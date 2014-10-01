@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>gmx.iderc.geoserver</groupId>
+    <artifactId>tjs</artifactId>
+    <packaging>pom</packaging>
+    <version>1.1-SNAPSHOT</version>
+    <name>Geomix TJS(tjs)</name>
+    <url>http://maven.apache.org</url>
+
+<repositories>
+  <repository>
+   <id>opengeo</id>
+   <name>OpenGeo Maven Repository</name>
+   <url>http://repo.opengeo.org/</url>
+   <snapshots>
+     <enabled>true</enabled>
+   </snapshots>
+  </repository>
+  
+  <repository>
+    <id>osgeo</id>
+    <name>Open Source Geospatial Foundation Repository</name>
+    <url>http://download.osgeo.org/webdav/geotools/</url>
+    <snapshots>
+      <enabled>true</enabled>
+    </snapshots>
+  </repository>
+
+  <repository>
+    <id>maven-restlet</id>
+    <name>Restlet Maven Repository</name>
+    <url>http://maven.restlet.org</url>
+    <snapshots>
+      <enabled>false</enabled>
+    </snapshots>
+  </repository>
+ </repositories>
+
+ <pluginRepositories>
+  <pluginRepository>
+   <id>codehaus-snapshot-plugins</id>
+   <name>codehaus-shapshot-plugins</name>
+   <url>http://snapshots.repository.codehaus.org/</url>
+   <snapshots>
+    <enabled>true</enabled>
+   </snapshots>
+   <releases>
+    <enabled>false</enabled>
+   </releases>
+  </pluginRepository>
+ </pluginRepositories>
+
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/java</directory>
+                <includes>
+                    <include>**/*.png</include>
+                    <include>**/*.xml</include>
+                    <include>**/*.properties</include>
+                </includes>
+            </resource>
+        </resources>
+    </build>
+    <parent>
+        <groupId>org.geoserver</groupId>
+        <artifactId>community</artifactId>
+        <version>2.6-SNAPSHOT</version>
+    </parent>
+    <dependencies>
+        <dependency>
+            <groupId>gmx.iderc.geoserver</groupId>
+            <artifactId>tjs-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>gmx.iderc.geoserver</groupId>
+            <artifactId>tjs-web</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
+    <modules>
+        <module>tjs</module>
+        <module>tjs-web</module>
+        <module>tjsdata</module>
+        <module>net.opengis.tjs</module>
+        <module>xsd-tjs</module>
+    </modules>
+    <properties>
+        <gs.version>2.6-SNAPSHOT</gs.version>
+        <gt.version>12-SNAPSHOT</gt.version>
+    </properties>
+</project>

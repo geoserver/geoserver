@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
+<tjs:Capabilities service="TJS" version="1.0" xml:lang="en" xmlns:xlink="http://www.w3.org/1999/xlink"
+                  xmlns:tjs="http://www.opengis.net/tjs/1.0" xmlns:ows="http://www.opengis.net/ows/1.1"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://www.opengis.net/tjs/1.0 http://schemas.opengis.net/tjs/1.0/tjsGetCapabilities_response.xsd">
+    <ows:ServiceIdentification>
+        <ows:Title>AAFC Table Joining Service</ows:Title>
+        <ows:Abstract>AAFC TJS server based on the OGC TJS 1.0 standard.</ows:Abstract>
+        <ows:Keywords>
+            <ows:Keyword>TJS</ows:Keyword>
+            <ows:Keyword>GDAS</ows:Keyword>
+            <ows:Keyword>AAFC</ows:Keyword>
+            <ows:Keyword>geospatial</ows:Keyword>
+        </ows:Keywords>
+        <ows:ServiceType>TJS</ows:ServiceType>
+        <ows:ServiceTypeVersion>1.0.0</ows:ServiceTypeVersion>
+        <ows:Fees>NONE</ows:Fees>
+        <ows:AccessConstraints>NONE</ows:AccessConstraints>
+    </ows:ServiceIdentification>
+    <ows:ServiceProvider>
+        <ows:ProviderName>Agriculture and Agri-Food Canada</ows:ProviderName>
+        <ows:ProviderSite xlink:href="http://gis.agr.gc.ca/"/>
+        <ows:ServiceContact>
+            <ows:IndividualName>Peter Schut</ows:IndividualName>
+            <ows:PositionName>Head, Canadian Soil Information System</ows:PositionName>
+            <ows:ContactInfo>
+                <ows:Phone>
+                    <ows:Voice>+1 613 759-1874</ows:Voice>
+                    <ows:Facsimile>+1 613 759-1937</ows:Facsimile>
+                </ows:Phone>
+                <ows:Address>
+                    <ows:DeliveryPoint>Room 1135, Neatby Building, 960, Carling Avenue</ows:DeliveryPoint>
+                    <ows:City>Ottawa</ows:City>
+                    <ows:AdministrativeArea>ON</ows:AdministrativeArea>
+                    <ows:PostalCode>K1AOC6</ows:PostalCode>
+                    <ows:Country>Canada</ows:Country>
+                    <ows:ElectronicMailAddress>peter.schut@agr.gc.ca</ows:ElectronicMailAddress>
+                </ows:Address>
+            </ows:ContactInfo>
+        </ows:ServiceContact>
+    </ows:ServiceProvider>
+    <ows:OperationsMetadata>
+        <ows:Operation name="GetCapabilities">
+            <ows:DCP>
+                <ows:HTTP>
+                    <ows:Get xlink:href="http://sis.agr.gc.ca/pls/meta/TJS_1x0_GetCapabilities?"/>
+                </ows:HTTP>
+            </ows:DCP>
+        </ows:Operation>
+        <ows:Operation name="DescribeFrameworks">
+            <ows:DCP>
+                <ows:HTTP>
+                    <ows:Get xlink:href="http://sis.agr.gc.ca/pls/meta/TJS_1x0_DescribeFrameworks?"/>
+                </ows:HTTP>
+            </ows:DCP>
+        </ows:Operation>
+        <ows:Operation name="DescribeDatasets">
+            <ows:DCP>
+                <ows:HTTP>
+                    <ows:Get xlink:href="http://sis.agr.gc.ca/pls/meta/TJS_1x0_DescribeDatasets?"/>
+                </ows:HTTP>
+            </ows:DCP>
+        </ows:Operation>
+        <ows:Operation name="DescribeData">
+            <ows:DCP>
+                <ows:HTTP>
+                    <ows:Get xlink:href="http://sis.agr.gc.ca/pls/meta/TJS_1x0_DescribeData?"/>
+                </ows:HTTP>
+            </ows:DCP>
+        </ows:Operation>
+        <ows:Operation name="GetData">
+            <ows:DCP>
+                <ows:HTTP>
+                    <ows:Get xlink:href="http://sis.agr.gc.ca/pls/meta/TJS_1x0_GetData?"/>
+                </ows:HTTP>
+            </ows:DCP>
+            <ows:Constraint name="GeolinkidsLimit">
+                <ows:AllowedValues>
+                    <ows:Range>
+                        <ows:MaximumValue>0</ows:MaximumValue>
+                    </ows:Range>
+                </ows:AllowedValues>
+                <ows:Meaning>The maximum number of GeolinkIds that can be specified as part of the GeolinkIds element in
+                    a GetData request.
+                </ows:Meaning>
+            </ows:Constraint>
+            <ows:Constraint name="AttributeLimit">
+                <ows:AllowedValues>
+                    <ows:Range>
+                        <ows:MaximumValue>1</ows:MaximumValue>
+                    </ows:Range>
+                </ows:AllowedValues>
+                <ows:Meaning>The maximum number of Attributes that can be requested in one GetData request.
+                </ows:Meaning>
+            </ows:Constraint>
+        </ows:Operation>
+    </ows:OperationsMetadata>
+    <tjs:Languages>
+        <ows:Language>en</ows:Language>
+        <ows:Language>fr</ows:Language>
+    </tjs:Languages>
+    <tjs:WSDL xlink:href="http://sis.agr.gc.ca/pls/meta/TJS_1x0_WSDL?WSDL"/>
+</tjs:Capabilities>

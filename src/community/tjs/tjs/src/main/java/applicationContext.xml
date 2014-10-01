@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+    <!-- Spring will reference the instance of the HelloWorld class by the id name "helloService" -->
+    <bean id="tjsServiceLoader" class="gmx.iderc.geoserver.tjs.TJSXStreamLoader">
+        <constructor-arg ref="resourceLoader"/>
+    </bean>
+
+    <!-- TODO: remove this thing -->
+    <bean id="tjsServiceLegacyLoader" class="gmx.iderc.geoserver.tjs.TJSLoader"/>
+
+    <bean id="tjsServiceTarget" class="gmx.iderc.geoserver.tjs.DefaultTableJoiningService">
+        <constructor-arg ref="geoServer"/>
+    </bean>
+
+    <bean id="tjsService" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="proxyInterfaces">
+            <value>gmx.iderc.geoserver.tjs.TableJoiningService</value>
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>tjsServiceTarget</value>
+            </list>
+        </property>
+    </bean>
+    <!-- This creates a Service descriptor, which allows the org.geoserver.ows.Dispatcher to locate it. -->
+    <bean id="tjsService-1.0.0" class="org.geoserver.platform.Service">
+        <!-- used to reference the service in the URL -->
+        <constructor-arg index="0" value="tjs"/>
+
+        <!-- our actual service POJO defined previously -->
+        <constructor-arg index="1" ref="tjsService"/>
+
+        <!-- a version number for this service -->
+        <constructor-arg index="2" value="1.0.0"/>
+
+        <!-- a list of functions for this service -->
+        <constructor-arg index="3">
+            <list>
+                <value>getCapabilities</value>
+                <value>describeFrameworks</value>
+                <value>describeKey</value>
+                <value>describeDatasets</value>
+                <value>describeData</value>
+                <value>getData</value>
+                <value>describeJoinAbilities</value>
+                <value>joinData</value>
+            </list>
+        </constructor-arg>
+    </bean>
+
+    <bean id="tjsURLMapping" class="org.geoserver.ows.OWSHandlerMapping">
+        <constructor-arg ref="catalog"/>
+        <property name="alwaysUseFullPath" value="true"/>
+        <!--        <property name="interceptors">
+                    <list>
+                        <ref bean="citeComplianceHack"/>
+                        <ref bean="xmlPostRequestLogBufferSize"/>
+                    </list>
+                </property>
+        -->
+        <property name="mappings">
+            <props>
+                <prop key="/tjs">dispatcher</prop>
+                <prop key="/tjs/*">dispatcher</prop>
+                <!--<prop key="/TestWfsPost">wfsTestServlet</prop>-->
+            </props>
+        </property>
+    </bean>
+
+    <bean id="tjsGetCapabilitiesKvpReader" class="gmx.iderc.geoserver.tjs.kvp.GetCapabilitiesKvpRequestReader"/>
+    <bean id="tjsGetCapabilitiesResponse" class="gmx.iderc.geoserver.tjs.response.tjsGetCapabilitiesResponse"
+          singleton="false"/>
+
+    <bean id="tjsDescribeFrameworksKvpReader" class="gmx.iderc.geoserver.tjs.kvp.DescribeFrameworksKvpRequestReader"/>
+    <bean id="DescribeFrameworksResponse" class="gmx.iderc.geoserver.tjs.response.DescribeFrameworksResponse"
+          singleton="false"/>
+
+    <bean id="tjsDescribeKeyKvpReader" class="gmx.iderc.geoserver.tjs.kvp.DescribeKeyKvpRequestReader"/>
+    <bean id="DescribeKeyResponse" class="gmx.iderc.geoserver.tjs.response.DescribeKeyResponse" singleton="false"/>
+
+    <bean id="tjsDescribeDatasetsKvpReader" class="gmx.iderc.geoserver.tjs.kvp.DescribeDatasetsKvpRequestReader"/>
+    <bean id="DescribeDatasetsResponse" class="gmx.iderc.geoserver.tjs.response.DescribeDatasetsResponse"
+          singleton="false"/>
+
+    <bean id="tjsDescribeDataKvpReader" class="gmx.iderc.geoserver.tjs.kvp.DescribeDataKvpRequestReader"/>
+    <bean id="DescribeDataResponse" class="gmx.iderc.geoserver.tjs.response.DescribeDataResponse" singleton="false"/>
+
+    <bean id="tjsGetDataKvpReader" class="gmx.iderc.geoserver.tjs.kvp.GetDataKvpRequestReader"/>
+    <bean id="GetDataResponse" class="gmx.iderc.geoserver.tjs.response.GetDataResponse" singleton="false"/>
+
+    <bean id="tjsDescribeJoinAbilitiesKvpReader"
+          class="gmx.iderc.geoserver.tjs.kvp.DescribeJoinAbilitiesKvpRequestReader"/>
+    <bean id="DescribeJoinAbilitiesResponse" class="gmx.iderc.geoserver.tjs.response.DescribeJoinAbilitiesResponse"
+          singleton="false"/>
+
+    <bean id="tjsJoinDataKvpReader" class="gmx.iderc.geoserver.tjs.kvp.JoinDataKvpRequestReader"/>
+    <bean id="JoinDataResponse" class="gmx.iderc.geoserver.tjs.response.JoinDataResponse" singleton="false"/>
+
+</beans>

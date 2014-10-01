@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions name="TJS" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+                  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/"
+                  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                  xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/"
+                  xmlns:tjs_wsdl="http://www.opengis.net/tjs_wsdl/1.0"
+                  targetNamespace="http://www.opengis.net/tjs_wsdl/1.0">
+    <!-- import WMTS types, message and portType -->
+    <xsd:import namespace="http://www.opengis.net/wmts_wsdl/1.0" schemaLocation="tjs_abstract.wsdl"/>
+    <!--    Bindings   -->
+    <!-- HTTP Get KVP  bindings -->
+    <wsdl:binding name="TJS_HTTP_GET_Binding" type="tjs_wsdl:TJS_HTTP_Port_GET">
+        <http:binding verb="GET"/>
+        <wsdl:operation name="DescribeFrameworks">
+            <http:operation location="http://foo.bar/foo"/>
+            <wsdl:input>
+                <http:urlEncoded/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml"/>
+            </wsdl:output>
+            <wsdl:fault name="exception">
+                <mime:content type="text/xml"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="DescribeDatasets">
+            <http:operation location="http://foo.bar/foo"/>
+            <wsdl:input>
+                <http:urlEncoded/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml"/>
+            </wsdl:output>
+            <wsdl:fault name="exception">
+                <mime:content type="text/xml"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="DescribeData">
+            <http:operation location="http://foo.bar/foo"/>
+            <wsdl:input>
+                <http:urlEncoded/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml"/>
+            </wsdl:output>
+            <wsdl:fault name="exception">
+                <mime:content type="text/xml"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="GetData">
+            <http:operation location="http://foo.bar/foo"/>
+            <wsdl:input>
+                <http:urlEncoded/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml"/>
+            </wsdl:output>
+            <wsdl:fault name="exception">
+                <mime:content type="text/xml"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="DescribeJoinAbilities">
+            <http:operation location="http://foo.bar/foo"/>
+            <wsdl:input>
+                <http:urlEncoded/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml"/>
+            </wsdl:output>
+            <wsdl:fault name="exception">
+                <mime:content type="text/xml"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="DescribeKey">
+            <http:operation location="http://foo.bar/foo"/>
+            <wsdl:input>
+                <http:urlEncoded/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml"/>
+            </wsdl:output>
+            <wsdl:fault name="exception">
+                <mime:content type="text/xml"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="JoinData">
+            <http:operation location="http://foo.bar/foo"/>
+            <wsdl:input>
+                <http:urlEncoded/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml"/>
+            </wsdl:output>
+            <wsdl:fault name="exception">
+                <mime:content type="text/xml"/>
+            </wsdl:fault>
+        </wsdl:operation>
+    </wsdl:binding>
+    <!-- HTTP Post SOAP  bindings -->
+    <wsdl:binding name="TJS_SOAP_Binding" type="tjs_wsdl:TJS_HTTP_Port_SOAP">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <wsdl:operation name="DescribeFrameworks">
+            <soap:operation soapAction="http://foo.bar/foo"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="exception">
+                <soap:fault name="exception" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="DescribeDatasets">
+            <soap:operation soapAction="http://foo.bar/foo"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="exception">
+                <soap:fault name="exception" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="DescribeData">
+            <soap:operation soapAction="http://foo.bar/foo"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="exception">
+                <soap:fault name="exception" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="GetData">
+            <soap:operation soapAction="http://foo.bar/foo"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="exception">
+                <soap:fault name="exception" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="DescribeJoinAbilities">
+            <soap:operation soapAction="http://foo.bar/foo"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="exception">
+                <soap:fault name="exception" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="DescribeKey">
+            <soap:operation soapAction="http://foo.bar/foo"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="exception">
+                <soap:fault name="exception" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="JoinData">
+            <soap:operation soapAction="http://foo.bar/foo"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="exception">
+                <soap:fault name="exception" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+    </wsdl:binding>
+    <!--   Services    -->
+    <wsdl:service name="WMTS-TiledWorld-UAB-CREAF-MiraMon">
+        <wsdl:port name="WMTS-GET-Port" binding="tjs_wsdl:TJS_HTTP_GET_Binding">
+            <http:address location="http://foo.bar/foo.cgi"/>
+        </wsdl:port>
+        <wsdl:port name="WMTS-SOAP-Port" binding="tjs_wsdl:TJS_SOAP_Binding">
+            <soap:address location="http://foo.bar/foo.cgi"/>
+        </wsdl:port>
+    </wsdl:service>
+</wsdl:definitions>

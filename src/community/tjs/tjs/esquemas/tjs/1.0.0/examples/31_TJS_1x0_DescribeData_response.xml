@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
+<DataDescriptions service="TJS" version="1.0" capabilities="http://sis.agr.gc.ca/pls/meta/tjs_1x0_getcapabilities"
+                  xml:lang="en" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.opengis.net/tjs/1.0"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://www.opengis.net/tjs/1.0 http://schemas.opengis.net/tjs/1.0/tjsDescribeData_response.xsd">
+    <Framework>
+        <FrameworkURI>http://sis.agr.gc.ca/cansis/nsdb/ecostrat/zone/v1</FrameworkURI>
+        <Organization>Environment Canada</Organization>
+        <Title>Ecozones of Canada</Title>
+        <Abstract>Ecozones of Canada, forming part of the Terrestrial Ecological Stratification of Canada</Abstract>
+        <ReferenceDate startDate="1995-01-01">1995-06-03</ReferenceDate>
+        <Version>1</Version>
+        <Documentation>http://sis.agr.gc.ca/cansis/nsdb/ecostrat/hierarchy.html</Documentation>
+        <FrameworkKey>
+            <Column name="ecozone" type="http://www.w3.org/TR/xmlschema-2/#integer" length="2" decimals="0"/>
+        </FrameworkKey>
+        <BoundingCoordinates>
+            <North>90</North>
+            <South>43</South>
+            <East>-50</East>
+            <West>-145</West>
+        </BoundingCoordinates>
+        <DescribeDatasetsRequest
+                xlink:href="http://sis.agr.gc.ca/pls/meta/tjs_1x0_describedatasets?Service=TJS&amp;Version=1.0&amp;Request=DescribeDatasets&amp;FrameworkURI=http://sis.agr.gc.ca/cansis/nsdb/ecostrat/zone/v1&amp;AcceptLanguages=en"/>
+        <Dataset>
+            <DatasetURI>http://sis.agr.gc.ca/cansis/nsdb/ecostrat/zone/v1/population_1991</DatasetURI>
+            <Organization>Agriculture and Agri-Food Canada</Organization>
+            <Title>Population 1991</Title>
+            <Abstract>The population statistics are a special tabulation prepared for the State of the Environment
+                Directorate, Environment Canada, by Statistics Canada, based on the 1991 Census of Canada. Population
+                data was not compiled for the ecodistrict level of the framework. The population attributes compiled are
+                identified below.
+            </Abstract>
+            <ReferenceDate>1999-09-16</ReferenceDate>
+            <Version>1</Version>
+            <Documentation></Documentation>
+            <DescribeDataRequest
+                    xlink:href="http://sis.agr.gc.ca/pls/meta/tjs_1x0_describedata?Service=TJS&amp;Version=1.0&amp;Request=DescribeData&amp;FrameworkURI=http://sis.agr.gc.ca/cansis/nsdb/ecostrat/zone/v1&amp;DatasetURI=http://sis.agr.gc.ca/cansis/nsdb/ecostrat/zone/v1/population_1991&amp;AcceptLanguages=en"/>
+            <Columnset>
+                <FrameworkKey complete="true" relationship="one">
+                    <Column name="ecozone" type="http://www.w3.org/TR/xmlschema-2/#integer" length="2" decimals="0"/>
+                </FrameworkKey>
+                <Attributes>
+                    <Column name="rurf_91" type="http://www.w3.org/TR/xmlschema-2/#integer" length="10" decimals="0"
+                            purpose="Attribute">
+                        <Title>Rural Female Population</Title>
+                        <Abstract>Number of females living in rural areas.</Abstract>
+                        <Documentation>http://sis.agr.gc.ca/cansis/nsdb/ecostrat/population.html</Documentation>
+                        <Values>
+                            <Count>
+                                <UOM>
+                                    <ShortForm>people</ShortForm>
+                                    <LongForm>people</LongForm>
+                                </UOM>
+                            </Count>
+                        </Values>
+                        <GetDataRequest
+                                xlink:href="http://sis.agr.gc.ca/pls/meta/tjs_1x0_getdata?Service=TJS&amp;Version=1.0&amp;Request=GetData&amp;FrameworkURI=http://sis.agr.gc.ca/cansis/nsdb/ecostrat/zone/v1&amp;DatasetURI=http://sis.agr.gc.ca/cansis/nsdb/ecostrat/zone/v1/population_1991&amp;Attributes=rurf_91&amp;AcceptLanguages=en"/>
+                    </Column>
+                    <Column name="rurm_91" type="http://www.w3.org/TR/xmlschema-2/#integer" length="10" decimals="0"
+                            purpose="Attribute">
+                        <Title>Rural Male Population</Title>
+                        <Abstract>Number of males living in rural areas.</Abstract>
+                        <Documentation>http://sis.agr.gc.ca/cansis/nsdb/ecostrat/population.html</Documentation>
+                        <Values>
+                            <Count>
+                                <UOM>
+                                    <ShortForm>people</ShortForm>
+                                    <LongForm>people</LongForm>
+                                </UOM>
+                            </Count>
+                        </Values>
+                        <GetDataRequest
+                                xlink:href="http://sis.agr.gc.ca/pls/meta/tjs_1x0_getdata?Service=TJS&amp;Version=1.0&amp;Request=GetData&amp;FrameworkURI=http://sis.agr.gc.ca/cansis/nsdb/ecostrat/zone/v1&amp;DatasetURI=http://sis.agr.gc.ca/cansis/nsdb/ecostrat/zone/v1/population_1991&amp;Attributes=rurm_91&amp;AcceptLanguages=en"/>
+                    </Column>
+                    <Column name="rurt_91" type="http://www.w3.org/TR/xmlschema-2/#integer" length="10" decimals="0"
+                            purpose="Attribute">
+                        <Title>Rural Total Population</Title>
+                        <Abstract>Number of people living in rural areas.</Abstract>
+                        <Documentation>http://sis.agr.gc.ca/cansis/nsdb/ecostrat/population.html</Documentation>
+                        <Values>
+                            <Count>
+                                <UOM>
+                                    <ShortForm>people</ShortForm>
+                                    <LongForm>people</LongForm>
+                                </UOM>
+                            </Count>
+                        </Values>
+                        <GetDataRequest
+                                xlink:href="http://sis.agr.gc.ca/pls/meta/tjs_1x0_getdata?Service=TJS&amp;Version=1.0&amp;Request=GetData&amp;FrameworkURI=http://sis.agr.gc.ca/cansis/nsdb/ecostrat/zone/v1&amp;DatasetURI=http://sis.agr.gc.ca/cansis/nsdb/ecostrat/zone/v1/population_1991&amp;Attributes=rurt_91&amp;AcceptLanguages=en"/>
+                    </Column>
+                    <Column name="urbf_91" type="http://www.w3.org/TR/xmlschema-2/#integer" length="10" decimals="0"
+                            purpose="Attribute">
+                        <Title>Urban Female Population</Title>
+                        <Abstract>Number of females living in urban areas.</Abstract>
+                        <Documentation>http://sis.agr.gc.ca/cansis/nsdb/ecostrat/population.html</Documentation>
+                        <Values>
+                            <Count>
+                                <UOM>
+                                    <ShortForm>people</ShortForm>
+                                    <LongForm>people</LongForm>
+                                </UOM>
+                            </Count>
+                        </Values>
+                        <GetDataRequest
+                                xlink:href="http://sis.agr.gc.ca/pls/meta/tjs_1x0_getdata?Service=TJS&amp;Version=1.0&amp;Request=GetData&amp;FrameworkURI=http://sis.agr.gc.ca/cansis/nsdb/ecostrat/zone/v1&amp;DatasetURI=http://sis.agr.gc.ca/cansis/nsdb/ecostrat/zone/v1/population_1991&amp;Attributes=urbf_91&amp;AcceptLanguages=en"/>
+                    </Column>
+                    <Column name="urbm_91" type="http://www.w3.org/TR/xmlschema-2/#integer" length="10" decimals="0"
+                            purpose="Attribute">
+                        <Title>Urban Male Population</Title>
+                        <Abstract>Number fo males living in urban areas.</Abstract>
+                        <Documentation>http://sis.agr.gc.ca/cansis/nsdb/ecostrat/population.html</Documentation>
+                        <Values>
+                            <Count>
+                                <UOM>
+                                    <ShortForm>people</ShortForm>
+                                    <LongForm>people</LongForm>
+                                </UOM>
+                            </Count>
+                        </Values>
+                        <GetDataRequest
+                                xlink:href="http://sis.agr.gc.ca/pls/meta/tjs_1x0_getdata?Service=TJS&amp;Version=1.0&amp;Request=GetData&amp;FrameworkURI=http://sis.agr.gc.ca/cansis/nsdb/ecostrat/zone/v1&amp;DatasetURI=http://sis.agr.gc.ca/cansis/nsdb/ecostrat/zone/v1/population_1991&amp;Attributes=urbm_91&amp;AcceptLanguages=en"/>
+                    </Column>
+                    <Column name="urbt_91" type="http://www.w3.org/TR/xmlschema-2/#integer" length="10" decimals="0"
+                            purpose="Attribute">
+                        <Title>Urban Total Population</Title>
+                        <Abstract>Number of people living in urban areas.</Abstract>
+                        <Documentation>http://sis.agr.gc.ca/cansis/nsdb/ecostrat/population.html</Documentation>
+                        <Values>
+                            <Count>
+                                <UOM>
+                                    <ShortForm>people</ShortForm>
+                                    <LongForm>people</LongForm>
+                                </UOM>
+                            </Count>
+                        </Values>
+                        <GetDataRequest
+                                xlink:href="http://sis.agr.gc.ca/pls/meta/tjs_1x0_getdata?Service=TJS&amp;Version=1.0&amp;Request=GetData&amp;FrameworkURI=http://sis.agr.gc.ca/cansis/nsdb/ecostrat/zone/v1&amp;DatasetURI=http://sis.agr.gc.ca/cansis/nsdb/ecostrat/zone/v1/population_1991&amp;Attributes=urbt_91&amp;AcceptLanguages=en"/>
+                    </Column>
+                    <Column name="totf_91" type="http://www.w3.org/TR/xmlschema-2/#integer" length="10" decimals="0"
+                            purpose="Attribute">
+                        <Title>Total Female Population</Title>
+                        <Abstract>Total number of females.</Abstract>
+                        <Documentation>http://sis.agr.gc.ca/cansis/nsdb/ecostrat/population.html</Documentation>
+                        <Values>
+                            <Count>
+                                <UOM>
+                                    <ShortForm>people</ShortForm>
+                                    <LongForm>people</LongForm>
+                                </UOM>
+                            </Count>
+                        </Values>
+                        <GetDataRequest
+                                xlink:href="http://sis.agr.gc.ca/pls/meta/tjs_1x0_getdata?Service=TJS&amp;Version=1.0&amp;Request=GetData&amp;FrameworkURI=http://sis.agr.gc.ca/cansis/nsdb/ecostrat/zone/v1&amp;DatasetURI=http://sis.agr.gc.ca/cansis/nsdb/ecostrat/zone/v1/population_1991&amp;Attributes=totf_91&amp;AcceptLanguages=en"/>
+                    </Column>
+                    <Column name="totm_91" type="http://www.w3.org/TR/xmlschema-2/#integer" length="10" decimals="0"
+                            purpose="Attribute">
+                        <Title>Total Male Population</Title>
+                        <Abstract>Total number of males.</Abstract>
+                        <Documentation>http://sis.agr.gc.ca/cansis/nsdb/ecostrat/population.html</Documentation>
+                        <Values>
+                            <Count>
+                                <UOM>
+                                    <ShortForm>people</ShortForm>
+                                    <LongForm>people</LongForm>
+                                </UOM>
+                            </Count>
+                        </Values>
+                        <GetDataRequest
+                                xlink:href="http://sis.agr.gc.ca/pls/meta/tjs_1x0_getdata?Service=TJS&amp;Version=1.0&amp;Request=GetData&amp;FrameworkURI=http://sis.agr.gc.ca/cansis/nsdb/ecostrat/zone/v1&amp;DatasetURI=http://sis.agr.gc.ca/cansis/nsdb/ecostrat/zone/v1/population_1991&amp;Attributes=totm_91&amp;AcceptLanguages=en"/>
+                    </Column>
+                    <Column name="totpop_91" type="http://www.w3.org/TR/xmlschema-2/#integer" length="10" decimals="0"
+                            purpose="Attribute">
+                        <Title>Total Population</Title>
+                        <Abstract>Total number of people.</Abstract>
+                        <Documentation>http://sis.agr.gc.ca/cansis/nsdb/ecostrat/population.html</Documentation>
+                        <Values>
+                            <Count>
+                                <UOM>
+                                    <ShortForm>people</ShortForm>
+                                    <LongForm>people</LongForm>
+                                </UOM>
+                            </Count>
+                        </Values>
+                        <GetDataRequest
+                                xlink:href="http://sis.agr.gc.ca/pls/meta/tjs_1x0_getdata?Service=TJS&amp;Version=1.0&amp;Request=GetData&amp;FrameworkURI=http://sis.agr.gc.ca/cansis/nsdb/ecostrat/zone/v1&amp;DatasetURI=http://sis.agr.gc.ca/cansis/nsdb/ecostrat/zone/v1/population_1991&amp;Attributes=totpop_91&amp;AcceptLanguages=en"/>
+                    </Column>
+                </Attributes>
+            </Columnset>
+        </Dataset>
+    </Framework>
+</DataDescriptions>

@@ -1,0 +1,53 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<body>
+<wicket:panel>
+    <div wicket:id="rootObjects">
+        <h3>
+            <wicket:message key="ConfirmRemovalPanel.aboutRemove">About to remove</wicket:message>
+            : <span wicket:id="rootObjectNames"></span>
+        </h3>
+    </div>
+
+    <div wicket:id="notRemovedObjects">
+        <wicket:message key="ConfirmRemovalPanel.notRemovedObject">The following objects could not be removed:
+        </wicket:message>
+        <ul class="plain-ul">
+            <li wicket:id="notRemovedList"><span wicket:id="name"></span>: <span wicket:id="reason"></span></li>
+        </ul>
+    </div>
+
+    <div wicket:id="removedObjects">
+        <wicket:message
+                key="ConfirmRemovalPanel.removedObjects">The following objects will be removed
+        </wicket:message>
+        :
+        <ul class="plain-ul">
+            <li wicket:id="frameworksRemoved">
+                <wicket:message key="TJSConfirmRemovalPanel.frameworks"/>
+                :
+                <span wicket:id="frameworks"></span></li>
+            <li wicket:id="datasetsRemoved">
+                <wicket:message key="TJSConfirmRemovalPanel.datasets"/>
+                :
+                <span wicket:id="datasets"></span></li>
+            <li wicket:id="datastoresRemoved">
+                <wicket:message key="TJSConfirmRemovalPanel.datastores"/>
+                :
+                <span wicket:id="datasets"></span></li>
+        </ul>
+    </div>
+    <!--
+        <div wicket:id="modifiedObjects">
+            <wicket:message
+                key="ConfirmRemovalPanel.modifiedObjects">The following objects will be modified as a result</wicket:message>:
+            <ul class="plain-ul">
+                <li wicket:id="frameworksModified"><wicket:message key="TJSConfirmRemovalPanel.frameworks" />:
+                    <span wicket:id="frameworks"></span></li>
+                <li wicket:id="datasetsModified"><wicket:message key="TJSConfirmRemovalPanel.datasets" />:
+                    <span wicket:id="datasets"></span></li>
+            </ul>
+        </div>
+    -->
+</wicket:panel>
+</body>
+</html>

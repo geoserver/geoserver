@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ows:ExceptionReport xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                     xsi:schemaLocation="http://www.opengis.net/ows/1.1
+http://schemas.opengis.net/ows/1.1.0/owsExceptionReport.xsd" version="1.0.0" xml:lang="en-CA">
+    <ows:Exception exceptionCode="LinkageFailure">
+        <ows:ExceptionText>The JoinData operation was unable to complete because the contents of the relate keys in the
+            framework and attribute datasets did not match correctly.
+        </ows:ExceptionText>
+    </ows:Exception>
+</ows:ExceptionReport>

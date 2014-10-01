@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+        targetNamespace="http://www.opengis.net/tjs/1.0" elementFormDefault="qualified" xml:lang="en" version="1.0.0">
+    <annotation>
+        <appinfo>$Id: tjsAll.xsd 2010-12-23 $</appinfo>
+        <documentation>
+            <description>This XML Schema Document includes and imports, directly and indirectly, all the XML Schemas
+                defined by the tjs Implementation Standard.
+            </description>
+            <copyright>
+                TJS is an OGC Standard.
+                Copyright (c) 2010 Open Geospatial Consortium, Inc. All Rights Reserved.
+                To obtain additional rights of use, visit http://www.opengeospatial.org/legal/ .
+            </copyright>
+        </documentation>
+    </annotation>
+    <!-- ========= includes and imports ================================ -->
+    <include schemaLocation="tjsGetCapabilities_request.xsd"/>
+    <include schemaLocation="tjsGetCapabilities_response.xsd"/>
+    <include schemaLocation="tjsDescribeFrameworks_request.xsd"/>
+    <include schemaLocation="tjsDescribeFrameworks_response.xsd"/>
+    <include schemaLocation="tjsDescribeDatasets_request.xsd"/>
+    <include schemaLocation="tjsDescribeDatasets_response.xsd"/>
+    <include schemaLocation="tjsDescribeData_request.xsd"/>
+    <include schemaLocation="tjsDescribeData_response.xsd"/>
+    <include schemaLocation="tjsGetData_request.xsd"/>
+    <include schemaLocation="tjsGetData_response.xsd"/>
+    <include schemaLocation="tjsDescribeJoinAbilities_request.xsd"/>
+    <include schemaLocation="tjsDescribeJoinAbilities_response.xsd"/>
+    <include schemaLocation="tjsDescribeKey_request.xsd"/>
+    <include schemaLocation="tjsDescribeKey_response.xsd"/>
+    <include schemaLocation="tjsJoinData_request.xsd"/>
+    <include schemaLocation="tjsJoinData_response.xsd"/>
+    <include schemaLocation="tjsService.xsd"/>
+    <include schemaLocation="tjsWSDL.xsd"/>
+</schema>

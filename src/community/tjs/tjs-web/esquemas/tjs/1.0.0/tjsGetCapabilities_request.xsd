@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2009 sp1 (http://www.altova.com) by Peter Schut (Agriculture Canada) -->
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:ows="http://www.opengis.net/ows/1.1"
+        targetNamespace="http://www.opengis.net/tjs/1.0"
+        elementFormDefault="qualified" xml:lang="en" version="1.0.0">
+    <annotation>
+        <appinfo>$Id: tjsGetCapabilities_request.xsd 2010-12-23 $</appinfo>
+        <documentation>
+            <description>This XML Schema specifies the content of the TJS GetCapabilities request.</description>
+            <copyright>
+                TJS is an OGC Standard.
+                Copyright (c) 2010 Open Geospatial Consortium, Inc. All Rights Reserved.
+                To obtain additional rights of use, visit http://www.opengeospatial.org/legal/ .
+            </copyright>
+        </documentation>
+    </annotation>
+    <!-- ========= includes and imports ================================ -->
+    <import namespace="http://www.opengis.net/ows/1.1"
+            schemaLocation="http://schemas.opengis.net/ows/1.1.0/owsAll.xsd"/>
+    <!-- ========= top level element =================================== -->
+    <element name="GetCapabilities">
+        <annotation>
+            <documentation>Request to a TJS to perform the GetCapabilities operation. This operation allows a client to
+                retrieve a Capabilities XML document providing metadata for the specific TJS server. In this XML
+                encoding, no "request" parameter is included, since the element name specifies the specific operation.
+            </documentation>
+        </annotation>
+        <complexType>
+            <sequence>
+                <element name="AcceptVersions" minOccurs="0">
+                    <annotation>
+                        <documentation>Prioritized sequence of one or more specification versions accepted by client,
+                            with preferred versions listed first. Version negotiation is similar to that specified by
+                            the OWS 1.1 Version Negotiation subclause except that the form of the TJS version number
+                            differs slightly.
+                        </documentation>
+                    </annotation>
+                    <complexType>
+                        <annotation>
+                            <documentation>When omitted, server shall return latest supported version.</documentation>
+                        </annotation>
+                        <sequence>
+                            <element name="Version" maxOccurs="unbounded">
+                                <annotation>
+                                    <documentation>Specification version for the TJS GetCapabilities operation. The
+                                        string value shall contain one "version" value. Version numbering is similar to
+                                        OWS 1.1 except the version number contains only two non-negative integers
+                                        separated by decimal points, in the form "x.y", where the integer x is the major
+                                        version and y is the minor version. Currently version "1.0" is the only valid
+                                        value for this element.
+                                    </documentation>
+                                </annotation>
+                                <simpleType>
+                                    <restriction base="string">
+                                        <enumeration value="1.0"/>
+                                    </restriction>
+                                </simpleType>
+                            </element>
+                        </sequence>
+                    </complexType>
+                </element>
+                <element name="Sections" type="ows:SectionsType" minOccurs="0">
+                    <annotation>
+                        <documentation>When omitted or not supported by server, server shall return complete service
+                            metadata (Capabilities) document.
+                        </documentation>
+                    </annotation>
+                </element>
+                <element name="AcceptFormats" type="ows:AcceptFormatsType" minOccurs="0">
+                    <annotation>
+                        <documentation>When omitted or not supported by server, server shall return service metadata
+                            document using the MIME type "text/xml".
+                        </documentation>
+                    </annotation>
+                </element>
+            </sequence>
+            <attribute name="service" use="required" fixed="TJS">
+                <annotation>
+                    <documentation>Service type identifier requested by the client.</documentation>
+                </annotation>
+            </attribute>
+            <attribute name="language">
+                <annotation>
+                    <documentation>Language requested by the client for all human readable text in the response.
+                        Consists of a two or five character RFC 4646 language code.
+                    </documentation>
+                </annotation>
+            </attribute>
+            <attribute name="updateSequence" type="ows:UpdateSequenceType" use="optional">
+                <annotation>
+                    <documentation>When omitted or not supported by server, server shall return latest complete service
+                        metadata document.
+                    </documentation>
+                </annotation>
+            </attribute>
+        </complexType>
+    </element>
+</schema>

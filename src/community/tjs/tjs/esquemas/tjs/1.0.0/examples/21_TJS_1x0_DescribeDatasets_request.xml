@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- DescribeDatasets operation, requesting that the response be restricted to datasets that match a specific Framework.-->
+<!-- Equivalent GET request is http://foo.bar/foo?Service=TJS&Request=DescribeDatasets&Version=1.0&AcceptLanguages=en-CA&FrameworkURI=http%3A%2F%2Fwww.statcan.ca%2Fprovinces%2F2001 -->
+<DescribeDatasets service="TJS" version="1.0" language="en-CA" xmlns="http://www.opengis.net/tjs/1.0"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://www.opengis.net/tjs/1.0 http://schemas.opengis.net/tjs/1.0/tjsDescribeDatasets_request.xsd">
+    <FrameworkURI>http://www.statcan.ca/provinces/2001</FrameworkURI>
+</DescribeDatasets>

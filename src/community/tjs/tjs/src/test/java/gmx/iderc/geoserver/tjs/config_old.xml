@@ -1,0 +1,22 @@
+<gmx.iderc.geoserver.tjs.catalog.impl.TJSCatalogImpl>
+    <frameworks>
+        <entry>
+            <string>DefaultFrameworkInfo</string>
+            <gmx.iderc.geoserver.tjs.catalog.impl.FrameworkInfoImpl>
+                <datasets>
+                    <entry>
+                        <string>DefaultDatasetInfo</string>
+                        <gmx.iderc.geoserver.tjs.catalog.impl.DatasetInfoImpl>
+                            <name>DefaultDatasetInfo</name>
+                            <description>Default Dataset for testing propose.</description>
+                            <enabled>false</enabled>
+                        </gmx.iderc.geoserver.tjs.catalog.impl.DatasetInfoImpl>
+                    </entry>
+                </datasets>
+                <name>DefaultFrameworkInfo</name>
+                <description>Default Framework for testing propose.</description>
+                <enabled>false</enabled>
+            </gmx.iderc.geoserver.tjs.catalog.impl.FrameworkInfoImpl>
+        </entry>
+    </frameworks>
+</gmx.iderc.geoserver.tjs.catalog.impl.TJSCatalogImpl>

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+        xmlns:tjs="http://www.opengis.net/tjs/1.0" targetNamespace="http://www.opengis.net/tjs/1.0"
+        elementFormDefault="qualified" version="1.0.0" xml:lang="en">
+    <annotation>
+        <appinfo>$Id: tjsGetData_request.xsd 2010-12-23 $</appinfo>
+        <documentation>
+            <description>This XML Schema encodes the TJS GetData request.</description>
+            <copyright>
+                TJS is an OGC Standard.
+                Copyright (c) 2010 Open Geospatial Consortium, Inc. All Rights Reserved.
+                To obtain additional rights of use, visit http://www.opengeospatial.org/legal/ .
+            </copyright>
+        </documentation>
+    </annotation>
+    <!-- ========= includes and imports ================================ -->
+    <include schemaLocation="tjsAll.xsd"/>
+    <!-- ========= top level element =================================== -->
+    <element name="GetData">
+        <annotation>
+            <documentation>Request to get a specified portion of the data residing on this server.</documentation>
+        </annotation>
+        <complexType>
+            <complexContent>
+                <extension base="tjs:RequestBaseType">
+                    <sequence>
+                        <element ref="tjs:FrameworkURI"/>
+                        <element ref="tjs:DatasetURI"/>
+                        <element ref="tjs:Attributes" minOccurs="0"/>
+                        <element ref="tjs:LinkageKeys" minOccurs="0"/>
+                        <element name="FilterColumn" minOccurs="0">
+                            <annotation>
+                                <documentation>The name of a Nominal or Ordinal field in the dataset upon which to
+                                    filter the contents of the GetData response.
+                                </documentation>
+                            </annotation>
+                        </element>
+                        <element name="FilterValue" minOccurs="0">
+                            <annotation>
+                                <documentation>The Nominal or Ordinal value which the contents of the GetData response
+                                    shall match.
+                                </documentation>
+                            </annotation>
+                        </element>
+                        <element name="XSL" minOccurs="0">
+                            <annotation>
+                                <documentation>Valid URL for an XSL document which will be referenced in the response
+                                    XML in a fashion that it will be applied by web browsers.
+                                </documentation>
+                            </annotation>
+                        </element>
+                    </sequence>
+                    <attribute name="aid" type="boolean" use="optional" default="false">
+                        <annotation>
+                            <documentation>Boolean switch to request Attribute IDentifier. If "aid=true" then an "aid"
+                                attribute will be included with each "V" element of the response.
+                            </documentation>
+                        </annotation>
+                    </attribute>
+                </extension>
+            </complexContent>
+        </complexType>
+    </element>
+    <!-- ========= other elements and types ============================ -->
+    <element name="Attributes" type="string">
+        <annotation>
+            <documentation>The AttributeNames requested by the user, in comma-delimited format</documentation>
+        </annotation>
+    </element>
+    <element name="LinkageKeys" type="string">
+        <annotation>
+            <documentation>The DatasetKey identifiers requested by the user. Identifiers shall be in comma-delimited
+                format, where ranges shall be indicated with a minimum value and maximum value separated by a dash
+                ("-"). The same Identifier cannot be requested multiple times.
+            </documentation>
+        </annotation>
+    </element>
+</schema>

@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<JoinAbilities version="1.0" xml:lang="en" service="TJS" capabilities="http://foo.bar/foo" updateSupported="false"
+               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xmlns="http://www.opengis.net/tjs/1.0"
+               xsi:schemaLocation="http://www.opengis.net/tjs/1.0  http://schemas.opengis.net/tjs/1.0/tjsDescribeJoinAbilities_response.xsd">
+    <SpatialFrameworks>
+        <Framework>
+            <FrameworkURI>http://sis.agr.gc.ca/cansis/nsdb/ecostrat/zone/v1</FrameworkURI>
+            <Organization>Environment Canada</Organization>
+            <Title>Ecozones of Canada</Title>
+            <Abstract>Ecozones of Canada, forming part of the Terrestrial Ecological Stratification of Canada</Abstract>
+            <ReferenceDate startDate="1995-01-01">1995-06-03</ReferenceDate>
+            <Version>1</Version>
+            <Documentation>http://sis.agr.gc.ca/cansis/nsdb/ecostrat/hierarchy.html</Documentation>
+            <FrameworkKey>
+                <Column name="ecozone" type="http://www.w3.org/TR/xmlschema-2/#integer" length="2" decimals="0"/>
+            </FrameworkKey>
+            <BoundingCoordinates>
+                <North>90</North>
+                <South>43</South>
+                <East>-50</East>
+                <West>-145</West>
+            </BoundingCoordinates>
+        </Framework>
+        <Framework>
+            <FrameworkURI>http://sis.agr.gc.ca/cansis/nsdb/ecostrat/province/v1</FrameworkURI>
+            <Organization>Environment Canada</Organization>
+            <Title>Ecoprovinces of Canada</Title>
+            <Abstract>Ecoprovinces of Canada, forming part of the Terrestrial Ecological Stratification of Canada.
+            </Abstract>
+            <ReferenceDate startDate="1995">2005</ReferenceDate>
+            <Version>1</Version>
+            <Documentation>http://sis.agr.gc.ca/cansis/nsdb/ecostrat/hierarchy.html</Documentation>
+            <FrameworkKey>
+                <Column name="ecoprovinc" type="http://www.w3.org/TR/xmlschema-2/#float" length="4" decimals="1"/>
+            </FrameworkKey>
+            <BoundingCoordinates>
+                <North>90</North>
+                <South>43</South>
+                <East>-50</East>
+                <West>-145</West>
+            </BoundingCoordinates>
+        </Framework>
+        <Framework>
+            <FrameworkURI>http://sis.agr.gc.ca/cansis/nsdb/ecostrat/region/v1</FrameworkURI>
+            <Organization>Environment Canada</Organization>
+            <Title>Ecoregions of Canada</Title>
+            <Abstract>Ecoregions of Canada, forming part of the Terrestrial Ecological Stratification of Canada.
+            </Abstract>
+            <ReferenceDate>1995-06-03</ReferenceDate>
+            <Version>1</Version>
+            <Documentation>http://sis.agr.gc.ca/cansis/nsdb/ecostrat/hierarchy.html</Documentation>
+            <FrameworkKey>
+                <Column name="ecoregion" type="http://www.w3.org/TR/xmlschema-2/#integer" length="3" decimals="0"/>
+            </FrameworkKey>
+            <BoundingCoordinates>
+                <North>90</North>
+                <South>43</South>
+                <East>-50</East>
+                <West>-145</West>
+            </BoundingCoordinates>
+        </Framework>
+    </SpatialFrameworks>
+    <AttributeLimit>1</AttributeLimit>
+    <OutputMechanisms>
+        <Mechanism>
+            <Identifier>shapefile</Identifier>
+            <Title>ESRI shapefile</Title>
+            <Abstract>ESRI shapefile currently unavailable</Abstract>
+            <Reference>http://en.wikipedia.org/wiki/Shapefile</Reference>
+        </Mechanism>
+        <Mechanism>
+            <Identifier>WMS</Identifier>
+            <Title>Web Map Server v1.1.1</Title>
+            <Abstract>The OpenGIS® Web Map Service Interface Standard (WMS) provides a simple HTTP interface for
+                requesting geo-registered map images from one or more distributed geospatial databases. A WMS request
+                defines the geographic layer(s) and area of interest to be processed. The response to the request is one
+                or more geo-registered map images (returned as JPEG, PNG, etc) that can be displayed in a browser
+                application. The interface also supports the ability to specify whether the returned images should be
+                transparent so that layers from multiple servers can be combined or not.
+            </Abstract>
+            <Reference>http://schemas.opengis.net/wms/1.1.1/</Reference>
+        </Mechanism>
+    </OutputMechanisms>
+    <OutputStylings>
+        <Styling>
+            <Identifier>MapServer</Identifier>
+            <Title>MapServer .MAP file</Title>
+            <Abstract>The MapServer MAP file allows styling via CLASS descriptions.</Abstract>
+            <Reference>http://ms.gis.umn.edu/docs/reference/mapfile/class</Reference>
+            <Schema>xx</Schema>
+        </Styling>
+        <Styling>
+            <Identifier>ReclassPalette</Identifier>
+            <Title>MetaMapper Reclassification Palette</Title>
+            <Abstract>Reclassification hash URL, semicolon, and Palette URL</Abstract>
+            <Reference>xx</Reference>
+            <Schema>xx</Schema>
+        </Styling>
+    </OutputStylings>
+    <ClassificationSchemaURL>http://foo.bar/foo</ClassificationSchemaURL>
+</JoinAbilities>

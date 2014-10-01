@@ -1,0 +1,160 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>gmx.iderc.geoserver</groupId>
+    <artifactId>tjs-core</artifactId>
+    <packaging>jar</packaging>
+    <version>1.1-SNAPSHOT</version>
+    <name>GeoMIX TJS for Geoserver(tjs-core)</name>
+    <url>http://maven.apache.org</url>
+
+<repositories>
+  <repository>
+   <id>opengeo</id>
+   <name>OpenGeo Maven Repository</name>
+   <url>http://repo.opengeo.org/</url>
+   <snapshots>
+     <enabled>true</enabled>
+   </snapshots>
+  </repository>
+  
+  <repository>
+    <id>osgeo</id>
+    <name>Open Source Geospatial Foundation Repository</name>
+    <url>http://download.osgeo.org/webdav/geotools/</url>
+    <snapshots>
+      <enabled>true</enabled>
+    </snapshots>
+  </repository>
+
+  <repository>
+    <id>maven-restlet</id>
+    <name>Restlet Maven Repository</name>
+    <url>http://maven.restlet.org</url>
+    <snapshots>
+      <enabled>false</enabled>
+    </snapshots>
+  </repository>
+ </repositories>
+
+ <pluginRepositories>
+  <pluginRepository>
+   <id>codehaus-snapshot-plugins</id>
+   <name>codehaus-shapshot-plugins</name>
+   <url>http://snapshots.repository.codehaus.org/</url>
+   <snapshots>
+    <enabled>true</enabled>
+   </snapshots>
+   <releases>
+    <enabled>false</enabled>
+   </releases>
+  </pluginRepository>
+ </pluginRepositories>
+    <!--  <build>
+          <resources>
+                <resource>
+                    <directory>src/main/java</directory>
+                    <includes>
+                        <include>**/*.png</include>
+                        <include>**/*.xml</include>
+                        <include>**/*.properties</include>
+                    </includes>
+                </resource>
+            </resources>
+      </build>
+    -->
+    <parent>
+        <groupId>org.geoserver</groupId>
+        <artifactId>geoserver</artifactId>
+        <version>2.6-SNAPSHOT</version>
+    </parent>
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>3.8.2</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>gmx.iderc.geoserver</groupId>
+            <artifactId>tjsdata</artifactId>
+            <version>1.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.geotools</groupId>
+            <artifactId>gt-main</artifactId>
+            <version>${gt.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.geoserver.web</groupId>
+            <artifactId>gs-web-core</artifactId>
+            <version>${gs.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.geoserver.web</groupId>
+            <artifactId>gs-web-core</artifactId>
+            <version>${gs.version}</version>
+            <classifier>tests</classifier>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.geoserver</groupId>
+            <artifactId>gs-main</artifactId>
+            <version>${gs.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.geoserver</groupId>
+            <artifactId>gs-main</artifactId>
+            <version>${gs.version}</version>
+            <classifier>tests</classifier>
+            <scope>test</scope>
+        </dependency> 
+        <dependency>
+            <groupId>org.geoserver</groupId>
+            <artifactId>gs-wms</artifactId>
+            <version>${gs.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.geoserver</groupId>
+            <artifactId>gs-ows</artifactId>
+            <version>${gs.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.geotools.xsd</groupId>
+            <artifactId>gt-xsd-tjs</artifactId>
+            <version>${gt.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.geotools</groupId>
+            <artifactId>gt-geojson</artifactId>
+            <version>${gt.version}</version>
+        </dependency>
+	<!-- duplicate of previous one ? -->
+        <!-- <dependency>
+            <groupId>org.geoserver</groupId>
+            <artifactId>main</artifactId>
+            <classifier>tests</classifier>
+            <scope>test</scope>
+        </dependency> -->
+        <dependency>
+            <groupId>com.mockrunner</groupId>
+            <artifactId>mockrunner</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>xmlunit</groupId>
+            <artifactId>xmlunit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.sf.opencsv</groupId>
+            <artifactId>opencsv</artifactId>
+            <version>1.8</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+</project>
+
+
+
+

@@ -1,0 +1,57 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<body>
+<wicket:extend>
+    <form wicket:id="form">
+        <ul>
+            <li>
+                <label for="name">Name</label>
+                <input wicket:id="name" id="name" type="text" size="20"/>
+            </li>
+            <li>
+                <label for="geoKeyField">Geographic Key Field</label>
+                <select wicket:id="geoKeyField" id="geoKeyField"/>
+            </li>
+            <li>
+                <label for="framework">Spatial framework</label>
+                <select wicket:id="framework" id="framework"/>
+            </li>
+            <li>
+                <label for="description">Description</label>
+                <input wicket:id="description" id="description" type="text" size="60"/>
+            </li>
+            <li>
+                <label for="organization">Organization</label>
+                <input wicket:id="organization" id="organization" type="text" size="60"/>
+            </li>
+            <li>
+                <label for="referenceDate">Referece Date ("dd-MM-yyyy")</label>
+                <input wicket:id="referenceDate" id="referenceDate" type="text" size="60"/>
+            </li>
+            <li>
+                <label for="version">Version</label>
+                <input wicket:id="version" id="version" type="text" size="10"/>
+            </li>
+            <li>
+                <label for="documentation">Documentation</label>
+                <input wicket:id="documentation" id="documentation" type="text" size="120"/>
+            </li>
+            <li>
+                <label for="enabled">
+                    <wicket:message key="enabled">Enabled</wicket:message>
+                </label>
+                <input wicket:id="enabled" id="enabled" type="checkbox"/>
+            </li>
+
+            <li class="button-group selfclear">
+                <a href="#" wicket:id="submit">
+                    <wicket:message key="submit">Submit</wicket:message>
+                </a>
+                <a href="#" wicket:id="cancel">
+                    <wicket:message key="cancel">Cancel</wicket:message>
+                </a>
+            </li>
+        </ul>
+    </form>
+</wicket:extend>
+</body>
+</html>

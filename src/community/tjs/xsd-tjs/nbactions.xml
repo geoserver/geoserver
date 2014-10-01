@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<actions>
+    <action>
+        <actionName>CUSTOM-generateSchema</actionName>
+        <displayName>generateSchema</displayName>
+        <goals>
+            <goal>org.geotools.maven:xmlcodegen:generateSchema</goal>
+        </goals>
+    </action>
+</actions>

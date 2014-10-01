@@ -1,0 +1,296 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions name="TJS" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+                  xmlns:http="http://schemas.xmlsoap.org/wsdl/http/"
+                  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                  xmlns:ows="http://www.opengis.net/ows/1.1"
+                  xmlns:tjs="http://www.opengis.net/tjs/1.0" xmlns:tjs_wsdl="http://www.opengis.net/tjs_wsdl/1.0"
+                  targetNamespace="http://www.opengis.net/tjs_wsdl/1.0">
+    <wsdl:types>
+        <xsd:schema targetNamespace="http://www.opengis.net/tjs_wsdl/1.0" elementFormDefault="qualified">
+            <xsd:import namespace="http://www.opengis.net/ows/1.1"
+                        schemaLocation="http://schemas.opengis.net/ows/1.1.0/owsCommon.xsd"/>
+            <xsd:import namespace="http://www.opengis.net/tjs/1.0"
+                        schemaLocation="http://schemas.opengis.net/tjs/1.0/tjsAll.xsd"/>
+        </xsd:schema>
+    </wsdl:types>
+
+    <!--Messages-->
+    <wsdl:message name="DescribeFrameworks_Request_GET">
+        <wsdl:part name="service" type="tjs:RequestServiceType"/>
+        <wsdl:part name="request" type="tjs:DescribeFrameworksValueType"/>
+        <wsdl:part name="version" type="tjs:VersionType"/>
+        <wsdl:part name="AcceptLanguages" type="tjs:AcceptLanguagesType"/>
+        <wsdl:part name="FrameworkURI" type="xsd:string"/>
+    </wsdl:message>
+    <wsdl:message name="DescribeFrameworks_Request_POST">
+        <wsdl:part name="request" element="tjs:DescribeFrameworks"/>
+    </wsdl:message>
+    <wsdl:message name="DescribeFrameworks_Request_SOAP">
+        <wsdl:part name="body" element="tjs:DescribeFrameworks"/>
+    </wsdl:message>
+    <wsdl:message name="DescribeFrameworks_Response">
+        <wsdl:part name="response" element="tjs:FrameworkDescriptions"/>
+    </wsdl:message>
+    <wsdl:message name="DescribeFrameworks_Response_SOAP">
+        <wsdl:part name="body" element="tjs:FrameworkDescriptions"/>
+    </wsdl:message>
+
+    <wsdl:message name="DescribeDatasets_Request_GET">
+        <wsdl:part name="service" type="tjs:RequestServiceType"/>
+        <wsdl:part name="request" type="tjs:DescribeDatasetsValueType"/>
+        <wsdl:part name="version" type="tjs:VersionType"/>
+        <wsdl:part name="AcceptLanguages" type="tjs:AcceptLanguagesType"/>
+        <wsdl:part name="FrameworkURI" type="xsd:string"/>
+        <wsdl:part name="DatasetURI" type="xsd:string"/>
+    </wsdl:message>
+    <wsdl:message name="DescribeDatasets_Request_POST">
+        <wsdl:part name="request" element="tjs:DescribeDatasets"/>
+    </wsdl:message>
+    <wsdl:message name="DescribeDatasets_Request_SOAP">
+        <wsdl:part name="body" element="tjs:DescribeDatasets"/>
+    </wsdl:message>
+    <wsdl:message name="DescribeDatasets_Response">
+        <wsdl:part name="response" element="tjs:DatasetDescriptions"/>
+    </wsdl:message>
+    <wsdl:message name="DescribeDatasets_Response_SOAP">
+        <wsdl:part name="body" element="tjs:DatasetDescriptions"/>
+    </wsdl:message>
+
+    <wsdl:message name="DescribeData_Request_GET">
+        <wsdl:part name="service" type="tjs:RequestServiceType"/>
+        <wsdl:part name="request" type="tjs:DescribeDataValueType"/>
+        <wsdl:part name="version" type="tjs:VersionType"/>
+        <wsdl:part name="AcceptLanguages" type="tjs:AcceptLanguagesType"/>
+        <wsdl:part name="FrameworkURI" type="xsd:string"/>
+        <wsdl:part name="DatasetURI" type="xsd:string"/>
+        <wsdl:part name="Attributes" type="xsd:string"/>
+    </wsdl:message>
+    <wsdl:message name="DescribeData_Request_POST">
+        <wsdl:part name="request" element="tjs:DescribeData"/>
+    </wsdl:message>
+    <wsdl:message name="DescribeData_Request_SOAP">
+        <wsdl:part name="body" element="tjs:DescribeData"/>
+    </wsdl:message>
+    <wsdl:message name="DescribeData_Response">
+        <wsdl:part name="response" element="tjs:DataDescriptions"/>
+    </wsdl:message>
+    <wsdl:message name="DescribeData_Response_SOAP">
+        <wsdl:part name="body" element="tjs:DataDescriptions"/>
+    </wsdl:message>
+
+    <wsdl:message name="GetData_Request_GET">
+        <wsdl:part name="service" type="tjs:RequestServiceType"/>
+        <wsdl:part name="request" type="tjs:GetDataValueType"/>
+        <wsdl:part name="version" type="tjs:VersionType"/>
+        <wsdl:part name="AcceptLanguages" type="tjs:AcceptLanguagesType"/>
+        <wsdl:part name="FrameworkURI" type="xsd:string"/>
+        <wsdl:part name="DatasetURI" type="xsd:string"/>
+        <wsdl:part name="Attributes" type="xsd:string"/>
+        <wsdl:part name="LinkageKeys" type="xsd:string"/>
+        <wsdl:part name="FilterField" type="xsd:string"/>
+        <wsdl:part name="FilterValue" type="xsd:string"/>
+        <wsdl:part name="XSL" type="xsd:string"/>
+        <wsdl:part name="aid" type="xsd:string"/>
+    </wsdl:message>
+    <wsdl:message name="GetData_Request_POST">
+        <wsdl:part name="request" element="tjs:GetData"/>
+    </wsdl:message>
+    <wsdl:message name="GetData_Request_SOAP">
+        <wsdl:part name="body" element="tjs:GetData"/>
+    </wsdl:message>
+    <wsdl:message name="GetData_Response">
+        <wsdl:part name="response" element="tjs:GDAS"/>
+    </wsdl:message>
+    <wsdl:message name="GetData_Response_SOAP">
+        <wsdl:part name="body" element="tjs:GDAS"/>
+    </wsdl:message>
+
+    <wsdl:message name="DescribeJoinAbilities_Request_GET">
+        <wsdl:part name="service" type="tjs:RequestServiceType"/>
+        <wsdl:part name="request" type="tjs:DescribeJoinAbilitiesValueType"/>
+        <wsdl:part name="version" type="tjs:VersionType"/>
+        <wsdl:part name="AcceptLanguages" type="tjs:AcceptLanguagesType"/>
+        <wsdl:part name="FrameworkURI" type="xsd:string"/>
+    </wsdl:message>
+    <wsdl:message name="DescribeJoinAbilities_Request_POST">
+        <wsdl:part name="request" element="tjs:JoinAbilities"/>
+    </wsdl:message>
+    <wsdl:message name="DescribeJoinAbilities_Request_SOAP">
+        <wsdl:part name="body" element="tjs:JoinAbilities"/>
+    </wsdl:message>
+    <wsdl:message name="DescribeJoinAbilities_Response">
+        <wsdl:part name="response" element="tjs:JoinAbilities"/>
+    </wsdl:message>
+    <wsdl:message name="DescribeJoinAbilities_Response_SOAP">
+        <wsdl:part name="body" element="tjs:JoinAbilities"/>
+    </wsdl:message>
+
+    <wsdl:message name="DescribeKey_Request_GET">
+        <wsdl:part name="service" type="tjs:RequestServiceType"/>
+        <wsdl:part name="request" type="tjs:DescribeKeyValueType"/>
+        <wsdl:part name="version" type="tjs:VersionType"/>
+        <wsdl:part name="AcceptLanguages" type="tjs:AcceptLanguagesType"/>
+        <wsdl:part name="FrameworkURI" type="xsd:string"/>
+    </wsdl:message>
+    <wsdl:message name="DescribeKey_Request_POST">
+        <wsdl:part name="request" element="tjs:DescribeKey"/>
+    </wsdl:message>
+    <wsdl:message name="DescribeKey_Request_SOAP">
+        <wsdl:part name="body" element="tjs:DescribeKey"/>
+    </wsdl:message>
+    <wsdl:message name="DescribeKey_Response">
+        <wsdl:part name="response" element="tjs:FrameworkKeyDescription"/>
+    </wsdl:message>
+    <wsdl:message name="DescribeKey_Response_SOAP">
+        <wsdl:part name="body" element="tjs:FrameworkKeyDescription"/>
+    </wsdl:message>
+
+    <wsdl:message name="JoinData_Request_GET">
+        <wsdl:part name="service" type="tjs:RequestServiceType"/>
+        <wsdl:part name="request" type="tjs:GetDataValueType"/>
+        <wsdl:part name="version" type="tjs:VersionType"/>
+        <wsdl:part name="AcceptLanguages" type="tjs:AcceptLanguagesType"/>
+        <wsdl:part name="update" type="xsd:string"/>
+        <wsdl:part name="FrameworkURI" type="xsd:string"/>
+        <wsdl:part name="GetDataURL" type="xsd:string"/>
+        <wsdl:part name="StylingURL" type="xsd:string"/>
+        <wsdl:part name="StylingIdentifier" type="xsd:string"/>
+        <wsdl:part name="ClassificationURL" type="xsd:string"/>
+    </wsdl:message>
+    <wsdl:message name="JoinData_Request_POST">
+        <wsdl:part name="request" element="tjs:JoinData"/>
+    </wsdl:message>
+    <wsdl:message name="JoinData_Request_SOAP">
+        <wsdl:part name="body" element="tjs:JoinData"/>
+    </wsdl:message>
+    <wsdl:message name="JoinData_Response">
+        <wsdl:part name="response" element="tjs:JoinDataResponse"/>
+    </wsdl:message>
+    <wsdl:message name="JoinData_Response_SOAP">
+        <wsdl:part name="body" element="tjs:JoinDataResponse"/>
+    </wsdl:message>
+
+    <wsdl:message name="ServiceExceptionMessage">
+        <wsdl:part name="response" element="ows:ExceptionReport"/>
+    </wsdl:message>
+    <wsdl:message name="ServiceExceptionMessage_SOAP">
+        <wsdl:part name="body" element="ows:ExceptionReport"/>
+    </wsdl:message>
+
+
+    <!--Ports-->
+    <wsdl:portType name="TJS_HTTP_Port_GET">
+        <wsdl:operation name="DescribeFrameworks">
+            <wsdl:input message="tjs_wsdl:DescribeFrameworks_Request_GET"/>
+            <wsdl:output message="tjs_wsdl:DescribeFrameworks_Response"/>
+            <wsdl:fault name="exception" message="tjs_wsdl:ServiceExceptionMessage"/>
+        </wsdl:operation>
+        <wsdl:operation name="DescribeDatasets">
+            <wsdl:input message="tjs_wsdl:DescribeDatasets_Request_GET"/>
+            <wsdl:output message="tjs_wsdl:DescribeDatasets_Response"/>
+            <wsdl:fault name="exception" message="tjs_wsdl:ServiceExceptionMessage"/>
+        </wsdl:operation>
+        <wsdl:operation name="DescribeData">
+            <wsdl:input message="tjs_wsdl:DescribeData_Request_GET"/>
+            <wsdl:output message="tjs_wsdl:DescribeData_Response"/>
+            <wsdl:fault name="exception" message="tjs_wsdl:ServiceExceptionMessage"/>
+        </wsdl:operation>
+        <wsdl:operation name="GetData">
+            <wsdl:input message="tjs_wsdl:GetData_Request_GET"/>
+            <wsdl:output message="tjs_wsdl:GetData_Response"/>
+            <wsdl:fault name="exception" message="tjs_wsdl:ServiceExceptionMessage"/>
+        </wsdl:operation>
+        <wsdl:operation name="DescribeJoinAbilities">
+            <wsdl:input message="tjs_wsdl:DescribeJoinAbilities_Request_GET"/>
+            <wsdl:output message="tjs_wsdl:DescribeJoinAbilities_Response"/>
+            <wsdl:fault name="exception" message="tjs_wsdl:ServiceExceptionMessage"/>
+        </wsdl:operation>
+        <wsdl:operation name="DescribeKey">
+            <wsdl:input message="tjs_wsdl:DescribeKey_Request_GET"/>
+            <wsdl:output message="tjs_wsdl:DescribeKey_Response"/>
+            <wsdl:fault name="exception" message="tjs_wsdl:ServiceExceptionMessage"/>
+        </wsdl:operation>
+        <wsdl:operation name="JoinData">
+            <wsdl:input message="tjs_wsdl:JoinData_Request_GET"/>
+            <wsdl:output message="tjs_wsdl:JoinData_Response"/>
+            <wsdl:fault name="exception" message="tjs_wsdl:ServiceExceptionMessage"/>
+        </wsdl:operation>
+    </wsdl:portType>
+
+    <wsdl:portType name="TJS_HTTP_Port_POST">
+        <wsdl:operation name="DescribeFrameworks">
+            <wsdl:input message="tjs_wsdl:DescribeFrameworks_Request_POST"/>
+            <wsdl:output message="tjs_wsdl:DescribeFrameworks_Response"/>
+            <wsdl:fault name="exception" message="tjs_wsdl:ServiceExceptionMessage"/>
+        </wsdl:operation>
+        <wsdl:operation name="DescribeDatasets">
+            <wsdl:input message="tjs_wsdl:DescribeDatasets_Request_POST"/>
+            <wsdl:output message="tjs_wsdl:DescribeDatasets_Response"/>
+            <wsdl:fault name="exception" message="tjs_wsdl:ServiceExceptionMessage"/>
+        </wsdl:operation>
+        <wsdl:operation name="DescribeData">
+            <wsdl:input message="tjs_wsdl:DescribeData_Request_POST"/>
+            <wsdl:output message="tjs_wsdl:DescribeData_Response"/>
+            <wsdl:fault name="exception" message="tjs_wsdl:ServiceExceptionMessage"/>
+        </wsdl:operation>
+        <wsdl:operation name="GetData">
+            <wsdl:input message="tjs_wsdl:GetData_Request_POST"/>
+            <wsdl:output message="tjs_wsdl:GetData_Response"/>
+            <wsdl:fault name="exception" message="tjs_wsdl:ServiceExceptionMessage"/>
+        </wsdl:operation>
+        <wsdl:operation name="DescribeJoinAbilities">
+            <wsdl:input message="tjs_wsdl:DescribeJoinAbilities_Request_POST"/>
+            <wsdl:output message="tjs_wsdl:DescribeJoinAbilities_Response"/>
+            <wsdl:fault name="exception" message="tjs_wsdl:ServiceExceptionMessage"/>
+        </wsdl:operation>
+        <wsdl:operation name="DescribeKey">
+            <wsdl:input message="tjs_wsdl:DescribeKey_Request_POST"/>
+            <wsdl:output message="tjs_wsdl:DescribeKey_Response"/>
+            <wsdl:fault name="exception" message="tjs_wsdl:ServiceExceptionMessage"/>
+        </wsdl:operation>
+        <wsdl:operation name="JoinData">
+            <wsdl:input message="tjs_wsdl:JoinData_Request_POST"/>
+            <wsdl:output message="tjs_wsdl:JoinData_Response"/>
+            <wsdl:fault name="exception" message="tjs_wsdl:ServiceExceptionMessage"/>
+        </wsdl:operation>
+    </wsdl:portType>
+
+    <wsdl:portType name="TJS_HTTP_Port_SOAP">
+        <wsdl:operation name="DescribeFrameworks">
+            <wsdl:input message="tjs_wsdl:DescribeFrameworks_Request_SOAP"/>
+            <wsdl:output message="tjs_wsdl:DescribeFrameworks_Response_SOAP"/>
+            <wsdl:fault name="exception" message="tjs_wsdl:ServiceExceptionMessage_SOAP"/>
+        </wsdl:operation>
+        <wsdl:operation name="DescribeDatasets">
+            <wsdl:input message="tjs_wsdl:DescribeDatasets_Request_SOAP"/>
+            <wsdl:output message="tjs_wsdl:DescribeDatasets_Response_SOAP"/>
+            <wsdl:fault name="exception" message="tjs_wsdl:ServiceExceptionMessage_SOAP"/>
+        </wsdl:operation>
+        <wsdl:operation name="DescribeData">
+            <wsdl:input message="tjs_wsdl:DescribeData_Request_SOAP"/>
+            <wsdl:output message="tjs_wsdl:DescribeData_Response_SOAP"/>
+            <wsdl:fault name="exception" message="tjs_wsdl:ServiceExceptionMessage_SOAP"/>
+        </wsdl:operation>
+        <wsdl:operation name="GetData">
+            <wsdl:input message="tjs_wsdl:GetData_Request_SOAP"/>
+            <wsdl:output message="tjs_wsdl:GetData_Response_SOAP"/>
+            <wsdl:fault name="exception" message="tjs_wsdl:ServiceExceptionMessage_SOAP"/>
+        </wsdl:operation>
+        <wsdl:operation name="DescribeJoinAbilities">
+            <wsdl:input message="tjs_wsdl:DescribeJoinAbilities_Request_SOAP"/>
+            <wsdl:output message="tjs_wsdl:DescribeJoinAbilities_Response_SOAP"/>
+            <wsdl:fault name="exception" message="tjs_wsdl:ServiceExceptionMessage_SOAP"/>
+        </wsdl:operation>
+        <wsdl:operation name="DescribeKey">
+            <wsdl:input message="tjs_wsdl:DescribeKey_Request_SOAP"/>
+            <wsdl:output message="tjs_wsdl:DescribeKey_Response_SOAP"/>
+            <wsdl:fault name="exception" message="tjs_wsdl:ServiceExceptionMessage_SOAP"/>
+        </wsdl:operation>
+        <wsdl:operation name="JoinData">
+            <wsdl:input message="tjs_wsdl:JoinData_Request_SOAP"/>
+            <wsdl:output message="tjs_wsdl:JoinData_Response_SOAP"/>
+            <wsdl:fault name="exception" message="tjs_wsdl:ServiceExceptionMessage_SOAP"/>
+        </wsdl:operation>
+    </wsdl:portType>
+
+</wsdl:definitions>

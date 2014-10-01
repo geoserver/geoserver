@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+        xmlns:tjs="http://www.opengis.net/tjs/1.0" targetNamespace="http://www.opengis.net/tjs/1.0"
+        elementFormDefault="qualified" attributeFormDefault="unqualified" xml:lang="en" version="1.0.0">
+    <annotation>
+        <appinfo>$Id: tjsDescribeKey_response.xsd 2010-12-23 $</appinfo>
+        <documentation>
+            <description>This XML Schema specifies the content of the TJS DescribeKey response.</description>
+            <copyright>
+                TJS is an OGC Standard.
+                Copyright (c) 2010 Open Geospatial Consortium, Inc. All Rights Reserved.
+                To obtain additional rights of use, visit http://www.opengeospatial.org/legal/ .
+            </copyright>
+        </documentation>
+    </annotation>
+    <!-- ========= includes and imports ================================ -->
+    <include schemaLocation="tjsAll.xsd"/>
+    <!-- ========= top level element =================================== -->
+    <element name="FrameworkKeyDescription">
+        <annotation>
+            <documentation>Response containing full description the FrameworkKey of a spatial framework housed on this
+                server.
+            </documentation>
+        </annotation>
+        <complexType>
+            <sequence>
+                <element name="Framework" type="tjs:DescribeFrameworkKeyType">
+                    <annotation>
+                        <documentation>Spatial framework for which attribute data is housed on this server.
+                        </documentation>
+                    </annotation>
+                </element>
+            </sequence>
+            <attributeGroup ref="tjs:RootAttributesGroup"/>
+        </complexType>
+    </element>
+    <!-- ========= other elements and types ============================ -->
+    <complexType name="DescribeFrameworkKeyType">
+        <sequence>
+            <element ref="tjs:FrameworkURI"/>
+            <element ref="tjs:Organization"/>
+            <element ref="tjs:Title"/>
+            <element ref="tjs:Abstract"/>
+            <element ref="tjs:ReferenceDate"/>
+            <element ref="tjs:Version"/>
+            <element ref="tjs:Documentation" minOccurs="0"/>
+            <element ref="tjs:FrameworkKey"/>
+            <element ref="tjs:BoundingCoordinates"/>
+            <element name="Rowset">
+                <annotation>
+                    <documentation>Database table structure. Ordered list of all the spatial features for the identified
+                        framework. Row elements are in ascending order based on the contents of the Spatial Key (K).
+                    </documentation>
+                </annotation>
+                <complexType>
+                    <sequence>
+                        <element name="Row" maxOccurs="unbounded">
+                            <annotation>
+                                <documentation>Database row structure. Contains data for a feature found in the spatial
+                                    framework.
+                                </documentation>
+                            </annotation>
+                            <complexType>
+                                <sequence>
+                                    <element ref="tjs:K" maxOccurs="unbounded"/>
+                                    <element ref="tjs:Title" minOccurs="0"/>
+                                </sequence>
+                            </complexType>
+                        </element>
+                    </sequence>
+                </complexType>
+            </element>
+        </sequence>
+    </complexType>
+</schema>

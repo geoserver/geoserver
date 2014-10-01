@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!-- JoinData request.-->
+<!-- Equivalent GET request (except it uses HTTP GET for the GetData request) is http://foo.bar/foo?Service=TJS&Request=JoinData&Version=1.0&Language=en-CA&FrameworkURI=http%3A%2F%2Fwww.statcan.ca%2Fprovinces%2F2001&DatasetURI=http%3A%2F%2Faafc.gc.ca%2FAgCensusByProv%2F2001&LinkageField=prov&Attributes=cattlecalves%2Ccows&LinkageIds=10%2C11%2C12%2C13%2C24%2C35%2C46-48%2C59&StylingIdentifier=SLD&StylingURL=http%3A%2F%2Ffoo.bar%2Ffoo -->
+<JoinData service="TJS" version="1.0" language="en-CA" xmlns="http://www.opengis.net/tjs/1.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://www.opengis.net/tjs/1.0  http://schemas.opengis.net/tjs/1.0/tjsJoinData_request.xsd">
+    <AttributeData>
+        <GetDataXML getDataHost="http://foo.bar/foo" language="en-Ca">
+            <FrameworkURI>http://www.statcan.ca/provinces/2001</FrameworkURI>
+            <DatasetURI>http://aafc.gc.ca/AgCensusByProv/2001</DatasetURI>
+            <Attributes>cattlecalves,cows</Attributes>
+            <LinkageKeys>10,11,12,13,24,35,46-48,59</LinkageKeys>
+        </GetDataXML>
+    </AttributeData>
+    <MapStyling>
+        <StylingIdentifier>SLD</StylingIdentifier>
+        <StylingURL>http://foo.bar/foo</StylingURL>
+    </MapStyling>
+</JoinData>

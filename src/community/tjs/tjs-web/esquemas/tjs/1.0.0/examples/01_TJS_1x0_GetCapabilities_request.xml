@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- GetCapabilities request  -->
+<!-- Equivalent GET request is http://foo.bar/foo?Service=TJS&Request=GetCapabilities&AcceptVersions=1.0&language=en -->
+<GetCapabilities service="TJS" language="en" xmlns="http://www.opengis.net/tjs/1.0"
+                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                 xsi:schemaLocation="http://www.opengis.net/tjs/1.0  http://schemas.opengis.net/tjs/1.0/tjsGetCapabilities_request.xsd">
+    <AcceptVersions>
+        <Version>1.0</Version>
+    </AcceptVersions>
+</GetCapabilities>

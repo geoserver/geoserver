@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+        targetNamespace="http://www.opengis.net/tjs/1.0"
+        elementFormDefault="qualified" xml:lang="en" version="1.0.0">
+    <annotation>
+        <appinfo>tjsWSDL.xsd 2010-12-23</appinfo>
+        <documentation>This XML Schema Document encodes TJS request parameters that can be used in SOAP encodings.
+            TJS is an OGC Standard.
+            Copyright (c) 2010 Open Geospatial Consortium, Inc. All Rights Reserved.
+            To obtain additional rights of use, visit http://www.opengeospatial.org/legal/ .
+        </documentation>
+    </annotation>
+    <!-- =============================================================
+         includes and imports
+     ============================================================== -->
+    <import namespace="http://www.opengis.net/ows/1.1"
+            schemaLocation="http://schemas.opengis.net/ows/1.1.0/owsAll.xsd"/>
+    <!-- =============================================================
+         elements and types
+     ============================================================== -->
+    <simpleType name="RequestServiceType">
+        <restriction base="string">
+            <enumeration value="TJS"/>
+        </restriction>
+    </simpleType>
+    <simpleType name="VersionType">
+        <restriction base="string">
+            <enumeration value="1.0"/>
+        </restriction>
+    </simpleType>
+    <simpleType name="AcceptLanguagesType">
+        <restriction base="string"/>
+    </simpleType>
+    <simpleType name="GetCapabilitiesValueType">
+        <restriction base="string">
+            <enumeration value="GetCapabilities"/>
+        </restriction>
+    </simpleType>
+    <simpleType name="DescribeFrameworksValueType">
+        <restriction base="string">
+            <enumeration value="DescribeFrameworks"/>
+        </restriction>
+    </simpleType>
+    <simpleType name="DescribeDatasetsValueType">
+        <restriction base="string">
+            <enumeration value="DescribeDatasets"/>
+        </restriction>
+    </simpleType>
+    <simpleType name="DescribeDataValueType">
+        <restriction base="string">
+            <enumeration value="DescribeData"/>
+        </restriction>
+    </simpleType>
+    <simpleType name="GetDataValueType">
+        <restriction base="string">
+            <enumeration value="GetData"/>
+        </restriction>
+    </simpleType>
+    <simpleType name="DescribeJoinAbilitiesValueType">
+        <restriction base="string">
+            <enumeration value="DescribeJoinAbilities"/>
+        </restriction>
+    </simpleType>
+    <simpleType name="DescribeKeyValueType">
+        <restriction base="string">
+            <enumeration value="DescribeKey"/>
+        </restriction>
+    </simpleType>
+    <simpleType name="JoinDataValueType">
+        <restriction base="string">
+            <enumeration value="JoinData"/>
+        </restriction>
+    </simpleType>
+    <simpleType name="SectionsType">
+        <annotation>
+            <documentation>XML encoded identifier comma separated list of a standard MIME type, possibly a parameterized
+                MIME type.
+            </documentation>
+        </annotation>
+        <restriction base="string">
+            <annotation>
+                <documentation>Comma separated list of available ServiceMetadata root elements.</documentation>
+            </annotation>
+            <pattern
+                    value="(ServiceIdentification|ServiceProvider|OperationsMetadata|Contents|Themes)(,(ServiceIdentification|ServiceProvider|OperationsMetadata|Contents|Themes))*"/>
+        </restriction>
+    </simpleType>
+</schema>

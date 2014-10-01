@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
+<DatasetDescriptions service="TJS" version="1.0" capabilities="http://sis.agr.gc.ca/pls/meta/tjs_1x0_getcapabilities"
+                     xml:lang="en" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.opengis.net/tjs/1.0"
+                     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                     xsi:schemaLocation="http://www.opengis.net/tjs/1.0 http://schemas.opengis.net/tjs/1.0/tjsDescribeDatasets_response.xsd">
+    <Framework>
+        <FrameworkURI>http://sis.agr.gc.ca/cansis/nsdb/ecostrat/zone/v1</FrameworkURI>
+        <Organization>Environment Canada</Organization>
+        <Title>Ecozones of Canada</Title>
+        <Abstract>Ecozones of Canada, forming part of the Terrestrial Ecological Stratification of Canada</Abstract>
+        <ReferenceDate startDate="1995-01-01">1995-06-03</ReferenceDate>
+        <Version>1</Version>
+        <Documentation>http://sis.agr.gc.ca/cansis/nsdb/ecostrat/hierarchy.html</Documentation>
+        <FrameworkKey>
+            <Column name="ecozone" type="http://www.w3.org/TR/xmlschema-2/#integer" length="2" decimals="0"/>
+        </FrameworkKey>
+        <BoundingCoordinates>
+            <North>90</North>
+            <South>43</South>
+            <East>-50</East>
+            <West>-145</West>
+        </BoundingCoordinates>
+        <DescribeDatasetsRequest
+                xlink:href="http://sis.agr.gc.ca/pls/meta/tjs_1x0_describedatasets?Service=TJS&amp;Version=1.0&amp;Request=DescribeDatasets&amp;FrameworkURI=http://sis.agr.gc.ca/cansis/nsdb/ecostrat/zone/v1&amp;AcceptLanguages=en"/>
+        <Dataset>
+            <DatasetURI>http://sis.agr.gc.ca/cansis/nsdb/ecostrat/zone/v1/names</DatasetURI>
+            <Organization>Agriculture and Agri-Food Canada</Organization>
+            <Title>Names</Title>
+            <Abstract></Abstract>
+            <ReferenceDate>1999-09-16</ReferenceDate>
+            <Version>1</Version>
+            <Documentation></Documentation>
+            <DescribeDataRequest
+                    xlink:href="http://sis.agr.gc.ca/pls/meta/tjs_1x0_describedata?Service=TJS&amp;Version=1.0&amp;Request=DescribeData&amp;FrameworkURI=http://sis.agr.gc.ca/cansis/nsdb/ecostrat/zone/v1&amp;DatasetURI=http://sis.agr.gc.ca/cansis/nsdb/ecostrat/zone/v1/names&amp;AcceptLanguages=en"/>
+        </Dataset>
+        <Dataset>
+            <DatasetURI>http://sis.agr.gc.ca/cansis/nsdb/ecostrat/zone/v1/area</DatasetURI>
+            <Organization>Agriculture and Agri-Food Canada</Organization>
+            <Title>Landscape Areas</Title>
+            <Abstract>Land and water area values (in hectares) for terrestrial ecozones of Canada. Land and freshwater
+                bounded by coastline are included. Bodies of freshwater shared by Canada and the USA, such as the Great
+                Lakes and the St. Lawrence River are included to the international boundary. The mouth of the St.
+                Lawrence River to the western tip of Anticosti Island is considered freshwater, as well as Bras d'Or
+                Lake on Cape Breton Island, Nova Scotia. Lake Melville in Labrador is considered marine water.
+            </Abstract>
+            <ReferenceDate>1999-09-16</ReferenceDate>
+            <Version>1</Version>
+            <Documentation>http://sis.agr.gc.ca/cansis/nsdb/ecostrat/area.html</Documentation>
+            <DescribeDataRequest
+                    xlink:href="http://sis.agr.gc.ca/pls/meta/tjs_1x0_describedata?Service=TJS&amp;Version=1.0&amp;Request=DescribeData&amp;FrameworkURI=http://sis.agr.gc.ca/cansis/nsdb/ecostrat/zone/v1&amp;DatasetURI=http://sis.agr.gc.ca/cansis/nsdb/ecostrat/zone/v1/area&amp;AcceptLanguages=en"/>
+        </Dataset>
+        <Dataset>
+            <DatasetURI>http://sis.agr.gc.ca/cansis/nsdb/ecostrat/zone/v1/area_by_prov</DatasetURI>
+            <Organization>Agriculture and Agri-Food Canada</Organization>
+            <Title>Landscape Areas by Province</Title>
+            <Abstract>Land and water area values (in hectares) by province for terrestrial ecozones of Canada. Land and
+                freshwater bounded by coastline are included. Bodies of freshwater shared by Canada and the USA, such as
+                the Great Lakes and the St. Lawrence River are included to the international boundary. The mouth of the
+                St. Lawrence River to the western tip of Anticosti Island is considered freshwater, as well as Bras d'Or
+                Lake on Cape Breton Island, Nova Scotia. Lake Melville in Labrador is considered marine water.
+            </Abstract>
+            <ReferenceDate>1999-09-16</ReferenceDate>
+            <Version>1</Version>
+            <Documentation>http://sis.agr.gc.ca/cansis/nsdb/ecostrat/area.html</Documentation>
+            <DescribeDataRequest
+                    xlink:href="http://sis.agr.gc.ca/pls/meta/tjs_1x0_describedata?Service=TJS&amp;Version=1.0&amp;Request=DescribeData&amp;FrameworkURI=http://sis.agr.gc.ca/cansis/nsdb/ecostrat/zone/v1&amp;DatasetURI=http://sis.agr.gc.ca/cansis/nsdb/ecostrat/zone/v1/area_by_prov&amp;AcceptLanguages=en"/>
+        </Dataset>
+        <Dataset>
+            <DatasetURI>http://sis.agr.gc.ca/cansis/nsdb/ecostrat/zone/v1/elevation</DatasetURI>
+            <Organization>Agriculture and Agri-Food Canada</Organization>
+            <Title>Elevation</Title>
+            <Abstract></Abstract>
+            <ReferenceDate>1999-09-16</ReferenceDate>
+            <Version>1</Version>
+            <Documentation></Documentation>
+            <DescribeDataRequest
+                    xlink:href="http://sis.agr.gc.ca/pls/meta/tjs_1x0_describedata?Service=TJS&amp;Version=1.0&amp;Request=DescribeData&amp;FrameworkURI=http://sis.agr.gc.ca/cansis/nsdb/ecostrat/zone/v1&amp;DatasetURI=http://sis.agr.gc.ca/cansis/nsdb/ecostrat/zone/v1/elevation&amp;AcceptLanguages=en"/>
+        </Dataset>
+        <Dataset>
+            <DatasetURI>http://sis.agr.gc.ca/cansis/nsdb/ecostrat/zone/v1/landform</DatasetURI>
+            <Organization>Agriculture and Agri-Food Canada</Organization>
+            <Title>Landforms</Title>
+            <Abstract></Abstract>
+            <ReferenceDate>1999-09-16</ReferenceDate>
+            <Version>1</Version>
+            <Documentation></Documentation>
+            <DescribeDataRequest
+                    xlink:href="http://sis.agr.gc.ca/pls/meta/tjs_1x0_describedata?Service=TJS&amp;Version=1.0&amp;Request=DescribeData&amp;FrameworkURI=http://sis.agr.gc.ca/cansis/nsdb/ecostrat/zone/v1&amp;DatasetURI=http://sis.agr.gc.ca/cansis/nsdb/ecostrat/zone/v1/landform&amp;AcceptLanguages=en"/>
+        </Dataset>
+        <Dataset>
+            <DatasetURI>http://sis.agr.gc.ca/cansis/nsdb/ecostrat/zone/v1/surface_form</DatasetURI>
+            <Organization>Agriculture and Agri-Food Canada</Organization>
+            <Title>Surface Form</Title>
+            <Abstract></Abstract>
+            <ReferenceDate>1999-09-16</ReferenceDate>
+            <Version>1</Version>
+            <Documentation></Documentation>
+            <DescribeDataRequest
+                    xlink:href="http://sis.agr.gc.ca/pls/meta/tjs_1x0_describedata?Service=TJS&amp;Version=1.0&amp;Request=DescribeData&amp;FrameworkURI=http://sis.agr.gc.ca/cansis/nsdb/ecostrat/zone/v1&amp;DatasetURI=http://sis.agr.gc.ca/cansis/nsdb/ecostrat/zone/v1/surface_form&amp;AcceptLanguages=en"/>
+        </Dataset>
+        <Dataset>
+            <DatasetURI>http://sis.agr.gc.ca/cansis/nsdb/ecostrat/zone/v1/surface_material</DatasetURI>
+            <Organization>Agriculture and Agri-Food Canada</Organization>
+            <Title>Surface Material</Title>
+            <Abstract></Abstract>
+            <ReferenceDate>1999-09-16</ReferenceDate>
+            <Version>1</Version>
+            <Documentation></Documentation>
+            <DescribeDataRequest
+                    xlink:href="http://sis.agr.gc.ca/pls/meta/tjs_1x0_describedata?Service=TJS&amp;Version=1.0&amp;Request=DescribeData&amp;FrameworkURI=http://sis.agr.gc.ca/cansis/nsdb/ecostrat/zone/v1&amp;DatasetURI=http://sis.agr.gc.ca/cansis/nsdb/ecostrat/zone/v1/surface_material&amp;AcceptLanguages=en"/>
+        </Dataset>
+        <Dataset>
+            <DatasetURI>http://sis.agr.gc.ca/cansis/nsdb/ecostrat/zone/v1/texture</DatasetURI>
+            <Organization>Agriculture and Agri-Food Canada</Organization>
+            <Title>Soil Texture Table</Title>
+            <Abstract></Abstract>
+            <ReferenceDate>1999-09-16</ReferenceDate>
+            <Version>1</Version>
+            <Documentation></Documentation>
+            <DescribeDataRequest
+                    xlink:href="http://sis.agr.gc.ca/pls/meta/tjs_1x0_describedata?Service=TJS&amp;Version=1.0&amp;Request=DescribeData&amp;FrameworkURI=http://sis.agr.gc.ca/cansis/nsdb/ecostrat/zone/v1&amp;DatasetURI=http://sis.agr.gc.ca/cansis/nsdb/ecostrat/zone/v1/texture&amp;AcceptLanguages=en"/>
+        </Dataset>
+        <Dataset>
+            <DatasetURI>http://sis.agr.gc.ca/cansis/nsdb/ecostrat/zone/v1/soil_development</DatasetURI>
+            <Organization>Agriculture and Agri-Food Canada</Organization>
+            <Title>Soil Classification</Title>
+            <Abstract></Abstract>
+            <ReferenceDate>1999-09-16</ReferenceDate>
+            <Version>1</Version>
+            <Documentation></Documentation>
+            <DescribeDataRequest
+                    xlink:href="http://sis.agr.gc.ca/pls/meta/tjs_1x0_describedata?Service=TJS&amp;Version=1.0&amp;Request=DescribeData&amp;FrameworkURI=http://sis.agr.gc.ca/cansis/nsdb/ecostrat/zone/v1&amp;DatasetURI=http://sis.agr.gc.ca/cansis/nsdb/ecostrat/zone/v1/soil_development&amp;AcceptLanguages=en"/>
+        </Dataset>
+        <Dataset>
+            <DatasetURI>http://sis.agr.gc.ca/cansis/nsdb/ecostrat/zone/v1/landcover</DatasetURI>
+            <Organization>Agriculture and Agri-Food Canada</Organization>
+            <Title>Land Cover</Title>
+            <Abstract></Abstract>
+            <ReferenceDate>1999-09-16</ReferenceDate>
+            <Version>1</Version>
+            <Documentation></Documentation>
+            <DescribeDataRequest
+                    xlink:href="http://sis.agr.gc.ca/pls/meta/tjs_1x0_describedata?Service=TJS&amp;Version=1.0&amp;Request=DescribeData&amp;FrameworkURI=http://sis.agr.gc.ca/cansis/nsdb/ecostrat/zone/v1&amp;DatasetURI=http://sis.agr.gc.ca/cansis/nsdb/ecostrat/zone/v1/landcover&amp;AcceptLanguages=en"/>
+        </Dataset>
+        <Dataset>
+            <DatasetURI>http://sis.agr.gc.ca/cansis/nsdb/ecostrat/zone/v1/permafrost</DatasetURI>
+            <Organization>Agriculture and Agri-Food Canada</Organization>
+            <Title>Permafrost</Title>
+            <Abstract>The extent and nature of permafrost, including estimated ice content and typical ground ice
+                forms.
+            </Abstract>
+            <ReferenceDate startDate="1999-09-16">1999-09-16</ReferenceDate>
+            <Version>1</Version>
+            <Documentation>http://sis.agr.gc.ca/cansis/nsdb/ecostrat/permafrost.html</Documentation>
+            <DescribeDataRequest
+                    xlink:href="http://sis.agr.gc.ca/pls/meta/tjs_1x0_describedata?Service=TJS&amp;Version=1.0&amp;Request=DescribeData&amp;FrameworkURI=http://sis.agr.gc.ca/cansis/nsdb/ecostrat/zone/v1&amp;DatasetURI=http://sis.agr.gc.ca/cansis/nsdb/ecostrat/zone/v1/permafrost&amp;AcceptLanguages=en"/>
+        </Dataset>
+        <Dataset>
+            <DatasetURI>http://sis.agr.gc.ca/cansis/nsdb/ecostrat/zone/v1/surficial_geology</DatasetURI>
+            <Organization>Agriculture and Agri-Food Canada</Organization>
+            <Title>Surficial Geology</Title>
+            <Abstract>The extent and nature of the surficial materials in this database are derived from the Surficial
+                Materials Map of Canada (Fulton, 1996).
+            </Abstract>
+            <ReferenceDate>1999-09-16</ReferenceDate>
+            <Version>1</Version>
+            <Documentation></Documentation>
+            <DescribeDataRequest
+                    xlink:href="http://sis.agr.gc.ca/pls/meta/tjs_1x0_describedata?Service=TJS&amp;Version=1.0&amp;Request=DescribeData&amp;FrameworkURI=http://sis.agr.gc.ca/cansis/nsdb/ecostrat/zone/v1&amp;DatasetURI=http://sis.agr.gc.ca/cansis/nsdb/ecostrat/zone/v1/surficial_geology&amp;AcceptLanguages=en"/>
+        </Dataset>
+        <Dataset>
+            <DatasetURI>http://sis.agr.gc.ca/cansis/nsdb/ecostrat/zone/v1/temperature_1961-1990</DatasetURI>
+            <Organization>Agriculture and Agri-Food Canada</Organization>
+            <Title>Temperature Normals 1961-1990</Title>
+            <Abstract>The 1961-1990 data for temperature and precipitation included only stations with averages based on
+                more than 19 years of data (Appendix 1). Data from additional stations which had temperature and
+                precipitation normals for the 1951-1980 period were also used to provide maximum station density, but
+                these normals were first adjusted to the 1961-1990 period by comparison with nearby stations. TMAX,
+                TMIN, TMEAN, RAIN, SNOW and TOTALP were interpolated using the Thiessen polygon method. The Thiessen
+            </Abstract>
+            <ReferenceDate>1999-09-16</ReferenceDate>
+            <Version>1</Version>
+            <Documentation></Documentation>
+            <DescribeDataRequest
+                    xlink:href="http://sis.agr.gc.ca/pls/meta/tjs_1x0_describedata?Service=TJS&amp;Version=1.0&amp;Request=DescribeData&amp;FrameworkURI=http://sis.agr.gc.ca/cansis/nsdb/ecostrat/zone/v1&amp;DatasetURI=http://sis.agr.gc.ca/cansis/nsdb/ecostrat/zone/v1/temperature_1961-1990&amp;AcceptLanguages=en"/>
+        </Dataset>
+        <Dataset>
+            <DatasetURI>http://sis.agr.gc.ca/cansis/nsdb/ecostrat/zone/v1/precipitation_1961-1990</DatasetURI>
+            <Organization>Agriculture and Agri-Food Canada</Organization>
+            <Title>Precipitation Normals 1961-1990</Title>
+            <Abstract>The 1961-1990 data for temperature and precipitation included only stations with averages based on
+                more than 19 years of data (Appendix 1). Data from additional stations which had temperature and
+                precipitation normals for the 1951-1980 period were also used to provide maximum station density, but
+                these normals were first adjusted to the 1961-1990 period by comparison with nearby stations. TMAX,
+                TMIN, TMEAN, RAIN, SNOW and TOTALP were interpolated using the Thiessen polygon method. The Thiessen
+            </Abstract>
+            <ReferenceDate>1999-09-16</ReferenceDate>
+            <Version>1</Version>
+            <Documentation></Documentation>
+            <DescribeDataRequest
+                    xlink:href="http://sis.agr.gc.ca/pls/meta/tjs_1x0_describedata?Service=TJS&amp;Version=1.0&amp;Request=DescribeData&amp;FrameworkURI=http://sis.agr.gc.ca/cansis/nsdb/ecostrat/zone/v1&amp;DatasetURI=http://sis.agr.gc.ca/cansis/nsdb/ecostrat/zone/v1/precipitation_1961-1990&amp;AcceptLanguages=en"/>
+        </Dataset>
+        <Dataset>
+            <DatasetURI>http://sis.agr.gc.ca/cansis/nsdb/ecostrat/zone/v1/population_1991</DatasetURI>
+            <Organization>Agriculture and Agri-Food Canada</Organization>
+            <Title>Population 1991</Title>
+            <Abstract>The population statistics are a special tabulation prepared for the State of the Environment
+                Directorate, Environment Canada, by Statistics Canada, based on the 1991 Census of Canada. Population
+                data was not compiled for the ecodistrict level of the framework. The population attributes compiled are
+                identified below.
+            </Abstract>
+            <ReferenceDate>1999-09-16</ReferenceDate>
+            <Version>1</Version>
+            <Documentation></Documentation>
+            <DescribeDataRequest
+                    xlink:href="http://sis.agr.gc.ca/pls/meta/tjs_1x0_describedata?Service=TJS&amp;Version=1.0&amp;Request=DescribeData&amp;FrameworkURI=http://sis.agr.gc.ca/cansis/nsdb/ecostrat/zone/v1&amp;DatasetURI=http://sis.agr.gc.ca/cansis/nsdb/ecostrat/zone/v1/population_1991&amp;AcceptLanguages=en"/>
+        </Dataset>
+    </Framework>
+</DatasetDescriptions>

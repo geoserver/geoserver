@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+        xmlns:tjs="http://www.opengis.net/tjs/1.0" targetNamespace="http://www.opengis.net/tjs/1.0"
+        elementFormDefault="qualified" xml:lang="en" version="1.0.0">
+    <annotation>
+        <appinfo>$Id: tjsDescribeJoinAbilities_request.xsd 2010-12-23 $</appinfo>
+        <documentation>
+            <description>This XML Schema specifies the content of the TJS DescribeJoinAbilities request.</description>
+            <copyright>
+                TJS is an OGC Standard.
+                Copyright (c) 2010 Open Geospatial Consortium, Inc. All Rights Reserved.
+                To obtain additional rights of use, visit http://www.opengeospatial.org/legal/ .
+            </copyright>
+        </documentation>
+    </annotation>
+    <!-- ========= includes and imports ================================ -->
+    <include schemaLocation="tjsAll.xsd"/>
+    <!-- ========= top level element =================================== -->
+    <element name="DescribeJoinAbilities" type="tjs:RequestBaseType">
+        <annotation>
+            <documentation>Request to describe to which spatial frameworks this server can join attribute data.
+            </documentation>
+        </annotation>
+    </element>
+</schema>

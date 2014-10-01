@@ -1,0 +1,3036 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<xsd:schema xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+            xmlns:opengis.specification.gml.schema.xlinks.v3._0c2="urn:opengis:specification:gml:schema-xlinks:v3.0c2"
+            xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:tjs="http://www.opengis.net/tjs/1.0"
+            xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsd="http://www.w3.org/2001/XMLSchema" ecore:nsPrefix="tjs"
+            ecore:package="net.opengis.tjs10"
+            opengis.specification.gml.schema.xlinks.v3._0c2:appinfo="xlinks.xsd v3.0b2 2001-07"
+            targetNamespace="http://www.opengis.net/tjs/1.0" xml:lang="en">
+    <xsd:import namespace="http://www.opengis.net/ows/1.1" schemaLocation="ows11.xsd"/>
+    <xsd:import namespace="http://www.w3.org/1999/xlink" schemaLocation="xlink.xsd"/>
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="http://www.w3.org/2001/xml.xsd"/>
+    <xsd:annotation>
+        <xsd:documentation>
+            <description>This XML Schema encodes the TJS GetData response.</description>
+            <copyright>
+                TJS is an OGC Standard.
+                Copyright (c) 2010 Open Geospatial Consortium.
+                To obtain additional rights of use, visit http://www.opengeospatial.org/legal/ .
+            </copyright>
+
+
+            GML 3.0 candidate xlinks schema. Copyright (c) 2001 Open Geospatial Consortium.
+
+            This XML Schema Document includes and imports, directly and indirectly, all the XML Schemas defined by the
+            OWS Common Implemetation Specification.
+
+            OWS is an OGC Standard.
+            Copyright (c) 2006,2010 Open Geospatial Consortium.
+            To obtain additional rights of use, visit http://www.opengeospatial.org/legal/ .
+
+            This XML Schema Document encodes the GetResourceByID operation request message. This typical operation is
+            specified as a base for profiling in specific OWS specifications. For information on the allowed changes and
+            limitations in such profiling, see Subclause 9.4.1 of the OWS Common specification.
+
+            OWS is an OGC Standard.
+            Copyright (c) 2006,2010 Open Geospatial Consortium.
+            To obtain additional rights of use, visit http://www.opengeospatial.org/legal/ .
+
+            This XML Schema Document encodes the Exception Report response to all OWS operations.
+
+            OWS is an OGC Standard.
+            Copyright (c) 2006,2010 Open Geospatial Consortium.
+            To obtain additional rights of use, visit http://www.opengeospatial.org/legal/ .
+
+            This XML Schema Document encodes the allowed values (or domain) of a quantity, often for an input or output
+            parameter to an OWS. Such a parameter is sometimes called a variable, quantity, literal, or typed literal.
+            Such a parameter can use one of many data types, including double, integer, boolean, string, or URI. The
+            allowed values can also be encoded for a quantity that is not explicit or not transferred, but is
+            constrained by a server implementation.
+
+            OWS is an OGC Standard.
+            Copyright (c) 2006,2010 Open Geospatial Consortium.
+            To obtain additional rights of use, visit http://www.opengeospatial.org/legal/ .
+
+            This XML Schema Document encodes the typical Contents section of an OWS service metadata (Capabilities)
+            document. This Schema can be built upon to define the Contents section for a specific OWS. If the
+            ContentsBaseType in this XML Schema cannot be restricted and extended to define the Contents section for a
+            specific OWS, all other relevant parts defined in owsContents.xsd shall be used by the "ContentsType" in the
+            wxsContents.xsd prepared for the specific OWS.
+
+            OWS is an OGC Standard.
+            Copyright (c) 2006,2010 Open Geospatial Consortium.
+            To obtain additional rights of use, visit http://www.opengeospatial.org/legal/ .
+
+            This XML Schema Document specifies types and elements for input and output of operation data, allowing
+            including multiple data items with each data item either included or referenced. The contents of each type
+            and element specified here can be restricted and/or extended for each use in a specific OWS specification.
+
+            OWS is an OGC Standard.
+            Copyright (c) 2006,2010 Open Geospatial Consortium.
+            To obtain additional rights of use, visit http://www.opengeospatial.org/legal/ .
+
+            This XML Schema Document specifies types and elements for document or resource references and for package
+            manifests that contain multiple references. The contents of each type and element specified here can be
+            restricted and/or extended for each use in a specific OWS specification.
+
+            OWS is an OGC Standard.
+            Copyright (c) 2006,2010 Open Geospatial Consortium.
+            To obtain additional rights of use, visit http://www.opengeospatial.org/legal/ .
+
+            This XML Schema Document encodes the parts of the MD_DataIdentification class of ISO 19115 (OGC Abstract
+            Specification Topic 11) which are expected to be used for most datasets. This Schema also encodes the parts
+            of this class that are expected to be useful for other metadata. Both may be used within the Contents
+            section of OWS service metadata (Capabilities) documents.
+
+            OWS is an OGC Standard.
+            Copyright (c) 2006,2010 Open Geospatial Consortium.
+            To obtain additional rights of use, visit http://www.opengeospatial.org/legal/ .
+
+            This XML Schema Document encodes various parameters and parameter types that can be used in OWS operation
+            requests and responses.
+
+            OWS is an OGC Standard.
+            Copyright (c) 2006,2010 Open Geospatial Consortium.
+            To obtain additional rights of use, visit http://www.opengeospatial.org/legal/ .
+
+            This XML Schema Document defines the GetCapabilities operation request and response XML elements and types,
+            which are common to all OWSs. This XML Schema shall be edited by each OWS, for example, to specify a
+            specific value for the "service" attribute.
+
+            OWS is an OGC Standard.
+            Copyright (c) 2006,2010 Open Geospatial Consortium.
+            To obtain additional rights of use, visit http://www.opengeospatial.org/legal/ .
+
+            This XML Schema Document encodes the common "ServiceIdentification" section of the GetCapabilities operation
+            response, known as the Capabilities XML document. This section encodes the SV_ServiceIdentification class of
+            ISO 19119 (OGC Abstract Specification Topic 12).
+
+            OWS is an OGC Standard.
+            Copyright (c) 2006,2010 Open Geospatial Consortium.
+            To obtain additional rights of use, visit http://www.opengeospatial.org/legal/ .
+
+            This XML Schema Document encodes the common "ServiceProvider" section of the GetCapabilities operation
+            response, known as the Capabilities XML document. This section encodes the SV_ServiceProvider class of ISO
+            19119 (OGC Abstract Specification Topic 12).
+
+            OWS is an OGC Standard.
+            Copyright (c) 2006,2010 Open Geospatial Consortium.
+            To obtain additional rights of use, visit http://www.opengeospatial.org/legal/ .
+
+            This XML Schema Document encodes the basic contents of the "OperationsMetadata" section of the
+            GetCapabilities operation response, also known as the Capabilities XML document.
+
+            OWS is an OGC Standard.
+            Copyright (c) 2006,2010 Open Geospatial Consortium.
+            To obtain additional rights of use, visit http://www.opengeospatial.org/legal/ .
+
+            This XML Schema Document encodes the parts of ISO 19115 used by the common "ServiceIdentification" and
+            "ServiceProvider" sections of the GetCapabilities operation response, known as the service metadata XML
+            document. The parts encoded here are the MD_Keywords, CI_ResponsibleParty, and related classes. The UML
+            package prefixes were omitted from XML names, and the XML element names were all capitalized, for
+            consistency with other OWS Schemas. This document also provides a simple coding of text in multiple
+            languages, simplified from Annex J of ISO 19115.
+
+            OWS is an OGC Standard.
+            Copyright (c) 2006,2010 Open Geospatial Consortium.
+            To obtain additional rights of use, visit http://www.opengeospatial.org/legal/ .
+        </xsd:documentation>
+    </xsd:annotation>
+    <xsd:annotation>
+        <xsd:appinfo ecore:key="appinfo">$Id: tjsGetData_response.xsd 2010-12-23 $&#13;
+            owsAll.xsd&#13;
+            owsGetResourceByID.xsd&#13;
+            owsExceptionReport.xsd&#13;
+            owsDomainType.xsd&#13;
+            owsContents.xsd&#13;
+            owsInputOutputData.xsd&#13;
+            owsManifest.xsd&#13;
+            owsDataIdentification.xsd&#13;
+            owsCommon.xsd&#13;
+            owsGetCapabilities.xsd&#13;
+            owsServiceIdentification.xsd&#13;
+            owsServiceProvider.xsd&#13;
+            owsOperationsMetadata.xsd&#13;
+            ows19115subset.xsd
+        </xsd:appinfo>
+    </xsd:annotation>
+    <xsd:element name="Abstract" type="tjs:AbstractType">
+        <xsd:annotation>
+            <xsd:documentation>One or more paragraphs of human-readable relevant text suitable for display in a pop-up
+                window.
+            </xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+    <xsd:element name="AttributeLimit" type="xsd:positiveInteger">
+        <xsd:annotation>
+            <xsd:documentation>Maximum number of attributes that can be joined simultaneously as part of a JoinData
+                request.
+            </xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+    <xsd:element name="Attributes" type="xsd:string">
+        <xsd:annotation>
+            <xsd:documentation>The AttributeNames requested by the user, in comma-delimited format</xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+    <xsd:element name="BoundingCoordinates" type="tjs:BoundingCoordinatesType">
+        <xsd:annotation>
+            <xsd:documentation>Identifies the bounding coordinates of the spatial framework using the WGS84 CRS.
+            </xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+    <xsd:element name="Capabilities" type="tjs:tjsCapabilitiesType">
+        <xsd:annotation>
+            <xsd:documentation>XML encoded tjs GetCapabilities operation response. This document provides clients with
+                service metadata about a specific service instance, including metadata about the tightly-coupled data
+                served. If the server does not implement the updateSequence parameter, the server shall always return
+                the complete Capabilities document, without the updateSequence parameter. When the server implements the
+                updateSequence parameter and the GetCapabilities operation request included the updateSequence parameter
+                with the current value, the server shall return this element with only the "version" and
+                "updateSequence" attributes. Otherwise, all optional elements shall be included or not depending on the
+                actual value of the Sections parameter in the GetCapabilities operation request.
+            </xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+    <xsd:element name="Columnset" type="tjs:ColumnsetType">
+        <xsd:annotation>
+            <xsd:documentation>Ordered list of columns found in the dataset.</xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+    <xsd:element name="Count" type="tjs:CountType">
+        <xsd:annotation>
+            <xsd:documentation>Data consists of the number of some observable elements present in the spatial features
+            </xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+    <xsd:element name="DataClass" type="tjs:DataClassType"/>
+    <xsd:element name="DataDescriptions" type="tjs:DataDescriptionsType">
+        <xsd:annotation>
+            <xsd:documentation>Response containing full descriptions of data which can be joined to the identified
+                spatial frameworks.
+            </xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+    <xsd:element name="Dataset" type="tjs:Dataset1Type"/>
+    <xsd:element name="DatasetDescriptions" type="tjs:DatasetDescriptionsType">
+        <xsd:annotation>
+            <xsd:documentation>Response containing full descriptions of all datasets containing data which can be joined
+                to the identified spatial frameworks.
+            </xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+    <xsd:element name="DatasetURI" type="xsd:string">
+        <xsd:annotation>
+            <xsd:documentation>URI of the attribute dataset. Normally a resolvable URL or a URN.</xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+    <xsd:element name="DescribeData" type="tjs:DescribeDataType">
+        <xsd:annotation>
+            <xsd:documentation>Request to describe the attribute data which is available from this server.
+            </xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+    <xsd:element name="DescribeDataRequest" type="tjs:DescribeDataRequestType">
+        <xsd:annotation>
+            <xsd:documentation>URL reference to the DescribeData request for this dataset.</xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+    <xsd:element name="DescribeDatasets" type="tjs:DescribeDatasetsType">
+        <xsd:annotation>
+            <xsd:documentation>Request to describe the attribute datasets from which data is available from this
+                server.
+            </xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+    <xsd:element name="DescribeDatasetsRequest" type="tjs:DescribeDatasetsRequestType">
+        <xsd:annotation>
+            <xsd:documentation>URL reference to the DescribeDatasets request for this framework.</xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+    <xsd:element name="DescribeFrameworks" type="tjs:DescribeFrameworksType">
+        <xsd:annotation>
+            <xsd:documentation>Request to describe the spatial frameworks to which attribute data available from this
+                server applies.
+            </xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+    <xsd:element name="DescribeJoinAbilities" type="tjs:RequestBaseType">
+        <xsd:annotation>
+            <xsd:documentation>Request to describe to which spatial frameworks this server can join attribute data.
+            </xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+    <xsd:element name="DescribeKey" type="tjs:DescribeKeyType">
+        <xsd:annotation>
+            <xsd:documentation>Request to describe the contents of the FrameworkKey field for a spatial framework housed
+                on this server.
+            </xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+    <xsd:element name="Documentation" type="xsd:anyURI">
+        <xsd:annotation>
+            <xsd:documentation>URL reference to a web-accessible resource which contains further information describing
+                this object.
+            </xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+    <xsd:element name="Framework" type="tjs:Framework1Type">
+        <xsd:annotation>
+            <xsd:documentation>Spatial framework description and attribute data which applies to that framework.
+            </xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+    <xsd:element name="FrameworkDescriptions" type="tjs:FrameworkDescriptionsType">
+        <xsd:annotation>
+            <xsd:documentation>Response containing full descriptions of all spatial frameworks for which data is
+                available.
+            </xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+    <xsd:element name="FrameworkKey" type="tjs:FrameworkKeyType">
+        <xsd:annotation>
+            <xsd:documentation>Describes the common key field in the spatial framework dataset through which data can be
+                joined. The values of this key populate the 'Rowset/Row/K' elements in the GetData response.
+            </xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+    <xsd:element name="FrameworkKeyDescription" type="tjs:FrameworkKeyDescriptionType">
+        <xsd:annotation>
+            <xsd:documentation>Response containing full description the FrameworkKey of a spatial framework housed on
+                this server.
+            </xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+    <xsd:element name="FrameworkURI" type="xsd:string">
+        <xsd:annotation>
+            <xsd:documentation>URI of the spatial framework. Normally a resolvable URL or a URN.</xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+    <xsd:element name="GDAS" type="tjs:GDASType">
+        <xsd:annotation>
+            <xsd:documentation>Geospatial Data Attribute Set</xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+    <xsd:element name="GetCapabilities" type="tjs:GetCapabilitiesType">
+        <xsd:annotation>
+            <xsd:documentation>Request to a TJS to perform the GetCapabilities operation. This operation allows a client
+                to retrieve a Capabilities XML document providing metadata for the specific TJS server. In this XML
+                encoding, no "request" parameter is included, since the element name specifies the specific operation.
+            </xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+    <xsd:element name="GetData" type="tjs:GetDataType">
+        <xsd:annotation>
+            <xsd:documentation>Request to get a specified portion of the data residing on this server.
+            </xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+    <xsd:element name="GetDataRequest" type="tjs:GetDataRequestType">
+        <xsd:annotation>
+            <xsd:documentation>URL reference to the GetData request for this attribute. The request shall include any
+                other descriptive columns (e.g. spatial component number, percentage, etc) that qualify this attribute
+                column.
+            </xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+    <xsd:element name="Identifier" type="xsd:string"/>
+    <xsd:element name="JoinAbilities" type="tjs:JoinAbilitiesType">
+        <xsd:annotation>
+            <xsd:documentation>Response describing all joining abilities of the tjs instance.</xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+    <xsd:element name="JoinData" type="tjs:JoinDataType">
+        <xsd:annotation>
+            <xsd:documentation>Request to a tjs to perform the JoinData operation. This operation allows a client to
+                join attribute data to a spatial framework. In this XML encoding, no "request" parameter is included,
+                since the element name specifies the specific operation.
+            </xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+    <xsd:element name="JoinDataResponse" type="tjs:JoinDataResponseType">
+        <xsd:annotation>
+            <xsd:documentation>Response to a tjs JoinData request. Includes the original JoinData request.
+            </xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+    <xsd:element name="K" type="tjs:KType">
+        <xsd:annotation>
+            <xsd:documentation>Spatial Key for this row. For the GetData response, when there is more than one "K"
+                element they are ordered according to the same sequence as the "FrameworkKey" elements of the
+                "Columnset" structure.
+            </xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+    <xsd:element name="LinkageKeys" type="xsd:string">
+        <xsd:annotation>
+            <xsd:documentation>The DatasetKey identifiers requested by the user. Identifiers shall be in comma-delimited
+                format, where ranges shall be indicated with a minimum value and maximum value separated by a dash
+                ("-"). The same Identifier cannot be requested multiple times.
+            </xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+    <xsd:element name="Measure" type="tjs:MeasureType">
+        <xsd:annotation>
+            <xsd:documentation>Data consists of measurements of some characteristic attributable to the spatial
+                features
+            </xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+    <xsd:element name="Mechanism" type="tjs:MechanismType">
+        <xsd:annotation>
+            <xsd:documentation>Mechanism by which the attribute data can be accessed once it has been joined to the
+                spatial framework.
+            </xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+    <xsd:element name="Nominal" type="tjs:NominalType">
+        <xsd:annotation>
+            <xsd:documentation>Data consists of unique names for spatial features</xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+    <xsd:element name="Ordinal" type="tjs:OrdinalType">
+        <xsd:annotation>
+            <xsd:documentation>Ordered classifications data</xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+    <xsd:element name="Organization" type="xsd:string">
+        <xsd:annotation>
+            <xsd:documentation>Human-readable name of the organization responsible for maintaining this object.
+            </xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+    <xsd:element name="ReferenceDate" type="tjs:ReferenceDateType">
+        <xsd:annotation>
+            <xsd:documentation>Point in time to which the Framework/Dataset applies. If the startDate attribute is
+                included then the contents of this element describes a range of time (from "startDate" to
+                "ReferenceDate") to which the framework/dataset applies. Valid content is a date field of the form
+                http://www.w3.org/TR/2004/REC-xmlschema-2-20041028/#gYear, gYearMonth, date, or dateTime.
+            </xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+    <xsd:element name="Rowset" type="tjs:Rowset1Type">
+        <xsd:annotation>
+            <xsd:documentation>Dataset table with columns as defined in the "Columnset" structure above.
+            </xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+    <xsd:element name="SpatialFrameworks" type="tjs:SpatialFrameworksType">
+        <xsd:annotation>
+            <xsd:documentation>Full description of all spatial frameworks to which attribute data can be joined.
+            </xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+    <xsd:element name="Styling" type="tjs:StylingType">
+        <xsd:annotation>
+            <xsd:documentation>Describes a form of styling instruction supported by this server.</xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+    <xsd:element name="Title" type="xsd:string">
+        <xsd:annotation>
+            <xsd:documentation>Human-readable short description suitable to display on a pick list, legend, and/or on
+                mouseover. Note that for attributes the unit of measure should not appear in the Title. Instead, it
+                should appear in the UOM element.
+            </xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+    <xsd:element name="Uncertainty" type="tjs:UncertaintyType">
+        <xsd:annotation>
+            <xsd:documentation>Standard Uncertainty, according to the generally agreed upon definition described at
+                sites like http://physics.nist.gov/cuu/Uncertainty/index.html
+            </xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+    <xsd:element name="UOM" type="tjs:UOMType">
+        <xsd:annotation>
+            <xsd:documentation>Unit of Measure</xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+    <xsd:element name="Values" type="tjs:ValuesType"/>
+    <xsd:element name="Version" type="xsd:string">
+        <xsd:annotation>
+            <xsd:documentation>Version identifier for this Framework / Dataset.</xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+    <xsd:complexType name="AbstractType"/>
+    <xsd:simpleType name="AcceptLanguagesType">
+        <xsd:restriction base="xsd:string"/>
+    </xsd:simpleType>
+    <xsd:complexType ecore:name="AcceptVersionsType" name="AcceptVersionsType">
+        <xsd:annotation>
+            <xsd:documentation>When omitted, server shall return latest supported version.</xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element ecore:name="version" form="qualified" maxOccurs="unbounded" name="Version"
+                         type="tjs:VersionType">
+                <xsd:annotation>
+                    <xsd:documentation>Specification version for the TJS GetCapabilities operation. The string value
+                        shall contain one "version" value. Version numbering is similar to OWS 1.1 except the version
+                        number contains only two non-negative integers separated by decimal points, in the form "x.y",
+                        where the integer x is the major version and y is the minor version. Currently version "1.0" is
+                        the only valid value for this element.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType ecore:name="AttributeDataType" name="AttributeDataType">
+        <xsd:sequence>
+            <xsd:element ecore:name="getDataURL" form="qualified" minOccurs="0" name="GetDataURL" type="xsd:anyURI">
+                <xsd:annotation>
+                    <xsd:documentation>URL which returns a valid tjs 0.12 GetData response. Note that this may be a tjs
+                        GetData request (via HTTP GET), a stored response to a GetData request, or a web process that
+                        returns content compliant with the GetData response schema.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="getDataXML" form="qualified" minOccurs="0" name="GetDataXML"
+                         type="tjs:GetDataXMLType">
+                <xsd:annotation>
+                    <xsd:documentation>GetData request in XML encoding, including the name of the tjs server to be
+                        queried. Note that since XML encoding of the GetData request is optional for tjs servers, this
+                        choice should not be used unless it is known that the tjs server supports this request method.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType ecore:name="AttributesType" name="AttributesType">
+        <xsd:sequence>
+            <xsd:element ecore:name="column" form="qualified" maxOccurs="unbounded" name="Column"
+                         type="tjs:Column1Type">
+                <xsd:annotation>
+                    <xsd:documentation>Describes a descriptor column or data column in the dataset. The order of
+                        multiple occurances of this element in a GetData response is determined by the order of the
+                        attributes listed in the request. The order of these elements defines the order of the "V"
+                        elements in the Rowset/Row structure below.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType ecore:name="BoundingCoordinatesType" name="BoundingCoordinatesType">
+        <xsd:sequence>
+            <xsd:element ecore:name="north" form="qualified" name="North" type="xsd:decimal">
+                <xsd:annotation>
+                    <xsd:documentation>WGS84 latitude of the northernmost coordinate of the spatial framework.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="south" form="qualified" name="South" type="xsd:decimal">
+                <xsd:annotation>
+                    <xsd:documentation>WGS84 latitude of the southernmost coordinate of the spatial framework.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="east" form="qualified" name="East" type="xsd:decimal">
+                <xsd:annotation>
+                    <xsd:documentation>WGS84 longitude of the easternmost coordinate of the spatial framework.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="west" form="qualified" name="West" type="xsd:decimal">
+                <xsd:annotation>
+                    <xsd:documentation>WGS84 longitude of the westernmost coordinate of the spatial framework.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType ecore:name="ClassesType" name="ClassesType">
+        <xsd:sequence>
+            <xsd:element ecore:name="title" ref="tjs:Title">
+                <xsd:annotation>
+                    <xsd:documentation>Human-readable short description suitable to display on a pick list, legend,
+                        and/or on mouseover. Note that for attributes the unit of measure should not appear in the
+                        Title. Instead, it should appear in the UOM element.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="abstract" ref="tjs:Abstract">
+                <xsd:annotation>
+                    <xsd:documentation>One or more paragraphs of human-readable relevant text suitable for display in a
+                        pop-up window.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="documentation" minOccurs="0" ref="tjs:Documentation">
+                <xsd:annotation>
+                    <xsd:documentation>URL reference to a web-accessible resource which contains further information
+                        describing this object.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="value" form="qualified" maxOccurs="unbounded" name="Value" type="tjs:ValueType">
+                <xsd:annotation>
+                    <xsd:documentation>Valid (non-null) values.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType ecore:name="ClassesType1" name="Classes1Type">
+        <xsd:sequence>
+            <xsd:element ecore:name="title" ref="tjs:Title">
+                <xsd:annotation>
+                    <xsd:documentation>Human-readable short description suitable to display on a pick list, legend,
+                        and/or on mouseover. Note that for attributes the unit of measure should not appear in the
+                        Title. Instead, it should appear in the UOM element.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="abstract" ref="tjs:Abstract">
+                <xsd:annotation>
+                    <xsd:documentation>One or more paragraphs of human-readable relevant text suitable for display in a
+                        pop-up window.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="documentation" minOccurs="0" ref="tjs:Documentation">
+                <xsd:annotation>
+                    <xsd:documentation>URL reference to a web-accessible resource which contains further information
+                        describing this object.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="value" form="qualified" maxOccurs="unbounded" name="Value" type="tjs:Value1Type">
+                <xsd:annotation>
+                    <xsd:documentation>Valid (non-null) values.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType ecore:name="ColumnsetType" name="ColumnsetType">
+        <xsd:sequence>
+            <xsd:element ecore:name="frameworkKey" form="qualified" name="FrameworkKey" type="tjs:FrameworkKey1Type">
+                <xsd:annotation>
+                    <xsd:documentation>Identifies the columns of the data table found in the Rowset structure below that
+                        are used to join the table to the spatial framework identified in the Framework structure above.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="attributes" form="qualified" name="Attributes" type="tjs:AttributesType">
+                <xsd:annotation>
+                    <xsd:documentation>Identifies the columns of the data table found in the Rowset structure below that
+                        contain data that can be joined to the spatial framework identified in the Framework structure
+                        above.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType ecore:name="ColumnType" name="ColumnType">
+        <xsd:attribute name="decimals" type="xsd:nonNegativeInteger">
+            <xsd:annotation>
+                <xsd:documentation>Number of digits after the decimal, for decimal numbers with a fixed number of digits
+                    after the decimal.
+                </xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="length" type="xsd:nonNegativeInteger" use="required">
+            <xsd:annotation>
+                <xsd:documentation>Length of the field, in characters.</xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="name" type="xsd:string" use="required">
+            <xsd:annotation>
+                <xsd:documentation>Name of the key field in the spatial framework dataset through which data can be
+                    joined.
+                </xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="type" type="tjs:typeType" use="required">
+            <xsd:annotation>
+                <xsd:documentation>Datatype, as defined by XML schema at http://www.w3.org/TR/xmlschema-2/#.
+                </xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+    </xsd:complexType>
+    <xsd:complexType ecore:name="ColumnType1" name="Column1Type">
+        <xsd:sequence>
+            <xsd:element ecore:name="title" ref="tjs:Title">
+                <xsd:annotation>
+                    <xsd:documentation>Human-readable short description suitable to display on a pick list, legend,
+                        and/or on mouseover. Note that for attributes the unit of measure should not appear in the
+                        Title. Instead, it should appear in the UOM element.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="abstract" ref="tjs:Abstract">
+                <xsd:annotation>
+                    <xsd:documentation>One or more paragraphs of human-readable text describing the attribute and
+                        suitable for display in a pop-up window.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="documentation" minOccurs="0" ref="tjs:Documentation">
+                <xsd:annotation>
+                    <xsd:documentation>URL reference to a web-accessible resource which contains further information
+                        describing this object.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="values" ref="tjs:Values">
+                <xsd:annotation>
+                    <xsd:documentation>Type of values and valid values for the contents of this column.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="getDataRequest" ref="tjs:GetDataRequest">
+                <xsd:annotation>
+                    <xsd:documentation>URL reference to the GetData request for this column. The request shall include
+                        any other columns that describe or quantify the values in this attribute column (i.e. where the
+                        "purpose" of the column is SpatialComponentIdentifier, TemporalIdentfier, etc).
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+        <xsd:attribute name="decimals" type="xsd:nonNegativeInteger">
+            <xsd:annotation>
+                <xsd:documentation>Number of digits after the decimal, for decimal numbers with a fixed number of digits
+                    after the decimal.
+                </xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="length" type="xsd:nonNegativeInteger" use="required">
+            <xsd:annotation>
+                <xsd:documentation>Length of the field, in characters.</xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="name" type="xsd:string" use="required">
+            <xsd:annotation>
+                <xsd:documentation>Name of the key field in the spatial framework dataset through which data can be
+                    joined.
+                </xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="purpose" type="tjs:purposeType" use="required">
+            <xsd:annotation>
+                <xsd:documentation>Primary purpose of the attribute, indicating whether the column contains attribute
+                    data or a linkage key to some other spatial framework or nonspatial data table.
+                </xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="type" type="tjs:typeType" use="required">
+            <xsd:annotation>
+                <xsd:documentation>Datatype, as defined by XML schema at http://www.w3.org/TR/xmlschema-2/#.
+                </xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+    </xsd:complexType>
+    <xsd:complexType ecore:name="ColumnType2" name="Column2Type">
+        <xsd:attribute name="decimals" type="xsd:nonNegativeInteger">
+            <xsd:annotation>
+                <xsd:documentation>Number of digits after the decimal, for decimal numbers with a fixed number of digits
+                    after the decimal.
+                </xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="length" type="xsd:nonNegativeInteger" use="required">
+            <xsd:annotation>
+                <xsd:documentation>Length of the field, in characters.</xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="name" type="xsd:string" use="required">
+            <xsd:annotation>
+                <xsd:documentation>Name of the key field in the spatial framework dataset through which data can be
+                    joined.
+                </xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="type" type="tjs:typeType" use="required">
+            <xsd:annotation>
+                <xsd:documentation>Datatype, as defined by XML schema at http://www.w3.org/TR/xmlschema-2/#.
+                </xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+    </xsd:complexType>
+    <xsd:complexType ecore:name="CountType" name="CountType">
+        <xsd:sequence>
+            <xsd:element ecore:name="uOM" ref="tjs:UOM">
+                <xsd:annotation>
+                    <xsd:documentation>Unit of Measure</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="uncertainty" minOccurs="0" ref="tjs:Uncertainty">
+                <xsd:annotation>
+                    <xsd:documentation>Standard Uncertainty, according to the generally agreed upon definition described
+                        at sites like http://physics.nist.gov/cuu/Uncertainty/index.html
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="exceptions" form="qualified" minOccurs="0" name="Exceptions"
+                         type="tjs:MeasureCountExceptions">
+                <xsd:annotation>
+                    <xsd:documentation>Valid exception classes for this attribute.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:simpleType ecore:name="DataClassType" name="DataClassType">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="nominal"/>
+            <xsd:enumeration value="ordinal"/>
+            <xsd:enumeration value="measure"/>
+            <xsd:enumeration value="count"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:complexType ecore:name="DataDescriptionsType" name="DataDescriptionsType">
+        <xsd:sequence>
+            <xsd:element ecore:name="framework" form="qualified" maxOccurs="unbounded" name="Framework"
+                         type="tjs:FrameworkDatasetDescribeDataType">
+                <xsd:annotation>
+                    <xsd:documentation>Spatial framework for which attribute data is housed on this server.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+        <xsd:attribute name="capabilities" type="xsd:string" use="required">
+            <xsd:annotation>
+                <xsd:documentation>GetCapabilities URL of the TJS server.</xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute ref="xml:lang" use="required">
+            <xsd:annotation>
+                <xsd:documentation>RFC 4646 language code of the human-readable text (e.g. "en-CA").</xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute ecore:default="TJS" name="service" type="xsd:anySimpleType" use="required">
+            <xsd:annotation>
+                <xsd:documentation>Service type identifier</xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute ecore:default="1.0" name="version" type="xsd:anySimpleType" use="required">
+            <xsd:annotation>
+                <xsd:documentation>Version of the TJS interface specification implemented by the server (1.0)
+                </xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+    </xsd:complexType>
+    <xsd:complexType ecore:name="DataInputsType" name="DataInputsType">
+        <xsd:sequence>
+            <xsd:element ecore:name="framework" form="qualified" name="Framework"
+                         type="tjs:FrameworkDatasetDescribeDataType"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType ecore:name="DatasetDescriptionsType" name="DatasetDescriptionsType">
+        <xsd:sequence>
+            <xsd:element ecore:name="framework" form="qualified" maxOccurs="unbounded" name="Framework"
+                         type="tjs:Framework4Type">
+                <xsd:annotation>
+                    <xsd:documentation>Spatial framework for which attribute data is housed on this server.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+        <xsd:attribute name="capabilities" type="xsd:string" use="required">
+            <xsd:annotation>
+                <xsd:documentation>GetCapabilities URL of the TJS server.</xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute ref="xml:lang" use="required">
+            <xsd:annotation>
+                <xsd:documentation>RFC 4646 language code of the human-readable text (e.g. "en-CA").</xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute ecore:default="TJS" name="service" type="xsd:anySimpleType" use="required">
+            <xsd:annotation>
+                <xsd:documentation>Service type identifier</xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute ecore:default="1.0" name="version" type="xsd:anySimpleType" use="required">
+            <xsd:annotation>
+                <xsd:documentation>Version of the TJS interface specification implemented by the server (1.0)
+                </xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+    </xsd:complexType>
+    <xsd:complexType ecore:name="DatasetType" name="DatasetType">
+        <xsd:sequence>
+            <xsd:element ecore:name="datasetURI" ref="tjs:DatasetURI">
+                <xsd:annotation>
+                    <xsd:documentation>URI of the attribute dataset. Normally a resolvable URL or a URN.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="organization" ref="tjs:Organization">
+                <xsd:annotation>
+                    <xsd:documentation>Human-readable name of the organization responsible for maintaining this
+                        object.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="title" ref="tjs:Title">
+                <xsd:annotation>
+                    <xsd:documentation>Human-readable short description suitable to display on a pick list, legend,
+                        and/or on mouseover. Note that for attributes the unit of measure should not appear in the
+                        Title. Instead, it should appear in the UOM element.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="abstract" ref="tjs:Abstract">
+                <xsd:annotation>
+                    <xsd:documentation>One or more paragraphs of human-readable relevant text suitable for display in a
+                        pop-up window.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="referenceDate" ref="tjs:ReferenceDate">
+                <xsd:annotation>
+                    <xsd:documentation>Point in time to which the Framework/Dataset applies. If the startDate attribute
+                        is included then the contents of this element describes a range of time (from "startDate" to
+                        "ReferenceDate") to which the framework/dataset applies. Valid content is a date field of the
+                        form http://www.w3.org/TR/2004/REC-xmlschema-2-20041028/#gYear, gYearMonth, date, or dateTime.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="version" ref="tjs:Version">
+                <xsd:annotation>
+                    <xsd:documentation>Version identifier for this Framework / Dataset.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="documentation" minOccurs="0" ref="tjs:Documentation">
+                <xsd:annotation>
+                    <xsd:documentation>URL reference to a web-accessible resource which contains further information
+                        describing this object.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="describeDataRequest" ref="tjs:DescribeDataRequest">
+                <xsd:annotation>
+                    <xsd:documentation>URL reference to the DescribeData request for this dataset.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType ecore:name="DatasetType1" name="Dataset1Type">
+        <xsd:sequence>
+            <xsd:element ecore:name="datasetURI" ref="tjs:DatasetURI">
+                <xsd:annotation>
+                    <xsd:documentation>URI of the attribute dataset. Normally a resolvable URL or a URN.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="organization" ref="tjs:Organization">
+                <xsd:annotation>
+                    <xsd:documentation>Human-readable name of the organization responsible for maintaining this
+                        object.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="title" ref="tjs:Title">
+                <xsd:annotation>
+                    <xsd:documentation>Human-readable short description suitable to display on a pick list, legend,
+                        and/or on mouseover. Note that for attributes the unit of measure should not appear in the
+                        Title. Instead, it should appear in the UOM element.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="abstract" ref="tjs:Abstract">
+                <xsd:annotation>
+                    <xsd:documentation>One or more paragraphs of human-readable relevant text suitable for display in a
+                        pop-up window.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="referenceDate" ref="tjs:ReferenceDate">
+                <xsd:annotation>
+                    <xsd:documentation>Point in time to which the Framework/Dataset applies. If the startDate attribute
+                        is included then the contents of this element describes a range of time (from "startDate" to
+                        "ReferenceDate") to which the framework/dataset applies. Valid content is a date field of the
+                        form http://www.w3.org/TR/2004/REC-xmlschema-2-20041028/#gYear, gYearMonth, date, or dateTime.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="version" ref="tjs:Version">
+                <xsd:annotation>
+                    <xsd:documentation>Version identifier for this Framework / Dataset. This element shall identify any
+                        changes, inclucing corrections, to the published content of the Columnset and Rowset elements
+                        for the dataset identfied by the DatasetURI element.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="documentation" minOccurs="0" ref="tjs:Documentation">
+                <xsd:annotation>
+                    <xsd:documentation>URL reference to a web-accessible resource which contains further information
+                        describing this object.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="columnset" ref="tjs:Columnset">
+                <xsd:annotation>
+                    <xsd:documentation>Ordered list of columns found in the dataset.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="rowset" ref="tjs:Rowset">
+                <xsd:annotation>
+                    <xsd:documentation>Dataset Rows. Ordered list of all the requested dataset table rows for the
+                        identified framework. Row elements are in ascending order based on the contents of the Spatial
+                        Key (K).
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType ecore:name="DatasetType2" name="Dataset2Type">
+        <xsd:sequence>
+            <xsd:element ecore:name="datasetURI" ref="tjs:DatasetURI">
+                <xsd:annotation>
+                    <xsd:documentation>URI of the attribute dataset. Normally a resolvable URL or a URN.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="organization" ref="tjs:Organization">
+                <xsd:annotation>
+                    <xsd:documentation>Human-readable name of the organization responsible for maintaining this
+                        object.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="title" ref="tjs:Title">
+                <xsd:annotation>
+                    <xsd:documentation>Human-readable short description suitable to display on a pick list, legend,
+                        and/or on mouseover. Note that for attributes the unit of measure should not appear in the
+                        Title. Instead, it should appear in the UOM element.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="abstract" ref="tjs:Abstract">
+                <xsd:annotation>
+                    <xsd:documentation>One or more paragraphs of human-readable relevant text suitable for display in a
+                        pop-up window.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="referenceDate" ref="tjs:ReferenceDate">
+                <xsd:annotation>
+                    <xsd:documentation>Point in time to which the Framework/Dataset applies. If the startDate attribute
+                        is included then the contents of this element describes a range of time (from "startDate" to
+                        "ReferenceDate") to which the framework/dataset applies. Valid content is a date field of the
+                        form http://www.w3.org/TR/2004/REC-xmlschema-2-20041028/#gYear, gYearMonth, date, or dateTime.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="version" ref="tjs:Version">
+                <xsd:annotation>
+                    <xsd:documentation>Version identifier for this Framework / Dataset.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="documentation" minOccurs="0" ref="tjs:Documentation">
+                <xsd:annotation>
+                    <xsd:documentation>URL reference to a web-accessible resource which contains further information
+                        describing this object.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="describeDataRequest" ref="tjs:DescribeDataRequest">
+                <xsd:annotation>
+                    <xsd:documentation>URL reference to the DescribeData request for this dataset.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="columnset" ref="tjs:Columnset">
+                <xsd:annotation>
+                    <xsd:documentation>Ordered list of columns found in the dataset. The order of the columns matches
+                        that of and describes the content of the "V" elements found in each "Row" of the "Rowset"
+                        element below.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="rowset" ref="tjs:Rowset">
+                <xsd:annotation>
+                    <xsd:documentation>Ordered list of rows found in the dataset. The order of the ""Row" elements is by
+                        ascending value of the "K" element.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType ecore:name="DatasetType3" name="Dataset3Type">
+        <xsd:sequence>
+            <xsd:element ecore:name="datasetURI" ref="tjs:DatasetURI">
+                <xsd:annotation>
+                    <xsd:documentation>URI of the attribute dataset. Normally a resolvable URL or a URN.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="organization" ref="tjs:Organization">
+                <xsd:annotation>
+                    <xsd:documentation>Human-readable name of the organization responsible for maintaining this
+                        object.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="title" ref="tjs:Title">
+                <xsd:annotation>
+                    <xsd:documentation>Human-readable short description suitable to display on a pick list, legend,
+                        and/or on mouseover. Note that for attributes the unit of measure should not appear in the
+                        Title. Instead, it should appear in the UOM element.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="abstract" ref="tjs:Abstract">
+                <xsd:annotation>
+                    <xsd:documentation>One or more paragraphs of human-readable relevant text suitable for display in a
+                        pop-up window.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="referenceDate" ref="tjs:ReferenceDate">
+                <xsd:annotation>
+                    <xsd:documentation>Point in time to which the Framework/Dataset applies. If the startDate attribute
+                        is included then the contents of this element describes a range of time (from "startDate" to
+                        "ReferenceDate") to which the framework/dataset applies. Valid content is a date field of the
+                        form http://www.w3.org/TR/2004/REC-xmlschema-2-20041028/#gYear, gYearMonth, date, or dateTime.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="version" ref="tjs:Version">
+                <xsd:annotation>
+                    <xsd:documentation>Version identifier for this Framework / Dataset.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="documentation" minOccurs="0" ref="tjs:Documentation">
+                <xsd:annotation>
+                    <xsd:documentation>URL reference to a web-accessible resource which contains further information
+                        describing this object.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="describeDataRequest" ref="tjs:DescribeDataRequest">
+                <xsd:annotation>
+                    <xsd:documentation>URL reference to the DescribeData request for this dataset.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="columnset" ref="tjs:Columnset">
+                <xsd:annotation>
+                    <xsd:documentation>Ordered list of columns found in the dataset.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType ecore:name="DescribeDataRequestType" name="DescribeDataRequestType">
+        <xsd:attribute ref="xlink:href" use="required"/>
+    </xsd:complexType>
+    <xsd:complexType ecore:name="DescribeDatasetsRequestType" name="DescribeDatasetsRequestType">
+        <xsd:attribute ref="xlink:href" use="required"/>
+    </xsd:complexType>
+    <xsd:complexType ecore:name="DescribeDatasetsType" name="DescribeDatasetsType">
+        <xsd:complexContent>
+            <xsd:extension base="tjs:RequestBaseType">
+                <xsd:sequence>
+                    <xsd:element ecore:name="frameworkURI" minOccurs="0" ref="tjs:FrameworkURI">
+                        <xsd:annotation>
+                            <xsd:documentation>URI the spatial framework to which the attribute data must apply.
+                            </xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element ecore:name="datasetURI" minOccurs="0" ref="tjs:DatasetURI">
+                        <xsd:annotation>
+                            <xsd:documentation>URI of the attribute dataset. Normally a resolvable URL or a URN.
+                            </xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:simpleType name="DescribeDatasetsValueType">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="DescribeDatasets"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:complexType ecore:name="DescribeDataType" name="DescribeDataType">
+        <xsd:complexContent>
+            <xsd:extension base="tjs:RequestBaseType">
+                <xsd:sequence>
+                    <xsd:element ecore:name="frameworkURI" minOccurs="0" ref="tjs:FrameworkURI">
+                        <xsd:annotation>
+                            <xsd:documentation>URI of the spatial framework to which the attribute data must apply.
+                            </xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element ecore:name="datasetURI" minOccurs="0" ref="tjs:DatasetURI">
+                        <xsd:annotation>
+                            <xsd:documentation>URI of the dataset which contains the attributes to be described.
+                            </xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element ecore:name="attributes" minOccurs="0" ref="tjs:Attributes">
+                        <xsd:annotation>
+                            <xsd:documentation>The names of the attributes for which descriptions are requested from the
+                                server.
+                            </xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:simpleType name="DescribeDataValueType">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="DescribeData"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:complexType name="DescribeFrameworkKeyType">
+        <xsd:sequence>
+            <xsd:element ecore:name="frameworkURI" ref="tjs:FrameworkURI">
+                <xsd:annotation>
+                    <xsd:documentation>URI of the spatial framework. Normally a resolvable URL or a URN.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="organization" ref="tjs:Organization">
+                <xsd:annotation>
+                    <xsd:documentation>Human-readable name of the organization responsible for maintaining this
+                        object.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="title" ref="tjs:Title">
+                <xsd:annotation>
+                    <xsd:documentation>Human-readable short description suitable to display on a pick list, legend,
+                        and/or on mouseover. Note that for attributes the unit of measure should not appear in the
+                        Title. Instead, it should appear in the UOM element.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="abstract" ref="tjs:Abstract">
+                <xsd:annotation>
+                    <xsd:documentation>One or more paragraphs of human-readable relevant text suitable for display in a
+                        pop-up window.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="referenceDate" ref="tjs:ReferenceDate">
+                <xsd:annotation>
+                    <xsd:documentation>Point in time to which the Framework/Dataset applies. If the startDate attribute
+                        is included then the contents of this element describes a range of time (from "startDate" to
+                        "ReferenceDate") to which the framework/dataset applies. Valid content is a date field of the
+                        form http://www.w3.org/TR/2004/REC-xmlschema-2-20041028/#gYear, gYearMonth, date, or dateTime.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="version" ref="tjs:Version">
+                <xsd:annotation>
+                    <xsd:documentation>Version identifier for this Framework / Dataset.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="documentation" minOccurs="0" ref="tjs:Documentation">
+                <xsd:annotation>
+                    <xsd:documentation>URL reference to a web-accessible resource which contains further information
+                        describing this object.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="frameworkKey" ref="tjs:FrameworkKey">
+                <xsd:annotation>
+                    <xsd:documentation>Describes the common key field in the spatial framework dataset through which
+                        data can be joined. The values of this key populate the 'Rowset/Row/K' elements in the GetData
+                        response.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="boundingCoordinates" ref="tjs:BoundingCoordinates">
+                <xsd:annotation>
+                    <xsd:documentation>Identifies the bounding coordinates of the spatial framework using the WGS84
+                        CRS.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="rowset" form="qualified" name="Rowset" type="tjs:RowsetType">
+                <xsd:annotation>
+                    <xsd:documentation>Database table structure. Ordered list of all the spatial features for the
+                        identified framework. Row elements are in ascending order based on the contents of the Spatial
+                        Key (K).
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType ecore:name="DescribeFrameworksType" name="DescribeFrameworksType">
+        <xsd:complexContent>
+            <xsd:extension base="tjs:RequestBaseType">
+                <xsd:sequence>
+                    <xsd:element ecore:name="frameworkURI" minOccurs="0" ref="tjs:FrameworkURI">
+                        <xsd:annotation>
+                            <xsd:documentation>URI of a spatial framework to which the attribute data can be joined.
+                            </xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:simpleType name="DescribeFrameworksValueType">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="DescribeFrameworks"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="DescribeJoinAbilitiesValueType">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="DescribeJoinAbilities"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:complexType ecore:name="DescribeKeyType" name="DescribeKeyType">
+        <xsd:complexContent>
+            <xsd:extension base="tjs:RequestBaseType">
+                <xsd:sequence>
+                    <xsd:element ecore:name="frameworkURI" ref="tjs:FrameworkURI">
+                        <xsd:annotation>
+                            <xsd:documentation>URI of the spatial framework to which the attribute data must apply.
+                            </xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:simpleType name="DescribeKeyValueType">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="DescribeKey"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:complexType ecore:name="ExceptionReportType" name="ExceptionReportType">
+        <xsd:sequence>
+            <xsd:element ecore:name="exception" ref="ows:Exception">
+                <xsd:annotation>
+                    <xsd:documentation>Error encountered during processing that prevented successful production of this
+                        output.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType ecore:name="FailedType" name="FailedType"/>
+    <xsd:complexType name="FrameworkDatasetDescribeDataType">
+        <xsd:sequence>
+            <xsd:element ecore:name="frameworkURI" ref="tjs:FrameworkURI">
+                <xsd:annotation>
+                    <xsd:documentation>URI of the spatial framework. Normally a resolvable URL or a URN.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="organization" ref="tjs:Organization">
+                <xsd:annotation>
+                    <xsd:documentation>Human-readable name of the organization responsible for maintaining this
+                        object.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="title" ref="tjs:Title">
+                <xsd:annotation>
+                    <xsd:documentation>Human-readable short description suitable to display on a pick list, legend,
+                        and/or on mouseover. Note that for attributes the unit of measure should not appear in the
+                        Title. Instead, it should appear in the UOM element.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="abstract" ref="tjs:Abstract">
+                <xsd:annotation>
+                    <xsd:documentation>One or more paragraphs of human-readable relevant text suitable for display in a
+                        pop-up window.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="referenceDate" ref="tjs:ReferenceDate">
+                <xsd:annotation>
+                    <xsd:documentation>Point in time to which the Framework/Dataset applies. If the startDate attribute
+                        is included then the contents of this element describes a range of time (from "startDate" to
+                        "ReferenceDate") to which the framework/dataset applies. Valid content is a date field of the
+                        form http://www.w3.org/TR/2004/REC-xmlschema-2-20041028/#gYear, gYearMonth, date, or dateTime.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="version" ref="tjs:Version">
+                <xsd:annotation>
+                    <xsd:documentation>Version identifier for this Framework / Dataset.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="documentation" minOccurs="0" ref="tjs:Documentation">
+                <xsd:annotation>
+                    <xsd:documentation>URL reference to a web-accessible resource which contains further information
+                        describing this object.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="frameworkKey" ref="tjs:FrameworkKey">
+                <xsd:annotation>
+                    <xsd:documentation>Describes the common key field in the spatial framework dataset through which
+                        data can be joined. The values of this key populate the 'Rowset/Row/K' elements in the GetData
+                        response.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="boundingCoordinates" ref="tjs:BoundingCoordinates">
+                <xsd:annotation>
+                    <xsd:documentation>Identifies the bounding coordinates of the spatial framework using the WGS84
+                        CRS.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="describeDatasetsRequest" ref="tjs:DescribeDatasetsRequest">
+                <xsd:annotation>
+                    <xsd:documentation>URL reference to the DescribeDatasets request for this framework.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="dataset" form="qualified" maxOccurs="unbounded" name="Dataset"
+                         type="tjs:Dataset3Type"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType ecore:name="FrameworkDescriptionsType" name="FrameworkDescriptionsType">
+        <xsd:sequence>
+            <xsd:element ecore:name="framework" form="qualified" maxOccurs="unbounded" name="Framework"
+                         type="tjs:Framework2Type">
+                <xsd:annotation>
+                    <xsd:documentation>Spatial framework for which attribute data is housed on this server.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+        <xsd:attribute name="capabilities" type="xsd:string" use="required">
+            <xsd:annotation>
+                <xsd:documentation>GetCapabilities URL of the TJS server.</xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute ref="xml:lang" use="required">
+            <xsd:annotation>
+                <xsd:documentation>RFC 4646 language code of the human-readable text (e.g. "en-CA").</xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute ecore:default="TJS" name="service" type="xsd:anySimpleType" use="required">
+            <xsd:annotation>
+                <xsd:documentation>Service type identifier</xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute ecore:default="1.0" name="version" type="xsd:anySimpleType" use="required">
+            <xsd:annotation>
+                <xsd:documentation>Version of the TJS interface specification implemented by the server (1.0)
+                </xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+    </xsd:complexType>
+    <xsd:complexType ecore:name="FrameworkKeyDescriptionType" name="FrameworkKeyDescriptionType">
+        <xsd:sequence>
+            <xsd:element ecore:name="framework" form="qualified" name="Framework" type="tjs:DescribeFrameworkKeyType">
+                <xsd:annotation>
+                    <xsd:documentation>Spatial framework for which attribute data is housed on this server.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+        <xsd:attribute name="capabilities" type="xsd:string" use="required">
+            <xsd:annotation>
+                <xsd:documentation>GetCapabilities URL of the TJS server.</xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute ref="xml:lang" use="required">
+            <xsd:annotation>
+                <xsd:documentation>RFC 4646 language code of the human-readable text (e.g. "en-CA").</xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute ecore:default="TJS" name="service" type="xsd:anySimpleType" use="required">
+            <xsd:annotation>
+                <xsd:documentation>Service type identifier</xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute ecore:default="1.0" name="version" type="xsd:anySimpleType" use="required">
+            <xsd:annotation>
+                <xsd:documentation>Version of the TJS interface specification implemented by the server (1.0)
+                </xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+    </xsd:complexType>
+    <xsd:complexType ecore:name="FrameworkKeyType" name="FrameworkKeyType">
+        <xsd:sequence>
+            <xsd:element ecore:name="column" form="qualified" maxOccurs="unbounded" name="Column"
+                         type="tjs:ColumnType"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType ecore:name="FrameworkKeyType1" name="FrameworkKey1Type">
+        <xsd:sequence>
+            <xsd:element ecore:name="column" form="qualified" maxOccurs="unbounded" name="Column"
+                         type="tjs:Column2Type">
+                <xsd:annotation>
+                    <xsd:documentation>Identifies a column that is used to form the framework key. Where more than one
+                        of these elements is present then all of these columns are required to join the data table to
+                        the spatial framework. The order of these elements defines the order of the "K" elements in the
+                        Rowset/Row structures below.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+        <xsd:attribute name="complete" type="xsd:anySimpleType" use="required">
+            <xsd:annotation>
+                <xsd:documentation>Identifies if there is at least one record in the Attribute dataset for every record
+                    in the Framework dataset. “true” indicates that this is the case. “false” indicates that some Keys
+                    in the Framework dataset cannot be found in the Attribute dataset.
+                </xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="relationship" type="xsd:anySimpleType" use="required">
+            <xsd:annotation>
+                <xsd:documentation>Identifies if the relationship between the Framework and the Attribute datasets are
+                    1:1 or 1:many. “one” indicates that there is at most one record in the Attribute dataset for every
+                    key in the Framework dataset. “many” indicates that there may be more than one record in the
+                    Attribute dataset for every key in the Framework dataset, in which case some preliminary processing
+                    is required before the join operation can take place.
+                </xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+    </xsd:complexType>
+    <xsd:complexType ecore:name="FrameworkType" name="FrameworkType">
+        <xsd:sequence>
+            <xsd:element ecore:name="frameworkURI" ref="tjs:FrameworkURI">
+                <xsd:annotation>
+                    <xsd:documentation>URI of the spatial framework. Normally a resolvable URL or a URN.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="organization" ref="tjs:Organization">
+                <xsd:annotation>
+                    <xsd:documentation>Human-readable name of the organization responsible for maintaining this
+                        object.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="title" ref="tjs:Title">
+                <xsd:annotation>
+                    <xsd:documentation>Human-readable short description suitable to display on a pick list, legend,
+                        and/or on mouseover. Note that for attributes the unit of measure should not appear in the
+                        Title. Instead, it should appear in the UOM element.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="abstract" ref="tjs:Abstract">
+                <xsd:annotation>
+                    <xsd:documentation>One or more paragraphs of human-readable relevant text suitable for display in a
+                        pop-up window.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="referenceDate" ref="tjs:ReferenceDate">
+                <xsd:annotation>
+                    <xsd:documentation>Point in time to which the Framework/Dataset applies. If the startDate attribute
+                        is included then the contents of this element describes a range of time (from "startDate" to
+                        "ReferenceDate") to which the framework/dataset applies. Valid content is a date field of the
+                        form http://www.w3.org/TR/2004/REC-xmlschema-2-20041028/#gYear, gYearMonth, date, or dateTime.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="version" ref="tjs:Version">
+                <xsd:annotation>
+                    <xsd:documentation>Version identifier for this Framework / Dataset.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="documentation" minOccurs="0" ref="tjs:Documentation">
+                <xsd:annotation>
+                    <xsd:documentation>URL reference to a web-accessible resource which contains further information
+                        describing this object.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="frameworkKey" ref="tjs:FrameworkKey">
+                <xsd:annotation>
+                    <xsd:documentation>Describes the common key field in the spatial framework dataset through which
+                        data can be joined. The values of this key populate the 'Rowset/Row/K' elements in the GetData
+                        response.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="boundingCoordinates" ref="tjs:BoundingCoordinates">
+                <xsd:annotation>
+                    <xsd:documentation>Identifies the bounding coordinates of the spatial framework using the WGS84
+                        CRS.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType ecore:name="FrameworkType1" name="Framework1Type">
+        <xsd:sequence>
+            <xsd:element ecore:name="frameworkURI" ref="tjs:FrameworkURI">
+                <xsd:annotation>
+                    <xsd:documentation>URI of the spatial framework. Normally a resolvable URL or a URN.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="organization" ref="tjs:Organization">
+                <xsd:annotation>
+                    <xsd:documentation>Human-readable name of the organization responsible for maintaining this
+                        object.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="title" ref="tjs:Title">
+                <xsd:annotation>
+                    <xsd:documentation>Human-readable short description suitable to display on a pick list, legend,
+                        and/or on mouseover. Note that for attributes the unit of measure should not appear in the
+                        Title. Instead, it should appear in the UOM element.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="abstract" ref="tjs:Abstract">
+                <xsd:annotation>
+                    <xsd:documentation>One or more paragraphs of human-readable relevant text suitable for display in a
+                        pop-up window.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="referenceDate" ref="tjs:ReferenceDate">
+                <xsd:annotation>
+                    <xsd:documentation>Point in time to which the Framework/Dataset applies. If the startDate attribute
+                        is included then the contents of this element describes a range of time (from "startDate" to
+                        "ReferenceDate") to which the framework/dataset applies. Valid content is a date field of the
+                        form http://www.w3.org/TR/2004/REC-xmlschema-2-20041028/#gYear, gYearMonth, date, or dateTime.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="version" ref="tjs:Version">
+                <xsd:annotation>
+                    <xsd:documentation>Version identifier for this Framework / Dataset.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="documentation" minOccurs="0" ref="tjs:Documentation">
+                <xsd:annotation>
+                    <xsd:documentation>URL reference to a web-accessible resource which contains further information
+                        describing this object.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="frameworkKey" ref="tjs:FrameworkKey">
+                <xsd:annotation>
+                    <xsd:documentation>Describes the common key field in the spatial framework dataset through which
+                        data can be joined. The values of this key populate the 'Rowset/Row/K' elements in the GetData
+                        response.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="boundingCoordinates" ref="tjs:BoundingCoordinates">
+                <xsd:annotation>
+                    <xsd:documentation>Identifies the bounding box of the spatial framework using the WGS84 coordinate
+                        reference system.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="dataset" ref="tjs:Dataset">
+                <xsd:annotation>
+                    <xsd:documentation>Description of the dataset which contains attribute data that applies to the
+                        spatial framework, and the requested attribute data.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType ecore:name="FrameworkType2" name="Framework2Type">
+        <xsd:sequence>
+            <xsd:element ecore:name="frameworkURI" ref="tjs:FrameworkURI">
+                <xsd:annotation>
+                    <xsd:documentation>URI of the spatial framework. Normally a resolvable URL or a URN.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="organization" ref="tjs:Organization">
+                <xsd:annotation>
+                    <xsd:documentation>Human-readable name of the organization responsible for maintaining this
+                        object.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="title" ref="tjs:Title">
+                <xsd:annotation>
+                    <xsd:documentation>Human-readable short description suitable to display on a pick list, legend,
+                        and/or on mouseover. Note that for attributes the unit of measure should not appear in the
+                        Title. Instead, it should appear in the UOM element.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="abstract" ref="tjs:Abstract">
+                <xsd:annotation>
+                    <xsd:documentation>One or more paragraphs of human-readable relevant text suitable for display in a
+                        pop-up window.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="referenceDate" ref="tjs:ReferenceDate">
+                <xsd:annotation>
+                    <xsd:documentation>Point in time to which the Framework/Dataset applies. If the startDate attribute
+                        is included then the contents of this element describes a range of time (from "startDate" to
+                        "ReferenceDate") to which the framework/dataset applies. Valid content is a date field of the
+                        form http://www.w3.org/TR/2004/REC-xmlschema-2-20041028/#gYear, gYearMonth, date, or dateTime.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="version" ref="tjs:Version">
+                <xsd:annotation>
+                    <xsd:documentation>Version identifier for this Framework / Dataset.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="documentation" minOccurs="0" ref="tjs:Documentation">
+                <xsd:annotation>
+                    <xsd:documentation>URL reference to a web-accessible resource which contains further information
+                        describing this object.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="frameworkKey" ref="tjs:FrameworkKey">
+                <xsd:annotation>
+                    <xsd:documentation>Describes the common key field in the spatial framework dataset through which
+                        data can be joined. The values of this key populate the 'Rowset/Row/K' elements in the GetData
+                        response.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="boundingCoordinates" ref="tjs:BoundingCoordinates">
+                <xsd:annotation>
+                    <xsd:documentation>Identifies the bounding coordinates of the spatial framework using the WGS84
+                        CRS.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="describeDatasetsRequest" ref="tjs:DescribeDatasetsRequest">
+                <xsd:annotation>
+                    <xsd:documentation>URL reference to the DescribeDatasets request for this framework.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType ecore:name="FrameworkType3" name="Framework3Type">
+        <xsd:sequence>
+            <xsd:element ecore:name="frameworkURI" ref="tjs:FrameworkURI">
+                <xsd:annotation>
+                    <xsd:documentation>URI of the spatial framework. Normally a resolvable URL or a URN.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="organization" ref="tjs:Organization">
+                <xsd:annotation>
+                    <xsd:documentation>Human-readable name of the organization responsible for maintaining this
+                        object.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="title" ref="tjs:Title">
+                <xsd:annotation>
+                    <xsd:documentation>Human-readable short description suitable to display on a pick list, legend,
+                        and/or on mouseover. Note that for attributes the unit of measure should not appear in the
+                        Title. Instead, it should appear in the UOM element.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="abstract" ref="tjs:Abstract">
+                <xsd:annotation>
+                    <xsd:documentation>One or more paragraphs of human-readable relevant text suitable for display in a
+                        pop-up window.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="referenceDate" ref="tjs:ReferenceDate">
+                <xsd:annotation>
+                    <xsd:documentation>Point in time to which the Framework/Dataset applies. If the startDate attribute
+                        is included then the contents of this element describes a range of time (from "startDate" to
+                        "ReferenceDate") to which the framework/dataset applies. Valid content is a date field of the
+                        form http://www.w3.org/TR/2004/REC-xmlschema-2-20041028/#gYear, gYearMonth, date, or dateTime.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="version" ref="tjs:Version">
+                <xsd:annotation>
+                    <xsd:documentation>Version identifier for this Framework / Dataset.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="documentation" minOccurs="0" ref="tjs:Documentation">
+                <xsd:annotation>
+                    <xsd:documentation>URL reference to a web-accessible resource which contains further information
+                        describing this object.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="frameworkKey" ref="tjs:FrameworkKey">
+                <xsd:annotation>
+                    <xsd:documentation>Describes the common key field in the spatial framework dataset through which
+                        data can be joined. The values of this key populate the 'Rowset/Row/K' elements in the GetData
+                        response.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="boundingCoordinates" ref="tjs:BoundingCoordinates">
+                <xsd:annotation>
+                    <xsd:documentation>Identifies the bounding coordinates of the spatial framework using the WGS84
+                        CRS.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="describeDatasetsRequest" ref="tjs:DescribeDatasetsRequest">
+                <xsd:annotation>
+                    <xsd:documentation>URL reference to the DescribeDatasets request for this framework.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="dataset" form="qualified" name="Dataset" type="tjs:Dataset2Type"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType ecore:name="FrameworkType4" name="Framework4Type">
+        <xsd:sequence>
+            <xsd:element ecore:name="frameworkURI" ref="tjs:FrameworkURI">
+                <xsd:annotation>
+                    <xsd:documentation>URI of the spatial framework. Normally a resolvable URL or a URN.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="organization" ref="tjs:Organization">
+                <xsd:annotation>
+                    <xsd:documentation>Human-readable name of the organization responsible for maintaining this
+                        object.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="title" ref="tjs:Title">
+                <xsd:annotation>
+                    <xsd:documentation>Human-readable short description suitable to display on a pick list, legend,
+                        and/or on mouseover. Note that for attributes the unit of measure should not appear in the
+                        Title. Instead, it should appear in the UOM element.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="abstract" ref="tjs:Abstract">
+                <xsd:annotation>
+                    <xsd:documentation>One or more paragraphs of human-readable relevant text suitable for display in a
+                        pop-up window.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="referenceDate" ref="tjs:ReferenceDate">
+                <xsd:annotation>
+                    <xsd:documentation>Point in time to which the Framework/Dataset applies. If the startDate attribute
+                        is included then the contents of this element describes a range of time (from "startDate" to
+                        "ReferenceDate") to which the framework/dataset applies. Valid content is a date field of the
+                        form http://www.w3.org/TR/2004/REC-xmlschema-2-20041028/#gYear, gYearMonth, date, or dateTime.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="version" ref="tjs:Version">
+                <xsd:annotation>
+                    <xsd:documentation>Version identifier for this Framework / Dataset.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="documentation" minOccurs="0" ref="tjs:Documentation">
+                <xsd:annotation>
+                    <xsd:documentation>URL reference to a web-accessible resource which contains further information
+                        describing this object.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="frameworkKey" ref="tjs:FrameworkKey">
+                <xsd:annotation>
+                    <xsd:documentation>Describes the common key field in the spatial framework dataset through which
+                        data can be joined. The values of this key populate the 'Rowset/Row/K' elements in the GetData
+                        response.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="boundingCoordinates" ref="tjs:BoundingCoordinates">
+                <xsd:annotation>
+                    <xsd:documentation>Identifies the bounding coordinates of the spatial framework using the WGS84
+                        CRS.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="describeDatasetsRequest" ref="tjs:DescribeDatasetsRequest">
+                <xsd:annotation>
+                    <xsd:documentation>URL reference to the DescribeDatasets request for this framework.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="dataset" form="qualified" maxOccurs="unbounded" name="Dataset"
+                         type="tjs:DatasetType"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:simpleType ecore:name="GaussianType" name="gaussianType">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="true"/>
+            <xsd:enumeration value="false"/>
+            <xsd:enumeration value="unknown"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:complexType ecore:name="GDASType" name="GDASType">
+        <xsd:sequence>
+            <xsd:element ecore:name="framework" form="qualified" name="Framework" type="tjs:Framework3Type"/>
+        </xsd:sequence>
+        <xsd:attribute name="capabilities" type="xsd:string" use="required">
+            <xsd:annotation>
+                <xsd:documentation>GetCapabilities URL of the TJS server.</xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute ref="xml:lang" use="required">
+            <xsd:annotation>
+                <xsd:documentation>RFC 4646 language code of the human-readable text (e.g. "en-CA").</xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute ecore:default="TJS" name="service" type="xsd:anySimpleType" use="required">
+            <xsd:annotation>
+                <xsd:documentation>Service type identifier</xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute ecore:default="1.0" name="version" type="xsd:anySimpleType" use="required">
+            <xsd:annotation>
+                <xsd:documentation>Version of the TJS interface specification implemented by the server (1.0)
+                </xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+    </xsd:complexType>
+    <xsd:complexType ecore:name="GetCapabilitiesType" name="GetCapabilitiesType">
+        <xsd:sequence>
+            <xsd:element ecore:name="acceptVersions" form="qualified" minOccurs="0" name="AcceptVersions"
+                         type="tjs:AcceptVersionsType">
+                <xsd:annotation>
+                    <xsd:documentation>Prioritized sequence of one or more specification versions accepted by client,
+                        with preferred versions listed first. Version negotiation is similar to that specified by the
+                        OWS 1.1 Version Negotiation subclause except that the form of the TJS version number differs
+                        slightly.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="sections" form="qualified" minOccurs="0" name="Sections" type="ows:SectionsType">
+                <xsd:annotation>
+                    <xsd:documentation>When omitted or not supported by server, server shall return complete service
+                        metadata (Capabilities) document.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="acceptFormats" form="qualified" minOccurs="0" name="AcceptFormats"
+                         type="ows:AcceptFormatsType">
+                <xsd:annotation>
+                    <xsd:documentation>When omitted or not supported by server, server shall return service metadata
+                        document using the MIME type "text/xml".
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+        <xsd:attribute name="language" type="xsd:anySimpleType">
+            <xsd:annotation>
+                <xsd:documentation>Language requested by the client for all human readable text in the response.
+                    Consists of a two or five character RFC 4646 language code.
+                </xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute ecore:default="TJS" name="service" type="xsd:anySimpleType" use="required">
+            <xsd:annotation>
+                <xsd:documentation>Service type identifier requested by the client.</xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="updateSequence" type="ows:UpdateSequenceType">
+            <xsd:annotation>
+                <xsd:documentation>When omitted or not supported by server, server shall return latest complete service
+                    metadata document.
+                </xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+    </xsd:complexType>
+    <xsd:simpleType name="GetCapabilitiesValueType">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="GetCapabilities"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:complexType ecore:name="GetDataRequestType" name="GetDataRequestType">
+        <xsd:attribute ref="xlink:href" use="required"/>
+    </xsd:complexType>
+    <xsd:complexType ecore:name="GetDataType" name="GetDataType">
+        <xsd:complexContent>
+            <xsd:extension base="tjs:RequestBaseType">
+                <xsd:sequence>
+                    <xsd:element ecore:name="frameworkURI" ref="tjs:FrameworkURI">
+                        <xsd:annotation>
+                            <xsd:documentation>URI of the spatial framework. Normally a resolvable URL or a URN.
+                            </xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element ecore:name="datasetURI" ref="tjs:DatasetURI">
+                        <xsd:annotation>
+                            <xsd:documentation>URI of the attribute dataset. Normally a resolvable URL or a URN.
+                            </xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element ecore:name="attributes" minOccurs="0" ref="tjs:Attributes">
+                        <xsd:annotation>
+                            <xsd:documentation>The AttributeNames requested by the user, in comma-delimited format
+                            </xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element ecore:name="linkageKeys" minOccurs="0" ref="tjs:LinkageKeys">
+                        <xsd:annotation>
+                            <xsd:documentation>The DatasetKey identifiers requested by the user. Identifiers shall be in
+                                comma-delimited format, where ranges shall be indicated with a minimum value and maximum
+                                value separated by a dash ("-"). The same Identifier cannot be requested multiple times.
+                            </xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element ecore:name="filterColumn" form="qualified" minOccurs="0" name="FilterColumn"
+                                 type="xsd:anyType">
+                        <xsd:annotation>
+                            <xsd:documentation>The name of a Nominal or Ordinal field in the dataset upon which to
+                                filter the contents of the GetData response.
+                            </xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element ecore:name="filterValue" form="qualified" minOccurs="0" name="FilterValue"
+                                 type="xsd:anyType">
+                        <xsd:annotation>
+                            <xsd:documentation>The Nominal or Ordinal value which the contents of the GetData response
+                                shall match.
+                            </xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element ecore:name="xSL" form="qualified" minOccurs="0" name="XSL" type="xsd:anyType">
+                        <xsd:annotation>
+                            <xsd:documentation>Valid URL for an XSL document which will be referenced in the response
+                                XML in a fashion that it will be applied by web browsers.
+                            </xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+                </xsd:sequence>
+                <xsd:attribute default="false" name="aid" type="xsd:boolean">
+                    <xsd:annotation>
+                        <xsd:documentation>Boolean switch to request Attribute IDentifier. If "aid=true" then an "aid"
+                            attribute will be included with each "V" element of the response.
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:simpleType name="GetDataValueType">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="GetData"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:complexType ecore:name="GetDataXMLType" name="GetDataXMLType">
+        <xsd:sequence>
+            <xsd:element ecore:name="frameworkURI" ref="tjs:FrameworkURI">
+                <xsd:annotation>
+                    <xsd:documentation>URI of the spatial framework. Normally a resolvable URL or a URN.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="datasetURI" ref="tjs:DatasetURI">
+                <xsd:annotation>
+                    <xsd:documentation>URI of the attribute dataset. Normally a resolvable URL or a URN.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="attributes" minOccurs="0" ref="tjs:Attributes">
+                <xsd:annotation>
+                    <xsd:documentation>The AttributeNames requested by the user, in comma-delimited format
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="linkageKeys" minOccurs="0" ref="tjs:LinkageKeys">
+                <xsd:annotation>
+                    <xsd:documentation>The DatasetKey identifiers requested by the user. Identifiers shall be in
+                        comma-delimited format, where ranges shall be indicated with a minimum value and maximum value
+                        separated by a dash ("-"). The same Identifier cannot be requested multiple times.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+        <xsd:attribute name="getDataHost" type="xsd:anyURI">
+            <xsd:annotation>
+                <xsd:documentation>Base URL of the tjs server to which the attached GetData request shall be passed.
+                </xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="language" type="xsd:string">
+            <xsd:annotation>
+                <xsd:documentation>Value of the language parameter to be included in the GetData request.
+                </xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+    </xsd:complexType>
+    <xsd:complexType ecore:name="JoinAbilitiesType" name="JoinAbilitiesType">
+        <xsd:sequence>
+            <xsd:element ecore:name="spatialFrameworks" ref="tjs:SpatialFrameworks">
+                <xsd:annotation>
+                    <xsd:documentation>Full description of all spatial frameworks to which attribute data can be
+                        joined.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="attributeLimit" ref="tjs:AttributeLimit">
+                <xsd:annotation>
+                    <xsd:documentation>Maximum number of attributes that can be joined simultaneously as part of a
+                        JoinData request.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="outputMechanisms" form="qualified" name="OutputMechanisms"
+                         type="tjs:OutputMechanismsType">
+                <xsd:annotation>
+                    <xsd:documentation>List of mechanisms by which the attribute data will be accessible once it has
+                        been joined to the spatial framework.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="outputStylings" form="qualified" minOccurs="0" name="OutputStylings"
+                         type="tjs:OutputStylingsType">
+                <xsd:annotation>
+                    <xsd:documentation>Unordered list of display or content styling instructions supported by the server
+                        and that can be applied if the AccessMechanisms of the requested output includes WMS. If WMS is
+                        not supported by the server then this element shall not be present. If WMS is supported and this
+                        element is not present, a default styling will be applied to the WMS layer.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="classificationSchemaURL" form="qualified" minOccurs="0"
+                         name="ClassificationSchemaURL" type="xsd:anyType">
+                <xsd:annotation>
+                    <xsd:documentation>URL that returns an XML Schema document that specifying an XML structure for
+                        describing data classifications. When included with a JoinData request, the contents of such an
+                        XML file can be applied by the server in order to produce the data classes used in the JoinData
+                        output.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+        <xsd:attribute name="capabilities" type="xsd:string" use="required">
+            <xsd:annotation>
+                <xsd:documentation>GetCapabilities URL of the TJS server.</xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute ref="xml:lang" use="required">
+            <xsd:annotation>
+                <xsd:documentation>RFC 4646 language code of the human-readable text (e.g. "en-CA").</xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute ecore:default="TJS" name="service" type="xsd:anySimpleType" use="required">
+            <xsd:annotation>
+                <xsd:documentation>Service type identifier</xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="updateSupported" type="xsd:boolean" use="required">
+            <xsd:annotation>
+                <xsd:documentation>Boolean that identifies if existing JoinData products can be updated by this service.
+                    If "true" then subsequent identical JoinData requests will update existing JoinData products that
+                    were created by this service. These updated products will then be available via the existing URLs of
+                    those products.
+                </xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute ecore:default="1.0" name="version" type="xsd:anySimpleType" use="required">
+            <xsd:annotation>
+                <xsd:documentation>Version of the TJS interface specification implemented by the server (1.0)
+                </xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+    </xsd:complexType>
+    <xsd:complexType ecore:name="JoinDataResponseType" name="JoinDataResponseType">
+        <xsd:sequence>
+            <xsd:element ecore:name="status" form="qualified" name="Status" type="tjs:StatusType">
+                <xsd:annotation>
+                    <xsd:documentation>Execution status of the JoinData request.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="dataInputs" form="qualified" name="DataInputs" type="tjs:DataInputsType">
+                <xsd:annotation>
+                    <xsd:documentation>Descriptions of the framework, dataset, and attributes used to generate the
+                        outputs of the JoinData operation.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="joinedOutputs" form="qualified" name="JoinedOutputs" type="tjs:JoinedOutputsType">
+                <xsd:annotation>
+                    <xsd:documentation>List of outputs resulting from the JoinData operation. There must be at least one
+                        output when the operation has completed successfully. Each output mechanism advertised for this
+                        framework in the DescribeJoinAbiities response shall be represented here.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+        <xsd:attribute name="capabilities" type="xsd:string" use="required">
+            <xsd:annotation>
+                <xsd:documentation>GetCapabilities URL of the TJS server.</xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute ref="xml:lang" use="required">
+            <xsd:annotation>
+                <xsd:documentation>RFC 4646 language code of the human-readable text (e.g. "en-CA").</xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute ecore:default="TJS" name="service" type="xsd:anySimpleType" use="required">
+            <xsd:annotation>
+                <xsd:documentation>Service type identifier</xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute ecore:default="1.0" name="version" type="xsd:anySimpleType" use="required">
+            <xsd:annotation>
+                <xsd:documentation>Version of the TJS interface specification implemented by the server (1.0)
+                </xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+    </xsd:complexType>
+    <xsd:complexType ecore:name="JoinDataType" name="JoinDataType">
+        <xsd:complexContent>
+            <xsd:extension base="tjs:RequestBaseType">
+                <xsd:sequence>
+                    <xsd:element ecore:name="attributeData" form="qualified" name="AttributeData"
+                                 type="tjs:AttributeDataType">
+                        <xsd:annotation>
+                            <xsd:documentation>Attribute data to be joined to the spatial framework.</xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element ecore:name="mapStyling" form="qualified" minOccurs="0" name="MapStyling"
+                                 type="tjs:MapStylingType">
+                        <xsd:annotation>
+                            <xsd:documentation>Styling that shall be applied if the AccessMechanisms of the requested
+                                output includes WMS. If WMS is not supported, this element shall not be present. If WMS
+                                is supported and this element is not present, a default styling will be applied to the
+                                WMS layer.
+                            </xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element ecore:name="classificationURL" form="qualified" minOccurs="0" name="ClassificationURL"
+                                 type="xsd:anyType">
+                        <xsd:annotation>
+                            <xsd:documentation>URL that returns a file describing a data classification to be applied to
+                                the output (e.g. the classification to be used for a legend in the case where the output
+                                is a WMS). This file must be encoded in compliance with the XML Schema identified in the
+                                ClassificationSchemaURL element of the DescribeJoinAbilities response.
+                            </xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+                </xsd:sequence>
+                <xsd:attribute name="update" type="tjs:updateType">
+                    <xsd:annotation>
+                        <xsd:documentation>Flag to indicate if the Rowset content would be used to update/replace any
+                            equivalent attribute data that currently exists on the server.
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:simpleType name="JoinDataValueType">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="JoinData"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:complexType ecore:name="JoinedOutputsType" name="JoinedOutputsType">
+        <xsd:sequence>
+            <xsd:element ecore:name="output" form="qualified" maxOccurs="unbounded" name="Output" type="tjs:OutputType">
+                <xsd:annotation>
+                    <xsd:documentation>Unordered list of all the outputs that have been or will be produced by this
+                        operation.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType ecore:name="KType" name="KType">
+        <xsd:simpleContent>
+            <xsd:extension base="xsd:string">
+                <xsd:attribute name="aid" type="xsd:anySimpleType"/>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+    <xsd:complexType ecore:name="LanguagesType" name="LanguagesType">
+        <xsd:sequence>
+            <xsd:element ecore:name="language" maxOccurs="unbounded" ref="ows:Language">
+                <xsd:annotation>
+                    <xsd:documentation>Identifier of a language used by the data(set) contents. This language identifier
+                        shall be as specified in IETF RFC 4646. When this element is omitted, the language used is not
+                        identified.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType ecore:name="MapStylingType" name="MapStylingType">
+        <xsd:sequence>
+            <xsd:element ecore:name="stylingIdentifier" form="qualified" name="StylingIdentifier" type="xsd:anyType">
+                <xsd:annotation>
+                    <xsd:documentation>Name that identifies the type of styling to be invoked. Must be a styling
+                        Identifier listed in the DescribeJoinAbilities response.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="stylingURL" form="qualified" name="StylingURL" type="xsd:anyURI">
+                <xsd:annotation>
+                    <xsd:documentation>Reference to a web-accessible resource that contains the styling information to
+                        be applied. This attribute shall contain a URL from which this input can be electronically
+                        retrieved.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="MeasureCountExceptions">
+        <xsd:sequence>
+            <xsd:element ecore:name="null" form="qualified" maxOccurs="unbounded" name="Null" type="tjs:NullType">
+                <xsd:annotation>
+                    <xsd:documentation>Valid null values.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType ecore:name="MeasureType" name="MeasureType">
+        <xsd:sequence>
+            <xsd:element ecore:name="uOM" ref="tjs:UOM">
+                <xsd:annotation>
+                    <xsd:documentation>Unit of Measure</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="uncertainty" minOccurs="0" ref="tjs:Uncertainty">
+                <xsd:annotation>
+                    <xsd:documentation>Standard Uncertainty, according to the generally agreed upon definition described
+                        at sites like http://physics.nist.gov/cuu/Uncertainty/index.html
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="exceptions" form="qualified" minOccurs="0" name="Exceptions"
+                         type="tjs:MeasureCountExceptions">
+                <xsd:annotation>
+                    <xsd:documentation>Valid exception classes for this attribute.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType ecore:name="MechanismType" name="MechanismType">
+        <xsd:sequence>
+            <xsd:element ecore:name="identifier" ref="tjs:Identifier">
+                <xsd:annotation>
+                    <xsd:documentation>Name which uniquely identifies this type of access mechanism supported by this
+                        server.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="title" ref="tjs:Title">
+                <xsd:annotation>
+                    <xsd:documentation>Human-readable title which uniquely identifies the type of access mechanism
+                        supported by this server. Must be suitable for display in a pick-list to a user.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="abstract" form="qualified" name="Abstract" type="xsd:string">
+                <xsd:annotation>
+                    <xsd:documentation>Human-readable description of the type of access mechanism, suitable for display
+                        to a user seeking information about this type of access mechanism.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="reference" form="qualified" name="Reference" type="xsd:anyURI">
+                <xsd:annotation>
+                    <xsd:documentation>URL that defines the access mechanism.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="NominalOrdinalExceptions">
+        <xsd:sequence>
+            <xsd:element ecore:name="null" form="qualified" maxOccurs="unbounded" name="Null" type="tjs:Null1Type">
+                <xsd:annotation>
+                    <xsd:documentation>Valid null values.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType ecore:name="NominalType" name="NominalType">
+        <xsd:sequence>
+            <xsd:element ecore:name="classes" form="qualified" minOccurs="0" name="Classes" type="tjs:Classes1Type">
+                <xsd:annotation>
+                    <xsd:documentation>Valid nominal classes for this attribute.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="exceptions" form="qualified" minOccurs="0" name="Exceptions"
+                         type="tjs:NominalOrdinalExceptions">
+                <xsd:annotation>
+                    <xsd:documentation>Valid exception classes for this attribute.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType ecore:name="NullType" name="NullType">
+        <xsd:sequence>
+            <xsd:element ecore:name="identifier" ref="tjs:Identifier">
+                <xsd:annotation>
+                    <xsd:documentation>Text string representing a null value, found in the "V" elements of this
+                        attribute.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="title" ref="tjs:Title">
+                <xsd:annotation>
+                    <xsd:documentation>Human-readable short description suitable to display on a pick list, legend,
+                        and/or on mouseover. Note that for attributes the unit of measure should not appear in the
+                        Title. Instead, it should appear in the UOM element.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="abstract" ref="tjs:Abstract">
+                <xsd:annotation>
+                    <xsd:documentation>One or more paragraphs of human-readable relevant text suitable for display in a
+                        pop-up window.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="documentation" minOccurs="0" ref="tjs:Documentation">
+                <xsd:annotation>
+                    <xsd:documentation>URL reference to a web-accessible resource which contains further information
+                        describing this object.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType ecore:name="NullType1" name="Null1Type">
+        <xsd:sequence>
+            <xsd:element ecore:name="identifier" ref="tjs:Identifier">
+                <xsd:annotation>
+                    <xsd:documentation>Text string representing a null value, found in the V elements of this
+                        attribute
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="title" ref="tjs:Title">
+                <xsd:annotation>
+                    <xsd:documentation>Human-readable short description suitable to display on a pick list, legend,
+                        and/or on mouseover. Note that for attributes the unit of measure should not appear in the
+                        Title. Instead, it should appear in the UOM element.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="abstract" ref="tjs:Abstract">
+                <xsd:annotation>
+                    <xsd:documentation>One or more paragraphs of human-readable relevant text suitable for display in a
+                        pop-up window.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="documentation" minOccurs="0" ref="tjs:Documentation">
+                <xsd:annotation>
+                    <xsd:documentation>URL reference to a web-accessible resource which contains further information
+                        describing this object.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+        <xsd:attribute name="color" type="xsd:anySimpleType">
+            <xsd:annotation>
+                <xsd:documentation>Hex code for a color that is suggested for cartographic portrayal of this null value.
+                    E.g."CCFFCC"
+                </xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+    </xsd:complexType>
+    <xsd:complexType ecore:name="OrdinalType" name="OrdinalType">
+        <xsd:sequence>
+            <xsd:element ecore:name="classes" form="qualified" minOccurs="0" name="Classes" type="tjs:ClassesType">
+                <xsd:annotation>
+                    <xsd:documentation>Valid ordinal classes for this attribute. Should be included when "purpose" of
+                        this attribute is "Data".
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="exceptions" form="qualified" minOccurs="0" name="Exceptions"
+                         type="tjs:NominalOrdinalExceptions">
+                <xsd:annotation>
+                    <xsd:documentation>Valid exception classes for this attribute.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="OutputMechanismsType">
+        <xsd:sequence>
+            <xsd:element ecore:name="mechanism" maxOccurs="unbounded" ref="tjs:Mechanism">
+                <xsd:annotation>
+                    <xsd:documentation>Mechanism by which the attribute data can be accessed once it has been joined to
+                        the spatial framework.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="OutputStylingsType">
+        <xsd:sequence>
+            <xsd:element ecore:name="styling" maxOccurs="unbounded" ref="tjs:Styling">
+                <xsd:annotation>
+                    <xsd:documentation>Describes a form of styling instruction supported by this server. (e.g. SLD)
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType ecore:name="OutputStylingsType1" name="OutputStylingsType">
+        <xsd:complexContent>
+            <xsd:extension base="tjs:OutputStylingsType"/>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:complexType ecore:name="OutputType" name="OutputType">
+        <xsd:sequence>
+            <xsd:element ecore:name="mechanism" ref="tjs:Mechanism">
+                <xsd:annotation>
+                    <xsd:documentation>The access mechanism by which the joined data has been made available.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="resource" form="qualified" minOccurs="0" name="Resource" type="tjs:ResourceType">
+                <xsd:annotation>
+                    <xsd:documentation>Reference to a web-accessible resource that was created by the JoinData
+                        operation. This element shall be populated once the output has been successfully produced. Prior
+                        to that time the content of the subelements may be empty.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="exceptionReport" form="qualified" minOccurs="0" name="ExceptionReport"
+                         type="tjs:ExceptionReportType">
+                <xsd:annotation>
+                    <xsd:documentation>Unordered list of one or more errors encountered during the JoinData operation
+                        for this output. These Exception elements shall be interpreted by clients as being independent
+                        of one another (not hierarchical). This element is populated when the production of this output
+                        did not succeed.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType ecore:name="ParameterType" name="ParameterType">
+        <xsd:simpleContent>
+            <xsd:extension base="xsd:string">
+                <xsd:attribute name="name" type="xsd:anySimpleType" use="required">
+                    <xsd:annotation>
+                        <xsd:documentation>Identifier for this parameter as defined by the service delivering the output
+                            of the JoinData operation. For a WMS output this attribute shall be populated with the
+                            string "layers", thus providing sufficient information to allow the client to construct the
+                            "Layers=" parameter of a GetMap request.
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+    <xsd:simpleType ecore:name="PurposeType" name="purposeType">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="SpatialComponentIdentifier"/>
+            <xsd:enumeration value="SpatialComponentProportion"/>
+            <xsd:enumeration value="SpatialComponentPercentage"/>
+            <xsd:enumeration value="TemporalIdentifier"/>
+            <xsd:enumeration value="TemporalValue"/>
+            <xsd:enumeration value="VerticalIdentifier"/>
+            <xsd:enumeration value="VerticalValue"/>
+            <xsd:enumeration value="OtherSpatialIdentifier"/>
+            <xsd:enumeration value="NonSpatialIdentifier"/>
+            <xsd:enumeration value="Attribute"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:complexType ecore:name="ReferenceDateType" name="ReferenceDateType">
+        <xsd:simpleContent>
+            <xsd:extension base="xsd:string">
+                <xsd:attribute name="startDate" type="xsd:string">
+                    <xsd:annotation>
+                        <xsd:documentation>Start date of a range of time to which the framework/dataset applies. Valid
+                            content is a date field of the form
+                            http://www.w3.org/TR/2004/REC-xmlschema-2-20041028/#gYear, gYearMonth, date, or dateTime.
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+    <xsd:complexType name="RequestBaseType">
+        <xsd:annotation>
+            <xsd:documentation>TJS operation request base, for all TJS operations except GetCapabilities. In this XML
+                encoding, no "request" parameter is included, since the element name specifies the specific operation.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:attribute name="language" type="xsd:string">
+            <xsd:annotation>
+                <xsd:documentation>Language requested by the client for all human readable text in the response.
+                    Consists of a two or five character RFC 4646 language code. Must map to a language supported by the
+                    server.
+                </xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute ecore:default="TJS" name="service" type="xsd:anySimpleType" use="required">
+            <xsd:annotation>
+                <xsd:documentation>Service type identifier requested by the client.</xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="version" type="tjs:versionType">
+            <xsd:annotation>
+                <xsd:documentation>Two-part version identifier requested by the client. Must map to a version supported
+                    by the server.
+                </xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+    </xsd:complexType>
+    <xsd:simpleType name="RequestServiceType">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="TJS"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:complexType ecore:name="ResourceType" name="ResourceType">
+        <xsd:sequence>
+            <xsd:element ecore:name="uRL" form="qualified" name="URL" type="xsd:anyType">
+                <xsd:annotation>
+                    <xsd:documentation>URL from which this resource can be electronically retrieved, or from which a
+                        document can be retrieved that indicates access details for the resource (such as a OGC
+                        Capabilities document). For OGC web services this shall be the complete GetCapabilities URL.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="parameter" form="qualified" maxOccurs="unbounded" minOccurs="0" name="Parameter"
+                         type="tjs:ParameterType">
+                <xsd:annotation>
+                    <xsd:documentation>Parameter that may need to be included the HTTP requests to a web service
+                        identified by the URL parameter above. For a WMS output there shall be one occurance of this
+                        element, and it shall be populated with the name of the layer produced by the JoinData
+                        operation.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType ecore:name="RowsetType" name="RowsetType">
+        <xsd:sequence>
+            <xsd:element ecore:name="row" form="qualified" maxOccurs="unbounded" name="Row" type="tjs:RowType">
+                <xsd:annotation>
+                    <xsd:documentation>Database row structure. Contains data for a feature found in the spatial
+                        framework.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType ecore:name="RowsetType1" name="Rowset1Type">
+        <xsd:annotation>
+            <xsd:documentation>Rowset type defines a section for a dataset. Rowset can be presented more than once.
+                However the efficient use of Rowset will be once per GetData response
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element ecore:name="row" form="qualified" maxOccurs="unbounded" name="Row" type="tjs:Row1Type">
+                <xsd:annotation>
+                    <xsd:documentation>Dataset Row</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType ecore:name="RowType" name="RowType">
+        <xsd:sequence>
+            <xsd:element ecore:name="k" maxOccurs="unbounded" ref="tjs:K">
+                <xsd:annotation>
+                    <xsd:documentation>Spatial Key for this row. For the GetData response, when there is more than one
+                        "K" element they are ordered according to the same sequence as the "FrameworkKey" elements of
+                        the "Columnset" structure.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="title" minOccurs="0" ref="tjs:Title">
+                <xsd:annotation>
+                    <xsd:documentation>Human-readable short description suitable to display on a pick list, legend,
+                        and/or on mouseover. Note that for attributes the unit of measure should not appear in the
+                        Title. Instead, it should appear in the UOM element.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType ecore:name="RowType1" name="Row1Type">
+        <xsd:sequence>
+            <xsd:element ecore:name="k" maxOccurs="unbounded" ref="tjs:K">
+                <xsd:annotation>
+                    <xsd:documentation>Spatial Key for this row. For the GetData response, when there is more than one
+                        "K" element they are ordered according to the same sequence as the "FrameworkKey" elements of
+                        the "Columnset" structure.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="v" form="qualified" maxOccurs="unbounded" name="V" type="tjs:VType">
+                <xsd:annotation>
+                    <xsd:documentation>Value of a attribute (i.e. data) applicable to the spatial feature identified by
+                        the "K" elements of this row. When there is more than one "V" element, they are ordered
+                        according to the same sequence as the "Column" elements of the "Columnset" structure above. When
+                        this value is null (indicated with the null attribute) an identification of the reason may be
+                        included in the content of this element.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:simpleType name="SectionsType">
+        <xsd:annotation>
+            <xsd:documentation>XML encoded identifier comma separated list of a standard MIME type, possibly a
+                parameterized MIME type.
+                Comma separated list of available ServiceMetadata root elements.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:restriction base="xsd:string">
+            <xsd:pattern
+                    value="(ServiceIdentification|ServiceProvider|OperationsMetadata|Contents|Themes)(,(ServiceIdentification|ServiceProvider|OperationsMetadata|Contents|Themes))*"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:complexType ecore:name="SpatialFrameworksType" name="SpatialFrameworksType">
+        <xsd:sequence>
+            <xsd:element ecore:name="framework" form="qualified" maxOccurs="unbounded" name="Framework"
+                         type="tjs:FrameworkType"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType ecore:name="StatusType" name="StatusType">
+        <xsd:sequence>
+            <xsd:element ecore:name="accepted" form="qualified" minOccurs="0" name="Accepted" type="xsd:anyType">
+                <xsd:annotation>
+                    <xsd:documentation>Indicates that this request has been accepted by the server, but has not yet
+                        completed. The contents of this human-readable text string is left open to definition by each
+                        server implementation, but is expected to include any messages the server may wish to let the
+                        clients know. Such information could include when completion is expected, or any warning
+                        conditions that may have been encountered. The client may display this text to a human user.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="completed" form="qualified" minOccurs="0" name="Completed" type="xsd:anyType">
+                <xsd:annotation>
+                    <xsd:documentation>Indicates that this request has completed execution with at lease partial
+                        success. The contents of this human-readable text string is left open to definition by each
+                        server, but is expected to include any messages the server may wish to let the client know, such
+                        as how long the operation took to execute, or any warning conditions that may have been
+                        encountered. The client may display this text string to a human user. The client should make use
+                        of the presence of this element to trigger automated or manual access to the results of the
+                        operation. If manual access is intended, the client should use the presence of this element to
+                        present the results as downloadable links to the user.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="failed" form="qualified" minOccurs="0" name="Failed" type="tjs:FailedType">
+                <xsd:annotation>
+                    <xsd:documentation>Indicates that execution of the JoinData operation failed, and includes error
+                        information. The client may display this text string to a human user. The presence of this
+                        element indicates that the operation completely failed and no Outputs were produced.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+        <xsd:attribute name="creationTime" type="xsd:anySimpleType" use="required">
+            <xsd:annotation>
+                <xsd:documentation>The time (UTC) that the JoinData operation finished. If the operation is still in
+                    progress, this element shall contain the creation time of this document.
+                </xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute ref="xlink:href" use="required">
+            <xsd:annotation>
+                <xsd:documentation>HTTP reference to location where current JoinDataResponse document is stored.
+                </xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+    </xsd:complexType>
+    <xsd:complexType ecore:name="StylingType" name="StylingType">
+        <xsd:sequence>
+            <xsd:element ecore:name="identifier" ref="tjs:Identifier">
+                <xsd:annotation>
+                    <xsd:documentation>Name that uniquely identifies this type of styling instructions supported by this
+                        server.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="title" ref="tjs:Title">
+                <xsd:annotation>
+                    <xsd:documentation>Human-readable title that uniquely identifies the type of styling instructions
+                        supported by this server. Must be suitable for display in a pick-list to a user.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="abstract" form="qualified" name="Abstract" type="xsd:string">
+                <xsd:annotation>
+                    <xsd:documentation>Human-readable description of the type of styling instructions, suitable for
+                        display to a user seeking information about this type of styling instruction.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="reference" form="qualified" name="Reference" type="xsd:anyURI">
+                <xsd:annotation>
+                    <xsd:documentation>URL that defines the styling instructions.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="schema" form="qualified" minOccurs="0" name="Schema" type="xsd:anyURI">
+                <xsd:annotation>
+                    <xsd:documentation>Reference to a definition of XML elements or types supported for this styling
+                        instruction (e.g., a URL which returns the XSD for SLD 1.0). This parameter shall be included
+                        when the styling instructions are XML encoded using an XML schema. When included, the
+                        input/output shall validate against the referenced XML Schema. This element shall be omitted if
+                        Schema does not apply to this form of styling instruction. Note: If this styling instruction
+                        uses a profile of a larger schema, the server administrator should provide that schema profile
+                        for validation purposes.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType ecore:name="TjsCapabilitiesType" name="tjsCapabilitiesType">
+        <xsd:sequence>
+            <xsd:element ecore:name="serviceIdentification" minOccurs="0" ref="ows:ServiceIdentification">
+                <xsd:annotation>
+                    <xsd:documentation>General metadata for this specific server. This XML Schema of this section shall
+                        be the same for all OWS.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="serviceProvider" minOccurs="0" ref="ows:ServiceProvider">
+                <xsd:annotation>
+                    <xsd:documentation>Metadata about the organization that provides this specific service instance or
+                        server.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="operationsMetadata" minOccurs="0" ref="ows:OperationsMetadata">
+                <xsd:annotation>
+                    <xsd:documentation>Metadata about the operations and related abilities specified by this service and
+                        implemented by this server, including the URLs for operation requests. The basic contents of
+                        this section shall be the same for all OWS types, but individual services can add elements
+                        and/or change the optionality of optional elements.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="languages" form="qualified" minOccurs="0" name="Languages"
+                         type="tjs:LanguagesType">
+                <xsd:annotation>
+                    <xsd:documentation>A list of human languages that this server supports.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="wSDL" form="qualified" minOccurs="0" name="WSDL" type="tjs:WSDLType">
+                <xsd:annotation>
+                    <xsd:documentation>Location of a WSDL document for this service.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+        <xsd:attribute ref="xml:lang" use="required">
+            <xsd:annotation>
+                <xsd:documentation>RFC 4646 language code of the human-readable text (e.g. "en-CA")</xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute ecore:default="TJS" name="service" type="xsd:anySimpleType" use="required">
+            <xsd:annotation>
+                <xsd:documentation>Service type identifier</xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="updateSequence" type="ows:UpdateSequenceType"/>
+        <xsd:attribute ecore:default="1.0" name="version" type="xsd:anySimpleType" use="required">
+            <xsd:annotation>
+                <xsd:documentation>Version of the TJS interface specification implemented by the server (1.0)
+                </xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+    </xsd:complexType>
+    <xsd:simpleType ecore:name="TypeType" name="typeType">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration ecore:name="httpWwwW3OrgTRXmlschema2String"
+                             value="http://www.w3.org/TR/xmlschema-2/#string"/>
+            <xsd:enumeration ecore:name="httpWwwW3OrgTRXmlschema2Boolean"
+                             value="http://www.w3.org/TR/xmlschema-2/#boolean"/>
+            <xsd:enumeration ecore:name="httpWwwW3OrgTRXmlschema2Integer"
+                             value="http://www.w3.org/TR/xmlschema-2/#integer"/>
+            <xsd:enumeration ecore:name="httpWwwW3OrgTRXmlschema2Decimal"
+                             value="http://www.w3.org/TR/xmlschema-2/#decimal"/>
+            <xsd:enumeration ecore:name="httpWwwW3OrgTRXmlschema2Float"
+                             value="http://www.w3.org/TR/xmlschema-2/#float"/>
+            <xsd:enumeration ecore:name="httpWwwW3OrgTRXmlschema2Double"
+                             value="http://www.w3.org/TR/xmlschema-2/#double"/>
+            <xsd:enumeration ecore:name="httpWwwW3OrgTRXmlschema2Datetime"
+                             value="http://www.w3.org/TR/xmlschema-2/#datetime"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:complexType ecore:name="UncertaintyType" name="UncertaintyType">
+        <xsd:simpleContent>
+            <xsd:extension base="xsd:string">
+                <xsd:attribute name="gaussian" type="tjs:gaussianType" use="required">
+                    <xsd:annotation>
+                        <xsd:documentation>Uncertainty is of a Gaussian form, and Independent and Identically
+                            Distributed (IID).
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+    <xsd:complexType ecore:name="UOMType" name="UOMType">
+        <xsd:sequence>
+            <xsd:element ecore:name="shortForm" form="qualified" name="ShortForm" type="xsd:anyType">
+                <xsd:annotation>
+                    <xsd:documentation>Short form of the unit of measure, suitable for charts or legends (e.g. "°C").
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="longForm" form="qualified" name="LongForm" type="xsd:anyType">
+                <xsd:annotation>
+                    <xsd:documentation>Long form of the unit of measure, suitable for complete text descriptions (e.g.
+                        "degrees centigrade").
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+        <xsd:attribute ref="ows:reference">
+            <xsd:annotation>
+                <xsd:documentation>Reference to data or metadata recorded elsewhere, either external to this XML
+                    document or within it. Whenever practical, this attribute should be a URL from which this metadata
+                    can be electronically retrieved. Alternately, this attribute can reference a URN for well-known
+                    metadata. For example, such a URN could be a URN defined in the "ogc" URN namespace.
+                </xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+    </xsd:complexType>
+    <xsd:simpleType ecore:name="UpdateType" name="updateType">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="true"/>
+            <xsd:enumeration value="false"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:complexType ecore:name="ValuesType" name="ValuesType">
+        <xsd:sequence>
+            <xsd:element ecore:name="nominal" minOccurs="0" ref="tjs:Nominal">
+                <xsd:annotation>
+                    <xsd:documentation>Data consists of unique names for spatial features</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="ordinal" minOccurs="0" ref="tjs:Ordinal">
+                <xsd:annotation>
+                    <xsd:documentation>Data consists of a ranked (ordered) classification</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="count" minOccurs="0" ref="tjs:Count">
+                <xsd:annotation>
+                    <xsd:documentation>Data consists of the number of some observable elements present in the spatial
+                        features
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="measure" minOccurs="0" ref="tjs:Measure">
+                <xsd:annotation>
+                    <xsd:documentation>Data consists of measurements of some characteristic attributable to the spatial
+                        features
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType ecore:name="ValueType" name="ValueType">
+        <xsd:sequence>
+            <xsd:element ecore:name="identifier" ref="tjs:Identifier">
+                <xsd:annotation>
+                    <xsd:documentation>Text string found in the V elements of this attribute</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="title" ref="tjs:Title">
+                <xsd:annotation>
+                    <xsd:documentation>Human-readable short description suitable to display on a pick list, legend,
+                        and/or on mouseover. Note that for attributes the unit of measure should not appear in the
+                        Title. Instead, it should appear in the UOM element.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="abstract" ref="tjs:Abstract">
+                <xsd:annotation>
+                    <xsd:documentation>One or more paragraphs of human-readable relevant text suitable for display in a
+                        pop-up window.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="documentation" minOccurs="0" ref="tjs:Documentation">
+                <xsd:annotation>
+                    <xsd:documentation>URL reference to a web-accessible resource which contains further information
+                        describing this object.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+        <xsd:attribute name="color" type="xsd:anySimpleType">
+            <xsd:annotation>
+                <xsd:documentation>Hex code for a color that is suggested for cartographic portrayal of this value.
+                    E.g."CCFFCC"
+                </xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="rank" type="xsd:nonNegativeInteger" use="required">
+            <xsd:annotation>
+                <xsd:documentation>Rank order of this value, from lowest = 1 to highest.</xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+    </xsd:complexType>
+    <xsd:complexType ecore:name="ValueType1" name="Value1Type">
+        <xsd:sequence>
+            <xsd:element ecore:name="identifier" ref="tjs:Identifier">
+                <xsd:annotation>
+                    <xsd:documentation>Text string found in the V elements of this attribute</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="title" ref="tjs:Title">
+                <xsd:annotation>
+                    <xsd:documentation>Human-readable short description suitable to display on a pick list, legend,
+                        and/or on mouseover. Note that for attributes the unit of measure should not appear in the
+                        Title. Instead, it should appear in the UOM element.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="abstract" ref="tjs:Abstract">
+                <xsd:annotation>
+                    <xsd:documentation>One or more paragraphs of human-readable relevant text suitable for display in a
+                        pop-up window.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element ecore:name="documentation" minOccurs="0" ref="tjs:Documentation">
+                <xsd:annotation>
+                    <xsd:documentation>URL reference to a web-accessible resource which contains further information
+                        describing this object.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+        <xsd:attribute name="color" type="xsd:anySimpleType">
+            <xsd:annotation>
+                <xsd:documentation>Hex code for a color that is suggested for cartographic portrayal of this value.
+                    E.g."CCFFCC"
+                </xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+    </xsd:complexType>
+    <xsd:simpleType name="VersionType">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration ecore:name="_10" value="1.0"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType ecore:name="VersionType1" name="VersionType">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration ecore:name="_10" value="1.0"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType ecore:name="VersionType2" name="versionType">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration ecore:name="_1" value="1"/>
+            <xsd:enumeration ecore:name="_10" value="1.0"/>
+            <xsd:enumeration ecore:name="_100" value="1.0.0"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:complexType ecore:name="VType" name="VType">
+        <xsd:simpleContent>
+            <xsd:extension base="xsd:string">
+                <xsd:attribute name="aid" type="xsd:string">
+                    <xsd:annotation>
+                        <xsd:documentation>Attribute identifier, namely the corresponding AttributeName
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute default="false" name="null" type="xsd:boolean">
+                    <xsd:annotation>
+                        <xsd:documentation>Boolean value, when present and "true" indicates that this particular value
+                            is missing for some reason, and the contents of the element must be processed accordingly.
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+    <xsd:complexType ecore:name="WSDLType" name="WSDLType">
+        <xsd:attribute ref="xlink:href" use="required">
+            <xsd:annotation>
+                <xsd:documentation>The URL from which the WSDL document can be retrieved.</xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+    </xsd:complexType>
+</xsd:schema>

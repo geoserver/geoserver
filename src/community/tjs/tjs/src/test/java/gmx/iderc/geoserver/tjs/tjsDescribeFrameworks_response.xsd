@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+        xmlns:tjs="http://www.opengis.net/tjs/1.0" targetNamespace="http://www.opengis.net/tjs/1.0"
+        elementFormDefault="qualified" attributeFormDefault="unqualified" xml:lang="en" version="1.0.1">
+    <annotation>
+        <appinfo>$Id: tjsDescribeFrameworks_response.xsd 2010-12-23 $</appinfo>
+        <documentation>
+            <description>This XML Schema specifies the content of the TJS DescribeFrameworks response</description>
+            <copyright>
+                TJS is an OGC Standard.
+                Copyright (c) 2010 Open Geospatial Consortium.
+                To obtain additional rights of use, visit http://www.opengeospatial.org/legal/ .
+            </copyright>
+        </documentation>
+    </annotation>
+    <!-- ========= includes and imports ================================ -->
+    <include schemaLocation="tjsAll.xsd"/>
+
+    <import namespace="http://www.opengis.net/ows/1.1"
+            schemaLocation="http://localhost/ogcschemas/ows/1.1.0/owsAll.xsd"/>
+    <!-- ========= top level element =================================== -->
+    <element name="FrameworkDescriptions">
+        <annotation>
+            <documentation>Response containing full descriptions of all spatial frameworks for which data is
+                available.
+            </documentation>
+        </annotation>
+        <complexType>
+            <sequence>
+                <element name="Framework" maxOccurs="unbounded">
+                    <annotation>
+                        <documentation>Spatial framework for which attribute data is housed on this server.
+                        </documentation>
+                    </annotation>
+                    <complexType>
+                        <sequence>
+                            <element ref="tjs:FrameworkURI"/>
+                            <element ref="tjs:Organization"/>
+                            <element ref="tjs:Title"/>
+                            <element ref="tjs:Abstract"/>
+                            <element ref="tjs:ReferenceDate"/>
+                            <element ref="tjs:Version"/>
+                            <element ref="tjs:Documentation" minOccurs="0"/>
+                            <element ref="tjs:FrameworkKey"/>
+                            <element ref="tjs:BoundingCoordinates"/>
+                            <element ref="tjs:DescribeDatasetsRequest"/>
+                        </sequence>
+                    </complexType>
+                </element>
+            </sequence>
+            <attributeGroup ref="tjs:RootAttributesGroup"/>
+        </complexType>
+        <!-- This constraint ensures that no Framework URI may appear more than once. -->
+        <unique name="unique_framework">
+            <selector xpath="tjs:Framework"/>
+            <field xpath="tjs:FrameworkURI"/>
+        </unique>
+    </element>
+</schema>

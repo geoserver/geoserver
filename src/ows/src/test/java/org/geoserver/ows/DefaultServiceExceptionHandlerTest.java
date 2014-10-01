@@ -21,6 +21,8 @@ import org.geotools.util.Version;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
+import org.owasp.encoder.*;
+
 import com.mockrunner.mock.web.MockHttpServletRequest;
 import com.mockrunner.mock.web.MockHttpServletResponse;
 import com.mockrunner.mock.web.MockServletOutputStream;
@@ -96,7 +98,7 @@ public class DefaultServiceExceptionHandlerTest extends TestCase {
         
         Node exceptionText = XPathAPI.selectSingleNode(doc, "ows:ExceptionReport/ows:Exception/ows:ExceptionText/text()");
         assertNotNull(exceptionText);
-        assertEquals("round-tripped through character entities", message, exceptionText.getTextContent());
+        assertEquals("round-tripped through character entities", Encode.forXml(message), exceptionText.getTextContent());
     }
     
     @SuppressWarnings("unchecked")
@@ -120,7 +122,7 @@ public class DefaultServiceExceptionHandlerTest extends TestCase {
         Node exceptionText = XPathAPI.selectSingleNode(doc, "ows:ExceptionReport/ows:Exception/ows:ExceptionText/text()");
         assertNotNull(exceptionText);
         String message = message1 + "\n" + message2;
-        assertEquals("round-tripped through character entities", message, exceptionText.getTextContent());
+        assertEquals("round-tripped through character entities", Encode.forXml(message), exceptionText.getTextContent());
     }
 
     public void testHandleServiceExceptionCauses() throws Exception {

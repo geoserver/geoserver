@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FrameworkKeyDescription service="TJS" version="1.0" xml:lang="en" capabilities="http://foo.bar/foo"
+                         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.opengis.net/tjs/1.0"
+                         xsi:schemaLocation="http://www.opengis.net/tjs/1.0 http://schemas.opengis.net/tjs/1.0/tjsDescribeKey_response.xsd">
+    <Framework>
+        <FrameworkURI>http://www.statcan.ca/provinces/2001</FrameworkURI>
+        <Organization>Statistics Canada</Organization>
+        <Title>Provinces and Territories of Canada as defined for the 2001 Census.</Title>
+        <Abstract>String</Abstract>
+        <ReferenceDate>2002-05-01</ReferenceDate>
+        <Version>1</Version>
+        <Documentation>http://geodepot.statcan.ca/Diss/Data/Geography/n_cd_e.cfm</Documentation>
+        <FrameworkKey>
+            <Column name="pr" type="http://www.w3.org/TR/xmlschema-2/#integer" length="2" decimals="0"/>
+        </FrameworkKey>
+        <BoundingCoordinates>
+            <North>90</North>
+            <South>43</South>
+            <East>-50</East>
+            <West>-145</West>
+        </BoundingCoordinates>
+        <Rowset>
+            <Row>
+                <K>10</K>
+                <Title>Newfoundland</Title>
+            </Row>
+            <Row>
+                <K>11</K>
+                <Title>Prince Edward Island</Title>
+            </Row>
+            <Row>
+                <K>12</K>
+                <Title>Nova Scotia</Title>
+            </Row>
+            <Row>
+                <K>13</K>
+                <Title>New Brunswick</Title>
+            </Row>
+            <Row>
+                <K>24</K>
+                <Title>Quebec</Title>
+            </Row>
+            <Row>
+                <K>35</K>
+                <Title>Ontario</Title>
+            </Row>
+            <Row>
+                <K>46</K>
+                <Title>Manitoba</Title>
+            </Row>
+            <Row>
+                <K>47</K>
+                <Title>Saskatchewan</Title>
+            </Row>
+            <Row>
+                <K>48</K>
+                <Title>Alberta</Title>
+            </Row>
+            <Row>
+                <K>59</K>
+                <Title>British Columbia</Title>
+            </Row>
+            <Row>
+                <K>60</K>
+                <Title>Yukon</Title>
+            </Row>
+            <Row>
+                <K>61</K>
+                <Title>North West Territories</Title>
+            </Row>
+            <Row>
+                <K>62</K>
+                <Title>Nunavut</Title>
+            </Row>
+        </Rowset>
+    </Framework>
+</FrameworkKeyDescription>

@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog" prefer="system">
+    <system systemId="file:/media/Work/PublicoDatos/gmxtjs/tjs/1.0.0/tjsAll.xsd"
+            uri="xml-resources/jaxb/tjsService/tjsAll.xsd"/>
+    <system systemId="file:/media/Work/PublicoDatos/gmxtjs/tjs/1.0.0/tjsGetCapabilities_request.xsd"
+            uri="xml-resources/jaxb/tjsService/tjsGetCapabilities_request.xsd"/>
+    <system systemId="file:/media/Work/PublicoDatos/gmxtjs/tjs/1.0.0/tjsGetCapabilities_response.xsd"
+            uri="xml-resources/jaxb/tjsService/tjsGetCapabilities_response.xsd"/>
+    <system systemId="file:/media/Work/PublicoDatos/gmxtjs/tjs/1.0.0/tjsDescribeFrameworks_request.xsd"
+            uri="xml-resources/jaxb/tjsService/tjsDescribeFrameworks_request.xsd"/>
+    <system systemId="file:/media/Work/PublicoDatos/gmxtjs/tjs/1.0.0/tjsDescribeFrameworks_response.xsd"
+            uri="xml-resources/jaxb/tjsService/tjsDescribeFrameworks_response.xsd"/>
+    <system systemId="file:/media/Work/PublicoDatos/gmxtjs/tjs/1.0.0/tjsDescribeDatasets_request.xsd"
+            uri="xml-resources/jaxb/tjsService/tjsDescribeDatasets_request.xsd"/>
+    <system systemId="file:/media/Work/PublicoDatos/gmxtjs/tjs/1.0.0/tjsDescribeDatasets_response.xsd"
+            uri="xml-resources/jaxb/tjsService/tjsDescribeDatasets_response.xsd"/>
+    <system systemId="file:/media/Work/PublicoDatos/gmxtjs/tjs/1.0.0/tjsDescribeData_request.xsd"
+            uri="xml-resources/jaxb/tjsService/tjsDescribeData_request.xsd"/>
+    <system systemId="file:/media/Work/PublicoDatos/gmxtjs/tjs/1.0.0/tjsDescribeData_response.xsd"
+            uri="xml-resources/jaxb/tjsService/tjsDescribeData_response.xsd"/>
+    <system systemId="file:/media/Work/PublicoDatos/gmxtjs/tjs/1.0.0/tjsGetData_request.xsd"
+            uri="xml-resources/jaxb/tjsService/tjsGetData_request.xsd"/>
+    <system systemId="file:/media/Work/PublicoDatos/gmxtjs/tjs/1.0.0/tjsGetData_response.xsd"
+            uri="xml-resources/jaxb/tjsService/tjsGetData_response.xsd"/>
+    <system systemId="file:/media/Work/PublicoDatos/gmxtjs/tjs/1.0.0/tjsDescribeJoinAbilities_request.xsd"
+            uri="xml-resources/jaxb/tjsService/tjsDescribeJoinAbilities_request.xsd"/>
+    <system systemId="file:/media/Work/PublicoDatos/gmxtjs/tjs/1.0.0/tjsDescribeJoinAbilities_response.xsd"
+            uri="xml-resources/jaxb/tjsService/tjsDescribeJoinAbilities_response.xsd"/>
+    <system systemId="file:/media/Work/PublicoDatos/gmxtjs/tjs/1.0.0/tjsDescribeKey_request.xsd"
+            uri="xml-resources/jaxb/tjsService/tjsDescribeKey_request.xsd"/>
+    <system systemId="file:/media/Work/PublicoDatos/gmxtjs/tjs/1.0.0/tjsDescribeKey_response.xsd"
+            uri="xml-resources/jaxb/tjsService/tjsDescribeKey_response.xsd"/>
+    <system systemId="file:/media/Work/PublicoDatos/gmxtjs/tjs/1.0.0/tjsJoinData_request.xsd"
+            uri="xml-resources/jaxb/tjsService/tjsJoinData_request.xsd"/>
+    <system systemId="file:/media/Work/PublicoDatos/gmxtjs/tjs/1.0.0/tjsJoinData_response.xsd"
+            uri="xml-resources/jaxb/tjsService/tjsJoinData_response.xsd"/>
+    <system systemId="file:/media/Work/PublicoDatos/gmxtjs/tjs/1.0.0/tjsService.xsd"
+            uri="xml-resources/jaxb/tjsService/tjsService.xsd"/>
+    <system systemId="file:/media/Work/PublicoDatos/gmxtjs/tjs/1.0.0/tjsWSDL.xsd"
+            uri="xml-resources/jaxb/tjsService/tjsWSDL.xsd"/>
+    <system systemId="http://schemas.opengis.net/ows/1.1.0/owsAll.xsd"
+            uri="xml-resources/jaxb/tjsService/schemas.opengis.net/ows/1.1.0/owsAll.xsd"/>
+    <system systemId="http://www.w3.org/2001/xml.xsd" uri="xml-resources/jaxb/tjsService/www.w3.org/2001/xml.xsd"/>
+    <system systemId="http://schemas.opengis.net/ows/1.1.0/owsGetResourceByID.xsd"
+            uri="xml-resources/jaxb/tjsService/schemas.opengis.net/ows/1.1.0/owsGetResourceByID.xsd"/>
+    <system systemId="http://schemas.opengis.net/ows/1.1.0/owsExceptionReport.xsd"
+            uri="xml-resources/jaxb/tjsService/schemas.opengis.net/ows/1.1.0/owsExceptionReport.xsd"/>
+    <system systemId="http://schemas.opengis.net/ows/1.1.0/owsDomainType.xsd"
+            uri="xml-resources/jaxb/tjsService/schemas.opengis.net/ows/1.1.0/owsDomainType.xsd"/>
+    <system systemId="http://schemas.opengis.net/ows/1.1.0/owsContents.xsd"
+            uri="xml-resources/jaxb/tjsService/schemas.opengis.net/ows/1.1.0/owsContents.xsd"/>
+    <system systemId="http://schemas.opengis.net/ows/1.1.0/owsInputOutputData.xsd"
+            uri="xml-resources/jaxb/tjsService/schemas.opengis.net/ows/1.1.0/owsInputOutputData.xsd"/>
+    <system systemId="http://schemas.opengis.net/ows/1.1.0/owsDataIdentification.xsd"
+            uri="xml-resources/jaxb/tjsService/schemas.opengis.net/ows/1.1.0/owsDataIdentification.xsd"/>
+    <system systemId="http://schemas.opengis.net/ows/1.1.0/owsGetCapabilities.xsd"
+            uri="xml-resources/jaxb/tjsService/schemas.opengis.net/ows/1.1.0/owsGetCapabilities.xsd"/>
+    <system systemId="http://www.w3.org/1999/xlink.xsd" uri="xml-resources/jaxb/tjsService/www.w3.org/1999/xlink.xsd"/>
+    <system systemId="http://schemas.opengis.net/ows/1.1.0/owsCommon.xsd"
+            uri="xml-resources/jaxb/tjsService/schemas.opengis.net/ows/1.1.0/owsCommon.xsd"/>
+    <system systemId="http://schemas.opengis.net/ows/1.1.0/owsManifest.xsd"
+            uri="xml-resources/jaxb/tjsService/schemas.opengis.net/ows/1.1.0/owsManifest.xsd"/>
+    <system systemId="http://schemas.opengis.net/ows/1.1.0/ows19115subset.xsd"
+            uri="xml-resources/jaxb/tjsService/schemas.opengis.net/ows/1.1.0/ows19115subset.xsd"/>
+    <system systemId="http://schemas.opengis.net/ows/1.1.0/owsServiceIdentification.xsd"
+            uri="xml-resources/jaxb/tjsService/schemas.opengis.net/ows/1.1.0/owsServiceIdentification.xsd"/>
+    <system systemId="http://schemas.opengis.net/ows/1.1.0/owsServiceProvider.xsd"
+            uri="xml-resources/jaxb/tjsService/schemas.opengis.net/ows/1.1.0/owsServiceProvider.xsd"/>
+    <system systemId="http://schemas.opengis.net/ows/1.1.0/owsOperationsMetadata.xsd"
+            uri="xml-resources/jaxb/tjsService/schemas.opengis.net/ows/1.1.0/owsOperationsMetadata.xsd"/>
+</catalog>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

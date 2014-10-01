@@ -181,7 +181,7 @@ class FakeHttpServletRequest implements HttpServletRequest {
     }
 
     public String getContentType() {
-        throw new ServletDebugException();
+        return null;
     }
 
     public ServletInputStream getInputStream() throws IOException {

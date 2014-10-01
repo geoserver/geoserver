@@ -6,6 +6,8 @@
 package org.geoserver.catalog;
 
 import static org.junit.Assert.*;
+
+import java.awt.Color;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +18,12 @@ import javax.measure.unit.BaseUnit;
 import org.geoserver.catalog.CoverageDimensionCustomizerReader.WrappedSampleDimension;
 import org.geoserver.catalog.impl.CoverageDimensionImpl;
 import org.geoserver.test.GeoServerSystemTestSupport;
+import org.geotools.coverage.Category;
 import org.geotools.coverage.GridSampleDimension;
+import org.geotools.referencing.operation.transform.IdentityTransform;
+import org.geotools.referencing.operation.transform.LinearTransform1D;
+import org.geotools.resources.i18n.Vocabulary;
+import org.geotools.resources.i18n.VocabularyKeys;
 import org.geotools.util.NumberRange;
 import org.junit.Test;
 import org.opengis.coverage.ColorInterpretation;
@@ -68,6 +75,83 @@ public class CoverageDimensionCustomizerReaderTest extends GeoServerSystemTestSu
         assertEquals(newMaximum, wrappedRange.getMaximum(), DELTA);
 
         assertEquals(wrappedName, wrappedDim.getDescription().toString());
+    }
+
+    /**
+     * Test that the wrapped nodata categories contains the defined nodata
+     * 
+     * @throws IOException
+     */
+    @Test
+    public void testNoDataCategoryWrapping() throws IOException {
+
+        // Setting coverage dimension
+        final CoverageDimensionImpl coverageDim = new CoverageDimensionImpl();
+        final String wrappedName = "wrapped";
+        coverageDim.setName(wrappedName);
+        coverageDim.setDimensionType(SampleDimensionType.REAL_64BITS);
+
+        // Definition of the nodata
+        final List<Double> nullValues = new ArrayList<Double>();
+        final double noData1 = -32768d;
+        final double noData2 = -32767d;
+        nullValues.add(noData1);
+        nullValues.add(noData2);
+        coverageDim.setNullValues(nullValues);
+
+        // Qualitative nodata category
+        GridSampleDimension sampleDim = new GridSampleDimension("original",
+                new Category[] { new Category(
+                        Vocabulary.formatInternational(VocabularyKeys.NODATA),
+                        new Color(0, 0, 0, 0), 0) }, null);
+
+        // Wrap the dimension
+        GridSampleDimension wrappedDim = new WrappedSampleDimension(sampleDim, coverageDim);
+
+        // Ensure nodata are correct
+        double[] noData = wrappedDim.getNoDataValues();
+        assertEquals(2, noData.length);
+        assertEquals(noData1, noData[0], DELTA);
+        assertEquals(noData2, noData[1], DELTA);
+
+        // Extract categories
+        List<Category> categories = wrappedDim.getCategories();
+
+        // Ensure NoData Category is present
+        Category category = categories.get(0);
+        assertTrue(category.getName().equals(Category.NODATA.getName()));
+
+        // Check that it does not contain sampleToGeophisics and that the Range contains only NaN
+        assertNull(category.getSampleToGeophysics());
+        assertEquals(category.geophysics(true).getRange().getMinimum(), Double.NaN, DELTA);
+        assertEquals(category.geophysics(true).getRange().getMaximum(), Double.NaN, DELTA);
+
+        // Quantitative nodata category
+        sampleDim = new GridSampleDimension("original", new Category[] { new Category(
+                Vocabulary.formatInternational(VocabularyKeys.NODATA), new Color[] { new Color(0,
+                        0, 0, 0) }, NumberRange.create(-9999, -9999), NumberRange.create(-9999,
+                        -9999)) }, null);
+
+        // Wrap the dimension
+        wrappedDim = new WrappedSampleDimension(sampleDim, coverageDim);
+
+        // Ensure nodata are correct
+        noData = wrappedDim.getNoDataValues();
+        assertEquals(2, noData.length);
+        assertEquals(noData1, noData[0], DELTA);
+        assertEquals(noData2, noData[1], DELTA);
+
+        // Extract categories
+        categories = wrappedDim.getCategories();
+
+        // Ensure NoData Category is present
+        category = categories.get(0);
+        assertTrue(category.getName().equals(Category.NODATA.getName()));
+
+        // Check if it contains sampleToGeophisics and the Range contains the first nodata defined
+        assertNotNull(category.getSampleToGeophysics());
+        assertEquals(category.geophysics(true).getRange().getMinimum(), noData1, DELTA);
+        assertEquals(category.geophysics(true).getRange().getMaximum(), noData1, DELTA);
     }
 
     /**

@@ -266,10 +266,28 @@ public class Request {
 
     /**
      * Allows callbacks to change the parsed KVP map
-     * @param kvp
+     * <p>
+     * Clients should consider calling {@link #setOrAppendKvp(java.util.Map)} to retain the
+     * existing kvp map.
+     * </p>
+     * @param kvp Parsed kvp values.
      */
     public void setKvp(Map kvp) {
         this.kvp = kvp;
+    }
+
+    /**
+     * Sets the parsed kvp map, appending/overwriting to any previously set values.
+     *
+     * @param kvp Parsed kvp values.
+     */
+    public void setOrAppendKvp(Map kvp) {
+        if (this.kvp == null) {
+            setKvp(kvp);
+        }
+        else {
+            this.kvp.putAll(kvp);
+        }
     }
 
     /**

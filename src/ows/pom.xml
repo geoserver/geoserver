@@ -28,6 +28,14 @@
    <artifactId>commons-lang</artifactId>
   </dependency>
   <dependency>
+   <groupId>commons-io</groupId>
+   <artifactId>commons-io</artifactId>
+  </dependency>
+  <dependency>
+   <groupId>commons-fileupload</groupId>
+   <artifactId>commons-fileupload</artifactId>
+  </dependency>
+  <dependency>
    <groupId>org.geoserver</groupId>
    <artifactId>gs-platform</artifactId>
   </dependency>
@@ -64,6 +72,11 @@
   <dependency>
    <groupId>xalan</groupId>
    <artifactId>xalan</artifactId>
+   <scope>test</scope>
+  </dependency>
+  <dependency>
+   <groupId>javax.mail</groupId>
+   <artifactId>mail</artifactId>
    <scope>test</scope>
   </dependency>
  </dependencies>

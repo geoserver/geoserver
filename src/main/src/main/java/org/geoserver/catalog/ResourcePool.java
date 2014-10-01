@@ -83,15 +83,13 @@ import org.geotools.data.wms.WebMapServer;
 import org.geotools.factory.Hints;
 import org.geotools.feature.AttributeTypeBuilder;
 import org.geotools.feature.FeatureTypes;
+import org.geotools.feature.NameImpl;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.gml2.GML;
-import org.geotools.jdbc.JDBCDataStore;
-import org.geotools.jdbc.VirtualTable;
 import org.geotools.measure.Measure;
 import org.geotools.referencing.CRS;
-import org.geotools.renderer.lite.RendererUtilities;
 import org.geotools.styling.Style;
 import org.geotools.util.SoftValueHashMap;
 import org.geotools.util.logging.Logging;
@@ -104,14 +102,13 @@ import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.GeometryDescriptor;
+import org.opengis.feature.type.Name;
 import org.opengis.feature.type.PropertyDescriptor;
 import org.opengis.filter.Filter;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.crs.GeographicCRS;
 import org.opengis.referencing.crs.SingleCRS;
-import org.opengis.referencing.cs.AxisDirection;
 import org.opengis.referencing.cs.CoordinateSystem;
-import org.opengis.referencing.cs.CoordinateSystemAxis;
 import org.opengis.referencing.operation.TransformException;
 import org.springframework.context.ApplicationContext;
 import org.vfny.geoserver.global.GeoServerFeatureLocking;
@@ -871,24 +868,17 @@ public class ResourcePool {
             synchronized ( featureTypeCache ) {
                 ft = featureTypeCache.get( key );
                 if ( ft == null ) {
-                    
+
                     //grab the underlying feature type
                     DataAccess<? extends FeatureType, ? extends Feature> dataAccess = getDataStore(info.getStore());
-                    
-                    if(isSQLView(info, dataAccess)) {
-    
-                        VirtualTable vt = info.getMetadata().get(FeatureTypeInfo.JDBC_VIRTUAL_TABLE, VirtualTable.class);
-                        JDBCDataStore jstore = (JDBCDataStore) dataAccess;
-                        if(!jstore.getVirtualTables().containsValue(vt)) {
-                            jstore.addVirtualTable(vt);
-                        }
-                        ft = jstore.getSchema(vt.getName());
-                    } else {
-                        ft = dataAccess.getSchema(info.getQualifiedNativeName());
+                    FeatureTypeCallback initializer = getFeatureTypeInitializer(info, dataAccess);
+                    if (initializer != null) {
+                        initializer.initialize(info, dataAccess, null);
                     }
-                    
+                    // ft = jstore.getSchema(vt.getName());
+                    ft = dataAccess.getSchema(info.getQualifiedNativeName());
                     ft = buildFeatureType(info, handleProjectionPolicy, ft);
-                    
+
                     featureTypeCache.put( key, ft );
                 }
             }
@@ -898,62 +888,69 @@ public class ResourcePool {
 
     private FeatureType getNonCacheableFeatureType( FeatureTypeInfo info, boolean handleProjectionPolicy ) throws IOException {
         FeatureType ft = null;
-        
+
         //grab the underlying feature type
         DataAccess<? extends FeatureType, ? extends Feature> dataAccess = getDataStore(info.getStore());
-        
-        String vtName = null;
-        if(isSQLView(info, dataAccess)) {
-            JDBCDataStore jstore = (JDBCDataStore) dataAccess;
-            VirtualTable vt = info.getMetadata().get(FeatureTypeInfo.JDBC_VIRTUAL_TABLE, VirtualTable.class);
-            
-            
-            // building the virtual table structure is expensive, see if the VT is already registered in the db
-            if(jstore.getVirtualTables().containsValue(vt)) {
-                // if the virtual table is already registered in the store (and equality in the test above
-                // guarantees the structure is the same), we can just get the schema from it directly
-                ft = jstore.getSchema(vt.getName());
-                // paranoid check: make sure nobody changed the vt structure while we fetched 
-                // the data (rather unlikely, even more unlikely would be 
-                if(!jstore.getVirtualTables().containsValue(vt)) {
-                    ft = null;
-                }
-            } 
-            
-            if(ft == null) {
-                // use a highly random name, we don't want to actually add the
-                // virtual table to the store as this feature type is not cacheable,
-                // it is "dirty" or un-saved. The renaming below will take care
-                // of making the user see the actual name
-                // NT 14/8/2012: Removed synchronization on jstore as it blocked query
-                // execution and risk of UUID clash is considered acceptable.
-                final String[] typeNames = jstore.getTypeNames();
-                do {
-                    vtName = UUID.randomUUID().toString();
-                } while (Arrays.asList(typeNames).contains(vtName));                                
-                jstore.addVirtualTable(new VirtualTable(vtName, vt));
-    
-                ft = jstore.getSchema(vtName);
+
+
+        FeatureTypeCallback initializer = getFeatureTypeInitializer(info, dataAccess);
+        Name temporaryName = null;
+        if (initializer != null) {
+            // use a highly random name, we don't want to actually add the
+            // virtual table to the store as this feature type is not cacheable,
+            // it is "dirty" or un-saved. The renaming below will take care
+            // of making the user see the actual name
+            // NT 14/8/2012: Removed synchronization on jstore as it blocked query
+            // execution and risk of UUID clash is considered acceptable.
+
+            List<Name> typeNames = dataAccess.getNames();
+            String nsURI = null;
+            if (typeNames.size() > 0) {
+                nsURI = typeNames.get(0).getNamespaceURI();
             }
-        } else {
-            ft = dataAccess.getSchema(info.getQualifiedNativeName());
+            do {
+                String name = UUID.randomUUID().toString();
+                temporaryName = new NameImpl(nsURI, name);
+            } while (Arrays.asList(typeNames).contains(temporaryName));
+            if (!initializer.initialize(info, dataAccess, temporaryName)) {
+                temporaryName = null;
+            }
         }
-        
+        ft = dataAccess.getSchema(temporaryName != null ? temporaryName : info
+                .getQualifiedNativeName());
         ft = buildFeatureType(info, handleProjectionPolicy, ft);
-        
-        if(vtName != null) {
-            JDBCDataStore jstore = (JDBCDataStore) dataAccess;
-            jstore.removeVirtualTable(vtName);
+
+        // Remove layer configuration from datastore
+        if (initializer != null && temporaryName != null) {
+            initializer.dispose(info, dataAccess, temporaryName);
         }
+
         return ft;
     }
-    
-    private boolean isSQLView(FeatureTypeInfo info,
+
+    /**
+     * Looks up a FetureTypeInitializer for this FeatureTypeInfo and DataAccess.
+     * FeatureTypeInitializer are used to init and dispose configured feature types (as opposed to
+     * ones that natively originate from the source)
+     * 
+     * @param info
+     * @param dataAccess
+     * @param initializer
+     * @return
+     */
+    FeatureTypeCallback getFeatureTypeInitializer(FeatureTypeInfo info,
             DataAccess<? extends FeatureType, ? extends Feature> dataAccess) {
-        return dataAccess instanceof JDBCDataStore && info.getMetadata() != null &&
-                (info.getMetadata().get(FeatureTypeInfo.JDBC_VIRTUAL_TABLE) instanceof VirtualTable);
+        List<FeatureTypeCallback> featureTypeInitializers = GeoServerExtensions
+                .extensions(FeatureTypeCallback.class);
+        FeatureTypeCallback initializer = null;
+        for (FeatureTypeCallback fti : featureTypeInitializers) {
+            if (fti.canHandle(info, dataAccess)) {
+                initializer = fti;
+            }
+        }
+        return initializer;
     }
-    
+
     private FeatureType buildFeatureType(FeatureTypeInfo info,
             boolean handleProjectionPolicy, FeatureType ft) throws IOException {
         // TODO: support reprojection for non-simple FeatureType
@@ -1143,13 +1140,9 @@ public class ResourcePool {
         SimpleFeatureSource fs;
         
         // sql view handling
-        if(dataStore instanceof JDBCDataStore && info.getMetadata() != null &&
-                info.getMetadata().containsKey(FeatureTypeInfo.JDBC_VIRTUAL_TABLE)) {
-            VirtualTable vt = (VirtualTable) info.getMetadata().get(FeatureTypeInfo.JDBC_VIRTUAL_TABLE);
-            JDBCDataStore jstore = (JDBCDataStore) dataStore;
-            if(!jstore.getVirtualTables().containsValue(vt)) {
-                 jstore.addVirtualTable(vt);
-            }
+        FeatureTypeCallback initializer = getFeatureTypeInitializer(info, dataAccess);
+        if (initializer != null) {
+            initializer.initialize(info, dataAccess, null);
         }
                 
         //

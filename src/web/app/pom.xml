@@ -1165,5 +1165,15 @@
         </dependency>
       </dependencies>
     </profile>
+	<profile>
+      <id>solr</id>
+      <dependencies>
+        <dependency>
+		  <groupId>org.geoserver.community</groupId>
+		  <artifactId>gs-web-solr</artifactId>
+		  <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
  </profiles>
 </project>

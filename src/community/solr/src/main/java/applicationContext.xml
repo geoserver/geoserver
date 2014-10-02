@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright (c) 2014 OpenPlans - www.openplans.org. All rights reserved.
+This code is licensed under the GPL 2.0 license, available at the root application directory.
+ -->
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+	<bean id="solrXStreamInitializer" class="org.geoserver.solr.SolrXStreamInitializer" />
+	
+	<bean id="solrFeatureTypeCallback" class="org.geoserver.solr.SolrFeatureTypeCallback" />
+
+	<bean id="solrConfigPanel" class="org.geoserver.solr.SolrConfigurationPanelInfo">
+		<property name="id" value="solr" />
+		<property name="titleKey" value="data.resource.config.solr" />
+		<property name="componentClass" value="org.geoserver.solr.SolrConfigurationPanel" />
+		<property name="supportedTypes">
+			<list>
+				<value>SOLR</value>
+			</list>
+		</property>
+	</bean>
+
+</beans>

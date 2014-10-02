@@ -532,8 +532,8 @@ public class GetFeatureTest extends WFSTestSupport {
         Document dom = getAsDOM("wfs?request=GetFeature&typename="
                 + getLayerId(SystemTestData.BUILDINGS) + "&version=1.1.0&service=wfs&sortBy=GODOT");
         checkOws10Exception(dom, "InvalidParameterValue");
-        XMLAssert
-                .assertXpathEvaluatesTo("Illegal property name: GODOT", "//ows:ExceptionText", dom);
+        XMLAssert.assertXpathEvaluatesTo("Illegal property name: GODOT for feature type "
+                + getLayerId(SystemTestData.BUILDINGS), "//ows:ExceptionText", dom);
     }
 
     @Test

@@ -25,5 +25,7 @@
     </bean>
     
     <bean id="geopkgProcessRequestPPIO" class="org.geoserver.geopkg.wps.GeoPackageProcessRequestPPIO" />
-    
+    <bean id="geopkgDataStoreFactoryInitializer" class="org.geoserver.geopkg.GeoPkgDataStoreFactoryInitializer">
+        <property name="resourceLoader" ref="resourceLoader"/>
+    </bean>
 </beans>

@@ -1138,13 +1138,14 @@ O:      for (String propName : query.getPropertyNames()) {
         for (SortBy sortBy : sortBys) {
             PropertyName name = sortBy.getPropertyName();
             if (name.evaluate(featureType) == null) {
-                throw new WFSException(request, "Illegal property name: "
-                        + name.getPropertyName(), "InvalidParameterValue");
+                throw new WFSException(request, "Illegal property name: " + name.getPropertyName()
+                        + " for feature type " + meta.prefixedName(), "InvalidParameterValue");
             }
         }
     }
 
-    void validateFilter(Filter filter, Query query, FeatureTypeInfo meta, final GetFeatureRequest request) 
+    void validateFilter(Filter filter, Query query, final FeatureTypeInfo meta,
+            final GetFeatureRequest request)
         throws IOException {
       //1. ensure any property name refers to a property that 
         // actually exists
@@ -1154,7 +1155,8 @@ O:      for (String propName : query.getPropertyNames()) {
                     // case of multiple geometries being returned
                     if (name.evaluate(featureType) == null) {
                         throw new WFSException(request, "Illegal property name: "
-                            + name.getPropertyName(), "InvalidParameterValue");
+                            + name.getPropertyName() + " for feature type " + meta.prefixedName(),
+                            "InvalidParameterValue");
                     }
 
                     return name;
@@ -1181,7 +1183,9 @@ O:      for (String propName : query.getPropertyNames()) {
                     // a geometric type
                     AttributeDescriptor att = (AttributeDescriptor) name.evaluate(featureType);
                     if ( !( att instanceof GeometryDescriptor ) ) {
-                        throw new WFSException(request, "Property " + name + " is not geometric", "InvalidParameterValue");
+                        throw new WFSException(request, "Property " + name
+                                + " is not geometric in feature type " + meta.prefixedName(),
+                                "InvalidParameterValue");
                     }
                 }
                 

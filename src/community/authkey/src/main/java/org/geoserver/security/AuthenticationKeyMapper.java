@@ -6,8 +6,11 @@
 package org.geoserver.security;
 
 import java.io.IOException;
+import java.util.Map;
+import java.util.Set;
 
 import org.geoserver.security.impl.GeoServerUser;
+import org.geoserver.security.validation.FilterConfigException;
 import org.springframework.beans.factory.BeanNameAware;
 
 /**
@@ -58,5 +61,33 @@ public interface AuthenticationKeyMapper extends BeanNameAware {
     public GeoServerSecurityManager getSecurityManager();
     public void setSecurityManager(GeoServerSecurityManager securityManager);
     
+    /**
+     * Returns the list of configuration parameters supported by this mapper.
+     * 
+     * @return
+     */
+    public Set<String> getAvailableParameters();
+    
+    /**
+     * Configures the mapper parameters.
+     * 
+     * @param parameters
+     */
+    public void configureMapper(Map<String, String> parameters);
+    
+    /**
+     * Returns the mapper parameters.
+     * 
+     * @return
+     */
+    public Map<String, String> getMapperConfiguration();
 
+    /**
+     * Validates the given parameter.
+     * 
+     * @param paramName
+     * @param string
+     * @throws FilterConfigException
+     */
+    public void validateParameter(String paramName, String value) throws FilterConfigException;
 }

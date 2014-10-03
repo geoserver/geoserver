@@ -23,6 +23,10 @@
     <property name="userPropertyName" value="UUID"/>
   </bean>
   
+  <bean id="webServiceMapper" class="org.geoserver.security.WebServiceAuthenticationKeyMapper" scope="prototype">
+    
+  </bean>
+  
   <bean id="authenticationKeyProvider" class="org.geoserver.security.GeoServerAuthenticationKeyProvider"/>
   
   <bean id="authKeyPanelInfo" class="org.geoserver.security.web.AuthenticationKeyFilterPanelInfo">

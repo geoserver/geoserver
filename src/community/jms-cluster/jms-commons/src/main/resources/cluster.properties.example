@@ -1,0 +1,8 @@
+# This name of the instance 
+#instanceName=jms
+
+# Topic name to subscribe ">" is an ActiveMQ wildcard
+topicName=>
+
+# the broker url
+brokerURL=failover://(tcp://localhost:61616)?jms.useAsyncSend=true

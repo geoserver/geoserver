@@ -8,7 +8,7 @@ Getting commit access
 
 All contributors are asked to provide an assignment agreement for working on the project:
 
-* `corporate_contributor.txt <http://www.osgeo.org/sites/osgeo.org/files/Page/corporate_contributor.tx>`_
+* `corporate_contributor.txt <http://www.osgeo.org/sites/osgeo.org/files/Page/corporate_contributor.txt>`_
 * `individual_contributor.txt <http://www.osgeo.org/sites/osgeo.org/files/Page/individual_contributor.txt>`_
 
 

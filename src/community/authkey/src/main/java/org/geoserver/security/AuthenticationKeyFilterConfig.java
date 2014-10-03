@@ -4,6 +4,9 @@
  */
 package org.geoserver.security;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.geoserver.security.config.SecurityAuthFilterConfig;
 import org.geoserver.security.config.SecurityFilterConfig;
 
@@ -24,6 +27,7 @@ public class AuthenticationKeyFilterConfig extends SecurityFilterConfig
     private String authKeyMapperName;
     private String authKeyParamName = KeyAuthenticationToken.DEFAULT_URL_PARAM;
     private String userGroupServiceName;
+    private Map<String, String> mapperParameters;
     
        
     @Override
@@ -53,5 +57,27 @@ public class AuthenticationKeyFilterConfig extends SecurityFilterConfig
     public void setUserGroupServiceName(String userGroupServiceName) {
         this.userGroupServiceName = userGroupServiceName;
     }
-        
+
+    /**
+     * Returns the mapper parameters.
+     * 
+     * @return
+     */
+    public Map<String, String> getMapperParameters() {
+        if(mapperParameters == null) {
+            mapperParameters = new HashMap<String, String>();
+        }
+        return mapperParameters;
+    }
+
+    /**
+     * Sets the mapper parameters.
+     * 
+     * @param mapperParameters
+     */
+    public void setMapperParameters(Map<String, String> mapperParameters) {
+        this.mapperParameters = mapperParameters;
+    }
+    
+    
 }

@@ -71,6 +71,7 @@ public class GeoServerAuthenticationKeyFilter extends  GeoServerSecurityFilter
         mapper=(AuthenticationKeyMapper) GeoServerExtensions.bean(authKeyMapperName);
         mapper.setUserGroupServiceName(userGroupServiceName);
         mapper.setSecurityManager(getSecurityManager());
+        mapper.configureMapper(authConfig.getMapperParameters());
         
     }
 

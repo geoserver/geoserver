@@ -31,5 +31,6 @@ public class AuthenticationKeyFilterConfigException extends FilterConfigExceptio
     public static final String AUTH_KEY_MAPPER_NAME_REQUIRED ="AUTH_KEY_MAPPER_NAME_REQUIRED";
     public static final String AUTH_KEY_MAPPER_NOT_FOUND_$1 ="AUTH_KEY_MAPPER_NOT_FOUND";
     public static final String INVALID_AUTH_KEY_MAPPER_$2="INVALID_AUTH_KEY_MAPPER";
+    public static final String INVALID_AUTH_KEY_MAPPER_PARAMETER_$3 ="INVALID_AUTH_KEY_MAPPER_PARAMETER";
                 
 }

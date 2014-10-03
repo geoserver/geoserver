@@ -56,7 +56,17 @@ public class AuthenticationKeyFilterConfigValidator extends FilterConfigValidato
                     config.getAuthKeyMapperName());
         }
         
+        // validates mapper parameters
         AuthenticationKeyMapper mapper = (AuthenticationKeyMapper) lookupBean(config.getAuthKeyMapperName());
+        for(String paramName : config.getMapperParameters().keySet()) {
+            if(!mapper.getAvailableParameters().contains(paramName)) {
+                throw createFilterException(AuthenticationKeyFilterConfigException.INVALID_AUTH_KEY_MAPPER_PARAMETER_$3,
+                        paramName);
+            }
+            mapper.validateParameter(paramName, config.getMapperParameters().get(paramName));
+        }
+        mapper.configureMapper(config.getMapperParameters());
+        
         GeoServerUserGroupService service=null;
         try {
             service = manager.loadUserGroupService(config.getUserGroupServiceName());

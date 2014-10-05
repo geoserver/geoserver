@@ -1068,7 +1068,7 @@ public class WCSDimensionsSubsetHelper {
         Polygon llPolygon = JTS.toGeometry(new ReferencedEnvelope(envelope));
         GeometryDescriptor geom = source.getSchema().getGeometryDescriptor();
         PropertyName geometryProperty = ff.property(geom.getLocalName());
-        Geometry nativeCRSPolygon = JTS.transform(llPolygon, CRS.findMathTransform(DefaultGeographicCRS.WGS84, reader.getCoordinateReferenceSystem()));
+        Geometry nativeCRSPolygon = JTS.transform(llPolygon, CRS.findMathTransform(envelope.getCoordinateReferenceSystem(), reader.getCoordinateReferenceSystem()));
         Literal polygonLiteral = ff.literal(nativeCRSPolygon);
 //                    if(overlaps) {
         return ff.intersects(geometryProperty, polygonLiteral);

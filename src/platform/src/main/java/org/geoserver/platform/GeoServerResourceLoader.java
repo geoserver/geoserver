@@ -565,6 +565,7 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Re
                 }
             } catch(IOException e) {
                 // we tried...
+                LOGGER.severe(e.getMessage());
             }
         }
     }

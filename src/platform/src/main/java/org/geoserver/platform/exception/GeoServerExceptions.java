@@ -81,7 +81,9 @@ public class GeoServerExceptions {
             bundle = ResourceBundle.getBundle("GeoServerException", locale, control);
             //bundle = ResourceBundle.getBundle(clazz.getCanonicalName(), locale, control);
         }
-        catch(MissingResourceException ex) {}
+        catch(MissingResourceException ex) {
+            LOGGER.severe(ex.getMessage());
+        }
         
         if (bundle == null) {
             //could not locate a bundle
@@ -99,7 +101,9 @@ public class GeoServerExceptions {
             try {
                 localized = bundle.getString(clazz.getSimpleName() + "." + id);
             }
-            catch(MissingResourceException ex2) {}
+            catch(MissingResourceException ex2) {
+                LOGGER.severe(ex2.getMessage());
+            }
         }
         if (localized == null) {
             if (LOGGER.isLoggable(Level.FINER)) {

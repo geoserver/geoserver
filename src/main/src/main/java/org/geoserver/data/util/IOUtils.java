@@ -285,7 +285,9 @@ public final class IOUtils {
             if (file.exists()) {
                 if(file.isDirectory()) {
                     // recurse and append
-                    zipDirectory(file, prefix + file.getName() + "/", zipout, filter);
+                    String newPrefix = prefix + file.getName() + "/";
+                    zipout.putNextEntry(new ZipEntry(newPrefix));
+                    zipDirectory(file, newPrefix, zipout, filter);
                 } else {
                     ZipEntry entry = new ZipEntry(prefix  + file.getName());
                     zipout.putNextEntry(entry);

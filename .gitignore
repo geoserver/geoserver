@@ -12,3 +12,4 @@ target
 # Intellij
 .idea/
 *.iml
+/src/nbactions.xml

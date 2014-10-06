@@ -7,183 +7,191 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 
 <beans>
-	<bean id="wmsLegacyLoader" class="org.geoserver.wms.WMSLoader"/>
+    <bean id="wmsLegacyLoader" class="org.geoserver.wms.WMSLoader"/>
     <bean id="wmsLoader" class="org.geoserver.wms.WMSXStreamLoader">
-      <constructor-arg ref="resourceLoader"/>
+        <constructor-arg ref="resourceLoader"/>
     </bean>
-    
+
     <!-- wms configuration bean. This is a service level facade to the configuration system -->
     <bean id="wms" class="org.geoserver.wms.WMS">
-      <constructor-arg ref="geoServer"/>
+        <constructor-arg ref="geoServer"/>
     </bean>
-    
-	<!-- this registers the above modules with the servlet context
-		 it is around to keep the struts app happy as we move away from 
-		 servlets  -->
-	<bean id="wmsRegisterar"
-		class="org.vfny.geoserver.global.GeoServerServletContextInitializer">
-		
-		<constructor-arg type="java.lang.String" value="WMS"/>
- 		<constructor-arg ref="wms"/>
- 	</bean>
- 	
- 	<bean id="wmsFactoryExtension" class="org.geoserver.wms.WMSFactoryExtension"/>
- 	
- 	<!-- 
-		operation beans for handling incoming requests 
-	-->
-	<bean id="wmsGetCapabilities" 
-		class="org.geoserver.wms.GetCapabilities" >
-      <description>WMS GetCapabilities operation</description>
-      <constructor-arg ref="wms"/>
-	</bean>
+
+    <!-- this registers the above modules with the servlet context
+         it is around to keep the struts app happy as we move away from
+         servlets  -->
+    <bean id="wmsRegisterar"
+          class="org.vfny.geoserver.global.GeoServerServletContextInitializer">
+
+        <constructor-arg type="java.lang.String" value="WMS"/>
+        <constructor-arg ref="wms"/>
+    </bean>
+
+    <bean id="wmsFactoryExtension" class="org.geoserver.wms.WMSFactoryExtension"/>
+
+    <!--
+       operation beans for handling incoming requests
+   -->
+    <bean id="wmsGetCapabilities"
+          class="org.geoserver.wms.GetCapabilities" >
+        <description>WMS GetCapabilities operation</description>
+        <constructor-arg ref="wms"/>
+    </bean>
 
     <bean id="wmsGetStyles"
-        class="org.geoserver.sld.GetStyles">
-       <description>WMS GetStyles operation</description>
-       <constructor-arg ref="wms"/>
-    </bean>
-    
-	<bean id="wmsDescribeLayer"
-		class="org.geoserver.wms.DescribeLayer">
-       <description>WMS DescribeLayer operation</description>
-	</bean>
-		
-	<bean id="wmsGetFeatureInfo"
-		class="org.geoserver.wms.GetFeatureInfo"/>
-		
-	<bean id="wmsGetLegendGraphic"
-		class="org.geoserver.wms.GetLegendGraphic">
-      <constructor-arg ref="wms"/>
-	</bean>	
-		
-	<bean id="wmsGetMap" class="org.geoserver.wms.GetMap" depends-on="extensions">
-	    <constructor-arg ref="wms"/>
-        <property name="filterFactory" ref="filterFactory">
-          <description>Use the same filter factory declared in the WFS module</description>
-        </property>
-    </bean>
-  
-    <!-- GetFeatureInfo output formats -->
-    <bean id="wmsGetFeatureInfoPlainText" class="org.geoserver.wms.featureinfo.TextFeatureInfoOutputFormat">
-      <constructor-arg ref="wms" />
-    </bean>
-  
-    <bean id="wmsGetFeatureInfoGML2" class="org.geoserver.wms.featureinfo.GML2FeatureInfoOutputFormat">
-      <constructor-arg ref="wms" />
-    </bean>
-    
-    <bean id="wmsGetFeatureInfoGML3" class="org.geoserver.wms.featureinfo.GML3FeatureInfoOutputFormat">
-      <constructor-arg ref="wms" />
-    </bean>
-    
-    <bean id="wmsGetFeatureInfoHTML" class="org.geoserver.wms.featureinfo.HTMLFeatureInfoOutputFormat">
-      <constructor-arg ref="wms" />
+          class="org.geoserver.sld.GetStyles">
+        <description>WMS GetStyles operation</description>
+        <constructor-arg ref="wms"/>
     </bean>
 
-	<!-- GetFeatureInfo JSONP -->
-	<bean id="geoJSONPFeatureInfoResponse"
-		class="org.geoserver.wms.featureinfo.GeoJSONFeatureInfoResponse">
-		<constructor-arg ref="wms" />
-		<constructor-arg value="text/javascript" />
-	</bean>
-	<!-- GetFeatureInfo JSONP filter -->
-	<bean id="geoJSONPFeatureInfoResponseEF" class="org.geoserver.wfs.json.JSONPExtensionFilter">
-		<constructor-arg value="geoJSONPFeatureInfoResponse" />
-	</bean>
-	<!-- GetFeatureInfo JSON -->
-	<bean id="geoJSONFeatureInfoResponse"
-		class="org.geoserver.wms.featureinfo.GeoJSONFeatureInfoResponse">
-		<constructor-arg ref="wms" />
-		<constructor-arg value="application/json" />
-	</bean>
-        
-	<!-- wms service + descriptor -->
- 	<bean id="wmsServiceTarget" class="org.geoserver.wms.DefaultWebMapService">
- 	  <constructor-arg ref="wms"/>
-      <property name="getCapabilities" ref="wmsGetCapabilities"/>
-      <property name="describeLayer" ref="wmsDescribeLayer"/>
-      <property name="getMap" ref="wmsGetMap"/>
-      <property name="getFeatureInfo" ref="wmsGetFeatureInfo"/>
-      <property name="getLegendGraphic" ref="wmsGetLegendGraphic"/>
-      <property name="getStyles" ref="wmsGetStyles"/>
- 	</bean>
- 	
- 	<bean id="wmsLogger" class="org.geoserver.ows.util.RequestObjectLogger">
-      <constructor-arg type="java.lang.String" value="org.geoserver.wms"/>
+    <bean id="wmsDescribeLayer"
+          class="org.geoserver.wms.DescribeLayer">
+        <description>WMS DescribeLayer operation</description>
+    </bean>
+
+    <bean id="wmsGetFeatureInfo"
+          class="org.geoserver.wms.GetFeatureInfo"/>
+
+    <bean id="wmsGetLegendGraphic"
+          class="org.geoserver.wms.GetLegendGraphic">
+        <constructor-arg ref="wms"/>
+    </bean>
+
+    <bean id="wmsGetMap" class="org.geoserver.wms.GetMap" depends-on="extensions">
+        <constructor-arg ref="wms"/>
+        <property name="filterFactory" ref="filterFactory">
+            <description>Use the same filter factory declared in the WFS module</description>
+        </property>
+    </bean>
+
+    <!-- GetFeatureInfo output formats -->
+    <bean id="wmsGetFeatureInfoPlainText" class="org.geoserver.wms.featureinfo.TextFeatureInfoOutputFormat">
+        <constructor-arg ref="wms" />
+    </bean>
+
+    <bean id="wmsGetFeatureInfoGML2" class="org.geoserver.wms.featureinfo.GML2FeatureInfoOutputFormat">
+        <constructor-arg ref="wms" />
+    </bean>
+
+    <bean id="wmsGetFeatureInfoXML2" class="org.geoserver.wms.featureinfo.XML2FeatureInfoOutputFormat">
+        <constructor-arg ref="wms" />
+    </bean>
+
+    <bean id="wmsGetFeatureInfoGML3" class="org.geoserver.wms.featureinfo.GML3FeatureInfoOutputFormat">
+        <constructor-arg ref="wms" />
+    </bean>
+
+    <bean id="wmsGetFeatureInfoXML311" class="org.geoserver.wms.featureinfo.XML311FeatureInfoOutputFormat">
+        <constructor-arg ref="wms" />
+    </bean>
+
+    <bean id="wmsGetFeatureInfoHTML" class="org.geoserver.wms.featureinfo.HTMLFeatureInfoOutputFormat">
+        <constructor-arg ref="wms" />
+    </bean>
+
+    <!-- GetFeatureInfo JSONP -->
+    <bean id="geoJSONPFeatureInfoResponse"
+          class="org.geoserver.wms.featureinfo.GeoJSONFeatureInfoResponse">
+        <constructor-arg ref="wms" />
+        <constructor-arg value="text/javascript" />
+    </bean>
+    <!-- GetFeatureInfo JSONP filter -->
+    <bean id="geoJSONPFeatureInfoResponseEF" class="org.geoserver.wfs.json.JSONPExtensionFilter">
+        <constructor-arg value="geoJSONPFeatureInfoResponse" />
+    </bean>
+    <!-- GetFeatureInfo JSON -->
+    <bean id="geoJSONFeatureInfoResponse"
+          class="org.geoserver.wms.featureinfo.GeoJSONFeatureInfoResponse">
+        <constructor-arg ref="wms" />
+        <constructor-arg value="application/json" />
+    </bean>
+
+    <!-- wms service + descriptor -->
+    <bean id="wmsServiceTarget" class="org.geoserver.wms.DefaultWebMapService">
+        <constructor-arg ref="wms"/>
+        <property name="getCapabilities" ref="wmsGetCapabilities"/>
+        <property name="describeLayer" ref="wmsDescribeLayer"/>
+        <property name="getMap" ref="wmsGetMap"/>
+        <property name="getFeatureInfo" ref="wmsGetFeatureInfo"/>
+        <property name="getLegendGraphic" ref="wmsGetLegendGraphic"/>
+        <property name="getStyles" ref="wmsGetStyles"/>
+    </bean>
+
+    <bean id="wmsLogger" class="org.geoserver.ows.util.RequestObjectLogger">
+        <constructor-arg type="java.lang.String" value="org.geoserver.wms"/>
     </bean>
     <bean id="wmsService2" class="org.springframework.aop.framework.ProxyFactoryBean">
-      <property name="proxyInterfaces">
-        <value>org.geoserver.wms.WebMapService</value>
-      </property>
-      <property name="targetName">
-        <value>wmsServiceTarget</value>
-      </property>
-      <property name="interceptorNames">
-        <list>
-            <value>wmsLogger</value>
-            <!-- allow any other advise defined elsewhere and named "wmsServiceInterceptor*" 
-                 to be added to the interceptors list -->
-            <value>wmsServiceInterceptor*</value>
-        </list>
-      </property>
+        <property name="proxyInterfaces">
+            <value>org.geoserver.wms.WebMapService</value>
+        </property>
+        <property name="targetName">
+            <value>wmsServiceTarget</value>
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>wmsLogger</value>
+                <!-- allow any other advise defined elsewhere and named "wmsServiceInterceptor*"
+                     to be added to the interceptors list -->
+                <value>wmsServiceInterceptor*</value>
+            </list>
+        </property>
     </bean>
     <alias name="wmsService2" alias="webMapService"/>
 
- 	<bean id="wms-1_1_1-ServiceDescriptor" class="org.geoserver.platform.Service">
-		<constructor-arg index="0" value="wms"/>
-		<constructor-arg index="1" ref="wmsService2"/>
-		<constructor-arg index="2" value="1.1.1"/>
-	    <constructor-arg index="3">
-          <list>
-            <value>Capabilities</value>
-            <value>GetCapabilities</value>
-            <value>DescribeLayer</value>
-            <value>GetFeatureInfo</value>
-            <value>GetLegendGraphic</value>
-            <value>GetMap</value>
-            <value>Map</value>
-            <value>reflect</value>
-            <value>kml</value>
-            <value>animate</value>
-            <value>GetStyles</value>
-          </list>
-        </constructor-arg>
- 	</bean>
-
- 	<!-- service exception handler -->
-	<bean id="wmsExceptionHandler" class="org.geoserver.wms.WMSServiceExceptionHandler">
-		<constructor-arg>
-		  <list>
-		    <ref bean="wms-1_1_1-ServiceDescriptor"/>
-		    <ref bean="wms-1_3_0-ServiceDescriptor"/>
-		  </list>
-		</constructor-arg>
-		<constructor-arg ref="geoServer"/>
-	</bean>
- 	
-    <bean id="wms-1_3_0-ServiceDescriptor" class="org.geoserver.platform.Service">
-      <constructor-arg index="0" value="wms"/>
-      <constructor-arg index="1" ref="wmsService2"/>
-      <constructor-arg index="2" value="1.3.0"/>
+    <bean id="wms-1_1_1-ServiceDescriptor" class="org.geoserver.platform.Service">
+        <constructor-arg index="0" value="wms"/>
+        <constructor-arg index="1" ref="wmsService2"/>
+        <constructor-arg index="2" value="1.1.1"/>
         <constructor-arg index="3">
             <list>
-              <value>GetCapabilities</value>
-              <value>Capabilities</value>
-              <value>GetMap</value>
-              <value>Map</value>
-              <value>DescribeLayer</value>
-              <value>GetFeatureInfo</value>
-              <value>GetLegendGraphic</value>
-              <value>reflect</value>
-              <value>kml</value>
-              <value>animate</value>
+                <value>Capabilities</value>
+                <value>GetCapabilities</value>
+                <value>DescribeLayer</value>
+                <value>GetFeatureInfo</value>
+                <value>GetLegendGraphic</value>
+                <value>GetMap</value>
+                <value>Map</value>
+                <value>reflect</value>
+                <value>kml</value>
+                <value>animate</value>
+                <value>GetStyles</value>
             </list>
-          </constructor-arg>
+        </constructor-arg>
+    </bean>
+
+    <!-- service exception handler -->
+    <bean id="wmsExceptionHandler" class="org.geoserver.wms.WMSServiceExceptionHandler">
+        <constructor-arg>
+            <list>
+                <ref bean="wms-1_1_1-ServiceDescriptor"/>
+                <ref bean="wms-1_3_0-ServiceDescriptor"/>
+            </list>
+        </constructor-arg>
+        <constructor-arg ref="geoServer"/>
+    </bean>
+
+    <bean id="wms-1_3_0-ServiceDescriptor" class="org.geoserver.platform.Service">
+        <constructor-arg index="0" value="wms"/>
+        <constructor-arg index="1" ref="wmsService2"/>
+        <constructor-arg index="2" value="1.3.0"/>
+        <constructor-arg index="3">
+            <list>
+                <value>GetCapabilities</value>
+                <value>Capabilities</value>
+                <value>GetMap</value>
+                <value>Map</value>
+                <value>DescribeLayer</value>
+                <value>GetFeatureInfo</value>
+                <value>GetLegendGraphic</value>
+                <value>reflect</value>
+                <value>kml</value>
+                <value>animate</value>
+            </list>
+        </constructor-arg>
     </bean>
 
     <!-- kvp parsers -->
-  
+
     <!-- 
     Can't use MapLayerInfoKvpParser due to the issue with the workspace qualifier callbacks in Dispatcher:
     the kvp parsers are run at Dispatcher.init(), before dispatching the request, when the KvpReaders all called. At that
@@ -210,389 +218,389 @@
       <property name="request" value="GetFeatureInfo"/>
     </bean>
     -->
-    
+
     <bean id="QuantizerMethodKvpParser" class="org.geoserver.ows.kvp.EnumKvpParser">
-		<constructor-arg value="quantizer"/>
-		<constructor-arg value="org.geoserver.wms.map.PNGMapResponse$QuantizeMethod"/>
- 	</bean>
-    
+        <constructor-arg value="quantizer"/>
+        <constructor-arg value="org.geoserver.wms.map.PNGMapResponse$QuantizeMethod"/>
+    </bean>
+
     <bean id="AnimatedGIFDelayKvpParser" class="org.geoserver.ows.kvp.IntegerKvpParser">
-		<constructor-arg value="animatedGIFDelay"/>
- 	</bean>
- 	
- 	<bean id="AnimatedGIFLoopContinuoslyKvpParser" class="org.geoserver.ows.kvp.BooleanKvpParser">
-		<constructor-arg value="animatedGIFLoopContinuosly"/>
- 	</bean>
- 	
- 	<bean id="widthKvpParser" class="org.geoserver.ows.kvp.IntegerKvpParser">
-		<constructor-arg value="width"/>
- 	</bean>
- 	<bean id="heightKvpParser" class="org.geoserver.ows.kvp.IntegerKvpParser">
-		<constructor-arg value="height"/>
- 	</bean>
- 	<bean id="wmsFormatOptionsKvpParser" class="org.geoserver.ows.kvp.FormatOptionsKvpParser"/>
- 	<bean id="wmsEnviromentKvpParser" class="org.geoserver.ows.kvp.FormatOptionsKvpParser">
- 		<constructor-arg index="0" value="env"/>
- 	</bean>
- 	<bean id="wmsLegendOptionsKvpParser" class="org.geoserver.ows.kvp.FormatOptionsKvpParser">
- 		<constructor-arg index="0" value="legend_options"/>
- 	</bean>
-  <bean id="wmsSqlViewKvpParser" class="org.geoserver.ows.kvp.ViewParamsKvpParser">
-    <!-- cannot set the service or it won't work for the reflectors -->
-  </bean>
- 	<bean id="bgColorKvpParser" class="org.geoserver.wms.kvp.ColorKvpParser">
-		<constructor-arg value="bgcolor"/>
- 	</bean> 	
- 	<bean id="transparentKvpParser" class="org.geoserver.ows.kvp.BooleanKvpParser">
- 		<constructor-arg value="transparent"/>
- 	</bean>
- 	<bean id="tiledKvpParser" class="org.geoserver.ows.kvp.BooleanKvpParser">
- 		<constructor-arg value="tiled"/>
- 	</bean> 	
- 	<bean id="tilesOriginKvpParser" class="org.geoserver.wms.kvp.TilesOriginKvpParser"/>
- 	<bean id="bufferKvpParser" class="org.geoserver.ows.kvp.IntegerKvpParser">
- 		<constructor-arg value="buffer"/>
- 	</bean>
- 	<bean id="paletteKvpParser" class="org.geoserver.wms.kvp.PaletteKvpParser"/>
-  <bean id="timeKvpParser" class="org.geoserver.ows.kvp.TimeKvpParser">
-      <constructor-arg value="time"/>
-  </bean>
- 	<bean id="elevationKvpParser" class="org.geoserver.ows.kvp.ElevationKvpParser">
-		<constructor-arg value="elevation"/>
- 	</bean>
- 	<bean id="validateSldKvpParser" class="org.geoserver.ows.kvp.BooleanKvpParser">
- 		<constructor-arg value="validateschema"/>
- 	</bean>
+        <constructor-arg value="animatedGIFDelay"/>
+    </bean>
+
+    <bean id="AnimatedGIFLoopContinuoslyKvpParser" class="org.geoserver.ows.kvp.BooleanKvpParser">
+        <constructor-arg value="animatedGIFLoopContinuosly"/>
+    </bean>
+
+    <bean id="widthKvpParser" class="org.geoserver.ows.kvp.IntegerKvpParser">
+        <constructor-arg value="width"/>
+    </bean>
+    <bean id="heightKvpParser" class="org.geoserver.ows.kvp.IntegerKvpParser">
+        <constructor-arg value="height"/>
+    </bean>
+    <bean id="wmsFormatOptionsKvpParser" class="org.geoserver.ows.kvp.FormatOptionsKvpParser"/>
+    <bean id="wmsEnviromentKvpParser" class="org.geoserver.ows.kvp.FormatOptionsKvpParser">
+        <constructor-arg index="0" value="env"/>
+    </bean>
+    <bean id="wmsLegendOptionsKvpParser" class="org.geoserver.ows.kvp.FormatOptionsKvpParser">
+        <constructor-arg index="0" value="legend_options"/>
+    </bean>
+    <bean id="wmsSqlViewKvpParser" class="org.geoserver.ows.kvp.ViewParamsKvpParser">
+        <!-- cannot set the service or it won't work for the reflectors -->
+    </bean>
+    <bean id="bgColorKvpParser" class="org.geoserver.wms.kvp.ColorKvpParser">
+        <constructor-arg value="bgcolor"/>
+    </bean>
+    <bean id="transparentKvpParser" class="org.geoserver.ows.kvp.BooleanKvpParser">
+        <constructor-arg value="transparent"/>
+    </bean>
+    <bean id="tiledKvpParser" class="org.geoserver.ows.kvp.BooleanKvpParser">
+        <constructor-arg value="tiled"/>
+    </bean>
+    <bean id="tilesOriginKvpParser" class="org.geoserver.wms.kvp.TilesOriginKvpParser"/>
+    <bean id="bufferKvpParser" class="org.geoserver.ows.kvp.IntegerKvpParser">
+        <constructor-arg value="buffer"/>
+    </bean>
+    <bean id="paletteKvpParser" class="org.geoserver.wms.kvp.PaletteKvpParser"/>
+    <bean id="timeKvpParser" class="org.geoserver.ows.kvp.TimeKvpParser">
+        <constructor-arg value="time"/>
+    </bean>
+    <bean id="elevationKvpParser" class="org.geoserver.ows.kvp.ElevationKvpParser">
+        <constructor-arg value="elevation"/>
+    </bean>
+    <bean id="validateSldKvpParser" class="org.geoserver.ows.kvp.BooleanKvpParser">
+        <constructor-arg value="validateschema"/>
+    </bean>
     <bean id="sldKvpParser" class="org.geoserver.ows.kvp.URLKvpParser">
         <constructor-arg value="sld"/>
     </bean>
- 	<bean id="startIndexKvpParser" class="org.geoserver.ows.kvp.IntegerKvpParser">
- 	    <constructor-arg value="startIndex"/>
- 	</bean>
- 	<bean id="angleKvpParser" class="org.geoserver.ows.kvp.DoubleKvpParser">
-		<constructor-arg value="angle"/>
- 	</bean>
- 	<bean id="stylesKvpParser" class="org.geoserver.ows.FlatKvpParser">
-		<constructor-arg index="0" value="layers"/>
-		<constructor-arg index="1" value="java.lang.String"/>
-		<property name="request" value="GetStyles"/>
-		<property name="service" value="WMS"/>
- 	</bean>
+    <bean id="startIndexKvpParser" class="org.geoserver.ows.kvp.IntegerKvpParser">
+        <constructor-arg value="startIndex"/>
+    </bean>
+    <bean id="angleKvpParser" class="org.geoserver.ows.kvp.DoubleKvpParser">
+        <constructor-arg value="angle"/>
+    </bean>
+    <bean id="stylesKvpParser" class="org.geoserver.ows.FlatKvpParser">
+        <constructor-arg index="0" value="layers"/>
+        <constructor-arg index="1" value="java.lang.String"/>
+        <property name="request" value="GetStyles"/>
+        <property name="service" value="WMS"/>
+    </bean>
     <bean id="dpiKvpParser" class="org.geoserver.ows.kvp.IntegerKvpParser">
         <constructor-arg value="dpi"/>
     </bean>
-     <bean id="propertyNameWMSKvpParser" class="org.geoserver.ows.NestedKvpParser">
+    <bean id="propertyNameWMSKvpParser" class="org.geoserver.ows.NestedKvpParser">
         <constructor-arg index="0" value="propertyName"/>
         <constructor-arg index="1" value="java.lang.String"/>
         <property name="service" value="WMS"/>
     </bean>
- 	
- 	<!-- kvp request readers -->
- 	<bean id="wmsGetCapabilitiesKvpReader" 
- 		class="org.geoserver.wms.capabilities.CapabilitiesKvpReader">
-      <constructor-arg ref="wms"/>
-	</bean>
 
-	<bean id="describeLayerKvpReader"
-		class="org.geoserver.wms.describelayer.DescribeLayerKvpRequestReader">
-      	<constructor-arg ref="wms" />
-	</bean>
-	
-	<bean id="getMapKvpReader"
-		class="org.geoserver.wms.map.GetMapKvpRequestReader">
+    <!-- kvp request readers -->
+    <bean id="wmsGetCapabilitiesKvpReader"
+          class="org.geoserver.wms.capabilities.CapabilitiesKvpReader">
         <constructor-arg ref="wms"/>
-	</bean>
-	<bean id="getFeatureInfoKvpReader"
-			class="org.geoserver.wms.featureinfo.GetFeatureInfoKvpReader">
-      	<constructor-arg ref="wms" />
-	</bean>
-	<bean id="getLegendGraphicKvpReader"
-			class="org.geoserver.wms.legendgraphic.GetLegendGraphicKvpReader">
-      	<constructor-arg ref="wms" />
-	</bean>
-	
-	<bean id="getStylesKvpReader" class="org.geoserver.sld.GetStylesKvpRequestReader">
-		<constructor-arg ref="wms"/> 
-	</bean>
-  
+    </bean>
+
+    <bean id="describeLayerKvpReader"
+          class="org.geoserver.wms.describelayer.DescribeLayerKvpRequestReader">
+        <constructor-arg ref="wms" />
+    </bean>
+
+    <bean id="getMapKvpReader"
+          class="org.geoserver.wms.map.GetMapKvpRequestReader">
+        <constructor-arg ref="wms"/>
+    </bean>
+    <bean id="getFeatureInfoKvpReader"
+          class="org.geoserver.wms.featureinfo.GetFeatureInfoKvpReader">
+        <constructor-arg ref="wms" />
+    </bean>
+    <bean id="getLegendGraphicKvpReader"
+          class="org.geoserver.wms.legendgraphic.GetLegendGraphicKvpReader">
+        <constructor-arg ref="wms" />
+    </bean>
+
+    <bean id="getStylesKvpReader" class="org.geoserver.sld.GetStylesKvpRequestReader">
+        <constructor-arg ref="wms"/>
+    </bean>
+
     <bean id="scaleMethodKvpReader" class="org.geoserver.ows.kvp.EnumKvpParser">
-       <constructor-arg value="scaleMethod"/>
-       <constructor-arg value="org.geoserver.wms.ScaleComputationMethod"/>
+        <constructor-arg value="scaleMethod"/>
+        <constructor-arg value="org.geoserver.wms.ScaleComputationMethod"/>
     </bean>
-		
-	<!-- xml request readers -->
-    <bean id="wmsCapabilitiesXmlReader" 
-    	class="org.geoserver.wms.capabilities.CapabilitiesXmlReader">
+
+    <!-- xml request readers -->
+    <bean id="wmsCapabilitiesXmlReader"
+          class="org.geoserver.wms.capabilities.CapabilitiesXmlReader">
     </bean>
-    
-     <bean id="getMapXmlReader" 
-    	class="org.geoserver.wms.map.GetMapXmlReader">
-    	<constructor-arg ref="wms"/>
+
+    <bean id="getMapXmlReader"
+          class="org.geoserver.wms.map.GetMapXmlReader">
+        <constructor-arg ref="wms"/>
     </bean>
-   	<bean id="sldXmlReader"
-   		class="org.geoserver.sld.SLDXmlRequestReader">
-      <constructor-arg ref="wms"/>
+    <bean id="sldXmlReader"
+          class="org.geoserver.sld.SLDXmlRequestReader">
+        <constructor-arg ref="wms"/>
     </bean>
-   		
-	<!--  responses -->
-	<bean id="wms_1_1_1_GetCapabilitiesResponse"
-		class="org.geoserver.wms.capabilities.GetCapabilitiesResponse">
-      <constructor-arg ref="wms"/>
-	</bean>
+
+    <!--  responses -->
+    <bean id="wms_1_1_1_GetCapabilitiesResponse"
+          class="org.geoserver.wms.capabilities.GetCapabilitiesResponse">
+        <constructor-arg ref="wms"/>
+    </bean>
     <bean id="wms_1_3_0_GetCapabilitiesResponse"
-      class="org.geoserver.wms.capabilities.Capabilities_1_3_0_Response">
+          class="org.geoserver.wms.capabilities.Capabilities_1_3_0_Response">
     </bean>
-    
+
     <!-- DescribeLayer output formats -->
     <bean id="wmsDescribeLayerXML" class="org.geoserver.wms.describelayer.XMLDescribeLayerResponse">
-      <constructor-arg ref="wms" />
-      <constructor-arg value="text/xml" />
-    </bean>
-    
-    <!-- DescribeLayer output formats -->
-    <bean id="wmsDescribeLayerResponse" class="org.geoserver.wms.describelayer.XMLDescribeLayerResponse">
-      <constructor-arg ref="wms" />
+        <constructor-arg ref="wms" />
+        <constructor-arg value="text/xml" />
     </bean>
 
-	<!-- DescribeLayer JSONP -->
-	<bean id="jsonPDescribeLayerResponse"
-		class="org.geoserver.wms.describelayer.JSONDescribeLayerResponse">
-		<constructor-arg ref="wms" />
-		<constructor-arg value="text/javascript" />
-	</bean>
-	<!-- DescribeLayer JSONP Filter -->
-	<bean id="jsonPDescribeLayerResponseEF" class="org.geoserver.wfs.json.JSONPExtensionFilter">
-		<constructor-arg value="jsonPDescribeLayerResponse" />
-	</bean>
-	<!-- DescribeLayer JSON -->
-	<bean id="jsonDescribeLayerResponse"
-		class="org.geoserver.wms.describelayer.JSONDescribeLayerResponse">
-		<constructor-arg ref="wms" />
-		<constructor-arg value="application/json" />
-	</bean>
-    
-	<!--bean id="getMapResponse"
-		class="org.geoserver.wms.response.GetMapResponse">
-		<constructor-arg ref="wms"/>
-	</bean-->
-	<bean id="getFeatureInfoResponse"
-		class="org.geoserver.wms.featureinfo.GetFeatureInfoResponse">
-		<constructor-arg ref="wms"/>
+    <!-- DescribeLayer output formats -->
+    <bean id="wmsDescribeLayerResponse" class="org.geoserver.wms.describelayer.XMLDescribeLayerResponse">
+        <constructor-arg ref="wms" />
+    </bean>
+
+    <!-- DescribeLayer JSONP -->
+    <bean id="jsonPDescribeLayerResponse"
+          class="org.geoserver.wms.describelayer.JSONDescribeLayerResponse">
+        <constructor-arg ref="wms" />
+        <constructor-arg value="text/javascript" />
+    </bean>
+    <!-- DescribeLayer JSONP Filter -->
+    <bean id="jsonPDescribeLayerResponseEF" class="org.geoserver.wfs.json.JSONPExtensionFilter">
+        <constructor-arg value="jsonPDescribeLayerResponse" />
+    </bean>
+    <!-- DescribeLayer JSON -->
+    <bean id="jsonDescribeLayerResponse"
+          class="org.geoserver.wms.describelayer.JSONDescribeLayerResponse">
+        <constructor-arg ref="wms" />
+        <constructor-arg value="application/json" />
+    </bean>
+
+    <!--bean id="getMapResponse"
+        class="org.geoserver.wms.response.GetMapResponse">
+        <constructor-arg ref="wms"/>
+    </bean-->
+    <bean id="getFeatureInfoResponse"
+          class="org.geoserver.wms.featureinfo.GetFeatureInfoResponse">
+        <constructor-arg ref="wms"/>
         <constructor-arg ref="wmsGetFeatureInfoPlainText"/> <!-- default output format -->
-	</bean>
-	
-	<bean id="stylesResponse" class="org.geoserver.sld.GetStylesResponse"/>
-	
-	<!-- http url mapping -->
-	<bean id="wmsURLMapping" 
-		class="org.geoserver.ows.OWSHandlerMapping">
-		<constructor-arg ref="catalog"/>
-		<property name="alwaysUseFullPath" value="true"/>
-		<property name="mappings">
-			<props>
-				<prop key="/wms">dispatcher</prop>
-				<prop key="/wms/*">dispatcher</prop>
-			</props>
-		</property>
-	</bean>
-	<!--  
-		GetLegendGraphic output formats
-	 -->
-	<bean id="wmsGIFLegendOutputFormat" 
-		class="org.geoserver.wms.legendgraphic.GIFLegendOutputFormat">
-	</bean>
-    <bean id="wmsGIFLegendGraphicResponse" 
-        class="org.geoserver.wms.legendgraphic.GIFLegendGraphicResponse">
     </bean>
-	<bean id="wmsJPEGLegendGraphicOutputFormat" 
-        class="org.geoserver.wms.legendgraphic.JPEGLegendOutputFormat">
-	</bean>
-    <bean id="wmsJPEGLegendGraphicResponse" 
-        class="org.geoserver.wms.legendgraphic.JPEGLegendGraphicResponse">
+
+    <bean id="stylesResponse" class="org.geoserver.sld.GetStylesResponse"/>
+
+    <!-- http url mapping -->
+    <bean id="wmsURLMapping"
+          class="org.geoserver.ows.OWSHandlerMapping">
+        <constructor-arg ref="catalog"/>
+        <property name="alwaysUseFullPath" value="true"/>
+        <property name="mappings">
+            <props>
+                <prop key="/wms">dispatcher</prop>
+                <prop key="/wms/*">dispatcher</prop>
+            </props>
+        </property>
     </bean>
-	<bean id="wmsPNGLegendOutputFormat" 
-		class="org.geoserver.wms.legendgraphic.PNGLegendOutputFormat">
-	</bean>
-    <bean id="wmsPNGLegendGraphicResponse" 
-        class="org.geoserver.wms.legendgraphic.PNGLegendGraphicResponse">
+    <!--
+        GetLegendGraphic output formats
+     -->
+    <bean id="wmsGIFLegendOutputFormat"
+          class="org.geoserver.wms.legendgraphic.GIFLegendOutputFormat">
     </bean>
-	
-	<!--  
-		Map producers and responses
-	 -->
+    <bean id="wmsGIFLegendGraphicResponse"
+          class="org.geoserver.wms.legendgraphic.GIFLegendGraphicResponse">
+    </bean>
+    <bean id="wmsJPEGLegendGraphicOutputFormat"
+          class="org.geoserver.wms.legendgraphic.JPEGLegendOutputFormat">
+    </bean>
+    <bean id="wmsJPEGLegendGraphicResponse"
+          class="org.geoserver.wms.legendgraphic.JPEGLegendGraphicResponse">
+    </bean>
+    <bean id="wmsPNGLegendOutputFormat"
+          class="org.geoserver.wms.legendgraphic.PNGLegendOutputFormat">
+    </bean>
+    <bean id="wmsPNGLegendGraphicResponse"
+          class="org.geoserver.wms.legendgraphic.PNGLegendGraphicResponse">
+    </bean>
+
+    <!--
+        Map producers and responses
+     -->
     <bean id="wmsXMLTransformerResponse" class="org.geoserver.wms.map.XMLTransformerMapResponse">
-      <description>Handles responsed from GetMapOutputFormats that produce
-        an org.geoserver.wms.map.XMLTransformerMap, such as the KML and GeoRSS ones
+        <description>Handles responsed from GetMapOutputFormats that produce
+            an org.geoserver.wms.map.XMLTransformerMap, such as the KML and GeoRSS ones
         </description>
     </bean>
 
     <bean id="PNGMapProducer" class="org.geoserver.wms.map.RenderedImageMapOutputFormat">
-      <constructor-arg>
-        <description>The prescribed output format MIME-Type</description>
-        <value>image/png</value>
-      </constructor-arg>
-      <constructor-arg>
-        <description>The declared output format MIME-Types in the capabilities document</description>
-        <list>
-          <value>image/png</value>
-        </list>
-      </constructor-arg>
-      <constructor-arg ref="wms" />
-      <property name="extension" value="png"/>
+        <constructor-arg>
+            <description>The prescribed output format MIME-Type</description>
+            <value>image/png</value>
+        </constructor-arg>
+        <constructor-arg>
+            <description>The declared output format MIME-Types in the capabilities document</description>
+            <list>
+                <value>image/png</value>
+            </list>
+        </constructor-arg>
+        <constructor-arg ref="wms" />
+        <property name="extension" value="png"/>
     </bean>
     <bean id="PNG8MapProducer" class="org.geoserver.wms.map.RenderedImageMapOutputFormat">
-      <constructor-arg>
-        <description>The prescribed output format MIME-Type</description>
-        <value>image/png; mode=8bit</value>
-      </constructor-arg>
-      <constructor-arg>
-        <description>The declared output format MIME-Types in the capabilities document</description>
-        <list>
-          <value>image/png8</value>
-          <value>image/png; mode=8bit</value>
-        </list>
-      </constructor-arg>
-      <constructor-arg ref="wms" />
-      <property name="extension" value="png"/>
+        <constructor-arg>
+            <description>The prescribed output format MIME-Type</description>
+            <value>image/png; mode=8bit</value>
+        </constructor-arg>
+        <constructor-arg>
+            <description>The declared output format MIME-Types in the capabilities document</description>
+            <list>
+                <value>image/png8</value>
+                <value>image/png; mode=8bit</value>
+            </list>
+        </constructor-arg>
+        <constructor-arg ref="wms" />
+        <property name="extension" value="png"/>
     </bean>
-    
+
     <bean id="PNGMapResponse" class="org.geoserver.wms.map.PNGMapResponse">
-      <constructor-arg ref="wms" />
+        <constructor-arg ref="wms" />
     </bean>
-    
+
     <bean id="GeoTiffMapProducer" class="org.geoserver.wms.map.RenderedImageMapOutputFormat">
-      <constructor-arg>
-        <description>The prescribed output format MIME-Type</description>
-        <value>image/geotiff</value>
-      </constructor-arg>
-      <constructor-arg>
-        <description>The declared output format MIME-Types in the capabilities document</description>
-        <list>
-          <value>image/geotiff</value>
-        </list>
-      </constructor-arg>
-      <property name="extension" value="tif"/>
-      <constructor-arg ref="wms" />
+        <constructor-arg>
+            <description>The prescribed output format MIME-Type</description>
+            <value>image/geotiff</value>
+        </constructor-arg>
+        <constructor-arg>
+            <description>The declared output format MIME-Types in the capabilities document</description>
+            <list>
+                <value>image/geotiff</value>
+            </list>
+        </constructor-arg>
+        <property name="extension" value="tif"/>
+        <constructor-arg ref="wms" />
     </bean>
     <bean id="GeoTiffMapProducer8" class="org.geoserver.wms.map.RenderedImageMapOutputFormat">
-      <constructor-arg>
-        <description>The prescribed output format MIME-Type</description>
-        <value>image/geotiff8</value>
-      </constructor-arg>
-      <constructor-arg>
-        <description>The declared output format MIME-Types in the capabilities document</description>
-        <list>
-          <value>image/geotiff8</value>
-        </list>
-      </constructor-arg>
-      <constructor-arg ref="wms" />
-      <property name="extension" value="tif"/>
+        <constructor-arg>
+            <description>The prescribed output format MIME-Type</description>
+            <value>image/geotiff8</value>
+        </constructor-arg>
+        <constructor-arg>
+            <description>The declared output format MIME-Types in the capabilities document</description>
+            <list>
+                <value>image/geotiff8</value>
+            </list>
+        </constructor-arg>
+        <constructor-arg ref="wms" />
+        <property name="extension" value="tif"/>
     </bean>
     <bean id="GeoTiffMapResponse" class="org.geoserver.wms.map.GeoTIFFMapResponse">
-      <constructor-arg ref="wms" />
+        <constructor-arg ref="wms" />
     </bean>
 
     <bean id="TiffMapProducer" class="org.geoserver.wms.map.RenderedImageMapOutputFormat">
-      <constructor-arg>
-        <description>The prescribed output format MIME-Type</description>
-        <value>image/tiff</value>
-      </constructor-arg>
-      <constructor-arg>
-        <description>The declared output format MIME-Types in the capabilities document</description>
-        <list>
-          <value>image/tiff</value>
-        </list>
-      </constructor-arg>
-      <constructor-arg ref="wms" />
-      <property name="extension" value="tif"/>
+        <constructor-arg>
+            <description>The prescribed output format MIME-Type</description>
+            <value>image/tiff</value>
+        </constructor-arg>
+        <constructor-arg>
+            <description>The declared output format MIME-Types in the capabilities document</description>
+            <list>
+                <value>image/tiff</value>
+            </list>
+        </constructor-arg>
+        <constructor-arg ref="wms" />
+        <property name="extension" value="tif"/>
     </bean>
     <bean id="Tiff8MapProducer" class="org.geoserver.wms.map.RenderedImageMapOutputFormat">
-      <constructor-arg>
-        <description>The prescribed output format MIME-Type</description>
-        <value>image/tiff8</value>
-      </constructor-arg>
-      <constructor-arg>
-        <description>The declared output format MIME-Types in the capabilities document</description>
-        <list>
-          <value>image/tiff8</value>
-        </list>
-      </constructor-arg>
-      <constructor-arg ref="wms" />
-      <property name="extension" value="tif"/>
+        <constructor-arg>
+            <description>The prescribed output format MIME-Type</description>
+            <value>image/tiff8</value>
+        </constructor-arg>
+        <constructor-arg>
+            <description>The declared output format MIME-Types in the capabilities document</description>
+            <list>
+                <value>image/tiff8</value>
+            </list>
+        </constructor-arg>
+        <constructor-arg ref="wms" />
+        <property name="extension" value="tif"/>
     </bean>
     <bean id="TiffMapResponse" class="org.geoserver.wms.map.TIFFMapResponse">
-      <constructor-arg ref="wms" />
+        <constructor-arg ref="wms" />
     </bean>
-  
+
     <bean id="GIFMapProducer" class="org.geoserver.wms.map.RenderedImageMapOutputFormat">
-      <constructor-arg>
-        <description>The prescribed output format MIME-Type, same as declared in the getcaps document</description>
-        <value>image/gif</value>
-      </constructor-arg>
-      <constructor-arg>
-        <description>The declared output format MIME-Types in the capabilities document</description>
-        <list>
-          <value>image/gif</value>
-          <value>image/gif;subtype=animated</value>
-        </list>
-      </constructor-arg>
-      <constructor-arg ref="wms" />
-      <property name="extension" value="gif"/>
+        <constructor-arg>
+            <description>The prescribed output format MIME-Type, same as declared in the getcaps document</description>
+            <value>image/gif</value>
+        </constructor-arg>
+        <constructor-arg>
+            <description>The declared output format MIME-Types in the capabilities document</description>
+            <list>
+                <value>image/gif</value>
+                <value>image/gif;subtype=animated</value>
+            </list>
+        </constructor-arg>
+        <constructor-arg ref="wms" />
+        <property name="extension" value="gif"/>
     </bean>
     <bean id="GIFMapResponse" class="org.geoserver.wms.map.GIFMapResponse">
-      <constructor-arg ref="wms" />
+        <constructor-arg ref="wms" />
     </bean>
-  
+
     <bean id="JPEGMapProducer" class="org.geoserver.wms.map.RenderedImageMapOutputFormat">
-      <constructor-arg>
-        <description>The prescribed output format MIME-Type, same as declared in the getcaps document</description>
-        <value>image/jpeg</value>
-      </constructor-arg>
-      <constructor-arg ref="wms" />
-      <property name="transparencySupported">
-        <description>JPEG does not support transparency</description>
-        <value>false</value>
-      </property>
-      <property name="paletteSupported">
-        <description>JPEG does not support 8-bit indexed color maps</description>
-        <value>false</value>
-      </property>
-      <property name="extension" value="jpg"/>
+        <constructor-arg>
+            <description>The prescribed output format MIME-Type, same as declared in the getcaps document</description>
+            <value>image/jpeg</value>
+        </constructor-arg>
+        <constructor-arg ref="wms" />
+        <property name="transparencySupported">
+            <description>JPEG does not support transparency</description>
+            <value>false</value>
+        </property>
+        <property name="paletteSupported">
+            <description>JPEG does not support 8-bit indexed color maps</description>
+            <value>false</value>
+        </property>
+        <property name="extension" value="jpg"/>
     </bean>
     <bean id="JPEGMapResponse" class="org.geoserver.wms.map.JPEGMapResponse">
-      <constructor-arg ref="wms" />
+        <constructor-arg ref="wms" />
     </bean>
 
     <bean id="PDFMapProducer" class="org.geoserver.wms.map.PDFMapOutputFormat">
     </bean>
     <bean id="PDFMapResponse" class="org.geoserver.wms.map.PDFMapResponse">
-      <constructor-arg ref="wms" />
+        <constructor-arg ref="wms" />
     </bean>
 
     <bean id="OpenLayersMapProducer" class="org.geoserver.wms.map.OpenLayersMapOutputFormat">
-      <constructor-arg index="0" ref="wms" />
+        <constructor-arg index="0" ref="wms" />
     </bean>
     <bean id="OpenLayersMapResponse" class="org.geoserver.wms.map.RawMapResponse">
     </bean>
-    
 
-	<bean id="AtomGeoRSSMapProducer"
-		singleton="true"
-		class="org.geoserver.wms.georss.AtomGeoRSSMapOutputFormat">
-        <constructor-arg index="0" ref="wms"/>
-	</bean>
 
-	<bean id="RSSGeoRSSMapProducer"
-		singleton="true"
-		class="org.geoserver.wms.georss.RSSGeoRSSMapOutputFormat">
+    <bean id="AtomGeoRSSMapProducer"
+          singleton="true"
+          class="org.geoserver.wms.georss.AtomGeoRSSMapOutputFormat">
         <constructor-arg index="0" ref="wms"/>
-	</bean>
+    </bean>
+
+    <bean id="RSSGeoRSSMapProducer"
+          singleton="true"
+          class="org.geoserver.wms.georss.RSSGeoRSSMapOutputFormat">
+        <constructor-arg index="0" ref="wms"/>
+    </bean>
 
     <bean id="SVGBatikMapOutputFormat" class="org.geoserver.wms.svg.SVGBatikMapOutputFormat">
-      <constructor-arg ref="wms" />
+        <constructor-arg ref="wms" />
     </bean>
     <bean id="SVGBatikMapResponse" class="org.geoserver.wms.svg.SVGBatikMapResponse">
-      <description>OWS Response handler for the maps produced by SVGBatikMapOutputFormat</description>
+        <description>OWS Response handler for the maps produced by SVGBatikMapOutputFormat</description>
     </bean>
 
     <bean id="SVGStreamingMapOutputFormat" class="org.geoserver.wms.svg.SVGStreamingMapOutputFormat">
@@ -600,160 +608,160 @@
     <bean id="SVGStreamingMapResponse" class="org.geoserver.wms.svg.SVGStreamingMapResponse">
     </bean>
 
-  <bean id="wmsSVGStrategyExclusionFilter" class="org.geoserver.wms.svg.SVGStrategyExclusionFilter">
-    <description>Excludes the SVG map producer that's to be disabled based on the WMS preferences</description>
-    <constructor-arg>
-      <description>Name (not reference) of the WMS bean, so it's lazily loaded from the app context to avoid circular
-        rerefencies (that happen only due to the mock tests set up)</description>
-      <value>wms</value>
-    </constructor-arg>
-  </bean>
- 		
-	<bean id="animateFilter" class="org.geoserver.wms.animate.AnimatorFilter"/>
- 	
-	<bean id="animateURLMapping" 
-		class="org.geoserver.ows.OWSHandlerMapping">
-		<constructor-arg ref="catalog"/>
-		<property name="alwaysUseFullPath" value="true"/>
-		<property name="mappings">
-			<props>
-				<prop key="/animate">dispatcher</prop>
-				<prop key="/animate/*">dispatcher</prop>
-			</props>
-		</property>
-	</bean>
-	
+    <bean id="wmsSVGStrategyExclusionFilter" class="org.geoserver.wms.svg.SVGStrategyExclusionFilter">
+        <description>Excludes the SVG map producer that's to be disabled based on the WMS preferences</description>
+        <constructor-arg>
+            <description>Name (not reference) of the WMS bean, so it's lazily loaded from the app context to avoid circular
+                rerefencies (that happen only due to the mock tests set up)</description>
+            <value>wms</value>
+        </constructor-arg>
+    </bean>
+
+    <bean id="animateFilter" class="org.geoserver.wms.animate.AnimatorFilter"/>
+
+    <bean id="animateURLMapping"
+          class="org.geoserver.ows.OWSHandlerMapping">
+        <constructor-arg ref="catalog"/>
+        <property name="alwaysUseFullPath" value="true"/>
+        <property name="mappings">
+            <props>
+                <prop key="/animate">dispatcher</prop>
+                <prop key="/animate/*">dispatcher</prop>
+            </props>
+        </property>
+    </bean>
+
     <!-- the meta tile cache, registered here because it's also a WFS transaction listener -->
     <bean id="metaTileCache" class="org.geoserver.wms.map.QuickTileCache">
-      <constructor-arg ref="geoServer"/>
+        <constructor-arg ref="geoServer"/>
     </bean>
 
     <!-- Default Decoration Plugins -->
-    <bean id="image" 
+    <bean id="image"
           class="org.geoserver.wms.decoration.WatermarkDecoration"
           singleton="false"
-     />
+            />
 
-    <bean id="legend" 
+    <bean id="legend"
           class="org.geoserver.wms.decoration.LegendDecoration"
           singleton="false">
-       <constructor-arg ref="wms"/>
+        <constructor-arg ref="wms"/>
     </bean>
 
-    <bean id="scaleratio" 
+    <bean id="scaleratio"
           class="org.geoserver.wms.decoration.ScaleRatioDecoration"
           singleton="false"
-    />
-    
-    <bean id="scaleline" 
+            />
+
+    <bean id="scaleline"
           class="org.geoserver.wms.decoration.ScaleLineDecoration"
           singleton="false"
-    />
-    
-    <bean id="text" 
+            />
+
+    <bean id="text"
           class="org.geoserver.wms.decoration.TextDecoration"
           singleton="false"
-    />
-    
+            />
+
     <bean id="wmsWorkspaceQualifier" class="org.geoserver.wms.WMSWorkspaceQualifier">
-      <constructor-arg ref="catalog"/>
+        <constructor-arg ref="catalog"/>
     </bean>
-    
+
     <bean id="wmsLocalWorkspaceURLManger" class="org.geoserver.ows.LocalWorkspaceURLMangler">
-      <constructor-arg value="wms"/>
+        <constructor-arg value="wms"/>
     </bean>
-    
+
     <bean id="wmsLifecycleHandler" class="org.geoserver.wms.WMSLifecycleHandler">
-      <constructor-arg index="0" ref="dataDirectory"/>
-      <constructor-arg index="1" ref="wms"/>
+        <constructor-arg index="0" ref="dataDirectory"/>
+        <constructor-arg index="1" ref="wms"/>
     </bean>
-      
+
     <bean id="wmsCatalogValidator" class="org.geoserver.wms.WMSValidator"/>
-    
+
     <bean id="rasterCleaner" class="org.geoserver.wms.RasterCleaner"/>
-    
+
     <bean id="wmsClasspathPublisherMapping"
-    class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
-     <property name="alwaysUseFullPath" value="true"/>
-     <property name="mappings">
-       <props>
-        <prop key="/openlayers/**">classpathPublisher</prop>
-        <prop key="/openlayers3/**">classpathPublisher</prop>
-        <prop key="/options.png">classpathPublisher</prop>
-       </props>
-     </property>
-  </bean>
-  
-  <!-- Pluggable layer identifiers -->
-  <bean id="basicVectorLayerIdentifier" class="org.geoserver.wms.featureinfo.VectorBasicLayerIdentifier">
-      <constructor-arg ref="wms"/>
-  </bean>
-  <bean id="renderVectorLayerIdentifier" class="org.geoserver.wms.featureinfo.VectorRenderingLayerIdentifier">
-      <constructor-arg ref="wms"/>
-      <constructor-arg ref="basicVectorLayerIdentifier"/>
-  </bean>
-  <bean id="rasterLayerIdentifier" class="org.geoserver.wms.featureinfo.RasterLayerIdentifier">
-      <constructor-arg ref="wms"/>
-  </bean>
-  <bean id="wmsLayerIdentifier" class="org.geoserver.wms.featureinfo.WMSLayerIdentifier"/>
-    
-    
-  <!-- Dimension default value factory -->  
-  <bean id="dimensionDefaultValueStrategyFactory" class="org.geoserver.wms.dimension.impl.DimensionDefaultValueSelectionStrategyFactoryImpl">
-    <property name="featureTimeMinimumStrategy">
-      <bean class="org.geoserver.wms.dimension.impl.FeatureMinimumValueSelectionStrategyImpl"/>
-    </property>
-    <property name="featureTimeMaximumStrategy">
-      <bean class="org.geoserver.wms.dimension.impl.FeatureMaximumValueSelectionStrategyImpl"/>
-    </property>    
-    <property name="coverageTimeMinimumStrategy">
-      <bean class="org.geoserver.wms.dimension.impl.CoverageMinimumValueSelectionStrategyImpl"/>
-    </property>
-    <property name="coverageTimeMaximumStrategy">
-      <bean class="org.geoserver.wms.dimension.impl.CoverageMaximumValueSelectionStrategyImpl"/>
-    </property>
-    
-    <property name="featureElevationMinimumStrategy">
-      <bean class="org.geoserver.wms.dimension.impl.FeatureMinimumValueSelectionStrategyImpl"/>
-    </property>
-    <property name="featureElevationMaximumStrategy">
-      <bean class="org.geoserver.wms.dimension.impl.FeatureMaximumValueSelectionStrategyImpl"/>
-    </property>
-     <property name="coverageElevationMinimumStrategy">
-      <bean class="org.geoserver.wms.dimension.impl.CoverageMinimumValueSelectionStrategyImpl"/>
-    </property>
-    <property name="coverageElevationMaximumStrategy">
-      <bean class="org.geoserver.wms.dimension.impl.CoverageMaximumValueSelectionStrategyImpl"/>
-    </property>
-    
-    <property name="featureCustomDimensionMinimumStrategy">
-      <bean class="org.geoserver.wms.dimension.impl.FeatureMinimumValueSelectionStrategyImpl"/>
-    </property>
-    <property name="featureCustomDimensionMaximumStrategy">
-      <bean class="org.geoserver.wms.dimension.impl.FeatureMaximumValueSelectionStrategyImpl"/>
-    </property>
-    <property name="coverageCustomDimensionMinimumStrategy">
-      <bean class="org.geoserver.wms.dimension.impl.CoverageMinimumValueSelectionStrategyImpl"/>
-    </property>
-    <property name="coverageCustomDimensionMaximumStrategy">
-      <bean class="org.geoserver.wms.dimension.impl.CoverageMaximumValueSelectionStrategyImpl"/>
-    </property>
-    
-    <property name="featureNearestValueStrategyFactory">
-      <bean class="org.geoserver.wms.dimension.DefaultFeatureNearestValueSelectionStrategyFactory"/>
-    </property>
-    <property name="coverageNearestValueStrategyFactory">
-      <bean class="org.geoserver.wms.dimension.DefaultCoverageNearestValueSelectionStrategyFactory"/>
-    </property>
-    
-    <property name="fixedValueStrategyFactory">
-      <bean class="org.geoserver.wms.dimension.DefaultFixedValueStrategyFactory"/>
-    </property>    
-  </bean>
-  
-  <bean id="legendSample" class="org.geoserver.wms.capabilities.LegendSampleImpl">
-    <constructor-arg ref="catalog"/>
-    <constructor-arg ref="resourceLoader"/>
-  </bean>
-  
+          class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+        <property name="alwaysUseFullPath" value="true"/>
+        <property name="mappings">
+            <props>
+                <prop key="/openlayers/**">classpathPublisher</prop>
+                <prop key="/openlayers3/**">classpathPublisher</prop>
+                <prop key="/options.png">classpathPublisher</prop>
+            </props>
+        </property>
+    </bean>
+
+    <!-- Pluggable layer identifiers -->
+    <bean id="basicVectorLayerIdentifier" class="org.geoserver.wms.featureinfo.VectorBasicLayerIdentifier">
+        <constructor-arg ref="wms"/>
+    </bean>
+    <bean id="renderVectorLayerIdentifier" class="org.geoserver.wms.featureinfo.VectorRenderingLayerIdentifier">
+        <constructor-arg ref="wms"/>
+        <constructor-arg ref="basicVectorLayerIdentifier"/>
+    </bean>
+    <bean id="rasterLayerIdentifier" class="org.geoserver.wms.featureinfo.RasterLayerIdentifier">
+        <constructor-arg ref="wms"/>
+    </bean>
+    <bean id="wmsLayerIdentifier" class="org.geoserver.wms.featureinfo.WMSLayerIdentifier"/>
+
+
+    <!-- Dimension default value factory -->
+    <bean id="dimensionDefaultValueStrategyFactory" class="org.geoserver.wms.dimension.impl.DimensionDefaultValueSelectionStrategyFactoryImpl">
+        <property name="featureTimeMinimumStrategy">
+            <bean class="org.geoserver.wms.dimension.impl.FeatureMinimumValueSelectionStrategyImpl"/>
+        </property>
+        <property name="featureTimeMaximumStrategy">
+            <bean class="org.geoserver.wms.dimension.impl.FeatureMaximumValueSelectionStrategyImpl"/>
+        </property>
+        <property name="coverageTimeMinimumStrategy">
+            <bean class="org.geoserver.wms.dimension.impl.CoverageMinimumValueSelectionStrategyImpl"/>
+        </property>
+        <property name="coverageTimeMaximumStrategy">
+            <bean class="org.geoserver.wms.dimension.impl.CoverageMaximumValueSelectionStrategyImpl"/>
+        </property>
+
+        <property name="featureElevationMinimumStrategy">
+            <bean class="org.geoserver.wms.dimension.impl.FeatureMinimumValueSelectionStrategyImpl"/>
+        </property>
+        <property name="featureElevationMaximumStrategy">
+            <bean class="org.geoserver.wms.dimension.impl.FeatureMaximumValueSelectionStrategyImpl"/>
+        </property>
+        <property name="coverageElevationMinimumStrategy">
+            <bean class="org.geoserver.wms.dimension.impl.CoverageMinimumValueSelectionStrategyImpl"/>
+        </property>
+        <property name="coverageElevationMaximumStrategy">
+            <bean class="org.geoserver.wms.dimension.impl.CoverageMaximumValueSelectionStrategyImpl"/>
+        </property>
+
+        <property name="featureCustomDimensionMinimumStrategy">
+            <bean class="org.geoserver.wms.dimension.impl.FeatureMinimumValueSelectionStrategyImpl"/>
+        </property>
+        <property name="featureCustomDimensionMaximumStrategy">
+            <bean class="org.geoserver.wms.dimension.impl.FeatureMaximumValueSelectionStrategyImpl"/>
+        </property>
+        <property name="coverageCustomDimensionMinimumStrategy">
+            <bean class="org.geoserver.wms.dimension.impl.CoverageMinimumValueSelectionStrategyImpl"/>
+        </property>
+        <property name="coverageCustomDimensionMaximumStrategy">
+            <bean class="org.geoserver.wms.dimension.impl.CoverageMaximumValueSelectionStrategyImpl"/>
+        </property>
+
+        <property name="featureNearestValueStrategyFactory">
+            <bean class="org.geoserver.wms.dimension.DefaultFeatureNearestValueSelectionStrategyFactory"/>
+        </property>
+        <property name="coverageNearestValueStrategyFactory">
+            <bean class="org.geoserver.wms.dimension.DefaultCoverageNearestValueSelectionStrategyFactory"/>
+        </property>
+
+        <property name="fixedValueStrategyFactory">
+            <bean class="org.geoserver.wms.dimension.DefaultFixedValueStrategyFactory"/>
+        </property>
+    </bean>
+
+    <bean id="legendSample" class="org.geoserver.wms.capabilities.LegendSampleImpl">
+        <constructor-arg ref="catalog"/>
+        <constructor-arg ref="resourceLoader"/>
+    </bean>
+
 </beans>

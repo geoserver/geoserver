@@ -601,6 +601,7 @@ public class GetFeature {
             } else {
                 if (isNumberMatchedSkipped) {
                     totalCount = -1;
+                    offset = 0;
                 } else {
                     // optimization: if count < max features then total count == count
                     if(count < maxFeatures) {

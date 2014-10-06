@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -8,6 +9,8 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import org.custommonkey.xmlunit.XMLUnit;
+import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.TestHttpClientProvider;
@@ -16,6 +19,7 @@ import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.test.http.MockHttpClient;
 import org.geoserver.test.http.MockHttpResponse;
+import org.junit.Before;
 
 /**
  * Base class for WMS cascading tests
@@ -26,10 +30,20 @@ public abstract class WMSCascadeTestSupport extends WMSTestSupport {
     
     protected static final String WORLD4326_130 = "world4326_130";
     protected static final String WORLD4326_110 = "world4326_110";
+    protected static final String WORLD4326_110_NFI = "world4326_110_NFI";
     protected MockHttpClient wms13Client;
     protected URL wms13BaseURL;
     protected MockHttpClient wms11Client;
     protected URL wms11BaseURL;
+    protected MockHttpClient wms11ClientNfi;
+    protected URL wms11BaseNfiURL;
+    protected XpathEngine xpath;
+
+    
+    @Before
+    public void setupXpathEngine() {
+        xpath = XMLUnit.newXpathEngine();
+    }
     
     @Override
     protected void setUpTestData(SystemTestData testData) throws Exception {
@@ -41,6 +55,7 @@ public abstract class WMSCascadeTestSupport extends WMSTestSupport {
         // we only setup the cascaded WMS layer, so no call to super
         setupWMS130Layer();
         setupWMS110Layer();
+        setupWMS110NfiLayer();
     }
 
     private void setupWMS130Layer() throws MalformedURLException, IOException {
@@ -94,6 +109,29 @@ public abstract class WMSCascadeTestSupport extends WMSTestSupport {
         getCatalog().add(wmsLayer);
         LayerInfo gsLayer = cb.buildLayer(wmsLayer);
         gsLayer.setName(WORLD4326_110);
+        getCatalog().add(gsLayer);
+    }
+    
+    private void setupWMS110NfiLayer() throws MalformedURLException, IOException {
+        // prepare the WMS 1.1 mock client
+        wms11ClientNfi = new MockHttpClient();
+        wms11BaseNfiURL = new URL(TestHttpClientProvider.MOCKSERVER + "/wms11_nfi");
+        URL capsDocument = WMSTestSupport.class.getResource("caps111_no_feature_info.xml");
+        wms11ClientNfi.expectGet(new URL(wms11BaseNfiURL + "?service=WMS&request=GetCapabilities&version=1.1.1"), new MockHttpResponse(capsDocument, "text/xml"));
+
+        String caps = wms11BaseNfiURL + "?service=WMS&request=GetCapabilities&version=1.1.1";
+        TestHttpClientProvider.bind(wms11ClientNfi, caps);
+        
+        // setup the WMS layer
+        CatalogBuilder cb = new CatalogBuilder(getCatalog());
+        WMSStoreInfo store = cb.buildWMSStore("mock-wms-store-110-nfi");
+        getCatalog().add(store);
+        cb.setStore(store);
+        store.setCapabilitiesURL(caps);
+        WMSLayerInfo wmsLayer = cb.buildWMSLayer("world4326");
+        getCatalog().add(wmsLayer);
+        LayerInfo gsLayer = cb.buildLayer(wmsLayer);
+        gsLayer.setName(WORLD4326_110_NFI);
         getCatalog().add(gsLayer);
     }
     

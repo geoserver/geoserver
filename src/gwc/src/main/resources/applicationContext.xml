@@ -10,9 +10,8 @@
   <import resource="geowebcache-geoserver-context.xml" />
   <import resource="geowebcache-servlet.xml" />
 
-  <bean id="GWCLifeCycleHandler" class="org.geoserver.gwc.config.GWCLifeCycleHandler">
+  <bean id="GWCLifeCycleHandler" class="org.geoserver.gwc.config.GWCLifeCycleHandler" depends-on="gwcFacade">
     <description>Reloads the GWC config when GeoServer is called for a reload</description>
-    <constructor-arg ref="gwcFacade" />
   </bean>
   
   <bean id="gwcJdbcConfigurationStorage" class="org.geoserver.gwc.JDBCConfigurationStorage">

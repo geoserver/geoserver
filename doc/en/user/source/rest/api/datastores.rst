@@ -59,7 +59,7 @@ Controls a particular data store in a given workspace.
      - 200
      - HTML, XML, JSON
      - HTML
-     -
+     - :ref:`quietOnNotFound <rest_api_datastores_quietOnNotFound>`	 
    * - POST
      - 
      - 405
@@ -107,6 +107,12 @@ Parameters
 
 The ``recurse`` parameter recursively deletes all layers referenced by the specified data store. Allowed values for this parameter are "true" or "false". The default value is "false".
 
+.. _rest_api_datastores_quietOnNotFound:
+
+``quietOnNotFound``
+^^^^^^^^^^^^^^^^^^^^
+
+The ``quietOnNotFound`` parameter avoids to log an Exception when the data store is not present. Note that 404 status code will be returned anyway.
 
 ``/workspaces/<ws>/datastores/<ds>/[file|url|external][.<extension>]``
 ----------------------------------------------------------------------

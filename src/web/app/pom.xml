@@ -16,8 +16,8 @@
   <artifactId>gs-web-app</artifactId>
   <packaging>jar</packaging>
   <version>2.7-SNAPSHOT</version>
-  <name>GeoServer Web Application</name>
-  <dependencies>
+  <name>GeoServer Web Application</name>    
+  <dependencies>  
     <dependency>
       <groupId>org.geoserver.web</groupId>
       <artifactId>gs-web-core</artifactId>
@@ -1019,26 +1019,14 @@
           <version>${project.version}</version>
         </dependency>
       </dependencies>
-		</profile>
+    </profile>
     <profile>
-			<id>netcdf</id>
+      <id>netcdf</id>
       <dependencies>
         <dependency>
-          <groupId>org.geotools</groupId>
-          <artifactId>gt-netcdf</artifactId>
-          <version>${gt.version}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.slf4j</groupId>
-            <artifactId>jcl-over-slf4j</artifactId>
-          </exclusion>
-
-
-        </exclusions>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-netcdf</artifactId>
+          <version>${gs.version}</version>
         </dependency>
       </dependencies>
 		</profile>        
@@ -1068,6 +1056,16 @@
       </dependencies>
     </profile>
     <profile>
+      <id>pgraster</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.extension</groupId>
+          <artifactId>gs-pgraster</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+   <profile>
       <id>geopkg</id>
       <dependencies>
         <dependency>
@@ -1113,17 +1111,7 @@
         <dependency>
           <groupId>org.geoserver.community</groupId>
           <artifactId>gs-grib</artifactId>
-		  <version>${project.version}</version>
-		  <exclusions>
-			<exclusion>
-				<groupId>org.slf4j</groupId>
-				<artifactId>slf4j-api</artifactId>
-			</exclusion>
-			<exclusion>
-				<groupId>org.slf4j</groupId>
-				<artifactId>jcl-over-slf4j</artifactId>
-			</exclusion>
-		  </exclusions>
+          <version>${project.version}</version>
         </dependency>
       </dependencies>
     </profile>
@@ -1147,6 +1135,66 @@
         </dependency>
       </dependencies>
     </profile>
+	<profile>
+      <id>wps-download</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-wps-download</artifactId>
+		  <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>    
+	<profile>
+      <id>kmlppio</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-kmlppio</artifactId>
+		  <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+	<profile>
+      <id>gpxppio</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-gpxppio</artifactId>
+		  <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+	<profile>
+      <id>solr</id>
+      <dependencies>
+        <dependency>
+		  <groupId>org.geoserver.community</groupId>
+		  <artifactId>gs-web-solr</artifactId>
+		  <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+   </profile>
+   <profile>
+	<id>jms-cluster</id>
+	<activation>
+		<property>
+			<name>all</name>
+			<value>true</value>
+		</property>
+	</activation>
+	<dependencies>
+		<dependency>
+			<groupId>org.geoserver</groupId>
+			<artifactId>gs-jms-commons</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.geoserver</groupId>
+			<artifactId>gs-jms-geoserver</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+	</dependencies>
+	</profile>	
  </profiles>
-
 </project>

@@ -61,7 +61,7 @@ Controls a particular coverage in a given coverage store and workspace.
      - 200
      - HTML, XML, JSON
      - HTML
-     -
+     - :ref:`quietOnNotFound <rest_api_coverages_quietOnNotFound>`
    * - POST
      -
      - 405
@@ -107,6 +107,13 @@ Parameters
 ^^^^^^^^^^^
 
 The ``recurse`` parameter recursively deletes all layers referenced by the specified coverage. Permitted values for this parameter are "true" or "false". The default value is "false".
+
+.. _rest_api_coverages_quietOnNotFound:
+
+``quietOnNotFound``
+^^^^^^^^^^^^^^^^^^^^
+
+The ``quietOnNotFound`` parameter avoids to log an Exception when the coverage is not present. Note that 404 status code will be returned anyway.
 
 Structured coverages
 ====================
@@ -239,7 +246,7 @@ Returns a single granule and allows for its removal.
      - 200
      - XML, JSON
      - XML
-     -
+     - :ref:`quietOnNotFound <rest_api_structuredcoverages_quietOnNotFound>`
    * - POST
      -
      - 405
@@ -259,4 +266,24 @@ Returns a single granule and allows for its removal.
      -
      - 
 
+Exceptions
+~~~~~~~~~~
 
+.. list-table::
+   :header-rows: 1
+
+   * - Exception
+     - Status code
+   * - GET for a granule that does not exist
+     - 404 
+	 
+
+Parameters
+~~~~~~~~~~
+	 
+.. _rest_api_structuredcoverages_quietOnNotFound:
+
+``quietOnNotFound``
+^^^^^^^^^^^^^^^^^^^^
+
+The ``quietOnNotFound`` parameter avoids to log an Exception when the granule is not present. Note that 404 status code will be returned anyway.

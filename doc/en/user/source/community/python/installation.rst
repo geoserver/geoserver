@@ -17,5 +17,5 @@ Installing the Python Extension
 Verifiying the Installation
 ---------------------------
 
-To verify the extension has been installed properly start the GeoServer instance and navigate to the data directory. Upon a successfull install a new directory
+To verify the extension has been installed properly start the GeoServer instance and navigate to the data directory. Upon a successful install a new directory
  named ``python`` will be created.

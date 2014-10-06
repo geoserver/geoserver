@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -81,9 +82,11 @@ public class ScriptListResource extends ReflectiveResource {
             for (File f : dir.listFiles(filter)) {
                 if (path.equals("apps")) {
                     File mainScript = scriptMgr.findAppMainScript(f);
-                    String name = mainScript.getAbsolutePath().substring(
-                            f.getParentFile().getAbsolutePath().length() + 1).replace("\\", "/");
-                    scripts.add(new Script(name));
+                    if (mainScript != null) {
+                        String name = mainScript.getAbsolutePath().substring(
+                                f.getParentFile().getAbsolutePath().length() + 1).replace("\\", "/");
+                        scripts.add(new Script(name));
+                    }
                 } else if (path.equals("wps")) {
                     if (f.isDirectory()) {
                         String namespace = f.getName();

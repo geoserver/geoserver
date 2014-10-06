@@ -25,9 +25,19 @@
    </dependency>
    <dependency>
      <groupId>org.geoserver.community</groupId>
+     <artifactId>gs-gpxppio</artifactId>
+     <version>${project.version}</version>
+   </dependency>   
+   <dependency>
+     <groupId>org.geoserver.community</groupId>
      <artifactId>gs-netcdf</artifactId>
      <version>${project.version}</version>
    </dependency>
+   <dependency>
+     <groupId>org.geoserver.community</groupId>
+     <artifactId>gs-wps-download</artifactId>
+     <version>${project.version}</version>
+   </dependency>   
    <dependency>
      <groupId>org.geoserver.community</groupId>
      <artifactId>gs-netcdf-out</artifactId>
@@ -108,6 +118,31 @@
      <artifactId>gs-rest-ext</artifactId>
      <version>${project.version}</version>
    </dependency>
+   <dependency>
+     <groupId>org.geoserver.community</groupId>
+     <artifactId>gs-pgraster</artifactId>
+     <version>${project.version}</version>
+   </dependency>
+   <dependency>
+     <groupId>org.geoserver.community</groupId>
+     <artifactId>gs-kmlppio</artifactId>
+     <version>${project.version}</version>
+   </dependency>
+   <dependency>
+     <groupId>org.geoserver.community</groupId>
+     <artifactId>gs-gpxppio</artifactId>
+     <version>${project.version}</version>
+   </dependency>
+   <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>gs-jms-cluster</artifactId>
+     <version>${project.version}</version>
+   </dependency>  
+   <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>gs-jms-commons</artifactId>
+     <version>${project.version}</version>
+   </dependency>   
  </dependencies>
  <build>
   <plugins>

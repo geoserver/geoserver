@@ -13,7 +13,7 @@ To install the JDBCConfig module:
 
 #. Verify that the configuration directory was created to be sure installation worked then turn off GeoServer.
 
-#. Configure JDBCConfig (:ref:'community_jdbcconfig_config'), being sure to set ``enabled``, ``initdb``, and ``import`` to ``true``, and to provide the connection information for an empty database.
+#. Configure JDBCConfig (:ref:`community_jdbcconfig_config`), being sure to set ``enabled``, ``initdb``, and ``import`` to ``true``, and to provide the connection information for an empty database.
 
 #. Start GeoServer again.  This time JDBCConfig will connect to the specified database, initialize it, import the old catalog into it, and take over from the old catalog. Subsequent start ups will skip the initialize and import steps unless you re-enable them in ``jdbcconfig.properties``.
 

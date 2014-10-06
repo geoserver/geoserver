@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Copyright (c) 2014 Open Source Geospatial Foundation - all rights reserved 
+ Copyright (c) 2001 - 2014 OpenPlans - www.openplans.org. All rights reserved.
+ This code is licensed under the GPL 2.0 license, available at the root
+ application directory.
+ -->
+ <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd"> 
+
+<beans>
+  <!-- KML PPIO -->
+  <bean id="KMLPPIO" class="org.geoserver.wps.ppio.KMLPPIO">
+      <constructor-arg ref="geoServer"/>
+  </bean>
+</beans>

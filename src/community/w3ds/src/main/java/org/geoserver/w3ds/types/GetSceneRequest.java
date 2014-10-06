@@ -1,4 +1,7 @@
-/* This code is licensed under the GPL 2.0 license, available at the root
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2012 - 2013 OpenPlans
+ *
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  * 
  * @author Jorge Gustavo Rocha / Universidade do Minho
@@ -54,6 +57,8 @@ public class GetSceneRequest extends W3DSRequest {
 		this.addAcceptedFormat(Format.X3D);
 		this.addAcceptedFormat(Format.HTML);
 		this.addAcceptedFormat(Format.KML);
+		this.addAcceptedFormat(Format.XML3D);
+		this.addAcceptedFormat(Format.OCTET_STREAM);
 	}
 	
 	public GetSceneRequest() {
@@ -66,6 +71,8 @@ public class GetSceneRequest extends W3DSRequest {
 		this.addAcceptedFormat(Format.X3D);
 		this.addAcceptedFormat(Format.HTML);
 		this.addAcceptedFormat(Format.KML);
+		this.addAcceptedFormat(Format.XML3D);
+		this.addAcceptedFormat(Format.OCTET_STREAM);
 	}
 
 	public CoordinateReferenceSystem getCrs() {

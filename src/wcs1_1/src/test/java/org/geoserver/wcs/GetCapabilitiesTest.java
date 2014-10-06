@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -299,6 +300,13 @@ public class GetCapabilitiesTest extends WCSTestSupport {
         assertXpathEvaluatesTo("1", "count(//ows:ServiceProvider)", dom);
         assertXpathEvaluatesTo("1", "count(//ows:OperationsMetadata)", dom);
         assertXpathEvaluatesTo("1", "count(//wcs:Contents)", dom);
+    }
+    
+    @Test
+    public void testSchemaLocation() throws Exception {
+        Document dom = getAsDOM(BASEPATH + "?request=GetCapabilities&service=WCS");
+        checkValidationErrors(dom, WCS11_SCHEMA);        
+        assertXpathEvaluatesTo("1", "count(//wcs:Capabilities[contains(@xsi:schemaLocation,'http://www.opengis.net/wcs/1.1.1 ')])", dom);
     }
 
     @Test

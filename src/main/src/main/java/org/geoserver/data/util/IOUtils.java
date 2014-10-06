@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -284,7 +285,9 @@ public final class IOUtils {
             if (file.exists()) {
                 if(file.isDirectory()) {
                     // recurse and append
-                    zipDirectory(file, prefix + file.getName() + "/", zipout, filter);
+                    String newPrefix = prefix + file.getName() + "/";
+                    zipout.putNextEntry(new ZipEntry(newPrefix));
+                    zipDirectory(file, newPrefix, zipout, filter);
                 } else {
                     ZipEntry entry = new ZipEntry(prefix  + file.getName());
                     zipout.putNextEntry(entry);

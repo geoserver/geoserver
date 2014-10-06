@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -183,11 +184,11 @@ public class DemoRequestsPage extends GeoServerBasePage {
                 final String service = reqFileName.substring(0, reqFileName.indexOf('_'))
                         .toLowerCase();
                 if (demoRequestIsHttpGet) {
-                    String url = baseUrl + contents;
+                    String url = ResponseUtils.appendPath(baseUrl, contents);
                     urlTextField.setModelObject(url);
                     body.setModelObject("");
                 } else {
-                    String serviceUrl = baseUrl + service;
+                    String serviceUrl = ResponseUtils.appendPath(baseUrl, service);
                     urlTextField.setModelObject(serviceUrl);
                     body.setModelObject(contents);
                 }

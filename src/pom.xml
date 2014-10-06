@@ -767,6 +767,11 @@
     <version>${spring.version}</version>
    </dependency>
    <dependency>
+    <groupId>org.springframework</groupId>
+    <artifactId>spring-jms</artifactId>
+    <version>${spring.version}</version>
+   </dependency>
+   <dependency>
     <groupId>org.springframework.security</groupId>
     <artifactId>spring-security-core</artifactId>
     <version>${spring.security.version}</version>
@@ -1033,6 +1038,31 @@
       <artifactId>pngj</artifactId>
       <version>2.0.1</version>
     </dependency>
+	<dependency>
+	  <groupId>javax.jms</groupId>
+	  <artifactId>jms-api</artifactId>
+	  <version>1.1-rev-1</version>
+	</dependency>    
+	<!-- Needed to solve NamespaceHandler class org.apache.xbean.spring.context.v2.XBeanNamespaceHandler 
+	  for namespace [http://activemq.apache.org/schema/core] not found ClassNotFoundException: 
+	  org.apache.xbean.spring.context.v2.XBeanNamespaceHandler<br> ref: http://codebrane.com/blog/?p=823 -->
+	<dependency>
+		<groupId>org.apache.xbean</groupId>
+		<artifactId>xbean-spring</artifactId>
+		<version>3.5</version>
+		<exclusions>
+		  <exclusion>
+		<groupId>commons-logging</groupId>
+		<artifactId>commons-logging</artifactId>
+		  </exclusion>
+		</exclusions>
+	</dependency>  
+	<dependency>
+		<groupId>it.geosolutions</groupId>
+		<artifactId>geoserver-manager</artifactId>
+		<version>1.5.1</version>
+		<scope>test</scope>
+	</dependency>	
   </dependencies>
  </dependencyManagement>
 

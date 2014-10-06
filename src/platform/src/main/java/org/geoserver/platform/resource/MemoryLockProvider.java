@@ -1,5 +1,6 @@
-/* Copyright (c) 2014 OpenPlans - www.openplans.org. All rights reserved.
- * Copyright (c) 2008-2010 GeoSolutions
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2014 OpenPlans
+ * (c) 2008-2010 GeoSolutions
  * 
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.

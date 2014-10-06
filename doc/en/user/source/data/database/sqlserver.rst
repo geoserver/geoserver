@@ -28,6 +28,8 @@ GeoServer files
 
 #. Extract the contents of the archive into the ``WEB-INF/lib`` directory of the GeoServer installation.
 
+#. Restart the GeoServer to load the extension.
+
 Microsoft files
 ```````````````
 
@@ -38,7 +40,7 @@ Microsoft files
 #. If you are running Java 6 or above, copy the file ``sqljdbc4.jar`` to the ``WEB-INF/lib`` directory of the GeoServer installation.
    If you are running Java 5 instead (supported up to GeoServer 2.1.x) copy the file ``sqljdbc.jar`` to the ``WEB-INF/lib`` directory
 
-#. For GeoServer installed on Windows, copy ``\x86\sqljdbc_auth.dll`` and ``\x86\sqljdbc_xa.dll`` to ``C:\Windows\System32``
+#. For GeoServer installed on Windows, copy ``auth\x86\sqljdbc_auth.dll`` and ``xa\x86\sqljdbc_xa.dll`` to ``C:\Windows\System32``
 
 Adding a SQL Server database
 ----------------------------

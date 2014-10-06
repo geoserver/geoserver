@@ -1,9 +1,12 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.catalog.rest;
 
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertTrue;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.junit.Assert.*;
 import net.sf.json.JSON;
@@ -231,6 +234,52 @@ public class WMSLayerTest extends CatalogRESTTestSupport {
     public void testGetAsHTML() throws Exception {
         Document dom = getAsDOM( "/rest/workspaces/sf/wmslayers/states.html");
         // print(dom);
+    }
+    
+    @Test
+    public void testGetWrongWMSLayer() throws Exception {
+        // Parameters for the request
+        String ws = "sf";
+        String wms = "demo";
+        String wl = "statessssss";
+        // Request path
+        String requestPath = "/rest/workspaces/" + ws + "/wmslayers/" + wl + ".html";
+        String requestPath2 = "/rest/workspaces/" + ws + "/wmsstores/" + wms + "/wmslayers/" + wl + ".html";
+        // Exception path
+        String exception = "No such cascaded wms: "+ws+","+wl;
+        String exception2 = "No such cascaded wms layer: "+ws+","+wms+","+wl;
+        
+        // CASE 1: No wmsstore set
+        
+        // First request should thrown an exception
+        MockHttpServletResponse response = getAsServletResponse(requestPath);
+        assertEquals(404, response.getStatusCode());
+        assertTrue(response.getOutputStreamContent().contains(
+                exception));
+        
+        // Same request with ?quietOnNotFound should not throw an exception
+        response = getAsServletResponse(requestPath + "?quietOnNotFound=true");
+        assertEquals(404, response.getStatusCode());
+        assertFalse(response.getOutputStreamContent().contains(
+                exception));
+        // No exception thrown
+        assertTrue(response.getOutputStreamContent().isEmpty());
+        
+        // CASE 2: wmsstore set
+        
+        // First request should thrown an exception
+        response = getAsServletResponse(requestPath2);
+        assertEquals(404, response.getStatusCode());
+        assertTrue(response.getOutputStreamContent().contains(
+                exception2));
+        
+        // Same request with ?quietOnNotFound should not throw an exception
+        response = getAsServletResponse(requestPath2 + "?quietOnNotFound=true");
+        assertEquals(404, response.getStatusCode());
+        assertFalse(response.getOutputStreamContent().contains(
+                exception2));
+        // No exception thrown
+        assertTrue(response.getOutputStreamContent().isEmpty());
     }
     
     @Test

@@ -40,9 +40,16 @@ public abstract class WCSTestSupport extends CoverageTestSupport {
     protected static final Schema WCS11_SCHEMA;
     
     static {
+        File wcsTestFile = new File("./schemas/wcs/1.1.1/wcsAll.xsd");
+
+        // Specific check for building from an IDE such as IntelliJ IDEA.
+        if (!wcsTestFile.exists()) {
+            wcsTestFile = new File("wcs1_1/schemas/wcs/1.1.1/wcsAll.xsd");
+        }
+
         try {
             final SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-            WCS11_SCHEMA = factory.newSchema(new File("wcs1_1/schemas/wcs/1.1.1/wcsAll.xsd"));
+            WCS11_SCHEMA = factory.newSchema(wcsTestFile);
         } catch(Exception e) {
             throw new RuntimeException("Could not parse the WCS 1.1.1 schemas", e);
         }

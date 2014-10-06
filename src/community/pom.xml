@@ -365,24 +365,12 @@
     </profile>
     <profile>
       <id>jms-cluster</id>
-      <activation>
-        <property>
-          <name>all</name>
-          <value>true</value>
-        </property>
-      </activation>
       <modules>
         <module>jms-cluster</module>
       </modules>
     </profile>
     <profile>
       <id>activemq</id>
-      <activation>
-        <property>
-          <name>all</name>
-          <value>true</value>
-        </property>
-      </activation>
       <modules>
         <module>jms-cluster</module>
       </modules>

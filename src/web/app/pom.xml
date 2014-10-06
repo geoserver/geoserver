@@ -1177,12 +1177,6 @@
    </profile>
    <profile>
 	<id>jms-cluster</id>
-	<activation>
-		<property>
-			<name>all</name>
-			<value>true</value>
-		</property>
-	</activation>
 	<dependencies>
 		<dependency>
 			<groupId>org.geoserver</groupId>

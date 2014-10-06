@@ -4,11 +4,8 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
-
-import javax.imageio.ImageIO;
 
 import org.junit.Test;
 
@@ -19,7 +16,7 @@ public class ScaleLineDecorationTest extends DecorationTestSupport {
         ScaleLineDecoration d = new ScaleLineDecoration();
         BufferedImage bi = paintOnImage(d);
         
-        ImageIO.write(bi, "PNG", new File("/tmp/test.png"));
+        // ImageIO.write(bi, "PNG", new File("/tmp/test.png"));
 
         assertPixel(bi, 180, 160, Color.WHITE);
         

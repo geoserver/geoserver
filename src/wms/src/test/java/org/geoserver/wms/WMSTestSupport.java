@@ -279,16 +279,16 @@ public abstract class WMSTestSupport extends GeoServerSystemTestSupport {
     }
 
     /**
-     * Asserts that the image is blank, in the sense that all pixels will be equal to the bakground
+     * Asserts that the image is blank, in the sense that all pixels will be equal to the background
      * color
      * 
-     * @param testName the name of the test to throw meaningfull messages if something goes wrong
-     * @param image the imgage to check it is not "blank"
+     * @param testName the name of the test to throw meaningful messages if something goes wrong
+     * @param image the image to check it is not "blank"
      * @param bgColor the background color for which differing pixels are looked for
      */
     protected void assertBlank(String testName, BufferedImage image, Color bgColor) {
         int pixelsDiffer = countNonBlankPixels(testName, image, bgColor);
-        assertEquals(testName + " image is comlpetely blank", 0, pixelsDiffer);
+        assertEquals(testName + " image is completely blank", 0, pixelsDiffer);
     }
 
     /**

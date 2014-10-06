@@ -65,7 +65,7 @@ public class DateFormatTransform extends AttributeRemapTransform {
     @Override
     public SimpleFeature apply(ImportTask task, DataStore dataStore, SimpleFeature oldFeature,
             SimpleFeature feature) throws Exception {
-        Object val = feature.getAttribute(field);
+        Object val = oldFeature.getAttribute(field);
         if (val != null) {
             Date parsed = parseDate(val.toString());
             if (parsed == null) {

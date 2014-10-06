@@ -9,8 +9,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import com.vividsolutions.jts.geom.Geometry;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.geojson.feature.FeatureJSON;
+import org.geotools.geojson.geom.GeometryJSON;
 
 /**
  * Inputs and outputs feature collections in GeoJSON format using gt-geojson
@@ -18,34 +20,70 @@ import org.geotools.geojson.feature.FeatureJSON;
  * @author Andrea Aime - OpenGeo
  * 
  */
-public class GeoJSONPPIO extends CDataPPIO {
+public abstract class GeoJSONPPIO extends CDataPPIO {
 
-    protected GeoJSONPPIO() {
-        super(FeatureCollection.class, FeatureCollection.class, "application/json");
+    protected GeoJSONPPIO(Class clazz) {
+        super(clazz, clazz, "application/json");
     }
 
     @Override
-    public void encode(Object value, OutputStream os) throws IOException {
-        FeatureJSON json = new FeatureJSON();
-        // commented out due to GEOT-3209
-        // json.setEncodeFeatureCRS(true);
-        // json.setEncodeFeatureCollectionCRS(true);
-        json.writeFeatureCollection((FeatureCollection) value, os);
-    }
+    public abstract void encode(Object value, OutputStream os) throws IOException;
 
     @Override
-    public Object decode(InputStream input) throws Exception {
-        return new FeatureJSON().readFeatureCollection(input);
-    }
+    public abstract Object decode(InputStream input) throws Exception;
 
     @Override
-    public Object decode(String input) throws Exception {
-        return new FeatureJSON().readFeatureCollection(input);
-    }
+    public abstract Object decode(String input) throws Exception;
     
     @Override
-    public String getFileExtension() {
+    public final String getFileExtension() {
         return "json";
     }
 
+    public static class FeatureCollections extends GeoJSONPPIO {
+        public FeatureCollections() {
+            super(FeatureCollection.class);
+        }
+
+        @Override
+        public void encode(Object value, OutputStream os) throws IOException {
+            FeatureJSON json = new FeatureJSON();
+            // commented out due to GEOT-3209
+            // json.setEncodeFeatureCRS(true);
+            // json.setEncodeFeatureCollectionCRS(true);
+            json.writeFeatureCollection((FeatureCollection) value, os);
+        }
+
+        @Override
+        public Object decode(InputStream input) throws Exception {
+            return new FeatureJSON().readFeatureCollection(input);
+        }
+
+        @Override
+        public Object decode(String input) throws Exception {
+            return new FeatureJSON().readFeatureCollection(input);
+        }
+    }
+
+    public static class Geometries extends GeoJSONPPIO {
+        public Geometries() {
+            super(Geometry.class);
+        }
+
+        @Override
+        public void encode(Object value, OutputStream os) throws IOException {
+            GeometryJSON json = new GeometryJSON();
+            json.write((Geometry) value, os);
+        }
+
+        @Override
+        public Object decode(InputStream input) throws Exception {
+            return new GeometryJSON().read(input);
+        }
+
+        @Override
+        public Object decode(String input) throws Exception {
+            return new GeometryJSON().read(input);
+        }
+    }
 }

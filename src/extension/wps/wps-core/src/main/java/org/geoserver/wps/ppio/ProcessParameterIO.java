@@ -73,13 +73,14 @@ public abstract class ProcessParameterIO {
         defaults.add(new GMLPPIO.GML3.Geometry());
         defaults.add(new GMLPPIO.GML2.Geometry());
         defaults.add(new WKTPPIO());
+        defaults.add(new GeoJSONPPIO.Geometries());
         defaults.add(new GMLPPIO.GML3.GeometryAlternate());
         defaults.add(new GMLPPIO.GML2.GeometryAlternate());
 
         // features
         defaults.add(new WFSPPIO.WFS10());
         defaults.add(new WFSPPIO.WFS11());
-        defaults.add(new GeoJSONPPIO());
+        defaults.add(new GeoJSONPPIO.FeatureCollections());
         defaults.add(new WFSPPIO.WFS10Alternate());
         defaults.add(new WFSPPIO.WFS11Alternate());
 

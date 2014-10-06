@@ -44,7 +44,7 @@ public class GML2FeatureInfoOutputFormat extends GetFeatureInfoOutputFormat {
     /**
      * The MIME type of the format this response produces: <code>"application/vnd.ogc.gml"</code>
      */
-    private static final String FORMAT = "application/vnd.ogc.gml";
+    public static final String FORMAT = "application/vnd.ogc.gml";
 
     private WMS wms;
 
@@ -53,6 +53,11 @@ public class GML2FeatureInfoOutputFormat extends GetFeatureInfoOutputFormat {
      */
     public GML2FeatureInfoOutputFormat(final WMS wms) {
         super(FORMAT);
+        this.wms = wms;
+    }
+
+    protected GML2FeatureInfoOutputFormat(WMS wms, String format) {
+        super(format);
         this.wms = wms;
     }
 

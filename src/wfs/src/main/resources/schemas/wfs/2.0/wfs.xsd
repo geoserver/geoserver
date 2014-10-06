@@ -14,7 +14,7 @@
    <xsd:import namespace="http://www.w3.org/XML/1998/namespace"
       schemaLocation="http://www.w3.org/2001/xml.xsd"/>
    <xsd:import namespace="http://www.w3.org/1999/xlink"
-      schemaLocation="http://schemas.opengis.net/xlink/1.0.0/xlinks.xsd"/>
+               schemaLocation="http://www.w3.org/1999/xlink.xsd"/>
    <xsd:import namespace="http://www.opengis.net/ows/1.1"
       schemaLocation="http://schemas.opengis.net/ows/1.1.0/owsAll.xsd"/>
    <xsd:import namespace="http://www.opengis.net/fes/2.0"
@@ -200,7 +200,7 @@
                   <xsd:complexType>
                      <xsd:complexContent>
                         <xsd:restriction base="xsd:anyType">
-                           <xsd:attributeGroup ref="xlink:simpleLink"/>
+                            <xsd:attributeGroup ref="xlink:simpleAttrs"/>
                         </xsd:restriction>
                      </xsd:complexContent>
                   </xsd:complexType>
@@ -250,7 +250,7 @@
       </xsd:sequence>
    </xsd:complexType>
    <xsd:complexType name="MetadataURLType">
-      <xsd:attributeGroup ref="xlink:simpleLink"/>
+      <xsd:attributeGroup ref="xlink:simpleAttrs"/>
       <xsd:attribute name="about" type="xsd:anyURI"/>
    </xsd:complexType>
    <xsd:complexType name="ExtendedDescriptionType">
@@ -334,7 +334,7 @@
          <xsd:element ref="wfs:SimpleFeatureCollection"/>
       </xsd:choice>
       <xsd:attribute name="state" type="wfs:StateValueType"/>
-      <xsd:attributeGroup ref="xlink:simpleLink"/>
+      <xsd:attributeGroup ref="xlink:simpleAttrs"/>
    </xsd:complexType>
    <xsd:element name="Tuple" type="wfs:TupleType"/>
    <xsd:complexType name="TupleType">

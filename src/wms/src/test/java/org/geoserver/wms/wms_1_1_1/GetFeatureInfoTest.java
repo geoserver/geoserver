@@ -172,7 +172,7 @@ public class GetFeatureInfoTest extends WMSTestSupport {
                 + "&feature_count=10";
 
         Document dom3d = getAsDOM(base3d + "&width=" + 10 + "&height=" + 10 + "&x=" + 5 + "&y=" + 5);
-        print(dom3d);
+        // print(dom3d);
         XMLAssert.assertXpathEvaluatesTo("11", "count(/html/body/table/tr)", dom3d);
 
     }

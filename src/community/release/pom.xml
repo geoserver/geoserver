@@ -103,11 +103,11 @@
      <artifactId>gs-mbtiles</artifactId>
      <version>${project.version}</version>
    </dependency>
-   <dependency>
+   <!--dependency>
      <groupId>org.geoserver.community</groupId>
      <artifactId>gs-grib</artifactId>
      <version>${project.version}</version>
-   </dependency>
+   </dependency-->
     <dependency>
      <groupId>org.geoserver.community</groupId>
      <artifactId>gs-dyndimension</artifactId>
@@ -141,6 +141,11 @@
    <dependency>
       <groupId>org.geoserver</groupId>
       <artifactId>gs-jms-commons</artifactId>
+     <version>${project.version}</version>
+   </dependency>
+   <dependency>
+     <groupId>org.geoserver.community</groupId>
+     <artifactId>gs-geofence</artifactId>
      <version>${project.version}</version>
    </dependency>   
    <dependency>

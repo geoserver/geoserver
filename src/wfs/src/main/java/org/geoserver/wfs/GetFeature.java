@@ -448,7 +448,8 @@ public class GetFeature {
                 
                 // validate sortby if present
                 List<SortBy> sortBy = query.getSortBy();
-                if (sortBy != null && !sortBy.isEmpty()) {
+                if (sortBy != null && !sortBy.isEmpty()
+                        && meta.getFeatureType() instanceof SimpleFeatureType) {
                     validateSortBy(sortBy, meta, request);
                 }
 

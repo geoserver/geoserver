@@ -85,6 +85,8 @@ Automatically cache non-default styles
 
 By default, only requests using the default style for a given layer will be cached. When this setting is enabled, all requests for a given layer, even those that use a non-standard style will be cached. Disabling this may be useful in situations where disk space is an issue, or when only one default style is important.
 
+.. _default_metatile_size:
+
 Default metatile size
 ~~~~~~~~~~~~~~~~~~~~~
 

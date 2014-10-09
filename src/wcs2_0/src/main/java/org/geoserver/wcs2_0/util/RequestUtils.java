@@ -236,7 +236,6 @@ public class RequestUtils {
                 if(!foundOverviewPolicy && readOverview != null && readOverview.getValue() != null) {
                     paramList.add(readOverview);
                 }
-
                 readParams = (GeneralParameterValue[]) paramList.toArray(new GeneralParameterValue[paramList.size()]);
             }
             coverage = (GridCoverage2D) reader.read(readParams);

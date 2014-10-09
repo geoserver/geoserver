@@ -830,11 +830,11 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         
         // actual read
         RenderedImage image = null;
-        GridCoverage2D coverage; 
+        GridCoverage2D coverage=null; 
         RenderingHints interpolationHints = new RenderingHints(JAI.KEY_INTERPOLATION, interpolation);
         try {
             final Color readerBgColor = transparent ? null : bgColor;
-            if (transformation == null) {
+            if (transformation == null && DefaultWebMapService.isAdvancedReprojectionHandlingEnabled()) {
                 //
                 // Get the reader
                 //
@@ -896,42 +896,62 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
                                 PixelInCell.CELL_CORNER, new AffineTransform2D(
                                         worldToScreen.createInverse()), mapCRS, null);
                     } catch (Exception e) {
-                        final IOException ioe = new IOException();
-                        ioe.initCause(e);
-                        throw ioe;
+                        throw new IOException(e);
                     }
                 }
 
-                RenderingTransformationHelper helper = new RenderingTransformationHelper() {
+                if(transformation!=null){
+                    RenderingTransformationHelper helper = new RenderingTransformationHelper() {
+                        
+                        protected GridCoverage2D readCoverage(GridCoverage2DReader reader, Object params, GridGeometry2D readGG)
+                                throws IOException {
+                            return readBestCoverage(
+                                    reader, 
+                                    params,
+                                    ReferencedEnvelope.reference(readGG.getEnvelope()),
+                                    readGG.getGridRange2D(), 
+                                    interpolation,
+                                    readerBgColor);
+                        }
+                        
+                    };
                     
-                    protected GridCoverage2D readCoverage(GridCoverage2DReader reader, Object params, GridGeometry2D readGG)
-                            throws IOException {
-                        return readBestCoverage(
-                                reader, 
-                                params,
-                                ReferencedEnvelope.reference(readGG.getEnvelope()),
-                                readGG.getGridRange2D(), 
-                                interpolation,
-                                readerBgColor);
+                    Object result = helper.applyRenderingTransformation(transformation, layer.getFeatureSource(), 
+                            layer.getQuery(), Query.ALL, readGG, coverageCRS, interpolationHints);
+                    if(result == null) {
+                        coverage = null;
+                    } else if(result instanceof GridCoverage2D) {
+                        coverage = (GridCoverage2D) result;
+                    } else {
+                        // we don't know how to handle this case, we'll let streaming renderer fall back on this one
+                        return null;
                     }
+                }else{
+                  //
+                  // Get the reader
+                  //
+                  final Feature feature = mapContent.layers().get(0).getFeatureSource().getFeatures()
+                          .features().next();
+                  final GridCoverage2DReader reader = (GridCoverage2DReader) feature.getProperty(
+                          "grid").getValue();
+                  // render via grid coverage renderer, that will apply the advanced projection
+                  // handling
+                  final Object params = feature.getProperty("params").getValue();
                     
-                };
-                
-                Object result = helper.applyRenderingTransformation(transformation, layer.getFeatureSource(), 
-                        layer.getQuery(), Query.ALL, readGG, coverageCRS, interpolationHints);
-                if(result == null) {
-                    coverage = null;
-                } else if(result instanceof GridCoverage2D) {
-                    coverage = (GridCoverage2D) result;
-                } else {
-                    // we don't know how to handle this case, we'll let streaming renderer fall back on this one
-                    return null;
+                    coverage=readBestCoverage(
+                            reader, 
+                            params,
+                            ReferencedEnvelope.reference(readGG.getEnvelope()),
+                            readGG.getGridRange2D(), 
+                            interpolation,
+                            readerBgColor);
                 }
                 
                 // apply the grid coverage renderer
                 final GridCoverageRenderer gcr = new GridCoverageRenderer(mapCRS,
                         ReferencedEnvelope.reference(readGG.getEnvelope()),
                         readGG.getGridRange2D(), worldToScreen, interpolationHints);
+                gcr.setAdvancedProjectionHandlingEnabled(false);
 
                 // create a solid color empty image
                 image = gcr.renderImage(coverage, symbolizer, interpolation,

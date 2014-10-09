@@ -48,6 +48,7 @@
           <descriptor>release/ext-mbtiles.xml</descriptor>
           <descriptor>release/ext-geopkg.xml</descriptor>
           <descriptor>release/ext-grib.xml</descriptor>
+          <descriptor>release/ext-gridcoveragecache.xml</descriptor>
           <descriptor>release/ext-pgraster.xml</descriptor>
           <descriptor>release/ext-dyndimension.xml</descriptor>
           <descriptor>release/ext-rest-ext.xml</descriptor>
@@ -173,6 +174,7 @@
         <module>mbtiles</module>
         <module>geopkg</module>
         <module>grib</module>
+        <module>gridcoveragecache</module>
         <module>pgraster</module>
         <module>dyndimension</module>
         <module>rest-ext</module>
@@ -390,5 +392,11 @@
           <module>geofence</module>
         </modules>
     </profile>    
+     <profile>
+      <id>gc-cache</id>
+      <modules>
+        <module>gridcoveragecache</module>
+      </modules>
+    </profile>
   </profiles>
 </project>

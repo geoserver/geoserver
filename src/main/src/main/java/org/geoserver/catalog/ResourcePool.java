@@ -1504,6 +1504,11 @@ public class ResourcePool {
         for (CoverageHintReaderKey key : keys) {
             if(key.id != null && key.id.equals(storeId)) {
                 hintCoverageReaderCache.remove(key);
+            }
+        }
+        keys = new HashSet<CoverageHintReaderKey>(wrappedCoverageReaderCache.keySet());
+        for (CoverageHintReaderKey key : keys) {
+            if(key.id != null && key.id.equals(storeId)) {
                 wrappedCoverageReaderCache.remove(key);
             }
         }

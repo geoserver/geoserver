@@ -55,7 +55,7 @@ public class GWCSettingsPage extends GeoServerSecuredPage {
 
         form.add(gwcServicesPanel);
         form.add(defaultCachingOptionsPanel);
-
+        
         // Pluggable extension points
         final ListView extensions = GWCSettingsPluginPanelInfo.createExtensions("extensions",
                 formModel, getGeoServerApplication());

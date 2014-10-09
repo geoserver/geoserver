@@ -154,6 +154,11 @@ public class ResourcePool {
      */
     public static Hints.Key JOINS = new Hints.Key(List.class);
 
+    /**
+     * Hint to specify if we need to skip the Coverage extensions lookup
+     */
+    public static Hints.Key SKIP_COVERAGE_EXTENSIONS_LOOKUP = new Hints.Key( Boolean.class );
+
     /** logging */
     static Logger LOGGER = Logging.getLogger( "org.geoserver.catalog");
     
@@ -168,6 +173,7 @@ public class ResourcePool {
         } catch (ClassNotFoundException e) {
             //fall through
         }
+        
     }
     
     /**
@@ -186,10 +192,12 @@ public class ResourcePool {
     Map<String, WebMapServer> wmsCache;
     Map<String, GridCoverageReader>  coverageReaderCache;
     Map<CoverageHintReaderKey, GridCoverageReader> hintCoverageReaderCache;
+    Map<CoverageHintReaderKey, GridCoverageReader> wrappedCoverageReaderCache;
     Map<StyleInfo,Style> styleCache;
     List<Listener> listeners;
     ThreadPoolExecutor coverageExecutor;
     CatalogRepository repository;
+    List<GridCoverageReaderCallback> gridCoverageReaderCallbacks;
 
     /**
      * Creates a new instance of the resource pool.
@@ -221,7 +229,9 @@ public class ResourcePool {
         featureTypeAttributeCache = createFeatureTypeAttributeCache(FEATURETYPE_CACHE_SIZE_DEFAULT);
         coverageReaderCache = createCoverageReaderCache();
         hintCoverageReaderCache = createHintCoverageReaderCache();
-        
+        wrappedCoverageReaderCache = createWrappedCoverageReaderCache();
+        gridCoverageReaderCallbacks = GeoServerExtensions
+                .extensions(GridCoverageReaderCallback.class);
         wmsCache = createWmsCache();
         styleCache = createStyleCache();
 
@@ -361,6 +371,9 @@ public class ResourcePool {
         return new CoverageHintReaderCache();
     }
 
+    protected Map<CoverageHintReaderKey, GridCoverageReader> createWrappedCoverageReaderCache() {
+        return new CoverageHintReaderCache();
+    }
     /**
      * Returns the cache for {@link Style} objects for a particular style.
      * <p>
@@ -1338,8 +1351,7 @@ public class ResourcePool {
     public GridCoverageReader getGridCoverageReader(CoverageStoreInfo storeInfo, String coverageName, Hints hints) throws IOException {
         return getGridCoverageReader(storeInfo, (CoverageInfo) null, coverageName, hints);
     }
-    
-    
+
     /**
      * Returns a coverage reader, caching the result.
      *  
@@ -1352,78 +1364,104 @@ public class ResourcePool {
     private GridCoverageReader getGridCoverageReader(CoverageStoreInfo info, CoverageInfo coverageInfo, String coverageName, Hints hints) 
         throws IOException {
         
+        GridCoverage2DReader wrappedReader = null;
+
+        if (!(hints != null && hints.containsKey(SKIP_COVERAGE_EXTENSIONS_LOOKUP)
+                && (Boolean) hints.get(SKIP_COVERAGE_EXTENSIONS_LOOKUP)) && coverageInfo != null && coverageName != null) {
+            CoverageHintReaderKey key;
+            if (info.getId() != null) {
+                // expand the hints if necessary
+                key = new CoverageHintReaderKey(info.getId(), hints);
+                    synchronized (wrappedCoverageReaderCache) {
+                        Object cachedReader = wrappedCoverageReaderCache.get(key);
+                        wrappedReader = cachedReader != null ? (GridCoverage2DReader) cachedReader
+                                : null;
+                        if (wrappedReader == null) {
+                            GridCoverageReaderCallback callBack = getGridCoverageReaderCallback(coverageInfo);
+                            if (callBack != null) {
+                                wrappedReader = callBack.wrapGridCoverageReader(this, coverageInfo,
+                                        coverageName, hints);
+                                wrappedCoverageReaderCache.put(key, wrappedReader);
+                            }
+                        }
+                }
+            }
+        }
         final AbstractGridFormat gridFormat = info.getFormat();
         if(gridFormat == null) {
             throw new IOException("Could not find the raster plugin for format " + info.getType());
         }
-        
+
         // look into the cache
         GridCoverageReader reader = null;
         Object key;
-        if ( hints != null && info.getId() != null) {
-            // expand the hints if necessary
-            final String formatName = gridFormat.getName();
-            if (formatName.equalsIgnoreCase(IMAGE_MOSAIC) || formatName.equalsIgnoreCase(IMAGE_PYRAMID)){
-                if (coverageExecutor != null){
-                    if (hints != null) {
-                        // do not modify the caller hints
-                        hints = new Hints(hints);
-                        hints.add(new RenderingHints(Hints.EXECUTOR_SERVICE, coverageExecutor));
-                    } else {
-                        hints = new Hints(new RenderingHints(Hints.EXECUTOR_SERVICE, coverageExecutor));
+        if (wrappedReader == null) {
+            if (hints != null && info.getId() != null) {
+                // expand the hints if necessary
+                final String formatName = gridFormat.getName();
+                if (formatName.equalsIgnoreCase(IMAGE_MOSAIC) || formatName.equalsIgnoreCase(IMAGE_PYRAMID)){
+                    if (coverageExecutor != null){
+                        if (hints != null) {
+                            // do not modify the caller hints
+                            hints = new Hints(hints);
+                            hints.add(new RenderingHints(Hints.EXECUTOR_SERVICE, coverageExecutor));
+                        } else {
+                            hints = new Hints(new RenderingHints(Hints.EXECUTOR_SERVICE, coverageExecutor));
+                        }
                     }
+                }
+                
+                key = new CoverageHintReaderKey(info.getId(), hints);
+                reader = hintCoverageReaderCache.get( key );
+            } else {
+                key = info.getId();
+                if(key != null) {
+                    reader = coverageReaderCache.get( key );
                 }
             }
             
-            key = new CoverageHintReaderKey(info.getId(), hints);
-            reader = hintCoverageReaderCache.get( key );
-        } else {
-            key = info.getId();
-            if(key != null) {
-                reader = coverageReaderCache.get( key );
-            }
-        }
-        
-        // if not found in cache, create it
-        if(reader == null) {
-            synchronized ( hints != null ? hintCoverageReaderCache : coverageReaderCache ) {
-                if (key != null) {
-                    if (hints != null) {
-                        reader = hintCoverageReaderCache.get(key);
-                    } else {
-                        reader = coverageReaderCache.get(key);
-                    }
-                }
-                if (reader == null) {
-                    /////////////////////////////////////////////////////////
-                    //
-                    // Getting coverage reader using the format and the real path.
-                    //
-                    // /////////////////////////////////////////////////////////
-                    final String url = info.getURL();
-                    GeoServerResourceLoader loader = catalog.getResourceLoader();
-                    final File obj = loader.url(url);
-
-                    // In case no File is returned, provide the original String url
-                    final Object input = obj != null ? obj : url;  
-
-                    // readers might change the provided hints, pass down a defensive copy
-                    reader = gridFormat.getReader(input, new Hints(hints));
-                    if(reader == null) {
-                        throw new IOException("Failed to create reader from " + url + " and hints " + hints);
-                    }
-                    if(key != null) {
-                        if(hints != null) {
-                            hintCoverageReaderCache.put((CoverageHintReaderKey) key, reader);
+            // if not found in cache, create it
+            if(reader == null) {
+                synchronized ( hints != null ? hintCoverageReaderCache : coverageReaderCache ) {
+                    if (key != null) {
+                        if (hints != null) {
+                            reader = hintCoverageReaderCache.get(key);
                         } else {
-                            coverageReaderCache.put((String) key, reader);
+                            reader = coverageReaderCache.get(key);
+                        }
+                    }
+                    if (reader == null) {
+                        /////////////////////////////////////////////////////////
+                        //
+                        // Getting coverage reader using the format and the real path.
+                        //
+                        // /////////////////////////////////////////////////////////
+                        final String url = info.getURL();
+                        GeoServerResourceLoader loader = catalog.getResourceLoader();
+                        final File obj = loader.url(url);
+    
+                        // In case no File is returned, provide the original String url
+                        final Object input = obj != null ? obj : url;  
+    
+                        // readers might change the provided hints, pass down a defensive copy
+                        reader = gridFormat.getReader(input, new Hints(hints));
+                        if(reader == null) {
+                            throw new IOException("Failed to create reader from " + url + " and hints " + hints);
+                        }
+                        if(key != null) {
+                            if(hints != null) {
+                                hintCoverageReaderCache.put((CoverageHintReaderKey) key, reader);
+                            } else {
+                                coverageReaderCache.put((String) key, reader);
+                            }
                         }
                     }
                 }
             }
+        } else {
+            reader = wrappedReader;
         }
-
-        if (coverageInfo != null) {
+        if (coverageInfo != null && wrappedReader == null) {
             MetadataMap metadata = coverageInfo.getMetadata();
             if (metadata != null && metadata.containsKey(CoverageView.COVERAGE_VIEW)) {
                 CoverageView coverageView = (CoverageView) metadata.get(CoverageView.COVERAGE_VIEW);
@@ -1466,9 +1504,9 @@ public class ResourcePool {
         for (CoverageHintReaderKey key : keys) {
             if(key.id != null && key.id.equals(storeId)) {
                 hintCoverageReaderCache.remove(key);
+                wrappedCoverageReaderCache.remove(key);
             }
         }
-        
     }
     
     public GridCoverage getGridCoverage(CoverageInfo info, ReferencedEnvelope env, Hints hints) throws IOException {
@@ -1571,7 +1609,6 @@ public class ResourcePool {
         // Reading the coverage
         //
         // /////////////////////////////////////////////////////////
-        
         GridCoverage gc  = reader.read(CoverageUtils.getParameters(
                     reader.getFormat().getReadParameters(), info.getParameters()));
         
@@ -1878,6 +1915,7 @@ public class ResourcePool {
         featureTypeAttributeCache.clear();
         coverageReaderCache.clear();
         hintCoverageReaderCache.clear();
+        wrappedCoverageReaderCache.clear();
         wmsCache.clear();
         styleCache.clear();
         listeners.clear();
@@ -2214,6 +2252,12 @@ public class ResourcePool {
         void disposed(FeatureTypeInfo featureType, FeatureType ft);
     }
 
-    
-    
+    GridCoverageReaderCallback getGridCoverageReaderCallback(CoverageInfo info) {
+        for (GridCoverageReaderCallback gcc : gridCoverageReaderCallbacks) {
+            if (gcc.canHandle(info)) {
+                return gcc;
+            }
+        }
+        return null;
+    }
 }

@@ -58,6 +58,12 @@ public class SolrAttributeProvider extends GeoServerDataProvider<SolrAttribute> 
             "srid");
 
     /**
+     * Mark as the default geometry
+     */
+    protected static final Property<SolrAttribute> DEFAULT_GEOMETRY = new BeanProperty<SolrAttribute>(
+            "defaultGeometry", "defaultGeometry");
+
+    /**
      * Store if the field is PK
      */
     protected static final Property<SolrAttribute> PK = new BeanProperty<SolrAttribute>("pk", "pk");
@@ -85,7 +91,7 @@ public class SolrAttributeProvider extends GeoServerDataProvider<SolrAttribute> 
 
     @Override
     protected List<org.geoserver.web.wicket.GeoServerDataProvider.Property<SolrAttribute>> getProperties() {
-        return Arrays.asList(EMPTY, USE, NAME, TYPE, SRID, PK);
+        return Arrays.asList(EMPTY, USE, NAME, TYPE, SRID, DEFAULT_GEOMETRY, PK);
     }
 
     @Override

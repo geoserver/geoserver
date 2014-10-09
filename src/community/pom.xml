@@ -55,7 +55,8 @@
           <descriptor>release/ext-gpx.xml</descriptor>
           <descriptor>release/ext-wps-download.xml</descriptor>
           <descriptor>release/ext-jms-cluster.xml</descriptor>
-          <descriptor>release/ext-activeMQ.xml</descriptor>		  
+          <descriptor>release/ext-activeMQ.xml</descriptor>	
+          <descriptor>release/ext-solr.xml</descriptor>		  
         </descriptors>
       </configuration>
      </plugin>
@@ -177,6 +178,7 @@
         <module>kmlppio</module>
         <module>wps-download</module>
         <module>jms-cluster</module>
+		<module>solr</module>
       </modules>
     </profile>
     <profile>

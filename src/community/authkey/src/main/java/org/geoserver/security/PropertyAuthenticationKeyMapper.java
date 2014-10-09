@@ -13,7 +13,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.Set;
 
+import org.apache.commons.io.FileUtils;
 import org.geoserver.security.impl.GeoServerUser;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.util.StringUtils;
@@ -107,8 +109,13 @@ public class PropertyAuthenticationKeyMapper extends AbstractAuthenticationKeyMa
         
         // check if property file exists and reload                        
         if (propFile.exists()) {
-            propFile.renameTo(backupFile);
-            oldProps.load(new FileInputStream(backupFile));            
+            FileUtils.copyFile(propFile, backupFile);
+            FileInputStream inputFile = new FileInputStream(backupFile);
+            try {
+                oldProps.load(inputFile);
+            } finally {
+                inputFile.close();
+            }
         }
         
         Map<Object,Object> reverseMap=new HashMap<Object,Object>();
@@ -127,7 +134,12 @@ public class PropertyAuthenticationKeyMapper extends AbstractAuthenticationKeyMa
                 counter++;
             }
         }            
-        authKeyProps.store(new FileOutputStream(propFile, false), "Format is authkey=username");
+        FileOutputStream outputFile = new FileOutputStream(propFile, false);
+        try {
+            authKeyProps.store(outputFile, "Format is authkey=username");
+        } finally {
+            outputFile.close();
+        }
             
         if (backupFile.exists())
             backupFile.delete();

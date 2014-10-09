@@ -301,7 +301,19 @@ public abstract class SolrConfigurationPage extends Panel {
                         Fragment f = new Fragment(id, "empty", SolrConfigurationPage.this);
                         return f;
                     }
+                } else if (property == SolrAttributeProvider.DEFAULT_GEOMETRY) {
+                    if (isGeometry) {
+                        Fragment f = new Fragment(id, "checkboxDefaultGeometry",
+                                SolrConfigurationPage.this);
+                        f.add(new CheckBox("defaultGeometry", new PropertyModel<Boolean>(itemModel,
+                                "defaultGeometry")));
+                        return f;
+                    } else {
+                        Fragment f = new Fragment(id, "empty", SolrConfigurationPage.this);
+                        return f;
+                    }
                 }
+
                 return null;
             }
         };

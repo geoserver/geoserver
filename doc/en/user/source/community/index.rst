@@ -32,3 +32,4 @@ officially part of the GeoServer releases. They are however built along with the
    pgraster/pgraster
    wps-download/index
    jms-cluster/index
+   solr/index

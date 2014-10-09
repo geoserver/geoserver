@@ -111,6 +111,9 @@ in a table the fields available:
      - Type of the field, as derived from the SORL schema. For geometry types, you have the option to provide a more specific data type
    * - ``SRID``
      - Native spatial reference ID of the geometries
+   * - ``Default geometry``
+     - Indicates if the geometry field is the default one. Useful if the documents contain more than one geometry field, 
+       as SLDs and spatial filters will hit the default geometry field unless otherwise specified
    * - ``Identifier``
      - Check if the field can be used as the feature identifier 
 

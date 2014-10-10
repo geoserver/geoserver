@@ -142,3 +142,36 @@ save and use the layer in WMS and WFS.
 .. warning:: In order to compute the bounding box GeoServer will have to fetch all the geometries making up the layer out of SOLR, 
           this operation might take some time, you're advised to manually entered the native bounding box when configuring a 
           layer out of a large document set
+          
+Custom ``q`` and ``fq`` parameters
+------------------------------
+
+The SORL store will translate most OGC filters, as specified in SLD, CQL Filter or OGC filter,
+down into the SOLR engine for native filtering, using the ``fq`` parameter.
+However, in some occasions you might need to specify manually either ``q`` or ``fq``, to leverage
+some native SORL filtering ability that cannot be expressed via OGC filters.
+
+This can be done by specifying those as ``viewparams``, pretty much like in parametric sql views
+atop relational databases.
+
+For example, the following URL::
+
+    http://localhost:8080/geoserver/nurc/wms?service=WMS&version=1.1.0&request=GetMap
+         &layers=nurc:active&styles=geo2&bbox=0.0,0.0,24.0,44.0&width=279&height=512
+         &srs=EPSG:4326&format=application/openlayers
+         &viewparams=fq:security_ss:WEP
+         
+Will send down to SOLR a query looking like::
+
+   omitHeader=true&fl=geo2,id&q=*:*&rows=2147483647&sort=id asc
+   &fq=status_s:active AND geo2:"Intersects(POLYGON ((-1.7197265625 -2.87890625, 
+       -1.7197265625 8.20703125, 4.3603515625 8.20703125, 4.3603515625 -2.87890625, 
+       -1.7197265625 -2.87890625)))"
+   &fq=security_ss:WEP&cursorMark=AoEhOA==
+   
+You can notice that:
+
+* Only the columns needed for the display (in this case, a single geometry) are retrieved
+* The bbox and layer identification filters are specified in the first ``fq``
+* The custom ``fq`` is passed as a second ``fq`` parameter (SOLR will treat it as being and-ed with
+  the previuos one)

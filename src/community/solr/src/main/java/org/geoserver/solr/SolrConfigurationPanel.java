@@ -5,6 +5,9 @@
 
 package org.geoserver.solr;
 
+import java.io.IOException;
+import java.util.logging.Level;
+
 import org.apache.wicket.ajax.AbstractDefaultAjaxBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
@@ -14,6 +17,7 @@ import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.model.IModel;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.data.resource.ResourceConfigurationPage;
 import org.geoserver.web.data.resource.ResourceConfigurationPanel;
@@ -56,6 +60,14 @@ public class SolrConfigurationPanel extends ResourceConfigurationPanel {
                 if (_layerInfo != null) {
                     GeoServerApplication app = (GeoServerApplication) getApplication();
                     FeatureTypeInfo ft = (FeatureTypeInfo) getResourceInfo();
+
+                    //Override _isNew state, based on resource informations into catalog
+                    if(ft.getId() != null && app.getCatalog().getResource(ft.getId(),ResourceInfo.class) != null){
+                        _isNew = false;
+                    }else{
+                        _isNew = true;
+                    }
+
                     app.getCatalog().getResourcePool().clear(ft);
                     app.getCatalog().getResourcePool().clear(ft.getStore());
                     setResponsePage(new ResourceConfigurationPage(_layerInfo, _isNew));

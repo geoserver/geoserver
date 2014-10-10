@@ -15,7 +15,6 @@ import net.opengis.wfs20.Wfs20Factory;
 
 import org.eclipse.emf.ecore.EObject;
 import org.geotools.feature.FeatureCollection;
-import sun.security.util.BigInt;
 
 /**
  * Response object for a feature collection, most notably from a GetFeature request.

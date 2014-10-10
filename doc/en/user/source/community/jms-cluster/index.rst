@@ -67,7 +67,7 @@ To install the jms cluster modules into an existing GeoServer refer to the :ref:
 
 
 How to configure GeoServer Instances
-====================================
+------------------------------------
 
 The configuration for the GeoServer is very simple and can be performed using the provided GUI or modifying the ``cluster.properties`` file which is stored into the ``GEOSERVER_DATA_DIR`` under the ``cluster`` folder (e.g. ``${GEOSERVER_DATA_DIR}/cluster``).
  

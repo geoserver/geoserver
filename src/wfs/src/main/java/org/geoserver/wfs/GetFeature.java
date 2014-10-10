@@ -696,7 +696,7 @@ public class GetFeature {
 
         FeatureCollectionResponse result = request.createResponse();
         result.setNumberOfFeatures(BigInteger.valueOf(count));
-        result.setTotalNumberOfFeatures(String.valueOf(total));
+        result.setTotalNumberOfFeatures(BigInteger.valueOf(total));
         result.setTimeStamp(Calendar.getInstance());
         result.setLockId(lockId);
         result.getFeature().addAll(results);

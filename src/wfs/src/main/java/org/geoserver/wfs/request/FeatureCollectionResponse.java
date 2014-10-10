@@ -15,6 +15,7 @@ import net.opengis.wfs20.Wfs20Factory;
 
 import org.eclipse.emf.ecore.EObject;
 import org.geotools.feature.FeatureCollection;
+import sun.security.util.BigInt;
 
 /**
  * Response object for a feature collection, most notably from a GetFeature request.
@@ -56,8 +57,8 @@ public abstract class FeatureCollectionResponse extends RequestObject {
     public abstract BigInteger getNumberOfFeatures();
     public abstract void setNumberOfFeatures(BigInteger n);
 
-    public abstract String getTotalNumberOfFeatures();
-    public abstract void setTotalNumberOfFeatures(String n);
+    public abstract BigInteger getTotalNumberOfFeatures();
+    public abstract void setTotalNumberOfFeatures(BigInteger n);
 
     public abstract void setPrevious(String previous);
     public abstract String getPrevious();
@@ -92,12 +93,12 @@ public abstract class FeatureCollectionResponse extends RequestObject {
         }
 
         @Override
-        public String getTotalNumberOfFeatures() {
+        public BigInteger getTotalNumberOfFeatures() {
             //noop
             return null;
         }
         @Override
-        public void setTotalNumberOfFeatures(String n) {
+        public void setTotalNumberOfFeatures(BigInteger n) {
             //noop
         }
 
@@ -150,12 +151,12 @@ public abstract class FeatureCollectionResponse extends RequestObject {
         }
 
         @Override
-        public String getTotalNumberOfFeatures() {
-            return eGet(adaptee, "numberMatched", String.class);
+        public BigInteger getTotalNumberOfFeatures() {
+            return eGet(adaptee, "numberMatched", BigInteger.class);
         }
         @Override
-        public void setTotalNumberOfFeatures(String n) {
-            eSet(adaptee, "numberMatched", (n.equals("-1") ? "unknown" : BigInteger.valueOf(Long.valueOf(n))));
+        public void setTotalNumberOfFeatures(BigInteger n) {
+            eSet(adaptee, "numberMatched", n);
         }
 
         @Override

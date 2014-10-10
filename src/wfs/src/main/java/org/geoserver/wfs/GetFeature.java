@@ -536,7 +536,7 @@ public class GetFeature {
                 // check maxFeatures and offset, if they are unset we can use the size we 
                 // calculated above
                 isNumberMatchedSkipped = meta.getSkipNumberMatched();
-                if (isNumberMatchedSkipped) {
+                if (!isNumberMatchedSkipped) {
                     if (calculateSize && queryMaxFeatures == Integer.MAX_VALUE && offset == 0) {
                         totalCountExecutors.add(new CountExecutor(size));
                     } else {

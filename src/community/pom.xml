@@ -57,6 +57,7 @@
           <descriptor>release/ext-jms-cluster.xml</descriptor>
           <descriptor>release/ext-activeMQ.xml</descriptor>	
           <descriptor>release/ext-solr.xml</descriptor>		  
+          <descriptor>release/ext-geofence.xml</descriptor>
         </descriptors>
       </configuration>
      </plugin>
@@ -179,6 +180,7 @@
         <module>wps-download</module>
         <module>jms-cluster</module>
 		<module>solr</module>
+        <!-- <module>geofence</module> -->
       </modules>
     </profile>
     <profile>
@@ -377,5 +379,14 @@
         <module>jms-cluster</module>
       </modules>
     </profile>
+    <profile>
+      <id>geofence</id>
+        <activation>
+          <property><name>geofence</name></property>
+        </activation>
+        <modules>
+          <module>geofence</module>
+        </modules>
+    </profile>    
   </profiles>
 </project>

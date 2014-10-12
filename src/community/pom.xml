@@ -55,13 +55,9 @@
           <descriptor>release/ext-gpx.xml</descriptor>
           <descriptor>release/ext-wps-download.xml</descriptor>
           <descriptor>release/ext-jms-cluster.xml</descriptor>
-<<<<<<< HEAD
           <descriptor>release/ext-activeMQ.xml</descriptor>	
           <descriptor>release/ext-solr.xml</descriptor>		  
-=======
-          <descriptor>release/ext-activeMQ.xml</descriptor>		  
           <descriptor>release/ext-geofence.xml</descriptor>
->>>>>>> [GEOS-6713] GeoFence integration community module
         </descriptors>
       </configuration>
      </plugin>

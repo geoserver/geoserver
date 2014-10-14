@@ -939,6 +939,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                 Enumeration prefixes = getNamespaceSupport().getPrefixes();
                 while (prefixes.hasMoreElements()) {
                     String prefix = (String) prefixes.nextElement();
+                    if ("xml".equals(prefix)) continue;
                     attributes.addAttribute(null, null, "xmlns:" + prefix, null,
                             getNamespaceSupport().getURI(prefix));
                 }

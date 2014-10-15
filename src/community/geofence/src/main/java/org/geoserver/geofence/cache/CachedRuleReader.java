@@ -94,6 +94,7 @@ public class CachedRuleReader implements RuleReaderService {
                 .maximumSize(cacheConfiguration.getSize())
                 .refreshAfterWrite(cacheConfiguration.getRefreshMilliSec(), TimeUnit.MILLISECONDS) // reloadable after x time
                 .expireAfterWrite(cacheConfiguration.getExpireMilliSec(), TimeUnit.MILLISECONDS) // throw away entries too old
+                .recordStats()
                 ;
         //.expireAfterAccess(timeoutMillis, TimeUnit.MILLISECONDS)
         //                .removalListener(MY_LISTENER)

@@ -17,8 +17,10 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import net.opengis.wfs.QueryType;
+import javax.xml.namespace.QName;
+
 import net.opengis.wfs.GetFeatureType;
+import net.opengis.wfs.QueryType;
 import net.sf.json.JSONException;
 
 import org.eclipse.emf.common.util.EList;
@@ -36,13 +38,13 @@ import org.geoserver.wfs.request.FeatureCollectionResponse;
 import org.geoserver.wfs.request.GetFeatureRequest;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.Query;
+import org.geotools.factory.Hints;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.gml2.SrsSyntax;
 import org.geotools.gml2.bindings.GML2EncodingUtils;
 import org.geotools.referencing.CRS;
-import org.geotools.referencing.CRS.AxisOrder;
 import org.geotools.referencing.NamedIdentifier;
 import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeature;
@@ -54,8 +56,6 @@ import org.opengis.filter.Filter;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.ReferenceIdentifier;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
-
-import javax.xml.namespace.QName;
 
 import com.vividsolutions.jts.geom.Geometry;
 
@@ -119,7 +119,7 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat {
         //GetFeatureRequest request = GetFeatureRequest.adapt(describeFeatureType.getParameters()[0]);
         Request request = Dispatcher.REQUEST.get();
         if (request != null) {
-            id_option = JSONType.getIdPolicy( (Map<String,String>) request.getKvp() );
+            id_option = JSONType.getIdPolicy( request.getKvp() );
         }
         // prepare to write out
         OutputStreamWriter osw = null;
@@ -292,7 +292,7 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat {
             if (hasGeom && featureBounding) {
                 ReferencedEnvelope e = null;
                 for (int i = 0; i < resultsList.size(); i++) {
-                    FeatureCollection collection = (FeatureCollection) resultsList.get(i);
+                    FeatureCollection collection = resultsList.get(i);
                     if (e == null) {
                         e = collection.getBounds();
                     } else {
@@ -398,13 +398,14 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat {
      * @throws IOException
      */
     @SuppressWarnings("unchecked")
-    private int getFeatureCountFromWFS11Request(Operation describeFeatureType, WFSInfo wfs)
+    private int getFeatureCountFromWFS11Request(Operation operation, WFSInfo wfs)
             throws IOException {
         int totalCount = 0;
         Catalog catalog = wfs.getGeoServer().getCatalog();
         
-        GetFeatureType request = (GetFeatureType) describeFeatureType.getParameters()[0];
-        
+        GetFeatureType request = (GetFeatureType) operation.getParameters()[0];
+        List<Map<String, String>> viewParams = new GetFeatureRequest.WFS11(request).getViewParams();
+        int idx = 0;
         for (QueryType query :  (EList<QueryType>) request.getQuery()) {
             QName typeName = (QName) query.getTypeName().get(0);
             FeatureTypeInfo meta = catalog.getFeatureTypeByName(typeName.getNamespaceURI(),
@@ -417,6 +418,13 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat {
                 filter = Filter.INCLUDE;
             }
             Query countQuery = new Query(typeName.getLocalPart(), filter);
+            Map<String, String> viewParam = viewParams != null && viewParams.size() > idx ? viewParams
+                    .get(idx) : null;
+            if (viewParam != null) {
+                final Hints hints = new Hints();
+                hints.put(Hints.VIRTUAL_TABLE_PARAMETERS, viewParam);
+                countQuery.setHints(hints);
+            }
             
             int count = 0;
             count = source.getCount(countQuery);

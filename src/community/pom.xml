@@ -179,8 +179,8 @@
         <module>kmlppio</module>
         <module>wps-download</module>
         <module>jms-cluster</module>
-		<module>solr</module>
-        <!-- <module>geofence</module> -->
+        <module>solr</module>
+        <module>geofence</module>
       </modules>
     </profile>
     <profile>

@@ -14,12 +14,9 @@ import java.io.RandomAccessFile;
 import java.net.URL;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Logger;
+import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import javax.servlet.http.HttpServletRequest;
@@ -52,6 +49,7 @@ import org.restlet.data.Method;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.util.zip.ZipInputStream;
 
 /**
  * Utility class for Restlets.
@@ -578,6 +576,39 @@ public class RESTUtils {
         // Mapping the item path
         for (RESTUploadPathMapper mapper : mappers) {
             mapper.mapItemPath(workspace, store, storeParams, itemPath, initialFileName);
+        }
+    }
+
+
+    /**
+     * Unzips a ZipInputStream to a directory
+     *
+     * @param in
+     * @param outputDirectory
+     * @throws IOException
+     */
+    public static void unzipInputStream(ZipInputStream zin, File outputDirectory) throws IOException {
+        try {
+
+            ZipEntry entry;
+            byte[] buffer = new byte[2048];
+
+            while((entry = zin.getNextEntry())!=null) {
+                String outpath = outputDirectory.getAbsolutePath() + "/" + entry.getName();
+                FileOutputStream output = null;
+                try {
+                    output = new FileOutputStream(outpath);
+                    int len = 0;
+                    while ((len = zin.read(buffer)) > 0)
+                    {
+                        output.write(buffer, 0, len);
+                    }
+                } finally {
+                    IOUtils.closeQuietly(output);
+                }
+            }
+        } finally {
+            IOUtils.closeQuietly(zin);
         }
     }
 }

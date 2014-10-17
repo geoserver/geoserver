@@ -5,14 +5,17 @@
  */
 package org.geoserver.catalog.rest;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
+import java.util.zip.ZipInputStream;
 
+import com.google.common.io.Files;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.LayerInfo;
@@ -21,21 +24,28 @@ import org.geoserver.catalog.StyleHandler;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.Styles;
 import org.geoserver.config.GeoServerDataDirectory;
-import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.rest.RestletException;
 import org.geoserver.rest.format.DataFormat;
+import org.geoserver.rest.util.RESTUtils;
+import org.geotools.factory.CommonFactoryFinder;
+import org.geotools.styling.SLDParser;
 import org.geotools.styling.Style;
 import org.geotools.util.Version;
 import org.restlet.Context;
+import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 
 public class StyleResource extends AbstractCatalogResource {
 
+    private List<String> validImageFileExtensions = new ArrayList<String>();
+
     public StyleResource(Context context, Request request, Response response, Catalog catalog) {
         super(context, request, response, StyleInfo.class, catalog);
+
+        validImageFileExtensions = Arrays.asList(new String[]{"svg", "png", "jpg"});
     }
     
     @Override
@@ -109,6 +119,100 @@ public class StyleResource extends AbstractCatalogResource {
 
             return style.getName();
         }
+        else if (getRequest().getEntity().getMediaType().equals(MediaType.APPLICATION_ZIP) && object instanceof InputStream) {
+            File directory = null;
+            try {
+                directory = unzipSldPackage((InputStream) object);
+                File uploadedFile = retrieveSldFile(directory);
+
+                Style styleSld = parseSld(uploadedFile);
+                //figure out the name of the new style, first check if specified directly
+                String name = getRequest().getResourceRef().getQueryAsForm().getFirstValue("name");
+
+                if (name == null) {
+                    name = findNameFromObject(styleSld);
+                }
+
+                //ensure that the style does not already exist
+                if (catalog.getStyleByName(workspace, name) != null) {
+                    throw new RestletException("Style " + name + " already exists.", Status.CLIENT_ERROR_FORBIDDEN);
+                }
+
+                // save image resources
+                saveImageResources(directory, workspace);
+
+                //create a style info object
+                StyleInfo styleInfo = catalog.getFactory().createStyle();
+                styleInfo.setName(name);
+                styleInfo.setFilename(name + ".sld");
+
+                if (workspace != null) {
+                    styleInfo.setWorkspace(catalog.getWorkspaceByName(workspace));
+                }
+
+                // ensure that a existing resource does not already exist, because we may not want to overwrite it
+                GeoServerDataDirectory dataDir = new GeoServerDataDirectory(catalog.getResourceLoader());
+                if (dataDir.style(styleInfo).getType() != Resource.Type.UNDEFINED) {
+                    String msg = "Style resource " + styleInfo.getFilename() + " already exists.";
+                    throw new RestletException(msg, Status.CLIENT_ERROR_FORBIDDEN);
+                }
+
+                serializeSldFileInCatalog(new File(getStylePath(styleInfo)), uploadedFile);
+
+                /**
+                 * Following code causes this (replaced by serializeSldFileInCatalog, just streams the file to the proper folder):
+                 *
+                 * java.lang.Error: Failed to encode the xlink location
+                 * at org.geotools.styling.SLDTransformer$SLDTranslator.visit(SLDTransformer.java:658)
+                 * at org.geotools.styling.ExternalGraphicImpl.accept(ExternalGraphicImpl.java:138)
+                 * at org.geotools.styling.SLDTransformer$SLDTranslator.visit(SLDTransformer.java:808)
+                 * at org.geotools.styling.GraphicImpl.accept(GraphicImpl.java:349)
+                 * at org.geotools.styling.SLDTransformer$SLDTranslator.visit(SLDTransformer.java:781)
+                 * at org.geotools.styling.PointSymbolizerImpl.accept(PointSymbolizerImpl.java:93)
+                 * at org.geotools.styling.SLDTransformer$SLDTranslator.visit(SLDTransformer.java:746)
+                 * at org.geotools.styling.RuleImpl.accept(RuleImpl.java:312)
+                 * at org.geotools.styling.SLDTransformer$SLDTranslator.visit(SLDTransformer.java:1085)
+                 * at org.geotools.styling.SLDTransformer$SLDTranslator.visit(SLDTransformer.java:1042)
+                 * at org.geotools.styling.SLDTransformer$SLDTranslator.visit(SLDTransformer.java:866)
+                 * at org.geotools.styling.SLDTransformer$SLDTranslator.visit(SLDTransformer.java:838)
+                 * at org.geotools.styling.StyledLayerDescriptorImpl.accept(StyledLayerDescriptorImpl.java:196)
+                 * at org.geotools.styling.SLDTransformer$SLDTranslator.encode(SLDTransformer.java:1220)
+                 * at org.geotools.styling.SLDTransformer$SLDTranslator.encode(SLDTransformer.java:1229)
+                 * at org.geotools.xml.transform.TransformerBase$XMLReaderSupport.parse(TransformerBase.java:1026)
+                 * at com.sun.org.apache.xalan.internal.xsltc.trax.TransformerImpl.transformIdentity(TransformerImpl.java:677)
+                 * at com.sun.org.apache.xalan.internal.xsltc.trax.TransformerImpl.transform(TransformerImpl.java:746)
+                 * at com.sun.org.apache.xalan.internal.xsltc.trax.TransformerImpl.transform(TransformerImpl.java:359)
+                 * at org.geotools.xml.transform.TransformerBase$Task.run(TransformerBase.java:300)
+                 * at org.geotools.xml.transform.TransformerBase.transform(TransformerBase.java:133)
+                 * at org.geotools.xml.transform.TransformerBase.transform(TransformerBase.java:112)
+                 * at org.geoserver.catalog.SLDHandler.encode10(SLDHandler.java:193)
+                 * at org.geoserver.catalog.SLDHandler.encode(SLDHandler.java:182)
+                 * at org.geoserver.catalog.ResourcePool.writeStyle(ResourcePool.java:1799)
+                 */
+                /*ResourcePool resourcePool = catalog.getResourcePool();
+                try {
+                    resourcePool.writeStyle(styleInfo, styleSld);
+                } catch (IOException e) {
+                    throw new RestletException("Error writing style", Status.SERVER_ERROR_INTERNAL, e);
+                }*/
+
+                catalog.add(styleInfo);
+
+                LOGGER.info("POST Style Package: " + name + ", workspace: " + workspace);
+
+                return name;
+            } catch (RestletException e) {
+                // Re-throw the exception
+                throw e;
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                LOGGER.severe("Error processing the style package (POST): " + e.getMessage());
+                throw new RestletException( "Error processing the style", Status.SERVER_ERROR_INTERNAL, e );
+            } finally {
+                FileUtils.deleteQuietly(directory);
+            }
+        }
         else if (object instanceof Style || object instanceof InputStream) {
 
             //figure out the name of the new style, first check if specified directly
@@ -143,6 +247,7 @@ public class StyleResource extends AbstractCatalogResource {
                 String msg = "Style resource " + sinfo.getFilename() + " already exists.";
                 throw new RestletException(msg, Status.CLIENT_ERROR_FORBIDDEN);
             }
+
 
             ResourcePool resourcePool = catalog.getResourcePool();
             try {
@@ -194,7 +299,7 @@ public class StyleResource extends AbstractCatalogResource {
         }
         return getAttribute("style") != null;
     }
-    
+
     @Override
     protected void handleObjectPut(Object object) throws Exception {
         String style = getAttribute("style");
@@ -214,6 +319,91 @@ public class StyleResource extends AbstractCatalogResource {
             
             new CatalogBuilder( catalog ).updateStyle( original, s );
             catalog.save( original );
+        }
+        else if (getRequest().getEntity().getMediaType().equals(MediaType.APPLICATION_ZIP) && object instanceof InputStream) {
+            File directory = null;
+            try {
+                directory = unzipSldPackage((InputStream) object);
+                File uploadedFile = retrieveSldFile(directory);
+
+                Style styleSld = parseSld(uploadedFile);
+
+                //figure out the name of the style, first check if specified directly
+                String name = getRequest().getResourceRef().getQueryAsForm().getFirstValue("name");
+
+                if (name == null) {
+                    name = findNameFromObject(styleSld);
+                }
+
+                if (name == null) {
+                    throw new RestletException("Style must have a name.", Status.CLIENT_ERROR_BAD_REQUEST);
+                }
+
+                //ensure that the style does already exist
+                if (!existsStyleInCatalog(workspace, name)) {
+                    throw new RestletException( "Style " + name + " doesn't exists.", Status.CLIENT_ERROR_FORBIDDEN  );
+                }
+
+                // save image resources
+                saveImageResources(directory, workspace);
+
+                // Save the style: serialize the style out into the data directory
+                StyleInfo styleInfo = catalog.getStyleByName( workspace, style );
+                serializeSldFileInCatalog(new File(getStylePath(styleInfo)), uploadedFile);
+
+                /**
+                 * Following code causes this (replaced by serializeSldFileInCatalog, just streams the file to the proper folder):
+                 *
+                 * java.lang.Error: Failed to encode the xlink location
+                 * at org.geotools.styling.SLDTransformer$SLDTranslator.visit(SLDTransformer.java:658)
+                 * at org.geotools.styling.ExternalGraphicImpl.accept(ExternalGraphicImpl.java:138)
+                 * at org.geotools.styling.SLDTransformer$SLDTranslator.visit(SLDTransformer.java:808)
+                 * at org.geotools.styling.GraphicImpl.accept(GraphicImpl.java:349)
+                 * at org.geotools.styling.SLDTransformer$SLDTranslator.visit(SLDTransformer.java:781)
+                 * at org.geotools.styling.PointSymbolizerImpl.accept(PointSymbolizerImpl.java:93)
+                 * at org.geotools.styling.SLDTransformer$SLDTranslator.visit(SLDTransformer.java:746)
+                 * at org.geotools.styling.RuleImpl.accept(RuleImpl.java:312)
+                 * at org.geotools.styling.SLDTransformer$SLDTranslator.visit(SLDTransformer.java:1085)
+                 * at org.geotools.styling.SLDTransformer$SLDTranslator.visit(SLDTransformer.java:1042)
+                 * at org.geotools.styling.SLDTransformer$SLDTranslator.visit(SLDTransformer.java:866)
+                 * at org.geotools.styling.SLDTransformer$SLDTranslator.visit(SLDTransformer.java:838)
+                 * at org.geotools.styling.StyledLayerDescriptorImpl.accept(StyledLayerDescriptorImpl.java:196)
+                 * at org.geotools.styling.SLDTransformer$SLDTranslator.encode(SLDTransformer.java:1220)
+                 * at org.geotools.styling.SLDTransformer$SLDTranslator.encode(SLDTransformer.java:1229)
+                 * at org.geotools.xml.transform.TransformerBase$XMLReaderSupport.parse(TransformerBase.java:1026)
+                 * at com.sun.org.apache.xalan.internal.xsltc.trax.TransformerImpl.transformIdentity(TransformerImpl.java:677)
+                 * at com.sun.org.apache.xalan.internal.xsltc.trax.TransformerImpl.transform(TransformerImpl.java:746)
+                 * at com.sun.org.apache.xalan.internal.xsltc.trax.TransformerImpl.transform(TransformerImpl.java:359)
+                 * at org.geotools.xml.transform.TransformerBase$Task.run(TransformerBase.java:300)
+                 * at org.geotools.xml.transform.TransformerBase.transform(TransformerBase.java:133)
+                 * at org.geotools.xml.transform.TransformerBase.transform(TransformerBase.java:112)
+                 * at org.geoserver.catalog.SLDHandler.encode10(SLDHandler.java:193)
+                 * at org.geoserver.catalog.SLDHandler.encode(SLDHandler.java:182)
+                 * at org.geoserver.catalog.ResourcePool.writeStyle(ResourcePool.java:1799)
+                 */
+               /* ResourcePool resourcePool = catalog.getResourcePool();
+                try {
+                    resourcePool.writeStyle(styleInfo, styleSld);
+                } catch (IOException e) {
+                    throw new RestletException("Error writing style", Status.SERVER_ERROR_INTERNAL, e);
+                }*/
+
+                // With serializeSldFileInCatalog is not required
+                //catalog.save( styleInfo );
+
+                LOGGER.info("PUT Style Package: " + name + ", workspace: " + workspace);
+
+            } catch (RestletException e) {
+                // Re-throw the exception
+                throw e;
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                LOGGER.severe("Error processing the style package (PUT): " + e.getMessage());
+                throw new RestletException( "Error processing the style", Status.SERVER_ERROR_INTERNAL, e );
+            } finally {
+                FileUtils.deleteQuietly(directory);
+            }
         }
         else if (object instanceof Style || object instanceof InputStream) {
             /*
@@ -235,7 +425,10 @@ public class StyleResource extends AbstractCatalogResource {
              */
             catalog.save(s);
         }
-        
+        else if (object instanceof InputStream) {
+            LOGGER.info( "PUT style InputStream");
+
+        }
         LOGGER.info( "PUT style " + style);
     }
 
@@ -267,5 +460,159 @@ public class StyleResource extends AbstractCatalogResource {
         
         LOGGER.info( "DELETE style " + style);
        
+    }
+
+
+    /**
+     * Unzips the ZIP stream.
+     *
+     */
+    private File unzipSldPackage(InputStream object) throws IOException {
+        File tempDir = Files.createTempDir();
+        RESTUtils.unzipInputStream(new ZipInputStream((InputStream) object), tempDir);
+
+        return tempDir;
+    }
+
+    /**
+     * Returns the sld file in the given directory. If no sld file, throws an exception
+     *
+     * @param directory
+     * @return
+     */
+    private File retrieveSldFile(File directory) {
+        File[] matchingFiles = directory.listFiles(new FilenameFilter() {
+            public boolean accept(File dir, String name) {
+                return name.endsWith("sld");
+            }
+        });
+
+        if (matchingFiles.length == 0) {
+            throw new RestletException("No sld file provided:", Status.CLIENT_ERROR_FORBIDDEN);
+        }
+
+        LOGGER.fine("retrieveSldFile (sldFile): " + matchingFiles[0].getAbsolutePath());
+
+        return matchingFiles[0];
+    }
+
+    /**
+     * Save the image resources in the styles folder
+     *
+     * @param directory     Temporary directory with images from SLD package
+     * @param workspace     Geoserver workspace name for the style
+     * @throws java.io.IOException
+     */
+    private void saveImageResources(File directory, String workspace) throws IOException {
+        File stylesDir = new File(getStylesFolderPath(workspace));
+
+        File[] imageFiles = retrieveImageFiles(directory);
+
+        for (int i = 0; i < imageFiles.length; i++) {
+            FileUtils.copyFileToDirectory(imageFiles[i],
+                    stylesDir);
+        }
+    }
+
+    /**
+     * Returns a list of image files in the given directory
+     *
+     * @param directory
+     * @return
+     */
+    private File[] retrieveImageFiles(File directory) {
+        File[] matchingFiles = directory.listFiles(new FilenameFilter() {
+            public boolean accept(File dir, String name) {
+                return validImageFileExtensions.contains(FilenameUtils.getExtension(name).toLowerCase());
+            }
+        });
+
+        return matchingFiles;
+    }
+
+    /**
+     * Parses the sld file.
+     *
+     * @param sldFile
+     * @return
+     */
+    private Style parseSld(File sldFile) {
+        Style style = null;
+        InputStream is = null;
+
+        try {
+            is = new FileInputStream(sldFile);
+
+            SLDParser parser
+                    = new SLDParser(CommonFactoryFinder.getStyleFactory(null), is);
+
+            Style[] styles = parser.readXML();
+            if (styles.length > 0) {
+                style = styles[0];
+            }
+
+            if (style == null) {
+                throw new RestletException("Style error.", Status.CLIENT_ERROR_BAD_REQUEST);
+            }
+
+            return style;
+
+        } catch (Exception ex) {
+            LOGGER.severe(ex.getMessage());
+            throw new RestletException("Style error.", Status.CLIENT_ERROR_BAD_REQUEST);
+
+        } finally {
+            IOUtils.closeQuietly(is);
+        }
+    }
+
+    /**
+     * Checks if style is in the catalog.
+     *
+     * @param workspaceName     Workspace name
+     * @param name              Style name
+     */
+    private boolean existsStyleInCatalog(String workspaceName, String name) {
+        return (catalog.getStyleByName(workspaceName, name ) != null);
+    }
+
+    /**
+     * Serializes the uploaded sld file in the catalog
+     *
+     * @param sldFile
+     * @param uploadedSldFile
+     */
+    private void serializeSldFileInCatalog(File sldFile, File uploadedSldFile) {
+        BufferedOutputStream out = null;
+        try {
+            out = new BufferedOutputStream(new FileOutputStream(sldFile));
+            byte[] sldContent = FileUtils.readFileToByteArray(uploadedSldFile);
+            out.write(sldContent);
+            out.flush();
+        } catch (IOException e) {
+            throw new RestletException("Error creating file", Status.SERVER_ERROR_INTERNAL, e);
+        } finally {
+            IOUtils.closeQuietly(out);
+        }
+    }
+
+    private String getStylePath(StyleInfo styleInfo) {
+        String workspaceName = (styleInfo.getWorkspace() != null)?styleInfo.getWorkspace().getName():null;
+
+        String stylesFolder = getStylesFolderPath(workspaceName);
+        String stylePath = stylesFolder + "/" + styleInfo.getFilename();
+
+        return stylePath;
+    }
+
+    private String getStylesFolderPath(String workspace) {
+        String path = "styles" + File.separator;
+
+        if (workspace != null) {
+            path = "workspaces" + File.separator + workspace + File.separator + path;
+        }
+        path = catalog.getResourceLoader().getBaseDirectory().getAbsolutePath() + File.separator + path;
+
+        return path;
     }
 }

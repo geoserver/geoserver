@@ -512,10 +512,6 @@
             <key><value>/workspaces/{workspace}/coveragestores/{coveragestore}/coverages/{coverage}/index/granules/{granule}</value></key>
             <value>structuredCoverageFinder</value>
         </entry>
-        <entry>
-          <key><value>/sld/{workspace}/{style}</value></key>
-          <value>stylePackageFinder</value>
-        </entry>
   </map>
 </property>
 </bean>
@@ -571,7 +567,5 @@
 
   <bean id="aboutManifestFinder" class="org.geoserver.rest.AboutManifestFinder" />
   <bean id="aboutVersionFinder" class="org.geoserver.rest.AboutVersionFinder" />
-
-  <bean id="stylePackageFinder" class="org.geoserver.catalog.rest.StylePackageFinder" parent="abstractCatalogFinder"/>
 
 </beans>

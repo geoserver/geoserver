@@ -33,9 +33,7 @@ import org.geoserver.test.RemoteOWSTestSupport;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSTestSupport;
-import org.geoserver.wms.featureinfo.GML3FeatureInfoOutputFormat;
-import org.geoserver.wms.featureinfo.GetFeatureInfoOutputFormat;
-import org.geoserver.wms.featureinfo.TextFeatureInfoOutputFormat;
+import org.geoserver.wms.featureinfo.*;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.geometry.jts.ReferencedEnvelope3D;
@@ -181,18 +179,54 @@ public class GetFeatureInfoTest extends WMSTestSupport {
 	/**
      * Tests GML output does not break when asking for an area that has no data with
      * GML feature bounding enabled
-     * 
-     * @throws Exception
+     *
+     * @param contentType Content-type (MIME-type) to test on.
+     * @throws Exception When an XPath Exception occurs.
      */
-    @Test 
-    public void testGMLNoData() throws Exception {
+    private void testGMLNoData(String contentType) throws Exception {
         String layer = getLayerId(MockData.PONDS);
         String request = "wms?version=1.1.1&bbox=-0.002,-0.002,0.002,0.002&styles=&format=jpeg" +
-                "&info_format=application/vnd.ogc.gml&request=GetFeatureInfo&layers="
+                "&info_format=" + contentType +"&request=GetFeatureInfo&layers="
                 + layer + "&query_layers=" + layer + "&width=20&height=20&x=20&y=20";
         Document dom = getAsDOM(request);
         XMLAssert.assertXpathEvaluatesTo("1", "count(//wfs:FeatureCollection)", dom);
         XMLAssert.assertXpathEvaluatesTo("0", "count(//gml:featureMember)", dom);
+    }
+
+    /**
+     * Tests GML output does not break when asking for an area that has no data with
+     * GML feature bounding enabled. This method tests GML 2 with Content-Type:
+     * <code>application/vnd.ogc.gml</code>.
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testGMLNoData() throws Exception {
+        this.testGMLNoData(GML2FeatureInfoOutputFormat.FORMAT);
+    }
+
+    /**
+     * Tests GML output does not break when asking for an area that has no data with
+     * GML feature bounding enabled. This method tests GML 2 with Content-Type:
+     * <code>text/xml</code>.
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testXMLNoData() throws Exception {
+        this.testGMLNoData(XML2FeatureInfoOutputFormat.FORMAT);
+    }
+
+    /**
+     * Tests GML output does not break when asking for an area that has no data with
+     * GML feature bounding enabled. This method tests GML 3.1.1 with Content-Type:
+     * <code>text/xml; subtype=gml/3.1.1</code>.
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testXML311NoData() throws Exception {
+        this.testGMLNoData(XML311FeatureInfoOutputFormat.FORMAT);
     }
     
     /**

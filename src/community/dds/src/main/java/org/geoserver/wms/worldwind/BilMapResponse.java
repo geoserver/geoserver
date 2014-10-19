@@ -47,8 +47,6 @@ import org.opengis.coverage.grid.GridCoverage;
 import org.opengis.coverage.grid.GridCoverageReader;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.cs.AxisDirection;
-import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
 import org.vfny.geoserver.wcs.WcsException;
 
@@ -130,7 +128,7 @@ public final class BilMapResponse extends RenderedImageMapResponse {
 		GridCoverage2D subCov = null;
 		try {
 			subCov = getFinalCoverage(request,
-					mapLayerInfo, (GridCoverage2DReader)coverageReader);
+					mapLayerInfo, mapContent, (GridCoverage2DReader)coverageReader);
 		} catch (IndexOutOfBoundsException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -214,6 +212,7 @@ public final class BilMapResponse extends RenderedImageMapResponse {
 	 * @param request CoverageRequest
 	 * @param meta CoverageInfo
 	 * @param parameters
+	 * @param mapContent Context for GetMap request.
 	 * @param coverage GridCoverage
 	 * @return GridCoverage2D
 	 * @throws WcsException
@@ -223,62 +222,27 @@ public final class BilMapResponse extends RenderedImageMapResponse {
 	 * @throws TransformException
 	 */
 	private static GridCoverage2D getFinalCoverage(GetMapRequest request, MapLayerInfo meta,
-	    GridCoverage2DReader coverageReader /*GridCoverage coverage*/)
+	        WMSMapContent mapContent, GridCoverage2DReader coverageReader)
 	    throws WcsException, IOException, IndexOutOfBoundsException, FactoryException,
 	        TransformException {
 	    // This is the final Response CRS
 	    final String responseCRS = request.getSRS();
-	
-	    // - first check if the responseCRS is present on the Coverage
-	    // ResponseCRSs list
-	    /*
-	    if (!meta.getSRS().contains(responseCRS)) {
-	        throw new WmsException("This Layer does not support the requested Response-CRS.");
-	    }
-		*/
+
 	    // - then create the Coordinate Reference System
 	    final CoordinateReferenceSystem targetCRS = CRS.decode(responseCRS);
-	
+
 	    // This is the CRS of the requested Envelope
 	    final String requestCRS = request.getSRS();
-	
-	    // - first check if the requestCRS is present on the Coverage
-	    // RequestCRSs list
-	    /*
-	    if (!meta.getSRS().contains(requestCRS)) {
-	        throw new WmsException("This Layer does not support the requested CRS.");
-	    }
-		*/
+
 	    // - then create the Coordinate Reference System
 	    final CoordinateReferenceSystem sourceCRS = CRS.decode(requestCRS);
-	
+
 	    // This is the CRS of the Coverage Envelope
 	    final CoordinateReferenceSystem cvCRS = ((GeneralEnvelope) coverageReader
 	        .getOriginalEnvelope()).getCoordinateReferenceSystem();
-	    final MathTransform GCCRSTodeviceCRSTransformdeviceCRSToGCCRSTransform = CRS
-	        .findMathTransform(cvCRS, sourceCRS, true);
-	    final MathTransform GCCRSTodeviceCRSTransform = CRS.findMathTransform(cvCRS, targetCRS, true);
-	    final MathTransform deviceCRSToGCCRSTransform = GCCRSTodeviceCRSTransformdeviceCRSToGCCRSTransform
-	        .inverse();
-	
-	    com.vividsolutions.jts.geom.Envelope envelope = request.getBbox();
-	    GeneralEnvelope destinationEnvelope;
-	    final boolean lonFirst = sourceCRS.getCoordinateSystem().getAxis(0).getDirection().absolute()
-	                                      .equals(AxisDirection.EAST);
-	
-	    // the envelope we are provided with is lon,lat always
-	    if (!lonFirst) {
-	        destinationEnvelope = new GeneralEnvelope(new double[] {
-	                    envelope.getMinY(), envelope.getMinX()
-	                }, new double[] { envelope.getMaxY(), envelope.getMaxX() });
-	    } else {
-	        destinationEnvelope = new GeneralEnvelope(new double[] {
-	                    envelope.getMinX(), envelope.getMinY()
-	                }, new double[] { envelope.getMaxX(), envelope.getMaxY() });
-	    }
-	
-	    destinationEnvelope.setCoordinateReferenceSystem(sourceCRS);
-	
+
+	    GeneralEnvelope destinationEnvelope = new GeneralEnvelope(mapContent.getRenderingArea());
+
 	    // this is the destination envelope in the coverage crs
         final GeneralEnvelope destinationEnvelopeInSourceCRS = CRS.transform(destinationEnvelope,
                 cvCRS);

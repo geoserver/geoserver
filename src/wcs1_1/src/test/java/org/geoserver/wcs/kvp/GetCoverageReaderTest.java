@@ -92,6 +92,7 @@ public class GetCoverageReaderTest extends WCSTestSupport {
 
     }
 
+    @Test
     public void testUnknownCoverageParams() throws Exception {
         Map<String, Object> raw = baseMap();
         final String layerId = "fairyTales:rumpelstilskin";
@@ -107,6 +108,7 @@ public class GetCoverageReaderTest extends WCSTestSupport {
         }
     }
 
+    @Test
     public void testBasic() throws Exception {
         Map<String, Object> raw = baseMap();
         final String layerId = getLayerId(TASMANIA_BM);
@@ -125,6 +127,7 @@ public class GetCoverageReaderTest extends WCSTestSupport {
                 .getGridBaseCRS());
     }
 
+    @Test
     public void testUnsupportedCRS() throws Exception {
         Map<String, Object> raw = baseMap();
         final String layerId = getLayerId(TASMANIA_BM);
@@ -141,6 +144,7 @@ public class GetCoverageReaderTest extends WCSTestSupport {
         }
     }
 
+    @Test
     public void testGridTypes() throws Exception {
         Map<String, Object> raw = baseMap();
         final String layerId = getLayerId(TASMANIA_BM);
@@ -184,6 +188,7 @@ public class GetCoverageReaderTest extends WCSTestSupport {
         }
     }
 
+    @Test
     public void testGridCS() throws Exception {
         Map<String, Object> raw = baseMap();
         final String layerId = getLayerId(TASMANIA_BM);
@@ -212,6 +217,7 @@ public class GetCoverageReaderTest extends WCSTestSupport {
         }
     }
 
+    @Test
     public void testGridOrigin() throws Exception {
         Map<String, Object> raw = baseMap();
         final String layerId = getLayerId(TASMANIA_BM);
@@ -246,6 +252,7 @@ public class GetCoverageReaderTest extends WCSTestSupport {
         }
     }
 
+    @Test
     public void testGridOffsets() throws Exception {
         Map<String, Object> raw = baseMap();
 
@@ -283,36 +290,36 @@ public class GetCoverageReaderTest extends WCSTestSupport {
     }
 
     /**
-     * Tests valid range subset expressions, but with a mix of valid and invalid identifiers
-     * 
+     * Tests Bicubic (also called cubic) interpolation with a RangeSubset.
+     *
      * @throws Exception
      */
-    public void testRangeSubset() throws Exception {
-        Map<String, Object> raw = baseMap();
-        final String layerId = getLayerId(TASMANIA_BM);
-        raw.put("identifier", layerId);
-        raw.put("format", "image/tiff");
-        raw.put("BoundingBox", "-45,146,-42,147");
+    @Test
+    public void testInterpolationBicubic() throws Exception {
+        this.testRangeSubset("cubic");
+    }
 
-        // ok, finally something we can parse
-        raw.put("rangeSubset", "BlueMarble:nearest[Bands[Red_band]]");
-        GetCoverageType getCoverage = (GetCoverageType) reader.read(reader.createRequest(),
-                parseKvp(raw), raw);
-        RangeSubsetType rs = getCoverage.getRangeSubset();
-        assertNotNull(rs);
-        assertEquals(1, rs.getFieldSubset().size());
-        FieldSubsetType field = (FieldSubsetType) rs.getFieldSubset().get(0);
-        assertEquals("BlueMarble", field.getIdentifier().getValue());
-        assertEquals(1, field.getAxisSubset().size());
-        AxisSubsetType axis = (AxisSubsetType) field.getAxisSubset().get(0);
-        assertEquals("Bands", axis.getIdentifier());
-        List keys = axis.getKey();
-        assertEquals(1, keys.size());
-        assertEquals("Red_band", keys.get(0));
+    /**
+     * Tests Bilinear (also called linear) interpolation with a RangeSubset.
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testInterpolationBilinear() throws Exception {
+        this.testRangeSubset("linear");
+    }
+
+    /**
+     * Tests Nearest neighbor (also called nearest) interpolation with a RangeSubset.
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testInterpolationNearest() throws Exception {
+        this.testRangeSubset("nearest");
     }
 
     protected Map parseKvp(Map /* <String,String> */raw) throws Exception {
-
         // parse like the dispatcher but make sure we don't change the original map
         HashMap input = new HashMap(raw);
         List<Throwable> errors = KvpUtils.parse(input);
@@ -330,6 +337,41 @@ public class GetCoverageReaderTest extends WCSTestSupport {
             result.put(key.toUpperCase(), input.get(key));
         }
         return new CaseInsensitiveMap(result);
+    }
+
+    /**
+     * Tests valid range subset expressions, but with a mix of valid and invalid identifiers.
+     *
+     * @param interpolation The used interpolation method.
+     * @throws Exception
+     */
+    private void testRangeSubset(String interpolation) throws Exception {
+        Map<String, Object> raw = baseMap();
+        final String layerId = getLayerId(TASMANIA_BM);
+
+        raw.put("identifier", layerId);
+        raw.put("format", "image/tiff");
+        raw.put("BoundingBox", "-45,146,-42,147");
+        raw.put("rangeSubset", "BlueMarble:" + interpolation + "[Bands[Red_band]]");
+
+        GetCoverageType getCoverage = (GetCoverageType) reader.read(reader.createRequest(), parseKvp(raw), raw);
+        RangeSubsetType rs = getCoverage.getRangeSubset();
+        FieldSubsetType field = (FieldSubsetType) rs.getFieldSubset().get(0);
+        AxisSubsetType axis = (AxisSubsetType) field.getAxisSubset().get(0);
+        List keys = axis.getKey();
+
+        assertNotNull(rs);
+        assertEquals(1, rs.getFieldSubset().size());
+
+        assertEquals("BlueMarble", field.getIdentifier().getValue());
+        assertEquals(1, field.getAxisSubset().size());
+
+        assertEquals("Bands", axis.getIdentifier());
+
+        assertEquals(1, keys.size());
+        assertEquals("Red_band", keys.get(0));
+
+        assertEquals(field.getInterpolationType(), interpolation);
     }
 
 }

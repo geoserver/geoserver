@@ -28,7 +28,7 @@ import org.geoserver.web.wicket.SRSListTextArea;
 
 @SuppressWarnings("serial")
 public class WFSLayerConfig extends LayerConfigurationPanel {
-    
+
     protected GeoServerDialog dialog;
 
     public WFSLayerConfig(String id, IModel model){
@@ -44,7 +44,9 @@ public class WFSLayerConfig extends LayerConfigurationPanel {
         Border mdb = new FormComponentFeedbackBorder("maxDecimalsBorder");
         mdb.add(maxDecimals);
         add(mdb);
-        
+        CheckBox skipNumberMatched = new CheckBox("skipNumberMatched", new PropertyModel(model, "resource.skipNumberMatched"));
+        add(skipNumberMatched);
+
         // other srs list
         dialog = new GeoServerDialog("wfsDialog");
         add(dialog);
@@ -65,6 +67,14 @@ public class WFSLayerConfig extends LayerConfigurationPanel {
                 Boolean visible = overrideServiceSRS.getConvertedInput();
                 srsList.setVisible(visible);
                 target.addComponent(otherSrsContainer);
+            }
+        });
+        add(new AjaxLink("skipNumberMatchedHelp") {
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                dialog.showInfo(target,
+                        new StringResourceModel("skipNumberMatched", WFSLayerConfig.this, null),
+                        new StringResourceModel("skipNumberMatched.message", WFSLayerConfig.this, null));
             }
         });
         add(new AjaxLink("otherSRSHelp") {

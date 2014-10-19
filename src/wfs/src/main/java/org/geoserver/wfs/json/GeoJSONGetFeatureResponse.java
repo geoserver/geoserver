@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -127,15 +128,16 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat {
         boolean hasGeom = false;
 
         // get feature count for request
-        Integer featureCount = null; 
+        BigInteger featureCount = null;
         // for WFS 1.0.0 and WFS 1.1.0 a request with the query must be executed
         if(describeFeatureType != null) {
             if (describeFeatureType.getParameters()[0] instanceof GetFeatureType) {
-                featureCount = getFeatureCountFromWFS11Request(describeFeatureType, wfs);
+                featureCount = BigInteger.valueOf(getFeatureCountFromWFS11Request(describeFeatureType, wfs));
             }
             // for WFS 2.0.0 the total number of features is stored in the featureCollection
             else if (describeFeatureType.getParameters()[0] instanceof net.opengis.wfs20.GetFeatureType){
-                featureCount = featureCollection.getTotalNumberOfFeatures().intValue(); 
+                featureCount = (featureCollection.getTotalNumberOfFeatures().longValue() < 0)
+                        ? null : featureCollection.getTotalNumberOfFeatures();
             }
         }
         
@@ -151,6 +153,8 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat {
             jsonWriter.object().key("type").value("FeatureCollection");
             if(featureCount != null) {
                 jsonWriter.key("totalFeatures").value(featureCount);
+            } else {
+                jsonWriter.key("totalFeatures").value("unknown");
             }
             jsonWriter.key("features");
             jsonWriter.array();

@@ -289,6 +289,16 @@ public abstract class DecoratingFeatureTypeInfo extends AbstractDecorator<Featur
     }
 
     @Override
+    public boolean getSkipNumberMatched() {
+        return delegate.getSkipNumberMatched();
+    }
+
+    @Override
+    public void setSkipNumberMatched(boolean skipNumberMatched) {
+        delegate.setSkipNumberMatched(skipNumberMatched);
+    }
+
+    @Override
     public Measure getLinearizationTolerance() {
         return delegate.getLinearizationTolerance();
     }

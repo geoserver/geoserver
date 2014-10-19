@@ -36,7 +36,7 @@ public class FeatureTypeInfoImpl extends ResourceInfoImpl implements
     protected List<String> responseSRS = new ArrayList<String>();
     
     boolean overridingServiceSRS;
-    
+    boolean skipNumberMatched = false;
     boolean circularArcPresent;
     
     public boolean isCircularArcPresent() {
@@ -135,6 +135,16 @@ public class FeatureTypeInfoImpl extends ResourceInfoImpl implements
     }
 
     @Override
+    public boolean getSkipNumberMatched() {
+        return skipNumberMatched;
+    }
+
+    @Override
+    public void setSkipNumberMatched(boolean skipNumberMatched) {
+        this.skipNumberMatched = skipNumberMatched;
+    }
+
+    @Override
     public int hashCode() {
         final int prime = 31;
         int result = super.hashCode();
@@ -144,6 +154,7 @@ public class FeatureTypeInfoImpl extends ResourceInfoImpl implements
         result = prime * result + numDecimals;
         result = prime * result + (overridingServiceSRS ? 1231 : 1237);
         result = prime * result + ((responseSRS == null) ? 0 : responseSRS.hashCode());
+        result = prime * result + (skipNumberMatched ? 2845 : 3984);
         return result;
     }
 
@@ -186,9 +197,10 @@ public class FeatureTypeInfoImpl extends ResourceInfoImpl implements
             return false;
         if (numDecimals != other.getNumDecimals())
             return false;
-        if(overridingServiceSRS != other.isOverridingServiceSRS()) {
+        if(overridingServiceSRS != other.isOverridingServiceSRS())
             return false;
-        }
+        if (skipNumberMatched != other.getSkipNumberMatched())
+            return false;
         return true;
     }
 

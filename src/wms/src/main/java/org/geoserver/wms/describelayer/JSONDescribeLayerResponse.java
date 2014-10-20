@@ -20,6 +20,7 @@ import net.sf.json.util.JSONBuilder;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
+import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.json.JSONType;
 import org.geoserver.wms.DescribeLayerRequest;
@@ -99,7 +100,7 @@ public class JSONDescribeLayerResponse extends DescribeLayerResponse {
             IOUtils.closeQuietly(osw);
         }
     }
-
+    
     private void writeJSON(Writer outWriter, DescribeLayerModel description) throws IOException {
 
         try {
@@ -137,4 +138,8 @@ public class JSONDescribeLayerResponse extends DescribeLayerResponse {
         }
     }
 
+    @Override
+    public String getCharset(Operation operation){
+        return wms.getGeoServer().getSettings().getCharset();
+    }
 }

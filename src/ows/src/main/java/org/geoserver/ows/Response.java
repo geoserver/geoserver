@@ -215,4 +215,14 @@ public abstract class Response {
         }
         return name;
     }
+    
+    /**
+     * Returns the charset for this response, the Dispatcher will set it in the ServletResponse.
+     * The default implementation returns <code>null</code>, in this case no encoding should be set.
+     * Subclasses returning text documents (CSV,HTML,JSON) should override taking into account SettingsInfo.getCharset()
+     * as well as the specific encoding requirements of the returned format.
+     */
+    public String getCharset(Operation operation){ 
+       return null;
+    }
 }

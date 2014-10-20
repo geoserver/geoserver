@@ -42,7 +42,7 @@ public class CSVOutputFormatTest extends WFSTestSupport {
 
 	@Test
     public void testFullRequest() throws Exception {
-        MockHttpServletResponse resp = getAsServletResponse("wfs?version=1.1.0&request=GetFeature&typeName=sf:PrimitiveGeoFeature&outputFormat=csv");
+        MockHttpServletResponse resp = getAsServletResponse("wfs?version=1.1.0&request=GetFeature&typeName=sf:PrimitiveGeoFeature&outputFormat=csv","");
         
         FeatureSource fs = getFeatureSource(MockData.PRIMITIVEGEOFEATURE);
         
@@ -50,6 +50,9 @@ public class CSVOutputFormatTest extends WFSTestSupport {
         
         // check the mime type
         assertEquals("text/csv", resp.getContentType());
+        
+        // check the charset encoding
+        assertEquals("UTF-8", resp.getCharacterEncoding());
         
         // check the content disposition
         assertEquals("attachment; filename=PrimitiveGeoFeature.csv", resp.getHeader("Content-Disposition"));

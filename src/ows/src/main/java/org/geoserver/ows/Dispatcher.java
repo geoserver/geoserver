@@ -966,6 +966,12 @@ public class Dispatcher extends AbstractController {
                 req.getHttpResponse().setContentType(mimeType);
             }
 
+            //set the charset
+            String charset = response.getCharset(opDescriptor);
+            if(charset != null){
+                req.getHttpResponse().setCharacterEncoding(charset);
+            }
+            
             setHeaders(req,opDescriptor,result,response);
             
             OutputStream output = outputStrategy.getDestination(req.getHttpResponse());

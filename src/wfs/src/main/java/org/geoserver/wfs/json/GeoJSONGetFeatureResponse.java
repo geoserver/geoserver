@@ -142,7 +142,7 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat {
         }
         
         try {
-            osw = new OutputStreamWriter(output, gs.getSettings().getCharset());
+            osw = new OutputStreamWriter(output, gs.getGlobal().getSettings().getCharset());
             outWriter = new BufferedWriter(osw);
 
             if (jsonp) {
@@ -441,5 +441,10 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat {
         }
 
         return totalCount;
+    }
+    
+    @Override
+    public String getCharset(Operation operation){
+        return gs.getGlobal().getSettings().getCharset();
     }
 }

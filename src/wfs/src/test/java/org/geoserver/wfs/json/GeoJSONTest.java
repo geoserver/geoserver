@@ -133,8 +133,9 @@ public class GeoJSONTest extends WFSTestSupport {
     
     @Test
     public void testGetSimpleJson() throws Exception {    
-        MockHttpServletResponse response = getAsServletResponse("wfs?request=GetFeature&version=1.0.0&typename=sf:PrimitiveGeoFeature&maxfeatures=1&outputformat="+JSONType.simple_json);
+        MockHttpServletResponse response = getAsServletResponse("wfs?request=GetFeature&version=1.0.0&typename=sf:PrimitiveGeoFeature&maxfeatures=1&outputformat="+JSONType.simple_json,"");
         assertEquals("application/json", response.getContentType());
+        assertEquals("UTF-8", response.getCharacterEncoding());
         String out = response.getOutputStreamContent();
         
         JSONObject rootObject = JSONObject.fromObject( out );

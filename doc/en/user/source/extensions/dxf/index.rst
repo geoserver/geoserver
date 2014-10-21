@@ -21,6 +21,25 @@ They produce a standard DXF file or a DXF file compressed in zip format.
 The WPS PPIO adds dxf as an on output format option for WPS processes.
 The WPS PPIO requires the WPS extension to be installed on GeoServer.
 
+Installation
+-------------
+
+The DXF plugin is listed among the other extension downloads on the GeoServer download page in the Output formats section.
+
+The installation process is similar to other GeoServer extensions:
+
+#. Download the appropriate archive from the GeoServer download page. Please verify that the version number in the filename corresponds to the version of GeoServer you are running. The file will be called :file:`geoserver-A.B.C-dxf-plugin.zip` where ``A.B.C`` is the GeoServer version.
+
+#. Extract the contents of the archive into the :file:`WEB-INF/lib` directory in GeoServer. Make sure you do not create any sub-directories during the extraction process.
+
+#. Restart GeoServer.
+
+If installation was successful, you will see DXF and DXF-Zip entry in the layer's preview drop down box in the WFS section.
+
+
+Note: Make sure to delete the gs-dxf-wps-<version>.jar, when not having the WPS plugin installed or your GeoServer will crash because of no available WPS plugin.
+
+
 WFS Output Format usage
 ---------------------------
 

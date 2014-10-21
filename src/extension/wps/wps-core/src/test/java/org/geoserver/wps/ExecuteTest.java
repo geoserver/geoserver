@@ -494,6 +494,43 @@ public class ExecuteTest extends WPSTestSupport {
     }
     
     @Test
+    public void testInlineShapezip() throws Exception {
+        String xml = "<wps:Execute service='WPS' version='1.0.0' xmlns:wps='http://www.opengis.net/wps/1.0.0' " + 
+        "xmlns:ows='http://www.opengis.net/ows/1.1'>" + 
+        "<ows:Identifier>gs:BufferFeatureCollection</ows:Identifier>" + 
+         "<wps:DataInputs>" + 
+            "<wps:Input>" + 
+                "<ows:Identifier>features</ows:Identifier>" + 
+                "<wps:Data>" +
+                  "<wps:ComplexData mimeType=\"application/zip\" encoding=\"base64\"><![CDATA[" + 
+                       readFileIntoString("states-zip-base64.txt") + 
+                  "]]></wps:ComplexData>" + 
+                "</wps:Data>" +     
+            "</wps:Input>" + 
+            "<wps:Input>" + 
+               "<ows:Identifier>distance</ows:Identifier>" + 
+               "<wps:Data>" + 
+                 "<wps:LiteralData>10</wps:LiteralData>" + 
+               "</wps:Data>" + 
+            "</wps:Input>" + 
+           "</wps:DataInputs>" +
+           "<wps:ResponseForm>" +  
+             "<wps:RawDataOutput mimeType=\"application/json\">" + 
+                 "<ows:Identifier>result</ows:Identifier>" +
+             "</wps:RawDataOutput>" +
+           "</wps:ResponseForm>" + 
+         "</wps:Execute>";
+  
+        MockHttpServletResponse r = postAsServletResponse("wps", xml);
+        assertEquals("application/json", r.getContentType());
+        // System.out.println(r.getOutputStreamContent());
+        FeatureCollection fc = new FeatureJSON().readFeatureCollection(r.getOutputStreamContent());
+        assertEquals(2, fc.size());
+        
+    }
+
+    
+    @Test
     public void testShapeZip() throws Exception {
         String xml = "<wps:Execute service='WPS' version='1.0.0' xmlns:xlink=\"http://www.w3.org/1999/xlink\" " +
                 "xmlns:wps='http://www.opengis.net/wps/1.0.0' xmlns:wfs='http://www.opengis.net/wfs' " + 

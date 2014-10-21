@@ -5,29 +5,27 @@
  */
 package org.geoserver.wps.process;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.apache.commons.io.IOUtils;
+public class ByteArrayRawData extends AbstractRawData {
 
-public class StringRawData extends AbstractRawData {
+    private byte[] data;
 
-    private String data;
-
-    public StringRawData(String data, String mimeType) {
+    public ByteArrayRawData(byte[] data, String mimeType) {
         super(mimeType);
         this.data = data;
     }
 
     @Override
     public InputStream getInputStream() throws IOException {
-        return IOUtils.toInputStream(data);
+        return new ByteArrayInputStream(data);
     }
 
     @Override
     public String toString() {
-        return "StringRawData [data=" + data + ", mimeType=" + mimeType + ", extension="
-                + extension + "]";
+        return "ByteArrayRawData [mimeType=" + mimeType + "]";
     }
 
 }

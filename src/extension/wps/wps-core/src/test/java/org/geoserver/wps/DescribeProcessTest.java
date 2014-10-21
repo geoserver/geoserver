@@ -37,7 +37,12 @@ public class DescribeProcessTest extends WPSTestSupport {
     @Test
     public void testGetBufferFeatureCollection() throws Exception { // Standard Test A.4.3.1
         Document d = getAsDOM( root() + "service=wps&request=describeprocess&identifier=gs:BufferFeatureCollection");
-        // print(d);
+        print(d);
+
+        // check that we advertise the base64 encoding for application/zip
+        String base = "/wps:ProcessDescriptions/ProcessDescription/DataInputs";
+        assertXpathExists(base + "/Input[1]/ComplexData/Supported/Format[MimeType='application/zip']", d);
+        assertXpathEvaluatesTo("base64", base + "/Input[1]/ComplexData/Supported/Format[MimeType='application/zip']/Encoding", d);
     }
     
     private void testBufferDescription(Document d) throws Exception { // Standard Test A.4.3.3
@@ -49,9 +54,6 @@ public class DescribeProcessTest extends WPSTestSupport {
         assertXpathEvaluatesTo("true", "//ProcessDescription/@statusSupported", d);
         
         String base = "/wps:ProcessDescriptions/ProcessDescription/DataInputs";
-        
-        // check store and status
-        
         
         //first parameter
         assertXpathExists( base + "/Input[1]" , d );

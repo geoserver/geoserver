@@ -41,7 +41,6 @@ Paging
 Paging is now supported in App-Schema. There are a few exceptions:
 
    * Paging is only supported for data stores with JDBC back ends and will not work for data stores with property files. It has been tested with Oracle and PostGIS databases.
-   * Paging with filters involving nested attributes (attributes that exist inside a linked type with a different database table) is not yet supported. E.g. filtering by `gsml:MappedFeature/gsml:specification/gsml:GeologicUnit/gml:name`.
    * Paging with filters involving attributes that are mapped to functions will not be supported, as this cannot be translated into SQL.
 
 For more efficient SQL queries generation, please set ``isDenormalised`` to false where applicable (when a one to one database table is used). See :ref:`app-schema.mapping-file`.

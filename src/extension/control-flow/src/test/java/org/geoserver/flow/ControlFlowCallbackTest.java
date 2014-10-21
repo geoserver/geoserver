@@ -23,7 +23,7 @@ public class ControlFlowCallbackTest {
         TestingConfigurator tc = new TestingConfigurator();
         CountingController controller = new CountingController(1, 0);
         tc.controllers.add(controller);
-        callback.configurator = tc;
+        callback.provider = new DefaultFlowControllerProvider(tc);
         
         callback.operationDispatched(null, null);
         assertEquals(1, controller.requestIncomingCalls);
@@ -43,7 +43,7 @@ public class ControlFlowCallbackTest {
         CountingController c2 = new CountingController(1, 200);
         tc.controllers.add(c1);
         tc.controllers.add(c2);
-        callback.configurator = tc;
+        callback.provider = new DefaultFlowControllerProvider(tc);
         
         try {
             callback.operationDispatched(null, null);

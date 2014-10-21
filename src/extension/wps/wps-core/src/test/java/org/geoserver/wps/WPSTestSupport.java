@@ -7,6 +7,7 @@ package org.geoserver.wps;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -152,8 +153,9 @@ public abstract class WPSTestSupport extends GeoServerSystemTestSupport {
     }
 
     protected String readFileIntoString(String filename) throws IOException {
+        InputStream stream = getClass().getResourceAsStream( filename );
         BufferedReader in = 
-            new BufferedReader( new InputStreamReader(getClass().getResourceAsStream( filename ) ) );
+            new BufferedReader( new InputStreamReader(stream ) );
         StringBuffer sb = new StringBuffer();
         String line = null;
         while( (line = in.readLine() ) != null ) {

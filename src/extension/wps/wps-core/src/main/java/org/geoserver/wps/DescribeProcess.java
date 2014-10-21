@@ -38,6 +38,7 @@ import net.opengis.wps10.Wps10Factory;
 
 import org.geoserver.ows.Ows11Util;
 import org.geoserver.wfs.xml.XSProfile;
+import org.geoserver.wps.ppio.BinaryPPIO;
 import org.geoserver.wps.ppio.BoundingBoxPPIO;
 import org.geoserver.wps.ppio.ComplexPPIO;
 import org.geoserver.wps.ppio.LiteralPPIO;
@@ -124,7 +125,7 @@ public class DescribeProcess {
         pd.setStatusSupported(true);
         pd.setStoreSupported(true);
         
-        //data inputs
+        // data inputs
         DataInputsType inputs = wpsf.createDataInputsType();
         pd.setDataInputs(inputs);
         dataInputs( inputs, pf, name );
@@ -182,7 +183,7 @@ public class DescribeProcess {
                 }
                 if (p.metadata.get(Parameter.OPTIONS) != null) {
                     List<Object> options = (List<Object>) p.metadata.get(Parameter.OPTIONS);
-                    Object[] optionsArray = (Object[]) options.toArray(new Object[options.size()]);
+                    Object[] optionsArray = options.toArray(new Object[options.size()]);
                     addAllowedValues(literal, optionsArray);
                 } else if (lppio.getType().isEnum()) {
                 	Object[] enumValues = lppio.getType().getEnumConstants();
@@ -218,6 +219,13 @@ public class DescribeProcess {
                             ComplexDataDescriptionType ddt = wpsf
                                     .createComplexDataDescriptionType();
                             ddt.setMimeType(mimeType);
+                            // heuristic to figure out if a format is text based, or not, we
+                            // might want to expose this as a separate annotation/property down the
+                            // road
+                            if (!mimeType.contains("json") && !mimeType.contains("text")
+                                    && !mimeType.contains("xml") && !mimeType.contains("gml")) {
+                                ddt.setEncoding("base64");
+                            }
                             complex.getSupported().getFormat().add(ddt);
                             if (format == null) {
                                 format = ddt;
@@ -226,6 +234,9 @@ public class DescribeProcess {
                     } else {
                         format = wpsf.createComplexDataDescriptionType();
                         format.setMimeType(cppio.getMimeType());
+                        if (cppio instanceof BinaryPPIO) {
+                            format.setEncoding("base64");
+                        }
                         // add to supported
                         complex.getSupported().getFormat().add(format);
                     }

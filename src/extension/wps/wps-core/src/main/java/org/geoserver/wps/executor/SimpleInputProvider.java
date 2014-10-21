@@ -5,6 +5,7 @@
  */
 package org.geoserver.wps.executor;
 
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
@@ -51,8 +52,10 @@ import org.geoserver.wps.ppio.ComplexPPIO;
 import org.geoserver.wps.ppio.LiteralPPIO;
 import org.geoserver.wps.ppio.ProcessParameterIO;
 import org.geoserver.wps.ppio.RawDataPPIO;
+import org.geoserver.wps.process.ByteArrayRawData;
 import org.geoserver.wps.process.StringRawData;
 import org.geoserver.wps.resource.GridCoverageResource;
+import org.geotools.data.Base64;
 import org.opengis.coverage.grid.GridCoverage;
 import org.springframework.context.ApplicationContext;
 
@@ -138,10 +141,42 @@ class SimpleInputProvider implements InputProvider {
                 } else if (data.getComplexData() != null) {
                     ComplexDataType complex = data.getComplexData();
                     if (ppio instanceof RawDataPPIO) {
-                        String content = complex.getData().get(0).toString();
-                        return new StringRawData(content, complex.getMimeType());
+                        Object inputData = complex.getData().get(0);
+                        String encoding = complex.getEncoding();
+                        byte[] decoded = null;
+                        if (encoding != null) {
+                            if ("base64".equals(encoding)) {
+                                String input = inputData.toString();
+                                decoded = Base64.decode(input);
+                            } else {
+                                throw new WPSException("Unsupported encoding " + encoding);
+                            }
+                        } 
+                        
+                        if(decoded != null) {
+                            return new ByteArrayRawData(decoded, complex.getMimeType());
+                        } else {
+                            return new StringRawData(inputData.toString(), complex.getMimeType());
+                        }
+                        
                     } else {
-                        value = ((ComplexPPIO) ppio).decode(complex.getData().get(0));
+                        Object inputData = complex.getData().get(0);
+                        String encoding = complex.getEncoding();
+                        byte[] decoded = null;
+                        if (encoding != null) {
+                            if ("base64".equals(encoding)) {
+                                String input = inputData.toString();
+                                decoded = Base64.decode(input);
+                            } else {
+                                throw new WPSException("Unsupported encoding " + encoding);
+                            }
+                        }
+
+                        if (decoded != null) {
+                            value = ((ComplexPPIO) ppio).decode(new ByteArrayInputStream(decoded));
+                        } else {
+                            value = ((ComplexPPIO) ppio).decode(inputData);
+                        }
                     }
                 } else if (data.getBoundingBoxData() != null) {
                     value = ((BoundingBoxPPIO) ppio).decode(data.getBoundingBoxData());

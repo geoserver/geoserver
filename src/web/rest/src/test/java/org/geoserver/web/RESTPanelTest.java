@@ -1,4 +1,5 @@
-/* Copyright (c) 2014 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2014 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -100,5 +101,46 @@ public class RESTPanelTest extends GeoServerWicketTestSupport {
         assertEquals(
                 gs.getGlobal().getSettings().getMetadata().get(RESTUtils.ROOT_KEY, String.class),
                 root);
+    }
+
+    @Test
+    public void testQuietSettingOnGlobal() {
+        // Opening the selected page
+        tester.startPage(new GlobalSettingsPage());
+        tester.assertRenderedPage(GlobalSettingsPage.class);
+        tester.assertNoErrorMessage();
+
+        // Get GeoServer object for searching the global settings
+        GeoServer gs = getGeoServer();
+
+        // Set the root directory
+        FormTester form = tester.newFormTester("form");
+        form.setValue("extensions:0:content:quiet", false);
+        form.submit("submit");
+        // Check if no error has been found
+        tester.assertNoErrorMessage();
+        // Control if the defined root has been correctly set
+        assertEquals(
+                gs.getGlobal().getSettings().getMetadata().get(RESTUtils.QUIET_ON_NOT_FOUND_KEY, Boolean.class),
+                false);
+        
+        // Opening the selected page
+        tester.startPage(new GlobalSettingsPage());
+        tester.assertRenderedPage(GlobalSettingsPage.class);
+        tester.assertNoErrorMessage();
+
+        // Get GeoServer object for searching the global settings
+        gs = getGeoServer();
+
+        // Set the root directory
+        form = tester.newFormTester("form");
+        form.setValue("extensions:0:content:quiet", true);
+        form.submit("submit");
+        // Check if no error has been found
+        tester.assertNoErrorMessage();
+        // Control if the defined root has been correctly set
+        assertEquals(
+                gs.getGlobal().getSettings().getMetadata().get(RESTUtils.QUIET_ON_NOT_FOUND_KEY, Boolean.class),
+                true);
     }
 }

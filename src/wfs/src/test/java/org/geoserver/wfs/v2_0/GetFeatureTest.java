@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -15,6 +16,7 @@ import java.util.Collections;
 import javax.xml.namespace.QName;
 
 import org.custommonkey.xmlunit.XMLAssert;
+import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wfs.GMLInfo;
@@ -25,6 +27,7 @@ import org.geotools.gml3.v3_2.GML;
 import org.geotools.wfs.v2_0.WFS;
 import org.junit.Before;
 import org.junit.Test;
+import org.opengis.feature.type.FeatureType;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -42,6 +45,22 @@ public class GetFeatureTest extends WFS20TestSupport {
     protected void setUpInternal(SystemTestData data) throws Exception {
         data.addVectorLayer(new QName(SystemTestData.SF_URI, "WithGMLProperties", SystemTestData.SF_PREFIX), Collections.EMPTY_MAP,
             org.geoserver.wfs.v1_1.GetFeatureTest.class, getCatalog());
+    }
+
+    @Test
+    public void testSkipNumberMatched() throws Exception {
+        FeatureTypeInfo fti = this.getCatalog().getFeatureTypeByName("Fifteen");
+
+        fti.setSkipNumberMatched(true);
+        this.getCatalog().save(fti);
+
+        assertEquals(true, fti.getSkipNumberMatched());
+
+        Document dom = getAsDOM("wfs?request=GetFeature&typenames=cdf:Fifteen&version=2.0.0&service=wfs");
+        assertEquals("unknown", dom.getDocumentElement().getAttribute("numberMatched"));
+
+        fti.setSkipNumberMatched(false);
+        this.getCatalog().save(fti);
     }
 
     @Test

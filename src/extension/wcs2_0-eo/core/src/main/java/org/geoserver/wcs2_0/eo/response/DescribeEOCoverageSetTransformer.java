@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -44,6 +45,7 @@ import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.data.store.MaxFeaturesFeatureCollection;
 import org.geotools.factory.CommonFactoryFinder;
+import org.geotools.factory.GeoTools;
 import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -320,7 +322,7 @@ public class DescribeEOCoverageSetTransformer extends TransformerBase {
                 GranuleSource source = null;
                 try {
                     StructuredGridCoverage2DReader reader = (StructuredGridCoverage2DReader) ci
-                            .getGridCoverageReader(null, null);
+                            .getGridCoverageReader(null, GeoTools.getDefaultHints());
                     String name = codec.getCoverageName(ci);
                     source = reader.getGranules(name, true);
 

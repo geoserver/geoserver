@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -285,6 +286,16 @@ public abstract class DecoratingFeatureTypeInfo extends AbstractDecorator<Featur
     @Override
     public void setOverridingServiceSRS(boolean overridingServiceSRS) {
         delegate.setOverridingServiceSRS(overridingServiceSRS);
+    }
+
+    @Override
+    public boolean getSkipNumberMatched() {
+        return delegate.getSkipNumberMatched();
+    }
+
+    @Override
+    public void setSkipNumberMatched(boolean skipNumberMatched) {
+        delegate.setSkipNumberMatched(skipNumberMatched);
     }
 
     @Override

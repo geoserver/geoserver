@@ -1,0 +1,196 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!--DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd" -->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jms="http://www.springframework.org/schema/jms" xmlns:amq="http://activemq.apache.org/schema/core"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+                           http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/context
+                           http://www.springframework.org/schema/context/spring-context.xsd
+                           http://www.springframework.org/schema/jms
+                           http://www.springframework.org/schema/jms/spring-jms.xsd
+                           http://activemq.apache.org/schema/core
+                           http://activemq.apache.org/schema/core/activemq-core.xsd">
+
+	<context:component-scan base-package="it.geosoutions.geoserver.jms" />
+	<context:annotation-config />
+	
+    <bean id="clusterHomePageContentProvider" 
+          class="org.geoserver.cluster.impl.web.ClusterHomePageContentProvider">
+      <constructor-arg ref="JMSConfiguration"/>
+    </bean>
+	<bean id="JMSXBeanBrokerFactory"
+		class="org.geoserver.cluster.impl.JMSXBeanBrokerFactory" />
+
+	<bean id="JMSActiveMQFactory" class="org.geoserver.cluster.impl.JMSActiveMQFactory" />
+
+	<bean id="JMSActiveMQEmbeddedBrokerConfiguration"
+		class="org.geoserver.cluster.impl.ActiveMQEmbeddedBrokerConfiguration" />
+
+	<!-- REST INTERFACE -->
+
+	<bean id="jmsRestConfigMapping" class="org.geoserver.rest.RESTMapping">
+		<property name="routes">
+			<map>
+				<entry>
+					<key>
+						<value>/cluster</value>
+					</key>
+					<value>JMSResourceFinder</value>
+				</entry>
+			</map>
+		</property>
+	</bean>
+	
+	<bean id="JMSResourceFinder"
+		class="org.geoserver.cluster.impl.rest.ClusterResourceFinder" />
+		
+	<bean id="JMSController"
+		class="org.geoserver.cluster.impl.rest.Controller" />
+
+	<!-- CONFIGURATION EXTENSIONS -->
+
+	<bean id="JMSConfigDirConfiguration"
+		class="org.geoserver.cluster.impl.configuration.ConfigDirConfiguration">
+	</bean>
+
+	<!-- Needed to JMSConfigDirConfiguration bean -->
+	<!-- <bean id="JMSPropertyPlaceholderConfigurer" -->
+	<!-- class="org.geoserver.cluster.impl.utils.JMSPropertyPlaceholderConfigurer"> -->
+	<!-- <constructor-arg ref="dataDirectory" /> -->
+	<!-- <property name="location" value="file:cluster.properties" /> -->
+	<!-- </bean> -->
+
+	<!-- THIS IS NOT SUPPORTED USING Spring-2.5.5 use it on Spring-3.0.5.RELEASE -->
+	<!-- <bean id="connectionFactory" -->
+	<!-- class="org.springframework.jms.connection.CachingConnectionFactory" 
+		depends-on="amqConnectionFactory"> -->
+	<!-- <constructor-arg index="0" type="ConnectionFactory" ref="amqConnectionFactory" 
+		/> -->
+	<!-- <property name="exceptionListener" ref="jmsExceptionListener" /> -->
+	<!-- <property name="sessionCacheSize" value="${connectionfactory.sessionCacheSize}" 
+		/> -->
+	<!-- </bean> -->
+	<!-- ================================================ -->
+
+	<!-- web stuff -->
+	<bean id="clusterCategory" class="org.geoserver.web.Category">
+		<property name="nameKey" value="category.cluster" />
+		<property name="order" value="600" />
+	</bean>
+
+	<bean id="clusterPage" class="org.geoserver.web.MenuPageInfo">
+		<property name="id" value="ClusterPage" />
+		<property name="titleKey" value="clusterPage.title" />
+		<property name="descriptionKey" value="clusterPage.description" />
+		<property name="componentClass"
+			value="org.geoserver.cluster.impl.web.ClusterPage" />
+		<property name="category" ref="clusterCategory" />
+		<property name="icon" value="img/cluster_icon_16.png" />
+		<property name="order" value="10" />
+	</bean>
+
+	<bean id="JMSContainerHandlerExceptionListenerImpl"
+		class="org.geoserver.cluster.impl.web.JMSContainerHandlerExceptionListenerImpl" />
+
+	<!-- CLIENT -->
+
+	<bean id="JMSReadOnlyGeoServerLoader" class="org.geoserver.config.ReadOnlyGeoServerLoader">
+		<constructor-arg index="0" ref="resourceLoader" />
+	</bean>
+
+	<!-- SERVER/CLIENT side impl -->
+
+	<bean id="RestDispatcherCallback"
+		class="org.geoserver.cluster.impl.events.RestDispatcherCallback" />
+
+	<bean id="JMSXstream" class="com.thoughtworks.xstream.XStream" />
+
+	<!-- Producers -->
+
+	<bean id="JMSCatalogListener" class="org.geoserver.cluster.server.JMSCatalogListener"
+		depends-on="catalog" lazy-init="true">
+		<constructor-arg index="0" ref="rawCatalog" />
+		<constructor-arg index="1" ref="JMSPublisher" />
+	</bean>
+
+	<bean id="JMSConfigurationListener"
+		class="org.geoserver.cluster.server.JMSConfigurationListener"
+		depends-on="geoServer" lazy-init="true">
+		<constructor-arg index="0" ref="geoServer" />
+		<constructor-arg index="1" ref="JMSPublisher" />
+	</bean>
+
+	<!-- note: SPI bean id name MUST be the same as SPI SimpleClassName -->
+
+	<!-- TO HANDLE XML file -->
+	<bean id="DocumentFileHandlerSPI"
+		class="org.geoserver.cluster.impl.handlers.DocumentFileHandlerSPI">
+		<constructor-arg index="0" value="1" />
+		<constructor-arg index="1" ref="JMSXstream" />
+	</bean>
+
+	<bean id="JMSCatalogStylesFileHandlerSPI"
+		class="org.geoserver.cluster.impl.handlers.catalog.JMSCatalogStylesFileHandlerSPI">
+		<constructor-arg index="0" value="-1" />
+		<constructor-arg index="1" ref="rawCatalog" />
+		<constructor-arg index="2" ref="JMSXstream" />
+	</bean>
+
+	<bean id="JMSCatalogAddEventHandlerSPI"
+		class="org.geoserver.cluster.impl.handlers.catalog.JMSCatalogAddEventHandlerSPI">
+		<constructor-arg index="0" value="1" />
+		<constructor-arg index="1" ref="rawCatalog" />
+		<constructor-arg index="2" ref="JMSXstream" />
+		<constructor-arg index="3" ref="JMSToggleProducer" />
+	</bean>
+
+	<bean id="JMSCatalogModifyEventHandlerSPI"
+		class="org.geoserver.cluster.impl.handlers.catalog.JMSCatalogModifyEventHandlerSPI">
+		<constructor-arg index="0" value="1" />
+		<constructor-arg index="1" ref="rawCatalog" />
+		<constructor-arg index="2" ref="JMSXstream" />
+		<constructor-arg index="3" ref="JMSToggleProducer" />
+	</bean>
+
+	<bean id="JMSCatalogRemoveEventHandlerSPI"
+		class="org.geoserver.cluster.impl.handlers.catalog.JMSCatalogRemoveEventHandlerSPI">
+		<constructor-arg index="0" value="1" />
+		<constructor-arg index="1" ref="rawCatalog" />
+		<constructor-arg index="2" ref="JMSXstream" />
+		<constructor-arg index="3" ref="JMSToggleProducer" />
+	</bean>
+
+	<bean id="JMSCatalogPostModifyEventHandlerSPI"
+		class="org.geoserver.cluster.impl.handlers.catalog.JMSCatalogPostModifyEventHandlerSPI">
+		<constructor-arg index="0" value="1" />
+		<constructor-arg index="1" ref="rawCatalog" />
+		<constructor-arg index="2" ref="JMSXstream" />
+		<constructor-arg index="3" ref="JMSToggleProducer" />
+	</bean>
+
+	<bean id="JMSServiceHandlerSPI"
+		class="org.geoserver.cluster.impl.handlers.configuration.JMSServiceHandlerSPI">
+		<constructor-arg index="0" value="1" />
+		<constructor-arg index="1" ref="geoServer" />
+		<constructor-arg index="2" ref="JMSXstream" />
+		<constructor-arg index="3" ref="JMSToggleProducer" />
+	</bean>
+
+	<bean id="JMSGeoServerHandlerSPI"
+		class="org.geoserver.cluster.impl.handlers.configuration.JMSGeoServerHandlerSPI">
+		<constructor-arg index="0" value="1" />
+		<constructor-arg index="1" ref="geoServer" />
+		<constructor-arg index="2" ref="JMSXstream" />
+		<constructor-arg index="3" ref="JMSToggleProducer" />
+	</bean>
+
+	<bean id="JMSLoggingHandlerSPI"
+		class="org.geoserver.cluster.impl.handlers.configuration.JMSLoggingHandlerSPI">
+		<constructor-arg index="0" value="1" />
+		<constructor-arg index="1" ref="geoServer" />
+		<constructor-arg index="2" ref="JMSXstream" />
+		<constructor-arg index="3" ref="JMSToggleProducer" />
+	</bean>
+</beans>

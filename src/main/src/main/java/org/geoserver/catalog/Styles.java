@@ -1,10 +1,12 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.catalog;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -51,6 +53,25 @@ public class Styles {
     static Logger LOGGER = Logging.getLogger("org.geoserver.wms");
     
     static StyleFactory styleFactory = CommonFactoryFinder.getStyleFactory(null);
+
+    /**
+     * Encodes the specified SLD as a string.
+     *
+     * @param sld The sld to encode.
+     * @param handler The handler to use to encode.
+     * @param ver Version of the style to encode, may be <code>null</code>.
+     * @param pretty Whether to format the style.
+     *
+     * @return The encoded style.
+     */
+    public static String string(StyledLayerDescriptor sld, SLDHandler handler, Version ver, boolean pretty)
+        throws IOException {
+
+        ByteArrayOutputStream bout = new ByteArrayOutputStream();
+        handler.encode(sld, ver, pretty, bout);
+
+        return new String(bout.toByteArray());
+    }
 
     /**
      * Convenience method to pull a UserSyle from a StyledLayerDescriptor.

@@ -53,14 +53,17 @@ Controls a particular layer group.
      - Status code
      - Formats
      - Default Format
+     - Parameters
    * - GET
      - Return layer group ``lg``
      - 200
      - HTML, XML, JSON
      - HTML
+     - :ref:`quietOnNotFound <rest_api_layergroups_quietOnNotFound>`
    * - POST
      - 
      - 405
+     -
      -
      -
    * - PUT
@@ -68,9 +71,11 @@ Controls a particular layer group.
      - 200
      - XML,JSON
      - 
+     -
    * - DELETE
      - Delete layer group ``lg``
      - 200
+     -
      -
      -
 
@@ -89,6 +94,15 @@ Exceptions
    * - PUT that changes name of layer group
      - 403
 
+Parameters
+~~~~~~~~~~
+	 
+.. _rest_api_layergroups_quietOnNotFound:
+
+``quietOnNotFound``
+^^^^^^^^^^^^^^^^^^^^
+
+The ``quietOnNotFound`` parameter avoids to log an Exception when the layergroup is not present. Note that 404 status code will be returned anyway. 
  
 ``/workspaces/<ws>/layergroups[.<format>]``
 -------------------------------------------
@@ -138,25 +152,39 @@ Controls a particular layer group in a given workspace.
      - Status code
      - Formats
      - Default Format
+     -	 
    * - GET
      - Return layer group ``lg`` within workspace ``ws``
      - 200
      - HTML, XML, JSON
      - HTML
+     - :ref:`quietOnNotFound <rest_api_layergroups_quietOnNotFound>`
    * - POST
      - 
      - 405
      -
      -
+     -	 
    * - PUT
      - Modify layer group ``lg`` within workspace ``ws``
      - 200
      - XML,JSON
      - 
+     -	 
    * - DELETE
      - Delete layer group ``lg`` within workspace ``ws``
      - 200
      -
      -
+     -	 
 
+Exceptions
+~~~~~~~~~~
 
+.. list-table::
+   :header-rows: 1
+
+   * - Exception
+     - Status code
+   * - GET for a layer group that does not exist for that workspace
+     - 404

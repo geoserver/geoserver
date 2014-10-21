@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -18,6 +19,7 @@ import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.GeometryDescriptor;
 
@@ -59,6 +61,11 @@ public class StyleGenerator {
     private Catalog catalog;
 
     /**
+     * Workspace to create styles relative to
+     */
+    private WorkspaceInfo workspace;
+
+    /**
      * Builds a style generator with the default color ramp
      * @param catalog
      */
@@ -84,6 +91,10 @@ public class StyleGenerator {
 
         this.ramp = ramp;
         this.catalog = catalog;
+    }
+
+    public void setWorkspace(WorkspaceInfo workspace) {
+        this.workspace = workspace;
     }
 
     public StyleInfo createStyle(FeatureTypeInfo featureType) throws IOException {
@@ -119,7 +130,8 @@ public class StyleGenerator {
 
     StyleInfo doCreateStyle(StyleType styleType, ResourceInfo resource) throws IOException {
         // find a new style name
-        String styleName = findUniqueStyleName(resource);
+        String styleName = workspace != null ?
+            findUniqueStyleName(resource, workspace) : findUniqueStyleName(resource);
 
         // variable replacement
         String sld = loadSLDFromTemplate(styleType, ramp.next(), resource);
@@ -128,6 +140,10 @@ public class StyleGenerator {
         StyleInfo style = catalog.getFactory().createStyle();
         style.setName(styleName);
         style.setFilename(styleName + ".sld");
+        if (workspace != null) {
+            style.setWorkspace(workspace);
+        }
+
         catalog.getResourcePool().writeStyle(style, new ByteArrayInputStream(sld.getBytes()));
         
         //catalog.add(style);
@@ -135,6 +151,7 @@ public class StyleGenerator {
 
         return style;
     }
+
     String findUniqueStyleName(ResourceInfo resource) {
         String styleName = resource.getStore().getWorkspace().getName() + "_" + resource.getName();
         StyleInfo style = catalog.getStyleByName(styleName);
@@ -142,6 +159,18 @@ public class StyleGenerator {
         while(style != null) {
             styleName = resource.getStore().getWorkspace().getName() + "_" + resource.getName() + i;
             style = catalog.getStyleByName(styleName);
+            i++;
+        }
+        return styleName;
+    }
+
+    String findUniqueStyleName(ResourceInfo resource, WorkspaceInfo workspace) {
+        String styleName = resource.getName();
+        StyleInfo style = catalog.getStyleByName(workspace, styleName);
+        int i = 1;
+        while(style != null) {
+            styleName = resource.getName() + i;
+            style = catalog.getStyleByName(workspace, styleName);
             i++;
         }
         return styleName;

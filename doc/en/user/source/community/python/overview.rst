@@ -29,15 +29,15 @@ structure::
         lib/
         process/
 
-Each directory correponds to a GeoServer extension point.
+Each directory corresponds to a GeoServer extension point.
 
 The :file:`app` directory consists of python scripts that are intended to be 
-invoked over http through a `wsgi <http://wsgi.org/wsgi>`_ interface.
+invoked over HTTP through a `wsgi <http://wsgi.org/wsgi>`_ interface.
 
 The :file:`datastore` directory consists of python modules that implement the 
 geotools data store interface. The geotools data store interface is the 
 extension point used to contribute support for vector spatial data formats
-from shapefiles to postgis.
+ranging from shapefiles to postgis.
 
 The :file:`filter` directory consists of modules that implement filter 
 functions. Filter functions are used in WFS queries and in SLD documents.
@@ -51,7 +51,7 @@ implementing the other types of modules. These types of modules are typically
 utility modules.
 
 The :file:`process` directory consists of modules that implement the geotools 
-process interface. Implements of this extension point are used as processes in
+process interface. Implementations of this extension point are used as processes in
 the GeoServer WPS.
 
 Continue to :ref:`python_hooks` for more details.

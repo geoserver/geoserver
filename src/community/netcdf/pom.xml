@@ -23,6 +23,20 @@
     <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-netcdf</artifactId>
+      <exclusions>
+         <exclusion>
+           <groupId>org.slf4j</groupId>
+           <artifactId>slf4j-api</artifactId>
+         </exclusion>
+         <exclusion>
+           <groupId>org.slf4j</groupId>
+           <artifactId>jcl-over-slf4j</artifactId>
+         </exclusion>
+       </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver.web</groupId>
+      <artifactId>gs-web-core</artifactId>
     </dependency>
   </dependencies>
 </project>

@@ -1,10 +1,12 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wfs.v1_1;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Iterator;
@@ -52,12 +54,14 @@ public class GetCapabilitiesTest extends WFSTestSupport {
     @Test
     public void testGet() throws Exception {
         Document doc = getAsDOM("wfs?service=WFS&request=getCapabilities&version=1.1.0");
+        String docText = getAsString("wfs?service=WFS&request=GetCapabilities&version=1.1.0");
 
         assertEquals("wfs:WFS_Capabilities", doc.getDocumentElement()
                 .getNodeName());
         assertEquals("1.1.0", doc.getDocumentElement().getAttribute("version"));
         XpathEngine xpath =  XMLUnit.newXpathEngine();
         assertTrue(xpath.getMatchingNodes("//wfs:FeatureType", doc).getLength() > 0);
+        assertFalse(docText, docText.contains("xmlns:xml="));
     }
     
     @Test

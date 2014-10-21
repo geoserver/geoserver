@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -78,6 +79,12 @@ public interface JAIInfo extends Cloneable, Serializable {
      */
     boolean isAllowNativeMosaic();
     void setAllowNativeMosaic(boolean allowNativeMosaic);
+    
+    /**
+     * Flag controlling native warping operations.
+     */
+    boolean isAllowNativeWarp();
+    void setAllowNativeWarp(boolean allowNativeWarp);
     
     /**
      * Flag controlling the image io cache.

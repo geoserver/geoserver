@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -11,6 +12,7 @@ import org.geoserver.platform.ContextLoadedEvent;
 import org.geoserver.rest.RestletException;
 import org.geoserver.rest.format.MediaTypes;
 import org.geotools.util.Version;
+import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Request;
@@ -38,11 +40,22 @@ public class StyleFinder extends AbstractCatalogFinder implements ApplicationLis
         }
         //check style exists if specified
         if ( style != null) {
+            // Check if the quietOnNotFound parameter is set
+            boolean quietOnNotFound=quietOnNotFoundEnabled(request);            
+            //ensure it exists
             if (workspace != null && catalog.getStyleByName( workspace, style ) == null) {
+                // If true, no exception is returned
+                if(quietOnNotFound){
+                    return null;
+                }
                 throw new RestletException(String.format("No such style %s in workspace %s", 
                     style, workspace), Status.CLIENT_ERROR_NOT_FOUND );
             }
             if (workspace == null && catalog.getStyleByName( style ) == null) {
+                // If true, no exception is returned
+                if(quietOnNotFound){
+                    return null;
+                }
                 throw new RestletException( "No such style: " + style, Status.CLIENT_ERROR_NOT_FOUND );
             }
         }

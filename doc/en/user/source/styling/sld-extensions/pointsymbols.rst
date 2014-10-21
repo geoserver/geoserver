@@ -84,8 +84,127 @@ Their names are prefixed by ``shape://``
    * - ``shape://carrow``
      - A closed arrow symbol (closed triangle, suitable for placing arrows at the end of lines)
 
-TTF marks
-~~~~~~~~~
+The weather symbols are prefixed by the ``extshape://`` protocol in the SLD:
+
+.. list-table::
+   :widths: 20 20 60
+   
+   * - **Name**
+     - **Description**
+     - **Produces**
+   * - ``extshape://triangle``
+     - cold front
+     - |triangle|
+   * - ``extshape://emicircle``
+     - warm front
+     - |emicircle|
+   * - ``extshape://triangleemicircle``
+     - stationary front
+     - |triangleemicircle|
+     
+.. |triangle| image:: images/triangle.png
+.. |emicircle| image:: images/emicircle.png
+.. |triangleemicircle| image:: images/triangleemicircle.png
+
+You can use ``extshape://`` for a few additional built-in shapes:
+
+.. list-table::
+   :widths: 20 80
+   
+   * - ``extshape://narrow``
+     - North Arrow
+   * - ``extshape://sarrow``
+     - South Arrow
+
+More complex symbols like Wind Barbs can be created with the ``windbarbs://`` prefix. There are some examples:
+
+.. list-table::
+   :widths: 50 50
+   
+   * - **Name**
+     - **Description**
+   * - ``windbarbs://default(15)[kts]``
+     - *15* wind intensity with *[kts]* unit of measure
+   * - ``windbarbs://default(9)[m/s]?hemisphere=s``
+     - *9* wind intensity with *[m/s]* unit of measure, in the south hemisphere
+   
+Custom WKT Shapes
+~~~~~~~~~~~~~~~~~
+
+Custom shapes can be defined using your own Geometry. Geometry is defined using the same well-known-text format used for CQL_FILTER.
+
+.. code-block:: xml
+
+   <LineSymbolizer>
+     <Stroke>
+       <GraphicStroke>
+         <Graphic>
+           <Mark>
+             <WellKnownName>wkt://MULTILINESTRING((-0.25 -0.25, -0.125 -0.25), (0.125 -0.25, 0.25 -0.25), (-0.25 0.25, -0.125 0.25), (0.125 0.25, 0.25 0.25))</WellKnownName>
+             <Fill>
+               <CssParameter name="fill">#0000ff</CssParameter>
+             </Fill>
+             <Stroke>
+               <CssParameter name="stroke">#0000ff</CssParameter>
+               <CssParameter name="stroke-width">1</CssParameter>
+             </Stroke>
+           </Mark>
+           <Size>6</Size>
+         </Graphic>
+       </GraphicStroke>
+     </Stroke>
+   </LineSymbolizer>
+
+Which produces double dashed line:
+  
+.. image:: images/double-dashed-line.png
+
+You can also make use of curves when defining WKT:
+
+.. code-block:: xml
+
+    <LineSymbolizer>
+      <Stroke>
+        <GraphicStroke>
+          <Graphic>
+            <Mark>
+              <WellKnownName>wkt://COMPOUNDCURVE((0 0, 0.25 0), CIRCULARSTRING(0.25 0, 0.5 0.5, 0.75 0), (0.75 0, 1 0))</WellKnownName>
+              <Fill>
+                <CssParameter name="fill">#0000ff</CssParameter>
+              </Fill>
+              <Stroke>
+                <CssParameter name="stroke">#0000ff</CssParameter>
+                <CssParameter name="stroke-width">1</CssParameter>
+              </Stroke>
+            </Mark>
+            <Size>10</Size>
+          </Graphic>
+        </GraphicStroke>
+      </Stroke>
+    </LineSymbolizer>
+  
+Producing an "emi circle" line:
+
+.. image:: images/emicircle-line.png
+
+Bulk WKT Shapes
+~~~~~~~~~~~~~~~
+
+It is possible to create a symbol set of your own custom marks using a property file.
+
+Here is an :file:`example.properties`:
+
+.. code-block:: text
+   
+   zig=LINESTRING(0.0 0.25, 0.25 0.25, 0.5 0.75, 0.75 0.25, 1.00 0.25)
+   block=POLYGON((0 0, 1 0, 1 1, 0 1, 0 0))
+
+To reference the above property file in your SLD, prefixed like this (note the protocol changed to "wktlib://")::
+  
+  <WellKnownName>wktlib://example.properties#zig</WellKnownName>
+
+Bulk TTF marks
+~~~~~~~~~~~~~~
 
 It is possible to create a mark using glyphs from any decorative or symbolic True Type Font, such as Wingdings, WebDings, or the many symbol fonts available on the internet.
 The syntax for specifying this is::

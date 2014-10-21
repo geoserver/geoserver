@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -25,6 +26,7 @@ public class CoverageFinder extends AbstractCatalogFinder {
         String ws = getAttribute(request, "workspace");
         String cs = getAttribute(request, "coveragestore");
         String c = getAttribute(request, "coverage");
+        
 
         //ensure referenced resources exist
         if ( ws != null && catalog.getWorkspaceByName( ws ) == null ) {
@@ -46,12 +48,23 @@ public class CoverageFinder extends AbstractCatalogFinder {
         }
 
         if ( c != null ) {
+            // Check if the quietOnNotFound parameter is set
+            boolean quietOnNotFound=quietOnNotFoundEnabled(request);
             if ( cs != null && catalog.getCoverageByCoverageStore(catalog.getCoverageStoreByName(ws, cs), c) == null) {
+                // If true, no exception is returned
+                if(quietOnNotFound){
+                    return null;
+                }
                 throw new RestletException( "No such coverage: "+ws+","+cs+","+c, Status.CLIENT_ERROR_NOT_FOUND );
+
             } else {
                 //look up by workspace/namespace
                 NamespaceInfo ns = catalog.getNamespaceByPrefix( ws );
                 if ( ns == null || catalog.getCoverageByName( ns, c ) == null ) {
+                    // If true, no exception is returned
+                    if(quietOnNotFound){
+                        return null;
+                    }
                     throw new RestletException( "No such coverage: "+ws+","+c, Status.CLIENT_ERROR_NOT_FOUND );
                 }
             }

@@ -1,0 +1,18 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<body>
+<wicket:panel>
+	<fieldset>
+        <legend><span><wicket:message key="connectionParameters">Connection Parameters</wicket:message></span></legend>
+        <div><span wicket:id="urlPanel"></span></div>
+	<ul>
+      <li><label><input type="checkbox" id="enabled" wicket:id="enabled" />
+      PGRaster automatic configuration parameters</label></li>
+      <li wicket:id="configsContainer">
+        <ul wicket:id="pgpanel"></ul>
+      </li>
+    </ul>
+	</fieldset>
+
+</wicket:panel>
+</body>
+</html>

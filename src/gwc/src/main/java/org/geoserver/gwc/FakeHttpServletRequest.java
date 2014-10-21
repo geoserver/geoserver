@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -180,7 +181,7 @@ class FakeHttpServletRequest implements HttpServletRequest {
     }
 
     public String getContentType() {
-        throw new ServletDebugException();
+        return null;
     }
 
     public ServletInputStream getInputStream() throws IOException {

@@ -1,17 +1,17 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wfs.v1_1;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 import java.net.URLEncoder;
 import java.util.Collections;
+
 import javax.xml.namespace.QName;
+
 import org.custommonkey.xmlunit.XMLAssert;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.test.RunTestSetup;
@@ -525,6 +525,15 @@ public class GetFeatureTest extends WFSTestSupport {
                 + "&version=1.1.0&service=wfs&sortBy=ADDRESS D&maxFeatures=1&startIndex=1");
         XMLAssert.assertXpathEvaluatesTo("1", "count(//cite:Buildings)", dom);
         XMLAssert.assertXpathEvaluatesTo("113", "//cite:Buildings[1]/cite:FID", dom);
+    }
+
+    @Test
+    public void testSortedInvalidAttribute() throws Exception {
+        Document dom = getAsDOM("wfs?request=GetFeature&typename="
+                + getLayerId(SystemTestData.BUILDINGS) + "&version=1.1.0&service=wfs&sortBy=GODOT");
+        checkOws10Exception(dom, "InvalidParameterValue");
+        XMLAssert.assertXpathEvaluatesTo("Illegal property name: GODOT for feature type "
+                + getLayerId(SystemTestData.BUILDINGS), "//ows:ExceptionText", dom);
     }
 
     @Test

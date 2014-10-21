@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -102,6 +103,26 @@ public class WorkspaceTest extends CatalogRESTTestSupport {
             
             assertTrue( link.getAttribute("href").endsWith( store.getName() + ".html") );
         }
+    }
+    
+    @Test
+    public void testGetWrongWorkspace() throws Exception {
+        // Parameters for the request
+        String workspace = "sfsssss";
+        // Request path
+        String requestPath = "/rest/workspaces/" + workspace + ".html";
+        // Exception path
+        String exception = "No such workspace: " + workspace;
+        // First request should thrown an exception
+        MockHttpServletResponse response = getAsServletResponse(requestPath);
+        assertEquals(404, response.getStatusCode());
+        assertTrue(response.getOutputStreamContent().contains(
+                exception));
+        // Same request with ?quietOnNotFound should not throw an exception
+        response = getAsServletResponse(requestPath + "?quietOnNotFound=true");
+        assertEquals(404, response.getStatusCode());
+        assertFalse(response.getOutputStreamContent().contains(
+                exception));
     }
     
     @Test

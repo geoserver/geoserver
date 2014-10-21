@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
 */
@@ -938,6 +939,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                 Enumeration prefixes = getNamespaceSupport().getPrefixes();
                 while (prefixes.hasMoreElements()) {
                     String prefix = (String) prefixes.nextElement();
+                    if ("xml".equals(prefix)) continue;
                     attributes.addAttribute(null, null, "xmlns:" + prefix, null,
                             getNamespaceSupport().getURI(prefix));
                 }
@@ -1837,7 +1839,6 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
              */
             protected void operation(String name, Map.Entry[] parameters, Map.Entry[] constraints, boolean get, boolean post) {
                 start("ows:Operation", attributes(new String[] { "name", name }));
-
                 String serviceURL = buildURL(request.getBaseUrl(), "wfs", null, URLType.SERVICE);
                 
                 //dcp
@@ -1880,7 +1881,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                 
                 
                 if (get) {
-                    element("ows:Get", null, attributes(new String[] { "xlink:href", serviceURL}));
+                    element("ows:Get", null, attributes(new String[] { "xlink:href", serviceURL + "?"}));
                 }
 
                 if (post) {

@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -13,6 +14,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Locale;
+import java.util.regex.Pattern;
 
 import org.eclipse.xsd.XSDElementDeclaration;
 import org.eclipse.xsd.impl.XSDElementDeclarationImpl;
@@ -42,6 +44,8 @@ import org.opengis.feature.type.PropertyDescriptor;
  * @author Andrea Aime, OpenGeo
  */
 public class CSVOutputFormat extends WFSGetFeatureOutputFormat {
+
+    static final Pattern CSV_ESCAPES = Pattern.compile("[\"\n,\r]");
 
     public CSVOutputFormat(GeoServer gs) {
         //this is the name of your output format, it is the string
@@ -88,7 +92,7 @@ public class CSVOutputFormat extends WFSGetFeatureOutputFormat {
                    
         //get the feature collection
         FeatureCollection<?, ?> fc = 
-            (FeatureCollection<?, ?>) featureCollection.getFeature().get(0);           
+            featureCollection.getFeature().get(0);           
         
         if (fc.getSchema() instanceof SimpleFeatureType) {
             //write out the header
@@ -233,8 +237,8 @@ public class CSVOutputFormat extends WFSGetFeatureOutputFormat {
     	/*
     	 * Enclose string in double quotes if it contains double quotes, commas, or newlines
     	 */
-    	if(mod.matches(".*(\"|\n|,).*")){
-    		mod = "\"" + mod + "\"";
+        if (CSV_ESCAPES.matcher(mod).find()) {
+            mod = "\"" + mod + "\"";
     	}
     	
 		return mod;

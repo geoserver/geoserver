@@ -29,6 +29,13 @@ import org.springframework.context.ApplicationContextAware;
  */
 public class ControlFlowCallback extends AbstractDispatcherCallback implements
         ApplicationContextAware {
+
+    /**
+     * Header added to all responses to make it visible how much deplay was applied going thorough
+     * the flow controllers
+     */
+    static final String X_RATELIMIT_DELAY = "X-RATELIMIT-DELAY";
+
     static final Logger LOGGER = Logging.getLogger(ControlFlowCallback.class);
 
     static final class CallbackContext {
@@ -44,13 +51,13 @@ public class ControlFlowCallback extends AbstractDispatcherCallback implements
     }
 
     static ThreadLocal<CallbackContext> REQUEST_CONTROLLERS = new ThreadLocal<CallbackContext>();
-    
+
     static NestedRequestSentinel SENTINEL = new NestedRequestSentinel();
 
     FlowControllerProvider provider;
-    
+
     AtomicLong blockedRequests = new AtomicLong();
-    
+
     AtomicLong runningRequests = new AtomicLong();
 
     /**
@@ -61,14 +68,14 @@ public class ControlFlowCallback extends AbstractDispatcherCallback implements
     }
 
     /**
-     * Returns the current number of running requests. 
+     * Returns the current number of running requests.
      */
     public long getRunningRequests() {
         return runningRequests.get();
     }
 
     public void finished(Request request) {
-        if(SENTINEL.isOutermostRequest() && REQUEST_CONTROLLERS.get() != null) {
+        if (SENTINEL.isOutermostRequest() && REQUEST_CONTROLLERS.get() != null) {
             runningRequests.decrementAndGet();
             // call back the same controllers we used when the operation started
             if (REQUEST_CONTROLLERS.get() != null) {
@@ -76,31 +83,31 @@ public class ControlFlowCallback extends AbstractDispatcherCallback implements
                 for (FlowController flowController : context.controllers) {
                     try {
                         flowController.requestComplete(request);
-                    } catch(Exception e) {
+                    } catch (Exception e) {
                         LOGGER.log(Level.SEVERE, "Flow controller " + flowController
                                 + " failed to mark the request as complete", e);
                     }
                 }
-                
 
             }
             // clean up the thread local
             REQUEST_CONTROLLERS.remove();
-            
+
             // provide some visibility that control flow is running
             if (LOGGER.isLoggable(Level.INFO)) {
                 LOGGER.info("Running requests: " + getRunningRequests() + ", blocked requests: "
                         + getBlockedRequests());
             }
-        } 
+        }
         SENTINEL.stop();
     }
 
     public Operation operationDispatched(Request request, Operation operation) {
         // tell the recursion sentinel we're starting a request
         SENTINEL.start();
-        if(SENTINEL.isOutermostRequest()) {
+        if (SENTINEL.isOutermostRequest()) {
             blockedRequests.incrementAndGet();
+            long start = System.currentTimeMillis();
             try {
                 // grab the controllers for this request
                 List<FlowController> controllers = null;
@@ -119,11 +126,13 @@ public class ControlFlowCallback extends AbstractDispatcherCallback implements
                     REQUEST_CONTROLLERS.set(context);
                     long maxTime = timeout > 0 ? System.currentTimeMillis() + timeout : -1;
                     for (FlowController flowController : controllers) {
-                        if(timeout > 0) {
+                        if (timeout > 0) {
                             long maxWait = maxTime - System.currentTimeMillis();
-                            if(!flowController.requestIncoming(request, maxWait)) 
-                                throw new HttpErrorCodeException(503, "Requested timeout out while waiting to be executed");
-                         } else {
+                            if (!flowController.requestIncoming(request, maxWait)) {
+                                throw new HttpErrorCodeException(503,
+                                        "Requested timeout out while waiting to be executed, please lower your request rate");
+                            }
+                        } else {
                             flowController.requestIncoming(request, -1);
                         }
                     }
@@ -131,11 +140,16 @@ public class ControlFlowCallback extends AbstractDispatcherCallback implements
             } finally {
                 blockedRequests.decrementAndGet();
                 runningRequests.incrementAndGet();
+                if (request != null && request.getHttpResponse() != null) {
+                    // report how much time was spent going though the flow controllers
+                    long end = System.currentTimeMillis();
+                    request.getHttpResponse().addHeader(X_RATELIMIT_DELAY,
+                            String.valueOf(end - start));
+                }
             }
         }
         return operation;
     }
-
 
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         // look for a ControlFlowConfigurator in the application context, if none is found, use the

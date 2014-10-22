@@ -15,6 +15,8 @@ import org.geoserver.ows.HttpErrorCodeException;
 import org.geoserver.ows.Request;
 import org.junit.Test;
 
+import com.mockrunner.mock.web.MockHttpServletResponse;
+
 public class ControlFlowCallbackTest {
 
     @Test
@@ -58,6 +60,28 @@ public class ControlFlowCallbackTest {
         callback.finished(null);
     }
     
+    @Test
+    public void testDelayHeader() {
+        ControlFlowCallback callback = new ControlFlowCallback();
+        TestingConfigurator tc = new TestingConfigurator();
+        tc.timeout = Integer.MAX_VALUE;
+        CountingController cc = new CountingController(2, 50);
+        tc.controllers.add(cc);
+        callback.provider = new DefaultFlowControllerProvider(tc);
+
+        Request request = new Request();
+        MockHttpServletResponse httpResponse = new MockHttpServletResponse();
+        request.setHttpResponse(httpResponse);
+
+        callback.operationDispatched(request, null);
+        callback.finished(null);
+
+        String delayHeader = httpResponse.getHeader(ControlFlowCallback.X_RATELIMIT_DELAY);
+        assertNotNull(delayHeader);
+        long delay = Long.parseLong(delayHeader);
+        assertTrue("Delay should be greater than 50 " + delay, delay > 50);
+    }
+
     @Test
     public void testFailBeforeOperationDispatch() {
         ControlFlowCallback callback = new ControlFlowCallback();

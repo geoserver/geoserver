@@ -103,7 +103,8 @@ public class EventHzSynchronizer extends HzSynchronizer {
             AtomicInteger countDown = expectedAckCounters.get(eventId);
             if (countDown != null) {
                 countDown.decrementAndGet();
-                LOGGER.finer("Got ack on " + eventId);
+                LOGGER.finer(format("%s - Got ack on event %s from %s", nodeId(), eventId,
+                        message.getSource()));
             }
         }
     }
@@ -117,7 +118,7 @@ public class EventHzSynchronizer extends HzSynchronizer {
         final UUID evendId = event.getUUID();
         final int maxWaitMillis = 2000;
         final int waitInterval = 100;
-        LOGGER.finer("Waiting for acks on " + evendId);
+        LOGGER.fine(format("%s - Waiting for acks on %s", nodeId(), evendId));
         final AtomicInteger countDown = ackListener.expectedAckCounters.get(evendId);
         int waited = 0;
         try {
@@ -197,11 +198,12 @@ public class EventHzSynchronizer extends HzSynchronizer {
                     CatalogRemoveEvent.class);
             evt = new CatalogRemoveEventImpl();
             RemovedObjectProxy proxy = new RemovedObjectProxy(id, name, clazz);
-            
-            if(ResourceInfo.class.isAssignableFrom(clazz) && event.getStoreId()!=null) {
-            	proxy.addCatalogCollaborator("store", cat.getStore(event.getStoreId(), StoreInfo.class));
+
+            if (ResourceInfo.class.isAssignableFrom(clazz) && event.getStoreId() != null) {
+                proxy.addCatalogCollaborator("store",
+                        cat.getStore(event.getStoreId(), StoreInfo.class));
             }
-			subj = (CatalogInfo) Proxy.newProxyInstance(getClass().getClassLoader(),
+            subj = (CatalogInfo) Proxy.newProxyInstance(getClass().getClassLoader(),
                     new Class[] { clazz }, proxy);
 
             break;

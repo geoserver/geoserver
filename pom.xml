@@ -48,11 +48,11 @@
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
     </dependency>
-    <!--dependency>
+    <dependency>
       <groupId>com.hazelcast</groupId>
       <artifactId>hazelcast-cloud</artifactId>
       <version>${hazelcast.version}</version>
-    </dependency-->
+    </dependency>
 
     <dependency>
       <groupId>junit</groupId>

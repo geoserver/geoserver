@@ -80,7 +80,7 @@ public class EventHzSynchronizer extends HzSynchronizer {
         Set<Member> members = cluster.getHz().getCluster().getMembers();
         int expectedAcks = 0;
         for (Member member : members) {
-            if (!(member.isLiteMember() || member.localMember())) {
+            if (!(member.localMember())) {
                 expectedAcks++;
             }
         }

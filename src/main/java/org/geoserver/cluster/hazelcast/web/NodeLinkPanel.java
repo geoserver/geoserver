@@ -42,7 +42,7 @@ public class NodeLinkPanel extends Panel {
         add(new Label("cluster", cluster.getHz().getConfig().getGroupConfig().getName()));
         
         add(dialog = new GeoServerDialog("dialog"));
-        dialog.setInitialHeight(255);
+        dialog.setInitialHeight(350);
         dialog.setInitialWidth(300);
     }
 

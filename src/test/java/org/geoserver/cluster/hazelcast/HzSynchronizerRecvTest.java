@@ -399,7 +399,7 @@ public abstract class HzSynchronizerRecvTest extends HzSynchronizerTest {
 
     protected void mockMessage(ConfigChangeEvent evt) {
         evt.setSource(remoteAddress);
-        Message<Event> msg = new Message<Event>(TOPIC_NAME, evt);
+        Message<Event> msg = new Message<Event>(TOPIC_NAME, evt, 0, null);
         for(MessageListener<Event> listener: captureTopicListener.getValues()){
             listener.onMessage(msg);
         }

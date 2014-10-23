@@ -51,7 +51,7 @@ public abstract class HzSynchronizerTest {
         ackTopic = createMock(ITopic.class);
         configWatcher = createMock(ClusterConfigWatcher.class);
         clusterConfig = createMock(ClusterConfig.class);
-        
+
         captureTopicListener = new Capture<MessageListener<Event>>();
         captureAckTopicListener = new Capture<MessageListener<UUID>>();
         captureAckTopicPublish = new Capture<UUID>();
@@ -71,10 +71,12 @@ public abstract class HzSynchronizerTest {
         
         
         expect(hz.<Event>getTopic(TOPIC_NAME)).andStubReturn(topic);
-        topic.addMessageListener(capture(captureTopicListener)); expectLastCall().anyTimes();
+        expect(topic.addMessageListener(capture(captureTopicListener))).andReturn("fake-id"); 
+        expectLastCall().anyTimes();
         
         expect(hz.<UUID>getTopic(ACK_TOPIC_NAME)).andStubReturn(ackTopic);
-        ackTopic.addMessageListener(capture(captureAckTopicListener)); expectLastCall().anyTimes();
+        expect(ackTopic.addMessageListener(capture(captureAckTopicListener))).andReturn("fake-id"); 
+        expectLastCall().anyTimes();
         
 
         ackTopic.publish(EasyMock.capture(captureAckTopicPublish));EasyMock.expectLastCall().andStubAnswer(new IAnswer<Object>() {
@@ -95,8 +97,6 @@ public abstract class HzSynchronizerTest {
         expect(cluster.getLocalMember()).andStubReturn(localMember);
         expect(localMember.getInetSocketAddress()).andStubReturn(localAddress);
         expect(remoteMember.getInetSocketAddress()).andStubReturn(remoteAddress);
-        expect(localMember.isLiteMember()).andStubReturn(false);
-        expect(remoteMember.isLiteMember()).andStubReturn(false);
         expect(localMember.localMember()).andStubReturn(true);
         expect(remoteMember.localMember()).andStubReturn(false);
         

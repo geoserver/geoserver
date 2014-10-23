@@ -21,6 +21,7 @@ import org.geoserver.cluster.Event;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import com.hazelcast.core.Member;
 import com.hazelcast.core.Message;
 import com.hazelcast.core.MessageListener;
 
@@ -80,8 +81,12 @@ public class EventHzSynchronizerSendTest extends HzSynchronizerSendTest {
                 listener.handleRemoveEvent(event);
             }
 
-            for(MessageListener<UUID> listener: this.captureAckTopicListener.getValues()) {
-            	Message<UUID> message = new Message<UUID>("geoserver.config.ack",capture.getValue().getUUID());
+            for (MessageListener<UUID> listener : this.captureAckTopicListener.getValues()) {
+                String topicName = "geoserver.config.ack";
+                UUID messageObject = capture.getValue().getUUID();
+                int publishTime = 0;
+                Member publishingMember = null;
+                Message<UUID> message = new Message<UUID>(topicName, messageObject, publishTime, publishingMember);
                 listener.onMessage(message);
             }
         }

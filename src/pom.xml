@@ -13,7 +13,7 @@
  <groupId>org.geoserver</groupId>
  <artifactId>geoserver</artifactId>
  <packaging>pom</packaging>
- <version>2.6.0</version>
+ <version>2.6.0.1</version>
  <name>GeoServer</name>
 
  <scm>
@@ -924,7 +924,7 @@
    <dependency>
     <groupId>org.eclipse.emf</groupId>
     <artifactId>common</artifactId>
-    <version>2.6.0</version>
+    <version>2.6.0.1</version>
    </dependency>
    <dependency>
     <groupId>org.eclipse.emf</groupId>
@@ -1531,8 +1531,8 @@
 </modules>
 
  <properties>
-  <gs.version>2.6.0</gs.version>
-  <gt.version>12.0</gt.version>
+  <gs.version>2.6.0.1</gs.version>
+  <gt.version>12.0.1</gt.version>
   <gwc.version>1.6.0</gwc.version>
   <spring.version>3.1.4.RELEASE</spring.version>
   <spring.security.version>3.1.0.RELEASE</spring.security.version> 

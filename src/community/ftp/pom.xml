@@ -3,12 +3,12 @@
    <parent>
       <groupId>org.geoserver</groupId>
       <artifactId>community</artifactId>
-      <version>2.6.0</version>
+      <version>2.6.0.1</version>
    </parent>
    <groupId>org.geoserver.community</groupId>
    <artifactId>gs-ftp</artifactId>
    <packaging>jar</packaging>
-   <version>2.6.0</version>
+   <version>2.6.0.1</version>
    <name>GeoServer Embedded FTP server</name>
 
    <dependencies>
@@ -25,20 +25,34 @@
 
       <!-- Testing -->
       <dependency>
+
          <groupId>org.geoserver</groupId>
+
          <artifactId>gs-main</artifactId>
+
          <classifier>tests</classifier>
+
          <scope>test</scope>
+
       </dependency>
       <dependency>
+
          <groupId>com.mockrunner</groupId>
+
          <artifactId>mockrunner</artifactId>
+
          <scope>test</scope>
+
       </dependency>
+
       <dependency>
+
          <groupId>xmlunit</groupId>
+
          <artifactId>xmlunit</artifactId>
+
          <scope>test</scope>
+
       </dependency>
       <dependency>
          <groupId>org.easymock</groupId>

@@ -195,8 +195,8 @@ functionality.
 JUnit @Before, @After, @BeforeClass, @AfterClass
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-As with a any JUnit test various annotations are available to preform tasks at various points
-of test life cycle. However with a GeoServer system test one must be weary of the task having 
+As with any JUnit test various annotations are available to perform tasks at various points
+of the test life cycle. However with a GeoServer system test one must be wary of the task having 
 a dependency on the system state. For this reason the ``GeoServerSystemTestSupport`` class 
 provides its own callbacks. 
 

@@ -37,7 +37,7 @@
     <parent>
     	<groupId>org.geoserver.community</groupId>
     	<artifactId>geoserver-sync</artifactId>
-        <version>2.5-SNAPSHOT</version>
+        <version>2.5.3</version>
     </parent>
 
     <artifactId>geoserver-sync-server</artifactId>

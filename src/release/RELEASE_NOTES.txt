@@ -3,7 +3,7 @@ GeoServer 2.6.0.1
 
 This release was built on Oct 26, 2014. The changelog for this release can be found:
 
-  http://jira.codehaus.org/browse/GEOS/fixforversion/20649
+  http://jira.codehaus.org/browse/GEOS/fixforversion/20719
 
 This release is based on:
 

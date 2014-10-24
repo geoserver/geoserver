@@ -32,6 +32,7 @@ import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.config.GeoServer;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoServerBasePage;
@@ -39,6 +40,7 @@ import org.geoserver.web.demo.PreviewLayer.PreviewLayerType;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.wfs.WFSGetFeatureOutputFormat;
+import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wms.GetMapOutputFormat;
 
 /**
@@ -89,7 +91,7 @@ public class MapPreviewPage extends GeoServerBasePage {
                     // gml preview (we actually want it only for vector layers)
                     final String gmlUrl = 
                         layer.getBaseUrl("ows") + "?service=WFS&version=1.0.0&request=GetFeature&typeName="
-                        + layer.getName() + "&maxFeatures=50";
+                        + layer.getName() + getMaxFeatures();
                     Component gmlLink = new ExternalLink("gml", gmlUrl, "GML");
                     f.add(gmlLink);
                     gmlLink.setVisible(layer.getType() == PreviewLayerType.Vector);
@@ -105,6 +107,21 @@ public class MapPreviewPage extends GeoServerBasePage {
         };
         table.setOutputMarkupId(true);
         add(table);
+    }
+    
+    /**
+     * Generates the maxFeatures element of the WFS request using the value of 
+     * maxNumberOfFeaturesForPreview. Values <= 0 give no limit.
+     * @return "&maxFeatures=${maxNumberOfFeaturesForPreview}" or "" if 
+     * maxNumberOfFeaturesForPreview <= 0"
+     */
+    private String getMaxFeatures() {
+        GeoServer geoserver = getGeoServer();
+        WFSInfo service = geoserver.getService(WFSInfo.class);
+        if (service.getMaxNumberOfFeaturesForPreview() > 0) {
+            return "&maxFeatures="+service.getMaxNumberOfFeaturesForPreview();
+        }
+        return "";
     }
 
     /**
@@ -217,7 +234,7 @@ public class MapPreviewPage extends GeoServerBasePage {
                 + "&format=' + this.options[this.selectedIndex].value";
         String wfsUrl = "'" + layer.getBaseUrl("ows") + "?service=WFS&version=1.0.0&request=GetFeature&typeName="
           + layer.getName()
-          + "&maxFeatures=50"
+          + getMaxFeatures()
           + "&outputFormat=' + this.options[this.selectedIndex].value";
         String choice = "(this.options[this.selectedIndex].parentNode.label == 'WMS') ? " + wmsUrl + " : " + wfsUrl;
         menu.add(new AttributeAppender("onchange", new Model("window.open("

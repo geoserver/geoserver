@@ -79,7 +79,7 @@ public class ControlFlowCallbackTest {
         String delayHeader = httpResponse.getHeader(ControlFlowCallback.X_RATELIMIT_DELAY);
         assertNotNull(delayHeader);
         long delay = Long.parseLong(delayHeader);
-        assertTrue("Delay should be greater than 50 " + delay, delay > 50);
+        assertTrue("Delay should be greater than 50 " + delay, delay >= 50);
     }
 
     @Test

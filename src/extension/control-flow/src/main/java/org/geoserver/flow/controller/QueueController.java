@@ -8,7 +8,6 @@ package org.geoserver.flow.controller;
 
 import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.geoserver.flow.FlowController;

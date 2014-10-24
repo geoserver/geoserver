@@ -34,7 +34,7 @@ public class ControlFlowCallback extends AbstractDispatcherCallback implements
      * Header added to all responses to make it visible how much deplay was applied going thorough
      * the flow controllers
      */
-    static final String X_RATELIMIT_DELAY = "X-RATELIMIT-DELAY";
+    static final String X_RATELIMIT_DELAY = "X-Control-flow-delay-ms";
 
     static final Logger LOGGER = Logging.getLogger(ControlFlowCallback.class);
 

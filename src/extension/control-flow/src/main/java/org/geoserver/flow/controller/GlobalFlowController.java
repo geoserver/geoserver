@@ -5,8 +5,6 @@
  */
 package org.geoserver.flow.controller;
 
-import org.geoserver.ows.Request;
-
 /**
  * A flow controller matching all requests, can be used for globally controlling the number of
  * incoming requests
@@ -16,14 +14,9 @@ import org.geoserver.ows.Request;
 public class GlobalFlowController extends SingleQueueFlowController {
 
     public GlobalFlowController(int queueSize) {
-        super(queueSize);
+        super(queueSize, new OWSRequestMatcher());
     }
 
-    @Override
-    protected boolean matchesRequest(Request request) {
-        return true;
-    }
-    
     @Override
     public String toString() {
         return "GlobalFlowController(" + queueSize + ")";

@@ -248,6 +248,18 @@ public interface WFSInfo extends ServiceInfo {
     void setHitsIgnoreMaxFeatures(boolean hitsIgnoreMaxFeatures);
     
     /**
+     * Get the maximum number of features to be displayed in a layer preview.
+     * Can be defined by the user. By default, 50.
+     * @return maxNumberOfFeaturesForPreview
+     */
+    Integer getMaxNumberOfFeaturesForPreview();
+    
+    /**
+     * Set the maximum number of features to be displayed in a layer preview
+     */
+    void setMaxNumberOfFeaturesForPreview(Integer maxNumberOfFeaturesForPreview);
+    
+    /**
      * The srs's that the WFS service will advertise in the capabilities document
      */
     List<String> getSRS();

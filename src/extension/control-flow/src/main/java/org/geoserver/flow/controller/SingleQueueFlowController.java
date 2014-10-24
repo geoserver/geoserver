@@ -16,22 +16,28 @@ import org.geoserver.flow.FlowController;
 import org.geoserver.ows.Request;
 import org.geotools.util.logging.Logging;
 
+import com.google.common.base.Predicate;
+
 /**
  * Base class for flow controllers using a single queue
  * 
  * @author Andrea Aime - OpenGeo
  * 
  */
-public abstract class SingleQueueFlowController implements FlowController {
+public class SingleQueueFlowController implements FlowController {
     static final Logger LOGGER = Logging.getLogger(ControlFlowCallback.class);
+
+    Predicate<Request> matcher;
 
     BlockingQueue<Request> queue;
 
     int queueSize;
 
-    public SingleQueueFlowController(int queueSize) {
+    public SingleQueueFlowController(int queueSize, Predicate<Request> matcher) {
         this.queueSize = queueSize;
+        this.matcher = matcher;
         queue = new ArrayBlockingQueue<Request>(queueSize, true);
+
     }
 
     public int getPriority() {
@@ -39,14 +45,14 @@ public abstract class SingleQueueFlowController implements FlowController {
     }
 
     public void requestComplete(Request request) {
-        if (matchesRequest(request)) {
+        if (matcher.apply(request)) {
             queue.remove(request);
         }
     }
 
     public boolean requestIncoming(Request request, long timeout) {
         boolean retval = true;
-        if (matchesRequest(request)) {
+        if (matcher.apply(request)) {
             try {
                 if(timeout > 0) {
                     retval = queue.offer(request, timeout, TimeUnit.MILLISECONDS);
@@ -65,6 +71,8 @@ public abstract class SingleQueueFlowController implements FlowController {
         return retval;
     }
 
-    abstract boolean matchesRequest(Request request);
+    public Predicate<Request> getMatcher() {
+        return matcher;
+    }
 
 }

@@ -5,21 +5,26 @@
  */
 package org.geoserver.flow.config;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.StringTokenizer;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.flow.ControlFlowConfigurator;
 import org.geoserver.flow.FlowController;
 import org.geoserver.flow.controller.BasicOWSController;
+import org.geoserver.flow.controller.CookieKeyGenerator;
 import org.geoserver.flow.controller.GlobalFlowController;
 import org.geoserver.flow.controller.IpFlowController;
+import org.geoserver.flow.controller.IpKeyGenerator;
+import org.geoserver.flow.controller.KeyGenerator;
+import org.geoserver.flow.controller.OWSRequestMatcher;
+import org.geoserver.flow.controller.RateFlowController;
 import org.geoserver.flow.controller.SingleIpFlowController;
-import org.geoserver.flow.controller.UserFlowController;
+import org.geoserver.flow.controller.UserConcurrentFlowController;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Resource;
@@ -33,8 +38,44 @@ import org.geotools.util.logging.Logging;
  * @author Juan Marin, OpenGeo
  */
 public class DefaultControlFlowConfigurator implements ControlFlowConfigurator {
+    static final Pattern RATE_PATTERN = Pattern.compile("(\\d+)/([smhd])(;(\\d+)s)?");
+
     static final Logger LOGGER = Logging.getLogger(DefaultControlFlowConfigurator.class);
     static final String PROPERTYFILENAME="controlflow.properties";
+
+    /**
+     * Factors out the code to build a rate flow controller
+     * 
+     * @author Andrea Aime - GeoSolutions
+     * 
+     */
+    static abstract class RateControllerBuilder {
+        public FlowController build(String[] keys, String value) {
+            Matcher matcher = RATE_PATTERN.matcher(value);
+            if (!matcher.matches()) {
+                LOGGER.severe("Rate limiting rule values should be expressed as <rate</<unit>[;<delay>s], "
+                        + "where unit can be s, m, h or d. This one is invalid: "
+                        + value);
+                return null;
+            }
+            int rate = Integer.parseInt(matcher.group(1));
+            long interval = Intervals.valueOf(matcher.group(2)).duration;
+            int delay = 0;
+            String userDelay = matcher.group(4);
+            if (userDelay != null) {
+                delay = Integer.parseInt(userDelay) * 1000;
+            }
+            
+            String service = keys.length >= 3 ? keys[2] : null;
+            String request = keys.length >= 4 ? keys[3] : null;
+            String format = keys.length >= 5 ? keys[4] : null;
+            OWSRequestMatcher requestMatcher = new OWSRequestMatcher(service, request, format);
+            KeyGenerator keyGenerator = buildKeyGenerator(keys, value);
+            return new RateFlowController(requestMatcher, rate, interval, delay, keyGenerator);
+        }
+
+        protected abstract KeyGenerator buildKeyGenerator(String[] keys, String value);
+    }
     PropertyFileWatcher configFile;
 
     long timeout = -1;
@@ -70,18 +111,20 @@ public class DefaultControlFlowConfigurator implements ControlFlowConfigurator {
             int queueSize = 0;
             StringTokenizer tokenizer = new StringTokenizer(value, ",");
             try {
-            	//ip.blacklist and ip.whitelist properties aren't integer values
-            	if(!"ip.blacklist".equals(key) && !"ip.whitelist".equals(key)){
-                    if (tokenizer.countTokens() == 1) {
-                        queueSize = Integer.parseInt(value);
-                    } else {
-                        queueSize = Integer.parseInt(tokenizer.nextToken());
+                // some properties are not integers
+                if("ip.blacklist".equals(key) && "ip.whitelist".equals(key)) {
+                    continue;
+                } else {
+                    if (!key.startsWith("user.ows") && !key.startsWith("ip.ows")) {
+                        if (tokenizer.countTokens() == 1) {
+                            queueSize = Integer.parseInt(value);
+                        } else {
+                            queueSize = Integer.parseInt(tokenizer.nextToken());
+                        }
                     }
-                }else{
-                	continue;
-                }
+                } 
             } catch (NumberFormatException e) {
-                LOGGER.severe("Rules should be assigned just a queue size, instead " + okey
+                LOGGER.severe("Rules should be assigned just a queue size, instead " + key
                         + " is associated to " + value);
                 continue;
             }
@@ -103,10 +146,30 @@ public class DefaultControlFlowConfigurator implements ControlFlowConfigurator {
                     controller = new BasicOWSController(keys[1], queueSize);
                 }
             } else if ("user".equals(keys[0])) {
-                controller = new UserFlowController(queueSize);
+                if (keys.length == 1) {
+                    controller = new UserConcurrentFlowController(queueSize);
+                } else if ("ows".equals(keys[1])) {
+                    controller = new RateControllerBuilder() {
+
+                        @Override
+                        protected KeyGenerator buildKeyGenerator(String[] keys, String value) {
+                            return new CookieKeyGenerator();
+                        }
+
+                    }.build(keys, value);
+                }
             } else if ("ip".equals(keys[0])) {
                 if (keys.length == 1) {
                     controller = new IpFlowController(queueSize);
+                } else if (keys.length > 1 && "ows".equals(keys[1])) {
+                    controller = new RateControllerBuilder() {
+
+                        @Override
+                        protected KeyGenerator buildKeyGenerator(String[] keys, String value) {
+                            return new IpKeyGenerator();
+                        }
+
+                    }.build(keys, value);
                 } else if (keys.length > 1) {
                 	if(!"blacklist".equals(keys[1]) && !"whitelist".equals(keys[1])){
                 		String ip = key.substring("ip.".length());

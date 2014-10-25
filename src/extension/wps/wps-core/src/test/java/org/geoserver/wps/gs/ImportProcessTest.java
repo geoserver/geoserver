@@ -10,10 +10,13 @@ import static junit.framework.Assert.assertNotNull;
 
 import java.io.IOException;
 
+import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wps.WPSTestSupport;
+import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.data.Query;
 import org.geotools.data.crs.ForceCoordinateSystemFeatureResults;
 import org.geotools.data.simple.SimpleFeatureCollection;
@@ -23,12 +26,20 @@ import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.referencing.CRS;
 import org.junit.After;
 import org.junit.Test;
+import org.opengis.coverage.grid.GridCoverage;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.filter.FilterFactory;
 
 public class ImportProcessTest extends WPSTestSupport {
+
+    @Override
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        super.onSetUp(testData);
+        
+        addWcs11Coverages(testData);
+    }
     
-    @After 
+    @After
     public void removeNewLayers() {
         removeLayer(SystemTestData.CITE_PREFIX, "Buildings2");
     }
@@ -38,38 +49,62 @@ public class ImportProcessTest extends WPSTestSupport {
      */
     @Test
     public void testImportBuildings() throws Exception {
-        FeatureTypeInfo ti = getCatalog().getFeatureTypeByName(getLayerId(SystemTestData.BUILDINGS));
+        FeatureTypeInfo ti = getCatalog()
+                .getFeatureTypeByName(getLayerId(SystemTestData.BUILDINGS));
         SimpleFeatureCollection rawSource = (SimpleFeatureCollection) ti.getFeatureSource(null,
                 null).getFeatures();
         ForceCoordinateSystemFeatureResults forced = new ForceCoordinateSystemFeatureResults(
                 rawSource, CRS.decode("EPSG:4326"));
 
         ImportProcess importer = new ImportProcess(getCatalog());
-        String result = importer.execute(forced, null, SystemTestData.CITE_PREFIX, SystemTestData.CITE_PREFIX,
-                "Buildings2", null, null, null);
+        String result = importer.execute(forced, null, SystemTestData.CITE_PREFIX,
+                SystemTestData.CITE_PREFIX, "Buildings2", null, null, null);
 
         checkBuildings2(result);
     }
-    
+
     /**
      * Try to re-import buildings as another layer (different name, different projection)
      */
     @Test
     public void testImportBuildingsForceCRS() throws Exception {
-        FeatureTypeInfo ti = getCatalog().getFeatureTypeByName(getLayerId(SystemTestData.BUILDINGS));
+        FeatureTypeInfo ti = getCatalog()
+                .getFeatureTypeByName(getLayerId(SystemTestData.BUILDINGS));
         SimpleFeatureCollection rawSource = (SimpleFeatureCollection) ti.getFeatureSource(null,
                 null).getFeatures();
 
         ImportProcess importer = new ImportProcess(getCatalog());
-        String result = importer.execute(rawSource, null, SystemTestData.CITE_PREFIX, SystemTestData.CITE_PREFIX,
-                "Buildings2", CRS.decode("EPSG:4326"), null, null);
+        String result = importer.execute(rawSource, null, SystemTestData.CITE_PREFIX,
+                SystemTestData.CITE_PREFIX, "Buildings2", CRS.decode("EPSG:4326"), null, null);
 
         checkBuildings2(result);
     }
 
+    /**
+     * Try to re-import tasmania as another layer (different name, different style)
+     */
+    @Test
+    public void testImportTasmaniaDEM() throws Exception {
+        CoverageInfo ci = getCatalog().getCoverageByName(getLayerId(MockData.TASMANIA_DEM));
+        GridCoverage coverage = ci.getGridCoverage(null, null);
+        
+        ImportProcess importer = new ImportProcess(getCatalog());
+        String result = importer.execute(null, (GridCoverage2D) coverage, SystemTestData.WCS_PREFIX,
+                "DEM", "Tasmania2", CRS.decode("EPSG:4326"), null, null);
+        
+        assertEquals(SystemTestData.WCS_PREFIX + ":" + "Tasmania2", result);
 
-	private void checkBuildings2(String result) throws IOException {
-		assertEquals(SystemTestData.CITE_PREFIX + ":" + "Buildings2", result);
+        // check the layer
+        LayerInfo layer = getCatalog().getLayerByName(result);
+        assertNotNull(layer);
+        
+        // check the coverage info
+        CoverageInfo cinfo = (CoverageInfo) layer.getResource();
+        assertEquals("EPSG:4326", cinfo.getSRS());
+    }
+    
+    private void checkBuildings2(String result) throws IOException {
+        assertEquals(SystemTestData.CITE_PREFIX + ":" + "Buildings2", result);
 
         // check the layer
         LayerInfo layer = getCatalog().getLayerByName(result);
@@ -102,5 +137,5 @@ public class ImportProcessTest extends WPSTestSupport {
         fi.close();
         assertEquals("114", f.getAttribute("FID"));
         assertEquals("215 Main Street", f.getAttribute("ADDRESS"));
-	}
+    }
 }

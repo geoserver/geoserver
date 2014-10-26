@@ -48,6 +48,11 @@ public class WFSLoader extends LegacyServiceLoader<WFSInfo> {
             wfs.setHitsIgnoreMaxFeatures( hitsIgnoreMaxFeatures );
         }
         
+        Integer maxNumberOfFeaturesForPreview = (Integer) properties.get( "maxNumberOfFeaturesForPreview");
+        if (maxNumberOfFeaturesForPreview != null) {
+            wfs.setMaxNumberOfFeaturesForPreview( maxNumberOfFeaturesForPreview );
+        }
+        
         //gml2
         GMLInfo gml = new GMLInfoImpl();
         gml.setOverrideGMLAttributes(true);

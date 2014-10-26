@@ -1,6 +1,11 @@
 package org.geoserver.community.css.web;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.wicket.PageParameters;
@@ -16,12 +21,9 @@ import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-
 public class CssDemoTest extends GeoServerWicketTestSupport {
 
-    @Before 
+    @Before
     public void setup() {
         login();
     }
@@ -62,7 +64,7 @@ public class CssDemoTest extends GeoServerWicketTestSupport {
         tester.assertComponent("main-content:context:panel", SLDPreviewPanel.class);
     }
 
-    @Test 
+    @Test
     public void testStyleChooser() {
         tester.startPage(CssDemoPage.class);
         tester.clickLink("main-content:change.style");
@@ -83,7 +85,7 @@ public class CssDemoTest extends GeoServerWicketTestSupport {
         tester.clickLink("main-content:context:tabs-container:tabs:3:link");
         tester.assertComponent("main-content:context:panel", DocsPanel.class);
     }
-    
+
     @Test
     public void testWorkspaceSpecificStyle() {
         // make this style workspace specific
@@ -91,7 +93,7 @@ public class CssDemoTest extends GeoServerWicketTestSupport {
         WorkspaceInfo ws = getCatalog().getWorkspaceByName(MockData.BASIC_POLYGONS.getPrefix());
         si.setWorkspace(ws);
         getCatalog().save(si);
-        
+
         login();
         PageParameters pp = new PageParameters();
         String prefixedName = getLayerId(MockData.BASIC_POLYGONS);
@@ -102,17 +104,17 @@ public class CssDemoTest extends GeoServerWicketTestSupport {
         tester.assertModelValue("main-content:style.name", prefixedName);
         tester.assertModelValue("main-content:layer.name", prefixedName);
     }
-    
+
     @Test
     public void testWorkspaceRelativeLinks() {
         StyleInfo si = getCatalog().getStyleByName(MockData.LAKES.getLocalPart());
         WorkspaceInfo ws = getCatalog().getWorkspaceByName(MockData.LAKES.getPrefix());
         si.setWorkspace(ws);
-        
+
         CssDemoPage page = new CssDemoPage();
         String css = "* { mark: url(\"smiley.png\");  }";
         String sld = page.cssText2sldText(css, si);
-        
+
         // check the reference is workspace specific (see http://jira.codehaus.org/browse/GEOS-6229
         // though, that should be a better fix)
         // System.out.println(sld);
@@ -141,13 +143,15 @@ public class CssDemoTest extends GeoServerWicketTestSupport {
         tester.assertModelValue("main-content:style.name", "foo");
         tester.assertModelValue("main-content:layer.name", prefixedName);
 
-        tester.debugComponentTrees();
+        // tester.debugComponentTrees();
         FormTester form = tester.newFormTester("main-content:style.editing:style-editor");
         form.setValue("editor", "* { stroke: red; }");
 
         tester.executeAjaxEvent("main-content:style.editing:style-editor:submit", "onclick");
 
-        String content = IOUtils.toString(cat.getResourcePool().readStyle(foo));
+        BufferedReader reader = cat.getResourcePool().readStyle(foo);
+        String content = IOUtils.toString(reader);
+        reader.close();
         assertEquals("* { stroke: red; }", content);
     }
 }

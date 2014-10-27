@@ -197,6 +197,7 @@ public class CoverageStoreEditPage extends AbstractCoverageStorePage {
 
             ResourcePool resourcePool = catalog.getResourcePool();
             resourcePool.clear(info);
+            catalog.validate(info, false).throwIfInvalid();
             catalog.save(info);
 
             for (CoverageInfo coverage : alreadyConfigured) {

@@ -74,7 +74,8 @@ public class WMSStoreResource extends AbstractCatalogResource {
              wms.setWorkspace( catalog.getWorkspaceByName( workspace ) );
         } 
         wms.setEnabled(true);
-
+        
+        catalog.validate(wms, false).throwIfInvalid();
         catalog.add( wms );
         
         LOGGER.info( "POST WSM store " + wms.getName() );
@@ -104,6 +105,7 @@ public class WMSStoreResource extends AbstractCatalogResource {
         
         new CatalogBuilder( catalog ).updateWMSStore( original, wms );
         
+        catalog.validate(original, false).throwIfInvalid();
         catalog.save( original );
         
         LOGGER.info( "PUT wms store " + workspace + "," + wmsstore );

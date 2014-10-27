@@ -192,6 +192,7 @@ public class FeatureTypeResource extends AbstractCatalogResource {
         }
         
         featureType.setEnabled(true);
+        catalog.validate(featureType, true).throwIfInvalid();
         catalog.add( featureType );
         
         //create a layer for the feature type
@@ -254,6 +255,7 @@ public class FeatureTypeResource extends AbstractCatalogResource {
         CatalogBuilder helper = new CatalogBuilder(catalog);
         helper.updateFeatureType(featureTypeInfo,featureTypeUpdate);
         calculateOptionalFields(featureTypeUpdate, featureTypeInfo);
+        catalog.validate(featureTypeInfo, false).throwIfInvalid();
         catalog.save( featureTypeInfo );
         catalog.getResourcePool().clear(featureTypeInfo);
         

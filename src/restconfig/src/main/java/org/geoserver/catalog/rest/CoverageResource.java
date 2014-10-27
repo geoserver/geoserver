@@ -105,6 +105,7 @@ public class CoverageResource extends AbstractCatalogResource {
         }
         
         coverage.setEnabled(true);
+        catalog.validate(coverage, true).throwIfInvalid();
         catalog.add( coverage );
         
         //create a layer for the coverage
@@ -151,6 +152,7 @@ public class CoverageResource extends AbstractCatalogResource {
         CoverageInfo original = catalog.getCoverageByCoverageStore( cs,  coverage );
         new CatalogBuilder(catalog).updateCoverage(original,c);
         calculateOptionalFields(c, original);
+        catalog.validate(original, false).throwIfInvalid();
         catalog.save( original );
         
         clear(original);

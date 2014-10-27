@@ -5,29 +5,29 @@
  */
 package org.geoserver.wps;
 
-import java.io.File;
-
-import org.geoserver.wps.executor.WPSExecutionManager;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resource.Type;
+import org.geoserver.wps.resource.WPSResourceManager;
 
 public class GetResult {
 
-    private WPSExecutionManager executionManager;
+    private WPSResourceManager resourceManager;
 
-    public GetResult(WPSExecutionManager executionManager) {
-        this.executionManager = executionManager;
+    public GetResult(WPSResourceManager resourceManager) {
+        this.resourceManager = resourceManager;
     }
 
-    public File run(GetExecutionResultType request) {
+    public Resource run(GetExecutionResultType request) {
         // otherwise check for a stored response
-        File outputFile = executionManager.getStoredOutput(request.getExecutionId(),
+        Resource output = resourceManager.getOutputResource(request.getExecutionId(),
                 request.getOutputId());
-        if (outputFile == null || !outputFile.exists()) {
+        if (output == null || output.getType() == Type.UNDEFINED) {
             throw new WPSException("Unknown output " + request.getOutputId() + " for execution id "
                     + request.getExecutionId()
                     + ", either the execution was never submitted or too much time "
                     + "elapsed since the process completed");
         }
-        return outputFile;
+        return output;
     }
 
 }

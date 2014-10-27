@@ -5,35 +5,71 @@
  */
 package org.geoserver.wps;
 
-import java.io.File;
+import java.io.IOException;
 
-import net.opengis.wps10.ExecuteResponseType;
+import net.opengis.wps10.ExecuteType;
 
-import org.geoserver.wps.executor.WPSExecutionManager;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resource.Type;
+import org.geoserver.wps.executor.ExecuteResponseBuilder;
+import org.geoserver.wps.executor.ExecutionStatus;
+import org.geoserver.wps.resource.WPSResourceManager;
+import org.springframework.context.ApplicationContext;
 
 public class GetStatus {
 
-    private WPSExecutionManager executionManager;
+    private WPSResourceManager resources;
 
-    public GetStatus(WPSExecutionManager executionManager) {
-        this.executionManager = executionManager;
+    private ProcessStatusTracker tracker;
+
+    private ApplicationContext ctx;
+
+    public GetStatus(ProcessStatusTracker tracker, WPSResourceManager resources, ApplicationContext ctx) {
+        this.tracker = tracker;
+        this.resources = resources;
+        this.ctx = ctx;
     }
 
-    public Object run(GetExecutionStatusType request) {
+    public Object run(GetExecutionStatusType request) throws WPSException {
         // see if the process is still in-flight
-        ExecuteResponseType status = executionManager.getStatus(request.getExecutionId());
-        if (status != null) {
-            return status;
-        }
-        
-        // otherwise check for a stored response
-        File storedResponse = executionManager.getStoredResponse(request.getExecutionId());
-        if (storedResponse == null || !storedResponse.exists()) {
-            throw new WPSException("Unknown execution id " + request.getExecutionId()
+        String executionId = request.getExecutionId();
+        ExecutionStatus status = tracker.getStatus(executionId);
+        if(status == null) {
+            throw new WPSException("Unknown execution id " + executionId
                     + ", either the execution was never submitted or too much time "
                     + "elapsed since the process completed");
         }
-        return storedResponse;
+        
+        // are we done?
+        if(status.getPhase().isExecutionCompleted()) {
+            Resource storedResponse = resources.getStoredResponse(executionId);
+            if (storedResponse == null || storedResponse.getType() == Type.UNDEFINED) {
+                throw new WPSException("The execution is completed with status " + status.getPhase() 
+                        + " and yet the response cannot be located on disk, this is an internal failure");
+            } else {
+                return storedResponse;
+            }
+        } else {
+            try {
+                ExecuteType execute = status.getRequest();
+                if (execute == null) {
+                    execute = resources.getStoredRequestObject(executionId);
+                }
+                if (execute == null) {
+                    throw new WPSException(
+                            "Could not locate the original request for execution id: "
+                                    + executionId);
+                } else {
+                    ExecuteResponseBuilder builder = new ExecuteResponseBuilder(execute, ctx,
+                            status);
+                    return builder.build();
+                }
+            } catch (IOException e) {
+                throw new WPSException("Failed to write status response", e);
+            }
+        }
+        
+        
     }
 
 }

@@ -5,13 +5,9 @@
  */
 package org.geoserver.wps;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertTrue;
-
-import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
-import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
-import static org.geoserver.data.test.MockData.PRIMITIVEGEOFEATURE;
+import static junit.framework.Assert.*;
+import static org.custommonkey.xmlunit.XMLAssert.*;
+import static org.geoserver.data.test.MockData.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -522,6 +518,7 @@ public class ExecuteTest extends WPSTestSupport {
          "</wps:Execute>";
   
         MockHttpServletResponse r = postAsServletResponse("wps", xml);
+        System.out.println(r.getOutputStreamContent());
         assertEquals("application/json", r.getContentType());
         // System.out.println(r.getOutputStreamContent());
         FeatureCollection fc = new FeatureJSON().readFeatureCollection(r.getOutputStreamContent());
@@ -593,7 +590,7 @@ public class ExecuteTest extends WPSTestSupport {
                 "</wps:Execute>";
         
         Document dom = postAsDOM(root(), request);
-        // print(dom);
+        print(dom);
         assertXpathEvaluatesTo("-4.0E-4 -0.0024", "/ows:BoundingBox/ows:LowerCorner", dom);
         assertXpathEvaluatesTo("0.0036 0.0024", "/ows:BoundingBox/ows:UpperCorner", dom);
     }
@@ -857,6 +854,7 @@ public class ExecuteTest extends WPSTestSupport {
         String request = "wps?service=WPS&version=1.0.0&request=Execute&Identifier=gs:Monkey&DataInputs=" + urlEncode("id=x1");
         Document dom = getAsDOM(request);
         checkValidationErrors(dom);
+        print(dom);
         assertXpathExists("//wps:ProcessFailed", dom);
         assertXpathEvaluatesTo("Process failed during execution\nSorry dude, things went pear shaped...", 
                 "//wps:ProcessFailed/ows:ExceptionReport/ows:Exception/ows:ExceptionText", dom);
@@ -875,8 +873,9 @@ public class ExecuteTest extends WPSTestSupport {
         // we move the clock forward, but we asked no status, nothing should change
         MonkeyProcess.progress("x2", 50f, true);
         dom = getAsDOM(statusLocation);
-        // print(dom);
-        assertXpathExists("//wps:ProcessAccepted", dom);
+        print(dom);
+        assertXpathExists("//wps:ProcessStarted", dom);
+        assertXpathEvaluatesTo("34", "//wps:ProcessStarted/@percentCompleted", dom);
         
         // now schedule the exit and wait for it to exit
         ListFeatureCollection fc = collectionOfThings();
@@ -905,14 +904,14 @@ public class ExecuteTest extends WPSTestSupport {
         Document dom = getAsDOM(statusLocation);
         print(dom);
         assertXpathExists("//wps:ProcessStarted", dom);
-        assertXpathEvaluatesTo("" + Math.round(0.66 * 10), "//wps:ProcessStarted/@percentCompleted", dom);
+        assertXpathEvaluatesTo("8", "//wps:ProcessStarted/@percentCompleted", dom);
         
         // we move the clock forward, but we asked no status, nothing should change
         MonkeyProcess.progress("x3", 50f, true);
         dom = getAsDOM(statusLocation);
-         print(dom);
+        // print(dom);
         assertXpathExists("//wps:ProcessStarted", dom);
-        assertXpathEvaluatesTo("" + Math.round(0.66 * 50), "//wps:ProcessStarted/@percentCompleted", dom);
+        assertXpathEvaluatesTo("34", "//wps:ProcessStarted/@percentCompleted", dom);
         assertXpathEvaluatesTo("Currently at 50.0", "//wps:ProcessStarted", dom);
 
         
@@ -979,7 +978,7 @@ public class ExecuteTest extends WPSTestSupport {
         // now schedule the exit and wait for it to exit
         MonkeyProcess.exit("x5", bombOutCollection(), true);
         Document dom = waitForProcessEnd(statusLocation, 60);
-        // print(dom);
+        print(dom);
         assertXpathExists("//wps:ProcessFailed", dom);
     }
     
@@ -993,9 +992,9 @@ public class ExecuteTest extends WPSTestSupport {
         MonkeyProcess.progress("one", 10f, true);
         MonkeyProcess.progress("two", 10f, true);
         
-        // make sure both were started and are running (the 
-        assertProgress(statusLocation1, "7");
-        assertProgress(statusLocation2, "7");
+        // make sure both were started and are running, input parsing was assumed to be 1%
+        assertProgress(statusLocation1, "8");
+        assertProgress(statusLocation2, "8");
         
         // now schedule the exit and wait for it to exit
         MonkeyProcess.exit("one", collectionOfThings(), true);
@@ -1049,6 +1048,7 @@ public class ExecuteTest extends WPSTestSupport {
     private String submitMonkey(String id) throws Exception, XpathException {
         String request = "wps?service=WPS&version=1.0.0&request=Execute&Identifier=gs:Monkey&storeExecuteResponse=true&status=true&DataInputs=" + urlEncode("id=" + id);
         Document dom = getAsDOM(request);
+        // print(dom);
         assertXpathExists("//wps:ProcessAccepted", dom);
         XpathEngine xpath = XMLUnit.newXpathEngine();
         String fullStatusLocation = xpath.evaluate("//wps:ExecuteResponse/@statusLocation", dom);
@@ -1083,7 +1083,9 @@ public class ExecuteTest extends WPSTestSupport {
         Document dom = null;
         long start = System.currentTimeMillis();
         while(((System.currentTimeMillis() - start) / 1000 < maxWaitSeconds)) {
-            dom = getAsDOM(statusLocation);
+            MockHttpServletResponse response = getAsServletResponse(statusLocation);
+            // System.out.println(response.getOutputStreamContent());
+            dom = dom(new ByteArrayInputStream(response.getOutputStreamContent().getBytes()));
             // print(dom);
             // are we still waiting for termination?
             if(xpath.getMatchingNodes("//wps:Status/wps:ProcessAccepted", dom).getLength() > 0 ||

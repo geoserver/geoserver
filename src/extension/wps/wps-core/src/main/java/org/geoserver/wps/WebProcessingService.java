@@ -6,8 +6,6 @@
 
 package org.geoserver.wps;
 
-import java.io.File;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -17,6 +15,8 @@ import net.opengis.wps10.ExecuteType;
 import net.opengis.wps10.GetCapabilitiesType;
 import net.opengis.wps10.ProcessDescriptionsType;
 import net.opengis.wps10.WPSCapabilitiesType;
+
+import org.geoserver.platform.resource.Resource;
 
 /**
  * @author Lucas Reed, Refractions Research Inc
@@ -58,11 +58,11 @@ public interface WebProcessingService {
     void getSchema(HttpServletRequest request, HttpServletResponse response) throws WPSException;
 
     /**
-     * Returns a file stored as a reference in the specified execution 
+     * Returns a output stored as a reference in the specified execution
      * 
      * @param request
      * @return
      * @throws WPSException
      */
-    File getExecutionResult(GetExecutionResultType request) throws WPSException;
+    Resource getExecutionResult(GetExecutionResultType request) throws WPSException;
 }

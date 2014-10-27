@@ -8,7 +8,6 @@ package org.geoserver.wps;
 
 import java.util.List;
 
-import org.geoserver.catalog.MetadataMap;
 import org.geoserver.config.ServiceInfo;
 
 /**
@@ -83,5 +82,21 @@ public interface WPSInfo extends ServiceInfo {
      * @return
      */
     public List<ProcessGroupInfo> getProcessGroups();
+
+    /**
+     * Gets the current output storage directory
+     * 
+     * @return
+     */
+    public String getStorageDirectory();
+
+    /**
+     * Sets the output storage directory, that is, the directory used to store the request, status
+     * and final response of asynch requests, as well as any output that is meant to be referred to
+     * by URL instead of being included inline in Execute the response.
+     * 
+     * @param storageDirectory
+     */
+    public void setStorageDirectory(String storageDirectory);
 
 }

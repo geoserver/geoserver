@@ -36,7 +36,6 @@ class ListInputProvider implements InputProvider {
                 Object pv = provider.getValue();
                 value.add(pv);
             }
-            providers = null;
         }
         return value;
     }

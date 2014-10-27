@@ -17,10 +17,13 @@ import org.apache.wicket.markup.html.form.SubmitLink;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.validation.validator.MinimumValidator;
+import org.geoserver.web.data.store.panel.DirectoryParamPanel;
 import org.geoserver.web.services.BaseServiceAdminPage;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerTablePanel;
+import org.geoserver.web.wicket.ParamResourceModel;
 import org.geoserver.wps.ProcessGroupInfo;
 import org.geoserver.wps.WPSInfo;
 
@@ -72,6 +75,13 @@ public class WPSAdminPage extends BaseServiceAdminPage<WPSInfo> {
         resourceExpirationTimeout.add(new MinimumValidator<Integer>(1));
         form.add(resourceExpirationTimeout);
         
+        // GeoServerFileChooser chooser = new GeoServerFileChooser("storageDirectory",
+        // new PropertyModel<String>(info, "storageDirectory"));
+        DirectoryParamPanel chooser = new DirectoryParamPanel("storageDirectory",
+                new PropertyModel<String>(
+                info, "storageDirectory"), new ParamResourceModel("storageDirectory", this), false);
+        form.add(chooser);
+
         WPSInfo wpsInfo = (WPSInfo) info.getObject();
         processFactories = cloneFactoryInfos(wpsInfo.getProcessGroups());
         ProcessFactoryInfoProvider provider = new ProcessFactoryInfoProvider(processFactories, getLocale());

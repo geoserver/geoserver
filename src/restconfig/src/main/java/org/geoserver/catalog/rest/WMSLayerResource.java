@@ -112,6 +112,7 @@ public class WMSLayerResource extends AbstractCatalogResource {
         cb.initWMSLayer( wml );
         
         wml.setEnabled(true);
+        catalog.validate(wml, true).throwIfInvalid();
         catalog.add( wml );
         
         // create a layer for the feature type
@@ -137,6 +138,7 @@ public class WMSLayerResource extends AbstractCatalogResource {
         WMSStoreInfo wms = catalog.getStoreByName(workspace, wmsstore, WMSStoreInfo.class);
         WMSLayerInfo original = catalog.getResourceByStore( wms,  wmslayer, WMSLayerInfo.class );
         new CatalogBuilder(catalog).updateWMSLayer(original,wml);
+        catalog.validate(original, false).throwIfInvalid();
         catalog.save( original );
         
         LOGGER.info( "PUT wms layer " + wmsstore + "," + wmslayer );

@@ -6,6 +6,7 @@
 package org.geoserver.web.data.store;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.logging.Level;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -106,6 +107,7 @@ public class DataAccessNewPage extends AbstractDataAccessPage {
         DataStoreInfo savedStore = catalog.getFactory().createDataStore();
         clone(info, savedStore);
         try {
+            catalog.validate(savedStore, true).throwIfInvalid();
             catalog.add(savedStore);
         } catch (Exception e) {
             LOGGER.log(Level.WARNING, "Error adding data store to catalog", e);

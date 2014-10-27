@@ -5,6 +5,7 @@
  */
 package org.geoserver.web.data.store;
 
+import java.util.List;
 import java.util.logging.Level;
 
 import javax.management.RuntimeErrorException;
@@ -58,6 +59,7 @@ public class CoverageStoreNewPage extends AbstractCoverageStorePage {
         // of a failure!... strange, why a save can't fail?
         // Still, be cautious and wrap it in a try/catch block so the page does not blow up
         try {
+            catalog.validate(savedStore, false).throwIfInvalid();
             catalog.save(savedStore);
         } catch (RuntimeException e) {
             LOGGER.log(Level.INFO, "Adding the store for " + info.getURL(), e);

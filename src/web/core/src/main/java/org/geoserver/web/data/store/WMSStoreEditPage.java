@@ -5,6 +5,8 @@
  */
 package org.geoserver.web.data.store;
 
+import java.util.List;
+
 import org.apache.wicket.Component;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -64,6 +66,7 @@ public class WMSStoreEditPage extends AbstractWMSStorePage {
      * </p>
      */
     protected void doSaveStore(WMSStoreInfo info) {
+        getCatalog().validate(info, false).throwIfInvalid();
         getCatalog().save(info);
         doReturn(StorePage.class);
     }

@@ -667,8 +667,7 @@ public class XStreamPersisterTest {
         Assert.assertEquals(LayerGroupInfo.Mode.SINGLE, group.getMode());
         
         Catalog catalog = new CatalogImpl();
-        List<RuntimeException> errors = catalog.validate(group, false);
-        Assert.assertTrue(errors == null || errors.size() == 0);
+        Assert.assertTrue(catalog.validate(group, false).isValid());
     }
     
     @Test

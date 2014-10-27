@@ -182,9 +182,15 @@ public class CoverageStoreFileResource extends StoreFileResource {
         
         //add or update the datastore info
         if ( add ) {
+        	if (!catalog.validate(info, true).isValid()) {
+        		throw new RuntimeException("Validation failed");
+        	}
             catalog.add( info );
         }
         else {
+        	if (!catalog.validate(info, false).isValid()) {
+        		throw new RuntimeException("Validation failed");
+        	}
             catalog.save( info );
         }
         
@@ -298,6 +304,7 @@ public class CoverageStoreFileResource extends StoreFileResource {
             
             if ( existing != null ) {
                 builder.updateCoverage(existing,cinfo);
+                catalog.validate(existing, false).throwIfInvalid();
                 catalog.save( existing );
                 cinfo = existing;
             }
@@ -315,6 +322,7 @@ public class CoverageStoreFileResource extends StoreFileResource {
 
         //add/save
         if ( add ) {
+            catalog.validate(cinfo, true).throwIfInvalid();
             catalog.add( cinfo );
             
             LayerInfo layerInfo = builder.buildLayer( cinfo );
@@ -343,7 +351,7 @@ public class CoverageStoreFileResource extends StoreFileResource {
 
             boolean valid = true;
             try {
-                if (!catalog.validate(layerInfo, true).isEmpty()) {
+                if (!catalog.validate(layerInfo, true).isValid()) {
                     valid = false;
                 }
             } catch (Exception e) {

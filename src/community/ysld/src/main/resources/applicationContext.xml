@@ -1,9 +1,14 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
-
-    <bean class="org.geoserver.ysld.YsldHandler"/>
-
+    
+    <bean class="org.geoserver.ysld.YsldHandler">
+       <constructor-arg ref="gwcZoomContextFinder"/>
+    </bean>
+    <bean id="gwcZoomContextFinder" class="org.geoserver.ysld.GWCZoomContextFinder">
+      <constructor-arg ref="gwcGridSetBroker"/>
+    </bean>
+    
     <!--<bean class="org.geoserver.web.HeaderContribution">-->
         <!--<property name="scope" value="com.boundlessgeo.ysld.YsldHandler"/>-->
         <!--<property name="javaScriptFilename" value="yaml.js"/>-->

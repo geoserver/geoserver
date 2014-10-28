@@ -6,10 +6,11 @@ import org.geotools.styling.StyledLayerDescriptor;
 import org.geotools.util.Version;
 import org.geotools.ysld.Ysld;
 import org.xml.sax.EntityResolver;
+import org.geotools.ysld.parse.ZoomContextFinder;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class YsldHandler extends StyleHandler {
@@ -17,8 +18,9 @@ public class YsldHandler extends StyleHandler {
     public static final String FORMAT = "ysld";
     public static final String MIMETYPE = "application/vnd.geoserver.ysld+yaml";
 
-    public YsldHandler() {
+    public YsldHandler(ZoomContextFinder zoomFinder) {
         super("Ysld", FORMAT);
+        this.zoomFinder = zoomFinder;
     }
 
     @Override
@@ -30,11 +32,13 @@ public class YsldHandler extends StyleHandler {
     public String getCodeMirrorEditMode() {
         return "yaml";
     }
-
+    
+    ZoomContextFinder zoomFinder;
+    
     @Override
     public StyledLayerDescriptor parse(Object input, Version version, ResourceLocator resourceLocator,
         EntityResolver entityResolver) throws IOException {
-        return Ysld.parse(toReader(input));
+        return Ysld.parse(toReader(input), Collections.singletonList(zoomFinder));
     }
 
     @Override

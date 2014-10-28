@@ -228,6 +228,62 @@ public class GWCZoomContextFinderTest {
     }
     
     @Test
+    public void testRangePastEnd() throws Exception {
+        GridSetBroker broker = createMock(GridSetBroker.class);
+        GridSet set = createMock(GridSet.class);
+        
+        expect(broker.get("test")).andStubReturn(set);
+        Grid grid2 = mockGrid(2, 500_000_000d, set);
+        Grid grid3 = mockGrid(3, 200_000_000d, set);
+        Grid grid4 = mockGrid(4, 100_000_000d, set);
+        expect(set.getNumLevels()).andStubReturn(5);
+        
+        replay(broker, set, grid2, grid3, grid4);
+        
+        ZoomContextFinder finder = new GWCZoomContextFinder(broker);
+        
+        ZoomContext zContext = finder.get("test");
+        
+        ScaleRange range = zContext.getRange(6,7);
+        
+        assertThat(range, not(rangeContains(1/EPSILON)));
+        assertThat(range, not(rangeContains(500_000_000d)));
+        assertThat(range, not(rangeContains(200_000_000d)));
+        assertThat(range, not(rangeContains(100_000_000d)));
+        assertThat(range, not(rangeContains(EPSILON)));
+       
+        verify(broker, set, grid2, grid3, grid4);
+    }
+    
+    @Test
+    public void testRangePastStart() throws Exception {
+        GridSetBroker broker = createMock(GridSetBroker.class);
+        GridSet set = createMock(GridSet.class);
+        
+        expect(broker.get("test")).andStubReturn(set);
+        Grid grid2 = mockGrid(2, 500_000_000d, set);
+        Grid grid3 = mockGrid(3, 200_000_000d, set);
+        Grid grid4 = mockGrid(4, 100_000_000d, set);
+        expect(set.getNumLevels()).andStubReturn(5);
+        
+        replay(broker, set, grid2, grid3, grid4);
+        
+        ZoomContextFinder finder = new GWCZoomContextFinder(broker);
+        
+        ZoomContext zContext = finder.get("test");
+        
+        ScaleRange range = zContext.getRange(-2,-1);
+        
+        assertThat(range, not(rangeContains(1/EPSILON)));
+        assertThat(range, not(rangeContains(500_000_000d)));
+        assertThat(range, not(rangeContains(200_000_000d)));
+        assertThat(range, not(rangeContains(100_000_000d)));
+        assertThat(range, not(rangeContains(EPSILON)));
+       
+        verify(broker, set, grid2, grid3, grid4);
+    }
+    
+    @Test
     public void testRangeBoundaryLikeTileFuser() throws Exception {
         GridSetBroker broker = createMock(GridSetBroker.class);
         GridSet set = createMock(GridSet.class);

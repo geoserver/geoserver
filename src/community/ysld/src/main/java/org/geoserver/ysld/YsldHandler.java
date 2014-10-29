@@ -5,6 +5,7 @@ import org.geotools.styling.ResourceLocator;
 import org.geotools.styling.StyledLayerDescriptor;
 import org.geotools.util.Version;
 import org.geotools.ysld.Ysld;
+import org.geotools.ysld.parse.WellKnownZoomContextFinder;
 import org.xml.sax.EntityResolver;
 import org.geotools.ysld.parse.ZoomContextFinder;
 
@@ -18,9 +19,23 @@ public class YsldHandler extends StyleHandler {
     public static final String FORMAT = "ysld";
     public static final String MIMETYPE = "application/vnd.geoserver.ysld+yaml";
 
+    /**
+     * Creates a new handler with an explicit zoom finder.
+     */
     public YsldHandler(ZoomContextFinder zoomFinder) {
         super("Ysld", FORMAT);
         this.zoomFinder = zoomFinder;
+    }
+
+    /**
+     * Creates a new handler.
+     * <p>
+     * The instance is created with {@link org.geotools.ysld.parse.WellKnownZoomContextFinder}
+     * as the zoom context finder.
+     * </p>
+     */
+    public YsldHandler() {
+        this(WellKnownZoomContextFinder.getInstance());
     }
 
     @Override

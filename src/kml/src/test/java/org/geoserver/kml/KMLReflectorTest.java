@@ -24,7 +24,9 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
@@ -252,10 +254,17 @@ public class KMLReflectorTest extends WMSTestSupport {
         // all the kvp parameters (which should be set as format_options now are correctly parsed)
         String result = xpath.evaluate("//kml:NetworkLink/kml:Link/kml:href", dom);
         Map<String, Object> kvp = KvpUtils.parseQueryString(result);
-        String formatOptions = (String) kvp.get("format_options");
-        assertEquals(
-                "LEGEND:true;SUPEROVERLAY:true;AUTOFIT:true;KMPLACEMARK:false;OVERLAYMODE:auto;KMSCORE:10;MODE:superoverlay;KMATTR:true;KMLTITLE:myCustomLayerTitle",
-                formatOptions);
+        List<String> formatOptions = Arrays.asList(((String) kvp.get("format_options")).split(";"));
+        assertEquals(9, formatOptions.size());
+        assertTrue(formatOptions.contains("LEGEND:true"));
+        assertTrue(formatOptions.contains("SUPEROVERLAY:true"));
+        assertTrue(formatOptions.contains("AUTOFIT:true"));
+        assertTrue(formatOptions.contains("KMPLACEMARK:false"));
+        assertTrue(formatOptions.contains("OVERLAYMODE:auto"));
+        assertTrue(formatOptions.contains("KMSCORE:10"));
+        assertTrue(formatOptions.contains("MODE:superoverlay"));
+        assertTrue(formatOptions.contains("KMATTR:true"));
+        assertTrue(formatOptions.contains("KMLTITLE:myCustomLayerTitle"));
     }
 
     @Test

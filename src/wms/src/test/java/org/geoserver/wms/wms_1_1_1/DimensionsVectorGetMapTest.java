@@ -228,7 +228,7 @@ public class DimensionsVectorGetMapTest extends WMSDimensionsTestSupport {
         // adding a extra elevation that is simply not there, should not break
         setupVectorDimension(ResourceInfo.TIME, "time", DimensionPresentation.LIST, null, null, null);
         MockHttpServletResponse response = getAsServletResponse("wms?service=WMS&version=1.1.1&request=GetMap"
-                + "&bbox=-180,-90,180,90&styles=&Format=image/png&width=80&height=40&srs=EPSG:4326"
+                + "&bbox=-180,-90,180,90&styles=&width=80&height=40&srs=EPSG:4326"
                 + "&layers=" + getLayerId(V_TIME_ELEVATION)
                 + "&time=2011-05-02,2011-05-04,2011-05-10&format=" + GIFMapResponse.IMAGE_GIF_SUBTYPE_ANIMATED);
 
@@ -247,7 +247,7 @@ public class DimensionsVectorGetMapTest extends WMSDimensionsTestSupport {
         // testing NON transparency in animated gif, with RED bgcolor
         setupVectorDimension(ResourceInfo.TIME, "time", DimensionPresentation.LIST, null, null, null);
         MockHttpServletResponse response = getAsServletResponse("wms?service=WMS&version=1.1.1&request=GetMap"
-                + "&bbox=-180,-90,180,90&styles=&Format=image/png&width=80&height=40&srs=EPSG:4326"
+                + "&bbox=-180,-90,180,90&styles=&width=80&height=40&srs=EPSG:4326"
                 + "&layers=" + getLayerId(V_TIME_ELEVATION)
                 + "&time=2011-05-02,2011-05-04,2011-05-10&format=" + GIFMapResponse.IMAGE_GIF_SUBTYPE_ANIMATED 
                 + "&TRANSPARENT=false&BGCOLOR=0xff0000");
@@ -294,7 +294,7 @@ public class DimensionsVectorGetMapTest extends WMSDimensionsTestSupport {
     	// note by uncommenting lines below you can see actual output
         setupVectorDimension(ResourceInfo.TIME, "time", DimensionPresentation.LIST, null, null, null);
         MockHttpServletResponse response = getAsServletResponse("wms?service=WMS&version=1.1.1&request=GetMap"
-                + "&bbox=-180,-90,180,90&styles=&Format=image/png&width=80&height=40&srs=EPSG:4326"
+                + "&bbox=-180,-90,180,90&styles=&width=80&height=40&srs=EPSG:4326"
                 + "&layers=" + getLayerId(V_TIME_ELEVATION)
                 + "&time=2011-05-02,2011-05-04,2011-05-10&format=" + GIFMapResponse.IMAGE_GIF_SUBTYPE_ANIMATED 
                 + "&TRANSPARENT=true&BGCOLOR=0xfffff");

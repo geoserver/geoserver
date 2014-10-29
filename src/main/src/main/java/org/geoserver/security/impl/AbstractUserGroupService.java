@@ -146,7 +146,7 @@ public abstract class AbstractUserGroupService extends AbstractGeoServerSecurity
      * @see org.geoserver.security.GeoserverUserGroupService#load()
      */
     public void load() throws IOException{
-        LOGGER.info("Start reloading user/grous for service named "+getName());
+        LOGGER.info("Start reloading user/groups for service named "+getName());
         // prevent concurrent write from store and
         // read from service
         synchronized (this) { 

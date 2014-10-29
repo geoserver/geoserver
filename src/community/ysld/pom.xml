@@ -59,7 +59,7 @@
     <dependency>
       <groupId>org.opengeo</groupId>
       <artifactId>gt-ysld</artifactId>
-      <type>test-jar</type>
+      <classifier>tests</classifier>
       <scope>test</scope>
       <version>${gt.version}</version>
     </dependency>

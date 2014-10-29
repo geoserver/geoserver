@@ -306,14 +306,14 @@ public abstract class AbstractUserGroupStore  implements GeoServerUserGroupStore
      */
     public void store() throws IOException {
         if (isModified()) {
-            LOGGER.info("Start storing user/grous for service named "+getName());
+            LOGGER.info("Start storing user/groups for service named "+getName());
             // prevent concurrent write from store and
             // read from service
             synchronized (service) { 
                 serialize();
             }
             setModified(false);
-            LOGGER.info("Storing user/grous successful for service named "+getName());
+            LOGGER.info("Storing user/groups successful for service named "+getName());
             service.load(); // service must reload
         }  else {
             LOGGER.info("Storing unnecessary, no change for user and groups");

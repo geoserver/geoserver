@@ -81,7 +81,7 @@ public class ReprojectTransform extends AbstractVectorTransform implements Inlin
             transform = CRS.findMathTransform(source, target, true);
         }
 
-        Geometry g = (Geometry) feature.getDefaultGeometry();
+        Geometry g = (Geometry) oldFeature.getDefaultGeometry();
         if (g != null) {
             feature.setDefaultGeometry(JTS.transform(g, transform));
         }

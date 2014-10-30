@@ -67,6 +67,7 @@ public class CoverageStoreResource extends AbstractCatalogResource {
     @Override
     protected String handleObjectPost(Object object) throws Exception {
         CoverageStoreInfo coverageStore = (CoverageStoreInfo) object;
+        catalog.validate(coverageStore, true).throwIfInvalid();
         catalog.add( coverageStore );
         
         LOGGER.info( "POST coverage store " + coverageStore.getName() );
@@ -86,7 +87,8 @@ public class CoverageStoreResource extends AbstractCatalogResource {
         CoverageStoreInfo cs = (CoverageStoreInfo) object;
         CoverageStoreInfo original = catalog.getCoverageStoreByName(workspace, coveragestore);
         new CatalogBuilder( catalog ).updateCoverageStore( original, cs );
-        
+
+        catalog.validate(original, false).throwIfInvalid();
         catalog.save( original );
         clear(original);
         

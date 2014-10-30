@@ -252,8 +252,7 @@ public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
         put( "/rest/workspaces/gs/datastores/store%20with%20spaces/file.shp", bytes, "application/zip");
         
         DataStoreInfo ds = cat.getDataStoreByName("gs", "store with spaces"); 
-        assertNotNull(ds);
-        assertFalse(cat.getFeatureTypesByDataStore(ds).isEmpty());
+        assertNull(ds);
     }
  
     @Test

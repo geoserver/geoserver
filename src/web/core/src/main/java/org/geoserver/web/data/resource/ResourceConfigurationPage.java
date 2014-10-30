@@ -293,6 +293,7 @@ public class ResourceConfigurationPage extends GeoServerSecuredPage {
                     }
                 }
 
+                catalog.validate(resourceInfo, true).throwIfInvalid();
                 catalog.add(resourceInfo);
                 try {
                     catalog.add(getLayerInfo());
@@ -303,6 +304,8 @@ public class ResourceConfigurationPage extends GeoServerSecuredPage {
             } else {
                 ResourceInfo oldState = catalog.getResource(resourceInfo.getId(),
                         ResourceInfo.class);
+                
+                catalog.validate(resourceInfo, true).throwIfInvalid();
                 catalog.save(resourceInfo);
                 try {
                     LayerInfo layer = getLayerInfo();

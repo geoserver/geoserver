@@ -61,9 +61,10 @@ public class YsldHandler extends StyleHandler {
         Ysld.encode(sld, output);
     }
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
     public List<Exception> validate(Object input, Version version, EntityResolver entityResolver) throws IOException {
-        return (List) Ysld.validate(toReader(input));
+        return (List) Ysld.validate(toReader(input), Collections.singletonList(zoomFinder));
     }
 
     @Override

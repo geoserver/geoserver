@@ -8,7 +8,7 @@
   <fileSet>
    <!-- the main webapp -->
    <directory>web/app/target/geoserver</directory>
-   <outputDirectory>geoserver-2.6.0/webapps/geoserver</outputDirectory>
+   <outputDirectory>geoserver-2.6.0.1/webapps/geoserver</outputDirectory>
    <includes>
     <include>**/*</include>
    </includes>

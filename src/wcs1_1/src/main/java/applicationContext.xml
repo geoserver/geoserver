@@ -23,6 +23,7 @@
     <property name="interceptorNames">
       <list>
         <value>wcsLogger</value>
+        <value>wcs111ServiceInterceptor*</value>
         <value>wcs111ServiceTarget</value>
       </list>
     </property>

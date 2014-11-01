@@ -51,19 +51,21 @@ public class BDBImportStoreTest extends ImporterTestSupport {
         ImportContext ctx = new ImportContext2();
         ctx.setState(ImportContext.State.PENDING);
         ctx.setUser("fooboo");
-        store = new BDBImportStore(imp);
-        store.init();
-        store.add(ctx);
-        
-        Iterator<ImportContext> iterator = store.iterator();
-        while (iterator.hasNext()) {
-            ctx = iterator.next();
-            assertEquals("fooboo", ctx.getUser());
+        BDBImportStore store = new BDBImportStore(imp);
+        try {
+            store.init();
+            store.add(ctx);
+            
+            Iterator<ImportContext> iterator = store.iterator();
+            while (iterator.hasNext()) {
+                ctx = iterator.next();
+                assertEquals("fooboo", ctx.getUser());
+            }
+            
+            store.add(ctx);
+        } finally {        
+            store.destroy();
         }
-        
-        store.add(ctx);
-        
-        store.destroy();
     }
     
     public static class ImportContext2 extends ImportContext {

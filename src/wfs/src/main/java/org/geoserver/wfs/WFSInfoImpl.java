@@ -95,6 +95,17 @@ public class WFSInfoImpl extends ServiceInfoImpl implements WFSInfo {
     public void setHitsIgnoreMaxFeatures(boolean hitsIgnoreMaxFeatures) {
         this.hitsIgnoreMaxFeatures = hitsIgnoreMaxFeatures;
     }
+
+    @Override
+    public Integer getMaxNumberOfFeaturesForPreview() {
+        Integer i = getMetadata().get("maxNumberOfFeaturesForPreview", Integer.class);
+        return i != null ? i : 50;
+    }
+
+    @Override
+    public void setMaxNumberOfFeaturesForPreview(Integer maxNumberOfFeaturesForPreview) {
+        getMetadata().put("maxNumberOfFeaturesForPreview", maxNumberOfFeaturesForPreview);
+    }
     
     public List<String> getSRS() {
         return srs;
@@ -156,6 +167,4 @@ public class WFSInfoImpl extends ServiceInfoImpl implements WFSInfo {
         
         return true;
     }
-    
-    
 }

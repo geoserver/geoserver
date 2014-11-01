@@ -24,6 +24,7 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import net.sf.json.util.JSONBuilder;
 
+import org.apache.commons.lang.SystemUtils;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.geoserver.catalog.CascadeDeleteVisitor;
@@ -252,5 +253,10 @@ public abstract class ImporterTestSupport extends GeoServerSystemTestSupport {
             return JSONObject.fromObject( ((StringWriter) writer).toString() );
         }
         
+    }
+    
+    @Override
+    protected boolean isMemoryCleanRequired() {
+        return SystemUtils.IS_OS_WINDOWS;
     }
 }

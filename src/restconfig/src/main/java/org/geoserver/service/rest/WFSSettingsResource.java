@@ -86,6 +86,7 @@ public class WFSSettingsResource extends ServiceSettingsResource {
                     properties.put("maxFeatures", String.valueOf(wfsInfo.getMaxFeatures()));
                     properties.put("isFeatureBounding", wfsInfo.isFeatureBounding() ? "true" : "false");
                     properties.put("hitsIgnoreMaxFeatures", wfsInfo.isHitsIgnoreMaxFeatures() ? "true" : "false");
+                    properties.put("maxNumberOfFeaturesForPreview", wfsInfo.getMaxNumberOfFeaturesForPreview());
                     properties.put("serviceLevel", wfsInfo.getServiceLevel());
                     properties.put("isCanonicalSchemaLocation", wfsInfo.isCanonicalSchemaLocation() ? "true" : "false");
                     properties.put("encodeFeatureMember", wfsInfo.isEncodeFeatureMember() ? "true" : "false");

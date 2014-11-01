@@ -9,7 +9,9 @@ import static org.junit.Assert.*;
 
 import java.util.Iterator;
 
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.MarkupContainer;
+import org.apache.wicket.behavior.IBehavior;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.repeater.data.DataView;
 import org.geoserver.catalog.Catalog;
@@ -17,8 +19,10 @@ import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.config.GeoServer;
 import org.geoserver.data.test.MockData;
 import org.geoserver.web.GeoServerWicketTestSupport;
+import org.geoserver.wfs.WFSInfo;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -90,5 +94,54 @@ public class MapPreviewPageTest extends GeoServerWicketTestSupport {
         }
 
         assertTrue(exists);
+    }
+    
+    @Test
+    public void testMaxNumberOfFeaturesForPreview() throws Exception {
+
+        GeoServer geoserver = getGeoServer();
+        WFSInfo wfsInfo = geoserver.getService(WFSInfo.class);
+        
+        int maxFeatures = 100;
+        wfsInfo.setMaxNumberOfFeaturesForPreview(maxFeatures);
+        geoserver.save(wfsInfo);
+        
+        tester.startPage(MapPreviewPage.class);
+        tester.assertRenderedPage(MapPreviewPage.class);
+        
+        assertMaxFeaturesInData(
+                (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items"),
+                maxFeatures);
+        
+        maxFeatures = 0;
+        wfsInfo.setMaxNumberOfFeaturesForPreview(maxFeatures);
+        geoserver.save(wfsInfo);
+        
+        tester.startPage(MapPreviewPage.class);
+        tester.assertRenderedPage(MapPreviewPage.class);
+        
+        assertMaxFeaturesInData(
+                (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items"),
+                maxFeatures);
+    }
+    
+    private void assertMaxFeaturesInData(DataView data, int maxFeatures) {
+        for (Iterator it = data.iterator(); it.hasNext(); ) {
+            MarkupContainer c = (MarkupContainer) it.next();
+            MarkupContainer list = (MarkupContainer) c.get("itemProperties:4:component:menu");
+            for (Iterator<IBehavior> itBehaviors = list.getBehaviors().iterator(); itBehaviors.hasNext();) {
+                IBehavior b = (IBehavior)(itBehaviors.next());
+                if (b instanceof AttributeModifier) {
+                    AttributeModifier am = (AttributeModifier)b;
+                    String url = am.toString();
+                    if (maxFeatures > 0) {
+                        assertTrue(url.contains("&maxFeatures="+maxFeatures));
+                    } else {
+                        assertTrue(!url.contains("&maxFeatures="));
+                    }
+                }
+                
+            }
+        }
     }
 }

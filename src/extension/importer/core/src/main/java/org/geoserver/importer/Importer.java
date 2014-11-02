@@ -941,194 +941,200 @@ public class Importer implements DisposableBean, ApplicationListener {
         VectorTransformChain tx) throws Exception {
 
         ImportData data = task.getData();
-        FeatureReader reader = format.read(data, task);
-        SimpleFeatureType featureType = (SimpleFeatureType) reader.getFeatureType();
-        final String featureTypeName = featureType.getName().getLocalPart();
-
-        DataStore dataStore = (DataStore) store.getDataStore(null);
-        FeatureDataConverter featureDataConverter = FeatureDataConverter.DEFAULT;
-        if (isShapefileDataStore(dataStore)) {
-            featureDataConverter = FeatureDataConverter.TO_SHAPEFILE;
-        }
-        else if (isOracleDataStore(dataStore)) {
-            featureDataConverter = FeatureDataConverter.TO_ORACLE;
-        }
-        else if (isPostGISDataStore(dataStore)) {
-            featureDataConverter = FeatureDataConverter.TO_POSTGIS;
-        }
-        
-        featureType = featureDataConverter.convertType(featureType, format, data, task);
-        UpdateMode updateMode = task.getUpdateMode();
-        final String uniquifiedFeatureTypeName;
-        if (updateMode == UpdateMode.CREATE) {
-            //find a unique type name in the target store
-            uniquifiedFeatureTypeName = findUniqueNativeFeatureTypeName(featureType, store);
-            task.setOriginalLayerName(featureTypeName);
-
-            if (!uniquifiedFeatureTypeName.equals(featureTypeName)) {
-                //update the metadata
-                task.getLayer().getResource().setName(uniquifiedFeatureTypeName);
-                task.getLayer().getResource().setNativeName(uniquifiedFeatureTypeName);
-                
-                //retype
-                SimpleFeatureTypeBuilder typeBuilder = new SimpleFeatureTypeBuilder();
-                typeBuilder.setName(uniquifiedFeatureTypeName);
-                typeBuilder.addAll(featureType.getAttributeDescriptors());
-                featureType = typeBuilder.buildFeatureType();
-            }
-
-            // @todo HACK remove this at some point when timezone issues are fixed
-            // this will force postgis to create timezone w/ timestamp fields
-            if (dataStore instanceof JDBCDataStore) {
-                JDBCDataStore ds = (JDBCDataStore) dataStore;
-                // sniff for postgis (h2 is used in tests and will cause failure if this occurs)
-                if (ds.getSqlTypeNameToClassMappings().containsKey("timestamptz")) {
-                    ds.getSqlTypeToSqlTypeNameOverrides().put(java.sql.Types.TIMESTAMP, "timestamptz");
-                }
-            }
-
-            //apply the feature type transform
-            featureType = tx.inline(task, dataStore, featureType);
-
-            dataStore.createSchema(featureType);
-        } else {
-            // @todo what to do if featureType transform is present?
-            
-            // @todo implement me - need to specify attribute used for id
-            if (updateMode == UpdateMode.UPDATE) {
-                throw new UnsupportedOperationException("updateMode UPDATE is not supported yet");
-            }
-            uniquifiedFeatureTypeName = featureTypeName;
-        }
-            
-        Transaction transaction = new DefaultTransaction();
-        
-        if (updateMode == UpdateMode.REPLACE) {
-            
-            FeatureStore fs = (FeatureStore) dataStore.getFeatureSource(featureTypeName);
-            fs.setTransaction(transaction);
-            fs.removeFeatures(Filter.INCLUDE);
-        }
-        
+        FeatureReader reader = null;
+        FeatureWriter writer = null;
         // using this exception to throw at the end
         Exception error = null;
-
-        //start writing features
-        // @todo ability to collect transformation errors for use in a dry-run (auto-rollback)
-        FeatureWriter writer = null;
-        
-        ProgressMonitor monitor = task.progress();
-        
-        // @todo need better way to communicate to client
-        int skipped = 0;
-        int cnt = 0;
-        // metrics
-        long startTime = System.currentTimeMillis();
-        task.clearMessages();
-        
-        task.setTotalToProcess(format.getFeatureCount(task.getData(), task));
-        
-        LOGGER.info("begining import");
         try {
-            writer = dataStore.getFeatureWriterAppend(uniquifiedFeatureTypeName, transaction);
+            reader = format.read(data, task);
+
+            SimpleFeatureType featureType = (SimpleFeatureType) reader.getFeatureType();
+            final String featureTypeName = featureType.getName().getLocalPart();
+    
+            DataStore dataStore = (DataStore) store.getDataStore(null);
+            FeatureDataConverter featureDataConverter = FeatureDataConverter.DEFAULT;
+            if (isShapefileDataStore(dataStore)) {
+                featureDataConverter = FeatureDataConverter.TO_SHAPEFILE;
+            }
+            else if (isOracleDataStore(dataStore)) {
+                featureDataConverter = FeatureDataConverter.TO_ORACLE;
+            }
+            else if (isPostGISDataStore(dataStore)) {
+                featureDataConverter = FeatureDataConverter.TO_POSTGIS;
+            }
             
-            while(reader.hasNext()) {
-                if (monitor.isCanceled()){
-                    break;
+            featureType = featureDataConverter.convertType(featureType, format, data, task);
+            UpdateMode updateMode = task.getUpdateMode();
+            final String uniquifiedFeatureTypeName;
+            if (updateMode == UpdateMode.CREATE) {
+                //find a unique type name in the target store
+                uniquifiedFeatureTypeName = findUniqueNativeFeatureTypeName(featureType, store);
+                task.setOriginalLayerName(featureTypeName);
+    
+                if (!uniquifiedFeatureTypeName.equals(featureTypeName)) {
+                    //update the metadata
+                    task.getLayer().getResource().setName(uniquifiedFeatureTypeName);
+                    task.getLayer().getResource().setNativeName(uniquifiedFeatureTypeName);
+                    
+                    //retype
+                    SimpleFeatureTypeBuilder typeBuilder = new SimpleFeatureTypeBuilder();
+                    typeBuilder.setName(uniquifiedFeatureTypeName);
+                    typeBuilder.addAll(featureType.getAttributeDescriptors());
+                    featureType = typeBuilder.buildFeatureType();
                 }
-                SimpleFeature feature = (SimpleFeature) reader.next();
-                SimpleFeature next = (SimpleFeature) writer.next();
-
-                //(JD) TODO: some formats will rearrange the geometry type (like shapefile) which
-                // makes the goemetry the first attribute reagardless, so blindly copying over
-                // attributes won't work unless the source type also  has the geometry as the 
-                // first attribute in the schema
-                featureDataConverter.convert(feature, next);
-                
-                // @hack #45678 - mask empty geometry or postgis will complain
-                Geometry geom = (Geometry) next.getDefaultGeometry();
-                if (geom != null && geom.isEmpty()) {
-                    next.setDefaultGeometry(null);
+    
+                // @todo HACK remove this at some point when timezone issues are fixed
+                // this will force postgis to create timezone w/ timestamp fields
+                if (dataStore instanceof JDBCDataStore) {
+                    JDBCDataStore ds = (JDBCDataStore) dataStore;
+                    // sniff for postgis (h2 is used in tests and will cause failure if this occurs)
+                    if (ds.getSqlTypeNameToClassMappings().containsKey("timestamptz")) {
+                        ds.getSqlTypeToSqlTypeNameOverrides().put(java.sql.Types.TIMESTAMP, "timestamptz");
+                    }
                 }
+    
+                //apply the feature type transform
+                featureType = tx.inline(task, dataStore, featureType);
+    
+                dataStore.createSchema(featureType);
+            } else {
+                // @todo what to do if featureType transform is present?
                 
-                //apply the feature transform
-                next = tx.inline(task, dataStore, feature, next);
-                
-                if (next == null) {
-                    skipped++;
-                } else {
-                    writer.write();
+                // @todo implement me - need to specify attribute used for id
+                if (updateMode == UpdateMode.UPDATE) {
+                    throw new UnsupportedOperationException("updateMode UPDATE is not supported yet");
                 }
-                task.setNumberProcessed(++cnt);
+                uniquifiedFeatureTypeName = featureTypeName;
             }
-            transaction.commit();
-            if (skipped > 0) {
-                task.addMessage(Level.WARNING,skipped + " features were skipped.");
+                
+            Transaction transaction = new DefaultTransaction();
+            
+            if (updateMode == UpdateMode.REPLACE) {
+                
+                FeatureStore fs = (FeatureStore) dataStore.getFeatureSource(featureTypeName);
+                fs.setTransaction(transaction);
+                fs.removeFeatures(Filter.INCLUDE);
             }
-            LOGGER.info("load to target took " + (System.currentTimeMillis() - startTime));
-        } 
-        catch (Exception e) {
-            error = e;
-        } 
-        // no finally block, there is too much to do
-        
-        if (error != null || monitor.isCanceled()) {
-            // all sub exceptions in this catch block should be logged, not thrown
-            // as the triggering exception will be thrown
-
-            //failure, rollback transaction
+            
+            //start writing features
+            // @todo ability to collect transformation errors for use in a dry-run (auto-rollback)
+            
+            ProgressMonitor monitor = task.progress();
+            
+            // @todo need better way to communicate to client
+            int skipped = 0;
+            int cnt = 0;
+            // metrics
+            long startTime = System.currentTimeMillis();
+            task.clearMessages();
+            
+            task.setTotalToProcess(format.getFeatureCount(task.getData(), task));
+            
+            LOGGER.info("begining import");
             try {
-                transaction.rollback();
-            } catch (Exception e1) {
-                LOGGER.log(Level.WARNING, "Error rolling back transaction",e1);
-            }
-
-            //attempt to drop the type that was created as well
-            try {
-                dropSchema(dataStore,featureTypeName);
-            } catch(Exception e1) {
-                LOGGER.log(Level.WARNING, "Error dropping schema in rollback",e1);
-            }
-        }
-
-        // try to cleanup, but if an error occurs here and one hasn't already been set, set the error
-        try {
-            transaction.close();
-        } catch (Exception e) {
-            if (error != null) {
+                writer = dataStore.getFeatureWriterAppend(uniquifiedFeatureTypeName, transaction);
+                
+                while(reader.hasNext()) {
+                    if (monitor.isCanceled()){
+                        break;
+                    }
+                    SimpleFeature feature = (SimpleFeature) reader.next();
+                    SimpleFeature next = (SimpleFeature) writer.next();
+    
+                    //(JD) TODO: some formats will rearrange the geometry type (like shapefile) which
+                    // makes the goemetry the first attribute reagardless, so blindly copying over
+                    // attributes won't work unless the source type also  has the geometry as the 
+                    // first attribute in the schema
+                    featureDataConverter.convert(feature, next);
+                    
+                    // @hack #45678 - mask empty geometry or postgis will complain
+                    Geometry geom = (Geometry) next.getDefaultGeometry();
+                    if (geom != null && geom.isEmpty()) {
+                        next.setDefaultGeometry(null);
+                    }
+                    
+                    //apply the feature transform
+                    next = tx.inline(task, dataStore, feature, next);
+                    
+                    if (next == null) {
+                        skipped++;
+                    } else {
+                        writer.write();
+                    }
+                    task.setNumberProcessed(++cnt);
+                }
+                transaction.commit();
+                if (skipped > 0) {
+                    task.addMessage(Level.WARNING,skipped + " features were skipped.");
+                }
+                LOGGER.info("load to target took " + (System.currentTimeMillis() - startTime));
+            } 
+            catch (Exception e) {
                 error = e;
+            } 
+            // no finally block, there is too much to do
+            
+            if (error != null || monitor.isCanceled()) {
+                // all sub exceptions in this catch block should be logged, not thrown
+                // as the triggering exception will be thrown
+    
+                //failure, rollback transaction
+                try {
+                    transaction.rollback();
+                } catch (Exception e1) {
+                    LOGGER.log(Level.WARNING, "Error rolling back transaction",e1);
+                }
+    
+                //attempt to drop the type that was created as well
+                try {
+                    dropSchema(dataStore,featureTypeName);
+                } catch(Exception e1) {
+                    LOGGER.log(Level.WARNING, "Error dropping schema in rollback",e1);
+                }
             }
-            LOGGER.log(Level.WARNING, "Error closing transaction",e);
-        }
-        if (writer != null) {
+    
+            // try to cleanup, but if an error occurs here and one hasn't already been set, set the error
             try {
-                writer.close();
+                transaction.close();
             } catch (Exception e) {
                 if (error != null) {
                     error = e;
                 }
-                LOGGER.log(Level.WARNING, "Error closing writer",e);
+                LOGGER.log(Level.WARNING, "Error closing transaction",e);
             }
-        }
-
-        // @revisit - when this gets disposed, any following uses seem to
-        // have a problem where later users of the dataStore get an NPE 
-        // since the dataStore gets cached by the ResourcePool but is in a 
-        // closed state???
-        
-        // do this last in case we have to drop the schema
-//        try {
-//            dataStore.dispose();
-//        } catch (Exception e) {
-//            LOGGER.log(Level.WARNING, "Error closing dataStore",e);
-//        }
-        try {    
-            format.dispose(reader, task);
-            // @hack catch _all_ Exceptions here - occassionally closing a shapefile
-            // seems to result in an IllegalArgumentException related to not
-            // holding the lock...
-        } catch (Exception e) {
-            LOGGER.log(Level.WARNING, "Error closing reader",e);
+    
+            // @revisit - when this gets disposed, any following uses seem to
+            // have a problem where later users of the dataStore get an NPE 
+            // since the dataStore gets cached by the ResourcePool but is in a 
+            // closed state???
+            
+            // do this last in case we have to drop the schema
+    //        try {
+    //            dataStore.dispose();
+    //        } catch (Exception e) {
+    //            LOGGER.log(Level.WARNING, "Error closing dataStore",e);
+    //        }
+        } finally {
+            if (writer != null) {
+                try {
+                    writer.close();
+                } catch (Exception e) {
+                    if (error != null) {
+                        error = e;
+                    }
+                    LOGGER.log(Level.WARNING, "Error closing writer",e);
+                }
+            }
+            try {    
+                if(reader != null) {
+                    format.dispose(reader, task);
+                    // @hack catch _all_ Exceptions here - occassionally closing a shapefile
+                    // seems to result in an IllegalArgumentException related to not
+                    // holding the lock...
+                }
+            } catch (Exception e) {
+                LOGGER.log(Level.WARNING, "Error closing reader",e);
+            }
         }
         
         // finally, throw any error

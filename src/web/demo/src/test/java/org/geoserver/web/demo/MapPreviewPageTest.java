@@ -12,7 +12,9 @@ import java.util.Iterator;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.behavior.IBehavior;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.markup.repeater.data.DataView;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
@@ -125,6 +127,25 @@ public class MapPreviewPageTest extends GeoServerWicketTestSupport {
                 maxFeatures);
     }
     
+    @Test
+    public void testWfsOutputFormatValueUrlEncoding() {
+        tester.startPage(MapPreviewPage.class);
+        tester.assertRenderedPage(MapPreviewPage.class);
+
+        Label optionLabel = (Label) tester.getComponentFromLastRenderedPage("table:listContainer:items:4:itemProperties:4:component:menu:wfs:wfsFormats:3");
+        assertTrue(optionLabel.getDefaultModelObjectAsString().equals("GML3.2"));
+        for (Iterator<IBehavior> itBehaviors = optionLabel.getBehaviors().iterator(); itBehaviors.hasNext();) {
+            IBehavior b = (IBehavior)(itBehaviors.next());
+            if (b instanceof AttributeModifier) {
+                AttributeModifier am = (AttributeModifier)b;
+                String url = am.toString();
+                assertTrue(!url.contains("gml+xml"));
+                assertTrue(url.contains("gml%2Bxml"));
+                break;
+            }
+        }
+    }
+
     private void assertMaxFeaturesInData(DataView data, int maxFeatures) {
         for (Iterator it = data.iterator(); it.hasNext(); ) {
             MarkupContainer c = (MarkupContainer) it.next();

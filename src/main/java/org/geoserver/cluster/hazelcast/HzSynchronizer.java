@@ -97,8 +97,7 @@ public abstract class HzSynchronizer extends GeoServerSynchronizer implements
         if (!isStarted()) {
             // wait for service to be fully started before processing events.
             if (LOGGER.isLoggable(Level.FINER)) {
-                LOGGER.finer(format("%s - Ignoring message: %s. Service is not yet started.",
-                        nodeId(), e));
+                LOGGER.finer(format("Ignoring message: %s. Service is not started.", e));
             }
             return;
         }
@@ -218,7 +217,11 @@ public abstract class HzSynchronizer extends GeoServerSynchronizer implements
     }
 
     protected String nodeId() {
-        return localIPAsString(cluster.getHz());
+        try {
+            return localIPAsString(cluster.getHz());
+        } catch (RuntimeException e) {
+            return "nodeId not available: " + e.getMessage();
+        }
     }
 
     public void start() {

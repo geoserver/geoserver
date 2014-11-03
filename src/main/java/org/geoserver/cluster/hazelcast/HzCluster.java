@@ -74,6 +74,10 @@ public class HzCluster implements DisposableBean, InitializingBean {
         return hz!=null;
     }
     
+    public boolean isRunning() {
+        return isEnabled() && hz.getLifecycleService().isRunning();
+    }
+    
     /**
      * Is session sharing enabled.  Only true if clustering in general is enabled.
      * @return
@@ -113,9 +117,11 @@ public class HzCluster implements DisposableBean, InitializingBean {
     @Override
     public void destroy() throws Exception {
         if (hz != null) {
+            LOGGER.info("HzCluster.destroy() invoked, shutting down Hazelcast instance...");
             CLUSTER = null;
             hz.getLifecycleService().shutdown();
             hz = null;
+            LOGGER.info("HzCluster.destroy(): Hazelcast instance shut down complete");
         }
     }
     

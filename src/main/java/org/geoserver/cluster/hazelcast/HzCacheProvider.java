@@ -20,6 +20,7 @@ import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.util.CacheProvider;
 
 import com.google.common.base.Function;
+import com.google.common.base.Optional;
 import com.google.common.base.Throwables;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheStats;
@@ -223,17 +224,19 @@ public class HzCacheProvider implements CacheProvider {
         }
 
         private boolean available() {
-            if (hzMap == null) {
-                if (HzCluster.getInstanceIfAvailable().isPresent()) {
-                    HzCluster hzCluster = HzCluster.getInstanceIfAvailable().get();
-                    HazelcastInstance hazelcastInstance = hzCluster.getHz();
-                    Catalog catalog = hzCluster.getRawCatalog();
-                    hzMap = hazelcastInstance.getMap(mapName);
-                    persister = serializationFactory.createXMLPersister();
-                    persister.setCatalog(catalog);
-                }
+            Optional<HzCluster> cluster = HzCluster.getInstanceIfAvailable();
+            if (!cluster.isPresent()) {
+                return false;
             }
-            return hzMap != null;
+            HzCluster hzCluster = cluster.get();
+            if (hzMap == null && hzCluster.isRunning()) {
+                HazelcastInstance hazelcastInstance = hzCluster.getHz();
+                Catalog catalog = hzCluster.getRawCatalog();
+                hzMap = hazelcastInstance.getMap(mapName);
+                persister = serializationFactory.createXMLPersister();
+                persister.setCatalog(catalog);
+            }
+            return hzMap != null && hzCluster.isRunning();
         }
 
         @Override

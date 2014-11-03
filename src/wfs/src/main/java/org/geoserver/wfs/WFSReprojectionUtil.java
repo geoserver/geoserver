@@ -61,11 +61,12 @@ class WFSReprojectionUtil {
      * @return
      */
     public static CoordinateReferenceSystem getDeclaredCrs(FeatureType schema, String wfsVersion) {
+        if (schema == null)
+            return null;
+
         CoordinateReferenceSystem crs = (schema.getGeometryDescriptor() != null) ? schema
                 .getGeometryDescriptor().getCoordinateReferenceSystem() : null;
 
-        if (schema == null)
-            return null;
         return getDeclaredCrs(crs, wfsVersion);
     }
 

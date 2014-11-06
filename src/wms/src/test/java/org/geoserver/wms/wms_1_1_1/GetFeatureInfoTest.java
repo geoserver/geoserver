@@ -48,6 +48,8 @@ import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory;
 import org.w3c.dom.Document;
 
+import com.mockrunner.mock.web.MockHttpServletResponse;
+
 public class GetFeatureInfoTest extends WMSTestSupport {
     
     public static String WCS_PREFIX = "wcs";
@@ -325,10 +327,14 @@ public class GetFeatureInfoTest extends WMSTestSupport {
                 "&info_format=text/html&request=GetFeatureInfo&layers="
                 + layer + "&query_layers=" + layer + "&width=20&height=20&x=10&y=10";
         Document dom = getAsDOM(request);
-        
+      
         // count lines that do contain a forest reference
         XMLAssert.assertXpathEvaluatesTo("1",
                 "count(/html/body/table/tr/td[starts-with(.,'Forests.')])", dom);
+        
+        MockHttpServletResponse response = getAsServletResponse(request,"");
+        // Check if the character encoding is the one expected
+        assertTrue("UTF-8".equals(response.getCharacterEncoding()));
     }
     
     /**

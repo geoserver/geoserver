@@ -11,6 +11,7 @@ import java.util.logging.Logger;
 
 import net.opengis.wfs.FeatureCollectionType;
 
+import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetFeatureInfoRequest;
 import org.geotools.util.logging.Logging;
@@ -91,5 +92,15 @@ public abstract class GetFeatureInfoOutputFormat {
 
     public String getContentType() {
         return contentType;
+    }
+    
+    /**
+     * Returns the charset for this outputFormat.
+     * The default implementation returns <code>null</code>, in this case no encoding should be set.
+     * Subclasses returning text documents (CSV,HTML,JSON) should override taking into account SettingsInfo.getCharset()
+     * as well as the specific encoding requirements of the returned format.
+     */
+    public String getCharset(){ 
+       return null;
     }
 }

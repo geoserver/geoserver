@@ -795,6 +795,9 @@ public class ConfigDatabase {
         if (info instanceof CatalogInfo) {
             info = resolveCatalog((CatalogInfo) info);
         }
+        else if (info instanceof ServiceInfo) {
+            resolveTransient((ServiceInfo)info);
+        }
 
         if (type.isAssignableFrom(info.getClass())) {
             // use ModificationProxy only in this case as returned object is cached. saveInternal
@@ -849,6 +852,12 @@ public class ConfigDatabase {
                 resolveTransient(s);
             }
         }
+    }
+
+    private <T extends ServiceInfo> void resolveTransient(T real) {
+        real = ModificationProxy.unwrap(real);
+        OwsUtils.resolveCollections(real);
+        real.setGeoServer(getGeoServer());
     }
 
     /**

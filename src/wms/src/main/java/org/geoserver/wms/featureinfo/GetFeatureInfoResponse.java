@@ -131,4 +131,13 @@ public class GetFeatureInfoResponse extends Response {
         return format;
 
     }
+    
+    @Override
+    public String getCharset(Operation operation) {
+        Assert.notNull(operation, "operation is null");
+        GetFeatureInfoRequest request = (GetFeatureInfoRequest) OwsUtils.parameter(
+                operation.getParameters(), GetFeatureInfoRequest.class);
+        GetFeatureInfoOutputFormat outputFormat = getRequestedOutputFormat(request);
+        return outputFormat.getCharset();
+    }
 }

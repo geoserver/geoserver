@@ -88,7 +88,7 @@ public class CSVOutputFormat extends WFSGetFeatureOutputFormat {
     	   //write out content here
         
         //create a writer
-        BufferedWriter w = new BufferedWriter( new OutputStreamWriter( output ) );
+        BufferedWriter w = new BufferedWriter( new OutputStreamWriter( output, gs.getGlobal().getSettings().getCharset() ) );
                    
         //get the feature collection
         FeatureCollection<?, ?> fc = 
@@ -248,6 +248,11 @@ public class CSVOutputFormat extends WFSGetFeatureOutputFormat {
     @Override
     public String getCapabilitiesElementName() {
     	return "CSV";
+    }
+    
+    @Override
+    public String getCharset(Operation operation){
+        return gs.getGlobal().getSettings().getCharset();
     }
 
 }

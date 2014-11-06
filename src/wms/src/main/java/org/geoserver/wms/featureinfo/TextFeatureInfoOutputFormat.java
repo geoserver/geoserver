@@ -155,4 +155,9 @@ public class TextFeatureInfoOutputFormat extends GetFeatureInfoOutputFormat {
 
         writer.flush();
     }
+    
+    @Override
+    public String getCharset(){ 
+        return wms.getGeoServer().getSettings().getCharset();
+    }
 }

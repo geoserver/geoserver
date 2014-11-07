@@ -1,10 +1,11 @@
 package org.geoserver.cluster.hazelcast;
 
 import static java.lang.String.format;
-import static org.geoserver.cluster.hazelcast.HazelcastUtil.localAddress;
+import static org.geoserver.cluster.hazelcast.HazelcastUtil.*;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.net.InetSocketAddress;
 import java.util.Iterator;
 import java.util.Queue;
 import java.util.Set;
@@ -103,8 +104,16 @@ public class EventHzSynchronizer extends HzSynchronizer {
             AtomicInteger countDown = expectedAckCounters.get(eventId);
             if (countDown != null) {
                 countDown.decrementAndGet();
+                String originAddr = null;
+                Member publishingMember = message.getPublishingMember();
+                if (publishingMember != null) {
+                    InetSocketAddress socketAddress = publishingMember.getSocketAddress();
+                    if (socketAddress != null) {
+                        originAddr = addressString(socketAddress);
+                    }
+                }
                 LOGGER.finer(format("%s - Got ack on event %s from %s", nodeId(), eventId,
-                        message.getSource()));
+                        originAddr));
             }
         }
     }
@@ -112,6 +121,7 @@ public class EventHzSynchronizer extends HzSynchronizer {
     protected final void ack(Event event) {
         UUID uuid = event.getUUID();
         ackTopic.publish(uuid);
+        LOGGER.finer(format("%s - Sent ack for event %s", nodeId(), uuid));
     }
 
     private void waitForAck(Event event) {

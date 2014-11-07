@@ -156,6 +156,13 @@
         <property name="descriptionKey" value="DigestAuthFilterPanel.description"/>
     </bean>
     
+    <bean id="credentialsHeaderPanelInfo" class="org.geoserver.security.web.auth.CredentialsFromRequestHeaderFilterPanelInfo">
+        <property name="id" value="org.geoserver.security.GeoServerCredentialsFromRequestHeaderFilter" />
+        <property name="shortTitleKey" value="CredentialsFromRequestHeaderFilterPanel.short"/>
+        <property name="titleKey" value="CredentialsFromRequestHeaderFilterPanel.title"/>
+        <property name="descriptionKey" value="CredentialsFromRequestHeaderFilterPanel.description"/>
+   </bean>
+    
     <!-- user group service panel infos -->
     <bean id="xmlUserGroupServicePanelInfo" class="org.geoserver.security.web.usergroup.XMLUserGroupServicePanelInfo">
         <property name="id" value="security.xmlUserGroupService" />

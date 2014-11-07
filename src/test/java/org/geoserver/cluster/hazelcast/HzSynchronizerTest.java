@@ -95,8 +95,8 @@ public abstract class HzSynchronizerTest {
         });
         
         expect(cluster.getLocalMember()).andStubReturn(localMember);
-        expect(localMember.getInetSocketAddress()).andStubReturn(localAddress);
-        expect(remoteMember.getInetSocketAddress()).andStubReturn(remoteAddress);
+        expect(localMember.getSocketAddress()).andStubReturn(localAddress);
+        expect(remoteMember.getSocketAddress()).andStubReturn(remoteAddress);
         expect(localMember.localMember()).andStubReturn(true);
         expect(remoteMember.localMember()).andStubReturn(false);
         

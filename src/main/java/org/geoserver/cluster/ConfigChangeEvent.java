@@ -132,7 +132,8 @@ public class ConfigChangeEvent extends Event {
             sb.append('(').append(source).append(") ");
         }
 
-        sb.append("[id:").append(id).append(", name:").append(name).append("]");
+        sb.append("[uuid:").append(getUUID()).append(", object id:").append(id).append(", name:")
+                .append(name).append("]");
         return sb.toString();
     }
 

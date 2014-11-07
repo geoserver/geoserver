@@ -81,5 +81,7 @@ public class JAIInitializer implements GeoServerInitializer {
         
         // Workaround for native mosaic BUG
         Registry.setNativeAccelerationAllowed("Mosaic", jai.isAllowNativeMosaic(), jaiDef);
+        // Workaround for native Warp BUG
+        Registry.setNativeAccelerationAllowed("Warp", jai.isAllowNativeWarp(), jaiDef);
     }
 }

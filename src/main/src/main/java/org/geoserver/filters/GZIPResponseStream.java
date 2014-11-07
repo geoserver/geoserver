@@ -23,7 +23,7 @@ public class GZIPResponseStream extends ServletOutputStream {
     public GZIPResponseStream(HttpServletResponse response) throws IOException {
         super();
         closed = false;
-        gzipstream = new GZIPOutputStream(response.getOutputStream(), 4096, true);
+        gzipstream = new GZIPOutputStream(response.getOutputStream());
     }
 
     public void close() throws IOException {

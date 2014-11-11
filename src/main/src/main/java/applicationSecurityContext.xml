@@ -130,6 +130,9 @@
   <bean id="anonymousFilterProvider" class="org.geoserver.security.filter.GeoServerAnonymousAuthenticationProvider"/>
   <bean id="logoutFilterProvider" class="org.geoserver.security.filter.GeoServerLogoutProvider"/>  
   <bean id="securityInterceptorFilterProvider" class="org.geoserver.security.filter.GeoServerSecurityInterceptorProvider"/>  
+  <bean id="credentialsFromRequestHeaderSecurityProvider" class="org.geoserver.security.filter.GeoServerCredentialsFromRequestHeaderProvider"/>
+  
+  
   
   <bean id="urlMasterPasswordProvider" 
     class="org.geoserver.security.password.URLMasterPasswordProvider$SecurityProvider"/>

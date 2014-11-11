@@ -105,8 +105,8 @@ public class ProcessStatusTracker implements ApplicationContextAware, ProcessLis
 
     public void cleanExpiredStatuses(long expirationThreshold) {
         Date date = new Date(expirationThreshold);
-        Not notNull = FF.not(FF.isNull(FF.property("completionDate")));
-        Filter expired = FF.after(FF.property("completionDate"), FF.literal(date));
+        Not notNull = FF.not(FF.isNull(FF.property("completionTime")));
+        Filter expired = FF.after(FF.property("completionTime"), FF.literal(date));
         Filter filter = FF.and(notNull, expired);
         store.remove(filter);
     }

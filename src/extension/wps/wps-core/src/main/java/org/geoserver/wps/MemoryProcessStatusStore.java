@@ -86,10 +86,15 @@ public class MemoryProcessStatusStore implements ProcessStatusStore {
         }
 
         // paging
-        if (query.getStartIndex() != null && query.getStartIndex() > 0) {
-            result = result.subList(query.getStartIndex(),
-                    Math.min(result.size() - query.getStartIndex(), query.getMaxFeatures()));
-        } else if (result.size() > query.getMaxFeatures()) {
+        Integer startIndex = query.getStartIndex();
+        if (startIndex != null && startIndex > 0) {
+            if (startIndex > result.size()) {
+                result.clear();
+            } else {
+                result = result.subList(startIndex, result.size());
+            }
+        }
+        if (result.size() > query.getMaxFeatures()) {
             result = result.subList(0, query.getMaxFeatures());
         }
 
@@ -99,26 +104,6 @@ public class MemoryProcessStatusStore implements ProcessStatusStore {
     @Override
     public ExecutionStatus get(String executionId) {
         return statuses.get(executionId);
-    }
-
-    private static class CompositeComparator<T> implements Comparator<T> {
-        List<Comparator<T>> comparators;
-
-        public CompositeComparator(List<Comparator<T>> comparators) {
-            this.comparators = comparators;
-        }
-
-        @Override
-        public int compare(T o1, T o2) {
-            for (Comparator<T> comparator : comparators) {
-                int result = comparator.compare(o1, o2);
-                if (result != 0) {
-                    return result;
-                }
-            }
-
-            return 0;
-        }
     }
 
 }

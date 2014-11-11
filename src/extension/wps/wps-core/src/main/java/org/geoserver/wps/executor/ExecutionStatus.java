@@ -22,7 +22,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
- * Summarizes the execution state of a certain process
+ * Summarizes the execution state of a certain process. Note: the class implements equals and
+ * hashcode, but skips the exception in them, as commmon Java exceptions do not sport a usable
+ * equals/hashcode implementation, and the exceptions might be cloned to due network/database
+ * serialization.
  * 
  * @author Andrea Aime - GeoSolutions
  */
@@ -187,6 +190,10 @@ public class ExecutionStatus implements Serializable {
         return processName;
     }
 
+    public String getSimpleProcessName() {
+        return processName.toString();
+    }
+
     public String getExecutionId() {
         return executionId;
     }
@@ -288,7 +295,6 @@ public class ExecutionStatus implements Serializable {
         result = prime * result + (asynchronous ? 1231 : 1237);
         result = prime * result + ((completionTime == null) ? 0 : completionTime.hashCode());
         result = prime * result + ((creationTime == null) ? 0 : creationTime.hashCode());
-        result = prime * result + ((exception == null) ? 0 : exception.hashCode());
         result = prime * result + ((executionId == null) ? 0 : executionId.hashCode());
         result = prime * result + ((nodeId == null) ? 0 : nodeId.hashCode());
         result = prime * result + ((phase == null) ? 0 : phase.hashCode());
@@ -319,11 +325,6 @@ public class ExecutionStatus implements Serializable {
             if (other.creationTime != null)
                 return false;
         } else if (!creationTime.equals(other.creationTime))
-            return false;
-        if (exception == null) {
-            if (other.exception != null)
-                return false;
-        } else if (!exception.equals(other.exception))
             return false;
         if (executionId == null) {
             if (other.executionId != null)

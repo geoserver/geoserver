@@ -1,0 +1,32 @@
+name: Default Styler
+title: 'YSLD Cook Book: Zoom-based point'
+feature-styles:
+- name: name
+  rules:
+  - name: Large
+    scale: (,1.6E8)
+    symbolizers:
+    - point:
+        size: 12
+        symbols:
+        - mark:
+            shape: circle
+            fill-color: CC3300
+  - name: Medium
+    scale: (1.6E8,3.2E8)
+    symbolizers:
+    - point:
+        size: 8
+        symbols:
+        - mark:
+            shape: circle
+            fill-color: CC3300
+  - name: Small
+    scale: (3.2E8,)
+    symbolizers:
+    - point:
+        size: 4
+        symbols:
+        - mark:
+            shape: circle
+            fill-color: CC3300

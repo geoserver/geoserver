@@ -40,6 +40,7 @@ import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.ProjectionPolicy;
 import org.geoserver.catalog.PublishedInfo;
+import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.SLDHandler;
 import org.geoserver.catalog.StoreInfo;
@@ -508,7 +509,7 @@ public class MockCatalogBuilder {
     
         expect(l.getId()).andReturn(lId).anyTimes();
         expect(l.getName()).andReturn(name).anyTimes();
-        expect(l.getType()).andReturn(LayerInfo.Type.VECTOR).anyTimes();
+        expect(l.getType()).andReturn(PublishedType.VECTOR).anyTimes();
         expect(l.getResource()).andReturn(r).anyTimes();
         expect(l.getDefaultStyle()).andReturn(s).anyTimes();
         expect(l.getStyles()).andReturn(Collections.singleton(s)).anyTimes();

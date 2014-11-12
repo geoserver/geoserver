@@ -42,6 +42,7 @@ import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.ResourcePool;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.ValidationResult;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMSStoreInfo;
@@ -625,11 +626,11 @@ public class CatalogImpl implements Catalog {
         
         if ( layer.getType() == null ) {
             if ( layer.getResource() instanceof FeatureTypeInfo ) {
-                layer.setType( LayerInfo.Type.VECTOR );
+                layer.setType( PublishedType.VECTOR );
             } else if ( layer.getResource() instanceof CoverageInfo ) {
-                layer.setType( LayerInfo.Type.RASTER );
+                layer.setType( PublishedType.RASTER );
             } else if ( layer.getResource() instanceof WMSLayerInfo ) {
-                layer.setType( LayerInfo.Type.WMS );
+                layer.setType( PublishedType.WMS );
             } else {
                 String msg = "Layer type not set and can't be derived from resource";
                 throw new IllegalArgumentException( msg );

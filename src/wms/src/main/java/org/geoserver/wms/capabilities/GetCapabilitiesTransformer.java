@@ -42,12 +42,12 @@ import org.geoserver.catalog.KeywordInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerIdentifierInfo;
 import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.LayerInfo.Type;
 import org.geoserver.catalog.LegendInfo;
 import org.geoserver.catalog.MetadataLinkInfo;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.config.ContactInfo;
 import org.geoserver.config.GeoServer;
@@ -234,6 +234,8 @@ public class GetCapabilitiesTransformer extends TransformerBase {
         
         private final boolean skipping;
 
+        private WMSInfo serviceInfo;
+
         /**
          * Creates a new CapabilitiesTranslator object.
          * 
@@ -249,6 +251,7 @@ public class GetCapabilitiesTransformer extends TransformerBase {
             this.getMapFormats = getMapFormats;
             this.getLegendGraphicFormats = getLegendGraphicFormats;
             this.extCapsProviders = extCapsProviders;
+            this.serviceInfo = wmsConfig.getServiceInfo();
             
             this.dimensionHelper = new DimensionHelper(Mode.WMS11, wmsConfig) {
                 
@@ -301,7 +304,6 @@ public class GetCapabilitiesTransformer extends TransformerBase {
         private void handleService() {
             start("Service");
 
-            final WMSInfo serviceInfo = wmsConfig.getServiceInfo();
             element("Name", "OGC:WMS");
             element("Title", serviceInfo.getTitle());
             element("Abstract", serviceInfo.getAbstract());
@@ -590,7 +592,7 @@ public class GetCapabilitiesTransformer extends TransformerBase {
                         public void end(String element) {
                             CapabilitiesTranslator.this.end(element);
                         }
-                    }, wmsConfig.getServiceInfo(), request);
+                    }, serviceInfo, request);
                 } catch (Exception e) {
                     throw new ServiceException("Extended capabilities provider threw error", e);
                 }
@@ -640,7 +642,7 @@ public class GetCapabilitiesTransformer extends TransformerBase {
                 layers = wmsConfig.getLayers();
             }
 
-            WMSInfo serviceInfo = wmsConfig.getServiceInfo();
+            //WMSInfo serviceInfo = wmsConfig.getServiceInfo();
             element("Title", serviceInfo.getTitle());
             element("Abstract", serviceInfo.getAbstract());
 
@@ -750,11 +752,11 @@ public class GetCapabilitiesTransformer extends TransformerBase {
 
         private boolean isExposable(LayerInfo layer) {
             boolean wmsExposable = false;
-            if (layer.getType() == Type.RASTER || layer.getType() == Type.WMS) {
+            if (layer.getType() == PublishedType.RASTER || layer.getType() == PublishedType.WMS) {
                 wmsExposable = true;
             } else {
                 try {
-                    wmsExposable = layer.getType() == Type.VECTOR
+                    wmsExposable = layer.getType() == PublishedType.VECTOR
                             && ((FeatureTypeInfo) layer.getResource()).getFeatureType()
                                     .getGeometryDescriptor() != null;
                 } catch (Exception e) {
@@ -882,9 +884,9 @@ public class GetCapabilitiesTransformer extends TransformerBase {
             }
 
             // handle dimensions
-            if (layer.getType() == Type.VECTOR) {
+            if (layer.getType() == PublishedType.VECTOR) {
                 dimensionHelper.handleVectorLayerDimensions(layer);
-            } else if (layer.getType() == Type.RASTER) {
+            } else if (layer.getType() == PublishedType.RASTER) {
                 dimensionHelper.handleRasterLayerDimensions(layer);
             }
 
@@ -1048,9 +1050,9 @@ public class GetCapabilitiesTransformer extends TransformerBase {
                LayerInfo rootLayer = layerGroup.getRootLayer();
                
                // handle dimensions
-               if (rootLayer.getType() == Type.VECTOR) {
+               if (rootLayer.getType() == PublishedType.VECTOR) {
                    dimensionHelper.handleVectorLayerDimensions(rootLayer);
-               } else if (rootLayer.getType() == Type.RASTER) {
+               } else if (rootLayer.getType() == PublishedType.RASTER) {
                    dimensionHelper.handleRasterLayerDimensions(rootLayer);
                }
                
@@ -1345,10 +1347,10 @@ public class GetCapabilitiesTransformer extends TransformerBase {
         private void handleAdditionalBBox(ReferencedEnvelope bbox, String srs, LayerInfo layer) {
             //TODO: this method is copied from wms 1.3 caps (along with a lot of things), we 
             // should refactor
-            WMSInfo info = wmsConfig.getServiceInfo();
-            if (info.isBBOXForEachCRS() && !info.getSRS().isEmpty()) {
+            //WMSInfo info = wmsConfig.getServiceInfo();
+            if (serviceInfo.isBBOXForEachCRS() && !serviceInfo.getSRS().isEmpty()) {
                 //output bounding box for each supported service srs
-                for (String crs : info.getSRS()) {
+                for (String crs : serviceInfo.getSRS()) {
                     crs = qualifySRS(crs);
                     if (srs != null && crs.equals(srs)) {
                         continue; //already did this one

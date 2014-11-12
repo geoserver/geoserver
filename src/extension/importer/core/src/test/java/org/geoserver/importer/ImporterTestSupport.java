@@ -34,6 +34,7 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.test.GeoServerSystemTestSupport;
@@ -125,7 +126,7 @@ public abstract class ImporterTestSupport extends GeoServerSystemTestSupport {
         assertNotNull(layer.getDefaultStyle());
         assertNotNull(layer.getResource().getProjectionPolicy());
         
-        if (layer.getType() == LayerInfo.Type.VECTOR) {
+        if (layer.getType() == PublishedType.VECTOR) {
             FeatureTypeInfo featureType = (FeatureTypeInfo) layer.getResource();
             FeatureSource source = featureType.getFeatureSource(null, null);
             assertTrue(source.getCount(Query.ALL) > 0);

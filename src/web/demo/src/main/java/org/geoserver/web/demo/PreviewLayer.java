@@ -14,7 +14,7 @@ import org.apache.wicket.ResourceReference;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.LayerInfo.Type;
+import org.geoserver.catalog.PublishedType;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.web.CatalogIconFactory;
@@ -115,9 +115,9 @@ public class PreviewLayer {
 
     public PreviewLayer.PreviewLayerType getType() {
         if (layerInfo != null) {
-            if (layerInfo.getType() == Type.RASTER)
+            if (layerInfo.getType() == PublishedType.RASTER)
                 return PreviewLayerType.Raster;
-            else if (layerInfo.getType() == Type.VECTOR)
+            else if (layerInfo.getType() == PublishedType.VECTOR)
                 return PreviewLayerType.Vector;
             else
                 return PreviewLayerType.Remote;

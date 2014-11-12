@@ -31,9 +31,11 @@ import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.catalog.util.CloseableIteratorAdapter;
+import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.geoserver.security.DataAccessManager;
 import org.geoserver.security.DataAccessManagerAdapter;
 import org.geoserver.security.ResourceAccessManager;
+import org.geoserver.security.ResourceAccessManagerWrapper;
 import org.geoserver.security.SecureCatalogImpl;
 import org.geotools.data.DataStore;
 import org.geotools.data.FeatureStore;
@@ -108,6 +110,8 @@ public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
     protected List<CoverageInfo> coverages;
 
     protected List<WorkspaceInfo> workspaces;
+
+    protected SecureCatalogImpl sc;
 
     @Before
     public void setUp() throws Exception {
@@ -237,32 +241,36 @@ public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
     }
     
     protected ResourceAccessManager buildManager(String propertyFile) throws Exception {
-        return new DataAccessManagerAdapter(buildLegacyAccessManager(propertyFile));
+        return buildManager(propertyFile, null);
     }
-    protected ResourceAccessManager buildManager(String propertyFile, final IAnswer<SecureCatalogImpl> securityWrapper) throws Exception {
-        return new DataAccessManagerAdapter(buildLegacyAccessManager(propertyFile)) {
+
+    protected ResourceAccessManager buildManager(String propertyFile,
+            ResourceAccessManagerWrapper wrapper) throws Exception {
+        ResourceAccessManager manager = new DataAccessManagerAdapter(
+                buildLegacyAccessManager(propertyFile));
+
+        if (wrapper != null) {
+            wrapper.setDelegate(manager);
+            manager = wrapper;
+        }
+
+        sc = new SecureCatalogImpl(catalog, manager) {
 
             @Override
-            protected SecureCatalogImpl getSecurityWrapper() {
-                try {
-                    SecureCatalogImpl sc = securityWrapper.answer();
-                    return sc;
-                } catch(RuntimeException e) {
-                    throw e;
-                } catch(Error e) {
-                    throw e;
-                } catch (Throwable e) {
-                    throw new IllegalStateException(e);
-                }
+            protected boolean isAdmin(Authentication authentication) {
+                return false;
             }
-            
+
         };
+        GeoServerExtensionsHelper.singleton("secureCatalog", sc, SecureCatalogImpl.class);
+
+        return manager;
     }
-    
+
     protected DataAccessManager buildLegacyAccessManager(String propertyFile) throws Exception {
         Properties props = new Properties();
         props.load(getClass().getResourceAsStream(propertyFile));
-        return new DefaultDataAccessManager(new MemoryDataAccessRuleDAO(catalog, props));
+        return new DefaultResourceAccessManager(new MemoryDataAccessRuleDAO(catalog, props));
     }
     
     /**
@@ -313,6 +321,7 @@ public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
         stubList(catalog, CoverageInfo.class, coverages);
         expect(catalog.getWorkspaces()).andReturn(workspaces).anyTimes();
         stubList(catalog, WorkspaceInfo.class, workspaces);
+        stubList(catalog, StyleInfo.class, Arrays.asList(pointStyle, lineStyle));
         expect(catalog.getWorkspaceByName("topp")).andReturn(toppWs).anyTimes();
         expect(catalog.getWorkspaceByName("nurc")).andReturn(nurcWs).anyTimes();
         expect(catalog.getStyles()).andReturn(Arrays.asList(pointStyle, lineStyle)).anyTimes();
@@ -323,6 +332,8 @@ public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
         expect(catalog.getLayerGroupsByWorkspace("nurc")).andReturn(Arrays.asList(layerGroupGlobal)).anyTimes();
         expect(catalog.getLayerGroupByName("topp", layerGroupWithSomeLockedLayer.getName())).andReturn(layerGroupWithSomeLockedLayer).anyTimes();
         replay(catalog);
+
+        GeoServerExtensionsHelper.singleton("catalog", catalog);
     }
     
     <T extends CatalogInfo> void stubList(Catalog mock, Class<T> clazz, final List<T> source) {

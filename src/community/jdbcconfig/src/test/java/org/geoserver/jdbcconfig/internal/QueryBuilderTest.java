@@ -20,17 +20,18 @@ import java.util.Arrays;
 
 import junit.framework.TestCase;
 
+import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.Predicates;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.jdbcconfig.JDBCConfigTestSupport;
 import org.junit.Ignore;
+import org.junit.Test;
 import org.opengis.filter.Filter;
 
 /**
  * @author groldan
  * @author Kevin Smith, OpenGeo
  */
-@Ignore // Doesn't actually test anything so ignore.  Used for debugging.
 public class QueryBuilderTest extends TestCase {
 
     private JDBCConfigTestSupport testSupport;
@@ -89,5 +90,61 @@ public class QueryBuilderTest extends TestCase {
                 .sortOrder(Predicates.asc("foo"),Predicates.desc("bar"),Predicates.asc("baz"))
                 .build();
         
+    }
+
+    @Test
+    public void testNotEquals() {
+        // Create the filter
+        Filter filter = Predicates.notEqual("name", "quux");
+        // Build it
+        StringBuilder build = QueryBuilder.forIds(dialect, WorkspaceInfo.class, dbMappings)
+                .filter(filter).build();
+        String sql = build.toString();
+        // Ensure the following sql is present
+        assertTrue(sql
+                .contains("NOT oid IN (SELECT oid FROM object_property WHERE property_type IN (:ptype0) AND UPPER(value) = :value0)"));
+    }
+
+    @Test
+    public void testIsInstanceOf() {
+        // Create the filter
+        Filter filter = Predicates.isInstanceOf(LayerInfo.class);
+        // Build it
+        StringBuilder build = QueryBuilder.forIds(dialect, WorkspaceInfo.class, dbMappings)
+                .filter(filter).build();
+        String sql = build.toString();
+        // Ensure the following sql is present
+        assertTrue(sql.contains("type_id = " + dbMappings.getTypeId(LayerInfo.class)));
+    }
+
+    @Test
+    public void testIsNull() {
+        // Create the filter
+        Filter filter = Predicates.isNull("name");
+        // Build it
+        StringBuilder build = QueryBuilder.forIds(dialect, WorkspaceInfo.class, dbMappings)
+                .filter(filter).build();
+        String sql = build.toString();
+
+        String sqlNull = "oid IN (select oid from object_property where property_type in (:"
+                + "ptype0) and value IS NULL) OR oid NOT  in (select oid from object_property where property_type in (:"
+                + "ptype0))";
+        // Ensure the following sql is present
+        assertTrue(sql.contains(sqlNull));
+    }
+
+    @Test
+    public void testIsNil() {
+        // Create the filter
+        Filter filter = Predicates.isNull("name");
+        // Build it
+        StringBuilder build = QueryBuilder.forIds(dialect, WorkspaceInfo.class, dbMappings)
+                .filter(filter).build();
+        String sql = build.toString();
+
+        String sqlNil = "oid IN (select oid from object_property where property_type in (:" + 
+                "ptype0) and value IS NULL)";
+        // Ensure the following sql is present
+        assertTrue(sql.contains(sqlNil));
     }
 }

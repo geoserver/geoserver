@@ -12,15 +12,21 @@ import java.util.Collections;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
-import org.geoserver.security.DataAccessManager;
-import org.geoserver.security.ResourceAccessManager;
-import org.geoserver.security.DataAccessManagerAdapter;
+import org.geoserver.catalog.util.CloseableIterator;
+import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.geoserver.security.CatalogFilterAccessManager;
+import org.geoserver.security.DataAccessManager;
+import org.geoserver.security.DataAccessManagerAdapter;
+import org.geoserver.security.ResourceAccessManager;
 import org.geoserver.security.SecureCatalogImpl;
 import org.geoserver.security.impl.AbstractAuthorizationTest;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.opengis.filter.Filter;
+import org.springframework.security.core.Authentication;
+
+import com.google.common.collect.Iterators;
 
 public class LocalWorkspaceSecureCatalogTest extends AbstractAuthorizationTest {
 
@@ -88,7 +94,43 @@ public class LocalWorkspaceSecureCatalogTest extends AbstractAuthorizationTest {
         assertEquals("layerGroup", sc.getLayerGroups().get(0).getName());
         LocalWorkspace.remove();
     }
-    
+
+    @Test
+    public void testAccessToStyleAsIterator() throws Exception {
+        // Getting the access manager
+        CatalogFilterAccessManager mgr = setupAccessManager();
+
+        // Defining a SecureCatalog with a user which is not admin
+        SecureCatalogImpl sc = new SecureCatalogImpl(catalog, mgr) {
+            @Override
+            protected boolean isAdmin(Authentication authentication) {
+                return false;
+            }
+        };
+        GeoServerExtensionsHelper.singleton("secureCatalog", sc, SecureCatalogImpl.class);
+
+        // Get the iterator on the styles
+        CloseableIterator<StyleInfo> styles = sc.list(StyleInfo.class, Filter.INCLUDE);
+        int size = Iterators.size(styles);
+        assertEquals(2, size);
+
+        // Setting the workspace "topp" and repeating the test
+        WorkspaceInfo ws = sc.getWorkspaceByName("topp");
+        LocalWorkspace.set(ws);
+
+        styles = sc.list(StyleInfo.class, Filter.INCLUDE);
+        size = Iterators.size(styles);
+        assertEquals(2, size);
+        LocalWorkspace.remove();
+
+        // Setting the workspace "nurc" and repeating the test
+        ws = sc.getWorkspaceByName("nurc");
+        LocalWorkspace.set(ws);
+        styles = sc.list(StyleInfo.class, Filter.INCLUDE);
+        size = Iterators.size(styles);
+        assertEquals(1, size);
+    }
+
     @After
     public void tearDown() throws Exception {
         LocalWorkspace.remove();

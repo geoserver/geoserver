@@ -26,12 +26,12 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupHelper;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.LayerInfo.Type;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.Predicates;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.event.CatalogAddEvent;
@@ -454,7 +454,7 @@ public class CatalogLayerEventListener implements CatalogListener {
                 }
                 
                 try {
-                    if(layer.getType() == Type.VECTOR && 
+                    if(layer.getType() == PublishedType.VECTOR && 
                             ((FeatureTypeInfo) layer.getResource()).getFeatureType().getGeometryDescriptor() == null) {
                         // skip geometryless layers
                         continue;

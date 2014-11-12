@@ -5,7 +5,7 @@
  */
 package org.geoserver.gwc.layer;
 
-import static org.geoserver.gwc.GWC.tileLayerName;
+import static org.geoserver.gwc.GWC.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,6 +18,7 @@ import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.gwc.config.GWCConfig;
 import org.geowebcache.config.XMLGridSubset;
@@ -130,6 +131,24 @@ public class TileLayerInfoUtil {
     
     /**
      * If the layer is configured for automatic style updates of its Style parameter filter, do so.
+     * @param layer The GeoServer layer
+     * @param layerInfo The GeoWebCache layer
+     */
+    public static void checkAutomaticStyles(final PublishedInfo published,
+            GeoServerTileLayerInfo layerInfo) {
+        if (published instanceof LayerInfo) {
+            checkAutomaticStyles((LayerInfo) published, layerInfo);
+        } else if (published instanceof LayerGroupInfo) {
+            checkAutomaticStyles((LayerGroupInfo) published, layerInfo);
+        } else {
+            throw new IllegalArgumentException(
+                    "Do not know how to handle this kind of PublishedInfo: " + published);
+        }
+    }
+
+    /**
+     * If the layer is configured for automatic style updates of its Style parameter filter, do so.
+     * 
      * @param layer The GeoServer layer
      * @param layerInfo The GeoWebCache layer
      */

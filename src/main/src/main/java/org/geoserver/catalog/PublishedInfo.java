@@ -25,6 +25,12 @@ public interface PublishedInfo extends CatalogInfo {
     void setName(String name);
 
     /**
+     * @see prefixedName
+     */
+    @Deprecated
+    public String getPrefixedName();
+
+    /**
      * The derived prefixed name.
      * <p>
      * If a workspace is set this method returns:
@@ -71,4 +77,9 @@ public interface PublishedInfo extends CatalogInfo {
      */
     List<LayerIdentifierInfo> getIdentifiers();
     
+    /**
+     * The type of the layer.
+     */
+    PublishedType getType();
+
 }

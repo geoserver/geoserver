@@ -34,6 +34,7 @@ import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataLinkInfo;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.util.ReaderDimensionsAccessor;
 import org.geoserver.config.ResourceErrorHandling;
 import org.geoserver.ows.URLMangler.URLType;
@@ -184,7 +185,7 @@ public class Wcs10DescribeCoverageTransformer extends TransformerBase {
                     String coverageId = (String) it.next();
                     // check the coverage is known
                     LayerInfo layer = catalog.getLayerByName(coverageId);
-                    if (layer == null || layer.getType() != LayerInfo.Type.RASTER) {
+                    if (layer == null || layer.getType() != PublishedType.RASTER) {
                         throw new WcsException("Could not find the specified coverage: " + coverageId,
                                 WcsExceptionCode.InvalidParameterValue, "coverage");
                     }

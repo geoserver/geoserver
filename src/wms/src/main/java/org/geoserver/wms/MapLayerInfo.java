@@ -16,6 +16,7 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.ResourcePool;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.PublishedType;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.factory.GeoTools;
@@ -37,13 +38,13 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
  * @author Gabriel Roldan
  */
 public final class MapLayerInfo {
-    public static int TYPE_VECTOR = LayerInfo.Type.VECTOR.getCode();
+    public static int TYPE_VECTOR = PublishedType.VECTOR.getCode();
 
-    public static int TYPE_RASTER = LayerInfo.Type.RASTER.getCode();
+    public static int TYPE_RASTER = PublishedType.RASTER.getCode();
 
-    public static int TYPE_REMOTE_VECTOR = LayerInfo.Type.REMOTE.getCode();
+    public static int TYPE_REMOTE_VECTOR = PublishedType.REMOTE.getCode();
 
-    public static int TYPE_WMS = LayerInfo.Type.WMS.getCode();
+    public static int TYPE_WMS = PublishedType.WMS.getCode();
 
     /**
      * The feature source for the remote WFS layer (see REMOVE_OWS_TYPE/URL in the SLD spec)

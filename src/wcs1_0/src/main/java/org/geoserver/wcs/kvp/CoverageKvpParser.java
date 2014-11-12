@@ -13,6 +13,7 @@ import java.util.List;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.PublishedType;
 import org.geoserver.ows.KvpParser;
 import org.geoserver.ows.util.KvpUtils;
 import org.vfny.geoserver.wcs.WcsException;
@@ -47,7 +48,7 @@ public class CoverageKvpParser extends KvpParser {
 
         for (String coverage : identifiers) {
             final LayerInfo layer = catalog.getLayerByName(coverage);
-            if (layer == null || layer.getType() != LayerInfo.Type.RASTER)
+            if (layer == null || layer.getType() != PublishedType.RASTER)
                 throw new WcsException("Could not find coverage '" + coverage + "'",InvalidParameterValue, "coverage");
             coverages.add(coverage);
         }

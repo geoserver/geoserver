@@ -29,6 +29,7 @@ import org.geoserver.catalog.Keyword;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.TestHttpClientProvider;
+import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.data.test.MockData;
@@ -242,7 +243,7 @@ public class CatalogBuilderTest extends GeoServerMockTestSupport {
         layer.setResource(fti);
         layer.setName(fti.getName());
         layer.setEnabled(true);
-        layer.setType(LayerInfo.Type.VECTOR);
+        layer.setType(PublishedType.VECTOR);
         
         LayerGroupInfo group = cat.getFactory().createLayerGroup();
         group.setName("group");
@@ -270,7 +271,7 @@ public class CatalogBuilderTest extends GeoServerMockTestSupport {
         layer.setResource(fti);
         layer.setName(fti.getName());
         layer.setEnabled(true);
-        layer.setType(LayerInfo.Type.VECTOR);
+        layer.setType(PublishedType.VECTOR);
         
         LayerGroupInfo group = cat.getFactory().createLayerGroup();
         group.setName("group_EO");
@@ -309,7 +310,7 @@ public class CatalogBuilderTest extends GeoServerMockTestSupport {
         assertWMSLayer(wmsLayer);
         
         LayerInfo layer = cb.buildLayer(wmsLayer);
-        assertEquals(LayerInfo.Type.WMS, layer.getType());
+        assertEquals(PublishedType.WMS, layer.getType());
 
         wmsLayer = cat.getFactory().createWMSLayer();
         wmsLayer.setName("states");

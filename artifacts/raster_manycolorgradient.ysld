@@ -1,0 +1,19 @@
+name: Default Styler
+title: 'YSLD Cook Book: Many color gradient'
+feature-styles:
+- name: name
+  rules:
+  - symbolizers:
+    - raster:
+        opacity: 1.0
+        color-map:
+          type: ramp
+          entries:
+          - (000000,,95,)
+          - (0000FF,,110,)
+          - (00FF00,,135,)
+          - (FF0000,,160,)
+          - (FF00FF,,185,)
+          - (FFFF00,,210,)
+          - (00FFFF,,235,)
+          - (FFFFFF,,256,)

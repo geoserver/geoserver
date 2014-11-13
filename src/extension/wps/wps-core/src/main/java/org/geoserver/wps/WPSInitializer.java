@@ -67,9 +67,9 @@ public class WPSInitializer implements GeoServerInitializer {
     void initWPS(WPSInfo info, GeoServer geoServer) {
         // Handle the http connection timeout.
         // The specified timeout is in seconds. Convert it to milliseconds
-        double timeout = info.getConnectionTimeout();
-        if (timeout > 0) {
-            executionManager.setConnectionTimeout((int) timeout * 1000);
+        double connectionTimeout = info.getConnectionTimeout();
+        if (connectionTimeout > 0) {
+            executionManager.setConnectionTimeout((int) connectionTimeout * 1000);
         } else {
             // specified timeout == -1 represents infinite timeout.
             // by convention, for infinite URLConnection timeouts, we need to use zero.
@@ -77,13 +77,13 @@ public class WPSInitializer implements GeoServerInitializer {
         }
 
         // handle the resource expiration timeout
-        timeout = info.getResourceExpirationTimeout();
-        if (timeout > 0) {
-            cleaner.setExpirationDelay((int) timeout * 1000);
-        } else {
-            // specified timeout == -1, so we use the default of five minutes
-            cleaner.setExpirationDelay(5 * 60 * 1000);
+        int expirationTimeout = info.getResourceExpirationTimeout() * 1000;
+        if (expirationTimeout <= 0) {
+            // use the default of five minutes
+            expirationTimeout = 5 * 60 * 1000;
         }
+        cleaner.setExpirationDelay(expirationTimeout);
+        executionManager.setHeartbeatDelay(expirationTimeout / 2);
 
         // the max number of synch proceesses
         int defaultMaxProcesses = Runtime.getRuntime().availableProcessors() * 2;

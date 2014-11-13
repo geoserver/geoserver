@@ -13,6 +13,7 @@ import java.util.logging.Logger;
 import javax.naming.ConfigurationException;
 
 import org.geoserver.wcs.response.WCSStorageCleaner;
+import org.geoserver.wps.executor.ProcessStatusTracker;
 import org.geoserver.wps.resource.WPSResourceManager;
 import org.geotools.util.logging.Logging;
 
@@ -47,7 +48,7 @@ public class WPSStorageCleaner extends TimerTask {
             // ok, now scan for existing files there and clean up those that are too old
             long expirationThreshold = System.currentTimeMillis() - expirationDelay;
             statusTracker.cleanExpiredStatuses(expirationThreshold);
-            resourceManager.cleanExpiredResources(expirationThreshold);
+            resourceManager.cleanExpiredResources(expirationThreshold, statusTracker);
         } catch (Exception e) {
             LOGGER.log(Level.WARNING, "Error occurred while trying to clean up "
                     + "old coverages from temp storage", e);

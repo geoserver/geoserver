@@ -7,9 +7,14 @@ package org.geoserver.wps.executor;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
@@ -55,20 +60,63 @@ public class WPSExecutionManager implements ApplicationContextAware,
 
     private static final Logger LOGGER = Logging.getLogger(WPSExecutionManager.class);
 
-    private ExecutorService storedResponseWriters = Executors.newCachedThreadPool();
+    /**
+     * The thread pool that will run the threads doing input decoding/process launch/output decoding
+     * for asynchronous processes
+     */
+    private ExecutorService executors = Executors.newCachedThreadPool();
 
+    /**
+     * Used to do run-time lookups of extension points
+     */
     ApplicationContext applicationContext;
 
+    /**
+     * The resource manager, the source of execution ids
+     */
     private WPSResourceManager resourceManager;
 
+    /**
+     * The classes that will actually run the process once the inputs are parsed
+     */
     private List<ProcessManager> processManagers;
 
+    /**
+     * Objects listening to the process lifecycles
+     */
     private List<ProcessListener> listeners;
 
+    /**
+     * The HTTP connection timeout for remote resources
+     */
     private int connectionTimeout;
 
-    public WPSExecutionManager(WPSResourceManager resourceManager) {
+    /**
+     * The status tracker, that will be periodically informed about processes still running, even if
+     * they are not issuing events to the process listener
+     */
+    private ProcessStatusTracker statusTracker;
+
+    /**
+     * The currently running processes
+     */
+    private Set<String> localProcessExecutionIds = Collections
+            .newSetFromMap(new ConcurrentHashMap<String, Boolean>());
+
+    /**
+     * The timer informing the status tracker of the currently executing processes
+     */
+    private Timer heartbeatTimer;
+
+    /**
+     * The delay between one heartbeat and the next
+     */
+    private int heartbeatDelay;
+
+    public WPSExecutionManager(WPSResourceManager resourceManager,
+            ProcessStatusTracker statusTracker) {
         this.resourceManager = resourceManager;
+        this.statusTracker = statusTracker;
     }
 
     WPSResourceManager getResourceManager() {
@@ -129,7 +177,7 @@ public class WPSExecutionManager implements ApplicationContextAware,
                     applicationContext, status);
             response = builder.build();
             // now actually start the process
-            storedResponseWriters.submit(executor);
+            executors.submit(executor);
         }
 
         return response;
@@ -157,12 +205,40 @@ public class WPSExecutionManager implements ApplicationContextAware,
                 + processName);
     }
 
+    /**
+     * Returns the HTTP connection timeout for remote resource fetching
+     * 
+     * @return
+     */
     public int getConnectionTimeout() {
         return connectionTimeout;
     }
 
+    /**
+     * Sets the HTTP connection timeout for remote resource fetching
+     * 
+     * @param connectionTimeout
+     */
     public void setConnectionTimeout(int connectionTimeout) {
         this.connectionTimeout = connectionTimeout;
+    }
+
+    /**
+     * Sets the heartbeat delay for the processes that are running (to make sure we tell the rest of
+     * the cluster the process is actually still running, even if it does not update its status)
+     * 
+     * @param i
+     */
+    public void setHeartbeatDelay(int heartbeatDelay) {
+        if (heartbeatDelay != this.heartbeatDelay) {
+            this.heartbeatDelay = heartbeatDelay;
+            if (heartbeatTimer != null) {
+                heartbeatTimer.cancel();
+            }
+            heartbeatTimer = new Timer();
+            heartbeatTimer.schedule(new HeartbeatTask(), heartbeatDelay);
+        }
+
     }
 
     @Override
@@ -174,10 +250,10 @@ public class WPSExecutionManager implements ApplicationContextAware,
     @Override
     public void onApplicationEvent(ApplicationEvent event) {
         if (event instanceof ContextRefreshedEvent) {
-            if (storedResponseWriters == null) {
-                storedResponseWriters = Executors.newCachedThreadPool();
+            if (executors == null) {
+                executors = Executors.newCachedThreadPool();
             } else if (event instanceof ContextClosedEvent) {
-                storedResponseWriters.shutdownNow();
+                executors.shutdownNow();
             }
         }
     }
@@ -241,8 +317,10 @@ public class WPSExecutionManager implements ApplicationContextAware,
             if (transfer != null) {
                 try {
                     transfer.apply();
+                    localProcessExecutionIds.add(status.getExecutionId());
                     return execute();
                 } finally {
+                    localProcessExecutionIds.remove(status.getExecutionId());
                     transfer.cleanup();
                 }
             } else {
@@ -356,5 +434,23 @@ public class WPSExecutionManager implements ApplicationContextAware,
 
     }
 
+    /**
+     * Touches the running processes, making sure we don't end up cleaning their resources by
+     * mistake while they are still running (this is required for processes that are not reporting
+     * progress)
+     * 
+     * @author Andrea Aime - GeoSolutions
+     */
+    private class HeartbeatTask extends TimerTask {
+
+        @Override
+        public void run() {
+            for (String executionId : localProcessExecutionIds) {
+                statusTracker.touch(executionId);
+            }
+
+        }
+
+    }
 
 }

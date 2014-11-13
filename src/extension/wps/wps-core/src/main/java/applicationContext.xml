@@ -29,6 +29,7 @@
     <!--  Execution manager, the thing that actually orchestrates the process execution -->
     <bean id="executionManager" class="org.geoserver.wps.executor.WPSExecutionManager">
         <constructor-arg ref="wpsResourceManager" />
+        <constructor-arg ref="processStatusTracker"/>
     </bean>    
     
     <!-- The default process runner, others may be around -->
@@ -38,7 +39,7 @@
       <property name="maxSynchronousProcesses" value="10"/>
     </bean>
     
-    <bean id="processStatusTracker" class="org.geoserver.wps.ProcessStatusTracker"/>
+    <bean id="processStatusTracker" class="org.geoserver.wps.executor.ProcessStatusTracker"/>
 
     <!-- WPS Service -->
     <bean id="wpsServiceTarget" class="org.geoserver.wps.DefaultWebProcessingService">

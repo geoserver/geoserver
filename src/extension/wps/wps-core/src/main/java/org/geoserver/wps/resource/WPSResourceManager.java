@@ -31,6 +31,8 @@ import org.geoserver.platform.Service;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
+import org.geoserver.wps.executor.ExecutionStatus;
+import org.geoserver.wps.executor.ProcessStatusTracker;
 import org.geoserver.wps.resource.ProcessArtifactsStore.ArtifactType;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.BeansException;
@@ -378,11 +380,13 @@ public class WPSResourceManager implements DispatcherCallback,
         return artifactsStore;
     }
 
-    public void cleanExpiredResources(long expirationThreshold) {
+    public void cleanExpiredResources(long expirationThreshold, ProcessStatusTracker tracker) {
         for (Resource r : artifactsStore.listExecutionResourcess()) {
-            LOGGER.log(Level.SEVERE, "We still need to check if the execution id is associated "
-                    + "to something still running for: " + r.name());
-            cleanupResource(r, expirationThreshold);
+            ExecutionStatus status = tracker.getStatus(r.name());
+            // remove only the things that are not running
+            if (status == null || status.getPhase().isExecutionCompleted()) {
+                cleanupResource(r, expirationThreshold);
+            }
         }
     }
 

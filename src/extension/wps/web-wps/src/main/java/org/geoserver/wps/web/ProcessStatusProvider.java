@@ -9,8 +9,8 @@ import java.util.List;
 
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.wicket.GeoServerDataProvider;
-import org.geoserver.wps.ProcessStatusTracker;
 import org.geoserver.wps.executor.ExecutionStatus;
+import org.geoserver.wps.executor.ProcessStatusTracker;
 import org.geotools.data.Query;
 
 /**

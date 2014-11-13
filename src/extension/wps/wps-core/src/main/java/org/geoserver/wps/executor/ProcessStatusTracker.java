@@ -2,17 +2,21 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.wps;
+package org.geoserver.wps.executor;
 
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.geoserver.platform.GeoServerExtensions;
-import org.geoserver.wps.executor.ExecutionStatus;
-import org.geoserver.wps.executor.ProcessState;
+import org.geoserver.wps.MemoryProcessStatusStore;
+import org.geoserver.wps.ProcessEvent;
+import org.geoserver.wps.ProcessListener;
+import org.geoserver.wps.ProcessStatusStore;
+import org.geoserver.wps.WPSException;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.util.logging.Logging;
+import org.opengis.filter.And;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory;
 import org.opengis.filter.Not;
@@ -49,11 +53,27 @@ public class ProcessStatusTracker implements ApplicationContextAware, ProcessLis
         store.save(event.getStatus());
     }
 
+    /**
+     * Custom method that updates the status last updated field without touching anything else, to
+     * make sure we let the cluster know the process is still running
+     * 
+     * @param executionId
+     * @throws WPSException
+     */
+    public void touch(String executionId) throws WPSException {
+        ExecutionStatus status = store.get(executionId);
+        if (status != null) {
+            status.setLastUpdated(new Date());
+            store.save(status);
+        }
+    }
+
     @Override
     public void completed(ProcessEvent event) throws WPSException {
         ExecutionStatus newStatus = event.getStatus();
         ExecutionStatus original = store.get(newStatus.getExecutionId());
         if (isStepCompatible(original, newStatus)) {
+            newStatus.setLastUpdated(new Date());
             store.save(newStatus);
         } else {
             LOGGER.log(Level.WARNING, "Invalid process status evolution from " + original + " to "
@@ -86,17 +106,23 @@ public class ProcessStatusTracker implements ApplicationContextAware, ProcessLis
 
     @Override
     public void cancelled(ProcessEvent event) throws WPSException {
-        store.save(event.getStatus());
+        ExecutionStatus status = event.getStatus();
+        status.setLastUpdated(new Date());
+        store.save(status);
     }
 
     @Override
     public void failed(ProcessEvent event) {
-        store.save(event.getStatus());
+        ExecutionStatus status = event.getStatus();
+        status.setLastUpdated(new Date());
+        store.save(status);
     }
 
     @Override
     public void progress(ProcessEvent event) throws WPSException {
-        store.save(event.getStatus());
+        ExecutionStatus status = event.getStatus();
+        status.setLastUpdated(new Date());
+        store.save(status);
     }
 
     public ExecutionStatus getStatus(String executionId) {
@@ -105,9 +131,13 @@ public class ProcessStatusTracker implements ApplicationContextAware, ProcessLis
 
     public void cleanExpiredStatuses(long expirationThreshold) {
         Date date = new Date(expirationThreshold);
-        Not notNull = FF.not(FF.isNull(FF.property("completionTime")));
-        Filter expired = FF.after(FF.property("completionTime"), FF.literal(date));
-        Filter filter = FF.and(notNull, expired);
+        Not completionTimenotNull = FF.not(FF.isNull(FF.property("completionTime")));
+        Filter completionTimeExpired = FF.after(FF.property("completionTime"), FF.literal(date));
+        Filter completionTimeFilter = FF.and(completionTimenotNull, completionTimeExpired);
+        Not lastUpdatedNotNull = FF.not(FF.isNull(FF.property("lastUpdated")));
+        Filter lastUpdatedExpired = FF.after(FF.property("lastUpdated"), FF.literal(date));
+        Filter lastUpdatedFilter = FF.and(lastUpdatedNotNull, lastUpdatedExpired);
+        And filter = FF.and(completionTimeFilter, lastUpdatedFilter);
         store.remove(filter);
     }
 

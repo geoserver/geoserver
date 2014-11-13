@@ -21,6 +21,7 @@ import net.opengis.wps10.WPSCapabilitiesType;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.platform.resource.Resource;
+import org.geoserver.wps.executor.ProcessStatusTracker;
 import org.geoserver.wps.executor.WPSExecutionManager;
 import org.geoserver.wps.resource.WPSResourceManager;
 import org.geotools.util.logging.Logging;

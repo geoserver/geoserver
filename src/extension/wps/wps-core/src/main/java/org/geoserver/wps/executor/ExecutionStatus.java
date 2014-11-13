@@ -36,7 +36,7 @@ public class ExecutionStatus implements Serializable {
     private static final long serialVersionUID = -2433524030271115410L;
 
     // TODO: find a GeoServer unified, non GUI specific way to get the node identifier
-    static final String NODE_IDENTIFIER = getNodeIdentifier();
+    public static final String NODE_IDENTIFIER = getNodeIdentifier();
 
     private static String getNodeIdentifier() {
         try {
@@ -129,6 +129,11 @@ public class ExecutionStatus implements Serializable {
     Date completionTime;
 
     /**
+     * A heartbeat field, used when clustering nodes
+     */
+    Date lastUpdated;
+
+    /**
      * What is the process currently working on
      */
     String task;
@@ -154,6 +159,7 @@ public class ExecutionStatus implements Serializable {
         this.executionId = executionId;
         this.phase = ProcessState.QUEUED;
         this.creationTime = new Date();
+        this.lastUpdated = this.creationTime;
         this.asynchronous = asynchronous;
 
         // grab the user name that made the request
@@ -179,6 +185,7 @@ public class ExecutionStatus implements Serializable {
         this.asynchronous = other.asynchronous;
         this.userName = other.userName;
         this.nodeId = other.nodeId;
+        this.lastUpdated = other.lastUpdated;
     }
 
     public void setException(Throwable exception) {
@@ -288,6 +295,31 @@ public class ExecutionStatus implements Serializable {
         return nodeId;
     }
 
+    /**
+     * Last time this bean has been updated
+     */
+    public Date getLastUpdated() {
+        return lastUpdated;
+    }
+
+    /**
+     * Sets the last updated time. Only the {@link ProcessStatusTracker} should call this method
+     * 
+     * @param lastUpdated
+     */
+    void setLastUpdated(Date lastUpdated) {
+        this.lastUpdated = lastUpdated;
+    }
+
+    @Override
+    public String toString() {
+        return "ExecutionStatus [processName=" + processName + ", executionId=" + executionId
+                + ", asynchronous=" + asynchronous + ", phase=" + phase + ", progress=" + progress
+                + ", userName=" + userName + ", creationTime=" + creationTime + ", completionTime="
+                + completionTime + ", lastUpdated=" + lastUpdated + ", task=" + task
+                + ", exception=" + exception + ", nodeId=" + nodeId + "]";
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -296,6 +328,7 @@ public class ExecutionStatus implements Serializable {
         result = prime * result + ((completionTime == null) ? 0 : completionTime.hashCode());
         result = prime * result + ((creationTime == null) ? 0 : creationTime.hashCode());
         result = prime * result + ((executionId == null) ? 0 : executionId.hashCode());
+        result = prime * result + ((lastUpdated == null) ? 0 : lastUpdated.hashCode());
         result = prime * result + ((nodeId == null) ? 0 : nodeId.hashCode());
         result = prime * result + ((phase == null) ? 0 : phase.hashCode());
         result = prime * result + ((processName == null) ? 0 : processName.hashCode());
@@ -331,6 +364,11 @@ public class ExecutionStatus implements Serializable {
                 return false;
         } else if (!executionId.equals(other.executionId))
             return false;
+        if (lastUpdated == null) {
+            if (other.lastUpdated != null)
+                return false;
+        } else if (!lastUpdated.equals(other.lastUpdated))
+            return false;
         if (nodeId == null) {
             if (other.nodeId != null)
                 return false;
@@ -356,15 +394,6 @@ public class ExecutionStatus implements Serializable {
         } else if (!userName.equals(other.userName))
             return false;
         return true;
-    }
-
-    @Override
-    public String toString() {
-        return "ExecutionStatus [processName=" + processName + ", executionId=" + executionId
-                + ", asynchronous=" + asynchronous + ", phase=" + phase + ", progress=" + progress
-                + ", userName=" + userName + ", creationTime=" + creationTime + ", completionTime="
-                + completionTime + ", task=" + task + ", exception=" + exception + ", nodeId="
-                + nodeId + "]";
     }
 
 

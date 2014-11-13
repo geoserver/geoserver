@@ -13,6 +13,7 @@ import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.wps.executor.ExecuteResponseBuilder;
 import org.geoserver.wps.executor.ExecutionStatus;
+import org.geoserver.wps.executor.ProcessStatusTracker;
 import org.geoserver.wps.resource.WPSResourceManager;
 import org.springframework.context.ApplicationContext;
 

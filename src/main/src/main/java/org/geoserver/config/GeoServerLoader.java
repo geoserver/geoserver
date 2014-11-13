@@ -166,8 +166,8 @@ public abstract class GeoServerLoader {
         if ( catalog.getStyleByName( StyleInfo.DEFAULT_LINE ) == null ) {
             initializeStyle( catalog, StyleInfo.DEFAULT_LINE, "default_line.sld" );
         }
-        if ( catalog.getStyleByName( StyleInfo.DEFAULT_POLYGON ) == null ) {
-            initializeStyle( catalog, StyleInfo.DEFAULT_POLYGON, "default_line.sld" );
+        if ( catalog.getStyleByName( StyleInfo.DEFAULT_POLYGON ) == null ) {    
+            initializeStyle( catalog, StyleInfo.DEFAULT_POLYGON, "default_polygon.sld" );
         }
         if ( catalog.getStyleByName( StyleInfo.DEFAULT_RASTER ) == null ) {
             initializeStyle( catalog, StyleInfo.DEFAULT_RASTER, "default_raster.sld" );

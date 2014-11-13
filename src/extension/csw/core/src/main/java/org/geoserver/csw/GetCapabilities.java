@@ -40,6 +40,7 @@ import net.opengis.ows10.ServiceIdentificationType;
 import net.opengis.ows10.ServiceProviderType;
 import net.opengis.ows10.TelephoneType;
 
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.geoserver.catalog.KeywordInfo;
 import org.geoserver.config.ContactInfo;
 import org.geoserver.csw.records.RecordDescriptor;
@@ -396,13 +397,15 @@ public class GetCapabilities {
             // - Parameters
             for (DomainType param : operationParameters.get("OperationsMetadata"))
             {
-                operationsMetadata.getParameter().add(param);
+                // clone the object, as the caps decorators might want to modify it
+                operationsMetadata.getParameter().add(EcoreUtil.copy(param));
             }
 
             // - Constraints
             for (DomainType constraint : operationConstraints.get("OperationsMetadata"))
             {
-                operationsMetadata.getConstraint().add(constraint);
+                // clone the object, as the caps decorators might want to modify it
+                operationsMetadata.getConstraint().add(EcoreUtil.copy(constraint));
             }
         }
 
@@ -485,13 +488,15 @@ public class GetCapabilities {
         // - Parameters
         for (DomainType param : operationParameters.get("GetCapabilities"))
         {
-            getCapabilities.getParameter().add(param);
+            // clone the object, as the caps decorators might want to modify it
+            getCapabilities.getParameter().add(EcoreUtil.copy(param));
         }
 
         // - Constraints
         for (DomainType constraint : operationConstraints.get("GetCapabilities"))
         {
-            getCapabilities.getConstraint().add(constraint);
+            // clone the object, as the caps decorators might want to modify it
+            getCapabilities.getConstraint().add(EcoreUtil.copy(constraint));
         }
     }
 
@@ -535,13 +540,15 @@ public class GetCapabilities {
         // - Parameters
         for (DomainType param : operationParameters.get("DescribeRecord"))
         {
-            describeRecord.getParameter().add(param);
+            // clone the object, as the caps decorators might want to modify it
+            describeRecord.getParameter().add(EcoreUtil.copy(param));
         }
 
         // - Constraints
         for (DomainType constraint : operationConstraints.get("DescribeRecord"))
         {
-            describeRecord.getConstraint().add(constraint);
+            // clone the object, as the caps decorators might want to modify it
+            describeRecord.getConstraint().add(EcoreUtil.copy(constraint));
         }
     }
 
@@ -585,13 +592,15 @@ public class GetCapabilities {
         // - Parameters
         for (DomainType param : operationParameters.get("GetRecords"))
         {
-            getRecords.getParameter().add(param);
+            // clone the object, as the caps decorators might want to modify it
+            getRecords.getParameter().add(EcoreUtil.copy(param));
         }
 
         // - Constraints
         for (DomainType constraint : operationConstraints.get("GetRecords"))
         {
-            getRecords.getConstraint().add(constraint);
+            // clone the object, as the caps decorators might want to modify it
+            getRecords.getConstraint().add(EcoreUtil.copy(constraint));
         }
         
         // the additional queriables based on the store
@@ -662,13 +671,15 @@ public class GetCapabilities {
         // - Parameters
         for (DomainType param : operationParameters.get("GetRecordById"))
         {
-            getRecordById.getParameter().add(param);
+            // clone the object, as the caps decorators might want to modify it
+            getRecordById.getParameter().add(EcoreUtil.copy(param));
         }
 
         // - Constraints
         for (DomainType constraint : operationConstraints.get("GetRecordById"))
         {
-            getRecordById.getConstraint().add(constraint);
+            // clone the object, as the caps decorators might want to modify it
+            getRecordById.getConstraint().add(EcoreUtil.copy(constraint));
         }
     }
 
@@ -712,7 +723,8 @@ public class GetCapabilities {
         // - Fixed Parameters
         for (DomainType param : operationParameters.get("GetDomain"))
         {
-            getDomain.getParameter().add(param);
+            // clone the object, as the caps decorators might want to modify it
+            getDomain.getParameter().add(EcoreUtil.copy(param));
         }
         
         // The domain queriables list from the catalog store
@@ -748,7 +760,7 @@ public class GetCapabilities {
         // - Constraints
         for (DomainType constraint : operationConstraints.get("GetDomain"))
         {
-            getDomain.getConstraint().add(constraint);
+            getDomain.getConstraint().add(EcoreUtil.copy(constraint));
         }
     }
 
@@ -792,13 +804,15 @@ public class GetCapabilities {
         // - Parameters
         for (DomainType param : operationParameters.get("Transaction"))
         {
-            transaction.getParameter().add(param);
+            // clone the object, as the caps decorators might want to modify it
+            transaction.getParameter().add(EcoreUtil.copy(param));
         }
 
         // - Constraints
         for (DomainType constraint : operationConstraints.get("Transaction"))
         {
-            transaction.getConstraint().add(constraint);
+            // clone the object, as the caps decorators might want to modify it
+            transaction.getConstraint().add(EcoreUtil.copy(constraint));
         }
         
     }

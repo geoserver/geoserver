@@ -53,7 +53,7 @@ public class YsldHandler extends StyleHandler {
     @Override
     public StyledLayerDescriptor parse(Object input, Version version, ResourceLocator resourceLocator,
         EntityResolver entityResolver) throws IOException {
-        return Ysld.parse(toReader(input), Collections.singletonList(zoomFinder));
+        return Ysld.parse(toReader(input), Collections.singletonList(zoomFinder), null);
     }
 
     @Override

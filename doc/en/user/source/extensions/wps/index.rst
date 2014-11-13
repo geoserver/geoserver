@@ -17,6 +17,7 @@ For the official WPS specification, see http://www.opengeospatial.org/standards/
    install
    operations
    administration
+   security
    processes
    requestbuilder
    

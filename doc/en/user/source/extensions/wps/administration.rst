@@ -31,21 +31,8 @@ Resource settings:
   * *Resource expiration timeout*: number of seconds the result of a asynchronous execution will be kept available on disk for user to retrieve. Once this time is expired these resources will be eligible for clearing (which happens at regular intervals).
   * *Resource storage directory*: where on disk the input, temporary and output resources associated to a certain process will be kept. By default it will be the ``temp/wps`` directory inside the GeoServer data directory
   
-Process activation control
---------------------------
-
-.. figure:: images/groups.png
-   :align: center
-
-This section of the user interface allows to control which processes are actually made available to the end users.
-A group of processes can be fully disabled by unecheking the corresponding checkout (like the deprecated processes set),
-but the admin can also click on the "Enable/disable processes" link and enable/disable them one by one instead:
-
-.. figure:: images/selection.png
-   :align: center
-
 Process status page
-===================
+-------------------
 
 The process status page, available in the "About & Status" section, reports about running, and recently
 completed, processes:

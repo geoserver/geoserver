@@ -12,6 +12,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.net.URLEncoder;
 import java.security.Principal;
 import java.util.Arrays;
 import java.util.List;
@@ -286,7 +287,7 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         config.setPasswordHeaderName("X-Credentials");
         config.setUserNameRegex("private-user=([^&]*)");
         config.setPasswordRegex("private-pw=([^&]*)");
-        config.setParseAsUriComponents(false);
+        config.setParseAsUriComponents(true);
         config.setName(testFilterName10);
         getSecurityManager().saveFilter(config);
         
@@ -354,8 +355,8 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         request= createRequest("/foo/bar");
         response= new MockHttpServletResponse();
         chain = new MockFilterChain();        
-        request.addHeader("X-Credentials",  "private-user="+GeoServerUser.ROOT_USERNAME+"&private-pw="+getMasterPassword());
-        
+        String masterPassword = URLEncoder.encode(getMasterPassword(), "UTF-8");
+        request.addHeader("X-Credentials",  "private-user="+GeoServerUser.ROOT_USERNAME+"&private-pw=" + masterPassword);
         getProxy().doFilter(request, response, chain);
         assertEquals(HttpServletResponse.SC_OK, response.getErrorCode());
         ctx = (SecurityContext)request.getSession(true).getAttribute(

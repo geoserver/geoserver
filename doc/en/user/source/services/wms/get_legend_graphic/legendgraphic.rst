@@ -28,7 +28,7 @@ In the following table the whole set of GetLegendGraphic parameters that can be 
      - **Description**
    * - *REQUEST*
      - Required
-     - Value must be "GetLegendRequest".
+     - Value must be "GetLegendGraphic".
    * - *LAYER*
      - Required
      - Layer for which to produce legend graphic.

@@ -328,7 +328,7 @@ public class GetCoverage {
         // axes swap management
         //
         final boolean enforceLatLonAxesOrder=requestingLatLonAxesOrder(gridCoverageRequest.getOutputCRS());
-        if (enforceLatLonAxesOrder){
+        if (wcs.isLatLon() && enforceLatLonAxesOrder){
             coverage = enforceLatLongOrder(coverage, hints, gridCoverageRequest.getOutputCRS());
         }
 

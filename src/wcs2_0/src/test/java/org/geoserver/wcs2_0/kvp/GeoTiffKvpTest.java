@@ -432,6 +432,60 @@ public class GeoTiffKvpTest extends WCSKVPTestSupport {
         }
     }
 
-    
-    
+    @Test
+    public void getFullCoverageLonLat() throws Exception {
+        // impose not using latLon retaining
+        final WCSInfo wcsInfo = getWCS();
+        final boolean oldLatLon = wcsInfo.isLatLon();
+        wcsInfo.setLatLon(false);
+        getGeoServer().save(wcsInfo);
+
+        // execute
+        MockHttpServletResponse response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1&coverageId=wcs__BlueMarble");
+
+        assertEquals("image/tiff", response.getContentType());
+        byte[] tiffContents = getBinary(response);
+        File file = new File("./target/bm_fullLonLat.tiff");
+        FileUtils.writeByteArrayToFile(file, tiffContents);
+
+        final Hints hints = new Hints();
+        hints.put(Hints.FORCE_AXIS_ORDER_HONORING, "EPSG");
+        hints.put(Hints.FORCE_LONGITUDE_FIRST_AXIS_ORDER, Boolean.TRUE);
+        GeoTiffReader readerTarget = new GeoTiffReader(file, hints);
+        GridCoverage2D targetCoverage = null, sourceCoverage = null;
+        try {
+            targetCoverage = readerTarget.read(null);
+            sourceCoverage = (GridCoverage2D) this.getCatalog().getCoverageByName("BlueMarble")
+                    .getGridCoverageReader(null, null).read(null);
+
+            // checks
+            assertEquals(sourceCoverage.getGridGeometry().getGridRange(), targetCoverage
+                    .getGridGeometry().getGridRange());
+            assertEquals(CRS.getAxisOrder(targetCoverage.getCoordinateReferenceSystem()),
+                    AxisOrder.EAST_NORTH);
+
+            assertEquals(sourceCoverage.getEnvelope(), targetCoverage.getEnvelope());
+        } finally {
+            // reinforce old settings
+            wcsInfo.setLatLon(oldLatLon);
+            getGeoServer().save(wcsInfo);
+
+            try {
+                readerTarget.dispose();
+            } catch (Exception e) {
+                // TODO: handle exception
+            }
+            try {
+                scheduleForCleaning(targetCoverage);
+            } catch (Exception e) {
+                // TODO: handle exception
+            }
+            try {
+                scheduleForCleaning(sourceCoverage);
+            } catch (Exception e) {
+                // TODO: handle exception
+            }
+        }
+    }
+
 }

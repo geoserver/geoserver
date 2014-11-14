@@ -205,9 +205,9 @@ and the ``tiled`` and ``tilesorigin`` parameters must be specified.
 The ``tiled`` parameter controls whether meta-tiling is used. 
 The syntax is::
 
-   tiled=[yes|no]
+   tiled=[true|false]
 
-To invoke meta-tiling use ``tiled=yes``.
+To invoke meta-tiling use ``tiled=true``.
 
 tilesorigin
 -----------
@@ -248,7 +248,7 @@ The following code shows how to specify the meta-tiling parameters:
             layers: 'layerName',
             format: 'image/png',
             tiled: true,
-            tilesorigin: [map.maxExtent.left, map.maxExtent.bottom]  
+            tilesorigin: map.maxExtent.left + ',' + map.maxExtent.bottom
         },
         {buffer: 0} 
     );

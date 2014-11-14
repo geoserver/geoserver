@@ -24,7 +24,7 @@ public class GWCZoomContextFinder implements ZoomContextFinder {
         super();
         this.broker = broker;
     }
-
+    
     @Override
     public @Nullable ZoomContext get(String name) {
         GridSet set = broker.get(name);

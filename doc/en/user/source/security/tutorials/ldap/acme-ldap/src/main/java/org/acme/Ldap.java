@@ -1,7 +1,8 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* Copyright (c) 2014 Open Source Geospatial Foundation - all rights reserved
+  (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
- * 
+ *
  * This code was derived from 
  * http://svn.apache.org/repos/asf/directory/documentation/samples/trunk/embedded-sample/. Which
  * falls under the following license. 

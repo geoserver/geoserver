@@ -1,8 +1,8 @@
 GeoServer is distributed under the GNU General Public License Version 2.0 license:
 
     GeoServer, open geospatial information server
-    Copyright (C) 2001-2014 OpenPlans
-    http://openplans.org
+    Copyright (C) 2001-2014 Open Source Geospatial Foundation
+    http://osgeo.org
     
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -35,10 +35,6 @@ GeoServer is distributed under the GNU General Public License Version 2.0 licens
     You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
     Foundation, Inc., 51 Franklin Street, Suite 500, Boston, MA 02110-1335  USA
-
-For latest contact information of OpenPlans see the website at
-http://openplans.org.  Current email is hello@openplans.org and address is 
-148 Lafayette Street, 12th Floor, New York, NY 10013.
 
 The full GPL license is available in this directory at GPL.txt
 

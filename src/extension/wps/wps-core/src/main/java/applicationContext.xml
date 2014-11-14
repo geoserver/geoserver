@@ -37,11 +37,15 @@
       <property name="maxAsynchronousProcesses" value="10"/>
       <property name="maxSynchronousProcesses" value="10"/>
     </bean>
+    
+    <bean id="processStatusTracker" class="org.geoserver.wps.ProcessStatusTracker"/>
 
     <!-- WPS Service -->
     <bean id="wpsServiceTarget" class="org.geoserver.wps.DefaultWebProcessingService">
         <constructor-arg ref="geoServer" />
         <constructor-arg ref="executionManager" />
+        <constructor-arg ref="wpsResourceManager" />
+        <constructor-arg ref="processStatusTracker" />
     </bean>
     
     <bean id="wpsLogger" class="org.geoserver.ows.util.EMFLogger">
@@ -152,8 +156,8 @@
       <constructor-arg index="1" value="ExecuteResponse"/>
       <constructor-arg index="2" value="org.geoserver.wps.xml.WPSConfiguration"/>
     </bean>
-    <bean id="wpsStoredFileResponse" class="org.geoserver.wps.response.StoredFileResponse">
-      <constructor-arg index="0" ref="wpsStorageCleaner"/>
+    <bean id="wpsStoredResourceResponse" class="org.geoserver.wps.response.StoredResourceResponse">
+      <constructor-arg index="0" ref="wpsResourceManager"/>
     </bean>
     
     <!-- Exception handler, we need to output ows 1.1 exceptions -->
@@ -194,7 +198,7 @@
     <bean id="aggregateProcessResultPPIO" class="org.geoserver.wps.gs.AggregateProcessPPIO"/>
 
     <bean id="storeCoverageProcess" class="org.geoserver.wps.gs.StoreCoverage" >
-      <constructor-arg index="0" ref="wpsStorageCleaner"></constructor-arg>
+      <constructor-arg index="0" ref="wpsResourceManager"></constructor-arg>
     </bean>
     
     <bean id="georectifyConfiguration" class="org.geoserver.wps.gs.GeorectifyConfiguration" /> 
@@ -233,7 +237,8 @@
   
     <!-- Temp storage cleanup -->
     <bean id="wpsStorageCleaner" class="org.geoserver.wps.WPSStorageCleaner">
-      <constructor-arg index="0" ref="dataDirectory" />
+      <constructor-arg index="0" ref="wpsResourceManager" />
+      <constructor-arg index="1" ref="processStatusTracker" />
     </bean>
   
     <!-- Definition of how often the scheduled task runs -->
@@ -265,6 +270,8 @@
       <constructor-arg index="0" ref="executionManager"/>
       <constructor-arg index="1" ref="defaultProcessManager"/>
       <constructor-arg index="2" ref="wpsStorageCleaner"/>
+      <constructor-arg index="3" ref="wpsResourceManager"/>
+      <constructor-arg index="4" ref="resourceLoader"/>
     </bean>
 
     <!-- The uber-process factory used by GeoServer -->
@@ -277,6 +284,14 @@
     <bean id="wpsLocalWorkspaceURLManger" class="org.geoserver.ows.LocalWorkspaceURLMangler">
       <constructor-arg value="wps"/>
     </bean>
+    
+    <bean id="executionIdThreadLocalTransfer" class="org.geoserver.wps.resource.ExecutionIdThreadLocalTransfer">
+      <constructor-arg ref="wpsResourceManager"/>
+    </bean>
 
+    <bean id="coverageResourceListener" class="org.geoserver.wps.resource.CoverageResourceListener">
+      <constructor-arg ref="wpsResourceManager"/>
+    </bean>
+    
 
 </beans>

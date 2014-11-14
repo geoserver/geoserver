@@ -187,9 +187,6 @@ class SimpleInputProvider implements InputProvider {
             if(value instanceof GridCoverage) {
                 executor.getResourceManager().addResource(new GridCoverageResource((GridCoverage) value));
             }
-            
-            // release the input, it's not needed anymore 
-            input = null;
         }
 
         return value;

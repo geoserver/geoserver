@@ -1,28 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- 
- Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
- This code is licensed under the GPL 2.0 license, available at the root
- application directory.
- -->
+<!-- Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved. 
+  This code is licensed under the GPL 2.0 license, available at the root application 
+  directory. -->
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 <beans>
 
-    <bean id="wpsRequestBuilder" class="org.geoserver.web.DemoLinkInfo">
-      <property name="id" value="wpsRequestBuilder" />
-      <property name="titleKey" value="WPSRequestBuilder.title" />
-      <property name="descriptionKey" value="WPSRequestBuilder.shortDescription" />
-      <property name="componentClass" value="org.geoserver.wps.web.WPSRequestBuilder" />
-    </bean>
-    
-    <bean id="wpsServicePage" class="org.geoserver.web.services.ServiceMenuPageInfo">
-    <property name="id" value="wps"/>
-    <property name="titleKey" value="wps.title"/>
-    <property name="descriptionKey" value="wps.description"/>
-    <property name="componentClass" value="org.geoserver.wps.web.WPSAdminPage"/> 
-    <property name="icon" value="server_gear.png"/>
-    <property name="category" ref="servicesCategory"/>
-    <property name="order" value="100"></property>
-    <property name="serviceClass" value="org.geoserver.wps.WPSInfo"/>
+  <bean id="wpsRequestBuilder" class="org.geoserver.web.DemoLinkInfo">
+    <property name="id" value="wpsRequestBuilder" />
+    <property name="titleKey" value="WPSRequestBuilder.title" />
+    <property name="descriptionKey" value="WPSRequestBuilder.shortDescription" />
+    <property name="componentClass" value="org.geoserver.wps.web.WPSRequestBuilder" />
   </bean>
-    
+
+  <bean id="wpsServicePage" class="org.geoserver.web.services.ServiceMenuPageInfo">
+    <property name="id" value="wps" />
+    <property name="titleKey" value="wps.title" />
+    <property name="descriptionKey" value="wps.description" />
+    <property name="componentClass" value="org.geoserver.wps.web.WPSAdminPage" />
+    <property name="icon" value="server_gear.png" />
+    <property name="category" ref="servicesCategory" />
+    <property name="order" value="100"></property>
+    <property name="serviceClass" value="org.geoserver.wps.WPSInfo" />
+  </bean>
+
+  <bean id="processStatusMenuPage" class="org.geoserver.web.MenuPageInfo">
+    <property name="id" value="server.admin.status" />
+    <property name="titleKey" value="ProcessStatusPage.title" />
+    <property name="descriptionKey" value="ProcessStatusPage.description" />
+    <property name="componentClass" value="org.geoserver.wps.web.ProcessStatusPage" />
+    <property name="category" ref="aboutStatusCategory" />
+    <property name="icon" value="../../web/img/icons/silk/cog.png" />
+    <property name="order" value="30" />
+  </bean>
+
+
 </beans>

@@ -88,6 +88,7 @@
   </bean>
   <bean id="wcs20scaleAxesKvpParser" class="org.geoserver.wcs2_0.kvp.ScaleAxesKvpParser" />
   <bean id="wcs20scaleSizeKvpParser" class="org.geoserver.wcs2_0.kvp.ScaleSizeKvpParser" />
+  <bean id="overviewPolicyKvpParser" class="org.geoserver.wcs2_0.kvp.OverviewPolicyKvpParser" />
   <bean id="wcs20scaleExtentKvpParser" class="org.geoserver.wcs2_0.kvp.ScaleExtentKvpParser" />
   <bean id="wcs200interpolationKvpParser" class="org.geoserver.wcs2_0.kvp.InterpolationKvpParser" >
       <property name="service" value="WCS" />

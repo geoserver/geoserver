@@ -100,6 +100,8 @@ public class WCSDimensionsSubsetHelper {
 
     private CoordinateReferenceSystem subsettingCRS;
 
+    private WCSEnvelope requestedEnvelope;
+
     private GridCoverage2DReader reader;
 
     private EnvelopeAxesLabelsMapper envelopeDimensionsMapper;
@@ -347,6 +349,7 @@ public class WCSDimensionsSubsetHelper {
         }
 
         // make sure we have not been requested to subset outside of the source CRS
+        requestedEnvelope = new WCSEnvelope(subsettingEnvelope);
         subsettingEnvelope.intersect(new GeneralEnvelope(sourceEnvelopeInSubsettingCRS));
 
         if (subsettingEnvelope.isEmpty()) {
@@ -538,6 +541,10 @@ public class WCSDimensionsSubsetHelper {
             }
         }
         return results;
+    }
+
+    public WCSEnvelope getRequestedEnvelope() {
+        return requestedEnvelope;
     }
 
     /**

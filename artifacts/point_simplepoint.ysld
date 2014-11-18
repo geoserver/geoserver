@@ -1,4 +1,3 @@
-name: Default Styler
 title: 'YSLD Cook Book: Simple Point'
 feature-styles:
 - name: name
@@ -9,4 +8,4 @@ feature-styles:
         symbols:
         - mark:
             shape: circle
-            fill-color: FF0000
+            fill-color: '#FF0000'

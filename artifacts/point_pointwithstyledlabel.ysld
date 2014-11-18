@@ -1,4 +1,3 @@
-name: Default Styler
 title: 'YSLD Cook Book: Point with styled label'
 feature-styles:
 - name: name
@@ -9,10 +8,10 @@ feature-styles:
         symbols:
         - mark:
             shape: circle
-            fill-color: FF0000
+            fill-color: '#FF0000'
     - text:
-        label: name
-        fill-color: '000000'
+        label: ${name}
+        fill-color: '#000000'
         font-family: Arial
         font-size: 12
         font-style: normal

@@ -5,10 +5,8 @@
  */
 package org.geoserver.wps.executor;
 
-import java.io.File;
-import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.math.BigInteger;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -39,18 +37,17 @@ import net.opengis.wps10.ProcessStartedType;
 import net.opengis.wps10.ResponseDocumentType;
 import net.opengis.wps10.Wps10Factory;
 
-import org.apache.commons.io.IOUtils;
 import org.eclipse.emf.common.util.EList;
 import org.geoserver.ows.Ows11Util;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.ServiceException;
+import org.geoserver.platform.resource.Resource;
 import org.geoserver.wps.BinaryEncoderDelegate;
 import org.geoserver.wps.CDataEncoderDelegate;
 import org.geoserver.wps.RawDataEncoderDelegate;
 import org.geoserver.wps.WPSException;
 import org.geoserver.wps.XMLEncoderDelegate;
-import org.geoserver.wps.executor.ExecutionStatus.ProcessState;
 import org.geoserver.wps.ppio.BinaryPPIO;
 import org.geoserver.wps.ppio.BoundingBoxPPIO;
 import org.geoserver.wps.ppio.CDataPPIO;
@@ -61,14 +58,12 @@ import org.geoserver.wps.ppio.RawDataPPIO;
 import org.geoserver.wps.ppio.XMLPPIO;
 import org.geoserver.wps.process.GeoServerProcessors;
 import org.geoserver.wps.process.RawData;
-import org.geoserver.wps.resource.GridCoverageResource;
 import org.geoserver.wps.resource.WPSResourceManager;
 import org.geotools.data.Parameter;
 import org.geotools.process.ProcessFactory;
 import org.geotools.util.Converters;
 import org.geotools.util.logging.Logging;
 import org.geotools.xml.EMFUtils;
-import org.opengis.coverage.grid.GridCoverage;
 import org.opengis.feature.type.Name;
 import org.springframework.context.ApplicationContext;
 
@@ -82,38 +77,22 @@ public class ExecuteResponseBuilder {
 
     Map<String, Object> outputs;
 
-    Date created;
-
     boolean verboseExceptions;
-
-    Throwable exception;
 
     ApplicationContext context;
 
-    String executionId;
-
     WPSResourceManager resourceManager;
 
-    public ExecuteResponseBuilder(ExecuteType request, ApplicationContext context, Date created) {
+    public ExecuteResponseBuilder(ExecuteType request, ApplicationContext context,
+            ExecutionStatus status) {
         this.request = request;
-        this.created = created;
         this.context = context;
         this.resourceManager = context.getBean(WPSResourceManager.class);
-    }
-
-    public void setStatus(ExecutionStatus status) {
         this.status = status;
     }
 
     public void setOutputs(Map<String, Object> outputs) {
         this.outputs = outputs;
-        // mark the output coverages as resources to be cleaned after
-        // ... hmmm.. wondering if we could make this more pluggable...
-        for (Object result : outputs.values()) {
-            if(result instanceof GridCoverage) {
-                resourceManager.addResource(new GridCoverageResource(((GridCoverage) result)));
-            }
-        }
     }
 
     public ExecuteResponseType build() {
@@ -143,11 +122,12 @@ public class ExecuteResponseBuilder {
 
         // status
         response.setStatus(f.createStatusType());
-        XMLGregorianCalendar gc = Converters.convert(created, XMLGregorianCalendar.class);
+        XMLGregorianCalendar gc = Converters.convert(status.getCreationTime(),
+                XMLGregorianCalendar.class);
         response.getStatus().setCreationTime(gc);
         if (status == null) {
-            if (exception != null) {
-                setResponseFailed(response, getException(ProcessState.COMPLETED));
+            if (status.getException() != null) {
+                setResponseFailed(response, getException(ProcessState.FAILED));
             } else if (outputs == null) {
                 response.getStatus().setProcessAccepted("Process accepted.");
             } else {
@@ -169,7 +149,7 @@ public class ExecuteResponseBuilder {
                 startedType.setPercentCompleted(new BigInteger(String.valueOf(progressPercent)));
                 startedType.setValue(status.getTask());
                 response.getStatus().setProcessStarted(startedType);
-            } else if (status.getPhase() == ProcessState.COMPLETED) {
+            } else if (status.getPhase() == ProcessState.SUCCEEDED) {
                 response.getStatus().setProcessSucceeded("Process succeeded.");
             } else {
                 ServiceException reportException = getException(status.getPhase());
@@ -178,12 +158,13 @@ public class ExecuteResponseBuilder {
         }
 
         // status location, if asynch
-        if (helper.isAsynchronous() && request.getBaseUrl() != null && executionId != null) {
+        if (status.isAsynchronous() && request.getBaseUrl() != null
+                && status.getExecutionId() != null) {
             Map<String, String> kvp = new LinkedHashMap<String, String>();
             kvp.put("service", "WPS");
             kvp.put("version", "1.0.0");
             kvp.put("request", "GetExecutionStatus");
-            kvp.put("executionId", executionId);
+            kvp.put("executionId", status.getExecutionId());
             response.setStatusLocation(ResponseUtils.buildURL(request.getBaseUrl(), "ows", kvp, URLType.SERVICE));
 
         }
@@ -216,7 +197,7 @@ public class ExecuteResponseBuilder {
         }
 
         // process outputs
-        if (exception == null && outputs != null) {
+        if (status.getException() == null && outputs != null) {
             ProcessOutputsType1 processOutputs = f.createProcessOutputsType1();
             response.setProcessOutputs(processOutputs);
 
@@ -280,32 +261,26 @@ public class ExecuteResponseBuilder {
                 output.setReference(outputReference);
                 
                 ComplexPPIO cppio = (ComplexPPIO) ppio;
-                File file = resourceManager.getOutputFile(executionId, key + "." + cppio.getFileExtension());
+                String name = key + "." + cppio.getFileExtension();
+                Resource outputResource = resourceManager.getOutputResource(
+                        status.getExecutionId(), name);
                 
-                // write out the file
-                FileOutputStream fos = null;
-                try {
-                    fos = new FileOutputStream(file);
-                    cppio.encode(o, fos);
-                } finally {
-                    IOUtils.closeQuietly(fos);
+                // write out the output
+                try (OutputStream os = outputResource.out()) {
+                    cppio.encode(o, os);
                 }
                 
-                // create the link
-                Map<String, String> kvp = new LinkedHashMap<String, String>();
-                kvp.put("service", "WPS");
-                kvp.put("version", "1.0.0");
-                kvp.put("request", "GetExecutionResult");
-                kvp.put("executionId", executionId);
-                kvp.put("outputId", file.getName());
-                if(o instanceof RawData) {
-                	RawData rawData = (RawData) o;
-                	kvp.put("mimetype", rawData.getMimeType());
+                String mime;
+                if (o instanceof RawData) {
+                    RawData rawData = (RawData) o;
+                    mime = rawData.getMimeType();
                 } else {
-                	kvp.put("mimetype", cppio.getMimeType());
+                    mime = cppio.getMimeType();
                 }
-                outputReference.setHref(ResponseUtils.buildURL(request.getBaseUrl(), "ows", kvp, URLType.SERVICE));
-                outputReference.setMimeType(cppio.getMimeType());
+                String url = resourceManager.getOutputResourceUrl(status.getExecutionId(), name,
+                        request.getBaseUrl(), mime);
+                outputReference.setHref(url);
+                outputReference.setMimeType(mime);
             } else {
                 // encode as data
                 DataType data = f.createDataType();
@@ -393,15 +368,8 @@ public class ExecuteResponseBuilder {
         if (phase == ProcessState.CANCELLED) {
             return new WPSException("Process was cancelled by the administrator");
         } else {
-            return new WPSException("Process failed during execution", exception);
+            return new WPSException("Process failed during execution", status.getException());
         }
     }
 
-    public void setException(Throwable exception) {
-        this.exception = exception;
-    }
-
-    public void setExecutionId(String executionId) {
-        this.executionId = executionId;
-    }
 }

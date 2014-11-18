@@ -625,6 +625,16 @@
       </dependencies>
     </profile>
     <profile>
+      <id>wps-cluster-hazelcast</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.extension</groupId>
+          <artifactId>gs-wps-cluster-hazelcast</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
       <id>css</id>
       <dependencies>
         <dependency>

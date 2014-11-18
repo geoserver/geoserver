@@ -21,7 +21,8 @@
     <name>Web Processing Service parent</name>
 
     <modules>
-      <module>wps-core</module>
+      <module>wps-core</module> 
+      <module>wps-cluster-hazelcast</module>
       <module>web-wps</module>
     </modules>
 </project>

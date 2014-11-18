@@ -6,30 +6,30 @@
 
 package org.geoserver.wps.response;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 
 import org.apache.commons.io.IOUtils;
 import org.geoserver.ows.Response;
 import org.geoserver.platform.Operation;
+import org.geoserver.platform.resource.Resource;
 import org.geoserver.wps.GetExecutionResultType;
 import org.geoserver.wps.GetExecutionStatusType;
 import org.geoserver.wps.WPSException;
-import org.geoserver.wps.WPSStorageCleaner;
+import org.geoserver.wps.resource.WPSResourceManager;
 
 /**
- * Stored file response (for the status and resource operations)
+ * Returns a response already computed and stored in an output
  * 
  * @author Andrea Aime - GeoSolutions
  */
-public class StoredFileResponse extends Response {
-    WPSStorageCleaner cleaner;
+public class StoredResourceResponse extends Response {
+    WPSResourceManager manager;
 
-    public StoredFileResponse(WPSStorageCleaner cleaner) {
-        super(File.class);
-        this.cleaner = cleaner;
+    public StoredResourceResponse(WPSResourceManager manager) {
+        super(Resource.class);
+        this.manager = manager;
     }
 
     @Override
@@ -78,16 +78,9 @@ public class StoredFileResponse extends Response {
     }
 
     public void write(Object value, OutputStream output, Operation operation) throws IOException {
-        File file = (File) value;
-        FileInputStream fos = null;
-        try {
-            cleaner.lock(file);
-            fos = new FileInputStream(file);
-            IOUtils.copy(fos, output);
-        } finally {
-            cleaner.unlock(file);
-            IOUtils.closeQuietly(fos);
+        Resource resource = (Resource) value;
+        try (InputStream is = resource.in()) {
+            IOUtils.copy(is, output);
         }
-
     }
 }

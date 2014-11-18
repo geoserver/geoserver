@@ -15,6 +15,7 @@ import java.util.logging.Logger;
 
 import org.geoserver.catalog.CatalogException;
 import org.geoserver.catalog.Info;
+import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.event.CatalogAddEvent;
@@ -162,6 +163,9 @@ public abstract class HzSynchronizer extends GeoServerSynchronizer implements
         }
         if (store !=null) {
         	ev.setStoreId(store.getId());
+        }
+        if (subj instanceof ResourceInfo) {
+            ev.setNativeName(((ResourceInfo) subj).getNativeName());
         }
         return ev;
     }

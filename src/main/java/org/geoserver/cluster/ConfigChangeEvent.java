@@ -1,9 +1,12 @@
 package org.geoserver.cluster;
 
 import static com.google.common.base.Objects.equal;
+
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.annotation.Nullable;
 
 import org.geoserver.catalog.AttributionInfo;
 import org.geoserver.catalog.Catalog;
@@ -115,6 +118,8 @@ public class ConfigChangeEvent extends Event {
      */
     Type type;
 
+    private String nativeName;
+
     public ConfigChangeEvent(String id, String name, Class<? extends Info> clazz, Type type) {
         super();
         this.id = id;
@@ -215,5 +220,14 @@ public class ConfigChangeEvent extends Event {
 
     public Type getChangeType() {
         return type;
+    }
+
+    public void setNativeName(String nativeName) {
+        this.nativeName = nativeName;
+    }
+    
+    @Nullable
+    public String getNativeName() {
+        return nativeName;
     }
 }

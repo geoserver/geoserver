@@ -9,7 +9,8 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
-import org.geoserver.wps.WPSStorageCleaner;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.wps.resource.WPSResourceManager;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.grid.io.imageio.GeoToolsWriteParams;
@@ -44,17 +45,19 @@ public class StoreCoverage implements GSProcess {
         DEFAULT_WRITE_PARAMS.setTiling(512, 512);
     }
 
-    WPSStorageCleaner storage;
+    WPSResourceManager resources;
 
-    public StoreCoverage(WPSStorageCleaner storage) {
-        this.storage = storage;
+    public StoreCoverage(WPSResourceManager resources) {
+        this.resources = resources;
     }
 
     @DescribeResult(name = "coverageLocation", description = "URL at which raster can be accessed")
     public URL execute(
             @DescribeParameter(name = "coverage", description = "Input raster") GridCoverage2D coverage)
             throws IOException {
-        final File file = File.createTempFile(coverage.getName().toString(), ".tif", storage.getStorage());
+        String fileName = coverage.getName().toString() + ".tif";
+        final Resource resource = resources.getOutputResource(null, fileName);
+        final File file = resource.file();
 
         // TODO check file prior to writing
         GeoTiffWriter writer = new GeoTiffWriter(file);
@@ -63,7 +66,7 @@ public class StoreCoverage implements GSProcess {
         final ParameterValueGroup params = new GeoTiffFormat().getWriteParameters();
         params.parameter(AbstractGridFormat.GEOTOOLS_WRITE_PARAMS.getName().toString()).setValue(
                 DEFAULT_WRITE_PARAMS);
-        final GeneralParameterValue[] wps = (GeneralParameterValue[]) params.values().toArray(
+        final GeneralParameterValue[] wps = params.values().toArray(
                 new GeneralParameterValue[1]);
         try {
             writer.write(coverage, wps);
@@ -75,7 +78,7 @@ public class StoreCoverage implements GSProcess {
             }
         }
 
-        return storage.getURL(file);
+        return new URL(resources.getOutputResourceUrl(null, fileName, null, "image/tiff"));
     }
 
 }

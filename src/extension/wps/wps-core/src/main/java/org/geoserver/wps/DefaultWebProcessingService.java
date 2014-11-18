@@ -6,7 +6,6 @@
 
 package org.geoserver.wps;
 
-import java.io.File;
 import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
@@ -21,7 +20,10 @@ import net.opengis.wps10.WPSCapabilitiesType;
 
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.wps.executor.ProcessStatusTracker;
 import org.geoserver.wps.executor.WPSExecutionManager;
+import org.geoserver.wps.resource.WPSResourceManager;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -43,10 +45,17 @@ public class DefaultWebProcessingService implements WebProcessingService, Applic
 
     protected WPSExecutionManager executionManager;
 
-    public DefaultWebProcessingService(GeoServer gs, WPSExecutionManager executionManager) {
+    protected WPSResourceManager resources;
+
+    private ProcessStatusTracker tracker;
+
+    public DefaultWebProcessingService(GeoServer gs, WPSExecutionManager executionManager,
+            WPSResourceManager resources, ProcessStatusTracker tracker) {
         this.wps = gs.getService(WPSInfo.class);
         this.gs = gs.getGlobal();
         this.executionManager = executionManager;
+        this.resources = resources;
+        this.tracker = tracker;
     }
 
     /**
@@ -94,11 +103,11 @@ public class DefaultWebProcessingService implements WebProcessingService, Applic
 
     @Override
     public Object getExecutionStatus(GetExecutionStatusType request) throws WPSException {
-        return new GetStatus(executionManager).run(request);
+        return new GetStatus(tracker, resources, context).run(request);
     }
     
     @Override
-    public File getExecutionResult(GetExecutionResultType request) throws WPSException {
-        return new GetResult(executionManager).run(request);
+    public Resource getExecutionResult(GetExecutionResultType request) throws WPSException {
+        return new GetResult(resources).run(request);
     }
 }

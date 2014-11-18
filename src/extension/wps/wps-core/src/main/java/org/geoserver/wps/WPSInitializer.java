@@ -5,6 +5,7 @@
  */
 package org.geoserver.wps;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -14,8 +15,14 @@ import org.geoserver.config.ConfigurationListenerAdapter;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.GeoServerInitializer;
+import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.FileLockProvider;
+import org.geoserver.platform.resource.FileSystemResourceStore;
+import org.geoserver.platform.resource.Resource;
 import org.geoserver.wps.executor.DefaultProcessManager;
 import org.geoserver.wps.executor.WPSExecutionManager;
+import org.geoserver.wps.resource.DefaultProcessArtifactsStore;
+import org.geoserver.wps.resource.WPSResourceManager;
 import org.geotools.process.ProcessFactory;
 import org.geotools.process.Processors;
 
@@ -32,11 +39,18 @@ public class WPSInitializer implements GeoServerInitializer {
 
     WPSStorageCleaner cleaner;
 
+    WPSResourceManager resources;
+
+    GeoServerResourceLoader resourceLoader;
+
     public WPSInitializer(WPSExecutionManager executionManager,
-            DefaultProcessManager processManager, WPSStorageCleaner cleaner) {
+            DefaultProcessManager processManager, WPSStorageCleaner cleaner,
+            WPSResourceManager resources, GeoServerResourceLoader resourceLoader) {
         this.executionManager = executionManager;
         this.processManager = processManager;
         this.cleaner = cleaner;
+        this.resources = resources;
+        this.resourceLoader = resourceLoader;
     }
 
     public void initialize(final GeoServer geoServer) throws Exception {
@@ -53,9 +67,9 @@ public class WPSInitializer implements GeoServerInitializer {
     void initWPS(WPSInfo info, GeoServer geoServer) {
         // Handle the http connection timeout.
         // The specified timeout is in seconds. Convert it to milliseconds
-        double timeout = info.getConnectionTimeout();
-        if (timeout > 0) {
-            executionManager.setConnectionTimeout((int) timeout * 1000);
+        double connectionTimeout = info.getConnectionTimeout();
+        if (connectionTimeout > 0) {
+            executionManager.setConnectionTimeout((int) connectionTimeout * 1000);
         } else {
             // specified timeout == -1 represents infinite timeout.
             // by convention, for infinite URLConnection timeouts, we need to use zero.
@@ -63,13 +77,13 @@ public class WPSInitializer implements GeoServerInitializer {
         }
 
         // handle the resource expiration timeout
-        timeout = info.getResourceExpirationTimeout();
-        if (timeout > 0) {
-            cleaner.setExpirationDelay((int) timeout * 1000);
-        } else {
-            // specified timeout == -1, so we use the default of five minutes
-            cleaner.setExpirationDelay(5 * 60 * 1000);
+        int expirationTimeout = info.getResourceExpirationTimeout() * 1000;
+        if (expirationTimeout <= 0) {
+            // use the default of five minutes
+            expirationTimeout = 5 * 60 * 1000;
         }
+        cleaner.setExpirationDelay(expirationTimeout);
+        executionManager.setHeartbeatDelay(expirationTimeout / 2);
 
         // the max number of synch proceesses
         int defaultMaxProcesses = Runtime.getRuntime().availableProcessors() * 2;
@@ -86,6 +100,42 @@ public class WPSInitializer implements GeoServerInitializer {
             processManager.setMaxAsynchronousProcesses(maxAsynch);
         } else {
             processManager.setMaxAsynchronousProcesses(defaultMaxProcesses);
+        }
+        
+        // update the location of the artifact storage in case we are using a file system based
+        // one
+        if(resources.getArtifactsStore() instanceof DefaultProcessArtifactsStore) {
+            WPSInfo wps = geoServer.getService(WPSInfo.class);
+            String outputStorageDirectory = wps.getStorageDirectory();
+            FileSystemResourceStore resourceStore;
+            if (outputStorageDirectory == null || outputStorageDirectory.trim().isEmpty()) {
+                Resource temp = resourceLoader.get("temp/wps");
+                resourceStore = new FileSystemResourceStore(temp.dir()); 
+            } else {
+                File storage = new File(outputStorageDirectory);
+                // if it's a path relative to the data directory, make it absolute
+                if (!storage.isAbsolute()) {
+                    storage = resourceLoader.url(outputStorageDirectory);
+                }
+                if(storage.exists() && !storage.isDirectory()) {
+                    throw new IllegalArgumentException("Invalid wps storage path, "
+                            + "it represents a file: " + storage.getPath());
+                }
+                if(!storage.exists()) {
+                    if (!storage.mkdirs()) {
+                        throw new IllegalArgumentException(
+                                "Invalid wps storage path, it does not exists and cannot be created: "
+                                        + storage.getPath());
+                    }
+                }
+                resourceStore = new FileSystemResourceStore(storage);
+            }
+            // use a clustering ready lock provider
+            resourceStore.setLockProvider(new FileLockProvider());
+
+            DefaultProcessArtifactsStore artifactsStore = (DefaultProcessArtifactsStore) resources
+                    .getArtifactsStore();
+            artifactsStore.setResourceStore(resourceStore);
         }
 
         lookupNewProcessGroups(info, geoServer);

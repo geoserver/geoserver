@@ -63,6 +63,11 @@ public class WPSInfoImpl extends ServiceInfoImpl implements WPSInfo {
      */
     List<ProcessGroupInfo> processGroups = new ArrayList<ProcessGroupInfo>();
     
+    /**
+     * Where to store the WPS artifacts (inputs, outputs, and so on)
+     */
+    String storageDirectory;
+
     public WPSInfoImpl() {
         title = "Prototype GeoServer WPS";
     }
@@ -167,5 +172,16 @@ public class WPSInfoImpl extends ServiceInfoImpl implements WPSInfo {
 
     public void setProcessGroups(List<ProcessGroupInfo> processGroups) {
         this.processGroups = processGroups;
+    }
+
+    @Override
+    public String getStorageDirectory() {
+        return storageDirectory;
+    }
+
+    @Override
+    public void setStorageDirectory(String storageDirectory) {
+        this.storageDirectory = storageDirectory;
+
     }
 }

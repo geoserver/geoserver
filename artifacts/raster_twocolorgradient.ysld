@@ -1,4 +1,3 @@
-name: Default Styler
 title: 'YSLD Cook Book: Two color gradient'
 feature-styles:
 - name: name
@@ -9,5 +8,5 @@ feature-styles:
         color-map:
           type: ramp
           entries:
-          - (008000,,70,)
-          - (663333,,256,)
+          - ('#008000',1,70,)
+          - ('#663333',1,256,)

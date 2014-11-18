@@ -1,11 +1,10 @@
-name: Default Styler
 title: 'YSLD Cook Book: Transparent polygon'
 feature-styles:
 - name: name
   rules:
   - symbolizers:
     - polygon:
-        stroke-color: FFFFFF
+        stroke-color: '#FFFFFF'
         stroke-width: 2
-        fill-color: '000080'
+        fill-color: '#000080'
         fill-opacity: 0.5

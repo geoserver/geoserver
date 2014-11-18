@@ -1,4 +1,3 @@
-name: Default Styler
 title: 'YSLD Cook Book: Rotated square'
 feature-styles:
 - name: name
@@ -10,4 +9,4 @@ feature-styles:
         symbols:
         - mark:
             shape: square
-            fill-color: '009900'
+            fill-color: '#009900'

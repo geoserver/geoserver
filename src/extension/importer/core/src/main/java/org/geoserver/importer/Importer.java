@@ -109,6 +109,13 @@ public class Importer implements DisposableBean, ApplicationListener {
         this.styleGen = new StyleGenerator(catalog);
     }
 
+    /**
+     * Returns the style generator.
+     */
+    public StyleGenerator getStyleGenerator() {
+        return styleGen;
+    }
+
     ImportStore createContextStore() {
         // check the spring context for an import store
         ImportStore store = null;

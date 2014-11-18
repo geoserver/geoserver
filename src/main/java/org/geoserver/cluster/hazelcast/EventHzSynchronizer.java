@@ -184,6 +184,7 @@ public class EventHzSynchronizer extends HzSynchronizer {
         Type t = event.getChangeType();
         String id = event.getObjectId();
         String name = event.getObjectName();
+        String nativeName = event.getNativeName();
         // catalog event
         CatalogInfo subj;
         Method notifyMethod;

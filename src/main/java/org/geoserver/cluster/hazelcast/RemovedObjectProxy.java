@@ -10,6 +10,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Nullable;
+
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.CatalogVisitor;
@@ -49,8 +51,13 @@ class RemovedObjectProxy implements InvocationHandler {
     private final Class<? extends Info> infoInterface;
 
     private final Map<String, CatalogInfo> catalogCollaborators;
+
+    private String nativeName;
     
     public RemovedObjectProxy(String id, String name, Class<? extends Info> infoInterface) {
+        this(id, name, infoInterface, null);
+    }
+    public RemovedObjectProxy(String id, String name, Class<? extends Info> infoInterface, @Nullable String nativeName) {
         checkNotNull(id, "id");
         checkNotNull(name, "name");
         checkNotNull(infoInterface, "infoInterface");
@@ -58,6 +65,7 @@ class RemovedObjectProxy implements InvocationHandler {
         this.id = id;
         this.name = name;
         this.infoInterface = infoInterface;
+        this.nativeName = nativeName;
         this.catalogCollaborators = new HashMap<String, CatalogInfo>();
     }
 
@@ -78,6 +86,9 @@ class RemovedObjectProxy implements InvocationHandler {
         }
         if ("getname".equalsIgnoreCase(method.getName())) {
             return name;
+        }
+        if ("getNativeName".equalsIgnoreCase(method.getName())) {
+            return nativeName;
         }
         if ("accept".equals(method.getName())) {
             proxyVisitory(proxy, method, (CatalogVisitor) args[0]);

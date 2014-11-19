@@ -109,10 +109,18 @@ public class ControlFlowCallback extends AbstractDispatcherCallback implements
             blockedRequests.incrementAndGet();
             long start = System.currentTimeMillis();
             try {
+                // the operation has not been set in the Request yet by the dispatcher, do so now in
+                // a clone of the Request
+                Request requestWithOperation = null;
+                if(request != null) {
+                    requestWithOperation = new Request(request);
+                    requestWithOperation.setOperation(operation);
+                }
+                
                 // grab the controllers for this request
                 List<FlowController> controllers = null;
                 try {
-                    controllers = provider.getFlowControllers(request);
+                    controllers = provider.getFlowControllers(requestWithOperation);
                 } catch (Exception e) {
                     LOGGER.log(Level.SEVERE,
                             "An error occurred setting up the flow controllers to this request", e);
@@ -121,19 +129,19 @@ public class ControlFlowCallback extends AbstractDispatcherCallback implements
                 if (controllers.size() == 0) {
                     LOGGER.info("Control-flow inactive for , there are no configured rules");
                 } else {
-                    long timeout = provider.getTimeout(request);
+                    long timeout = provider.getTimeout(requestWithOperation);
                     CallbackContext context = new CallbackContext(controllers, timeout);
                     REQUEST_CONTROLLERS.set(context);
                     long maxTime = timeout > 0 ? System.currentTimeMillis() + timeout : -1;
                     for (FlowController flowController : controllers) {
                         if (timeout > 0) {
                             long maxWait = maxTime - System.currentTimeMillis();
-                            if (!flowController.requestIncoming(request, maxWait)) {
+                            if (!flowController.requestIncoming(requestWithOperation, maxWait)) {
                                 throw new HttpErrorCodeException(503,
                                         "Requested timeout out while waiting to be executed, please lower your request rate");
                             }
                         } else {
-                            flowController.requestIncoming(request, -1);
+                            flowController.requestIncoming(requestWithOperation, -1);
                         }
                     }
                 }

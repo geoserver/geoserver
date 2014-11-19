@@ -8,6 +8,7 @@ package org.geoserver.ows;
 import java.io.BufferedReader;
 import java.util.Date;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -108,8 +109,41 @@ public class Request {
      */
     protected Operation operation;
 
+    /**
+     * Uniquely identifies this request
+     */
+    protected UUID identifier;
+
     public Request() {
         timestamp = new Date(); 
+        identifier = UUID.randomUUID();
+    }
+    
+    /**
+     * Copy constructor
+     * @param other
+     */
+    public Request(Request other) {
+        super();
+        this.httpRequest = other.httpRequest;
+        this.httpResponse = other.httpResponse;
+        this.get = other.get;
+        this.soap = other.soap;
+        this.kvp = other.kvp;
+        this.rawKvp = other.rawKvp;
+        this.input = other.input;
+        this.service = other.service;
+        this.request = other.request;
+        this.version = other.version;
+        this.namespace = other.namespace;
+        this.serviceDescriptor = other.serviceDescriptor;
+        this.context = other.context;
+        this.path = other.path;
+        this.outputFormat = other.outputFormat;
+        this.error = other.error;
+        this.timestamp = other.timestamp;
+        this.operation = other.operation;
+        this.identifier = other.identifier;
     }
 
     /**
@@ -431,5 +465,30 @@ public class Request {
      */
     public void setTimestamp(Date timestamp) {
         this.timestamp = timestamp;
+    }
+    
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((identifier == null) ? 0 : identifier.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Request other = (Request) obj;
+        if (identifier == null) {
+            if (other.identifier != null)
+                return false;
+        } else if (!identifier.equals(other.identifier))
+            return false;
+        return true;
     }
 }

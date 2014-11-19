@@ -18,6 +18,7 @@ import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.filter.text.ecql.ECQL;
 import org.junit.Before;
 import org.junit.Test;
+import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.sort.SortBy;
 import org.opengis.filter.sort.SortOrder;
@@ -161,7 +162,7 @@ public abstract class AbstractProcessStoreTest {
 
     @Test
     public void testIsolated() {
-        MemoryProcessStatusStore store = new MemoryProcessStatusStore();
+        store.remove(Filter.INCLUDE);
         ExecutionStatus status = new ExecutionStatus(new NameImpl("test"), "abcde", false);
         store.save(status);
         List<ExecutionStatus> statuses = store.list(Query.ALL);

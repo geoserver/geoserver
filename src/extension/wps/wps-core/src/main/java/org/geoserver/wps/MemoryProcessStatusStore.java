@@ -10,10 +10,14 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.commons.beanutils.BeanComparator;
 import org.geoserver.wps.executor.ExecutionStatus;
+import org.geoserver.wps.executor.ProcessState;
 import org.geotools.data.Query;
+import org.geotools.util.logging.Logging;
 import org.opengis.filter.Filter;
 import org.opengis.filter.sort.SortBy;
 import org.opengis.filter.sort.SortOrder;
@@ -25,16 +29,46 @@ import org.opengis.filter.sort.SortOrder;
  */
 public class MemoryProcessStatusStore implements ProcessStatusStore {
 
+    static final Logger LOGGER = Logging.getLogger(MemoryProcessStatusStore.class);
+
     Map<String, ExecutionStatus> statuses = new ConcurrentHashMap<String, ExecutionStatus>();
 
     @Override
     public void save(ExecutionStatus status) {
-        statuses.put(status.getExecutionId(), new ExecutionStatus(status));
+        boolean succeded = false;
+
+        if (LOGGER.isLoggable(Level.FINE)) {
+            LOGGER.log(Level.FINE, "Saving status " + status);
+        }
+
+        // use optimistic locking to update the status, and check the phase transition is a valid
+        // one
+        while (!succeded) {
+            ExecutionStatus oldStatus = statuses.get(status.getExecutionId());
+            ExecutionStatus newStatus = new ExecutionStatus(status);
+            if (oldStatus != null) {
+                ProcessState previousPhase = oldStatus.getPhase();
+                ProcessState currPhase = status.getPhase();
+                if (!currPhase.isValidSuccessor(previousPhase)) {
+                    throw new WPSException("Cannot switch process status from " + previousPhase
+                            + " to " + currPhase);
+                }
+                ExecutionStatus prevInMap = statuses.put(status.getExecutionId(), newStatus);
+                succeded = prevInMap == oldStatus;
+            } else {
+                ExecutionStatus previous = statuses.put(status.getExecutionId(), newStatus);
+                succeded = previous == null;
+            }
+        }
 
     }
 
     @Override
     public int remove(Filter filter) {
+        if (LOGGER.isLoggable(Level.FINE)) {
+            LOGGER.log(Level.FINE, "Removing statuses matching " + filter);
+        }
+
         int count = 0;
         for (ExecutionStatus status : statuses.values()) {
             if (filter.evaluate(status)) {
@@ -104,6 +138,15 @@ public class MemoryProcessStatusStore implements ProcessStatusStore {
     @Override
     public ExecutionStatus get(String executionId) {
         return statuses.get(executionId);
+    }
+
+    @Override
+    public ExecutionStatus remove(String executionId) {
+        if (LOGGER.isLoggable(Level.FINE)) {
+            LOGGER.log(Level.FINE, "Removing status for execution id: " + executionId);
+        }
+
+        return statuses.remove(executionId);
     }
 
 }

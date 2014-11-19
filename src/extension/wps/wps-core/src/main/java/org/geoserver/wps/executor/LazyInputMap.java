@@ -11,6 +11,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.geoserver.wps.ProcessDismissedException;
 import org.geoserver.wps.WPSException;
 import org.geotools.util.NullProgressListener;
 import org.geotools.util.SimpleInternationalString;
@@ -40,7 +41,13 @@ class LazyInputMap extends AbstractMap<String, Object> {
     }
 
     public Object get(Object key) {
+        // make sure we just kill the process is a dismiss happened
+        if (listener.isCanceled()) {
+            throw new ProcessDismissedException();
+        }
+        // lazy parse inputs
         parseInputs();
+        // return the value
         return values.get(key);
     }
     
@@ -73,6 +80,8 @@ class LazyInputMap extends AbstractMap<String, Object> {
                     subListener = new NullProgressListener();
                 }
                 totalSteps += providerLongSteps;
+                subListener.started();
+                subListener.progress(0);
                 Object value = provider.getValue(subListener);
                 values.put(provider.getInputId(), value);
             } catch (Exception e) {

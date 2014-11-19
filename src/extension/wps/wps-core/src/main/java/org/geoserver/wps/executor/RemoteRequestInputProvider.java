@@ -141,7 +141,8 @@ public class RemoteRequestInputProvider extends AbstractInputProvider {
 
             // actually parse teh data
             if (input != null) {
-                return complexPPIO.decode(input);
+                CancellingInputStream is = new CancellingInputStream(input, listener);
+                return complexPPIO.decode(is);
             } else {
                 throw new WPSException("Could not find a mean to read input " + inputId);
             }

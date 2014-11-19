@@ -5,9 +5,9 @@
 package org.geoserver.wps.executor;
 
 import java.util.Date;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.geoserver.platform.ExtensionPriority;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.wps.MemoryProcessStatusStore;
 import org.geoserver.wps.ProcessEvent;
@@ -24,8 +24,14 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
-
-public class ProcessStatusTracker implements ApplicationContextAware, ProcessListener {
+/**
+ * A listener that tracks the evolution of process execution and stores it in a
+ * {@link ProcessStatusStore}
+ * 
+ * @author Andrea Aime - GeoSolutions
+ */
+public class ProcessStatusTracker implements ApplicationContextAware, ProcessListener,
+        ExtensionPriority {
 
     static final FilterFactory FF = CommonFactoryFinder.getFilterFactory();
 
@@ -69,46 +75,29 @@ public class ProcessStatusTracker implements ApplicationContextAware, ProcessLis
     }
 
     @Override
-    public void completed(ProcessEvent event) throws WPSException {
+    public void succeeded(ProcessEvent event) throws WPSException {
         ExecutionStatus newStatus = event.getStatus();
         ExecutionStatus original = store.get(newStatus.getExecutionId());
-        if (isStepCompatible(original, newStatus)) {
-            newStatus.setLastUpdated(new Date());
-            store.save(newStatus);
-        } else {
-            LOGGER.log(Level.WARNING, "Invalid process status evolution from " + original + " to "
-                    + newStatus + " was not saved");
-        }
+        newStatus.setLastUpdated(new Date());
+        store.save(newStatus);
 
         // update the status in the event to let the process know it has been cancelled
-        if (original.getPhase() == ProcessState.CANCELLED) {
-            event.getStatus().setPhase(ProcessState.CANCELLED);
+        if (original.getPhase() == ProcessState.DISMISSING) {
+            event.getStatus().setPhase(ProcessState.FAILED);
         }
-    }
-
-    /**
-     * Check if going from s1 to s2 makes sense
-     * 
-     * @param s1
-     * @param s2
-     * @return
-     */
-    private boolean isStepCompatible(ExecutionStatus s1, ExecutionStatus s2) {
-        if (s1 == null) {
-            return false;
-        }
-
-        ProcessState startPhase = s1.getPhase();
-        ProcessState endPhase = s2.getPhase();
-        return (endPhase.equals(startPhase) || endPhase.isValidSuccessor(startPhase))
-                && s2.getProgress() >= s1.getProgress();
     }
 
     @Override
-    public void cancelled(ProcessEvent event) throws WPSException {
+    public void dismissing(ProcessEvent event) throws WPSException {
         ExecutionStatus status = event.getStatus();
         status.setLastUpdated(new Date());
         store.save(status);
+    }
+
+    @Override
+    public void dismissed(ProcessEvent event) throws WPSException {
+        ExecutionStatus status = event.getStatus();
+        store.remove(status.getExecutionId());
     }
 
     @Override
@@ -120,9 +109,14 @@ public class ProcessStatusTracker implements ApplicationContextAware, ProcessLis
 
     @Override
     public void progress(ProcessEvent event) throws WPSException {
-        ExecutionStatus status = event.getStatus();
-        status.setLastUpdated(new Date());
-        store.save(status);
+        ExecutionStatus original = store.get(event.getStatus().getExecutionId());
+        if (original.getPhase() == ProcessState.DISMISSING) {
+            event.getStatus().setPhase(ProcessState.DISMISSING);
+        } else {
+            ExecutionStatus newStatus = event.getStatus();
+            newStatus.setLastUpdated(new Date());
+            store.save(newStatus);
+        }
     }
 
     public ExecutionStatus getStatus(String executionId) {
@@ -132,10 +126,10 @@ public class ProcessStatusTracker implements ApplicationContextAware, ProcessLis
     public void cleanExpiredStatuses(long expirationThreshold) {
         Date date = new Date(expirationThreshold);
         Not completionTimenotNull = FF.not(FF.isNull(FF.property("completionTime")));
-        Filter completionTimeExpired = FF.after(FF.property("completionTime"), FF.literal(date));
+        Filter completionTimeExpired = FF.before(FF.property("completionTime"), FF.literal(date));
         Filter completionTimeFilter = FF.and(completionTimenotNull, completionTimeExpired);
         Not lastUpdatedNotNull = FF.not(FF.isNull(FF.property("lastUpdated")));
-        Filter lastUpdatedExpired = FF.after(FF.property("lastUpdated"), FF.literal(date));
+        Filter lastUpdatedExpired = FF.before(FF.property("lastUpdated"), FF.literal(date));
         Filter lastUpdatedFilter = FF.and(lastUpdatedNotNull, lastUpdatedExpired);
         And filter = FF.and(completionTimeFilter, lastUpdatedFilter);
         store.remove(filter);
@@ -143,6 +137,25 @@ public class ProcessStatusTracker implements ApplicationContextAware, ProcessLis
 
     public ProcessStatusStore getStore() {
         return store;
+    }
+
+    /**
+     * Removes the execution status for the given id, and returns its value, if found, or null, if
+     * not found
+     * 
+     * @param executionId
+     * @return
+     */
+    public ExecutionStatus remove(String executionId) {
+        return store.remove(executionId);
+
+    }
+
+    @Override
+    public int getPriority() {
+        // we want status tracking to be the last bit in the status tracking chain,
+        // to make sure that when a status changes, all other listener has done its job
+        return ExtensionPriority.LOWEST;
     }
 
 }

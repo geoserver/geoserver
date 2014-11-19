@@ -156,5 +156,33 @@ The response from the request is (with numbers rounded for clarity):
 
 For help in generating WPS requests you can use the built-in interactive :ref:`wps_request_builder`.
 
+Dismiss
+-------
 
+According to the WPS specification, an asynchronous process execution returns a back link to a status 
+location that the client can ping to get progress report about the process, and eventually retrieve
+its final results.
 
+In GeoServer this link is implemented as a pseudo-operation called ``GetExecutionStatus``, and the link
+has the following structure::
+
+    http://host:port/geoserver/ows?service=WPS&version=1.0.0&request=GetExecutionStatus&executionId=397e8cbd-7d51-48c5-ad72-b0fcbe7cfbdb
+
+The ``executionId`` identifies the running request, and can be used in a the ``Dismiss`` vendor
+operation in order to cancel the execution of the process:
+
+   http://host:port/geoserver/ows?service=WPS&version=1.0.0&request=Dismiss&executionId=397e8cbd-7d51-48c5-ad72-b0fcbe7cfbdb
+
+Upon receipt GeoServer will do its best to stop the running process, and subsequent calls to ``Dismiss``
+or ``GetExecutionStatus`` will report that the executionId is not known anymore.
+Internally, GeoServer will stop any process that attempts to report progress, and poison input and
+outputs to break the execution of the process, but the execution of processes that already got their
+inputs, and are not reporting their progress back, will continue until its natural end.  
+
+For example, let's consider the "geo:Buffer" process, possibly working against a very large input 
+GML geometry, to be fetched from another host. The process itself does a single call to a  JTS function,
+which cannot report progress. Here are three possible scenarios, depending on when the Dismiss operation is invoked:
+
+* Dismiss is invoked while the GML is being retrieved, in this case the execution will stop immediately
+* Dismiss is invoked while the process is doing the buffering, in this case, the execution will stop as soon as the buffering is completed
+* Dismiss is invoked while the output GML is being encoded, also in this case the execution will stop immediately 

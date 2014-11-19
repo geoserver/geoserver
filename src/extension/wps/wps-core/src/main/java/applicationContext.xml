@@ -72,14 +72,15 @@
         <constructor-arg index="1" ref="wpsService" />
         <constructor-arg index="2" value="1.0.0" />
         <constructor-arg index="3">
-		  <list>
-		    <value>GetCapabilities</value>
-		    <value>DescribeProcess</value>
-		    <value>Execute</value>
-            <value>GetExecutionStatus</value>
-            <value>GetExecutionResult</value>
-		  </list>
-		</constructor-arg>
+            <list>
+              <value>GetCapabilities</value>
+              <value>DescribeProcess</value>
+              <value>Execute</value>
+              <value>Dismiss</value>
+              <value>GetExecutionStatus</value>
+              <value>GetExecutionResult</value>
+            </list>
+        </constructor-arg>
     </bean>
 
     <!-- KVP Parsers -->
@@ -96,6 +97,7 @@
     <bean id="executeKvpRequestReader" class="org.geoserver.wps.kvp.ExecuteKvpRequestReader"/>
     <bean id="statusKvpRequestReader" class="org.geoserver.wps.kvp.GetExecutionStatusKvpRequestReader"/>
     <bean id="resultKvpRequestReader" class="org.geoserver.wps.kvp.GetExecutionResultKvpRequestReader"/>
+    <bean id="dismisssKvpRequestReader" class="org.geoserver.wps.kvp.DismissKvpRequestReader"/>
     
 
     <!-- XML Configuration -->

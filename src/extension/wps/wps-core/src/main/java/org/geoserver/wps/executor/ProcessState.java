@@ -20,14 +20,16 @@ public enum ProcessState {
      * Execution completed successfully, (full output encoding included)
      */
     SUCCEEDED(true, RUNNING),
+
     /**
-     * The process has been cancelled by the origina user or the admin
+     * The process is being cancelled by the original user that requested the process, or the admin
      */
-    CANCELLED(true, QUEUED, RUNNING),
+    DISMISSING(false, QUEUED, RUNNING),
+
     /**
      * The process failed during execution/output encoding
      */
-    FAILED(true, QUEUED, RUNNING);
+    FAILED(true, QUEUED, RUNNING, DISMISSING);
 
     private boolean executionCompleted;
 
@@ -55,6 +57,7 @@ public enum ProcessState {
      * @return
      */
     public boolean isValidSuccessor(ProcessState predecessor) {
-        return predecessors.contains(predecessor);
+        return predecessor == this || predecessors.contains(predecessor);
     }
+
 }

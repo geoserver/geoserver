@@ -8,6 +8,7 @@ package org.geoserver.wps;
 import static junit.framework.Assert.*;
 import static org.custommonkey.xmlunit.XMLAssert.*;
 import static org.geoserver.data.test.MockData.*;
+import static org.junit.Assert.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -17,7 +18,10 @@ import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -31,7 +35,15 @@ import org.custommonkey.xmlunit.exceptions.XpathException;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.SystemTestData.LayerProperty;
+import org.geoserver.ows.util.KvpUtils;
+import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.resource.Resource;
 import org.geoserver.test.RemoteOWSTestSupport;
+import org.geoserver.wps.executor.ExecutionStatus;
+import org.geoserver.wps.executor.ProcessState;
+import org.geoserver.wps.executor.ProcessStatusTracker;
+import org.geoserver.wps.resource.ProcessArtifactsStore;
+import org.geoserver.wps.resource.WPSResourceManager;
 import org.geotools.data.collection.ListFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.feature.FeatureCollection;
@@ -44,6 +56,7 @@ import org.geotools.process.ProcessException;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.xml.Parser;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opengis.feature.simple.SimpleFeatureType;
@@ -207,7 +220,7 @@ public class ExecuteTest extends WPSTestSupport {
         // System.out.println(response.getOutputStreamContent());
         assertEquals("application/wkt", response.getContentType());
         Geometry g = new WKTReader().read(response.getOutputStreamContent());
-        assertTrue(g instanceof Polygon);
+        Assert.assertTrue(g instanceof Polygon);
     }
     
     @Test
@@ -219,7 +232,7 @@ public class ExecuteTest extends WPSTestSupport {
         // System.out.println(response.getOutputStreamContent());
         assertEquals("application/wkt", response.getContentType());
         Geometry g = new WKTReader().read(response.getOutputStreamContent());
-        assertTrue(g instanceof Polygon);
+        Assert.assertTrue(g instanceof Polygon);
     }
 
     @Test
@@ -831,7 +844,7 @@ public class ExecuteTest extends WPSTestSupport {
         MockHttpServletResponse resp = postAsServletResponse(root(), xml);
         assertEquals("text/plain", resp.getContentType());
         // the result is inaccurate since the buffer is just a poor approximation of a circle
-        assertTrue(resp.getOutputStreamContent().matches("312\\..*"));
+        Assert.assertTrue(resp.getOutputStreamContent().matches("312\\..*"));
     }
     
     @Test
@@ -844,7 +857,7 @@ public class ExecuteTest extends WPSTestSupport {
         MockHttpServletResponse resp = getAsServletResponse(request);
         assertEquals("text/plain", resp.getContentType());
         // the result is inaccurate since the buffer is just a poor approximation of a circle
-        assertTrue(resp.getOutputStreamContent().matches("312\\..*"));
+        Assert.assertTrue(resp.getOutputStreamContent().matches("312\\..*"));
     }
     
     @Test
@@ -884,15 +897,6 @@ public class ExecuteTest extends WPSTestSupport {
         assertXpathExists("//wps:ProcessSucceeded", dom);
     }
 
-    private ListFeatureCollection collectionOfThings() {
-        SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
-        tb.add("name", String.class);
-        tb.add("location", Point.class, DefaultGeographicCRS.WGS84);
-        tb.setName("thing");
-        SimpleFeatureType featureType = tb.buildFeatureType();
-        ListFeatureCollection fc = new ListFeatureCollection(featureType);
-        return fc;
-    }
     
     @Test
     public void testStoredWithStatus() throws Exception {
@@ -1090,10 +1094,196 @@ public class ExecuteTest extends WPSTestSupport {
         // now schedule the exit and wait for it to exit
         MonkeyProcess.exit("x5", bombOutCollection(), true);
         Document dom = waitForProcessEnd(statusLocation, 60);
-        print(dom);
+        // print(dom);
         assertXpathExists("//wps:ProcessFailed", dom);
     }
     
+    @Test
+    public void testDismissDuringEncoding() throws Exception {
+        // submit asynch request with no updates
+        String statusLocation = submitMonkey("x3");
+        // grab the execution id
+        Map<String, Object> kvp = KvpUtils.parseQueryString(statusLocation);
+        String executionId = (String) kvp.get("executionId");
+
+        // make it progress until the end
+        MonkeyProcess.progress("x3", 100f, true);
+        Document dom = getAsDOM(statusLocation);
+        // print(dom);
+        assertXpathExists("//wps:ProcessStarted", dom);
+        assertXpathEvaluatesTo("50", "//wps:ProcessStarted/@percentCompleted", dom);
+
+        // have it return a collection that we can block
+        final AtomicBoolean returnFlag = new AtomicBoolean(false);
+        SimpleFeatureType featureType = buildSampleFeatureType();
+        ListFeatureCollection fc = new ListFeatureCollection(featureType) {
+            @Override
+            public SimpleFeatureIterator features() {
+                while (returnFlag.get() == false) {
+                    try {
+                        Thread.sleep(20);
+                    } catch (InterruptedException e) {
+                    }
+                }
+                return super.features();
+            }
+
+            @Override
+            protected Iterator openIterator() {
+                while (returnFlag.get() == false) {
+                    try {
+                        Thread.sleep(20);
+                    } catch (InterruptedException e) {
+                    }
+                }
+                return super.openIterator();
+            }
+
+        };
+        MonkeyProcess.exit("x3", fc, true);
+
+        // grab the status tracker
+        ProcessStatusTracker statusTracker = GeoServerExtensions.bean(ProcessStatusTracker.class,
+                applicationContext);
+
+
+        // now issue the dismiss, while the process is blocked trying to write out the collection
+        dom = getAsDOM("wps?service=WPS&version=1.0.0&request=Dismiss&executionId=" + executionId);
+        // print(dom);
+        assertXpathExists("//wps:ProcessFailed", dom);
+
+        // on the status tracker, the process is being dismissed
+        ExecutionStatus status = statusTracker.getStatus(executionId);
+        Assert.assertEquals(ProcessState.DISMISSING, status.getPhase());
+
+        // let it move on and wait for end
+        returnFlag.set(true);
+
+        // wait until the execution actually ends
+        while (status != null && status.getPhase() == ProcessState.DISMISSING) {
+            Thread.sleep(50);
+            status = statusTracker.getStatus(executionId);
+            if (status != null) {
+                // the status must switch from dismissing to plain gone
+                Assert.assertEquals(ProcessState.DISMISSING, status.getPhase());
+            }
+        }
+
+        // at this point also check there is no resource left
+        WPSResourceManager resources = GeoServerExtensions.bean(WPSResourceManager.class,
+                applicationContext);
+        ProcessArtifactsStore artifactsStore = resources.getArtifactsStore();
+        List<Resource> executionResources = artifactsStore.listExecutionResourcess();
+        for (Resource r : executionResources) {
+            assertNotEquals(executionId, r.name());
+        }
+    }
+
+    @Test
+    public void testDismissDuringExecution() throws Exception {
+        // submit asynch request with no updates
+        String statusLocation = submitMonkey("x3");
+        // grab the execution id
+        Map<String, Object> kvp = KvpUtils.parseQueryString(statusLocation);
+        String executionId = (String) kvp.get("executionId");
+
+        // make it progress and complete
+        MonkeyProcess.progress("x3", 10f, true);
+        Document dom = getAsDOM(statusLocation);
+        // print(dom);
+        assertXpathExists("//wps:ProcessStarted", dom);
+        assertXpathEvaluatesTo("6", "//wps:ProcessStarted/@percentCompleted", dom);
+
+        // grab the status tracker
+        ProcessStatusTracker statusTracker = GeoServerExtensions.bean(ProcessStatusTracker.class,
+                applicationContext);
+
+        // now issue a dismiss
+        dom = getAsDOM("wps?service=WPS&version=1.0.0&request=Dismiss&executionId=" + executionId);
+        print(dom);
+        assertXpathExists("//wps:ProcessFailed", dom);
+
+        // on the status tracker, the process is being dismissed
+        ExecutionStatus status = statusTracker.getStatus(executionId);
+        Assert.assertEquals(ProcessState.DISMISSING, status.getPhase());
+
+        // issue it again, we should be told the process does not exists
+        dom = getAsDOM("wps?service=WPS&version=1.0.0&request=Dismiss&executionId=" + executionId);
+        print(dom);
+        checkOws11Exception(dom);
+        // same goes when using the status url
+
+        // still being dismissed
+        status = statusTracker.getStatus(executionId);
+        Assert.assertEquals(ProcessState.DISMISSING, status.getPhase());
+        dom = getAsDOM(statusLocation);
+        checkOws11Exception(dom);
+
+        // make the process move forward so that it will notice the failure and bomb
+        MonkeyProcess.progress("x3", 50f, true);
+
+        // wait until the execution actually ends
+        while (status != null && status.getPhase() == ProcessState.DISMISSING) {
+            Thread.sleep(50);
+            status = statusTracker.getStatus(executionId);
+            if (status != null) {
+                // the status must switch from dismissing to plain gone
+                Assert.assertEquals(ProcessState.DISMISSING, status.getPhase());
+            }
+        }
+
+        // at this point also check there is no resource left
+        WPSResourceManager resources = GeoServerExtensions.bean(WPSResourceManager.class,
+                applicationContext);
+        ProcessArtifactsStore artifactsStore = resources.getArtifactsStore();
+        List<Resource> executionResources = artifactsStore.listExecutionResourcess();
+        for (Resource r : executionResources) {
+            assertNotEquals(executionId, r.name());
+        }
+    }
+
+    @Test
+    public void testDismissAfterCompletion() throws Exception {
+        // submit asynch request with no updates
+        String statusLocation = submitMonkey("x3");
+        // grab the execution id
+        Map<String, Object> kvp = KvpUtils.parseQueryString(statusLocation);
+        String executionId = (String) kvp.get("executionId");
+
+        // make it progress and complete
+        MonkeyProcess.exit("x3", collectionOfThings(), true);
+        Document dom = waitForProcessEnd(statusLocation, 60);
+        // print(dom);
+        assertXpathExists("//wps:ProcessSucceeded", dom);
+
+        // grab the status tracker, check the process succeeded
+        ProcessStatusTracker statusTracker = GeoServerExtensions.bean(ProcessStatusTracker.class,
+                applicationContext);
+        ExecutionStatus status = statusTracker.getStatus(executionId);
+        Assert.assertEquals(ProcessState.SUCCEEDED, status.getPhase());
+
+        // grab the resource manager, the output collection is also there
+        WPSResourceManager resources = GeoServerExtensions.bean(WPSResourceManager.class,
+                applicationContext);
+        Resource resource = resources.getStoredResponse(executionId);
+        Assert.assertEquals(Resource.Type.RESOURCE, resource.getType());
+
+        // now dismiss it
+        dom = getAsDOM("wps?service=WPS&version=1.0.0&request=Dismiss&executionId=" + executionId);
+        assertXpathExists("//wps:ProcessFailed", dom);
+
+        // on the status tracker, the process is now gone
+        status = statusTracker.getStatus(executionId);
+        Assert.assertNull(status);
+
+        // and there is no trace of its resources either
+        ProcessArtifactsStore artifactsStore = resources.getArtifactsStore();
+        List<Resource> executionResources = artifactsStore.listExecutionResourcess();
+        for (Resource r : executionResources) {
+            assertNotEquals(executionId, r.name());
+        }
+    }
+
     @Test
     public void testConcurrentRequests() throws Exception {
         // submit first
@@ -1121,8 +1311,8 @@ public class ExecuteTest extends WPSTestSupport {
 
     @Test
     public void testInlineGetFeatureNameClash() throws Exception {
-        assertNotNull(getCatalog().getLayerByName("foo:PrimitiveGeoFeature"));
-        assertNotNull(getCatalog().getLayerByName("sf:PrimitiveGeoFeature"));
+        Assert.assertNotNull(getCatalog().getLayerByName("foo:PrimitiveGeoFeature"));
+        Assert.assertNotNull(getCatalog().getLayerByName("sf:PrimitiveGeoFeature"));
 
         String request = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
                 "<wps:Execute version=\"1.0.0\" service=\"WPS\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.opengis.net/wps/1.0.0\" xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:wps=\"http://www.opengis.net/wps/1.0.0\" xmlns:ows=\"http://www.opengis.net/ows/1.1\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:wcs=\"http://www.opengis.net/wcs/1.1.1\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xsi:schemaLocation=\"http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd\">\n" + 
@@ -1172,13 +1362,23 @@ public class ExecuteTest extends WPSTestSupport {
         return statusLocation;
     }
     
-    
-    private ListFeatureCollection bombOutCollection() {
+    private ListFeatureCollection collectionOfThings() {
+        SimpleFeatureType featureType = buildSampleFeatureType();
+        ListFeatureCollection fc = new ListFeatureCollection(featureType);
+        return fc;
+    }
+
+    private SimpleFeatureType buildSampleFeatureType() {
         SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
         tb.add("name", String.class);
         tb.add("location", Point.class, DefaultGeographicCRS.WGS84);
-        tb.setName("bomb");
+        tb.setName("thing");
         SimpleFeatureType featureType = tb.buildFeatureType();
+        return featureType;
+    }
+
+    private ListFeatureCollection bombOutCollection() {
+        SimpleFeatureType featureType = buildSampleFeatureType();
         ListFeatureCollection fc = new ListFeatureCollection(featureType) {
             @Override
             public SimpleFeatureIterator features() {
@@ -1230,16 +1430,16 @@ public class ExecuteTest extends WPSTestSupport {
         
         MockHttpServletResponse resp = postAsServletResponse(root(), request);
         ReferencedEnvelope re = toEnvelope(resp.getOutputStreamContent());
-        assertEquals(-91.516129, re.getMinX(), 0.001);
-        assertEquals(36.986771, re.getMinY(), 0.001);
-        assertEquals(-87.507889, re.getMaxX(), 0.001);
-        assertEquals(42.509361, re.getMaxY(), 0.001);
+        Assert.assertEquals(-91.516129, re.getMinX(), 0.001);
+        Assert.assertEquals(36.986771, re.getMinY(), 0.001);
+        Assert.assertEquals(-87.507889, re.getMaxX(), 0.001);
+        Assert.assertEquals(42.509361, re.getMaxY(), 0.001);
     }
     
     ReferencedEnvelope toEnvelope(String xml) throws Exception {
         Parser p = new Parser(new OWSConfiguration());
         Object parsed = p.parse(new ByteArrayInputStream(xml.getBytes()));
-        assertTrue(parsed instanceof BoundingBoxType);
+        Assert.assertTrue(parsed instanceof BoundingBoxType);
         BoundingBoxType box = (BoundingBoxType) parsed;
         
         ReferencedEnvelope re;
@@ -1271,7 +1471,7 @@ public class ExecuteTest extends WPSTestSupport {
         }
         while((entry = zis.getNextEntry()) != null) {
             final String name = entry.getName();
-            assertTrue("Missing " + name, names.contains(name));
+            Assert.assertTrue("Missing " + name, names.contains(name));
             names.remove(name);
             zis.closeEntry();
         }

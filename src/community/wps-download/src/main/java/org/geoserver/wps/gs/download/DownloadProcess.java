@@ -229,8 +229,8 @@ public class DownloadProcess implements GSProcess {
                 LOGGER.log(Level.FINE, "Preparing the result");
             }
             // build output zip
-            final File result = resourceManager.getOutputFile(resourceManager.getExecutionId(true),
-                    resourceInfo.getName() + ".zip");
+            final File result = resourceManager.getOutputResource(
+                    resourceManager.getExecutionId(true), resourceInfo.getName() + ".zip").file();
 
             FileOutputStream os1 = null;
             try {

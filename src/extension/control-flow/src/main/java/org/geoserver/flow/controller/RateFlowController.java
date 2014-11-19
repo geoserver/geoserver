@@ -184,7 +184,7 @@ public class RateFlowController implements FlowController {
         response.addHeader(X_RATE_LIMIT_CONTEXT, matcher.toString());
         response.addIntHeader(X_RATE_LIMIT_LIMIT, maxRequests);
         response.addIntHeader(X_RATE_LIMIT_REMAINING, Math.max(residual, 0));
-        response.addIntHeader(X_RATE_LIMIT_RESET, (int) ((currPeriodId + 1) * timeInterval));
+        response.addDateHeader(X_RATE_LIMIT_RESET, ((currPeriodId + 1) * timeInterval));
         response.addHeader("X-Rate-Limit-Action", action);
         // counter cleanup handling
         if (LOGGER.isLoggable(Level.FINE)) {

@@ -7,7 +7,7 @@ The YSLD Cookbook is a collection of YSLD "recipes" for creating various types o
 
 The YSLD Cookbook is divided into four sections: the first three for each of the vector types (points, lines, and polygons) and the fourth section for rasters. Each example in every section contains a screenshot showing actual GeoServer WMS output, a snippet of the YSLD code for reference, and a link to download the full YSLD.
 
-Each section uses data created especially for the YSLD Cookbook, with shapefiles for vector data and GeoTIFFs for raster data. The projection for data is EPSG:4326. All files can be easily loaded into :ref:`webmaps.composer <GeoServer Composer>` in order to recreate the examples. 
+Each section uses data created especially for the YSLD Cookbook, with shapefiles for vector data and GeoTIFFs for raster data. The projection for data is EPSG:4326. All files can be easily loaded into :ref:`GeoServer Composer<webmaps.composer>` in order to recreate the examples. 
 
 .. list-table::
    :widths: 20 80

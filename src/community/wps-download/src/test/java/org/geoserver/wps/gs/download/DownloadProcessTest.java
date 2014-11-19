@@ -22,10 +22,12 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.util.IOUtils;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.wcs.CoverageCleanerCallback;
+import org.geoserver.wps.ProcessEvent;
 import org.geoserver.wps.WPSTestSupport;
 import org.geoserver.wps.executor.ExecutionStatus;
-import org.geoserver.wps.executor.ExecutionStatus.ProcessState;
+import org.geoserver.wps.executor.ProcessState;
 import org.geoserver.wps.ppio.WFSPPIO;
 import org.geoserver.wps.ppio.ZipArchivePPIO;
 import org.geoserver.wps.resource.WPSResourceManager;
@@ -33,6 +35,7 @@ import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.shapefile.ShapefileDataStore;
 import org.geotools.data.simple.SimpleFeatureCollection;
+import org.geotools.feature.NameImpl;
 import org.geotools.filter.text.cql2.CQL;
 import org.geotools.gce.geotiff.GeoTiffReader;
 import org.geotools.geojson.feature.FeatureJSON;
@@ -148,7 +151,7 @@ public class DownloadProcessTest extends WPSTestSupport {
         // Estimator process for checking limits
         DownloadEstimatorProcess limits = new DownloadEstimatorProcess(
                 new StaticDownloadServiceConfiguration(), getGeoServer());
-        final WPSResourceManager resourceManager = new WPSResourceManager();
+        final WPSResourceManager resourceManager = getResourceManager();
         // Creates the new process for the download
         DownloadProcess downloadProcess = new DownloadProcess(getGeoServer(), limits,
                 resourceManager);
@@ -188,7 +191,7 @@ public class DownloadProcessTest extends WPSTestSupport {
         // Estimator process for checking limits
         DownloadEstimatorProcess limits = new DownloadEstimatorProcess(
                 new StaticDownloadServiceConfiguration(), getGeoServer());
-        final WPSResourceManager resourceManager = new WPSResourceManager();
+        final WPSResourceManager resourceManager = getResourceManager();
         // Creates the new process for the download
         DownloadProcess downloadProcess = new DownloadProcess(getGeoServer(), limits,
                 resourceManager);
@@ -244,7 +247,7 @@ public class DownloadProcessTest extends WPSTestSupport {
         // Estimator process for checking limits
         DownloadEstimatorProcess limits = new DownloadEstimatorProcess(
                 new StaticDownloadServiceConfiguration(), getGeoServer());
-        final WPSResourceManager resourceManager = new WPSResourceManager();
+        final WPSResourceManager resourceManager = getResourceManager();
         // Creates the new process for the download
         DownloadProcess downloadProcess = new DownloadProcess(getGeoServer(), limits,
                 resourceManager);
@@ -371,7 +374,7 @@ public class DownloadProcessTest extends WPSTestSupport {
         // Estimator process for checking limits
         DownloadEstimatorProcess limits = new DownloadEstimatorProcess(
                 new StaticDownloadServiceConfiguration(), getGeoServer());
-        final WPSResourceManager resourceManager = new WPSResourceManager();
+        final WPSResourceManager resourceManager = getResourceManager();
         // Creates the new process for the download
         DownloadProcess downloadProcess = new DownloadProcess(getGeoServer(), limits,
                 resourceManager);
@@ -412,7 +415,7 @@ public class DownloadProcessTest extends WPSTestSupport {
         // Estimator process for checking limits
         DownloadEstimatorProcess limits = new DownloadEstimatorProcess(
                 new StaticDownloadServiceConfiguration(), getGeoServer());
-        final WPSResourceManager resourceManager = new WPSResourceManager();
+        final WPSResourceManager resourceManager = getResourceManager();
         // Creates the new process for the download
         DownloadProcess downloadProcess = new DownloadProcess(getGeoServer(), limits,
                 resourceManager);
@@ -525,7 +528,7 @@ public class DownloadProcessTest extends WPSTestSupport {
                 new StaticDownloadServiceConfiguration(), getGeoServer());
         ZipArchivePPIO ppio = new ZipArchivePPIO(
                 DownloadServiceConfiguration.DEFAULT_COMPRESSION_LEVEL);
-        final WPSResourceManager resourceManager = new WPSResourceManager();
+        final WPSResourceManager resourceManager = getResourceManager();
         // Creates the new process for the download
         DownloadProcess downloadProcess = new DownloadProcess(getGeoServer(), limits,
                 resourceManager);
@@ -556,7 +559,7 @@ public class DownloadProcessTest extends WPSTestSupport {
 
         final File tempDir = new File(currentDirectory, Long.toString(System.nanoTime()));
         Assert.assertTrue(tempDir.mkdir());
-        File tempFile = (File) decode(new FileInputStream(tempZipFile), tempDir);
+        File tempFile = decode(new FileInputStream(tempZipFile), tempDir);
         Assert.assertNotNull(tempFile);
         IOUtils.delete(tempFile);
     }
@@ -576,7 +579,7 @@ public class DownloadProcessTest extends WPSTestSupport {
                         DownloadServiceConfiguration.NO_LIMIT,
                         DownloadServiceConfiguration.DEFAULT_COMPRESSION_LEVEL)), getGeoServer());
 
-        final WPSResourceManager resourceManager = new WPSResourceManager();
+        final WPSResourceManager resourceManager = getResourceManager();
         // Creates the new process for the download
         DownloadProcess downloadProcess = new DownloadProcess(getGeoServer(), limits,
                 resourceManager);
@@ -619,7 +622,7 @@ public class DownloadProcessTest extends WPSTestSupport {
                         DownloadServiceConfiguration.NO_LIMIT, 10, 10,
                         DownloadServiceConfiguration.DEFAULT_COMPRESSION_LEVEL)), getGeoServer());
 
-        final WPSResourceManager resourceManager = new WPSResourceManager();
+        final WPSResourceManager resourceManager = getResourceManager();
         // Creates the new process for the download
         DownloadProcess downloadProcess = new DownloadProcess(getGeoServer(), limits,
                 resourceManager);
@@ -662,7 +665,7 @@ public class DownloadProcessTest extends WPSTestSupport {
                         DownloadServiceConfiguration.NO_LIMIT,
                         DownloadServiceConfiguration.NO_LIMIT, 10,
                         DownloadServiceConfiguration.DEFAULT_COMPRESSION_LEVEL)), getGeoServer());
-        final WPSResourceManager resourceManager = new WPSResourceManager();
+        final WPSResourceManager resourceManager = getResourceManager();
         // Creates the new process for the download
         DownloadProcess downloadProcess = new DownloadProcess(getGeoServer(), limits,
                 resourceManager);
@@ -686,6 +689,10 @@ public class DownloadProcessTest extends WPSTestSupport {
         }
     }
 
+    private WPSResourceManager getResourceManager() {
+        return GeoServerExtensions.bean(WPSResourceManager.class);
+    }
+
     /**
      * Test download physical limit for raster data. It should throw an exception
      * 
@@ -693,12 +700,13 @@ public class DownloadProcessTest extends WPSTestSupport {
      */
     @Test
     public void testDownloadPhysicalLimitsRaster() throws Exception {
-        ProcessListener listener = new ProcessListener(new ExecutionStatus(null, "0",
-                ProcessState.RUNNING, 0, null));
+        final WPSResourceManager resourceManager = getResourceManager();
+        ProcessListener listener = new ProcessListener(new ExecutionStatus(new NameImpl("gs",
+                "DownloadEstimator"), resourceManager.getExecutionId(false), false));
         // Estimator process for checking limits
         DownloadEstimatorProcess limits = new DownloadEstimatorProcess(
                 new StaticDownloadServiceConfiguration(), getGeoServer());
-        final WPSResourceManager resourceManager = new WPSResourceManager();
+
         // Creates the new process for the download
         DownloadProcess downloadProcess = new DownloadProcess(getGeoServer(), limits,
                 resourceManager);
@@ -735,8 +743,9 @@ public class DownloadProcessTest extends WPSTestSupport {
      */
     @Test
     public void testDownloadPhysicalLimitsVector() throws Exception {
-        ProcessListener listener = new ProcessListener(new ExecutionStatus(null, "0",
-                ProcessState.RUNNING, 0, null));
+        final WPSResourceManager resourceManager = getResourceManager();
+        ProcessListener listener = new ProcessListener(new ExecutionStatus(new NameImpl("gs",
+                "DownloadEstimator"), resourceManager.getExecutionId(false), false));
         // Estimator process for checking limits
         DownloadEstimatorProcess limits = new DownloadEstimatorProcess(
                 new StaticDownloadServiceConfiguration(new DownloadServiceConfiguration(
@@ -745,7 +754,7 @@ public class DownloadProcessTest extends WPSTestSupport {
                         DownloadServiceConfiguration.NO_LIMIT, 1,
                         DownloadServiceConfiguration.DEFAULT_COMPRESSION_LEVEL)), getGeoServer());
 
-        final WPSResourceManager resourceManager = new WPSResourceManager();
+
         // Creates the new process for the download
         DownloadProcess downloadProcess = new DownloadProcess(getGeoServer(), limits,
                 resourceManager);
@@ -789,7 +798,7 @@ public class DownloadProcessTest extends WPSTestSupport {
         // Estimator process for checking limits
         DownloadEstimatorProcess limits = new DownloadEstimatorProcess(
                 new StaticDownloadServiceConfiguration(), getGeoServer());
-        final WPSResourceManager resourceManager = new WPSResourceManager();
+        final WPSResourceManager resourceManager = getResourceManager();
         // Creates the new process for the download
         DownloadProcess downloadProcess = new DownloadProcess(getGeoServer(), limits,
                 resourceManager);

@@ -6,10 +6,12 @@
 package org.geoserver.wps;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.logging.Logger;
 
 import org.geoserver.config.ConfigurationListenerAdapter;
 import org.geoserver.config.GeoServer;
@@ -25,6 +27,7 @@ import org.geoserver.wps.resource.DefaultProcessArtifactsStore;
 import org.geoserver.wps.resource.WPSResourceManager;
 import org.geotools.process.ProcessFactory;
 import org.geotools.process.Processors;
+import org.geotools.util.logging.Logging;
 
 /**
  * Initializes WPS functionality from configuration.
@@ -32,6 +35,8 @@ import org.geotools.process.Processors;
  * @author Andrea Aime, GeoSolutions
  */
 public class WPSInitializer implements GeoServerInitializer {
+
+    static final Logger LOGGER = Logging.getLogger(WPSInitializer.class);
 
     WPSExecutionManager executionManager;
 
@@ -131,7 +136,15 @@ public class WPSInitializer implements GeoServerInitializer {
                 resourceStore = new FileSystemResourceStore(storage);
             }
             // use a clustering ready lock provider
-            resourceStore.setLockProvider(new FileLockProvider());
+            try {
+                File lockDirectory = resourceLoader.findOrCreateDirectory("tmp");
+                resourceStore.setLockProvider(new FileLockProvider(lockDirectory));
+            } catch (IOException e) {
+                throw new RuntimeException(
+                        "Unexpected failure searching for tmp directory inside geoserver data dir",
+                        e);
+            }
+            
 
             DefaultProcessArtifactsStore artifactsStore = (DefaultProcessArtifactsStore) resources
                     .getArtifactsStore();

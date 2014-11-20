@@ -38,6 +38,7 @@ import org.geotools.util.DateRange;
  * @author Cedric Briancon
  * @author Martin Desruisseaux
  * @author Simone Giannecchini, GeoSolutions SAS
+ * @author Jonathan Meyer, Applied Information Sciences, jon@gisjedi.com
  * @version $Id$
  */
 public class TimeKvpParser extends KvpParser {    
@@ -78,6 +79,11 @@ public class TimeKvpParser extends KvpParser {
      */
     static final TimeZone UTC_TZ = TimeZone.getTimeZone("UTC");
 
+    /**
+     * pattern used to match back parameter
+     */
+	private static final Pattern pattern = Pattern.compile("(back)(\\d+)([hdw])");
+    
     /**
      * Amount of milliseconds in a day.
      */
@@ -280,25 +286,66 @@ public class TimeKvpParser extends KvpParser {
     }
 
     /**
-     * Parses date given in parameter according the ISO-8601 standard. This parameter
-     * should follow a syntax defined in the {@link #PATTERNS} array to be validated.
+     * Parses date given in parameter according the ISO-8601 standard. This parameter should follow 
+     * a syntax defined in the {@link #PATTERNS} array to be validated.
      *
      * @param value The date to parse.
      * @return A date found in the request.
      * @throws ParseException if the string can not be parsed.
      */
     static Object getFuzzyDate(final String value) throws ParseException {
+        String computedValue = value;
 
         // special handling for current keyword (we accept both wms and wcs ways)
-        if(value.equalsIgnoreCase("current") || value.equalsIgnoreCase("now")) {
+        if (computedValue.equalsIgnoreCase("current") || computedValue.equalsIgnoreCase("now")) {
             return null;
+        }
+
+        // Accept new "present" keyword, which actually fills in present time as now should have
+        if (computedValue.equalsIgnoreCase("present")) {
+            Calendar now = Calendar.getInstance();
+            now.set(Calendar.MILLISECOND, 0);
+            computedValue = FormatAndPrecision.MILLISECOND.getFormat().format(now.getTime());
+        }
+
+        /*
+         * Accept new "back" keyword, which allows use of time relative to now. 
+         * Expects parameter of the following format: 
+         * BACK1H 
+         * BACK2D 
+         * BACK30W
+         * supports intervals of hour (H), day (D) and week (W) duration of interval
+         * must be at least 1 digit
+         */
+        if (computedValue.toLowerCase().startsWith("back")) {
+            Matcher m = pattern.matcher(computedValue.toLowerCase());
+
+            while (m.find()) {
+                Calendar today = Calendar.getInstance();
+                today.set(Calendar.MILLISECOND, 0);
+
+                String interval = m.group(3);
+                int duration = Integer.parseInt(m.group(2));
+
+                if (interval.equals("h")) {
+                    today.add(Calendar.HOUR, -1 * duration);
+                } else if (interval.equals("d")) {
+                    today.add(Calendar.DAY_OF_YEAR, -1 * duration);
+                } else if (interval.equals("w")) {
+                    today.add(Calendar.DAY_OF_YEAR, -7 * duration);
+                } else {
+                    throw new ParseException("Invalid TIME back format: " + value, 0);
+                }
+
+                computedValue = FormatAndPrecision.MILLISECOND.getFormat().format(today.getTime());
+            }
         }
 
         for (FormatAndPrecision f : FormatAndPrecision.values()) {
             ParsePosition pos = new ParsePosition(0);
-            Date time = f.getFormat().parse(value, pos);
-            if (pos.getIndex() == value.length()) {
-                DateRange range  = f.expand(time);
+            Date time = f.getFormat().parse(computedValue, pos);
+            if (pos.getIndex() == computedValue.length()) {
+                DateRange range = f.expand(time);
                 if (range.getMinValue().equals(range.getMaxValue())) {
                     return range.getMinValue();
                 } else {
@@ -309,7 +356,7 @@ public class TimeKvpParser extends KvpParser {
 
         throw new ParseException("Invalid date: " + value, 0);
     }
-    
+
     /**
      * Parses the increment part of a period and returns it in milliseconds.
      *

@@ -26,6 +26,7 @@ import org.geotools.util.DateRange;
  * 
  * @author Cedric Briancon
  * @author Simone Giannecchini, GeoSolutions SAS
+ * @author Jonathan Meyer, Applied Information Sciences, jon@gisjedi.com
  */
 public class TimeKvpParserTest extends TestCase {
     /**
@@ -34,6 +35,10 @@ public class TimeKvpParserTest extends TestCase {
     private final static String PERIOD = "2007-01-01T12Z/2007-01-31T12Z/P1DT12H";
     
     private final static String CONTINUOUS_PERIOD = "2007-01-01T12Z/2007-01-31T12Z";
+    
+    private final static String CONTINUOUS_RELATIVE_PERIOD_H = "BACK2H/PRESENT";
+    private final static String CONTINUOUS_RELATIVE_PERIOD_D = "BACK10D/PRESENT";
+    private final static String CONTINUOUS_RELATIVE_PERIOD_W = "BACK400W/PRESENT";
     
     /**
      * Format of dates.
@@ -200,6 +205,49 @@ public class TimeKvpParserTest extends TestCase {
         end.setTime(end.getTime() - 1);
         assertEquals(end, range.getMaxValue());
     }
+	
+	public void testContinuousRelativeInterval() throws ParseException {
+		TimeKvpParser timeKvpParser = new  TimeKvpParser("TIME");
+		Calendar back = Calendar.getInstance();
+		Calendar now = Calendar.getInstance();
+			
+        List l = new ArrayList((Collection)  timeKvpParser.parse(CONTINUOUS_RELATIVE_PERIOD_H));
+        // Verify that the list contains at least one element.
+        now.set(Calendar.MILLISECOND, 0);
+        back.set(Calendar.MILLISECOND, 0);
+        back.add(Calendar.HOUR, -2);
+        assertFalse(l.isEmpty());
+        assertTrue(l.get(0) instanceof DateRange);
+        DateRange range=(DateRange) l.get(0);
+        assertEquals(back.getTime(), range.getMinValue());
+        assertEquals(now.getTime(), range.getMaxValue());
+        
+        back = Calendar.getInstance();
+        now = Calendar.getInstance();
+        l = new ArrayList((Collection)  timeKvpParser.parse(CONTINUOUS_RELATIVE_PERIOD_D));
+        // Verify that the list contains at least one element.
+        now.set(Calendar.MILLISECOND, 0);
+        back.set(Calendar.MILLISECOND, 0);
+        back.add(Calendar.DAY_OF_YEAR, -10);
+        assertFalse(l.isEmpty());
+        assertTrue(l.get(0) instanceof DateRange);
+        range=(DateRange) l.get(0);
+        assertEquals(back.getTime(), range.getMinValue());
+        assertEquals(now.getTime(), range.getMaxValue());
+        
+        back = Calendar.getInstance();
+        now = Calendar.getInstance();
+        l = new ArrayList((Collection)  timeKvpParser.parse(CONTINUOUS_RELATIVE_PERIOD_W));
+        // Verify that the list contains at least one element.
+        now.set(Calendar.MILLISECOND, 0);
+        back.set(Calendar.MILLISECOND, 0);
+        back.add(Calendar.DAY_OF_YEAR, -400 * 7);
+        assertFalse(l.isEmpty());
+        assertTrue(l.get(0) instanceof DateRange);
+        range=(DateRange) l.get(0);
+        assertEquals(back.getTime(), range.getMinValue());
+        assertEquals(now.getTime(), range.getMaxValue());
+	}
     
     public void testMixedValues() throws ParseException {
         TimeKvpParser timeKvpParser = new TimeKvpParser("TIME");
@@ -311,4 +359,3 @@ public class TimeKvpParserTest extends TestCase {
     	assertEquals("Range " + range + " should have end", expectedEnd, range.getMaxValue());
     }
 }
-

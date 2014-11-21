@@ -28,6 +28,7 @@ public class GZIPResponseWrapper extends HttpServletResponseWrapper {
     protected Set formatsToCompress;
     protected String requestedURL;
     protected Logger logger = org.geotools.util.logging.Logging.getLogger("org.geoserver.filters");
+    private int contentLength = -1;
 
     public GZIPResponseWrapper(HttpServletResponse response, Set toCompress, String url) {
         super(response);
@@ -38,9 +39,68 @@ public class GZIPResponseWrapper extends HttpServletResponseWrapper {
     }
 
     protected AlternativesResponseStream createOutputStream() throws IOException {
-        return new AlternativesResponseStream(origResponse, formatsToCompress);
+        return new AlternativesResponseStream(origResponse, formatsToCompress, contentLength);
     }
 
+    
+    
+    
+    /**
+     * The default behavior of this method is to return setHeader(String name, String value)
+     * on the wrapped response object.
+     */
+    public void setHeader(String name, String value) {
+        if(name.equalsIgnoreCase("Content-Length")) {
+            try {
+                contentLength = Integer.parseInt(value);
+            } catch(NumberFormatException e) {
+                super.setHeader(name, value);
+            }
+        } else {
+            super.setHeader(name, value);
+        }
+    }
+    
+    /**
+     * The default behavior of this method is to return addHeader(String name, String value)
+     * on the wrapped response object.
+     */
+     public void addHeader(String name, String value) {
+         if(name.equalsIgnoreCase("Content-Length")) {
+             try {
+                 contentLength = Integer.parseInt(value);
+             } catch(NumberFormatException e) {
+                 super.addHeader(name, value);
+             }
+         } else {
+             super.addHeader(name, value);
+         }
+    }
+    
+    /**
+     * The default behavior of this method is to call setIntHeader(String name, int value)
+     * on the wrapped response object.
+     */
+    public void setIntHeader(String name, int value) {
+        if(name.equalsIgnoreCase("Content-Length")) {
+            contentLength = value;
+        } else {
+            super.setIntHeader(name, value);
+        }
+    }
+    
+    /**
+     * The default behavior of this method is to call addIntHeader(String name, int value)
+     * on the wrapped response object.
+     */
+    public void addIntHeader(String name, int value) {
+        if(name.equalsIgnoreCase("Content-Length")) {
+            contentLength = value;
+        } else {
+            super.addIntHeader(name, value);
+        }
+    }
+    
     public void setContentType(String type){
 //        if (stream != null && stream.isDirty()){
 //            logger.warning("Setting mimetype after acquiring stream! was:" +
@@ -94,5 +154,7 @@ public class GZIPResponseWrapper extends HttpServletResponseWrapper {
         return (writer);
     }
 
-    public void setContentLength(int length) {}
+    public void setContentLength(int length) {
+        this.contentLength = length;
+    }
 }

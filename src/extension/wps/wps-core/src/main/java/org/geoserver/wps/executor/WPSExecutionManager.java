@@ -37,10 +37,10 @@ import org.geoserver.wps.xml.WPSConfiguration;
 import org.geotools.data.Parameter;
 import org.geotools.process.ProcessException;
 import org.geotools.process.ProcessFactory;
-import org.geotools.util.NullProgressListener;
 import org.geotools.util.SubProgressListener;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.type.Name;
+import org.opengis.util.ProgressListener;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -128,19 +128,23 @@ public class WPSExecutionManager implements ApplicationContextAware,
      * threads starvation
      * 
      * @param request
+     * @param listener
      * @return
      */
-    Map<String, Object> submitChained(ExecuteRequest request) {
+    Map<String, Object> submitChained(ExecuteRequest request, ProgressListener listener) {
         Name processName = request.getProcessName();
         ProcessManager processManager = getProcessManager(processName);
         String executionId = resourceManager.getExecutionId(true);
-        Map<String, Object> inputs = request.getProcessInputs(this);
-        // TODO: we might want the LazyInputMap to pass us a listener, and chain down
-        // the progress of the input processes, to get more details, as a deeply chained
-        // process set might have most of its processing time spent in the "input" parsing
-        // of the main process
-        NullProgressListener listener = new NullProgressListener();
-        return processManager.submitChained(executionId, processName, inputs, listener);
+        LazyInputMap inputs = request.getProcessInputs(this);
+        int inputsLongSteps = inputs.longStepCount();
+        int longSteps = inputsLongSteps + 1;
+        float longStepPercentage = longSteps;
+        float inputPercentage = inputsLongSteps * longStepPercentage;
+        float executionPercentage = 100 - inputPercentage;
+        inputs.setListener(new SubProgressListener(listener, inputPercentage));
+        ProgressListener executionListener = new SubProgressListener(listener, inputPercentage,
+                executionPercentage);
+        return processManager.submitChained(executionId, processName, inputs, executionListener);
     }
 
     /**
@@ -332,8 +336,14 @@ public class WPSExecutionManager implements ApplicationContextAware,
             // prepare the lazy input map to report progress (for simple inputs the parse
             // already happened, but the output response is yet to be encoded, so we give
             // that a bit more in terms of percentage)
-            float inputPercentage = inputs.longParse() ? 33 : 1;
-            float outputPercentage = hasComplexOutputs() ? 33 : 3;
+            int inputsLongSteps = inputs.longStepCount();
+            int longSteps = inputsLongSteps + 1;
+            if (hasComplexOutputs()) {
+                longSteps++;
+            }
+            float longStepPercentage = 98f / longSteps;
+            float inputPercentage = 1 + inputsLongSteps * longStepPercentage;
+            float outputPercentage = (hasComplexOutputs() ? longStepPercentage : 0) + 1;
             float executionPercentage = 100 - inputPercentage - outputPercentage;
 
             // have the input map give us progress report

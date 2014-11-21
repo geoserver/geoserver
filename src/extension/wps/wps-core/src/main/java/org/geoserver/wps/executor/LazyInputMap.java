@@ -14,6 +14,7 @@ import java.util.Set;
 import org.geoserver.wps.WPSException;
 import org.geotools.util.NullProgressListener;
 import org.geotools.util.SimpleInternationalString;
+import org.geotools.util.SubProgressListener;
 import org.opengis.util.ProgressListener;
 
 /**
@@ -51,41 +52,34 @@ class LazyInputMap extends AbstractMap<String, Object> {
         parsed = true;
 
         // count long parses
-        int longParses = 0;
-        for (InputProvider provider: providers.values()) {
-            if(provider.longParse()) {
-                longParses++;
-            }
+        int totalSteps = 0;
+        for (InputProvider provider : providers.values()) {
+            totalSteps = provider.longStepCount();
         }
-        float fastParseStep, longParseStep;
-        if(longParses > 0) {
-            fastParseStep = 1;
-            longParseStep = (100f - (providers.size() - longParses)) / longParses;
-        } else {
-            fastParseStep = 100f / providers.size();
-            longParseStep = 0;
-        }
-        
+
         listener.started();
-        int progress = 0;
+        float stepsSoFar = 0;
         for (InputProvider provider : providers.values()) {
             listener.setTask(new SimpleInternationalString("Retrieving/parsing process input: "
                     + provider.getInputId()));
             try {
                 // force parsing
-                Object value = provider.getValue();
+                float providerLongSteps = provider.longStepCount();
+                ProgressListener subListener;
+                if (providerLongSteps > 0) {
+                    subListener = new SubProgressListener(listener,
+                            (stepsSoFar / totalSteps) * 100, (providerLongSteps / totalSteps) * 100);
+                } else {
+                    subListener = new NullProgressListener();
+                }
+                totalSteps += providerLongSteps;
+                Object value = provider.getValue(subListener);
                 values.put(provider.getInputId(), value);
             } catch (Exception e) {
                 listener.exceptionOccurred(e);
                 throw new WPSException("Failed to retrieve value for input "
                         + provider.getInputId(), e);
             }
-            if (provider.longParse()) {
-                progress += longParseStep;
-            } else {
-                progress += fastParseStep;
-            }
-            listener.progress(progress);
         }
     }
 
@@ -98,13 +92,12 @@ class LazyInputMap extends AbstractMap<String, Object> {
         return result;
     }
     
-    public boolean longParse() {
+    public int longStepCount() {
+        int count = 0;
         for (InputProvider provider: providers.values()) {
-            if(provider.longParse()) {
-                return true;
-            }
+            count += provider.longStepCount();
         }
-        return false;
+        return count;
     }
 
     public class DeferredEntry implements Entry<String, Object> {

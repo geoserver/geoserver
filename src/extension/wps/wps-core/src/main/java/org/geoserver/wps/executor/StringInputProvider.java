@@ -5,6 +5,8 @@
  */
 package org.geoserver.wps.executor;
 
+import org.opengis.util.ProgressListener;
+
 /**
  * A input provider for static string data
  * 
@@ -22,7 +24,7 @@ public class StringInputProvider implements InputProvider {
     }
 
     @Override
-    public Object getValue() throws Exception {
+    public Object getValue(ProgressListener listener) throws Exception {
         return value;
     }
 
@@ -37,8 +39,8 @@ public class StringInputProvider implements InputProvider {
     }
 
     @Override
-    public boolean longParse() {
-        return false;
+    public int longStepCount() {
+        return 0;
     }
 
 }

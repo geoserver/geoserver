@@ -1,12 +1,11 @@
 package org.geoserver.geopkg.wps.gs;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.io.File;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wps.WPSTestSupport;
 import org.geotools.data.DataUtilities;
@@ -17,6 +16,8 @@ import org.geotools.geopkg.TileEntry;
 import org.geotools.geopkg.TileMatrix;
 import org.geotools.geopkg.TileReader;
 import org.junit.Test;
+
+import com.mockrunner.mock.web.MockHttpServletResponse;
 
 public class GeoPackageProcessTest extends WPSTestSupport {
     
@@ -30,7 +31,10 @@ public class GeoPackageProcessTest extends WPSTestSupport {
     @Test
     public void testGeoPackageProcess() throws Exception{
         String urlPath = string(post("wps", getXml())).trim();
-        File file = getDataDirectory().findFile(urlPath.substring("http://localhost:8080/geoserver/".length()));
+        String resourceUrl = urlPath.substring("http://localhost:8080/geoserver/".length());
+        MockHttpServletResponse response = getAsServletResponse(resourceUrl);
+        File file = new File(getDataDirectory().findOrCreateDir("tmp"), "test.gpkg");
+        FileUtils.writeByteArrayToFile(file, getBinary(response));
         assertNotNull(file);
         assertEquals("test.gpkg", file.getName());
         assertTrue(file.exists());
@@ -110,9 +114,12 @@ public class GeoPackageProcessTest extends WPSTestSupport {
     @Test
     public void testGeoPackageProcessWithRemove() throws Exception{
         File path = getDataDirectory().findOrCreateDataRoot();
-        
         String urlPath = string(post("wps", getXml2(path,true))).trim();
-        File file = getDataDirectory().findFile(urlPath.substring("http://localhost:8080/geoserver/".length()));
+        String resourceUrl = urlPath.substring("http://localhost:8080/geoserver/".length());
+        MockHttpServletResponse response = getAsServletResponse(resourceUrl);
+        File file = new File(getDataDirectory().findOrCreateDir("tmp"), "test.gpkg");
+        FileUtils.writeByteArrayToFile(file, getBinary(response));
+        
         assertNotNull(file);
         assertEquals("test.gpkg", file.getName());
         assertTrue(file.exists());

@@ -178,6 +178,17 @@ public class WPSResourceManager implements DispatcherCallback,
     /**
      * Returns the url to fetch a output resource using the GetExecutionResult call
      * 
+     * @param name The file name
+     * @param mimeType the
+     * @return
+     */
+    public String getOutputResourceUrl(String name, String mimeType) {
+        return getOutputResourceUrl(null, name, null, mimeType);
+    }
+
+    /**
+     * Returns the url to fetch a output resource using the GetExecutionResult call
+     * 
      * @param executionId - optional, if you don't have it the resource manager will use its thread
      *        local version
      * @param name

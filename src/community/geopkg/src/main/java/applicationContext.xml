@@ -20,7 +20,7 @@
     <bean id="geopkgProcess" class="org.geoserver.geopkg.wps.GeoPackageProcess">
 	  <constructor-arg index="0" ref="geoServer"/>
       <constructor-arg index="1" ref="geopkgGetMapOutputFormat" />
-      <constructor-arg index="2" ref="wpsStorageCleaner"/>
+      <constructor-arg index="2" ref="wpsResourceManager"/>
       <constructor-arg index="3" ref="filterFactory"/>
     </bean>
     

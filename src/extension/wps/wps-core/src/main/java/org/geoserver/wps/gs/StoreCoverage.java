@@ -78,7 +78,7 @@ public class StoreCoverage implements GSProcess {
             }
         }
 
-        return new URL(resources.getOutputResourceUrl(null, fileName, null, "image/tiff"));
+        return new URL(resources.getOutputResourceUrl(fileName, "image/tiff"));
     }
 
 }

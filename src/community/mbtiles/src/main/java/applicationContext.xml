@@ -16,7 +16,7 @@
    <bean id="mbtilesProcess" class="org.geoserver.mbtiles.gs.wps.MBTilesProcess">
 	  <constructor-arg index="0" ref="catalog"/>
       <constructor-arg index="1" ref="mbtilesGetMapOutputFormat" />
-      <constructor-arg index="2" ref="wpsStorageCleaner"/>
+      <constructor-arg index="2" ref="wpsResourceManager"/>
     </bean>
 
 </beans>

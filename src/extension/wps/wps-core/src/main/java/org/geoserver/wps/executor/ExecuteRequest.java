@@ -39,6 +39,8 @@ public class ExecuteRequest {
 
     ExecuteType request;
 
+    LazyInputMap inputs;
+
     public ExecuteRequest(ExecuteType request) {
         this.request = request;
     }
@@ -86,8 +88,16 @@ public class ExecuteRequest {
      * 
      * @param request
      * @return
+     * @throws Exception
      */
     public LazyInputMap getProcessInputs(WPSExecutionManager manager) {
+        if (inputs == null) {
+            return getInputsInternal(manager);
+        }
+        return inputs;
+    }
+
+    LazyInputMap getInputsInternal(WPSExecutionManager manager) {
         // get the input descriptors
         Name processName = Ows11Util.name(request.getIdentifier());
         ProcessFactory pf = GeoServerProcessors.createProcessFactory(processName);
@@ -137,20 +147,24 @@ public class ExecuteRequest {
             }
 
             // build the provider
-            InputProvider provider = new SimpleInputProvider(input, ppio, manager,
-                    manager.applicationContext);
+            try {
+                InputProvider provider = AbstractInputProvider.getInputProvider(input, ppio,
+                        manager, manager.applicationContext);
 
-            // store the input
-            if (p.maxOccurs > 1) {
-                ListInputProvider lp = (ListInputProvider) providers.get(p.key);
-                if (lp == null) {
-                    lp = new ListInputProvider(provider);
-                    providers.put(p.key, lp);
+                // store the input
+                if (p.maxOccurs > 1) {
+                    ListInputProvider lp = (ListInputProvider) providers.get(p.key);
+                    if (lp == null) {
+                        lp = new ListInputProvider(provider);
+                        providers.put(p.key, lp);
+                    } else {
+                        lp.add(provider);
+                    }
                 } else {
-                    lp.add(provider);
+                    providers.put(p.key, provider);
                 }
-            } else {
-                providers.put(p.key, provider);
+            } catch (Exception e) {
+                throw new WPSException("Failed to parse process inputs", e);
             }
         }
 

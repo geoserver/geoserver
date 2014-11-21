@@ -875,7 +875,7 @@ public class ExecuteTest extends WPSTestSupport {
         dom = getAsDOM(statusLocation);
         print(dom);
         assertXpathExists("//wps:ProcessStarted", dom);
-        assertXpathEvaluatesTo("34", "//wps:ProcessStarted/@percentCompleted", dom);
+        assertXpathEvaluatesTo("26", "//wps:ProcessStarted/@percentCompleted", dom);
         
         // now schedule the exit and wait for it to exit
         ListFeatureCollection fc = collectionOfThings();
@@ -904,14 +904,14 @@ public class ExecuteTest extends WPSTestSupport {
         Document dom = getAsDOM(statusLocation);
         print(dom);
         assertXpathExists("//wps:ProcessStarted", dom);
-        assertXpathEvaluatesTo("8", "//wps:ProcessStarted/@percentCompleted", dom);
+        assertXpathEvaluatesTo("6", "//wps:ProcessStarted/@percentCompleted", dom);
         
         // we move the clock forward, but we asked no status, nothing should change
         MonkeyProcess.progress("x3", 50f, true);
         dom = getAsDOM(statusLocation);
         // print(dom);
         assertXpathExists("//wps:ProcessStarted", dom);
-        assertXpathEvaluatesTo("34", "//wps:ProcessStarted/@percentCompleted", dom);
+        assertXpathEvaluatesTo("26", "//wps:ProcessStarted/@percentCompleted", dom);
         assertXpathEvaluatesTo("Currently at 50.0", "//wps:ProcessStarted", dom);
 
         
@@ -957,17 +957,36 @@ public class ExecuteTest extends WPSTestSupport {
         		"    </wps:Input>\n" + 
         		"  </wps:DataInputs>\n" + 
         		"  <wps:ResponseForm>\n" + 
-        		"    <wps:RawDataOutput mimeType=\"application/wkt\">\n" + 
-        		"      <ows:Identifier>result</ows:Identifier>\n" + 
-        		"    </wps:RawDataOutput>\n" + 
+ "<wps:ResponseDocument status=\"true\" storeExecuteResponse=\"true\">"
+                +
+                     "<wps:Output asReference=\"true\">"  +
+                        "<ows:Identifier>result</ows:Identifier>" +
+                      "</wps:Output>" +
+                      "</wps:ResponseDocument>" + 
         		"  </wps:ResponseForm>\n" + 
         		"</wps:Execute>";
         
+        //
+        // MonkeyProcess.exit("chained-monkey", collectionOfThings(), false);
+        Document dom = postAsDOM("wfs", request);
+        String statusLocation = getStatusLocation(dom);
+
         MonkeyProcess.progress("chained-monkey", 10f, false);
-        MonkeyProcess.exit("chained-monkey", collectionOfThings(), false);
-        MockHttpServletResponse response = postAsServletResponse("wfs", request);
-        assertEquals("application/wkt", response.getContentType());
-        assertEquals("GEOMETRYCOLLECTION EMPTY", response.getOutputStreamContent());
+        dom = getAsDOM(statusLocation);
+        // print(dom);
+        assertXpathExists("//wps:ProcessStarted", dom);
+        assertXpathEvaluatesTo("3", "//wps:ProcessStarted/@percentCompleted", dom);
+
+        MonkeyProcess.progress("chained-monkey", 50f, false);
+        dom = getAsDOM(statusLocation);
+        // print(dom);
+        assertXpathExists("//wps:ProcessStarted", dom);
+        assertXpathEvaluatesTo("17", "//wps:ProcessStarted/@percentCompleted", dom);
+
+        MonkeyProcess.exit("chained-monkey", collectionOfThings(), true);
+
+        // no way to control the collect geometry process, we just wait
+        waitForProcessEnd(statusLocation, 60);
     }
     
     @Test
@@ -993,8 +1012,8 @@ public class ExecuteTest extends WPSTestSupport {
         MonkeyProcess.progress("two", 10f, true);
         
         // make sure both were started and are running, input parsing was assumed to be 1%
-        assertProgress(statusLocation1, "8");
-        assertProgress(statusLocation2, "8");
+        assertProgress(statusLocation1, "6");
+        assertProgress(statusLocation2, "6");
         
         // now schedule the exit and wait for it to exit
         MonkeyProcess.exit("one", collectionOfThings(), true);
@@ -1049,6 +1068,10 @@ public class ExecuteTest extends WPSTestSupport {
         String request = "wps?service=WPS&version=1.0.0&request=Execute&Identifier=gs:Monkey&storeExecuteResponse=true&status=true&DataInputs=" + urlEncode("id=" + id);
         Document dom = getAsDOM(request);
         // print(dom);
+        return getStatusLocation(dom);
+    }
+
+    private String getStatusLocation(Document dom) throws XpathException {
         assertXpathExists("//wps:ProcessAccepted", dom);
         XpathEngine xpath = XMLUnit.newXpathEngine();
         String fullStatusLocation = xpath.evaluate("//wps:ExecuteResponse/@statusLocation", dom);

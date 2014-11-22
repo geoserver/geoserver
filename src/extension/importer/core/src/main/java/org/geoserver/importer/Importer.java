@@ -1203,6 +1203,15 @@ public class Importer implements DisposableBean, ApplicationListener {
         NamespaceInfo ns = catalog.getNamespaceByPrefix(store.getWorkspace().getName());
         
         String name = resource.getName();
+
+        // make sure the name conforms to a legal layer name
+        if (!Character.isLetter(name.charAt(0))) {
+            name = "a_" + name;
+        }
+
+        // strip out any non-word characters
+        name = name.replaceAll("\\W", "_");
+
         if (catalog.getResourceByName(ns, name, ResourceInfo.class) != null) {
             int i = 0;
             name += i;

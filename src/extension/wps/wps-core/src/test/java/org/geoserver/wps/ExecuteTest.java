@@ -204,7 +204,7 @@ public class ExecuteTest extends WPSTestSupport {
         // print(dom(new StringInputStream("<?xml version=\"1.0\" encoding=\"UTF-16\"?>\n" + xml)));
         
         MockHttpServletResponse response = postAsServletResponse( "wps", xml );
-        System.out.println(response.getOutputStreamContent());
+        // System.out.println(response.getOutputStreamContent());
         assertEquals("application/wkt", response.getContentType());
         Geometry g = new WKTReader().read(response.getOutputStreamContent());
         assertTrue(g instanceof Polygon);
@@ -518,7 +518,7 @@ public class ExecuteTest extends WPSTestSupport {
          "</wps:Execute>";
   
         MockHttpServletResponse r = postAsServletResponse("wps", xml);
-        System.out.println(r.getOutputStreamContent());
+        // System.out.println(r.getOutputStreamContent());
         assertEquals("application/json", r.getContentType());
         // System.out.println(r.getOutputStreamContent());
         FeatureCollection fc = new FeatureJSON().readFeatureCollection(r.getOutputStreamContent());
@@ -986,6 +986,99 @@ public class ExecuteTest extends WPSTestSupport {
         MonkeyProcess.exit("chained-monkey", collectionOfThings(), true);
 
         // no way to control the collect geometry process, we just wait
+        waitForProcessEnd(statusLocation, 60);
+    }
+    
+    /**
+     * http://jira.codehaus.org/browse/GEOS-5208
+     * @throws Exception
+     */
+    @Test
+    public void testTripleChainedProgress() throws Exception {
+        String request = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
+                "<wps:Execute version=\"1.0.0\" service=\"WPS\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.opengis.net/wps/1.0.0\" xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:wps=\"http://www.opengis.net/wps/1.0.0\" xmlns:ows=\"http://www.opengis.net/ows/1.1\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:wcs=\"http://www.opengis.net/wcs/1.1.1\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xsi:schemaLocation=\"http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd\">\n" + 
+                "  <ows:Identifier>gs:Monkey</ows:Identifier>\n" + 
+                "  <wps:DataInputs>\n" + 
+                "    <wps:Input>\n" + 
+                "       <ows:Identifier>id</ows:Identifier>\n" + 
+                "       <wps:Data>\n" + 
+                "           <wps:LiteralData>m1</wps:LiteralData>\n" + 
+                "       </wps:Data>\n" + 
+                "    </wps:Input>\n" + 
+                "    <wps:Input>\n" + 
+                "      <ows:Identifier>fc</ows:Identifier>\n" + 
+                "      <wps:Reference mimeType=\"text/xml; subtype=wfs-collection/1.0\" xlink:href=\"http://geoserver/wps\" method=\"POST\">\n" + 
+                "        <wps:Body>\n" + 
+                "          <wps:Execute version=\"1.0.0\" service=\"WPS\">\n" + 
+                "            <ows:Identifier>gs:Monkey</ows:Identifier>\n" + 
+                "            <wps:DataInputs>\n" + 
+                "              <wps:Input>\n" + 
+                "                <ows:Identifier>id</ows:Identifier>\n" + 
+                "                <wps:Data>\n" + 
+                "                  <wps:LiteralData>m2</wps:LiteralData>\n" + 
+                "                </wps:Data>\n" + 
+                "              </wps:Input>\n" + 
+                "              <wps:Input>\n" + 
+                "                <ows:Identifier>fc</ows:Identifier>\n" + 
+                "                <wps:Reference mimeType=\"text/xml; subtype=wfs-collection/1.0\" xlink:href=\"http://geoserver/wps\" method=\"POST\">\n" + 
+                "                  <wps:Body>\n" + 
+                "                    <wps:Execute version=\"1.0.0\" service=\"WPS\">\n" + 
+                "                      <ows:Identifier>gs:Monkey</ows:Identifier>\n" + 
+                "                      <wps:DataInputs>\n" + 
+                "                        <wps:Input>\n" + 
+                "                          <ows:Identifier>id</ows:Identifier>\n" + 
+                "                          <wps:Data>\n" + 
+                "                            <wps:LiteralData>m3</wps:LiteralData>\n" + 
+                "                          </wps:Data>\n" + 
+                "                        </wps:Input>\n" + 
+                "                      </wps:DataInputs>\n" + 
+                "                      <wps:ResponseForm>\n" + 
+                "                        <wps:RawDataOutput mimeType=\"text/xml; subtype=gml/3.1.1\">\n" + 
+                "                          <ows:Identifier>result</ows:Identifier>\n" + 
+                "                        </wps:RawDataOutput>\n" + 
+                "                      </wps:ResponseForm>\n" + 
+                "                    </wps:Execute>\n" + 
+                "                  </wps:Body>\n" + 
+                "                </wps:Reference>\n" + 
+                "              </wps:Input>\n" + 
+                "            </wps:DataInputs>\n" + 
+                "            <wps:ResponseForm>\n" + 
+                "              <wps:RawDataOutput mimeType=\"text/xml; subtype=gml/3.1.1\">\n" + 
+                "                <ows:Identifier>result</ows:Identifier>\n" + 
+                "              </wps:RawDataOutput>\n" + 
+                "            </wps:ResponseForm>\n" + 
+                "          </wps:Execute>\n" + 
+                "        </wps:Body>\n" + 
+                "      </wps:Reference>\n" + 
+                "    </wps:Input>\n" + 
+                "  </wps:DataInputs>\n" + 
+                "  <wps:ResponseForm>\n" + 
+                "  <wps:ResponseDocument status=\"true\" storeExecuteResponse=\"true\">" +
+                "     <wps:Output asReference=\"true\">"  +
+                "       <ows:Identifier>result</ows:Identifier>" +
+                "     </wps:Output>" +
+                "   </wps:ResponseDocument>" + 
+                "  </wps:ResponseForm>\n" + 
+                "</wps:Execute>";
+        
+        //
+        // MonkeyProcess.exit("chained-monkey", collectionOfThings(), false);
+        Document dom = postAsDOM("wfs", request);
+        String statusLocation = getStatusLocation(dom);
+
+        MonkeyProcess.progress("m3", 50f, true);
+        assertProgress(statusLocation, "13");
+        MonkeyProcess.exit("m3", collectionOfThings(), true);
+        assertProgress(statusLocation, "25");
+        MonkeyProcess.progress("m2", 50f, true);
+        assertProgress(statusLocation, "38");
+        MonkeyProcess.exit("m2", collectionOfThings(), true);
+        assertProgress(statusLocation, "50");
+        MonkeyProcess.progress("m1", 100f, true);
+        assertProgress(statusLocation, "75");
+        MonkeyProcess.exit("m1", collectionOfThings(), true);
+
+        // wait for completion
         waitForProcessEnd(statusLocation, 60);
     }
     

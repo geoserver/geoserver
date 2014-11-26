@@ -138,7 +138,7 @@ public class WPSExecutionManager implements ApplicationContextAware,
         LazyInputMap inputs = request.getProcessInputs(this);
         int inputsLongSteps = inputs.longStepCount();
         int longSteps = inputsLongSteps + 1;
-        float longStepPercentage = longSteps;
+        float longStepPercentage = 100f / longSteps;
         float inputPercentage = inputsLongSteps * longStepPercentage;
         float executionPercentage = 100 - inputPercentage;
         inputs.setListener(new SubProgressListener(listener, inputPercentage));

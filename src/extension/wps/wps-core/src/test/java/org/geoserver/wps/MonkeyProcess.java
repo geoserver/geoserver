@@ -18,7 +18,6 @@ import org.geotools.process.factory.DescribeParameter;
 import org.geotools.process.factory.DescribeProcess;
 import org.geotools.process.factory.DescribeResult;
 import org.geotools.util.SimpleInternationalString;
-import org.jdom.Text;
 import org.opengis.util.ProgressListener;
 
 @DescribeProcess(title = "Monkey", description = "Process used to test asynch calls")
@@ -79,12 +78,16 @@ public class MonkeyProcess {
             }
         }
     }
-    
-    @DescribeResult(name="result")
-    public SimpleFeatureCollection execute(@DescribeParameter(name = "id") String id, ProgressListener listener) throws Exception {
+    @DescribeResult(name = "result")
+    public SimpleFeatureCollection execute(@DescribeParameter(name = "id") String id,
+            @DescribeParameter(name = "fc", min = 0) SimpleFeatureCollection fc,
+            ProgressListener listener) throws Exception {
+        BlockingQueue<Command> queue = getCommandQueue(id);
         while (true) {
-            Command command = getCommandQueue(id).take();
+            Command command = queue.take();
             if (command.type == CommandType.Exit) {
+                listener.progress(100f);
+                listener.complete();
                 commands.remove(id);
                 return (SimpleFeatureCollection) command.value;
             } else if (command.type == CommandType.SetProgress) {

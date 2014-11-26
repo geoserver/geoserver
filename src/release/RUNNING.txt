@@ -13,15 +13,16 @@ In order to install and run this application, follow these steps:
 
 (0) Download and install a Java Development Kit
 
-* Download a Java Development Kit (JDK) (version 1.4 or later) from:
+* Download a Java Runtime Environment (Java 7 or later) from:
 
-    http://java.sun.com/javase/
+    http://www.oracle.com/technetwork/java/
+     or 
+    http://openjdk.java.net
 
-* Install the JDK according to the instructions included with the release.
+* Install the JRE according to the instructions included with the release.
 
 * Set an environment variable JAVA_HOME to the pathname of the directory
   into which you installed the JDK.
-
 
 (1) Download and install the GeoServer binary
 
@@ -29,7 +30,7 @@ There is more help available at the GeoServer home page (http://geoserver.org)
 
 * Download a binary distribution of GeoServer from:
 
-    http://geoserver.org/display/GEOS/Download
+    http://geoserver.org/download/
      or
     http://sourceforge.net/projects/geoserver
 

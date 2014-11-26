@@ -3,7 +3,9 @@
 License
 =======
 
-GeoServer is free software and is licensed under the :download:`GNU General Public License <../gpl-2.0.txt>`.::
+For complete license details review :download:`LICENSE.txt </../../../../src/LICENSE.txt>`.
+
+* GeoServer is free software and is licensed under the :download:`GNU General Public License </../../../../src/release/GPL.txt>`.::
 
     GeoServer, open geospatial information server
     Copyright (C) 2001 - 2011 The Open Planning Project dba OpenPlans
@@ -41,6 +43,6 @@ GeoServer is free software and is licensed under the :download:`GNU General Publ
     along with this program; if not, write to the Free Software
     Foundation, Inc., 51 Franklin Street, Suite 500, Boston, MA 02110-1335  USA
 
-This product includes software developed by the Apache Software Foundation (http://www.apache.org/)
-licensed under the :download:`Apache License Version 2.0 <../apache-2.0.txt>` and
-:download:`Apache License Version 1.1 <../apache-1.1.txt>`.
+This product includes software developed by the Apache Software Foundation (http://www.apache.org/) licensed under the :download:`Apache License Version 2.0 </../../../../src/release/apache-2.0.txt>` and :download:`Apache License Version 1.1 </../../../../src/release/apache-1.1.txt>`.
+
+This product includes software developed by the Eclipse Software Foundation () under the :download:`Eclipse Public License </../../../../src/release/epl-1.0.txt>`.

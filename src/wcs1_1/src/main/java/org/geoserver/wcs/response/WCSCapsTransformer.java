@@ -478,11 +478,6 @@ public class WCSCapsTransformer extends TransformerBase {
             if ((mdl.getAbout() != null) && (mdl.getAbout() != "")) {
                 attributes.addAttribute("", "about", "about", "", mdl.getAbout());
             }
-            
-            if ((mdl.getMetadataType() != null) && (mdl.getMetadataType() != "")) {
-                attributes.addAttribute("", "metadataType", "metadataType", "", mdl
-                        .getMetadataType());
-            }
 
             if ((linkType != null) && (linkType != "")) {
                 attributes.addAttribute("", "xlink:type", "xlink:type", "", linkType);

@@ -6,7 +6,6 @@ import static org.geoserver.cluster.hazelcast.HazelcastUtil.localIPAsString;
 
 import java.util.List;
 import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -44,7 +43,7 @@ import com.yammer.metrics.Metrics;
  * <p>
  * This synchronizer maintains a thread safe queue that is populated with events as they occur. Upon
  * receiving of an event a new runnable is scheduled and run after a short delay (default 5 sec).
- * The runnable calls the {@link #processEventQueue(Queue)} method to be implemented by subclasses.
+ * The runnable calls the {@link #processEvent(Queue)} method to be implemented by subclasses.
  * </p>
  * <p>
  * This synchronizer events messages received from the same source.
@@ -61,9 +60,6 @@ public abstract class HzSynchronizer extends GeoServerSynchronizer implements
     protected final HzCluster cluster;
 
     protected final ITopic<Event> topic;
-
-    /** event queue */
-    protected final Queue<Event> queue;
 
     /** event processor */
     private final ScheduledExecutorService executor;
@@ -85,7 +81,6 @@ public abstract class HzSynchronizer extends GeoServerSynchronizer implements
         topic = cluster.getHz().getTopic("geoserver.config");
         topic.addMessageListener(this);
 
-        queue = new ConcurrentLinkedQueue<Event>();
         executor = getNewExecutor();
 
         gs.addListener(this);
@@ -94,44 +89,51 @@ public abstract class HzSynchronizer extends GeoServerSynchronizer implements
 
     @Override
     public void onMessage(Message<Event> message) {
-        Event e = message.getMessageObject();
+        Event event = message.getMessageObject();
         if (!isStarted()) {
             // wait for service to be fully started before processing events.
             if (LOGGER.isLoggable(Level.FINER)) {
-                LOGGER.finer(format("Ignoring message: %s. Service is not started.", e));
+                LOGGER.finer(format("Ignoring message: %s. Service is not started.", event));
             }
             return;
         }
         Metrics.newCounter(getClass(), "recieved").inc();
-        if (localAddress(cluster.getHz()).equals(e.getSource())) {
+        if (localAddress(cluster.getHz()).equals(event.getSource())) {
             if (LOGGER.isLoggable(Level.FINER)) {
-                LOGGER.finer(format("%s - Skipping message generated locally: %s", nodeId(), e));
+                LOGGER.finer(format("%s - Skipping message generated locally: %s", nodeId(), event));
             }
             return;
         }
         if (LOGGER.isLoggable(Level.FINE)) {
-            LOGGER.fine(format("%s - Received event %s", nodeId(), e));
+            LOGGER.fine(format("%s - Received event %s", nodeId(), event));
         }
-        // queue the event to be processed
-        queue.add(message.getMessageObject());
+
         // schedule job to process the event with a short delay
         final int syncDelay = configWatcher.get().getSyncDelay();
-        executor.schedule(new Runnable() {
-            @Override
-            public void run() {
-                if (queue.isEmpty()) {
-                    return;
-                }
+        executor.schedule(new EventWorker(event), syncDelay, TimeUnit.SECONDS);
+    }
 
-                try {
-                    processEventQueue(queue);
-                } catch (Exception e) {
-                    LOGGER.log(Level.WARNING, format("%s - Event processing failed", nodeId()), e);
-                }
+    private class EventWorker implements Runnable {
 
-                Metrics.newCounter(getClass(), "reloads").inc();
+        private Event event;
+
+        public EventWorker(Event event) {
+            this.event = event;
+        }
+
+        @Override
+        public void run() {
+            if (!isStarted()) {
+                return;
             }
-        }, syncDelay, TimeUnit.SECONDS);
+            try {
+                processEvent(event);
+            } catch (Exception e) {
+                LOGGER.log(Level.WARNING, format("%s - Event processing failed", nodeId()), e);
+            }
+
+            Metrics.newCounter(getClass(), "reloads").inc();
+        }
     }
 
     protected abstract void dispatch(Event e);
@@ -143,7 +145,7 @@ public abstract class HzSynchronizer extends GeoServerSynchronizer implements
      * are processed.
      * </p>
      */
-    protected abstract void processEventQueue(Queue<Event> q) throws Exception;
+    protected abstract void processEvent(Event event) throws Exception;
 
     ConfigChangeEvent newChangeEvent(CatalogEvent evt, Type type) {
         return newChangeEvent(evt.getSource(), type);

@@ -10,6 +10,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import org.easymock.Capture;
+import org.easymock.CaptureType;
 import org.easymock.EasyMock;
 import org.easymock.IAnswer;
 import org.geoserver.catalog.Catalog;
@@ -68,6 +69,7 @@ public abstract class HzSynchronizerTest {
         expect(this.cluster.getHz()).andStubReturn(hz);
         expect(this.cluster.isEnabled()).andStubReturn(true);
         expect(this.cluster.getRawCatalog()).andStubReturn(catalog);;
+        expect(this.cluster.getAckTimeoutMillis()).andStubReturn(100);
         
         
         expect(hz.<Event>getTopic(TOPIC_NAME)).andStubReturn(topic);
@@ -121,7 +123,7 @@ public abstract class HzSynchronizerTest {
         catalog.addListener(capture(catListenerCapture));expectLastCall().atLeastOnce();
         
         executor = createMock(ScheduledExecutorService.class);
-        captureExecutor = new Capture<Runnable>();
+        captureExecutor = new Capture<Runnable>(CaptureType.ALL);
         expect(executor.schedule(capture(captureExecutor), anyLong(), (TimeUnit)anyObject())).andStubReturn(null);
     }
 

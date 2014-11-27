@@ -18,6 +18,7 @@ import org.geoserver.catalog.Info;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.util.CacheProvider;
+import org.geoserver.util.DefaultCacheProvider;
 
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
@@ -29,6 +30,12 @@ import com.google.common.collect.Maps;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.IMap;
 
+/**
+ * {@link CacheProvider} for a cluster configuration. Looked up by interface by
+ * {@link DefaultCacheProvider#findProvider()} hence shall be declared in
+ * {@code applicationContext.xml}.
+ *
+ */
 public class HzCacheProvider implements CacheProvider {
 
     private static final long DEFAULT_TTL = 5;

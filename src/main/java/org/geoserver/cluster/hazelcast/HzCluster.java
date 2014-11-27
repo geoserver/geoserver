@@ -96,6 +96,14 @@ public class HzCluster implements DisposableBean, InitializingBean {
     }
     
     /**
+     * @return milliseconds to wait for node ack notifications upon sending a config change event.
+     *         Defaults to 2000ms.
+     */
+    public int getAckTimeoutMillis() {
+        return getClusterConfig().getAckTimeoutMillis();
+    }
+    
+    /**
      * Get the HazelcastInstance being used for clustering
      * @return
      * @throws IllegalStateException if clustering is not enabled

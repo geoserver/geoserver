@@ -1,18 +1,19 @@
 package org.geoserver.cluster.hazelcast;
 
 import static java.lang.String.format;
-import static org.geoserver.cluster.hazelcast.HazelcastUtil.*;
+import static org.geoserver.cluster.hazelcast.HazelcastUtil.addressString;
+import static org.geoserver.cluster.hazelcast.HazelcastUtil.localAddress;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.net.InetSocketAddress;
-import java.util.Iterator;
-import java.util.Queue;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
+
+import javax.annotation.Nullable;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogInfo;
@@ -42,6 +43,7 @@ import org.geoserver.config.LoggingInfo;
 import org.geoserver.config.ServiceInfo;
 import org.geoserver.config.SettingsInfo;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import com.hazelcast.core.ITopic;
@@ -126,7 +128,7 @@ public class EventHzSynchronizer extends HzSynchronizer {
 
     private void waitForAck(Event event) {
         final UUID evendId = event.getUUID();
-        final int maxWaitMillis = 2000;
+        final int maxWaitMillis = cluster.getAckTimeoutMillis();
         final int waitInterval = 100;
         LOGGER.fine(format("%s - Waiting for acks on %s", nodeId(), evendId));
         final AtomicInteger countDown = ackListener.expectedAckCounters.get(evendId);
@@ -152,28 +154,24 @@ public class EventHzSynchronizer extends HzSynchronizer {
     }
 
     @Override
-    protected void processEventQueue(Queue<Event> q) throws Exception {
-        Iterator<Event> it = q.iterator();
-        while (it.hasNext() && isStarted()) {
-            final Event event = it.next();
-            try {
-                it.remove();
-                LOGGER.fine(format("%s - Processing event %s", nodeId(), event));
-                if (!(event instanceof ConfigChangeEvent)) {
-                    return;
-                }
-                ConfigChangeEvent ce = (ConfigChangeEvent) event;
-                Class<? extends Info> clazz = ce.getObjectInterface();
-                if (CatalogInfo.class.isAssignableFrom(clazz)) {
-                    processCatalogEvent(ce);
-                } else {
-                    processGeoServerConfigEvent(ce);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            } finally {
-                ack(event);
+    protected void processEvent(Event event) throws Exception {
+        Preconditions.checkState(isStarted());
+        if (!(event instanceof ConfigChangeEvent)) {
+            return;
+        }
+        try {
+            LOGGER.fine(format("%s - Processing event %s", nodeId(), event));
+            ConfigChangeEvent ce = (ConfigChangeEvent) event;
+            Class<? extends Info> clazz = ce.getObjectInterface();
+            if (CatalogInfo.class.isAssignableFrom(clazz)) {
+                processCatalogEvent(ce);
+            } else {
+                processGeoServerConfigEvent(ce);
             }
+        } catch (Exception e) {
+            LOGGER.log(Level.WARNING, format("%s - Error processing event %s", nodeId(), event), e);
+        } finally {
+            ack(event);
         }
     }
 
@@ -181,10 +179,10 @@ public class EventHzSynchronizer extends HzSynchronizer {
             SecurityException {
 
         Class<? extends Info> clazz = event.getObjectInterface();
-        Type t = event.getChangeType();
-        String id = event.getObjectId();
-        String name = event.getObjectName();
-        String nativeName = event.getNativeName();
+        final Type t = event.getChangeType();
+        final String id = event.getObjectId();
+        final String name = event.getObjectName();
+        final @Nullable String nativeName = event.getNativeName();
         // catalog event
         CatalogInfo subj;
         Method notifyMethod;
@@ -208,7 +206,7 @@ public class EventHzSynchronizer extends HzSynchronizer {
             notifyMethod = CatalogListener.class.getMethod("handleRemoveEvent",
                     CatalogRemoveEvent.class);
             evt = new CatalogRemoveEventImpl();
-            RemovedObjectProxy proxy = new RemovedObjectProxy(id, name, clazz);
+            RemovedObjectProxy proxy = new RemovedObjectProxy(id, name, clazz, nativeName);
 
             if (ResourceInfo.class.isAssignableFrom(clazz) && event.getStoreId() != null) {
                 proxy.addCatalogCollaborator("store",
@@ -223,12 +221,6 @@ public class EventHzSynchronizer extends HzSynchronizer {
         }
 
         if (subj == null) {// can't happen if type == DELETE
-            ConfigChangeEvent removeEvent = new ConfigChangeEvent(id, name, clazz, Type.REMOVE);
-            if (queue.contains(removeEvent)) {
-                LOGGER.fine(format("%s - Ignoring event %s, a remove is queued.", nodeId(), event));
-                return;
-            }
-
             if (subj == null) {
                 String message = format(
                         "%s - Error processing event %s: object not found in catalog", nodeId(),

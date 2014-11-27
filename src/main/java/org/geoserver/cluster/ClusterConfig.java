@@ -8,6 +8,8 @@ import java.util.Properties;
  */
 public class ClusterConfig extends Properties {
 
+    private static final long serialVersionUID = 1L;
+
     /**
      * @return is clustering enabled
      */
@@ -27,5 +29,13 @@ public class ClusterConfig extends Properties {
      */
     public int getSyncDelay() {
         return Integer.parseInt(getProperty("sync_delay", "5"));
+    }
+
+    /**
+     * @return milliseconds to wait for node ack notifications upon sending a config change event.
+     *         Defaults to 2000ms.
+     */
+    public int getAckTimeoutMillis() {
+        return Integer.parseInt(getProperty("acktimeout", "2000"));
     }
 }

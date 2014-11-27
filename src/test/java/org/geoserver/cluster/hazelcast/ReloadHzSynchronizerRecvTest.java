@@ -1,9 +1,10 @@
 package org.geoserver.cluster.hazelcast;
 
-import static org.easymock.EasyMock.*;
+import static org.easymock.EasyMock.expectLastCall;
 
-import java.util.UUID;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -110,6 +111,21 @@ public class ReloadHzSynchronizerRecvTest extends HzSynchronizerRecvTest {
     protected void expectationTestChangeService(ServiceInfo info,
             String ServiceId) throws Exception {
         getGeoServer().reload(); expectLastCall();
+    }
+
+    /**
+     * Overrides to wait for {@link ReloadHzSynchronizer}'s executor service to shut down
+     */
+    @Override
+    protected void verify(Object... mocks) {
+        ExecutorService reloadService = ((ReloadHzSynchronizer)sync).reloadService;
+        reloadService.shutdown();
+        try {
+            reloadService.awaitTermination(5, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        super.verify(mocks);
     }
 
 }

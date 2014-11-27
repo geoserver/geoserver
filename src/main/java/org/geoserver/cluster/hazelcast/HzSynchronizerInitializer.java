@@ -45,16 +45,13 @@ public class HzSynchronizerInitializer implements GeoServerInitializer, Applicat
         @SuppressWarnings("unused")
         HazelcastInstance hz = cluster.getHz();
         
-        
         String method = config.getSyncMethod();
         if ("event".equalsIgnoreCase(method)) {
             syncher = new EventHzSynchronizer(cluster, geoServer);
-        }
-        else {
+        } else {
             method = "reload"; 
             syncher = new ReloadHzSynchronizer(cluster, geoServer);
         }
-        
         syncher.initialize(configWatcher);
         LOGGER.info("Hazelcast synchronizer method is " + method);
     }

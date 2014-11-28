@@ -32,7 +32,8 @@ public class SecondaryNamespaceExceptionTest extends AbstractAppSchemaTestSuppor
     public void testNamespaces() {
         Document doc = getAsDOM("wfs?request=GetFeature&typeName=ex:ShapeContent");
         LOGGER.info("Secondary Namespace Response:\n" + prettyString(doc));
-        assertEquals("ows:ExceptionReport", doc.getDocumentElement().getNodeName());
+        assertEquals("wfs:FeatureCollection", doc.getDocumentElement().getNodeName());
+       
     }
 
 }

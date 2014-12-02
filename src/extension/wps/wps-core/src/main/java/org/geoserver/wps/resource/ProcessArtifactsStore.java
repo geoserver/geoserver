@@ -4,6 +4,7 @@
  */
 package org.geoserver.wps.resource;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.geoserver.platform.resource.Resource;
@@ -33,5 +34,13 @@ public interface ProcessArtifactsStore {
      * @return
      */
     List<Resource> listExecutionResourcess();
+
+    /**
+     * Immediately removes all artifacts associated to the given execution id
+     * 
+     * @param executionId
+     * @throws IOException
+     */
+    void clearArtifacts(String executionId) throws IOException;
 
 }

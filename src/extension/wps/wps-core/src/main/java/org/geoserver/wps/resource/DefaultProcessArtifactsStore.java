@@ -5,6 +5,7 @@
 package org.geoserver.wps.resource;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,6 +13,7 @@ import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.platform.resource.ResourceStore;
+import org.geoserver.platform.resource.Resources;
 
 /**
  * Default implementation that will store the artifacts on the file system inside
@@ -63,5 +65,10 @@ public class DefaultProcessArtifactsStore implements ProcessArtifactsStore {
         return result;
     }
 
+    @Override
+    public void clearArtifacts(String executionId) throws IOException {
+        Resource resource = store.get(executionId);
+        Resources.delete(resource);
+    }
 
 }

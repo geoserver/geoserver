@@ -14,6 +14,7 @@ import net.opengis.wps10.MethodType;
 import org.geoserver.wps.WPSException;
 import org.geoserver.wps.kvp.ExecuteKvpRequestReader;
 import org.geoserver.wps.ppio.ProcessParameterIO;
+import org.geotools.feature.FeatureCollection;
 import org.opengis.util.ProgressListener;
 import org.springframework.context.ApplicationContext;
 
@@ -58,6 +59,12 @@ public class InternalWPSInputProvider extends AbstractInputProvider {
                     "The process output is incompatible with the input target type, was expecting "
                             + ppio.getType().getName() + " and got " + obj.getClass().getName());
         }
+
+        // make sure we have the process receiving this fail if cancellation triggers
+        if (obj instanceof FeatureCollection) {
+            obj = CancellingFeatureCollectionBuilder.wrap((FeatureCollection) obj, listener);
+        }
+
         return obj;
     }
 

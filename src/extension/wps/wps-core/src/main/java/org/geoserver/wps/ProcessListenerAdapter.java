@@ -6,7 +6,7 @@ package org.geoserver.wps;
  * 
  * @author Andrea Aime - GeoSolutions
  */
-public class BaseProcessListener implements ProcessListener {
+public class ProcessListenerAdapter implements ProcessListener {
 
     @Override
     public void submitted(ProcessEvent event) throws WPSException {
@@ -19,14 +19,20 @@ public class BaseProcessListener implements ProcessListener {
     }
 
     @Override
-    public void completed(ProcessEvent event) throws WPSException {
+    public void succeeded(ProcessEvent event) throws WPSException {
 
     }
 
     @Override
-    public void cancelled(ProcessEvent event) throws WPSException {
+    public void dismissing(ProcessEvent event) throws WPSException {
 
     }
+
+    @Override
+    public void dismissed(ProcessEvent event) throws WPSException {
+
+    }
+
 
     @Override
     public void failed(ProcessEvent event) {

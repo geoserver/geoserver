@@ -5,18 +5,19 @@
  */
 package org.geoserver.wps;
 
-import java.io.IOException;
-
-import net.opengis.wps10.ExecuteType;
-
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
-import org.geoserver.wps.executor.ExecuteResponseBuilder;
 import org.geoserver.wps.executor.ExecutionStatus;
+import org.geoserver.wps.executor.ProcessState;
 import org.geoserver.wps.executor.ProcessStatusTracker;
 import org.geoserver.wps.resource.WPSResourceManager;
 import org.springframework.context.ApplicationContext;
 
+/**
+ * Runs the GetStatus pseudo WPS request (GeoServer uses it to implement the status url)
+ * 
+ * @author Andrea Aime - GeoSolutions
+ */
 public class GetStatus {
 
     private WPSResourceManager resources;
@@ -25,7 +26,8 @@ public class GetStatus {
 
     private ApplicationContext ctx;
 
-    public GetStatus(ProcessStatusTracker tracker, WPSResourceManager resources, ApplicationContext ctx) {
+    public GetStatus(ProcessStatusTracker tracker, WPSResourceManager resources,
+            ApplicationContext ctx) {
         this.tracker = tracker;
         this.resources = resources;
         this.ctx = ctx;
@@ -36,9 +38,7 @@ public class GetStatus {
         String executionId = request.getExecutionId();
         ExecutionStatus status = tracker.getStatus(executionId);
         if(status == null) {
-            throw new WPSException("Unknown execution id " + executionId
-                    + ", either the execution was never submitted or too much time "
-                    + "elapsed since the process completed");
+            throw new UnknownExecutionIdException(executionId);
         }
         
         // are we done?
@@ -50,27 +50,15 @@ public class GetStatus {
             } else {
                 return storedResponse;
             }
+        } else if (status.getPhase() == ProcessState.DISMISSING) {
+            // in case of dismissal we have to pretend we don't know the execution id
+            throw new UnknownExecutionIdException(executionId);
         } else {
-            try {
-                ExecuteType execute = status.getRequest();
-                if (execute == null) {
-                    execute = resources.getStoredRequestObject(executionId);
-                }
-                if (execute == null) {
-                    throw new WPSException(
-                            "Could not locate the original request for execution id: "
-                                    + executionId);
-                } else {
-                    ExecuteResponseBuilder builder = new ExecuteResponseBuilder(execute, ctx,
-                            status);
-                    return builder.build();
-                }
-            } catch (IOException e) {
-                throw new WPSException("Failed to write status response", e);
-            }
+            return new StatusResponseBuilder(resources, ctx).buildStatusResponse(status);
         }
         
         
     }
+
 
 }

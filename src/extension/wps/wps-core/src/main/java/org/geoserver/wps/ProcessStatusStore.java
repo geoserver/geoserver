@@ -26,6 +26,11 @@ public interface ProcessStatusStore {
     ExecutionStatus get(String executionId);
 
     /**
+     * Removes a specific status by id
+     */
+    ExecutionStatus remove(String executionId);
+
+    /**
      * Clears process statuses matching a certain condition, and returns the number of statuses
      * removed
      */

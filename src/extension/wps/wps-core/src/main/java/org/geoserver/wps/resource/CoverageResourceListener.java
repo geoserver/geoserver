@@ -7,7 +7,7 @@ package org.geoserver.wps.resource;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.geoserver.wps.BaseProcessListener;
+import org.geoserver.wps.ProcessListenerAdapter;
 import org.geoserver.wps.ProcessEvent;
 import org.geoserver.wps.WPSException;
 import org.opengis.coverage.grid.GridCoverage;
@@ -18,7 +18,7 @@ import org.opengis.coverage.grid.GridCoverage;
  * 
  * @author Andrea Aime - GeoSolutions
  */
-public class CoverageResourceListener extends BaseProcessListener {
+public class CoverageResourceListener extends ProcessListenerAdapter {
 
     /**
      * A simple check to assess whether the
@@ -78,12 +78,12 @@ public class CoverageResourceListener extends BaseProcessListener {
     }
 
     @Override
-    public void completed(ProcessEvent event) throws WPSException {
+    public void succeeded(ProcessEvent event) throws WPSException {
         cleanResourceStatus(event);
     }
 
     @Override
-    public void cancelled(ProcessEvent event) throws WPSException {
+    public void dismissed(ProcessEvent event) throws WPSException {
         cleanResourceStatus(event);
     }
 

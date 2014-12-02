@@ -68,7 +68,7 @@ import com.google.common.base.Preconditions;
  * @see LayerCacheOptionsTabPanel
  * @see LayerGroupCacheOptionsPanel
  */
-class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo> {
+public class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo> {
 
     private static final long serialVersionUID = 7870938096047218989L;
 

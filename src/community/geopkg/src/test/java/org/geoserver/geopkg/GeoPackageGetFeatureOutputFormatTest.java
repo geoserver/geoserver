@@ -158,7 +158,10 @@ public class GeoPackageGetFeatureOutputFormatTest extends WFSTestSupport {
                 }
             } 
             
+            reader.close();            
         }  
+        
+        geopkg.close();
     }
     
     protected boolean findFeatureAttribute(SimpleFeatureCollection collection, int indexProp, Object value) {

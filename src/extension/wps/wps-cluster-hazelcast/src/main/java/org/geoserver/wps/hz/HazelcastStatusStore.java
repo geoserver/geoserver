@@ -6,16 +6,21 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.commons.beanutils.BeanComparator;
 import org.geoserver.wps.CompositeComparator;
 import org.geoserver.wps.ProcessStatusStore;
+import org.geoserver.wps.WPSException;
 import org.geoserver.wps.executor.ExecutionStatus;
+import org.geoserver.wps.executor.ProcessState;
 import org.geotools.data.Query;
 import org.geotools.filter.FilterCapabilities;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.filter.visitor.PostPreProcessFilterSplittingVisitor;
+import org.geotools.util.logging.Logging;
 import org.opengis.filter.Filter;
 import org.opengis.filter.sort.SortBy;
 import org.opengis.filter.sort.SortOrder;
@@ -38,6 +43,8 @@ import com.hazelcast.query.TruePredicate;
  * 
  */
 public class HazelcastStatusStore implements ProcessStatusStore {
+
+    static final Logger LOGGER = Logging.getLogger(HazelcastStatusStore.class);
 
     /**
      * Name of the distributed map that will hold the process statuses
@@ -70,7 +77,30 @@ public class HazelcastStatusStore implements ProcessStatusStore {
 
     @Override
     public void save(ExecutionStatus status) {
-        statuses.put(status.getExecutionId(), new ExecutionStatus(status));
+        if (LOGGER.isLoggable(Level.FINE)) {
+            LOGGER.log(Level.FINE, "Saving status " + status);
+        }
+
+        boolean succeded = false;
+
+        // use optimistic locking to update the status, and check the phase transition is a valid
+        // one
+        while (!succeded) {
+            ExecutionStatus oldStatus = statuses.get(status.getExecutionId());
+            if (oldStatus != null) {
+                ProcessState previousPhase = oldStatus.getPhase();
+                ProcessState currPhase = status.getPhase();
+                if (!currPhase.isValidSuccessor(previousPhase)) {
+                    throw new WPSException("Cannot switch process status from " + previousPhase
+                            + " to " + currPhase);
+                }
+                succeded = statuses.replace(status.getExecutionId(), oldStatus,
+                        new ExecutionStatus(status));
+            } else {
+                ExecutionStatus previous = statuses.put(status.getExecutionId(), status);
+                succeded = previous == null;
+            }
+        }
     }
 
     @Override
@@ -79,14 +109,27 @@ public class HazelcastStatusStore implements ProcessStatusStore {
     }
 
     @Override
+    public ExecutionStatus remove(String executionId) {
+        if (LOGGER.isLoggable(Level.FINE)) {
+            LOGGER.log(Level.FINE, "Removing status for execution id: " + executionId);
+        }
+        return statuses.remove(executionId);
+    }
+
+    @Override
     public int remove(Filter filter) {
+        if (LOGGER.isLoggable(Level.FINE)) {
+            LOGGER.log(Level.FINE, "Removing statuses matching: " + filter);
+        }
+
         FilterPredicate filterPredicate = new FilterPredicate(filter);
         Predicate predicate = filterPredicate.predicate;
         Filter postFilter = filterPredicate.postFilter;
 
         Map<String, Object> results = statuses.executeOnEntries(new RemovingEntryProcessor(
                 postFilter), predicate);
-        return results.size();
+        int removedCount = results.size();
+        return removedCount;
     }
 
     @Override
@@ -332,4 +375,5 @@ public class HazelcastStatusStore implements ProcessStatusStore {
         }
 
     }
+
 }

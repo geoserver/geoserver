@@ -65,4 +65,13 @@ public interface WebProcessingService {
      * @throws WPSException
      */
     Resource getExecutionResult(GetExecutionResultType request) throws WPSException;
+
+    /**
+     * Dismisses the execution of a currently running process
+     * 
+     * @param request
+     * @return
+     * @throws WPSException
+     */
+    ExecuteResponseType dismiss(DismissType request) throws WPSException;
 }

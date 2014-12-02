@@ -110,4 +110,8 @@ public class DefaultWebProcessingService implements WebProcessingService, Applic
     public Resource getExecutionResult(GetExecutionResultType request) throws WPSException {
         return new GetResult(resources).run(request);
     }
+
+    public ExecuteResponseType dismiss(DismissType request) throws WPSException {
+        return new Dismiss(executionManager, tracker, resources, context).run(request);
+    }
 }

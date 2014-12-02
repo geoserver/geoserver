@@ -5,6 +5,8 @@
  */
 package org.geoserver.wps;
 
+import static org.junit.Assert.*;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,8 +23,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.dom.DOMSource;
 
-import junit.framework.Assert;
-
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
@@ -30,7 +30,6 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.SystemTestData.LayerProperty;
-import org.geoserver.security.AccessMode;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.wcs.CoverageCleanerCallback;
 import org.geoserver.wps.xml.WPSConfiguration;
@@ -38,7 +37,6 @@ import org.geotools.process.Processors;
 import org.geotools.xml.Configuration;
 import org.geotools.xml.Parser;
 import org.junit.After;
-import org.junit.Before;
 import org.opengis.coverage.grid.GridCoverage;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXParseException;
@@ -148,7 +146,7 @@ public abstract class WPSTestSupport extends GeoServerSystemTestSupport {
                 SAXParseException ex = (SAXParseException) e.next();
                 System.out.println( ex.getLineNumber() + "," + ex.getColumnNumber() + " -" + ex.toString()  );
             }
-            Assert.fail( "Document did not validate.");
+            fail("Document did not validate.");
         }
     }
 

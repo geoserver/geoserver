@@ -21,30 +21,33 @@ public interface ProcessListener {
     void submitted(ProcessEvent event) throws WPSException;
 
     /**
-     * Called to notify progress in the process execution
+     * Reports progress of the process. Not to be confused with the Java based process
+     * implementation progress tracking, this also includes input parsing and output encoding void
+     * progress(ProcessEvent event) throws WPSException;
      * 
      * @param event
      */
     void progress(ProcessEvent event) throws WPSException;
 
     /**
-     * Reports progress of the process. Not to be confused with the Java based process
-     * implementation progress tracking, this also includes input parsing and output encoding void
-     * progress(ProcessEvent event) throws WPSException;
-     * 
-     * /** Called when the process successfully executed and the output is succesfully written out
-     * to the caller (or stored on disk, for asynchronous calls)
+     * Called when the process successfully executed and the output is successfully written out to
+     * the caller (or stored on disk, for asynchronous calls)
      * 
      * @param event
      */
-    void completed(ProcessEvent event) throws WPSException;
+    void succeeded(ProcessEvent event) throws WPSException;
 
     /**
-     * Called when the process is getting cancelled by the client/administrator
+     * Called when the process is getting dismissed by the client/administrator
      * 
      * @param event
      */
-    void cancelled(ProcessEvent event) throws WPSException;
+    void dismissing(ProcessEvent event) throws WPSException;
+
+    /**
+     * Notifies dismissal completion
+     */
+    void dismissed(ProcessEvent event) throws WPSException;
 
     /**
      * Called when the process failed to execute. This method should not throw further exceptions.

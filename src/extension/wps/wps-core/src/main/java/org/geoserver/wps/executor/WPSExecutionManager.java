@@ -7,10 +7,8 @@ package org.geoserver.wps.executor;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.Callable;
@@ -26,7 +24,10 @@ import org.geoserver.ows.XmlObjectEncodingResponse;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.threadlocals.ThreadLocalsTransfer;
+import org.geoserver.wps.ProcessDismissedException;
+import org.geoserver.wps.ProcessEvent;
 import org.geoserver.wps.ProcessListener;
+import org.geoserver.wps.UnknownExecutionIdException;
 import org.geoserver.wps.WPSException;
 import org.geoserver.wps.executor.ProcessListenerNotifier.WPSProgressListener;
 import org.geoserver.wps.ppio.ComplexPPIO;
@@ -100,8 +101,7 @@ public class WPSExecutionManager implements ApplicationContextAware,
     /**
      * The currently running processes
      */
-    private Set<String> localProcessExecutionIds = Collections
-            .newSetFromMap(new ConcurrentHashMap<String, Boolean>());
+    private Map<String, ProcessListenerNotifier> localProcesses = new ConcurrentHashMap<String, ProcessListenerNotifier>();
 
     /**
      * The timer informing the status tracker of the currently executing processes
@@ -177,6 +177,12 @@ public class WPSExecutionManager implements ApplicationContextAware,
                     + " with execution id " + executionId);
             // building the response while the process is still "queued", will result in
             // ProcessAccepted in the response
+            try {
+                resourceManager.storeRequestObject(request.getRequest(), executionId);
+            } catch (IOException e) {
+                throw new WPSException("Failed to store original WPS request, which "
+                        + "will be needed to encode the output", e);
+            }
             ExecuteResponseBuilder builder = new ExecuteResponseBuilder(request.getRequest(),
                     applicationContext, status);
             response = builder.build();
@@ -321,11 +327,15 @@ public class WPSExecutionManager implements ApplicationContextAware,
             if (transfer != null) {
                 try {
                     transfer.apply();
-                    localProcessExecutionIds.add(status.getExecutionId());
+                    localProcesses.put(status.getExecutionId(), notifier);
                     return execute();
                 } finally {
-                    localProcessExecutionIds.remove(status.getExecutionId());
-                    transfer.cleanup();
+                    localProcesses.remove(status.getExecutionId());
+                    try {
+                        transfer.cleanup();
+                    } finally {
+                        resourceManager.finished(status.getExecutionId());
+                    }
                 }
             } else {
                 return execute();
@@ -333,6 +343,9 @@ public class WPSExecutionManager implements ApplicationContextAware,
         }
 
         private ExecuteResponseType execute() {
+            ExecuteResponseType result = null;
+            Map<String, Object> outputs = null;
+
             // prepare the lazy input map to report progress (for simple inputs the parse
             // already happened, but the output response is yet to be encoded, so we give
             // that a bit more in terms of percentage)
@@ -345,94 +358,108 @@ public class WPSExecutionManager implements ApplicationContextAware,
             float inputPercentage = 1 + inputsLongSteps * longStepPercentage;
             float outputPercentage = (hasComplexOutputs() ? longStepPercentage : 0) + 1;
             float executionPercentage = 100 - inputPercentage - outputPercentage;
-
-            // have the input map give us progress report
             WPSProgressListener listener = notifier.getProgressListener();
-            inputs.setListener(new SubProgressListener(listener, 0, inputPercentage));
-
-            // submit
-            SubProgressListener executionListener = new SubProgressListener(listener,
-                    inputPercentage, executionPercentage);
-            processManager.submit(status.getExecutionId(), status.getProcessName(), inputs,
-                    executionListener, status.isAsynchronous());
-
-            // prepare to build the response
-            Map<String, Object> outputs = null;
             try {
+                // have the input map give us progress report
+                inputs.setListener(new SubProgressListener(listener, 0, inputPercentage));
+
+                // submit
+                SubProgressListener executionListener = new SubProgressListener(listener,
+                        inputPercentage, executionPercentage);
+                notifier.checkDismissed();
+                processManager.submit(status.getExecutionId(), status.getProcessName(), inputs,
+                        executionListener, status.isAsynchronous());
+
                 // grab the output (and get blocked waiting for it)
+                notifier.checkDismissed();
                 outputs = processManager.getOutput(status.getExecutionId(), -1);
-                if(status.getPhase() == ProcessState.RUNNING) {
+                if (status.getPhase() == ProcessState.RUNNING) {
                     notifier.fireProgress(inputPercentage + executionPercentage,
                             "Execution completed, preparing to write response");
                 }
+            } catch (ProcessDismissedException e) {
+                // that's fine, move on writing the output
             } catch (Exception e) {
-                LOGGER.log(Level.SEVERE, "Process execution failed", e);
-                notifier.fireFailed(e);
-            }
-
-            // build result and return
-            notifier.fireProgress(inputPercentage + executionPercentage, "Writing outputs");
-
-            ExecuteResponseType result = null;
-            try {
-                // the build must say we completed, even if writing might take some time
-                ExecutionStatus completedStatus = new ExecutionStatus(status);
-                if (status.getPhase() == ProcessState.RUNNING) {
-                    completedStatus.setPhase(ProcessState.SUCCEEDED);
+                if (status.getPhase() != ProcessState.DISMISSING) {
+                    LOGGER.log(Level.SEVERE, "Process execution failed", e);
+                    notifier.fireFailed(e);
                 }
-                ExecuteResponseBuilder builder = new ExecuteResponseBuilder(status.getRequest(),
-                        applicationContext, completedStatus);
-                builder.setOutputs(outputs);
+            } finally {
+                // build result and return
+                if (status.getPhase() == ProcessState.RUNNING) {
+                    notifier.fireProgress(inputPercentage + executionPercentage, "Writing outputs");
+                }
 
-                result = builder.build();
-            } catch (Exception e) {
-                LOGGER.log(Level.SEVERE, "Failed writing out the results", e);
-                notifier.fireFailed(e);
-            }
-
-            // if not synchronous, we need to write the execution id down
-            if (synchronous) {
-                notifier.fireSucceded();
-            } else {
                 try {
-                    // write to a temp file (as that might take time) and only when done switch
-                    // to
-                    // the actual output file
-                    Resource output = resourceManager.getStoredResponse(status.getExecutionId());
-                    try {
-                        notifier.fireProgress(inputPercentage + executionPercentage
-                                + outputPercentage / 2, "Writing out response");
-                        writeOutResponse(result, output);
-                        notifier.fireSucceded();
-                    } catch (Exception e) {
-                        // maybe it was an exception during output encoding, try to write out
-                        // the error if possible
-                        LOGGER.log(Level.SEVERE, "Request failed during output encoding", e);
-                        status.setException(e);
-                        ExecuteResponseBuilder builder = new ExecuteResponseBuilder(
-                                status.getRequest(),
-                                applicationContext, status);
-                        builder.setOutputs(null);
-                        result = builder.build();
-                        writeOutResponse(result, output);
+                    // the build must say we completed, even if writing might take some time
+                    ExecutionStatus completedStatus = new ExecutionStatus(status);
+                    if (status.getPhase() == ProcessState.RUNNING) {
+                        completedStatus.setPhase(ProcessState.SUCCEEDED);
+                    } else {
+                        completedStatus.setPhase(ProcessState.FAILED);
+                    }
+                    ExecuteResponseBuilder builder = new ExecuteResponseBuilder(
+                            status.getRequest(), applicationContext, completedStatus);
+                    builder.setOutputs(outputs);
+
+                    ProgressListener outputListener = new SubProgressListener(listener,
+                            inputPercentage + executionPercentage, outputPercentage);
+                    result = builder.build(outputListener);
+                } catch (Exception e) {
+                    LOGGER.log(Level.SEVERE, "Failed writing out the results", e);
+                    if (status.getPhase() != ProcessState.DISMISSING) {
                         notifier.fireFailed(e);
                     }
-                } catch (Exception e) {
-                    // ouch, this is bad, we can just log the output...
-                    LOGGER.log(
-                            Level.SEVERE,
-                            "Failed to write out the stored WPS response for executionId "
-                                    + status.getExecutionId(), e);
-                    notifier.fireFailed(e);
-                    throw new WPSException("Execution failed while writing the outputs", e);
+                }
+
+                // if we are being cancelled, clean up everything right now
+                if (status.getPhase() != ProcessState.DISMISSING) {
+                    if (synchronous) {
+                        notifier.fireCompleted();
+                    } else {
+                        try {
+                            // write out the final response to a file that will be kept there
+                            // for GetExecutionStatus requests
+                            Resource output = resourceManager.getStoredResponse(status
+                                    .getExecutionId());
+                            try {
+                                if (status.getPhase() == ProcessState.RUNNING) {
+                                    notifier.fireProgress(inputPercentage + executionPercentage
+                                            + outputPercentage / 2, "Writing out response");
+                                }
+                                writeOutResponse(result, output);
+                                // just in case it got cancelled while we were writing the output
+                                notifier.fireCompleted();
+                            } catch (Exception e) {
+                                // maybe it was an exception during output encoding, try to write
+                                // out the error if possible
+                                LOGGER.log(Level.SEVERE, "Request failed during output encoding", e);
+                                status.setException(e);
+                                ExecuteResponseBuilder builder = new ExecuteResponseBuilder(
+                                        status.getRequest(), applicationContext, status);
+                                builder.setOutputs(null);
+                                result = builder.build();
+                                writeOutResponse(result, output);
+                                notifier.fireCompleted();
+                            }
+                        } catch (Exception e) {
+                            // ouch, this is bad, we can just log the output...
+                            LOGGER.log(Level.SEVERE,
+                                    "Failed to write out the stored WPS response for executionId "
+                                            + status.getExecutionId(), e);
+                            notifier.fireFailed(e);
+                            throw new WPSException("Execution failed while writing the outputs", e);
+                        }
+                    }
+                } else {
+                    notifier.fireCompleted();
                 }
             }
 
             return result;
         }
 
-        void writeOutResponse(ExecuteResponseType response, Resource output)
-                throws IOException {
+        void writeOutResponse(ExecuteResponseType response, Resource output) throws IOException {
             try (OutputStream os = output.out()) {
                 XmlObjectEncodingResponse encoder = new XmlObjectEncodingResponse(
                         ExecuteResponseType.class, "ExecuteResponse", WPSConfiguration.class);
@@ -455,12 +482,46 @@ public class WPSExecutionManager implements ApplicationContextAware,
 
         @Override
         public void run() {
-            for (String executionId : localProcessExecutionIds) {
+            for (String executionId : localProcesses.keySet()) {
                 statusTracker.touch(executionId);
             }
 
         }
 
+    }
+
+    /**
+     * Cancels the execution of the given process, notifying the process managers if needs be
+     * 
+     * @param executionId
+     */
+    public void cancel(String executionId) {
+        ExecutionStatus status = statusTracker.getStatus(executionId);
+        if (status == null) {
+            throw new UnknownExecutionIdException(executionId);
+        }
+
+        // if the process is running locally, clean it
+        if (status.getPhase() == ProcessState.RUNNING) {
+            ProcessListenerNotifier notifier = localProcesses.get(executionId);
+            if (notifier != null) {
+                notifier.dismiss();
+            } else {
+                status.setPhase(ProcessState.DISMISSING);
+                statusTracker.dismissing(new ProcessEvent(status, null, null));
+            }
+            
+            // did it manage to complete while we were notifying dismiss?
+            status = statusTracker.getStatus(executionId);
+            if(!status.getPhase().isExecutionCompleted()) {
+                return;
+            }
+        } 
+        
+        // alredy completed, clean it up
+        ProcessEvent event = new ProcessEvent(status, null);
+        statusTracker.dismissed(event);
+        resourceManager.dismissed(event);
     }
 
 }

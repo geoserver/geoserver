@@ -60,11 +60,14 @@ import org.geoserver.wps.process.GeoServerProcessors;
 import org.geoserver.wps.process.RawData;
 import org.geoserver.wps.resource.WPSResourceManager;
 import org.geotools.data.Parameter;
+import org.geotools.feature.FeatureCollection;
 import org.geotools.process.ProcessFactory;
 import org.geotools.util.Converters;
+import org.geotools.util.NullProgressListener;
 import org.geotools.util.logging.Logging;
 import org.geotools.xml.EMFUtils;
 import org.opengis.feature.type.Name;
+import org.opengis.util.ProgressListener;
 import org.springframework.context.ApplicationContext;
 
 public class ExecuteResponseBuilder {
@@ -96,6 +99,10 @@ public class ExecuteResponseBuilder {
     }
 
     public ExecuteResponseType build() {
+        return build(new NullProgressListener());
+    }
+
+    public ExecuteResponseType build(ProgressListener listener) {
         ExecuteRequest helper = new ExecuteRequest(request);
 
         // build the response
@@ -211,6 +218,9 @@ public class ExecuteResponseBuilder {
                 // and reference encoding
                 EList outputs = request.getResponseForm().getResponseDocument().getOutput();
                 for (Object object : outputs) {
+                    if (listener.isCanceled()) {
+                        break;
+                    }
                     DocumentOutputDefinitionType odt = (DocumentOutputDefinitionType) object;
                     String key = odt.getIdentifier().getValue();
                     Parameter<?> outputParam = resultInfo.get(key);
@@ -220,14 +230,19 @@ public class ExecuteResponseBuilder {
                     }
 
                     String mimeType = odt.getMimeType();
-                    OutputDataType output = encodeOutput(key, outputParam, mimeType, odt.isAsReference());
+                    OutputDataType output = encodeOutput(key, outputParam, mimeType,
+                            odt.isAsReference(), listener);
                     processOutputs.getOutput().add(output);
                 }
             } else {
                 // encode all as inline for the moment
                 for (String key : outputs.keySet()) {
+                    if (listener.isCanceled()) {
+                        break;
+                    }
+
                     Parameter<?> outputParam = resultInfo.get(key);
-                    OutputDataType output = encodeOutput(key, outputParam, null, false);
+                    OutputDataType output = encodeOutput(key, outputParam, null, false, listener);
                     processOutputs.getOutput().add(output);
                 }
             }
@@ -237,13 +252,13 @@ public class ExecuteResponseBuilder {
     }
 
     OutputDataType encodeOutput(String key, Parameter<?> outputParam, String mimeType,
-            boolean reference) {
+            boolean reference, ProgressListener listener) {
         Wps10Factory f = Wps10Factory.eINSTANCE;
         OutputDataType output = f.createOutputDataType();
         output.setIdentifier(Ows11Util.code(key));
         output.setTitle(Ows11Util.languageString(outputParam.description));
 
-        final Object o = outputs.get(key);
+        Object o = outputs.get(key);
         if (mimeType == null) {
             mimeType = getOutputMimeType(key);
         }
@@ -265,8 +280,12 @@ public class ExecuteResponseBuilder {
                 Resource outputResource = resourceManager.getOutputResource(
                         status.getExecutionId(), name);
                 
-                // write out the output
-                try (OutputStream os = outputResource.out()) {
+                // write out the output, wrapping the output stream and other well known
+                // object in classes that will fail upon cancellation
+                try (OutputStream os = new CancellingOutputStream(outputResource.out(), listener)) {
+                    if (o instanceof FeatureCollection) {
+                        o = CancellingFeatureCollectionBuilder.wrap((FeatureCollection) o, listener);
+                    }
                     cppio.encode(o, os);
                 }
                 
@@ -365,7 +384,7 @@ public class ExecuteResponseBuilder {
     }
 
     private ServiceException getException(ProcessState phase) {
-        if (phase == ProcessState.CANCELLED) {
+        if (phase == ProcessState.DISMISSING) {
             return new WPSException("Process was cancelled by the administrator");
         } else {
             return new WPSException("Process failed during execution", status.getException());

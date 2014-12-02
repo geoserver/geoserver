@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.geoserver.wps.ProcessDismissedException;
 import org.geoserver.wps.ProcessEvent;
 import org.geoserver.wps.ProcessListener;
 import org.geotools.util.logging.Logging;
@@ -70,7 +71,9 @@ public class ProcessListenerNotifier {
 
     public void fireFailed(Throwable e) {
         status.setPhase(ProcessState.FAILED);
-        status.setException(e);
+        if (e != null) {
+            status.setException(e);
+        }
         ProcessEvent event = new ProcessEvent(status, inputs, outputs);
         for (ProcessListener listener : listeners) {
             listener.failed(event);
@@ -83,7 +86,39 @@ public class ProcessListenerNotifier {
         status.setTask(null);
         ProcessEvent event = new ProcessEvent(status, inputs, outputs);
         for (ProcessListener listener : listeners) {
-            listener.submitted(event);
+            listener.succeeded(event);
+        }
+    }
+
+    public void fireCompleted() {
+        if (status.getPhase() == ProcessState.RUNNING) {
+            fireSucceded();
+        } else if (status.getPhase() == ProcessState.DISMISSING) {
+            fireDismissed();
+        } else {
+            fireFailed(null);
+        }
+    }
+
+    /**
+     * Notifies all listeners that the process is being dismissed
+     */
+    public void dismiss() {
+        this.status.phase = ProcessState.DISMISSING;
+        ProcessEvent event = new ProcessEvent(status, inputs, outputs);
+        for (ProcessListener listener : listeners) {
+            listener.dismissing(event);
+        }
+    }
+
+    /**
+     * Notifies all listeners that the process is being dismissed
+     */
+    public void fireDismissed() {
+        this.status.phase = ProcessState.FAILED;
+        ProcessEvent event = new ProcessEvent(status, inputs, outputs);
+        for (ProcessListener listener : listeners) {
+            listener.dismissed(event);
         }
     }
 
@@ -93,8 +128,6 @@ public class ProcessListenerNotifier {
      * @author Andrea Aime - GeoSolutions
      */
     class WPSProgressListener implements ProgressListener {
-
-        boolean canceled;
 
         InternationalString task;
 
@@ -110,6 +143,7 @@ public class ProcessListenerNotifier {
         @Override
         public void setTask(InternationalString task) {
             this.task = task;
+            checkDismissed();
             fireProgress(status.progress, task.toString());
         }
 
@@ -120,6 +154,7 @@ public class ProcessListenerNotifier {
 
         @Override
         public void setDescription(String description) {
+            checkDismissed();
             this.description = description;
         }
 
@@ -131,9 +166,7 @@ public class ProcessListenerNotifier {
         @Override
         public void progress(float percent) {
             // force process to just exit immediately
-            if (status.phase == ProcessState.CANCELLED) {
-                throw new ProcessCanceledException();
-            }
+            checkDismissed();
             fireProgress(percent, task.toString());
         }
 
@@ -154,12 +187,12 @@ public class ProcessListenerNotifier {
 
         @Override
         public boolean isCanceled() {
-            return status.phase == ProcessState.CANCELLED;
+            return status.phase == ProcessState.DISMISSING;
         }
 
         @Override
         public void setCanceled(boolean cancel) {
-            status.phase = ProcessState.CANCELLED;
+            dismiss();
         }
 
         @Override
@@ -168,15 +201,13 @@ public class ProcessListenerNotifier {
                     "Got a warning during process execution " + status.getExecutionId() + ": "
                             + warning);
             // force process to just exit immediately
-            if (canceled) {
-                throw new ProcessCanceledException();
-            }
+            checkDismissed();
         }
 
         @Override
         public void exceptionOccurred(Throwable exception) {
             // do not record the exception if we just forced the process to bail out
-            if (!canceled) {
+            if (status.phase != ProcessState.DISMISSING) {
                 this.exception = exception;
                 fireFailed(exception);
             }
@@ -191,6 +222,15 @@ public class ProcessListenerNotifier {
     public WPSProgressListener getProgressListener() {
         return progressListener;
 
+    }
+
+    /**
+     * Throws a process cancelled exception if the process has been cancelled
+     */
+    public void checkDismissed() {
+        if (status.getPhase() == ProcessState.DISMISSING) {
+            throw new ProcessDismissedException();
+        }
     }
 
 

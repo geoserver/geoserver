@@ -17,6 +17,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.xml.parsers.ParserConfigurationException;
+
 import net.opengis.wps10.ExecuteType;
 
 import org.geoserver.ows.Dispatcher;
@@ -31,10 +33,17 @@ import org.geoserver.platform.Service;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
+import org.geoserver.wps.ProcessEvent;
+import org.geoserver.wps.ProcessListenerAdapter;
+import org.geoserver.wps.WPSException;
 import org.geoserver.wps.executor.ExecutionStatus;
 import org.geoserver.wps.executor.ProcessStatusTracker;
 import org.geoserver.wps.resource.ProcessArtifactsStore.ArtifactType;
+import org.geoserver.wps.xml.WPSConfiguration;
 import org.geotools.util.logging.Logging;
+import org.geotools.wps.WPS;
+import org.geotools.xml.Encoder;
+import org.geotools.xml.Parser;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -42,9 +51,7 @@ import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.context.event.ContextStoppedEvent;
-
-import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.io.binary.BinaryStreamDriver;
+import org.xml.sax.SAXException;
 
 /**
  * A WPS process has to deal with various temporary resources during the execution, be streamed and
@@ -61,7 +68,7 @@ import com.thoughtworks.xstream.io.binary.BinaryStreamDriver;
  *         TODO: we need to have the process statuses to avoid deleting stuff that is being worked
  *         on by another machine
  */
-public class WPSResourceManager implements DispatcherCallback,
+public class WPSResourceManager extends ProcessListenerAdapter implements DispatcherCallback,
         ApplicationListener<ApplicationEvent>, ApplicationContextAware {
     private static final Logger LOGGER = Logging.getLogger(WPSResourceManager.class);
 
@@ -269,8 +276,11 @@ public class WPSResourceManager implements DispatcherCallback,
             return null;
         } else {
             try (InputStream in = resource.in()) {
-                XStream xs = new XStream(new BinaryStreamDriver());
-                return (ExecuteType) xs.fromXML(in);
+                WPSConfiguration config = new WPSConfiguration();
+                Parser parser = new Parser(config);
+                return (ExecuteType) parser.parse(in);
+            } catch (SAXException | ParserConfigurationException e) {
+                throw new WPSException("Could not parse the stored WPS request", e);
             }
         }
     }
@@ -285,8 +295,9 @@ public class WPSResourceManager implements DispatcherCallback,
     public void storeRequestObject(ExecuteType execute, String executionId) throws IOException {
         Resource resource = getStoredRequest(executionId);
         try (OutputStream out = resource.out()) {
-            XStream xs = new XStream(new BinaryStreamDriver());
-            xs.toXML(execute, out);
+            WPSConfiguration config = new WPSConfiguration();
+            Encoder encoder = new Encoder(config);
+            encoder.encode(execute, WPS.Execute, out);
         }
     }
 
@@ -306,7 +317,7 @@ public class WPSResourceManager implements DispatcherCallback,
 
         // cleanup automatically if the process is synchronous
         if (resourceCache.get(id).synchronouos) {
-            cleanProcess(id);
+            cleanProcess(id, false);
             resourceCache.remove(id);
         }
     }
@@ -316,7 +327,7 @@ public class WPSResourceManager implements DispatcherCallback,
         this.executionId.remove();
 
         // cleanup the temporary resources
-        cleanProcess(executionId);
+        cleanProcess(executionId, false);
        
         // mark the process as complete
         resourceCache.get(executionId).completionTime = System.currentTimeMillis();
@@ -329,7 +340,7 @@ public class WPSResourceManager implements DispatcherCallback,
      * 
      * @param id
      */
-    void cleanProcess(String id) {
+    public void cleanProcess(String id, boolean cancelled) {
         // delete all resources associated with the process
         ExecutionResources executionResources = resourceCache.get(id);
         for (WPSResource resource : executionResources.temporary) {
@@ -338,6 +349,15 @@ public class WPSResourceManager implements DispatcherCallback,
             } catch (Throwable t) {
                 LOGGER.log(Level.WARNING,
                         "Failed to clean up the WPS resource " + resource.getName(), t);
+            }
+        }
+
+        // in case of cancellation, remove also the results
+        if (cancelled) {
+            try {
+                artifactsStore.clearArtifacts(id);
+            } catch (IOException e) {
+                throw new WPSException("Failed to clear the process artifacts");
             }
         }
     }
@@ -371,7 +391,7 @@ public class WPSResourceManager implements DispatcherCallback,
         if (event instanceof ContextClosedEvent || event instanceof ContextStoppedEvent) {
             // we are shutting down, remove all temp resources!
             for (String id : resourceCache.keySet()) {
-                cleanProcess(id);
+                cleanProcess(id, false);
             }
             resourceCache.clear();
         }
@@ -415,7 +435,11 @@ public class WPSResourceManager implements DispatcherCallback,
         return result;
     }
 
-
+    @Override
+    public void dismissed(ProcessEvent event) throws WPSException {
+        String executionId = event.getStatus().getExecutionId();
+        cleanProcess(executionId, true);
+    }
 
 
 }

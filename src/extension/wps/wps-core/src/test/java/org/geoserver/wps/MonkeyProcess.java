@@ -41,10 +41,11 @@ public class MonkeyProcess {
 
     }
 
-    public static void exit(String id, SimpleFeatureCollection value, boolean wait) throws InterruptedException {
+    public static void exit(String id, SimpleFeatureCollection value, boolean wait)
+            throws InterruptedException {
         getCommandQueue(id).put(new Command(CommandType.Exit, value));
-        if(wait) {
-            while(getCommandQueue(id).size() > 0) {
+        if (wait) {
+            while (getCommandQueue(id).size() > 0) {
                 Thread.sleep(10);
             }
         }
@@ -52,28 +53,30 @@ public class MonkeyProcess {
 
     private synchronized static BlockingQueue<Command> getCommandQueue(String id) {
         BlockingQueue<Command> queue = commands.get(id);
-        if(queue == null) {
+        if (queue == null) {
             queue = new LinkedBlockingQueue<MonkeyProcess.Command>();
             commands.put(id, queue);
         }
-        
+
         return queue;
     }
 
-    public static void progress(String id, float progress, boolean wait) throws InterruptedException {
+    public static void progress(String id, float progress, boolean wait)
+            throws InterruptedException {
         getCommandQueue(id).put(new Command(CommandType.SetProgress, progress));
-        if(wait) {
-            while(getCommandQueue(id).size() > 0) {
+        if (wait) {
+            while (getCommandQueue(id).size() > 0) {
                 Thread.sleep(10);
             }
         }
 
     }
 
-    public static void exception(String id, ProcessException exception, boolean wait) throws InterruptedException {
+    public static void exception(String id, ProcessException exception, boolean wait)
+            throws InterruptedException {
         getCommandQueue(id).put(new Command(CommandType.Exception, exception));
-        if(wait) {
-            while(getCommandQueue(id).size() > 0) {
+        if (wait) {
+            while (getCommandQueue(id).size() > 0) {
                 Thread.sleep(10);
             }
         }
@@ -109,8 +112,9 @@ public class MonkeyProcess {
 
     public static void clearCommands() {
         for (Map.Entry<String, BlockingQueue<MonkeyProcess.Command>> entry : commands.entrySet()) {
-            if(entry.getValue().size() > 0) {
-                throw new IllegalStateException("The command queue is not clean, queue " + entry.getKey() + " still has commands in: " + entry.getValue());
+            if (entry.getValue().size() > 0) {
+                throw new IllegalStateException("The command queue is not clean, queue "
+                        + entry.getKey() + " still has commands in: " + entry.getValue());
             }
         }
 

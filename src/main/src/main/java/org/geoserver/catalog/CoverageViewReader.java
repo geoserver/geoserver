@@ -5,8 +5,12 @@
  */
 package org.geoserver.catalog;
 
+import it.geosolutions.imageio.utilities.ImageIOUtilities;
+
 import java.awt.Rectangle;
+import java.awt.image.ColorModel;
 import java.awt.image.RenderedImage;
+import java.awt.image.SampleModel;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,6 +21,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.media.jai.ImageLayout;
+import javax.media.jai.RasterFactory;
 import javax.media.jai.operator.BandMergeDescriptor;
 
 import org.geoserver.catalog.CoverageDimensionCustomizerReader.GridCoverageWrapper;
@@ -36,6 +41,7 @@ import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.factory.Hints;
 import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.referencing.CRS;
+import org.jaitools.imageutils.ImageLayout2;
 import org.opengis.coverage.SampleDimension;
 import org.opengis.coverage.grid.Format;
 import org.opengis.coverage.grid.GridEnvelope;
@@ -255,6 +261,8 @@ public class CoverageViewReader implements GridCoverage2DReader {
 
     private GridCoverageFactory coverageFactory;
 
+    private ImageLayout imageLayout;
+
     public CoverageViewReader(GridCoverage2DReader delegate, CoverageView coverageView,
             CoverageInfo coverageInfo, Hints hints) {
         this.coverageName = coverageView.getName();
@@ -272,6 +280,22 @@ public class CoverageViewReader implements GridCoverage2DReader {
         }
         if (this.coverageFactory == null) {
             this.coverageFactory = CoverageFactoryFinder.getGridCoverageFactory(this.hints);
+        }
+        ImageLayout layout;
+        try {
+            layout = delegate.getImageLayout(referenceName);
+            List<CoverageBand> bands = coverageView.getCoverageBands();
+            SampleModel originalSampleModel = layout.getSampleModel(null);
+            SampleModel sampleModel = RasterFactory.createBandedSampleModel(originalSampleModel.getDataType(),
+                    originalSampleModel.getWidth(), originalSampleModel.getHeight(), bands.size());
+
+            ColorModel colorModel = ImageIOUtilities.createColorModel(sampleModel);
+            this.imageLayout = new ImageLayout2(layout.getMinX(null), layout.getMinY(null), originalSampleModel.getWidth(), 
+                    originalSampleModel.getHeight());
+            imageLayout.setSampleModel(sampleModel);
+            imageLayout.setColorModel(colorModel);
+        } catch (IOException e) {
+           throw new RuntimeException(e);
         }
     }
 
@@ -497,13 +521,13 @@ public class CoverageViewReader implements GridCoverage2DReader {
 
     @Override
     public ImageLayout getImageLayout() throws IOException {
-        return delegate.getImageLayout(referenceName);
+        return imageLayout;
     }
 
     @Override
     public ImageLayout getImageLayout(String coverageName) throws IOException {
         checkCoverageName(coverageName);
-        return delegate.getImageLayout(referenceName);
+        return imageLayout;
     }
 
     @Override

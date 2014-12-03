@@ -941,7 +941,7 @@ public class DownloadProcessTest extends WPSTestSupport {
          * @return true, if is canceled
          */
         public boolean isCanceled() {
-            return status.getPhase() == ProcessState.CANCELLED;
+            return status.getPhase() == ProcessState.DISMISSING;
         }
 
         /**
@@ -951,7 +951,7 @@ public class DownloadProcessTest extends WPSTestSupport {
          */
         public void setCanceled(boolean cancel) {
             if (cancel == true) {
-                status.setPhase(ProcessState.CANCELLED);
+                status.setPhase(ProcessState.DISMISSING);
             }
 
         }

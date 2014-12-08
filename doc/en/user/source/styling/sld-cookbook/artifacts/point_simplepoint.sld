@@ -8,7 +8,7 @@
   <NamedLayer>
     <Name>Simple Point</Name>
     <UserStyle>
-      <Title>SLD Cook Book: Simple Point With Stroke</Title>
+      <Title>SLD Cook Book: Simple Point</Title>
       <FeatureTypeStyle>
         <Rule>
           <PointSymbolizer>

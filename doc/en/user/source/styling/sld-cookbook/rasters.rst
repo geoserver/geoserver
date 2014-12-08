@@ -143,7 +143,7 @@ As with previous examples, **lines 8-11** determine the ``<ColorMap>``, with **l
 Three-color gradient
 --------------------
 
-This example creates a three-color gradient in primary colors.  In addition, the gradient doesn't span the entire range of data values, leading some data not to be rendered at all.
+This example creates a three-color gradient in primary colors.
 
 .. figure:: images/raster_threecolorgradient.png
    :align: center
@@ -175,7 +175,7 @@ Details
 
 This example creates a three-color gradient based on a ``<ColorMap>`` with three entries on **lines 4-8**: **line 5** specifies the lower bound (150) be styled in blue (``#0000FF``), **line 6** specifies an intermediate point (200) be styled in yellow (``#FFFF00``), and **line 7** specifies the upper bound (250) be styled in red (``#FF0000``).
 
-Since our data values run between 70 and 256, some data points are not accounted for in this style.  Those values below the lowest entry in the color map (the range from 70 to 149)  are styled the same color as the lower bound, in this case blue.  On the other hand, values above the upper bound in the color map (the range from 251 to 256) are not rendered at all.
+Since our data values run between 70 and 256, some data points are not accounted for in this style.  Those values below the lowest entry in the color map (the range from 70 to 149)  are styled the same color as the lower bound, in this case blue.  Values above the upper bound in the color map (the range from 251 to 256) are styled the same color as the upper bound, in this case red.
 
 
 Alpha channel

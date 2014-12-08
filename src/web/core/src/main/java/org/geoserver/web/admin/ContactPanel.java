@@ -20,10 +20,12 @@ public class ContactPanel extends Panel {
         add(new TextField("contactPosition"));
         add(new TextField("addressType"));
         add(new TextField("address")); 
+        add(new TextField("addressDeliveryPoint"));
         add(new TextField("addressCity"));
         add(new TextField("addressState")); 
         add(new TextField("addressPostalCode"));
         add(new TextField("addressCountry"));
+        add(new TextField("addressElectronicMailAddress"));
         add(new TextField("contactVoice"));
         add(new TextField("contactFacsimile"));
         add(new TextField("contactEmail"));

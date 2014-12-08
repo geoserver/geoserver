@@ -17,6 +17,10 @@ public class ContactInfoImpl implements ContactInfo {
 
     String addressCountry;
 
+    String addressDeliveryPoint;
+
+    String addressElectronicMailAddress;
+
     String addressPostalCode;
 
     String addressState;
@@ -67,6 +71,26 @@ public class ContactInfoImpl implements ContactInfo {
 
     public void setAddressCountry(String addressCountry) {
         this.addressCountry = addressCountry;
+    }
+
+    @Override
+    public String getAddressDeliveryPoint() {
+        return addressDeliveryPoint;
+    }
+
+    @Override
+    public void setAddressDeliveryPoint(String addressDeliveryPoint) {
+        this.addressDeliveryPoint = addressDeliveryPoint;
+    }
+
+    @Override
+    public String getAddressElectronicMailAddress() {
+        return addressElectronicMailAddress;
+    }
+
+    @Override
+    public void setAddressElectronicMailAddress(String addressElectronicMailAddress) {
+        this.addressElectronicMailAddress = addressElectronicMailAddress;
     }
 
     public String getAddressPostalCode() {
@@ -167,6 +191,8 @@ public class ContactInfoImpl implements ContactInfo {
         result = PRIME * result + ((contactPosition == null) ? 0 : contactPosition.hashCode());
         result = PRIME * result + ((contactVoice == null) ? 0 : contactVoice.hashCode());
         result = PRIME * result + ((onlineResource == null) ? 0 : onlineResource.hashCode());
+        result = PRIME * result + ((addressElectronicMailAddress == null) ? 0 : addressElectronicMailAddress.hashCode());
+        result = PRIME * result + ((addressDeliveryPoint == null) ? 0 : addressDeliveryPoint.hashCode());
         return result;
     }
 
@@ -243,6 +269,16 @@ public class ContactInfoImpl implements ContactInfo {
             if (other.getOnlineResource() != null)
                 return false;
         } else if (!onlineResource.equals(other.getOnlineResource()))
+            return false;
+        if (addressDeliveryPoint == null) {
+            if (other.getAddressDeliveryPoint() != null)
+                return false;
+        } else if (!addressDeliveryPoint.equals(other.getAddressDeliveryPoint()))
+            return false;
+        if (addressElectronicMailAddress == null) {
+            if (other.getAddressElectronicMailAddress() != null)
+                return false;
+        } else if (!addressElectronicMailAddress.equals(other.getAddressElectronicMailAddress()))
             return false;
         return true;
     }

@@ -1130,10 +1130,16 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                 <element name="Country" type="string" minOccurs="0">
                 <element name="ElectronicMailAddress" type="string" minOccurs="0" maxOccurs="unbounded">
                  */
+                element( "ows:DeliveryPoint", contact.getAddressDeliveryPoint() );
                 element( "ows:City", contact.getAddressCity() );
                 element( "ows:AdministrativeArea", contact.getAddressState() );
                 element( "ows:PostalCode", contact.getAddressPostalCode() );
                 element( "ows:Country", contact.getAddressCountry() );
+                element( "ows:ElectronicMailAddress", contact.getAddressElectronicMailAddress() );
+
+                /* Currently disregarding the maxOccurs for DeliveryPoint and ElectronicMailAddress,
+                 * because this can create issues with the XML serializer. */
+
                 end( "ows:Address" );
                 
                 end( "ows:ContactInfo" );

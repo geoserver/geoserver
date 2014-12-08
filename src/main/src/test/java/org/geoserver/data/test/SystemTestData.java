@@ -906,6 +906,8 @@ public class SystemTestData extends CiteTestData {
         }
         settings.setWorkspace(ws);
         settings.getContact().setContactPerson("Andrea Aime");
+        settings.getContact().setAddressElectronicMailAddress("andrea@geoserver.org");
+        settings.getContact().setAddressDeliveryPoint("1600 Pennsylvania Ave NW, Washington DC 20500, United States");
         settings.setNumDecimals(8);
         settings.setOnlineResource("http://geoserver.org");
         settings.setVerbose(false);

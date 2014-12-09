@@ -117,6 +117,33 @@ Examples
    In practice, GeoServer and many data storage engines have limited resolution in their representations, so approximating a range to the nearest millisecond is 'as good as we can do.'
    It is possible that this technical constraint may be lifted at some point in the future.
 
+Specifying a Relative Interval
+------------------------------
+
+A client may request information over a relative time interval instead of a set time range by specifying a start or end time with an associated duration, separated by a ``/`` character.
+One end of the interval must be a time value, but the other may be a duration value as defined by the ISO 8601 standard.  The special keyword PRESENT may be used to specify a time relative to the present server time.
+
+Examples
+........
+
+
+.. list-table::
+
+   * - Description
+     - Time specification
+   * - The month of September 2002
+     - ``2002-09-01T00:00:00.0Z/P1M``
+   * - The entire day of December 25, 2010
+     - ``2010-12-25T00:00:00.0Z/P1D``
+   * - The entire day preceding December 25, 2010
+     - ``P1D/2010-12-25T00:00:00.0Z``
+   * - 36 hours preceding the present time
+     - ``PT36H/PRESENT``
+
+.. note::
+   
+    The final example could be paired with the KML service to provide a Google Earth network link always updated with the last 36 hours of data.
+
 Reduced Accuracy Times
 ----------------------
 

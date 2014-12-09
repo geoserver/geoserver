@@ -190,16 +190,22 @@ public class TimeKvpParser extends KvpParser {
             } else {
                 // period
                 String[] period = date.split("/");
+
                 //
-                // Period like : yyyy-MM-ddTHH:mm:ssZ/yyyy-MM-ddTHH:mm:ssZ/P1D
+                // Period like one of the following: 
+                // yyyy-MM-ddTHH:mm:ssZ/yyyy-MM-ddTHH:mm:ssZ/P1D
+                // May be one of the following possible ISO 8601 Time Interval formats with trailing period for 
+                // breaking the interval by given period:
+                // TIME/TIME/PERIOD
+                // DURATION/TIME/PERIOD
+                // TIME/DURATION/PERIOD
                 //
                 if (period.length == 3) {
-                    final Date begin = beginning(getFuzzyDate(period[0]));
-                    final Date end = end(getFuzzyDate(period[1]));
+                    Date[] range = parseTimeDuration(period);
                     
                     final long millisIncrement = parsePeriod(period[2]);
-                    final long startTime = begin.getTime();
-                    final long endTime = end.getTime();
+                    final long startTime = range[0].getTime();
+                    final long endTime = range[1].getTime();
                     long time;
                     int j = 0;
                     while ((time = j * millisIncrement + startTime) <= endTime) {
@@ -215,12 +221,16 @@ public class TimeKvpParser extends KvpParser {
                             break;                  
                         }
                     }
-                } else if (period.length == 2) {
-                        // Period like : yyyy-MM-ddTHH:mm:ssZ/yyyy-MM-ddTHH:mm:ssZ, it is an extension 
-                        // of WMS that works with continuos period [Tb, Te].
-                        final Date begin = beginning(getFuzzyDate(period[0]));
-                        final Date end   = end(getFuzzyDate(period[1]));
-                        addPeriod(result, new DateRange(begin, end));
+                } 
+                // Period like : yyyy-MM-ddTHH:mm:ssZ/yyyy-MM-ddTHH:mm:ssZ, it is an extension 
+                // of WMS that works with continuos period [Tb, Te].
+                // May be one of the following possible ISO 8601 Time Interval formats, as in ECQL Time Period:
+                // TIME/DURATION
+                // DURATION/TIME
+                // TIME/TIME
+                else if (period.length == 2) {
+                        Date[] range = parseTimeDuration(period);
+                        addPeriod(result, new DateRange(range[0], range[1]));
                 } else {
                     throw new ParseException("Invalid time period: " + Arrays.toString(period), 0);
                 }
@@ -229,7 +239,68 @@ public class TimeKvpParser extends KvpParser {
         
         return new ArrayList(result);
     }
-    
+
+    private static Date[] parseTimeDuration(final String[] period) throws ParseException {
+        Date[] range = null;
+
+        if (period.length == 2 || period.length == 3) {
+            Date begin = null;
+            Date end = null;
+
+            // Check first to see if we have any duration value within TIME parameter
+            if (period[0].toUpperCase().startsWith("P") || period[1].toUpperCase().startsWith("P")) {
+                long durationOffset = Long.MIN_VALUE;
+
+                // Attempt to parse a time or duration from the first portion of the
+                if (period[0].toUpperCase().startsWith("P")) {
+                    durationOffset = parsePeriod(period[0]);
+                } else {
+                    begin = beginning(getFuzzyDate(period[0]));
+                }
+
+                if (period[1].toUpperCase().startsWith("P")
+                        && !period[1].toUpperCase().startsWith("PRESENT")) {
+                    // Invalid time period of the format:
+                    // DURATION/DURATION[/PERIOD]
+                    if (durationOffset != Long.MIN_VALUE) {
+                        throw new ParseException(
+                                "Invalid time period containing duration with no paired time value: "
+                                        + Arrays.toString(period), 0);
+                    }
+                    // Time period of the format:
+                    // DURATION/TIME[/PERIOD]
+                    else {
+                        durationOffset = parsePeriod(period[1]);
+                        final Calendar calendar = new GregorianCalendar();
+                        calendar.setTimeInMillis(begin.getTime() + durationOffset);
+                        end = calendar.getTime();
+                    }
+                }
+                // Time period of the format:
+                // TIME/DURATION[/PERIOD]
+                else {
+                    end = end(getFuzzyDate(period[1]));
+                    final Calendar calendar = new GregorianCalendar();
+                    calendar.setTimeInMillis(end.getTime() - durationOffset);
+                    begin = calendar.getTime();
+                }
+            }
+            // Time period of the format:
+            // TIME/TIME[/PERIOD]
+            else {
+                begin = beginning(getFuzzyDate(period[0]));
+                end = end(getFuzzyDate(period[1]));
+            }
+
+            range = new Date[2];
+            range[0] = begin;
+            range[1] = end;
+
+        }
+
+        return range;
+    }
+
     private static Date beginning(Object dateOrDateRange) {
         if (dateOrDateRange instanceof DateRange) {
             return ((DateRange) dateOrDateRange).getMinValue();
@@ -306,39 +377,6 @@ public class TimeKvpParser extends KvpParser {
             Calendar now = Calendar.getInstance();
             now.set(Calendar.MILLISECOND, 0);
             computedValue = FormatAndPrecision.MILLISECOND.getFormat().format(now.getTime());
-        }
-
-        /*
-         * Accept new "back" keyword, which allows use of time relative to now. 
-         * Expects parameter of the following format: 
-         * BACK1H 
-         * BACK2D 
-         * BACK30W
-         * supports intervals of hour (H), day (D) and week (W) duration of interval
-         * must be at least 1 digit
-         */
-        if (computedValue.toLowerCase().startsWith("back")) {
-            Matcher m = pattern.matcher(computedValue.toLowerCase());
-
-            while (m.find()) {
-                Calendar today = Calendar.getInstance();
-                today.set(Calendar.MILLISECOND, 0);
-
-                String interval = m.group(3);
-                int duration = Integer.parseInt(m.group(2));
-
-                if (interval.equals("h")) {
-                    today.add(Calendar.HOUR, -1 * duration);
-                } else if (interval.equals("d")) {
-                    today.add(Calendar.DAY_OF_YEAR, -1 * duration);
-                } else if (interval.equals("w")) {
-                    today.add(Calendar.DAY_OF_YEAR, -7 * duration);
-                } else {
-                    throw new ParseException("Invalid TIME back format: " + value, 0);
-                }
-
-                computedValue = FormatAndPrecision.MILLISECOND.getFormat().format(today.getTime());
-            }
         }
 
         for (FormatAndPrecision f : FormatAndPrecision.values()) {

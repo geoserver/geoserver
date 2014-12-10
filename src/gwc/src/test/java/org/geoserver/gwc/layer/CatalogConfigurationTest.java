@@ -387,6 +387,13 @@ public class CatalogConfigurationTest {
         verify(mockMediator, times(1)).layerAdded(eq(addedState2.getName()));
     }
 
+    @Test public void testCanSave() {
+        // Create mock layer not transient and ensure that the Layer cannot be saved
+        GeoServerTileLayer l = mock(GeoServerTileLayer.class);
+        when(l.isTransientLayer()).thenReturn(true);
+        assertFalse(config.canSave(l));
+    }
+
     @Test  public void testNoGeometry() throws Exception {
         org.opengis.feature.type.FeatureType featureTypeWithNoGeometry = mock(org.opengis.feature.type.FeatureType.class);
         when(featureTypeWithNoGeometry.getGeometryDescriptor()).thenReturn(null);
@@ -399,6 +406,7 @@ public class CatalogConfigurationTest {
         info.setId("layerWithNoGeometry");
         info.setName("layerWithNoGeometry");
         when(tl.getId()).thenReturn("layerWithNoGeometry");
+        when(tl.isTransientLayer()).thenReturn(false);
         when(tl.getInfo()).thenReturn(info);
         when(tl.getLayerInfo()).thenReturn(layerWithNoGeometry);
         when(catalog.getLayer(layerWithNoGeometry.getId())).thenReturn(layerWithNoGeometry);

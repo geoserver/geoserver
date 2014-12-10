@@ -99,7 +99,7 @@ public class HzCacheProvider implements CacheProvider {
         }
 
         @Override
-        public V getIfPresent(K key) {
+        public V getIfPresent(Object key) {
             if (available()) {
                 return hzMap.get(key);
             }
@@ -121,11 +121,11 @@ public class HzCacheProvider implements CacheProvider {
         }
 
         @Override
-        public ImmutableMap<K, V> getAllPresent(Iterable<? extends K> keys) {
+        public ImmutableMap<K, V> getAllPresent(Iterable<?> keys) {
             if (available()) {
                 Set<K> set = new HashSet<K>();
-                for (K k : keys) {
-                    set.add(k);
+                for (Object k : keys) {
+                    set.add((K) k);
                 }
                 Map<K, V> allPresent = hzMap.getAll(set);
                 return ImmutableMap.copyOf(allPresent);
@@ -188,22 +188,9 @@ public class HzCacheProvider implements CacheProvider {
             //
         }
 
-        @Deprecated
         @Override
-        public V get(K key) throws ExecutionException {
-            throw new UnsupportedOperationException();
-        }
-
-        @Deprecated
-        @Override
-        public V getUnchecked(K key) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Deprecated
-        @Override
-        public V apply(K key) {
-            throw new UnsupportedOperationException();
+        public void putAll(Map<? extends K, ? extends V> m) {
+            hzMap.putAll(m);
         }
     }
 
@@ -247,7 +234,7 @@ public class HzCacheProvider implements CacheProvider {
         }
 
         @Override
-        public Info getIfPresent(String key) {
+        public Info getIfPresent(Object key) {
             Info info = null;
             if (available()) {
                 byte[] serialForm = hzMap.get(key);
@@ -283,11 +270,11 @@ public class HzCacheProvider implements CacheProvider {
         }
 
         @Override
-        public ImmutableMap<String, Info> getAllPresent(Iterable<? extends String> keys) {
+        public ImmutableMap<String, Info> getAllPresent(Iterable<?> keys) {
             if (available()) {
                 Set<String> set = new HashSet<String>();
-                for (String k : keys) {
-                    set.add(k);
+                for (Object k : keys) {
+                    set.add((String) k);
                 }
                 Map<String, byte[]> allPresent = hzMap.getAll(set);
                 Function<byte[], Info> function = new Function<byte[], Info>() {
@@ -305,15 +292,32 @@ public class HzCacheProvider implements CacheProvider {
         @Override
         public void put(String key, Info value) {
             if (available()) {
-                ByteArrayOutputStream out = new ByteArrayOutputStream();
-                try {
-                    persister.save(value, out);
-                } catch (IOException e) {
-                    throw Throwables.propagate(e);
-                }
-                byte[] serialForm = out.toByteArray();
+                byte[] serialForm = serialize(value);
                 hzMap.putTransient(key, serialForm, ttl, timeunit);
             }
+        }
+
+        private byte[] serialize(Info value) {
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            try {
+                persister.save(value, out);
+            } catch (IOException e) {
+                throw Throwables.propagate(e);
+            }
+            byte[] serialForm = out.toByteArray();
+            return serialForm;
+        }
+
+        @Override
+        public void putAll(Map<? extends String, ? extends Info> m) {
+            Function<Info, byte[]> f = new Function<Info, byte[]>() {
+                @Override
+                public byte[] apply(Info input) {
+                    return serialize(input);
+                }
+            };
+            Map<? extends String, byte[]> map = Maps.transformValues(m, f);
+            hzMap.putAll(map);
         }
 
         @Override
@@ -369,24 +373,6 @@ public class HzCacheProvider implements CacheProvider {
         public void cleanUp() {
             //
         }
-
-        @Deprecated
-        @Override
-        public Info get(String key) throws ExecutionException {
-            throw new UnsupportedOperationException();
-        }
-
-        @Deprecated
-        @Override
-        public Info getUnchecked(String key) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Deprecated
-        @Override
-        public Info apply(String key) {
-            throw new UnsupportedOperationException();
-        }
     }
 
     private static class NullCache<K, V> implements Cache<K, V> {
@@ -402,14 +388,8 @@ public class HzCacheProvider implements CacheProvider {
         }
 
         @Override
-        public V getIfPresent(K key) {
+        public V getIfPresent(Object key) {
             return null;
-        }
-
-        @Deprecated
-        @Override
-        public V get(K key) throws ExecutionException {
-            throw new UnsupportedOperationException();
         }
 
         @Override
@@ -433,7 +413,7 @@ public class HzCacheProvider implements CacheProvider {
         }
 
         @Override
-        public ImmutableMap<K, V> getAllPresent(Iterable<? extends K> keys) {
+        public ImmutableMap<K, V> getAllPresent(Iterable<?> keys) {
             return ImmutableMap.of();
         }
 
@@ -457,17 +437,9 @@ public class HzCacheProvider implements CacheProvider {
             //
         }
 
-        @Deprecated
         @Override
-        public V getUnchecked(K key) {
-            throw new UnsupportedOperationException();
-
-        }
-
-        @Deprecated
-        @Override
-        public V apply(K key) {
-            throw new UnsupportedOperationException();
+        public void putAll(Map<? extends K, ? extends V> m) {
+            //
         }
     }
 }

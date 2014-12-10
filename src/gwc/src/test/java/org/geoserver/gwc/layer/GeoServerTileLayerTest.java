@@ -590,4 +590,17 @@ public class GeoServerTileLayerTest {
         assertEquals(40, layerInfoTileLayer.getInfo().getExpireCache());
     }
 
+    @Test
+    public void testAdvertised() {
+        // Testing the advertised parameter
+        layerInfoTileLayer = new GeoServerTileLayer(layerInfo, defaults, gridSetBroker);
+        assertTrue(layerInfoTileLayer.isAdvertised());
+    }
+
+    @Test
+    public void testTransient() {
+        // Testing the transient parameter
+        layerInfoTileLayer = new GeoServerTileLayer(layerInfo, defaults, gridSetBroker);
+        assertFalse(layerInfoTileLayer.isTransientLayer());
+    }
 }

@@ -531,4 +531,28 @@ public class GetCoverageTest extends AbstractGetCoverageTest {
         assertTrue(image.getHeight() < 1000);
     }
 
+    @Test
+    public void testBicubicInterpolation() throws Exception {
+        this.testInterpolationMethods("cubic");
+    }
+
+    @Test
+    public void testBilinearInterpolation() throws Exception {
+        this.testInterpolationMethods("linear");
+    }
+
+    @Test
+    public void testNearestNeighborInterpolation() throws Exception {
+        this.testInterpolationMethods("nearest");
+    }
+
+    private void testInterpolationMethods(String method) throws Exception {
+        String queryString = "wcs?identifier=" + getLayerId(MOSAIC) + "&request=getcoverage"
+                + "&service=wcs&version=1.1.1&&format=image/tiff"
+                + "&BoundingBox=0,0,1,1,urn:ogc:def:crs:EPSG:6.6:4326"
+                + "&RangeSubset=contents:" + method;
+
+        MockHttpServletResponse response = getAsServletResponse(queryString);
+    }
+
 }

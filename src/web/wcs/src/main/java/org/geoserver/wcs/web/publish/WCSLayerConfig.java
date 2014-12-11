@@ -32,7 +32,7 @@ import org.geoserver.web.wicket.SimpleChoiceRenderer;
 public class WCSLayerConfig extends LayerConfigurationPanel {
 
     private static final List<String> WCS_FORMATS = Arrays.asList("GIF","PNG","JPEG","TIFF","GTOPO30","GEOTIFF","IMAGEMOSAIC","ARCGRID");
-    private static final List<String> INTERPOLATIONS = Arrays.asList("nearest neighbour","bilinear","bicubic");
+    private static final List<String> INTERPOLATIONS = Arrays.asList("nearest neighbor","bilinear","bicubic");
     
     private List<String> selectedRequestSRSs;
     private List<String> selectedResponseSRSs;

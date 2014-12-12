@@ -45,4 +45,8 @@ public class FileRawData extends AbstractRawData {
                 + "]";
     }
 
+    public File getFile() {
+        return file;
+    }
+
 }

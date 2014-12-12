@@ -29,25 +29,25 @@ class CancellingOutputStream extends FilterOutputStream {
 
     @Override
     public void write(byte[] b) throws IOException {
-        if (listener.isCanceled()) {
-            throw new ProcessDismissedException();
-        }
+        checkCancelled();
         super.write(b);
+    }
+
+    private void checkCancelled() {
+        if (listener.isCanceled()) {
+            throw new ProcessDismissedException(listener);
+        }
     }
 
     @Override
     public void write(byte[] b, int off, int len) throws IOException {
-        if (listener.isCanceled()) {
-            throw new ProcessDismissedException();
-        }
+        checkCancelled();
         super.write(b, off, len);
     }
 
     @Override
     public void write(int b) throws IOException {
-        if (listener.isCanceled()) {
-            throw new ProcessDismissedException();
-        }
+        checkCancelled();
         super.write(b);
     }
 

@@ -5,9 +5,10 @@
  */
 package org.geoserver.wps;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.fail;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -40,6 +41,8 @@ import org.junit.After;
 import org.opengis.coverage.grid.GridCoverage;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXParseException;
+
+import com.mockrunner.mock.web.MockHttpServletResponse;
 
 public abstract class WPSTestSupport extends GeoServerSystemTestSupport {
 
@@ -180,4 +183,32 @@ public abstract class WPSTestSupport extends GeoServerSystemTestSupport {
         testData.addRasterLayer(ROTATED_CAD, "rotated.tiff", TIFF, props, MockData.class, getCatalog());
         testData.addRasterLayer(WORLD, "world.tiff", TIFF, props, MockData.class, getCatalog());
     }
+
+    protected Document waitForProcessEnd(String statusLocation, long maxWaitSeconds)
+            throws Exception {
+        XpathEngine xpath = XMLUnit.newXpathEngine();
+        Document dom = null;
+        long start = System.currentTimeMillis();
+        while ((((System.currentTimeMillis() - start) / 1000) < maxWaitSeconds)) {
+            MockHttpServletResponse response = getAsServletResponse(statusLocation);
+            String contents = response.getOutputStreamContent();
+            // super weird... and I believe related to the testing harness... just ignoring it
+            // for the moment.
+            if ("".equals(contents)) {
+                continue;
+            }
+            dom = dom(new ByteArrayInputStream(contents.getBytes()));
+            // print(dom);
+            // are we still waiting for termination?
+            if (xpath.getMatchingNodes("//wps:Status/wps:ProcessAccepted", dom).getLength() > 0
+                    || xpath.getMatchingNodes("//wps:Status/wps:ProcessStarted", dom).getLength() > 0
+                    || xpath.getMatchingNodes("//wps:Status/wps:ProcessQueued", dom).getLength() > 0) {
+                Thread.sleep(100);
+            } else {
+                return dom;
+            }
+        }
+        throw new Exception("Waited for the process to complete more than " + maxWaitSeconds);
+    }
+
 }

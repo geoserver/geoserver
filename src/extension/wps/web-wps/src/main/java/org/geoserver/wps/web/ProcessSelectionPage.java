@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -22,6 +22,7 @@ import org.apache.wicket.markup.html.form.SubmitLink;
 import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.panel.Fragment;
+import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.apache.wicket.model.IModel;
 import org.geoserver.security.GeoServerRoleService;
 import org.geoserver.security.impl.GeoServerRole;
@@ -29,9 +30,8 @@ import org.geoserver.security.web.AbstractSecurityPage;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.ParamResourceModel;
-import org.geoserver.wps.ProcessInfo;
-import org.geoserver.wps.ProcessInfoImpl;
 import org.geoserver.wps.ProcessGroupInfo;
+import org.geoserver.wps.ProcessInfo;
 import org.geoserver.wps.process.GeoServerProcessors;
 import org.geoserver.wps.web.FilteredProcessesProvider.FilteredProcess;
 import org.geotools.process.ProcessFactory;
@@ -109,7 +109,36 @@ public class ProcessSelectionPage extends AbstractSecurityPage {
                     roles.setOutputMarkupId(true);
                     roles.add(b);
                     fragment.add(roles);
-                    return fragment;                   
+                    return fragment;
+                } else if (property.getName().equals("validated")) {
+                    final IModel<Boolean> hasValidatorsModel = property.getModel(itemModel); 
+                    IModel<String> availableModel = new AbstractReadOnlyModel<String>() {
+
+                        @Override
+                        public String getObject() {
+                            Boolean value = hasValidatorsModel.getObject();
+                            if (Boolean.TRUE.equals(value)) {
+                                return "*";
+                            } else {
+                                return "";
+                            }
+                        }
+
+                    };
+                    return new Label(id, availableModel);
+                } else if (property.getName().equals("edit")) {
+                    Fragment fragment = new Fragment(id, "linkFragment", ProcessSelectionPage.this);
+                    // we use a submit link to avoid losing the other edits in the form
+                    Link link = new Link("link") {
+                        @Override
+                        public void onClick() {
+                            FilteredProcess fp = (FilteredProcess) itemModel.getObject();
+                            setResponsePage(new ProcessLimitsPage(ProcessSelectionPage.this, fp));
+                        }
+                    };
+                    fragment.add(link);
+
+                    return fragment;
                 }
                 return null;
             }            
@@ -124,12 +153,10 @@ public class ProcessSelectionPage extends AbstractSecurityPage {
                // super.onSubmit();
                 pfi.getFilteredProcesses().clear();
                 for (FilteredProcess process : provider.getItems()){
-                    if(!process.getRoles().isEmpty() || !process.getEnabled()){
-                        ProcessInfo pai = new ProcessInfoImpl();
-                        pai.setName(process.getName());
-                        pai.setEnabled(process.getEnabled());   
-                        pai.getRoles().addAll(process.getRoles());
-                        pfi.getFilteredProcesses().add(pai);      
+                    if (!process.getRoles().isEmpty() || !process.getEnabled()
+                            || !process.getValidators().isEmpty()) {
+                        ProcessInfo pai = process.toProcessInfo();
+                        pfi.getFilteredProcesses().add(pai);
                     }
                 }
                 setResponsePage(wpsAccessRulePage);

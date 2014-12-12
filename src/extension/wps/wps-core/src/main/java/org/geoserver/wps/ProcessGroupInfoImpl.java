@@ -12,7 +12,6 @@ import java.util.List;
 
 import org.geoserver.catalog.MetadataMap;
 import org.geotools.process.ProcessFactory;
-import org.opengis.feature.type.Name;
 
 public class ProcessGroupInfoImpl implements ProcessGroupInfo {
 
@@ -22,11 +21,11 @@ public class ProcessGroupInfoImpl implements ProcessGroupInfo {
 
     boolean enabled;
 
-    List<String> roles;
+    List<String> roles = new ArrayList<>();
 
     List<ProcessInfo> filteredProcesses = new ArrayList<ProcessInfo>();
 
-    MetadataMap metadataMap = new MetadataMap();
+    MetadataMap metadata = new MetadataMap();
 
     @Override
     public String getId() {
@@ -59,7 +58,11 @@ public class ProcessGroupInfoImpl implements ProcessGroupInfo {
 
     @Override
     public MetadataMap getMetadata() {
-        return metadataMap;
+        return metadata;
+    }
+
+    public void setMetadata(MetadataMap metadataMap) {
+        this.metadata = metadataMap;
     }
 
     @Override
@@ -71,11 +74,21 @@ public class ProcessGroupInfoImpl implements ProcessGroupInfo {
         if(filteredProcesses != null) {
             clone.setFilteredProcesses(new ArrayList<ProcessInfo>(filteredProcesses));
         } 
-        if(metadataMap != null) {
-            clone.metadataMap = new MetadataMap(new HashMap<String, Serializable>(metadataMap));
+        if(metadata != null) {
+            clone.metadata = new MetadataMap(new HashMap<String, Serializable>(metadata));
         }
 
         return clone;
+    }
+
+    @Override
+    public List<String> getRoles() {
+        return roles;
+    }
+
+    @Override
+    public void setRoles(List<String> roles) {
+        this.roles = roles;        
     }
 
     @Override
@@ -85,7 +98,7 @@ public class ProcessGroupInfoImpl implements ProcessGroupInfo {
         result = prime * result + (enabled ? 1231 : 1237);
         result = prime * result + ((factoryClass == null) ? 0 : factoryClass.hashCode());
         result = prime * result + ((filteredProcesses == null) ? 0 : filteredProcesses.hashCode());
-        result = prime * result + ((metadataMap == null) ? 0 : metadataMap.hashCode());
+        result = prime * result + ((metadata == null) ? 0 : metadata.hashCode());
         result = prime * result + ((roles == null) ? 0 : roles.hashCode());
         return result;
     }
@@ -101,8 +114,6 @@ public class ProcessGroupInfoImpl implements ProcessGroupInfo {
         ProcessGroupInfoImpl other = (ProcessGroupInfoImpl) obj;
         if (enabled != other.enabled)
             return false;
-        if (roles != other.roles)
-            return false;
         if (factoryClass == null) {
             if (other.factoryClass != null)
                 return false;
@@ -113,29 +124,17 @@ public class ProcessGroupInfoImpl implements ProcessGroupInfo {
                 return false;
         } else if (!filteredProcesses.equals(other.filteredProcesses))
             return false;
-        if (metadataMap == null) {
-            if (other.metadataMap != null)
+        if (metadata == null) {
+            if (other.metadata != null)
                 return false;
-        } else if (!metadataMap.equals(other.metadataMap))
+        } else if (!metadata.equals(other.metadata))
+            return false;
+        if (roles == null) {
+            if (other.roles != null)
+                return false;
+        } else if (!roles.equals(other.roles))
             return false;
         return true;
     }
-
-    @Override
-    public String toString() {
-        return "ProcessFactoryInfoImpl [factoryClass=" + factoryClass + ", enabled=" + enabled
-                + ", filteredProcesses=" + filteredProcesses + ", metadataMap=" + metadataMap +  ", roles=" + roles +"]";
-    }
-
-    @Override
-    public List<String> getRoles() {
-        return roles;
-    }
-
-    @Override
-    public void setRoles(List<String> roles) {
-        this.roles = roles;        
-    }
-
 
 }

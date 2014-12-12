@@ -127,7 +127,7 @@ public class BeanProcessFactoryTest extends WPSTestSupport {
     @Test
     public void testSPI() throws Exception {
         NameImpl boundsName = new NameImpl("bean", "Bounds");
-        ProcessFactory factory = GeoServerProcessors.createProcessFactory(boundsName);
+        ProcessFactory factory = GeoServerProcessors.createProcessFactory(boundsName, false);
         assertNotNull(factory);
 
         org.geotools.process.Process buffer = GeoServerProcessors.createProcess(boundsName);

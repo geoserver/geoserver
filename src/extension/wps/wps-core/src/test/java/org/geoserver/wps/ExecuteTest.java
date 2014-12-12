@@ -5,10 +5,11 @@
  */
 package org.geoserver.wps;
 
-import static junit.framework.Assert.*;
-import static org.custommonkey.xmlunit.XMLAssert.*;
-import static org.geoserver.data.test.MockData.*;
-import static org.junit.Assert.*;
+import static junit.framework.Assert.assertEquals;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
+import static org.geoserver.data.test.MockData.PRIMITIVEGEOFEATURE;
+import static org.junit.Assert.assertNotEquals;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -1394,27 +1395,6 @@ public class ExecuteTest extends WPSTestSupport {
         return fc;
     }
     
-    private Document waitForProcessEnd(String statusLocation, long maxWaitSeconds) throws Exception {
-        XpathEngine xpath = XMLUnit.newXpathEngine();
-        Document dom = null;
-        long start = System.currentTimeMillis();
-        while(((System.currentTimeMillis() - start) / 1000 < maxWaitSeconds)) {
-            MockHttpServletResponse response = getAsServletResponse(statusLocation);
-            // System.out.println(response.getOutputStreamContent());
-            dom = dom(new ByteArrayInputStream(response.getOutputStreamContent().getBytes()));
-            // print(dom);
-            // are we still waiting for termination?
-            if(xpath.getMatchingNodes("//wps:Status/wps:ProcessAccepted", dom).getLength() > 0 ||
-                    xpath.getMatchingNodes("//wps:Status/wps:ProcessStarted", dom).getLength() > 0 ||
-                    xpath.getMatchingNodes("//wps:Status/wps:ProcessQueued", dom).getLength() > 0 
-                    ) {
-                Thread.sleep(100);
-            } else {
-                return dom;
-            }
-        }
-        throw new Exception("Waited for the process to complete more than " + maxWaitSeconds);
-    }
 
     /**
      * Checks the bounds process returned the expected envelope

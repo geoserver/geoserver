@@ -116,7 +116,7 @@ public class ExecuteResponseBuilder {
 
         // process
         Name processName = helper.getProcessName();
-        ProcessFactory pf = GeoServerProcessors.createProcessFactory(processName);
+        ProcessFactory pf = GeoServerProcessors.createProcessFactory(processName, false);
         final ProcessBriefType process = f.createProcessBriefType();
         response.setProcess(process);
         // damn blasted EMF changes the state of request if we set its identifier on
@@ -387,7 +387,11 @@ public class ExecuteResponseBuilder {
         if (phase == ProcessState.DISMISSING) {
             return new WPSException("Process was cancelled by the administrator");
         } else {
-            return new WPSException("Process failed during execution", status.getException());
+            if (status.getException() instanceof WPSException) {
+                return (WPSException) status.getException();
+            } else {
+                return new WPSException("Process failed during execution", status.getException());
+            }
         }
     }
 

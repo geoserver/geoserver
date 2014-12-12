@@ -25,9 +25,13 @@ import org.geoserver.wps.WPSException;
 import org.geoserver.wps.ppio.ProcessParameterIO;
 import org.geoserver.wps.process.AbstractRawData;
 import org.geoserver.wps.process.GeoServerProcessors;
+import org.geoserver.wps.validator.MultiplicityValidator;
+import org.geoserver.wps.validator.ProcessLimitsFilter;
+import org.geoserver.wps.validator.Validators;
 import org.geotools.data.Parameter;
 import org.geotools.process.ProcessFactory;
 import org.opengis.feature.type.Name;
+import org.springframework.validation.Validator;
 
 /**
  * Centralizes some common request parsing activities
@@ -100,7 +104,7 @@ public class ExecuteRequest {
     LazyInputMap getInputsInternal(WPSExecutionManager manager) {
         // get the input descriptors
         Name processName = Ows11Util.name(request.getIdentifier());
-        ProcessFactory pf = GeoServerProcessors.createProcessFactory(processName);
+        ProcessFactory pf = GeoServerProcessors.createProcessFactory(processName, true);
         if(pf == null) {
             throw new WPSException("Unknown process " + processName);
         }
@@ -146,16 +150,23 @@ public class ExecuteRequest {
                 throw new WPSException("Unable to decode input: " + inputId);
             }
 
+            // get the validators
+            Collection<Validator> validators = (Collection<Validator>) p.metadata
+                    .get(ProcessLimitsFilter.VALIDATORS_KEY);
+            // we handle multiplicity validation here, before the parsing even starts
+            List<Validator> filteredValidators = Validators.filterOutClasses(validators,
+                    MultiplicityValidator.class);
+
             // build the provider
             try {
                 InputProvider provider = AbstractInputProvider.getInputProvider(input, ppio,
-                        manager, manager.applicationContext);
+                        manager, manager.applicationContext, validators);
 
                 // store the input
                 if (p.maxOccurs > 1) {
                     ListInputProvider lp = (ListInputProvider) providers.get(p.key);
                     if (lp == null) {
-                        lp = new ListInputProvider(provider);
+                        lp = new ListInputProvider(provider, p.getMaxOccurs());
                         providers.put(p.key, lp);
                     } else {
                         lp.add(provider);

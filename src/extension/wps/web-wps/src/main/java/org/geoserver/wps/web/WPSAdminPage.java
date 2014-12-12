@@ -54,10 +54,20 @@ public class WPSAdminPage extends BaseServiceAdminPage<WPSInfo> {
         maxSynchProcesses.add(new MinimumValidator<Integer>(1));
         form.add(maxSynchProcesses);
         
+        TextField maxSynchExecutionTime = new TextField("maxSynchronousExecutionTime",
+                Integer.class);
+        maxSynchExecutionTime.add(new MinimumValidator<Integer>(-1));
+        form.add(maxSynchExecutionTime);
+
         TextField maxAsynchProcesses = new TextField("maxAsynchronousProcesses", Integer.class);
         maxAsynchProcesses.add(new MinimumValidator<Integer>(1));
         form.add(maxAsynchProcesses);
         
+        TextField maxAsynchExecutionTime = new TextField("maxAsynchronousExecutionTime",
+                Integer.class);
+        maxAsynchExecutionTime.add(new MinimumValidator<Integer>(-1));
+        form.add(maxAsynchExecutionTime);
+
         TextField resourceExpirationTimeout = new TextField("resourceExpirationTimeout", Integer.class);
         resourceExpirationTimeout.add(new MinimumValidator<Integer>(1));
         form.add(resourceExpirationTimeout);

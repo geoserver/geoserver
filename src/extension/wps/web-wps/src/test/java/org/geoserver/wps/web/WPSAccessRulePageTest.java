@@ -9,13 +9,12 @@ import static org.junit.Assert.assertEquals;
 
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.config.GeoServer;
-import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.wps.ProcessGroupInfo;
 import org.geoserver.wps.WPSInfo;
 import org.junit.Test;
 
-public class WPSAccessRulePageTest extends GeoServerWicketTestSupport {
+public class WPSAccessRulePageTest extends WPSPagesTestSupport {
 
     @Test
     public void testGroupToWpsLink() throws Exception {

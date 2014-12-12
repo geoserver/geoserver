@@ -92,7 +92,7 @@ public class DefaultProcessManager implements ProcessManager, ExtensionPriority,
     public Map<String, Object> submitChained(String executionId, Name processName,
             Map<String, Object> inputs, ProgressListener listener) throws ProcessException {
         // straight execution, no thread pooling, we're already running in the parent process thread
-        ProcessFactory pf = GeoServerProcessors.createProcessFactory(processName);
+        ProcessFactory pf = GeoServerProcessors.createProcessFactory(processName, false);
         if (pf == null) {
             throw new WPSException("No such process: " + processName);
         }
@@ -140,6 +140,8 @@ public class DefaultProcessManager implements ProcessManager, ExtensionPriority,
             }
             if (e instanceof ProcessException) {
                 throw (ProcessException) e;
+            } else if (e instanceof WPSException) {
+                throw (WPSException) e;
             } else {
                 throw new ProcessException("Process execution " + executionId + " failed", e);
             }
@@ -188,7 +190,7 @@ public class DefaultProcessManager implements ProcessManager, ExtensionPriority,
                 // transfer the thread locals to this execution context
                 threadLocalTransfer.apply();
                 
-                ProcessFactory pf = GeoServerProcessors.createProcessFactory(processName);
+                ProcessFactory pf = GeoServerProcessors.createProcessFactory(processName, false);
                 if (pf == null) {
                     throw new WPSException("No such process: " + processName);
                 }

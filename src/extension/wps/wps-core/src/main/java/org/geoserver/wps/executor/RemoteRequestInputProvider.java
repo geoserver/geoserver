@@ -4,16 +4,21 @@
  */
 package org.geoserver.wps.executor;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import net.opengis.wps10.HeaderType;
 import net.opengis.wps10.InputReferenceType;
 import net.opengis.wps10.InputType;
 import net.opengis.wps10.MethodType;
 
+import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpConnectionManager;
 import org.apache.commons.httpclient.HttpMethod;
@@ -25,6 +30,8 @@ import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
 import org.geoserver.wps.WPSException;
 import org.geoserver.wps.ppio.ComplexPPIO;
+import org.geotools.data.DataUtilities;
+import org.geotools.util.logging.Logging;
 import org.opengis.util.ProgressListener;
 
 /**
@@ -34,14 +41,19 @@ import org.opengis.util.ProgressListener;
  */
 public class RemoteRequestInputProvider extends AbstractInputProvider {
 
+    static final Logger LOGGER = Logging.getLogger(RemoteRequestInputProvider.class);
+
     private int timeout;
 
     private ComplexPPIO complexPPIO;
 
-    public RemoteRequestInputProvider(InputType input, ComplexPPIO ppio, int timeout) {
+    private long maxSize;
+
+    public RemoteRequestInputProvider(InputType input, ComplexPPIO ppio, int timeout, long maxSize) {
         super(input, ppio);
         this.timeout = timeout;
         this.complexPPIO = ppio;
+        this.maxSize = maxSize;
     }
 
     @Override
@@ -57,7 +69,16 @@ public class RemoteRequestInputProvider extends AbstractInputProvider {
         // execute the request
         listener.started();
         try {
-            if ("http".equalsIgnoreCase(destination.getProtocol())) {
+            if ("file".equalsIgnoreCase(destination.getProtocol())) {
+                File file = DataUtilities.urlToFile(destination);
+                if (maxSize > 0 && maxSize < file.length()) {
+                    throw new WPSException("Input " + getInputId() + " size " + file.length()
+                            + " exceeds maximum allowed size of " + maxSize, "NoApplicableCode",
+                            getInputId());
+                }
+
+                input = new FileInputStream(file);
+            } else if ("http".equalsIgnoreCase(destination.getProtocol())) {
                 // setup the client
                 HttpClient client = new HttpClient();
                 // setting timeouts (30 seconds, TODO: make this configurable)
@@ -126,7 +147,25 @@ public class RemoteRequestInputProvider extends AbstractInputProvider {
                 int code = client.executeMethod(method);
 
                 if (code == 200) {
+                    try {
+                        Header length = method.getResponseHeader("Content-Lenght");
+                        if (maxSize > 0 && length != null
+                                && Long.parseLong(length.getValue()) > maxSize) {
+                            throw new WPSException(
+                                    "Input " + getInputId() + " size " + length.getValue()
+                                            + " exceeds maximum allowed size of " + maxSize
+                                            + " according to HTTP Content-Lenght response header",
+                                    "NoApplicableCode", getInputId());
+                        }
+                    } catch (NumberFormatException e) {
+                        LOGGER.log(Level.FINE,
+                                "Failed to parse content lenght to check input limits respect, "
+                                        + "moving on and checking data as it comes in", e);
+                    }
                     input = method.getResponseBodyAsStream();
+                    if (maxSize > 0) {
+                        input = new MaxSizeInputStream(input, getInputId(), maxSize);
+                    }
                 } else {
                     throw new WPSException("Error getting remote resources from " + ref.getHref()
                             + ", http error " + code + ": " + method.getStatusText());
@@ -137,9 +176,13 @@ public class RemoteRequestInputProvider extends AbstractInputProvider {
                 conn.setConnectTimeout(timeout);
                 conn.setReadTimeout(timeout);
                 input = conn.getInputStream();
+
+                if (maxSize > 0) {
+                    input = new MaxSizeInputStream(input, getInputId(), maxSize);
+                }
             }
 
-            // actually parse teh data
+            // actually parse the data
             if (input != null) {
                 CancellingInputStream is = new CancellingInputStream(input, listener);
                 return complexPPIO.decode(is);
@@ -150,6 +193,9 @@ public class RemoteRequestInputProvider extends AbstractInputProvider {
             listener.progress(100);
             listener.complete();
             // make sure to close the connection and streams no matter what
+            if (refInput != null) {
+                refInput.close();
+            }
             if (input != null) {
                 input.close();
             }

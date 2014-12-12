@@ -28,6 +28,7 @@
 
     <!--  Execution manager, the thing that actually orchestrates the process execution -->
     <bean id="executionManager" class="org.geoserver.wps.executor.WPSExecutionManager">
+        <constructor-arg ref="geoServer" />
         <constructor-arg ref="wpsResourceManager" />
         <constructor-arg ref="processStatusTracker"/>
     </bean>    
@@ -296,5 +297,14 @@
       <constructor-arg ref="wpsResourceManager"/>
     </bean>
     
-
+    <!-- Input limits support -->
+    <bean id="processLimitsFilter" class="org.geoserver.wps.validator.ProcessLimitsFilter" >
+      <constructor-arg index="0" ref="geoServer"/>
+    </bean>
+    <!-- Size estimation portion of limits -->
+    <bean id="objectSizeEstimators" class="org.geoserver.wps.validator.ObjectSizeEstimators"/>
+    <bean id="featureSizeEstimators" class="org.geoserver.wps.validator.FeatureSizeEstimator"/>
+    <bean id="rasterSizeEstimators" class="org.geoserver.wps.validator.RasterSizeEstimator"/>
+    <bean id="rawDataSizeEstimator" class="org.geoserver.wps.validator.RawDataSizeEstimator"/>
+    <bean id="geometrySizeEstimator" class="org.geoserver.wps.validator.GeometrySizeEstimator"/>
 </beans>

@@ -11,25 +11,44 @@ import org.apache.wicket.PageParameters;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.impl.ServiceInfoImpl;
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.ows.util.OwsUtils;
-import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geoserver.web.wicket.KeywordsEditor;
 import org.geoserver.wps.WPSInfo;
 import org.junit.Test;
 
-public class WPSAdminPageTest extends GeoServerWicketTestSupport {
+public class WPSAdminPageTest extends WPSPagesTestSupport {
+
+    @Override
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        super.onSetUp(testData);
+
+        WPSInfo wps = getGeoServer().getService(WPSInfo.class);
+        wps.setMaxAsynchronousExecutionTime(600);
+        wps.setMaxSynchronousExecutionTime(60);
+        wps.setMaxSynchronousProcesses(16);
+        wps.setMaxAsynchronousProcesses(16);
+        getGeoServer().save(wps);
+    }
 
     @Test
     public void test() throws Exception {
         login();
-        WPSInfo wps = getGeoServerApplication().getGeoServer().getService(WPSInfo.class);
         
         // start the page
         tester.startPage(new WPSAdminPage());
+        // print(tester.getLastRenderedPage(), true, true);
+
+        WPSInfo wps = getGeoServer().getService(WPSInfo.class);
         
         // test that components have been filled as expected
         tester.assertComponent("form:keywords", KeywordsEditor.class);
         tester.assertModelValue("form:keywords", wps.getKeywords());
+        tester.assertModelValue("form:maxSynchronousProcesses:", 16);
+        tester.assertModelValue("form:maxAsynchronousProcesses:", 16);
+        tester.assertModelValue("form:maxSynchronousExecutionTime:", 60);
+        tester.assertModelValue("form:maxAsynchronousExecutionTime:", 600);
+
     }
 
     @Test

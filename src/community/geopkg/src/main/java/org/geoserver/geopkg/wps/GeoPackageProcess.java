@@ -202,6 +202,10 @@ public class GeoPackageProcess implements GSProcess {
                    e.setBounds(bounds);
                   
                    gpkg.add(e, (SimpleFeatureCollection)  collection);
+                   
+                   if (features.isIndexed()) {
+                       gpkg.createSpatialIndex(e);
+                   }                   
                }
                
            } else if (layer.getType() == LayerType.TILES) {

@@ -1,0 +1,17 @@
+<assembly>
+  <id>sldservice-plugin</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <fileSets>
+    <fileSet>
+      <directory>release/target/dependency</directory>
+      <outputDirectory></outputDirectory>
+      <includes>
+        <include>gs-sldservice*</include>
+        <include>*xom*</include>
+      </includes>
+    </fileSet>
+  </fileSets>
+</assembly>

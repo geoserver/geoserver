@@ -142,7 +142,8 @@ public class GetCapabilities {
         caps.setProcessOfferings(po);
 
         // gather the process list
-        for (ProcessFactory pf : GeoServerProcessors.getProcessFactories()) {
+        Set<ProcessFactory> pfs = GeoServerProcessors.getProcessFactories();
+        for (ProcessFactory pf : pfs) {
             for (Name name : pf.getNames()) {
                 ProcessBriefType p = wpsf.createProcessBriefType();
                 p.setProcessVersion(pf.getVersion(name));

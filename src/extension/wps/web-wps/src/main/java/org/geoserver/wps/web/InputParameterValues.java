@@ -21,7 +21,6 @@ import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.data.Parameter;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.process.ProcessFactory;
-import org.geotools.process.Processors;
 import org.opengis.coverage.grid.GridCoverage;
 import org.opengis.feature.type.Name;
 

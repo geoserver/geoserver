@@ -22,8 +22,10 @@ public class ProcessGroupInfoImpl implements ProcessGroupInfo {
 
     boolean enabled;
 
-    List<Name> filteredProcesses = new ArrayList<Name>();
-    
+    List<String> roles;
+
+    List<ProcessInfo> filteredProcesses = new ArrayList<ProcessInfo>();
+
     MetadataMap metadataMap = new MetadataMap();
 
     @Override
@@ -47,11 +49,11 @@ public class ProcessGroupInfoImpl implements ProcessGroupInfo {
         this.enabled = enabled;
     }
 
-    public List<Name> getFilteredProcesses() {
+    public List<ProcessInfo> getFilteredProcesses() {
         return filteredProcesses;
     }
 
-    public void setFilteredProcesses(List<Name> filteredProcesses) {
+    public void setFilteredProcesses(List<ProcessInfo> filteredProcesses) {
         this.filteredProcesses = filteredProcesses;
     }
 
@@ -65,13 +67,14 @@ public class ProcessGroupInfoImpl implements ProcessGroupInfo {
         ProcessGroupInfoImpl clone = new ProcessGroupInfoImpl();
         clone.setEnabled(enabled);
         clone.setFactoryClass(factoryClass);
+        clone.setRoles(roles);
         if(filteredProcesses != null) {
-            clone.setFilteredProcesses(new ArrayList<Name>(filteredProcesses));
+            clone.setFilteredProcesses(new ArrayList<ProcessInfo>(filteredProcesses));
         } 
         if(metadataMap != null) {
             clone.metadataMap = new MetadataMap(new HashMap<String, Serializable>(metadataMap));
         }
-        
+
         return clone;
     }
 
@@ -83,6 +86,7 @@ public class ProcessGroupInfoImpl implements ProcessGroupInfo {
         result = prime * result + ((factoryClass == null) ? 0 : factoryClass.hashCode());
         result = prime * result + ((filteredProcesses == null) ? 0 : filteredProcesses.hashCode());
         result = prime * result + ((metadataMap == null) ? 0 : metadataMap.hashCode());
+        result = prime * result + ((roles == null) ? 0 : roles.hashCode());
         return result;
     }
 
@@ -96,6 +100,8 @@ public class ProcessGroupInfoImpl implements ProcessGroupInfo {
             return false;
         ProcessGroupInfoImpl other = (ProcessGroupInfoImpl) obj;
         if (enabled != other.enabled)
+            return false;
+        if (roles != other.roles)
             return false;
         if (factoryClass == null) {
             if (other.factoryClass != null)
@@ -118,8 +124,18 @@ public class ProcessGroupInfoImpl implements ProcessGroupInfo {
     @Override
     public String toString() {
         return "ProcessFactoryInfoImpl [factoryClass=" + factoryClass + ", enabled=" + enabled
-                + ", filteredProcesses=" + filteredProcesses + ", metadataMap=" + metadataMap + "]";
+                + ", filteredProcesses=" + filteredProcesses + ", metadataMap=" + metadataMap +  ", roles=" + roles +"]";
     }
-    
-    
+
+    @Override
+    public List<String> getRoles() {
+        return roles;
+    }
+
+    @Override
+    public void setRoles(List<String> roles) {
+        this.roles = roles;        
+    }
+
+
 }

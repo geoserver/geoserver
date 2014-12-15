@@ -43,7 +43,7 @@ public abstract class AbstractAccessRuleDAO<R extends Comparable<?>> {
     /**
      * Parsed rules
      */
-    Set<R> rules;
+    protected Set<R> rules;
 
     /**
      * Used to check the file for modifications
@@ -53,7 +53,7 @@ public abstract class AbstractAccessRuleDAO<R extends Comparable<?>> {
     /**
      * Stores the time of the last rule list loading
      */
-    long lastModified;
+    protected long lastModified;
     
     /**
      * The security dir
@@ -174,7 +174,7 @@ public abstract class AbstractAccessRuleDAO<R extends Comparable<?>> {
     /**
      * Checks the property file is up to date, eventually rebuilds the tree
      */
-    void checkPropertyFile(boolean force) {
+    protected void checkPropertyFile(boolean force) {
         try {
             if (rules == null || force) {
                 // no security folder, let's work against an empty properties then

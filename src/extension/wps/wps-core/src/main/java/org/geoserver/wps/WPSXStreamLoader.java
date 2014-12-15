@@ -7,8 +7,6 @@
 package org.geoserver.wps;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
@@ -16,20 +14,20 @@ import org.geoserver.catalog.MetadataMap;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamServiceLoader;
-import org.geoserver.config.util.XStreamPersister.SRSConverter;
 import org.geoserver.platform.GeoServerResourceLoader;
-import org.geoserver.wfs.WFSInfoImpl;
 import org.geotools.feature.NameImpl;
-import org.geotools.process.ProcessFactory;
-import org.geotools.process.Processors;
-import org.geotools.referencing.CRS;
-import org.geotools.referencing.wkt.Formattable;
 import org.geotools.util.Version;
 import org.opengis.feature.type.Name;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.converters.UnmarshallingContext;
 import com.thoughtworks.xstream.converters.basic.AbstractSingleValueConverter;
+import com.thoughtworks.xstream.converters.collections.CollectionConverter;
+import com.thoughtworks.xstream.converters.reflection.ReflectionConverter;
+import com.thoughtworks.xstream.converters.reflection.ReflectionProvider;
+import com.thoughtworks.xstream.io.HierarchicalStreamReader;
+import com.thoughtworks.xstream.mapper.ClassAliasingMapper;
+import com.thoughtworks.xstream.mapper.Mapper;
 
 /**
  * Service loader for the Web Processing Service
@@ -59,10 +57,18 @@ public class WPSXStreamLoader extends XStreamServiceLoader<WPSInfo> {
     @Override
     protected void initXStreamPersister(XStreamPersister xp, GeoServer gs) {
         XStream xs = xp.getXStream();
+        // Use custom converter to manage previous wps.xml configuration format
+        xs.registerConverter(new WPSXStreamConverter(xs.getMapper(), xs.getReflectionProvider()));
         xs.alias("wps", WPSInfo.class, WPSInfoImpl.class);
         xs.alias("processGroup", ProcessGroupInfoImpl.class);
         xs.alias("name", NameImpl.class);
+        xs.alias("name", Name.class, NameImpl.class);
+        xs.alias("accessInfo", ProcessInfoImpl.class);
         xs.registerConverter(new NameConverter());
+        ClassAliasingMapper mapper = new ClassAliasingMapper(xs.getMapper());
+        mapper.addClassAlias("role", String.class);
+        xs.registerLocalConverter(ProcessGroupInfoImpl.class, "roles", new CollectionConverter(mapper));
+        xs.registerLocalConverter(ProcessInfoImpl.class, "roles", new CollectionConverter(mapper));
     }
     
     @Override
@@ -131,5 +137,51 @@ public class WPSXStreamLoader extends XStreamServiceLoader<WPSInfo> {
             }
         }
         
+    }
+
+    /**
+     * Manages unmarshalling of {@link ProcessGroupInfoImpl} taking into account previous wps.xml
+     * format in witch {@link ProcessGroupInfoImpl #getFilteredProcesses()} is a collection of
+     * {@link NameImpl}
+     */
+    public static class WPSXStreamConverter extends ReflectionConverter {
+
+        public WPSXStreamConverter(Mapper mapper, ReflectionProvider reflectionProvider) {
+            super(mapper, reflectionProvider);
+        }
+
+        @Override
+        public boolean canConvert(Class clazz) {
+            return ProcessGroupInfoImpl.class == clazz;
+        }
+
+        @Override
+        public Object doUnmarshal(Object result, HierarchicalStreamReader reader,
+                UnmarshallingContext context) {
+            ProcessGroupInfo converted = (ProcessGroupInfo) super.doUnmarshal(result, reader,
+                    context);
+
+            if (converted.getFilteredProcesses() != null) {
+                List<ProcessInfo> newFilteredProcesses = new ArrayList<ProcessInfo>();
+                for (Object fp : converted.getFilteredProcesses()) {
+                    if (fp instanceof NameImpl) {
+                        NameImpl ni = (NameImpl) fp;
+                        ProcessInfo pi = new ProcessInfoImpl();
+                        pi.setName(ni);
+                        pi.setEnabled(false);
+                        newFilteredProcesses.add(pi);
+                    } else {
+                        break;
+                    }
+                }
+                if (!newFilteredProcesses.isEmpty()) {
+                    converted.getFilteredProcesses().clear();
+                    converted.getFilteredProcesses().addAll(newFilteredProcesses);
+                }
+            }
+
+            return converted;
+        }
+
     }
 }

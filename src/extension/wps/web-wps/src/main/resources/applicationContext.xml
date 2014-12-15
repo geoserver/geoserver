@@ -33,5 +33,14 @@
     <property name="order" value="30" />
   </bean>
 
+  <bean id="wpsSecurityPage" class="org.geoserver.web.MenuPageInfo">
+    <property name="id" value="security.wps" />
+    <property name="titleKey" value="wps.security.title" />
+    <property name="descriptionKey" value="wps.security.description" />
+    <property name="componentClass" value="org.geoserver.wps.web.WPSAccessRulePage" />
+    <property name="icon" value="server_key.png" />
+    <property name="category" ref="securityCategory" />
+    <property name="order" value="400" />
+  </bean>
 
 </beans>

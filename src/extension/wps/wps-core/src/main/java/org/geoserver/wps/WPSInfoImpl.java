@@ -1,5 +1,4 @@
 /* (c) 2014 Open Source Geospatial Foundation - all rights reserved
- * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -11,6 +10,7 @@ import java.util.List;
 
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.config.impl.ServiceInfoImpl;
+import org.geoserver.security.CatalogMode;
 
 /**
  * WPS information implementation
@@ -68,6 +68,8 @@ public class WPSInfoImpl extends ServiceInfoImpl implements WPSInfo {
      */
     String storageDirectory;
 
+    CatalogMode catalogMode;
+    
     public WPSInfoImpl() {
         title = "Prototype GeoServer WPS";
     }
@@ -184,4 +186,79 @@ public class WPSInfoImpl extends ServiceInfoImpl implements WPSInfo {
         this.storageDirectory = storageDirectory;
 
     }
+    
+    @Override
+    public CatalogMode getCatalogMode() {
+        if(catalogMode==null){
+            catalogMode = CatalogMode.HIDE;
+        }
+        return catalogMode;
+    }
+
+    @Override
+    public void setCatalogMode(CatalogMode catalogMode) {
+        this.catalogMode = catalogMode;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = super.hashCode();
+        result = prime * result + ((catalogMode == null) ? 0 : catalogMode.hashCode());
+        result = prime * result + ((connectionTimeout == null) ? 0 : connectionTimeout.hashCode());
+        result = prime * result
+                + ((maxAsynchronousProcesses == null) ? 0 : maxAsynchronousProcesses.hashCode());
+        result = prime * result
+                + ((maxSynchronousProcesses == null) ? 0 : maxSynchronousProcesses.hashCode());
+        result = prime * result + ((processGroups == null) ? 0 : processGroups.hashCode());
+        result = prime * result
+                + ((resourceExpirationTimeout == null) ? 0 : resourceExpirationTimeout.hashCode());
+        result = prime * result + ((storageDirectory == null) ? 0 : storageDirectory.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (!super.equals(obj))
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        WPSInfoImpl other = (WPSInfoImpl) obj;
+        if (catalogMode != other.catalogMode)
+            return false;
+        if (connectionTimeout == null) {
+            if (other.connectionTimeout != null)
+                return false;
+        } else if (!connectionTimeout.equals(other.connectionTimeout))
+            return false;
+        if (maxAsynchronousProcesses == null) {
+            if (other.maxAsynchronousProcesses != null)
+                return false;
+        } else if (!maxAsynchronousProcesses.equals(other.maxAsynchronousProcesses))
+            return false;
+        if (maxSynchronousProcesses == null) {
+            if (other.maxSynchronousProcesses != null)
+                return false;
+        } else if (!maxSynchronousProcesses.equals(other.maxSynchronousProcesses))
+            return false;
+        if (processGroups == null) {
+            if (other.processGroups != null)
+                return false;
+        } else if (!processGroups.equals(other.processGroups))
+            return false;
+        if (resourceExpirationTimeout == null) {
+            if (other.resourceExpirationTimeout != null)
+                return false;
+        } else if (!resourceExpirationTimeout.equals(other.resourceExpirationTimeout))
+            return false;
+        if (storageDirectory == null) {
+            if (other.storageDirectory != null)
+                return false;
+        } else if (!storageDirectory.equals(other.storageDirectory))
+            return false;
+        return true;
+    }
+    
 }

@@ -12,11 +12,15 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
+import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.PropertyModel;
 import org.geoserver.web.wicket.GeoServerDataProvider;
 import org.geoserver.wps.ProcessGroupInfo;
+import org.geoserver.wps.ProcessInfo;
 import org.geoserver.wps.process.GeoServerProcessors;
 import org.geotools.process.ProcessFactory;
 import org.opengis.feature.type.Name;
+import org.opengis.util.InternationalString;
 
 /**
  * Provides entries for the process filtering table in the {@link ProcessSelectionPage}
@@ -34,9 +38,13 @@ public class FilteredProcessesProvider extends
      */
     static class FilteredProcess implements Serializable, Comparable<FilteredProcess>{
 
+        private boolean enabled;
+        
         private Name name;
 
         private String description;
+        
+        private List<String> roles;
 
         public FilteredProcess(Name name, String description) {
             this.name = name;
@@ -50,6 +58,22 @@ public class FilteredProcessesProvider extends
         public String getDescription() {
             return description;
         }
+        
+        public List<String> getRoles() {
+            return roles;
+        }
+
+        public void setRoles(List<String> roles) {
+            this.roles = roles;
+        }
+
+        public boolean getEnabled() {
+            return enabled;
+        }
+
+        public void setEnabled(boolean enabled) {
+            this.enabled = enabled;
+        }
 
         @Override
         public int compareTo(FilteredProcess other) {
@@ -60,8 +84,7 @@ public class FilteredProcessesProvider extends
             } else {
                 return name.getURI().compareTo(other.getName().getURI());
             }
-        }
-
+        }        
     }
 
     private ProcessGroupInfo pfi;
@@ -76,22 +99,45 @@ public class FilteredProcessesProvider extends
         ProcessFactory pf = GeoServerProcessors.getProcessFactory(pfi.getFactoryClass(), false);
         Set<Name> names = pf.getNames();
         selectableProcesses = new ArrayList<FilteredProcess>();
+        List<ProcessInfo> filteredProcesses = pfi.getFilteredProcesses();
         for (Name name : names) {
-            String description = GeoServerProcessors
-                    .getProcessFactory(pfi.getFactoryClass(), false).getDescription(name)
-                    .toString(locale);
-            FilteredProcess sp = new FilteredProcess(name, description);
+            InternationalString description = GeoServerProcessors.getProcessFactory(pfi.getFactoryClass(), false).getDescription(name);
+            String des = "";
+            if(description != null){
+                des = description.toString(locale);
+            }
+            FilteredProcess sp = new FilteredProcess(name, des);
+            sp.setEnabled(true);
+            
+            for (ProcessInfo fp: filteredProcesses) {
+                if(sp.getName().equals(fp.getName())){
+                    sp.setEnabled(fp.isEnabled());
+                    sp.setRoles(fp.getRoles());
+                }
+            }
+            
             selectableProcesses.add(sp);
         }
+
         Collections.sort(selectableProcesses);
     }
 
     @Override
     protected List<Property<FilteredProcess>> getProperties() {
         List<Property<FilteredProcess>> props = new ArrayList<GeoServerDataProvider.Property<FilteredProcess>>();
+        props.add(new BeanProperty<FilteredProcess>("enabled", "enabled"));
         props.add(new BeanProperty<FilteredProcess>("name", "name"));
         props.add(new BeanProperty<FilteredProcess>("description", "description"));
-
+        props.add(new AbstractProperty<FilteredProcess>("roles") {
+            @Override
+            public Object getPropertyValue(FilteredProcess item) {
+                return item.getRoles();
+            } 
+            @Override
+            public IModel getModel(IModel itemModel) {
+                return new PropertyModel(itemModel, "roles");
+            }
+        });
         return props;
     }
 
@@ -100,5 +146,5 @@ public class FilteredProcessesProvider extends
         return selectableProcesses;
     }
 
-    
+
 }

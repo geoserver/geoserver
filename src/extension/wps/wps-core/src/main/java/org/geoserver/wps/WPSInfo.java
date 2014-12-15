@@ -1,5 +1,4 @@
 /* (c) 2014 Open Source Geospatial Foundation - all rights reserved
- * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -9,6 +8,7 @@ package org.geoserver.wps;
 import java.util.List;
 
 import org.geoserver.config.ServiceInfo;
+import org.geoserver.security.CatalogMode;
 
 /**
  * Configuration related
@@ -98,5 +98,16 @@ public interface WPSInfo extends ServiceInfo {
      * @param storageDirectory
      */
     public void setStorageDirectory(String storageDirectory);
+    
+    /**
+     * Controls how the server allows access to secured processes, in a similar way to how the
+     * catalog controls access to secured layers
+     */
+    public CatalogMode getCatalogMode();
+
+    /**
+     * Sets the policy to control access to secured processes
+     */
+    public void setCatalogMode(CatalogMode catalogMode);
 
 }

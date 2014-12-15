@@ -303,34 +303,7 @@ public class FeatureTypeResource extends AbstractCatalogResource {
         
         catalog.remove( ft );
         
-        // clear from resource pool
-        catalog.getResourcePool().clear(ft);        
-        List<FeatureTypeInfo> siblings = catalog.getFeatureTypesByDataStore(ds);
-        if( siblings.size() == 0 ){
-            // clean up cached DataAccess if no longer in use
-            catalog.getResourcePool().clear(ds);
-        }
-        else {
-            boolean flush = false;
-            try {
-                DataAccess<?,?> dataStore = catalog.getResourcePool().getDataStore( ds );
-                if( dataStore instanceof ContentDataStore ){
-                    // ask JDBC DataStore to forget cached column information
-                    Name name = ft.getQualifiedNativeName();
-                    ContentDataStore contentDataStore = (ContentDataStore) dataStore;
-                    ContentFeatureSource featureSource = contentDataStore.getFeatureSource(name,Transaction.AUTO_COMMIT);
-                    featureSource.getState().flush();
-                    flush = true;
-                }
-            } catch( Exception e ) {
-                LOGGER.warning( "Unable to flush '" + ft.getQualifiedNativeName() );
-                LOGGER.log(Level.FINE, "", e );
-            }
-            if( !flush ){
-                 // Original heavy handed way to force "flush"? seems a bad idea
-                 catalog.getResourcePool().clear(ds);     
-            }
-        }
+
         LOGGER.info( "DELETE feature type" + datastore + "," + featuretype );
     }
 

@@ -10,7 +10,7 @@ jdk:
 before_script:
   - cd src
 script:
-  - mvn clean test -Prelease -B -T2
+  - mvn clean test -Prelease -B -T2 -fae
 notifications:
   email:
     on_success: never

@@ -1,0 +1,45 @@
+<wps>
+  <id>WPSInfoImpl-7e1709cd:14a3db768be:-8000</id>
+  <enabled>true</enabled>
+  <name>WPS</name>
+  <title>Old WPS format test</title>
+  <versions>
+    <org.geotools.util.Version>
+      <version>1.0.0</version>
+    </org.geotools.util.Version>
+  </versions>
+  <citeCompliant>false</citeCompliant>
+  <schemaBaseURL>http://schemas.opengis.net</schemaBaseURL>
+  <verbose>false</verbose>
+  <connectionTimeout>30.0</connectionTimeout>
+  <resourceExpirationTimeout>300</resourceExpirationTimeout>
+  <maxSynchronousProcesses>12</maxSynchronousProcesses>
+  <maxAsynchronousProcesses>12</maxAsynchronousProcesses>
+  <processGroups>
+    <processGroup>
+      <factoryClass>org.geoserver.wps.DeprecatedProcessFactory</factoryClass>
+      <enabled>false</enabled>
+    </processGroup>
+    <processGroup>
+      <factoryClass>org.geoserver.wps.jts.SpringBeanProcessFactory</factoryClass>
+      <enabled>true</enabled>
+      <filteredProcesses>
+        <name>gs:GeorectifyCoverage</name>
+        <name>gs:GetFullCoverage</name>
+        <name>gs:Import</name>
+      </filteredProcesses>
+    </processGroup>
+    <processGroup>
+      <factoryClass>org.geotools.process.geometry.GeometryProcessFactory</factoryClass>
+      <enabled>false</enabled>
+    </processGroup>
+    <processGroup>
+      <factoryClass>org.geotools.process.raster.RasterProcessFactory</factoryClass>
+      <enabled>true</enabled>
+    </processGroup>
+    <processGroup>
+      <factoryClass>org.geotools.process.vector.VectorProcessFactory</factoryClass>
+      <enabled>false</enabled>
+    </processGroup>
+  </processGroups>
+</wps>

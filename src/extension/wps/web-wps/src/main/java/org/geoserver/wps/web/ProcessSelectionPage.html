@@ -1,4 +1,7 @@
-<html xmlns:wicket="http://wicket.apache.org/">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:wicket="http://wicket.apache.org/" xml:lang="en" lang="en">
 <body>
 <wicket:extend>
   <form wicket:id="form">
@@ -8,11 +11,20 @@
         <input type="checkbox" wicket:id="enabled"/>
     </wicket:fragment>
      
-     <div class="button-group selfclear"><a href="#" wicket:id="apply"><wicket:message
-        key="apply">Apply</wicket:message></a> <a href="#" wicket:id="cancel"><wicket:message
-        key="cancel">Cancel</wicket:message></a>
+     <div class="button-group selfclear">
+          <button wicket:id="apply" type="submit"><wicket:message key="apply"/></button>
+	      <button wicket:id="cancel" type="submit"><wicket:message key="cancel"/></button> 
      </div>
   </form>
+  
+  <wicket:fragment wicket:id="rolesFragment">
+    <textarea wicket:id="roles" autocomplete="off" style="width:390px;height:50px;padding:5px;"></textarea>
+  </wicket:fragment>
+  
+  <wicket:fragment wicket:id="enabledFragment">
+    <input type="checkbox" wicket:id="enabled"/>
+  </wicket:fragment>
+  
 </wicket:extend>
 </body>
 </html>

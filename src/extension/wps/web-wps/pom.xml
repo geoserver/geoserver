@@ -28,6 +28,11 @@
            <version>${gs.version}</version>
         </dependency>
         <dependency>
+           <groupId>org.geoserver.web</groupId>
+           <artifactId>gs-web-sec-core</artifactId>
+           <version>${gs.version}</version>
+        </dependency>
+        <dependency>
            <groupId>org.geoserver.extension</groupId>
            <artifactId>gs-wps-core</artifactId>
            <version>${gs.version}</version>
@@ -71,6 +76,9 @@
           <artifactId>easymockclassextension</artifactId>
           <scope>test</scope>
         </dependency>
-
+        <dependency>
+          <groupId>org.apache.wicket</groupId>
+          <artifactId>wicket-extensions</artifactId>
+        </dependency>
     </dependencies>
 </project>

@@ -58,6 +58,7 @@
           <descriptor>release/ext-activeMQ.xml</descriptor>	
           <descriptor>release/ext-solr.xml</descriptor>		  
           <descriptor>release/ext-geofence.xml</descriptor>
+          <descriptor>release/ext-sldservice.xml</descriptor>
         </descriptors>
       </configuration>
      </plugin>
@@ -181,6 +182,7 @@
         <module>jms-cluster</module>
         <module>solr</module>
         <module>geofence</module>
+        <module>sldService</module>
       </modules>
     </profile>
     <profile>

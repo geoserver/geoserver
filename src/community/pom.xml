@@ -50,6 +50,7 @@
           <descriptor>release/ext-grib.xml</descriptor>
           <descriptor>release/ext-dyndimension.xml</descriptor>
 		  <descriptor>release/ext-rest-ext.xml</descriptor>
+          <descriptor>release/ext-sldservice.xml</descriptor>
         </descriptors>
       </configuration>
      </plugin>
@@ -162,6 +163,7 @@
 		<module>grib</module>
         <module>dyndimension</module>
 		<module>rest-ext</module>
+        <module>sldService</module>
       </modules>
     </profile>
     <profile>

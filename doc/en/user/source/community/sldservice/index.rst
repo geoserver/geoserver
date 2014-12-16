@@ -268,13 +268,14 @@ a red based color range.
       ...
     </Rules>
     
-A quantile classification on the states layer PERSONS attribute with a custom
-color ramp and 3 intervals.
+A uniqueInterval classification on the states layer SUB_REGION attribute using 
+a red based color range and 3 intervals.
+
  
 .. code-block:: console
 
    curl -v -u admin:geoserver -XGET 
-     http://localhost:8080/geoserver/rest/sldservice/states/classify.xml?attribute=PERSONS&ramp=CUSTOM&method=quantile&intervals=3&startColor=0xFF0000&endColor=0x0000FF
+     http://localhost:8080/geoserver/rest/sldservice/states/classify.xml?attribute=SUB_REGION&ramp=red&method=uniqueInterval&intervals=3
           
 .. code-block:: xml
     

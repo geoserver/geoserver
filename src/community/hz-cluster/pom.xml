@@ -3,30 +3,25 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>org.opengeo</groupId>
-    <artifactId>geoserver-exts</artifactId>
-    <version>2.6-SNAPSHOT</version>
+    <groupId>org.geoserver</groupId>
+    <artifactId>community</artifactId>
+    <version>2.7-SNAPSHOT</version>
   </parent>
 
-  <groupId>org.opengeo.geoserver</groupId>
-  <artifactId>cluster</artifactId>
+  <groupId>org.geoserver.community</groupId>
+  <artifactId>gs-hz-cluster</artifactId>
   <packaging>jar</packaging>
-  <name>GeoServer Clustering Module</name>
+  <name>GeoServer Hazelcast Clustering Module</name>
 
   <dependencies>
     <dependency>
       <groupId>org.geoserver</groupId>
       <artifactId>gs-main</artifactId>
-      <version>${gs.version}</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.geoserver.web</groupId>
       <artifactId>gs-web-core</artifactId>
-      <version>${gs.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.opengeo.geoserver</groupId>
-      <artifactId>metrics-base</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -43,6 +38,11 @@
       <groupId>com.hazelcast</groupId>
       <artifactId>hazelcast-wm</artifactId>
       <version>${hazelcast.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.yammer.metrics</groupId>
+      <artifactId>metrics-servlet</artifactId>
+      <version>${metrics.version}</version>
     </dependency>
     <dependency>
       <groupId>com.google.guava</groupId>
@@ -72,7 +72,7 @@
       <version>1.1</version>
       <scope>test</scope>
     </dependency>
-    
+
     <dependency>
       <groupId>org.easymock</groupId>
       <artifactId>easymock</artifactId>
@@ -82,28 +82,29 @@
     <dependency>
       <groupId>org.geoserver</groupId>
       <artifactId>gs-main</artifactId>
-      <version>${gs.version}</version>
+      <version>${project.version}</version>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
-    
+
     <dependency>
       <groupId>com.mockrunner</groupId>
       <artifactId>mockrunner</artifactId>
       <scope>test</scope>
     </dependency>
-    
+
     <dependency>
       <groupId>org.geoserver</groupId>
       <artifactId>gs-wms</artifactId>
-      <version>${gs.version}</version>
+      <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
-    
+
   </dependencies>
 
   <properties>
     <hazelcast.version>3.3.1</hazelcast.version>
+    <metrics.version>2.1.5</metrics.version>
   </properties>
 </project>
 

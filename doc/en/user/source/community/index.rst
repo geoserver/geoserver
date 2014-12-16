@@ -29,3 +29,4 @@ officially part of the GeoServer releases. They are however built along with the
    mbtiles/index
    geopkg/index
    grib/grib
+   sldservice/index

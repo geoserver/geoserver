@@ -49,6 +49,7 @@
           <descriptor>release/ext-mbtiles.xml</descriptor>
           <descriptor>release/ext-geopkg.xml</descriptor>
           <descriptor>release/ext-grib.xml</descriptor>
+          <descriptor>release/ext-sldservice.xml</descriptor>
         </descriptors>
       </configuration>
      </plugin>
@@ -164,7 +165,8 @@
         <module>netcdf-out</module>
         <module>mbtiles</module>
         <module>geopkg</module>
-		<module>grib</module>
+        <module>sldService</module>
+        <module>grib</module>
       </modules>
     </profile>
     <profile>

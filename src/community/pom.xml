@@ -387,6 +387,12 @@
         <modules>
           <module>geofence</module>
         </modules>
-    </profile>    
+    </profile>
+    <profile>
+      <id>hz-cluster</id>
+        <modules>
+          <module>hz-cluster</module>
+        </modules>
+    </profile>
   </profiles>
 </project>

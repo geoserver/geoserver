@@ -134,9 +134,9 @@ public class DefaultWebMapService implements WebMapService, ApplicationContextAw
     private static Boolean ENABLE_MAP_WRAPPING = null;
 
     /**
-     * Enable advanced reprojection handling
+     * Enable advanced projection handling
      */
-    private static Boolean ENABLE_ADVANCED_REPROJECTION = null;
+    private static Boolean ENABLE_ADVANCED_PROJECTION = null;
 
     /**
      * Use a global rendering pool, or use a new pool each time
@@ -243,14 +243,14 @@ public class DefaultWebMapService implements WebMapService, ApplicationContextAw
                 ENABLE_MAP_WRAPPING = Boolean.valueOf(wrapping);
         }
 
-        // enable/disable advanced reprojection handling
-        if (ENABLE_ADVANCED_REPROJECTION == null) {
-            String reprojection = GeoServerExtensions.getProperty("ENABLE_ADVANCED_REPROJECTION", context);
+        // enable/disable advanced projection handling
+        if (ENABLE_ADVANCED_PROJECTION == null) {
+            String projection = GeoServerExtensions.getProperty("ENABLE_ADVANCED_PROJECTION", context);
             // default to true, but allow switching off
-            if (reprojection == null)
-                ENABLE_ADVANCED_REPROJECTION = true;
+            if (projection == null)
+                ENABLE_ADVANCED_PROJECTION = true;
             else
-                ENABLE_ADVANCED_REPROJECTION = Boolean.valueOf(reprojection);
+                ENABLE_ADVANCED_PROJECTION = Boolean.valueOf(projection);
         }
 
         // control usage of the global rendering thread pool
@@ -284,12 +284,12 @@ public class DefaultWebMapService implements WebMapService, ApplicationContextAw
     }
 
     /**
-     * Checks if continuous map wrapping is enabled or not
+     * Checks if AdvancedProjectionHandling is enabled or not
      * 
      * @return
      */
-    public static boolean isAdvancedReprojectionHandlingEnabled() {
-        return ENABLE_ADVANCED_REPROJECTION;
+    public static boolean isAdvancedProjectionHandlingEnabled() {
+        return ENABLE_ADVANCED_PROJECTION;
     }
 
     /**

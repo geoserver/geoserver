@@ -426,10 +426,13 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         }
         
         // turn on advanced projection handling
-        rendererParams.put(StreamingRenderer.ADVANCED_PROJECTION_HANDLING_KEY, true);
-        if(DefaultWebMapService.isContinuousMapWrappingEnabled()) {
-            rendererParams.put(StreamingRenderer.CONTINUOUS_MAP_WRAPPING, true);
+        if(DefaultWebMapService.isAdvancedProjectionHandlingEnabled()){
+            rendererParams.put(StreamingRenderer.ADVANCED_PROJECTION_HANDLING_KEY, true);
+            if(DefaultWebMapService.isContinuousMapWrappingEnabled()) {
+                rendererParams.put(StreamingRenderer.CONTINUOUS_MAP_WRAPPING, true);
+            }
         }
+
         
         // see if the user specified a dpi
         if (request.getFormatOptions().get("dpi") != null) {
@@ -834,7 +837,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         RenderingHints interpolationHints = new RenderingHints(JAI.KEY_INTERPOLATION, interpolation);
         try {
             final Color readerBgColor = transparent ? null : bgColor;
-            if (transformation == null && DefaultWebMapService.isAdvancedReprojectionHandlingEnabled()) {
+            if (transformation == null && DefaultWebMapService.isAdvancedProjectionHandlingEnabled()) {
                 //
                 // Get the reader
                 //
@@ -945,17 +948,22 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
                             readGG.getGridRange2D(), 
                             interpolation,
                             readerBgColor);
+                    if(coverage == null){
+                        // we're outside of the coverage definition area, return an empty space
+                        image = createBkgImage(mapWidth, mapHeight, bgColor, null);
+                    }
                 }
-                
-                // apply the grid coverage renderer
-                final GridCoverageRenderer gcr = new GridCoverageRenderer(mapCRS,
-                        ReferencedEnvelope.reference(readGG.getEnvelope()),
-                        readGG.getGridRange2D(), worldToScreen, interpolationHints);
-                gcr.setAdvancedProjectionHandlingEnabled(false);
+                if(image == null){
+                    // apply the grid coverage renderer
+                    final GridCoverageRenderer gcr = new GridCoverageRenderer(mapCRS,
+                            ReferencedEnvelope.reference(readGG.getEnvelope()),
+                            readGG.getGridRange2D(), worldToScreen, interpolationHints);
+                    gcr.setAdvancedProjectionHandlingEnabled(false);
 
-                // create a solid color empty image
-                image = gcr.renderImage(coverage, symbolizer, interpolation,
-                        mapContent.getBgColor(), tileSizeX, tileSizeY);
+                    // create a solid color empty image
+                    image = gcr.renderImage(coverage, symbolizer, interpolation,
+                            mapContent.getBgColor(), tileSizeX, tileSizeY);
+                }
             }
         } catch (Throwable e) {
             throw new ServiceException(e);

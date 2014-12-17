@@ -25,6 +25,12 @@ public class WCS20Const {
 
     protected static final String URI_WCS = "http://www.opengis.net/wcs/2.0";
 
+    public static final String OVERVIEW_POLICY_EXTENSION = "OverviewPolicy";
+
+    public static final String OVERVIEW_POLICY_EXTENSION_LOWERCASE = OVERVIEW_POLICY_EXTENSION.toLowerCase();
+
+    public static final String OVERVIEW_POLICY_EXTENSION_NAMESPACE = "http://www.geoserver.org/WCS_service-extension_overviewpolicy/1.0";
+
     public static AttributesImpl getDefaultNamespaces() {
 
             final AttributesImpl attributes = new AttributesImpl();

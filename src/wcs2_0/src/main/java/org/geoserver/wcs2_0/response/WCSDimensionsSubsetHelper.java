@@ -34,6 +34,7 @@ import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.util.ReaderDimensionsAccessor;
 import org.geoserver.wcs2_0.GetCoverage;
 import org.geoserver.wcs2_0.GridCoverageRequest;
+import org.geoserver.wcs2_0.WCSEnvelope;
 import org.geoserver.wcs2_0.exception.WCS20Exception;
 import org.geoserver.wcs2_0.response.DimensionBean.DimensionType;
 import org.geoserver.wcs2_0.util.EnvelopeAxesLabelsMapper;
@@ -50,7 +51,6 @@ import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
-import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.util.DateRange;
 import org.geotools.util.NumberRange;
 import org.geotools.util.Utilities;
@@ -95,6 +95,8 @@ public class WCSDimensionsSubsetHelper {
     private DimensionInfo elevationDimension;
 
     private CoordinateReferenceSystem subsettingCRS;
+
+    private WCSEnvelope requestedEnvelope;
 
     private GridCoverage2DReader reader;
 
@@ -332,6 +334,9 @@ public class WCSDimensionsSubsetHelper {
             }
         }
 
+        // make sure we have not been requested to subset outside of the source CRS
+        requestedEnvelope = new WCSEnvelope(subsettingEnvelope);
+
         //
         // intersect with original envelope to make sure the subsetting is valid
         //
@@ -512,6 +517,10 @@ public class WCSDimensionsSubsetHelper {
             }
         }
         return results;
+    }
+
+    public WCSEnvelope getRequestedEnvelope() {
+        return requestedEnvelope;
     }
 
     /**

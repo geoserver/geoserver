@@ -6,6 +6,7 @@
 package org.vfny.geoserver.global;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -14,6 +15,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.ProjectionPolicy;
 import org.geotools.data.DataSourceException;
 import org.geotools.data.DataStore;
@@ -103,7 +105,7 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
     protected ProjectionPolicy srsHandling;
 
     /** FeatureTypeInfo metadata to pass to extensions within the Query **/
-    protected Map<String, Object> metadata;
+    protected MetadataMap metadata;
 
     /**
      * Distance used for curve linearization tolerance, as an absolute value expressed in the data
@@ -122,7 +124,7 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
      *        value expressed in the data native CRS
      */
     GeoServerFeatureSource(FeatureSource<SimpleFeatureType, SimpleFeature> source, SimpleFeatureType schema, Filter definitionQuery,
-        CoordinateReferenceSystem declaredCRS, int srsHandling, Double linearizationTolerance, Map<String, Object> metadata) {
+        CoordinateReferenceSystem declaredCRS, int srsHandling, Double linearizationTolerance, MetadataMap metadata) {
         this(source, new Settings(schema, definitionQuery, declaredCRS, srsHandling, linearizationTolerance, metadata));
     }
 
@@ -164,23 +166,38 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
      * <p>
      * This factory method is public and will be used to create all required
      * subclasses. By comparison the constructors for this class have package
-     * visibiliy.
+     * visibility.
      * </p>
+     * 
+     * @deprecated
      *
      * @param featureSource
      * @param schema DOCUMENT ME!
      * @param definitionQuery DOCUMENT ME!
      * @param declaredCRS 
      * @param linearizationTolerance TODO
-     * @param metadata Extra configuration for the feature type in GeoServer
+     * @param metadata Feature type metadata
      * @return
      */
     public static GeoServerFeatureSource create(FeatureSource <SimpleFeatureType, SimpleFeature> featureSource, SimpleFeatureType schema,
         Filter definitionQuery, CoordinateReferenceSystem declaredCRS, int srsHandling, Double linearizationTolerance,
-        Map<String, Object> metadata) {
+        MetadataMap metadata) {
         return create(featureSource, new Settings(schema, definitionQuery, declaredCRS, srsHandling, linearizationTolerance, metadata));
     }
 
+    /**
+     * Factory that make the correct decorator for the provided featureSource.
+     *
+     * <p>
+     * This factory method is public and will be used to create all required
+     * subclasses. By comparison the constructors for this class have package
+     * visibility.
+     * </p>
+     *
+     * @param featureSource
+     * @param settings Settings for this store
+     * @return
+     */
     public static GeoServerFeatureSource create(FeatureSource <SimpleFeatureType, SimpleFeature> featureSource, Settings settings) {
         if (featureSource instanceof FeatureLocking) {
             return new GeoServerFeatureLocking(
@@ -423,7 +440,7 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
         Query newQuery = adaptQuery(reprojected, schema);
         
         // Merge configuration metadata into query hints
-        for (Entry<String, Object> e : metadata.entrySet()) {
+        for (Entry<String, Serializable> e : metadata.entrySet()) {
             ConfigurationMetadataKey key = ConfigurationMetadataKey.get(e.getKey());
             newQuery.getHints().put(key, e.getValue());
         }
@@ -735,11 +752,21 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
         protected CoordinateReferenceSystem declaredCRS;
         protected int srsHandling;
         protected Double linearizationTolerance;
-        protected Map<String, Object> metadata;
+        protected MetadataMap metadata;
 
+        /**
+         * Constructor parameter for GeoServerFeatureSource.
+         * 
+         * @param schema
+         * @param definitionQuery
+         * @param declaredCRS
+         * @param srsHandling
+         * @param linearizationTolerance
+         * @param metadata Feature type metadata
+         */
         protected Settings(SimpleFeatureType schema, Filter definitionQuery,
                 CoordinateReferenceSystem declaredCRS, int srsHandling,
-                Double linearizationTolerance, Map<String, Object> metadata) {
+                Double linearizationTolerance, MetadataMap metadata) {
             this.schema = schema;
             this.definitionQuery = definitionQuery;
             this.declaredCRS = declaredCRS;

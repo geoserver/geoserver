@@ -48,11 +48,7 @@ public class GeoServerFeatureStore extends GeoServerFeatureSource implements Sim
      * Creates a new DEFQueryFeatureLocking object.
      *
      * @param store GeoTools2 FeatureSource
-     * @param schema FeatureType served by source
-     * @param definitionQuery Filter that constrains source
-     * @param declaredCRS Geometries will be forced to this CRS (or null, if no forcing is needed)
-     * @param srsHandling
-     * @param linearizationTolerance TODO
+     * @param settings Settings for this store
      */
     GeoServerFeatureStore(FeatureStore<SimpleFeatureType, SimpleFeature> store, Settings settings) {
         super(store, settings);

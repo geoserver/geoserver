@@ -10,8 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
-import org.geoserver.catalog.AttributeTypeInfo;
-import org.geotools.data.Query;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.visitor.UniqueVisitor;
@@ -21,12 +19,8 @@ import org.geotools.process.factory.DescribeParameter;
 import org.geotools.process.factory.DescribeProcess;
 import org.geotools.process.factory.DescribeResult;
 import org.geotools.util.logging.Logging;
-import org.json.simple.JSONObject;
 import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory;
-import org.opengis.filter.sort.SortBy;
-import org.opengis.filter.sort.SortOrder;
 
 /**
  * A WPS process to retrieve unique field values from a layer on Geoserver
@@ -97,9 +91,15 @@ public class PagedUniqueProcess implements GeoServerProcess {
                 + " - field: " + fieldName);
     
         
-        UniqueVisitor visitor = new UniqueVisitor(FF.property(fieldName));
-    
-    
+        UniqueVisitor visitor = new UniqueVisitor(FF.property(fieldName)) {
+            @Override
+            public boolean hasLimits() {
+                // force usage of visitor limits, also for size extraction "query"
+                return true;
+            }
+            
+        };
+        
         Integer listSize = 0;
         List<String> list = new ArrayList<String>();
     

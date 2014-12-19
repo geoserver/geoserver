@@ -36,11 +36,17 @@ public class CascadedStoredQueryCallback implements FeatureTypeCallback {
         StoredQueryConfiguration sqc = info.getMetadata().get(FeatureTypeInfo.STORED_QUERY_CONFIGURATION, StoredQueryConfiguration.class);
         WFSDataStore wstore = (WFSDataStore)dataAccess;
 
-        if(!wstore.getConfiguredStoredQueries().containsValue(info.getName())) {
-            wstore.addStoredQuery(info.getNativeName(), sqc.getStoredQueryId());
+        String localPart = info.getName();
+        boolean usesTemporary = false;
+        if (temporaryName != null) {
+            localPart = temporaryName.getLocalPart();
+            usesTemporary = true;
         }
 
-        return false;
+        if(!wstore.getConfiguredStoredQueries().containsValue(localPart)) {
+            wstore.addStoredQuery(localPart, sqc.getStoredQueryId());
+        }
+        return usesTemporary;
     }
     
     @Override
@@ -54,7 +60,8 @@ public class CascadedStoredQueryCallback implements FeatureTypeCallback {
     public void dispose(FeatureTypeInfo info,
             DataAccess<? extends FeatureType, ? extends Feature> dataAccess,
             Name temporaryName) throws IOException {
-        // nothing to do (initialize() always returns false)
+        WFSDataStore wstore = (WFSDataStore)dataAccess;
+        wstore.removeStoredQuery(temporaryName.getLocalPart());
     }
 
 }

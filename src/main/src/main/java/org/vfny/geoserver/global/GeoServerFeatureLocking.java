@@ -49,11 +49,8 @@ public class GeoServerFeatureLocking extends GeoServerFeatureStore implements Si
      * @param srsHandling see {@link FeatureTypeInfo#FORCE} & co.
      * @param linearizationTolerance TODO
      */
-    GeoServerFeatureLocking(FeatureLocking<SimpleFeatureType, SimpleFeature> locking,
-            SimpleFeatureType schema, Filter definitionQuery,
-            CoordinateReferenceSystem declaredCRS, int srsHandling, Double linearizationTolerance,
-            Map<String, Object> metadata) {
-        super(locking, schema, definitionQuery, declaredCRS, srsHandling, linearizationTolerance, metadata);
+    GeoServerFeatureLocking(FeatureLocking<SimpleFeatureType, SimpleFeature> locking, Settings settings) {
+        super(locking, settings);
     }
 
     FeatureLocking<SimpleFeatureType, SimpleFeature> locking() {

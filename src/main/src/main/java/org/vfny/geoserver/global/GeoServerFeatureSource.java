@@ -439,7 +439,10 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
         Query reprojected = reprojectFilter(query);
         Query newQuery = adaptQuery(reprojected, schema);
         
-        // Merge configuration metadata into query hints
+        // Merge configuration metadata into query hints. This ensures that all
+        // metadata for a particular FeatureType is available in the actual data store.
+        // All String keys in the featuretype.xml metadata will be transformed into
+        // ConfigurationMetadataKey instances
         for (Entry<String, Serializable> e : metadata.entrySet()) {
             ConfigurationMetadataKey key = ConfigurationMetadataKey.get(e.getKey());
             newQuery.getHints().put(key, e.getValue());

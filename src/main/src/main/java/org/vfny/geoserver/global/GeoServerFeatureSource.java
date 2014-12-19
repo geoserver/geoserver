@@ -123,13 +123,23 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
      */
     GeoServerFeatureSource(FeatureSource<SimpleFeatureType, SimpleFeature> source, SimpleFeatureType schema, Filter definitionQuery,
         CoordinateReferenceSystem declaredCRS, int srsHandling, Double linearizationTolerance, Map<String, Object> metadata) {
+        this(source, new Settings(schema, definitionQuery, declaredCRS, srsHandling, linearizationTolerance, metadata));
+    }
+
+    /**
+     * Creates a new GeoServerFeatureSource object.
+     *
+     * @param source GeoTools2 FeatureSource
+     * @param settings Settings for this source
+     */
+    GeoServerFeatureSource(FeatureSource<SimpleFeatureType, SimpleFeature> source, Settings settings) {
         this.source = DataUtilities.simple(source);
-        this.schema = schema;
-        this.definitionQuery = definitionQuery;
-        this.declaredCRS = declaredCRS;
-        this.srsHandling = ProjectionPolicy.get( srsHandling );
-        this.linearizationTolerance = linearizationTolerance;
-        this.metadata = metadata;
+        this.schema = settings.schema;
+        this.definitionQuery = settings.definitionQuery;
+        this.declaredCRS = settings.declaredCRS;
+        this.srsHandling = ProjectionPolicy.get( settings.srsHandling );
+        this.linearizationTolerance = settings.linearizationTolerance;
+        this.metadata = settings.metadata;
 
         if (this.definitionQuery == null) {
             this.definitionQuery = Filter.INCLUDE;
@@ -162,22 +172,25 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
      * @param definitionQuery DOCUMENT ME!
      * @param declaredCRS 
      * @param linearizationTolerance TODO
+     * @param metadata Extra configuration for the feature type in GeoServer
      * @return
      */
     public static GeoServerFeatureSource create(FeatureSource <SimpleFeatureType, SimpleFeature> featureSource, SimpleFeatureType schema,
         Filter definitionQuery, CoordinateReferenceSystem declaredCRS, int srsHandling, Double linearizationTolerance,
         Map<String, Object> metadata) {
+        return create(featureSource, new Settings(schema, definitionQuery, declaredCRS, srsHandling, linearizationTolerance, metadata));
+    }
+
+    public static GeoServerFeatureSource create(FeatureSource <SimpleFeatureType, SimpleFeature> featureSource, Settings settings) {
         if (featureSource instanceof FeatureLocking) {
             return new GeoServerFeatureLocking(
-                    (FeatureLocking<SimpleFeatureType, SimpleFeature>) featureSource, schema,
-                    definitionQuery, declaredCRS, srsHandling, linearizationTolerance, metadata);
+                    (FeatureLocking<SimpleFeatureType, SimpleFeature>) featureSource, settings);
         } else if (featureSource instanceof FeatureStore) {
             return new GeoServerFeatureStore(
-                    (FeatureStore<SimpleFeatureType, SimpleFeature>) featureSource, schema,
-                    definitionQuery, declaredCRS, srsHandling, linearizationTolerance, metadata);
+                    (FeatureStore<SimpleFeatureType, SimpleFeature>) featureSource, settings);
         }
 
-        return new GeoServerFeatureSource(featureSource, schema, definitionQuery, declaredCRS, srsHandling, null, metadata);
+        return new GeoServerFeatureSource(featureSource, settings);
     }
 
     /**
@@ -714,5 +727,25 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
             }
         };
         
-    }   
+    }
+
+    protected static class Settings {
+        protected SimpleFeatureType schema;
+        protected Filter definitionQuery;
+        protected CoordinateReferenceSystem declaredCRS;
+        protected int srsHandling;
+        protected Double linearizationTolerance;
+        protected Map<String, Object> metadata;
+
+        protected Settings(SimpleFeatureType schema, Filter definitionQuery,
+                CoordinateReferenceSystem declaredCRS, int srsHandling,
+                Double linearizationTolerance, Map<String, Object> metadata) {
+            this.schema = schema;
+            this.definitionQuery = definitionQuery;
+            this.declaredCRS = declaredCRS;
+            this.srsHandling = srsHandling;
+            this.linearizationTolerance = linearizationTolerance;
+            this.metadata = metadata;
+        }
+    }
 }

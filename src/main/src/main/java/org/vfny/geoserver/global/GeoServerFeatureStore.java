@@ -54,11 +54,8 @@ public class GeoServerFeatureStore extends GeoServerFeatureSource implements Sim
      * @param srsHandling
      * @param linearizationTolerance TODO
      */
-    GeoServerFeatureStore(FeatureStore<SimpleFeatureType, SimpleFeature> store,
-            SimpleFeatureType schema, Filter definitionQuery,
-            CoordinateReferenceSystem declaredCRS, int srsHandling, Double linearizationTolerance,
-            Map<String, Object> metadata) {
-        super(store, schema, definitionQuery, declaredCRS, srsHandling, linearizationTolerance, metadata);
+    GeoServerFeatureStore(FeatureStore<SimpleFeatureType, SimpleFeature> store, Settings settings) {
+        super(store, settings);
     }
 
     /**

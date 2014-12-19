@@ -1244,7 +1244,7 @@ public class ResourcePool {
 
             //return a normal 
             return GeoServerFeatureLocking.create(fs, schema, info.getFilter(), resultCRS, info
-                    .getProjectionPolicy().getCode(), getTolerance(info), (Map)info.getMetadata().getMap());
+                    .getProjectionPolicy().getCode(), getTolerance(info), info.getMetadata());
         }
     }
     

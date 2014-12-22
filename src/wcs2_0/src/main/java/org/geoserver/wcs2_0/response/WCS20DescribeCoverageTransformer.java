@@ -19,6 +19,7 @@ import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataMap;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.wcs.CoverageCleanerCallback;
 import org.geoserver.wcs.WCSInfo;
 import org.geoserver.wcs.responses.CoverageResponseDelegateFinder;
@@ -29,6 +30,7 @@ import org.geoserver.wcs2_0.exception.WCS20Exception;
 import org.geoserver.wcs2_0.util.EnvelopeAxesLabelsMapper;
 import org.geoserver.wcs2_0.util.NCNameResourceCodec;
 import org.geoserver.wcs2_0.util.RequestUtils;
+import org.geoserver.wcs2_0.util.WCS20DescribeCoverageExtension;
 import org.geotools.coverage.GridSampleDimension;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridEnvelope2D;
@@ -64,6 +66,12 @@ public class WCS20DescribeCoverageTransformer extends GMLTransformer {
     private Catalog catalog;
 
     private CoverageResponseDelegateFinder responseFactory;
+
+    /** Available extension points for DescribeCoverage*/
+    private List<WCS20DescribeCoverageExtension> wcsDescribeCoverageExtensions;
+
+    /** Boolean indicating that at least an extension point for the DescribeCoverage operation is available */
+    private boolean availableDescribeCoverageExtensions;
     
     /**
      * Creates a new WFSCapsTransformer object.
@@ -77,6 +85,10 @@ public class WCS20DescribeCoverageTransformer extends GMLTransformer {
         this.mimemapper = mimemapper;
         setNamespaceDeclarationEnabled(false);
         setIndentation(2);
+        this.wcsDescribeCoverageExtensions = GeoServerExtensions
+                .extensions(WCS20DescribeCoverageExtension.class);
+        this.availableDescribeCoverageExtensions = wcsDescribeCoverageExtensions != null
+                && !wcsDescribeCoverageExtensions.isEmpty();
     }
 
     public WCS20DescribeCoverageTranslator createTranslator(ContentHandler handler) {
@@ -109,10 +121,19 @@ public class WCS20DescribeCoverageTransformer extends GMLTransformer {
             // collect coverages
             List<CoverageInfo> coverages = new ArrayList<CoverageInfo>();
 
+            List<String> covIds = new ArrayList<String>();
             for (String encodedCoverageId : (List<String>)request.getCoverageId()) {
-                LayerInfo layer = NCNameResourceCodec.getCoverage(catalog, encodedCoverageId);
+                String newCoverageID = encodedCoverageId;
+                // Extension point for encoding the coverageId
+                if (availableDescribeCoverageExtensions) {
+                    for (WCS20DescribeCoverageExtension ext : wcsDescribeCoverageExtensions) {
+                        newCoverageID = ext.handleCoverageId(newCoverageID);
+                    }
+                }
+                LayerInfo layer = NCNameResourceCodec.getCoverage(catalog, newCoverageID);
                 if(layer != null) {
                     coverages.add((CoverageInfo) layer.getResource());
+                    covIds.add(encodedCoverageId);
                 } else {
                     // if we get there there is an internal error, the coverage existence is
                     // checked before creating the transformer
@@ -137,10 +158,23 @@ public class WCS20DescribeCoverageTransformer extends GMLTransformer {
             String location = buildSchemaLocation(request.getBaseUrl(), WCS.NAMESPACE, "http://schemas.opengis.net/wcs/2.0/wcsDescribeCoverage.xsd");
             attributes.addAttribute("", "xsi:schemaLocation", "xsi:schemaLocation", "", location);
             start("wcs:CoverageDescriptions", attributes);
+            int coverageIndex = 0;
             for (CoverageInfo ci : coverages) {
                 try {
                     String encodedId = NCNameResourceCodec.encode(ci);
-                    handleCoverageDescription(encodedId, ci);
+                    CoverageInfo ciNew = ci;
+                    String newCoverageID = covIds.get(coverageIndex);
+                    // Extension point for encoding the coverageId
+                    if (availableDescribeCoverageExtensions) {
+                        for (WCS20DescribeCoverageExtension ext : wcsDescribeCoverageExtensions) {
+                            newCoverageID = ext.handleEncodedId(location, newCoverageID);
+                            ciNew = ext.handleCoverageInfo(covIds.get(coverageIndex), ci);
+                        }
+                    } else {
+                        newCoverageID = encodedId;
+                    }
+                    handleCoverageDescription(newCoverageID, ciNew);
+                    coverageIndex++;
                 } catch (Exception e) {
                     throw new RuntimeException("Unexpected error occurred during describe coverage xml encoding", e);
                 }

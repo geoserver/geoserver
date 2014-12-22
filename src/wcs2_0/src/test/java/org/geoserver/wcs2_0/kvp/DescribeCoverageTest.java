@@ -252,7 +252,7 @@ public class DescribeCoverageTest extends WCSTestSupport {
         assertXpathEvaluatesTo("2008-11-01T00:00:00.000Z", "//gmlcov:metadata/gmlcov:Extension/wcsgs:TimeDomain/gml:TimePeriod/gml:endPosition", dom);
         assertXpathEvaluatesTo("0", "count(//gmlcov:metadata/gmlcov:Extension/wcsgs:TimeDomain/gml:TimePeriod/gml:TimeInterval)", dom);
     }
-    
+
     @Test
     public void testDescribeTimeDiscreteInterval() throws Exception {
         setupRasterDimension(getLayerId(WATTEMP), ResourceInfo.TIME, DimensionPresentation.DISCRETE_INTERVAL, 1000 * 60 * 60 * 24d);

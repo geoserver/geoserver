@@ -22,7 +22,7 @@ import org.opengis.util.ProgressListener;
  * 
  * @author Andrea Aime - GeoSolutions
  */
-class GranuleCoverageInfo extends DecoratingCoverageInfo {
+public class GranuleCoverageInfo extends DecoratingCoverageInfo {
     private static final long serialVersionUID = 7877565589262804385L;
     private SimpleFeature feature;
     private List<DimensionDescriptor> dimensionDescriptors;

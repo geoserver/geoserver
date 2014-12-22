@@ -43,4 +43,16 @@
 		class="org.geoserver.wms.worldwind.BilMapResponse">
 		<constructor-arg index="0" ref="wms"/>
 	</bean>
+
+    <!-- Register a layer configuration panel to allow the server admin to configure how BIL output is produced. -->
+    <bean id="bilLayerConfig" class="org.geoserver.web.publish.LayerConfigurationPanelInfo">
+        <property name="id" value="bilLayerConfig"/>
+        <property name="titleKey" value="publish.layer.config.bil"/>
+        <property name="componentClass" value="org.geoserver.wms.worldwind.web.BilLayerConfigPanel"/>
+        <property name="supportedTypes">
+            <list>
+                <value>org.geoserver.catalog.CoverageInfo</value>
+            </list>
+        </property>
+    </bean>
 </beans>

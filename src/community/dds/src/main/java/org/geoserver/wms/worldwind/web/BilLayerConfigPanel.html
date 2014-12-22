@@ -1,0 +1,35 @@
+<!-- 
+ Copyright (C) 2014 - Open Source Geospatial Foundation. All rights reserved.
+ This code is licensed under the GPL 2.0 license, available at the root
+ application directory.
+ -->
+<html xmlns:wicket="http://wicket.apache.org/">
+<head></head>
+<body>
+<form name="theForm">
+    <wicket:panel>
+        <ul>
+            <li>
+                <fieldset>
+                    <legend><span><wicket:message key="bilFormatSettings">BIL Format Settings</wicket:message></span></legend>
+                    <ul>
+                        <li>
+                            <label for="defaultDataTypeAttribute"><wicket:message key="defaultDataTypeAttribute">Default Data Type Attribute</wicket:message></label>
+                            <select id="defaultDataTypeAttribute" class="text" type="text" wicket:id="bil.defaultDataTypeAttribute"></select>
+                        </li>
+                        <li>
+                            <label for="byteOrderAttribute"><wicket:message key="byteOrderAttribute">Byte Order</wicket:message></label>
+                            <select id="byteOrderAttribute" class="text" type="text" wicket:id="bil.byteOrderAttribute"></select>
+                        </li>
+                        <li>
+                            <label for="noDataOutputAttribute"><wicket:message key="noDataOutputAttribute">Default NoData Output Attribute</wicket:message></label>
+                            <input id="noDataOutputAttribute" class="text" type="text" wicket:id="bil.noDataOutputAttribute"></input>
+                        </li>
+                    </ul>
+                </fieldset>
+            </li>
+        </ul>
+    </wicket:panel>
+</form>
+</body>
+</html>

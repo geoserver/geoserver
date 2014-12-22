@@ -34,6 +34,33 @@ The mime-types will also be listed in the ``GetCapabilities`` document::
 <Format>image/bil</Format>
 <Format>image/dds</Format>
 
+Configuring the BIL format
+------------------------------------
+
+For a client application to use a BIL layer, it must know the data encoding of the BIL file (e.g. 16-bit integer, 32-bit floating point, etc), the byte order of the data, and the value that indicates missing data. BIL files do not contain this metadata, so it may be necessary to configure the server to produce BIL files in the format that a client application expects.
+
+.. figure:: images/bil_config.png
+   :align: center
+
+The BIL output format can be configured for each layer in the Publishing tab of the layer configuration. The plugin supports the following options:
+
+.. list-table::
+   :widths: 50 50
+
+   * - **Option**
+     - **Description**
+   * - ``Default encoding``
+     - The data encoding to use if the request does not specify an encoding. For example, application/bil does not specify the response encoding, while application/bil16 does specify an encoding. Default: use same encoding as layer source files.
+   * - ``Byte order``
+     - Byte order of the response. Default: network byte order (big endian).
+   * - ``No Data value``
+     -  The value that indicates missing data. If this option is set, missing data values will be recoded to this value. Default: no data translation.
+
+For compatibility with the default behavior of NASA World Wind, use these settings:
+
+* Default encoding: application/bil16
+* Byte order: Little endian
+* No data: -9999
    
 Configuring World Wind to access Imagery/Terrain from GeoServer
 ---------------------------------------------------------------

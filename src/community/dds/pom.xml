@@ -57,6 +57,11 @@
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
+			<groupId>org.geoserver.web</groupId>
+			<artifactId>gs-web-core</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
       		<groupId>org.geotools</groupId>
       		<artifactId>gt-sample-data</artifactId>
       		<version>${gt.version}</version>

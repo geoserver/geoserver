@@ -108,7 +108,29 @@ public class DescribeCoverageTest extends WCSTestSupport {
         assertXpathEvaluatesTo("9", "count(//wcs:CoverageDescription//gmlcov:rangeType//swe:DataRecord//swe:field)", dom);        
         assertXpathEvaluatesTo("image/tiff", "//wcs:CoverageDescriptions//wcs:CoverageDescription[1]//wcs:ServiceParameters//wcs:nativeFormat", dom);
     }
-    
+
+    @Test
+    public void testMultiBandKVPNoWs() throws Exception {
+        Document dom = getAsDOM(DESCRIBE_URL + "&coverageId=multiband");
+        assertNotNull(dom);
+        // print(dom, System.out);
+
+        checkValidationErrors(dom, WCS20_SCHEMA);       
+        assertXpathEvaluatesTo("9", "count(//wcs:CoverageDescription//gmlcov:rangeType//swe:DataRecord//swe:field)", dom);        
+        assertXpathEvaluatesTo("image/tiff", "//wcs:CoverageDescriptions//wcs:CoverageDescription[1]//wcs:ServiceParameters//wcs:nativeFormat", dom);
+    }
+
+    @Test
+    public void testMultiBandKVPLocalWs() throws Exception {
+        Document dom = getAsDOM("wcs/" + DESCRIBE_URL + "&coverageId=multiband");
+        assertNotNull(dom);
+        // print(dom, System.out);
+
+        checkValidationErrors(dom, WCS20_SCHEMA);       
+        assertXpathEvaluatesTo("9", "count(//wcs:CoverageDescription//gmlcov:rangeType//swe:DataRecord//swe:field)", dom);        
+        assertXpathEvaluatesTo("image/tiff", "//wcs:CoverageDescriptions//wcs:CoverageDescription[1]//wcs:ServiceParameters//wcs:nativeFormat", dom);
+    }
+
     @Test
     public void testMultipleCoverages() throws Exception {
         Document dom = getAsDOM(DESCRIBE_URL + "&coverageId=wcs__multiband,wcs__BlueMarble");
@@ -124,7 +146,39 @@ public class DescribeCoverageTest extends WCSTestSupport {
         assertXpathEvaluatesTo("3", "count(//wcs:CoverageDescription[2]//gmlcov:rangeType//swe:DataRecord//swe:field)", dom);
         assertXpathEvaluatesTo("image/tiff", "//wcs:CoverageDescriptions/wcs:CoverageDescription[2]//wcs:ServiceParameters//wcs:nativeFormat", dom);
     }
-    
+
+    @Test
+    public void testMultipleCoveragesNoWs() throws Exception {
+        Document dom = getAsDOM(DESCRIBE_URL + "&coverageId=multiband,wcs__BlueMarble");
+        assertNotNull(dom);
+        // print(dom, System.out);
+
+        checkValidationErrors(dom, WCS20_SCHEMA);       
+        assertXpathEvaluatesTo("2", "count(//wcs:CoverageDescription)", dom);        
+        assertXpathEvaluatesTo("wcs__multiband", "//wcs:CoverageDescriptions/wcs:CoverageDescription[1]/@gml:id", dom);
+        assertXpathEvaluatesTo("9", "count(//wcs:CoverageDescription[1]//gmlcov:rangeType//swe:DataRecord//swe:field)", dom);
+        assertXpathEvaluatesTo("image/tiff", "//wcs:CoverageDescriptions/wcs:CoverageDescription[1]//wcs:ServiceParameters//wcs:nativeFormat", dom);
+        assertXpathEvaluatesTo("wcs__BlueMarble", "//wcs:CoverageDescriptions/wcs:CoverageDescription[2]/@gml:id", dom);
+        assertXpathEvaluatesTo("3", "count(//wcs:CoverageDescription[2]//gmlcov:rangeType//swe:DataRecord//swe:field)", dom);
+        assertXpathEvaluatesTo("image/tiff", "//wcs:CoverageDescriptions/wcs:CoverageDescription[2]//wcs:ServiceParameters//wcs:nativeFormat", dom);
+    }
+
+    @Test
+    public void testMultipleCoveragesLocalWs() throws Exception {
+        Document dom = getAsDOM("wcs/" + DESCRIBE_URL + "&coverageId=multiband,BlueMarble");
+        assertNotNull(dom);
+        // print(dom, System.out);
+
+        checkValidationErrors(dom, WCS20_SCHEMA);       
+        assertXpathEvaluatesTo("2", "count(//wcs:CoverageDescription)", dom);        
+        assertXpathEvaluatesTo("wcs__multiband", "//wcs:CoverageDescriptions/wcs:CoverageDescription[1]/@gml:id", dom);
+        assertXpathEvaluatesTo("9", "count(//wcs:CoverageDescription[1]//gmlcov:rangeType//swe:DataRecord//swe:field)", dom);
+        assertXpathEvaluatesTo("image/tiff", "//wcs:CoverageDescriptions/wcs:CoverageDescription[1]//wcs:ServiceParameters//wcs:nativeFormat", dom);
+        assertXpathEvaluatesTo("wcs__BlueMarble", "//wcs:CoverageDescriptions/wcs:CoverageDescription[2]/@gml:id", dom);
+        assertXpathEvaluatesTo("3", "count(//wcs:CoverageDescription[2]//gmlcov:rangeType//swe:DataRecord//swe:field)", dom);
+        assertXpathEvaluatesTo("image/tiff", "//wcs:CoverageDescriptions/wcs:CoverageDescription[2]//wcs:ServiceParameters//wcs:nativeFormat", dom);
+    }
+
     @Test
     public void testMultipleCoveragesOneNotExists() throws Exception {
         MockHttpServletResponse response = getAsServletResponse(DESCRIBE_URL + "&coverageId=wcs__multiband,wcs__IAmNotThere");

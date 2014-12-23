@@ -294,7 +294,7 @@ public class GetCapabilitiesTest extends WCSTestSupport {
 
     @Test
     public void testSectionsAll() throws Exception {
-        Document dom = getAsDOM(BASEPATH + "?request=GetCapabilities&service=WCS&sections=All");
+        Document dom = getAsDOM(BASEPATH + "?request=GetCapabilities&service=WCS&sections=All&version=1.1");
         checkValidationErrors(dom, WCS11_SCHEMA);
         assertXpathEvaluatesTo("1", "count(//ows:ServiceIdentification)", dom);
         assertXpathEvaluatesTo("1", "count(//ows:ServiceProvider)", dom);
@@ -312,7 +312,7 @@ public class GetCapabilitiesTest extends WCSTestSupport {
     @Test
     public void testOneSection() throws Exception {
         Document dom = getAsDOM(BASEPATH
-                + "?request=GetCapabilities&service=WCS&sections=ServiceProvider");
+                + "?request=GetCapabilities&service=WCS&sections=ServiceProvider&version=1.1");
         checkValidationErrors(dom, WCS11_SCHEMA);
         assertXpathEvaluatesTo("0", "count(//ows:ServiceIdentification)", dom);
         assertXpathEvaluatesTo("1", "count(//ows:ServiceProvider)", dom);
@@ -323,7 +323,7 @@ public class GetCapabilitiesTest extends WCSTestSupport {
     @Test
     public void testTwoSection() throws Exception {
         Document dom = getAsDOM(BASEPATH
-                + "?request=GetCapabilities&service=WCS&sections=ServiceProvider,Contents");
+                + "?request=GetCapabilities&service=WCS&sections=ServiceProvider,Contents&version=1.1");
         checkValidationErrors(dom, WCS11_SCHEMA);
         assertXpathEvaluatesTo("0", "count(//ows:ServiceIdentification)", dom);
         assertXpathEvaluatesTo("1", "count(//ows:ServiceProvider)", dom);

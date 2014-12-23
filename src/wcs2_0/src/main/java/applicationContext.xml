@@ -107,6 +107,15 @@
     <property name="version" value="2.0.1" />
   </bean>
 
+  <bean id="wcs200SectionsKvpParser" class="org.geoserver.wcs2_0.kvp.SectionsKvpParser">
+    <property name="version" value="2.0.0"/>
+  </bean>
+
+  <bean id="wcs201SectionsKvpParser" class="org.geoserver.wcs2_0.kvp.SectionsKvpParser">
+    <property name="version" value="2.0.1"/>
+  </bean>    
+
+  <bean id="wcsDefaultSectionsKvpParser" class="org.geoserver.wcs2_0.kvp.SectionsKvpParser"/>
 
   <bean id="wcs20getCoverageKvpParser" class="org.geoserver.wcs2_0.kvp.WCS20GetCoverageRequestReader" />
 

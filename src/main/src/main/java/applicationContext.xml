@@ -239,4 +239,7 @@
   <!-- JDBC VirtualTable callback -->
   <bean id="virtualTableCallback" class="org.geoserver.catalog.VirtualTableCallback"/>
   <bean id="xmlSafeNameValidator" class="org.geoserver.catalog.impl.XMLSafeNameValidator"/>
+  
+  <!-- WFS Cascaded Stored Query callback  -->
+  <bean id="cascadedStoredQueryCallback" class="org.geoserver.catalog.CascadedStoredQueryCallback"/>
 </beans>

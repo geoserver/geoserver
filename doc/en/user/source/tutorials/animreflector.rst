@@ -128,7 +128,7 @@ The available options are:
 
    * - **Option**
      - **Description**
-   * - ``gif_loop_continuosly``
+   * - ``gif_loop_continuously``
      - If ``true`` the animation will loop continuously.
        The default is ``false``.
    * - ``gif_frames_delay``

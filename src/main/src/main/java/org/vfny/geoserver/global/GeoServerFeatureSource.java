@@ -444,8 +444,13 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
         // All String keys in the featuretype.xml metadata will be transformed into
         // ConfigurationMetadataKey instances
         for (Entry<String, Serializable> e : metadata.entrySet()) {
-            ConfigurationMetadataKey key = ConfigurationMetadataKey.get(e.getKey());
-            newQuery.getHints().put(key, e.getValue());
+            try {
+                ConfigurationMetadataKey key = ConfigurationMetadataKey.get(e.getKey());
+                newQuery.getHints().put(key, e.getValue());
+            }
+            catch (IllegalArgumentException ignore){
+              LOGGER.fine("Hint "+e.getKey()+": "+ignore);
+            }
         }
 
         CoordinateReferenceSystem targetCRS = query.getCoordinateSystemReproject();

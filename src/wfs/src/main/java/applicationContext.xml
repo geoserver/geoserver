@@ -659,4 +659,7 @@
        </property>
     </bean>
     
+    <!-- XStream persister initializer -->
+    <bean id="wfsXStreamPersisterInitializer" class="org.geoserver.wfs.WFSXStreamPersisterInitializer" />
+
 </beans>

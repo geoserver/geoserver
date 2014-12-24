@@ -7,6 +7,7 @@ package org.vfny.geoserver.global;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import org.geoserver.feature.RetypingFeatureCollection;
 import org.geotools.data.DataUtilities;
@@ -47,16 +48,10 @@ public class GeoServerFeatureStore extends GeoServerFeatureSource implements Sim
      * Creates a new DEFQueryFeatureLocking object.
      *
      * @param store GeoTools2 FeatureSource
-     * @param schema FeatureType served by source
-     * @param definitionQuery Filter that constrains source
-     * @param declaredCRS Geometries will be forced to this CRS (or null, if no forcing is needed)
-     * @param srsHandling
-     * @param linearizationTolerance TODO
+     * @param settings Settings for this store
      */
-    GeoServerFeatureStore(FeatureStore<SimpleFeatureType, SimpleFeature> store,
-            SimpleFeatureType schema, Filter definitionQuery,
-            CoordinateReferenceSystem declaredCRS, int srsHandling, Double linearizationTolerance) {
-        super(store, schema, definitionQuery, declaredCRS, srsHandling, linearizationTolerance);
+    GeoServerFeatureStore(FeatureStore<SimpleFeatureType, SimpleFeature> store, Settings settings) {
+        super(store, settings);
     }
 
     /**

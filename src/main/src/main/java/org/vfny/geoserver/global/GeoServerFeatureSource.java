@@ -6,12 +6,16 @@
 package org.vfny.geoserver.global;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.ProjectionPolicy;
 import org.geotools.data.DataSourceException;
 import org.geotools.data.DataStore;
@@ -29,6 +33,7 @@ import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.factory.Hints;
+import org.geotools.factory.Hints.ConfigurationMetadataKey;
 import org.geotools.feature.FeatureTypes;
 import org.geotools.feature.SchemaException;
 import org.geotools.feature.collection.MaxSimpleFeatureCollection;
@@ -99,6 +104,9 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
     /** How to handle SRS   */
     protected ProjectionPolicy srsHandling;
 
+    /** FeatureTypeInfo metadata to pass to extensions within the Query **/
+    protected MetadataMap metadata;
+
     /**
      * Distance used for curve linearization tolerance, as an absolute value expressed in the data
      * native CRS
@@ -116,13 +124,24 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
      *        value expressed in the data native CRS
      */
     GeoServerFeatureSource(FeatureSource<SimpleFeatureType, SimpleFeature> source, SimpleFeatureType schema, Filter definitionQuery,
-        CoordinateReferenceSystem declaredCRS, int srsHandling, Double linearizationTolerance) {
+        CoordinateReferenceSystem declaredCRS, int srsHandling, Double linearizationTolerance, MetadataMap metadata) {
+        this(source, new Settings(schema, definitionQuery, declaredCRS, srsHandling, linearizationTolerance, metadata));
+    }
+
+    /**
+     * Creates a new GeoServerFeatureSource object.
+     *
+     * @param source GeoTools2 FeatureSource
+     * @param settings Settings for this source
+     */
+    GeoServerFeatureSource(FeatureSource<SimpleFeatureType, SimpleFeature> source, Settings settings) {
         this.source = DataUtilities.simple(source);
-        this.schema = schema;
-        this.definitionQuery = definitionQuery;
-        this.declaredCRS = declaredCRS;
-        this.srsHandling = ProjectionPolicy.get( srsHandling );
-        this.linearizationTolerance = linearizationTolerance;
+        this.schema = settings.schema;
+        this.definitionQuery = settings.definitionQuery;
+        this.declaredCRS = settings.declaredCRS;
+        this.srsHandling = ProjectionPolicy.get( settings.srsHandling );
+        this.linearizationTolerance = settings.linearizationTolerance;
+        this.metadata = settings.metadata;
 
         if (this.definitionQuery == null) {
             this.definitionQuery = Filter.INCLUDE;
@@ -147,29 +166,48 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
      * <p>
      * This factory method is public and will be used to create all required
      * subclasses. By comparison the constructors for this class have package
-     * visibiliy.
+     * visibility.
      * </p>
+     * 
+     * @deprecated
      *
      * @param featureSource
      * @param schema DOCUMENT ME!
      * @param definitionQuery DOCUMENT ME!
      * @param declaredCRS 
      * @param linearizationTolerance TODO
+     * @param metadata Feature type metadata
      * @return
      */
     public static GeoServerFeatureSource create(FeatureSource <SimpleFeatureType, SimpleFeature> featureSource, SimpleFeatureType schema,
-        Filter definitionQuery, CoordinateReferenceSystem declaredCRS, int srsHandling, Double linearizationTolerance) {
+        Filter definitionQuery, CoordinateReferenceSystem declaredCRS, int srsHandling, Double linearizationTolerance,
+        MetadataMap metadata) {
+        return create(featureSource, new Settings(schema, definitionQuery, declaredCRS, srsHandling, linearizationTolerance, metadata));
+    }
+
+    /**
+     * Factory that make the correct decorator for the provided featureSource.
+     *
+     * <p>
+     * This factory method is public and will be used to create all required
+     * subclasses. By comparison the constructors for this class have package
+     * visibility.
+     * </p>
+     *
+     * @param featureSource
+     * @param settings Settings for this store
+     * @return
+     */
+    public static GeoServerFeatureSource create(FeatureSource <SimpleFeatureType, SimpleFeature> featureSource, Settings settings) {
         if (featureSource instanceof FeatureLocking) {
             return new GeoServerFeatureLocking(
-                    (FeatureLocking<SimpleFeatureType, SimpleFeature>) featureSource, schema,
-                    definitionQuery, declaredCRS, srsHandling, linearizationTolerance);
+                    (FeatureLocking<SimpleFeatureType, SimpleFeature>) featureSource, settings);
         } else if (featureSource instanceof FeatureStore) {
             return new GeoServerFeatureStore(
-                    (FeatureStore<SimpleFeatureType, SimpleFeature>) featureSource, schema,
-                    definitionQuery, declaredCRS, srsHandling, linearizationTolerance);
+                    (FeatureStore<SimpleFeatureType, SimpleFeature>) featureSource, settings);
         }
 
-        return new GeoServerFeatureSource(featureSource, schema, definitionQuery, declaredCRS, srsHandling, null);
+        return new GeoServerFeatureSource(featureSource, settings);
     }
 
     /**
@@ -401,6 +439,15 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
         Query reprojected = reprojectFilter(query);
         Query newQuery = adaptQuery(reprojected, schema);
         
+        // Merge configuration metadata into query hints. This ensures that all
+        // metadata for a particular FeatureType is available in the actual data store.
+        // All String keys in the featuretype.xml metadata will be transformed into
+        // ConfigurationMetadataKey instances
+        for (Entry<String, Serializable> e : metadata.entrySet()) {
+            ConfigurationMetadataKey key = ConfigurationMetadataKey.get(e.getKey());
+            newQuery.getHints().put(key, e.getValue());
+        }
+
         CoordinateReferenceSystem targetCRS = query.getCoordinateSystemReproject();
         try {
             //this is the raw "unprojected" feature collection
@@ -700,5 +747,35 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
             }
         };
         
-    }   
+    }
+
+    protected static class Settings {
+        protected SimpleFeatureType schema;
+        protected Filter definitionQuery;
+        protected CoordinateReferenceSystem declaredCRS;
+        protected int srsHandling;
+        protected Double linearizationTolerance;
+        protected MetadataMap metadata;
+
+        /**
+         * Constructor parameter for GeoServerFeatureSource.
+         * 
+         * @param schema
+         * @param definitionQuery
+         * @param declaredCRS
+         * @param srsHandling
+         * @param linearizationTolerance
+         * @param metadata Feature type metadata
+         */
+        protected Settings(SimpleFeatureType schema, Filter definitionQuery,
+                CoordinateReferenceSystem declaredCRS, int srsHandling,
+                Double linearizationTolerance, MetadataMap metadata) {
+            this.schema = schema;
+            this.definitionQuery = definitionQuery;
+            this.declaredCRS = declaredCRS;
+            this.srsHandling = srsHandling;
+            this.linearizationTolerance = linearizationTolerance;
+            this.metadata = metadata;
+        }
+    }
 }

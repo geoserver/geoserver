@@ -24,6 +24,7 @@ import javax.imageio.metadata.IIOMetadataNode;
 import javax.imageio.stream.ImageInputStream;
 import javax.xml.namespace.QName;
 
+import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.data.test.MockData;
@@ -140,7 +141,9 @@ public class AnimatorTest extends WMSTestSupport {
         MockHttpServletResponse resp = getAsServletResponse(requestURL);
         
         assertEquals("image/gif", resp.getContentType());
-        try (ImageInputStream is = ImageIO.createImageInputStream(getBinaryInputStream(resp))) {
+        ImageInputStream is = null;
+        try {
+            is = ImageIO.createImageInputStream(getBinaryInputStream(resp));
             ImageReader reader = ImageIO.getImageReadersByFormatName("gif").next();
             reader.setInput(is);
 
@@ -172,6 +175,8 @@ public class AnimatorTest extends WMSTestSupport {
             if(!found) {
                 fail("Could not find custom metadata node containing the loop control extension");
             }
+        } finally {
+            IOUtils.closeQuietly(is);
         }
     }
     

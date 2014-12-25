@@ -24,7 +24,6 @@ import javax.imageio.metadata.IIOMetadataNode;
 import javax.imageio.stream.ImageInputStream;
 import javax.xml.namespace.QName;
 
-import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.data.test.MockData;
@@ -176,7 +175,9 @@ public class AnimatorTest extends WMSTestSupport {
                 fail("Could not find custom metadata node containing the loop control extension");
             }
         } finally {
-            IOUtils.closeQuietly(is);
+            if (is != null) {
+                is.close();
+            }
         }
     }
     

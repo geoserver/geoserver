@@ -22,6 +22,7 @@ import org.geoserver.wcs2_0.WCS20Const;
 import org.geotools.wcs.v2_0.RangeSubset;
 import org.geotools.wcs.v2_0.Scaling;
 import org.junit.Test;
+import org.w3c.dom.Document;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
@@ -41,6 +42,14 @@ public class GetCoverageKvpTest extends WCSKVPTestSupport {
 
         assertEquals("image/tiff", response.getContentType());      
     }
+    
+    @Test
+    public void testNotExistent() throws Exception {
+        MockHttpServletResponse response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1" +
+                "&coverageId=NotThere&&Format=image/tiff");  
+        checkOws20Exception(response, 404, "NoSuchCoverage", "coverageId");      
+    }
+
 
     @Test
     public void testGetCoverageLocalWs() throws Exception {

@@ -556,7 +556,9 @@ public class DefaultWebCoverageService111 implements WebCoverageService111 {
                 return new GridCoverage[] { bandSelectedCoverage };
             }
         } catch (Throwable e) {
-            CoverageCleanerCallback.addCoverages(coverage);
+            if (coverage != null) {
+                CoverageCleanerCallback.addCoverages(coverage);
+            }
             if (e instanceof WcsException) {
                 throw (WcsException) e;
             } else {

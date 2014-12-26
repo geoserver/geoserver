@@ -269,6 +269,16 @@ public class GetCoverageTest extends AbstractGetCoverageTest {
     }
 
     @Test
+    public void testNotExistent() throws Exception {
+        String queryString = "&request=getcoverage&service=wcs&version=1.1.1&&format=image/geotiff"
+                + "&BoundingBox=-45,146,-42,147,urn:ogc:def:crs:EPSG:6.6:4326";
+        Document dom = getAsDOM("wcs?identifier=NotThere" + queryString);
+        // print(dom);
+        checkOws11Exception(dom, "InvalidParameterValue", "identifier");
+    }
+
+    
+    @Test
     public void testLayerQualified() throws Exception {
         String queryString = "&request=getcoverage&service=wcs&version=1.1.1&&format=image/geotiff"
                 + "&BoundingBox=-45,146,-42,147,urn:ogc:def:crs:EPSG:6.6:4326";

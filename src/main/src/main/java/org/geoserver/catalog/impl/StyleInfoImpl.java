@@ -165,7 +165,7 @@ public class StyleInfoImpl implements StyleInfo {
 
     @Override
     public String toString() {
-        return new StringBuilder(getClass().getSimpleName()).append('[').append(name).append(']')
+        return new StringBuilder(getClass().getSimpleName()).append('[').append(prefixedName()).append(']')
                 .toString();
     }
     
@@ -185,5 +185,14 @@ public class StyleInfoImpl implements StyleInfo {
         }
 
         return this;
+    }
+
+    @Override
+    public String prefixedName() {
+        if(workspace != null) {
+            return workspace.getName() + ":" + getName();
+        } else {
+            return getName();
+        }
     }
 }

@@ -58,16 +58,9 @@ public class WMSLayerConfig extends LayerConfigurationPanel {
         defStyleImg.setOutputMarkupId(true);
         styleContainer.add(defStyleImg);
 
+        // the wms url is build without qualification to allow usage of global styles,
+        // the style name and layer name will be ws qualified instead
         String wmsURL = getRequest().getRelativePathPrefixToContextRoot();
-        //append the workspace
-        String wsName = null;
-        if (resource.getStore() != null && resource.getStore().getWorkspace() != null) {
-            wsName = resource.getStore().getWorkspace().getName();
-        }
-
-        if (wsName != null) {
-            wmsURL += wmsURL.endsWith("/") ? wsName : ("/" + wsName);
-        }
         wmsURL += wmsURL.endsWith("/") ? "wms?" : "/wms?";
 
         final LegendGraphicAjaxUpdater defaultStyleUpdater;

@@ -1280,7 +1280,20 @@ public class CatalogImpl implements Catalog {
     }
 
     public StyleInfo getStyleByName(String name) {
-        return getStyleByName((WorkspaceInfo) null, name);
+        StyleInfo result = null;
+        int colon = name.indexOf(':');
+        if (colon != -1) {
+            // search by resource name
+            String prefix = name.substring(0, colon);
+            String resource = name.substring(colon + 1);
+
+            result = getStyleByName(prefix, resource);
+        } 
+        if (result == null) {
+            result = facade.getStyleByName(name);
+        }
+        
+        return result;
     }
 
     public StyleInfo getStyleByName(String workspaceName, String name) {

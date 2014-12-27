@@ -44,7 +44,7 @@ class LegendGraphicAjaxUpdater implements Serializable {
                 + "REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&STRICT=false&style=";
         StyleInfo styleInfo = (StyleInfo) styleInfoModel.getObject();
         if (styleInfo != null) {
-            String style = styleInfo.getName();
+            String style = styleInfo.prefixedName();
             url += style;
             image.add(new AttributeModifier("src", new Model(url)));
             if (target != null) {

@@ -12,7 +12,7 @@ import org.geoserver.catalog.StyleInfo;
 public class StyleChoiceRenderer implements IChoiceRenderer {
 
     public Object getDisplayValue(Object object) {
-        return ((StyleInfo) object).getName();
+        return ((StyleInfo) object).prefixedName();
     }
 
     public String getIdValue(Object object, int index) {

@@ -181,6 +181,7 @@
         <module>wps-download</module>
         <module>jms-cluster</module>
         <module>solr</module>
+	<module>rest-upload</module>
         <module>geofence</module>
         <module>sldService</module>
       </modules>
@@ -367,6 +368,12 @@
       <id>solr</id>
       <modules>
         <module>solr</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>rest-upload</id>
+      <modules>
+        <module>rest-upload</module>
       </modules>
     </profile>
     <profile>

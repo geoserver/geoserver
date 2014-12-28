@@ -1225,6 +1225,7 @@ O:      for (String propName : query.getPropertyNames()) {
                             CoordinateReferenceSystem crs = null;
                             try {
                                 crs = CRS.decode( filter.getSRS() );
+                                e.setCoordinateReferenceSystem(crs);
                                 e = CRS.transform(e, geo);
                             } 
                             catch( Exception ex ) {

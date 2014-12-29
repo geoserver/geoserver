@@ -5,9 +5,13 @@
  */
 package org.geoserver.wms.wms_1_1_1;
 
-import static junit.framework.Assert.*;
-import static org.custommonkey.xmlunit.XMLAssert.*;
-import static org.custommonkey.xmlunit.XMLUnit.*;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertTrue;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathNotExists;
+import static org.custommonkey.xmlunit.XMLUnit.newXpathEngine;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -266,14 +270,14 @@ public class CapabilitiesTest extends WMSTestSupport {
                         "//Layer[Name='cdf:Fifteen']/Style[Name='Default']/LegendURL/OnlineResource/@xlink:href",
                         doc);
         assertTrue(href.contains("GetLegendGraphic"));
-        assertTrue(href.contains("layer=Fifteen"));
+        assertTrue(href.contains("layer=cdf%3AFifteen"));
         assertFalse(href.contains("style"));
         href = xpath
                 .evaluate(
                         "//Layer[Name='cdf:Fifteen']/Style[Name='point']/LegendURL/OnlineResource/@xlink:href",
                         doc);
         assertTrue(href.contains("GetLegendGraphic"));
-        assertTrue(href.contains("layer=Fifteen"));
+        assertTrue(href.contains("layer=cdf%3AFifteen"));
         assertTrue(href.contains("style=point"));
     }
 

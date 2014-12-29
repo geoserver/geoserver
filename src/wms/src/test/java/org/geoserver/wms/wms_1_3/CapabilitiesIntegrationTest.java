@@ -263,14 +263,14 @@ public class CapabilitiesIntegrationTest extends WMSTestSupport {
                         "//wms:Layer[wms:Name='cdf:Fifteen']/wms:Style[wms:Name='Default']/wms:LegendURL/wms:OnlineResource/@xlink:href",
                         doc);
         assertTrue(href.contains("GetLegendGraphic"));
-        assertTrue(href.contains("layer=Fifteen"));
+        assertTrue(href.contains("layer=cdf%3AFifteen"));
         assertFalse(href.contains("style"));
         href = xpath
                 .evaluate(
                         "//wms:Layer[wms:Name='cdf:Fifteen']/wms:Style[wms:Name='point']/wms:LegendURL/wms:OnlineResource/@xlink:href",
                         doc);
         assertTrue(href.contains("GetLegendGraphic"));
-        assertTrue(href.contains("layer=Fifteen"));
+        assertTrue(href.contains("layer=cdf%3AFifteen"));
         assertTrue(href.contains("style=point"));
     }
 

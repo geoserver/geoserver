@@ -33,6 +33,7 @@ import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.SystemTestData.LayerProperty;
 import org.geoserver.ows.LocalWorkspace;
+import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Paths;
@@ -210,6 +211,25 @@ public abstract class GetCapabilitiesLegendURLTest extends WMSTestSupport {
         Document dom = WMSTestSupport.transform(req, tr);
         
         assertTrue(samplesFolder.exists());
+    }
+
+    /**
+     * Tests the layer names are workspace qualified
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testLayerWorkspaceQualified() throws Exception {
+
+        TransformerBase tr = createTransformer();
+        tr.setIndentation(2);
+        Document dom = WMSTestSupport.transform(req, tr);
+        // print(dom);
+
+        String legendURL = XPATH.evaluate(getLegendURLXPath("cite:squares") + "/"
+                + getElementPrefix() + "OnlineResource/@xlink:href", dom);
+        Map<String, Object> kvp = KvpUtils.parseQueryString(legendURL);
+        assertEquals("cite:squares", kvp.get("layer"));
     }
 
     /**

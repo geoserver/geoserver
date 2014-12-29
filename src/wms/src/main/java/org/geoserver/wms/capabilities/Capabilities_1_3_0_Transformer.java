@@ -64,8 +64,6 @@ import org.geoserver.wms.GetMapOutputFormat;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.capabilities.DimensionHelper.Mode;
-import org.geoserver.wms.legendgraphic.LegendUtils;
-import org.geotools.data.ows.Layer;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.CRS.AxisOrder;
@@ -1246,7 +1244,6 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
          */
         protected void handleLegendURL(LayerInfo layer, LegendInfo legend,
                 StyleInfo style, StyleInfo sampleStyle) {
-            String layerName = layer.getName();
             if (legend != null) {
                 if (LOGGER.isLoggable(Level.FINE)) {
                     LOGGER.fine("using user supplied legend URL");
@@ -1315,6 +1312,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                 element("Format", defaultFormat);
                 attrs.clear();
 
+                String layerName = layer.prefixedName();
                 Map<String, String> params = params("service", "WMS", "request",
                         "GetLegendGraphic", "format", defaultFormat, "width",
                         String.valueOf(GetLegendGraphicRequest.DEFAULT_WIDTH), "height",

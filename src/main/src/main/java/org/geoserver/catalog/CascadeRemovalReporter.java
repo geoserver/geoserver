@@ -118,6 +118,16 @@ public class CascadeRemovalReporter implements CatalogVisitor {
         // drill into namespaces
         // catalog.getNamespaceByPrefix(workspace.getName()).accept(this);
 
+        // drill down into styles
+        for (StyleInfo style : catalog.getStylesByWorkspace(workspace)) {
+            style.accept(this);
+        }
+
+        // drill down into groups
+        for (LayerGroupInfo group : catalog.getLayerGroupsByWorkspace(workspace)) {
+            group.accept(this);
+        }
+
         // add self
         add(workspace, ModificationType.DELETE);
     }

@@ -22,4 +22,10 @@ public class StyleDetachableModel extends LoadableDetachableModel {
         return GeoServerApplication.get().getCatalog().getStyle( id );
     }
 
+    @Override
+    protected void onDetach() {
+        // TODO Auto-generated method stub
+        super.onDetach();
+    }
+
 }

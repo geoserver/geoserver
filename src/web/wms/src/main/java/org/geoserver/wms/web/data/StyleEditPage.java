@@ -88,7 +88,9 @@ public class StyleEditPage extends AbstractStylePage {
         // write out the file and save name modifications
         try {
             StyleInfo style = (StyleInfo) styleForm.getModelObject();
-            Version version = Styles.handler(formatChoice.getModelObject()).version(rawStyle);
+            String format = formatChoice.getModelObject();
+            style.setFormat(format);
+            Version version = Styles.handler(format).version(rawStyle);
             style.setSLDVersion(version);
             
             // write out the SLD

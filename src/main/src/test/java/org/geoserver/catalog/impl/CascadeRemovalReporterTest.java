@@ -127,10 +127,15 @@ public class CascadeRemovalReporterTest extends GeoServerMockTestSupport {
         WorkspaceInfo ws = catalog.getWorkspaceByName(MockData.CITE_PREFIX);
         assertNotNull(ws);
         List<StoreInfo> stores = getCatalog().getStoresByWorkspace(ws, StoreInfo.class);
+        List<StyleInfo> styles = getCatalog().getStylesByWorkspace(ws);
+        List<LayerGroupInfo> layerGroups = getCatalog().getLayerGroupsByWorkspace(ws);
         
         ws.accept(visitor);
         
         assertTrue(stores.containsAll(visitor.getObjects(StoreInfo.class, ModificationType.DELETE)));
+        assertTrue(styles.containsAll(visitor.getObjects(StyleInfo.class, ModificationType.DELETE)));
+        assertTrue(layerGroups.containsAll(visitor.getObjects(LayerGroupInfo.class,
+                ModificationType.DELETE)));
     }
     
     @Test

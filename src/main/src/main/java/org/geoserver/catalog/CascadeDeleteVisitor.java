@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.geoserver.catalog.CascadeRemovalReporter.ModificationType;
 import org.geotools.util.logging.Logging;
 
 /**
@@ -47,10 +46,20 @@ public class CascadeDeleteVisitor implements CatalogVisitor {
             s.accept(this);
         }
 
-        //remove any linked namespaces
+        // remove any linked namespaces
         NamespaceInfo ns = catalog.getNamespaceByPrefix( workspace.getName() );
         if ( ns != null ) {
             ns.accept(this);
+        }
+
+        // remove styles contained in this workspace
+        for (StyleInfo style : catalog.getStylesByWorkspace(workspace)) {
+            style.accept(this);
+        }
+
+        // remove layer groups contained in this workspace
+        for (LayerGroupInfo group : catalog.getLayerGroupsByWorkspace(workspace)) {
+            group.accept(this);
         }
 
         catalog.remove(workspace);

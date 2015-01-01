@@ -67,6 +67,7 @@
     <bean id="localWorkspaceCatalog" class="org.geoserver.catalog.impl.LocalWorkspaceCatalog">
         <constructor-arg ref="advertisedCatalog" />
     </bean>
+    <bean id="disabledResourceFilter" class="org.geoserver.security.DisabledResourceFilter"/>
     
     <!-- Switch this when you want to enable the secure catalog by default -->
     <!--alias name="secureCatalog" alias="catalog"/-->

@@ -177,6 +177,29 @@ public class GetCoverageTest extends WCSTestSupport {
         XMLAssert.assertXpathEvaluatesTo("sourcecoverage", "/ServiceExceptionReport/ServiceException/@locator", dom);
     }
 
+    @Test
+    public void testRequestDisabledResource() throws Exception {
+        Catalog catalog = getCatalog();
+        ResourceInfo tazbm = catalog.getResourceByName(getLayerId(MockData.TASMANIA_BM),
+                ResourceInfo.class);
+        try {
+
+            tazbm.setEnabled(false);
+            catalog.save(tazbm);
+
+            String queryString = "&request=getcoverage&service=wcs&version=1.0.0&format=image/geotiff&bbox=146,-45,147,-42"
+                    + "&crs=EPSG:4326&width=150&height=150";
+
+            Document dom = getAsDOM("wcs?sourcecoverage=" + TASMANIA_BM.getLocalPart()
+                    + queryString);
+            // print(dom);
+            assertEquals("ServiceExceptionReport", dom.getDocumentElement().getNodeName());
+        } finally {
+            tazbm.setEnabled(true);
+            catalog.save(tazbm);
+        }
+    }
+
 
     @Test
     public void testLayerQualified() throws Exception {

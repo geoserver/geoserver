@@ -384,7 +384,7 @@ public class GetMap {
                 
                 // mix the dimension related filter with the layer filter
                 Filter dimensionFilter = wms.getTimeElevationToFilter(times, elevations, mapLayerInfo.getFeature());
-                Filter filter = Filters.and(ff, layerFilter, dimensionFilter); 
+                Filter filter = SimplifyingFilterVisitor.simplify(Filters.and(ff, layerFilter, dimensionFilter)); 
 
                 final Query definitionQuery = new Query(source.getSchema().getName().getLocalPart());
                 definitionQuery.setVersion(featureVersion);

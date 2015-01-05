@@ -44,7 +44,7 @@ class CssSubmitButton extends AjaxButton {
                     new ByteArrayInputStream(styleBody.getObject().getBytes()));
             }
             else {
-                // create the css side car file
+                // create the sld side car file
                 String sld = page.cssText2sldText(styleBody.getObject(), info);
                 Writer writer = new FileWriter(cssFile);
                 writer.write(styleBody.getObject());

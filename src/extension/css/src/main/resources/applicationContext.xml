@@ -14,5 +14,7 @@
     <property name="componentClass" value="org.geoserver.community.css.web.CssDemoPage"/>
   </bean>
 
-  <bean id="cssStyleHandler" class="org.geoserver.community.css.web.CssHandler"/>
+  <bean id="cssStyleHandler" class="org.geoserver.community.css.web.CssHandler">
+    <constructor-arg ref="sldHandler"/>
+  </bean>
 </beans>

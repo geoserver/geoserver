@@ -36,8 +36,6 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
-import org.geoscript.geocss.CssParser;
-import org.geoscript.geocss.Translator;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -53,7 +51,6 @@ import org.geoserver.web.wicket.GeoServerDialog.DialogDelegate;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geoserver.web.wicket.SimpleAjaxLink;
 import org.geotools.styling.SLDTransformer;
-import org.geotools.styling.Style;
 import org.geotools.styling.StyledLayerDescriptor;
 
 public class CssDemoPage extends GeoServerSecuredPage {
@@ -165,30 +162,15 @@ public class CssDemoPage extends GeoServerSecuredPage {
 
     public LayerInfo getLayer() { return this.layer; } 
     
-    public String cssText2sldText(String css, StyleInfo styleInfo) {
+    String cssText2sldText(String css, StyleInfo styleInfo) {
         try {
-            GeoServerDataDirectory datadir = 
-                new GeoServerDataDirectory(getCatalog().getResourceLoader());
-            File styleDir;
-            if(styleInfo == null || styleInfo.getWorkspace() == null) {
-                styleDir= datadir.findStyleDir();
-            } else {
-                File ws = datadir.findOrCreateWorkspaceDir(styleInfo.getWorkspace());
-                styleDir = new File(ws, "styles");
-                if(!styleDir.exists()) {
-                    styleDir.mkdir();
-                }
-            }
-
-            scala.collection.Seq<org.geoscript.geocss.Rule> rules = CssParser.parse(css).get();
-            Translator translator = 
-                new Translator(scala.Option.apply(styleDir.toURI().toURL()));
-            Style style = translator.css2sld(rules);
+            CssHandler cssHandler = getGeoServerApplication().getBeanOfType(CssHandler.class);
+            StyledLayerDescriptor sld = cssHandler.convertToSLD(css);
 
             SLDTransformer tx = new org.geotools.styling.SLDTransformer();
             tx.setIndentation(2);
             StringWriter sldChars = new java.io.StringWriter();
-            tx.transform(style, sldChars);
+            tx.transform(sld, sldChars);
             return sldChars.toString();
         } catch (Exception e) {
             throw new WicketRuntimeException("Error while parsing stylesheet [" + css + "] : " + e);

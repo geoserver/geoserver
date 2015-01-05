@@ -6,6 +6,9 @@ import static org.junit.Assert.assertTrue;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.wicket.PageParameters;
@@ -20,6 +23,7 @@ import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.junit.Before;
 import org.junit.Test;
+import org.xml.sax.SAXException;
 
 public class CssDemoTest extends GeoServerWicketTestSupport {
 
@@ -106,7 +110,8 @@ public class CssDemoTest extends GeoServerWicketTestSupport {
     }
 
     @Test
-    public void testWorkspaceRelativeLinks() {
+    public void testWorkspaceRelativeLinks() throws UnsupportedEncodingException,
+            ParserConfigurationException, SAXException, IOException {
         StyleInfo si = getCatalog().getStyleByName(MockData.LAKES.getLocalPart());
         WorkspaceInfo ws = getCatalog().getWorkspaceByName(MockData.LAKES.getPrefix());
         si.setWorkspace(ws);
@@ -115,10 +120,8 @@ public class CssDemoTest extends GeoServerWicketTestSupport {
         String css = "* { mark: url(\"smiley.png\");  }";
         String sld = page.cssText2sldText(css, si);
 
-        // check the reference is workspace specific (see http://jira.codehaus.org/browse/GEOS-6229
-        // though, that should be a better fix)
-        // System.out.println(sld);
-        assertTrue(sld.contains("workspaces/cite/styles/smiley.png"));
+        // check the relative reference is still relative
+        assertTrue(sld.contains("xlink:href=\"smiley.png\""));
     }
 
     @Test

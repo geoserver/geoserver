@@ -10,8 +10,10 @@
       <outputDirectory></outputDirectory>
       <includes>
         <include>gs-css-*.jar</include>
-        <include>geocss_2.10*.jar</include>
-        <include>scala-library-2.10*.jar</include>
+        <include>gt-css-*.jar</include>
+        <include>gt-brewer-*.jar</include>
+        <include>parboiled*.jar</include>
+        <include>asm*.jar</include>
       </includes>
     </fileSet>
     <fileSet>

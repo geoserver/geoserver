@@ -465,7 +465,7 @@ The final CSS should looks like this::
     }
     
     [@scale < 20000000] {
-      label: [STATE_NAME];
+      label: [STATE_ABBR];
       label-anchor: 0.5 0.5;
       font-family: "Times New Roman";
       font-fill: black;

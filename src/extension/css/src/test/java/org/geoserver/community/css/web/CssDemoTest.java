@@ -21,6 +21,7 @@ import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geoserver.web.wicket.GeoServerTablePanel;
+import org.geoserver.web.wicket.SimpleAjaxLink;
 import org.junit.Before;
 import org.junit.Test;
 import org.xml.sax.SAXException;
@@ -47,8 +48,8 @@ public class CssDemoTest extends GeoServerWicketTestSupport {
         tester.assertRenderedPage(CssDemoPage.class);
         tester.assertComponent("main-content:context", AjaxTabbedPanel.class);
         tester.assertComponent("main-content:context:panel", SLDPreviewPanel.class);
-        tester.assertComponent("main-content:change.style", AjaxLink.class);
-        tester.assertComponent("main-content:change.layer", AjaxLink.class);
+        tester.assertComponent("main-content:change.style", SimpleAjaxLink.class);
+        tester.assertComponent("main-content:change.layer", SimpleAjaxLink.class);
         tester.assertComponent("main-content:create.style", AjaxLink.class);
         tester.assertComponent("main-content:associate.styles" , AjaxLink.class);
         tester.assertComponent("main-content:style.editing" , StylePanel.class);
@@ -71,7 +72,7 @@ public class CssDemoTest extends GeoServerWicketTestSupport {
     @Test
     public void testStyleChooser() {
         tester.startPage(CssDemoPage.class);
-        tester.clickLink("main-content:change.style");
+        tester.clickLink("main-content:change.style:link");
         tester.assertComponent("main-content:popup:content:style.table", GeoServerTablePanel.class);
     }
 
@@ -79,7 +80,7 @@ public class CssDemoTest extends GeoServerWicketTestSupport {
     @Test
     public void testLayerChooser() {
         tester.startPage(CssDemoPage.class);
-        tester.clickLink("main-content:change.layer");
+        tester.clickLink("main-content:change.layer:link");
         tester.assertComponent("main-content:popup:content:layer.table", GeoServerTablePanel.class);
     }
 
@@ -104,9 +105,10 @@ public class CssDemoTest extends GeoServerWicketTestSupport {
         pp.put("layer", prefixedName);
         pp.put("style", prefixedName);
         tester.startPage(CssDemoPage.class, pp);
+        // print(tester.getLastRenderedPage(), true, true);
         tester.assertRenderedPage(CssDemoPage.class);
-        tester.assertModelValue("main-content:style.name", prefixedName);
-        tester.assertModelValue("main-content:layer.name", prefixedName);
+        tester.assertModelValue("main-content:change.style:link:label", prefixedName);
+        tester.assertModelValue("main-content:change.layer:link:label", prefixedName);
     }
 
     @Test
@@ -142,13 +144,14 @@ public class CssDemoTest extends GeoServerWicketTestSupport {
         pp.put("layer", prefixedName);
         pp.put("style", "foo");
         tester.startPage(CssDemoPage.class, pp);
+        // print(tester.getLastRenderedPage(), true, true);
         tester.assertRenderedPage(CssDemoPage.class);
-        tester.assertModelValue("main-content:style.name", "foo");
-        tester.assertModelValue("main-content:layer.name", prefixedName);
+        tester.assertModelValue("main-content:change.style:link:label", "foo");
+        tester.assertModelValue("main-content:change.layer:link:label", prefixedName);
 
         // tester.debugComponentTrees();
         FormTester form = tester.newFormTester("main-content:style.editing:style-editor");
-        form.setValue("editor", "* { stroke: red; }");
+        form.setValue("editor:editorContainer:editorParent:editor", "* { stroke: red; }");
 
         tester.executeAjaxEvent("main-content:style.editing:style-editor:submit", "onclick");
 

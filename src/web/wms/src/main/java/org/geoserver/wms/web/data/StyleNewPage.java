@@ -15,7 +15,6 @@ import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.StyleHandler;
 import org.geoserver.catalog.StyleInfo;
-import org.geoserver.catalog.Styles;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geotools.util.Version;
 
@@ -50,6 +49,7 @@ public class StyleNewPage extends AbstractStylePage {
         // add the style
         Catalog catalog = getCatalog();
         StyleInfo s = (StyleInfo) styleForm.getModelObject();
+        s.setFormat(format);
 
         StyleHandler styleHandler = styleHandler();
 

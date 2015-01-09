@@ -42,6 +42,11 @@
       <version>${gt.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.geotools</groupId>
+      <artifactId>gt-csv</artifactId>
+      <version>${gt.version}</version>
+    </dependency>
+    <dependency>
       <groupId>net.sourceforge.javacsv</groupId>
       <artifactId>javacsv</artifactId>
       <version>2.0</version>

@@ -415,6 +415,11 @@
      <artifactId>gt-cql</artifactId>
      <version>${gt.version}</version>
    </dependency>
+    <dependency>
+     <groupId>org.geotools</groupId>
+     <artifactId>gt-csv</artifactId>
+     <version>${gt.version}</version>
+   </dependency>
    <dependency>
      <groupId>org.geotools.ogc</groupId>
      <artifactId>net.opengis.ows</artifactId>

@@ -210,6 +210,13 @@ public interface ResourceInfo extends CatalogInfo {
     List<MetadataLinkInfo> getMetadataLinks();
 
     /**
+     * A collection of data links for the resource.
+     * 
+     * @see DataLinkInfo
+     */
+    List<DataLinkInfo> getDataLinks();
+
+    /**
      * Returns the bounds of the resource in lat / lon.
      * <p>
      * This value represents a "fixed value" and is not calulated on the

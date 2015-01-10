@@ -31,6 +31,11 @@ public interface CatalogFactory {
     MetadataLinkInfo createMetadataLink();
 
     /**
+     * Creates a new data link.
+     */
+    DataLinkInfo createDataLink();
+
+    /**
      * Creates a new coverage store.
      */
     CoverageStoreInfo createCoverageStore();

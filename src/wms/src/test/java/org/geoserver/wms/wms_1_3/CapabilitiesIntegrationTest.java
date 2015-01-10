@@ -21,6 +21,7 @@ import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.catalog.AttributionInfo;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.DataLinkInfo;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.Keyword;
@@ -444,6 +445,53 @@ public class CapabilitiesIntegrationTest extends WMSTestSupport {
         assertXpathEvaluatesTo("simple", xpath, doc);
         
         xpath = "//wms:Layer[wms:Name='" + layerName + "']/wms:MetadataURL/wms:OnlineResource/@xlink:href";
+        assertXpathEvaluatesTo("http://geoserver.org", xpath, doc);
+        
+        // Test transforming localhost to proxyBaseUrl
+        GeoServerInfo global = getGeoServer().getGlobal();
+        String proxyBaseUrl = global.getSettings().getProxyBaseUrl();
+        mdlink.setContent("/metadata");
+        getCatalog().save(resource);
+        
+        doc = getAsDOM("wms?service=WMS&request=getCapabilities&version=1.3.0", true);
+        assertXpathEvaluatesTo(proxyBaseUrl + "/metadata", xpath, doc);
+        
+        // Test KVP in URL
+        String query = "key=value";
+        mdlink.setContent("/metadata?" + query);
+        getCatalog().save(resource);
+        
+        doc = getAsDOM("wms?service=WMS&request=getCapabilities&version=1.3.0", true);
+        assertXpathEvaluatesTo(proxyBaseUrl + "/metadata?" + query, xpath, doc);
+
+        mdlink.setContent("http://localhost/metadata?" + query);
+        getCatalog().save(resource);
+        
+        doc = getAsDOM("wms?service=WMS&request=getCapabilities&version=1.3.0", true);
+        assertXpathEvaluatesTo("http://localhost/metadata?" + query, xpath, doc);
+        
+    }
+    
+    @org.junit.Test 
+    public void testDataLinks() throws Exception {
+        String layerName = MockData.POINTS.getPrefix() + ":" + MockData.POINTS.getLocalPart();
+        
+        LayerInfo layer = getCatalog().getLayerByName(MockData.POINTS.getLocalPart());
+        DataLinkInfo mdlink = getCatalog().getFactory().createDataLink();
+        mdlink.setContent("http://geoserver.org");
+        mdlink.setType("text/xml");
+        ResourceInfo resource = layer.getResource();
+        resource.getDataLinks().add(mdlink);
+        getCatalog().save(resource);
+        
+        Document doc = getAsDOM("wms?service=WMS&request=getCapabilities&version=1.3.0", true);
+        String xpath = "//wms:Layer[wms:Name='" + layerName + "']/wms:DataURL/wms:Format";
+        assertXpathEvaluatesTo("text/xml", xpath, doc);
+        
+        xpath = "//wms:Layer[wms:Name='" + layerName + "']/wms:DataURL/wms:OnlineResource/@xlink:type";
+        assertXpathEvaluatesTo("simple", xpath, doc);
+        
+        xpath = "//wms:Layer[wms:Name='" + layerName + "']/wms:DataURL/wms:OnlineResource/@xlink:href";
         assertXpathEvaluatesTo("http://geoserver.org", xpath, doc);
         
         // Test transforming localhost to proxyBaseUrl

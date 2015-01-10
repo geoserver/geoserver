@@ -132,6 +132,7 @@ public class MockCatalogBuilder {
         expect(ns.getName()).andReturn(name).anyTimes();
         expect(ns.getPrefix()).andReturn(name).anyTimes();
         expect(ns.getMetadata()).andReturn(new MetadataMap()).anyTimes();
+        expect(ns.getURI()).andReturn(uri).anyTimes();
     
         expect(catalog.getNamespace(nsId)).andReturn(ns).anyTimes();
         expect(catalog.getNamespaceByPrefix(name)).andReturn(ns).anyTimes();

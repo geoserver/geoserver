@@ -12,6 +12,7 @@ import org.geoserver.catalog.CatalogFactory;
 import org.geoserver.catalog.CoverageDimensionInfo;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
+import org.geoserver.catalog.DataLinkInfo;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
@@ -87,6 +88,10 @@ public class CatalogFactoryImpl implements CatalogFactory {
     
     public MetadataLinkInfo createMetadataLink() {
         return new MetadataLinkInfoImpl();
+    }
+
+    public DataLinkInfo createDataLink() {
+        return new DataLinkInfoImpl();
     }
 
     public NamespaceInfo createNamespace() {

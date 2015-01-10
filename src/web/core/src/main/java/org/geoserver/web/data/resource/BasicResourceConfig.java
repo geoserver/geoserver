@@ -62,6 +62,7 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
         add(new TextArea("abstract"));
         add(new KeywordsEditor("keywords", LiveCollectionModel.list(new PropertyModel(model, "keywords"))));
         add(new MetadataLinkEditor("metadataLinks", model));
+        add(new DataLinkEditor("dataLinks", model));
 
         final Form refForm = new Form("referencingForm");
         add(refForm);

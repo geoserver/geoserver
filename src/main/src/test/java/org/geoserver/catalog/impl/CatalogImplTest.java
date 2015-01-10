@@ -68,6 +68,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import org.geoserver.catalog.DataLinkInfo;
 
 public class CatalogImplTest {
 
@@ -1041,6 +1042,35 @@ public class CatalogImplTest {
         catalog.save(ft3);
         FeatureTypeInfo ft5 = catalog.getFeatureTypeByName(ft.getName());
         MetadataLinkInfo ml5 = ft5.getMetadataLinks().get(0);
+        assertEquals("application/json", ml5.getType());
+    }
+    
+    @Test
+    public void testModifyDataLinks() {
+        addFeatureType();
+        
+        FeatureTypeInfo ft2 = catalog.getFeatureTypeByName(ft.getName());
+        DataLinkInfo ml = catalog.getFactory().createDataLink();
+        ml.setContent("http://www.geoserver.org/meta");
+        ml.setType("text/plain");
+        ft2.getDataLinks().clear();
+        ft2.getDataLinks().add(ml);
+        catalog.save(ft2);
+        
+        FeatureTypeInfo ft3 = catalog.getFeatureTypeByName(ft.getName());
+        DataLinkInfo ml3 = ft3.getDataLinks().get(0);
+        ml3.setType("application/json");
+        
+        // do not save and grab another, the metadata link must not have been modified
+        FeatureTypeInfo ft4 = catalog.getFeatureTypeByName(ft.getName());
+        DataLinkInfo ml4 = ft4.getDataLinks().get(0);
+        assertEquals("text/plain", ml4.getType());
+        
+        
+        // now save and grab yet another, the modification must have happened
+        catalog.save(ft3);
+        FeatureTypeInfo ft5 = catalog.getFeatureTypeByName(ft.getName());
+        DataLinkInfo ml5 = ft5.getDataLinks().get(0);
         assertEquals("application/json", ml5.getType());
     }
     

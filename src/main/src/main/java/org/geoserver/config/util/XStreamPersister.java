@@ -144,6 +144,7 @@ import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 import com.thoughtworks.xstream.mapper.ClassAliasingMapper;
 import com.thoughtworks.xstream.mapper.Mapper;
 import com.vividsolutions.jts.geom.Geometry;
+import org.geoserver.catalog.DataLinkInfo;
 
 /**
  * Utility class which loads and saves catalog and configuration objects to and
@@ -318,6 +319,7 @@ public class XStreamPersister {
         xs.alias( "coverageBand", CoverageBand.class);
         xs.alias( "inputCoverageBand", InputCoverageBand.class);
         xs.alias( "metadataLink", MetadataLinkInfo.class);
+        xs.alias( "dataLink", DataLinkInfo.class);
         xs.alias( "attribute", AttributeTypeInfo.class );
         xs.alias( "layer", LayerInfo.class);
         xs.alias( "layerGroup", LayerGroupInfo.class);

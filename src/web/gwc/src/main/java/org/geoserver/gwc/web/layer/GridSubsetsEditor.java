@@ -43,7 +43,7 @@ import org.geowebcache.grid.BoundingBox;
 import org.geowebcache.grid.GridSet;
 import org.geowebcache.grid.GridSetBroker;
 
-class GridSubsetsEditor extends FormComponentPanel<Set<XMLGridSubset>> {
+public class GridSubsetsEditor extends FormComponentPanel<Set<XMLGridSubset>> {
 
     private static final long serialVersionUID = 5098470663723800345L;
 

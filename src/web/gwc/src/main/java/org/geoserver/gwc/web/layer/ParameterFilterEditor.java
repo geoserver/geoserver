@@ -55,7 +55,7 @@ import org.geowebcache.filter.parameters.ParameterFilter;
 import org.geowebcache.filter.parameters.RegexParameterFilter;
 import org.geowebcache.filter.parameters.StringParameterFilter;
 
-class ParameterFilterEditor extends FormComponentPanel<Set<ParameterFilter>> {
+public class ParameterFilterEditor extends FormComponentPanel<Set<ParameterFilter>> {
 
     private static final Logger LOGGER = Logging.getLogger(ParameterFilterEditor.class);
 

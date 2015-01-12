@@ -149,4 +149,10 @@ public class DefaultWebMapServiceTest extends WMSTestSupport {
         assertEquals(512, height);
     }
 
+    @Test
+    public void testAdvancedProjectionEnabled(){
+        // Ensure that by default advanced projection handling is enabled
+        assertTrue(DefaultWebMapService.isAdvancedProjectionHandlingEnabled());
+    }
+
 }

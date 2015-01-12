@@ -73,4 +73,12 @@
   </bean>
   
   <bean id="diskQuotaWarningProvider" class="org.geoserver.gwc.web.diskquota.DiskQuotaWarningProvider"/>
+  
+  <bean id="defaultGWCPluginPanel" class="org.geoserver.gwc.web.plugin.GWCSettingsPluginPanelInfo">
+    <description>This bean is an example bean which does nothing</description>
+    <property name="id" value="defaultGWCPluginPanel"/>
+    <property name="titleKey" value="defaultGWCPluginPanel"/>
+    <property name="componentClass" value="org.geoserver.gwc.web.plugin.DefaultCachingPluginPanel"/>
+    <property name="priority" value="0"/>
+  </bean>
 </beans>

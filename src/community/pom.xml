@@ -48,6 +48,7 @@
           <descriptor>release/ext-mbtiles.xml</descriptor>
           <descriptor>release/ext-geopkg.xml</descriptor>
           <descriptor>release/ext-grib.xml</descriptor>
+          <descriptor>release/ext-gridcoveragecache.xml</descriptor>
           <descriptor>release/ext-pgraster.xml</descriptor>
           <descriptor>release/ext-dyndimension.xml</descriptor>
           <descriptor>release/ext-rest-ext.xml</descriptor>
@@ -59,6 +60,7 @@
           <descriptor>release/ext-solr.xml</descriptor>		  
           <descriptor>release/ext-geofence.xml</descriptor>
           <descriptor>release/ext-sldservice.xml</descriptor>
+          <descriptor>release/ext-gwc-distributed.xml</descriptor>	
         </descriptors>
       </configuration>
      </plugin>
@@ -173,6 +175,7 @@
         <module>mbtiles</module>
         <module>geopkg</module>
         <module>grib</module>
+        <module>gridcoveragecache</module>
         <module>pgraster</module>
         <module>dyndimension</module>
         <module>rest-ext</module>
@@ -183,6 +186,7 @@
         <module>solr</module>
         <module>geofence</module>
         <module>sldService</module>
+        <module>gwc-distributed</module>
       </modules>
     </profile>
     <profile>
@@ -390,5 +394,23 @@
           <module>geofence</module>
         </modules>
     </profile>    
+     <profile>
+      <id>gc-cache</id>
+      <modules>
+        <module>gridcoveragecache</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>gwc-distributed</id>
+      <activation>
+        <property>
+          <name>all</name>
+          <value>true</value>
+        </property>
+      </activation>
+      <modules>
+        <module>gwc-distributed</module>
+      </modules>
+    </profile>
   </profiles>
 </project>

@@ -9,6 +9,7 @@ import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
 import java.awt.image.SampleModel;
+import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -44,6 +45,7 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageDimensionCustomizerReader.GridCoverageWrapper;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.ResourcePool;
 import org.geoserver.data.util.CoverageUtils;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wcs.CoverageCleanerCallback;
@@ -71,6 +73,7 @@ import org.geotools.coverage.processing.operation.Mosaic;
 import org.geotools.coverage.processing.operation.Mosaic.GridGeometryPolicy;
 import org.geotools.factory.GeoTools;
 import org.geotools.factory.Hints;
+import org.geotools.gce.geotiff.GeoTiffWriter;
 import org.geotools.geometry.Envelope2D;
 import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -119,7 +122,9 @@ import org.vfny.geoserver.wcs.WcsException;
  * @author Daniele Romagnoli, GeoSolutions
  */
 public class GetCoverage {
-    
+
+    public final static boolean DEBUGWCS = Boolean.getBoolean("org.geoserver.wcs20.debug");
+
     private final static Set<String> mdFormats;
 
     static {
@@ -172,6 +177,7 @@ public class GetCoverage {
         Hints hints = GeoTools.getDefaultHints().clone();
         hints.add(new Hints(Hints.FORCE_LONGITUDE_FIRST_AXIS_ORDER,Boolean.TRUE));
         hints.add(new Hints(Hints.FORCE_AXIS_ORDER_HONORING, "http-uri"));
+
         lonLatCRSFactory = ReferencingFactoryFinder.getCRSAuthorityFactory("http://www.opengis.net/def", hints); 
         
         hints.add(new Hints(Hints.FORCE_LONGITUDE_FIRST_AXIS_ORDER,Boolean.FALSE));
@@ -223,6 +229,11 @@ public class GetCoverage {
             final Hints hints = GeoTools.getDefaultHints();
             hints.add(WCSUtils.getReaderHints(wcs));
             hints.add(new RenderingHints(JAI.KEY_BORDER_EXTENDER,BorderExtender.createInstance(BorderExtender.BORDER_COPY)));
+
+            Boolean extensionsLookup = extractExtensionsLookup(extensions);
+            if (extensionsLookup != null) {
+                hints.add(new Hints(ResourcePool.SKIP_COVERAGE_EXTENSIONS_LOOKUP, extensionsLookup));
+            }
 //            hints.add(new RenderingHints(JAI.KEY_REPLACE_INDEX_COLOR_MODEL,Boolean.FALSE));// TODO check interpolation
 
             // get a reader for this coverage
@@ -478,6 +489,19 @@ public class GetCoverage {
                 if (Math.abs(c.getEnvelope().getMinimum(0) + offset
                         - first.getEnvelope().getMaximum(0)) < EPS) {
                     GridCoverage2D displaced = displaceCoverage(coverages.get(1), offset);
+                    if (DEBUGWCS) {
+                        File file;
+                        try {
+                            file = File.createTempFile("getCoverage_displaced_OFFSET" + offset + "_", ".tiff");
+                            GeoTiffWriter writer = new GeoTiffWriter(file);
+                            writer.write(displaced, null);
+                            writer.dispose();
+                        } catch (IOException e) {
+                            // Just log it since we are doing simple debug
+                            LOGGER.log(Level.FINER, e.getMessage(), e);
+                        }
+                    }
+
                     coverages.set(i, displaced);
                 }
             }
@@ -489,7 +513,21 @@ public class GetCoverage {
             final ParameterValueGroup param = MOSAIC_PARAMS.clone();
             param.parameter("sources").setValue(coverages);
             param.parameter("policy").setValue(GridGeometryPolicy.FIRST.name());
-            return (GridCoverage2D) MOSAIC_FACTORY.doOperation(param, hints);
+            GridCoverage2D mosaicked = (GridCoverage2D) MOSAIC_FACTORY.doOperation(param, hints);
+            if (DEBUGWCS) {
+                File file;
+                try {
+                    file = File.createTempFile("getCoverage_mosaicked", ".tiff");
+                    GeoTiffWriter writer = new GeoTiffWriter(file);
+                    writer.write(mosaicked, null);
+                    writer.dispose();
+                } catch (IOException e) {
+                    // Just log it since we are doing simple debug
+                    LOGGER.log(Level.FINER, e.getMessage(), e);
+                }
+            }
+            
+            return mosaicked;
         } catch (Exception e) {
             throw new RuntimeException("Failed to mosaic the input coverages", e);
         }
@@ -598,6 +636,28 @@ public class GetCoverage {
             }
         }
         return null;
+    }
+
+    private Boolean extractExtensionsLookup(Map<String, ExtensionItemType> extensions) {
+            if (extensions == null || extensions.size() == 0
+                    || !extensions.containsKey(WCS20Const.SKIP_EXTENSIONS_LOOKUP_EXTENSION)) {
+                // NO extension at hand
+                return null;
+            }
+
+            // look for an overviewPolicy extension
+            final ExtensionItemType extensionItem = extensions.get(WCS20Const.SKIP_EXTENSIONS_LOOKUP_EXTENSION);
+            if (extensionItem.getName().equals(WCS20Const.SKIP_EXTENSIONS_LOOKUP_EXTENSION)) {
+                String extensionContent = extensionItem.getSimpleContent();
+
+                // checks
+                if (extensionContent == null) {
+                    throw new WCS20Exception(WCS20Const.SKIP_EXTENSIONS_LOOKUP_EXTENSION + " was null", WCS20ExceptionCode.MissingParameterValue,
+                            "null");
+                }
+                return Boolean.valueOf(extensionContent);
+            }
+            return null;
     }
 
     /**
@@ -756,16 +816,31 @@ public class GetCoverage {
             if (cov == null) {
                 cov = readCoverage(cinfo, request, reader, hints, incrementalInputSize,
                         spatialInterpolation, coverageCRS, readEnvelope, requestedEnvelope, scaling, preAppliedScale);
+                if (DEBUGWCS) {
+                    File file = File.createTempFile("getCoverage_read", ".tiff");
+                    GeoTiffWriter writer = new GeoTiffWriter(file);
+                    writer.write(cov, null);
+                    writer.dispose();
+                }
                 readCoverages.add(cov);
             }
-            Envelope2D covEnvelope = cov.getEnvelope2D();
-            if (covEnvelope.contains(readBoundingBox)
-                    && (covEnvelope.getWidth() > readBoundingBox.getWidth() || covEnvelope
-                            .getHeight() > readBoundingBox.getHeight())) {
-                GridCoverage2D cropped = cropOnEnvelope(cov, readEnvelope);
-                result.add(cropped);
-            } else {
-                result.add(cov);
+            if (cov != null) {
+                Envelope2D covEnvelope = cov.getEnvelope2D();
+                if (covEnvelope.contains(readBoundingBox)
+                        && (covEnvelope.getWidth() > readBoundingBox.getWidth() || covEnvelope
+                                .getHeight() > readBoundingBox.getHeight())) {
+                    GridCoverage2D cropped = cropOnEnvelope(cov, readEnvelope);
+                    if (DEBUGWCS) {
+                        File file = File.createTempFile("getCoverage_crop", ".tiff");
+                        GeoTiffWriter writer = new GeoTiffWriter(file);
+                        writer.write(cov, null);
+                        writer.dispose();
+                    }
+
+                    result.add(cropped);
+                } else {
+                    result.add(cov);
+                }
             }
         }
 
@@ -1137,6 +1212,11 @@ public class GetCoverage {
                     if (LOGGER.isLoggable(Level.FINE)) {
                         LOGGER.fine("Added extension overviewPolicy ");
                     }
+                } else if (extensionName.equals(WCS20Const.SKIP_EXTENSIONS_LOOKUP_EXTENSION)) {
+                    parsedExtensions.put(WCS20Const.SKIP_EXTENSIONS_LOOKUP_EXTENSION, extensionItem);
+                    if (LOGGER.isLoggable(Level.FINE)) {
+                        LOGGER.fine("Added extension for hints");
+                    }
                 }
             }
         } else if(LOGGER.isLoggable(Level.FINE)){
@@ -1250,7 +1330,22 @@ public class GetCoverage {
         parameters.parameter("CoordinateReferenceSystem").setValue(targetCRS);
         parameters.parameter("GridGeometry").setValue(null);
         parameters.parameter("InterpolationType").setValue(spatialInterpolation);
-        return (GridCoverage2D) processor.doOperation(parameters);
+        GridCoverage2D reprojected = (GridCoverage2D) processor.doOperation(parameters);
+
+        if (DEBUGWCS) {
+            File file;
+            try {
+                file = File.createTempFile("getCoverage_reprojected", ".tiff");
+                GeoTiffWriter writer = new GeoTiffWriter(file);
+                writer.write(reprojected, null);
+                writer.dispose();
+            } catch (IOException e) {
+                // Just log it since we are doing simple debug
+                LOGGER.log(Level.FINER, e.getMessage(), e);
+            }
+        }
+        return reprojected;
+
     }
 
     /**
@@ -1466,8 +1561,20 @@ public class GetCoverage {
             final Double[] scale = new Double[]{preAppliedScale[0], preAppliedScale[1]};
             hints.add(new Hints(GetCoverage.PRE_APPLIED_SCALE, scale));
         }
-        return scalingPolicy.scale(coverage, scaling, spatialInterpolation, hints, wcs);
-
+        GridCoverage2D scaled = scalingPolicy.scale(coverage, scaling, spatialInterpolation, hints, wcs);
+        if (DEBUGWCS) {
+            File file;
+            try {
+                file = File.createTempFile("getCoverage_scaled", ".tiff");
+                GeoTiffWriter writer = new GeoTiffWriter(file);
+                writer.write(scaled, null);
+                writer.dispose();
+            } catch (IOException e) {
+                // Just log it since we are doing simple debug
+                LOGGER.log(Level.FINER, e.getMessage(), e);
+            }
+        }
+        return scaled;
     }
 
     /**

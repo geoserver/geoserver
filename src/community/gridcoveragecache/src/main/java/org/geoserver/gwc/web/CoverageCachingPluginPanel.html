@@ -1,0 +1,70 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<head></head>
+<body>
+
+  <wicket:panel>
+  <fieldset>
+  <legend><span><wicket:message key="CoverageCachingPluginPanel.coverageCacheOptions">Coverage Caching Options</wicket:message></span></legend>
+    <ul>
+      <div wicket:id="configsCov">
+        <ul>
+          <li>
+            <div style="width: 50%">
+              <label><wicket:message key="GWCSettingsPage.lockProvider">lockProvider:</wicket:message></label>
+            </div>
+            <div>
+              <select class="select" id="lockProvider" wicket:id="lockProviderCov"></select>
+            </div>
+            <br>
+          </li>
+          <li>
+            <div style="width: 50%">
+              <label><wicket:message key="GWCSettingsPage.metaTiling">Default meta tiling factors:</wicket:message></label>
+            </div>
+            <div>
+              <select class="select" id="metaTilingX" wicket:id="metaTilingXCov"></select>
+              <wicket:message key="GWCSettingsPage.metaTilingX">Tiles wide by </wicket:message>
+              <select class="select" id="metaTilingY" wicket:id="metaTilingYCov"></select>
+              <wicket:message key="GWCSettingsPage.metaTilingY">Tiles high</wicket:message>
+            </div>
+          </li>
+          <li>
+            <div style="width: 50%">
+              <label><wicket:message key="GWCSettingsPage.gutter">Default gutter size:</wicket:message></label>
+            </div>
+            <div>
+              <select class="select" id="gutter" wicket:id="gutterCov"></select>
+            </div>
+            <br>
+          </li>            
+		   <li>
+            <label><wicket:message key="seedingPolicy">Seeding Policy:</wicket:message></label>
+            <select class="select" id="seedingPolicy" wicket:id="seedingPolicy"></select>
+            <br>
+          </li>
+          <li>
+            <label><wicket:message key="overviewPolicy">Overview Policy:</wicket:message></label>
+            <select class="select" id="overviewPolicy" wicket:id="overviewPolicy"></select>
+            <br>
+          </li>              
+          <li>
+            <label><wicket:message key="interpolationType">Resampling Algorithm:</wicket:message></label>
+            <select class="select" id="interpolationType" wicket:id="interpolationType"></select>
+            <br>
+          </li>
+          <li>
+            <label><wicket:message key="tiffCompression">Compression:</wicket:message></label>
+            <select class="select" id="tiffCompression" wicket:id="tiffCompression"></select>
+            <br>
+          </li>
+          <li>
+            <label><wicket:message key="cachedGridsetsCov">Cached Grid Sets:</wicket:message></label>
+            <span wicket:id="cachedGridsetsCov"></span>
+          </li>
+        </ul>
+      </div>
+    </ul>
+    </fieldset>
+  </wicket:panel>
+</body>
+</html>

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright (c) 2014 OpenPlans - www.openplans.org. All rights reserved.
+This code is licensed under the GPL 2.0 license, available at the root application directory.
+ -->
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+	<bean id="cacheCoverageReaderCallback" class="org.geoserver.coverage.CachingGridCoverageReaderCallback">
+        <property name="gridCoveragesCache" ref="gridCoveragesCache" />
+    </bean>
+
+    <bean id="gridCoveragesCache" class="org.geoserver.coverage.GridCoveragesCache">
+        <!-- <property name="storageBroker" ref="coverageCacheStorageBroker" /> -->
+        <constructor-arg ref="gwcStorageBroker" />
+        <constructor-arg ref="gwcGridSetBroker" />
+    </bean>
+
+    <bean id="rasterCacheEditTabPanelInfo" class="org.geoserver.gwc.web.layer.RasterEditCacheOptionsTabPanelInfo">
+        <property name="id" value="rasterCacheEditTabPanelInfo"/>
+        <property name="titleKey" value="RasterCacheOptionsTabPanel.title"/>
+        <property name="descriptionKey" value="RasterCacheOptionsTabPanel.shortDescription"/>
+        <property name="componentClass" value="org.geoserver.gwc.web.layer.RasterCacheOptionsTabPanel"/>
+        <property name="order" value="300"/>
+        <property name="persister" ref="coverageCacheConfigPersister"/>
+    </bean>
+
+    <bean id="coverageCatalogConfiguration" class="org.geoserver.coverage.configuration.CoverageConfiguration">
+        <constructor-arg ref="rawCatalog" />
+        <constructor-arg ref="coverageTileLayerCatalog" />
+        <constructor-arg ref="gwcGridSetBroker" />
+    </bean>
+
+    <bean id="coverageTileLayerCatalog" class="org.geoserver.gwc.layer.DefaultTileLayerCatalog">
+        <constructor-arg type="org.geoserver.platform.GeoServerResourceLoader" ref="resourceLoader" />
+        <constructor-arg type="org.geowebcache.config.XMLConfiguration" ref="gwcXmlConfig" />
+        <constructor-arg type="String" value="gwc-layer2" />
+    </bean>
+
+    <bean id="coverageInitializer" class="org.geoserver.coverage.configuration.CoverageCacheInitializer">
+        <constructor-arg ref="gwcFacade" />
+        <constructor-arg ref="rawCatalog" />
+        <constructor-arg ref="coverageCacheConfigPersister" />
+    </bean> 
+
+    <bean id="coverageCacheConfigPersister" class="org.geoserver.coverage.configuration.CoverageCacheConfigPersister">
+        <constructor-arg ref="xstreamPersisterFactory" />
+        <constructor-arg ref="resourceLoader"/>
+    </bean>
+
+    <bean id="coverageCachePanel" class="org.geoserver.gwc.web.plugin.GWCSettingsPluginPanelInfo">
+        <description>This bean adds the necessary form fields to REST Settings</description>
+        <property name="id" value="coverageCachingPluginPanel"/>
+        <property name="titleKey" value="restsettings"/>
+        <property name="componentClass" value="org.geoserver.gwc.web.CoverageCachingPluginPanel"/>
+        <property name="priority" value="0"/>
+     </bean>
+
+<!-- 
+    <bean id="coverageCacheStorageBroker" class="org.geowebcache.storage.DefaultStorageBroker" destroy-method="destroy">
+        <constructor-arg ref="coverageCacheBlobStore" />
+    </bean>
+    <bean id="coverageCacheDefaultStorageFinder" class="org.geowebcache.storage.DefaultStorageFinder">
+        <constructor-arg ref="gwcAppCtx" />
+    </bean>
+
+    <bean id="coverageCacheBlobStore" class="org.geowebcache.storage.blobstore.file.FileBlobStore" destroy-method="destroy">
+        <constructor-arg ref="coverageCacheDefaultStorageFinder" />
+    </bean>
+    -->
+
+    <bean id="coveragCacheXStreamInitializer" class="org.geoserver.coverage.CoverageCacheXStreamInitializer" />
+</beans>

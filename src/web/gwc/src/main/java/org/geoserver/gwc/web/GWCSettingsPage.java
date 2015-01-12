@@ -6,6 +6,7 @@
 package org.geoserver.gwc.web;
 
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -15,13 +16,19 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.list.ListItem;
+import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.model.StringResourceModel;
+import org.geoserver.gwc.ConfigurableBlobStore;
 import org.geoserver.gwc.GWC;
 import org.geoserver.gwc.config.GWCConfig;
+import org.geoserver.gwc.web.plugin.GWCSettingsPluginPanel;
+import org.geoserver.gwc.web.plugin.GWCSettingsPluginPanelInfo;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.wicket.GeoServerAjaxFormLink;
 import org.geotools.image.io.ImageIOExt;
@@ -50,6 +57,11 @@ public class GWCSettingsPage extends GeoServerSecuredPage {
 
         form.add(gwcServicesPanel);
         form.add(defaultCachingOptionsPanel);
+        
+        // Pluggable extension points
+        final ListView extensions = GWCSettingsPluginPanelInfo.createExtensions("extensions",
+                formModel, getGeoServerApplication());
+        form.add(extensions);
 
         form.add(new Button("submit") {
             private static final long serialVersionUID = 1L;
@@ -67,6 +79,21 @@ public class GWCSettingsPage extends GeoServerSecuredPage {
                     return;
                 }
 
+                // Iterate on all the plugin panels and call the doSave() method
+                Iterator iterator = extensions.iterator();
+
+                while (iterator.hasNext()) {
+                    ListItem item = (ListItem) iterator.next();
+                    GWCSettingsPluginPanel component = (GWCSettingsPluginPanel) item.get("content");
+                    component.doSave();
+                }
+
+                // Update ConfigurableBlobStore
+                ConfigurableBlobStore blobstore = GeoServerExtensions.bean(ConfigurableBlobStore.class);
+                if(blobstore != null){
+                    blobstore.setChanged(gwcConfig, false);
+                }
+                // Do return
                 doReturn();
             }
         });

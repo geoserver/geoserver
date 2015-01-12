@@ -31,6 +31,12 @@ public class WCS20Const {
 
     public static final String OVERVIEW_POLICY_EXTENSION_NAMESPACE = "http://www.geoserver.org/WCS_service-extension_overviewpolicy/1.0";
 
+    public static final String SKIP_EXTENSIONS_LOOKUP_EXTENSION = "ExtensionsLookup";
+
+    public static final String EXTENSIONS_LOOKUP_EXTENSION_LOWERCASE = SKIP_EXTENSIONS_LOOKUP_EXTENSION.toLowerCase();
+
+    public static final String EXTENSIONS_LOOKUP_EXTENSION_NAMESPACE = "http://www.geoserver.org/WCS_service-extensionsLookup/1.0";
+
     public static AttributesImpl getDefaultNamespaces() {
 
             final AttributesImpl attributes = new AttributesImpl();

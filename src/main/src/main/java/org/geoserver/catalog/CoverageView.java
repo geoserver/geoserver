@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
+import org.geotools.factory.Hints;
 import org.geotools.util.Utilities;
 
 /**
@@ -366,9 +367,10 @@ public class CoverageView implements Serializable {
         cinfo.getMetadata().put(CoverageView.COVERAGE_VIEW, this);
         cinfo.setName(name);
         cinfo.setNativeCoverageName(name);
-
+        Hints hints = new Hints(ResourcePool.SKIP_COVERAGE_EXTENSIONS_LOOKUP, true);
         GridCoverage2DReader reader = (GridCoverage2DReader) catalog.getResourcePool()
-                .getGridCoverageReader(cinfo, name, null);
+                .getGridCoverageReader(cinfo, name, hints);
+        
         builder.setStore(storeInfo);
         return builder.buildCoverage(reader, name, null);
     }

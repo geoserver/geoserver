@@ -1,0 +1,90 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<body>
+<wicket:panel>
+  <fieldset>
+    <ul>
+      <li>
+        <label for="innerCachingEnabled" class="checkbox"><wicket:message key="innerCachingEnabled">Inner Cahing Enabled</wicket:message></label>      
+        <input id="innerCachingEnabled" class="field checkbox" type="checkbox" wicket:id="innerCachingEnabled" />
+      </li>
+      <li wicket:id="container">
+      <ul>
+          <li>
+        	<label for="persistenceEnabled" class="checkbox"><wicket:message key="persistenceEnabled">Persistence Enabled</wicket:message></label>      
+        	<input id="persistenceEnabled" class="field checkbox" type="checkbox" wicket:id="persistenceEnabled" />
+      	  </li>
+	      <li>
+	        <label for="caches" class="select"><wicket:message key="caches">Cache Providers</wicket:message></label>      
+	        <select id="caches" wicket:id="caches" />
+	      </li>      	  
+      	  <li wicket:id="cacheConfContainer">
+			<ul>
+			  <li>
+			    <label for="hardMemoryLimit" class="text"><wicket:message key="hardMemoryLimit">Hard Memory Limit</wicket:message></label>      
+			    <input id="hardMemoryLimit" class="field text" type = "text" wicket:id="hardMemoryLimit" />
+			  </li>
+		      <li>
+		        <label for="policy" class="select"><wicket:message key="policy">Eviction Policy</wicket:message></label>      
+		        <select id="policy" wicket:id="policy" />
+		      </li>
+		      <li>
+			    <label for="evictionTime" class="text"><wicket:message key="evictionTime">Eviction Time</wicket:message></label>      
+			    <input id="evictionTime" class="field text" type = "text" wicket:id="evictionTime" />
+			  </li>
+		      <li>
+		        <label for="concurrencyLevel" class="text"><wicket:message key="concurrencyLevel">Concurrency Level</wicket:message></label>      
+		        <input id="concurrencyLevel" class="field text" type = "text" wicket:id="concurrencyLevel" />
+		      </li>
+      		</ul>	      	       	  
+      	  </li> 
+	      <li>
+	        <button type="submit" wicket:id="cacheClear"><wicket:message key="cacheClear">Clear Cache</wicket:message></button>
+	      </li>	
+	      <li wicket:id="statsContainer">
+		      <table>
+				  <tbody>
+				    <tr>				    
+				    	<th scope="row"><wicket:message key="totalCount">totalCount</wicket:message></th>
+				    	<td wicket:id="totalCount">hitRate</td>
+				    </tr>
+				    <tr>				    
+				    	<th scope="row"><wicket:message key="hitCount">hitCount</wicket:message></th>
+				    	<td wicket:id="hitCount">hitRate</td>
+				    </tr>
+				    <tr>				    
+				    	<th scope="row"><wicket:message key="missCount">missCount</wicket:message></th>
+				    	<td wicket:id="missCount">hitRate</td>
+				    </tr>				    				    				  
+				    <tr>				    
+				    	<th scope="row"><wicket:message key="hitRate">hitRate</wicket:message></th>
+				    	<td wicket:id="hitRate">hitRate</td>
+				    </tr>
+				    <tr>
+				    	<th scope="row"><wicket:message key="missRate">missRate</wicket:message></th>
+				    	<td wicket:id="missRate">missRate</td>
+				    </tr>
+				    <tr>
+				    	<th scope="row"><wicket:message key="evicted">evicted</wicket:message></th>
+				    	<td wicket:id="evicted">evicted</td>
+				    </tr>
+				    <tr>
+				    	<th scope="row"><wicket:message key="currentMemory">current memory</wicket:message></th>
+				    	<td wicket:id="currentMemory">current memory</td>
+				    </tr>
+				    <tr>
+				    	<th scope="row"><wicket:message key="cacheSize">CacheSize</wicket:message></th>
+				    	<td wicket:id="cacheSize">CacheSize</td>
+				    </tr>				    				    
+				  </tbody>
+				</table>
+      		</li> 
+	      <li>
+	        <button type="submit" wicket:id="statistics"><wicket:message key="statistics">Update Statistics</wicket:message></button>
+	      </li>      		     
+      	</ul>
+      </li>
+    </ul>
+  </fieldset>
+</wicket:panel>
+</body>
+</html>

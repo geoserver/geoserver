@@ -1138,12 +1138,12 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
     }
 
     @Override
-    public boolean isTransientLayer(){
+    public boolean isTransientLayer() {
         return false;
     }
 
     @Override
-    public void setTransientLayer(boolean transientLayer){
+    public void setTransientLayer(boolean transientLayer) {
         return;
     }
 }

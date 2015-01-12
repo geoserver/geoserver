@@ -60,17 +60,29 @@ public class DefaultTileLayerCatalog implements TileLayerCatalog {
     private volatile boolean initialized;
 
     public DefaultTileLayerCatalog(GeoServerResourceLoader resourceLoader,
+            XMLConfiguration xmlPersisterFactory, String baseDirectory) throws IOException {
+        this(resourceLoader, xmlPersisterFactory.getConfiguredXStreamWithContext(new XStream(), 
+                Context.PERSIST), baseDirectory);
+    }
+    
+    public DefaultTileLayerCatalog(GeoServerResourceLoader resourceLoader,
             XMLConfiguration xmlPersisterFactory) throws IOException {
         this(resourceLoader, xmlPersisterFactory.getConfiguredXStreamWithContext(new XStream(), 
-                Context.PERSIST));
+                Context.PERSIST), LAYERINFO_DIRECTORY);
     }
-
+    
     DefaultTileLayerCatalog(GeoServerResourceLoader resourceLoader, XStream configuredXstream)
+            throws IOException {
+        this(resourceLoader, configuredXstream, LAYERINFO_DIRECTORY);
+    }
+    
+
+    DefaultTileLayerCatalog(GeoServerResourceLoader resourceLoader, XStream configuredXstream, String baseDirectory)
             throws IOException {
 
         this.resourceLoader = resourceLoader;
         this.serializer = configuredXstream;
-        this.baseDirectory = LAYERINFO_DIRECTORY;
+        this.baseDirectory = baseDirectory;
 
         BiMap<String, String> baseBiMap = HashBiMap.create();
         this.layersById = Maps.synchronizedBiMap(baseBiMap);

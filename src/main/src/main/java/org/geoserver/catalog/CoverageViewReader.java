@@ -286,9 +286,9 @@ public class CoverageViewReader implements GridCoverage2DReader {
             layout = delegate.getImageLayout(referenceName);
             List<CoverageBand> bands = coverageView.getCoverageBands();
             SampleModel originalSampleModel = layout.getSampleModel(null);
-            SampleModel sampleModel = RasterFactory.createBandedSampleModel(originalSampleModel.getDataType(),
+            SampleModel sampleModel = RasterFactory.createBandedSampleModel(originalSampleModel.getDataType(), 
                     originalSampleModel.getWidth(), originalSampleModel.getHeight(), bands.size());
-
+ 
             ColorModel colorModel = ImageIOUtilities.createColorModel(sampleModel);
             this.imageLayout = new ImageLayout2(layout.getMinX(null), layout.getMinY(null), originalSampleModel.getWidth(), 
                     originalSampleModel.getHeight());

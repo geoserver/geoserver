@@ -117,6 +117,7 @@ public class TileLayerInfoUtil {
         info.setGutter(defaults.getGutter());
         info.setMetaTilingX(defaults.getMetaTilingX());
         info.setMetaTilingY(defaults.getMetaTilingY());
+        info.setInMemoryCached(true);
 
         return info;
     }

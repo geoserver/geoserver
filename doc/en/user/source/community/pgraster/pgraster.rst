@@ -2,6 +2,7 @@
 
 PGRaster
 ========
+
 The PGRaster geoserver module adds the ability to simplify the configuration of a PostGis Raster based ImageMosaic-JDBC store.
 Before proceeding, make sure to take a look to the `PostGis Raster plugin documentation
 <http://docs.geotools.org/latest/userguide/library/coverage/pgraster.html>`_ for background information. Note that configuration files, table creations and raster imports explained in that documentation, will be automatically handled by this module.
@@ -15,17 +16,19 @@ Before proceeding, make sure to take a look to the `PostGis Raster plugin docume
 
 Requirements
 ------------
+
 * You must have a PostGIS 2.0 database where your raster tiles will be stored.
-* raster tiles should have been previously created using ``gdal_retile`` since this module will simply import them and configure the store. The ImageMosaic JDBC setup example documentation provides `examples <http://docs.geotools.org/latest/userguide/library/coverage/jdbc/prepare.html>`_ of how to do that.
+* Raster tiles should have been previously created using ``gdal_retile`` since this module will simply import them and configure the store. The ImageMosaic JDBC setup example documentation provides `examples <http://docs.geotools.org/latest/userguide/library/coverage/jdbc/prepare.html>`_ of how to do that.
 * In case you want to perform automatic import of the raster tiles into the database, you need to have raster2pgsql and psql executables installed on your machine and configured on your ``PATH``. (In case your PostGIS 2.0 installation is on the same machine where you will run GeoServer, the executables should be already available).
     
 Installation
 ------------
+
 #. Download the pgraster community module for your version of GeoServer from the `download page <http://ares.opengeo.org/geoserver/master/community-latest/>`_.
+
 #. Unzip the archive into the WEB-INF/lib directory of the GeoServer installation.
 
-          * On Windows, make sure to add a ``RASTER2PGSQL_PATH=Drive:\Path\to\bin\folder\containing_raster2pgsqlExecutable`` property to the JAVA_OPTS
-          as an instance: ``JAVA_OPTS=-DRASTER2PGSQL_PATH=C:\work\programs\PostgreSQL\9.2\bin``
+   .. note:: On Windows, make sure to add a ``RASTER2PGSQL_PATH=Drive:\Path\to\bin\folder\containing_raster2pgsqlExecutable`` property to the ``JAVA_OPTS`` as an instance: ``JAVA_OPTS=-DRASTER2PGSQL_PATH=C:\work\programs\PostgreSQL\9.2\bin``
 
 #. Restart GeoServer.
 
@@ -68,7 +71,7 @@ Usage
    * - Table
      - The name of the metadata table which contains all the references to 
    * - File extension
-     - The extension of the raster files to be imported (as an instance *.png). It may not be specified when raster tiles have been already manually imported into the database by the user
+     - The extension of the raster files to be imported (such as ``png``). It may not be specified when raster tiles have been already manually imported into the database by the user
    * - raster2pgsql import options
      - The raster2pgsql script importing options (as an instance "-t 128x128" for raster tiles of 128x128). It may not be specified when raster tiles have been already manually imported into the database by the user
    * - EPSG Code

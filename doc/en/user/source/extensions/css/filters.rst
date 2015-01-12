@@ -51,7 +51,7 @@ have been::
 Which should be read as:
  
 * typename is 'restricted' *and*
-* (``cat='2'`` or ``cat='3'`` or ``cat='4'``) *and
+* (``cat='2'`` or ``cat='3'`` or ``cat='4'``) *and*
 * scale is between 100000 and 200000
  
 

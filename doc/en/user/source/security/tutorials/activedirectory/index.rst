@@ -43,8 +43,8 @@ Configure the LDAP authentication provider
 #. Fill in the fields of the settings form as follows:
 
    * Set ``Name`` to "ad-ldap"
-   * Set ``Server URL``  to "ldap://domain-controller/dc=ad,dc=local"
-   * Set ``Filter used to lookup user`` to "(|(userPrincipalName={0})(sAMAccountName={1}))"
+   * Set ``Server URL``  to "ldap://domain-controller/dc=ad,dc=local
+   * Set ``Filter used to lookup user`` to ``(|(userPrincipalName={0})(sAMAccountName={1}))``
    * Set ``Format used for user login name`` to "{0}@ad.local"
    * Check ``Use LDAP groups for authorization``
    * Check ``Bind user before searching for groups``

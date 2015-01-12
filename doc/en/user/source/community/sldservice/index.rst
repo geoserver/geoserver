@@ -1,7 +1,7 @@
 .. _community_sldservice:
 
 SLD REST Service
-===============
+================
 
 The SLD Service is a GeoServer REST service that can be used to create SLD styles on published GeoServer
 layers doing a classification on the layer data, following user provided directives.

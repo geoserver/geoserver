@@ -28,7 +28,7 @@ This section manages the Authentication Filters (adding, removing, and editing).
    *List of authentication filters*
 
 Credentials From Headers Filter
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 This filter allows gathering user credentials (username and password) from request headers in a flexible and configurable way.
 
 .. figure:: images/auth_filter_credentials_from_header.png

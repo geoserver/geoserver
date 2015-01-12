@@ -144,7 +144,7 @@ save and use the layer in WMS and WFS.
           layer out of a large document set
           
 Custom ``q`` and ``fq`` parameters
-------------------------------
+----------------------------------
 
 The SORL store will translate most OGC filters, as specified in SLD, CQL Filter or OGC filter,
 down into the SOLR engine for native filtering, using the ``fq`` parameter.

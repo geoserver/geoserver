@@ -109,7 +109,7 @@ Test a login
 
 
 Configure Apache HTTPD to forward an Header with authentication credentials
------------------------------------------------------
+---------------------------------------------------------------------------
 
 This can be done with an HTTPD configuration that looks like the following:
 

@@ -30,6 +30,7 @@ import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
+import org.geotools.coverage.grid.io.OverviewPolicy;
 import org.geotools.factory.GeoTools;
 import org.geotools.factory.Hints;
 import org.geotools.gce.imagemosaic.ImageMosaicFormat;
@@ -145,6 +146,7 @@ public class RequestUtils {
             final Object params,
             final GridGeometry2D readGG,
             final Interpolation interpolation, 
+            final OverviewPolicy overviewPolicy, 
             Hints hints) throws IOException {
     
         ////
@@ -177,7 +179,8 @@ public class RequestUtils {
         final Parameter<Interpolation> readInterpolation=(Parameter<Interpolation>) ImageMosaicFormat.INTERPOLATION.createValue(); 
         readInterpolation.setValue(interpolation);
        
-        
+        final Parameter<OverviewPolicy> readOverview =(Parameter<OverviewPolicy>) AbstractGridFormat.OVERVIEW_POLICY.createValue(); 
+        readOverview.setValue(overviewPolicy);
         // then I try to get read parameters associated with this
         // coverage if there are any.
         GridCoverage2D coverage = null;
@@ -198,9 +201,11 @@ public class RequestUtils {
             // request.
             final String readGGName = AbstractGridFormat.READ_GRIDGEOMETRY2D.getName().toString();
             final String readInterpolationName = ImageMosaicFormat.INTERPOLATION.getName().toString();
+            final String overviewPolicyName = AbstractGridFormat.OVERVIEW_POLICY.getName().toString();
             int i = 0;
             boolean foundInterpolation = false;
             boolean foundGG = false;
+            boolean foundOverviewPolicy = false;
             for (; i < length; i++) {
                 final String paramName = readParams[i].getDescriptor().getName().toString();
                 if (paramName.equalsIgnoreCase(readGGName)){
@@ -209,11 +214,15 @@ public class RequestUtils {
                 } else if(paramName.equalsIgnoreCase(readInterpolationName)){
                     ((Parameter) readParams[i]).setValue(interpolation);
                     foundInterpolation = true;
+                } else if (paramName.equalsIgnoreCase(overviewPolicyName)){
+                    // Override the default overview value using the one found on read params
+                    ((Parameter) readParams[i]).setValue(overviewPolicy);
+                    foundOverviewPolicy = true;
                 }
             }
-            
+
             // did we find anything?
-            if (!foundGG || !foundInterpolation){// || !(foundBgColor && bgColor != null)) {
+            if (!foundGG || !foundInterpolation || !foundOverviewPolicy){// || !(foundBgColor && bgColor != null)) {
                 // add the correct read geometry to the supplied
                 // params since we did not find anything
                 List<GeneralParameterValue> paramList = new ArrayList<GeneralParameterValue>();
@@ -224,6 +233,9 @@ public class RequestUtils {
                 if(!foundInterpolation) {
                     paramList.add(readInterpolation);
                 } 
+                if(!foundOverviewPolicy) {
+                    paramList.add(readOverview);
+                }
 
                 readParams = (GeneralParameterValue[]) paramList.toArray(new GeneralParameterValue[paramList.size()]);
             }

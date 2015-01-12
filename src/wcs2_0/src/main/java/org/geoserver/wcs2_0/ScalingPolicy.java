@@ -83,8 +83,9 @@ enum ScalingPolicy {
             Utilities.ensureNonNull("ScalingType", scaling);
 
             // get scale factor
-            final ScaleByFactorType scaleByFactorType = scaling.getScaleByFactor();
-            double scaleFactor = scaleByFactorType.getScaleFactor();
+            double[] scaleFactors = getScaleFactors(scaling);
+            double scaleFactor = scaleFactors[0];
+            scaleFactor = arrangeScaleFactors(hints, new double[]{scaleFactor, scaleFactor})[0];
 
             // checks
             if (scaleFactor <= 0) {
@@ -138,7 +139,6 @@ enum ScalingPolicy {
             return (GridCoverage2D) CoverageProcessor.getInstance(hints).doOperation(parameters,
                     hints);
         }
-
     },
 
     /**
@@ -161,33 +161,11 @@ enum ScalingPolicy {
         @Override
         public GridCoverage2D scale(GridCoverage2D sourceGC, ScalingType scaling,
                 Interpolation interpolation, Hints hints, WCSInfo wcsinfo) {
-            // get scale size
-            final ScaleToSizeType scaleType = scaling.getScaleToSize();
-            final EList<TargetAxisSizeType> targetAxisSizeElements = scaleType.getTargetAxisSize();
 
-            TargetAxisSizeType xSize = null, ySize = null;
-            for (TargetAxisSizeType axisSizeType : targetAxisSizeElements) {
-                final String axisName = axisSizeType.getAxis();
-                if (axisName.equals("http://www.opengis.net/def/axis/OGC/1/i")) {
-                    xSize = axisSizeType;
-                } else if (axisName.equals("http://www.opengis.net/def/axis/OGC/1/j")) {
-                    ySize = axisSizeType;
-                } else {
-                    // TODO remove when supporting TIME and ELEVATION
-                    throw new WCS20Exception("Scale Axis Undefined",
-                            WCS20Exception.WCS20ExceptionCode.ScaleAxisUndefined, axisName);
-                }
-            }
-            final int sizeX = (int) xSize.getTargetSize();// TODO should this be int?
-            if (sizeX <= 0) {
-                throw new WCS20Exception("Invalid target size",
-                        WCS20Exception.WCS20ExceptionCode.InvalidExtent, Integer.toString(sizeX));
-            }
-            final int sizeY = (int) ySize.getTargetSize();// TODO should this be int?
-            if (sizeY <= 0) {
-                throw new WCS20Exception("Invalid target size",
-                        WCS20Exception.WCS20ExceptionCode.InvalidExtent, Integer.toString(sizeY));
-            }
+            // get scale size
+            final int[] targetSize = getTargetSize(scaling);
+            final int sizeX = targetSize[0];
+            final int sizeY = targetSize[1];
 
             // scale
             final GridEnvelope2D sourceGE = sourceGC.getGridGeometry().getGridRange2D();
@@ -393,43 +371,10 @@ enum ScalingPolicy {
             // TODO dimension management
 
             // get scale factor
-            final ScaleAxisByFactorType scaleType = scaling.getScaleAxesByFactor();
-            final EList<ScaleAxisType> targetAxisScaleElements = scaleType.getScaleAxis();
-
-            ScaleAxisType xScale = null, yScale = null;
-            for (ScaleAxisType scaleAxisType : targetAxisScaleElements) {
-                final String axisName = scaleAxisType.getAxis();
-                if (axisName.equals("http://www.opengis.net/def/axis/OGC/1/i")) {
-                    xScale = scaleAxisType;
-                } else if (axisName.equals("http://www.opengis.net/def/axis/OGC/1/j")) {
-                    yScale = scaleAxisType;
-                } else {
-                    // TODO remove when supporting TIME and ELEVATION
-                    throw new WCS20Exception("Scale Axis Undefined",
-                            WCS20Exception.WCS20ExceptionCode.ScaleAxisUndefined, axisName);
-                }
-            }
-            if (xScale == null) {
-                throw new WCS20Exception("Missing scale factor along i",
-                        WCS20Exception.WCS20ExceptionCode.InvalidScaleFactor, "Null");
-            }
-            if (yScale == null) {
-                throw new WCS20Exception("Missing scale factor along j",
-                        WCS20Exception.WCS20ExceptionCode.InvalidScaleFactor, "Null");
-            }
-
-            final double scaleFactorX = xScale.getScaleFactor();
-            if (scaleFactorX <= 0) {
-                throw new WCS20Exception("Invalid scale factor",
-                        WCS20Exception.WCS20ExceptionCode.InvalidScaleFactor,
-                        Double.toString(scaleFactorX));
-            }
-            final double scaleFactorY = yScale.getScaleFactor();
-            if (scaleFactorY <= 0) {
-                throw new WCS20Exception("Invalid scale factor",
-                        WCS20Exception.WCS20ExceptionCode.InvalidScaleFactor,
-                        Double.toString(scaleFactorY));
-            }
+            double scaleFactors[] = getScaleFactors(scaling);
+            double scaleFactorX = scaleFactors[0];
+            double scaleFactorY = scaleFactors[1];
+            scaleFactors = arrangeScaleFactors(hints, scaleFactors);
 
             // unscale
             if (scaleFactorX == 1.0 && scaleFactorY == 1.0) {
@@ -469,8 +414,8 @@ enum ScalingPolicy {
             parameters.parameter("interpolation").setValue(
                     interpolation != null ? interpolation : InterpolationPolicy.getDefaultPolicy()
                             .getInterpolation());
-            parameters.parameter("xScale").setValue(scaleFactorX);
-            parameters.parameter("yScale").setValue(scaleFactorY);
+            parameters.parameter("xScale").setValue(scaleFactors[0]);
+            parameters.parameter("yScale").setValue(scaleFactors[1]);
             parameters.parameter("xTrans").setValue(0.0);
             parameters.parameter("yTrans").setValue(0.0);
             return (GridCoverage2D) CoverageProcessor.getInstance(hints).doOperation(parameters,
@@ -495,6 +440,11 @@ enum ScalingPolicy {
     abstract public GridCoverage2D scale(GridCoverage2D sourceGC, ScalingType scaling,
             Interpolation interpolation, Hints hints, WCSInfo wcsinfo);
 
+    /**
+     * Retrieve the {@link ScalingPolicy} from the provided {@link ScalingType}
+     * @param scaling
+     * @return
+     */
     public static ScalingPolicy getPolicy(ScalingType scaling) {
         if (scaling != null) {
             if (scaling.getScaleAxesByFactor() != null) {
@@ -507,10 +457,143 @@ enum ScalingPolicy {
                 return ScaleToExtent;
             }
             if (scaling.getScaleToSize() != null) {
-                return ScalingPolicy.ScaleToSize;
+                return ScaleToSize;
             }
 
         }
         return DoNothing;
     }
+
+    /**
+     * Extract the requested targetSize from this scaling extension in case the
+     * provided scaling is a ScaleToSizeType type.
+     *
+     * Throw an {@link IllegalArgumentException} in case the scaling type is not a
+     * supported one.
+     *
+     * @param scaling
+     * @return
+     */
+    public static int[] getTargetSize(ScalingType scaling) {
+        final ScaleToSizeType scaleType = scaling.getScaleToSize();
+        if (scaleType == null) {
+            throw new IllegalArgumentException("targe size can not be computed from this type of scaling: "
+                    + getPolicy(scaling));
+        }
+        final EList<TargetAxisSizeType> targetAxisSizeElements = scaleType.getTargetAxisSize();
+
+        TargetAxisSizeType xSize = null, ySize = null;
+        for (TargetAxisSizeType axisSizeType : targetAxisSizeElements) {
+            final String axisName = axisSizeType.getAxis();
+            if (axisName.equals("http://www.opengis.net/def/axis/OGC/1/i")) {
+                xSize = axisSizeType;
+            } else if (axisName.equals("http://www.opengis.net/def/axis/OGC/1/j")) {
+                ySize = axisSizeType;
+            } else {
+                // TODO remove when supporting TIME and ELEVATION
+                throw new WCS20Exception("Scale Axis Undefined",
+                        WCS20Exception.WCS20ExceptionCode.ScaleAxisUndefined, axisName);
+            }
+        }
+        final int sizeX = (int) xSize.getTargetSize();// TODO should this be int?
+        if (sizeX <= 0) {
+            throw new WCS20Exception("Invalid target size",
+                    WCS20Exception.WCS20ExceptionCode.InvalidExtent, Integer.toString(sizeX));
+        }
+        final int sizeY = (int) ySize.getTargetSize();// TODO should this be int?
+        if (sizeY <= 0) {
+            throw new WCS20Exception("Invalid target size",
+                    WCS20Exception.WCS20ExceptionCode.InvalidExtent, Integer.toString(sizeY));
+        }
+        return new int[] { sizeX, sizeY };
+    }
+
+    /**
+     * Extract the requested scaleFactors from this scaling extension in case the
+     * provided scaling is a ScaleXXXFactor type.
+     *
+     * Throw an {@link IllegalArgumentException} in case the scaling type is not a
+     * supported one.
+     *
+     * @param scaling
+     * @return
+     */
+    public static double[] getScaleFactors(ScalingType scaling) {
+        ScalingPolicy policy = getPolicy(scaling);
+        switch (policy) {
+        case ScaleByFactor:
+            final ScaleByFactorType scaleByFactorType = scaling.getScaleByFactor();
+            double scaleFactor = scaleByFactorType.getScaleFactor();
+            return new double[] { scaleFactor, scaleFactor };
+        case ScaleAxesByFactor:
+            final ScaleAxisByFactorType scaleType = scaling.getScaleAxesByFactor();
+            final EList<ScaleAxisType> targetAxisScaleElements = scaleType.getScaleAxis();
+
+            ScaleAxisType xScale = null,
+            yScale = null;
+            for (ScaleAxisType scaleAxisType : targetAxisScaleElements) {
+                final String axisName = scaleAxisType.getAxis();
+                if (axisName.equals("http://www.opengis.net/def/axis/OGC/1/i")) {
+                    xScale = scaleAxisType;
+                } else if (axisName.equals("http://www.opengis.net/def/axis/OGC/1/j")) {
+                    yScale = scaleAxisType;
+                } else {
+                    // TODO remove when supporting TIME and ELEVATION
+                    throw new WCS20Exception("Scale Axis Undefined",
+                            WCS20Exception.WCS20ExceptionCode.ScaleAxisUndefined, axisName);
+                }
+            }
+            if (xScale == null) {
+                throw new WCS20Exception("Missing scale factor along i",
+                        WCS20Exception.WCS20ExceptionCode.InvalidScaleFactor, "Null");
+            }
+            if (yScale == null) {
+                throw new WCS20Exception("Missing scale factor along j",
+                        WCS20Exception.WCS20ExceptionCode.InvalidScaleFactor, "Null");
+            }
+
+            final double scaleFactorX = xScale.getScaleFactor();
+            if (scaleFactorX <= 0) {
+                throw new WCS20Exception("Invalid scale factor",
+                        WCS20Exception.WCS20ExceptionCode.InvalidScaleFactor,
+                        Double.toString(scaleFactorX));
+            }
+            final double scaleFactorY = yScale.getScaleFactor();
+            if (scaleFactorY <= 0) {
+                throw new WCS20Exception("Invalid scale factor",
+                        WCS20Exception.WCS20ExceptionCode.InvalidScaleFactor,
+                        Double.toString(scaleFactorY));
+            }
+            return new double[] { scaleFactorX, scaleFactorY };
+        default:
+            throw new IllegalArgumentException(
+                    "scale factors can not be computed from this type of scaling: " + policy);
+        }
+
+    }
+
+    /**
+     * In case some scaling factor have been pre-applied, make sure to arrange
+     * the requested target scaleFactors by taking into account the previous ones.
+     *
+     * This is usually required when using overviews. Suppose you want to get a
+     * target scaleFactor of 0.00001 and the worst overview provide you a scale factor
+     * of 0.0001, then the current scaleFactor need to be adjusted by a remaining 0.1
+     * factor.
+     *
+     * @param hints
+     * @param scaleFactors
+     * @return the arranged scaleFactor
+     */
+    private static double[] arrangeScaleFactors(Hints hints, final double[] scaleFactors) {
+        if (hints != null && hints.containsKey(GetCoverage.PRE_APPLIED_SCALE)) {
+            Double[] preAppliedScale = (Double[]) hints.get(GetCoverage.PRE_APPLIED_SCALE);
+            if (preAppliedScale != null) {
+                scaleFactors[0] = scaleFactors[0] * preAppliedScale[0];
+                scaleFactors[1] = scaleFactors[1] * preAppliedScale[1];
+            }
+        }
+        return scaleFactors;
+    }
+
 }

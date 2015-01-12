@@ -163,13 +163,13 @@ public class WMSServiceExceptionHandler extends ServiceExceptionHandler {
     
     private boolean isImageExceptionType(String exceptions) {
         return "application/vnd.ogc.se_inimage".equals(exceptions) || "INIMAGE".equals(exceptions)
-                || "BLANK".equals(exceptions);
+                || "BLANK".equals(exceptions) || "application/vnd.ogc.se_blank".equals(exceptions);
     }
     
     private void handleImageException(ServiceException exception, Request request, final int width,
             final int height, final String format, String exceptionFormat, Color bgcolor, Boolean transparent) {
        
-        if ("BLANK".equals(exceptionFormat) && bgcolor == null && Boolean.TRUE.equals(transparent)) {
+        if (("BLANK".equals(exceptionFormat) || "application/vnd.ogc.se_blank".equals(exceptionFormat)) && bgcolor == null && Boolean.TRUE.equals(transparent)) {
             bgcolor = new Color(0, 0, 0, 0);
         }
         
@@ -184,7 +184,7 @@ public class WMSServiceExceptionHandler extends ServiceExceptionHandler {
         g.setColor(bgcolor);
         g.fillRect(0, 0, img.getWidth(), img.getHeight());
         
-        if (!"BLANK".equals(exceptionFormat)) { //wms 1.3 only
+        if (!("BLANK".equals(exceptionFormat) || "application/vnd.ogc.se_blank".equals(exceptionFormat))) { //wms 1.3 only
             g.setColor(Color.BLACK);
 
             // draw the exception text (give it a good offset so that it can be read

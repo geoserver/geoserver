@@ -34,7 +34,23 @@ public class GetCoverageKvpTest extends WCSKVPTestSupport {
         
         assertEquals("theCoverage", gc.getCoverageId());
     }
-    
+
+    @Test
+    public void testGetCoverageNoWs() throws Exception {
+        MockHttpServletResponse response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1" +
+                "&coverageId=BlueMarble&&Format=image/tiff");  
+
+        assertEquals("image/tiff", response.getContentType());      
+    }
+
+    @Test
+    public void testGetCoverageLocalWs() throws Exception {
+        MockHttpServletResponse response = getAsServletResponse("wcs/wcs?request=GetCoverage&service=WCS&version=2.0.1" +
+                "&coverageId=BlueMarble&&Format=image/tiff");  
+
+        assertEquals("image/tiff", response.getContentType());      
+    }
+
     @Test
     public void testNotExistent() throws Exception {
         MockHttpServletResponse response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1" +

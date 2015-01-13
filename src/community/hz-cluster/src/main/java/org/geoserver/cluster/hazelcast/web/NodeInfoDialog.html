@@ -1,0 +1,33 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<body>
+  <wicket:panel>
+   <div style="padding: 1em;">
+   <h3><span wicket:id="ip"></span></h3>
+   <form>
+     <ul>
+        <li>
+          <label>Hazelcast Group</label>
+          <span wicket:id="groupName"></span>
+        </li>
+        <li>
+          <label>Hostname</label>
+          <span wicket:id="host"></span>
+        </li>
+        <li>
+          <label>Port</label>
+          <span wicket:id="port"></span>
+        </li>
+        <li>
+          <label>Members</label>
+            <ul wicket:id="cluster">
+              <li wicket:id="members">
+                 <span wicket:id="label"></span>
+              </li>
+            </ul>
+        </li>
+     </ul>
+   </form>
+   </div>
+   </wicket:panel>
+ </body>
+</html>

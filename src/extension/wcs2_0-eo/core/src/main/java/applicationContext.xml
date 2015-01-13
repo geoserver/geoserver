@@ -58,5 +58,10 @@
   <bean id="wcs20DescribeEOCoverageSetResponse"
     class="org.geoserver.wcs2_0.eo.response.WCS20DescribeEOCoverageSetResponse"/>
 
+  <bean id="wcs20GranuleCoverageExtension"
+    class="org.geoserver.wcs2_0.eo.response.GranuleCoverageExtension">
+    <constructor-arg index="0" ref="geoServer"/>
+    <constructor-arg index="1" ref="wcsEoCoverageResourceCodec" />
+  </bean>  
 
 </beans>

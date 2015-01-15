@@ -33,6 +33,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.config.GeoServer;
+import org.geoserver.catalog.PublishedType;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoServerBasePage;
@@ -212,8 +213,8 @@ public class MapPreviewPage extends GeoServerBasePage {
         menu.add(wmsFormats);
         
         // the vector ones, it depends, we might have to hide them
-        boolean vector = layer.groupInfo == null && (layer.layerInfo.getType() == LayerInfo.Type.VECTOR 
-                || layer.layerInfo.getType() == LayerInfo.Type.REMOTE);
+        boolean vector = layer.groupInfo == null && (layer.layerInfo.getType() == PublishedType.VECTOR 
+                || layer.layerInfo.getType() == PublishedType.REMOTE);
         WebMarkupContainer wfsFormatsGroup = new WebMarkupContainer("wfs");
         RepeatingView wfsFormats = new RepeatingView("wfsFormats");
         if(vector) {

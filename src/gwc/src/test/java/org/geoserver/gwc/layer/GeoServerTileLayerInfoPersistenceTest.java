@@ -17,6 +17,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.PublishedType;
 import org.geoserver.gwc.config.GWCConfig;
 import org.geowebcache.config.XMLConfiguration;
 import org.geowebcache.config.XMLGridSubset;
@@ -86,7 +87,7 @@ public class GeoServerTileLayerInfoPersistenceTest {
     @Test
     public void testMarshallingDefaults() {
         GWCConfig oldDefaults = GWCConfig.getOldDefaults();
-        LayerInfo layerInfo = mockLayer("testLayer", new String[]{}, LayerInfo.Type.RASTER);
+        LayerInfo layerInfo = mockLayer("testLayer", new String[]{}, PublishedType.RASTER);
         info = loadOrCreate(layerInfo, oldDefaults);
         testMarshaling(info);
     }

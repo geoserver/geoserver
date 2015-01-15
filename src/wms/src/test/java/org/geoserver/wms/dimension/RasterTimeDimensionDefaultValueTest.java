@@ -28,6 +28,7 @@ import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.DimensionDefaultValueSetting.Strategy;
+import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.impl.DimensionInfoImpl;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
@@ -360,7 +361,7 @@ public class RasterTimeDimensionDefaultValueTest extends WMSTestSupport {
             layer.setResource(coverage);
 
             layer.setDefaultStyle(catalog.getStyleByName(SystemTestData.DEFAULT_RASTER_STYLE));
-            layer.setType(LayerInfo.Type.RASTER);
+            layer.setType(PublishedType.RASTER);
             layer.setEnabled(true);
 
             if (layer.getId() == null) {

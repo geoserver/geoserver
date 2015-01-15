@@ -13,6 +13,7 @@ import java.util.List;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.PublishedType;
 import org.geoserver.ows.KvpParser;
 import org.geoserver.ows.util.KvpUtils;
 import org.vfny.geoserver.wcs.WcsException;
@@ -51,7 +52,7 @@ public class SourceCoverageKvpParser extends KvpParser {
                     .substring(coverage.indexOf("@") + 1) : null;
 
             LayerInfo layer = catalog.getLayerByName(value);
-            if (layer == null || layer.getType() != LayerInfo.Type.RASTER)
+            if (layer == null || layer.getType() != PublishedType.RASTER)
                 throw new WcsException("Could not find sourcecoverage '" + coverage + "'",
                         InvalidParameterValue, "sourcecoverage");
             coverages.add(coverage);

@@ -5,7 +5,7 @@
  */
 package org.geoserver.jdbcconfig.internal;
 
-import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.*;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -13,11 +13,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.geoserver.catalog.Predicates;
+import org.geoserver.function.IsInstanceOf;
 import org.geotools.filter.Capabilities;
 import org.geotools.filter.LikeFilterImpl;
 import org.opengis.filter.And;
 import org.opengis.filter.ExcludeFilter;
 import org.opengis.filter.Filter;
+import org.opengis.filter.FilterFactory;
 import org.opengis.filter.FilterVisitor;
 import org.opengis.filter.Id;
 import org.opengis.filter.IncludeFilter;
@@ -37,6 +40,7 @@ import org.opengis.filter.PropertyIsNull;
 import org.opengis.filter.capability.FilterCapabilities;
 import org.opengis.filter.expression.Add;
 import org.opengis.filter.expression.Divide;
+import org.opengis.filter.expression.Expression;
 import org.opengis.filter.expression.ExpressionVisitor;
 import org.opengis.filter.expression.Function;
 import org.opengis.filter.expression.Literal;
@@ -87,6 +91,7 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
         builder.addType(PropertyIsNil.class);// whether the property exists AND it's value is null
         builder.addType(And.class);
         builder.addType(Or.class);
+        builder.addName(IsInstanceOf.NAME.getName());
 
         CAPABILITIES = builder.getContents();
     }
@@ -209,6 +214,11 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
             
         } else {
             
+            if(filter.getExpression1() instanceof IsInstanceOf){
+                StringBuilder builder = append(extraData, handleInstanceOf((IsInstanceOf) filter.getExpression1()));
+                return builder; 
+            }
+            
             //comparing a literal with a field
             
             PropertyName expression1;
@@ -264,6 +274,20 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     
             return builder;
         }
+    }
+
+    private String handleInstanceOf(IsInstanceOf instanceOf) {
+        Expression expression1 = instanceOf.getParameters().get(0);
+        
+        Class clazz = expression1.evaluate(null, Class.class);
+
+        if(clazz == null || dbMappings.getTypeId(clazz) == null){
+            return "(1=0) /* EXCLUDE */\n";
+        }
+        
+        Integer typeId = dbMappings.getTypeId(clazz);
+        
+        return "type_id = " + typeId + "/* isInstanceOf " + clazz.toString() + " */ \n";
     }
 
     /**
@@ -365,6 +389,12 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
      */
     @Override
     public Object visit(PropertyIsNotEqualTo filter, Object extraData) {
+        // equivalent to not(propertyisequalto)
+
+        FilterFactory ff = Predicates.factory;
+        Not not = ff.not(ff.equal(filter.getExpression1(), filter.getExpression2(),
+                filter.isMatchingCase(), filter.getMatchAction()));
+        visit(not, extraData);
 
         return extraData;
     }
@@ -439,7 +469,7 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     @Override
     public Object visit(Not filter, Object extraData) {
         
-        return (StringBuilder) filter.getFilter().accept(this, append (extraData, " NOT "));
+        return filter.getFilter().accept(this, append (extraData, " NOT "));
 
     }
 
@@ -522,7 +552,9 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
 
         StringBuilder builder = append(extraData,
                 "oid IN (select oid from object_property where property_type in (:",
-                propertyTypesParam, ") and value IS NULL) /* ", filter.toString(), " */ \n");
+                propertyTypesParam,
+                ") and value IS NULL) OR oid NOT  in (select oid from object_property where property_type in (:"
+                        + propertyTypesParam + ")) /* ", filter.toString(), " */ \n");
         return builder;
     }
 
@@ -535,8 +567,13 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
      */
     @Override
     public Object visit(PropertyIsNil filter, Object extraData) {
+        final PropertyName propertyName = (PropertyName) filter.getExpression();
+        final String propertyTypesParam = propertyTypesParam(propertyName);
 
-        return extraData;
+        StringBuilder builder = append(extraData,
+                "oid IN (select oid from object_property where property_type in (:",
+                propertyTypesParam, ") and value IS NULL) /* ", filter.toString(), " */ \n");
+        return builder;
     }
 
     /**

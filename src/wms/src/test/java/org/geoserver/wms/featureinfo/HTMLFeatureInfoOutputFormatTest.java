@@ -28,6 +28,7 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.impl.FeatureTypeInfoImpl;
 import org.geoserver.catalog.impl.LayerInfoImpl;
 import org.geoserver.catalog.impl.NamespaceInfoImpl;
@@ -105,7 +106,7 @@ public class HTMLFeatureInfoOutputFormatTest extends WMSTestSupport {
         // fake layer list
         List<MapLayerInfo> queryLayers = new ArrayList<MapLayerInfo>();               
         LayerInfo layerInfo = new LayerInfoImpl();
-        layerInfo.setType(LayerInfo.Type.VECTOR);
+        layerInfo.setType(PublishedType.VECTOR);
         ResourceInfo resourceInfo = new FeatureTypeInfoImpl(null);
         NamespaceInfo nameSpace = new NamespaceInfoImpl();
         nameSpace.setPrefix("topp");

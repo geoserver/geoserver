@@ -22,6 +22,7 @@ import net.opengis.wfs.WfsFactory;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.NamespaceInfo;
+import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.impl.FeatureTypeInfoImpl;
 import org.geoserver.catalog.impl.LayerInfoImpl;
@@ -68,7 +69,7 @@ private TextFeatureInfoOutputFormat outputFormat;
         // fake layer list
         List<MapLayerInfo> queryLayers = new ArrayList<MapLayerInfo>();
         LayerInfo layerInfo = new LayerInfoImpl();
-        layerInfo.setType(LayerInfo.Type.VECTOR);
+        layerInfo.setType(PublishedType.VECTOR);
         ResourceInfo resourceInfo = new FeatureTypeInfoImpl(null);
         NamespaceInfo nameSpace = new NamespaceInfoImpl();
         nameSpace.setPrefix("topp");

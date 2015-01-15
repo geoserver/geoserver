@@ -5,29 +5,42 @@
  */
 package org.geoserver.web.data.layergroup;
 
+import static org.geoserver.catalog.Predicates.acceptAll;
+import static org.geoserver.catalog.Predicates.or;
+import static org.geoserver.catalog.Predicates.sortBy;
+
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.extensions.markup.html.repeater.util.SortParam;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.IModel;
+import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.Predicates;
+import org.geoserver.catalog.util.CloseableIterator;
+import org.geoserver.catalog.util.CloseableIteratorAdapter;
 import org.geoserver.web.data.layer.LayerDetachableModel;
+import org.geoserver.web.data.layer.LayerProvider;
 import org.geoserver.web.wicket.GeoServerDataProvider;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.SimpleAjaxLink;
 import org.geoserver.web.wicket.GeoServerDataProvider.BeanProperty;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
+import org.opengis.filter.Filter;
+import org.opengis.filter.sort.SortBy;
+
+import com.google.common.collect.Lists;
 
 /**
  * Base class for a layer listing table with clickable layer names
  */
 public abstract class LayerListPanel extends GeoServerTablePanel<LayerInfo> {
     
-    protected static abstract class LayerListProvider extends GeoServerDataProvider<LayerInfo> {
-        @Override
-        protected abstract List<LayerInfo> getItems();
+    protected static abstract class LayerListProvider extends LayerProvider {
 
         @Override
         protected List<Property<LayerInfo>> getProperties() {
@@ -51,11 +64,48 @@ public abstract class LayerListPanel extends GeoServerTablePanel<LayerInfo> {
         new BeanProperty<LayerInfo>("workspace", "resource.store.workspace.name");
     
     public LayerListPanel( String id ) {
-        this( id, new LayerListProvider() {
-            
+        this( id, new LayerListProvider(){
+
             @Override
-            protected List<LayerInfo> getItems() {
-                return getCatalog().getLayers();
+            public Iterator<LayerInfo> iterator(final int first, final int count) {
+                Iterator<LayerInfo> iterator = filteredItems(first, count);
+                if (iterator instanceof CloseableIterator) {
+                    // don't know how to force wicket to close the iterator, lets return
+                    // a copy. Shouldn't be much overhead as we're paging
+                    try {
+                        return Lists.newArrayList(iterator).iterator();
+                    } finally {
+                        CloseableIteratorAdapter.close(iterator);
+                    }
+                } else {
+                    return iterator;
+                }
+            }
+
+            /**
+             * Returns the requested page of layer objects after applying any keyword
+             * filtering set on the page
+             */
+            private Iterator<LayerInfo> filteredItems(Integer first, Integer count) {
+                final Catalog catalog = getCatalog();
+
+                // global sorting
+                final SortParam sort = getSort();
+                final Property<LayerInfo> property = getProperty(sort);
+
+                SortBy sortOrder = null;
+                if (sort != null) {
+                    if(property instanceof BeanProperty){
+                        final String sortProperty = ((BeanProperty<LayerInfo>)property).getPropertyPath();
+                        sortOrder = sortBy(sortProperty, sort.isAscending());
+                    }
+                }
+
+                final Filter filter = getFilter();
+                //our already filtered and closeable iterator
+                Iterator<LayerInfo> items = catalog.list(LayerInfo.class, filter, first, count, sortOrder);
+
+                return items;
             }
         });
     }

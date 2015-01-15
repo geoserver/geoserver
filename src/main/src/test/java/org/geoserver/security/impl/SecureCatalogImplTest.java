@@ -5,31 +5,16 @@
  */
 package org.geoserver.security.impl;
 
+import static org.easymock.EasyMock.*;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.*;
+
 import java.io.IOException;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import static org.easymock.EasyMock.createNiceMock;
-import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.replay;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
-
-import static org.hamcrest.Matchers.allOf;
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.everyItem;
-import static org.hamcrest.Matchers.hasSize;
-
-import org.easymock.IAnswer;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.CoverageInfo;
@@ -43,11 +28,9 @@ import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.catalog.util.CloseableIteratorAdapter;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
+import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.geoserver.security.AbstractCatalogFilter;
 import org.geoserver.security.CatalogFilterAccessManager;
-import org.geoserver.security.ResourceAccessManager;
-import org.geoserver.security.ResourceAccessManagerWrapper;
-import org.geoserver.security.SecureCatalogImpl;
 import org.geoserver.security.decorators.ReadOnlyDataStoreTest;
 import org.geoserver.security.decorators.SecuredCoverageInfo;
 import org.geoserver.security.decorators.SecuredDataStoreInfo;
@@ -60,7 +43,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.opengis.filter.Filter;
 import org.opengis.filter.sort.SortBy;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 public class SecureCatalogImplTest extends AbstractAuthorizationTest {
@@ -74,47 +56,9 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
         Dispatcher.REQUEST.remove();
     }
     
-    SecureCatalogImpl buildTestObject(String propertyFile, Catalog catalog) throws Exception {
-        return buildTestObject(propertyFile, catalog, null);
-    }
-    
-    @SuppressWarnings("serial")
-    SecureCatalogImpl buildTestObject(String propertyFile, Catalog catalog, ResourceAccessManagerWrapper wrapper) throws Exception{
-        // hack to override the getSecurityWrapper method on the access manager to return the 
-        // securecatalog that itself requires the resourcemanager before being created.
-        // Outside of testing, this is handled using GeoServerExtensions.bean
-        SecureCatalogImpl sc;
-        final SecureCatalogImpl[] scHolder =  new SecureCatalogImpl[1];
-        ResourceAccessManager manager = buildManager(propertyFile, new IAnswer<SecureCatalogImpl>(){
-
-            @Override
-            public SecureCatalogImpl answer() throws Throwable {
-                return scHolder[0];
-            }
-            
-        });
-        
-        if(wrapper!=null) {
-            wrapper.setDelegate(manager);
-            manager=wrapper;
-        }
-        
-        sc = new SecureCatalogImpl(catalog, manager) {
-
-            @Override
-            protected boolean isAdmin(Authentication authentication) {
-                return false;
-            }
-            
-        };
-        
-        scHolder[0]=sc;
-        return sc;
-    }
-    
     @Test 
     public void testWideOpen() throws Exception {
-        SecureCatalogImpl sc = buildTestObject("wideOpen.properties", catalog);
+        buildManager("wideOpen.properties");
         
         // use no user at all
         SecurityContextHolder.getContext().setAuthentication(anonymous);
@@ -144,7 +88,7 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
     @Test
     public void testLockedDown() throws Exception {
         
-        SecureCatalogImpl sc = buildTestObject("lockedDown.properties", catalog);
+        buildManager("lockedDown.properties");
         
         // try with read only user
         SecurityContextHolder.getContext().setAuthentication(roUser);
@@ -198,7 +142,7 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
     @Test
     public void testLockedChallenge() throws Exception {
 
-        SecureCatalogImpl sc = buildTestObject("lockedDownChallenge.properties", catalog);
+        buildManager("lockedDownChallenge.properties");
 
         // try with read only user
         SecurityContextHolder.getContext().setAuthentication(roUser);
@@ -306,7 +250,7 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
     @Test
     public void testLockedMixed() throws Exception {
         
-        SecureCatalogImpl sc = buildTestObject("lockedDownMixed.properties", catalog);
+        buildManager("lockedDownMixed.properties");
 
         // try with read only user and GetFeatures request
         SecurityContextHolder.getContext().setAuthentication(roUser);
@@ -423,7 +367,7 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
     @Test
     public void testPublicRead() throws Exception {
         
-        SecureCatalogImpl sc = buildTestObject("publicRead.properties", catalog);
+        buildManager("publicRead.properties");
 
         // try with read only user
         SecurityContextHolder.getContext().setAuthentication(roUser);
@@ -482,9 +426,11 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
                 return new CloseableIteratorAdapter<T>((Iterator<T>) layers.iterator());
             }
         };
+        this.catalog = withLayers;
+        GeoServerExtensionsHelper.singleton("catalog", catalog, Catalog.class);
 
         // and the secure catalog with the filter
-        SecureCatalogImpl sc = this.buildTestObject("publicRead.properties", withLayers, filter);
+        buildManager("publicRead.properties", filter);
 
         // base behavior sanity
         assertTrue(layers.size() > 1);
@@ -510,7 +456,7 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
     @Test
     public void testComplex() throws Exception {
         
-        SecureCatalogImpl sc = buildTestObject("complex.properties", catalog);
+        buildManager("complex.properties");
 
         // try with anonymous user
         SecurityContextHolder.getContext().setAuthentication(anonymous);
@@ -558,7 +504,7 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
     @Test
     public void testLockedLayerInGroupMustNotHideGroup() throws Exception {        
         
-        SecureCatalogImpl sc = buildTestObject("lockedLayerInLayerGroup.properties", catalog);
+        buildManager("lockedLayerInLayerGroup.properties");
         
         
         SecurityContextHolder.getContext().setAuthentication(rwUser);
@@ -596,8 +542,10 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
         expect(eoCatalog.getLayerGroupByName("topp", eoRoadsLayerGroup.getName())).andReturn(eoRoadsLayerGroup).anyTimes();
         expect(eoCatalog.getLayerGroupByName("topp", eoStatesLayerGroup.getName())).andReturn(eoStatesLayerGroup).anyTimes();        
         replay(eoCatalog);
+        this.catalog = eoCatalog;
+        GeoServerExtensionsHelper.singleton("catalog", eoCatalog, Catalog.class);
         
-        SecureCatalogImpl sc = this.buildTestObject("lockedLayerInLayerGroup.properties", eoCatalog);
+        buildManager("lockedLayerInLayerGroup.properties");
         SecurityContextHolder.getContext().setAuthentication(roUser);
         
         // if root layer is not hidden

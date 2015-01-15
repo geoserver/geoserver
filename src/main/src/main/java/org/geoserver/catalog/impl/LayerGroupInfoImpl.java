@@ -17,6 +17,7 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 
@@ -376,5 +377,15 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
     public String toString() {
         return new StringBuilder(getClass().getSimpleName()).append('[').append(name).append(']')
                 .toString();
+    }
+
+    @Override
+    public String getPrefixedName() {
+        return prefixedName();
+    }
+
+    @Override
+    public PublishedType getType() {
+        return PublishedType.GROUP;
     }
 }

@@ -186,4 +186,14 @@ public class SecureTreeNode {
         }
         return curr;
     }
+
+    /**
+     * The children of this secure tree node
+     * 
+     * @return
+     */
+    Map<String, SecureTreeNode> getChildren() {
+        return children;
+    }
+
 }

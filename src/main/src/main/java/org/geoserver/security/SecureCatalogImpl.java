@@ -5,8 +5,7 @@
  */
 package org.geoserver.security;
 
-import static org.geoserver.catalog.Predicates.acceptAll;
-import static org.geoserver.catalog.Predicates.or;
+import static org.geoserver.catalog.Predicates.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -33,10 +32,10 @@ import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.ResourcePool;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.ValidationResult;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
-import org.geoserver.catalog.ValidationResult;
 import org.geoserver.catalog.event.CatalogListener;
 import org.geoserver.catalog.impl.AbstractDecorator;
 import org.geoserver.catalog.util.CloseableIterator;
@@ -53,16 +52,13 @@ import org.geoserver.security.decorators.SecuredLayerGroupInfo;
 import org.geoserver.security.decorators.SecuredLayerInfo;
 import org.geoserver.security.decorators.SecuredWMSLayerInfo;
 import org.geoserver.security.impl.DataAccessRuleDAO;
-import org.geoserver.security.impl.DefaultDataAccessManager;
-import org.geotools.filter.expression.InternalVolatileFunction;
+import org.geoserver.security.impl.DefaultResourceAccessManager;
 import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
-import org.opengis.filter.FilterFactory;
 import org.opengis.filter.sort.SortBy;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.Assert;
 
@@ -96,22 +92,26 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
         ResourceAccessManager manager = GeoServerExtensions.bean(ResourceAccessManager.class);
         if (manager == null) {
             DataAccessManager daManager = lookupDataAccessManager();
-            manager = new DataAccessManagerAdapter(daManager);
+            if (daManager == null) {
+                manager = buildDefaultResourceAccessManager();
+            } else {
+                manager = new DataAccessManagerAdapter(daManager);
+            }
+
         } 
         CatalogFilterAccessManager lwManager = new CatalogFilterAccessManager();
         lwManager.setDelegate(manager);
         return lwManager;
     }
 
+    private static DefaultResourceAccessManager buildDefaultResourceAccessManager() {
+        return new DefaultResourceAccessManager(GeoServerExtensions.bean(DataAccessRuleDAO.class));
+    }
+
     static DataAccessManager lookupDataAccessManager() throws Exception {
         DataAccessManager manager = GeoServerExtensions.bean(DataAccessManager.class);
-        if (manager == null) {
-            manager = new DefaultDataAccessManager(GeoServerExtensions.bean(DataAccessRuleDAO.class));
-        } else {
-            if (manager instanceof DataAccessManagerWrapper) {
-                ((DataAccessManagerWrapper)manager).setDelegate(
-                    new DefaultDataAccessManager(GeoServerExtensions.bean(DataAccessRuleDAO.class)));
-            }
+        if (manager != null && manager instanceof DataAccessManagerWrapper) {
+            ((DataAccessManagerWrapper) manager).setDelegate(buildDefaultResourceAccessManager());
         }
         return manager;
     }
@@ -126,23 +126,23 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
     // -------------------------------------------------------------------
 
     public CoverageInfo getCoverage(String id) {
-        return (CoverageInfo) checkAccess(user(), delegate.getCoverage(id));
+        return checkAccess(user(), delegate.getCoverage(id));
     }
 
     public CoverageInfo getCoverageByName(String ns, String name) {
-        return (CoverageInfo) checkAccess(user(), delegate.getCoverageByName(ns, name));
+        return checkAccess(user(), delegate.getCoverageByName(ns, name));
     }
 
     public CoverageInfo getCoverageByName(NamespaceInfo ns, String name) {
-        return (CoverageInfo) checkAccess(user(), delegate.getCoverageByName(ns, name));
+        return checkAccess(user(), delegate.getCoverageByName(ns, name));
     }
     
     public CoverageInfo getCoverageByName(Name name) {
-        return (CoverageInfo) checkAccess(user(), delegate.getCoverageByName(name));
+        return checkAccess(user(), delegate.getCoverageByName(name));
     }
     
     public CoverageInfo getCoverageByName(String name) {
-        return (CoverageInfo) checkAccess(user(), delegate.getCoverageByName(name));
+        return checkAccess(user(), delegate.getCoverageByName(name));
     }
 
     public List<CoverageInfo> getCoverages() {
@@ -749,6 +749,8 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
             }
 
             return mostRestrictive;
+        } else if(info instanceof StyleInfo){
+            return buildWrapperPolicy(accessManager, user, info, ((StyleInfo) info).getName());
         }
 
         throw new IllegalArgumentException("Can't build wrapper policy for objects of type "
@@ -1461,7 +1463,7 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
             return filter;
         }
 
-        if (StyleInfo.class.isAssignableFrom(infoType) || MapInfo.class.isAssignableFrom(infoType)) {
+        if (MapInfo.class.isAssignableFrom(infoType)) {
             // these kind of objects are not secured
             return filter;
         }

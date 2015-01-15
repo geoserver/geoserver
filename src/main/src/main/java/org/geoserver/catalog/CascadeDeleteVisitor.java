@@ -10,7 +10,10 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.geoserver.catalog.util.CloseableIterator;
 import org.geotools.util.logging.Logging;
+import org.opengis.filter.Filter;
+import org.opengis.filter.MultiValuedFilter.MatchAction;
 
 /**
  * Cascade deletes the visited objects, and modifies related object
@@ -114,8 +117,13 @@ public class CascadeDeleteVisitor implements CatalogVisitor {
     public void visit(LayerInfo layer) {
         // first update the groups, remove the layer, and if no
         // other layers remained, remove the group as well
-        for (LayerGroupInfo group : catalog.getLayerGroups()) {
-            if(group.getLayers().contains(layer)) {
+
+        Filter groupContainsLayer = Predicates.equal("layers", layer, MatchAction.ANY);
+        try (CloseableIterator<LayerGroupInfo> groups = catalog.list(LayerGroupInfo.class,
+                groupContainsLayer)) {
+            while (groups.hasNext()) {
+                LayerGroupInfo group = groups.next();
+
                 // parallel remove of layer and styles
                 int index = group.getLayers().indexOf(layer);
                 group.getLayers().remove(index);
@@ -130,6 +138,7 @@ public class CascadeDeleteVisitor implements CatalogVisitor {
             }
         }
         
+
         // remove the layer and (for the moment) its resource as well
         // TODO: change this to just remove the resource once the 
         // resource/publish split is done
@@ -220,17 +229,26 @@ public class CascadeDeleteVisitor implements CatalogVisitor {
     }
     
     public void visit(StyleInfo style) {
-        // remove style references in layers
-        List<LayerInfo> layers = catalog.getLayers();
-        for (LayerInfo layer : layers) {
-            removeStyleInLayer(layer, style);
-        }
+        // find the layers having this style as primary or secondary
+        Filter anyStyle = Predicates.equal("styles", style, MatchAction.ANY);
+        Filter layersAssociated = Predicates.or(Predicates.equal("defaultStyle", style), anyStyle);
 
+        // remove style references in layers
+        try (CloseableIterator<LayerInfo> it = catalog.list(LayerInfo.class, layersAssociated)) {
+            while (it.hasNext()) {
+                LayerInfo layer = it.next();
+                removeStyleInLayer(layer, style);
+            }
+        }
         // groups can also refer to style, reset each reference to the
         // associated layer default style
-        List<LayerGroupInfo> groups = catalog.getLayerGroups();
-        for (LayerGroupInfo group : groups) {
-            removeStyleInLayerGroup(group, style);
+        Filter groupAssociated = Predicates.or(Predicates.equal("rootLayerStyle", style), anyStyle);
+        try (CloseableIterator<LayerGroupInfo> it = catalog.list(LayerGroupInfo.class,
+                groupAssociated)) {
+            while (it.hasNext()) {
+                LayerGroupInfo group = it.next();
+                removeStyleInLayerGroup(group, style);
+            }
         }
         
         // finally remove the style
@@ -239,14 +257,18 @@ public class CascadeDeleteVisitor implements CatalogVisitor {
 
     public void visit(LayerGroupInfo layerGroupToRemove) {
         // remove layerGroupToRemove references from other groups
-        List<LayerGroupInfo> groups = catalog.getLayerGroups();
-        for (LayerGroupInfo group : groups) {
-            if (group.getLayers().remove(layerGroupToRemove)) {
-                if (group.getLayers().size() == 0) {
-                    // if group is empty, delete it
-                    visit(group);
-                } else {
-                    catalog.save(group);
+        Filter associatedTo = Predicates.equal("layers", layerGroupToRemove, MatchAction.ANY);
+        try (CloseableIterator<LayerGroupInfo> it = catalog
+                .list(LayerGroupInfo.class, associatedTo)) {
+            while (it.hasNext()) {
+                LayerGroupInfo group = it.next();
+                if (group.getLayers().remove(layerGroupToRemove)) {
+                    if (group.getLayers().size() == 0) {
+                        // if group is empty, delete it
+                        visit(group);
+                    } else {
+                        catalog.save(group);
+                    }
                 }
             }
         }

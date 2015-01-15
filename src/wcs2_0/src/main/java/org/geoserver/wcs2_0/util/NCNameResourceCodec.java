@@ -9,10 +9,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
+
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.PublishedType;
 import org.geoserver.wcs2_0.exception.WCS20Exception;
 import org.geotools.util.MapEntry;
 import org.geotools.util.logging.Logging;
@@ -57,7 +59,7 @@ public class NCNameResourceCodec {
         LayerInfo ret = null;
 
         for (LayerInfo layer : layers) {
-            if (layer != null && layer.getType() == LayerInfo.Type.RASTER) {
+            if (layer != null && layer.getType() == PublishedType.RASTER) {
                 if(ret == null) {
                     ret = layer;
                 } else {

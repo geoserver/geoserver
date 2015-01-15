@@ -70,7 +70,7 @@ public class GeoServerExtensionsHelper {
      * @param name Singleton name
      * @param bean Singleton
      */
-    public static void singleton( String name, Object bean ){
+    public static void singleton(String name, Object bean, Class... declaredClasses) {
         if( GeoServerExtensions.context != null ){
             if( GeoServerExtensions.context.containsBean(name) ){
                 Object conflict = GeoServerExtensions.context.getBean(name);
@@ -86,8 +86,14 @@ public class GeoServerExtensionsHelper {
             return;
         }
         GeoServerExtensions.singletonBeanCache.put( name,  bean );
-        Class<?> type = bean.getClass();
-        GeoServerExtensions.extensionsCache.put( type, new String[]{ name } );
+        if (declaredClasses != null && declaredClasses.length > 0) {
+            for (Class clazz : declaredClasses) {
+                GeoServerExtensions.extensionsCache.put(clazz, new String[] { name });
+            }
+        } else {
+            Class<?> type = bean.getClass();
+            GeoServerExtensions.extensionsCache.put(type, new String[] { name });
+        }
     }
     
     /**

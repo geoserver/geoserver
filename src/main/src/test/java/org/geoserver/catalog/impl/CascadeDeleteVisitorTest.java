@@ -5,90 +5,64 @@
  */
 package org.geoserver.catalog.impl;
 
-import static org.easymock.EasyMock.*;
-import static org.geoserver.data.test.CiteTestData.CITE_PREFIX;
-import static org.geoserver.data.test.CiteTestData.FORESTS;
-import static org.geoserver.data.test.CiteTestData.LAKES;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 
+import static org.easymock.EasyMock.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 
+import static org.geoserver.data.test.CiteTestData.*;
+import static org.junit.Assert.*;
+
+import java.io.IOException;
+
+
 import org.geoserver.catalog.CascadeDeleteVisitor;
 import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.CatalogVisitor;
 import org.geoserver.catalog.DataStoreInfo;
-import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
-import org.geoserver.test.GeoServerMockTestSupport;
-import org.geoserver.test.TestSetup;
-import org.geoserver.test.TestSetupFrequency;
+import org.junit.After;
 import org.junit.Test;
+import org.opengis.filter.Filter;
 
-@TestSetup(run=TestSetupFrequency.REPEAT)
-public class CascadeDeleteVisitorTest extends GeoServerMockTestSupport {
-    static final String LAKES_GROUP = "lakesGroup";
-    
-    LayerGroupInfo setUpMockLayerGroup(final Catalog catalog) {
-        LayerGroupInfo lg = createMock(LayerGroupInfo.class);
-        expect(lg.getName()).andReturn(LAKES_GROUP).anyTimes();
-        
-        LayerInfo lakes = createNiceMock(LayerInfo.class);
-        expect(lakes.getResource()).andReturn(createNiceMock(ResourceInfo.class)).anyTimes();
-        expect(catalog.getLayerByName(toString(LAKES))).andReturn(lakes).anyTimes();
-        
-        LayerInfo forests = createNiceMock(LayerInfo.class);
-        expect(forests.getResource()).andReturn(createNiceMock(ResourceInfo.class)).anyTimes();
-        expect(catalog.getLayerByName(toString(FORESTS))).andReturn(forests).anyTimes();
-        
-        LayerInfo bridges = createNiceMock(LayerInfo.class);
-        expect(bridges.getResource()).andReturn(createNiceMock(ResourceInfo.class)).anyTimes();
-        expect(catalog.getLayerByName(toString(FORESTS))).andReturn(bridges).anyTimes();
-        
-        expect(lg.getLayers()).andReturn(new ArrayList(Arrays.asList(lakes, forests, bridges))).anyTimes();
-        expect(lg.getStyles()).andReturn(new ArrayList(Arrays.asList(null, null, null))).anyTimes();
-        
-        expect(catalog.getLayerGroupByName(LAKES_GROUP)).andReturn(lg).anyTimes();
-        lg.accept((CatalogVisitor) anyObject());
-        expectLastCall().anyTimes();
-        replay(lakes, forests, bridges, lg);
+public class CascadeDeleteVisitorTest extends CascadeVisitorAbstractTest {
 
-        expect(catalog.getLayerGroups()).andReturn(Arrays.asList(lg)).anyTimes();
-        
-        return lg;
+    @After
+    public void resetChanges() throws IOException {
+        // add layers
+        revertLayer(LAKES);
+        revertLayer(BRIDGES);
+        revertLayer(FORESTS);
+        revertLayer(BUILDINGS);
+
+        Catalog catalog = getCatalog();
+        StyleInfo style = catalog.getStyleByName(WS_STYLE);
+        if (style != null) {
+            catalog.remove(style);
+        }
+        LayerGroupInfo group = catalog.getLayerGroupByName(LAKES_GROUP);
+        if (group != null) {
+            catalog.remove(group);
+        }
+
+        setupExtras(getTestData(), catalog);
     }
+
 
     @Test
     public void testCascadeLayer() {
-        Catalog catalog = createMock(Catalog.class);
-        LayerGroupInfo lg = setUpMockLayerGroup(catalog);
-        catalog.save(lg);
-        expectLastCall();
-
-        catalog.remove((LayerInfo) lg.getLayers().get(0));
-        expectLastCall();
-
-        catalog.remove(((LayerInfo) lg.getLayers().get(0)).getResource());
-        expectLastCall();
-
-        replay(catalog);
-
+        Catalog catalog = getCatalog();
         String name = toString(LAKES);
         LayerInfo layer = catalog.getLayerByName(name);
         assertNotNull(layer);
 
         CascadeDeleteVisitor visitor = new CascadeDeleteVisitor(catalog);
         visitor.visit(layer);
-        verify(catalog);
 
         LayerGroupInfo group = catalog.getLayerGroupByName(LAKES_GROUP);
         assertEquals(2, group.getLayers().size());
@@ -97,128 +71,47 @@ public class CascadeDeleteVisitorTest extends GeoServerMockTestSupport {
 
     @Test
     public void testCascadeStore() {
-        Catalog catalog = createMock(Catalog.class);
+        Catalog catalog = getCatalog();
+        DataStoreInfo store = (DataStoreInfo) catalog.getLayerByName(getLayerId(LAKES))
+                .getResource().getStore();
+        new CascadeDeleteVisitor(catalog).visit(store);
 
-        DataStoreInfo ds = createMock(DataStoreInfo.class);
-
-        ResourceInfo r1 = createMock(ResourceInfo.class);
-        LayerInfo l1 = createMock(LayerInfo.class);
-        l1.accept((CatalogVisitor)anyObject());
-        expectLastCall();
-
-        expect(catalog.getResourcesByStore(ds, ResourceInfo.class)).andReturn(Arrays.asList(r1));
-        expect(catalog.getLayers(r1)).andReturn(Arrays.asList(l1));
-        expect(catalog.getLayer(null)).andReturn(l1);
-        
-        catalog.remove(ds);
-        expectLastCall();
-
-        replay(ds, r1, l1, catalog);
-
-        new CascadeDeleteVisitor(catalog).visit(ds);
-
-        LayerInfo l = catalog.getLayer(null);
-        verify(catalog, l);
+        // that store actually holds all layers, so check we got empty
+        assertEquals(0, catalog.count(LayerInfo.class, Filter.INCLUDE));
+        assertEquals(0, catalog.count(ResourceInfo.class, Filter.INCLUDE));
+        assertEquals(0, catalog.count(StoreInfo.class, Filter.INCLUDE));
+        assertEquals(0, catalog.count(LayerGroupInfo.class, Filter.INCLUDE));
     }
 
     @Test
     public void testCascadeWorkspace() {
-        Catalog catalog = createMock(Catalog.class);
-
-        WorkspaceInfo ws = createMock(WorkspaceInfo.class);
-        expect(ws.getName()).andReturn(CITE_PREFIX).anyTimes();
-        expect(catalog.getWorkspaceByName(CITE_PREFIX)).andReturn(ws).anyTimes();
-
-        NamespaceInfo ns = createMock(NamespaceInfo.class);
-        expect(catalog.getNamespaceByPrefix(CITE_PREFIX)).andReturn(ns).anyTimes();
-        
-        StoreInfo s1 = createMock(StoreInfo.class);
-        StoreInfo s2 = createMock(StoreInfo.class);
-        expect(catalog.getStoresByWorkspace(ws, StoreInfo.class)).andReturn(Arrays.asList(s1, s2)).anyTimes();
-
-        StyleInfo style = createMockStyle(catalog, "ws-specific-style");
-        expect(catalog.getStylesByWorkspace(ws)).andReturn(Arrays.asList(style));
-        style.accept((CatalogVisitor) anyObject());
-        expectLastCall();
-
-        LayerGroupInfo group = setUpMockLayerGroup(catalog);
-        group.accept((CatalogVisitor) anyObject());
-        expectLastCall();
-        expect(catalog.getLayerGroupsByWorkspace(ws)).andReturn(Arrays.asList(group)).anyTimes();
-
-        ns.accept((CatalogVisitor)anyObject());
-        expectLastCall();
-
-        s1.accept((CatalogVisitor)anyObject());
-        expectLastCall();
-
-        s2.accept((CatalogVisitor)anyObject());
-        expectLastCall();
-
-        catalog.remove(ws);
-        expectLastCall();
-
-        replay(ws, ns, s1, s2, catalog, style);
-
+        Catalog catalog = getCatalog();
+        WorkspaceInfo ws = catalog.getWorkspaceByName(CITE_PREFIX);
         new CascadeDeleteVisitor(catalog).visit(ws);
 
-        verify(catalog.getNamespaceByPrefix(CITE_PREFIX));
-        for (StoreInfo s : catalog.getStoresByWorkspace(ws, StoreInfo.class)) {
-            verify(s);
-        }
+        // check the namespace is also gone
+        assertNull(catalog.getNamespaceByPrefix(CITE_PREFIX));
 
-        verify(catalog);
+        // that workspace actually holds all layers, so check we got empty
+        assertEquals(0, catalog.count(LayerInfo.class, Filter.INCLUDE));
+        assertEquals(0, catalog.count(ResourceInfo.class, Filter.INCLUDE));
+        assertEquals(0, catalog.count(StoreInfo.class, Filter.INCLUDE));
+        assertEquals(0, catalog.count(LayerGroupInfo.class, Filter.INCLUDE));
+
+        // the workspace specific style is also gone
+        assertEquals(0, catalog.getStylesByWorkspace(CITE_PREFIX).size());
+        assertNull(catalog.getStyleByName(WS_STYLE));
     }
 
-    private StyleInfo createMockStyle(Catalog catalog, String styleName) {
-        StyleInfo style = createMock(StyleInfo.class);
-        expect(style.getName()).andReturn(styleName).anyTimes();
-        expect(catalog.getStyleByName(styleName)).andReturn(style).anyTimes();
-        return style;
-    }
-    
     @Test
     public void testCascadeStyle() {
-        Catalog catalog = createMock(Catalog.class);
+        Catalog catalog = getCatalog();
+        StyleInfo style = catalog.getStyleByName(LAKES.getLocalPart());
+        assertNotNull(style);
 
-        createMockStyle(catalog, StyleInfo.DEFAULT_POINT);
-        StyleInfo style = createMockStyle(catalog, LAKES.getLocalPart());
-        
-        LayerInfo lakes = createMock(LayerInfo.class);
-        expect(lakes.getDefaultStyle()).andReturn(style).anyTimes();
-        expect(lakes.getStyles()).andReturn(new HashSet()).anyTimes();
-
-        FeatureTypeInfo lakesFt = createNiceMock(FeatureTypeInfo.class);
-        expect(lakes.getResource()).andReturn(lakesFt).anyTimes();
-        
-        lakes.setDefaultStyle((StyleInfo)anyObject());
-        expectLastCall();
-
-        catalog.save(lakes);
-        expectLastCall();
-
-        LayerInfo buildings = createMock(LayerInfo.class);
-        expect(buildings.getDefaultStyle()).andReturn(null).anyTimes();
-        expect(buildings.getStyles()).andReturn(new HashSet<StyleInfo>(Arrays.asList(style))).anyTimes();
-
-        catalog.save(buildings);
-        expectLastCall();
-
-        expect(catalog.getLayers()).andReturn(Arrays.asList(lakes, buildings)).anyTimes();
-        expect(catalog.getLayerGroups()).andReturn(new ArrayList());
-
-        catalog.remove(style);
-        expectLastCall();
-
-        replay(style, lakesFt, lakes, buildings, catalog);
-        
         new CascadeDeleteVisitor(catalog).visit(style);
-
-        for (LayerInfo l : catalog.getLayers()) {
-            verify(l);
-        }
-        verify(catalog);
+        assertNull(catalog.getStyleByName(LAKES.getLocalPart()));
+        LayerInfo layer = catalog.getLayerByName(getLayerId(LAKES));
+        assertEquals("polygon", layer.getDefaultStyle().getName());
     }
 }
-
-

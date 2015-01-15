@@ -18,6 +18,7 @@ import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.CoverageView.CompositionType;
 import org.geoserver.catalog.CoverageView.CoverageBand;
 import org.geoserver.catalog.CoverageView.InputCoverageBand;
+import org.geoserver.catalog.PublishedType;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.TestData;
 import org.geoserver.data.test.SystemTestData.LayerProperty;
@@ -371,7 +372,7 @@ public class DescribeOECoverageSetTest extends WCSEOTestSupport {
         setupRasterDimension(layerName, ResourceInfo.TIME, DimensionPresentation.LIST, null);
         enableEODataset(layerName);
 
-        layer.setType(LayerInfo.Type.RASTER);
+        layer.setType(PublishedType.RASTER);
         layer.setEnabled(true);
 
         if (layer.getId() == null) {

@@ -55,7 +55,7 @@ class CancellingFeatureCollectionBuilder {
         @Override
         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
             if (listener.isCanceled()) {
-                throw new ProcessDismissedException();
+                throw new ProcessDismissedException(listener);
             }
 
             Object result = method.invoke(delegate, args);

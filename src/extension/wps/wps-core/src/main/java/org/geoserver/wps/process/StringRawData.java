@@ -10,6 +10,12 @@ import java.io.InputStream;
 
 import org.apache.commons.io.IOUtils;
 
+/**
+ * Raw data backed by a simple java {@link String}
+ * 
+ * @author Andrea Aime - GeoSolutions
+ *
+ */
 public class StringRawData extends AbstractRawData {
 
     private String data;
@@ -28,6 +34,10 @@ public class StringRawData extends AbstractRawData {
     public String toString() {
         return "StringRawData [data=" + data + ", mimeType=" + mimeType + ", extension="
                 + extension + "]";
+    }
+
+    public String getData() {
+        return data;
     }
 
 }

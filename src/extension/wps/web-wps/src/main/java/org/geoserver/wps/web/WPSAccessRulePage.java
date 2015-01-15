@@ -25,12 +25,14 @@ import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.apache.wicket.markup.html.form.RadioChoice;
 import org.apache.wicket.markup.html.form.SubmitLink;
 import org.apache.wicket.markup.html.form.TextArea;
+import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.StringResourceModel;
+import org.apache.wicket.validation.validator.MinimumValidator;
 import org.geoserver.security.CatalogMode;
 import org.geoserver.security.GeoServerRoleService;
 import org.geoserver.security.impl.GeoServerRole;
@@ -74,6 +76,11 @@ public class WPSAccessRulePage extends AbstractSecurityPage {
         } catch (IOException e1) {
             LOGGER.log(Level.FINER, e1.getMessage(), e1);
         }
+
+        TextField<Integer> maxComplexInputSize = new TextField<Integer>("maxComplexInputSize",
+                Integer.class);
+        maxComplexInputSize.add(new MinimumValidator<Integer>(0));
+        form.add(maxComplexInputSize);
 
         final AutoCompleteSettings settings = new AutoCompleteSettings();
         settings.setShowCompleteListOnFocusGain(false);

@@ -23,8 +23,10 @@ Execution and resource management options
 Execution settings:
 
   * *Connection timeout*: the number of seconds the WPS will wait before giving up on a remote HTTP connection used to retrieve complex inputs
-  * *Maximum asynchronous executions run parallel*: the maximum number of asynchronous processes that will run in parallel at a given time. The others will be queued
   * *Maximum synchronous executions run parallel*: the maximum number of synchronous processes that will run in parallel at a given time. The others will be queued. 
+  * *Maximum execution time for synchronous requests*: processes running in synchronous mode will have to complete within the set time limit, or they will be dismissed automatically. These requests have the client waiting for a response on a HTTP connection, so choose a relatively short time (e.g., 60 seconds) 
+  * *Maximum asynchronous executions run parallel*: the maximum number of asynchronous processes that will run in parallel at a given time. The others will be queued
+  * *Maximum execution time for asynchronous requests*: processes running in asynchronous mode will have to complete within the set time limit, or they will be dismissed automatically  
 
 Resource settings:
 

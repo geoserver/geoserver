@@ -1,7 +1,7 @@
 .. _security_wps:
 
-WPS Security
-============
+WPS Security and input limits
+=============================
 
 Geoserver service security is normally based on the generic <OGC security configuration `_sec_service`>_, however, when it
 comes to WPS there is also a need to restrict single process availability. 
@@ -42,3 +42,37 @@ The roles string must be a simple semicolon separated list:
    :align: center
 
    *The role editor inside the process list page*
+   
+Input limits
+------------
+
+The amount of resources used by a process is normally directly related to the inputs of the process itself.
+The WPS specification is conscious of that, and allows to declare three different type of limits on each process inputs:
+
+* The maximum size of complex inputs, in megabytes
+* The range of acceptable values for numeric values
+* The max multiplicity of repeatable inputs (think of contour extraction, where the number of levels affects the execution time)
+
+Starting with GeoServer 2.7.0, GeoServer allows the administrator to configure said limits, and fail requests that 
+are not respecting them.
+
+The maximum size can be given a global default in the "WPS security" page (see screenshot above).
+It is otherwise possible to define limits on a process by process basis getting in the process list
+and getting in the process limits editor (processes having a "*" besides the link have a defined
+set of limits):
+
+.. figure:: images/process_selector.png
+   :align: center
+
+   *The process selector, with access constraints and links to the limits configuration*
+   
+The process limits configurator shows all inputs for which a limit can be provided, and
+sets a "emtpy" set of limits for it: if empty or unmodified, the limits won't be applied to 
+the input (e..g, a max input with a 0 value means no limit, and so on).
+
+.. figure:: images/process_limits.png
+   :align: center
+
+   *The process limit page, with a variety of input limits configured in it*
+
+.. warning:: In order for the limits to be actually saved, the process list page needs to be "applied", and then the main WPS security page needs to be saved

@@ -24,9 +24,6 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.measure.quantity.Quantity;
-import javax.measure.unit.Unit;
-
 import org.apache.commons.collections.MultiHashMap;
 import org.geoserver.catalog.AttributeTypeInfo;
 import org.geoserver.catalog.AttributionInfo;
@@ -35,6 +32,9 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageDimensionInfo;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
+import org.geoserver.catalog.CoverageView;
+import org.geoserver.catalog.CoverageView.CoverageBand;
+import org.geoserver.catalog.CoverageView.InputCoverageBand;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.Keyword;
@@ -50,9 +50,6 @@ import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.StyleInfo;
-import org.geoserver.catalog.CoverageView;
-import org.geoserver.catalog.CoverageView.InputCoverageBand;
-import org.geoserver.catalog.CoverageView.CoverageBand;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
@@ -123,6 +120,8 @@ import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
 
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.converters.ConversionException;
 import com.thoughtworks.xstream.converters.Converter;
@@ -130,6 +129,7 @@ import com.thoughtworks.xstream.converters.MarshallingContext;
 import com.thoughtworks.xstream.converters.SingleValueConverterWrapper;
 import com.thoughtworks.xstream.converters.UnmarshallingContext;
 import com.thoughtworks.xstream.converters.basic.AbstractSingleValueConverter;
+import com.thoughtworks.xstream.converters.collections.AbstractCollectionConverter;
 import com.thoughtworks.xstream.converters.collections.CollectionConverter;
 import com.thoughtworks.xstream.converters.collections.MapConverter;
 import com.thoughtworks.xstream.converters.reflection.FieldDictionary;
@@ -446,6 +446,7 @@ public class XStreamPersister {
         xs.registerConverter(new KeywordInfoConverter());
         xs.registerConverter(new SettingsInfoConverter());
         xs.registerConverter(new MeasureConverter());
+        xs.registerConverter(new MultimapConverter(xs.getMapper()));
         
         // register Virtual structure handling
         registerBreifMapComplexType("virtualTable", VirtualTable.class);
@@ -645,6 +646,7 @@ public class XStreamPersister {
         
         //collections
         xs.addDefaultImplementation(ArrayList.class, List.class);
+        xs.addDefaultImplementation(ArrayListMultimap.class, Multimap.class);
     }
     
     protected Class impl(Class interfce) {
@@ -930,6 +932,60 @@ public class XStreamPersister {
         }
     }
     
+    /**
+     * Converter for Google {@link Multimap} objects
+     */
+    public static class MultimapConverter extends AbstractCollectionConverter {
+
+        public MultimapConverter(Mapper mapper) {
+            super(mapper);
+
+        }
+
+        public boolean canConvert(Class clazz) {
+            return Multimap.class.isAssignableFrom(clazz);
+        }
+
+        public void marshal(Object value, HierarchicalStreamWriter writer,
+                MarshallingContext context) {
+            Multimap map = (Multimap) value;
+            // similar to BreifMapConverter, but handling the multimap nature of this thing
+            for (Object key : map.keySet()) {
+                for (Object v : map.get(key)) {
+                    if (v != null) {
+                        writer.startNode("entry");
+                        writer.addAttribute("key", key.toString());
+                        writeItem(v, context, writer);
+                        writer.endNode();
+                    }
+                }
+            }
+        }
+
+        public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {
+            ArrayListMultimap<Object, Object> map = ArrayListMultimap.create();
+            while (reader.hasMoreChildren()) {
+                reader.moveDown();
+                String key = reader.getAttribute("key");
+                Object value = null;
+                // in this case we also support complex objects
+                while (reader.hasMoreChildren()) {
+                    reader.moveDown();
+                    value = readItem(reader, context, map);
+                    reader.moveUp();
+                }
+                reader.moveUp();
+
+                if (value != null) {
+                    map.put(key, value);
+                }
+            }
+
+            return map;
+        }
+
+    }
+
     /**
      * Converters which encodes an object by a reference, or its id.
      */

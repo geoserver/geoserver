@@ -4,6 +4,7 @@
  */
 package org.geoserver.wps.executor;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,8 +21,11 @@ import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.wps.WPSException;
 import org.geoserver.wps.ppio.ComplexPPIO;
 import org.geoserver.wps.ppio.ProcessParameterIO;
+import org.geoserver.wps.validator.MaxSizeValidator;
+import org.geoserver.wps.validator.Validators;
 import org.opengis.util.ProgressListener;
 import org.springframework.context.ApplicationContext;
+import org.springframework.validation.Validator;
 
 /**
  * Base class for single value input providers
@@ -30,8 +34,13 @@ import org.springframework.context.ApplicationContext;
  */
 public abstract class AbstractInputProvider implements InputProvider {
 
+    /**
+     * Creates an input provider
+     */
     public static InputProvider getInputProvider(InputType input, ProcessParameterIO ppio,
-            WPSExecutionManager executor, ApplicationContext context) throws Exception {
+            WPSExecutionManager executor, ApplicationContext context,
+            Collection<Validator> validators) throws Exception {
+        InputProvider provider;
         if (input.getReference() != null) {
             // this is a reference
             InputReferenceType ref = input.getReference();
@@ -40,18 +49,23 @@ public abstract class AbstractInputProvider implements InputProvider {
             String href = ref.getHref();
 
             if (href.startsWith("http://geoserver/wfs")) {
-                return new InternalWFSInputProvider(input, ppio, context);
+                provider = new InternalWFSInputProvider(input, ppio, context);
             } else if (href.startsWith("http://geoserver/wcs")) {
-                return new InternalWCSInputProvider(input, ppio, context);
+                provider = new InternalWCSInputProvider(input, ppio, context);
             } else if (href.startsWith("http://geoserver/wps")) {
-                return new InternalWPSInputProvider(input, ppio, executor, context);
+                provider = new InternalWPSInputProvider(input, ppio, executor, context);
             } else {
-                return new RemoteRequestInputProvider(input, (ComplexPPIO) ppio,
-                        executor.getConnectionTimeout());
+                int maxSizeMB = Validators.getMaxSizeMB(validators);
+                validators = Validators.filterOutClasses(validators, MaxSizeValidator.class);
+                provider = new RemoteRequestInputProvider(input, (ComplexPPIO) ppio,
+                        executor.getConnectionTimeout(), maxSizeMB * 1024 * 1024);
             }
         } else {
-            return new SimpleInputProvider(input, ppio);
+            provider = new SimpleInputProvider(input, ppio);
         }
+
+        // add validation if necessary
+        return ValidatingInputProvider.wrap(provider, validators);
     }
 
     InputType input;

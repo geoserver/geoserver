@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -17,10 +17,15 @@ import org.apache.wicket.model.PropertyModel;
 import org.geoserver.web.wicket.GeoServerDataProvider;
 import org.geoserver.wps.ProcessGroupInfo;
 import org.geoserver.wps.ProcessInfo;
+import org.geoserver.wps.ProcessInfoImpl;
 import org.geoserver.wps.process.GeoServerProcessors;
+import org.geoserver.wps.validator.WPSInputValidator;
 import org.geotools.process.ProcessFactory;
 import org.opengis.feature.type.Name;
 import org.opengis.util.InternationalString;
+
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
 
 /**
  * Provides entries for the process filtering table in the {@link ProcessSelectionPage}
@@ -45,6 +50,8 @@ public class FilteredProcessesProvider extends
         private String description;
         
         private List<String> roles;
+
+        private Multimap<String, WPSInputValidator> validators = ArrayListMultimap.create();
 
         public FilteredProcess(Name name, String description) {
             this.name = name;
@@ -84,7 +91,31 @@ public class FilteredProcessesProvider extends
             } else {
                 return name.getURI().compareTo(other.getName().getURI());
             }
+        }
+
+        public ProcessInfo toProcessInfo() {
+            ProcessInfo pai = new ProcessInfoImpl();
+            pai.setName(getName());
+            pai.setEnabled(getEnabled());
+            pai.getRoles().addAll(getRoles());
+            if (validators != null && validators.size() > 0) {
+                pai.getValidators().putAll(validators);
+            }
+
+            return pai;
+        }
+
+        public Multimap<String, WPSInputValidator> getValidators() {
+            return validators;
+        }
+
+        public void setValidators(Multimap<String, WPSInputValidator> validators) {
+            this.validators = validators;
         }        
+
+        public boolean isValidated() {
+            return validators != null && validators.size() > 0;
+        }
     }
 
     private ProcessGroupInfo pfi;
@@ -113,6 +144,7 @@ public class FilteredProcessesProvider extends
                 if(sp.getName().equals(fp.getName())){
                     sp.setEnabled(fp.isEnabled());
                     sp.setRoles(fp.getRoles());
+                    sp.setValidators(fp.getValidators());
                 }
             }
             
@@ -138,6 +170,8 @@ public class FilteredProcessesProvider extends
                 return new PropertyModel(itemModel, "roles");
             }
         });
+        props.add(new PropertyPlaceholder("edit"));
+        props.add(new BeanProperty("validated", "validated"));
         return props;
     }
 

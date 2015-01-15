@@ -8,6 +8,7 @@ package org.geoserver.wps.executor;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.geoserver.wps.WPSException;
 import org.geotools.util.NullProgressListener;
 import org.geotools.util.SubProgressListener;
 import org.opengis.util.ProgressListener;
@@ -26,10 +27,13 @@ class ListInputProvider implements InputProvider {
 
     List<Object> value;
 
-    public ListInputProvider(InputProvider provider) {
+    int maxItems;
+
+    public ListInputProvider(InputProvider provider, int maxItems) {
         this.providers = new ArrayList<InputProvider>();
         this.providers.add(provider);
         this.inputId = provider.getInputId();
+        this.maxItems = maxItems;
     }
 
     @Override
@@ -37,6 +41,12 @@ class ListInputProvider implements InputProvider {
         float totalSteps = longStepCount();
         float stepsSoFar = 0;
         if (value == null) {
+            // check we are not going above the limit
+            if (maxItems > 0 && providers.size() > maxItems) {
+                throw new WPSException("Too many values for input " + getInputId()
+                        + ", the max is " + maxItems, "NoApplicableCode", getInputId());
+            }
+
             value = new ArrayList<Object>();
             for (InputProvider provider : providers) {
                 float providerLongSteps = provider.longStepCount();

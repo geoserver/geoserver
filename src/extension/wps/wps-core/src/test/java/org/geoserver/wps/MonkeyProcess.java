@@ -24,7 +24,7 @@ import org.opengis.util.ProgressListener;
 public class MonkeyProcess {
 
     enum CommandType {
-        Exit, SetProgress, Exception
+        Exit, SetProgress, Exception, Wait
     }
 
     static Map<String, BlockingQueue<Command>> commands = new ConcurrentHashMap<String, BlockingQueue<MonkeyProcess.Command>>();
@@ -72,6 +72,10 @@ public class MonkeyProcess {
 
     }
 
+    public static void wait(String id, long wait) throws InterruptedException {
+        getCommandQueue(id).put(new Command(CommandType.Wait, wait));
+    }
+
     public static void exception(String id, ProcessException exception, boolean wait)
             throws InterruptedException {
         getCommandQueue(id).put(new Command(CommandType.Exception, exception));
@@ -97,6 +101,9 @@ public class MonkeyProcess {
                 float progress = ((Number) command.value).floatValue();
                 listener.progress(progress);
                 listener.setTask(new SimpleInternationalString("Currently at " + progress));
+            } else if (command.type == CommandType.Wait) {
+                long wait = ((Number) command.value).longValue();
+                Thread.sleep(wait);
             } else {
                 ProcessException exception = (ProcessException) command.value;
                 listener.exceptionOccurred(exception);
@@ -120,4 +127,5 @@ public class MonkeyProcess {
 
         commands.clear();
     }
+
 }

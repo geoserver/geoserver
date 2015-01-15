@@ -35,6 +35,16 @@
             <li style="padding-top: 20px;">
             <fieldset>
               <legend>
+                <span><wicket:message key="globalLimits">globalLimits</wicket:message></span>
+              </legend>
+                <ul>
+                    <li><label><wicket:message key="maxInputSizeMB">"maxInputSizeMB"</wicket:message></label>
+                        <input type="text" wicket:id="maxComplexInputSize" class="field text" />
+                    </li>
+                </ul>
+            </fieldset>
+            <fieldset>
+              <legend>
                 <span><wicket:message key="processAccessMode">Process access mode</wicket:message></span>
                 <a href="#" wicket:id="processAccessModeHelp" class="help-link"></a>
               </legend>

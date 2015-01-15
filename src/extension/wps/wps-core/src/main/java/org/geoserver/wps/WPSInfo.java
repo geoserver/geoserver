@@ -75,7 +75,7 @@ public interface WPSInfo extends ServiceInfo {
      * @param maxAsynchronousProcesses
      */
     public void setMaxAsynchronousProcesses(int maxAsynchronousProcesses);
-    
+
     /**
      * Retrieves the process groups configurations
      * 
@@ -98,7 +98,7 @@ public interface WPSInfo extends ServiceInfo {
      * @param storageDirectory
      */
     public void setStorageDirectory(String storageDirectory);
-    
+
     /**
      * Controls how the server allows access to secured processes, in a similar way to how the
      * catalog controls access to secured layers
@@ -109,5 +109,42 @@ public interface WPSInfo extends ServiceInfo {
      * Sets the policy to control access to secured processes
      */
     public void setCatalogMode(CatalogMode catalogMode);
+
+    /**
+     * Returns the global maximum size of a complex input, in MB. Per process configuration can
+     * override it. Zero or a negative number means no limit.
+     */
+    public int getMaxComplexInputSize();
+
+    /**
+     * Sets the global maximum size of a complex input, in MB. Per process configuration can
+     * override it. Zero or a negative number means no limit.
+     */
+    public void setMaxComplexInputSize(int maxInputSizeMB);
+
+    /**
+     * How many seconds a process can run in asynchronous mode (with the user polling for its
+     * status) before it gets killed by the WPS container (0 or a negative value means no limit)
+     */
+    public abstract int getMaxAsynchronousExecutionTime();
+
+    /**
+     * Sets how many seconds a process can run in asynchronous mode (with the user polling for its
+     * status) before it gets killed by the WPS container (0 or a negative value means no limit)
+     */
+    public abstract void setMaxAsynchronousExecutionTime(int maxAsynchrornousExecutionTime);
+
+    /**
+     * How many seconds a process can run in asynchronous mode (with the user waiting on the HTTP
+     * connection) before it gets killed by the WPS container (0 or a negative value means no limit)
+     */
+    public abstract int getMaxSynchronousExecutionTime();
+
+    /**
+     * Sets how many seconds a process can run in asynchronous mode (with the user waiting on the
+     * HTTP connection) before it gets killed by the WPS container (0 or a negative value means no
+     * limit)
+     */
+    public abstract void setMaxSynchronousExecutionTime(int maxSynchronousExecutionTime);
 
 }

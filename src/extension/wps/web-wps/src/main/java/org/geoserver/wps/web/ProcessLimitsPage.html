@@ -1,0 +1,26 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<head>
+<title><wicket:message key="layerList">Layer list</wicket:message></title>
+</head>
+<body>
+<wicket:extend>
+    <form wicket:id="form">
+    	<div wicket:id="table"></div>
+        
+        <div class="button-group selfclear">
+              <button wicket:id="apply" type="submit"><wicket:message key="apply"/></button>
+              <button wicket:id="cancel" type="submit"><wicket:message key="cancel"/></button> 
+         </div>
+    </form>
+	
+	<wicket:fragment wicket:id="textEditor">
+		<label for="text" class="leftwise" style="width: 3em; font-weight: normal"><wicket:message key="max">max</wicket:message></label><input type="text" style="width:10em" wicket:id="text" />
+	</wicket:fragment>
+    
+    <wicket:fragment wicket:id="rangeEditor">
+        <div wicket:id="range" />
+    </wicket:fragment>
+
+</wicket:extend>
+</body>
+</html>

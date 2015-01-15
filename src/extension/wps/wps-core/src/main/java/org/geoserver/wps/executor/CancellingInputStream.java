@@ -29,25 +29,25 @@ public class CancellingInputStream extends FilterInputStream {
 
     @Override
     public int read() throws IOException {
-        if (listener.isCanceled()) {
-            throw new ProcessDismissedException();
-        }
+        checkCancelled();
         return super.read();
+    }
+
+    private void checkCancelled() {
+        if (listener.isCanceled()) {
+            throw new ProcessDismissedException(listener);
+        }
     }
 
     @Override
     public int read(byte[] b) throws IOException {
-        if (listener.isCanceled()) {
-            throw new ProcessDismissedException();
-        }
+        checkCancelled();
         return super.read(b);
     }
 
     @Override
     public int read(byte[] b, int off, int len) throws IOException {
-        if (listener.isCanceled()) {
-            throw new ProcessDismissedException();
-        }
+        checkCancelled();
         return super.read(b, off, len);
     }
 

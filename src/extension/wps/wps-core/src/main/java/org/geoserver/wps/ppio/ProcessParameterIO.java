@@ -190,6 +190,22 @@ public abstract class ProcessParameterIO {
     }
 
     /**
+     * Returns true if the specified parameter is a complex one
+     * 
+     * @param param
+     * @param applicationContext
+     * @return
+     */
+    public static boolean isComplex(Parameter<?> param, ApplicationContext applicationContext) {
+        List<ProcessParameterIO> ppios = findAll(param, applicationContext);
+        if (ppios.isEmpty()) {
+            return false;
+        } else {
+            return ppios.get(0) instanceof ComplexPPIO;
+        }
+    }
+
+    /**
      * java class of parameter when reading and writing i/o.
      */
     final protected Class externalType;
@@ -240,4 +256,5 @@ public abstract class ProcessParameterIO {
     public final String getIdentifer() {
         return identifer;
     }
+
 }

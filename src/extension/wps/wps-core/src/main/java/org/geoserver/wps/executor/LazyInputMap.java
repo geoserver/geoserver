@@ -43,7 +43,7 @@ class LazyInputMap extends AbstractMap<String, Object> {
     public Object get(Object key) {
         // make sure we just kill the process is a dismiss happened
         if (listener.isCanceled()) {
-            throw new ProcessDismissedException();
+            throw new ProcessDismissedException(listener);
         }
         // lazy parse inputs
         parseInputs();
@@ -86,6 +86,9 @@ class LazyInputMap extends AbstractMap<String, Object> {
                 values.put(provider.getInputId(), value);
             } catch (Exception e) {
                 listener.exceptionOccurred(e);
+                if (e instanceof WPSException) {
+                    throw (WPSException) e;
+                }
                 throw new WPSException("Failed to retrieve value for input "
                         + provider.getInputId(), e);
             }

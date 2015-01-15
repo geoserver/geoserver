@@ -20,6 +20,7 @@ import java.util.logging.Logger;
 
 import net.opengis.wps10.ExecuteResponseType;
 
+import org.geoserver.config.GeoServer;
 import org.geoserver.ows.XmlObjectEncodingResponse;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.resource.Resource;
@@ -29,7 +30,7 @@ import org.geoserver.wps.ProcessEvent;
 import org.geoserver.wps.ProcessListener;
 import org.geoserver.wps.UnknownExecutionIdException;
 import org.geoserver.wps.WPSException;
-import org.geoserver.wps.executor.ProcessListenerNotifier.WPSProgressListener;
+import org.geoserver.wps.WPSInfo;
 import org.geoserver.wps.ppio.ComplexPPIO;
 import org.geoserver.wps.ppio.ProcessParameterIO;
 import org.geoserver.wps.process.GeoServerProcessors;
@@ -113,10 +114,16 @@ public class WPSExecutionManager implements ApplicationContextAware,
      */
     private int heartbeatDelay;
 
-    public WPSExecutionManager(WPSResourceManager resourceManager,
+    /**
+     * Used to retrieve the current WPSInfo
+     */
+    private GeoServer geoServer;
+
+    public WPSExecutionManager(GeoServer geoServer, WPSResourceManager resourceManager,
             ProcessStatusTracker statusTracker) {
         this.resourceManager = resourceManager;
         this.statusTracker = statusTracker;
+        this.geoServer = geoServer;
     }
 
     WPSResourceManager getResourceManager() {
@@ -166,8 +173,9 @@ public class WPSExecutionManager implements ApplicationContextAware,
         ExecutionStatus status = new ExecutionStatus(processName, executionId,
                 request.isAsynchronous());
         status.setRequest(request.getRequest());
+        long maxExecutionTime = getMaxExecutionTime(synchronous);
         Executor executor = new Executor(request, processManager, processName, inputs, synchronous,
-                status, resourceManager);
+                status, resourceManager, maxExecutionTime);
 
         ExecuteResponseType response;
         if (synchronous) {
@@ -191,6 +199,15 @@ public class WPSExecutionManager implements ApplicationContextAware,
         }
 
         return response;
+    }
+
+    private long getMaxExecutionTime(boolean synchronous) {
+        WPSInfo wps = geoServer.getService(WPSInfo.class);
+        if (synchronous) {
+            return wps.getMaxSynchronousExecutionTime() * 1000;
+        } else {
+            return wps.getMaxAsynchronousExecutionTime() * 1000;
+        }
     }
 
     List<ProcessManager> getProcessManagers() {
@@ -288,14 +305,17 @@ public class WPSExecutionManager implements ApplicationContextAware,
 
         private ThreadLocalsTransfer transfer;
 
+        private long maxExecutionTime;
+
         private Executor(ExecuteRequest request, ProcessManager processManager, Name processName,
                 LazyInputMap inputs, boolean synchronous, ExecutionStatus status,
-                WPSResourceManager resources) {
+                WPSResourceManager resources, long maxExecutionTime) {
             this.request = request;
             this.processManager = processManager;
             this.status = status;
             this.inputs = inputs;
             this.synchronous = synchronous;
+            this.maxExecutionTime = maxExecutionTime;
             // if we execute asynchronously we'll need to make sure all thread locals are
             // transferred (in particular, the executionId in WPSResourceManager)
             if (status.isAsynchronous()) {
@@ -307,7 +327,7 @@ public class WPSExecutionManager implements ApplicationContextAware,
         }
 
         boolean hasComplexOutputs() {
-            ProcessFactory pf = GeoServerProcessors.createProcessFactory(request.getProcessName());
+            ProcessFactory pf = GeoServerProcessors.createProcessFactory(request.getProcessName(), false);
             Map<String, Parameter<?>> resultInfo = pf.getResultInfo(request.getProcessName(),
                     inputs);
             for (Parameter<?> param : resultInfo.values()) {
@@ -358,7 +378,11 @@ public class WPSExecutionManager implements ApplicationContextAware,
             float inputPercentage = 1 + inputsLongSteps * longStepPercentage;
             float outputPercentage = (hasComplexOutputs() ? longStepPercentage : 0) + 1;
             float executionPercentage = 100 - inputPercentage - outputPercentage;
-            WPSProgressListener listener = notifier.getProgressListener();
+            ProgressListener listener = notifier.getProgressListener();
+            // do we have a processing time limit?
+            if (maxExecutionTime > 0) {
+                listener = new MaxExecutionTimeListener(listener, maxExecutionTime);
+            }
             try {
                 // have the input map give us progress report
                 inputs.setListener(new SubProgressListener(listener, 0, inputPercentage));

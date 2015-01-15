@@ -1959,10 +1959,10 @@ public class ResourcePool {
             String id = key.substring(0, key.indexOf(PROJECTION_POLICY_SEPARATOR));
         	FeatureTypeInfo info = catalog.getFeatureType(id);
             if(info != null){
-                LOGGER.info( "Disposing feature type '" + info.getName() + "'/" + id);
+                LOGGER.fine( "Disposing feature type '" + info.getName() + "'/" + id);
                 fireDisposed(info, featureType);
                 if (null != featureTypeAttributeCache.remove(id)) {
-                    LOGGER.info("AttributeType cache cleared for feature type '" + info.getName()
+                    LOGGER.fine("AttributeType cache cleared for feature type '" + info.getName()
                             + "'/" + id + " as a side effect of its cache disposal");
                 }
             }
@@ -1992,7 +1992,7 @@ public class ResourcePool {
             final String name;
             if (info != null) {
                 name = info.getName();
-                LOGGER.info("Disposing datastore '" + name + "'");
+                LOGGER.fine("Disposing datastore '" + name + "'");
                 fireDisposed(info, dataAccess);
             }
             else {
@@ -2000,7 +2000,7 @@ public class ResourcePool {
             }
             final String implementation = dataAccess.getClass().getSimpleName();
             try {
-                LOGGER.info("Dispose data access '" + name + "' "+implementation);
+                LOGGER.fine("Dispose data access '" + name + "' "+implementation);
                 dataAccess.dispose();
             } catch( Exception e ) {
                 LOGGER.warning( "Error occured disposing data access '" + name + "' "+implementation );
@@ -2015,7 +2015,7 @@ public class ResourcePool {
         	CoverageStoreInfo info = catalog.getCoverageStore(id);
         	if(info != null) {
                 String name = info.getName();
-                LOGGER.info( "Disposing coverage store '" + name + "'" );
+                LOGGER.fine( "Disposing coverage store '" + name + "'" );
                 
                 fireDisposed(info, reader);
             }
@@ -2035,7 +2035,7 @@ public class ResourcePool {
         	CoverageStoreInfo info = catalog.getCoverageStore(key.id);
         	if(info != null) {
                 String name = info.getName();
-                LOGGER.info( "Disposing coverage store '" + name + "'" );
+                LOGGER.fine( "Disposing coverage store '" + name + "'" );
                 
                 fireDisposed(info, reader);
             }
@@ -2258,21 +2258,19 @@ public class ResourcePool {
             return;
         }
         if (!dataStoreCache.containsKey(ds.getId())) {
-            // don't bother if DataStore not cached
-            return;
+            return; // don't bother if DataStore not cached            
         }
         DataAccess<?, ?> dataStore;
         try {
             dataStore = getDataStore(ds);
         } catch (IOException e) {
-            LOGGER.warning("Unable to obtain data store for '" + ft.getQualifiedNativeName());
-            LOGGER.log(Level.WARNING, "", e);
+            LOGGER.log(Level.WARNING, "Unable to obtain data store '" + ft.getQualifiedNativeName()+"' to flush", e);
             return;
         }
         final int dsFtCount = countFeatureTypesOf(ds);
         if (dsFtCount == 0) {
             // clean up cached DataAccess if no longer in use
-            LOGGER.log(Level.INFO, "Feature Type {0} cleared: Disposing DataStore {1} - {2}",
+            LOGGER.log(Level.FINE, "Feature Type {0} cleared: Disposing DataStore {1} - {2}",
                     new String[] { ft.getName(), ds.getName(), "Last Feature Type Disposed" });
             clear(ds);
         } else {
@@ -2283,19 +2281,18 @@ public class ResourcePool {
                     String nativeName = ft.getNativeName();
                     if (nativeName != null) {
                         flushState(contentDataStore, nativeName);
-                        LOGGER.log(Level.INFO,
+                        LOGGER.log(Level.FINE,
                                 "Feature Type {0} cleared from ContentDataStore {1}", new String[] {
                                         ft.getName(), ds.getName() });
                     }
                 } catch (Exception e) {
-                    LOGGER.warning("Unable to flush '" + ft.getQualifiedNativeName());
-                    LOGGER.log(Level.WARNING, "", e);
+                    LOGGER.log(Level.WARNING, "Unable to flush '" + ft.getQualifiedNativeName(), e);
                 }
             } else {
                 LOGGER.log(
-                        Level.INFO,
-                        "Unable to clean up cached feature type {0} in data store {1}. Not a ContentDataStore",
-                        new String[] { ft.getName(), ds.getName() });
+                    Level.FINE,
+                    "Unable to clean up cached feature type {0} in data store {1} - not a ContentDataStore",
+                    new String[] { ft.getName(), ds.getName() });
             }
         }
     }

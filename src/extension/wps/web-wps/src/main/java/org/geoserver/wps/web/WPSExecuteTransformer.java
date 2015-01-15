@@ -218,10 +218,10 @@ class WPSExecuteTransformer extends TransformerBase {
 
                 ReferencedEnvelope bbox = raster.getSpatialDomain();
                 String srsUri = GML2EncodingUtils.toURI(bbox.getCoordinateReferenceSystem());
-                start("gml:BoundingBox", attributes("crs", srsUri));
+                start("ows:BoundingBox", attributes("crs", srsUri));
                 element("ows:LowerCorner", bbox.getMinX() + " " + bbox.getMinY());
                 element("ows:UpperCorner", bbox.getMaxX() + " " + bbox.getMaxY());
-                end("gml:BoundingBox");
+                end("ows:BoundingBox");
                 end("wcs:DomainSubset");
                 element("wcs:Output", null, attributes("format", "image/tiff"));
                 end("wcs:GetCoverage");

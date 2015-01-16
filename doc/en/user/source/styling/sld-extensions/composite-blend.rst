@@ -4,18 +4,17 @@ Color compositing and color blending
 =====================================
 
 Starting with GeoServer 2.7 it is possible to perform color blending and compositing, either between
-feature type styles, or by associating the blending operations to each symbolizer.
+feature type styles, or by associating blending operations with each symbolizer.
 
 GeoServer implements most of the color compositing and blending modes suggested by the `SVG compositing
 and blending level 1 specification <http://www.w3.org/TR/compositing-1/>`_.
-Either set of operations allows to control how two overlapping layers/symbols are merged togheter
-to form a final map: while normally images are just stacked on top of each other, using compositing
-and blending modes one can control how the two are going to be merged.
+Either set of operations allows one to control how two overlapping layers/symbols are merged 
+together to form a final map (As opposed to the normal behaviour of just stacking images on top of each other).
 
 In this section we are going to use the "source" and "destination" terms:
 
 * *source* is the image currently being painted on top of the map
-* *destination* is the current map contents, the background onto the source image is being painted to
+* *destination* is the current map contents, the background that the source image is being painted onto.
 
 In this documentation two sources and two destination images are going to be used:
 
@@ -47,8 +46,8 @@ Alpha Compositing modes
 
 Alpha compositing controls how two image are merged together by using the alpha levels of the two.
 Basically, if the operation has an alpha level of 1 (the simplest case) each pixel will come from
-either the source or the destination, or none, depending on the alpha value of pixels in the source
-and destination, that is, no color mixing is being performed, but pure geometric selection instead.
+either the source, or the destination, or none, depending on the alpha value of pixels in the source
+and destination. No color mixing is being performed, only pure geometric selection.
 
 Here is a list of supported operations, with an explanation and visual examples. Each of the titles
 values is one key that you can use in the SLD (syntax to be described later on).
@@ -84,7 +83,7 @@ Not much of interest, only the destination will be present in the output
 source-over
 ...........
 
-The normal drawing, the source is painted above the destination, the destination is visible
+Normal drawing, the source is painted above the destination, and the destination is visible
 where the source is transparent.
 
 .. list-table::
@@ -99,7 +98,7 @@ where the source is transparent.
 destination-over
 ................
 
-The opposite of normal drawing, the source is painted below the destination, as such it's visible
+The opposite of normal drawing, the source is painted below the destination, and is visible
 only when the destination is transparent. 
 
 .. list-table::
@@ -114,8 +113,8 @@ only when the destination is transparent.
 source-in
 .........
 
-The source is visible only when overlapping some non transparent pixel of the destination, this
-effectively allows the background map to act as a mask for the layer/feature being painted
+The source is visible only when overlapping some non transparent pixel of the destination. This
+effectively allows the background map to act as a mask for the layer/feature being painted.
 
 .. list-table::
    :widths: 50 50
@@ -129,8 +128,8 @@ effectively allows the background map to act as a mask for the layer/feature bei
 destination-in
 ..............
 
-The destination is retained only when overlapping some non transparent pixel in the source, 
-this effectively allows to cut the background map using the current layer/feature as a mask
+The destination is retained only when overlapping some non transparent pixel in the source. 
+This effectively allows to cut the background map using the current layer/feature as a mask.
 
 .. list-table::
    :widths: 50 50
@@ -145,7 +144,7 @@ source-out
 ...........
 
 The source is retained only in areas where the destination is transparent. This is basically
-a reverse mask, compared to source-in
+a reverse mask, compared to source-in.
 
 .. list-table::
    :widths: 50 50
@@ -160,7 +159,7 @@ destination-out
 ...............
 
 The destination is retained only in areas where the destination is transparent. This is basically
-a reverse mask, compared to destination-in
+a reverse mask, compared to destination-in.
 
 
 .. list-table::
@@ -176,7 +175,7 @@ a reverse mask, compared to destination-in
 source-atop
 ...........
 
-The destination is painted fully, the source only where it intersects the destination 
+The destination is painted fully, the source only where it intersects the destination. 
 
 .. list-table::
    :widths: 50 50
@@ -190,7 +189,7 @@ The destination is painted fully, the source only where it intersects the destin
 destination-atop
 ................
 
-The destination is painted fully, the destination only where it intersects the source 
+The destination is painted fully, the destination only where it intersects the source. 
 
 .. list-table::
    :widths: 50 50
@@ -205,7 +204,7 @@ xor
 ...
 
 "Exclusive or" mode, each pixel is painted only if either the source or the destination is not
-blank, but not when both are not blank 
+blank, but not when both are not blank. 
 
 .. list-table::
    :widths: 50 50
@@ -221,16 +220,16 @@ blank, but not when both are not blank
 Color blending modes
 --------------------
 
-Blending modes mix the colors of source and destination in various ways, each pixel in the result
+Blending modes mix the colors of source and destination in various ways. Each pixel in the result
 will be some sort of combination between the source and destination pixels.
 
-Each of the titles values is one key that you can use in the SLD (syntax to be described later on).
+Each title is a key that you can use in the SLD (syntax to be described later on).
 
 multiply
 ........
 
 The source color is multiplied by the destination color and replaces the destination.
-The resultant color is always at least as dark as either the source or destination color. Multiplying any color with black results in black. Multiplying any color with white preserves the original color.
+The resulting color is always at least as dark as either the source or destination color. Multiplying any color with black results in black. Multiplying any color with white preserves the original color.
 
 .. list-table::
    :widths: 50 50
@@ -244,7 +243,7 @@ The resultant color is always at least as dark as either the source or destinati
 screen
 ......
 
-Multiplies the complements of the backdrop and source color values, then complements the result.
+Multiplies the complements of the source and destination color values, then complements the result.
 The result color is always at least as light as either of the two constituent colors. Screening any color with white produces white; screening with black leaves the original color unchanged. The effect is similar to projecting multiple photographic slides simultaneously onto a single screen.
 
 .. list-table::
@@ -259,8 +258,8 @@ The result color is always at least as light as either of the two constituent co
 overlay
 ........
 
-Multiplies or screens the colors, depending on the backdrop color value.
-Source colors overlay the backdrop while preserving its highlights and shadows. The backdrop color is not replaced but is mixed with the source color to reflect the lightness or darkness of the backdrop.
+Multiplies or screens the colors, depending on the destination color value.
+Source colors overlay the destination while preserving its highlights and shadows. The backdrop color is not replaced but is mixed with the source color to reflect the lightness or darkness of the backdrop.
 
 .. list-table::
    :widths: 50 50
@@ -274,8 +273,8 @@ Source colors overlay the backdrop while preserving its highlights and shadows. 
 darken
 ......
 
-Selects the darker of the backdrop and source colors.
-The backdrop is replaced with the source where the source is darker; otherwise, it is left unchanged.
+Selects the darker of the destination and source colors.
+The destination is replaced with the source where the source is darker; otherwise, it is left unchanged.
 
 
 .. list-table::
@@ -290,8 +289,8 @@ The backdrop is replaced with the source where the source is darker; otherwise, 
 lighten
 .......
 
-Selects the lighter of the backdrop and source colors.
-The backdrop is replaced with the source where the source is lighter; otherwise, it is left unchanged.
+Selects the lighter of the destination and source colors.
+The destination is replaced with the source where the source is lighter; otherwise, it is left unchanged.
 
 .. list-table::
    :widths: 50 50
@@ -305,7 +304,7 @@ The backdrop is replaced with the source where the source is lighter; otherwise,
 color-dodge
 ...........
 
-Brightens the backdrop color to reflect the source color. Painting with black produces no changes.
+Brightens the destination color to reflect the source color. Painting with black produces no changes.
 
 .. list-table::
    :widths: 50 50
@@ -319,7 +318,7 @@ Brightens the backdrop color to reflect the source color. Painting with black pr
 color-burn
 ..........
 
-Darkens the backdrop color to reflect the source color. Painting with white produces no change.
+Darkens the destination color to reflect the source color. Painting with white produces no change.
 
 .. list-table::
    :widths: 50 50
@@ -333,7 +332,7 @@ Darkens the backdrop color to reflect the source color. Painting with white prod
 hard-light
 ..........
 
-Multiplies or screens the colors, depending on the source color value. The effect is similar to shining a harsh spotlight on the backdrop.
+Multiplies or screens the colors, depending on the source color value. The effect is similar to shining a harsh spotlight on the destination.
 
 .. list-table::
    :widths: 50 50
@@ -347,7 +346,7 @@ Multiplies or screens the colors, depending on the source color value. The effec
 soft-light
 ..........
 
-Darkens or lightens the colors, depending on the source color value. The effect is similar to shining a diffused spotlight on the backdrop.
+Darkens or lightens the colors, depending on the source color value. The effect is similar to shining a diffused spotlight on the destination.
 
 .. list-table::
    :widths: 50 50
@@ -363,7 +362,7 @@ difference
 ..........
 
 Subtracts the darker of the two constituent colors from the lighter color.
-Painting with white inverts the backdrop color; painting with black produces no change.
+Painting with white inverts the destination color; painting with black produces no change.
 
 
 .. list-table::
@@ -379,7 +378,7 @@ Painting with white inverts the backdrop color; painting with black produces no 
 exclusion
 .........
 
-Produces an effect similar to that of the Difference mode but lower in contrast. Painting with white inverts the backdrop color; painting with black produces no change
+Produces an effect similar to that of the difference mode but lower in contrast. Painting with white inverts the destination color; painting with black produces no change
 
 .. list-table::
    :widths: 50 50
@@ -409,7 +408,7 @@ In case a custom opacity is desired, it can be added after the operation name:
 .. warning:: Blending against symbolizers seems to cause exceptions inside the JDK when using OpenJDK 7. The issue is being investigated, but it's likely
              a bug in the JDK itself. Test against Oracle JDK 8 or even OpenJDK 7, but using the Marlin rasterizer, show no issue 
 
-Specifically for FeatureTypeStyle an extra vendor option can be added to control compositing groups:
+Specifically for FeatureTypeStyle an additional vendor option can be added to control compositing groups:
 
 .. code-block:: xml
 
@@ -425,10 +424,10 @@ current one. This can be limiting for two reasons:
   compositing effects will be achieved only when a certain stack of layers is used)
   
 By setting a FeatureTypeStyle as a "composite base" instead, the rendering engine will use that
-feature type style as the backdrop, and will compose all subsequent FeatureTypeStyle/Layer on top of it,
-until another base is found.
+feature type style as the destination, and will compose all subsequent FeatureTypeStyle/Layer on top 
+of it, until another base is found.
 Once the full set of layers against a base is composed, then the base itself will be composed against
-the backdrop, using its own compositing operator, if present.
+the next set of composed layers, using its own compositing operator, if present.
 
 Let's consider the following example:
 
@@ -442,10 +441,10 @@ Once that happens, "Merge2" is ready, and gets painted on top of "Merge1"
 
 The next layer is another base, so "Base2" will be again painted to an off-screen buffer, and layer 7
 and 8 will be painted/composited on top of it, forming Merge3.
-Once Merge3 is ready, it will be painted/composited on top of the already fused Merge1/Merge2, generating
-the final map.
+Once Merge3 is ready, it will be painted/composited on top of the already fused Merge1/Merge2, 
+generating the final map.
 
-An compositing and blending example
+A compositing and blending example
 -----------------------------------
 
 Let's say we want to draw topp:states so that the polygons are not filled with the population keyed
@@ -510,11 +509,11 @@ This is not what we want to achieve, and shows the risks of using alpha composit
 in a WMS setting.
 
 In order to achieve the desired result no matter how the client composes the request, the 
-first FeatureTypeStyle painting the polygon needs to be set as a compositing base, making thus
-sure the mask is only going to be applidd to it.
+first FeatureTypeStyle painting the polygon needs to be set as a compositing base, ensuring
+the mask is only going to be applied to it.
 
-Here is the full resulting style, adding also a multiply blend to be base to ensure a nice
-visual transparency effect on these border lines:
+Here is the full resulting style, also adding a multiply blend to the base to ensure a nice
+visual transparency effect on the border lines:
 
 .. code-block:: xml
 

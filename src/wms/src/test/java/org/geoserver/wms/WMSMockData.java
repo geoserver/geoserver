@@ -131,6 +131,7 @@ public class WMSMockData {
         dataStoreInfo.setWorkspace(workspaceInfo);
 
         dataStore = new MemoryDataStore();
+        dataStore.setNamespaceURI("http://geoserver.org"); // required for GeoTools 12 implemetnation of MemoryDataStore
         ResourcePool resourcePool = new ResourcePool(catalog) {
             @Override
             public DataStore getDataStore(DataStoreInfo info) throws IOException {

@@ -34,7 +34,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
-import org.opengis.feature.type.Name;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -424,7 +423,6 @@ public class FeatureTypeTest extends CatalogRESTTestSupport {
         FeatureTypeInfo featureType = catalog.getFeatureTypeByName("sf", "PrimitiveGeoFeature");
         String featureTypeId = featureType.getId();
         String dataStoreId = featureType.getStore().getId();
-        Name name = featureType.getFeatureType().getName();
         
         assertNotNull( "PrmitiveGeoFeature available", featureType );
         for (LayerInfo l : catalog.getLayers( featureType ) ) {
@@ -441,7 +439,7 @@ public class FeatureTypeTest extends CatalogRESTTestSupport {
         if( catalog.getResourcePool().getDataStoreCache().containsKey( dataStoreId ) ){
             DataAccess dataStore = catalog.getResourcePool().getDataStoreCache().get( dataStoreId );
             List<String> names = dataStore.getNames();
-            assertTrue( names.contains(name));
+            assertTrue( names.contains("PrimativeGeoFeature"));
         }
     }
     

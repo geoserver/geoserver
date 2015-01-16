@@ -17,3 +17,4 @@ Although not portable, the extensions make styling more powerful and concise and
    label-obstacles
    margins
    randomized
+   composite-blend

@@ -1121,6 +1121,16 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         return dispatch(request);
     }
     
+    protected MockHttpServletResponse postAsServletResponse(String path, byte[] body, String contentType) throws Exception {
+        MockHttpServletRequest request = createRequest(path);
+        request.setMethod("POST");
+        request.setContentType(contentType);
+        request.setBodyContent(body);
+        request.setHeader("Content-type",  contentType );
+
+        return dispatch(request);
+    }
+    
     /**
      * Execultes a request using the DELETE method.
      * 

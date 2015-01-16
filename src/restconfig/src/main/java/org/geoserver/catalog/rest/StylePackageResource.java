@@ -1,3 +1,7 @@
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.catalog.rest;
 
 import org.apache.commons.io.FileUtils;
@@ -134,11 +138,11 @@ public class StylePackageResource extends Resource {
                 sinfo.setWorkspace(catalog.getWorkspaceByName(workspaceName));
             }
             catalog.add(sinfo);
-
+            getResponse().setStatus(Status.SUCCESS_CREATED);
+            
             LOGGER.info("POST Style Package: " + name + ", workspace: " + workspaceName);
 
         } catch (Exception e) {
-            e.printStackTrace();
             LOGGER.severe("Error processing the style package (POST): " + e.getMessage());
             throw new RestletException( "Error processing the style", Status.SERVER_ERROR_INTERNAL, e );
         } finally {
@@ -212,11 +216,10 @@ public class StylePackageResource extends Resource {
             StyleInfo sinfo = catalog.getStyleByName(workspaceName, name);
             sinfo.setFilename(f.getName());
             catalog.save(sinfo);
-
+            getResponse().setStatus(Status.SUCCESS_OK);
             LOGGER.info("PUT Style Package: " + name + ", workspace: " + workspaceName);
 
         } catch (Exception e) {
-            e.printStackTrace();
             LOGGER.severe("Error processing the style package (PUT): " + e.getMessage());
             throw new RestletException( "Error processing the style", Status.SERVER_ERROR_INTERNAL, e );
         } finally {
@@ -280,7 +283,6 @@ public class StylePackageResource extends Resource {
      * @return List of uploaded files in zip
      */
     protected void handleFileUpload(String style, String workspaceName, File directory) {
-        getResponse().setStatus(Status.SUCCESS_ACCEPTED);
 
         MediaType mediaType = getRequest().getEntity().getMediaType();
 

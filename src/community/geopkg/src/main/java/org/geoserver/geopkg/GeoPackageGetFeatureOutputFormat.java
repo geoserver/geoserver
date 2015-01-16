@@ -45,6 +45,8 @@ import com.google.common.collect.Sets;
  *
  */
 public class GeoPackageGetFeatureOutputFormat extends WFSGetFeatureOutputFormat {
+    
+    public final static String PROPERTY_INDEXED = "geopackage.wfs.indexed";
 
     public GeoPackageGetFeatureOutputFormat(GeoServer gs) {
         super(gs, Sets.union(Sets.newHashSet(MIME_TYPE), Sets.newHashSet(NAMES)));
@@ -106,6 +108,10 @@ public class GeoPackageGetFeatureOutputFormat extends WFSGetFeatureOutputFormat 
             }
 
             geopkg.add(e, features);
+            
+            if ("true".equals(System.getProperty(PROPERTY_INDEXED))) {
+                geopkg.createSpatialIndex(e);
+            }
         }
         
         geopkg.close();

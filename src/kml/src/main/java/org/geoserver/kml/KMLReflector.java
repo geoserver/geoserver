@@ -224,6 +224,8 @@ public class KMLReflector {
         WMSRequests.mergeEntry(kvp, formatOptions, "kmscore");
         WMSRequests.mergeEntry(kvp, formatOptions, "kmattr");
         WMSRequests.mergeEntry(kvp, formatOptions, "kmltitle");
+        WMSRequests.mergeEntry(kvp, formatOptions, "kmlrefresh");
+        WMSRequests.mergeEntry(kvp, formatOptions, "kmlvisible");
         WMSRequests.mergeEntry(kvp, formatOptions, "extendeddata");
         WMSRequests.mergeEntry(kvp, formatOptions, "extrude");
         WMSRequests.mergeEntry(kvp, formatOptions, "kmplacemark");

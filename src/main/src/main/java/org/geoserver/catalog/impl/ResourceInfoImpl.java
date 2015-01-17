@@ -27,6 +27,7 @@ import org.opengis.feature.type.Name;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import com.vividsolutions.jts.geom.Envelope;
+import org.geoserver.catalog.DataLinkInfo;
 
 /**
  * Default implementation of {@link ResourceInfo}.
@@ -56,6 +57,8 @@ public abstract class ResourceInfoImpl implements ResourceInfo {
     protected List<KeywordInfo> keywords = new ArrayList<KeywordInfo>();
 
     protected List<MetadataLinkInfo> metadataLinks = new ArrayList<MetadataLinkInfo>();
+
+    protected List<DataLinkInfo> dataLinks = new ArrayList<DataLinkInfo>();
 
     protected CoordinateReferenceSystem nativeCRS;
     
@@ -197,6 +200,10 @@ public abstract class ResourceInfoImpl implements ResourceInfo {
         return metadataLinks;
     }
 
+    public List<DataLinkInfo> getDataLinks() {
+        return dataLinks;
+    }
+
     public String getSRS() {
         return srs;
     }
@@ -266,6 +273,10 @@ public abstract class ResourceInfoImpl implements ResourceInfo {
     
     public void setMetadataLinks(List<MetadataLinkInfo> metaDataLinks) {
         this.metadataLinks = metaDataLinks;
+    }
+
+    public void setDataLinks(List<DataLinkInfo> dataLinks) {
+        this.dataLinks = dataLinks;
     }
 
     public StoreInfo getStore() {

@@ -85,6 +85,7 @@ import org.xml.sax.helpers.AttributesImpl;
 
 import com.google.common.collect.Iterables;
 import com.vividsolutions.jts.geom.Envelope;
+import org.geoserver.catalog.DataLinkInfo;
 
 /**
  * Geotools xml framework based encoder for a Capabilities WMS 1.3.0 document.
@@ -423,6 +424,31 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                 element("OnlineResource", null, orAtts);
 
                 end("MetadataURL");
+            }
+        }
+
+        /**
+         * Turns the data URL list to XML
+         * 
+         * @param keywords
+         */
+        private void handleDataList(Collection<DataLinkInfo> dataURLs) {
+            if (dataURLs == null) {
+                return;
+            }
+
+            for (DataLinkInfo link : dataURLs) {
+
+                start("DataURL");
+
+                element("Format", link.getType());
+
+                String content = ResponseUtils.proxifyDataLink(link, request.getBaseUrl());
+
+                AttributesImpl orAtts = attributes("xlink:type", "simple", "xlink:href", content);
+                element("OnlineResource", null, orAtts);
+
+                end("DataURL");
             }
         }
 
@@ -942,7 +968,8 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             // handle metadata URLs
             handleMetadataList(layer.getResource().getMetadataLinks());
 
-            // TODO: DataURL
+            // handle DataURLs
+            handleDataList(layer.getResource().getDataLinks());
             // TODO: FeatureListURL
             handleStyles(layer);
             

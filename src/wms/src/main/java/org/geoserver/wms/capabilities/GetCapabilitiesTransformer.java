@@ -98,7 +98,7 @@ public class GetCapabilitiesTransformer extends TransformerBase {
 
     /** the WMS supported exception formats */
     static final String[] EXCEPTION_FORMATS = { "application/vnd.ogc.se_xml",
-            "application/vnd.ogc.se_inimage", };
+            "application/vnd.ogc.se_inimage", "application/vnd.ogc.se_blank" };
 
     /**
      * Set of supported metadta link types. Links of any other type will be ignored to honor the DTD

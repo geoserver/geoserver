@@ -389,4 +389,17 @@ public class CapabilitiesTest extends WMSTestSupport {
         assertXpathEvaluatesTo("1", "//Layer[Name='" + linesName + "']/@opaque", doc);
         assertXpathEvaluatesTo("0", "//Layer[Name='" + pointsName + "']/@opaque", doc);
     }
+
+    @Test
+    public void testExceptions() throws Exception{
+
+        Document doc = getAsDOM("wms?service=WMS&request=getCapabilities&version=1.1.1", true);
+
+        XpathEngine xpath = XMLUnit.newXpathEngine();
+
+        assertTrue(xpath.evaluate("//Exception/Format[1]", doc).equals("application/vnd.ogc.se_xml"));
+        assertTrue(xpath.evaluate("//Exception/Format[2]", doc).equals("application/vnd.ogc.se_inimage"));
+        assertTrue(xpath.evaluate("//Exception/Format[3]", doc).equals("application/vnd.ogc.se_blank"));
+        assertTrue(xpath.getMatchingNodes("//Exception/Format", doc).getLength() == 3);
+    }
 }

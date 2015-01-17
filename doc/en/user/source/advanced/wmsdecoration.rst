@@ -86,6 +86,8 @@ The **scaleline** decoration (``type="scaleline"``) overlays a graphic showing t
      - the size of the font to use
    * - ``transparent``
      - if set to true, the background and border won't be painted (false by default)
+   * - ``measurement-system"``
+     - can be set to "metric" to only show metric units, "imperial" to only show imperial units, or "both" to show both of them (default)
 
 
 The **legend** decoration (``type="legend"``) overlays a graphic containing legends for the layers in the map.

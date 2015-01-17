@@ -898,7 +898,7 @@ public class DefaultWebCoverageService111 implements WebCoverageService111 {
             }
 
             for (String method : info.getInterpolationMethods()) {
-                if (interpolation.startsWith(method.toLowerCase())) {
+                if (method.toLowerCase().startsWith(interpolation)) {
                     interpolationSupported = true;
                     break;
                 }

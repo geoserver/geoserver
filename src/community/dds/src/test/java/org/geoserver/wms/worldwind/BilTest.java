@@ -224,6 +224,24 @@ public class BilTest extends WMSTestSupport {
         assertTrue("Did not find any no-data values", noDataCount > 0);
     }
 
+    @Test
+    public void testNonIntersectiongBbox() throws Exception
+    {
+        String layer = getLayerId(AUS_DEM);
+        
+        String bbox = "0,0,10,10"; // Does not intersection coverage area
+        String request = "wms?service=wms&request=GetMap&version=1.1.1" +
+                "&layers=" + layer + "&styles=&bbox=" + bbox + 
+                "&width=" + width + "&height=" + height +
+                "&format=application/bil16&srs=EPSG:4326";
+
+      MockHttpServletResponse servletResponse = getAsServletResponse(request);
+      byte[] response = getBinary(servletResponse);
+      
+      int expected = width * height * 2; // 2 bytes/pixel
+      assertEquals("testStandardRequest", expected, response.length);
+    }
+
     private void setConfiguration(QName layerQname, String key, String value)
     {
         String layer = getLayerId(layerQname);

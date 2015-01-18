@@ -49,7 +49,7 @@ public class RenderingBasedFeatureInfoTest extends WMSTestSupport {
         testData.addStyle("dashed", "dashed.sld",this.getClass(), getCatalog());
         testData.addStyle("polydash", "polydash.sld", this.getClass(), getCatalog());
         testData.addStyle("doublepoly", "doublepoly.sld", this.getClass(), getCatalog());
-        testData.addStyle("pureLabel", "pureLabel.sld", this.getClass(), getCatalog());
+        testData.addStyle("pureLabel", "purelabel.sld", this.getClass(), getCatalog());
     }
     
     @After 

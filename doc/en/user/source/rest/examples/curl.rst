@@ -332,6 +332,61 @@ And finally apply that style to the layer. Note the use of the ``<workspace>`` t
 .. todo:: The WMS request above results in an "Internal error featureType: acme:roads does not have a properly configured datastore"  Tested on 2.2.2.
 
 
+Creating a layer style (SLD package)
+------------------------------------
+
+This example will create a new style on the server and populate it the contents of a local SLD file and related images provided in a SLD package. A SLD package is a zip file containing the SLD style and related image files used in the SLD.
+
+The following creates a new style named ``roads_style``.
+
+.. note:: Each code block below contains a single command that may be extended over multiple lines.
+
+.. code-block:: console
+
+   curl -u admin:geoserver -XPOST -H "Content-type: application/zip" 
+     --data-binary @roads_style.zip 
+     http://localhost:8080/geoserver/rest/styles 
+ 
+If executed correctly, the response should contain the following::
+
+  < HTTP/1.1 201 Created
+
+The SLD itself can be downloaded through a a GET request:
+
+.. code-block:: console
+
+   curl -v -u admin:geoserver -XGET
+     http://localhost:8080/geoserver/rest/styles/roads_style.sld
+
+
+Changing a layer style (SLD package)
+------------------------------------
+
+This example will alter a layer style using a SLD package. A SLD package is a zip file containing the SLD style and related image files used in the SLD.
+
+In the previous example, we created a new style ``roads_style``, we can update the SLD package styling and apply the new changes to the style.
+
+.. note:: Each code block below contains a single command that may be extended over multiple lines.
+
+.. code-block:: console
+
+    curl -u admin:geoserver -XPUT -H "Content-type: application/zip" 
+      --data-binary @roads_style.zip 
+      http://localhost:8080/geoserver/rest/workspaces/w1/styles/roads_style.zip
+
+
+If executed correctly, the response should contain the following::
+
+  < HTTP/1.1 200 OK
+
+
+The SLD itself can be downloaded through a a GET request:
+
+.. code-block:: console
+
+   curl -v -u admin:geoserver -XGET
+     http://localhost:8080/geoserver/rest/styles/roads_style.sld
+     
 Adding a PostGIS database
 -------------------------
 

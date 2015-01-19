@@ -583,14 +583,17 @@ public class RESTUtils {
 
 
     /**
-     * Unzips a ZipInputStream to a directory
+     * Unzips a InputStream to a directory
      *
      * @param in
      * @param outputDirectory
      * @throws IOException
      */
-    public static void unzipInputStream(ZipInputStream zin, File outputDirectory) throws IOException {
+    public static void unzipInputStream(InputStream in, File outputDirectory) throws IOException {
+        ZipInputStream zin = null;
+
         try {
+            zin = new ZipInputStream(in);
 
             ZipEntry entry;
             byte[] buffer = new byte[2048];

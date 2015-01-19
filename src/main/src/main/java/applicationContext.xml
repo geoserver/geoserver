@@ -236,6 +236,9 @@
 
   <!-- default style handlers -->
   <bean id="sldHandler" class="org.geoserver.catalog.SLDHandler"/>
+  <bean id="sldPackageHandler" class="org.geoserver.catalog.SLDPackageHandler">
+    <constructor-arg ref="sldHandler"/>
+  </bean>
 
   <!-- JDBC VirtualTable callback -->
   <bean id="virtualTableCallback" class="org.geoserver.catalog.VirtualTableCallback"/>

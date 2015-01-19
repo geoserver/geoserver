@@ -19,6 +19,8 @@ import net.sf.json.JSONObject;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.custommonkey.xmlunit.XMLUnit;
+import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.catalog.*;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.data.test.SystemTestData;
@@ -682,7 +684,6 @@ public class StyleTest extends CatalogRESTTestSupport {
         assertEquals(SLDHandler.VERSION_11, style.getFormatVersion());
     }
 
-
     @Test
     public void testPostToWorkspaceSLDPackage() throws Exception {
         Catalog cat = getCatalog();
@@ -695,6 +696,17 @@ public class StyleTest extends CatalogRESTTestSupport {
                 postAsServletResponse( "/rest/workspaces/gs/styles", bytes, "application/zip");
         assertEquals( 201, response.getStatusCode() );
         assertNotNull(cat.getStyleByName("gs", "foo"));
+
+        Document d = getAsDOM("/rest/workspaces/gs/styles/foo.sld");
+
+        assertEquals( "StyledLayerDescriptor", d.getDocumentElement().getNodeName());
+        XpathEngine engine = XMLUnit.newXpathEngine();
+        NodeList list = engine.getMatchingNodes("//sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule/sld:PointSymbolizer/sld:Graphic/sld:ExternalGraphic/sld:OnlineResource", d);
+        assertEquals(1, list.getLength());
+        Element onlineResource = (Element)list.item(0);
+        assertEquals("gear.png", onlineResource.getAttribute("xlink:href"));
+        assertNotNull(getCatalog().getResourceLoader().find("workspaces/gs/styles/gear.png"));
+        assertNotNull(getCatalog().getResourceLoader().find("workspaces/gs/styles/foo.sld"));
     }
 
 
@@ -712,6 +724,17 @@ public class StyleTest extends CatalogRESTTestSupport {
                 putAsServletResponse( "/rest/workspaces/gs/styles/foo.zip", bytes, "application/zip");
         assertEquals( 200, response.getStatusCode() );
         assertNotNull(cat.getStyleByName("gs", "foo"));
+
+        Document d = getAsDOM("/rest/workspaces/gs/styles/foo.sld");
+
+        assertEquals( "StyledLayerDescriptor", d.getDocumentElement().getNodeName());
+        XpathEngine engine = XMLUnit.newXpathEngine();
+        NodeList list = engine.getMatchingNodes("//sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule/sld:PointSymbolizer/sld:Graphic/sld:ExternalGraphic/sld:OnlineResource", d);
+        assertEquals(1, list.getLength());
+        Element onlineResource = (Element)list.item(0);
+        assertEquals("gear.png", onlineResource.getAttribute("xlink:href"));
+        assertNotNull(getCatalog().getResourceLoader().find("workspaces/gs/styles/gear.png"));
+        assertNotNull(getCatalog().getResourceLoader().find("workspaces/gs/styles/foo.sld"));
     }
 
     @Test
@@ -726,6 +749,17 @@ public class StyleTest extends CatalogRESTTestSupport {
                 postAsServletResponse( "/rest/styles", bytes, "application/zip");
         assertEquals( 201, response.getStatusCode() );
         assertNotNull(cat.getStyleByName("foo"));
+
+        Document d = getAsDOM("/rest/styles/foo.sld");
+
+        assertEquals( "StyledLayerDescriptor", d.getDocumentElement().getNodeName());
+        XpathEngine engine = XMLUnit.newXpathEngine();
+        NodeList list = engine.getMatchingNodes("//sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule/sld:PointSymbolizer/sld:Graphic/sld:ExternalGraphic/sld:OnlineResource", d);
+        assertEquals(1, list.getLength());
+        Element onlineResource = (Element)list.item(0);
+        assertEquals("gear.png", onlineResource.getAttribute("xlink:href"));
+        assertNotNull(getCatalog().getResourceLoader().find("styles/gear.png"));
+        assertNotNull(getCatalog().getResourceLoader().find("styles/foo.sld"));
     }
 
     @Test
@@ -742,5 +776,31 @@ public class StyleTest extends CatalogRESTTestSupport {
                 putAsServletResponse( "/rest/styles/foo.zip", bytes, "application/zip");
         assertEquals( 200, response.getStatusCode() );
         assertNotNull(cat.getStyleByName("foo"));
+
+        Document d = getAsDOM("/rest/styles/foo.sld");
+
+        assertEquals( "StyledLayerDescriptor", d.getDocumentElement().getNodeName());
+        XpathEngine engine = XMLUnit.newXpathEngine();
+        NodeList list = engine.getMatchingNodes("//sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule/sld:PointSymbolizer/sld:Graphic/sld:ExternalGraphic/sld:OnlineResource", d);
+        assertEquals(1, list.getLength());
+        Element onlineResource = (Element)list.item(0);
+        assertEquals("gear.png", onlineResource.getAttribute("xlink:href"));
+        assertNotNull(getCatalog().getResourceLoader().find("styles/gear.png"));
+        assertNotNull(getCatalog().getResourceLoader().find("styles/foo.sld"));
     }
+
+
+    @Test
+    public void testGetSLDPackage() throws Exception {
+        testPostSLDPackage();
+
+        Catalog cat = getCatalog();
+        assertNotNull(cat.getStyleByName("foo"));
+
+        MockHttpServletResponse response =
+                getAsServletResponse("/rest/styles/foo.zip");
+        assertEquals( 200, response.getStatusCode() );
+
+    }
+
 }

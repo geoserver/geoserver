@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
-import java.util.zip.ZipInputStream;
 
 import com.google.common.io.Files;
 import org.apache.commons.io.FileUtils;
@@ -27,7 +26,6 @@ import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.rest.RestletException;
 import org.geoserver.rest.format.DataFormat;
-import org.geoserver.rest.util.RESTUtils;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.styling.SLDParser;
 import org.geotools.styling.Style;
@@ -158,43 +156,6 @@ public class StyleResource extends AbstractCatalogResource {
                 }
 
                 serializeSldFileInCatalog(new File(getStylePath(styleInfo)), uploadedFile);
-
-                /**
-                 * Following code causes this (replaced by serializeSldFileInCatalog, just streams the file to the proper folder):
-                 *
-                 * java.lang.Error: Failed to encode the xlink location
-                 * at org.geotools.styling.SLDTransformer$SLDTranslator.visit(SLDTransformer.java:658)
-                 * at org.geotools.styling.ExternalGraphicImpl.accept(ExternalGraphicImpl.java:138)
-                 * at org.geotools.styling.SLDTransformer$SLDTranslator.visit(SLDTransformer.java:808)
-                 * at org.geotools.styling.GraphicImpl.accept(GraphicImpl.java:349)
-                 * at org.geotools.styling.SLDTransformer$SLDTranslator.visit(SLDTransformer.java:781)
-                 * at org.geotools.styling.PointSymbolizerImpl.accept(PointSymbolizerImpl.java:93)
-                 * at org.geotools.styling.SLDTransformer$SLDTranslator.visit(SLDTransformer.java:746)
-                 * at org.geotools.styling.RuleImpl.accept(RuleImpl.java:312)
-                 * at org.geotools.styling.SLDTransformer$SLDTranslator.visit(SLDTransformer.java:1085)
-                 * at org.geotools.styling.SLDTransformer$SLDTranslator.visit(SLDTransformer.java:1042)
-                 * at org.geotools.styling.SLDTransformer$SLDTranslator.visit(SLDTransformer.java:866)
-                 * at org.geotools.styling.SLDTransformer$SLDTranslator.visit(SLDTransformer.java:838)
-                 * at org.geotools.styling.StyledLayerDescriptorImpl.accept(StyledLayerDescriptorImpl.java:196)
-                 * at org.geotools.styling.SLDTransformer$SLDTranslator.encode(SLDTransformer.java:1220)
-                 * at org.geotools.styling.SLDTransformer$SLDTranslator.encode(SLDTransformer.java:1229)
-                 * at org.geotools.xml.transform.TransformerBase$XMLReaderSupport.parse(TransformerBase.java:1026)
-                 * at com.sun.org.apache.xalan.internal.xsltc.trax.TransformerImpl.transformIdentity(TransformerImpl.java:677)
-                 * at com.sun.org.apache.xalan.internal.xsltc.trax.TransformerImpl.transform(TransformerImpl.java:746)
-                 * at com.sun.org.apache.xalan.internal.xsltc.trax.TransformerImpl.transform(TransformerImpl.java:359)
-                 * at org.geotools.xml.transform.TransformerBase$Task.run(TransformerBase.java:300)
-                 * at org.geotools.xml.transform.TransformerBase.transform(TransformerBase.java:133)
-                 * at org.geotools.xml.transform.TransformerBase.transform(TransformerBase.java:112)
-                 * at org.geoserver.catalog.SLDHandler.encode10(SLDHandler.java:193)
-                 * at org.geoserver.catalog.SLDHandler.encode(SLDHandler.java:182)
-                 * at org.geoserver.catalog.ResourcePool.writeStyle(ResourcePool.java:1799)
-                 */
-                /*ResourcePool resourcePool = catalog.getResourcePool();
-                try {
-                    resourcePool.writeStyle(styleInfo, styleSld);
-                } catch (IOException e) {
-                    throw new RestletException("Error writing style", Status.SERVER_ERROR_INTERNAL, e);
-                }*/
 
                 catalog.add(styleInfo);
 
@@ -351,46 +312,6 @@ public class StyleResource extends AbstractCatalogResource {
                 StyleInfo styleInfo = catalog.getStyleByName( workspace, style );
                 serializeSldFileInCatalog(new File(getStylePath(styleInfo)), uploadedFile);
 
-                /**
-                 * Following code causes this (replaced by serializeSldFileInCatalog, just streams the file to the proper folder):
-                 *
-                 * java.lang.Error: Failed to encode the xlink location
-                 * at org.geotools.styling.SLDTransformer$SLDTranslator.visit(SLDTransformer.java:658)
-                 * at org.geotools.styling.ExternalGraphicImpl.accept(ExternalGraphicImpl.java:138)
-                 * at org.geotools.styling.SLDTransformer$SLDTranslator.visit(SLDTransformer.java:808)
-                 * at org.geotools.styling.GraphicImpl.accept(GraphicImpl.java:349)
-                 * at org.geotools.styling.SLDTransformer$SLDTranslator.visit(SLDTransformer.java:781)
-                 * at org.geotools.styling.PointSymbolizerImpl.accept(PointSymbolizerImpl.java:93)
-                 * at org.geotools.styling.SLDTransformer$SLDTranslator.visit(SLDTransformer.java:746)
-                 * at org.geotools.styling.RuleImpl.accept(RuleImpl.java:312)
-                 * at org.geotools.styling.SLDTransformer$SLDTranslator.visit(SLDTransformer.java:1085)
-                 * at org.geotools.styling.SLDTransformer$SLDTranslator.visit(SLDTransformer.java:1042)
-                 * at org.geotools.styling.SLDTransformer$SLDTranslator.visit(SLDTransformer.java:866)
-                 * at org.geotools.styling.SLDTransformer$SLDTranslator.visit(SLDTransformer.java:838)
-                 * at org.geotools.styling.StyledLayerDescriptorImpl.accept(StyledLayerDescriptorImpl.java:196)
-                 * at org.geotools.styling.SLDTransformer$SLDTranslator.encode(SLDTransformer.java:1220)
-                 * at org.geotools.styling.SLDTransformer$SLDTranslator.encode(SLDTransformer.java:1229)
-                 * at org.geotools.xml.transform.TransformerBase$XMLReaderSupport.parse(TransformerBase.java:1026)
-                 * at com.sun.org.apache.xalan.internal.xsltc.trax.TransformerImpl.transformIdentity(TransformerImpl.java:677)
-                 * at com.sun.org.apache.xalan.internal.xsltc.trax.TransformerImpl.transform(TransformerImpl.java:746)
-                 * at com.sun.org.apache.xalan.internal.xsltc.trax.TransformerImpl.transform(TransformerImpl.java:359)
-                 * at org.geotools.xml.transform.TransformerBase$Task.run(TransformerBase.java:300)
-                 * at org.geotools.xml.transform.TransformerBase.transform(TransformerBase.java:133)
-                 * at org.geotools.xml.transform.TransformerBase.transform(TransformerBase.java:112)
-                 * at org.geoserver.catalog.SLDHandler.encode10(SLDHandler.java:193)
-                 * at org.geoserver.catalog.SLDHandler.encode(SLDHandler.java:182)
-                 * at org.geoserver.catalog.ResourcePool.writeStyle(ResourcePool.java:1799)
-                 */
-               /* ResourcePool resourcePool = catalog.getResourcePool();
-                try {
-                    resourcePool.writeStyle(styleInfo, styleSld);
-                } catch (IOException e) {
-                    throw new RestletException("Error writing style", Status.SERVER_ERROR_INTERNAL, e);
-                }*/
-
-                // With serializeSldFileInCatalog is not required
-                //catalog.save( styleInfo );
-
                 LOGGER.info("PUT Style Package: " + name + ", workspace: " + workspace);
 
             } catch (RestletException e) {
@@ -469,7 +390,8 @@ public class StyleResource extends AbstractCatalogResource {
      */
     private File unzipSldPackage(InputStream object) throws IOException {
         File tempDir = Files.createTempDir();
-        RESTUtils.unzipInputStream(new ZipInputStream((InputStream) object), tempDir);
+
+        org.geoserver.data.util.IOUtils.decompress(object, tempDir);
 
         return tempDir;
     }

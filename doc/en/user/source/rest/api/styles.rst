@@ -28,7 +28,7 @@ Controls all styles.
    * - POST
      - Create a new style
      - 201 with ``Location`` header
-     - SLD, XML, JSON
+     - SLD, XML, JSON, ZIP
        :ref:`See note below <rest_api_styles_post_put>`
      -
      - :ref:`name <rest_api_styles_name>` :ref:`raw <rest_api_styles_raw>`
@@ -52,6 +52,7 @@ supported out of the box include:
 
 * SLD 1.0 with a mime type of ``application/vnd.ogc.sld+xml``
 * SLD 1.1 / SE 1.1 with a mime type of ``application/vnd.ogc.se+xml``
+* SLD package (zip file containing sld and image files used in the style) with a mime type of application/zip
 
 Other extensions (such as :ref:`css <extensions_css>`) add support for 
 additional formats. 
@@ -94,7 +95,7 @@ Controls a given style.
    * - GET
      - Return style ``s``
      - 200
-     - SLD, HTML, XML, JSON
+     - SLD, HTML, XML, JSON, ZIP
      - HTML
      - :ref:`quietOnNotFound <rest_api_styles_quietOnNotFound>`
    * - POST
@@ -106,7 +107,7 @@ Controls a given style.
    * - PUT
      - Modify style ``s`` 
      - 200
-     - SLD, XML, JSON, :ref:`See note above <rest_api_styles_post_put>`
+     - SLD, XML, JSON, ZIP :ref:`See note above <rest_api_styles_post_put>`
      -
      - :ref:`raw <rest_api_styles_raw>` 
    * - DELETE
@@ -171,7 +172,7 @@ Controls all styles in a given workspace.
    * - POST
      - Create a new style within workspace ``ws``
      - 201 with ``Location`` header
-     - SLD, XML, JSON, :ref:`See note above <rest_api_styles_post_put>`
+     - SLD, XML, JSON, ZIP :ref:`See note above <rest_api_styles_post_put>`
      -
      - :ref:`name <rest_api_styles_name>` :ref:`raw <rest_api_styles_raw>` 
    * - PUT
@@ -217,7 +218,7 @@ Controls a particular style in a given workspace.
    * - PUT
      - Modify style ``s`` within workspace ``ws``
      - 200
-     - SLD, XML, JSON
+     - SLD, XML, JSON, ZIP
        :ref:`See note above <rest_api_styles_post_put>`
      - 
      - :ref:`raw <rest_api_styles_raw>` 

@@ -112,6 +112,10 @@ There are three options:
 
 **Disable Locking**: No file locking is used.
 
+REST Disable Resource not found Logging
+----------------------------------------
+This parameter can be used to mute exception logging when doing REST operations and the requested Resource is not present. This default setting can be overridden by adding to a REST call the following parameter: **quietOnNotFound=true/false**.
+
 REST PathMapper Root directory path
 -----------------------------------
 

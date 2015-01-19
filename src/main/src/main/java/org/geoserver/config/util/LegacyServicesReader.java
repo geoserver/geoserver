@@ -185,6 +185,7 @@ public class LegacyServicesReader {
         value( "srsXmlStyle", wfsElement, wfs, Boolean.class, false, Boolean.TRUE );
         value( "featureBounding", wfsElement, wfs, Boolean.class, false, Boolean.FALSE );
         value( "hitsIgnoreMaxFeatures", wfsElement, wfs, Boolean.class, false, Boolean.FALSE);
+        value( "maxNumberOfFeaturesForPreview", wfsElement, wfs, Integer.class, false, 50);
         
         return wfs;
     }

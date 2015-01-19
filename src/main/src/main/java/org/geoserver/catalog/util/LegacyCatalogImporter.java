@@ -30,6 +30,7 @@ import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.ProjectionPolicy;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.data.util.CoverageStoreUtils;
 import org.geoserver.platform.GeoServerResourceLoader;
@@ -169,7 +170,7 @@ public class LegacyCatalogImporter {
                 if ( layer.getPath() == null ) {
                     layer.setPath( "/" );
                 }
-                layer.setType(LayerInfo.Type.VECTOR);
+                layer.setType(PublishedType.VECTOR);
                
                 String defaultStyleName = ftInfoReader.defaultStyle();
                 if ( defaultStyleName != null ) {
@@ -242,7 +243,7 @@ public class LegacyCatalogImporter {
                 if ( layer.getPath() == null ) {
                     layer.setPath( "/" );
                 }
-                layer.setType(LayerInfo.Type.RASTER);
+                layer.setType(PublishedType.RASTER);
                 
                 String defaultStyleName = cInfoReader.defaultStyle();
                 if ( defaultStyleName != null ) {

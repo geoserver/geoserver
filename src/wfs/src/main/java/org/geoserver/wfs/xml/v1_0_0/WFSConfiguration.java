@@ -5,10 +5,7 @@
  */
 package org.geoserver.wfs.xml.v1_0_0;
 
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import net.opengis.ows10.Ows10Factory;
@@ -25,6 +22,7 @@ import org.geoserver.catalog.event.CatalogListener;
 import org.geoserver.catalog.event.CatalogModifyEvent;
 import org.geoserver.catalog.event.CatalogPostModifyEvent;
 import org.geoserver.catalog.event.CatalogRemoveEvent;
+import org.geoserver.wfs.CatalogFeatureTypeCache;
 import org.geoserver.wfs.xml.FeatureTypeSchemaBuilder;
 import org.geoserver.wfs.xml.PropertyTypePropertyExtractor;
 import org.geoserver.wfs.xml.WFSHandlerFactory;
@@ -168,28 +166,7 @@ public class WFSConfiguration extends Configuration {
         
         //TODO: this code is copied from the 1.1 configuration, FACTOR IT OUT!!!
         //seed the cache with entries from the catalog
-        FeatureTypeCache featureTypeCache = (FeatureTypeCache) context
-            .getComponentInstanceOfType(FeatureTypeCache.class);
-
-        Collection featureTypes = catalog.getFeatureTypes();
-        for (Iterator f = featureTypes.iterator(); f.hasNext();) {
-            FeatureTypeInfo meta = (FeatureTypeInfo) f.next();
-            if ( !meta.enabled() ) {
-                continue;
-            }
-
-            
-            FeatureType featureType =  null;
-            try {
-                featureType = meta.getFeatureType();
-            } catch(Exception e) {
-                LOGGER.log(Level.WARNING, "Could not load underlying feature type for type " 
-                        + meta.getName(), e);
-                continue;
-            }
-
-            featureTypeCache.put(featureType);
-        }
+        context.registerComponentInstance(FeatureTypeCache.class, new CatalogFeatureTypeCache(getCatalog()));
     }
 
     @SuppressWarnings("unchecked")

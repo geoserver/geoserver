@@ -27,6 +27,33 @@ below)::
     [rainfall>12], [lakes>1] {
         fill: blue;
     }
+    
+When writing a selector that uses both *and* and *or* combinators, remember that the *and*
+combinator has higher precedence. For example::
+
+    restricted [cat='2'], [cat='3'], [cat='4'] [ @scale <= 200000] [@scale > 100000] {
+      fill: #EE0000;
+    }
+    
+The above selector should be read as:
+
+* typename is 'restricted' and ``cat='2'`` *or*
+* ``cat='3'`` *or*
+* ``cat='4'`` and scale is between 100000 and 200000
+
+If instead the intention was to combine in or just the three cat filters, the right syntax would
+have been::
+
+    restricted [cat='2' or cat='3' or cat='4'] [ @scale <= 200000] [@scale > 100000] {
+      fill: #EE0000;
+    }
+
+Which should be read as:
+ 
+* typename is 'restricted' *and*
+* (``cat='2'`` or ``cat='3'`` or ``cat='4'``) *and*
+* scale is between 100000 and 200000
+ 
 
 Filtering on data attributes
 ----------------------------

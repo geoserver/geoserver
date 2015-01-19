@@ -7,13 +7,19 @@ package org.geoserver.web.data.layergroup;
 
 import static org.junit.Assert.*;
 
+import org.apache.wicket.Component;
+import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.feedback.FeedbackMessage;
+import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.util.tester.FormTester;
+import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.catalog.LayerInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.junit.Before;
 import org.junit.Test;
+import org.opengis.filter.Filter;
 
 public class LayerGroupNewPageTest extends LayerGroupBaseTest {
 
@@ -103,5 +109,26 @@ public class LayerGroupNewPageTest extends LayerGroupBaseTest {
         tester.assertErrorMessages(new String[] {"Field 'Bounds' is required."});
     }
     
-    
+    @Test
+    public void testLayerLink() {
+        
+        LayerGroupNewPage page = new LayerGroupNewPage();
+        // Create the new page
+        tester.startPage(page);
+        tester.assertRenderedPage(LayerGroupNewPage.class);
+        // Click on the link
+        tester.clickLink("form:layers:addLayer");
+        tester.assertNoErrorMessage();
+        // Ensure that the Layer List page is rendered correctly
+        tester.assertComponent("form:layers:popup:content:listContainer:items", DataView.class);
+        // Get the DataView containing the Layer List
+        DataView dataView = (DataView) page.lgEntryPanel.get("popup:content:listContainer:items");
+        // Ensure that the Row count is equal to the Layers in the Catalog
+        Catalog catalog = getGeoServerApplication().getCatalog();
+        
+        int layerCount = catalog.count(LayerInfo.class, Filter.INCLUDE);
+        int rowCount = dataView.getRowCount();
+        
+        assertEquals(layerCount, rowCount);
+    }
 }

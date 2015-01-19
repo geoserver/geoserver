@@ -20,6 +20,7 @@
 package org.geoserver.wcs2_0;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import java.util.List;
 
@@ -80,6 +81,8 @@ public class CoverageIdConverterTest {
     public void testDecodeBad() {
         String qualifiedName = "bad_qualified_name";
         List<MapEntry<String, String>> decode = NCNameResourceCodec.decode(qualifiedName);
-        assertEquals(0, decode.size());
+        assertEquals(1, decode.size());
+        assertNull(decode.get(0).getKey());
+        assertEquals("bad_qualified_name", decode.get(0).getValue());
     }
 }

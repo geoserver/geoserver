@@ -37,6 +37,9 @@ The CSS extension provides the facility to generate SLD files using a lightweigh
 
 The generated styles will work seamlessly with KML output from GeoServer.
 
+
+.. _kml-styling-sld-hand:
+
 Creating SLD by hand
 --------------------
 

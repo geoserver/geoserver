@@ -5,12 +5,7 @@
  */
 package org.geoserver.config.util;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -18,7 +13,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.Arrays;
-import java.util.List;
 
 import javax.measure.unit.SI;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -61,6 +55,7 @@ import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.referencing.wkt.Formattable;
 import org.geotools.referencing.wkt.UnformattableObjectException;
+import org.geotools.util.NumberRange;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -69,6 +64,9 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
+import com.thoughtworks.xstream.XStream;
 import com.vividsolutions.jts.geom.LineString;
 
 public class XStreamPersisterTest {
@@ -667,8 +665,7 @@ public class XStreamPersisterTest {
         Assert.assertEquals(LayerGroupInfo.Mode.SINGLE, group.getMode());
         
         Catalog catalog = new CatalogImpl();
-        List<RuntimeException> errors = catalog.validate(group, false);
-        Assert.assertTrue(errors == null || errors.size() == 0);
+        Assert.assertTrue(catalog.validate(group, false).isValid());
     }
     
     @Test
@@ -831,6 +828,26 @@ public class XStreamPersisterTest {
         CoordinateReferenceSystem crs2 = 
             (CoordinateReferenceSystem) new CRSConverter().fromString(wkt);
         assertTrue(CRS.equalsIgnoreMetadata(crs, crs2));
+    }
+
+    @Test
+    public void testMultimapConverter() throws Exception {
+        XStreamPersisterFactory factory = new XStreamPersisterFactory();
+        XStreamPersister xmlPersister = factory.createXMLPersister();
+        XStream xs = xmlPersister.getXStream();
+
+        Multimap<String, Object> mmap = ArrayListMultimap.create();
+        mmap.put("one", "abc");
+        mmap.put("one", new Integer(2));
+        mmap.put("two", new NumberRange<Integer>(Integer.class, 10, 20));
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        persister.save(mmap, out);
+
+        // print(in(out));
+
+        Multimap mmap2 = persister.load(in(out), Multimap.class);
+        assertEquals(mmap, mmap2);
     }
 
     @Test

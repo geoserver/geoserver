@@ -6,7 +6,6 @@
 package org.geoserver.web.data.resource;
 
 import java.io.IOException;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
@@ -29,24 +28,19 @@ import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
-import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.model.StringResourceModel;
-import org.apache.wicket.util.convert.ConversionException;
-import org.apache.wicket.validation.IValidatable;
-import org.apache.wicket.validation.IValidator;
-import org.apache.wicket.validation.ValidationError;
 import org.geoserver.catalog.AttributeTypeInfo;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.ResourcePool;
 import org.geoserver.web.GeoServerApplication;
+import org.geoserver.web.data.layer.CascadedWFSStoredQueryEditPage;
 import org.geoserver.web.data.layer.SQLViewEditPage;
 import org.geoserver.web.wicket.GeoServerAjaxFormLink;
 import org.geoserver.web.wicket.ParamResourceModel;
+import org.geotools.data.wfs.internal.v2_0.storedquery.StoredQueryConfiguration;
 import org.geotools.jdbc.VirtualTable;
 import org.geotools.measure.Measure;
-import org.geotools.util.Converters;
-import org.geotools.util.MeasureConverterFactory;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.type.FeatureType;
 
@@ -170,6 +164,23 @@ public class FeatureResourceConfigurationPanel extends ResourceConfigurationPane
         FeatureTypeInfo typeInfo = (FeatureTypeInfo) model.getObject();
         reloadContainer.setVisible(typeInfo.getMetadata().get(FeatureTypeInfo.JDBC_VIRTUAL_TABLE, VirtualTable.class) == null);
         sqlViewContainer.setVisible(!reloadContainer.isVisible());
+        
+        // Cascaded Stored Query
+        WebMarkupContainer cascadedStoredQueryContainer = new WebMarkupContainer("editCascadedStoredQueryContainer");
+        attributePanel.add(cascadedStoredQueryContainer);
+        cascadedStoredQueryContainer.add(new Link("editCascadedStoredQuery") {
+            @Override
+            public void onClick() {
+                FeatureTypeInfo typeInfo = (FeatureTypeInfo) model.getObject();
+                try {
+                    setResponsePage(new CascadedWFSStoredQueryEditPage(typeInfo, ((ResourceConfigurationPage) this.getPage())));
+                } catch(Exception e) {
+                    LOGGER.log(Level.SEVERE, "Failure opening the sql view edit page", e);
+                    error(e.toString());
+                }
+            }
+        });
+        cascadedStoredQueryContainer.setVisible(typeInfo.getMetadata().get(FeatureTypeInfo.STORED_QUERY_CONFIGURATION, StoredQueryConfiguration.class) != null);
     }
     
     static class ReloadWarningDialog extends WebPage {
@@ -188,7 +199,7 @@ public class FeatureResourceConfigurationPanel extends ResourceConfigurationPane
                 final ResourcePool resourcePool = catalog.getResourcePool();
                 return resourcePool.getAttributes(typeInfo);
             } catch (Exception e) {
-                LOGGER.log(Level.INFO, "Grabbing the attribute list failed", e);
+                LOGGER.log(Level.SEVERE, "Grabbing the attribute list failed", e);
                 String error = new ParamResourceModel("attributeListingFailed", FeatureResourceConfigurationPanel.this, e.getMessage()).getString();
                 FeatureResourceConfigurationPanel.this.getPage().error(error);
                 return Collections.emptyList();

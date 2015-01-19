@@ -9,20 +9,12 @@ environment can be set up.
 Java
 ----
 
-Developing with GeoServer requires a Java Development Kit (JDK) 6 or greater, available from `Oracle <http://www.oracle.com/technetwork/java/javase/downloads/index.html>`_.
-
-.. note::
-
-   While it is possible to use a JDK other than the one provided by Oracle, it is 
-   recommended that the Oracle JDK be used.
+Developing with GeoServer requires a Java Development Kit (JDK) 7 or greater, available from `Oracle <http://www.oracle.com/technetwork/java/javase/downloads/index.html>`_ or `OpenJDK <http://openjdk.java.net>`_
 
 Maven
 -----
 
 GeoServer uses a tool known as `Maven <http://maven.apache.org/>`_ to build. 
-The current recommended version of Maven is 2.2.1 and is available from 
-`Apache <http://maven.apache.org/download.html>`_. While 2.2.1 is recommended
-any version greater than 2.0.8 should also work.
 
 Maven tracks global settings in your home directory .m2/settings.xml. This file is used to control
 global options such as proxy settings or listing repository mirrors to download from.

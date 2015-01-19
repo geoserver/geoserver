@@ -5,18 +5,25 @@
  */
 package org.geoserver.wfs;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
+import java.io.IOException;
 import java.util.Collections;
 
 import javax.xml.namespace.QName;
+
 import org.custommonkey.xmlunit.XMLAssert;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.config.GeoServer;
+import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
+import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
@@ -35,6 +42,11 @@ public class GetFeatureTest extends WFSTestSupport {
     	
     	data.addVectorLayer (NULL_GEOMETRIES, Collections.EMPTY_MAP, getClass(), getCatalog());
     	data.addVectorLayer (FIFTEEN_DUPLICATE, Collections.EMPTY_MAP, getClass(), getCatalog());
+    }
+
+    @Before
+    public void resetFifteen() throws IOException {
+        revertLayer(MockData.FIFTEEN);
     }
        
     @Test
@@ -289,6 +301,43 @@ public class GetFeatureTest extends WFSTestSupport {
         if(i >= parsedLocations.length) {
             fail("Could not find the http://www.opengis.net/cite schema location!");
         }
+    }
+    
+    @Test
+    public void testStrictComplianceBBoxValidator() throws Exception {
+        GeoServer geoServer = getGeoServer();
+        WFSInfo service = geoServer.getService(WFSInfo.class);
+        try {
+            service.setCiteCompliant(true);
+            geoServer.save(service);
+            
+            final QName typeName = MockData.FORESTS;
+            // used to throw an error since it was not accounting for the bbox epsg code
+            String path = "ows?service=WFS&version=1.1.0&request=GetFeature&typeName="
+                    + getLayerId(typeName) + "&bbox=1818131,6142575,1818198,6142642,EPSG:3857&srsName=EPSG:4326";
+            Document doc = getAsDOM(path);
+            print(doc);
+            XMLAssert.assertXpathEvaluatesTo("1", "count(//wfs:FeatureCollection)", doc);
+        } finally {
+            service.setCiteCompliant(false);
+            geoServer.save(service);
+        }
+    }
+
+    @Test
+    public void testRequestDisabledResource() throws Exception {
+        Catalog catalog = getCatalog();
+        ResourceInfo fifteen = catalog.getResourceByName(getLayerId(MockData.FIFTEEN),
+                ResourceInfo.class);
+        fifteen.setEnabled(false);
+        catalog.save(fifteen);
+
+        Document doc = getAsDOM("wfs?request=GetFeature&typename=cdf:Fifteen&version=1.0.0&service=wfs");
+        // print(doc);
+        XMLAssert.assertXpathEvaluatesTo("1", "count(//ogc:ServiceException)", doc);
+        XMLAssert.assertXpathEvaluatesTo("InvalidParameterValue", "//ogc:ServiceException/@code",
+                doc);
+        XMLAssert.assertXpathEvaluatesTo("typeName", "//ogc:ServiceException/@locator", doc);
     }
 
 }

@@ -73,13 +73,14 @@ public abstract class ProcessParameterIO {
         defaults.add(new GMLPPIO.GML3.Geometry());
         defaults.add(new GMLPPIO.GML2.Geometry());
         defaults.add(new WKTPPIO());
+        defaults.add(new GeoJSONPPIO.Geometries());
         defaults.add(new GMLPPIO.GML3.GeometryAlternate());
         defaults.add(new GMLPPIO.GML2.GeometryAlternate());
 
         // features
         defaults.add(new WFSPPIO.WFS10());
         defaults.add(new WFSPPIO.WFS11());
-        defaults.add(new GeoJSONPPIO());
+        defaults.add(new GeoJSONPPIO.FeatureCollections());
         defaults.add(new WFSPPIO.WFS10Alternate());
         defaults.add(new WFSPPIO.WFS11Alternate());
 
@@ -189,6 +190,22 @@ public abstract class ProcessParameterIO {
     }
 
     /**
+     * Returns true if the specified parameter is a complex one
+     * 
+     * @param param
+     * @param applicationContext
+     * @return
+     */
+    public static boolean isComplex(Parameter<?> param, ApplicationContext applicationContext) {
+        List<ProcessParameterIO> ppios = findAll(param, applicationContext);
+        if (ppios.isEmpty()) {
+            return false;
+        } else {
+            return ppios.get(0) instanceof ComplexPPIO;
+        }
+    }
+
+    /**
      * java class of parameter when reading and writing i/o.
      */
     final protected Class externalType;
@@ -239,4 +256,5 @@ public abstract class ProcessParameterIO {
     public final String getIdentifer() {
         return identifer;
     }
+
 }

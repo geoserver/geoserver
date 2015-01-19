@@ -1,3 +1,8 @@
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.mbtiles.gs.wps;
 
 import java.awt.Color;
@@ -6,7 +11,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -18,9 +22,10 @@ import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.mbtiles.MBTilesGetMapOutputFormat;
 import org.geoserver.platform.ServiceException;
+import org.geoserver.platform.resource.Resource;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapLayerInfo;
-import org.geoserver.wps.WPSStorageCleaner;
+import org.geoserver.wps.resource.WPSResourceManager;
 import org.geotools.data.DataUtilities;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.mbtiles.MBTilesFile;
@@ -51,9 +56,9 @@ public class MBTilesProcess implements GSProcess {
     private Catalog catalog;
 
     /**
-     * {@link WPSStorageCleaner} used for cleaning temporary files
+     * {@link WPSResourceManager} used for cleaning temporary files
      */
-    private WPSStorageCleaner storage;
+    private WPSResourceManager resources;
 
     /**
      * {@link MBTilesGetMapOutputFormat} instance used for creating the MBTiles file
@@ -61,8 +66,8 @@ public class MBTilesProcess implements GSProcess {
     private MBTilesGetMapOutputFormat mapOutput;
 
     public MBTilesProcess(Catalog catalog, MBTilesGetMapOutputFormat mapOutput,
-            WPSStorageCleaner storage) {
-        this.storage = storage;
+            WPSResourceManager storage) {
+        this.resources = storage;
         this.mapOutput = mapOutput;
         this.catalog = catalog;
     }
@@ -121,12 +126,14 @@ public class MBTilesProcess implements GSProcess {
         // Extract the file path if present
         final File file;
 
+        String outputResourceName = name + ".mbtiles";
         if (path != null) {
             File urlToFile = DataUtilities.urlToFile(path);
             urlToFile.mkdirs();
-            file = new File(urlToFile, name + ".mbtiles");
+            file = new File(urlToFile, outputResourceName);
         } else {
-            file = new File(createTempDir(storage.getStorage()), name + ".mbtiles");
+            final Resource resource = resources.getOutputResource(null, outputResourceName);
+            file = resource.file();
         }
 
         // Create the MBTile file
@@ -283,7 +290,8 @@ public class MBTilesProcess implements GSProcess {
         if (path != null) {
             return DataUtilities.fileToURL(file);
         } else {
-            return storage.getURL(file);
+            return new URL(resources.getOutputResourceUrl(outputResourceName,
+                    "application/x-mbtiles"));
         }
     }
 }

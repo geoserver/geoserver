@@ -248,4 +248,17 @@ public class ConfigDatabaseTest {
         service = database.getById(service.getId(), ServiceInfo.class);
         assertEquals("Bar", service.getMaintainer());
     }
+
+    public void testGetServiceWithGeoServerRef() {
+        WMSInfo service = new WMSInfoImpl();
+        ((WMSInfoImpl) service).setId("WMS-TEST");
+        service.setName("WMS");
+        service.setMaintainer("Foo");
+
+        service = database.add(service);
+        database.clear(service);
+
+        service = database.getAll(WMSInfo.class).iterator().next();
+        assertNotNull(service.getGeoServer());
+    }
 }

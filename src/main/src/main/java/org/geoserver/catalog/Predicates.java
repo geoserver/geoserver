@@ -230,6 +230,18 @@ public class Predicates {
     }
 
     /**
+     * Returns a predicate that evaluates to {@code true} if each of its components evaluates to
+     * {@code true}.
+     * <p>
+     * The components are evaluated in order, and evaluation will be "short-circuited" as soon as a
+     * false predicate is found.
+     * 
+     */
+    public static Filter and(List<Filter> operands) {
+        return factory.and(operands);
+    }
+
+    /**
      * Returns a predicate that evaluates to {@code true} if either of its components evaluates to
      * {@code true}.
      * <p>
@@ -256,6 +268,10 @@ public class Predicates {
         return factory.or(ored);
     }
 
+    public static Filter or(List<Filter> operands) {
+        return factory.or(operands);
+    }
+
     public static Filter isNull(final String propertyName) {
         return factory.isNull(factory.property(propertyName));
     }
@@ -270,6 +286,36 @@ public class Predicates {
 
     public static SortBy sortBy(final String propertyName, final boolean ascending) {
         return factory.sort(propertyName, ascending ? SortOrder.ASCENDING : SortOrder.DESCENDING);
+    }
+    
+    public static Filter isInstanceOf(Class clazz){
+        return factory.equals(factory.function("isInstanceOf", factory.literal(clazz)), factory.literal(true));
+    }
+
+    /**
+     * Returns a predicate that checks a CatalogInfo object's property for inequality with the
+     * provided property value.
+     * <p>
+     * The <tt>property</tt> parameter may be specified as a "path" of the form "prop1.prop2". If
+     * any of the resulting properties along the path result in null this method will return null.
+     * <p>
+     * Indexed access to nested list and array properties is supported through the syntax
+     * {@code "prop1[M].prop2.prop3[N]"}, where {@code prop1} and {@code prop3} are list or array
+     * properties, {@code M} is the index of the {@code prop2} element to retrieve from
+     * {@code prop1}, and {@code N} is the index of array or list property {@code prop3} to
+     * retrieve. Indexed access to {{java.util.Set}} properties is <b>not</b> supported.
+     * <p>
+     * Evaluation of nested properties for <b>any</b> member of a collection property is at the
+     * moment not supported
+     * <p>
+     * 
+     * @param property the qualified property name of the predicate's input object to evaluate
+     * @param expected the value to check the input object's property against
+     * @see PropertyIsEqualTo
+     * 
+     */
+    public static Filter notEqual(final String property, final Object expected) {
+        return factory.notEqual(factory.property(property), factory.literal(expected));
     }
 
 }

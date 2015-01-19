@@ -107,7 +107,7 @@ public abstract class DescribeProcessTransformer extends TransformerBase {
                     return;
                 }
 
-                ProcessFactory pf = GeoServerProcessors.createProcessFactory(identifier);
+                ProcessFactory pf = GeoServerProcessors.createProcessFactory(identifier, false);
 
                 if (null == pf) {
                     throw new WPSException("Invalid identifier", "InvalidParameterValue");

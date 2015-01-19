@@ -17,8 +17,8 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
-import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.rest.RestletException;
@@ -26,18 +26,9 @@ import org.geoserver.rest.format.DataFormat;
 import org.geotools.data.DataAccess;
 import org.geotools.data.DataStore;
 import org.geotools.data.FeatureSource;
-import org.geotools.data.Transaction;
-import org.geotools.data.simple.SimpleFeatureSource;
-import org.geotools.data.store.ContentDataStore;
-import org.geotools.data.store.ContentEntry;
-import org.geotools.data.store.ContentFeatureSource;
-import org.geotools.data.store.ContentState;
 import org.geotools.feature.NameImpl;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
-import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.feature.type.FeatureType;
-import org.opengis.feature.type.Name;
 import org.restlet.Context;
 import org.restlet.data.Method;
 import org.restlet.data.Request;
@@ -192,6 +183,7 @@ public class FeatureTypeResource extends AbstractCatalogResource {
         }
         
         featureType.setEnabled(true);
+        catalog.validate(featureType, true).throwIfInvalid();
         catalog.add( featureType );
         
         //create a layer for the feature type
@@ -254,6 +246,7 @@ public class FeatureTypeResource extends AbstractCatalogResource {
         CatalogBuilder helper = new CatalogBuilder(catalog);
         helper.updateFeatureType(featureTypeInfo,featureTypeUpdate);
         calculateOptionalFields(featureTypeUpdate, featureTypeInfo);
+        catalog.validate(featureTypeInfo, false).throwIfInvalid();
         catalog.save( featureTypeInfo );
         catalog.getResourcePool().clear(featureTypeInfo);
         
@@ -301,34 +294,6 @@ public class FeatureTypeResource extends AbstractCatalogResource {
         
         catalog.remove( ft );
         
-        // clear from resource pool
-        catalog.getResourcePool().clear(ft);        
-        List<FeatureTypeInfo> siblings = catalog.getFeatureTypesByDataStore(ds);
-        if( siblings.size() == 0 ){
-            // clean up cached DataAccess if no longer in use
-            catalog.getResourcePool().clear(ds);
-        }
-        else {
-            boolean flush = false;
-            try {
-                DataAccess<?,?> dataStore = catalog.getResourcePool().getDataStore( ds );
-                if( dataStore instanceof ContentDataStore ){
-                    // ask JDBC DataStore to forget cached column information
-                    Name name = ft.getQualifiedNativeName();
-                    ContentDataStore contentDataStore = (ContentDataStore) dataStore;
-                    ContentFeatureSource featureSource = contentDataStore.getFeatureSource(name,Transaction.AUTO_COMMIT);
-                    featureSource.getState().flush();
-                    flush = true;
-                }
-            } catch( Exception e ) {
-                LOGGER.warning( "Unable to flush '" + ft.getQualifiedNativeName() );
-                LOGGER.log(Level.FINE, "", e );
-            }
-            if( !flush ){
-                 // Original heavy handed way to force "flush"? seems a bad idea
-                 catalog.getResourcePool().clear(ds);     
-            }
-        }
         LOGGER.info( "DELETE feature type" + datastore + "," + featuretype );
     }
 

@@ -6,12 +6,7 @@
 
 package org.geoserver.catalog;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.awt.image.RenderedImage;
 import java.io.File;
@@ -74,6 +69,8 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
         super.onSetUp(testData);
         
         testData.addStyle("relative", "se_relativepath.sld", ResourcePoolTest.class, getCatalog());
+        testData.addStyle("relative_protocol", "se_relativepath_protocol.sld",
+                ResourcePoolTest.class, getCatalog());
         StyleInfo style = getCatalog().getStyleByName("relative");
         style.setSLDVersion(new Version("1.1.0"));
         getCatalog().save(style);
@@ -305,6 +302,22 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
     }
     
     @Test
+    public void testSEStyleWithRelativePathProtocol() throws IOException {
+        StyleInfo si = getCatalog().getStyleByName("relative_protocol");
+
+        assertNotNull(si);
+        Style style = si.getStyle();
+        PolygonSymbolizer ps = (PolygonSymbolizer) style.featureTypeStyles().get(0).rules().get(0)
+                .symbolizers().get(0);
+        ExternalGraphic eg = (ExternalGraphic) ps.getFill().getGraphicFill().graphicalSymbols()
+                .get(0);
+        URI uri = eg.getOnlineResource().getLinkage();
+        assertNotNull(uri);
+        File actual = DataUtilities.urlToFile(uri.toURL()).getCanonicalFile();
+        assertEquals(rockFillSymbolFile, actual);
+    }
+
+    @Test
     public void testPreserveStructuredReader() throws IOException {
         // we have to make sure time ranges native name is set to trigger the bug in question
         CoverageInfo ci = getCatalog().getCoverageByName(getLayerId(TIMERANGES));
@@ -337,7 +350,7 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
             if (gc != null) {
                 RenderedImage ri = gc.getRenderedImage();
                 if (gc instanceof GridCoverage2D) {
-                    ((GridCoverage2D) gc).dispose(true);
+                    gc.dispose(true);
                 }
                 if (ri instanceof PlanarImage) {
                     ImageUtilities.disposePlanarImageChain((PlanarImage) ri);

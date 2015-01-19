@@ -38,7 +38,9 @@ Question and answer:
 License
 -------
 
-GeoServer is free software and is licensed under the :download:`GNU General Public License <gpl-2.0.txt>`.::
+For complete license information review :download:`LICENSE.txt </../../../../src/LICENSE.txt>`.
+
+* GeoServer is free software and is licensed under the :download:`GNU General Public License </../../../../src/release/GPL.txt>`::
 
     GeoServer, open geospatial information server
     Copyright (C) 2014 - Open Source Geospatial Foundation
@@ -93,6 +95,10 @@ Additionally:
      */
 
 * SetCharacterEncodingFilter and RewindableInputStream makes use of code provided
-  under :download:`Apache License Version 2.0 <apache-2.0.txt>`.
+  under :download:`Apache License Version 2.0 </../../../../src/release/apache-2.0.txt>`.
 
-* UCSReader is provided using :download:`Apache License Version 1.1 <apache-1.1.txt>`.
+* UCSReader is provided using :download:`Apache License Version 1.1 </../../../../src/release/apache-1.1.txt>`.
+
+* Snippets from the Prototype library (www.prototypejs.org) under a MIT license.
+
+* The build process will download jars from JAI ImageIO (BSD), Jetty (Jetty License), EMF (EPL), XSD (EPL). Several projects using the Apache License 2.0: Spring, Apache Commons, Log4j, Batik, Xerces.

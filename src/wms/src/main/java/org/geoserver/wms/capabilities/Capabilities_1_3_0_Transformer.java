@@ -41,13 +41,13 @@ import org.geoserver.catalog.KeywordInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerIdentifierInfo;
 import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.LayerInfo.Type;
 import org.geoserver.catalog.LegendInfo;
 import org.geoserver.catalog.MetadataLinkInfo;
 import org.geoserver.catalog.Predicates;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.config.ContactInfo;
@@ -64,8 +64,6 @@ import org.geoserver.wms.GetMapOutputFormat;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.capabilities.DimensionHelper.Mode;
-import org.geoserver.wms.legendgraphic.LegendUtils;
-import org.geotools.data.ows.Layer;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.CRS.AxisOrder;
@@ -87,6 +85,7 @@ import org.xml.sax.helpers.AttributesImpl;
 
 import com.google.common.collect.Iterables;
 import com.vividsolutions.jts.geom.Envelope;
+import org.geoserver.catalog.DataLinkInfo;
 
 /**
  * Geotools xml framework based encoder for a Capabilities WMS 1.3.0 document.
@@ -425,6 +424,31 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                 element("OnlineResource", null, orAtts);
 
                 end("MetadataURL");
+            }
+        }
+
+        /**
+         * Turns the data URL list to XML
+         * 
+         * @param keywords
+         */
+        private void handleDataList(Collection<DataLinkInfo> dataURLs) {
+            if (dataURLs == null) {
+                return;
+            }
+
+            for (DataLinkInfo link : dataURLs) {
+
+                start("DataURL");
+
+                element("Format", link.getType());
+
+                String content = ResponseUtils.proxifyDataLink(link, request.getBaseUrl());
+
+                AttributesImpl orAtts = attributes("xlink:type", "simple", "xlink:href", content);
+                element("OnlineResource", null, orAtts);
+
+                end("DataURL");
             }
         }
 
@@ -867,11 +891,11 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             }
 
             boolean wmsExposable = false;
-            if (layer.getType() == Type.RASTER || layer.getType() == Type.WMS) {
+            if (layer.getType() == PublishedType.RASTER || layer.getType() == PublishedType.WMS) {
                 wmsExposable = true;
             } else {
                 try {
-                    wmsExposable = layer.getType() == Type.VECTOR
+                    wmsExposable = layer.getType() == PublishedType.VECTOR
                             && ((FeatureTypeInfo) layer.getResource()).getFeatureType()
                                     .getGeometryDescriptor() != null;
                 } catch (Exception e) {
@@ -926,9 +950,9 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             }
 
             // handle dimensions
-            if (layer.getType() == Type.VECTOR) {
+            if (layer.getType() == PublishedType.VECTOR) {
                 dimensionHelper.handleVectorLayerDimensions(layer);
-            } else if (layer.getType() == Type.RASTER) {
+            } else if (layer.getType() == PublishedType.RASTER) {
                 dimensionHelper.handleRasterLayerDimensions(layer);
             }
 
@@ -944,7 +968,8 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             // handle metadata URLs
             handleMetadataList(layer.getResource().getMetadataLinks());
 
-            // TODO: DataURL
+            // handle DataURLs
+            handleDataList(layer.getResource().getDataLinks());
             // TODO: FeatureListURL
             handleStyles(layer);
             
@@ -1131,9 +1156,9 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                 LayerInfo rootLayer = layerGroup.getRootLayer();
                 
                 // handle dimensions
-                if (rootLayer.getType() == Type.VECTOR) {
+                if (rootLayer.getType() == PublishedType.VECTOR) {
                     dimensionHelper.handleVectorLayerDimensions(rootLayer);
-                } else if (rootLayer.getType() == Type.RASTER) {
+                } else if (rootLayer.getType() == PublishedType.RASTER) {
                     dimensionHelper.handleRasterLayerDimensions(rootLayer);
                 }
                 
@@ -1246,7 +1271,6 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
          */
         protected void handleLegendURL(LayerInfo layer, LegendInfo legend,
                 StyleInfo style, StyleInfo sampleStyle) {
-            String layerName = layer.getName();
             if (legend != null) {
                 if (LOGGER.isLoggable(Level.FINE)) {
                     LOGGER.fine("using user supplied legend URL");
@@ -1315,6 +1339,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                 element("Format", defaultFormat);
                 attrs.clear();
 
+                String layerName = layer.prefixedName();
                 Map<String, String> params = params("service", "WMS", "request",
                         "GetLegendGraphic", "format", defaultFormat, "width",
                         String.valueOf(GetLegendGraphicRequest.DEFAULT_WIDTH), "height",

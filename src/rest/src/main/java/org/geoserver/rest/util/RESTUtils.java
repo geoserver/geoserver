@@ -65,6 +65,8 @@ public class RESTUtils {
 
     public static final String ROOT_KEY = "root";
     
+    public static final String QUIET_ON_NOT_FOUND_KEY = "quietOnNotFound";
+    
     /**
      * Returns the underlying HttpServletRequest from a Restlet Request object.
      * <p>

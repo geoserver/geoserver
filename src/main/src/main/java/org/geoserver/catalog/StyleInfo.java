@@ -111,4 +111,16 @@ public interface StyleInfo extends CatalogInfo {
      */
     Style getStyle() throws IOException;
     
+    /**
+     * The derived prefixed name.
+     * <p>
+     * If a workspace is set this method returns:
+     * <pre>
+     *   getWorkspace().getName() + ":" + getName();
+     * </pre>
+     * Otherwise it simply returns: <pre>getName()</pre>
+     * </p>
+     */
+    String prefixedName();
+    
 }

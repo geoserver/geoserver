@@ -269,6 +269,16 @@ public class GetCoverageTest extends AbstractGetCoverageTest {
     }
 
     @Test
+    public void testNotExistent() throws Exception {
+        String queryString = "&request=getcoverage&service=wcs&version=1.1.1&&format=image/geotiff"
+                + "&BoundingBox=-45,146,-42,147,urn:ogc:def:crs:EPSG:6.6:4326";
+        Document dom = getAsDOM("wcs?identifier=NotThere" + queryString);
+        // print(dom);
+        checkOws11Exception(dom, "InvalidParameterValue", "identifier");
+    }
+
+    
+    @Test
     public void testLayerQualified() throws Exception {
         String queryString = "&request=getcoverage&service=wcs&version=1.1.1&&format=image/geotiff"
                 + "&BoundingBox=-45,146,-42,147,urn:ogc:def:crs:EPSG:6.6:4326";
@@ -529,6 +539,46 @@ public class GetCoverageTest extends AbstractGetCoverageTest {
         // check the image is suitably small (without requiring an exact size)
         assertTrue(image.getWidth() < 1000);
         assertTrue(image.getHeight() < 1000);
+    }
+
+    @Test
+    public void testBicubicInterpolation() throws Exception {
+        this.testInterpolationMethods("cubic");
+    }
+
+    @Test
+    public void testBilinearInterpolation() throws Exception {
+        this.testInterpolationMethods("linear");
+    }
+
+    @Test
+    public void testNearestNeighborInterpolation() throws Exception {
+        this.testInterpolationMethods("nearest");
+    }
+
+    @Test
+    public void testUnknownInterpolation() throws Exception {
+        this.testInterpolationMethods("unknown");
+    }
+
+    @Test
+    public void testEmptyInterpolation() throws Exception {
+        this.testInterpolationMethods("");
+    }
+
+    private void testInterpolationMethods(String method) throws Exception {
+        String queryString = "wcs?identifier=" + getLayerId(MOSAIC) + "&request=getcoverage"
+                + "&service=wcs&version=1.1.1&&format=image/tiff"
+                + "&BoundingBox=0,0,1,1,urn:ogc:def:crs:EPSG:6.6:4326"
+                + "&RangeSubset=contents:" + method;
+
+        MockHttpServletResponse response = getAsServletResponse(queryString);
+        try {
+            this.getMultipart(response);
+            assertEquals(response.getStatusCode(), 200);
+        } catch (ClassCastException e) {
+            assertEquals("application/xml", response.getContentType());
+        }
     }
 
 }

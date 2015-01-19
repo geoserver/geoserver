@@ -1335,11 +1335,11 @@ public class CatalogBuilder {
 
         // setup the layer type
         if (layer.getResource() instanceof FeatureTypeInfo) {
-            layer.setType(LayerInfo.Type.VECTOR);
+            layer.setType(PublishedType.VECTOR);
         } else if (layer.getResource() instanceof CoverageInfo) {
-            layer.setType(LayerInfo.Type.RASTER);
+            layer.setType(PublishedType.RASTER);
         } else if (layer.getResource() instanceof WMSLayerInfo) {
-            layer.setType(LayerInfo.Type.WMS);
+            layer.setType(PublishedType.WMS);
         }
 
         return layer;

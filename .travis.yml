@@ -1,11 +1,16 @@
+sudo: false
+cache:
+  directories:
+    - "$HOME/.m2"
 language: java
 jdk:
+  - oraclejdk8
   - oraclejdk7
   - openjdk7
 before_script:
   - cd src
 script:
-  - mvn clean test -Prelease -B -T2
+  - mvn clean test -Prelease -B -T2 -fae -U
 notifications:
   email:
     on_success: never

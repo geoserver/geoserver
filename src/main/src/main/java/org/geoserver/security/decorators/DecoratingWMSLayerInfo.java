@@ -11,6 +11,7 @@ import java.util.Map;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogVisitor;
+import org.geoserver.catalog.DataLinkInfo;
 import org.geoserver.catalog.KeywordInfo;
 import org.geoserver.catalog.MetadataLinkInfo;
 import org.geoserver.catalog.MetadataMap;
@@ -97,6 +98,11 @@ public class DecoratingWMSLayerInfo extends AbstractDecorator<WMSLayerInfo> impl
 
     public List<MetadataLinkInfo> getMetadataLinks() {
         return delegate.getMetadataLinks();
+    }
+
+    @Override
+    public List<DataLinkInfo> getDataLinks() {
+        return delegate.getDataLinks();
     }
 
     public String getName() {

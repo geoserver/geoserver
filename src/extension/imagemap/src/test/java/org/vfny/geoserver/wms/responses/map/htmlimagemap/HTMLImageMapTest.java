@@ -5,7 +5,9 @@
  */
 package org.vfny.geoserver.wms.responses.map.htmlimagemap;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.awt.Color;
 import java.io.BufferedReader;
@@ -15,23 +17,20 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.logging.Logger;
 
-import junit.framework.TestCase;
-
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.wms.WMSMapContent;
-import org.geotools.data.DataSourceException;
 import org.geotools.data.DataStore;
-import org.geotools.data.DataUtilities;
 import org.geotools.data.FeatureSource;
+import org.geotools.data.Query;
 import org.geotools.data.property.PropertyDataStore;
 import org.geotools.data.shapefile.ShapefileDataStore;
+import org.geotools.data.simple.SimpleFeatureSource;
+import org.geotools.data.view.DefaultView;
 import org.geotools.factory.CommonFactoryFinder;
-import org.geotools.feature.SchemaException;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.FeatureLayer;
 import org.geotools.referencing.CRS;
-import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.styling.SLDParser;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyleFactory;
@@ -41,8 +40,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
 import org.springframework.web.context.support.GenericWebApplicationContext;
@@ -105,23 +102,7 @@ public class HTMLImageMapTest {
     public DataStore getTestDataStore() throws IOException {
         File testdata = TestData.file(this, "featureTypes");
 
-        return new MyPropertyDataStore(testdata);
-
-    }
-
-    public DataStore getProjectedTestDataStore() throws IOException {
-        File testdata = TestData.file(this, "featureTypes");
-
-        try {
-            return new MyPropertyDataStore(testdata, CRS.decode("EPSG:3004"));
-        } catch (NoSuchAuthorityCodeException e) {
-            e.printStackTrace();
-            return null;
-        } catch (FactoryException e) {
-            //
-            e.printStackTrace();
-            return null;
-        }
+        return new PropertyDataStore(testdata);
 
     }
 
@@ -256,9 +237,13 @@ public class HTMLImageMapTest {
 
     @Test
     public void testMapProduceReproject() throws Exception {
-        final DataStore ds = getProjectedTestDataStore();
-        final FeatureSource<SimpleFeatureType, SimpleFeature> fs = ds
-                .getFeatureSource("ProjectedPolygon");
+        final DataStore ds = getTestDataStore();
+        final SimpleFeatureSource origional = ds.getFeatureSource("ProjectedPolygon");
+        
+        Query query = new Query("ProjectedPolygon");
+        query.setCoordinateSystem(CRS.decode("EPSG:3004"));
+        final SimpleFeatureSource fs = new DefaultView( origional, query );
+        
         final ReferencedEnvelope env = new ReferencedEnvelope(fs.getBounds(),
                 CRS.decode("EPSG:3004"));
 
@@ -527,41 +512,4 @@ public class HTMLImageMapTest {
         EncodeHTMLImageMap result = mapProducer.produceMap(map);
         assertTestResult(s, result);
     }
-
-    static class MyPropertyDataStore extends PropertyDataStore {
-
-        CoordinateReferenceSystem myCRS = DefaultGeographicCRS.WGS84;
-
-        /**
-         * Creates a new MyPropertyDataStore object.
-         */
-        public MyPropertyDataStore(File dir) {
-            super(dir);
-        }
-
-        /**
-         * Creates a new MyPropertyDataStore object.
-         * 
-         * @param dir
-         *            DOCUMENT ME!
-         */
-        public MyPropertyDataStore(File dir, CoordinateReferenceSystem coordinateSystem) {
-            super(dir);
-            this.myCRS = coordinateSystem;
-        }
-
-        public SimpleFeatureType getSchema(String typeName) throws IOException {
-            SimpleFeatureType schema = super.getSchema(typeName);
-
-            try {
-                return DataUtilities.createSubType(schema, null, myCRS);
-            } catch (SchemaException e) {
-                throw new DataSourceException(e.getMessage(), e);
-            }
-        }
-        
-        
-
-    }
-
 }

@@ -29,7 +29,7 @@ import org.geoserver.wfs.request.FeatureCollectionResponse;
 import org.geoserver.wfs.request.GetFeatureRequest;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapLayerInfo;
-import org.geoserver.wps.WPSStorageCleaner;
+import org.geoserver.wps.resource.WPSResourceManager;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.feature.FeatureCollection;
@@ -63,7 +63,7 @@ public class GeoPackageProcess implements GSProcess {
     
    private Catalog catalog;
     
-   private WPSStorageCleaner storage;
+    private WPSResourceManager resources;
    
    private GetFeature getFeatureDelegate;
       
@@ -71,8 +71,9 @@ public class GeoPackageProcess implements GSProcess {
    
    private FilterFactory2 filterFactory;
    
-   public GeoPackageProcess(GeoServer geoServer, GeoPackageGetMapOutputFormat mapOutput, WPSStorageCleaner storage, FilterFactory2 filterFactory) {
-       this.storage = storage;
+    public GeoPackageProcess(GeoServer geoServer, GeoPackageGetMapOutputFormat mapOutput,
+            WPSResourceManager resources, FilterFactory2 filterFactory) {
+        this.resources = resources;
        this.mapOutput = mapOutput;
        this.filterFactory = filterFactory;
        catalog = geoServer.getCatalog();
@@ -104,12 +105,13 @@ public class GeoPackageProcess implements GSProcess {
        URL path = contents.getPath();
        boolean remove = contents.getRemove() != null ? contents.getRemove() : true;
        
+        String outputName = contents.getName() + ".gpkg";
        if(!remove && path != null){ 
            File urlToFile = DataUtilities.urlToFile(path);
            urlToFile.mkdirs();
            file =new File(urlToFile, contents.getName()+ ".gpkg");
        }else{
-           file = new File( createTempDir(storage.getStorage()), contents.getName()+ ".gpkg");
+            file = resources.getOutputResource(null, outputName).file();
        }
        
        GeoPackage gpkg = new GeoPackage(file);
@@ -200,6 +202,10 @@ public class GeoPackageProcess implements GSProcess {
                    e.setBounds(bounds);
                   
                    gpkg.add(e, (SimpleFeatureCollection)  collection);
+                   
+                   if (features.isIndexed()) {
+                       gpkg.createSpatialIndex(e);
+                   }                   
                }
                
            } else if (layer.getType() == LayerType.TILES) {
@@ -350,7 +356,7 @@ public class GeoPackageProcess implements GSProcess {
        if(path != null && !remove){
            return path;
        }else{
-           return storage.getURL(file);
+            return new URL(resources.getOutputResourceUrl(outputName, "application/x-gpkg"));
        } 
    }
 

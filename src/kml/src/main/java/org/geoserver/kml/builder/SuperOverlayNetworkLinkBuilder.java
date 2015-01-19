@@ -2,6 +2,7 @@ package org.geoserver.kml.builder;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -61,6 +62,8 @@ public class SuperOverlayNetworkLinkBuilder extends AbstractNetworkLinkBuilder {
     private WMSMapContent mapContent;
 
     private WMS wms;
+    
+    static final String VISIBLE_KEY = "kmlvisible";
 
     public SuperOverlayNetworkLinkBuilder(KmlEncodingContext context) {
         super(context);
@@ -94,7 +97,7 @@ public class SuperOverlayNetworkLinkBuilder extends AbstractNetworkLinkBuilder {
             if (cachedMode && isRequestGWCCompatible(request, i, wms)) {
                 encodeGWCLink(container, request, layer);
             } else {
-                encodeLayerSuperOverlay(container, i, normalizedEnvelope, zoomLevel);
+                encodeLayerSuperOverlay(container, layer, i, normalizedEnvelope, zoomLevel);
             }
         }
     }
@@ -111,13 +114,29 @@ public class SuperOverlayNetworkLinkBuilder extends AbstractNetworkLinkBuilder {
         link.setViewRefreshMode(ViewRefreshMode.NEVER);
     }
 
-    private void encodeLayerSuperOverlay(Document container, int layerIndex, Envelope bounds,
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    private void encodeLayerSuperOverlay(Document container, MapLayerInfo layerInfo, int layerIndex, Envelope bounds,
             int zoomLevel) {
+        Map formatOptions = request.getFormatOptions();
+        
         Layer layer = mapContent.layers().get(layerIndex);
         Folder folder = container.createAndAddFolder();
-        folder.setName(layer.getTitle());
+        folder.setName(layerInfo.getLabel());
+        if (layerInfo.getDescription() != null && layerInfo.getDescription().length() > 0) {
+            folder.setDescription(layerInfo.getDescription());
+        }
+        
+        // Allow for all layers to be disabled by default.  This can be advantageous with
+        // multiple large data-sets.
+        if (formatOptions.get(VISIBLE_KEY) != null) {
+            boolean visible = Boolean.parseBoolean(formatOptions.get(VISIBLE_KEY).toString());
+            folder.setVisibility(visible);
+        }
+        else {
+            folder.setVisibility(true);
+        }
 
-        LookAtOptions lookAtOptions = new LookAtOptions(request.getFormatOptions());
+        LookAtOptions lookAtOptions = new LookAtOptions(formatOptions);
         if (bounds != null) {
             LookAtDecoratorFactory lookAtFactory = new LookAtDecoratorFactory();
             ReferencedEnvelope layerBounds = layer.getBounds();
@@ -283,6 +302,7 @@ public class SuperOverlayNetworkLinkBuilder extends AbstractNetworkLinkBuilder {
         return false;
     }
 
+    @SuppressWarnings("rawtypes")
     void encodeKMLLink(Folder container, Layer layer, String name, int drawOrder, Envelope box) {
         // copy the format options
         CaseInsensitiveMap fo = new CaseInsensitiveMap(new HashMap());
@@ -331,6 +351,7 @@ public class SuperOverlayNetworkLinkBuilder extends AbstractNetworkLinkBuilder {
         return null;
     }
 
+    @SuppressWarnings("unchecked")
     private int featuresInTile(Layer layer, Envelope bounds, boolean regionate) {
         if (!isVectorLayer(layer))
             return 1; // for coverages, we want raster tiles everywhere
@@ -399,6 +420,7 @@ public class SuperOverlayNetworkLinkBuilder extends AbstractNetworkLinkBuilder {
      * @param mapContent
      * @return
      */
+    @SuppressWarnings("unchecked")
     private boolean isRequestGWCCompatible(GetMapRequest request, int layerIndex, WMS wms) {
         // check the kml params are the same as the defaults (GWC uses always the defaults)
         boolean requestKmAttr = context.isDescriptionEnabled();

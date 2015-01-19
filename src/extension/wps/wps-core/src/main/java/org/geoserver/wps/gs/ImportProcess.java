@@ -440,7 +440,7 @@ public class ImportProcess implements GSProcess {
 
                     boolean valid = true;
                     try {
-                        if (!catalog.validate(layerInfo, true).isEmpty()) {
+                        if (!catalog.validate(layerInfo, true).isValid()) {
                             valid = false;
                         }
                     } catch (Exception e) {

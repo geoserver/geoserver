@@ -25,9 +25,13 @@ import org.geoserver.wps.WPSException;
 import org.geoserver.wps.ppio.ProcessParameterIO;
 import org.geoserver.wps.process.AbstractRawData;
 import org.geoserver.wps.process.GeoServerProcessors;
+import org.geoserver.wps.validator.MultiplicityValidator;
+import org.geoserver.wps.validator.ProcessLimitsFilter;
+import org.geoserver.wps.validator.Validators;
 import org.geotools.data.Parameter;
 import org.geotools.process.ProcessFactory;
 import org.opengis.feature.type.Name;
+import org.springframework.validation.Validator;
 
 /**
  * Centralizes some common request parsing activities
@@ -38,6 +42,8 @@ import org.opengis.feature.type.Name;
 public class ExecuteRequest {
 
     ExecuteType request;
+
+    LazyInputMap inputs;
 
     public ExecuteRequest(ExecuteType request) {
         this.request = request;
@@ -86,11 +92,19 @@ public class ExecuteRequest {
      * 
      * @param request
      * @return
+     * @throws Exception
      */
     public LazyInputMap getProcessInputs(WPSExecutionManager manager) {
+        if (inputs == null) {
+            return getInputsInternal(manager);
+        }
+        return inputs;
+    }
+
+    LazyInputMap getInputsInternal(WPSExecutionManager manager) {
         // get the input descriptors
         Name processName = Ows11Util.name(request.getIdentifier());
-        ProcessFactory pf = GeoServerProcessors.createProcessFactory(processName);
+        ProcessFactory pf = GeoServerProcessors.createProcessFactory(processName, true);
         if(pf == null) {
             throw new WPSException("Unknown process " + processName);
         }
@@ -136,21 +150,32 @@ public class ExecuteRequest {
                 throw new WPSException("Unable to decode input: " + inputId);
             }
 
-            // build the provider
-            InputProvider provider = new SimpleInputProvider(input, ppio, manager,
-                    manager.applicationContext);
+            // get the validators
+            Collection<Validator> validators = (Collection<Validator>) p.metadata
+                    .get(ProcessLimitsFilter.VALIDATORS_KEY);
+            // we handle multiplicity validation here, before the parsing even starts
+            List<Validator> filteredValidators = Validators.filterOutClasses(validators,
+                    MultiplicityValidator.class);
 
-            // store the input
-            if (p.maxOccurs > 1) {
-                ListInputProvider lp = (ListInputProvider) providers.get(p.key);
-                if (lp == null) {
-                    lp = new ListInputProvider(provider);
-                    providers.put(p.key, lp);
+            // build the provider
+            try {
+                InputProvider provider = AbstractInputProvider.getInputProvider(input, ppio,
+                        manager, manager.applicationContext, validators);
+
+                // store the input
+                if (p.maxOccurs > 1) {
+                    ListInputProvider lp = (ListInputProvider) providers.get(p.key);
+                    if (lp == null) {
+                        lp = new ListInputProvider(provider, p.getMaxOccurs());
+                        providers.put(p.key, lp);
+                    } else {
+                        lp.add(provider);
+                    }
                 } else {
-                    lp.add(provider);
+                    providers.put(p.key, provider);
                 }
-            } else {
-                providers.put(p.key, provider);
+            } catch (Exception e) {
+                throw new WPSException("Failed to parse process inputs", e);
             }
         }
 

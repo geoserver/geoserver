@@ -39,7 +39,7 @@ master_doc = 'index'
 # General substitutions.
 project = u'GeoServer'
 manual = u'User Manual'
-copyright = u'2014, OpenPlans'
+copyright = u'2014, Open Source Geospatial Foundation'
 
 # The default replacements for |version| and |release|, also used in various
 # other places throughout the built documents.
@@ -107,7 +107,7 @@ rst_epilog = "\n" \
  ".. |install_directory_mac| replace:: :file:`/Applications`\n" \
  ".. |data_directory_winXP| replace:: :file:`C:\Program Files\\\\GeoServer "+release+"\\\\data_dir`\n" \
  ".. |data_directory_win| replace:: :file:`C:\\\\Program Files (x86)\\\\GeoServer "+release+"\\\\data_dir`\n" \
- ".. |data_directory_linux| replace:: :file:`/var/lib/tomcat7/webapps/geoserver/data_dir`\n" \
+ ".. |data_directory_linux| replace:: :file:`/var/lib/tomcat7/webapps/geoserver/data`\n" \
  ".. |data_directory_mac| replace:: :file:`/Applications/GeoServer.app/Contents/Resources/Java/data_dir`"
 
 # Options for HTML output

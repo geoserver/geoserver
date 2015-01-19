@@ -1,21 +1,8 @@
-/*
- *  Copyright (C) 2007-2008-2009 GeoSolutions S.A.S.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * Copyright (C) 2007-2008-2009 GeoSolutions S.A.S.
  *  http://www.geo-solutions.it
- *
- *  GPLv3 + Classpath exception
- *
- *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
  */
 package org.geoserver.sldservice.rest.resource;
 
@@ -31,14 +18,18 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.SLDHandler;
+import org.geoserver.catalog.StyleHandler;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.Styles;
 import org.geoserver.catalog.rest.AbstractCatalogResource;
-import org.geoserver.catalog.rest.SLDFormat;
+import org.geoserver.catalog.rest.StyleFormat;
 import org.geoserver.rest.RestletException;
 import org.geoserver.rest.format.DataFormat;
 import org.geoserver.rest.format.MediaTypes;
 import org.geoserver.sldservice.utils.classifier.ColorRamp;
 import org.geoserver.sldservice.utils.classifier.impl.BlueColorRamp;
+import org.geoserver.sldservice.utils.classifier.impl.CustomColorRamp;
 import org.geoserver.sldservice.utils.classifier.impl.GrayColorRamp;
 import org.geoserver.sldservice.utils.classifier.impl.JetColorRamp;
 import org.geoserver.sldservice.utils.classifier.impl.RandomColorRamp;
@@ -51,6 +42,7 @@ import org.geotools.styling.Rule;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyleBuilder;
 import org.geotools.styling.Symbolizer;
+import org.geotools.util.Version;
 import org.opengis.filter.FilterFactory2;
 import org.restlet.Context;
 import org.restlet.data.Form;
@@ -64,9 +56,9 @@ import org.restlet.data.Status;
  */
 public class RasterizerResource extends AbstractCatalogResource {
 
-	private final static Logger LOGGER = Logger.getLogger(RasterizerResource.class.toString());
-	
-	/**
+    private final static Logger LOGGER = Logger.getLogger(RasterizerResource.class.toString());
+
+    /**
      * media type for SLD
      */
     public static final MediaType MEDIATYPE_SLD = new MediaType( "application/vnd.ogc.sld+xml" );
@@ -78,21 +70,30 @@ public class RasterizerResource extends AbstractCatalogResource {
     
     public enum COLORMAP_TYPE {RAMP, INTERVALS, VALUES};
 
-	private static final double DEFAULT_MIN = 0.0;
-	private static final double DEFAULT_MAX = 100.0;
-	private static final double DEFAULT_MIN_DECREMENT = 0.000000001;
-	private static final int DEFAULT_CLASSES = 100;
-	private static final int DEFAULT_DIGITS = 5;
-	private static final int DEFAULT_TYPE = ColorMap.TYPE_RAMP;
+    private static final double DEFAULT_MIN = 0.0;
 
-	public RasterizerResource(Context context, Request request, Response response, Catalog catalog) {
-		super(context, request, response, StyleInfo.class, catalog);
-	}
+    private static final double DEFAULT_MAX = 100.0;
+
+    private static final double DEFAULT_MIN_DECREMENT = 0.000000001;
+
+    private static final int DEFAULT_CLASSES = 100;
+
+    private static final int DEFAULT_DIGITS = 5;
+
+    private static final int DEFAULT_TYPE = ColorMap.TYPE_RAMP;
+
+    public RasterizerResource(Context context, Request request, Response response, Catalog catalog) {
+        super(context, request, response, StyleInfo.class, catalog);
+    }
 
 	@Override
     protected List<DataFormat> createSupportedFormats(Request request,Response response) {
         List<DataFormat> formats = super.createSupportedFormats(request,response);
-        formats.add( new SLDFormat() );
+        
+    	StyleHandler sh = Styles.handler(SLDHandler.MIMETYPE_10);
+    	Version ver = sh.versionForMimeType(SLDHandler.MIMETYPE_10);
+        formats.add(new StyleFormat(sh.mimeType(ver), ver, false, sh, request));
+        
         return formats;
     }
 	
@@ -112,6 +113,10 @@ public class RasterizerResource extends AbstractCatalogResource {
 		int classes = parameters.getFirstValue("classes") != null ? Integer.parseInt(parameters.getFirstValue("classes")) : DEFAULT_CLASSES;
 		int digits = parameters.getFirstValue("digits") != null ? Integer.parseInt(parameters.getFirstValue("digits")) : DEFAULT_DIGITS;
 		final String type = parameters.getFirstValue("type");
+		final String startColor = parameters.getFirstValue("startColor");
+		final String endColor = parameters.getFirstValue("endColor");
+		final String midColor = parameters.getFirstValue("midColor");
+		
 		int colormapType = DEFAULT_TYPE;
 		if (type != null){
 		    if (type.equalsIgnoreCase(COLORMAP_TYPE.INTERVALS.toString())){
@@ -122,6 +127,8 @@ public class RasterizerResource extends AbstractCatalogResource {
 		}
 		
 		COLORRAMP_TYPE ramp = parameters.getFirstValue("ramp") != null ? COLORRAMP_TYPE.valueOf(parameters.getFirstValue("ramp").toUpperCase()) : COLORRAMP_TYPE.RED;
+		
+		
 		
 		if (min == max)
 			min = min - Double.MIN_VALUE;
@@ -140,13 +147,13 @@ public class RasterizerResource extends AbstractCatalogResource {
 					throw new RestletException( "RasterSymbolizer SLD expected!", Status.CLIENT_ERROR_EXPECTATION_FAILED);
 				}
 				
-				Style rasterized = remapStyle(defaultStyle, rasterSymbolizer, min, max, classes, ramp, layer, digits, colormapType); 
+				Style rasterized = remapStyle(defaultStyle, rasterSymbolizer, min, max, classes, ramp, layer, digits, colormapType, startColor, endColor, midColor); 
 				
 				//check the format, if specified as sld, return the sld itself
-		        DataFormat format = getFormatGet();
-				if ( format instanceof SLDFormat ) {
+		                DataFormat format = getFormatGet();
+				if ( format instanceof StyleFormat ) {
 					return rasterized;
-		        }
+		                }
 				return defaultStyle;
 			}
 		}
@@ -159,11 +166,14 @@ public class RasterizerResource extends AbstractCatalogResource {
 	 * @param defaultStyle
 	 * @param rasterSymbolizer
 	 * @param layerName 
+	 * @param midColor 
+	 * @param endColor 
+	 * @param startColor 
 	 * @return
 	 * @throws Exception 
 	 */
 	private Style remapStyle(StyleInfo defaultStyle, RasterSymbolizer rasterSymbolizer, double min, double max, 
-	        int classes, COLORRAMP_TYPE ramp, String layerName, final int digits, final int colorMapType) throws Exception {
+	        int classes, COLORRAMP_TYPE ramp, String layerName, final int digits, final int colorMapType, String startColor, String endColor, String midColor) throws Exception {
 		StyleBuilder sb = new StyleBuilder();
 		
 		ColorMap originalColorMap = rasterSymbolizer.getColorMap();
@@ -214,13 +224,30 @@ public class RasterizerResource extends AbstractCatalogResource {
 			case RANDOM:
 				colorRamp = new RandomColorRamp();
 				break;
+			case CUSTOM:
+			    colorRamp = new CustomColorRamp();
+			    CustomColorRamp customRamp = (CustomColorRamp)colorRamp;
+			    if(startColor != null) {
+			        customRamp.setStartColor(Color.decode(startColor));
+			    }
+			    if(endColor != null) {
+                                customRamp.setEndColor(Color.decode(endColor));
+                            }
+			    if(midColor != null) {
+                                customRamp.setMid(Color.decode(midColor));
+                            }
+			    break;
 			}
 			colorRamp.setNumClasses(classes);
 			
-			resampledColorMap = sb.createColorMap(
+			List<Color> realColorRamp = new ArrayList<Color>();
+			realColorRamp.add(Color.BLACK);
+			realColorRamp.addAll(colorRamp.getRamp());
+
+                        resampledColorMap = sb.createColorMap(
 					labels, 
 					quantities, 
-					colorRamp.getRamp().toArray(new Color[1]), 
+					realColorRamp.toArray(new Color[1]), 
 					colorMapType
 			);
 			FilterFactory2 filterFactory = CommonFactoryFinder.getFilterFactory2(null);

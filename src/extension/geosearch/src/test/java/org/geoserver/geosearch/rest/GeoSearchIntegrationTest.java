@@ -110,7 +110,7 @@ public class GeoSearchIntegrationTest extends GeoServerSystemTestSupport {
 
         assertXpathExists("/kml:kml/kml:Document/kml:description", kml);
 
-        assertXpathEvaluatesTo("cite:BasicPolygons",
+        assertXpathEvaluatesTo("BasicPolygons",
                 "/kml:kml/kml:Document/kml:NetworkLink/kml:name", kml);
     }
 

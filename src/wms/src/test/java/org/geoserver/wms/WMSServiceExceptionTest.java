@@ -6,7 +6,11 @@
 package org.geoserver.wms;
 
 import static org.junit.Assert.*;
+
+import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferByte;
 import java.io.ByteArrayInputStream;
+import java.util.Arrays;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -16,6 +20,8 @@ import org.junit.Test;
 import org.w3c.dom.Document;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
+
+import javax.imageio.ImageIO;
 
 
 public class WMSServiceExceptionTest extends WMSTestSupport {
@@ -148,6 +154,41 @@ public class WMSServiceExceptionTest extends WMSTestSupport {
         // test that cross-site scripting attack payload is escaped
         assertFalse(content.contains("<a:body onload=\"alert('xss')\"/>"));
         assertTrue(content.contains("&lt;a:body onload=&quot;alert(&apos;xss&apos;)&quot;/&gt;"));
+    }
+
+    @Test
+    public void testExceptionFormatBlank111() throws Exception {
+        MockHttpServletResponse response = getAsServletResponse("wms?bbox=-130,24,-66,50&styles=I_DONT_EXIST"
+                + "&layers=states&Format=image/png8&request=GetMap&width=550"
+                + "&height=250&srs=EPSG:4326&version=1.1.1&service=WMS&EXCEPTIONS=application/vnd.ogc.se_blank");
+
+        assertEquals("image/png", response.getContentType());
+    }
+
+
+    @Test
+    public void testExceptionBlank111() throws Exception {
+        String wms111 = "wms?LAYERS=cite%3ALakes&STYLES=&FORMAT=image%2Fpng&TILED=true&TILESORIGIN=-0.0018%2C0.0006" +
+                "&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&CRS=EPSG%3A4326&BBOX=-0.0018,0.0006,0.0007,0.0031&WIDTH=256&HEIGHT=256" +
+                "&EXCEPTIONS=application/vnd.ogc.se_blank";
+
+        BufferedImage blankimage111 = ImageIO.read(getClass().getResourceAsStream("/ServiceException/vnd.ogc.se_blank.png")) ;
+        BufferedImage image111 = getAsImage(wms111, "image/png");
+
+        // compare the general structure
+        assertEquals(image111.getWidth(), blankimage111.getWidth());
+        assertEquals(image111.getHeight(), blankimage111.getHeight());
+        assertEquals(image111.getColorModel(), blankimage111.getColorModel());
+        assertEquals(image111.getSampleModel(), blankimage111.getSampleModel());
+
+        // compare the actual data
+        DataBufferByte blankdb111 = (DataBufferByte) blankimage111.getData().getDataBuffer();
+        DataBufferByte db111 = (DataBufferByte) image111.getData().getDataBuffer();
+        byte[][] blankbankData111 = blankdb111.getBankData();
+        byte[][] bankData111 = db111.getBankData();
+        for (int i = 0; i < bankData111.length; i++) {
+            assertTrue(Arrays.equals(blankbankData111[i], bankData111[i]));
+        }
     }
 
 }

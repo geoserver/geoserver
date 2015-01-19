@@ -195,7 +195,7 @@ class RasterDownload {
                     Boolean.TRUE, AbstractGridFormat.USE_JAI_IMAGEREAD.getName().getCode());
 
             // --> READ
-            originalGridCoverage = (GridCoverage2D) reader.read(readParameters);
+            originalGridCoverage = reader.read(readParameters);
 
             //
             // STEP 1 - Reproject if needed
@@ -299,7 +299,7 @@ class RasterDownload {
         if (LOGGER.isLoggable(Level.FINE)) {
             LOGGER.log(Level.FINE, "Writing file in a temporary folder");
         }
-        final File output = resourceManager.getTemporaryFile("." + extension);
+        final File output = resourceManager.getTemporaryResource("." + extension).file();
 
         // the limit output stream will throw an exception if the process is trying to writer more than the max allowed bytes
         final FileImageOutputStreamExtImpl fileImageOutputStreamExtImpl = new FileImageOutputStreamExtImpl(

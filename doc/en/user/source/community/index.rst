@@ -31,3 +31,6 @@ officially part of the GeoServer releases. They are however built along with the
    rest/index
    pgraster/pgraster
    wps-download/index
+   jms-cluster/index
+   solr/index
+   sldservice/index

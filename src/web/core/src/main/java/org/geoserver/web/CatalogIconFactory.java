@@ -19,8 +19,8 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourcePool;
 import org.geoserver.catalog.StoreInfo;
+import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.WMSStoreInfo;
-import org.geoserver.catalog.LayerInfo.Type;
 import org.geoserver.web.data.resource.DataStorePanelInfo;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.data.DataAccessFactory;
@@ -97,9 +97,9 @@ public class CatalogIconFactory implements Serializable {
      */
     public ResourceReference getLayerIcon(LayerInfo info) {
         ResourceReference icon = UNKNOWN_ICON;
-        if (info.getType() == Type.VECTOR)
+        if (info.getType() == PublishedType.VECTOR)
             icon = VECTOR_ICON;
-        else if (info.getType() == Type.RASTER)
+        else if (info.getType() == PublishedType.RASTER)
             icon = RASTER_ICON;
         return icon;
     }
@@ -112,9 +112,9 @@ public class CatalogIconFactory implements Serializable {
      * @return
      */
     public ResourceReference getSpecificLayerIcon(LayerInfo info) {
-        if (info.getType() == Type.RASTER) {
+        if (info.getType() == PublishedType.RASTER) {
             return RASTER_ICON;
-        } else if(info.getType() == Type.VECTOR) {
+        } else if(info.getType() == PublishedType.VECTOR) {
             try {
                 FeatureTypeInfo fti = (FeatureTypeInfo) info.getResource();
                 GeometryDescriptor gd = fti.getFeatureType().getGeometryDescriptor();
@@ -122,7 +122,7 @@ public class CatalogIconFactory implements Serializable {
             } catch(Exception e) {
                 return GEOMETRY_ICON;
             }
-        } else if(info.getType() == Type.WMS) {
+        } else if(info.getType() == PublishedType.WMS) {
             return MAP_ICON;
         } else {
             return UNKNOWN_ICON;

@@ -42,6 +42,8 @@ import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.ResourcePool;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.PublishedType;
+import org.geoserver.catalog.ValidationResult;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
@@ -165,7 +167,7 @@ public class CatalogImpl implements Catalog {
         added(added);
     }
 
-    public List<RuntimeException> validate(StoreInfo store, boolean isNew) {
+    public ValidationResult validate(StoreInfo store, boolean isNew) {
         if ( isNull(store.getName()) ) {
             throw new IllegalArgumentException( "Store name must not be null");
         }
@@ -182,7 +184,7 @@ public class CatalogImpl implements Catalog {
 
         return postValidate(store, isNew);
     }
-    
+
     public void remove(StoreInfo store) {
         if ( !getResourcesByStore(store, ResourceInfo.class).isEmpty() ) {
             throw new IllegalArgumentException( "Unable to delete non-empty store.");
@@ -384,11 +386,12 @@ public class CatalogImpl implements Catalog {
         added(added);
     }
 
-    public List<RuntimeException> validate(ResourceInfo resource, boolean isNew) {
+    public ValidationResult validate(ResourceInfo resource, boolean isNew) {
         if ( isNull(resource.getName()) ) {
             throw new NullPointerException( "Resource name must not be null");
         }
-        if ( isNull(resource.getNativeName())) {
+        
+        if ( isNull(resource.getNativeName()) && !(resource instanceof CoverageInfo && ((CoverageInfo)resource).getNativeCoverageName() != null)) {
             throw new NullPointerException( "Resource native name must not be null");
         }
         if ( resource.getStore() == null ) {
@@ -415,7 +418,7 @@ public class CatalogImpl implements Catalog {
         validateKeywords(resource.getKeywords());
         return postValidate(resource, isNew);
     }
-    
+
     public void remove(ResourceInfo resource) {
         //ensure no references to the resource
         if ( !getLayers( resource ).isEmpty() ) {
@@ -623,11 +626,11 @@ public class CatalogImpl implements Catalog {
         
         if ( layer.getType() == null ) {
             if ( layer.getResource() instanceof FeatureTypeInfo ) {
-                layer.setType( LayerInfo.Type.VECTOR );
+                layer.setType( PublishedType.VECTOR );
             } else if ( layer.getResource() instanceof CoverageInfo ) {
-                layer.setType( LayerInfo.Type.RASTER );
+                layer.setType( PublishedType.RASTER );
             } else if ( layer.getResource() instanceof WMSLayerInfo ) {
-                layer.setType( LayerInfo.Type.WMS );
+                layer.setType( PublishedType.WMS );
             } else {
                 String msg = "Layer type not set and can't be derived from resource";
                 throw new IllegalArgumentException( msg );
@@ -638,7 +641,7 @@ public class CatalogImpl implements Catalog {
         added(added);
     }
 
-    public List<RuntimeException> validate( LayerInfo layer, boolean isNew) {
+    public ValidationResult validate( LayerInfo layer, boolean isNew) {
         // TODO: bring back when the layer/publishing split is in act
 //        if ( isNull(layer.getName()) ) {
 //            throw new NullPointerException( "Layer name must not be null" );
@@ -804,7 +807,7 @@ public class CatalogImpl implements Catalog {
         added( added );
     }
     
-    public List<RuntimeException> validate( LayerGroupInfo layerGroup, boolean isNew ) {
+    public ValidationResult validate( LayerGroupInfo layerGroup, boolean isNew ) {
         if( isNull(layerGroup.getName()) ) {
             throw new NullPointerException( "Layer group name must not be null");
         }
@@ -1072,7 +1075,7 @@ public class CatalogImpl implements Catalog {
         added(added);
     }
 
-    public List<RuntimeException> validate(NamespaceInfo namespace, boolean isNew) {
+    public ValidationResult validate(NamespaceInfo namespace, boolean isNew) {
         if ( isNull(namespace.getPrefix()) ) {
             throw new NullPointerException( "Namespace prefix must not be null");
         }
@@ -1180,7 +1183,7 @@ public class CatalogImpl implements Catalog {
         added( added );
     }
     
-    public List<RuntimeException> validate(WorkspaceInfo workspace, boolean isNew) {
+    public ValidationResult validate(WorkspaceInfo workspace, boolean isNew) {
         if ( isNull(workspace.getName()) ) {
             throw new NullPointerException( "workspace name must not be null");
         }
@@ -1278,7 +1281,20 @@ public class CatalogImpl implements Catalog {
     }
 
     public StyleInfo getStyleByName(String name) {
-        return getStyleByName((WorkspaceInfo) null, name);
+        StyleInfo result = null;
+        int colon = name.indexOf(':');
+        if (colon != -1) {
+            // search by resource name
+            String prefix = name.substring(0, colon);
+            String resource = name.substring(colon + 1);
+
+            result = getStyleByName(prefix, resource);
+        } 
+        if (result == null) {
+            result = facade.getStyleByName(name);
+        }
+        
+        return result;
     }
 
     public StyleInfo getStyleByName(String workspaceName, String name) {
@@ -1328,7 +1344,7 @@ public class CatalogImpl implements Catalog {
         added(added);
     }
 
-    public List<RuntimeException> validate( StyleInfo style, boolean isNew ) {
+    public ValidationResult validate( StyleInfo style, boolean isNew ) {
         if ( isNull(style.getName()) ) {
             throw new NullPointerException( "Style name must not be null");
         }
@@ -1644,11 +1660,11 @@ public class CatalogImpl implements Catalog {
         return detached != null ? detached : original;
     }
     
-    protected List<RuntimeException> postValidate(CatalogInfo info, boolean isNew) {
+    protected ValidationResult postValidate(CatalogInfo info, boolean isNew) {
         List<RuntimeException> errors = new ArrayList<RuntimeException>();
 
         if (!extendedValidation) {
-            return errors; 
+            return new ValidationResult(null);
         }
 
         for (CatalogValidator constraint : getValidators()) {
@@ -1658,7 +1674,7 @@ public class CatalogImpl implements Catalog {
                 errors.add(e);
             }
         }
-        return errors;
+        return new ValidationResult(errors);
     }
     
     static class CatalogValidatorVisitor implements CatalogVisitor {

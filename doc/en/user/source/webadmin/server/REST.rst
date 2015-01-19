@@ -1,4 +1,4 @@
-.. _REST:
+.. _webadmin_server_REST:
 
 REST Configuration
 ==================

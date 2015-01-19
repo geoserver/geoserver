@@ -15,6 +15,7 @@ scripts in languages other than Java.
    overview/
    hooks/
    reference/
+   rest/
 
 
 

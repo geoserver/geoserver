@@ -231,14 +231,14 @@ For the second style, we have a ``PropertyIsBetween`` filter, which doesn't dire
 
 However, ``PropertyIsBetween`` can easily be replaced by a combination of two comparison selectors. In CSS, you can apply multiple selectors to a rule by simply placing them one after the other. Selectors separated by only whitespace must all be satisfied for a style to apply. Multiple such groups can be attached to a rule by separating them with commas (``,``). If a feature matches any of the comma-separated groups for a rule then that style is applied. Thus, the CSS equivalent of the second rule is::
 
-    [PERSONS > 2000000] [PERSONS < 4000000] {
+    [PERSONS >= 2000000] [PERSONS < 4000000] {
       fill: #FF4D4D;
       fill-opacity: 0.7;
     }
 
 The third rule can be handled in much the same manner as the first::
 
-    [PERSONS > 4000000] {
+    [PERSONS >= 4000000] {
       fill: #4D4DFF;
       fill-opacity: 0.7;
     }
@@ -283,6 +283,7 @@ This introduces the idea of rendering an extracted value (``STATE_ABBR``) direct
       label: [STATE_ABBR];
       label-anchor: 0.5 0.5;
       font-family: "Times New Roman";
+      font-fill: black;
       font-style: normal;
       font-size: 14;
     }
@@ -294,12 +295,12 @@ Putting it all together, you should now have a style that looks like::
       fill-opacity: 0.7;
     }
     
-    [PERSONS > 2000000] [PERSONS < 4000000] {
+    [PERSONS >= 2000000] [PERSONS < 4000000] {
       fill: #FF4D4D;
       fill-opacity: 0.7;
     }
     
-    [PERSONS > 4000000] {
+    [PERSONS >= 4000000] {
       fill: #4D4DFF;
       fill-opacity: 0.7;
     }
@@ -309,6 +310,7 @@ Putting it all together, you should now have a style that looks like::
       label: [STATE_ABBR];
       label-anchor: 0.5 0.5;
       font-family: "Times New Roman";
+      font-fill: black;
       font-style: normal;
       font-size: 14;
     }
@@ -339,6 +341,7 @@ Since we don't specify a ``stroke`` color, no stroke is applied. Let's add it, r
       label: [STATE_ABBR];
       label-anchor: 0.5 0.5;
       font-family: "Times New Roman";
+      font-fill: black;
       font-style: normal;
       font-size: 14;
     }
@@ -377,6 +380,7 @@ This brings the style down to only 21 lines::
       label: [STATE_ABBR];
       label-anchor: 0.5 0.5;
       font-family: "Times New Roman";
+      font-fill: black;
       font-style: normal;
       font-size: 14;
     }
@@ -399,6 +403,7 @@ Remove all the rest, moving them into a new rule::
       label: [STATE_ABBR];
       label-anchor: 0.5 0.5;
       font-family: "Times New Roman";
+      font-fill: black;
       font-style: normal;
       font-size: 14;
     }
@@ -440,29 +445,30 @@ The final CSS should looks like this::
     }
     
     /* @title 2M < Population < 4M */
-    [PERSONS > 2000000] [PERSONS < 4000000] {
+    [PERSONS >= 2000000] [PERSONS < 4000000] {
       fill: #FF4D4D;
       fill-opacity: 0.7;
     }
-
-    /* @title Population > 4M */    
-    [PERSONS > 4000000] {
+    
+    /* @title Population > 4M */
+    [PERSONS >= 4000000] {
       fill: #4D4DFF;
       fill-opacity: 0.7;
     }
-
-
+    
+    
     /* @title Boundaries */
     * {
       stroke: black;
       stroke-width: 0.2;
       fill-opacity: 0.7;
     }
-
+    
     [@scale < 20000000] {
       label: [STATE_ABBR];
       label-anchor: 0.5 0.5;
       font-family: "Times New Roman";
+      font-fill: black;
       font-style: normal;
       font-size: 14;
     }

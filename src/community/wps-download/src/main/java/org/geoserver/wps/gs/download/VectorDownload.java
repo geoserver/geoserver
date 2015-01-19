@@ -252,7 +252,7 @@ class VectorDownload {
         if (LOGGER.isLoggable(Level.FINE)) {
             LOGGER.log(Level.FINE, "Writing file in a temporary folder");
         }
-        final File output = resourceManager.getTemporaryFile(extension);
+        final File output = resourceManager.getTemporaryResource(extension).file();
 
         // write checking limits
         OutputStream os = null;

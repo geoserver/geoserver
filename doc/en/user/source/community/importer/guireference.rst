@@ -113,7 +113,7 @@ All layers will be selected for import by default, but can be deselected here by
 
    *List of layers to be imported*
 
-A common issue during the import process is when a :term:`CRS` cannot be determined for a given layer. In this case, a dialog box will display where the CRS can be declared explicitly. Enter the CRS and Click :guilabel:`Apply`.
+A common issue during the import process is when a CRS cannot be determined for a given layer. In this case, a dialog box will display where the CRS can be declared explicitly. Enter the CRS and Click :guilabel:`Apply`.
 
 .. figure:: img/layerlist_crs.png
 

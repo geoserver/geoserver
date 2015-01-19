@@ -12,7 +12,6 @@ import javax.servlet.http.Cookie;
 import org.geoserver.flow.controller.FlowControllerTestingThread.ThreadState;
 import org.geoserver.ows.Request;
 
-import com.mockrunner.mock.web.MockHttpServletRequest;
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
 public class UserFlowControllerTest extends AbstractFlowControllerTest {
@@ -20,9 +19,9 @@ public class UserFlowControllerTest extends AbstractFlowControllerTest {
     
     public void testConcurrentRequestsSingleUser() {
         // a cookie based flow controller that will allow just one request at a time
-        UserFlowController controller = new UserFlowController(1);
+        UserConcurrentFlowController controller = new UserConcurrentFlowController(1);
         
-        Request firstRequest = buildRequest(null);
+        Request firstRequest = buildCookieRequest(null);
         FlowControllerTestingThread tSample = new FlowControllerTestingThread(firstRequest, 0,
                 0, controller);
         tSample.start();
@@ -33,9 +32,9 @@ public class UserFlowControllerTest extends AbstractFlowControllerTest {
         
         // make three testing threads that will "process" forever, and will use the cookie to identify themselves
         // as the same client, until we interrupt them
-        FlowControllerTestingThread t1 = new FlowControllerTestingThread(buildRequest(cookieValue), 0,
+        FlowControllerTestingThread t1 = new FlowControllerTestingThread(buildCookieRequest(cookieValue), 0,
                 Long.MAX_VALUE, controller);
-        FlowControllerTestingThread t2 = new FlowControllerTestingThread(buildRequest(cookieValue), 0,
+        FlowControllerTestingThread t2 = new FlowControllerTestingThread(buildCookieRequest(cookieValue), 0,
                 Long.MAX_VALUE, controller);
         try {
             // start threads making sure every one of them managed to block somewhere before 
@@ -61,17 +60,5 @@ public class UserFlowControllerTest extends AbstractFlowControllerTest {
             waitAndKill(t2, MAX_WAIT);
         }
         
-    }
-    
-    Request buildRequest(String gsCookieValue) {
-        Request request = new Request();
-        MockHttpServletRequest httpRequest = new MockHttpServletRequest();
-        request.setHttpRequest(httpRequest);
-        request.setHttpResponse(new MockHttpServletResponse());
-        
-        if(gsCookieValue != null) {
-            httpRequest.addCookie(new Cookie(UserFlowController.COOKIE_NAME, gsCookieValue));
-        }
-        return request;
     }
 }

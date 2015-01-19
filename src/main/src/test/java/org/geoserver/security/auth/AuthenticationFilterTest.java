@@ -12,6 +12,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.net.URLEncoder;
 import java.security.Principal;
 import java.util.Arrays;
 import java.util.List;
@@ -26,6 +27,7 @@ import org.geoserver.security.GeoServerSecurityFilterChain;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.RequestFilterChain;
 import org.geoserver.security.config.BasicAuthenticationFilterConfig;
+import org.geoserver.security.config.CredentialsFromRequestHeaderFilterConfig;
 import org.geoserver.security.config.DigestAuthenticationFilterConfig;
 import org.geoserver.security.config.J2eeAuthenticationBaseFilterConfig;
 import org.geoserver.security.config.J2eeAuthenticationBaseFilterConfig.J2EERoleSource;
@@ -38,6 +40,7 @@ import org.geoserver.security.config.SecurityManagerConfig;
 import org.geoserver.security.config.UsernamePasswordAuthenticationFilterConfig;
 import org.geoserver.security.config.X509CertificateAuthenticationFilterConfig;
 import org.geoserver.security.filter.GeoServerBasicAuthenticationFilter;
+import org.geoserver.security.filter.GeoServerCredentialsFromRequestHeaderFilter;
 import org.geoserver.security.filter.GeoServerDigestAuthenticationFilter;
 import org.geoserver.security.filter.GeoServerJ2eeAuthenticationFilter;
 import org.geoserver.security.filter.GeoServerLogoutFilter;
@@ -75,6 +78,7 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
     public final static String testFilterName7 = "formLoginTestFilterWithRememberMe";
     public final static String testFilterName8 = "x509TestFilter";
     public final static String testFilterName9 = "logoutTestFilter";
+    public final static String testFilterName10 = "credentialsFromHeaderTestFilter";
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
@@ -271,6 +275,142 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         // Anonymous context is not stored in http session, no further testing
         removeAnonymousFilter();
 
+    }
+    
+    @Test
+    public void testCredentialsFromHeader() throws Exception {
+            
+            
+        CredentialsFromRequestHeaderFilterConfig config = new CredentialsFromRequestHeaderFilterConfig();
+        config.setClassName(GeoServerCredentialsFromRequestHeaderFilter.class.getName());
+        config.setUserNameHeaderName("X-Credentials");
+        config.setPasswordHeaderName("X-Credentials");
+        config.setUserNameRegex("private-user=([^&]*)");
+        config.setPasswordRegex("private-pw=([^&]*)");
+        config.setParseAsUriComponents(true);
+        config.setName(testFilterName10);
+        getSecurityManager().saveFilter(config);
+        
+        prepareFilterChain(pattern,
+                testFilterName10);
+        modifyChain(pattern, false, true,null);
+                
+        // Test entry point
+        MockHttpServletRequest request= createRequest("/foo/bar");
+        MockHttpServletResponse response= new MockHttpServletResponse();
+        MockFilterChain chain = new MockFilterChain();
+        
+        getProxy().doFilter(request, response, chain);
+        assertEquals(HttpServletResponse.SC_FORBIDDEN,response.getErrorCode());
+        SecurityContext ctx = (SecurityContext)request.getSession(true).getAttribute(
+                HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
+        assertNull(ctx);
+        assertNull(SecurityContextHolder.getContext().getAuthentication());
+        
+        // check success
+        request= createRequest("/foo/bar");
+        response= new MockHttpServletResponse();
+        chain = new MockFilterChain();
+        request.addHeader("X-Credentials",  "private-user="+testUserName+"&private-pw="+testPassword);
+        
+        getProxy().doFilter(request, response, chain);
+        assertEquals(HttpServletResponse.SC_OK, response.getErrorCode());
+        ctx = (SecurityContext)request.getSession(true).getAttribute(
+                HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
+        assertNotNull(ctx);
+        Authentication auth = ctx.getAuthentication();
+        assertNotNull(auth);
+        assertNull(SecurityContextHolder.getContext().getAuthentication());
+        checkForAuthenticatedRole(auth);
+        assertEquals(testUserName, ((UserDetails) auth.getPrincipal()).getUsername());
+        assertTrue(auth.getAuthorities().contains(new GeoServerRole(rootRole)));
+        assertTrue(auth.getAuthorities().contains(new GeoServerRole(derivedRole)));
+
+        // check wrong password
+        request= createRequest("/foo/bar");
+        response= new MockHttpServletResponse();
+        chain = new MockFilterChain();
+        
+        request.addHeader("X-Credentials",  "private-user="+testUserName+"&private-pw=wrongpass");
+        getProxy().doFilter(request, response, chain);
+        assertEquals(HttpServletResponse.SC_FORBIDDEN, response.getErrorCode());
+        ctx = (SecurityContext)request.getSession(true).getAttribute(
+                HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
+        assertNull(ctx);
+        assertNull(SecurityContextHolder.getContext().getAuthentication());
+        
+        // check unknown user
+        request= createRequest("/foo/bar");
+        response= new MockHttpServletResponse();
+        chain = new MockFilterChain();
+        request.addHeader("X-Credentials",  "private-user=wronguser&private-pw="+testPassword);
+        getProxy().doFilter(request, response, chain);
+        assertEquals(HttpServletResponse.SC_FORBIDDEN, response.getErrorCode());
+        ctx = (SecurityContext)request.getSession(true).getAttribute(
+                HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
+        assertNull(ctx);
+        assertNull(SecurityContextHolder.getContext().getAuthentication());
+        
+        // check root user
+        request= createRequest("/foo/bar");
+        response= new MockHttpServletResponse();
+        chain = new MockFilterChain();        
+        String masterPassword = URLEncoder.encode(getMasterPassword(), "UTF-8");
+        request.addHeader("X-Credentials",  "private-user="+GeoServerUser.ROOT_USERNAME+"&private-pw=" + masterPassword);
+        getProxy().doFilter(request, response, chain);
+        assertEquals(HttpServletResponse.SC_OK, response.getErrorCode());
+        ctx = (SecurityContext)request.getSession(true).getAttribute(
+                HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
+        auth = ctx.getAuthentication();
+        assertNotNull(auth);
+        assertNull(SecurityContextHolder.getContext().getAuthentication());
+        //checkForAuthenticatedRole(auth);
+        assertEquals(GeoServerUser.ROOT_USERNAME, auth.getPrincipal());
+        assertTrue(auth.getAuthorities().size()==2);
+        assertTrue(auth.getAuthorities().contains(GeoServerRole.ADMIN_ROLE));
+        
+        // check root user with wrong password
+        request= createRequest("/foo/bar");
+        response= new MockHttpServletResponse();
+        chain = new MockFilterChain();        
+        
+        request.addHeader("X-Credentials",  "private-user="+GeoServerUser.ROOT_USERNAME+"&private-pw=geoserver1");
+        getProxy().doFilter(request, response, chain);
+        
+        assertEquals(HttpServletResponse.SC_FORBIDDEN, response.getErrorCode());
+        ctx = (SecurityContext)request.getSession(true).getAttribute(
+                HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
+        assertNull(ctx);
+        assertNull(SecurityContextHolder.getContext().getAuthentication());
+
+        
+        // check disabled user, clear cache first
+        getSecurityManager().getAuthenticationCache().removeAll();
+        updateUser("ug1", testUserName, false);
+        request= createRequest("/foo/bar");
+        response= new MockHttpServletResponse();
+        chain = new MockFilterChain();
+        request.addHeader("X-Credentials",  "private-user="+testUserName+"&private-pw="+testPassword);
+        
+        getProxy().doFilter(request, response, chain);
+        
+        assertEquals(HttpServletResponse.SC_FORBIDDEN, response.getErrorCode());
+        ctx = (SecurityContext)request.getSession(true).getAttribute(
+                HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
+        assertNull(ctx);
+        assertNull(SecurityContextHolder.getContext().getAuthentication());
+        
+        updateUser("ug1", testUserName, true);
+        
+        // Test anonymous
+        insertAnonymousFilter();
+        request= createRequest("/foo/bar");
+        response= new MockHttpServletResponse();
+        chain = new MockFilterChain();
+        getProxy().doFilter(request, response, chain);
+        assertEquals(HttpServletResponse.SC_OK, response.getErrorCode());
+        // Anonymous context is not stored in http session, no further testing
+        removeAnonymousFilter();
     }
     
     @Test

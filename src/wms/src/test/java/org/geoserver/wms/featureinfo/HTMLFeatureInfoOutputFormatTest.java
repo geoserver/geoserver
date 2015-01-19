@@ -7,6 +7,7 @@
 package org.geoserver.wms.featureinfo;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayOutputStream;
@@ -20,11 +21,14 @@ import java.util.Map;
 
 import net.opengis.wfs.FeatureCollectionType;
 import net.opengis.wfs.WfsFactory;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.impl.FeatureTypeInfoImpl;
 import org.geoserver.catalog.impl.LayerInfoImpl;
 import org.geoserver.catalog.impl.NamespaceInfoImpl;
@@ -32,11 +36,14 @@ import org.geoserver.data.test.MockData;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
 import org.geoserver.template.GeoServerTemplateLoader;
+import org.geoserver.wfs.json.JSONType;
 import org.geoserver.wms.GetFeatureInfoRequest;
 import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.WMSTestSupport;
 import org.junit.Before;
 import org.junit.Test;
+
+import com.mockrunner.mock.web.MockHttpServletResponse;
 
 public class HTMLFeatureInfoOutputFormatTest extends WMSTestSupport {
     private HTMLFeatureInfoOutputFormat outputFormat;
@@ -99,7 +106,7 @@ public class HTMLFeatureInfoOutputFormatTest extends WMSTestSupport {
         // fake layer list
         List<MapLayerInfo> queryLayers = new ArrayList<MapLayerInfo>();               
         LayerInfo layerInfo = new LayerInfoImpl();
-        layerInfo.setType(LayerInfo.Type.VECTOR);
+        layerInfo.setType(PublishedType.VECTOR);
         ResourceInfo resourceInfo = new FeatureTypeInfoImpl(null);
         NamespaceInfo nameSpace = new NamespaceInfoImpl();
         nameSpace.setPrefix("topp");
@@ -146,5 +153,21 @@ public class HTMLFeatureInfoOutputFormatTest extends WMSTestSupport {
             error = true;
         }
         assertTrue(error); 
+    }
+    
+    @Test
+    public void testHTMLGetFeatureInfoCharset() throws Exception {
+        String layer = getLayerId(MockData.FORESTS);
+        String request = "wms?version=1.1.1&bbox=-0.002,-0.002,0.002,0.002&styles=&format=jpeg"
+                + "&request=GetFeatureInfo&layers=" + layer + "&query_layers=" + layer
+                + "&width=20&height=20&x=10&y=10" + "&info_format=text/html";
+
+        MockHttpServletResponse response = getAsServletResponse(request,"");
+
+        // MimeType
+        assertEquals("text/html", response.getContentType());
+
+        // Check if the character encoding is the one expected
+        assertTrue("UTF-8".equals(response.getCharacterEncoding()));
     }
 }

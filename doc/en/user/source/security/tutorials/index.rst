@@ -12,3 +12,4 @@ Tutorials
    cert/index
    j2ee/index
    httpheaderproxy/index
+   credentialsfromheaders/index

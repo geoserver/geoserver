@@ -12,15 +12,21 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
+import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
+import org.apache.wicket.model.PropertyModel;
 import org.geoserver.web.wicket.GeoServerDataProvider;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geoserver.wps.ProcessGroupInfo;
+import org.geoserver.wps.ProcessInfo;
 import org.geoserver.wps.process.GeoServerProcessors;
 import org.geotools.process.ProcessFactory;
-import org.geotools.process.Processors;
 import org.opengis.feature.type.Name;
 
+/**
+ * Provides entries for the process filtering table in the {@link WPSAccessRulePage}
+ * 
+ */
 @SuppressWarnings("serial")
 public class ProcessFactoryInfoProvider extends GeoServerDataProvider<ProcessGroupInfo> {
 
@@ -42,14 +48,14 @@ public class ProcessFactoryInfoProvider extends GeoServerDataProvider<ProcessGro
             public Object getPropertyValue(ProcessGroupInfo item) {
                 Class factoryClass = item.getFactoryClass();
                 Set<String> prefixes = new HashSet<String>();
-                ProcessFactory pf = GeoServerProcessors.getProcessFactory(factoryClass, true);
+                ProcessFactory pf = GeoServerProcessors.getProcessFactory(factoryClass, false);
                 if(pf != null) {
                     Set<Name> names = pf.getNames();
                     for (Name name : names) {
                         prefixes.add(name.getNamespaceURI());
                     }
                 }
-                
+
                 // if we cannot find a title use the class name
                 if(prefixes.isEmpty()) {
                     return "";
@@ -64,7 +70,7 @@ public class ProcessFactoryInfoProvider extends GeoServerDataProvider<ProcessGro
                             sb.append(", ");
                         }
                     }
-                    
+
                     return sb.toString();
                 }
             }
@@ -76,16 +82,16 @@ public class ProcessFactoryInfoProvider extends GeoServerDataProvider<ProcessGro
             public Object getPropertyValue(ProcessGroupInfo item) {
                 Class factoryClass = item.getFactoryClass();
                 String title = null;
-                ProcessFactory pf = GeoServerProcessors.getProcessFactory(factoryClass, true);
+                ProcessFactory pf = GeoServerProcessors.getProcessFactory(factoryClass, false);
                 if(pf != null) {
                     title = pf.getTitle().toString(locale);
                 }
-                
+
                 // if we cannot find a title use the class name
                 if(title == null) {
                     title = factoryClass.getName();
                 }
-                
+
                 return title;
             }
 
@@ -102,27 +108,44 @@ public class ProcessFactoryInfoProvider extends GeoServerDataProvider<ProcessGro
                             // all processes are enabled
                             return new ParamResourceModel("WPSAdminPage.filter.all", null).getString();
                         }
-                        
+
                         Class factoryClass = item.getFactoryClass();
                         ProcessFactory pf = GeoServerProcessors.getProcessFactory(factoryClass, false);
                         if(pf != null) {
                             Set<Name> names = new HashSet<Name>(pf.getNames());
                             int total = names.size();
-                            names.removeAll(item.getFilteredProcesses());
+                            for(ProcessInfo toRemove : item.getFilteredProcesses()){
+                                if(!toRemove.isEnabled()){
+                                    names.remove(toRemove.getName());
+                                }
+                            }
                             int active = names.size();
-                            return new ParamResourceModel("WPSAdminPage.filter.active", null, active, total).getString();
-                            
+                            if(active != total){
+                                return new ParamResourceModel("WPSAdminPage.filter.active", null, active, total).getString();
+                            }else{
+                                return new ParamResourceModel("WPSAdminPage.filter.all", null).getString();
+                            }
+
                         }
-                        
+
                         return "?";
                     }
                 };
             }
 
+        });        
+        props.add(new AbstractProperty<ProcessGroupInfo>("roles") {
+            @Override
+            public Object getPropertyValue(ProcessGroupInfo item) {
+                return item.getRoles();
+            } 
+            @Override
+            public IModel getModel(IModel itemModel) {
+                return new PropertyModel(itemModel, "roles");
+            }
         });
-        
         props.add(new PropertyPlaceholder("edit"));
-        
+
         return props;
     }
 

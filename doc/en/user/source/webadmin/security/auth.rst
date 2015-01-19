@@ -16,7 +16,48 @@ By default, GeoServer will allow anonymous access to the :ref:`web_admin`. Witho
    :align: center
 
    *Anonymous authentication checkbox*
+   
+Authentication filters
+------------------------
 
+This section manages the Authentication Filters (adding, removing, and editing). Several authentication filters are configured by default (anonymous, basic, form, rememberme), but others can be added to the list.
+
+.. figure:: images/auth_filters.png
+   :align: center
+   
+   *List of authentication filters*
+
+Credentials From Headers Filter
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+This filter allows gathering user credentials (username and password) from request headers in a flexible and configurable way.
+
+.. figure:: images/auth_filter_credentials_from_header.png
+   :align: center
+
+   *Creating a new authentication filter fetching credentials from request headers*
+   
+   
+.. list-table:: 
+   :widths: 40 60 
+   :header-rows: 1
+
+   * - Option
+     - Description
+   * - Name
+     - Name of the filter
+   * - Username Header
+     - Name of the Request Header containing the username
+   * - Regular Expression for Username
+     - Regular Expression used to extract the username from the related Header. Must define a group that will match the username.
+   * - Password Header
+     - Name of the Request Header containing the password
+   * - Regular Expression for Password
+     - Regular Expression used to extract the password from the related Header. Must define a group that will match the password.
+   * - Parse Arguments as Uri Components
+     - If checked username and password are uri deocded before being used as credentials
+
+   
+	 
 Authentication providers
 ------------------------
 
@@ -28,7 +69,7 @@ Click :guilabel:`Add new` to create a new provider. Click an existing provider t
    :align: center
 
    *List of authentication providers*
-
+   
 Username/password provider
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 

@@ -38,109 +38,100 @@ import org.opengis.feature.type.Name;
 import org.opengis.util.InternationalString;
 
 /**
- * Tests some processes that do not require integration with the application
- * context
+ * Tests some processes that do not require integration with the application context
  * 
  * @author Andrea Aime - OpenGeo
  * 
  */
 public class BeanProcessFactoryTest extends WPSTestSupport {
 
-	public class BeanProcessFactory extends AnnotatedBeanProcessFactory {
+    public class BeanProcessFactory extends AnnotatedBeanProcessFactory {
 
-		public BeanProcessFactory() {
-			super(new SimpleInternationalString(
-					"Some bean based processes custom processes"), "bean",
-					BoundsProcess.class, NearestProcess.class,
-					SnapProcess.class);
-		}
+        public BeanProcessFactory() {
+            super(new SimpleInternationalString("Some bean based processes custom processes"),
+                    "bean", BoundsProcess.class, NearestProcess.class, SnapProcess.class);
+        }
 
-	}
+    }
 
-	BeanProcessFactory factory;
+    BeanProcessFactory factory;
 
-	@Before
-	    public void setUp() throws Exception {
-		factory = new BeanProcessFactory();
+    @Before
+    public void setUp() throws Exception {
+        factory = new BeanProcessFactory();
 
-		// check SPI will see the factory if we register it using an iterator
-		// provider
-		GeoTools.addFactoryIteratorProvider(new FactoryIteratorProvider() {
+        // check SPI will see the factory if we register it using an iterator
+        // provider
+        GeoTools.addFactoryIteratorProvider(new FactoryIteratorProvider() {
 
-			public <T> Iterator<T> iterator(Class<T> category) {
-				if (ProcessFactory.class.isAssignableFrom(category)) {
-					return (Iterator<T>) Collections.singletonList(factory)
-							.iterator();
-				} else {
-					return null;
-				}
-			}
-		});
-	}
+            public <T> Iterator<T> iterator(Class<T> category) {
+                if (ProcessFactory.class.isAssignableFrom(category)) {
+                    return (Iterator<T>) Collections.singletonList(factory).iterator();
+                } else {
+                    return null;
+                }
+            }
+        });
+    }
 
-	@Test
-	public void testNames() {
-		Set<Name> names = factory.getNames();
-		assertTrue(names.size() > 0);
-		// System.out.println(names);
-		assertTrue(names.contains(new NameImpl("bean", "Bounds")));
-	}
+    @Test
+    public void testNames() {
+        Set<Name> names = factory.getNames();
+        assertTrue(names.size() > 0);
+        // System.out.println(names);
+        assertTrue(names.contains(new NameImpl("bean", "Bounds")));
+    }
 
-	@Test
-	public void testDescribeBounds() {
-		NameImpl boundsName = new NameImpl("bean", "Bounds");
-		InternationalString desc = factory.getDescription(boundsName);
-		assertNotNull(desc);
+    @Test
+    public void testDescribeBounds() {
+        NameImpl boundsName = new NameImpl("bean", "Bounds");
+        InternationalString desc = factory.getDescription(boundsName);
+        assertNotNull(desc);
 
-		Map<String, Parameter<?>> params = factory.getParameterInfo(boundsName);
-		assertEquals(1, params.size());
+        Map<String, Parameter<?>> params = factory.getParameterInfo(boundsName);
+        assertEquals(1, params.size());
 
-		Parameter<?> features = params.get("features");
-		assertEquals(FeatureCollection.class, features.type);
-		assertTrue(features.required);
+        Parameter<?> features = params.get("features");
+        assertEquals(FeatureCollection.class, features.type);
+        assertTrue(features.required);
 
-		Map<String, Parameter<?>> result = factory.getResultInfo(boundsName,
-				null);
-		assertEquals(1, result.size());
-		Parameter<?> bounds = result.get("bounds");
-		assertEquals(ReferencedEnvelope.class, bounds.type);
-	}
+        Map<String, Parameter<?>> result = factory.getResultInfo(boundsName, null);
+        assertEquals(1, result.size());
+        Parameter<?> bounds = result.get("bounds");
+        assertEquals(ReferencedEnvelope.class, bounds.type);
+    }
 
-	@Test
-	public void testExecuteBounds() throws ProcessException {
-		// prepare a mock feature collection
-		SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
-		tb.setName("test");
-		final ReferencedEnvelope re = new ReferencedEnvelope(-10, 10, -10, 10,
-				null);
-		FeatureCollection fc = new ListFeatureCollection(tb.buildFeatureType()) {
-			@Override
-			public synchronized ReferencedEnvelope getBounds() {
-				return re;
-			}
-		};
+    @Test
+    public void testExecuteBounds() throws ProcessException {
+        // prepare a mock feature collection
+        SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
+        tb.setName("test");
+        final ReferencedEnvelope re = new ReferencedEnvelope(-10, 10, -10, 10, null);
+        FeatureCollection fc = new ListFeatureCollection(tb.buildFeatureType()) {
+            @Override
+            public synchronized ReferencedEnvelope getBounds() {
+                return re;
+            }
+        };
 
-		org.geotools.process.Process p = factory.create(new NameImpl("bean",
-				"Bounds"));
-		Map<String, Object> inputs = new HashMap<String, Object>();
-		inputs.put("features", fc);
-		Map<String, Object> result = p.execute(inputs, null);
+        org.geotools.process.Process p = factory.create(new NameImpl("bean", "Bounds"));
+        Map<String, Object> inputs = new HashMap<String, Object>();
+        inputs.put("features", fc);
+        Map<String, Object> result = p.execute(inputs, null);
 
-		assertEquals(1, result.size());
-		ReferencedEnvelope computed = (ReferencedEnvelope) result.get("bounds");
-		assertEquals(re, computed);
-	}
+        assertEquals(1, result.size());
+        ReferencedEnvelope computed = (ReferencedEnvelope) result.get("bounds");
+        assertEquals(re, computed);
+    }
 
-	@Test
-	public void testSPI() throws Exception {
-		NameImpl boundsName = new NameImpl("bean", "Bounds");
-		ProcessFactory factory = GeoServerProcessors.createProcessFactory(boundsName);
-		assertNotNull(factory);
-		assertTrue(factory instanceof BeanProcessFactory);
+    @Test
+    public void testSPI() throws Exception {
+        NameImpl boundsName = new NameImpl("bean", "Bounds");
+        ProcessFactory factory = GeoServerProcessors.createProcessFactory(boundsName, false);
+        assertNotNull(factory);
 
-		org.geotools.process.Process buffer = GeoServerProcessors
-				.createProcess(boundsName);
-		assertNotNull(buffer);
-	}
+        org.geotools.process.Process buffer = GeoServerProcessors.createProcess(boundsName);
+        assertNotNull(buffer);
+    }
 
 }

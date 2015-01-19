@@ -137,9 +137,10 @@ If the 'outputFilename' parameter is defined in the main body then that name wil
 
 "brokenUrlPlaceholder" the placeholder image to use in the case of a broken url.  By default, when a url request fails, an error is thrown and the pdf process terminates.  However if this parameter is set then instead a placeholder image is returned.
 Non-null values are:
-  * "default" - use the system default image.
-  * "throw" - throw an exception.
-  * <url> - obtain the image from the supplied url.  If this url is broken then an exception will be thrown.  This can be anytype of valid url from a file url to https url.
+
+* "default" - use the system default image.
+* "throw" - throw an exception.
+* <url> - obtain the image from the supplied url.  If this url is broken then an exception will be thrown.  This can be anytype of valid url from a file url to https url.
 
 "proxyBaseUrl" the optional url of the proxy between mapfish-print and the internet.  This is the url base that will be in the info.json response.  On occasion the url or port of the web server containing mapfish-print is not the server that is public to the internet and the requests are proxied to the mapfish-print webserver.  In this case it is important for the info.json request to return the public URL instead of the url of the webserver.
 

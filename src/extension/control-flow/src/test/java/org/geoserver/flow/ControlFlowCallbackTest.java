@@ -15,6 +15,8 @@ import org.geoserver.ows.HttpErrorCodeException;
 import org.geoserver.ows.Request;
 import org.junit.Test;
 
+import com.mockrunner.mock.web.MockHttpServletResponse;
+
 public class ControlFlowCallbackTest {
 
     @Test
@@ -23,7 +25,7 @@ public class ControlFlowCallbackTest {
         TestingConfigurator tc = new TestingConfigurator();
         CountingController controller = new CountingController(1, 0);
         tc.controllers.add(controller);
-        callback.configurator = tc;
+        callback.provider = new DefaultFlowControllerProvider(tc);
         
         callback.operationDispatched(null, null);
         assertEquals(1, controller.requestIncomingCalls);
@@ -43,7 +45,7 @@ public class ControlFlowCallbackTest {
         CountingController c2 = new CountingController(1, 200);
         tc.controllers.add(c1);
         tc.controllers.add(c2);
-        callback.configurator = tc;
+        callback.provider = new DefaultFlowControllerProvider(tc);
         
         try {
             callback.operationDispatched(null, null);
@@ -58,6 +60,28 @@ public class ControlFlowCallbackTest {
         callback.finished(null);
     }
     
+    @Test
+    public void testDelayHeader() {
+        ControlFlowCallback callback = new ControlFlowCallback();
+        TestingConfigurator tc = new TestingConfigurator();
+        tc.timeout = Integer.MAX_VALUE;
+        CountingController cc = new CountingController(2, 50);
+        tc.controllers.add(cc);
+        callback.provider = new DefaultFlowControllerProvider(tc);
+
+        Request request = new Request();
+        MockHttpServletResponse httpResponse = new MockHttpServletResponse();
+        request.setHttpResponse(httpResponse);
+
+        callback.operationDispatched(request, null);
+        callback.finished(null);
+
+        String delayHeader = httpResponse.getHeader(ControlFlowCallback.X_RATELIMIT_DELAY);
+        assertNotNull(delayHeader);
+        long delay = Long.parseLong(delayHeader);
+        assertTrue("Delay should be greater than 50 " + delay, delay >= 50);
+    }
+
     @Test
     public void testFailBeforeOperationDispatch() {
         ControlFlowCallback callback = new ControlFlowCallback();

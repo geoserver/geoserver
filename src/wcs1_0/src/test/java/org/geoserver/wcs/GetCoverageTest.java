@@ -9,8 +9,6 @@ import static org.geoserver.data.test.MockData.TASMANIA_BM;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.awt.Color;
-import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -153,21 +151,6 @@ public class GetCoverageTest extends WCSTestSupport {
         CoverageCleanerCallback.disposeCoverage(coverages[0]);
     }
     
-    /**
-	 * Compare two grid to world transformations
-	 * @param expectedTx
-	 * @param tx
-	 */
-	private static void compareGrid2World(AffineTransform2D expectedTx,
-			AffineTransform2D tx) {
-		assertEquals("scalex",tx.getScaleX(), expectedTx.getScaleX(), 1E-6);
-        assertEquals("scaley",tx.getScaleY(), expectedTx.getScaleY(), 1E-6);
-        assertEquals("shearx",tx.getShearX(), expectedTx.getShearX(), 1E-6);
-        assertEquals("sheary",tx.getShearY(), expectedTx.getShearY(), 1E-6);
-        assertEquals("translatex",tx.getTranslateX(), expectedTx.getTranslateX(), 1E-6);
-        assertEquals("translatey",tx.getTranslateY(), expectedTx.getTranslateY(), 1E-6);
-	}
-
     @Test
     public void testWorkspaceQualified() throws Exception {
         String queryString ="&request=getcoverage&service=wcs&version=1.0.0&format=image/geotiff&bbox=146,-45,147,-42"+
@@ -181,6 +164,42 @@ public class GetCoverageTest extends WCSTestSupport {
             "cdf/wcs?sourcecoverage="+TASMANIA_BM.getLocalPart()+queryString);
         assertEquals("ServiceExceptionReport", dom.getDocumentElement().getNodeName());
     }
+    
+    @Test
+    public void testNonExistentCoverage() throws Exception {
+        String queryString ="&request=getcoverage&service=wcs&version=1.0.0&format=image/geotiff&bbox=146,-45,147,-42"+
+            "&crs=EPSG:4326&width=150&height=150";
+
+        Document dom = getAsDOM( 
+            "wcs?sourcecoverage=NotThere" + queryString);
+        // print(dom);
+        XMLAssert.assertXpathEvaluatesTo("InvalidParameterValue", "/ServiceExceptionReport/ServiceException/@code", dom);
+        XMLAssert.assertXpathEvaluatesTo("sourcecoverage", "/ServiceExceptionReport/ServiceException/@locator", dom);
+    }
+
+    @Test
+    public void testRequestDisabledResource() throws Exception {
+        Catalog catalog = getCatalog();
+        ResourceInfo tazbm = catalog.getResourceByName(getLayerId(MockData.TASMANIA_BM),
+                ResourceInfo.class);
+        try {
+
+            tazbm.setEnabled(false);
+            catalog.save(tazbm);
+
+            String queryString = "&request=getcoverage&service=wcs&version=1.0.0&format=image/geotiff&bbox=146,-45,147,-42"
+                    + "&crs=EPSG:4326&width=150&height=150";
+
+            Document dom = getAsDOM("wcs?sourcecoverage=" + TASMANIA_BM.getLocalPart()
+                    + queryString);
+            // print(dom);
+            assertEquals("ServiceExceptionReport", dom.getDocumentElement().getNodeName());
+        } finally {
+            tazbm.setEnabled(true);
+            catalog.save(tazbm);
+        }
+    }
+
 
     @Test
     public void testLayerQualified() throws Exception {

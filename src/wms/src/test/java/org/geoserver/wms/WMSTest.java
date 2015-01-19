@@ -147,8 +147,12 @@ public class WMSTest extends WMSTestSupport {
         
         Set<Integer> results = new HashSet<Integer>();
         FeatureIterator it = features.features();
-        while (it.hasNext()) {
-            results.add( (Integer) it.next().getProperty("id").getValue());
+        try {
+            while (it.hasNext()) {
+                results.add( (Integer) it.next().getProperty("id").getValue());
+            }
+        } finally {
+            it.close();
         }
         assertTrue("expected " + Arrays.toString(expectedIds) + " but got " + results,
                 results.containsAll(Arrays.asList(expectedIds)));

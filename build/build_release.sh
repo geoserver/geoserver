@@ -270,7 +270,7 @@ find src -name pom.xml -exec sed -i "s/$old_ver/$tag/g" {} \;
 find doc -name conf.py -exec sed -i "s/$old_ver/$tag/g" {} \;
 
 pushd src/release > /dev/null
-sed -i "s/$old_ver/$tag/g" *.xml installer/win/*.nsi installer/win/*.conf installer/mac/GeoServer.app/Contents/Info.plist
+sed -i "s/$old_ver/$tag/g" *.xml installer/win/*.nsi installer/win/*.conf 
 popd > /dev/null
 
 pushd src > /dev/null

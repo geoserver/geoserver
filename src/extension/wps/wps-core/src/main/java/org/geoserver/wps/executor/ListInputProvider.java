@@ -8,6 +8,11 @@ package org.geoserver.wps.executor;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.geoserver.wps.WPSException;
+import org.geotools.util.NullProgressListener;
+import org.geotools.util.SubProgressListener;
+import org.opengis.util.ProgressListener;
+
 /**
  * A InputProvider that handles a list of simple providers (used for multi-valued inputs)
  * 
@@ -22,21 +27,40 @@ class ListInputProvider implements InputProvider {
 
     List<Object> value;
 
-    public ListInputProvider(InputProvider provider) {
+    int maxItems;
+
+    public ListInputProvider(InputProvider provider, int maxItems) {
         this.providers = new ArrayList<InputProvider>();
         this.providers.add(provider);
         this.inputId = provider.getInputId();
+        this.maxItems = maxItems;
     }
 
     @Override
-    public Object getValue() throws Exception {
+    public Object getValue(ProgressListener listener) throws Exception {
+        float totalSteps = longStepCount();
+        float stepsSoFar = 0;
         if (value == null) {
+            // check we are not going above the limit
+            if (maxItems > 0 && providers.size() > maxItems) {
+                throw new WPSException("Too many values for input " + getInputId()
+                        + ", the max is " + maxItems, "NoApplicableCode", getInputId());
+            }
+
             value = new ArrayList<Object>();
             for (InputProvider provider : providers) {
-                Object pv = provider.getValue();
+                float providerLongSteps = provider.longStepCount();
+                ProgressListener subListener;
+                if (providerLongSteps > 0) {
+                    subListener = new SubProgressListener(listener,
+                            (stepsSoFar / totalSteps) * 100, (providerLongSteps / totalSteps) * 100);
+                } else {
+                    subListener = new NullProgressListener();
+                }
+                totalSteps += providerLongSteps;
+                Object pv = provider.getValue(subListener);
                 value.add(pv);
             }
-            providers = null;
         }
         return value;
     }
@@ -56,13 +80,14 @@ class ListInputProvider implements InputProvider {
     }
 
     @Override
-    public boolean longParse() {
-        for (InputProvider provider : providers) {
-            if(provider.longParse()) {
-                return true;
-            }
+    public int longStepCount() {
+        int count = 0;
+        for (InputProvider ip : providers) {
+            count += ip.longStepCount();
         }
-        return false;
+        
+        return count;
     }
+
 
 }

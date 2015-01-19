@@ -573,7 +573,9 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
 
             return coverageResults.toArray(new GridCoverage2D[] {});
         } catch (Exception e) {
-        	CoverageCleanerCallback.addCoverages(coverage);
+            if (coverage != null) {
+                CoverageCleanerCallback.addCoverages(coverage);
+            }
             if (e instanceof WcsException) {
                 throw (WcsException) e;
             } else {

@@ -18,6 +18,8 @@ import java.util.logging.Logger;
 import net.opengis.ows11.AllowedValuesType;
 import net.opengis.ows11.CodeType;
 import net.opengis.ows11.Ows11Factory;
+import net.opengis.ows11.RangeClosureType;
+import net.opengis.ows11.RangeType;
 import net.opengis.ows11.ValueType;
 import net.opengis.wps10.CRSsType;
 import net.opengis.wps10.ComplexDataDescriptionType;
@@ -38,6 +40,7 @@ import net.opengis.wps10.Wps10Factory;
 
 import org.geoserver.ows.Ows11Util;
 import org.geoserver.wfs.xml.XSProfile;
+import org.geoserver.wps.ppio.BinaryPPIO;
 import org.geoserver.wps.ppio.BoundingBoxPPIO;
 import org.geoserver.wps.ppio.ComplexPPIO;
 import org.geoserver.wps.ppio.LiteralPPIO;
@@ -45,6 +48,8 @@ import org.geoserver.wps.ppio.ProcessParameterIO;
 import org.geoserver.wps.ppio.RawDataPPIO;
 import org.geoserver.wps.process.AbstractRawData;
 import org.geoserver.wps.process.GeoServerProcessors;
+import org.geoserver.wps.validator.MaxSizeValidator;
+import org.geotools.data.DataAccessFactory.Param;
 import org.geotools.data.Parameter;
 import org.geotools.process.ProcessFactory;
 import org.opengis.feature.type.Name;
@@ -109,7 +114,7 @@ public class DescribeProcess {
     
     void processDescription( CodeType id, ProcessDescriptionsType pds ) {
         Name name = Ows11Util.name(id);
-        ProcessFactory pf = GeoServerProcessors.createProcessFactory(name);
+        ProcessFactory pf = GeoServerProcessors.createProcessFactory(name, true);
         if ( pf == null || pf.create(name) == null) {
             throw new WPSException( "No such process: " + id.getValue() );
         }
@@ -124,7 +129,7 @@ public class DescribeProcess {
         pd.setStatusSupported(true);
         pd.setStoreSupported(true);
         
-        //data inputs
+        // data inputs
         DataInputsType inputs = wpsf.createDataInputsType();
         pd.setDataInputs(inputs);
         dataInputs( inputs, pf, name );
@@ -162,7 +167,7 @@ public class DescribeProcess {
                 throw new WPSException( "Could not find process parameter for type " + p.key + "," + p.type );
             }
            
-            //handle the literal case
+            // handle the literal case
             if (ppios.get( 0 ) instanceof LiteralPPIO ) {
                 LiteralPPIO lppio = (LiteralPPIO) ppios.get( 0 );
                 
@@ -182,13 +187,15 @@ public class DescribeProcess {
                 }
                 if (p.metadata.get(Parameter.OPTIONS) != null) {
                     List<Object> options = (List<Object>) p.metadata.get(Parameter.OPTIONS);
-                    Object[] optionsArray = (Object[]) options.toArray(new Object[options.size()]);
+                    Object[] optionsArray = options.toArray(new Object[options.size()]);
                     addAllowedValues(literal, optionsArray);
                 } else if (lppio.getType().isEnum()) {
                 	Object[] enumValues = lppio.getType().getEnumConstants();
                     addAllowedValues(literal, enumValues);
                 } else {
-                	literal.setAnyValue( owsf.createAnyValueType() );
+                    Object min = p.metadata.get(Param.MIN);
+                    Object max = p.metadata.get(Param.MAX);
+                    addAllowedValues(literal, min, max);
                 }
 
                 try {
@@ -205,7 +212,13 @@ public class DescribeProcess {
                 //handle the complex data case
                 SupportedComplexDataInputType complex = wpsf.createSupportedComplexDataInputType();
                 input.setComplexData( complex );
-                
+                if (p.metadata.get(MaxSizeValidator.PARAMETER_KEY) instanceof Number) {
+                    int maxSize = ((Number) p.metadata.get(MaxSizeValidator.PARAMETER_KEY))
+                            .intValue();
+                    if (maxSize > 0) {
+                        complex.setMaximumMegabytes(BigInteger.valueOf(maxSize));
+                    }
+                }
                 complex.setSupported( wpsf.createComplexDataCombinationsType() );
                 for ( ProcessParameterIO ppio : ppios ) {
                     ComplexPPIO cppio = (ComplexPPIO) ppio;
@@ -218,6 +231,13 @@ public class DescribeProcess {
                             ComplexDataDescriptionType ddt = wpsf
                                     .createComplexDataDescriptionType();
                             ddt.setMimeType(mimeType);
+                            // heuristic to figure out if a format is text based, or not, we
+                            // might want to expose this as a separate annotation/property down the
+                            // road
+                            if (!mimeType.contains("json") && !mimeType.contains("text")
+                                    && !mimeType.contains("xml") && !mimeType.contains("gml")) {
+                                ddt.setEncoding("base64");
+                            }
                             complex.getSupported().getFormat().add(ddt);
                             if (format == null) {
                                 format = ddt;
@@ -226,6 +246,9 @@ public class DescribeProcess {
                     } else {
                         format = wpsf.createComplexDataDescriptionType();
                         format.setMimeType(cppio.getMimeType());
+                        if (cppio instanceof BinaryPPIO) {
+                            format.setEncoding("base64");
+                        }
                         // add to supported
                         complex.getSupported().getFormat().add(format);
                     }
@@ -252,6 +275,36 @@ public class DescribeProcess {
             allowed.getValue().add(vt);
         }
         literal.setAllowedValues(allowed);
+    }
+
+    private void addAllowedValues(LiteralInputType literal, Object min, Object max) {
+        if (min == null && max == null) {
+            literal.setAnyValue(owsf.createAnyValueType());
+        } else {
+            AllowedValuesType allowed = owsf.createAllowedValuesType();
+            RangeType range = owsf.createRangeType();
+            if (min != null) {
+                ValueType minValue = owsf.createValueType();
+                minValue.setValue(min.toString());
+                range.setMinimumValue(minValue);
+            }
+            if (max != null) {
+                ValueType maxValue = owsf.createValueType();
+                maxValue.setValue(max.toString());
+                range.setMaximumValue(maxValue);
+            }
+            RangeClosureType rangeClosure;
+            if (min == null) {
+                rangeClosure = RangeClosureType.OPEN_CLOSED_LITERAL;
+            } else if (max == null) {
+                rangeClosure = RangeClosureType.CLOSED_OPEN_LITERAL;
+            } else {
+                rangeClosure = RangeClosureType.CLOSED_LITERAL;
+            }
+            range.setRangeClosure(rangeClosure);
+            allowed.getRange().add(range);
+            literal.setAllowedValues(allowed);
+        }
     }
 
     private SupportedCRSsType buildSupportedCRSType() {

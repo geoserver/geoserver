@@ -5,11 +5,11 @@
  */
 package org.geoserver.ows.kvp;
 
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
+import java.util.TreeMap;
 import java.util.logging.Level;
 
 import org.geoserver.ows.KvpParser;
@@ -55,7 +55,7 @@ public class FormatOptionsKvpParser extends KvpParser implements ApplicationCont
 
     public Object parse(String value) throws Exception {
         List parsers = GeoServerExtensions.extensions(KvpParser.class, applicationContext);
-        Map formatOptions = new CaseInsensitiveMap(new HashMap());
+        Map formatOptions = new CaseInsensitiveMap(new TreeMap());
 
         List<String> kvps = KvpUtils.escapedTokens(value, ';');
         

@@ -32,6 +32,7 @@ import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.SingleGridCoverage2DReader;
 import org.geoserver.catalog.StoreInfo;
@@ -252,7 +253,7 @@ public class EoCoverageSelectorPage extends GeoServerSecuredPage {
             layer.setTitle(name);
             layer.setEnabled(true);
             layer.setQueryable(true);
-            layer.setType(LayerInfo.Type.RASTER);
+            layer.setType(PublishedType.RASTER);
             layer.getMetadata().put(EoLayerType.KEY, layerType.name());
             if(layerType == EoLayerType.BITMASK) {
                 StyleInfo red = getCatalog().getStyleByName("red");

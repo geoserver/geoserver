@@ -1,6 +1,14 @@
 package org.geoserver.community.css.web;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.wicket.PageParameters;
@@ -13,15 +21,14 @@ import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geoserver.web.wicket.GeoServerTablePanel;
+import org.geoserver.web.wicket.SimpleAjaxLink;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
+import org.xml.sax.SAXException;
 
 public class CssDemoTest extends GeoServerWicketTestSupport {
 
-    @Before 
+    @Before
     public void setup() {
         login();
     }
@@ -41,8 +48,8 @@ public class CssDemoTest extends GeoServerWicketTestSupport {
         tester.assertRenderedPage(CssDemoPage.class);
         tester.assertComponent("main-content:context", AjaxTabbedPanel.class);
         tester.assertComponent("main-content:context:panel", SLDPreviewPanel.class);
-        tester.assertComponent("main-content:change.style", AjaxLink.class);
-        tester.assertComponent("main-content:change.layer", AjaxLink.class);
+        tester.assertComponent("main-content:change.style", SimpleAjaxLink.class);
+        tester.assertComponent("main-content:change.layer", SimpleAjaxLink.class);
         tester.assertComponent("main-content:create.style", AjaxLink.class);
         tester.assertComponent("main-content:associate.styles" , AjaxLink.class);
         tester.assertComponent("main-content:style.editing" , StylePanel.class);
@@ -62,10 +69,10 @@ public class CssDemoTest extends GeoServerWicketTestSupport {
         tester.assertComponent("main-content:context:panel", SLDPreviewPanel.class);
     }
 
-    @Test 
+    @Test
     public void testStyleChooser() {
         tester.startPage(CssDemoPage.class);
-        tester.clickLink("main-content:change.style");
+        tester.clickLink("main-content:change.style:link");
         tester.assertComponent("main-content:popup:content:style.table", GeoServerTablePanel.class);
     }
 
@@ -73,7 +80,7 @@ public class CssDemoTest extends GeoServerWicketTestSupport {
     @Test
     public void testLayerChooser() {
         tester.startPage(CssDemoPage.class);
-        tester.clickLink("main-content:change.layer");
+        tester.clickLink("main-content:change.layer:link");
         tester.assertComponent("main-content:popup:content:layer.table", GeoServerTablePanel.class);
     }
 
@@ -83,7 +90,7 @@ public class CssDemoTest extends GeoServerWicketTestSupport {
         tester.clickLink("main-content:context:tabs-container:tabs:3:link");
         tester.assertComponent("main-content:context:panel", DocsPanel.class);
     }
-    
+
     @Test
     public void testWorkspaceSpecificStyle() {
         // make this style workspace specific
@@ -91,32 +98,32 @@ public class CssDemoTest extends GeoServerWicketTestSupport {
         WorkspaceInfo ws = getCatalog().getWorkspaceByName(MockData.BASIC_POLYGONS.getPrefix());
         si.setWorkspace(ws);
         getCatalog().save(si);
-        
+
         login();
         PageParameters pp = new PageParameters();
         String prefixedName = getLayerId(MockData.BASIC_POLYGONS);
         pp.put("layer", prefixedName);
         pp.put("style", prefixedName);
         tester.startPage(CssDemoPage.class, pp);
+        // print(tester.getLastRenderedPage(), true, true);
         tester.assertRenderedPage(CssDemoPage.class);
-        tester.assertModelValue("main-content:style.name", prefixedName);
-        tester.assertModelValue("main-content:layer.name", prefixedName);
+        tester.assertModelValue("main-content:change.style:link:label", prefixedName);
+        tester.assertModelValue("main-content:change.layer:link:label", prefixedName);
     }
-    
+
     @Test
-    public void testWorkspaceRelativeLinks() {
+    public void testWorkspaceRelativeLinks() throws UnsupportedEncodingException,
+            ParserConfigurationException, SAXException, IOException {
         StyleInfo si = getCatalog().getStyleByName(MockData.LAKES.getLocalPart());
         WorkspaceInfo ws = getCatalog().getWorkspaceByName(MockData.LAKES.getPrefix());
         si.setWorkspace(ws);
-        
+
         CssDemoPage page = new CssDemoPage();
         String css = "* { mark: url(\"smiley.png\");  }";
         String sld = page.cssText2sldText(css, si);
-        
-        // check the reference is workspace specific (see http://jira.codehaus.org/browse/GEOS-6229
-        // though, that should be a better fix)
-        // System.out.println(sld);
-        assertTrue(sld.contains("workspaces/cite/styles/smiley.png"));
+
+        // check the relative reference is still relative
+        assertTrue(sld.contains("xlink:href=\"smiley.png\""));
     }
 
     @Test
@@ -137,17 +144,20 @@ public class CssDemoTest extends GeoServerWicketTestSupport {
         pp.put("layer", prefixedName);
         pp.put("style", "foo");
         tester.startPage(CssDemoPage.class, pp);
+        // print(tester.getLastRenderedPage(), true, true);
         tester.assertRenderedPage(CssDemoPage.class);
-        tester.assertModelValue("main-content:style.name", "foo");
-        tester.assertModelValue("main-content:layer.name", prefixedName);
+        tester.assertModelValue("main-content:change.style:link:label", "foo");
+        tester.assertModelValue("main-content:change.layer:link:label", prefixedName);
 
-        tester.debugComponentTrees();
+        // tester.debugComponentTrees();
         FormTester form = tester.newFormTester("main-content:style.editing:style-editor");
-        form.setValue("editor", "* { stroke: red; }");
+        form.setValue("editor:editorContainer:editorParent:editor", "* { stroke: red; }");
 
         tester.executeAjaxEvent("main-content:style.editing:style-editor:submit", "onclick");
 
-        String content = IOUtils.toString(cat.getResourcePool().readStyle(foo));
+        BufferedReader reader = cat.getResourcePool().readStyle(foo);
+        String content = IOUtils.toString(reader);
+        reader.close();
         assertEquals("* { stroke: red; }", content);
     }
 }

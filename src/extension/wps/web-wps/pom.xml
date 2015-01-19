@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!-- 
- Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ Copyright (C) 2014 - Open Source Geospatial Foundation. All rights reserved.
  This code is licensed under the GPL 2.0 license, available at the root
  application directory.
  -->
@@ -25,6 +25,11 @@
         <dependency>
            <groupId>org.geoserver.web</groupId>
            <artifactId>gs-web-demo</artifactId>
+           <version>${gs.version}</version>
+        </dependency>
+        <dependency>
+           <groupId>org.geoserver.web</groupId>
+           <artifactId>gs-web-sec-core</artifactId>
            <version>${gs.version}</version>
         </dependency>
         <dependency>
@@ -71,6 +76,9 @@
           <artifactId>easymockclassextension</artifactId>
           <scope>test</scope>
         </dependency>
-
+        <dependency>
+          <groupId>org.apache.wicket</groupId>
+          <artifactId>wicket-extensions</artifactId>
+        </dependency>
     </dependencies>
 </project>

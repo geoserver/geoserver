@@ -22,6 +22,7 @@ import org.geoserver.catalog.CoverageDimensionInfo;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataLinkInfo;
+import org.geoserver.catalog.PublishedType;
 import org.geoserver.wcs.WCSInfo;
 import org.geoserver.wcs.kvp.GridType;
 import org.geoserver.wcs.responses.CoverageResponseDelegate;
@@ -145,7 +146,7 @@ public class DescribeCoverageTransformer extends TransformerBase {
 
                 // check the coverage is known
                 LayerInfo layer = catalog.getLayerByName(coverageId);
-				if (layer == null || layer.getType() != LayerInfo.Type.RASTER) {
+				if (layer == null || layer.getType() != PublishedType.RASTER) {
                     throw new WcsException("Could not find the specified coverage: "
                             + coverageId, WcsExceptionCode.InvalidParameterValue, "identifiers");
                 }

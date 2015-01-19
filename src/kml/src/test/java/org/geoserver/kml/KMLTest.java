@@ -23,6 +23,8 @@ import javax.xml.namespace.QName;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.custommonkey.xmlunit.XMLUnit;
+import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.data.test.MockData;
@@ -33,6 +35,7 @@ import org.geoserver.wms.WMSTestSupport;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -45,6 +48,13 @@ public class KMLTest extends WMSTestSupport {
     public static QName BOULDER = new QName(MockData.SF_URI, "boulder", MockData.SF_PREFIX);
     private static final QName STORM_OBS = new QName(MockData.CITE_URI, "storm_obs", MockData.CITE_PREFIX);
     private static TimeZone oldTimeZone;
+
+    XpathEngine xpath;
+
+    @Before
+    public void setUpXpath() {
+        xpath = XMLUnit.newXpathEngine();
+    }
 
     @Override
     protected void setUpTestData(SystemTestData testData) throws Exception {
@@ -111,10 +121,13 @@ public class KMLTest extends WMSTestSupport {
             "&height=1024&width=1024&bbox=3045967,1206627,3108482,1285209&srs=EPSG:2876" 
         );
         // print(doc);
-        
+
         assertEquals(1, doc.getElementsByTagName("Placemark").getLength());
-        assertXpathEvaluatesTo("-105.22433780246726", "//kml:Document/kml:LookAt/kml:longitude", doc);
-        assertXpathEvaluatesTo("40.008106270709035", "//kml:Document/kml:LookAt/kml:latitude", doc);
+
+        assertEquals(-105.2243,
+            Double.parseDouble(xpath.evaluate("//kml:Document/kml:LookAt/kml:longitude", doc)), 1E-4);
+        assertEquals(40.0081,
+            Double.parseDouble(xpath.evaluate("//kml:Document/kml:LookAt/kml:latitude", doc)), 1E-4);
     }
     
     @Test

@@ -51,6 +51,26 @@ public interface ContactInfo extends Info {
     void setAddressCountry(String addressCountry);
 
     /**
+     * @uml.property name="addressDeliveryPoint"
+     */
+    String getAddressDeliveryPoint();
+
+    /**
+     * @uml.property name="addressDeliveryPoint"
+     */
+    void setAddressDeliveryPoint(String addressDeliveryPoint);
+
+    /**
+     * @uml.property name="addressElectronicMailAddress"
+     */
+    String getAddressElectronicMailAddress();
+
+    /**
+     * @uml.property name="addressElectronicMailAddress"
+     */
+    void setAddressElectronicMailAddress(String addressElectronicMailAddress);
+
+    /**
      * @uml.property name="addressPostalCode"
      */
     String getAddressPostalCode();

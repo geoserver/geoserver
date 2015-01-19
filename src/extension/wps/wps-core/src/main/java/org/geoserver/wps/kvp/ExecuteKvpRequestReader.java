@@ -56,7 +56,7 @@ public class ExecuteKvpRequestReader extends EMFKvpRequestReader implements Appl
         
         // grab the process, we need it to parse the data inputs
         Name processName = Ows11Util.name(execute.getIdentifier());
-        ProcessFactory pf = GeoServerProcessors.createProcessFactory(processName);
+        ProcessFactory pf = GeoServerProcessors.createProcessFactory(processName, false);
         if (pf == null) {
             throw new WPSException("No such process: " + processName);
         }

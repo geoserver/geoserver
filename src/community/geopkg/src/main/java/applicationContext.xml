@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
- Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ Copyright (C) 2014 - Open Source Geospatial Foundation. All rights reserved.
  This code is licensed under the GPL 2.0 license, available at the root
  application directory.
  -->
@@ -20,10 +20,12 @@
     <bean id="geopkgProcess" class="org.geoserver.geopkg.wps.GeoPackageProcess">
 	  <constructor-arg index="0" ref="geoServer"/>
       <constructor-arg index="1" ref="geopkgGetMapOutputFormat" />
-      <constructor-arg index="2" ref="wpsStorageCleaner"/>
+      <constructor-arg index="2" ref="wpsResourceManager"/>
       <constructor-arg index="3" ref="filterFactory"/>
     </bean>
     
     <bean id="geopkgProcessRequestPPIO" class="org.geoserver.geopkg.wps.GeoPackageProcessRequestPPIO" />
-    
+    <bean id="geopkgDataStoreFactoryInitializer" class="org.geoserver.geopkg.GeoPkgDataStoreFactoryInitializer">
+        <property name="resourceLoader" ref="resourceLoader"/>
+    </bean>
 </beans>

@@ -245,11 +245,11 @@ public class CatalogWriter {
      *             In event of a writing error.
      */
     public void write(File file) throws IOException {
-        try {
+        try(FileOutputStream os = new FileOutputStream(file)) {
             Transformer tx = TransformerFactory.newInstance().newTransformer();
             tx.setOutputProperty(OutputKeys.INDENT, "yes");
             DOMSource source = new DOMSource(document);
-            StreamResult result = new StreamResult(new FileOutputStream(file));
+            StreamResult result = new StreamResult(os);
 
             tx.transform(source, result);
         } catch (Exception e) {

@@ -8,9 +8,9 @@ package org.geoserver.gwc;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.geoserver.catalog.LayerInfo.Type;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.StoreInfo;
+import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.impl.DataStoreInfoImpl;
 import org.geoserver.catalog.impl.FeatureTypeInfoImpl;
 import org.geoserver.catalog.impl.LayerGroupInfoImpl;
@@ -25,7 +25,7 @@ import com.google.common.collect.Lists;
 public class GWCTestHelpers {
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public static LayerInfoImpl mockLayer(String resourceName, String[] extraStyles, Type type) {
+    public static LayerInfoImpl mockLayer(String resourceName, String[] extraStyles, PublishedType type) {
         StoreInfo store = new DataStoreInfoImpl(null);
         store.setName(resourceName + "-store");
         store.setEnabled(true);

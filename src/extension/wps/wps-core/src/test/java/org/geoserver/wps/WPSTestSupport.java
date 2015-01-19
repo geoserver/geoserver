@@ -5,8 +5,12 @@
  */
 package org.geoserver.wps;
 
+import static org.junit.Assert.fail;
+
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,8 +24,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.dom.DOMSource;
 
-import junit.framework.Assert;
-
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
@@ -29,7 +31,6 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.SystemTestData.LayerProperty;
-import org.geoserver.security.AccessMode;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.wcs.CoverageCleanerCallback;
 import org.geoserver.wps.xml.WPSConfiguration;
@@ -37,10 +38,11 @@ import org.geotools.process.Processors;
 import org.geotools.xml.Configuration;
 import org.geotools.xml.Parser;
 import org.junit.After;
-import org.junit.Before;
 import org.opengis.coverage.grid.GridCoverage;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXParseException;
+
+import com.mockrunner.mock.web.MockHttpServletResponse;
 
 public abstract class WPSTestSupport extends GeoServerSystemTestSupport {
 
@@ -147,13 +149,14 @@ public abstract class WPSTestSupport extends GeoServerSystemTestSupport {
                 SAXParseException ex = (SAXParseException) e.next();
                 System.out.println( ex.getLineNumber() + "," + ex.getColumnNumber() + " -" + ex.toString()  );
             }
-            Assert.fail( "Document did not validate.");
+            fail("Document did not validate.");
         }
     }
 
     protected String readFileIntoString(String filename) throws IOException {
+        InputStream stream = getClass().getResourceAsStream( filename );
         BufferedReader in = 
-            new BufferedReader( new InputStreamReader(getClass().getResourceAsStream( filename ) ) );
+            new BufferedReader( new InputStreamReader(stream ) );
         StringBuffer sb = new StringBuffer();
         String line = null;
         while( (line = in.readLine() ) != null ) {
@@ -180,4 +183,32 @@ public abstract class WPSTestSupport extends GeoServerSystemTestSupport {
         testData.addRasterLayer(ROTATED_CAD, "rotated.tiff", TIFF, props, MockData.class, getCatalog());
         testData.addRasterLayer(WORLD, "world.tiff", TIFF, props, MockData.class, getCatalog());
     }
+
+    protected Document waitForProcessEnd(String statusLocation, long maxWaitSeconds)
+            throws Exception {
+        XpathEngine xpath = XMLUnit.newXpathEngine();
+        Document dom = null;
+        long start = System.currentTimeMillis();
+        while ((((System.currentTimeMillis() - start) / 1000) < maxWaitSeconds)) {
+            MockHttpServletResponse response = getAsServletResponse(statusLocation);
+            String contents = response.getOutputStreamContent();
+            // super weird... and I believe related to the testing harness... just ignoring it
+            // for the moment.
+            if ("".equals(contents)) {
+                continue;
+            }
+            dom = dom(new ByteArrayInputStream(contents.getBytes()));
+            // print(dom);
+            // are we still waiting for termination?
+            if (xpath.getMatchingNodes("//wps:Status/wps:ProcessAccepted", dom).getLength() > 0
+                    || xpath.getMatchingNodes("//wps:Status/wps:ProcessStarted", dom).getLength() > 0
+                    || xpath.getMatchingNodes("//wps:Status/wps:ProcessQueued", dom).getLength() > 0) {
+                Thread.sleep(100);
+            } else {
+                return dom;
+            }
+        }
+        throw new Exception("Waited for the process to complete more than " + maxWaitSeconds);
+    }
+
 }

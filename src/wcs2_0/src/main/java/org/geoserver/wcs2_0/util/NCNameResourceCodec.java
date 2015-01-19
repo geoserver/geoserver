@@ -9,10 +9,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
+
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.PublishedType;
 import org.geoserver.wcs2_0.exception.WCS20Exception;
 import org.geotools.util.MapEntry;
 import org.geotools.util.logging.Logging;
@@ -57,7 +59,7 @@ public class NCNameResourceCodec {
         LayerInfo ret = null;
 
         for (LayerInfo layer : layers) {
-            if (layer != null && layer.getType() == LayerInfo.Type.RASTER) {
+            if (layer != null && layer.getType() == PublishedType.RASTER) {
                 if(ret == null) {
                     ret = layer;
                 } else {
@@ -93,21 +95,33 @@ public class NCNameResourceCodec {
             String namespace = mapEntry.getKey();
             String covName = mapEntry.getValue();
 
-            LOGGER.info(" Checking pair " + namespace + " : " + covName );
+            if (namespace == null || namespace.isEmpty()) {
+                LOGGER.info(" Checking coverage name " + covName);
 
-            String fullName = namespace+":"+covName;
-            NamespaceInfo nsInfo = catalog.getNamespaceByPrefix(namespace);
-            if(nsInfo != null) {
-                LOGGER.info(" - Namespace found " + namespace);
-                LayerInfo layer = catalog.getLayerByName(fullName);
-                if(layer != null) {
+                LayerInfo layer = catalog.getLayerByName(covName);
+                if (layer != null) {
                     LOGGER.info(" - Collecting layer " + layer.prefixedName());
                     ret.add(layer);
                 } else {
-                    LOGGER.info(" - Ignoring layer " + fullName);
+                    LOGGER.info(" - Ignoring layer " + covName);
                 }
             } else {
-                LOGGER.info(" - Namespace not found " + namespace);
+                LOGGER.info(" Checking pair " + namespace + " : " + covName);
+
+                String fullName = namespace + ":" + covName;
+                NamespaceInfo nsInfo = catalog.getNamespaceByPrefix(namespace);
+                if (nsInfo != null) {
+                    LOGGER.info(" - Namespace found " + namespace);
+                    LayerInfo layer = catalog.getLayerByName(fullName);
+                    if (layer != null) {
+                        LOGGER.info(" - Collecting layer " + layer.prefixedName());
+                        ret.add(layer);
+                    } else {
+                        LOGGER.info(" - Ignoring layer " + fullName);
+                    }
+                } else {
+                    LOGGER.info(" - Namespace not found " + namespace);
+                }
             }
         }
 
@@ -120,11 +134,13 @@ public class NCNameResourceCodec {
      */
     public static List<MapEntry<String,String>> decode(String qualifiedName) {
         int lastPos = qualifiedName.lastIndexOf(DELIMITER);
-
-        if( lastPos == -1)
-            return Collections.EMPTY_LIST;
-
         List<MapEntry<String,String>> ret = new ArrayList<MapEntry<String, String>>();
+
+        if (lastPos == -1) {
+            ret.add(new MapEntry<String, String>(null, qualifiedName));
+            return ret;
+        }
+
         while (lastPos > -1) {
             String ws   = qualifiedName.substring(0, lastPos);
             String name = qualifiedName.substring(lastPos+DELIMITER.length());

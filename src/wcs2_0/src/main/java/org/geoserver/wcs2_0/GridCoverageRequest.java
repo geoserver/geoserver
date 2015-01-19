@@ -10,6 +10,7 @@ import java.util.Map;
 
 import javax.media.jai.Interpolation;
 
+import org.geotools.coverage.grid.io.OverviewPolicy;
 import org.geotools.util.DateRange;
 import org.geotools.util.NumberRange;
 import org.opengis.filter.Filter;
@@ -37,6 +38,8 @@ public class GridCoverageRequest {
     Interpolation spatialInterpolation;
 
     Interpolation temporalInterpolation;
+
+    OverviewPolicy overviewPolicy;
 
     Filter filter;
 
@@ -104,6 +107,14 @@ public class GridCoverageRequest {
         this.dimensionsSubset = dimensionsSubset;
     }
 
+    public OverviewPolicy getOverviewPolicy() {
+        return overviewPolicy;
+    }
+
+    public void setOverviewPolicy(OverviewPolicy overviewPolicy) {
+        this.overviewPolicy = overviewPolicy;
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -112,6 +123,7 @@ public class GridCoverageRequest {
         result = prime * result + ((elevationSubset == null) ? 0 : elevationSubset.hashCode());
         result = prime * result + ((filter == null) ? 0 : filter.hashCode());
         result = prime * result + ((outputCRS == null) ? 0 : outputCRS.hashCode());
+        result = prime * result + ((overviewPolicy == null) ? 0 : overviewPolicy.hashCode());
         result = prime * result
                 + ((spatialInterpolation == null) ? 0 : spatialInterpolation.hashCode());
         result = prime * result + ((spatialSubset == null) ? 0 : spatialSubset.hashCode());
@@ -149,6 +161,8 @@ public class GridCoverageRequest {
             if (other.outputCRS != null)
                 return false;
         } else if (!outputCRS.equals(other.outputCRS))
+            return false;
+        if (overviewPolicy != other.overviewPolicy)
             return false;
         if (spatialInterpolation == null) {
             if (other.spatialInterpolation != null)

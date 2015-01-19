@@ -65,7 +65,7 @@ class OutputParameter implements Serializable {
     }
 
     ProcessFactory getProcessFactory() {
-        return GeoServerProcessors.createProcessFactory(processName);
+        return GeoServerProcessors.createProcessFactory(processName, false);
     }
 
     Parameter<?> getParameter() {

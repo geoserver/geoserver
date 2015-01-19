@@ -30,6 +30,7 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.ProjectionPolicy;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.CatalogImpl;
 import org.geoserver.config.GeoServer;
@@ -597,7 +598,7 @@ public class SystemTestData extends CiteTestData {
 
         layer.getStyles().clear();
         layer.setDefaultStyle(defaultStyle);
-        layer.setType(LayerInfo.Type.VECTOR);
+        layer.setType(PublishedType.VECTOR);
         layer.setEnabled(true);
 
         if (layer.getId() == null) {
@@ -826,7 +827,7 @@ public class SystemTestData extends CiteTestData {
             
             layer.setDefaultStyle(
                 catalog.getStyleByName(LayerProperty.STYLE.get(props, DEFAULT_RASTER_STYLE)));
-            layer.setType(LayerInfo.Type.RASTER);
+            layer.setType(PublishedType.RASTER);
             layer.setEnabled(true);
     
             if (layer.getId() == null) {
@@ -906,6 +907,8 @@ public class SystemTestData extends CiteTestData {
         }
         settings.setWorkspace(ws);
         settings.getContact().setContactPerson("Andrea Aime");
+        settings.getContact().setAddressElectronicMailAddress("andrea@geoserver.org");
+        settings.getContact().setAddressDeliveryPoint("1600 Pennsylvania Ave NW, Washington DC 20500, United States");
         settings.setNumDecimals(8);
         settings.setOnlineResource("http://geoserver.org");
         settings.setVerbose(false);

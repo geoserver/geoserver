@@ -32,6 +32,7 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.data.test.CiteTestData;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.wcs.WCSInfo;
 import org.geoserver.wcs2_0.response.GranuleStack;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.junit.AfterClass;
@@ -44,7 +45,7 @@ import com.mockrunner.mock.web.MockHttpServletResponse;
 
 public class WCSNetCDFMosaicTest extends WCSTestSupport {
 
-    private static final String MIME_TYPE = "application/custom";
+    
     public static QName LATLONMOSAIC = new QName(CiteTestData.WCS_URI, "2DLatLonCoverage", CiteTestData.WCS_PREFIX);
     public static QName DUMMYMOSAIC = new QName(CiteTestData.WCS_URI, "DummyCoverage", CiteTestData.WCS_PREFIX);
 
@@ -79,7 +80,7 @@ public class WCSNetCDFMosaicTest extends WCSTestSupport {
         try {
             Field field = GetCoverage.class.getDeclaredField("mdFormats");
             field.setAccessible(true);
-            ((Set<String>) field.get(null)).add(MIME_TYPE);
+            ((Set<String>) field.get(null)).add(WCSResponseInterceptor.MIME_TYPE);
         } catch (NoSuchFieldException e) {
         } catch (SecurityException e) {
         } catch (IllegalArgumentException e) {
@@ -111,10 +112,41 @@ public class WCSNetCDFMosaicTest extends WCSTestSupport {
         //we expect a single granule which covers the entire mosaic
         for(GridCoverage2D c : stack.getGranules()){
             System.out.println(c.getEnvelope());
-            assertEquals(45., c.getEnvelope2D().getHeight(),0.001);
-            assertEquals(30., c.getEnvelope2D().getWidth(),0.001);
+            assertEquals(30., c.getEnvelope2D().getHeight(),0.001);
+            assertEquals(45., c.getEnvelope2D().getWidth(),0.001);
         }
         assertEquals(1, stack.getGranules().size());
+    }
+
+    @Test
+    public void testRequestCoverageLatLon() throws Exception {
+        final WCSInfo wcsInfo = getWCS();
+        final boolean oldLatLon = wcsInfo.isLatLon();
+        wcsInfo.setLatLon(true);
+        getGeoServer().save(wcsInfo);
+        try {
+            // http response from the request inside the string
+            MockHttpServletResponse response = getAsServletResponse("ows?request=GetCoverage&service=WCS&version=2.0.1"
+                    + "&coverageId=wcs__2DLatLonCoverage&format=application/custom&subset=time,http://www.opengis.net/def/trs/ISO-8601/0/Gregorian UTC(\"2013-11-01T00:00:00.000Z\")&subset=BANDS(\"MyBand\")");
+            assertNotNull(response);
+            GridCoverage2D lastResult = applicationContext.getBean(WCSResponseInterceptor.class)
+                    .getLastResult();
+            assertTrue(lastResult instanceof GranuleStack);
+            GranuleStack stack = (GranuleStack) lastResult;
+
+            // we expect a single granule which covers the entire mosaic
+            for (GridCoverage2D c : stack.getGranules()) {
+                System.out.println(c.getEnvelope());
+                assertEquals(45., c.getEnvelope2D().getHeight(), 0.001);
+                assertEquals(30., c.getEnvelope2D().getWidth(), 0.001);
+            }
+            assertEquals(1, stack.getGranules().size());
+        } finally {
+            wcsInfo.setLatLon(oldLatLon);
+            getGeoServer().save(wcsInfo);
+
+        }
+
     }
 
     @Test

@@ -18,6 +18,7 @@ import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.CoverageView.CompositionType;
 import org.geoserver.catalog.CoverageView.CoverageBand;
 import org.geoserver.catalog.CoverageView.InputCoverageBand;
+import org.geoserver.catalog.PublishedType;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.TestData;
 import org.geoserver.data.test.SystemTestData.LayerProperty;
@@ -304,6 +305,22 @@ public class DescribeOECoverageSetTest extends WCSEOTestSupport {
         assertEquals("4", xpath.evaluate("count(//wcs:CoverageDescriptions/wcs:CoverageDescription)", dom));
         assertEquals("1", xpath.evaluate("count(//wcseo:DatasetSeriesDescriptions)", dom));
     }
+
+    @Test
+    public void testTimeIntervalTrimContainsLenient() throws Exception {
+        // overlaps with some, contains none (dates are incomplete, we use the lenient parameter)
+        Document dom = getAsDOM("wcs?request=DescribeEOCoverageSet&version=2.0.1&service=WCS&eoid=sf__timeranges_dss" + 
+           "&subset=phenomenonTime(\"2008-10-31T00:00Z\",\"2008-10-31T23:59Z\")&containment=contains");
+        assertEquals("0", xpath.evaluate("count(//wcs:CoverageDescriptions/wcs:CoverageDescription)", dom));
+        assertEquals("0", xpath.evaluate("count(//wcseo:DatasetSeriesDescriptions)", dom));
+        
+        // contains a bunch 
+        dom = getAsDOM("wcs?request=DescribeEOCoverageSet&version=2.0.1&service=WCS&eoid=sf__timeranges_dss" +
+                "&subset=phenomenonTime(\"2008-10-30T00:00Z\",\"2008-11-03T00:00Z\")&containment=contains");
+        // print(dom);
+        assertEquals("4", xpath.evaluate("count(//wcs:CoverageDescriptions/wcs:CoverageDescription)", dom));
+        assertEquals("1", xpath.evaluate("count(//wcseo:DatasetSeriesDescriptions)", dom));
+    }    
     
     @Test
     public void testMixedTrim() throws Exception {
@@ -355,7 +372,7 @@ public class DescribeOECoverageSetTest extends WCSEOTestSupport {
         setupRasterDimension(layerName, ResourceInfo.TIME, DimensionPresentation.LIST, null);
         enableEODataset(layerName);
 
-        layer.setType(LayerInfo.Type.RASTER);
+        layer.setType(PublishedType.RASTER);
         layer.setEnabled(true);
 
         if (layer.getId() == null) {

@@ -22,7 +22,7 @@ class MemoryDataAccessRuleDAO extends DataAccessRuleDAO {
     }
     
     @Override
-    void checkPropertyFile(boolean force) {
+    protected void checkPropertyFile(boolean force) {
         // skip checking
         lastModified = Long.MAX_VALUE;
     }

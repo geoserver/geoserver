@@ -272,7 +272,7 @@ public class OwsUtils {
             Throwable cause = ex.getCause();
             final String message = ex.getMessage();
             String lastMessage = message;
-            if(!"".equals(message)) {
+            if(message != null && !"".equals(message)) {
                 if(xmlEscape)
                     s.append(ResponseUtils.encodeXML(message));
                 else
@@ -291,7 +291,7 @@ public class OwsUtils {
                         
                     }
                 }
-                if(cause != null)
+                if (cause != null && cause.getMessage() != null && !"".equals(cause.getMessage()))
                     s.append("\n");
             }
             

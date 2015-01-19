@@ -7,8 +7,6 @@
 package org.geoserver.wps;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
@@ -16,20 +14,30 @@ import org.geoserver.catalog.MetadataMap;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamServiceLoader;
-import org.geoserver.config.util.XStreamPersister.SRSConverter;
 import org.geoserver.platform.GeoServerResourceLoader;
-import org.geoserver.wfs.WFSInfoImpl;
+import org.geoserver.wps.validator.MaxSizeValidator;
+import org.geoserver.wps.validator.MultiplicityValidator;
+import org.geoserver.wps.validator.NumberRangeValidator;
+import org.geoserver.wps.validator.WPSInputValidator;
 import org.geotools.feature.NameImpl;
-import org.geotools.process.ProcessFactory;
-import org.geotools.process.Processors;
-import org.geotools.referencing.CRS;
-import org.geotools.referencing.wkt.Formattable;
+import org.geotools.util.Converters;
+import org.geotools.util.NumberRange;
 import org.geotools.util.Version;
 import org.opengis.feature.type.Name;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
 import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.converters.MarshallingContext;
+import com.thoughtworks.xstream.converters.UnmarshallingContext;
 import com.thoughtworks.xstream.converters.basic.AbstractSingleValueConverter;
+import com.thoughtworks.xstream.converters.collections.CollectionConverter;
+import com.thoughtworks.xstream.converters.reflection.ReflectionConverter;
+import com.thoughtworks.xstream.converters.reflection.ReflectionProvider;
+import com.thoughtworks.xstream.io.HierarchicalStreamReader;
+import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
+import com.thoughtworks.xstream.mapper.ClassAliasingMapper;
+import com.thoughtworks.xstream.mapper.Mapper;
 
 /**
  * Service loader for the Web Processing Service
@@ -47,63 +55,103 @@ public class WPSXStreamLoader extends XStreamServiceLoader<WPSInfo> {
     }
 
     protected WPSInfo createServiceFromScratch(GeoServer gs) {
-        WPSInfoImpl wps = new WPSInfoImpl();
+        WPSInfo wps = new WPSInfoImpl();
         wps.setName("WPS");
-        wps.setGeoServer( gs );
-        wps.getVersions().add( new Version( "1.0.0") );
+        wps.setGeoServer(gs);
+        wps.getVersions().add(new Version("1.0.0"));
         wps.setMaxAsynchronousProcesses(Runtime.getRuntime().availableProcessors() * 2);
         wps.setMaxSynchronousProcesses(Runtime.getRuntime().availableProcessors() * 2);
         return wps;
     }
-    
+
     @Override
     protected void initXStreamPersister(XStreamPersister xp, GeoServer gs) {
         XStream xs = xp.getXStream();
+        // Use custom converter to manage previous wps.xml configuration format
+        xs.registerConverter(new ProcessGroupConverter(xs.getMapper(), xs.getReflectionProvider()));
         xs.alias("wps", WPSInfo.class, WPSInfoImpl.class);
         xs.alias("processGroup", ProcessGroupInfoImpl.class);
         xs.alias("name", NameImpl.class);
+        xs.alias("name", Name.class, NameImpl.class);
+        xs.alias("accessInfo", ProcessInfoImpl.class);
         xs.registerConverter(new NameConverter());
+        ClassAliasingMapper mapper = new ClassAliasingMapper(xs.getMapper());
+        mapper.addClassAlias("role", String.class);
+        xs.registerLocalConverter(ProcessGroupInfoImpl.class, "roles", new CollectionConverter(
+                mapper));
+        xs.registerLocalConverter(ProcessInfoImpl.class, "roles", new CollectionConverter(mapper));
+        xs.registerLocalConverter(ProcessInfoImpl.class, "validators",
+                new XStreamPersister.MultimapConverter(mapper));
+        xs.alias("maxSizeValidator", MaxSizeValidator.class);
+        xs.alias("maxMultiplicityValidator", MultiplicityValidator.class);
+        xs.alias("rangeValidator", NumberRangeValidator.class);
+        xs.registerLocalConverter(NumberRangeValidator.class, "range",
+                new NumberRangeConverter(xs.getMapper(), xs.getReflectionProvider()));
     }
-    
+
     @Override
     protected WPSInfo initialize(WPSInfo service) {
         // TODO: move this code block to the parent class
-        if ( service.getKeywords() == null ) {
-            ((WPSInfoImpl)service).setKeywords( new ArrayList() );
+        if (service.getKeywords() == null) {
+            ((WPSInfoImpl) service).setKeywords(new ArrayList());
         }
-        if ( service.getExceptionFormats() == null ) {
-            ((WPSInfoImpl)service).setExceptionFormats( new ArrayList() );
+        if (service.getExceptionFormats() == null) {
+            ((WPSInfoImpl) service).setExceptionFormats(new ArrayList());
         }
-        if ( service.getMetadata() == null ) {
-            ((WPSInfoImpl)service).setMetadata( new MetadataMap() );
+        if (service.getMetadata() == null) {
+            ((WPSInfoImpl) service).setMetadata(new MetadataMap());
         }
-        if ( service.getClientProperties() == null ) {
-            ((WPSInfoImpl)service).setClientProperties( new HashMap() );
+        if (service.getClientProperties() == null) {
+            ((WPSInfoImpl) service).setClientProperties(new HashMap());
         }
-        if ( service.getVersions() == null ) {
-            ((WPSInfoImpl)service).setVersions( new ArrayList() );
+        if (service.getVersions() == null) {
+            ((WPSInfoImpl) service).setVersions(new ArrayList());
         }
-        if ( service.getVersions().isEmpty() ) {
-            service.getVersions().add( new Version( "1.0.0") );
+        if (service.getVersions().isEmpty()) {
+            service.getVersions().add(new Version("1.0.0"));
         }
         if (service.getConnectionTimeout() == 0) {
             // timeout has not yet been specified. Use default
-            ((WPSInfoImpl)service).setConnectionTimeout(WPSInfoImpl.DEFAULT_CONNECTION_TIMEOUT);
+            ((WPSInfo) service).setConnectionTimeout(WPSInfoImpl.DEFAULT_CONNECTION_TIMEOUT);
         }
         if (service.getProcessGroups() == null) {
-            ((WPSInfoImpl)service).setProcessGroups(new ArrayList());
+            ((WPSInfoImpl) service).setProcessGroups(new ArrayList());
+        } else {
+            for (ProcessGroupInfo pg : service.getProcessGroups()) {
+                if (pg.getRoles() == null) {
+                    pg.setRoles(new ArrayList<String>());
+                }
+                if (pg.getMetadata() == null) {
+                    ((ProcessGroupInfoImpl) pg).setMetadata(new MetadataMap());
+                }
+                if (pg.getFilteredProcesses() == null) {
+                    ((ProcessGroupInfoImpl) pg).setFilteredProcesses(new ArrayList<ProcessInfo>());
+                } else {
+                    for (ProcessInfo pi : pg.getFilteredProcesses()) {
+                        if (pi.getRoles() == null) {
+                            ((ProcessInfoImpl) pi).setRoles(new ArrayList<String>());
+                        }
+                        if (pi.getValidators() == null) {
+                            Multimap<String, WPSInputValidator> validators = ArrayListMultimap
+                                    .create();
+                            ((ProcessInfoImpl) pi).setValidators(validators);
+                        }
+                        if (pi.getMetadata() == null) {
+                            ((ProcessInfoImpl) pi).setMetadata(new MetadataMap());
+                        }
+                    }
+                }
+            }
         }
-        if(service.getName() == null) {
+        if (service.getName() == null) {
             service.setName("WPS");
         }
 
         return service;
     }
 
-    
-
     /**
-     * Converter for {@link Name} 
+     * Converter for {@link Name}
      *
      */
     public static class NameConverter extends AbstractSingleValueConverter {
@@ -118,11 +166,11 @@ public class WPSXStreamLoader extends XStreamServiceLoader<WPSInfo> {
             Name name = (Name) obj;
             return name.getNamespaceURI() + ":" + name.getLocalPart();
         }
-        
+
         @Override
         public Object fromString(String str) {
-            int idx =  str.indexOf(":");
-            if(idx == -1) {
+            int idx = str.indexOf(":");
+            if (idx == -1) {
                 return new NameImpl(str);
             } else {
                 String prefix = str.substring(0, idx);
@@ -130,6 +178,100 @@ public class WPSXStreamLoader extends XStreamServiceLoader<WPSInfo> {
                 return new NameImpl(prefix, local);
             }
         }
-        
+
     }
+
+    /**
+     * Manages unmarshalling of {@link ProcessGroupInfoImpl} taking into account previous wps.xml
+     * format in witch {@link ProcessGroupInfoImpl #getFilteredProcesses()} is a collection of
+     * {@link NameImpl}
+     */
+    public static class ProcessGroupConverter extends ReflectionConverter {
+
+        public ProcessGroupConverter(Mapper mapper, ReflectionProvider reflectionProvider) {
+            super(mapper, reflectionProvider);
+        }
+
+        @Override
+        public boolean canConvert(Class clazz) {
+            return ProcessGroupInfoImpl.class == clazz;
+        }
+
+        @Override
+        public Object doUnmarshal(Object result, HierarchicalStreamReader reader,
+                UnmarshallingContext context) {
+            ProcessGroupInfo converted = (ProcessGroupInfo) super.doUnmarshal(result, reader,
+                    context);
+
+            if (converted.getFilteredProcesses() != null) {
+                List<ProcessInfo> newFilteredProcesses = new ArrayList<ProcessInfo>();
+                for (Object fp : converted.getFilteredProcesses()) {
+                    if (fp instanceof NameImpl) {
+                        NameImpl ni = (NameImpl) fp;
+                        ProcessInfo pi = new ProcessInfoImpl();
+                        pi.setName(ni);
+                        pi.setEnabled(false);
+                        newFilteredProcesses.add(pi);
+                    } else {
+                        break;
+                    }
+                }
+                if (!newFilteredProcesses.isEmpty()) {
+                    converted.getFilteredProcesses().clear();
+                    converted.getFilteredProcesses().addAll(newFilteredProcesses);
+                }
+            }
+
+            return converted;
+        }
+
+    }
+
+    public static class NumberRangeConverter extends ReflectionConverter {
+
+        public NumberRangeConverter(Mapper mapper, ReflectionProvider reflectionProvider) {
+            super(mapper, reflectionProvider);
+        }
+
+        @Override
+        public boolean canConvert(Class type) {
+            return NumberRange.class.isAssignableFrom(type);
+        }
+
+        @Override
+        public void marshal(Object source, HierarchicalStreamWriter writer,
+                MarshallingContext context) {
+            NumberRange<?> range = (NumberRange<?>) source;
+            writer.startNode("minValue");
+            writer.setValue(String.valueOf(range.getMinValue()));
+            writer.endNode();
+            writer.startNode("maxValue");
+            writer.setValue(String.valueOf(range.getMaxValue()));
+            writer.endNode();
+            if (!range.isMinIncluded()) {
+                writer.startNode("isMinIncluded");
+                writer.setValue("false");
+                writer.endNode();
+            }
+            if (!range.isMaxIncluded()) {
+                writer.startNode("isMaxIncluded");
+                writer.setValue("false");
+                writer.endNode();
+            }
+        }
+
+        @Override
+        public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {
+            reader.moveDown();
+            double min = Converters.convert(reader.getValue(), Double.class);
+            reader.moveUp();
+            reader.moveDown();
+            double max = Converters.convert(reader.getValue(), Double.class);
+            reader.moveUp();
+            NumberRange<Double> range = new NumberRange<>(Double.class, min, max);
+            return range;
+        }
+
+    }
+
 }

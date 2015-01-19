@@ -5,23 +5,15 @@
  */
 package org.geoserver.wps.web;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.wicket.Component;
 import org.apache.wicket.PageParameters;
-import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.SubmitLink;
 import org.apache.wicket.markup.html.form.TextField;
-import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.validation.validator.MinimumValidator;
+import org.geoserver.web.data.store.panel.DirectoryParamPanel;
 import org.geoserver.web.services.BaseServiceAdminPage;
-import org.geoserver.web.wicket.GeoServerDataProvider.Property;
-import org.geoserver.web.wicket.GeoServerTablePanel;
-import org.geoserver.wps.ProcessGroupInfo;
+import org.geoserver.web.wicket.ParamResourceModel;
 import org.geoserver.wps.WPSInfo;
 
 /**
@@ -31,8 +23,6 @@ import org.geoserver.wps.WPSInfo;
  * 
  */
 public class WPSAdminPage extends BaseServiceAdminPage<WPSInfo> {
-
-    private List<ProcessGroupInfo> processFactories;
 
     public WPSAdminPage() {
         super();
@@ -64,75 +54,34 @@ public class WPSAdminPage extends BaseServiceAdminPage<WPSInfo> {
         maxSynchProcesses.add(new MinimumValidator<Integer>(1));
         form.add(maxSynchProcesses);
         
+        TextField maxSynchExecutionTime = new TextField("maxSynchronousExecutionTime",
+                Integer.class);
+        maxSynchExecutionTime.add(new MinimumValidator<Integer>(-1));
+        form.add(maxSynchExecutionTime);
+
         TextField maxAsynchProcesses = new TextField("maxAsynchronousProcesses", Integer.class);
         maxAsynchProcesses.add(new MinimumValidator<Integer>(1));
         form.add(maxAsynchProcesses);
         
+        TextField maxAsynchExecutionTime = new TextField("maxAsynchronousExecutionTime",
+                Integer.class);
+        maxAsynchExecutionTime.add(new MinimumValidator<Integer>(-1));
+        form.add(maxAsynchExecutionTime);
+
         TextField resourceExpirationTimeout = new TextField("resourceExpirationTimeout", Integer.class);
         resourceExpirationTimeout.add(new MinimumValidator<Integer>(1));
         form.add(resourceExpirationTimeout);
         
-        WPSInfo wpsInfo = (WPSInfo) info.getObject();
-        processFactories = cloneFactoryInfos(wpsInfo.getProcessGroups());
-        ProcessFactoryInfoProvider provider = new ProcessFactoryInfoProvider(processFactories, getLocale());
-        GeoServerTablePanel<ProcessGroupInfo> processFilterEditor = new GeoServerTablePanel<ProcessGroupInfo>("processFilterTable", provider) {
-
-            @Override
-            protected Component getComponentForProperty(String id, final IModel itemModel,
-                    Property<ProcessGroupInfo> property) {
-                
-                if(property.getName().equals("enabled")) {
-                    Fragment fragment = new Fragment(id, "enabledFragment", WPSAdminPage.this);
-                    CheckBox enabled = new CheckBox("enabled", property.getModel(itemModel));
-                    enabled.setOutputMarkupId(true);
-                    fragment.add(enabled);
-                    return fragment;
-                } else if(property.getName().equals("prefix")) {
-                    return new Label(id, property.getModel(itemModel));
-                } else if(property.getName().equals("title")) {
-                    return new Label(id, property.getModel(itemModel));
-                } else if(property.getName().equals("summary")) {
-                    return new Label(id, property.getModel(itemModel));
-                } else if(property.getName().equals("edit")) {
-                    Fragment fragment = new Fragment(id, "linkFragment", WPSAdminPage.this);
-                    // we use a submit link to avoid losing the other edits in the form
-                    SubmitLink link = new SubmitLink("link") {
-
-                        @Override
-                        public void onSubmit() {
-                            ProcessGroupInfo pfi = (ProcessGroupInfo) itemModel.getObject();
-                            setResponsePage(new ProcessSelectionPage(WPSAdminPage.this, pfi));
-                        }
-                    };   
-                    fragment.add(link);
-                    
-                    return fragment;
-                }
-                
-                return null;
-            }
-        };
-        processFilterEditor.setFilterable(false);
-        processFilterEditor.setPageable(false);
-        processFilterEditor.setOutputMarkupId( true );
-        form.add(processFilterEditor);
-    }
-    
-    private List<ProcessGroupInfo> cloneFactoryInfos(List<ProcessGroupInfo> processFactories) {
-        List<ProcessGroupInfo> result = new ArrayList<ProcessGroupInfo>();
-        for (ProcessGroupInfo pfi : processFactories) {
-            result.add(pfi.clone());
-        }
-        
-        return result;
+        // GeoServerFileChooser chooser = new GeoServerFileChooser("storageDirectory",
+        // new PropertyModel<String>(info, "storageDirectory"));
+        DirectoryParamPanel chooser = new DirectoryParamPanel("storageDirectory",
+                new PropertyModel<String>(
+                info, "storageDirectory"), new ParamResourceModel("storageDirectory", this), false);
+        form.add(chooser);
     }
 
     @Override
     protected void handleSubmit(WPSInfo info) {
-        // overwrite the process factories that we did clone to achieve isolation
-        List<ProcessGroupInfo> factories = info.getProcessGroups();
-        factories.clear();
-        factories.addAll(processFactories);
         super.handleSubmit(info);
     }
 

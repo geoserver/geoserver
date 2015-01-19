@@ -1,0 +1,52 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<head>
+<title><wicket:message key="title">SOLR fields configuration</wicket:message></title>
+</head>
+<body>
+	<wicket:panel>
+		<form wicket:id="solr_form">	
+			<input type="checkbox" wicket:id="hideEmpty"/><wicket:message key="hideEmpty">Hide empty fields</wicket:message>	
+			<div>
+				<div wicket:id="solrAttributes"></div>
+				<div wicket:id="solr_feedback">[Feedback Panel]</div>
+				<div class="button-group selfclear" style="height: 50px">
+					<a href="#" wicket:id="solr_save">
+						<wicket:message key="solr_save">Save</wicket:message>
+					</a>
+				</div>
+			</div>
+		</form>
+	</wicket:panel>
+
+	<wicket:fragment wicket:id="checkboxPk">
+		<input type="checkbox" wicket:id="pk"></input>
+	</wicket:fragment>
+    
+    <wicket:fragment wicket:id="checkboxDefaultGeometry">
+        <input type="checkbox" wicket:id="defaultGeometry"></input>
+    </wicket:fragment>
+    
+	<wicket:fragment wicket:id="checkboxUse">
+		<input type="checkbox" wicket:id="use"></input>
+	</wicket:fragment>
+	
+	<wicket:fragment wicket:id="checkboxEmpty">
+		<input type="checkbox" wicket:id="isEmpty" DISABLED></input>
+	</wicket:fragment>
+
+	<wicket:fragment wicket:id="empty"></wicket:fragment>
+
+	<wicket:fragment wicket:id="text">
+		<input type="text" wicket:id="text"></input>
+	</wicket:fragment>
+
+	<wicket:fragment wicket:id="geometry">
+		<select wicket:id="geometry"></select>
+	</wicket:fragment>
+	
+	<wicket:fragment wicket:id="label">
+		<span wicket:id="label"></span>
+	</wicket:fragment>
+		
+</body>
+</html>

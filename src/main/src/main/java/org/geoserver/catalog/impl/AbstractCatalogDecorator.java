@@ -26,6 +26,7 @@ import org.geoserver.catalog.ResourcePool;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.catalog.ValidationResult;
 import org.geoserver.catalog.event.CatalogListener;
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.platform.GeoServerResourceLoader;
@@ -88,10 +89,10 @@ public class AbstractCatalogDecorator extends AbstractDecorator<Catalog> impleme
         delegate.save(store);
     }
     
-    public List<RuntimeException> validate(StoreInfo store, boolean isNew) {
+    public ValidationResult validate(StoreInfo store, boolean isNew) {
         return delegate.validate(store, isNew);
     }
-    
+
     public <T extends StoreInfo> T detach(T store) {
         return delegate.detach(store);
     }
@@ -211,10 +212,10 @@ public class AbstractCatalogDecorator extends AbstractDecorator<Catalog> impleme
         delegate.save(resource);
     }
     
-    public List<RuntimeException> validate(ResourceInfo resource, boolean isNew) {
+    public ValidationResult validate(ResourceInfo resource, boolean isNew) {
         return delegate.validate(resource, isNew);
     }
-    
+
     public <T extends ResourceInfo> T detach(T resource) {
         return delegate.detach(resource);
     }
@@ -363,7 +364,7 @@ public class AbstractCatalogDecorator extends AbstractDecorator<Catalog> impleme
         delegate.save(layer);
     }
     
-    public List<RuntimeException> validate(LayerInfo layer, boolean isNew) {
+    public ValidationResult validate(LayerInfo layer, boolean isNew) {
         return delegate.validate(layer, isNew);
     }
     
@@ -445,7 +446,7 @@ public class AbstractCatalogDecorator extends AbstractDecorator<Catalog> impleme
         delegate.save(layerGroup);
     }
     
-    public List<RuntimeException> validate(LayerGroupInfo layerGroup, boolean isNew) {
+    public ValidationResult validate(LayerGroupInfo layerGroup, boolean isNew) {
         return delegate.validate(layerGroup, isNew);
     }
     
@@ -496,7 +497,7 @@ public class AbstractCatalogDecorator extends AbstractDecorator<Catalog> impleme
         delegate.save(style);
     }
     
-    public List<RuntimeException> validate(StyleInfo style, boolean isNew) {
+    public ValidationResult validate(StyleInfo style, boolean isNew) {
         return delegate.validate(style, isNew);
     }
     
@@ -547,7 +548,7 @@ public class AbstractCatalogDecorator extends AbstractDecorator<Catalog> impleme
         delegate.save(namespace);
     }
     
-    public List<RuntimeException> validate(NamespaceInfo namespace, boolean isNew) {
+    public ValidationResult validate(NamespaceInfo namespace, boolean isNew) {
         return delegate.validate(namespace, isNew);
     }
     
@@ -594,7 +595,7 @@ public class AbstractCatalogDecorator extends AbstractDecorator<Catalog> impleme
         delegate.save(workspace);
     }
     
-    public List<RuntimeException> validate(WorkspaceInfo workspace, boolean isNew) {
+    public ValidationResult validate(WorkspaceInfo workspace, boolean isNew) {
         return delegate.validate(workspace, isNew);
     }
     

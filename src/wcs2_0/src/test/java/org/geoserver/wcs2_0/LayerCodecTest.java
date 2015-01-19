@@ -7,7 +7,9 @@ import static org.junit.Assert.assertNull;
 import java.util.List;
 
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.ows.LocalWorkspace;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.wcs2_0.util.NCNameResourceCodec;
 import org.junit.Test;
@@ -27,7 +29,8 @@ public class LayerCodecTest extends GeoServerSystemTestSupport {
     public void testBasicKVP() throws Exception {
         {
             List<LayerInfo> list0 = NCNameResourceCodec.getLayers(getCatalog(), "pippo_topo");
-            assertNull(list0);
+            assertNotNull(list0);
+            assertEquals(0, list0.size());
         }
 
         {
@@ -38,6 +41,24 @@ public class LayerCodecTest extends GeoServerSystemTestSupport {
 
         {
             List<LayerInfo> list = NCNameResourceCodec.getLayers(getCatalog(), "wcs__BlueMarble");
+            assertNotNull(list);
+            assertEquals(1, list.size());
+        }
+
+        {
+            // Setting the LocalWorkspace to WCS
+            WorkspaceInfo ws = getCatalog().getWorkspaceByName("wcs");
+            assertNotNull(ws);
+            WorkspaceInfo oldWs = LocalWorkspace.get();
+            LocalWorkspace.set(ws);
+            List<LayerInfo> list = NCNameResourceCodec.getLayers(getCatalog(), "BlueMarble");
+            assertNotNull(list);
+            assertEquals(1, list.size());
+            LocalWorkspace.set(oldWs);
+        }
+
+        {
+            List<LayerInfo> list = NCNameResourceCodec.getLayers(getCatalog(), "BlueMarble");
             assertNotNull(list);
             assertEquals(1, list.size());
         }

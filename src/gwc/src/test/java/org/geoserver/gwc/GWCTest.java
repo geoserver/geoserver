@@ -43,6 +43,7 @@ import java.util.Set;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.event.CatalogListener;
 import org.geoserver.gwc.config.GWCConfig;
 import org.geoserver.gwc.config.GWCConfigPersister;
@@ -153,7 +154,7 @@ public class GWCTest {
     @Before
     public void setUp() throws Exception {
         catalog = mock(Catalog.class);
-        layer = mockLayer("testLayer", new String[]{"style1", "style2"}, LayerInfo.Type.RASTER);
+        layer = mockLayer("testLayer", new String[]{"style1", "style2"}, PublishedType.RASTER);
         layerGroup = mockGroup("testGroup", layer);
         mockCatalog();
 
@@ -503,7 +504,7 @@ public class GWCTest {
             assertTrue(true);
         }
 
-        LayerInfo layer2 = mockLayer("layer2", new String[]{}, LayerInfo.Type.RASTER);
+        LayerInfo layer2 = mockLayer("layer2", new String[]{}, PublishedType.RASTER);
         LayerGroupInfo group2 = mockGroup("group2", layer, layer2);
 
         when(catalog.getLayerByName(eq(tileLayerName(layer2)))).thenReturn(layer2);

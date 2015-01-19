@@ -19,6 +19,7 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.XmlRequestReader;
+import org.geoserver.wfs.CatalogNamespaceSupport;
 import org.geoserver.wfs.WFSException;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.xml.gml3.AbstractGeometryTypeBinding;
@@ -63,15 +64,9 @@ public class WFSXmlUtils {
         parser.getURIHandlers().add(0, new WFSURIHandler(geoServer));
 
         Catalog catalog = geoServer.getCatalog();
+
         //"inject" namespace mappings
-        List<NamespaceInfo> namespaces = catalog.getNamespaces();
-        for ( NamespaceInfo ns : namespaces ) {
-            if ( ns.equals( catalog.getDefaultNamespace() ) )  
-                continue;
-            
-            parser.getNamespaces().declarePrefix( 
-                ns.getPrefix(), ns.getURI());
-        }
+        parser.getNamespaces().add(new CatalogNamespaceSupport(catalog));
     }
     
     public static Object parseRequest(Parser parser, Reader reader, WFSInfo wfs) throws Exception {

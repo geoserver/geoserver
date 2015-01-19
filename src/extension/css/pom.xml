@@ -11,28 +11,8 @@
   <version>2.7-SNAPSHOT</version>
   <name>GeoServer CSS Styling</name>
 
-  <repositories>
-    <repository>
-      <id>scala-tools.org</id>
-      <name>Scala-Tools Maven2 Repository</name>
-      <url>http://scala-tools.org/repo-releases</url>
-    </repository>
-  </repositories>
-  <pluginRepositories>
-    <pluginRepository>
-      <id>scala-tools.org</id>
-      <name>Scala-Tools Maven2 Repository</name>
-      <url>http://scala-tools.org/repo-releases</url>
-    </pluginRepository>
-  </pluginRepositories>
-
   <dependencies>
     <!-- Runtime/compile-time dependencies -->
-    <dependency>
-      <groupId>org.scala-lang</groupId>
-      <artifactId>scala-library</artifactId>
-      <version>${scala.version}</version>
-    </dependency>
     <dependency>
       <groupId>org.geoserver.web</groupId>
       <artifactId>gs-web-core</artifactId>
@@ -43,9 +23,9 @@
       <artifactId>wicket-extensions</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.geoscript</groupId>
-      <artifactId>geocss_2.10</artifactId>
-      <version>0.8.4-aa2</version>
+      <groupId>org.geotools</groupId>
+      <artifactId>gt-css</artifactId>
+      <version>${gt.version}</version>
     </dependency>
 
     <!-- Test dependencies -->
@@ -70,7 +50,6 @@
     </dependency>
   </dependencies>
   <properties>
-    <scala.version>2.10.1</scala.version>
     <maven.test.search.classdir>true</maven.test.search.classdir>
   </properties>
   <build>

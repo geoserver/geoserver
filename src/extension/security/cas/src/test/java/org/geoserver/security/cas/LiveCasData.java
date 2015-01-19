@@ -161,7 +161,7 @@ public class LiveCasData extends LiveSystemTestData {
         }
                 
         // check connection
-        try {            
+        try {
             HttpURLConnection huc =  (HttpURLConnection)  loginURL.openConnection(); 
             huc.setRequestMethod("GET"); 
             huc.connect(); 
@@ -171,9 +171,9 @@ public class LiveCasData extends LiveSystemTestData {
             }
         } catch (Exception ex) {
             disableTest("problem with cas connection: "+ex.getMessage());
-            return null;            
+            return null;
         }
-                
+
         keyStoreFile = new File(base,"keystore.jks");
         if (keyStoreFile.exists()==false) {
             disableTest("Keystore not found: "+ keyStoreFile.getAbsolutePath());

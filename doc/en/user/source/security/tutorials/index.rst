@@ -13,3 +13,4 @@ Tutorials
    j2ee/index
    httpheaderproxy/index
    credentialsfromheaders/index
+   cas/index

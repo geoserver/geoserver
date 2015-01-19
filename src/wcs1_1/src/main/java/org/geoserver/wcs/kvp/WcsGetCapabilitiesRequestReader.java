@@ -12,6 +12,7 @@ import net.opengis.ows11.Ows11Factory;
 import net.opengis.wcs11.GetCapabilitiesType;
 import net.opengis.wcs11.Wcs111Factory;
 
+import org.eclipse.emf.ecore.EObject;
 import org.geoserver.ows.kvp.EMFKvpRequestReader;
 
 /**
@@ -31,6 +32,13 @@ public class WcsGetCapabilitiesRequestReader extends EMFKvpRequestReader {
             AcceptVersionsKvpParser avp = new AcceptVersionsKvpParser();
             AcceptVersionsType avt = (AcceptVersionsType) avp.parse((String) rawKvp.get("acceptVersions"));
             kvp.put("acceptVersions", avt);
+        }
+        // make sure we get the right Sections-Type param -> workaround for GEOS-6807
+        if(rawKvp.containsKey("sections")){
+            SectionsKvpParser parser = new SectionsKvpParser();
+            String value = (String) rawKvp.get("sections");
+            EObject sections = (EObject) parser.parse(value);
+            kvp.put("sections", sections);
         }
         request = super.read(request, kvp, rawKvp);
 

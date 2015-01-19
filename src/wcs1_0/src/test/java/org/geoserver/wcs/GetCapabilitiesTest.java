@@ -178,6 +178,14 @@ public class GetCapabilitiesTest extends WCSTestSupport {
     }
 
     @Test
+    public void testAcceptVersions() throws Exception {
+        Document dom = getAsDOM(BASEPATH
+                + "?request=GetCapabilities&service=WCS&version=1.0.0&acceptversions=1.0.0");
+
+        checkValidationErrors(dom, WCS10_GETCAPABILITIES_SCHEMA);
+    }
+
+    @Test
     public void testOneSection() throws Exception {
         Document dom = getAsDOM(BASEPATH
                 + "?request=GetCapabilities&service=WCS&version=1.0.0&section=/WCS_Capabilities/Service");

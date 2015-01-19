@@ -1887,7 +1887,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                 
                 
                 if (get) {
-                    element("ows:Get", null, attributes(new String[] { "xlink:href", serviceURL + "?"}));
+                    element("ows:Get", null, attributes(new String[] { "xlink:href", serviceURL}));
                 }
 
                 if (post) {

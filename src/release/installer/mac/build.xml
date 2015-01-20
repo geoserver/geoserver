@@ -37,7 +37,7 @@
     <!-- extract version number -->
     <property name="gs.bin.file" refid="gs.bin.path"/>
     <propertyregex property="gs.version" input="${gs.bin.file}"
-      regexp="geoserver-(.*)-bin.zip" select="\1"/>
+      regexp="mac/geoserver-(.*)-bin.zip" select="\1"/>
 
     <fail unless="gs.version" 
       message="Unable to determine GeoServer version number from bin file."/>

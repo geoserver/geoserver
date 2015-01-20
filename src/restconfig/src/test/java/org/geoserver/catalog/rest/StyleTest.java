@@ -788,19 +788,4 @@ public class StyleTest extends CatalogRESTTestSupport {
         assertNotNull(getCatalog().getResourceLoader().find("styles/gear.png"));
         assertNotNull(getCatalog().getResourceLoader().find("styles/foo.sld"));
     }
-
-
-    @Test
-    public void testGetSLDPackage() throws Exception {
-        testPostSLDPackage();
-
-        Catalog cat = getCatalog();
-        assertNotNull(cat.getStyleByName("foo"));
-
-        MockHttpServletResponse response =
-                getAsServletResponse("/rest/styles/foo.zip");
-        assertEquals( 200, response.getStatusCode() );
-
-    }
-
 }

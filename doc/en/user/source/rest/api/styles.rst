@@ -95,7 +95,7 @@ Controls a given style.
    * - GET
      - Return style ``s``
      - 200
-     - SLD, HTML, XML, JSON, ZIP
+     - SLD, HTML, XML, JSON
      - HTML
      - :ref:`quietOnNotFound <rest_api_styles_quietOnNotFound>`
    * - POST

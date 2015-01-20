@@ -59,22 +59,7 @@ public class SLDPackageHandler extends StyleHandler {
 
     @Override
     public void encode(StyledLayerDescriptor sld, Version version, boolean pretty, OutputStream output) throws IOException {
-        ZipOutputStream zos = new ZipOutputStream(output);
-
-        try {
-            String sldName = (sld.getName() != null)?sld.getName():"style";
-            zos.putNextEntry(new ZipEntry(sldName + ".sld"));
-
-            OutputStream sldOutputStream = new ByteArrayOutputStream();
-            sldHandler.encode(sld, version, pretty, sldOutputStream);
-
-            zos.write(((ByteArrayOutputStream) sldOutputStream).toByteArray());
-            zos.closeEntry();
-        }
-        finally {
-            zos.close();
-        }
-
+        sldHandler.encode(sld, version, pretty, output);
     }
 
     @Override

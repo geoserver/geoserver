@@ -3,12 +3,12 @@
    <parent>
       <groupId>org.geoserver</groupId>
       <artifactId>community</artifactId>
-      <version>2.7-SNAPSHOT</version>
+      <version>2.7-beta</version>
    </parent>
    <groupId>org.geoserver.community</groupId>
    <artifactId>gs-gss</artifactId>
    <packaging>jar</packaging>
-   <version>2.7-SNAPSHOT</version>
+   <version>2.7-beta</version>
    <name>GeoServer Synchronization Service</name>
 
    <dependencies>

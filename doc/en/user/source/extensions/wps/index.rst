@@ -19,6 +19,7 @@ For the official WPS specification, see http://www.opengeospatial.org/standards/
    administration
    security
    processes
+   hazelcast-clustering
    requestbuilder
    
    

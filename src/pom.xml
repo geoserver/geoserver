@@ -1280,6 +1280,7 @@
       <descriptor>release/ext-app-schema.xml</descriptor>
       <descriptor>release/ext-control-flow.xml</descriptor>
       <descriptor>release/ext-wps.xml</descriptor>
+      <descriptor>release/ext-wps-hazelcast.xml</descriptor>
       <descriptor>release/ext-querylayer.xml</descriptor>
       <descriptor>release/ext-teradata.xml</descriptor>
       <descriptor>release/ext-cas.xml</descriptor>

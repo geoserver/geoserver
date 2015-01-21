@@ -185,6 +185,11 @@
   </dependency>
   <dependency>
    <groupId>org.geoserver.extension</groupId>
+   <artifactId>gs-wps-cluster-hazelcast</artifactId>
+   <version>${project.version}</version>
+  </dependency>
+  <dependency>
+   <groupId>org.geoserver.extension</groupId>
    <artifactId>gs-web-wps</artifactId>
    <version>${project.version}</version>
   </dependency>

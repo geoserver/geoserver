@@ -136,8 +136,9 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat {
             }
             // for WFS 2.0.0 the total number of features is stored in the featureCollection
             else if (describeFeatureType.getParameters()[0] instanceof net.opengis.wfs20.GetFeatureType){
-                featureCount = (featureCollection.getTotalNumberOfFeatures().longValue() < 0)
-                        ? null : featureCollection.getTotalNumberOfFeatures();
+                BigInteger totalNumberOfFeatures = featureCollection.getTotalNumberOfFeatures();
+                featureCount = (totalNumberOfFeatures != null && totalNumberOfFeatures.longValue() < 0)
+                        ? null : totalNumberOfFeatures;
             }
         }
         

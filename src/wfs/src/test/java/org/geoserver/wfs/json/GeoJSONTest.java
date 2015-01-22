@@ -6,12 +6,10 @@
 
 package org.geoserver.wfs.json;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.*;
 
 import java.io.File;
 import java.util.Collection;
@@ -25,9 +23,11 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONNull;
 import net.sf.json.JSONObject;
 
+import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.ProjectionPolicy;
 import org.geoserver.config.GeoServer;
+import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.util.IOUtils;
 import org.geoserver.wfs.WFSInfo;
@@ -131,6 +131,34 @@ public class GeoJSONTest extends WFSTestSupport {
     	assertEquals(aFeature.getString("geometry_name"),"surfaceProperty");
     }
     
+    @Test
+    public void testGetSkipCounting() throws Exception {
+        Catalog catalog = getCatalog();
+        try {
+            // skip the feature cound
+            FeatureTypeInfo primitive = catalog
+                    .getFeatureTypeByName(getLayerId(MockData.PRIMITIVEGEOFEATURE));
+            primitive.setSkipNumberMatched(true);
+            catalog.save(primitive);
+
+            MockHttpServletResponse response = getAsServletResponse("wfs?request=GetFeature&version=2.0.0&typename=sf:PrimitiveGeoFeature&outputformat="
+                    + JSONType.json);
+            assertEquals("application/json", response.getContentType());
+            String out = response.getOutputStreamContent();
+
+            JSONObject rootObject = JSONObject.fromObject(out);
+            assertEquals(rootObject.get("type"), "FeatureCollection");
+            JSONArray featureCol = rootObject.getJSONArray("features");
+            JSONObject aFeature = featureCol.getJSONObject(0);
+            assertEquals(aFeature.getString("geometry_name"), "surfaceProperty");
+        } finally {
+            FeatureTypeInfo primitive = catalog
+                    .getFeatureTypeByName(getLayerId(MockData.PRIMITIVEGEOFEATURE));
+            primitive.setSkipNumberMatched(false);
+            catalog.save(primitive);
+        }
+    }
+
     @Test
     public void testGetSimpleJson() throws Exception {    
         MockHttpServletResponse response = getAsServletResponse("wfs?request=GetFeature&version=1.0.0&typename=sf:PrimitiveGeoFeature&maxfeatures=1&outputformat="+JSONType.simple_json,"");

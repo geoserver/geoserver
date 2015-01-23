@@ -10,6 +10,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URISyntaxException;
 import java.net.URL;
 
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -52,7 +53,13 @@ public class WPSXStreamLoaderTest {
     public void testBackFormatXmlComatibility() throws Exception {
         GeoServer gs = createMock(GeoServer.class);
         URL url = Thread.currentThread().getContextClassLoader().getResource("org/geoserver/wps/");
-        File file = new File(url.getPath());
+		File file;
+		try {
+			file = new File(url.toURI());
+		} catch (URISyntaxException e) {
+			file = new File(url.getPath());
+		}
+
         WPSXStreamLoader loader = new WPSXStreamLoader(new GeoServerResourceLoader(file));
         WPSInfo wps = loader.load(gs);
         boolean found1 = false;

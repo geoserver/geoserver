@@ -1,17 +1,22 @@
 package org.geoserver.catalog;
 
-import org.geoserver.test.GeoServerSystemTestSupport;
-import org.geoserver.test.GeoServerTestSupport;
-import org.geotools.styling.*;
-import org.junit.Test;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.Properties;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import org.geoserver.test.GeoServerSystemTestSupport;
+import org.geotools.factory.CommonFactoryFinder;
+import org.geotools.styling.PointSymbolizer;
+import org.geotools.styling.SLD;
+import org.geotools.styling.SLDParser;
+import org.geotools.styling.Style;
+import org.geotools.styling.StyledLayerDescriptor;
+import org.junit.Test;
 
 public class StylesTest extends GeoServerSystemTestSupport {
 
@@ -48,6 +53,15 @@ public class StylesTest extends GeoServerSystemTestSupport {
         Style style = Styles.style(sld);
         PointSymbolizer point = SLD.pointSymbolizer(style);
         assertNotNull(point);
+    }
+
+    @Test
+    public void testEmptyStyle() throws Exception {
+        SLDParser parser = new SLDParser(CommonFactoryFinder.getStyleFactory());
+        parser.setInput(StylesTest.class.getResourceAsStream("empty.sld"));
+        StyledLayerDescriptor sld = parser.parseSLD();
+
+        assertNull(Styles.style(sld));
     }
 
 }

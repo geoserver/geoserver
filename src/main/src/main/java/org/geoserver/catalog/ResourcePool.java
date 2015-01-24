@@ -57,6 +57,7 @@ import org.geoserver.data.util.CoverageUtils;
 import org.geoserver.feature.retype.RetypingFeatureSource;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.ServiceException;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.ResourceListener;
 import org.geoserver.platform.resource.ResourceNotification;
@@ -1735,6 +1736,11 @@ public class ResourcePool {
                 style = styleCache.get( info );
                 if ( style == null ) {
                     style = dataDir().parsedStyle(info);
+
+                    if (style == null) {
+                        throw new ServiceException("Could not extract a UserStyle definition from "
+                                + info.getName());
+                    }
 
                     // remove this when wms works off style info
                     style.setName( info.getName() );

@@ -31,8 +31,6 @@ Setting environment variables
 
 You will need to set the ``JAVA_HOME`` environment variable if it is not already set. This is the path to your JRE such that :file:`%JAVA_HOME%\\bin\\java.exe` exists.
 
-.. note:: Java 7 is required, as of GeoServer 2.6.x Java 5 is no longer supported. For more information about Java and GeoServer, please see the section on :ref:`production_java`.
-
 #. Navigate to :menuselection:`Control Panel --> System --> Advanced --> Environment Variables`.
 
 #. Under :guilabel:`System variables` click :guilabel:`New`. 

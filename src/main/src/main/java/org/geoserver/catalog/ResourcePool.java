@@ -1265,61 +1265,68 @@ public class ResourcePool {
     }
     
     private Double getTolerance(FeatureTypeInfo info) {
-    	// get the measure, if null, no linearization tolerance is available
-		Measure mt = info.getLinearizationTolerance();
-		if(mt == null) {
-			return null;
-		}
-		
-		// if the user did not specify a unit of measure, we use it as an absolute value
-		if(mt.getUnit() == null) {
-			return mt.doubleValue();
-		}
-		
-		// should not happen, but let's cover all our bases
-		CoordinateReferenceSystem crs = info.getCRS();
-		if(crs == null) {
-			return mt.doubleValue();
-		}
-		
-		// let's get the target unit
-		SingleCRS horizontalCRS = CRS.getHorizontalCRS(crs);
-		Unit targetUnit;
-		if(horizontalCRS != null) {
-			// leap of faith, the first axis is an horizontal one (
-			targetUnit = getFirstAxisUnit(horizontalCRS.getCoordinateSystem());
-		} else {
-			// leap of faith, the first axis is an horizontal one (
-			targetUnit = getFirstAxisUnit(crs.getCoordinateSystem());
-		}
-		
-		if((targetUnit != null && targetUnit == NonSI.DEGREE_ANGLE) || horizontalCRS instanceof GeographicCRS || crs instanceof GeographicCRS) {
-			// assume we're working against a type of geographic crs, must estimate the degrees equivalent
-			// to the measure, we are going to use a very rough estimate (cylindrical earth model)
-			// TODO: maybe look at the layer bbox and get a better estimate computed at the center of the bbox
-			UnitConverter converter = mt.getUnit().getConverterTo(SI.METER);
-			double tolMeters = converter.convert(mt.doubleValue());
-			return tolMeters * OGC_METERS_TO_DEGREES;
-		} else if(targetUnit != null && targetUnit.isCompatible(SI.METER)) {
-			// ok, we assume the target is not a geographic one, but we might
-			// have to convert between meters and feet maybe
-			UnitConverter converter = mt.getUnit().getConverterTo(targetUnit);
-			return converter.convert(mt.doubleValue());
-		} else {
-			return mt.doubleValue();
-		}
-		
-	}
+        // if no curved geometries, do not bother computing a tolerance
+        if (!info.isCircularArcPresent()) {
+            return null;
+        }
 
-	private Unit<?> getFirstAxisUnit(
-			CoordinateSystem coordinateSystem) {
-		if(coordinateSystem == null || coordinateSystem.getDimension() > 0) {
-			return null;
-		}
-		return coordinateSystem.getAxis(0).getUnit();
-	}
+        // get the measure, if null, no linearization tolerance is available
+        Measure mt = info.getLinearizationTolerance();
+        if (mt == null) {
+            return null;
+        }
 
-	public GridCoverageReader getGridCoverageReader(CoverageInfo info, Hints hints) 
+        // if the user did not specify a unit of measure, we use it as an absolute value
+        if (mt.getUnit() == null) {
+            return mt.doubleValue();
+        }
+
+        // should not happen, but let's cover all our bases
+        CoordinateReferenceSystem crs = info.getCRS();
+        if (crs == null) {
+            return mt.doubleValue();
+        }
+
+        // let's get the target unit
+        SingleCRS horizontalCRS = CRS.getHorizontalCRS(crs);
+        Unit targetUnit;
+        if (horizontalCRS != null) {
+            // leap of faith, the first axis is an horizontal one (
+            targetUnit = getFirstAxisUnit(horizontalCRS.getCoordinateSystem());
+        } else {
+            // leap of faith, the first axis is an horizontal one (
+            targetUnit = getFirstAxisUnit(crs.getCoordinateSystem());
+        }
+
+        if ((targetUnit != null && targetUnit == NonSI.DEGREE_ANGLE)
+                || horizontalCRS instanceof GeographicCRS || crs instanceof GeographicCRS) {
+            // assume we're working against a type of geographic crs, must estimate the degrees
+            // equivalent
+            // to the measure, we are going to use a very rough estimate (cylindrical earth model)
+            // TODO: maybe look at the layer bbox and get a better estimate computed at the center
+            // of the bbox
+            UnitConverter converter = mt.getUnit().getConverterTo(SI.METER);
+            double tolMeters = converter.convert(mt.doubleValue());
+            return tolMeters * OGC_METERS_TO_DEGREES;
+        } else if (targetUnit != null && targetUnit.isCompatible(SI.METER)) {
+            // ok, we assume the target is not a geographic one, but we might
+            // have to convert between meters and feet maybe
+            UnitConverter converter = mt.getUnit().getConverterTo(targetUnit);
+            return converter.convert(mt.doubleValue());
+        } else {
+            return mt.doubleValue();
+        }
+
+    }
+
+    private Unit<?> getFirstAxisUnit(CoordinateSystem coordinateSystem) {
+        if (coordinateSystem == null || coordinateSystem.getDimension() > 0) {
+            return null;
+        }
+        return coordinateSystem.getAxis(0).getUnit();
+    }
+
+    public GridCoverageReader getGridCoverageReader(CoverageInfo info, Hints hints)
             throws IOException {
         return getGridCoverageReader(info, (String) null, hints); 
     }

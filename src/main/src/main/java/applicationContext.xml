@@ -235,6 +235,5 @@
 
   <!-- default style handlers -->
   <bean id="sldHandler" class="org.geoserver.catalog.SLDHandler"/>
-
-  <bean id="xmlSafeNameValidator" class="org.geoserver.catalog.impl.XMLSafeNameValidator"/>
+  
 </beans>

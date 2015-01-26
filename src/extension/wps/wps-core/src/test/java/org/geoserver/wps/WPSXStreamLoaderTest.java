@@ -53,12 +53,13 @@ public class WPSXStreamLoaderTest {
     public void testBackFormatXmlComatibility() throws Exception {
         GeoServer gs = createMock(GeoServer.class);
         URL url = Thread.currentThread().getContextClassLoader().getResource("org/geoserver/wps/");
-		File file;
-		try {
-			file = new File(url.toURI());
-		} catch (URISyntaxException e) {
-			file = new File(url.getPath());
-		}
+        File file;
+        try {
+            file = new File(url.toURI());
+        }
+        catch (URISyntaxException e) {
+            file = new File(url.getPath());
+        }
 
         WPSXStreamLoader loader = new WPSXStreamLoader(new GeoServerResourceLoader(file));
         WPSInfo wps = loader.load(gs);

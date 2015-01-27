@@ -22,6 +22,7 @@ import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.wps.validator.MaxSizeValidator;
 import org.geoserver.wps.validator.MultiplicityValidator;
 import org.geoserver.wps.validator.NumberRangeValidator;
+import org.geotools.data.DataUtilities;
 import org.geotools.feature.NameImpl;
 import org.geotools.process.geometry.GeometryProcessFactory;
 import org.geotools.process.raster.RasterProcessFactory;
@@ -52,7 +53,7 @@ public class WPSXStreamLoaderTest {
     public void testBackFormatXmlComatibility() throws Exception {
         GeoServer gs = createMock(GeoServer.class);
         URL url = Thread.currentThread().getContextClassLoader().getResource("org/geoserver/wps/");
-        File file = new File(url.getPath());
+        File file = DataUtilities.urlToFile(url);
         WPSXStreamLoader loader = new WPSXStreamLoader(new GeoServerResourceLoader(file));
         WPSInfo wps = loader.load(gs);
         boolean found1 = false;

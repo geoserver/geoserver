@@ -19,7 +19,9 @@ Documentation
 
 Another crucial way to help out is with documentation. Whether it's adding tutorials or just correcting mistakes, every contribution serves to make the project more healthy. And the best part is that you do not need to be a developer in order to contribute.
 
-Our official documentation is contained as part of our `official code repository <https://www.github.com/geoserver/>`_. As part of the GitHub model, anyone can submit patches as pull requests, which will be evaluated by the team. To learn more about contributing to the GeoServer codebase, we highly recommend joining the GeoServer developers mailing list. See details below.
+Our official documentation is contained as part of our `official code repository <https://www.github.com/geoserver/>`_. As part of the GitHub model, anyone can submit patches as pull requests, which will be evaluated by the team.
+
+To learn more about contributing to the GeoServer codebase, we highly recommend joining the GeoServer developers mailing list (see details below). For typos and other small changes, please see our `Documentation Guide <http://docs.geoserver.org/latest/en/docguide/quickfix.html>`_ for how to make quick fixes.
 
 Mailing lists
 -------------

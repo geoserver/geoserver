@@ -32,9 +32,9 @@ sub-elements:
    * - **Element** 
      - **Description**
    * - ``<AnchorPoint>``
-     - This is relative to the LABEL. Using this you can do things such as center the label on top of the point, have the label to the left of the point, or have the label centered under the point.
+     - Determines the placement of the label relative to the label point. Values given as decimals between 0-1.
    * - ``<Displacement>``
-     - Offsets the label from the anchor point by a given number pixels in X and Y.
+     - Offsets the label from the anchor point. Values given in pixels.
    * - ``<Rotation>``
      - Rotates the label clockwise by a given number of degrees.
  	
@@ -46,43 +46,55 @@ AnchorPoint
 
 The anchor point determines where the label is placed relative to the label point.
 
-.. code-block:: xml 
+.. code-block:: xml
 
-    <AnchorPoint>
-       <AnchorPointX>
+   <AnchorPoint>
+     <AnchorPointX>
        0.5
-       </AnchorPointX>
-       <AnchorPointY>
+     </AnchorPointX>
+     <AnchorPointY>
        0.5
-       </AnchorPointY>
-    </AnchorPoint>
-    
-The anchor point values  are specified relative to the bounding box of the label. 
-The bottom left of the box is (0, 0), the top left is (1, 1), and the middle is (0.5, 0.5).
-The (X,Y) location of the anchor point inside the label's bounding box is placed at the label point.
+     </AnchorPointY>
+   </AnchorPoint>
+
+The anchor point values—listed here as (X, Y) ordered pairs—are specified relative to the bounding box of the label, with values from 0 to 1 inclusive. For example:
+
+* *(Default)* Bottom left of the box is (0, 0)
+* Top right is (1, 1)
+* Center is (0.5, 0.5)
+
+So to have the anchor location centered just below the label (label top-centered), use (0.5, 0):
+
+.. code-block:: xml
+
+   <AnchorPoint>
+     <AnchorPointX>
+       0.5
+     </AnchorPointX>
+     <AnchorPointY>
+       0
+     </AnchorPointY>
+   </AnchorPoint>
 
 .. figure:: img/label_bbox.png
-   :align: center
-
 
 The following examples show how changing the anchor point affects the position of labels:
 
-
 .. figure:: img/point_x0y0_5.png	
 
-*X=0, Y=0.5 - (default) places the label to the right of the label point* 	
+   (0, 0.5) places the label to the right of the label point
 
 .. figure:: img/point_x0_5y0_5.png
 
-*X=0.5, Y=0.5 - places the centre of the label at the label point*
+   (0.5, 0.5) places the center of the label at the label point
 
 .. figure:: img/point_x15y0_5.png
 
-*X=1, Y=0.5 - places the label to the left of the label point*	
+   (1, 0.5) places the label to the left of the label point
 
 .. figure:: img/point_x0_5y0.png
 
-*X=0.5, Y=0 - places the label horizontally centred above the label point*
+   (0.5, 0) places the label horizontally centered above the label point
 
 
 Displacement
@@ -582,7 +594,8 @@ If this option is used the ``graphic-margin`` option may also be specified.
      
 .. cssclass:: no-border
 
-   .. figure:: img/label_graphic-resize_none.png  
+   .. figure:: img/label_graphic-resize_none.png
+
    .. figure:: img/label_graphic-resize_stretch.png
   
 *Labeling with a Graphic Mark "square" - L) at native size; R) with "graphic-resize"=stretch and "graphic-margin"=3* 

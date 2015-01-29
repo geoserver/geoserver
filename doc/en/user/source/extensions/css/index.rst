@@ -10,6 +10,7 @@ The CSS extension adds an alternative style editor to GeoServer that uses a CSS-
 
    install
    tutorial
+   workshop/index
    filters
    metadata
    multivalueprops

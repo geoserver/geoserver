@@ -16,7 +16,7 @@ import org.apache.commons.io.FileUtils;
 import org.custommonkey.xmlunit.XMLAssert;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
-import org.geoserver.data.test.MockTestData;
+import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wps.validator.MaxSizeValidator;
 import org.geoserver.wps.validator.MultiplicityValidator;
@@ -46,6 +46,8 @@ public class InputLimitsTest extends WPSTestSupport {
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
+
+        addWcs11Coverages(testData);
 
         // add some limits to the processes
         WPSInfo wps = getGeoServer().getService(WPSInfo.class);
@@ -420,7 +422,7 @@ public class InputLimitsTest extends WPSTestSupport {
                 + "        <wps:Body>\n"
                 + "          <wcs:GetCoverage service=\"WCS\" version=\"1.1.1\">\n"
                 + "            <ows:Identifier>"
-                + getLayerId(MockTestData.TASMANIA_DEM)
+                + getLayerId(MockData.TASMANIA_DEM)
                 + "</ows:Identifier>\n"
                 + "            <wcs:DomainSubset>\n"
                 + "              <gml:BoundingBox crs=\"http://www.opengis.net/gml/srs/epsg.xml#4326\">\n"
@@ -491,7 +493,7 @@ public class InputLimitsTest extends WPSTestSupport {
                 + "        <wps:Body>\n"
                 + "          <wcs:GetCoverage service=\"WCS\" version=\"1.1.1\">\n"
                 + "            <ows:Identifier>"
-                + getLayerId(MockTestData.TASMANIA_DEM)
+                + getLayerId(MockData.TASMANIA_DEM)
                 + "</ows:Identifier>\n"
                 + "            <wcs:DomainSubset>\n"
                 + "              <gml:BoundingBox crs=\"http://www.opengis.net/gml/srs/epsg.xml#4326\">\n"

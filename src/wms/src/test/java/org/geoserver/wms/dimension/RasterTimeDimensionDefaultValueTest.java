@@ -142,7 +142,10 @@ public class RasterTimeDimensionDefaultValueTest extends WMSTestSupport {
         cal.set(Calendar.MINUTE, cal.getActualMinimum(Calendar.MINUTE));
         cal.set(Calendar.SECOND, cal.getActualMinimum(Calendar.SECOND));
         cal.set(Calendar.MILLISECOND, cal.getActualMinimum(Calendar.MILLISECOND));
-
+        // This is what the test data setup does, and it makes a difference at the
+        // end of the month (e.g. 29 Jan)
+        cal.set(Calendar.MONTH, cal.get(Calendar.MONTH) + 1);
+        cal.set(Calendar.MONTH, cal.get(Calendar.MONTH) - 1);
         cal.set(Calendar.YEAR, cal.get(Calendar.YEAR) + 1);
         long oneYearInFuture = cal.getTimeInMillis();
 

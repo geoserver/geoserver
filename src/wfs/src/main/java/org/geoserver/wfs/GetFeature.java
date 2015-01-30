@@ -498,13 +498,9 @@ public class GetFeature {
                 boolean calculateSize = true;
 
                 // optimization: WFS 1.0 does not require count unless we have multiple query elements
-                // and we are asked to perform a global limit on the results returned. Also,
-                // we don't want to count the size if there is just one element and number match
-                // skipped is true
-                isNumberMatchedSkipped = meta.getSkipNumberMatched();
-                calculateSize = !(("1.0".equals(request.getVersion()) || "1.0.0".equals(request
-                            .getVersion())) && (queries.size() == 1 || maxFeatures == Integer.MAX_VALUE))
-                            && !(queries.size() == 1 && isNumberMatchedSkipped);
+                // and we are asked to perform a global limit on the results returned
+                calculateSize = !(("1.0".equals(request.getVersion()) || "1.0.0".equals(request.getVersion())) && 
+                    (queries.size() == 1 || maxFeatures == Integer.MAX_VALUE));
                 
                 if (!calculateSize) {
                     //if offset was specified and we have more queries left in this request then we 
@@ -546,6 +542,8 @@ public class GetFeature {
                 // collect queries required to return numberMatched/totalSize
                 // check maxFeatures and offset, if they are unset we can use the size we 
                 // calculated above
+                    isNumberMatchedSkipped = meta.getSkipNumberMatched()
+                            && !request.isResultTypeHits();
                 if (!isNumberMatchedSkipped) {
                     if (calculateSize && queryMaxFeatures == Integer.MAX_VALUE && offset == 0) {
                         totalCountExecutors.add(new CountExecutor(size));

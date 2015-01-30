@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -6,19 +6,22 @@
 package org.geoserver.inspire.wms;
 
 import static org.geoserver.inspire.InspireMetadata.LANGUAGE;
-import static org.geoserver.inspire.InspireMetadata.SERVICE_METADATA_URL;
 import static org.geoserver.inspire.InspireMetadata.SERVICE_METADATA_TYPE;
+import static org.geoserver.inspire.InspireMetadata.SERVICE_METADATA_URL;
 
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
+import org.geoserver.catalog.LayerInfo;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.wms.ExtendedCapabilitiesProvider;
 import org.geoserver.wms.GetCapabilitiesRequest;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSInfo;
+import org.geotools.util.NumberRange;
 import org.geotools.util.Version;
 import org.xml.sax.Attributes;
 import org.xml.sax.helpers.AttributesImpl;
@@ -137,6 +140,17 @@ public class WMSExtendedCapabilitiesProvider implements ExtendedCapabilitiesProv
             attributes.addAttribute(null, atts[i], atts[i], null, atts[i + 1]);
         }
         return attributes;
+    }
+
+    @Override
+    public void customizeRootCrsList(Set<String> srs) {
+        // nothing to do
+    }
+
+    @Override
+    public NumberRange<Double> overrideScaleDenominators(LayerInfo layer,
+            NumberRange<Double> scaleDenominators) {
+        return scaleDenominators;
     }
 
 }

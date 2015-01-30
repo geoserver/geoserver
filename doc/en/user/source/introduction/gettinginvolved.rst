@@ -38,7 +38,7 @@ These lists are publicly available and are a great resource for those who are ne
 IRC
 ---
 
-GeoServer has an IRC channel, `#geoserver <irc://irc.freenode.net/geoserver>`_, on the `Freenode <http://freenode.net>`_ network. GeoServer developers frequent this channel, and so it is a great way to give and receive information in real time.
+Users can join the IRC channel, `#geoserver <irc://irc.freenode.net/geoserver>`_, on the `Freenode <http://freenode.net>`_ network, in order to collaborate in real time. GeoServer developers occasionally will be in this channel as well.
 
 Bug tracking
 ------------

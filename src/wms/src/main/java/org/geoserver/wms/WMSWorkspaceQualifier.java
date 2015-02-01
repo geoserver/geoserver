@@ -39,6 +39,16 @@ public class WMSWorkspaceQualifier extends WorkspaceQualifyingCallback {
             if (layer != null) {
                 request.getRawKvp().put("LAYER", qualifyName(layer, ws));
             }
+
+            String styles = (String) request.getRawKvp().get("STYLES");
+            if (styles != null && !styles.trim().isEmpty()) {
+                request.getRawKvp().put("STYLES", qualifyStyleNamesKVP(styles, ws));
+            }
+
+            String style = (String) request.getRawKvp().get("STYLE");
+            if (style != null && !style.trim().isEmpty()) {
+                request.getRawKvp().put("STYLE", qualifyStyleName(style, ws));
+            }
         }
     }
 
@@ -53,20 +63,15 @@ public class WMSWorkspaceQualifier extends WorkspaceQualifyingCallback {
 
     String qualifyLayerNamesKVP(String layers, WorkspaceInfo ws) {
         List<String> list = KvpUtils.readFlat(layers);
-        qualifyNames(list, ws);
+        qualifyLayerNames(list, ws);
 
-        StringBuffer sb = new StringBuffer();
-        for (String s : list) {
-            sb.append(s).append(",");
-        }
-        sb.setLength(sb.length() - 1);
-        return sb.toString();
+        return toCommaSeparatedList(list);
     }
     
     /**
      * Overriding the base class behavior as we want to avoid qualifying global layer group names
      */
-    protected void qualifyNames(List<String> names, WorkspaceInfo ws) {
+    protected void qualifyLayerNames(List<String> names, WorkspaceInfo ws) {
         for (int i = 0; i < names.size(); i++) {
             String baseName = names.get(i);
             String qualified = qualifyName(baseName, ws);
@@ -77,6 +82,37 @@ public class WMSWorkspaceQualifier extends WorkspaceQualifyingCallback {
                 names.set(i, qualified);
             }
         }
+    }
+
+    String qualifyStyleNamesKVP(String styles, WorkspaceInfo ws) {
+        List<String> list = KvpUtils.readFlat(styles);
+        for (int i = 0; i < list.size(); i++) {
+            String name = list.get(i);
+            name = qualifyStyleName(name, ws);
+            list.set(i, name);
+        }
+
+        return toCommaSeparatedList(list);
+    }
+
+    private String qualifyStyleName(String name, WorkspaceInfo ws) {
+        String qualified = qualifyName(name, ws);
+        // does the qualified name exist?
+        if (catalog.getStyleByName(qualified) != null) {
+            return qualified;
+        } else {
+            // use the original name instead
+            return name;
+        }
+    }
+
+    private String toCommaSeparatedList(List<String> list) {
+        StringBuffer sb = new StringBuffer();
+        for (String s : list) {
+            sb.append(s).append(",");
+        }
+        sb.setLength(sb.length() - 1);
+        return sb.toString();
     }
 
 }

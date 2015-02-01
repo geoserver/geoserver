@@ -10,20 +10,13 @@ import static org.geoserver.gwc.GWC.tileLayerName;
 import static org.hamcrest.Matchers.equalToIgnoringCase;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -64,14 +57,12 @@ import org.geowebcache.diskquota.QuotaStore;
 import org.geowebcache.diskquota.jdbc.JDBCConfiguration;
 import org.geowebcache.diskquota.jdbc.JDBCConfiguration.ConnectionPoolConfiguration;
 import org.geowebcache.diskquota.jdbc.JDBCQuotaStore;
-import org.geowebcache.filter.parameters.StringParameterFilter;
 import org.geowebcache.grid.BoundingBox;
 import org.geowebcache.grid.GridSetBroker;
 import org.geowebcache.grid.GridSubset;
 import org.geowebcache.layer.TileLayer;
 import org.geowebcache.layer.TileLayerDispatcher;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
@@ -111,14 +102,6 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         li.setDefaultStyle(catalog.getStyleByName(wi, WORKSPACED_STYLE_NAME));
         catalog.save(li);
         
-        GeoServerTileLayer tl = GWC.get().getTileLayer(li);
-        
-        StringParameterFilter wsFilter = new StringParameterFilter();
-        wsFilter.setKey("WORKSPACE");
-        wsFilter.setDefaultValue("");
-        wsFilter.setValues(Arrays.asList("", TEST_WORKSPACE_NAME));
-        tl.getInfo().addParameterFilter(wsFilter);
-        
         GWC.get().getConfig().setDirectWMSIntegrationEnabled(false);
     }
 
@@ -134,10 +117,10 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
     
     @Test 
     public void testWorkspacedStyle() throws Exception {
-        String layerId = String.format("%s:%s", TEST_WORKSPACE_NAME, WORKSPACED_LAYER);
+        String layerId = getLayerId(WORKSPACED_LAYER_QNAME);
         MockHttpServletResponse sr = getAsServletResponse("gwc/service/wmts?request=GetTile&layer="
                 + layerId
-                + "&format=image/png&tilematrixset=EPSG:4326&workspace="+TEST_WORKSPACE_NAME+"&tilematrix=EPSG:4326:0&tilerow=0&tilecol=0");
+                + "&format=image/png&tilematrixset=EPSG:4326&tilematrix=EPSG:4326:0&tilerow=0&tilecol=0");
         assertEquals(200, sr.getErrorCode());
         assertEquals("image/png", sr.getContentType());
     }
@@ -435,7 +418,22 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         assertEquals("image/png", response2.getContentType());
         assertEquals(qualifiedName, response2.getHeader("geowebcache-layer"));
         assertThat(response2.getHeader("geowebcache-cache-result"), equalToIgnoringCase("HIT"));
+
+        // now try with the style name too, should be another hit
+        request = TEST_WORKSPACE_NAME
+                + "/"
+                + buildGetMap(directWMSIntegrationEndpoint, localName, "EPSG:4326",
+                        WORKSPACED_STYLE_NAME, tileLayer) + "&tiled=true";
+
+        response = getAsServletResponse(request);
+        MockHttpServletResponse response3 = getAsServletResponse(request);
+        assertEquals(200, response2.getStatusCode());
+        assertEquals("image/png", response3.getContentType());
+        assertEquals(qualifiedName, response3.getHeader("geowebcache-layer"));
+        assertThat(response3.getHeader("geowebcache-cache-result"), equalToIgnoringCase("HIT"));
+
     }
+
 
     @Test public void testDirectWMSIntegrationWithVirtualServicesHiddenLayer() throws Exception {
         /*

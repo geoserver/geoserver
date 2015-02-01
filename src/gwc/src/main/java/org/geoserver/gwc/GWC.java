@@ -1559,18 +1559,18 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
      *         style
      */
     public Iterable<LayerInfo> getLayerInfosFor(final StyleInfo style) {
-        final String styleName = style.getName();
+        final String styleName = style.prefixedName();
         List<LayerInfo> result = new ArrayList<LayerInfo>();
         {
             for (LayerInfo layer : getLayerInfos()) {
                 try {
-                    String name = layer.getDefaultStyle().getName();
+                    String name = layer.getDefaultStyle().prefixedName();
                     if (styleName.equals(name)) {
                         result.add(layer);
                         continue;
                     }
                     for (StyleInfo alternateStyle : layer.getStyles()) {
-                        name = alternateStyle.getName();
+                        name = alternateStyle.prefixedName();
                         if (styleName.equals(name)) {
                             result.add(layer);
                             break;

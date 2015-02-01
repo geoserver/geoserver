@@ -78,17 +78,24 @@ public class CatalogStyleChangeListener implements CatalogListener {
             return;
         }
         final List<String> propertyNames = event.getPropertyNames();
-        if (!propertyNames.contains("name")) {
+        if (!propertyNames.contains("name") && !propertyNames.contains("workspace")) {
             return;
         }
-        final int index = propertyNames.indexOf("name");
-        final String oldStyleName = (String) event.getOldValues().get(index);
-        final String newStyleName = (String) event.getNewValues().get(index);
-        if (oldStyleName.equals(newStyleName)) {
+        final int nameIdx = propertyNames.indexOf("name");
+        final String oldName = (String) event.getOldValues().get(nameIdx);
+        final String newName = (String) event.getNewValues().get(nameIdx);
+        final int workspaceIdx = propertyNames.indexOf("wokspace");
+        final String oldWorkspaceName = workspaceIdx != -1 ? (String) event.getOldValues().get(
+                workspaceIdx) : null;
+        final String newWorkspaceName = workspaceIdx != -1 ? (String) event.getNewValues().get(
+                workspaceIdx) : null;
+        final String oldStyleName = getPrefixedName(oldWorkspaceName, oldName);
+        final String newStyleName = getPrefixedName(newWorkspaceName, newName);
+        if (oldName.equals(newName)) {
             return;
         }
         List<GeoServerTileLayer> affectedLayers;
-        affectedLayers = mediator.getTileLayersForStyle(oldStyleName);
+        affectedLayers = mediator.getTileLayersForStyle(oldName);
 
         for (GeoServerTileLayer tl : affectedLayers) {
             LayerInfo layerInfo = tl.getLayerInfo();
@@ -107,11 +114,19 @@ public class CatalogStyleChangeListener implements CatalogListener {
                 newStyles.remove(oldStyleName);
                 newStyles.add(newStyleName);
                 String defaultStyle = layerInfo.getDefaultStyle() == null ? null : layerInfo
-                        .getDefaultStyle().getName();
+                        .getDefaultStyle().prefixedName();
                 TileLayerInfoUtil.setCachedStyles(info, defaultStyle, newStyles);
 
                 mediator.save(tl);
             }
+        }
+    }
+
+    private String getPrefixedName(String workspace, String name) {
+        if (workspace != null) {
+            return workspace + ":" + name;
+        } else {
+            return name;
         }
     }
 
@@ -140,7 +155,7 @@ public class CatalogStyleChangeListener implements CatalogListener {
      * @param modifiedStyle
      */
     private void handleStyleChange(final StyleInfo modifiedStyle) {
-        final String styleName = modifiedStyle.getName();
+        final String styleName = modifiedStyle.prefixedName();
         log.finer("Handling style modification: " + styleName);
         // First we collect all the layers that use this style
         for (LayerInfo affectedLayer : mediator.getLayerInfosFor(modifiedStyle)) {

@@ -29,9 +29,9 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.Predicates;
+import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
-import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.event.CatalogAddEvent;
@@ -46,7 +46,6 @@ import org.geotools.util.logging.Logging;
 import org.geowebcache.filter.parameters.StringParameterFilter;
 import org.geowebcache.grid.GridSetBroker;
 import org.geowebcache.layer.TileLayer;
-import org.geowebcache.locks.LockProvider;
 import org.geowebcache.storage.StorageBroker;
 
 import com.google.common.base.Objects;
@@ -340,8 +339,8 @@ public class CatalogLayerEventListener implements CatalogListener {
             final StyleInfo oldStyle = (StyleInfo) oldValues.get(propIndex);
             final StyleInfo newStyle = (StyleInfo) newValues.get(propIndex);
 
-            final String oldStyleName = oldStyle.getName();
-            defaultStyle = newStyle.getName();
+            final String oldStyleName = oldStyle.prefixedName();
+            defaultStyle = newStyle.prefixedName();
             if (!Objects.equal(oldStyleName, defaultStyle)) {
                 save = true;
                 defaultStyleChanged = true;
@@ -351,13 +350,13 @@ public class CatalogLayerEventListener implements CatalogListener {
             }
         } else {
             StyleInfo styleInfo = li.getDefaultStyle();
-            defaultStyle = styleInfo == null ? null : styleInfo.getName();
+            defaultStyle = styleInfo == null ? null : styleInfo.prefixedName();
         }
 
         if (tileLayerInfo.isAutoCacheStyles()) {
             Set<String> styles = new HashSet<String>();
             for (StyleInfo s : li.getStyles()) {
-                styles.add(s.getName());
+                styles.add(s.prefixedName());
             }
             ImmutableSet<String> cachedStyles = tileLayerInfo.cachedStyles();
             if (!styles.equals(cachedStyles)) {

@@ -360,7 +360,7 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
             setConfigErrorMessage("Underlying GeoSever Layer has no default style");
             return null;
         }
-        return defaultStyle.getName();
+        return defaultStyle.prefixedName();
     }
 
     /**

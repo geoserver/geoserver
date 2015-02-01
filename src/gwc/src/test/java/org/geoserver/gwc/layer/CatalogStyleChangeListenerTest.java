@@ -5,22 +5,11 @@
  */
 package org.geoserver.gwc.layer;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
-import static org.mockito.Matchers.anyObject;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Matchers.same;
-import static org.mockito.Matchers.argThat;
-
-import static org.hamcrest.Matchers.*;
-
-import static org.mockito.Mockito.atLeastOnce;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.hasProperty;
+import static org.hamcrest.Matchers.is;
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -36,14 +25,10 @@ import org.geoserver.catalog.event.impl.CatalogModifyEventImpl;
 import org.geoserver.catalog.event.impl.CatalogPostModifyEventImpl;
 import org.geoserver.gwc.GWC;
 import org.geowebcache.filter.parameters.ParameterFilter;
-import org.geowebcache.filter.parameters.StringParameterFilter;
-import org.hamcrest.Matcher;
-import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
 
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
 
 public class CatalogStyleChangeListenerTest {
 
@@ -73,7 +58,7 @@ public class CatalogStyleChangeListenerTest {
     public void setUp() throws Exception {
         mockMediator = mock(GWC.class);
         mockStyle = mock(StyleInfo.class);
-        when(mockStyle.getName()).thenReturn(STYLE_NAME);
+        when(mockStyle.prefixedName()).thenReturn(STYLE_NAME);
 
         mockResourceInfo = mock(FeatureTypeInfo.class);
         when(mockResourceInfo.prefixedName()).thenReturn(PREFIXED_RESOURCE_NAME);

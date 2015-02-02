@@ -15,12 +15,17 @@ import javax.annotation.PostConstruct;
 
 import org.geoserver.cluster.JMSFactory;
 import org.geoserver.cluster.configuration.ConnectionConfiguration;
+import org.geoserver.cluster.configuration.ConnectionConfiguration.ConnectionConfigurationStatus;
 import org.geoserver.cluster.configuration.JMSConfiguration;
 import org.geoserver.cluster.configuration.TopicConfiguration;
-import org.geoserver.cluster.configuration.ConnectionConfiguration.ConnectionConfigurationStatus;
 import org.geotools.util.logging.Logging;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.jms.JmsException;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
 
@@ -31,7 +36,8 @@ import org.springframework.jms.listener.DefaultMessageListenerContainer;
  * @author Carlo Cancellieri - GeoSolutions SAS
  * 
  */
-final public class JMSContainer extends DefaultMessageListenerContainer implements DisposableBean {
+final public class JMSContainer extends DefaultMessageListenerContainer implements DisposableBean,
+        ApplicationListener<ContextRefreshedEvent>, ApplicationContextAware {
 
     private final static Logger LOGGER = Logging.getLogger(JMSContainer.class);
 
@@ -44,6 +50,8 @@ final public class JMSContainer extends DefaultMessageListenerContainer implemen
     private JMSConfiguration config;
 
     private boolean verified = false;
+
+    private ApplicationContext applicationContext;
 
     // times to test (connection)
     private static int max;
@@ -89,29 +97,8 @@ final public class JMSContainer extends DefaultMessageListenerContainer implemen
         maxWait = Long.parseLong(config.getConfiguration(ConnectionConfiguration.CONNECTION_MAXWAIT_KEY).toString());
 
         // check configuration for connection and try to start if needed
-        final String startString = config.getConfiguration(ConnectionConfiguration.CONNECTION_KEY);
-        if (startString != null
-                && startString.equals(ConnectionConfigurationStatus.enabled.toString())) {
-            if (!connect()) {
-                if (LOGGER.isLoggable(Level.SEVERE)){
-                    LOGGER.severe("Unable to connect to the broker, force connection status to disabled");
-                }
-
-                // change configuration status
-                config.putConfiguration(ConnectionConfiguration.CONNECTION_KEY,
-                        ConnectionConfigurationStatus.disabled.toString());
-
-                // store changes to the configuration
-                try {
-                    config.storeConfig();
-                } catch (IOException e) {
-                    LOGGER.log(Level.SEVERE,e.getMessage(), e);
-                }
-            }
-        } else {
-            // configure (needed by initializeBean)
-            configure();
-        }
+        // configure (needed by initializeBean)
+        configure();
     }
 
     private static void verify(final Object type, final String message) {
@@ -236,5 +223,39 @@ final public class JMSContainer extends DefaultMessageListenerContainer implemen
                 handler.handleListenerSetupFailure(ex, alreadyRecovered);
             }
         }
+    }
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
+
+    }
+
+    @Override
+    public void onApplicationEvent(ContextRefreshedEvent event) {
+        if (event.getApplicationContext() == applicationContext) {
+            final String startString = config
+                    .getConfiguration(ConnectionConfiguration.CONNECTION_KEY);
+            if (startString != null
+                    && startString.equals(ConnectionConfigurationStatus.enabled.toString())) {
+                if (!connect()) {
+                    if (LOGGER.isLoggable(Level.SEVERE)) {
+                        LOGGER.severe("Unable to connect to the broker, force connection status to disabled");
+                    }
+
+                    // change configuration status
+                    config.putConfiguration(ConnectionConfiguration.CONNECTION_KEY,
+                            ConnectionConfigurationStatus.disabled.toString());
+
+                    // store changes to the configuration
+                    try {
+                        config.storeConfig();
+                    } catch (IOException e) {
+                        LOGGER.log(Level.SEVERE, e.getMessage(), e);
+                    }
+                }
+            }
+        }
+
     }
 }

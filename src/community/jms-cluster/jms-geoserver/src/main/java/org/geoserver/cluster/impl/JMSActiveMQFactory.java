@@ -11,7 +11,6 @@ import java.net.URISyntaxException;
 import java.util.Properties;
 import java.util.logging.Level;
 
-import javax.annotation.PostConstruct;
 import javax.jms.ConnectionFactory;
 import javax.jms.Destination;
 import javax.jms.Topic;
@@ -21,20 +20,25 @@ import org.apache.activemq.pool.PooledConnectionFactory;
 import org.geoserver.cluster.JMSFactory;
 import org.geoserver.cluster.configuration.BrokerConfiguration;
 import org.geoserver.cluster.configuration.ConnectionConfiguration;
+import org.geoserver.cluster.configuration.ConnectionConfiguration.ConnectionConfigurationStatus;
 import org.geoserver.cluster.configuration.EmbeddedBrokerConfiguration;
 import org.geoserver.cluster.configuration.JMSConfiguration;
 import org.geoserver.cluster.configuration.TopicConfiguration;
-import org.geoserver.cluster.configuration.ConnectionConfiguration.ConnectionConfigurationStatus;
 import org.geotools.util.logging.Logging;
-import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ContextRefreshedEvent;
 
 /**
  * 
  * @author Carlo Cancellieri - carlo.cancellieri@geo-solutions.it
  * 
  */
-public class JMSActiveMQFactory extends JMSFactory implements InitializingBean {
+public class JMSActiveMQFactory extends JMSFactory implements
+        ApplicationListener<ContextRefreshedEvent>, ApplicationContextAware {
 
 	private final static java.util.logging.Logger LOGGER = Logging
 			.getLogger(JMSActiveMQFactory.class);
@@ -65,12 +69,7 @@ public class JMSActiveMQFactory extends JMSFactory implements InitializingBean {
 
 	private String brokerName;
 
-	@Override
-	public void afterPropertiesSet() throws Exception {
-
-		// TODO initialize connections in order (first broker, then client)
-
-	}
+    private ApplicationContext applicationContext;
 
 	// <bean id="JMSClientDestination"
 	// class="org.apache.activemq.command.ActiveMQQueue">
@@ -309,7 +308,6 @@ public class JMSActiveMQFactory extends JMSFactory implements InitializingBean {
 		return false;
 	}
 
-	@PostConstruct
 	private void init() {
 		// // times to test (connection)
 		max = Integer.parseInt(config.getConfiguration(
@@ -359,5 +357,17 @@ public class JMSActiveMQFactory extends JMSFactory implements InitializingBean {
 			}
 		}
 	}
+
+    @Override
+    public void onApplicationEvent(ContextRefreshedEvent event) {
+        if (event.getApplicationContext() == applicationContext) {
+            init();
+        }
+    }
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
+    }
 
 }

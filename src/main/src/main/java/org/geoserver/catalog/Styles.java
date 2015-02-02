@@ -5,42 +5,27 @@
  */
 package org.geoserver.catalog;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.Reader;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.logging.Logger;
 
 import javax.annotation.Nullable;
-import javax.xml.transform.TransformerException;
+
+import org.geoserver.platform.GeoServerExtensions;
+import org.geotools.factory.CommonFactoryFinder;
+import org.geotools.styling.NamedLayer;
+import org.geotools.styling.NamedStyle;
+import org.geotools.styling.Style;
+import org.geotools.styling.StyleFactory;
+import org.geotools.styling.StyledLayerDescriptor;
+import org.geotools.styling.UserLayer;
+import org.geotools.util.Version;
+import org.geotools.util.logging.Logging;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
-import org.geoserver.ows.util.RequestUtils;
-import org.geoserver.platform.resource.Resource;
-import org.geotools.data.DataUtilities;
-import org.geoserver.platform.GeoServerExtensions;
-import org.geotools.factory.CommonFactoryFinder;
-import org.geotools.sld.v1_1.SLDConfiguration;
-import org.geotools.styling.*;
-import org.geotools.util.Version;
-import org.geotools.util.logging.Logging;
-import org.geotools.xml.Parser;
-import org.vfny.geoserver.util.SLDValidator;
-import org.xml.sax.EntityResolver;
-import org.xml.sax.InputSource;
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
-import org.xmlpull.v1.XmlPullParserFactory;
 
 /**
  * Provides methods to parse/encode style documents. 
@@ -96,7 +81,7 @@ public class Styles {
             }
             
             if (styles != null) {
-                for (int j = 0; j < styles.length; i++) {
+                for (int j = 0; j < styles.length; j++) {
                     if (!(styles[j] instanceof NamedStyle)) {
                         return styles[j];
                     }

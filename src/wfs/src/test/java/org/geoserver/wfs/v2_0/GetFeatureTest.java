@@ -5,10 +5,10 @@
  */
 package org.geoserver.wfs.v2_0;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.net.URLEncoder;
 import java.util.Collections;
@@ -27,7 +27,6 @@ import org.geotools.gml3.v3_2.GML;
 import org.geotools.wfs.v2_0.WFS;
 import org.junit.Before;
 import org.junit.Test;
-import org.opengis.feature.type.FeatureType;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -58,6 +57,13 @@ public class GetFeatureTest extends WFS20TestSupport {
 
         Document dom = getAsDOM("wfs?request=GetFeature&typenames=cdf:Fifteen&version=2.0.0&service=wfs");
         assertEquals("unknown", dom.getDocumentElement().getAttribute("numberMatched"));
+        assertEquals("15", dom.getDocumentElement().getAttribute("numberReturned"));
+        XMLAssert.assertXpathEvaluatesTo("15", "count(//cdf:Fifteen)", dom);
+
+        dom = getAsDOM("wfs?request=GetFeature&typenames=cdf:Fifteen&version=2.0.0&service=wfs&resultType=hits");
+        assertEquals("15", dom.getDocumentElement().getAttribute("numberMatched"));
+        assertEquals("0", dom.getDocumentElement().getAttribute("numberReturned"));
+        XMLAssert.assertXpathEvaluatesTo("0", "count(//cdf:Fifteen)", dom);
 
         fti.setSkipNumberMatched(false);
         this.getCatalog().save(fti);

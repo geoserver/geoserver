@@ -203,6 +203,24 @@ public class JoinExtractingVisitor extends FilterVisitorSupport {
     }
 
     /**
+     * Returns the joined feature types. If called past join extraction, it will return the types in
+     * the same order as the joins (which might have been reordered to locate the center of the star
+     * join)
+     * 
+     * @return
+     */
+    public List<FeatureTypeInfo> getFeatureTypes() {
+        if (primaryFeatureType == null) {
+            return featureTypes;
+        } else {
+            List<FeatureTypeInfo> result = new ArrayList<>();
+            result.add(primaryFeatureType);
+            result.addAll(featureTypes);
+            return result;
+        }
+    }
+
+    /**
      * Find the center of the star join, and remove it from the feature types and aliases arrays the
      * rest of the algorithm is setup to have only the secondary types in these arrays
      */

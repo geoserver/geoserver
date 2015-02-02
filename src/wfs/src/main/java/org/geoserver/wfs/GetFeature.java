@@ -424,6 +424,7 @@ public class GetFeature {
 
                             primaryAlias = extractor.getPrimaryAlias();
                             primaryMeta = extractor.getPrimaryFeatureType();
+                            metas = extractor.getFeatureTypes();
                             primaryTypeName = new QName(primaryMeta.getNamespace().getURI(),
                                     primaryMeta.getNativeName());
                             joins = extractor.getJoins();
@@ -442,7 +443,7 @@ public class GetFeature {
 
                             filter = extractor.getPrimaryFilter();
                             if (filter != null) {
-                                validateFilter(filter, query, meta, request);
+                                    validateFilter(filter, query, primaryMeta, request);
                             }
                         }
                         else {

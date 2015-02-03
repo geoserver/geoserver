@@ -125,37 +125,6 @@ public class JoinExtractingVisitor extends FilterVisitorSupport {
         return handle(op, op.getExpression1(), op.getExpression2(), extraData);
     }
 
-//    void handle(Filter f) {
-//        if (f instanceof And) {
-//            for (Filter g : ((And)f).getChildren()) {
-//                handle(g);
-//            }
-//        }
-//        else {
-//            //check if this is a join filter
-//            boolean join = false;
-//            if (f instanceof BinaryComparisonOperator) {
-//                join = isJoinFilter(((BinaryComparisonOperator)f).getExpression1(), 
-//                    ((BinaryComparisonOperator)f).getExpression2());
-//            }
-//            else if (f instanceof BinarySpatialOperator) {
-//                join = isJoinFilter(((BinarySpatialOperator)f).getExpression1(), 
-//                        ((BinarySpatialOperator)f).getExpression2());
-//            }
-//            else if (f instanceof BinaryTemporalOperator) {
-//                join = isJoinFilter(((BinaryTemporalOperator)f).getExpression1(), 
-//                        ((BinaryTemporalOperator)f).getExpression2());
-//            }
-//            
-//            if (join) {
-//                joinFilters.add(f);
-//            }
-//            else {
-//                filters.add(f);
-//            }
-//        }
-//    }
-
     Object handle(Filter f, Expression e1, Expression e2, Object extraData) {
         if (isJoinFilter(e1, e2)) {
             joinFilters.add(f);

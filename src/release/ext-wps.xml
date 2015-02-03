@@ -16,6 +16,9 @@
         <include>net.opengis.wps*</include>
         <include>serializer*</include>
       </includes>
+      <excludes>
+        <exclude>gs-wps-cluster-hazelcast*</exclude>
+      </excludes>
     </fileSet>
   </fileSets>
 </assembly>

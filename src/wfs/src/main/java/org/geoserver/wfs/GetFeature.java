@@ -411,12 +411,12 @@ public class GetFeature {
                 if (filter != null) {
                     if (meta.getFeatureType() instanceof SimpleFeatureType) {                
                         if (metas.size() > 1) {
-                            //ensure that the filter is allowable
-                            if (!isValidJoinFilter(filter)) {
-                                throw new WFSException(request, 
-                                        "Unable to preform join with specified filter: " + filter);
-                            }
-                                // join, need to separate the joining filter from other filters
+                            // the join extracting visitor cannot handle negated filters,
+                            // the simplifier handles most common case removing the negation,
+                            // e.g., not(a < 10) -> a >= 10
+                            filter = SimplifyingFilterVisitor.simplify(filter);
+
+                            // join, need to separate the joining filter from other filters
                             JoinExtractingVisitor extractor = 
                                     new JoinExtractingVisitor(metas, query.getAliases());
                             filter.accept(extractor, null);
@@ -432,9 +432,15 @@ public class GetFeature {
                                         "join filters were found", metas.size(), extractor.getJoins().size()));
                             }
 
-                            //validate the filter for each join
+                                // validate the filter for each join, as well as the join filter
                             for (int j = 1; j < metas.size(); j++) {
                                 Join join = joins.get(j-1);
+                                    if (!isValidJoinFilter(join.getJoinFilter())) {
+                                        throw new WFSException(request,
+                                                "Unable to preform join with specified join filter: "
+                                                        + filter);
+                                    }
+
                                 if (join.getFilter() != null) {
                                     validateFilter(join.getFilter(), query, metas.get(j), request);
                                 }

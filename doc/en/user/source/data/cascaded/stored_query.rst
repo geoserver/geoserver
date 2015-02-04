@@ -3,16 +3,16 @@
 Cascaded Web Feature Service Stored Queries
 ===========================================
 
-Stored query is a feature of Web Feature Services. It allows servers to serve pre-configured filter queries or even queries that cannot be expressed as GetFeature filter queries. This feature of GeoServer allows creating cascaded layers out of stored queries.
+Stored query is a feature of Web Feature Services. It allows servers to serve pre-configured filter queries or even queries that cannot be expressed as GetFeature filter queries. This feature of GeoServer allows to create cascaded layers out of stored queries.
 
-Stored queries are read-only, and thus layers derived from cascaded stored queries cannot be updated with WFS-T.
+Stored queries are read-only, and layers derived from cascaded stored queries cannot be updated with WFS-T.
 
-Cascaded Stored Query parameters
+Cascaded stored query parameters
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The relationship between stored query parameters and the schema returned by the query is not well defined. So to allow cascading to stored queries, the relationship between the query received by GeoServer and the parameters passed to the stored query must be defined.
+The relationship between stored query parameters and the schema returned by the query is not well defined. For cascaded stored queries to work, the relationship between the query received by GeoServer and the parameters passed to the stored query must be defined.
 
-In practice this means that when setting up a layer based on a stored query, the administrator must not only select the stored query that they want to cascade requests to, but also select what value, if any, is passed to each parameter. To allow for flexibility, cascaded stored queries can leverage view parameters passed to the query. This is similar to how arbitrary parameters are passed to :ref:`sql_views`. GeoServer supports multiple strategies to pass these values. See below for a full list.
+When you set up a layer based on a stored query, you have to selecte which stored query to cascade and what values are passed to each parameter. Cascaded stored queries can leverage view parameters passed to the query. This is similar to how arbitrary parameters are passed to :ref:`sql_views`. GeoServer supports multiple strategies to pass these values. See below for a full list.
 
 .. list-table::
    :widths: 20 80
@@ -32,7 +32,7 @@ In practice this means that when setting up a layer based on a stored query, the
 
 See :ref:`using_a_parametric_sql_view` for more details how clients pass view parameters to GeoServer. 
 
-Configuring a Cascaded Stored Query layer
+Configuring a cascaded stored query layer
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 TODO
@@ -40,7 +40,7 @@ TODO
 
 .. _data_external_stored_query_cql:
 
-CQL Expressions
+CQL expressions
 ^^^^^^^^^^^^^^^
 
 Parameter mappings configured as CQL expressions are evaluated for each request using a context derived from the request query and the view parameters. General information on CQL expressions is available here :ref:`ecql_expr`. In addition to standard CQL, the syntax here allows using the + operator to concatenate strings.

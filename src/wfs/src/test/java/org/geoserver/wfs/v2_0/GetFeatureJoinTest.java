@@ -484,7 +484,7 @@ public class GetFeatureJoinTest extends WFS20TestSupport {
     }
     
     @Test
-    public void testStandardJoinUnsupportedLocalFilter() throws Exception {
+    public void testStandardJoinLocalFilterNot() throws Exception {
         String xml = 
             "<wfs:GetFeature xmlns:wfs='" + WFS.NAMESPACE + "' xmlns:fes='" + FES.NAMESPACE + "'" +
               " xmlns:gs='" + SystemTestData.DEFAULT_URI + "' version='2.0.0'>" + 
@@ -511,5 +511,76 @@ public class GetFeatureJoinTest extends WFS20TestSupport {
        
        XMLAssert.assertXpathExists("//wfs:Tuple/wfs:member/gs:Forests/gs:NAME[text() = 'Foo Forest']", dom);
        XMLAssert.assertXpathExists("//wfs:Tuple/wfs:member/gs:Lakes/gs:NAME[text() = 'Black Lake']", dom);
+    }
+    
+    @Test
+    public void testStandardJoinLocalFilterOr() throws Exception {
+        String xml = 
+            "<wfs:GetFeature xmlns:wfs='" + WFS.NAMESPACE + "' xmlns:fes='" + FES.NAMESPACE + "'" +
+              " xmlns:gs='" + SystemTestData.DEFAULT_URI + "' version='2.0.0'>" + 
+               "<wfs:Query typeNames='gs:Forests gs:Lakes' aliases='c d'>" +
+                "<fes:Filter> " +
+                  "<And>" +
+                    "<PropertyIsEqualTo>" +
+                      "<ValueReference>c/FID</ValueReference>" +
+                      "<ValueReference>d/FID</ValueReference>" + 
+                    "</PropertyIsEqualTo>" +
+                    "<Or>" +
+                      "<PropertyIsEqualTo>" +
+                         "<ValueReference>d/NAME</ValueReference>" +
+                         "<Literal>foo</Literal>" +
+                      "</PropertyIsEqualTo>" +
+                      "<PropertyIsEqualTo>" +
+                        "<ValueReference>d/NAME</ValueReference>" +
+                        "<Literal>Black Lake</Literal>" +
+                     "</PropertyIsEqualTo>" +
+                    "</Or>"+
+                  "</And>" +
+                "</fes:Filter> " + 
+               "</wfs:Query>" + 
+             "</wfs:GetFeature>";
+
+       Document dom = postAsDOM("wfs", xml);
+       XMLAssert.assertXpathEvaluatesTo("1", "count(//wfs:Tuple)", dom);
+       
+       XMLAssert.assertXpathExists("//wfs:Tuple/wfs:member/gs:Forests/gs:NAME[text() = 'Foo Forest']", dom);
+       XMLAssert.assertXpathExists("//wfs:Tuple/wfs:member/gs:Lakes/gs:NAME[text() = 'Black Lake']", dom);
+    }
+    
+    @Test
+    public void testOredJoinCondition() throws Exception {
+        String xml = 
+            "<wfs:GetFeature xmlns:wfs='" + WFS.NAMESPACE + "' xmlns:fes='" + FES.NAMESPACE + "'" +
+              " xmlns:gs='" + SystemTestData.DEFAULT_URI + "' version='2.0.0'>" + 
+               "<wfs:Query typeNames='gs:Forests gs:Lakes' aliases='c d'>" +
+                "<fes:Filter> " +
+                    "<Or>" +
+                      "<PropertyIsEqualTo>" +
+                        "<ValueReference>c/FID</ValueReference>" +
+                        "<ValueReference>d/FID</ValueReference>" + 
+                      "</PropertyIsEqualTo>" +
+                      "<And>" + 
+                        "<PropertyIsEqualTo>" +
+                          "<ValueReference>c/NAME</ValueReference>" +
+                          "<Literal>Bar Forest</Literal>" +
+                        "</PropertyIsEqualTo>" +
+                        "<PropertyIsEqualTo>" +
+                          "<ValueReference>d/NAME</ValueReference>" +
+                          "<Literal>Green Lake</Literal>" +
+                        "</PropertyIsEqualTo>" +
+                     "</And>" +
+                   "</Or>" +
+                "</fes:Filter> " + 
+               "</wfs:Query>" + 
+             "</wfs:GetFeature>";
+
+        Document dom = postAsDOM("wfs", xml);
+        // print(dom);
+        XMLAssert.assertXpathEvaluatesTo("2", "count(//wfs:Tuple)", dom);
+       
+        XMLAssert.assertXpathExists("//wfs:Tuple[wfs:member/gs:Forests/gs:NAME = 'Foo Forest' "
+                + "and wfs:member/gs:Lakes/gs:NAME = 'Black Lake']", dom);
+        XMLAssert.assertXpathExists("//wfs:Tuple[wfs:member/gs:Forests/gs:NAME = 'Bar Forest' "
+                + "and wfs:member/gs:Lakes/gs:NAME = 'Green Lake']", dom);
     }
 }

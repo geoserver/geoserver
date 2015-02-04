@@ -69,6 +69,8 @@ import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.Id;
 import org.opengis.filter.IncludeFilter;
+import org.opengis.filter.Not;
+import org.opengis.filter.Or;
 import org.opengis.filter.PropertyIsBetween;
 import org.opengis.filter.PropertyIsLike;
 import org.opengis.filter.PropertyIsNull;
@@ -158,8 +160,10 @@ public class GetFeature {
         joinFilterCapabilities.addType(TContains.class);
         joinFilterCapabilities.addType(TEquals.class);
 
-        //we only support simple filters, and any of them And'ed together.
+        // all logical combinations are supported too
         joinFilterCapabilities.addType(And.class);
+        joinFilterCapabilities.addType(Or.class);
+        joinFilterCapabilities.addType(Not.class);
     }
 
     /** The catalog */
@@ -433,12 +437,12 @@ public class GetFeature {
                                         "join filters were found", metas.size(), extractor.getJoins().size()));
                             }
 
-                                // validate the filter for each join, as well as the join filter
+                            // validate the filter for each join, as well as the join filter
                             for (int j = 1; j < metas.size(); j++) {
                                 Join join = joins.get(j-1);
                                     if (!isValidJoinFilter(join.getJoinFilter())) {
                                         throw new WFSException(request,
-                                                "Unable to preform join with specified join filter: "
+                                                "Unable to perform join with specified join filter: "
                                                         + filter);
                                     }
 

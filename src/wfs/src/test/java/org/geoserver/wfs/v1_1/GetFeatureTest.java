@@ -5,7 +5,10 @@
  */
 package org.geoserver.wfs.v1_1;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.net.URLEncoder;
 import java.util.Collections;
@@ -551,4 +554,15 @@ public class GetFeatureTest extends WFSTestSupport {
         XMLAssert.assertXpathNotExists("//gml:Point[@srsDimension = '2']", dom);
     }
     
+    @Test
+    public void testWfs20AndGML31() throws Exception {
+        Document doc = getAsDOM("wfs?request=GetFeature&typeName=cdf:Fifteen&version=2.0.0&service=wfs&featureid=Fifteen.2&outputFormat=gml3");
+        // print(doc);
+
+        XMLAssert.assertXpathEvaluatesTo("1",
+                "count(//wfs:FeatureCollection/gml:featureMembers/cdf:Fifteen)", doc);
+        XMLAssert.assertXpathEvaluatesTo("Fifteen.2",
+                "//wfs:FeatureCollection/gml:featureMembers/cdf:Fifteen/@gml:id", doc);
+    }
+
 }

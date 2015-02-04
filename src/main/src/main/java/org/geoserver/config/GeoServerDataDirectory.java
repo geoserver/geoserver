@@ -1404,7 +1404,7 @@ public class GeoServerDataDirectory implements ResourceStore {
     
     @Nullable Resource urlToResource(URL url) {
         if(url.getProtocol().equalsIgnoreCase("resource")) {
-            return get(url.getPath());
+            return get(Paths.convert(url.getPath()));
         } else if (url.getProtocol().equalsIgnoreCase("file")){
             return Files.asResource(DataUtilities.urlToFile(url));
         } else {

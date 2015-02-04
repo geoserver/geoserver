@@ -19,15 +19,15 @@ In practice this means that when setting up a layer based on a stored query, the
 
    * - **Parameter type**
      - **Explanation**
-   * - No mapping
+   * - :guilabel:`No mapping`
      - View parameter in query will be passed as such to the stored query
-   * - Blocked
+   * - :guilabel:`Blocked`
      - This parameter will never be passed to the stored query
-   * - Default
+   * - :guilabel:`Default`
      - The specified value is used unless overwritten by a view parameter 
-   * - Static
+   * - :guilabel:`Static`
      - The specified value is always used (view parameter value will be ignored)
-   * - CQL Expression
+   * - :guilabel:`CQL Expression`
      - An expression that will be evaluated on every request (see :ref:`data_external_stored_query_cql`)
 
 See :ref:`using_a_parametric_sql_view` for more details how clients pass view parameters to GeoServer. 
@@ -52,9 +52,9 @@ The context contains the following properties that may be used in the expression
 
    * - **Property name**
      - **Explanation**
-   * - bboxMinX, bboxMinY, bboxMaxX, bboxMaxY
+   * - ``bboxMinX`` ``bboxMinY`` ``bboxMaxX`` ``bboxMaxY``
      - Evaluates to a corner coordinate of the full extent of the query
-   * - defaultSRS
+   * - ``defaultSRS``
      - Evaluates to the default SRS of the feature type
-   * - viewparam:*name*
+   * - ``viewparam:name``
      - Evaluates to the value of the view parameter *name* in this query

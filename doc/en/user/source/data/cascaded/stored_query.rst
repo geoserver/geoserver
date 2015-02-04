@@ -35,8 +35,11 @@ See :ref:`using_a_parametric_sql_view` for more details how clients pass view pa
 Configuring a cascaded stored query layer
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-TODO
+In order to create a cascaded stored query layer the administrator invokes the Create new layer page. When an :ref:`data_external_wfs` is selected, the usual list of tables and views available for publication appears, a link :guilabel:`Configure Cascaded Stored Query...` also appears:
 
+.. figure:: images/csqaddnew.png
+
+TODO
 
 .. _data_external_stored_query_cql:
 

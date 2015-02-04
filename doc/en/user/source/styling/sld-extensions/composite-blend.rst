@@ -405,8 +405,14 @@ In case a custom opacity is desired, it can be added after the operation name:
 
    <VendorOption name="composite">multiply, 0.5</VendorOption>
 
-.. warning:: Blending against symbolizers seems to cause exceptions inside the JDK when using OpenJDK 7. The issue is being investigated, but it's likely
-             a bug in the JDK itself. Test against Oracle JDK 8 or even OpenJDK 7, but using the Marlin rasterizer, show no issue 
+.. warning:: Blending against symbolizers causes exceptions inside the JDK when using OpenJDK, the issue is known to 
+             the OpenJDK developers, but currently not being worked on: https://bugs.openjdk.java.net/browse/JDK-8048782 .
+             
+             Tests against Oracle JDK 8 or even Oracle JDK 7 show no issue. 
+             
+             One way to keep on using OpenJDK along with symbolizer specific composite modes is to install in it 
+             the `Marlin renderer <https://github.com/bourgesl/marlin-renderer>`_
+             which replaces the OpenJDK core renderer, and does not suffer from the same issue (and it's faster, too).
 
 Specifically for FeatureTypeStyle an additional vendor option can be added to control compositing groups:
 

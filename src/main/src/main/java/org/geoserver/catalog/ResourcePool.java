@@ -9,7 +9,6 @@ import java.awt.RenderingHints;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -1991,7 +1990,7 @@ public class ResourcePool {
         @Override
         protected void dispose(String key, WebMapServer server) {
             HTTPClient client = server.getHTTPClient();
-            if (client instanceof Closeable) {
+            if (client instanceof MultithreadedHttpClient) {
                 // dispose the client, and the connection pool hosted into it as a consequence
                 // the connection pool additionally holds a few threads that are also getting
                 // disposed with this call

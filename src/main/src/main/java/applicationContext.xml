@@ -35,6 +35,9 @@
     <!-- extensions -->
     <bean id="extensions" class="org.geoserver.platform.GeoServerExtensions"/>
     
+    <!-- disposer -->
+    <bean id="disposer" class="org.geoserver.platform.util.Disposer"/>
+    
     <!-- the shared filter factory -->
     <bean id="filterFactory" class="org.geotools.filter.FilterFactoryImpl"/>
     

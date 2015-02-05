@@ -66,6 +66,7 @@ import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.platform.resource.ResourceStore;
 import org.geoserver.platform.resource.Resources;
+import org.geoserver.platform.util.Disposer;
 import org.geoserver.security.GeoServerSecurityManager.FilterHelper;
 import org.geoserver.security.auth.AuthenticationCache;
 import org.geoserver.security.auth.GeoServerRootAuthenticationProvider;
@@ -148,6 +149,7 @@ import org.geoserver.security.xml.XMLUserGroupServiceConfig;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanCreationException;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationEvent;
@@ -610,7 +612,16 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
 
     AuthenticationCache lookupAuthenticationCache() {
         AuthenticationCache authCache = GeoServerExtensions.bean(AuthenticationCache.class);
-        return authCache != null ? authCache : new GuavaAuthenticationCacheImpl(1000);
+        if (authCache==null) {
+            Disposer disposer = GeoServerExtensions.bean(Disposer.class);
+            authCache = new GuavaAuthenticationCacheImpl(1000);
+            if(disposer!=null) {
+                disposer.register((DisposableBean)authCache);
+            } else {
+                LOGGER.warning("Disposer not available to register for disposal. GuavaAuthenticationCacheImpl may not be closed at application shutdown.");
+            }
+        }
+        return authCache;
     }
 
     public RememberMeServices getRememberMeService() {

@@ -13,14 +13,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.geoserver.platform.resource.Resource.Lock;
+import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.util.Disposer;
 import org.geotools.data.DataUtilities;
 import org.geotools.util.logging.Logging;
 
@@ -229,7 +229,17 @@ public final class Files {
      * <p>
      * Each file is monitored for change.
      */
-    static final FileSystemWatcher watcher = new FileSystemWatcher();
+    static final FileSystemWatcher watcher;
+    
+    static {
+        Disposer disposer = GeoServerExtensions.bean(Disposer.class);
+        watcher = new FileSystemWatcher();
+        if(disposer!=null) {
+            disposer.register(watcher);
+        } else {
+            LOGGER.warning("Disposer not available to register for disposal. FileSystemWatcher may not be closed at application shutdown.");
+        }
+    }
     
     private Files() {
         // utility class do not subclass

@@ -19,6 +19,12 @@ public class GuavaAuthenticationCacheTest extends BaseAuthenticationCacheTest {
         return new GuavaAuthenticationCacheImpl(MAX_ENTRIES, TIME_IDLE, TIME_LIVE,
                 TIME_CLEANUP, CONCURRENCY);
     }
+    
+    @Override
+    public void tearDown() throws Exception {
+        super.tearDown();
+        ((GuavaAuthenticationCacheImpl)cache).destroy();
+    } 
  
     public void testCleanUp() throws InterruptedException {
         putAuthenticationInCache();

@@ -15,6 +15,11 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.logging.Logger;
+
+import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.util.Disposer;
+import org.geotools.util.logging.Logging;
 
 /**
  * Implementation of ResourceStore backed by the file system.
@@ -32,7 +37,8 @@ public class FileSystemResourceStore implements ResourceStore {
     protected FileSystemResourceStore(){
         // Used by Spring, baseDirectory set by subclass
     }
-
+    
+    protected static final Logger LOGGER = Logging.getLogger( FileSystemResourceStore.class );
     
     /**
      * LockProvider used during {@link Resource#out()}.
@@ -91,7 +97,14 @@ public class FileSystemResourceStore implements ResourceStore {
     
     public synchronized void addListener(File file, String path, ResourceListener listener) {
         if( watcher == null ){
+            // Would be better if we could make FileSystemResource a DisposableBean instead
+            Disposer disposer = GeoServerExtensions.bean(Disposer.class);
             watcher = new FileSystemWatcher();
+            if(disposer!=null) {
+                disposer.register(watcher);
+            } else {
+                LOGGER.warning("Disposer not available to register for disposal. FileSystemWatcher may not be closed at application shutdown.");
+            }
         }
         watcher.addListener( file, path, listener );
     }

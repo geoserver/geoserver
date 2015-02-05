@@ -33,7 +33,6 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.eclipse.xsd.XSDElementDeclaration;
 import org.eclipse.xsd.XSDParticle;
@@ -674,10 +673,10 @@ public class ResourcePool {
         }
         
         //check the cache
-        List<AttributeTypeInfo> atts = (List<AttributeTypeInfo>) featureTypeAttributeCache.get(info.getId());
+        List<AttributeTypeInfo> atts = featureTypeAttributeCache.get(info.getId());
         if (atts == null) {
             synchronized (featureTypeAttributeCache) {
-                atts = (List<AttributeTypeInfo>) featureTypeAttributeCache.get(info.getId());
+                atts = featureTypeAttributeCache.get(info.getId());
                 if (atts == null) {
                     //load from feature type
                     atts = loadAttributes(info);
@@ -714,7 +713,7 @@ public class ResourcePool {
             att.setMaxOccurs(pd.getMaxOccurs());
             att.setNillable(pd.isNillable());
             att.setBinding(pd.getType().getBinding());
-            int length = FeatureTypes.getFieldLength((AttributeDescriptor) pd);
+            int length = FeatureTypes.getFieldLength(pd);
             if(length > 0) {
                 att.setLength(length);
             }
@@ -833,10 +832,10 @@ public class ResourcePool {
     FeatureType getFeatureType( FeatureTypeInfo info, boolean handleProjectionPolicy ) throws IOException {
         boolean cacheable = isCacheable(info);
         String key = getFeatureTypeInfoKey(info, handleProjectionPolicy);
-        FeatureType ft = (FeatureType) featureTypeCache.get(key);
+        FeatureType ft = featureTypeCache.get(key);
         if ( ft == null || !cacheable ) {
             synchronized ( featureTypeCache ) {
-                ft = (FeatureType) featureTypeCache.get(key);
+                ft = featureTypeCache.get(key);
                 if ( ft == null || !cacheable) {
                     
                     //grab the underlying feature type
@@ -925,7 +924,7 @@ public class ResourcePool {
                             
                                 AttributeDescriptor ad = (AttributeDescriptor) pd;
                                 ad = handleDescriptor(ad, info);
-                                tb.add( (AttributeDescriptor) ad );
+                                tb.add( ad );
                             }
                         }
                         ft = tb.buildFeatureType();
@@ -1247,11 +1246,11 @@ public class ResourcePool {
             }
             
             key = new CoverageHintReaderKey(info.getId(), hints);
-            reader = (GridCoverage2DReader) hintCoverageReaderCache.get( key );
+            reader = hintCoverageReaderCache.get( key );
         } else {
             key = info.getId();
             if(key != null) {
-                reader = (GridCoverageReader) coverageReaderCache.get( key );
+                reader = coverageReaderCache.get( key );
             }
         }
         
@@ -1260,9 +1259,9 @@ public class ResourcePool {
             synchronized ( hints != null ? hintCoverageReaderCache : coverageReaderCache ) {
                 if (key != null) {
                     if (hints != null) {
-                        reader = (GridCoverageReader) hintCoverageReaderCache.get(key);
+                        reader = hintCoverageReaderCache.get(key);
                     } else {
-                        reader = (GridCoverageReader) coverageReaderCache.get(key);
+                        reader = coverageReaderCache.get(key);
                     }
                 }
                 if (reader == null) {
@@ -1300,7 +1299,7 @@ public class ResourcePool {
             // multi-coverage reader)
             return SingleGridCoverage2DReader.wrap((GridCoverage2DReader) reader, coverageName);
         } else {
-            return (GridCoverage2DReader) reader;
+            return reader;
         }
     }
     
@@ -1469,10 +1468,10 @@ public class ResourcePool {
     public WebMapServer getWebMapServer(WMSStoreInfo info) throws IOException {
         try {
             String id = info.getId();
-            WebMapServer wms = (WebMapServer) wmsCache.get(id);
+            WebMapServer wms = wmsCache.get(id);
             if (wms == null) {
                 synchronized (wmsCache) {
-                    wms = (WebMapServer) wmsCache.get(id);
+                    wms = wmsCache.get(id);
                     if (wms == null) {
                         HTTPClient client = getHTTPClient(info);
                         String capabilitiesURL = info.getCapabilitiesURL();
@@ -1765,7 +1764,7 @@ public class ResourcePool {
         public V remove(Object key) {
             V object = super.remove(key);
             if (object != null) {
-                dispose((K) key, (V) object);
+                dispose((K) key, object);
             }
             return object;
         }
@@ -1945,8 +1944,20 @@ public class ResourcePool {
     class WMSCache extends CatalogResourceCache<String, WebMapServer> {
 
         @Override
-        protected void dispose(String key, WebMapServer object) {
-            // nothing to do
+        protected void dispose(String key, WebMapServer server) {
+            HTTPClient client = server.getHTTPClient();
+            if (client instanceof MultithreadedHttpClient) {
+                // dispose the client, and the connection pool hosted into it as a consequence
+                // the connection pool additionally holds a few threads that are also getting
+                // disposed with this call
+                MultithreadedHttpClient mt = (MultithreadedHttpClient) client;
+                try {
+                    mt.close();
+                } catch (Exception e) {
+                    LOGGER.log(Level.FINE,
+                            "Failure while disposing the http client for a WMS store", e);
+                }
+            }
         }
 
     }

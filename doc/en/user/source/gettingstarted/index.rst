@@ -11,4 +11,3 @@ This section contains short tutorials for common tasks in GeoServer, to get new 
    web-admin-quickstart/index.rst	
    shapefile-quickstart/index.rst
    postgis-quickstart/index.rst
-   styling-quickstart/index.rst

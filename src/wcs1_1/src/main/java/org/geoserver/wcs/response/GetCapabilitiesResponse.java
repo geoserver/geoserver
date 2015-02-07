@@ -42,7 +42,7 @@ public class GetCapabilitiesResponse extends Response {
     }
 
     public String getMimeType(Object value, Operation operation) {
-        GetCapabilitiesType request = (GetCapabilitiesType) OwsUtils.parameter(operation
+        GetCapabilitiesType request = OwsUtils.parameter(operation
                 .getParameters(), GetCapabilitiesType.class);
 
         if ((request != null) && (request.getAcceptFormats() != null)) {
@@ -58,8 +58,8 @@ public class GetCapabilitiesResponse extends Response {
             }
         }
 
-        //default
-        return "application/xml";
+        // default
+        return "text/xml";
     }
 
     public void write(Object value, OutputStream output, Operation operation)

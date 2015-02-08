@@ -33,7 +33,7 @@ GeoServer already has support for breaking up a dataset into regionated tiles. T
 Big datasets
 ************
 
-If you are making big datasets available, more than 50 000 individual features, up to 2,000,000, you should consider doing the following. The main burden is to sort the features according to an attribute, so that they are output in order of importance and included in exactly one tile.
+If you are making big datasets available (between 50000 and 2000000 individual features), you should consider doing the following. The main burden is to sort the features according to an attribute, so that they are output in order of importance and included in exactly one tile.
 
    1. Use a backend that supports queries, such as Postgis. You can use shp2psql to convert from a Shapefile to a SQL format supported by Postgis. Be sure to specify that you want a GIST (geospatial index) to be created, and provide the SRS. (-I and -s)
    2. Make sure your database has a primary index (an auto-incrementing integer is fine) and a spatial index on the geometry column

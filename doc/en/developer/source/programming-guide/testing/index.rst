@@ -15,19 +15,19 @@ GeoServer utilizes a number of commonly used testing libraries.
 JUnit
 ^^^^^
 
-The well known `JUnit <http://junit.org>`_ framekwork is the primary test library used in 
+The well known `JUnit <http://junit.org>`_ framework is the primary test library used in 
 GeoServer. The current version used is Junit 4.x. While it is possible to continue to write 
-JUnit 3.x style tests with JUnit 4 it is required that developers write in the JUnit4 style 
+JUnit 3.x style tests with JUnit 4, new tests should be written in the JUnit4 style 
 with annotations.
 
-Current version: 4.10
+Current version: 4.11
 
 XMLUnit
 ^^^^^^^
 
 The `XMLUnit <http://xmlunit.sourceforge.net>`_ library provides a convenient way to make 
 test assertions about the structure of XML documents. Since many components and services in 
-GeoServer speak XML it is a very useful library.
+GeoServer output XML, XMLUnit is a very useful library.
 
 Current version: 1.3
 
@@ -47,11 +47,11 @@ EasyMock
 
 The `EasyMock <http://www.easymock.org>`_ library is a 
 `mocking framework <http://en.wikipedia.org/wiki/Mock_object>`_ that is used to simulate 
-various objects without actually creating a real version of them. This is an extermely useful 
-tool when developing unit tests for a componenet a, that requires component b when component
-b may not be so easy to create from scatch. 
+various objects without actually creating a real version of them. This is an extremely useful 
+tool when developing unit tests for a component A, that requires component B when component
+B may not be so easy to create from scratch. 
 
-Current version: 2.3
+Current version: 2.5.2
 
 Testing Categories and Terminology
 -----------------------------------
@@ -62,7 +62,7 @@ exception. In the GeoServer code base one may find different types of tests.
 Unit 
 ^^^^
 
-Tests that excercise a particular method/class/component in complete isolation. In GeoServer
+Tests that exercise a particular method/class/component in complete isolation. In GeoServer
 these are tests that typically don't extend from any base class and look like what one would
 typically expect a unit test to look like.
 
@@ -70,7 +70,7 @@ typically expect a unit test to look like.
 Integration/Mock
 ^^^^^^^^^^^^^^^^
 
-Tests that excercise a component by that must integrate with another component to operate.  
+Tests that exercise a component by that must integrate with another component to operate.  
 In GeoServer these are tests that somehow mock up the dependencies for the component under
 test either by creating it directly or via a mocking library.
 
@@ -78,7 +78,7 @@ test either by creating it directly or via a mocking library.
 System
 ^^^^^^
 
-Tests that excercise a component or set of components by testing it in a fully running system.
+Tests that exercise a component or set of components by testing it in a fully running system.
 In GeoServer these are tests that create a fully functional GeoServer system, including
 a data directory/configuration and a spring context.
 
@@ -89,7 +89,7 @@ Writing System Tests
 System tests are the most common type of test case in GeoServer, primarily because they are 
 the easiest tests to write. However they come with a cost of performance. The GeoServer system
 test framework provides a fully functional GeoServer system. Creating this system is an 
-expensive operation so a full system test shold be useful only when its really necessary. 
+expensive operation so a full system test should be used only as a last resort. 
 Developers are encouraged to consider a straight unit or mock tests before resorting to a 
 full system test.
 
@@ -102,7 +102,7 @@ The general lifecycle of a system test goes through the following states:
 #. System destruction
 
 Phases 1 and 2 are referred to as the setup phase. It is during this phase that two main
-operations are performed. The first is the creation of the GeoServer data direcetory on 
+operations are performed. The first is the creation of the GeoServer data directory on 
 disk. The second is the creation of the spring application context.
 
 Single vs Repeated Setup
@@ -206,7 +206,7 @@ setUpTestData
 This callback method is invoked before the system has been created. It is meant to provide the
 test with a way to configure what configuration gets created in the Geoserver data directory 
 for the test. By default the test setup will create a standard set of vector layers. This 
-method is where that should be changed, for instnace to indicate that the test requires that
+method is where that should be changed, for instance to indicate that the test requires that
 raster layers be created as well. For example:
 
 .. code-block:: java
@@ -265,7 +265,7 @@ test class. For instance, consider the following:
 
 Since this is a one time setup, the onSetUp method is only executed once, before the test1 
 method. When the test2 method is executed it is actually a new instance of the test class, 
-but the onTestSetup is not re-executed. The proper way to this initalization would be:
+but the onTestSetup is not re-executed. The proper way to this initialization would be:
 
 .. code-block:: java
 
@@ -293,12 +293,12 @@ Writing Mock Tests
 ------------------
 
 Mock tests, also referred to as integration tests, are a good way to test a component that
-has depdendencies on other components. Often the case is that it is not simple to create the
-dependent component. 
+has dependencies on other components. It is often not simple to create the dependent component
+with the correct configuration.
 
 A mock test is just a regular unit test that uses functions from the EasyMock library to 
 create mock objects. There is however a base class named ``GeoServerMockTestSupport`` that
-is designed to provide a recreated set of mock objects. These pre created mock objects are 
+is designed to provide a pre-created set of mock objects. These pre-created mock objects are 
 designed to mimic the objects as they would be found in an actual running system. For example:
 
 .. code-block:: java
@@ -315,10 +315,10 @@ designed to mimic the objects as they would be found in an actual running system
        }
     }
 
-Like system tests mock tests utilize a one-time setup with the same setUpTestData and onSetUp callbacks. 
+Like system tests, mock tests do a one-time setup with the same setUpTestData and onSetUp callbacks. 
 
 The benefit of mock tests over system tests is the setup cost. Mock tests essentially have no 
-setup cost which means they can execute very quickly helping to keep overall bulid times down.
+setup cost which means they can execute very quickly, which helps to keep overall build times down.
 
 EasyMock Class Extension
 ^^^^^^^^^^^^^^^^^^^^^^^^
@@ -358,7 +358,7 @@ on main. This looks like:
       <scope>test</scope>
     </dependency>
 
-Furthermore, in maven test scope dependencies are not transistive in the same way that 
+Furthermore, in maven test scope dependencies are not transitive in the same way that 
 regular dependencies are. Therefore some additional dependencies must also be declared:
 
 .. code-block:: xml
@@ -384,7 +384,7 @@ Online Tests
 
 Often a test requires some external resource such as a database or a server to operate. Such
 tests should never assume that resource will be available and should skip test execution, 
-rather than fail, when the test is not avaialble. 
+rather than fail, when the test is not available. 
 
 JUnit4 provides a handy way to do this with the ``org.junit.Asssume`` class. Methods of the 
 class are called from a ``@Before`` hook or from a test method. For example consider the 
@@ -420,4 +420,4 @@ common case of connecting to a database:
     }
 
 In the above example the ``assumeNotNull`` method will throw back an exception telling JUnit 
-to simply forgo execution of the test.
+to skip execution of the test.

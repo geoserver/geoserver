@@ -56,9 +56,9 @@ To make a GSIP:
 #. Navigate to the proposals page: https://github.com/geoserver/geoserver.github.io/wiki/Proposals
 #. Edit the page with a new link under *Proposals Under Discussion*:
    
-   ````
+   ```
    [GSIP 116 - Use Apache Style Contributor Agreement](GSIP 116)
-   ````
+   ```
  
    #. The number should be the next "available" GSIP number.
    #. The title should be short and descriptive

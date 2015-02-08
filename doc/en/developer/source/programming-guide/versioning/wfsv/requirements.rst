@@ -14,9 +14,9 @@ From these pages we can gather the following requirements:
 #.  "Wiki for geospatial data" and "for us the two defining features of a wiki are the attribution and the ability to 'diff' and 'roll back".
 #. "The CVS of geospatial data"
 #. Easier to use than commercial softwares (less maintenance I guess?)
-#. Implemented as a set of plug-insinto the WFS transaction calls, among others, such as validation (so that bad data is not accepted) and change notification (mails, rss, and so on)
+#. Implemented as a set of plug-ins into the WFS transaction calls, among others, such as validation (so that bad data is not accepted) and change notification (mails, rss, and so on)
 #. Some kind of delayed commit, "Another possible plug-in could be 'peer review' holding area, where some one must explicitly approve a change instead of checking after and rolling it back";
-#. Patches, "it'd also be nice if there were an easy way to make a geospatial 'patch', based on specific contraints such as version numbers, area, user that provided them.
+#. Patches, "it'd also be nice if there were an easy way to make a geospatial 'patch', based on specific constraints such as version numbers, area, user that provided them.
 #. Checkouts, as in a classic version control system: caching and consuming of WFS. If you have a version table, that has timestamps as to the last updates, then the client really only needs to access the WFS once. And indeed in some cases you could even send out clients with the WFS layers pre-cached. When a client examines the layer again, they don't need to download the full WFS, they can just check the version table if there are updates since the last time they checked. If there are, then they can just download those directly, put them in the cache"and also "The version WFS would become the version control, and one could do diffs of ones locally modified files against the server. This also goes back to low and no bandwidth situations - files could be updated asynchronously, an update can come on a cd/dvd/firewire drive from the main office".
 
 Extra requirements that do not appear to be cited in the above documents, but seem to be important to me as well:
@@ -55,16 +55,16 @@ The following list of article contain real world experiences about spatial data 
 WFS-T extensions
 -----------------
 
-That is, how do we perform versioning versioning operations, and eventually provide enough information to build a client using some form of checkout, with the WFS Transaction and GetFeature calls? Are these enough?
+That is, how do we perform versioning operations, and eventually provide enough information to build a client using some form of checkout, with the WFS Transaction and GetFeature calls? Are these enough?
 
 GetFeature call must be extended so that we can specify which branch/tag we want to checkout, eventually which revision, if we go for the svn revision model, or which date. GetFeature response should include at least revision and tag/branch information.
 
-Transaction calls should be exdended to handle branch/tag and revision number so that we can check the modification is going over an up to date feature (do we need that? guess so, unless we go for a reserved checkout model leveraging lock calls?).
+Transaction calls should be extended to handle branch/tag and revision number so that we can check the modification is going over an up to date feature (do we need that? guess so, unless we go for a reserved checkout model leveraging lock calls?).
 Transaction responses should be extended to provide conflict informations (and eventually new revision numbers if we go the svn model?).
 
 The same goes for lock calls, we need to specify what we do want to lock (at least the branch/tag, not sure we may want to lock a specific revision).
 
-Most of the above requirements, beside the extended answers, come as natural if branch and revision are included in the feature type as extra attributes. We need those in order to build a checkout, but also to check for conflicts during transactional updates. As Jody suggested, the ranges of revision numbers could be provided thru a DescribeFeatureType call, using a "choice" construct.
+Most of the above requirements, beside the extended answers, come as natural if branch and revision are included in the feature type as extra attributes. We need those in order to build a checkout, but also to check for conflicts during transactional updates. As Jody suggested, the ranges of revision numbers could be provided through a DescribeFeatureType call, using a "choice" construct.
 
 An alternative could be to have a separate WFS server (different getCapabilities addresses) for each branch of the server. This implies a vision of versioning that spans the entire server. The main drawback I see is that this way the versioning handling seems to be locked to a specific datastore, or to an extension that can perform versioning independent of the datastore. Moreover, it apparently implies that all feature types server by the server are versioned.
 

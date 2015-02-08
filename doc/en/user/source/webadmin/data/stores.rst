@@ -42,14 +42,14 @@ While connection parameters will vary depending on data format, some of the basi
 Adding a Store
 --------------
 
-The buttons for adding and removing a workspace can be found at the top of the Stores page. 
+The buttons for adding and removing a store can be found at the top of the Stores page. 
 
 .. figure:: ../images/data_stores_add_remove.png
    :align: center
    
    *Buttons to add and remove stores*
 
-To add a workspace, select the :guilabel:`Add new Store` button. You will be prompted to choose a data source. GeoServer natively supports many formats (with more available via extensions). Click the appropriate data source to continue. 
+To add a store, select the :guilabel:`Add new Store` button. You will be prompted to choose a data source. GeoServer natively supports many formats (with more available via extensions). Click the appropriate data source to continue. 
 
 .. figure:: ../images/data_stores_chooser.png
    :align: center
@@ -73,7 +73,7 @@ To remove a store, click the store's corresponding check box. Multiple stores ca
    
    *Stores selected for deletion*
 
-Click the :guilabel:`Remove selected Stores` button. You will be asked to confirm the deletion of the the data within each store. Selecting :guilabel:`OK` removes the store(s), and will redirect to the main Stores page.
+Click the :guilabel:`Remove selected Stores` button. You will be asked to confirm the deletion of the data within each store. Selecting :guilabel:`OK` removes the store(s), and will redirect to the main Stores page.
 
 .. figure:: ../images/data_stores_delete_confirm.png
    :align: center   

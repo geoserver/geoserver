@@ -16,6 +16,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -78,7 +79,8 @@ public class CatalogStyleChangeListenerTest {
         when(mockMediator.getTileLayersForStyle(eq(STYLE_NAME))).thenReturn(
                 Collections.singletonList(mockTileLayer));
 
-        listener = new CatalogStyleChangeListener(mockMediator);
+        Catalog mockCatalog = mock(Catalog.class);
+        listener = new CatalogStyleChangeListener(mockMediator, mockCatalog);
 
         styleNameModifyEvent = new CatalogModifyEventImpl();
         styleNameModifyEvent.setSource(mockStyle);

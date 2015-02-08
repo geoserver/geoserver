@@ -17,12 +17,15 @@ import org.geoserver.catalog.CatalogException;
 import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.Predicates;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.event.CatalogAddEvent;
 import org.geoserver.catalog.event.CatalogListener;
 import org.geoserver.catalog.event.CatalogModifyEvent;
 import org.geoserver.catalog.event.CatalogPostModifyEvent;
 import org.geoserver.catalog.event.CatalogRemoveEvent;
+import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.gwc.GWC;
 import org.geotools.util.logging.Logging;
 import org.geowebcache.filter.parameters.ParameterFilter;
@@ -40,10 +43,20 @@ public class CatalogStyleChangeListener implements CatalogListener {
 
     private static Logger log = Logging.getLogger(CatalogStyleChangeListener.class);
 
+    /**
+     * Holds the CatalogModifyEvent from {@link #handleModifyEvent} to be taken after the change was
+     * applied to the {@link Catalog} at {@link #handlePostModifyEvent} and check whether it is
+     * necessary to perform any action on the cache based on the changed properties
+     */
+    private static ThreadLocal<CatalogModifyEvent> PRE_MODIFY_EVENT = new ThreadLocal<CatalogModifyEvent>();
+
     private final GWC mediator;
 
-    public CatalogStyleChangeListener(final GWC mediator) {
+    private Catalog catalog;
+
+    public CatalogStyleChangeListener(final GWC mediator, Catalog catalog) {
         this.mediator = mediator;
+        this.catalog = catalog;
     }
 
     /**
@@ -74,28 +87,34 @@ public class CatalogStyleChangeListener implements CatalogListener {
      */
     public void handleModifyEvent(CatalogModifyEvent event) throws CatalogException {
         CatalogInfo source = event.getSource();
-        if (!(source instanceof StyleInfo)) {
-            return;
+        if (source instanceof StyleInfo) {
+            final List<String> propertyNames = event.getPropertyNames();
+            if (!propertyNames.contains("name") && !propertyNames.contains("workspace")) {
+                return;
+            }
+            final int nameIdx = propertyNames.indexOf("name");
+            final String oldName = (String) event.getOldValues().get(nameIdx);
+            final String newName = (String) event.getNewValues().get(nameIdx);
+            final int workspaceIdx = propertyNames.indexOf("wokspace");
+            final String oldWorkspaceName = workspaceIdx != -1 ? (String) event.getOldValues().get(
+                    workspaceIdx) : null;
+            final String newWorkspaceName = workspaceIdx != -1 ? (String) event.getNewValues().get(
+                    workspaceIdx) : null;
+            final String oldStyleName = getPrefixedName(oldWorkspaceName, oldName);
+            final String newStyleName = getPrefixedName(newWorkspaceName, newName);
+
+            handleStyleRenamed(oldStyleName, newStyleName);
+        } else if (source instanceof WorkspaceInfo) {
+            PRE_MODIFY_EVENT.set(event);
         }
-        final List<String> propertyNames = event.getPropertyNames();
-        if (!propertyNames.contains("name") && !propertyNames.contains("workspace")) {
-            return;
-        }
-        final int nameIdx = propertyNames.indexOf("name");
-        final String oldName = (String) event.getOldValues().get(nameIdx);
-        final String newName = (String) event.getNewValues().get(nameIdx);
-        final int workspaceIdx = propertyNames.indexOf("wokspace");
-        final String oldWorkspaceName = workspaceIdx != -1 ? (String) event.getOldValues().get(
-                workspaceIdx) : null;
-        final String newWorkspaceName = workspaceIdx != -1 ? (String) event.getNewValues().get(
-                workspaceIdx) : null;
-        final String oldStyleName = getPrefixedName(oldWorkspaceName, oldName);
-        final String newStyleName = getPrefixedName(newWorkspaceName, newName);
-        if (oldName.equals(newName)) {
+    }
+
+    private void handleStyleRenamed(final String oldStyleName, final String newStyleName) {
+        if (oldStyleName.equals(newStyleName)) {
             return;
         }
         List<GeoServerTileLayer> affectedLayers;
-        affectedLayers = mediator.getTileLayersForStyle(oldName);
+        affectedLayers = mediator.getTileLayersForStyle(oldStyleName);
 
         for (GeoServerTileLayer tl : affectedLayers) {
             LayerInfo layerInfo = tl.getLayerInfo();
@@ -136,11 +155,45 @@ public class CatalogStyleChangeListener implements CatalogListener {
      * @see org.geoserver.catalog.event.CatalogListener#handlePostModifyEvent
      */
     public void handlePostModifyEvent(CatalogPostModifyEvent event) throws CatalogException {
-        Object obj = event.getSource();
-        if (obj instanceof StyleInfo) {
-            StyleInfo si = (StyleInfo) obj;
+        Object source = event.getSource();
+        if (source instanceof StyleInfo) {
+            StyleInfo si = (StyleInfo) source;
             handleStyleChange(si);
+        } else if (source instanceof WorkspaceInfo) {
+            WorkspaceInfo ws = (WorkspaceInfo) source;
+            handleWorkspaceChange(ws);
         }
+    }
+
+    private void handleWorkspaceChange(WorkspaceInfo ws) {
+        final CatalogModifyEvent preModifyEvent = PRE_MODIFY_EVENT.get();
+        PRE_MODIFY_EVENT.remove();
+
+        final List<String> changedProperties = preModifyEvent.getPropertyNames();
+
+        // was the workspace name modified? this implies a name change in workspace local styles
+        int nameIdx = changedProperties.indexOf("name");
+        if (nameIdx == -1) {
+            return;
+        }
+        String oldWorkspaceName = (String) preModifyEvent.getOldValues().get(nameIdx);
+        String newWorkspaceName = (String) preModifyEvent.getNewValues().get(nameIdx);
+
+        // grab the styles
+        CloseableIterator<StyleInfo> styles = catalog.list(StyleInfo.class,
+                Predicates.equal("workspace.name", newWorkspaceName));
+        try {
+            while (styles.hasNext()) {
+                StyleInfo style = styles.next();
+                String oldStyleName = oldWorkspaceName + ":" + style.getName();
+                String newStyleName = newWorkspaceName + ":" + style.getName();
+
+                handleStyleRenamed(oldStyleName, newStyleName);
+            }
+        } finally {
+            styles.close();
+        }
+
     }
 
     /**

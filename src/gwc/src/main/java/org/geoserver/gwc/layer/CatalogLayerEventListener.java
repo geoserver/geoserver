@@ -432,6 +432,7 @@ public class CatalogLayerEventListener implements CatalogListener {
         final String oldWorkspaceName = (String) oldValues.get(nameIndex);
         final String newWorkspaceName = (String) newValues.get(nameIndex);
         
+        // handle layers rename
         CloseableIterator<LayerInfo> layers = catalog.list(LayerInfo.class, Predicates.equal("resource.store.workspace.name", newWorkspaceName));
         try {
             while(layers.hasNext()) {
@@ -479,6 +480,44 @@ public class CatalogLayerEventListener implements CatalogListener {
             }
         } finally {
             layers.close();
+        }
+
+        // handle layer group renames
+        CloseableIterator<LayerGroupInfo> groups = catalog.list(LayerGroupInfo.class,
+                Predicates.equal("workspace.name", newWorkspaceName));
+        try {
+            while (groups.hasNext()) {
+                LayerGroupInfo group = groups.next();
+                String oldName = oldWorkspaceName + ":" + group.getName();
+                String newName = newWorkspaceName + ":" + group.getName();
+
+                // see if the tile layer existed and it is one that we can rename (admin
+                // could have overwritten it with a direct layer in geowebcache.xml)
+                TileLayer tl;
+                try {
+                    tl = mediator.getTileLayerByName(oldName);
+                    if (!(tl instanceof GeoServerTileLayer)) {
+                        continue;
+                    }
+                } catch (IllegalArgumentException e) {
+                    // this happens if the layer is not there, move on
+                    continue;
+                }
+
+                try {
+                    if (tl instanceof GeoServerTileLayer) {
+                        GeoServerTileLayer gstl = (GeoServerTileLayer) tl;
+                        renameTileLayer(gstl.getInfo(), oldName, newName);
+                    }
+                } catch (Exception e) {
+                    // this should not happen, but we don't want to
+                    log.log(Level.WARNING, "Failed to rename tile layer for geoserver group "
+                            + group + " while renaming tile layers for workspace name change "
+                            + oldName + " -> " + newName, e);
+                }
+            }
+        } finally {
+            groups.close();
         }
             
     }

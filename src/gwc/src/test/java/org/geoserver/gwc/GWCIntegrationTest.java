@@ -75,6 +75,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
     static final String FLAT_LAYER_GROUP = "flatLayerGroup";
     static final String NESTED_LAYER_GROUP = "nestedLayerGroup";
     static final String CONTAINER_LAYER_GROUP = "containerLayerGroup";
+    static final String WORKSPACED_LAYER_GROUP = "workspacedLayerGroup";
     
     static final String TEST_WORKSPACE_NAME = "testWorkspace";
     static final String TEST_WORKSPACE_URI = "http://geoserver.org/GWCIntegerationTest/"+TEST_WORKSPACE_NAME;
@@ -425,13 +426,121 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
                 + buildGetMap(directWMSIntegrationEndpoint, localName, "EPSG:4326",
                         WORKSPACED_STYLE_NAME, tileLayer) + "&tiled=true";
 
-        response = getAsServletResponse(request);
         MockHttpServletResponse response3 = getAsServletResponse(request);
-        assertEquals(200, response2.getStatusCode());
+        assertEquals(200, response3.getStatusCode());
         assertEquals("image/png", response3.getContentType());
         assertEquals(qualifiedName, response3.getHeader("geowebcache-layer"));
         assertThat(response3.getHeader("geowebcache-cache-result"), equalToIgnoringCase("HIT"));
 
+        // finally, rename the workspace
+        String oldWorkspaceName = TEST_WORKSPACE_NAME;
+        WorkspaceInfo ws = getCatalog().getWorkspaceByName(oldWorkspaceName);
+        String newWorkspaceName = oldWorkspaceName + "_renamed";
+        ws.setName(newWorkspaceName);
+        getCatalog().save(ws);
+
+        // rename the bits in the request, it should be another hit
+        request = newWorkspaceName
+                + "/"
+                + buildGetMap(directWMSIntegrationEndpoint, localName, "EPSG:4326",
+                        WORKSPACED_STYLE_NAME, tileLayer) + "&tiled=true";
+        MockHttpServletResponse response4 = getAsServletResponse(request);
+        assertEquals(200, response4.getStatusCode());
+        assertEquals("image/png", response4.getContentType());
+        assertEquals(newWorkspaceName + ":" + WORKSPACED_LAYER,
+                response4.getHeader("geowebcache-layer"));
+        assertThat(response4.getHeader("geowebcache-cache-result"), equalToIgnoringCase("HIT"));
+
+    }
+
+    @Test
+    public void testLayerGroupInWorkspace() throws Exception {
+        // the workspace for the tests
+        String workspaceName = MockData.BASIC_POLYGONS.getPrefix();
+
+        // build a flat layer group with them, in the test workspace
+        LayerGroupInfo lg = getCatalog().getFactory().createLayerGroup();
+        lg.setName(WORKSPACED_LAYER_GROUP);
+        String bpLayerId = getLayerId(MockData.BASIC_POLYGONS);
+        String mpLayerId = getLayerId(MockData.LAKES);
+        lg.getLayers().add(getCatalog().getLayerByName(bpLayerId));
+        lg.getLayers().add(getCatalog().getLayerByName(mpLayerId));
+
+        lg.setWorkspace(getCatalog().getWorkspaceByName(workspaceName));
+        new CatalogBuilder(getCatalog()).calculateLayerGroupBounds(lg);
+        getCatalog().add(lg);
+
+        // wmts request, use the qualified name, first request, works, but it's a cache miss of
+        // course
+        String request = "gwc/service/wmts?request=GetTile&layer="
+                + workspaceName
+                + ":"
+                + WORKSPACED_LAYER_GROUP
+                + "&format=image/png&tilematrixset=EPSG:4326&tilematrix=EPSG:4326:0&tilerow=0&tilecol=0";
+        MockHttpServletResponse sr = getAsServletResponse(request);
+        assertEquals(200, sr.getErrorCode());
+        assertEquals("image/png", sr.getContentType());
+        assertThat(sr.getHeader("geowebcache-cache-result"), equalToIgnoringCase("MISS"));
+
+        // run again, it should be a hit
+        sr = getAsServletResponse(request);
+        assertEquals(200, sr.getErrorCode());
+        assertEquals("image/png", sr.getContentType());
+        assertThat(sr.getHeader("geowebcache-cache-result"), equalToIgnoringCase("HIT"));
+
+        // try direct integration too
+        final GWC gwc = GWC.get();
+        gwc.getConfig().setDirectWMSIntegrationEnabled(true);
+        final TileLayer tileLayer = gwc.getTileLayerByName(lg.prefixedName());
+        request = buildGetMap(true, lg.prefixedName(), "EPSG:4326", null, tileLayer)
+                + "&tiled=true";
+        sr = getAsServletResponse(request);
+        assertEquals(200, sr.getErrorCode());
+        assertEquals("image/png", sr.getContentType());
+        assertEquals(lg.prefixedName(), sr.getHeader("geowebcache-layer"));
+        assertThat(sr.getHeader("geowebcache-cache-result"), equalToIgnoringCase("HIT"));
+
+        // and direct integration against the workspace local name
+        request = workspaceName + "/"
+                + buildGetMap(true, lg.getName(), "EPSG:4326", null, tileLayer) + "&tiled=true";
+        sr = getAsServletResponse(request);
+        assertEquals(200, sr.getErrorCode());
+        assertEquals(lg.prefixedName(), sr.getHeader("geowebcache-layer"));
+        assertThat(sr.getHeader("geowebcache-cache-result"), equalToIgnoringCase("HIT"));
+
+        // now change the workspace name
+        WorkspaceInfo ws = getCatalog().getWorkspaceByName(workspaceName);
+        String newWorkspaceName = workspaceName + "_renamed";
+        ws.setName(newWorkspaceName);
+        getCatalog().save(ws);
+
+        // prepare the wmts request anew, it should be a hit, the cache should be preserved
+        request = "gwc/service/wmts?request=GetTile&layer="
+                + newWorkspaceName
+                + ":"
+                + WORKSPACED_LAYER_GROUP
+                + "&format=image/png&tilematrixset=EPSG:4326&tilematrix=EPSG:4326:0&tilerow=0&tilecol=0";
+        sr = getAsServletResponse(request);
+        assertEquals(200, sr.getErrorCode());
+        assertEquals("image/png", sr.getContentType());
+        assertThat(sr.getHeader("geowebcache-cache-result"), equalToIgnoringCase("HIT"));
+
+        // and now direct integration
+        String newQualifiedName = newWorkspaceName + ":" + lg.getName();
+        request = buildGetMap(true, newQualifiedName, "EPSG:4326", null, tileLayer) + "&tiled=true";
+        sr = getAsServletResponse(request);
+        assertEquals(200, sr.getErrorCode());
+        assertEquals("image/png", sr.getContentType());
+        assertEquals(lg.prefixedName(), sr.getHeader("geowebcache-layer"));
+        assertThat(sr.getHeader("geowebcache-cache-result"), equalToIgnoringCase("HIT"));
+
+        // and direct integration against the workspace local name
+        request = newWorkspaceName + "/"
+                + buildGetMap(true, lg.getName(), "EPSG:4326", null, tileLayer) + "&tiled=true";
+        sr = getAsServletResponse(request);
+        assertEquals(200, sr.getErrorCode());
+        assertEquals(newQualifiedName, sr.getHeader("geowebcache-layer"));
+        assertThat(sr.getHeader("geowebcache-cache-result"), equalToIgnoringCase("HIT"));
     }
 
 
@@ -757,7 +866,6 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
             }
             
             // rename the workspace
-            
             ws.setName(wsRenamed);
             catalog.save(ws);
             

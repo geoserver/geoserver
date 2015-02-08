@@ -216,7 +216,7 @@ Bundling with Web Module
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
 An alternative to plugging into an existing installation is to build a complete
-GeoServer war that includes the custom hello plugin. To acheive this a new 
+GeoServer war that includes the custom hello plugin. To achieve this a new 
 dependency is declared from the core **web/app** module on the new plugin 
 project. This requires building GeoServer from sources.
 
@@ -289,5 +289,5 @@ it directly from sources.
 .. note::
 
    Ensure that the ``web-app`` module in eclipse depends on the newly imported
-   ``hello`` module. This can be done by inspeceting the ``web-app`` module 
-   properties and ensuring the ``hello`` module is a projcet dependency.
+   ``hello`` module. This can be done by inspecting the ``web-app`` module 
+   properties and ensuring the ``hello`` module is a project dependency.

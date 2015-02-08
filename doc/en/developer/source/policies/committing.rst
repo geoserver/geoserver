@@ -68,13 +68,13 @@ Being granted this stage of access takes time, and is obtained only after the
 developer has gained the trust of the other core committers.
 
 The process of obtaining core commit access is far less mechanical than the one
-to obtain community commit access. It is based soley on trust. To obtain core
+to obtain community commit access. It is based solely on trust. To obtain core
 commit access a developer must first obtain the trust of the other core
-commiters.
+committers.
 
 The way this is typically done is through continuous code review of patches.
 After a developer has submitted enough patches that have been met with a
-postitive response, and those patches require little modifications, the
+positive response, and those patches require little modifications, the
 developer will be nominated for core commit access.
 
 There is no magic number of patches that make the criteria, it is based mostly

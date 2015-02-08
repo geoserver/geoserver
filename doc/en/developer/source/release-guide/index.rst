@@ -179,13 +179,11 @@ Update the download short cuts:
    Edit the details for `release/dev/index.html https://github.com/geoserver/geoserver.github.io/blob/master/release/dev/index.html>`_
    
    ```
-   ---
    layout: release
    title: GeoServer
    version: 2.6-RC2
    jira_version: 20356
    release_date: August 18th, 2014
-   ---
    ```
    
    We do not keep landing pages for beta releases so there is no need to create a copy of this file.
@@ -195,13 +193,11 @@ Update the download short cuts:
    Edit the details for `release/stable/index.html <https://github.com/geoserver/geoserver.github.io/blob/master/release/stable/index.html>`_
    
    ```
-   ---
    layout: release
    title: GeoServer
    version: 2.6.0
    jira_version: 20402
    release_date:  Sep 7, 2014
-   ---
    ```
    
    And copy this page when you are done:
@@ -217,13 +213,11 @@ Update the download short cuts:
    Edit the details for `release/maintenance/index.html <https://github.com/geoserver/geoserver.github.io/blob/master/release/stable/index.html>`_
    
    ```
-   ---
    layout: release
    title: GeoServer
    version: 2.5.8
    jira_version: 20457
    release_date:  August 18, 2014
-   ---
    ```
    
     And copy this page when you are done:

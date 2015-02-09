@@ -26,9 +26,9 @@ The first step in creating our plug-in is setting up a maven project for it. The
   
     <!-- set parent pom to community pom -->
     <parent>
-      <groupId>org.geoserver</groupId>
-      <artifactId>community</artifactId>
-      <version>2.2.0</version>
+        <groupId>org.geoserver</groupId>
+        <artifactId>community</artifactId>
+        <version>2.7-SNAPSHOT</version> <!-- change this to the proper GeoServer version -->
     </parent>  
   
     <groupId>org.geoserver</groupId>
@@ -39,19 +39,22 @@ The first step in creating our plug-in is setting up a maven project for it. The
   
     <!-- declare depenency on geoserver main -->
     <dependencies>
-      <dependency>
-        <groupId>org.geoserver</groupId>
-        <artifactId>main</artifactId>
-        <version>2.2.0</version>
-      </dependency>
+        <dependency>
+            <groupId>org.geoserver</groupId>
+            <artifactId>gs-main</artifactId>
+            <version>2.7-SNAPSHOT</version> <!-- change this to the proper GeoServer version -->
+        </dependency>
     </dependencies>
 
     <repositories>
-      <repository>
-         <id>opengeo</id>
-         <name>opengeo</name>
-         <url>http://repo.opengeo.org</url>
-      </repository>
+        <repository>
+            <id>boundless</id>
+            <name>Boundless Maven Repository</name>
+            <url>http://repo.boundlessgeo.com/main</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
     </repositories>
 
   </project>

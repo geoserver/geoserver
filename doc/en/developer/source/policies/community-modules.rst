@@ -82,7 +82,7 @@ The following outlines the steps to be taken in order to add a new community mod
           <parent>
             <groupId>org.geoserver</groupId>
             <artifactId>geoserver</artifactId>
-            <version>1.7.0-SNAPSHOT</version> <!-- change this to the proper GeoServer version -->
+            <version>2.7-SNAPSHOT</version> <!-- change this to the proper GeoServer version -->
           </parent>
 
           <groupId>org.geoserver</groupId>
@@ -112,7 +112,7 @@ The following outlines the steps to be taken in order to add a new community mod
            <profiles>
              ...
              <profile>
-               <id>myComunityModule</id>
+               <id>myCommunityModule</id>
                <modules>
                  <module>myCommunityModule</module>
                </modules>
@@ -131,7 +131,7 @@ The following outlines the steps to be taken in order to add a new community mod
                <dependencies>
                  <dependency>
                     <groupId>org.geoserver</groupId>
-                    <artifactId>myCommuityModule</artifactId>
+                    <artifactId>myCommunityModule</artifactId>
                     <version>1.0-SNAPSHOT</version>
                   </dependency>
                </dependencies>
@@ -153,7 +153,7 @@ Promoting a community module
 
 Once a community modules becomes "stable", it may be promoted to a core or 
 extension module. Which depends on the nature of the community module. If the 
-module is plug-in based (ie. it provides functionality that some users may want,
+module is plug-in based (i.e. it provides functionality that some users may want,
 but others may not) then it should become an extension. Otherwise it should 
 become a core module.
 
@@ -199,10 +199,10 @@ The following properties must hold true in order to promote a community module:
 
 #. **The maintainer has signed the GeoServer Contributor Agreement**
 
-   The Open Planning Project (TOPP) retains all copyright on code released as
+   OSGeo retains all copyright on code released as
    part of GeoServer. Since core and extension modules are released along with
    the rest of GeoServer, the maintainer of said modules must agree to assign
-   copyright of code to TOPP.
+   copyright of code to OSGeo.
 
 Process
 ^^^^^^^
@@ -216,7 +216,7 @@ Process
 #. **Move the module**
 
    Once the proposal is accepted, the next step is to move the module out of 
-   the community space. Where the module ends up depends on wether it is being
+   the community space. Where the module ends up depends on whether it is being
    promoted to a core module, or an extension.
 
    *Core modules*
@@ -350,7 +350,7 @@ Process
              </dependencies>
 
    #. Add an entry for the release descriptor to the root ``pom.xml`` of
-      the source tree (ie. one step up from the release directory)::
+      the source tree (i.e. one step up from the release directory)::
 
              <!-- artifact assembly -->
              <plugin>
@@ -375,7 +375,7 @@ Process
 
        .. todo:: 
  
-          Finish this by linking somwhere...
+          Finish this by linking somewhere...
 
     #. Download the contributor agreement 
 

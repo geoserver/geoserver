@@ -62,7 +62,7 @@ public class LegacyTileLayerInfoLoader {
 
         if (metadataMap.containsKey(CONFIG_KEY_CACHED_STYLES)) {
             final String defaultStyle = layer.getDefaultStyle() == null ? "" : layer
-                    .getDefaultStyle().getName();
+                    .getDefaultStyle().prefixedName();
             String cachedStylesStr = metadataMap.get(CONFIG_KEY_CACHED_STYLES, String.class);
             Set<String> cachedStyles = unmarshalSet(cachedStylesStr);
             TileLayerInfoUtil.setCachedStyles(tileLayerInfo, defaultStyle, cachedStyles);

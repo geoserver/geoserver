@@ -37,7 +37,7 @@ public class WCS10WorkspaceQualifier extends WorkspaceQualifyingCallback {
         
         DescribeCoverageType dcov = parameter(operation, DescribeCoverageType.class);
         if (dcov != null) {
-            qualifyNames(dcov.getCoverage(), ws);
+            qualifyLayerNames(dcov.getCoverage(), ws);
             return;
         }
             

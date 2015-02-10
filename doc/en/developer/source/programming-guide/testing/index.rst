@@ -344,7 +344,7 @@ must import ``org.easymock.classextension.EasyMock``.
 Maven Dependencies
 ------------------
 
-All of the GeoServer base test classes live in the main module. However since they live in 
+All of the GeoServer base test classes live in the gs-main module. However since they live in 
 the test packages a special dependency must be set up in the pom of the module depending
 on main. This looks like:
 
@@ -352,7 +352,7 @@ on main. This looks like:
 
     <dependency>
       <groupId>org.geoserver</groupId>
-      <artifactId>main</artifactId>
+      <artifactId>gs-main</artifactId>
       <version>${project.version}</version>
       <classifier>tests</classifier>
       <scope>test</scope>

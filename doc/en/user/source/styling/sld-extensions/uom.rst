@@ -4,10 +4,10 @@ Specifying symbolizer sizes in ground units
 =============================================
 
 The SLD 1.0 specification allows giving symbolizer sizes in a single unit of measure: pixels.  
-This means that the size of symbolizers is the same at all zoom levels (which is commonly the desired behaviour).
+This means that the size of symbolizers is the same at all zoom levels (which is usually the desired behaviour).
 
 The Symbology Encoding 1.1 specification provides a ``uom`` attribute on ``Symbolizer`` elements.  
-This allows specifying styling parameter sizes in ground units of metres or feet, as well as the default screen pixels. 
+This allows specifying styling parameter sizes in ground units of metres or feet, as well as the default which is screen pixels. 
 When ground units are used, the screen size of styled elements increases as the map is zoomed in to larger scales.  
 GeoServer supports the SE 1.1 ``uom`` attribute in its extended SLD 1.0 support.  
 

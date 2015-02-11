@@ -78,7 +78,13 @@ Users authenticated via a X.509 certificate must be configured in GeoServer. For
 
    .. figure:: images/cert9.jpg
 
-#. Click :guilabel:`Save`.
+#. Click :guilabel:`Close`.
+
+#. You will be returned to the previous page. Click :guilabel:`Save`.
+
+   .. warning::
+
+      This last change requires both :guilabel:`Close` and then :guilabel:`Save` to be clicked. You may wish to return to the :guilabel:`web` dialog to verify that the change was made.
 
 Download sample certificate files
 ---------------------------------

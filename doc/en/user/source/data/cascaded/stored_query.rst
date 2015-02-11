@@ -20,7 +20,8 @@ When you set up a layer based on a stored query, you have to selecte which store
    * - **Parameter type**
      - **Explanation**
    * - :guilabel:`No mapping`
-     - View parameter in query will be passed as such to the stored query
+     - The value of the view parameter will be passed as is to the stored query. No parameter will be passed if there 
+       is no view parameter of the same name.
    * - :guilabel:`Blocked`
      - This parameter will never be passed to the stored query
    * - :guilabel:`Default`
@@ -28,20 +29,9 @@ When you set up a layer based on a stored query, you have to selecte which store
    * - :guilabel:`Static`
      - The specified value is always used (view parameter value will be ignored)
    * - :guilabel:`CQL Expression`
-     - An expression that will be evaluated on every request (see :ref:`data_external_stored_query_cql`)
+     - An expression that will be evaluated on every request (see below for more details)
 
 See :ref:`using_a_parametric_sql_view` for more details how clients pass view parameters to GeoServer. 
-
-Configuring a cascaded stored query layer
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-In order to create a cascaded stored query layer the administrator invokes the Create new layer page. When an :ref:`data_external_wfs` is selected, the usual list of tables and views available for publication appears, a link :guilabel:`Configure Cascaded Stored Query...` also appears:
-
-.. figure:: images/csqaddnew.png
-
-TODO
-
-.. _data_external_stored_query_cql:
 
 CQL expressions
 ^^^^^^^^^^^^^^^
@@ -61,3 +51,15 @@ The context contains the following properties that may be used in the expression
      - Evaluates to the default SRS of the feature type
    * - ``viewparam:name``
      - Evaluates to the value of the view parameter *name* in this query
+
+
+Configuring a cascaded stored query layer
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+In order to create a cascaded stored query layer the administrator invokes the Create new layer page. When an :ref:`data_external_wfs` is selected, the usual list of tables and views available for publication appears, a link :guilabel:`Configure Cascaded Stored Query...` also appears:
+
+.. figure:: images/csqaddnew.png
+
+Selecting the :guilabel:`Configure Cascaded Stored Query...` link opens a new page where the parameter mapping is set up. By default all parameters are set up as :guilabel:`No mapping`.
+
+.. figure:: images/csqconfigure.png

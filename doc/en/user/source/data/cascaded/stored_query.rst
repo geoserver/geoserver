@@ -36,7 +36,7 @@ See :ref:`using_a_parametric_sql_view` for more details how clients pass view pa
 CQL expressions
 ^^^^^^^^^^^^^^^
 
-Parameter mappings configured as CQL expressions are evaluated for each request using a context derived from the request query and the view parameters. General information on CQL expressions is available here :ref:`ecql_expr`. In addition to standard CQL, the syntax here allows using the + operator to concatenate strings.
+Parameter mappings configured as CQL expressions are evaluated for each request using a context derived from the request query and the view parameters. General information on CQL expressions is available here :ref:`ecql_expr`.
 
 The context contains the following properties that may be used in the expressions:
 

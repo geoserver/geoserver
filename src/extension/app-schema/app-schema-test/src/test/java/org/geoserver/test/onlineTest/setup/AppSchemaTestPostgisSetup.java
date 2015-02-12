@@ -125,7 +125,7 @@ public class AppSchemaTestPostgisSetup extends ReferenceDataPostgisSetup {
         buf.append("DROP SCHEMA IF EXISTS ").append(ONLINE_DB_SCHEMA).append(" CASCADE;\n");
         buf.append("CREATE SCHEMA ").append(ONLINE_DB_SCHEMA).append(";\n");
         for (String fileName : propertyFiles.keySet()) {
-            File file = new File(fileName);
+            File file = new File(propertyFiles.get(fileName), fileName);
             
             try (PropertyFeatureReader reader = new PropertyFeatureReader("test", file ) ){
                 SimpleFeatureType schema = reader.getFeatureType();

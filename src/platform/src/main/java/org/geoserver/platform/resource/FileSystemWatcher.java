@@ -14,6 +14,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.geoserver.platform.resource.ResourceNotification.Kind;
+import org.springframework.beans.factory.DisposableBean;
+import org.springframework.scheduling.concurrent.CustomizableThreadFactory;
 
 
 /**
@@ -26,7 +28,7 @@ import org.geoserver.platform.resource.ResourceNotification.Kind;
  * 
  * @author Jody Garnett (Boundless)
  */
-public class FileSystemWatcher {
+public class FileSystemWatcher implements DisposableBean {
     /**
      * Change to file system
      */
@@ -319,13 +321,19 @@ public class FileSystemWatcher {
 
     private long delay = 10;
 
+    private static CustomizableThreadFactory tFactory;
+    static {
+        tFactory = new CustomizableThreadFactory("FileSystemWatcher-");
+        tFactory.setDaemon(true);
+    }
+    
     /**
      * FileSystemWatcher used to track file changes.
      * <p>
      * Internally a single threaded schedule executor is used to monitor files.
      */
     FileSystemWatcher() {
-        this.pool = Executors.newSingleThreadScheduledExecutor();
+        this.pool = Executors.newSingleThreadScheduledExecutor(tFactory);
     }
     
     private Watch watch(File file, String path ){
@@ -393,5 +401,10 @@ public class FileSystemWatcher {
             monitor.cancel(false);
             monitor = pool.scheduleWithFixedDelay(sync, delay, delay, unit);
         }
+    }
+
+    @Override
+    public void destroy() throws Exception {
+        pool.shutdown();
     }
 }

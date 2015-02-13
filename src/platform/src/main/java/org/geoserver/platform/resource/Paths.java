@@ -126,6 +126,9 @@ public class Paths {
             if (!VALID.matcher(item).matches()) {
                 throw new IllegalArgumentException("Contains invalid " + item + " path: " + buf);
             }
+            if (!WARN.matcher(item).matches()) {
+                // to do warning 
+            }
             buf.append(item);
             if (i < LIMIT - 1) {
                 buf.append("/");
@@ -151,13 +154,15 @@ public class Paths {
         if (!VALID.matcher(path).matches()) {
             throw new IllegalArgumentException("Contains invalid chracters " + path);
         }
+        if (!WARN.matcher(path).matches()) {
+            // todo warning
+        }
         return path;
     }
 
     /**
      * Pattern used to check for invalid file characters.
      * <ul>
-     * <li>backslash (sorry windows users we are following linux conventions here)
      * <li>colon
      * <li>star
      * <li>question mark
@@ -167,7 +172,14 @@ public class Paths {
      * <li>bar
      * </ul>
      */
-    static final Pattern VALID = Pattern.compile("^[^\\\\\\:*?\"<>|]*$");
+    static final Pattern VALID = Pattern.compile("^[^\\\\\\*?\"<>|]*$");
+    /**
+     * Pattern used to check for ill-advised file characters:
+     * <ul>
+     * <li>colon - potential conflict with xml prefix separator and workspace style separator
+     * </ul> 
+     */
+    static final Pattern WARN = Pattern.compile("^[:*?\"<>|]*$");
 
     /**
      * Set of invalid resource names (currently used to quickly identify relative paths).

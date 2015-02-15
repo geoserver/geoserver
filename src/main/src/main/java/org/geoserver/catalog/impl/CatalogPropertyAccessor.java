@@ -65,7 +65,7 @@ public class CatalogPropertyAccessor implements PropertyAccessor {
     @SuppressWarnings("unchecked")
     @Override
     public <T> T get(Object object, String xpath, Class<T> target) throws IllegalArgumentException {
-        Object value = getProperty((Info) object, xpath);
+        Object value = getProperty(object, xpath);
         T result;
         if (null != target && null != value) {
             result = Converters.convert(value, target);
@@ -165,6 +165,13 @@ public class CatalogPropertyAccessor implements PropertyAccessor {
             } else {
                 value = OwsUtils.get(input, propName);
             }
+        }
+
+        // if our nested access stumbles onto a null, we return a null value to allow
+        // for full text searches to work (e.g., workspace.name, but workspace can be null
+        // in both layer groups and styles
+        if (value == null) {
+            return null;
         }
 
         return getProperty(value, propertyNames, offset + 1);

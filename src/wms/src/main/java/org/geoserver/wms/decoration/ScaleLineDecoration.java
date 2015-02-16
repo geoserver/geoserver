@@ -259,7 +259,7 @@ public class ScaleLineDecoration implements MapDecoration {
 			String topText = topRounded + " " + topUnits;
 			g2d.drawString(topText,
 					leftX + (int)((topPx - metrics.stringWidth(topText)) / 2),
-					centerY - prongHeight + metrics.getAscent()
+					centerY - prongHeight + metrics.getAscent()+2
 			);
 		}
     	

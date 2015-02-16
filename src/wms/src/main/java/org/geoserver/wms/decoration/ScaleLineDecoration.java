@@ -43,7 +43,8 @@ public class ScaleLineDecoration implements MapDecoration {
     public static final String topInUnits = "m";
     public static final String bottomOutUnits = "mi";
     public static final String bottomInUnits = "ft";
-    public static final int suggestedWidth = 100;
+
+    public static int scaleWidthPercent = 100;
     
     private float fontSize = 10;
     private float dpi = 25.4f / 0.28f; /// OGC Spec for SLD
@@ -117,12 +118,22 @@ public class ScaleLineDecoration implements MapDecoration {
 				this.LOGGER.log(Level.WARNING, "'measurement-system' must be one of 'metric', 'imperial' or 'both'.", e);
         }
 		}
+
+        if(options.get("scalewidthpercent") != null){
+            try {
+                LOGGER.log(Level.INFO,options.get("scalewidthpercent"));
+                this.scaleWidthPercent = Integer.parseInt((options.get("scalewidthpercent")));
+            } catch (Exception e) {
+                this.LOGGER.log(Level.WARNING, "'scalewidthpercent' must be an integer.", e);
+            }
+        }
+
     }
 
     public Dimension findOptimalSize(Graphics2D g2d, WMSMapContent mapContent){
     	FontMetrics metrics = g2d.getFontMetrics(g2d.getFont());
     	return new Dimension(
-            suggestedWidth, 8 + (metrics.getHeight() + metrics.getDescent()) * 2
+                scaleWidthPercent, 8 + (metrics.getHeight() + metrics.getDescent()) * 2
         );
     }
     
@@ -165,7 +176,7 @@ public class ScaleLineDecoration implements MapDecoration {
     	
     	double resolution = 1 / (normalizedScale * INCHES_PER_UNIT.get(curMapUnits) * this.dpi);
     	
-    	int maxWidth = suggestedWidth;
+    	int maxWidth = scaleWidthPercent;
     	
     	if (maxWidth > paintArea.getWidth()) {
     		maxWidth = (int)paintArea.getWidth();

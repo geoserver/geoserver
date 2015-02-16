@@ -14,6 +14,7 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.Stroke;
+import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -43,8 +44,10 @@ public class ScaleLineDecoration implements MapDecoration {
     public static final String topInUnits = "m";
     public static final String bottomOutUnits = "mi";
     public static final String bottomInUnits = "ft";
+    public static final String metricName = "METER";
+    public static final String imperialName = "FEET";
 
-    public static int scaleWidthPercent = 100;
+    public int scaleWidthPercent = 100;
     
     private float fontSize = 10;
     private float dpi = 25.4f / 0.28f; /// OGC Spec for SLD
@@ -220,9 +223,19 @@ public class ScaleLineDecoration implements MapDecoration {
 
     	// Creates a rectangle only if is defined, if not is "transparent" like Google Maps
     	if (!this.transparent) {
+            int width;
+            if(measurementSystem == METRIC){
+                width = topPx +8 + metrics.stringWidth(String.format("%d", topRounded))/2;
+            }else if(measurementSystem == IMPERIAL){
+                width = bottomPx +8 + metrics.stringWidth(String.format("%d", bottomRounded))/2;
+            }else{
+                width = Math.max(topPx, bottomPx) + 8;
+            }
+
+
     		Rectangle frame = new Rectangle(
     			leftX - 4, centerY - prongHeight - 4, 
-    			Math.max(topPx, bottomPx) + 8, 8 + prongHeight * 2
+    			width, 8 + prongHeight * 2
     		);
 
     		// fill the rectangle
@@ -241,13 +254,25 @@ public class ScaleLineDecoration implements MapDecoration {
 
     	g2d.setStroke(new BasicStroke(2));
     	
-		if(measurementSystem == METRIC || measurementSystem == BOTH) {
+		if(measurementSystem == METRIC) {
     	
+            paintScaleLine(measurementSystem,g2d,leftX,topPx,prongHeight,centerY,metrics,oldAntialias,topRounded);
+
+        }else if(measurementSystem == IMPERIAL){
+
+            paintScaleLine(measurementSystem, g2d,leftX,bottomPx,prongHeight,centerY,metrics,oldAntialias,bottomRounded);
+
+            //Defaults to both
+        }else{
+            int smallProngHeight = prongHeight/2;
+
+            //Metric
+
 			// Left vertical top bar
-			g2d.drawLine(leftX, centerY, leftX, centerY - prongHeight);
+			g2d.drawLine(leftX, centerY, leftX, centerY - smallProngHeight);
 
 			// Right vertical top bar
-			g2d.drawLine(leftX + topPx, centerY, leftX + topPx, centerY - prongHeight);
+			g2d.drawLine(leftX + topPx, centerY, leftX + topPx, centerY - smallProngHeight);
 
 			// Draw horizontal line for metric
 			g2d.drawLine(leftX, centerY, leftX + topPx, centerY);
@@ -261,18 +286,18 @@ public class ScaleLineDecoration implements MapDecoration {
 					leftX + (int)((topPx - metrics.stringWidth(topText)) / 2),
 					centerY - prongHeight + metrics.getAscent()+2
 			);
-		}
     	
-		if(measurementSystem == IMPERIAL || measurementSystem == BOTH){
+
+            //Imperial
 
 			//Do not antialias scaleline lines
 			g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
 			
 			//Left vertical bottom bar
-			g2d.drawLine(leftX, centerY + prongHeight, leftX, centerY);
+			g2d.drawLine(leftX, centerY + smallProngHeight, leftX, centerY);
 
 			// Right vertical bottom bar
-			g2d.drawLine(leftX + bottomPx, centerY, leftX + bottomPx, centerY + prongHeight);
+			g2d.drawLine(leftX + bottomPx, centerY, leftX + bottomPx, centerY + smallProngHeight);
 
 			// Draw horizontal for imperial
 			g2d.drawLine(leftX, centerY, leftX + bottomPx, centerY);
@@ -291,5 +316,57 @@ public class ScaleLineDecoration implements MapDecoration {
     	g2d.setColor(oldColor);	
     	g2d.setStroke(oldStroke);
     	g2d.setFont(oldFont);
+    }
+
+    private void paintScaleLine(MeasurementSystem measurementSystem, Graphics2D g2d, int leftX, int rightX, int prongHeight, int centerY, FontMetrics metrics, Object oldAntialias, int topRounded){
+        int smallProngHeight = prongHeight/4;
+        int centerX = (leftX + leftX + rightX)/2;
+
+        // Left vertical bar
+        g2d.drawLine(leftX, centerY - smallProngHeight, leftX, centerY + smallProngHeight);
+
+        // Right vertical bar
+        g2d.drawLine(leftX + rightX, centerY - smallProngHeight, leftX + rightX, centerY + smallProngHeight);
+
+        if(scaleWidthPercent >=200){
+            g2d.drawLine(centerX, centerY - smallProngHeight, centerX, centerY + smallProngHeight);
+        }
+
+        // Draw horizontal line for metric
+        g2d.drawLine(leftX, centerY, leftX + rightX, centerY);
+
+
+        //Antialias text if enabled
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, oldAntialias);
+
+        // Draw text metric
+        String topText = imperialName;
+        if(measurementSystem == METRIC) {
+            topText = metricName;
+        }
+        g2d.drawString(topText,
+                centerX - (metrics.stringWidth(topText) / 2),
+                centerY - prongHeight + metrics.getAscent()+2
+        );
+
+        String leftNumber = "0";
+        g2d.drawString(leftNumber,
+                leftX - (metrics.stringWidth(leftNumber) / 2),
+                centerY + prongHeight - metrics.getDescent()
+        );
+
+        if(scaleWidthPercent >=200) {
+            String middleText = new DecimalFormat("#.#").format((double) topRounded / 2);
+            g2d.drawString(middleText,
+                    centerX - (metrics.stringWidth(middleText) / 2),
+                    centerY + prongHeight - metrics.getDescent()
+            );
+        }
+
+        String rightText = String.format("%d", topRounded);
+        g2d.drawString(rightText,
+                (rightX + leftX - (metrics.stringWidth(rightText)/2)),
+                centerY + prongHeight - metrics.getDescent()
+        );
     }
 }

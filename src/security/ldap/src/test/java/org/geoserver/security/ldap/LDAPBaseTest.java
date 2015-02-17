@@ -24,6 +24,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
  *
  */
 public abstract class LDAPBaseTest {
+    protected GeoServerSecurityManager securityManager;
     protected LDAPSecurityProvider securityProvider;
     
     protected Authentication authentication;
@@ -42,8 +43,7 @@ public abstract class LDAPBaseTest {
         tempFolder.mkdirs();
         GeoServerResourceLoader resourceLoader = new GeoServerResourceLoader(
                 tempFolder);
-        GeoServerSecurityManager securityManager = new GeoServerSecurityManager(
-                new GeoServerDataDirectory(resourceLoader));
+        securityManager = new GeoServerSecurityManager(new GeoServerDataDirectory(resourceLoader));
         securityProvider = new LDAPSecurityProvider(securityManager);
         
         createConfig();

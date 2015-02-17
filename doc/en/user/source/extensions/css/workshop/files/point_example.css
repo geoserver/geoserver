@@ -1,0 +1,73 @@
+/* capitals */
+[@scale < 70000000]
+[FEATURECLA = 'Admin-0 capital']  {
+   mark: symbol(star);
+   label: [NAME];
+}
+[@scale > 70000000] [SCALERANK < 2]
+[FEATURECLA = 'Admin-0 capital']  {
+   mark: symbol(star);
+   label: [NAME];
+}
+
+/* populated places */
+[@scale < 4000000]
+[FEATURECLA <> 'Admin-0 capital'] {
+   mark: symbol(circle);
+   label: [NAME];
+}
+[@scale > 4000000] [@scale < 8000000] [SCALERANK < 7]
+[FEATURECLA <> 'Admin-0 capital'] {
+   mark: symbol(circle);
+   label: [NAME];
+}
+[@scale > 8000000] [@scale < 17000000] [SCALERANK < 5]
+[FEATURECLA <> 'Admin-0 capital'] {
+   mark: symbol(circle);
+   label: [NAME];
+}
+[@scale > 17000000] [@scale < 35000000] [SCALERANK < 4]
+[FEATURECLA <> 'Admin-0 capital'] {
+   mark: symbol(circle);
+   label: [NAME];
+}
+[@scale > 35000000] [@scale < 70000000][SCALERANK < 3]
+[FEATURECLA <> 'Admin-0 capital'] {
+   mark: symbol(circle);
+   label: [NAME];
+}
+[@scale > 70000000] [@scale < 140000000][SCALERANK < 2]
+[FEATURECLA <> 'Admin-0 capital'] {
+   mark: symbol(circle);
+   label: [NAME];
+}
+[@scale > 140000000] [SCALERANK < 1]
+[FEATURECLA <> 'Admin-0 capital'] {
+   mark: symbol(circle);
+   label: [NAME];
+}
+
+* {
+  mark-size: [12-(SCALERANK/2)];
+
+  font-fill: black;
+  font-family: "Arial";
+  font-size: 10;
+
+  label-anchor: 0.5 0;
+  label-offset: 0 [12-(SCALERANK/2)];
+
+  -gt-mark-label-obstacle: true;
+  -gt-label-max-displacement: 90;
+  -gt-label-padding: 2;
+  -gt-label-priority: [10 - LABELRANK];
+}
+
+[FEATURECLA = 'Admin-0 capital'] :mark {
+  fill: black;
+}
+
+:symbol {
+  fill: white;
+  stroke: black;
+}

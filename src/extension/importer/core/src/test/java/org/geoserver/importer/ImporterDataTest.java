@@ -5,12 +5,7 @@
  */
 package org.geoserver.importer;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import java.io.File;
 import java.util.HashMap;
@@ -23,7 +18,9 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.importer.ImportTask.State;
 import org.geoserver.importer.transform.AbstractInlineVectorTransform;
 import org.geoserver.importer.transform.AttributesToPointGeometryTransform;
@@ -108,6 +105,45 @@ public class ImporterDataTest extends ImporterTestSupport {
         assertEquals("archsites", task.getLayer().getResource().getName());
     }
     
+    @Test
+    public void testImportSameLayerNameDifferentWorkspace() throws Exception {
+        File dir = tmpDir();
+        unpack("shape/archsites_epsg_prj.zip", dir);
+
+        // make some 'extra' files
+        new File(dir, "archsites.sbn").createNewFile();
+        new File(dir, "archsites.sbx").createNewFile();
+        new File(dir, "archsites.shp.xml").createNewFile();
+
+        Catalog cat = getCatalog();
+        WorkspaceInfo ws1 = createWorkspace(cat, "ws1");
+
+        ImportContext context = importer.createContext(new Directory(dir), ws1);
+        importer.run(context);
+
+        assertNotNull(cat.getLayerByName("ws1:archsites"));
+
+        // same import, different workspace
+        WorkspaceInfo ws2 = createWorkspace(cat, "ws2");
+
+        context = importer.createContext(new Directory(dir), ws2);
+        importer.run(context);
+
+        assertNotNull(cat.getLayerByName("ws2:archsites"));
+
+    }
+
+    private WorkspaceInfo createWorkspace(Catalog cat, String name) {
+        WorkspaceInfo ws1 = cat.getFactory().createWorkspace();
+        ws1.setName(name);
+        NamespaceInfo ns1 = cat.getFactory().createNamespace();
+        ns1.setPrefix(name);
+        ns1.setURI("http://www.geoserver.org/" + name);
+        cat.add(ws1);
+        cat.add(ns1);
+        return ws1;
+    }
+
     @Test
     public void testImportShapefiles() throws Exception {
         File dir = tmpDir();

@@ -1,68 +1,72 @@
-.. _import_using:
+.. _extensions_importer_using:
 
 Using the Importer extension
 ============================
 
-The importer extension supports three workflows:
+Here are step-by-step instructions to import multiple shapefiles in one operation. For more details on different types of operations, please see the :ref:`extensions_importer_guireference`
 
-* Import a directory of shapefiles (or other spatial data). You are invited to publish the contents as layers in GeoServer.
+#. Find a directory of shapefiles and copy into your :ref:`data_directory`.
 
-* Connect to an existing database and select the tables you wish to publish as layers in GeoServer
+   .. note:: You can always use the `Natural Earth Quickstart <http://www.naturalearthdata.com/downloads/>`_ data for this task.
 
-* Import a spatial data into a target DataStore (before the results are published as new Layers in GeoServer).
+#. Log in as an administrator and navigate to the :guilabel:`Data --> Import Data` page.
 
-As an example here are the steps needed to import multiple shapefiles.
+#. For select :guilabel:`Spatial Files` as the data source.
 
-#. Download the `NaturalEarth Quickstart <http://www.naturalearthdata.com/downloads/>`_ and extract into your GEOSERVER_DATA_DIRECTORY.
-
-#. Login as an administrator and navigate to the gui-label:`Data --> Import Data` page.
-
-#. For step one select select :guilabel:`Spatial Files` as the the data source to import from.
-
-   .. figure:: images/import1-spatial-data.png
+   .. figure:: images/using_datasource.png
       
-      Choose Data Source to Import From
+      Data source
 
-#. For step two use gui:label:`Browse` to and navigate to a directory of shape files.
+#. Click :guilabel:`Browse` to navigate to the directory of shapefiles to be imported.
 
-   Start from your GEOSERVER_DATA_DIRECTORY and navigate to the the :file:`110m_cultural` folder.
+#. The web-based file browser will show as options your home directory, data directory, and the root of your file system (or drive). In this case, select :guilabel:`Data directory` 
 
-   .. figure:: images/import2-directory.png
+   .. figure:: images/using_directory.png
       
-      Configure Data Source
-      
-#. For step three we can select an existing workspace or create new.
+      Directory
+     
+#. Back on the main form, select :guilabel:`Create new` next to :guilabel:`Workspace`, and enter :kbd:`ne` to denote the workspace.
 
-   Select :guilabel:`create new` and provide the name :kbd:`ne` for the new workspace.
+   .. note:: Make sure the :guilabel:`Store` field reads :guilabel:`Create new` as well.
 
-   .. figure:: images/import3-create.png
+   .. figure:: images/using_workspace.png
       
-      Specify the target for import
+      Import target workspace
       
-#. Click :guilabel:`Next` to start the import and advance to the next screen.
+#. Click :guilabel:`Next` to start the import process.
+
+#. On the next screen, any layers available for import will be shown.
+
+   .. note:: Non-spatial files will be ignored.
+
+   .. figure:: images/using_layerlist.png
+      
+      Import layer list
+
+#. In most cases, all files will be ready for import, but if the the spatial reference system (SRS) is not recognized, you will need to manually input this but clicking :guilabel:`Advanced`
+
+   .. note:: You will need to manually input the SRS if you used the Natural Earth data above. For each layer click on :guilabel:`Advanced` and set reprojection to :kbd:`EPSG:4326`.
    
-   .. figure:: images/import4-import.png
+      .. figure:: images/using_advanced.png
       
-      Import
+         Advanced import settings
 
-#. From the import screen we can see the layers available for import.
-   
-   The natural earth quickstart data does not include :file:`prj` files that can be recognised by GeoServer. For each layer click on :guilabel:`Advanced` and enable reprojection to :kbd:`EPSG:4326`.
-   
-   .. figure :: images/import5-advanced.png
+#. Check the box next to each layer you wish to import.
+
+   .. figure:: images/using_layerlistchecked.png
       
-      Advanced Import Settings
+      Setting the layers to import
 
-#. Select each layer you wish to import using a checkbox and click :guilabel:`Done` at the bottom of the screen.
+#. When ready, click :guilabel:`Import`.
 
-   .. figure:: images/import6-import.png
+   .. warning:: Don't click :guilabel:`Done` at this point, otherwise the import will be canceled.
+
+#. The results of the import process will be shown next to each layer.
+
+#. When finished, click :guilabel:`Done`.
+
+   .. note:: Recent import processes are listed at the bottom of the page. You may wish to visit these pages to check if any difficulties were encountered during the import process or import additional layers.
+
+   .. figure:: images/using_recent.png
       
-      Import
-
-#. Click :guilabel:`Done` when finished.
-   
-   Recent imports are listed at the bottom of the page. You may wish to visit these pages to check if any difficulties were encountered during the import process or import additional layers.
-   
-   .. figure:: images/import7-done.png
-      
-      Recent Imports
+      Recent imports

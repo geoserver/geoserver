@@ -1,3 +1,5 @@
+.. _importer_rest:
+
 REST API
 ========
 
@@ -46,14 +48,14 @@ Each object in the ``imports`` array contains the following attributes:
 
 An individual import is represented with the following structure::
 
-	{
-	  "import": {
-	    "id": 1
-	    "tasks": [
-	       //array of task objects
-	    ] 
-	  }
-	}
+    {
+      "import": {
+        "id": 1
+        "tasks": [
+           //array of task objects
+        ] 
+      }
+    }
 
 An ``import`` object contains the following attributes:
 
@@ -92,22 +94,22 @@ Tasks
 
 A task represents a unit of work within an import. An individual ``task`` is represented with the following structure::
 
-	{
-	  "task": {
-		"id": <taskId>,
-		"state": "<state>", 
-		"href": "http://<host>:<port>/geoserver/rest/imports/<importId>/tasks/<taskId>", 
-		"source": {
-		   // source representation, see below
-		},
-	    "target": {
-	       // store representation from GeoServer restconfig
-	    }, 
-	    "items": [
-	       // array of item objects
-	    ]
-	  }
-	}
+    {
+      "task": {
+        "id": <taskId>,
+        "state": "<state>", 
+        "href": "http://<host>:<port>/geoserver/rest/imports/<importId>/tasks/<taskId>", 
+        "source": {
+           // source representation, see below
+        },
+        "target": {
+           // store representation from GeoServer restconfig
+        }, 
+        "items": [
+           // array of item objects
+        ]
+      }
+    }
 
 A ``task`` object contains the following attributes:
 
@@ -141,7 +143,7 @@ A task can be in one of the following states:
    * - RUNNING
      - The task is currently executing.
    * - INCOMPLETE
-     - The task can't be processed do to one or more items being non-complete. See :ref:`item states <items_state>`.
+     - The task can't be processed do to one or more items being non-complete. See :ref:`item states <item_state>`.
    * - COMPLETE
      - The task has executed successfully.
 
@@ -153,8 +155,8 @@ Source
 The source of a task represents the data that is to imported as part of the task. The structure of the source 
 is dependent on the type of source. The following lists the set of source types:
 
-.. list_table::
-   :head_rows: 0
+.. list-table:: Source
+   :header-rows: 0
 
    * - file
      - A single file (Shapefile, GeoTIFF, etc...).
@@ -243,19 +245,19 @@ Items
 
 An item represents a layer/resource to be imported as part of a task. An individual ``item`` is represented with the following structure::
 
-	{
-	  "item": {
-	    "id": <itemId>, 
-	    "state": "COMPLETE", 
-	    "href": "http://<host>:<port>/geoserver/rest/imports/<importId>/tasks/<taskId>/items/<itemId>", 
-	    "layer": {
-	       // same representation as GeoServer restconfig
-	    },
-	    "resource": {
-	       // same representation as GeoServer restconfig
-	    } 
-	  }
-	}
+    {
+      "item": {
+        "id": <itemId>, 
+        "state": "COMPLETE", 
+        "href": "http://<host>:<port>/geoserver/rest/imports/<importId>/tasks/<taskId>/items/<itemId>", 
+        "layer": {
+           // same representation as GeoServer restconfig
+        },
+        "resource": {
+           // same representation as GeoServer restconfig
+        } 
+      }
+    }
 
 An ``item`` object contains the following attributes:
 
@@ -296,7 +298,9 @@ An item can be in one of the following states:
      - The item has executed successfully.
 
 If an item is in one of the ``NO_CRS``, ``NO_BOUNDS`` states then the client should modify the 
-item configuration (via PUT) with the necessary information. See :ref:`item endpoint <item_op>`.
+item configuration (via PUT) with the necessary information. 
+
+.. see :ref:`item endpoint <item_op>`.
 
 .. _item_layer:
 
@@ -470,7 +474,7 @@ via a multi part form. The ``Content-Type`` header should have a value of "multi
      - Retrieve task with id <taskId> within import with id <importId>
      - 200
      - n/a
-     - :ref:`Task <task>`
+     - :ref:`Task <tasks>`
    * - PUT
      - Modify task with id <taskId> within import with id <importId>
      - 200

@@ -1,7 +1,7 @@
-﻿.. _dataadmin.importer.guireference:
+﻿.. _extensions_importer_guireference:
 
-Importer user interface reference 
-=================================
+Importer interface reference 
+============================
 
 The Layer Importer user interface is a component of the GeoServer web interface. You can access it from the GeoServer web interface by clicking the :guilabel:`Import Data` link, found on the left side of the screen after logging in.
 
@@ -15,14 +15,14 @@ Choose a data source to import from
 
 Select one of the following data sources to use for the import:
 
-* :guilabel:`Spatial Files` (see :ref:`dataadmin.importer.formats` for more details)
+* :guilabel:`Spatial Files` (see :ref:`extensions_importer_formats` for more details)
 * :guilabel:`PostGIS` database
 * :guilabel:`Oracle` database
 * :guilabel:`SQL Server` database
 
-.. figure:: img/sources_choosesourcefiles.png
+.. figure:: images/sources_choosesourcefiles.png
 
-   *Choose a data source*
+   Choose a data source
 
 The contents of the next section is dependent on the data source chosen here.
 
@@ -31,13 +31,13 @@ Configure the data source: Spatial Files
 
 There is a single box for selecting a file or directory. Click the :guilabel:`Browse` link to bring up a file chooser. To select a file, click on it. To select a directory, click on a directory name to open it and then click :guilabel:`OK`.
 
-.. figure:: img/sources_spatialfiles.png
+.. figure:: images/sources_spatialfiles.png
 
-   *Spatial file data source*
+   Spatial file data source
 
-.. figure:: img/sources_filechooser.png
+.. figure:: images/sources_filechooser.png
 
-   *File chooser for selecting spatial files*
+   File chooser for selecting spatial files
 
 Configure the data source: PostGIS
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -46,9 +46,9 @@ Fill out fields for :guilabel:`Connection type` (Default or JNDI) :guilabel:`Hos
 
 There are also advanced connection options, which are common to the standard PostGIS store loading procedure. (See the `PostGIS data store <../../geoserver/data/database/>`_ page in the GeoServer reference documentation.)
 
-.. figure:: img/sources_postgis.png
+.. figure:: images/sources_postgis.png
 
-   *PostGIS data source connection*
+   PostGIS data source connection
 
 Configure the data source: Oracle
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -57,9 +57,9 @@ The parameter fields for the Oracle import are identical to that of PostGIS. The
 
 .. note:: This option is only enabled if the :ref:`Oracle <data_oracle>` extension is installed.
 
-.. figure:: img/sources_oracle.png
+.. figure:: images/sources_oracle.png
 
-   *Oracle data source connection*
+   Oracle data source connection
 
 Configure the data source: SQL Server
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -68,9 +68,9 @@ The parameter fields for the SQL Server import are identical to that of PostGIS.
 
 .. note:: This option is only enabled if the :ref:`SQL Server <data_sqlserver>` extension is installed.
 
-.. figure:: img/sources_sqlserver.png
+.. figure:: images/sources_sqlserver.png
 
-   *SQL Server data source connection*
+   SQL Server data source connection
 
 Specify the target for the import
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -79,26 +79,24 @@ This area specifies where in the GeoServer catalog the new data source will be s
 
 Select the name of an existing workspace and store.
 
-.. figure:: img/sources_target.png
+.. figure:: images/sources_target.png
 
-   *Target workspace and store in GeoServer*
+   Target workspace and store in GeoServer
 
 Alternately, select :guilabel:`Create New` and type in a names for a new workspace or store. During the import process, these will be created.
 
-.. note:: The Namespace URI for a new workspace will be ``http://opengeo.org/#<workspace>``.
+.. figure:: images/sources_newworkspace.png
 
-.. figure:: img/sources_newworkspace.png
-
-   *Creating a new workspace and store*
+   Creating a new workspace and store
 
 Recent imports
 ~~~~~~~~~~~~~~
 
 This section will list previous imports, and whether they were successful or not. Items can be removed from this list with the :guilabel:`Remove` button, but otherwise cannot be edited.
 
-.. figure:: img/sources_recentimports.png
+.. figure:: images/sources_recentimports.png
 
-   *Recent imports*
+   Recent imports
 
 When ready to continue to the next page, click :guilabel:`Next`.
 
@@ -109,15 +107,15 @@ On the next page will be a list of layers found by the Layer Importer. The layer
 
 All layers will be selected for import by default, but can be deselected here by unchecking the box next to each entry.
 
-.. figure:: img/layerlist_select.png
+.. figure:: images/layerlist_select.png
 
-   *List of layers to be imported*
+   List of layers to be imported
 
 A common issue during the import process is when a CRS cannot be determined for a given layer. In this case, a dialog box will display where the CRS can be declared explicitly. Enter the CRS and Click :guilabel:`Apply`.
 
-.. figure:: img/layerlist_crs.png
+.. figure:: images/layerlist_crs.png
 
-   *Declaring a CRS*
+   Declaring a CRS
 
 When ready to perform the import, click :guilabel:`Import`.
 
@@ -125,9 +123,9 @@ Each selected layer will be added to the GeoServer catalog inside a new or exist
 
 After the import is complete the status area will refresh showing if the import was successful for each layer. If successful, a dialog box for previewing the layer will be displayed, with options for :guilabel:`Layer Preview` (OpenLayers), :guilabel:`Google Earth`, and :guilabel:`GeoExplorer`.
 
-.. figure:: img/layerlist_success.png
+.. figure:: images/layerlist_success.png
 
-   *Layers successfully imported*
+   Layers successfully imported
 
 Advanced import settings page
 -----------------------------
@@ -140,7 +138,7 @@ In addition, on this page attributes can be renamed and their type changed. Clic
 
 Click :guilabel:`Save` when finished.
 
-.. figure:: img/advanced.png
+.. figure:: images/advanced.png
 
-   *Advanced layer list page*
+   Advanced layer list page
 

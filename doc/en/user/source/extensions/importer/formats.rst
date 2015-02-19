@@ -1,4 +1,4 @@
-.. _dataadmin.importer.formats:
+.. _extensions_importer_formats:
 
 Supported data formats
 ======================
@@ -7,7 +7,7 @@ The importer supports any format that GeoServer can use a data store
 or coverage store. These include the most commonly used formats:
 
 * Shapefile
-* GeoTiff
+* GeoTIFF
 
 And a few additional formats:
 
@@ -20,10 +20,9 @@ The following databases are supported:
 * Oracle
 * Microsoft SQL Server
 
+.. note::
 
-    Oracle and SQL Server require extra drivers to be installed.
+   Oracle and SQL Server require extra drivers to be installed.
 
-    * :ref:`Install instructions for Oracle <data_oracle>`
-    * :ref:`Install instructions for SQL Server <data_sqlserver>`
-
-
+   * :ref:`Install instructions for Oracle <data_oracle>`
+   * :ref:`Install instructions for SQL Server <data_sqlserver>`

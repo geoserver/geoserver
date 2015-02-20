@@ -22,8 +22,6 @@ import java.util.logging.Logger;
 import org.geoserver.wms.WMSMapContent;
 import org.geotools.util.logging.Logging;
 
-import static org.geoserver.wms.decoration.ScaleLineDecoration.MeasurementSystem.*;
-
 public class ScaleLineDecoration implements MapDecoration {
     /** A logger for this class. */
     private static final Logger LOGGER =
@@ -40,11 +38,11 @@ public class ScaleLineDecoration implements MapDecoration {
         INCHES_PER_UNIT.put("yd", 36.0);
     }
 
-    public static final String topOutUnits = "km";
-    public static final String topInUnits = "m";
-    public static final String bottomOutUnits = "mi";
-    public static final String bottomInUnits = "ft";
-    public static final int suggestedWidth = 100;
+    private static final String topOutUnits = "km";
+    private static final String topInUnits = "m";
+    private static final String bottomOutUnits = "mi";
+    private static final String bottomInUnits = "ft";
+    private static final int suggestedWidth = 100;
 
     private float fontSize = 10;
     private float dpi = 25.4f / 0.28f; /// OGC Spec for SLD
@@ -56,9 +54,9 @@ public class ScaleLineDecoration implements MapDecoration {
 
     private Boolean transparent = Boolean.FALSE;
 
-    private MeasurementSystem measurementSystem = BOTH;
+    private MeasurementSystem measurementSystem = MeasurementSystem.BOTH;
 
-    static enum MeasurementSystem {
+    private static enum MeasurementSystem {
         METRIC, IMPERIAL, BOTH;
 
         static MeasurementSystem mapToEnum(String type) throws Exception {
@@ -135,7 +133,7 @@ public class ScaleLineDecoration implements MapDecoration {
         );
     }
 
-    public int getBarLength(double maxLength) {
+    private int getBarLength(double maxLength) {
         int digits = (int)(Math.log(maxLength) / Math.log(10));
         double pow10 = Math.pow(10, digits);
 
@@ -239,8 +237,7 @@ public class ScaleLineDecoration implements MapDecoration {
 
         g2d.setStroke(new BasicStroke(this.strokeWidth));
 
-        if(measurementSystem == METRIC || measurementSystem == BOTH) {
-
+        if (measurementSystem == MeasurementSystem.METRIC || measurementSystem == MeasurementSystem.BOTH) {
             // Left vertical top bar
             g2d.drawLine(leftX, centerY, leftX, centerY - prongHeight);
 
@@ -261,8 +258,7 @@ public class ScaleLineDecoration implements MapDecoration {
             );
         }
 
-        if(measurementSystem == IMPERIAL || measurementSystem == BOTH){
-
+        if (measurementSystem == MeasurementSystem.IMPERIAL || measurementSystem == MeasurementSystem.BOTH) {
             //Do not antialias scaleline lines
             g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
 

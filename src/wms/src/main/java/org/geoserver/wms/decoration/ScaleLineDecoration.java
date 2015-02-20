@@ -48,6 +48,7 @@ public class ScaleLineDecoration implements MapDecoration {
     private float fontSize = 10;
     private float dpi = 25.4f / 0.28f; /// OGC Spec for SLD
     private float strokeWidth = 2;
+    private float borderWidth = 1;
 
     private Color bgcolor = Color.WHITE;
     private Color fgcolor = Color.BLACK;
@@ -91,6 +92,14 @@ public class ScaleLineDecoration implements MapDecoration {
                 this.strokeWidth = Float.parseFloat(options.get("strokewidth"));
             } catch (Exception e) {
                 this.LOGGER.log(Level.WARNING, "'strokewidth' must be a float.", e);
+            }
+        }
+
+        if (options.get("borderwidth") != null) {
+            try {
+                this.borderWidth = Float.parseFloat(options.get("borderwidth"));
+            } catch (Exception e) {
+                this.LOGGER.log(Level.WARNING, "'borderwidth' must be a float.", e);
             }
         }
 
@@ -221,7 +230,7 @@ public class ScaleLineDecoration implements MapDecoration {
             frame.height -= 1;
             frame.width -= 1;
             g2d.setColor(fgcolor);
-            g2d.setStroke(new BasicStroke(1));
+            g2d.setStroke(new BasicStroke(this.borderWidth));
             g2d.draw(frame);
         } else {
             g2d.setColor(fgcolor);

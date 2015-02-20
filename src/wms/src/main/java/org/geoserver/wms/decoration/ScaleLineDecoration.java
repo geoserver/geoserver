@@ -48,6 +48,7 @@ public class ScaleLineDecoration implements MapDecoration {
     private float dpi = 25.4f / 0.28f; /// OGC Spec for SLD
     private float strokeWidth = 2;
     private float borderWidth = 1;
+    private int padding = 4;
 
     private Color bgcolor = Color.WHITE;
     private Color fgcolor = Color.BLACK;
@@ -102,6 +103,14 @@ public class ScaleLineDecoration implements MapDecoration {
             }
         }
 
+        if (options.get("padding") != null) {
+            try {
+                this.padding = Integer.parseInt(options.get("padding"));
+            } catch (Exception e) {
+                LOGGER.log(Level.WARNING, "'padding' must be an integer.", e);
+            }
+        }
+
         Color tmp = MapDecorationLayout.parseColor(options.get("bgcolor"));
         if (tmp != null) bgcolor = tmp;
 
@@ -127,9 +136,9 @@ public class ScaleLineDecoration implements MapDecoration {
     }
 
     public Dimension findOptimalSize(Graphics2D g2d, WMSMapContent mapContent){
-        FontMetrics metrics = g2d.getFontMetrics(g2d.getFont());
+        FontMetrics metrics = g2d.getFontMetrics(g2d.getFont().deriveFont(this.fontSize));
         return new Dimension(
-            suggestedWidth, 8 + (metrics.getHeight() + metrics.getDescent()) * 2
+            suggestedWidth, 2 * padding + (metrics.getHeight() + metrics.getDescent()) * 2
         );
     }
 
@@ -217,10 +226,9 @@ public class ScaleLineDecoration implements MapDecoration {
         // Creates a rectangle only if is defined, if not is "transparent" like Google Maps
         if (!this.transparent) {
             Rectangle frame = new Rectangle(
-                leftX - 4, centerY - prongHeight - 4,
-                Math.max(topPx, bottomPx) + 8, 8 + prongHeight * 2
+                leftX - padding, centerY - prongHeight - padding,
+                Math.max(topPx, bottomPx) + padding * 2, padding * 2 + prongHeight * 2
             );
-
             // fill the rectangle
             g2d.setColor(bgcolor);
             g2d.fill(frame);

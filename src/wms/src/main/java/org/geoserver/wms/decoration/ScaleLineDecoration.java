@@ -20,13 +20,14 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.geoserver.wms.WMSMapContent;
+import org.geotools.util.logging.Logging;
 
 import static org.geoserver.wms.decoration.ScaleLineDecoration.MeasurementSystem.*;
 
 public class ScaleLineDecoration implements MapDecoration {
     /** A logger for this class. */
     private static final Logger LOGGER =
-        org.geotools.util.logging.Logging.getLogger("org.geoserver.wms.responses");
+        Logging.getLogger("org.geoserver.wms.decoration");
 
     private static Map<String, Double>INCHES_PER_UNIT = new HashMap<String, Double> ();
     static {
@@ -75,7 +76,7 @@ public class ScaleLineDecoration implements MapDecoration {
             try {
                 this.fontSize = Float.parseFloat(options.get("fontsize"));
             } catch (Exception e) {
-                this.LOGGER.log(Level.WARNING, "'fontsize' must be a float.", e);
+                LOGGER.log(Level.WARNING, "'fontsize' must be a float.", e);
             }
         }
 
@@ -83,7 +84,7 @@ public class ScaleLineDecoration implements MapDecoration {
             try {
                 this.dpi = Float.parseFloat(options.get("dpi"));
             } catch (Exception e) {
-                this.LOGGER.log(Level.WARNING, "'dpi' must be a float.", e);
+                LOGGER.log(Level.WARNING, "'dpi' must be a float.", e);
             }
         }
 
@@ -91,7 +92,7 @@ public class ScaleLineDecoration implements MapDecoration {
             try {
                 this.strokeWidth = Float.parseFloat(options.get("strokewidth"));
             } catch (Exception e) {
-                this.LOGGER.log(Level.WARNING, "'strokewidth' must be a float.", e);
+                LOGGER.log(Level.WARNING, "'strokewidth' must be a float.", e);
             }
         }
 
@@ -99,7 +100,7 @@ public class ScaleLineDecoration implements MapDecoration {
             try {
                 this.borderWidth = Float.parseFloat(options.get("borderwidth"));
             } catch (Exception e) {
-                this.LOGGER.log(Level.WARNING, "'borderwidth' must be a float.", e);
+                LOGGER.log(Level.WARNING, "'borderwidth' must be a float.", e);
             }
         }
 
@@ -114,7 +115,7 @@ public class ScaleLineDecoration implements MapDecoration {
             try {
                 this.transparent = Boolean.parseBoolean(options.get("transparent"));
             } catch (Exception e) {
-                this.LOGGER.log(Level.WARNING, "'transparent' must be a boolean.", e);
+                LOGGER.log(Level.WARNING, "'transparent' must be a boolean.", e);
             }
         }
 
@@ -122,7 +123,7 @@ public class ScaleLineDecoration implements MapDecoration {
             try {
                 this.measurementSystem = MeasurementSystem.mapToEnum(options.get("measurement-system"));
             } catch (Exception e) {
-                this.LOGGER.log(Level.WARNING, "'measurement-system' must be one of 'metric', 'imperial' or 'both'.", e);
+                LOGGER.log(Level.WARNING, "'measurement-system' must be one of 'metric', 'imperial' or 'both'.", e);
             }
         }
     }

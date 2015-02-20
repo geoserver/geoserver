@@ -32,6 +32,7 @@ public class ScaleLineDecoration implements MapDecoration {
         INCHES_PER_UNIT.put("inches", 1.0);
         INCHES_PER_UNIT.put("ft", 12.0);
         INCHES_PER_UNIT.put("mi", 63360.0);
+        INCHES_PER_UNIT.put("nmi", 72913.4);
         INCHES_PER_UNIT.put("m", 39.3701);
         INCHES_PER_UNIT.put("km", 39370.1);
         INCHES_PER_UNIT.put("dd", 4374754.0);

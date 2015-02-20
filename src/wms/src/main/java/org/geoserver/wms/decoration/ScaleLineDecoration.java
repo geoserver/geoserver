@@ -42,12 +42,12 @@ public class ScaleLineDecoration implements MapDecoration {
     private static final String topInUnits = "m";
     private static final String bottomOutUnits = "mi";
     private static final String bottomInUnits = "ft";
-    private static final int suggestedWidth = 100;
 
     private float fontSize = 10;
     private float dpi = 25.4f / 0.28f; /// OGC Spec for SLD
     private float strokeWidth = 2;
     private float borderWidth = 1;
+    private int suggestedWidth = 100;
     private int padding = 4;
 
     private Color bgcolor = Color.WHITE;
@@ -100,6 +100,14 @@ public class ScaleLineDecoration implements MapDecoration {
                 this.borderWidth = Float.parseFloat(options.get("borderwidth"));
             } catch (Exception e) {
                 LOGGER.log(Level.WARNING, "'borderwidth' must be a float.", e);
+            }
+        }
+
+        if (options.get("suggestedwidth") != null) {
+            try {
+                this.suggestedWidth = Integer.parseInt(options.get("suggestedwidth"));
+            } catch (Exception e) {
+                LOGGER.log(Level.WARNING, "'suggestedwidth' must be an integer.", e);
             }
         }
 

@@ -88,7 +88,7 @@ public class ScaleLineDecoration implements MapDecoration {
 
         if (options.get("strokewidth") != null) {
             try {
-                this.strokeWidth = Float.parseFloat(options.get("strokeWidth"));
+                this.strokeWidth = Float.parseFloat(options.get("strokewidth"));
             } catch (Exception e) {
                 this.LOGGER.log(Level.WARNING, "'strokewidth' must be a float.", e);
             }
@@ -227,7 +227,7 @@ public class ScaleLineDecoration implements MapDecoration {
             g2d.setColor(fgcolor);
         }
 
-        g2d.setStroke(new BasicStroke(2));
+        g2d.setStroke(new BasicStroke(this.strokeWidth));
 
         if(measurementSystem == METRIC || measurementSystem == BOTH) {
 

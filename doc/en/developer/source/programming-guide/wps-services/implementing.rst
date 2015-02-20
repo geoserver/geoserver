@@ -50,12 +50,12 @@ For this example the project will be called "hello_wps".
          <dependency>
            <groupId>org.geotools</groupId>
            <artifactId>gt-process</artifactId>
-           <version>13-SNAPSHOT</version> <!-- change this to the proper GeoTools version -->
+           <version>14-SNAPSHOT</version> <!-- change this to the proper GeoTools version -->
          </dependency>
          <dependency>
            <groupId>org.geoserver</groupId>
            <artifactId>gs-main</artifactId>
-           <version>2.7-SNAPSHOT</version> <!-- change this to the proper GeoServer version -->
+           <version>2.8-SNAPSHOT</version> <!-- change this to the proper GeoServer version -->
            <classifier>tests</classifier>
            <scope>test</scope>
          </dependency>

@@ -37,12 +37,12 @@ Create a new module
          <dependency>
            <groupId>org.geoserver</groupId>
            <artifactId>gs-rest</artifactId>
-           <version>2.7-SNAPSHOT</version> <!-- change this to the proper GeoServer version -->
+           <version>2.8-SNAPSHOT</version> <!-- change this to the proper GeoServer version -->
          </dependency>
          <dependency>
            <groupId>org.geoserver</groupId>
            <artifactId>gs-main</artifactId>
-           <version>2.7-SNAPSHOT</version> <!-- change this to the proper GeoServer version -->
+           <version>2.8-SNAPSHOT</version> <!-- change this to the proper GeoServer version -->
            <classifier>tests</classifier>
            <scope>test</scope>
          </dependency>

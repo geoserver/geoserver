@@ -1,8 +1,8 @@
 import sbt._
 
 class GeoServerCSSProject(info: ProjectInfo) extends DefaultProject(info) {
-  val gtVersion="2.7-SNAPSHOT"
-  val gsVersion="2.1-SNAPSHOT"
+  val gtVersion="14-SNAPSHOT"
+  val gsVersion="2.8-SNAPSHOT"
 
   override def repositories = super.repositories ++ Set(
     "OpenGeo Maven Repository" at "http://repo.opengeo.org/"
@@ -16,8 +16,8 @@ class GeoServerCSSProject(info: ProjectInfo) extends DefaultProject(info) {
     "org.geotools" % "gt-epsg-hsql" % gtVersion,
     "org.geotools" % "gt-jdbc" % gtVersion,
     "org.geotools" % "gt-shapefile" % gtVersion,
-    "org.geoserver" % "main" % gsVersion % "provided",
-    "org.geoserver.web" % "web-core" % gsVersion % "provided",
+    "org.geoserver" % "gs-main" % gsVersion % "provided",
+    "org.geoserver.web" % "gs-web-core" % gsVersion % "provided",
     "xml-apis" % "xml-apis-xerces" % "2.7.1" from "http://repo.opengeo.org/xml-apis/xml-apis-xerces/2.7.1/xml-apis-xerces-2.7.1.jar"
   )
 }

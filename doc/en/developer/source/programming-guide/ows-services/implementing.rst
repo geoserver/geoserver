@@ -28,7 +28,7 @@ The first step in creating our plug-in is setting up a maven project for it. The
     <parent>
         <groupId>org.geoserver</groupId>
         <artifactId>community</artifactId>
-        <version>2.7-SNAPSHOT</version> <!-- change this to the proper GeoServer version -->
+        <version>2.8-SNAPSHOT</version> <!-- change this to the proper GeoServer version -->
     </parent>  
   
     <groupId>org.geoserver</groupId>
@@ -42,7 +42,7 @@ The first step in creating our plug-in is setting up a maven project for it. The
         <dependency>
             <groupId>org.geoserver</groupId>
             <artifactId>gs-main</artifactId>
-            <version>2.7-SNAPSHOT</version> <!-- change this to the proper GeoServer version -->
+            <version>2.8-SNAPSHOT</version> <!-- change this to the proper GeoServer version -->
         </dependency>
     </dependencies>
 

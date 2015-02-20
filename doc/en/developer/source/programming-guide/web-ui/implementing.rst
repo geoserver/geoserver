@@ -30,7 +30,7 @@ Create a new module
         <parent>
           <groupId>org.geoserver</groupId>
           <artifactId>web</artifactId>
-          <version>2.7-SNAPSHOT</version> <!-- change this to the proper GeoServer version -->
+          <version>2.8-SNAPSHOT</version> <!-- change this to the proper GeoServer version -->
         </parent>
 
         <groupId>org.geoserver</groupId>
@@ -43,7 +43,7 @@ Create a new module
           <dependency>
             <groupId>org.geoserver.web</groupId>
             <artifactId>gs-web-core</artifactId>
-            <version>2.7-SNAPSHOT</version> <!-- change this to the proper GeoServer version -->
+            <version>2.8-SNAPSHOT</version> <!-- change this to the proper GeoServer version -->
           </dependency>
         </dependencies>
 

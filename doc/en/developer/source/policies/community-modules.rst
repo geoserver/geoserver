@@ -82,7 +82,7 @@ The following outlines the steps to be taken in order to add a new community mod
           <parent>
             <groupId>org.geoserver</groupId>
             <artifactId>geoserver</artifactId>
-            <version>2.7-SNAPSHOT</version> <!-- change this to the proper GeoServer version -->
+            <version>2.8-SNAPSHOT</version> <!-- change this to the proper GeoServer version -->
           </parent>
 
           <groupId>org.geoserver</groupId>

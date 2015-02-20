@@ -27,7 +27,7 @@ public class ScaleLineDecoration implements MapDecoration {
     private static final Logger LOGGER =
         Logging.getLogger("org.geoserver.wms.decoration");
 
-    private static Map<String, Double>INCHES_PER_UNIT = new HashMap<String, Double> ();
+    private static Map<String, Double> INCHES_PER_UNIT = new HashMap<String, Double> ();
     static {
         INCHES_PER_UNIT.put("inches", 1.0);
         INCHES_PER_UNIT.put("ft", 12.0);
@@ -38,10 +38,10 @@ public class ScaleLineDecoration implements MapDecoration {
         INCHES_PER_UNIT.put("yd", 36.0);
     }
 
-    private static final String topOutUnits = "km";
-    private static final String topInUnits = "m";
-    private static final String bottomOutUnits = "mi";
-    private static final String bottomInUnits = "ft";
+    private String topOutUnit = "km";
+    private String topInUnit = "m";
+    private String bottomOutUnit = "mi";
+    private String bottomInUnit = "ft";
 
     private float fontSize = 10;
     private float dpi = 25.4f / 0.28f; /// OGC Spec for SLD
@@ -71,6 +71,46 @@ public class ScaleLineDecoration implements MapDecoration {
     }
 
     public void loadOptions(Map<String, String> options) {
+        String unit = options.get("top-out-unit");
+
+        if (unit != null) {
+            if (INCHES_PER_UNIT.containsKey(unit)) {
+                this.topOutUnit = unit;
+            } else {
+                LOGGER.log(Level.WARNING, "'{0}' is an unknown unit for 'top-out-unit'.");
+            }
+        }
+
+        unit = options.get("top-in-unit");
+
+        if (unit != null) {
+            if (INCHES_PER_UNIT.containsKey(unit)) {
+                this.topInUnit = unit;
+            } else {
+                LOGGER.log(Level.WARNING, "'{0}' is an unknown unit for 'top-in-unit'.");
+            }
+        }
+
+        unit = options.get("bottom-out-unit");
+
+        if (unit != null) {
+            if (INCHES_PER_UNIT.containsKey(unit)) {
+                this.bottomOutUnit = unit;
+            } else {
+                LOGGER.log(Level.WARNING, "'{0}' is an unknown unit for 'bottom-out-unit'.");
+            }
+        }
+
+        unit = options.get("bottom-in-unit");
+
+        if (unit != null) {
+            if (INCHES_PER_UNIT.containsKey(unit)) {
+                this.bottomInUnit = unit;
+            } else {
+                LOGGER.log(Level.WARNING, "'{0}' is an unknown unit for 'bottom-in-unit'.");
+            }
+        }
+
         if (options.get("fontsize") != null) {
             try {
                 this.fontSize = Float.parseFloat(options.get("fontsize"));
@@ -181,13 +221,13 @@ public class ScaleLineDecoration implements MapDecoration {
 
         double scaleDenominator = mapContent.getScaleDenominator(true);
 
-        String curMapUnits = "m";
+        String curMapUnit = "m";
 
         double normalizedScale = (scaleDenominator > 1.0)
             ? (1.0 / scaleDenominator)
             : scaleDenominator;
 
-        double resolution = 1 / (normalizedScale * INCHES_PER_UNIT.get(curMapUnits) * this.dpi);
+        double resolution = 1 / (normalizedScale * INCHES_PER_UNIT.get(curMapUnit) * this.dpi);
 
         int maxWidth = suggestedWidth;
 
@@ -197,27 +237,27 @@ public class ScaleLineDecoration implements MapDecoration {
 
         maxWidth = maxWidth - 6;
 
-        double maxSizeData = maxWidth * resolution * INCHES_PER_UNIT.get(curMapUnits);
+        double maxSizeData = maxWidth * resolution * INCHES_PER_UNIT.get(curMapUnit);
 
-        String topUnits;
-        String bottomUnits;
+        String topUnit;
+        String bottomUnit;
 
         if (maxSizeData > 100000) {
-            topUnits = topOutUnits;
-            bottomUnits = bottomOutUnits;
+            topUnit = topOutUnit;
+            bottomUnit = bottomOutUnit;
         } else {
-            topUnits = topInUnits;
-            bottomUnits = bottomInUnits;
+            topUnit = topInUnit;
+            bottomUnit = bottomInUnit;
         }
 
-        double topMax = maxSizeData / INCHES_PER_UNIT.get(topUnits);
-        double bottomMax = maxSizeData / INCHES_PER_UNIT.get(bottomUnits);
+        double topMax = maxSizeData / INCHES_PER_UNIT.get(topUnit);
+        double bottomMax = maxSizeData / INCHES_PER_UNIT.get(bottomUnit);
 
         int topRounded = this.getBarLength(topMax);
         int bottomRounded = this.getBarLength(bottomMax);
 
-        topMax = topRounded / INCHES_PER_UNIT.get(curMapUnits) * INCHES_PER_UNIT.get(topUnits);
-        bottomMax = bottomRounded / INCHES_PER_UNIT.get(curMapUnits) * INCHES_PER_UNIT.get(bottomUnits);
+        topMax = topRounded / INCHES_PER_UNIT.get(curMapUnit) * INCHES_PER_UNIT.get(topUnit);
+        bottomMax = bottomRounded / INCHES_PER_UNIT.get(curMapUnit) * INCHES_PER_UNIT.get(bottomUnit);
 
         int topPx = (int)(topMax / resolution);
         int bottomPx = (int)(bottomMax / resolution);
@@ -267,7 +307,7 @@ public class ScaleLineDecoration implements MapDecoration {
             g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, oldAntialias);
 
             // Draw text metric
-            String topText = topRounded + " " + topUnits;
+            String topText = topRounded + " " + topUnit;
             g2d.drawString(topText,
                     leftX + (int)((topPx - metrics.stringWidth(topText)) / 2),
                     centerY - prongHeight + metrics.getAscent()
@@ -291,7 +331,7 @@ public class ScaleLineDecoration implements MapDecoration {
             g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, oldAntialias);
 
             // Draw text imperial
-            String bottomText = bottomRounded + " " + bottomUnits;
+            String bottomText = bottomRounded + " " + bottomUnit;
             g2d.drawString(bottomText,
                     leftX + (int) ((bottomPx - metrics.stringWidth(bottomText)) / 2),
                     centerY + metrics.getHeight()

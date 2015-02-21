@@ -1280,15 +1280,28 @@ public class CatalogImpl implements Catalog {
         return facade.getStyle(id);
     }
 
+    static final String REPLACE = "[:]";
+    static final boolean STRICT_STYLE = Boolean.valueOf(System.getProperty("STRICT_STYLE", "true"));
     public StyleInfo getStyleByName(String name) {
         StyleInfo result = null;
         int colon = name.indexOf(':');
         if (colon != -1) {
-            // search by resource name
             String prefix = name.substring(0, colon);
             String resource = name.substring(colon + 1);
-
-            result = getStyleByName(prefix, resource);
+            if (STRICT_STYLE == true) {
+                result = getStyleByName(prefix, resource);
+            } else {
+                String resource2 = resource.replaceAll(REPLACE, "_");
+                String name2 = name.replaceAll(REPLACE, "_");
+                // check workspace: sty_le
+                result = getStyleByName(prefix, resource2);
+                // check workspace_sty_le
+                result = facade.getStyleByName(name2);
+                // check workspace: sty:le
+                result = getStyleByName(prefix, resource);
+                // check workspace:sty:le
+                result = facade.getStyleByName(name);
+            }
         } 
         if (result == null) {
             result = facade.getStyleByName(name);

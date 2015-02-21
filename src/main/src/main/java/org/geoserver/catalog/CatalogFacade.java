@@ -712,6 +712,8 @@ public interface CatalogFacade {
     /**
      * Loads a style from persistent storage by specifying its name.
      * 
+     * This only checks the global styles directory.
+     * 
      * @param name The name of the style.
      * 
      * @return The style, or <code>null</code> if no such style exists

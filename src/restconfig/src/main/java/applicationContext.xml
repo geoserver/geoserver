@@ -516,7 +516,9 @@
 </property>
 </bean>
 
-  <bean id="abstractCatalogFinder" class="org.geoserver.catalog.rest.AbstractCatalogFinder" abstract="true">
+
+
+<bean id="abstractCatalogFinder" class="org.geoserver.catalog.rest.AbstractCatalogFinder" abstract="true">
     <constructor-arg ref="catalog"/>
   </bean>
   

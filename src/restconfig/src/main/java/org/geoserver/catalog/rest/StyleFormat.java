@@ -85,6 +85,10 @@ public class StyleFormat extends StreamDataFormat {
 
     @Override
     protected Object read(InputStream in) throws IOException {
+        if (request.getEntity().getMediaType().equals(MediaType.APPLICATION_ZIP)) {
+            return in;
+        }
+
         if (isRawUpload(request)) {
             return in;
         }

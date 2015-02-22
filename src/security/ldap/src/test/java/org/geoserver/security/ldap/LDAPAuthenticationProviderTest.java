@@ -14,6 +14,7 @@ import org.geoserver.security.impl.MemoryRoleService;
 import org.geoserver.security.impl.MemoryRoleStore;
 import org.junit.Assume;
 import org.junit.Test;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 
@@ -210,6 +211,26 @@ public class LDAPAuthenticationProviderTest extends LDAPBaseTest {
         assertTrue(result.getAuthorities().contains(role));
         assertEquals(3, result.getAuthorities().size());
         
+    }
+    
+    /**
+     * Test that LDAPAuthenticationProvider finds roles even if there is a colon in 
+     * the password
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testColonPassword() throws Exception {
+        Assume.assumeTrue(LDAPTestUtils.initLdapServer(true, ldapServerUrl,
+                basePath, "data3.ldif"));
+        ((LDAPSecurityServiceConfig)config).setUserDnPattern("uid={0},ou=People");
+        
+        createAuthenticationProvider();
+
+        authentication = new UsernamePasswordAuthenticationToken("colon","da:da");
+        
+        Authentication result = authProvider.authenticate(authentication);
+        assertEquals(2, result.getAuthorities().size());
     }
     
 

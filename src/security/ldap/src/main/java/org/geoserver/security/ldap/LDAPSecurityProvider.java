@@ -107,15 +107,14 @@ public class LDAPSecurityProvider extends GeoServerSecurityProvider {
                         authPopulator) {
                     /**
                      * We need to give authoritiesPopulator both username and
-                     * password, so it can bind to the LDAP server. We encode
-                     * them in the username:password format.
+                     * password, so it can bind to the LDAP server. 
                      */
                     @Override
                     protected Collection<? extends GrantedAuthority> loadUserAuthorities(
                             DirContextOperations userData, String username,
                             String password) {
-                        return getAuthoritiesPopulator().getGrantedAuthorities(
-                                userData, username + ":" + password);
+                        return ((BindingLdapAuthoritiesPopulator) getAuthoritiesPopulator())
+                                .getGrantedAuthorities(userData, username, password);
                     }
                 };
             } else {

@@ -65,6 +65,7 @@ public class WFSAdminPage extends BaseServiceAdminPage<WFSInfo> {
     protected void build(final IModel info, Form form) {
         // max features
         form.add( new TextField<Integer>( "maxFeatures" ).add(new MinimumValidator<Integer>(0)) );
+        form.add( new TextField<Integer>("maxNumberOfFeaturesForPreview") );
         form.add( new CheckBox("featureBounding") );
         form.add( new CheckBox("hitsIgnoreMaxFeatures"));
         

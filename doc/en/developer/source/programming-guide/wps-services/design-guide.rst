@@ -40,7 +40,6 @@ The module relies on ``gt-process`` SPI based plugin mechanism to lookup and use
 * creating one or more ``Process`` implementations
 * registering the ``ProcessFactory`` in SPI by adding the factory class name in the ``META-INF/services/org.geotools.process.ProcessFactory`` file
 
-The WPS module shows an example of the above by bridging the Sextante API to the GeoTools process one, see the ``org.geoserver.wps.sextante`` package.
 This also means it's possible to rely on libraries of existing processes provided they are wrapped into a GeoTools process API container.
 
 An alternative way of implementing a custom WPS process, based on Java Annotations, is described in the :ref:`wps_services_implementing` section.

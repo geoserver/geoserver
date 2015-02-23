@@ -155,3 +155,60 @@ The file showcases all possible usage of the configuration elements:
           * ``singleFile`` (since 2.0.3): if true the output of the conversion is supposed to be a single file that can be streamed directly back without the need to wrap it into a zip file
           * ``mimeType`` (since 2.0.3): the mime type of the file returned when using ``singleFile``. If not specified ``application/octet-stream`` will be used as a default.
 
+OGR based WPS Output Format
+===========================
+
+The OGR based WPS output format provides the ability to turn feature collection (vector layer) output types into formats supported by OGR,
+using the same configuration and same machinery provided by the OGR WFS output format (which should also be installed for the WPS portion to work).
+
+Unlike the WFS case the WPS output formats are receiving different treatment in WPS responses depending on whether they are binary, text, or xml, when the Execute response
+style chosen by the client is "document":
+
+* Binary types need to be base64 encoded for XML embedding
+* Text types need to be included inside a CDATA section 
+* XML types can be integrated in the response as-is
+
+In order to understand the nature of the output format a new optional configuration element, ``<type>``, can
+be added to the ``ogr2ogr.xml`` configuration file in order to specify the output nature. 
+The possible values are ``binary``, ``text``, ``xml``, in case the value is missing, ``binary`` is assumed.
+Here is an example showing all possible combinations:
+
+.. code-block:: xml
+
+    <OgrConfiguration>
+        <ogr2ogrLocation>ogr2ogr</ogr2ogrLocation>
+        <!-- <gdalData>...</gdalData> -->
+        <formats>
+            <Format>
+                <ogrFormat>MapInfo File</ogrFormat>
+                <formatName>OGR-TAB</formatName>
+                <fileExtension>.tab</fileExtension>
+                <type>binary</type> <!-- not really required, it’s the default -->
+            </Format>
+            <Format>
+                <ogrFormat>MapInfo File</ogrFormat>
+                <formatName>OGR-MIF</formatName>
+                <fileExtension>.mif</fileExtension>
+                <option>-dsco</option>
+                <option>FORMAT=MIF</option>
+            </Format>
+            <Format>
+                <ogrFormat>CSV</ogrFormat>
+                <formatName>OGR-CSV</formatName>
+                <fileExtension>.csv</fileExtension>
+                <singleFile>true</singleFile>
+                <mimeType>text/csv</mimeType>
+                <option>-lco</option>
+                <option>GEOMETRY=AS_WKT</option>
+                <type>text</type>
+            </Format>
+            <Format>
+                <ogrFormat>KML</ogrFormat>
+                <formatName>OGR-KML</formatName>
+                <fileExtension>.kml</fileExtension>
+                <singleFile>true</singleFile>
+                <mimeType>application/vnd.google-earth.kml</mimeType>
+                <type>xml</type>
+            </Format>
+        </formats>
+    </OgrConfiguration>

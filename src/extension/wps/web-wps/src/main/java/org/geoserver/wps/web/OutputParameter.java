@@ -9,6 +9,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.geoserver.web.GeoServerApplication;
 import org.geoserver.wps.ppio.ComplexPPIO;
 import org.geoserver.wps.ppio.ProcessParameterIO;
 import org.geoserver.wps.process.GeoServerProcessors;
@@ -61,7 +62,8 @@ class OutputParameter implements Serializable {
     }
 
     List<ProcessParameterIO> getProcessParameterIO() {
-        return ProcessParameterIO.findAll(getParameter(), null);
+        return ProcessParameterIO.findAll(getParameter(), GeoServerApplication.get()
+                .getApplicationContext());
     }
 
     ProcessFactory getProcessFactory() {

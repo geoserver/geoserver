@@ -130,7 +130,12 @@
   </dependency>
   <dependency>
    <groupId>org.geoserver.extension</groupId>
-   <artifactId>gs-ogr</artifactId>
+   <artifactId>gs-ogr-wfs</artifactId>
+   <version>${project.version}</version>
+  </dependency>
+  <dependency>
+   <groupId>org.geoserver.extension</groupId>
+   <artifactId>gs-ogr-wps</artifactId>
    <version>${project.version}</version>
   </dependency>
   <dependency>

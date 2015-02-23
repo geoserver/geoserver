@@ -24,20 +24,20 @@ import com.thoughtworks.xstream.XStream;
 
 /**
  * Loads the ogr2ogr.xml configuration file and configures the output format accordingly.
- * 
- * <p>Also keeps tabs on the configuration file, reloading the file as needed. 
+ *
+ * <p>Also keeps tabs on the configuration file, reloading the file as needed.
  * @author Administrator
  *
  */
 public class Ogr2OgrConfigurator implements ApplicationListener<ContextClosedEvent> {
     private static final Logger LOGGER = Logging.getLogger(Ogr2OgrConfigurator.class);
 
-    Ogr2OgrOutputFormat of;
+    public Ogr2OgrOutputFormat of;
 
     OGRWrapper wrapper;
 
     Resource configFile;
-    
+
     // ConfigurationPoller
     private ResourceListener listener = new ResourceListener() {
         public void changed(ResourceNotification notify) {
@@ -47,13 +47,14 @@ public class Ogr2OgrConfigurator implements ApplicationListener<ContextClosedEve
 
     public Ogr2OgrConfigurator(Ogr2OgrOutputFormat format) {
         this.of = format;
-        
+
         GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
         configFile = loader.get("ogr2ogr.xml");
+        loadConfiguration();
         configFile.addListener( listener );
     }
 
-    protected void loadConfiguration() {
+    public void loadConfiguration() {
         // start with the default configuration, override if we can load the file
         OgrConfiguration configuration = OgrConfiguration.DEFAULT;
         try {

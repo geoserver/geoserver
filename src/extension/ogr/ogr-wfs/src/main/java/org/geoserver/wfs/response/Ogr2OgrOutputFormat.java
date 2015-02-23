@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -10,6 +10,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -135,20 +136,21 @@ public class Ogr2OgrOutputFormat extends WFSGetFeatureOutputFormat {
     public String getMimeType(Object value, Operation operation) throws ServiceException {
         GetFeatureRequest request = GetFeatureRequest.adapt(operation.getParameters()[0]);
         String outputFormat = request.getOutputFormat();
-        
+        String mimeType = "";
         OgrFormat format = formats.get(outputFormat);
         if (format == null) {
             throw new WFSException("Unknown output format " + outputFormat);
         } else if (format.singleFile && request.getQueries().size() <= 1) {
-            if(format.mimeType != null) {
-                return format.mimeType;
+            if (format.mimeType != null) {
+                mimeType = format.mimeType;
             } else {
                 // use a default binary blob
-                return "application/octet-stream";
+                mimeType = "application/octet-stream";
             }
         } else {
-            return "application/zip";
+            mimeType = "application/zip";
         }
+        return mimeType;
     }
     
     @Override
@@ -190,6 +192,15 @@ public class Ogr2OgrOutputFormat extends WFSGetFeatureOutputFormat {
      */
     public void addFormat(OgrFormat parameters) {
         formats.put(parameters.formatName, parameters);
+    }
+
+    /**
+     * Get a list of supported ogr format
+     *
+     * @return
+     */
+    public List<OgrFormat> getFormats() {
+        return new ArrayList<OgrFormat>(formats.values());
     }
 
     /**

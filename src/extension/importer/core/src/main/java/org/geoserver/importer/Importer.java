@@ -1327,19 +1327,9 @@ public class Importer implements DisposableBean, ApplicationListener {
         // @todo this needs implementation in geotools
         SimpleFeatureType schema = ds.getSchema(featureTypeName);
         if (schema != null) {
-            if (ds instanceof JDBCDataStore) {
-                JDBCDataStore dataStore = (JDBCDataStore) ds;
-                Connection conn = dataStore.getConnection(Transaction.AUTO_COMMIT);
-                Statement st = null;
-                try {
-                    st = conn.createStatement();
-                    st.execute("drop table " + featureTypeName);
-                    LOGGER.fine("dropSchema " + featureTypeName + " successful");
-                } finally {
-                    dataStore.closeSafe(conn);
-                    dataStore.closeSafe(st);
-                }
-            } else {
+            try {
+                ds.removeSchema(featureTypeName);
+            } catch(Exception e) {
                 LOGGER.warning("Unable to dropSchema " + featureTypeName + " from datastore " + ds.getClass());
             }
         } else {

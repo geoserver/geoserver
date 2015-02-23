@@ -75,7 +75,7 @@ public class GeoServerHomePage extends GeoServerBasePage {
             String contactEmail = contact.getContactEmail();
             HashMap<String, String>params = new HashMap<String, String>();
             params.put("version", version);
-            params.put("contactEmail", contactEmail);
+            params.put("contactEmail", (contactEmail == null ? "geoserver@example.org" : contactEmail));
             Label label = new Label("footerMessage", new StringResourceModel("GeoServerHomePage.footer", this, new Model(params)));
             label.setEscapeModelStrings(false);
             add(label);

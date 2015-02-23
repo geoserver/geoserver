@@ -20,3 +20,5 @@ This section will discuss the Importer extension.
    using
    guireference
    formats
+   rest_reference
+   rest_examples

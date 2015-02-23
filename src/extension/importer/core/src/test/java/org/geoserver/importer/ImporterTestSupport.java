@@ -31,7 +31,6 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
@@ -81,7 +80,7 @@ public abstract class ImporterTestSupport extends GeoServerSystemTestSupport {
     @After
     public void cleanCatalog() throws IOException {
         for (StoreInfo s : getCatalog().getStores(StoreInfo.class)) {
-            removeStore(s.getWorkspace().getName(), s.getName());
+            removeStore(null, s.getName());
         }
         for (StyleInfo s : getCatalog().getStyles()) {
             String styleName = s.getName();

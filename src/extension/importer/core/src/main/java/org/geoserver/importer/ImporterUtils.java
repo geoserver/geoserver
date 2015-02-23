@@ -7,6 +7,7 @@ package org.geoserver.importer;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.StoreInfoImpl;
@@ -68,7 +69,7 @@ public class ImporterUtils {
         }
 
         if (l != null && l.getId() == null && lookupByName) {
-            LayerInfo resolved = cat.getLayerByName(l.prefixedName());
+            LayerInfo resolved = cat.getLayerByName(l.getName());
             if (resolved != null) {
                 l = resolved;
             }

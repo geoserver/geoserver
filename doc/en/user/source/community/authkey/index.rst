@@ -65,6 +65,51 @@ A sample file looks as follows::
 This key provider also works for read only user/group services. Synchronizing adds new users not
 having an entry in this file and removes entries for users deleted in the user/group service.
 
+Key provider using an external web service
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This key provider calls an external URL to map the authentication key to the user. This allows
+GeoServer to integrate into an existing security infrastructure, where a session token is shared
+among applications and managed through dedicated web services.
+
+The web service URL and some other parameters can be specified to configure the mapper in details:
+
+.. list-table::
+   :widths: 50 50
+
+   * - **Option**
+     - **Description**
+   * - ``Web Service URL, with key placeholder``
+     - the complete URL of the key mapping webservice, with a special placeholder ({key}) that will be replaced by the current authentication key
+   * - ``Web Service Response User Search Regular Expression``
+     - a regular expression used to extract the username from the webservice response; the first matched group (the part included in parentheses) in the regular expression will be used as the user name; the default (^\\s*(.*)\\s*$) takes all the response text, trimming spaces at both ends
+   * - ``Connection Timeout``
+     - timeout to connect to the webservice
+   * - ``Read Timeout``
+     -  timeout to read data from the webservice
+
+The mapper will call the webservice using an HTTP GET request (webservice requiring POST are not
+supported yet), replacing the {key} placeholder in the configured URL with the actual authentication
+key.
+
+If a response is received, it is parsed using the configured regular expression to extract the user name 
+from it. New lines are automatically stripped from the response. Some examples of regular expression 
+that can be used are:
+
+.. list-table::
+   :widths: 40 60
+
+   * - **Regular Expression**
+     - **Usage**
+   * - ``^\\s*(.*)\\s*$``
+     - all text trimming spaces at both ends
+   * - ``^.*?\"user\"\\s*:\\s*\"([^\"]+)\".*$``
+     - json response where the username is contained in a property named **user**
+   * - ``^.*?<username>(.*?)</username>.*$``
+     - xml response where the username is contained in a tag named **username**
+ 	 
+Synchronizing users with the user/group service is not supported by this mapper.
+
 Configuration
 -------------
 
@@ -74,6 +119,9 @@ named **authkey** offering the following options.
 #. URL parameter name. This the name of URL parameter used in client HTTP requests. Default is ``authkey``.
 #. Key Provider. GeoSever offers the providers described above.
 #. User/group service to be used.
+
+Some of the key providers can require additional configuration parameter. These will appear under the 
+Key Provider combobox when one of those is selected.
 
 After configuring the filter it is necessary to put this filter on the authentication filter chain(s).
 
@@ -90,7 +138,7 @@ With some Java programming it is possible to programmatically create and registe
 name mapper that works under a different logic. 
 For example, you could have daily tokens, token generators and the like.
 
-In order to provide your custom mapper you have to implement the ``org.geoserver.securityAuthenticationKeyMapper``
+In order to provide your custom mapper you have to implement the ``org.geoserver.security.AuthenticationKeyMapper``
 interface and then register said bean in the Spring application context. Alternatively it is possible
 to subclass from ``org.geoserver.security.AbstractAuthenticationKeyMapper``. A mapper (key provider) has
 to implement

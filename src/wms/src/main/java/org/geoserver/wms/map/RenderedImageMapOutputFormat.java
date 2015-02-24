@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -409,8 +410,10 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
             rendererParams.put(StreamingRenderer.TEXT_RENDERING_KEY,
                     StreamingRenderer.TEXT_RENDERING_STRING);
         } else {
+            // used to be TEXT_RENDERING_ADAPTIVE always, but since java 7 calling drawGlyphVector
+            // just generates very ugly results
             rendererParams.put(StreamingRenderer.TEXT_RENDERING_KEY,
-                    StreamingRenderer.TEXT_RENDERING_ADAPTIVE);
+                    StreamingRenderer.TEXT_RENDERING_OUTLINE);
         }
         if (DefaultWebMapService.isLineWidthOptimizationEnabled()) {
             rendererParams.put(StreamingRenderer.LINE_WIDTH_OPTIMIZATION_KEY, true);

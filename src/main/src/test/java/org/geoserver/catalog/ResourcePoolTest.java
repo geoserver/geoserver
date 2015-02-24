@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -78,7 +78,7 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
         style.setSLDVersion(new Version("1.1.0"));
         getCatalog().save(style);
         File images = new File(testData.getDataDirectoryRoot(), "styles/images");
-        assertTrue(images.mkdir());
+        assertTrue(images.mkdirs());
         File image = new File("./src/test/resources/org/geoserver/catalog/rockFillSymbol.png");
         assertTrue(image.exists());
         FileUtils.copyFileToDirectory(image, images);

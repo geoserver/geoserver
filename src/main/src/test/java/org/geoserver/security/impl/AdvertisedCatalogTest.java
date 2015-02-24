@@ -1,8 +1,6 @@
 package org.geoserver.security.impl;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerGroupVisibilityPolicy;
@@ -51,5 +49,13 @@ public class AdvertisedCatalogTest extends AbstractAuthorizationTest {
         LayerGroupInfo layerGroup = sc.getLayerGroupByName("topp", "layerGroupWithSomeLockedLayer"); 
         assertNotNull(layerGroup);
         assertEquals(0, layerGroup.getLayers().size());
+    }
+
+    @Test
+    public void testLayerSpecificCapabilities() throws Exception {
+        AdvertisedCatalog sc = new AdvertisedCatalog(catalog);
+        Dispatcher.REQUEST.get().setContext("topp/states");
+
+        assertNotNull(sc.getLayerByName("topp:states"));
     }
 }

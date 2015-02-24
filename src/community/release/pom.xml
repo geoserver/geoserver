@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!-- 
- Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ Copyright (C) 2014 - Open Source Geospatial Foundation. All rights reserved.
  This code is licensed under the GPL 2.0 license, available at the root
  application directory.
  -->
@@ -106,6 +106,11 @@
    <dependency>
      <groupId>org.geoserver.community</groupId>
      <artifactId>gs-grib</artifactId>
+     <version>${project.version}</version>
+   </dependency>  
+   <dependency>
+     <groupId>org.geoserver.community</groupId>
+     <artifactId>gs-sldservice</artifactId>
      <version>${project.version}</version>
    </dependency>
  </dependencies>

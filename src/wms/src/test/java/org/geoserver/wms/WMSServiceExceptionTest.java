@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -127,6 +128,26 @@ public class WMSServiceExceptionTest extends WMSTestSupport {
         assertNotNull(exceptionText);
         assertEquals(exceptionText, "Could not find layer foobar");
 
+    }
+
+    /**
+     * Test protection against cross-site scripting attack in exception response.
+     */
+    @Test
+    public void testExceptionLocatorEscaped() throws Exception {
+        // request contains cross-site scripting attack payload
+        String path = "wms?request=%22%3E%3Ca%20xmlns:a=%27http://www.w3.org/1999/xhtml%27%3E%3C"
+                + "a:body%20onload=%22alert%28%27xss%27%29%22/%3E%3C/a%3E%3C";
+        MockHttpServletResponse response = getAsServletResponse(path);
+        String content = response.getOutputStreamContent();
+        // sanity
+        assertTrue(content.contains("<ServiceExceptionReport "));
+        assertTrue(content.contains("</ServiceExceptionReport>"));
+        assertTrue(content.contains("<ServiceException "));
+        assertTrue(content.contains("</ServiceException>"));
+        // test that cross-site scripting attack payload is escaped
+        assertFalse(content.contains("<a:body onload=\"alert('xss')\"/>"));
+        assertTrue(content.contains("&lt;a:body onload=&quot;alert(&apos;xss&apos;)&quot;/&gt;"));
     }
 
 }

@@ -1,13 +1,13 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wms.map;
 
-import java.awt.Transparency;                                                   
-import java.awt.image.BufferedImage;                                            
+import java.awt.Transparency;
+import java.awt.image.BufferedImage;
 import java.awt.image.IndexColorModel;
-
 import java.awt.image.RenderedImage;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -29,13 +29,11 @@ import javax.media.jai.RenderedImageList;
 
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetMapRequest;
-import org.geoserver.wms.RasterCleaner;
 import org.geoserver.wms.MapProducerCapabilities;
+import org.geoserver.wms.RasterCleaner;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContent;
-import org.geoserver.wms.kvp.PaletteManager;
 import org.geotools.image.ImageWorker;
-import org.geotools.image.palette.InverseColorMapOp;
 import org.geotools.resources.image.ImageUtilities;
 import org.geotools.util.logging.Logging;
 
@@ -51,6 +49,15 @@ import com.sun.media.imageioimpl.plugins.gif.GIFImageWriterSpi;
  * @version $Id
  */
 public final class GIFMapResponse extends RenderedImageMapResponse {
+
+    private static final String GIF_FRAMES_DELAY = "gif_frames_delay";
+
+    /**
+     * Old name, with typo, kept for backwards compatibility
+     */
+    private static final String GIF_LOOP_CONTINUOSLY = "gif_loop_continuosly";
+
+    private static final String GIF_LOOP_CONTINUOUSLY = "gif_loop_continuously";
 
     private final static Logger LOGGER = Logging.getLogger(GIFMapResponse.class);
 
@@ -176,11 +183,16 @@ public final class GIFMapResponse extends RenderedImageMapResponse {
             gifWriter.prepareWriteSequence(null);
 
             // gif params
-            final GetMapRequest request = (GetMapRequest) mapContent.getRequest();
-            final Boolean loopContinuosly = (request.getFormatOptions().get("gif_loop_continuosly") != null ?
-                    Boolean.valueOf((String)request.getFormatOptions().get("gif_loop_continuosly")) : wms.getLoopContinuously());
-            final Integer delay = (request.getFormatOptions().get("gif_frames_delay") != null ? 
-                    Integer.valueOf((String) request.getFormatOptions().get("gif_frames_delay")) : wms.getFramesDelay());
+            final GetMapRequest request = mapContent.getRequest();
+            Object loopContinuouslyString = request.getFormatOptions().get(GIF_LOOP_CONTINUOUSLY);
+            if (loopContinuouslyString == null) {
+                loopContinuouslyString = request.getFormatOptions().get(GIF_LOOP_CONTINUOSLY);
+            }
+            final Boolean loopContinuosly = (loopContinuouslyString != null ? Boolean
+                    .valueOf((String) loopContinuouslyString) : wms.getLoopContinuously());
+            Object frameDelayString = request.getFormatOptions().get(GIF_FRAMES_DELAY);
+            final Integer delay = (frameDelayString != null ? 
+                    Integer.valueOf((String) frameDelayString) : wms.getFramesDelay());
 
             // check value
             if (delay <= 0)

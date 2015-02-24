@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -37,6 +38,8 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
+
+import net.opengis.wfs.FeatureCollectionType;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -151,7 +154,7 @@ public class GML3OutputFormat extends WFSGetFeatureOutputFormat {
                         featureType.getName() + " in the GeoServer catalog");
 
                 //add it to the map
-                Set metas = (Set) ns2metas.get(namespaceURI);
+                Set metas = ns2metas.get(namespaceURI);
 
                 if (metas == null) {
                     metas = new HashSet();
@@ -269,7 +272,8 @@ public class GML3OutputFormat extends WFSGetFeatureOutputFormat {
     
     protected void encode(FeatureCollectionResponse results, OutputStream output, Encoder encoder)
         throws IOException {
-        encoder.encode(results.getAdaptee(), org.geoserver.wfs.xml.v1_1_0.WFS.FEATURECOLLECTION, output);
+        encoder.encode(results.unadapt(FeatureCollectionType.class),
+                org.geoserver.wfs.xml.v1_1_0.WFS.FEATURECOLLECTION, output);
     }
     
     protected DOMSource getXSLT() {
@@ -317,7 +321,7 @@ public class GML3OutputFormat extends WFSGetFeatureOutputFormat {
     public static boolean isComplexFeature(FeatureCollectionResponse results) {
         boolean hasComplex = false;
         for (int fcIndex = 0; fcIndex < results.getFeature().size(); fcIndex++) {
-            if (!(((FeatureCollection) results.getFeature().get(fcIndex)).getSchema() instanceof SimpleFeatureTypeImpl)) {
+            if (!(results.getFeature().get(fcIndex).getSchema() instanceof SimpleFeatureTypeImpl)) {
                 hasComplex = true;
                 break;
             }

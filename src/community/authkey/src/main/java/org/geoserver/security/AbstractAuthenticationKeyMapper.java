@@ -1,13 +1,20 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.security;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Logger;
 
+import org.geoserver.security.validation.FilterConfigException;
 import org.springframework.util.StringUtils;
 
 /**
@@ -27,7 +34,15 @@ public abstract class AbstractAuthenticationKeyMapper implements AuthenticationK
     private String beanName;    
     private String userGroupServiceName;
     private GeoServerSecurityManager securityManager;
+    
+    private Map<String, String> parameters = new HashMap<String, String>();
 
+    
+    
+    public AbstractAuthenticationKeyMapper() {
+        super();
+        fillDefaultParameters();
+    }
 
     @Override
     public void setBeanName(String name) {
@@ -75,5 +90,69 @@ public abstract class AbstractAuthenticationKeyMapper implements AuthenticationK
     
     protected String createAuthKey() {
         return UUID.randomUUID().toString();
+    }
+    
+    /**
+     * Returns the list of configuration parameters supported by the mapper.
+     * 
+     * @return
+     */
+    public Set<String> getAvailableParameters() {
+        return new HashSet<String>();
+    }
+    
+    /**
+     * Configures the mapper parameters.
+     * 
+     * @param parameters
+     */
+    public void configureMapper(Map<String, String> parameters) {
+        this.parameters = parameters;
+        fillDefaultParameters();
+    }
+
+    /**
+     * Fills parameters with default values (if defined by the mapper.
+     * 
+     */
+    private void fillDefaultParameters() {
+        for (String paramName : getAvailableParameters()) {
+            if (!this.parameters.containsKey(paramName)) {
+                this.parameters.put(paramName, getDefaultParamValue(paramName));
+            }
+        }
+    }
+    
+    /**
+     * Gets the default value for the given parameter.
+     * Default implementation always returns an empty string.
+     * 
+     * @param paramName
+     * @return
+     */
+    protected String getDefaultParamValue(String paramName) {
+        return "";
+    }
+
+    public Map<String, String> getMapperConfiguration() {
+        return parameters;
+    }
+    
+    /**
+     * Validates the given parameter (used by the filter validator).
+     */
+    public void validateParameter(String paramName, String value) throws FilterConfigException {
+        
+    }
+    
+    /**
+     * Creates a validation exception (used by inheriting mappers).
+     * 
+     * @param errorid
+     * @param args
+     * @return
+     */
+    protected AuthenticationKeyFilterConfigException createFilterException (String errorid, Object ...args) {
+        return new AuthenticationKeyFilterConfigException(errorid,args);
     }
 }

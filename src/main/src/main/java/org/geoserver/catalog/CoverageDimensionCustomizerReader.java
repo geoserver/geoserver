@@ -1,9 +1,11 @@
-/* Copyright (c) 2014 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2014 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.catalog;
 
+import java.awt.Color;
 import java.awt.image.ColorModel;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -457,11 +459,23 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
         }
         @Override
         public double getMinimumValue() {
-            return getRange().getMinimum();
+            NumberRange<? extends Number> range = getRange();
+            // Check if the range exists, otherwise use the sample dimension values
+            if(range != null){
+                return range.getMinimum();
+            }else{
+                return sampleDim.getMinimumValue();
+            }
         }
         @Override
         public double getMaximumValue() {
-            return getRange().getMaximum();
+            NumberRange<? extends Number> range = getRange();
+            // Check if the range exists, otherwise use the sample dimension values
+            if(range != null){
+                return range.getMaximum();
+            }else{
+                return sampleDim.getMaximumValue();
+            }
         }
         @Override
         public NumberRange<? extends Number> getRange() {
@@ -602,6 +616,9 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
                 this.configuredNoDataValues = sampleDim.getNoDataValues();
             }
 
+            // Check if the nodata has been configured
+            boolean nodataConfigured = configuredNoDataValues != null
+                    && configuredNoDataValues.length > 0;
             // custom categories
             if (categories != null) {
                 this.customCategories = new ArrayList<Category>(categories.size());
@@ -609,11 +626,23 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
                 for (Category category : categories) {
                     wrapped = category;
                     if (Category.NODATA.getName().equals(category.getName())) {
-                        wrapped = new Category(
-                                Category.NODATA.getName(),
-                                category.getColors()[0],
-                                configuredNoDataValues != null && configuredNoDataValues.length > 0 ? configuredNoDataValues[0]
-                                        : category.getRange().getMinimum());
+                        if (category.isQuantitative()) {
+                            // Get minimum and maximum value
+                            double minimum = nodataConfigured ? configuredNoDataValues[0]
+                                    : category.getRange().getMinimum();
+                            double maximum = nodataConfigured ? configuredNoDataValues[0]
+                                    : category.getRange().getMaximum();
+                            if (Double.isNaN(minimum) && Double.isNaN(maximum)) {
+                                // Create a qualitative category
+                                wrapped = new Category(Category.NODATA.getName(),
+                                        category.getColors()[0], minimum);
+                            } else {
+                                // Create the wrapped category
+                                wrapped = new Category(Category.NODATA.getName(),
+                                        category.getColors(), NumberRange.create(minimum, maximum),
+                                        category.getSampleToGeophysics());
+                            }
+                        }
                     }
                     customCategories.add(wrapped);
                 }

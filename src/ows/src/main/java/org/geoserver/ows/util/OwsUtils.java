@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -271,7 +272,7 @@ public class OwsUtils {
             Throwable cause = ex.getCause();
             final String message = ex.getMessage();
             String lastMessage = message;
-            if(!"".equals(message)) {
+            if(message != null && !"".equals(message)) {
                 if(xmlEscape)
                     s.append(ResponseUtils.encodeXML(message));
                 else
@@ -290,7 +291,7 @@ public class OwsUtils {
                         
                     }
                 }
-                if(cause != null)
+                if (cause != null && cause.getMessage() != null && !"".equals(cause.getMessage()))
                     s.append("\n");
             }
             

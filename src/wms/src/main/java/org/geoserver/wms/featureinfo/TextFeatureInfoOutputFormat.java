@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -119,8 +120,13 @@ public class TextFeatureInfoOutputFormat extends GetFeatureInfoOutputFormat {
                                     // too much - they should use GML version if
                                     // they want those details
                                     Geometry g = (Geometry) f.getAttribute(name);
-                                    writer.println(name + " = [GEOMETRY (" + g.getGeometryType()
-                                            + ") with " + g.getNumPoints() + " points]");
+                                    if(g != null) {
+                                        writer.println(name + " = [GEOMETRY (" + g.getGeometryType()
+                                                + ") with " + g.getNumPoints() + " points]");
+                                    } else {
+                                        // GEOS-6829
+                                        writer.println(name + " = null");
+                                    }
                                 } else {
                                     writer.println(name + " = " + f.getAttribute(name));
                                 }

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
- Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ Copyright (C) 2014 - Open Source Geospatial Foundation. All rights reserved.
  This code is licensed under the GPL 2.0 license, available at the root
  application directory.
  --><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
@@ -50,6 +50,7 @@
           <descriptor>release/ext-mbtiles.xml</descriptor>
           <descriptor>release/ext-geopkg.xml</descriptor>
           <descriptor>release/ext-grib.xml</descriptor>
+          <descriptor>release/ext-sldservice.xml</descriptor>
         </descriptors>
       </configuration>
      </plugin>
@@ -166,7 +167,9 @@
         <module>netcdf-out</module>
         <module>mbtiles</module>
         <module>geopkg</module>
-	<module>grib</module>
+        <module>sldService</module>
+        <module>grib</module>
+		<module>geofence</module>
       </modules>
     </profile>
     <profile>

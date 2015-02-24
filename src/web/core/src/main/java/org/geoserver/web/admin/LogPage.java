@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -29,6 +30,7 @@ import org.apache.wicket.validation.validator.MinimumValidator;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.logging.LoggingUtils;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.web.GeoServerSecuredPage;
 
 /**
@@ -54,6 +56,16 @@ public class LogPage extends GeoServerSecuredPage {
         String location = GeoServerExtensions.getProperty(LoggingUtils.GEOSERVER_LOG_LOCATION);
         if(location == null) {
             location= getGeoServerApplication().getGeoServer().getLogging().getLocation();
+        }
+        if (location == null) {
+            try {
+                GeoServerResourceLoader loader = getGeoServerApplication().getResourceLoader();
+                location = new File(loader.findOrCreateDirectory("logs"), "geoserver.log")
+                        .getAbsolutePath();
+            } catch (IOException e) {
+                throw new RuntimeException("Unexpeced error, could not find the log file location",
+                        e);
+            }
         }
         logFile = new File(location);
         

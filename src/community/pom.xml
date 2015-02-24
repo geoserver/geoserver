@@ -169,7 +169,6 @@
         <module>geopkg</module>
         <module>sldService</module>
         <module>grib</module>
-		<module>geofence</module>
       </modules>
     </profile>
     <profile>

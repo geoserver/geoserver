@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -106,15 +107,14 @@ public class LDAPSecurityProvider extends GeoServerSecurityProvider {
                         authPopulator) {
                     /**
                      * We need to give authoritiesPopulator both username and
-                     * password, so it can bind to the LDAP server. We encode
-                     * them in the username:password format.
+                     * password, so it can bind to the LDAP server. 
                      */
                     @Override
                     protected Collection<? extends GrantedAuthority> loadUserAuthorities(
                             DirContextOperations userData, String username,
                             String password) {
-                        return getAuthoritiesPopulator().getGrantedAuthorities(
-                                userData, username + ":" + password);
+                        return ((BindingLdapAuthoritiesPopulator) getAuthoritiesPopulator())
+                                .getGrantedAuthorities(userData, username, password);
                     }
                 };
             } else {

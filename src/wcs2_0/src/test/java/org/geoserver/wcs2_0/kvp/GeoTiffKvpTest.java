@@ -9,6 +9,8 @@ import it.geosolutions.imageioimpl.plugins.tiff.TIFFImageMetadata;
 import it.geosolutions.imageioimpl.plugins.tiff.TIFFImageReader;
 import it.geosolutions.imageioimpl.plugins.tiff.TIFFImageReaderSpi;
 
+import java.awt.image.Raster;
+import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -327,6 +329,132 @@ public class GeoTiffKvpTest extends WCSKVPTestSupport {
         // clean up
         reader.dispose();        
     }
+
+    @Test
+    public void overviewPolicy() throws Exception {
+        // //
+        // Different tests reading data to create a coverage which is half the size of the original one
+        // across X and Y
+        // //
+        MockHttpServletResponse response = null;
+        byte[] tiffContents = null;
+
+        // Reading native resolution
+        response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1"
+                + "&coverageId=wcs__BlueMarble&overviewPolicy=IGNORE&scalesize=http://www.opengis.net/def/axis/OGC/1/i(180),"
+                + "http://www.opengis.net/def/axis/OGC/1/j(180)");
+
+        assertEquals("image/tiff", response.getContentType());
+        tiffContents = getBinary(response);
+        File fileNative = File.createTempFile("native", "native.tiff", new File("./target"));
+        FileUtils.writeByteArrayToFile(fileNative, tiffContents);
+
+        // Reading using overview and TargetSize
+        response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1"
+                + "&coverageId=wcs__BlueMarble&overviewPolicy=NEAREST&scalesize=http://www.opengis.net/def/axis/OGC/1/i(180),"
+                + "http://www.opengis.net/def/axis/OGC/1/j(180)");
+        assertEquals("image/tiff", response.getContentType());
+        tiffContents = getBinary(response);
+        File fileOverviewTS = File.createTempFile("overviewTS", "overviewTS.tiff", new File("./target"));
+        FileUtils.writeByteArrayToFile(fileOverviewTS, tiffContents);
+
+        // Reading using overview and ScaleFactor
+        response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1"
+                + "&coverageId=wcs__BlueMarble&overviewPolicy=NEAREST&SCALEFACTOR=0.5");
+        assertEquals("image/tiff", response.getContentType());
+        tiffContents = getBinary(response);
+        File fileOverviewSF = File.createTempFile("overviewSF", "overviewSF.tiff", new File("./target"));
+        FileUtils.writeByteArrayToFile(fileOverviewSF, tiffContents);
+
+        TIFFImageReaderSpi spi = new TIFFImageReaderSpi();
+        TIFFImageReader readerNative = null;
+        TIFFImageReader readerOverviewTS = null;
+        TIFFImageReader readerOverviewSF = null;
+        FileImageInputStream streamNative = null;
+        FileImageInputStream streamOverviewTS = null;
+        FileImageInputStream streamOverviewSF = null;
+        try {
+            streamNative = new FileImageInputStream(fileNative);
+            readerNative = (TIFFImageReader) spi.createReaderInstance();
+            readerNative.setInput(streamNative);
+
+            streamOverviewTS = new FileImageInputStream(fileOverviewTS);
+            readerOverviewTS = (TIFFImageReader) spi.createReaderInstance();
+            readerOverviewTS.setInput(streamOverviewTS);
+
+            streamOverviewSF = new FileImageInputStream(fileOverviewSF);
+            readerOverviewSF = (TIFFImageReader) spi.createReaderInstance();
+            readerOverviewSF.setInput(streamOverviewSF);
+
+            // Reading back first image related to native request
+            RenderedImage riNative = readerNative.read(0);
+            Raster rasterNative = riNative.getData();
+            assertEquals(180, rasterNative.getWidth());
+            assertEquals(180, rasterNative.getHeight());
+
+            final int refX = 11;
+            final int refY = 65;
+            final int r1 = rasterNative.getSample(refX, refY, 0);
+            final int g1 = rasterNative.getSample(refX, refY, 1);
+            final int b1 = rasterNative.getSample(refX, refY, 2);
+
+            // Reading back second image related to request using overviews
+            final RenderedImage riOverviewTS = readerOverviewTS.read(0);
+            final Raster rasterOverviewTS = riOverviewTS.getData();
+            assertEquals(180, rasterOverviewTS.getWidth());
+            assertEquals(180, rasterOverviewTS.getHeight());
+
+            final int r2 = rasterOverviewTS.getSample(refX, refY, 0);
+            final int g2 = rasterOverviewTS.getSample(refX, refY, 1);
+            final int b2 = rasterOverviewTS.getSample(refX, refY, 2);
+
+            // Reading back third image related to request using overviews and scale factor
+            final RenderedImage riOverviewSF = readerOverviewSF.read(0);
+            final Raster rasterOverviewSF = riOverviewSF.getData();
+            assertEquals(180, rasterOverviewSF.getWidth());
+            assertEquals(180, rasterOverviewSF.getHeight());
+
+            final int r3 = rasterOverviewSF.getSample(refX, refY, 0);
+            final int g3 = rasterOverviewSF.getSample(refX, refY, 1);
+            final int b3 = rasterOverviewSF.getSample(refX, refY, 2);
+
+            // Checking the pixels are different 
+            assertTrue(r1 != r2);
+            assertTrue(g1 != g2);
+            assertTrue(b1 != b2);
+
+            // Checking the pixels from quality overviews using same layout are equals
+            assertEquals(r2, r3);
+            assertEquals(g2, g3);
+            assertEquals(b2, b3);
+       } finally {
+            IOUtils.closeQuietly(streamOverviewTS);
+            IOUtils.closeQuietly(streamOverviewSF);
+            IOUtils.closeQuietly(streamNative);
+            if (readerOverviewTS != null) {
+                try {
+                    readerOverviewTS.dispose();
+                } catch (Throwable t) {
+                    // Does nothing
+                }
+            }
+            if (readerOverviewSF != null) {
+                try {
+                    readerOverviewSF.dispose();
+                } catch (Throwable t) {
+                    // Does nothing
+                }
+            }
+            if (readerNative != null) {
+                try {
+                    readerNative.dispose();
+                } catch (Throwable t) {
+                    // Does nothing
+                }
+            }
+        }
+
+    }
     
     @Test
     public void wrongCompression() throws Exception {
@@ -432,6 +560,60 @@ public class GeoTiffKvpTest extends WCSKVPTestSupport {
         }
     }
 
-    
-    
+    @Test
+    public void getFullCoverageLonLat() throws Exception {
+        // impose not using latLon retaining
+        final WCSInfo wcsInfo = getWCS();
+        final boolean oldLatLon = wcsInfo.isLatLon();
+        wcsInfo.setLatLon(false);
+        getGeoServer().save(wcsInfo);
+
+        // execute
+        MockHttpServletResponse response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1&coverageId=wcs__BlueMarble");
+
+        assertEquals("image/tiff", response.getContentType());
+        byte[] tiffContents = getBinary(response);
+        File file = new File("./target/bm_fullLonLat.tiff");
+        FileUtils.writeByteArrayToFile(file, tiffContents);
+
+        final Hints hints = new Hints();
+        hints.put(Hints.FORCE_AXIS_ORDER_HONORING, "EPSG");
+        hints.put(Hints.FORCE_LONGITUDE_FIRST_AXIS_ORDER, Boolean.TRUE);
+        GeoTiffReader readerTarget = new GeoTiffReader(file, hints);
+        GridCoverage2D targetCoverage = null, sourceCoverage = null;
+        try {
+            targetCoverage = readerTarget.read(null);
+            sourceCoverage = (GridCoverage2D) this.getCatalog().getCoverageByName("BlueMarble")
+                    .getGridCoverageReader(null, null).read(null);
+
+            // checks
+            assertEquals(sourceCoverage.getGridGeometry().getGridRange(), targetCoverage
+                    .getGridGeometry().getGridRange());
+            assertEquals(CRS.getAxisOrder(targetCoverage.getCoordinateReferenceSystem()),
+                    AxisOrder.EAST_NORTH);
+
+            assertEquals(sourceCoverage.getEnvelope(), targetCoverage.getEnvelope());
+        } finally {
+            // reinforce old settings
+            wcsInfo.setLatLon(oldLatLon);
+            getGeoServer().save(wcsInfo);
+
+            try {
+                readerTarget.dispose();
+            } catch (Exception e) {
+                // TODO: handle exception
+            }
+            try {
+                scheduleForCleaning(targetCoverage);
+            } catch (Exception e) {
+                // TODO: handle exception
+            }
+            try {
+                scheduleForCleaning(sourceCoverage);
+            } catch (Exception e) {
+                // TODO: handle exception
+            }
+        }
+    }
+
 }

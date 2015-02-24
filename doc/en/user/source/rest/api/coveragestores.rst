@@ -59,7 +59,7 @@ Controls a particular coverage store in a given workspace.
      - 200
      - HTML, XML, JSON
      - HTML
-     -
+     - :ref:`quietOnNotFound <rest_api_coveragestores_quietOnNotFound>`
    * - POST
      - 
      - 405
@@ -119,6 +119,12 @@ It can take one of the three values:
 * ``metadata``-Delete only auxiliary files and metadata. It's recommended when data files (such as granules) should not be deleted from disk.
 * ``all``-Purge everything related to that store (metadata and granules).
 
+.. _rest_api_coveragestores_quietOnNotFound:
+
+``quietOnNotFound``
+^^^^^^^^^^^^^^^^^^^^
+
+The ``quietOnNotFound`` parameter avoids to log an Exception when the coverage store is not present. Note that 404 status code will be returned anyway.
 
 ``/workspaces/<ws>/coveragestores/<cs>/file[.<extension>]``
 -----------------------------------------------------------

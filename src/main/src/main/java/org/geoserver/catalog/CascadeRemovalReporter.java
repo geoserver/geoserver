@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -116,6 +117,16 @@ public class CascadeRemovalReporter implements CatalogVisitor {
         }
         // drill into namespaces
         // catalog.getNamespaceByPrefix(workspace.getName()).accept(this);
+
+        // drill down into styles
+        for (StyleInfo style : catalog.getStylesByWorkspace(workspace)) {
+            style.accept(this);
+        }
+
+        // drill down into groups
+        for (LayerGroupInfo group : catalog.getLayerGroupsByWorkspace(workspace)) {
+            group.accept(this);
+        }
 
         // add self
         add(workspace, ModificationType.DELETE);

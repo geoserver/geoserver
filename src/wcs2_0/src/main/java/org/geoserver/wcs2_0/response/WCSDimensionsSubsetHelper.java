@@ -1,4 +1,5 @@
-/* Copyright (c) 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -33,6 +34,7 @@ import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.util.ReaderDimensionsAccessor;
 import org.geoserver.wcs2_0.GetCoverage;
 import org.geoserver.wcs2_0.GridCoverageRequest;
+import org.geoserver.wcs2_0.WCSEnvelope;
 import org.geoserver.wcs2_0.exception.WCS20Exception;
 import org.geoserver.wcs2_0.response.DimensionBean.DimensionType;
 import org.geoserver.wcs2_0.util.EnvelopeAxesLabelsMapper;
@@ -49,7 +51,6 @@ import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
-import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.util.DateRange;
 import org.geotools.util.NumberRange;
 import org.geotools.util.Utilities;
@@ -94,6 +95,8 @@ public class WCSDimensionsSubsetHelper {
     private DimensionInfo elevationDimension;
 
     private CoordinateReferenceSystem subsettingCRS;
+
+    private WCSEnvelope requestedEnvelope;
 
     private GridCoverage2DReader reader;
 
@@ -331,6 +334,9 @@ public class WCSDimensionsSubsetHelper {
             }
         }
 
+        // make sure we have not been requested to subset outside of the source CRS
+        requestedEnvelope = new WCSEnvelope(subsettingEnvelope);
+
         //
         // intersect with original envelope to make sure the subsetting is valid
         //
@@ -511,6 +517,10 @@ public class WCSDimensionsSubsetHelper {
             }
         }
         return results;
+    }
+
+    public WCSEnvelope getRequestedEnvelope() {
+        return requestedEnvelope;
     }
 
     /**
@@ -884,7 +894,7 @@ public class WCSDimensionsSubsetHelper {
 
     /**
      * Split the current GridCoverageRequest by creating a list of new GridCoverageRequests: A query will be performed
-     * with the current specified subsets, returnin N granules (if any).
+     * with the current specified subsets, returning N granules (if any).
      * Then new N GridCoverageRequests will be created (one for each granule) having subsets setup on top
      * of the specific values of the dimensions for that N-th granule.
      * 
@@ -924,23 +934,25 @@ public class WCSDimensionsSubsetHelper {
         final SimpleFeatureCollection collection = source.getGranules(query);
         final SimpleFeatureIterator iterator = collection.features();
         final List<GridCoverageRequest> requests = new ArrayList<GridCoverageRequest>();
-        while (iterator.hasNext()) {
+        try {
+            while (iterator.hasNext()) {
+                final SimpleFeature feature = iterator.next();
 
-            final SimpleFeature feature = iterator.next();
+                // Prepare subRequest setting up dimensions matching the values of the current granule
+                final GridCoverageRequest subRequest = new GridCoverageRequest();
 
-            // Prepare subRequest setting up dimensions matching the values of the current granule
-            final GridCoverageRequest subRequest = new GridCoverageRequest();
+                // Setting up constant elements (outputCRS, spatial subset, interpolation
+                subRequest.setOutputCRS(gridCoverageRequest.getOutputCRS());
+                subRequest.setSpatialInterpolation(gridCoverageRequest.getSpatialInterpolation());
+                subRequest.setSpatialSubset(gridCoverageRequest.getSpatialSubset());
+                subRequest.setTemporalInterpolation(gridCoverageRequest.getTemporalInterpolation());
 
-            // Setting up constant elements (outputCRS, spatial subset, interpolation
-            subRequest.setOutputCRS(gridCoverageRequest.getOutputCRS());
-            subRequest.setSpatialInterpolation(gridCoverageRequest.getSpatialInterpolation());
-            subRequest.setSpatialSubset(gridCoverageRequest.getSpatialSubset());
-            subRequest.setTemporalInterpolation(gridCoverageRequest.getTemporalInterpolation());
-
-            //Setting up specific dimensions subset
-            updateDimensions(subRequest, feature, structuredReader, coverageName);
-            requests.add(subRequest);
-
+                //Setting up specific dimensions subset
+                updateDimensions(subRequest, feature, structuredReader, coverageName);
+                requests.add(subRequest);
+            }
+        } finally {
+            iterator.close();
         }
         return requests;
     }
@@ -1065,7 +1077,7 @@ public class WCSDimensionsSubsetHelper {
         Polygon llPolygon = JTS.toGeometry(new ReferencedEnvelope(envelope));
         GeometryDescriptor geom = source.getSchema().getGeometryDescriptor();
         PropertyName geometryProperty = ff.property(geom.getLocalName());
-        Geometry nativeCRSPolygon = JTS.transform(llPolygon, CRS.findMathTransform(DefaultGeographicCRS.WGS84, reader.getCoordinateReferenceSystem()));
+        Geometry nativeCRSPolygon = JTS.transform(llPolygon, CRS.findMathTransform(envelope.getCoordinateReferenceSystem(), reader.getCoordinateReferenceSystem()));
         Literal polygonLiteral = ff.literal(nativeCRSPolygon);
 //                    if(overlaps) {
         return ff.intersects(geometryProperty, polygonLiteral);

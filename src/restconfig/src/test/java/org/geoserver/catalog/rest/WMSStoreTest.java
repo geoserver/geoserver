@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -114,6 +115,29 @@ public class WMSStoreTest extends CatalogRESTTestSupport {
             
             assertTrue( link.getAttribute("href").endsWith( wl.getName() + ".html") );
         }
+    }
+    
+    @Test
+    public void testGetWrongWMSStore() throws Exception {
+        // Parameters for the request
+        String ws = "sf";
+        String wms = "sfssssss";
+        // Request path
+        String requestPath = "/rest/workspaces/" + ws + "/wmsstores/" + wms + ".html";
+        // Exception path
+        String exception = "No such wms store: " + ws + "," + wms;
+        // First request should thrown an exception
+        MockHttpServletResponse response = getAsServletResponse(requestPath);
+        assertEquals(404, response.getStatusCode());
+        assertTrue(response.getOutputStreamContent().contains(
+                exception));
+        // Same request with ?quietOnNotFound should not throw an exception
+        response = getAsServletResponse(requestPath + "?quietOnNotFound=true");
+        assertEquals(404, response.getStatusCode());
+        assertFalse(response.getOutputStreamContent().contains(
+                exception));
+        // No exception thrown
+        assertTrue(response.getOutputStreamContent().isEmpty());
     }
    
     @Test

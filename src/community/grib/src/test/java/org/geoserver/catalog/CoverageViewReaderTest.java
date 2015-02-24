@@ -1,4 +1,5 @@
-/* Copyright (c) 2014 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2014 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -6,10 +7,13 @@ package org.geoserver.catalog;
 
 import static org.junit.Assert.assertEquals;
 
+import java.awt.image.ColorModel;
+import java.awt.image.SampleModel;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import javax.media.jai.ImageLayout;
 import javax.xml.namespace.QName;
 
 import org.geoserver.catalog.CoverageView.CompositionType;
@@ -20,6 +24,7 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.io.GranuleStore;
+import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.factory.CommonFactoryFinder;
@@ -114,6 +119,13 @@ public class CoverageViewReaderTest extends GeoServerSystemTestSupport {
         assertEquals (1, removed);
         granulesCollection = granules.getGranules(null);
         assertEquals(0, granulesCollection.size());
+
+        GridCoverage2DReader myReader = (GridCoverage2DReader) reader;
+        ImageLayout layout = myReader.getImageLayout();
+        SampleModel sampleModel = layout.getSampleModel(null);
+        assertEquals (2, sampleModel.getNumBands());
+        ColorModel colorModel = layout.getColorModel(null);
+        assertEquals (2, colorModel.getNumComponents());
         reader.dispose();
     }
 

@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -9,7 +10,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.geoserver.catalog.CascadeRemovalReporter.ModificationType;
 import org.geotools.util.logging.Logging;
 
 /**
@@ -46,10 +46,20 @@ public class CascadeDeleteVisitor implements CatalogVisitor {
             s.accept(this);
         }
 
-        //remove any linked namespaces
+        // remove any linked namespaces
         NamespaceInfo ns = catalog.getNamespaceByPrefix( workspace.getName() );
         if ( ns != null ) {
             ns.accept(this);
+        }
+
+        // remove styles contained in this workspace
+        for (StyleInfo style : catalog.getStylesByWorkspace(workspace)) {
+            style.accept(this);
+        }
+
+        // remove layer groups contained in this workspace
+        for (LayerGroupInfo group : catalog.getLayerGroupsByWorkspace(workspace)) {
+            group.accept(this);
         }
 
         catalog.remove(workspace);

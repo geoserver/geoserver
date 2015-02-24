@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -267,6 +268,16 @@ public class GetCoverageTest extends AbstractGetCoverageTest {
         assertEquals("ows:ExceptionReport", dom.getDocumentElement().getNodeName());
     }
 
+    @Test
+    public void testNotExistent() throws Exception {
+        String queryString = "&request=getcoverage&service=wcs&version=1.1.1&&format=image/geotiff"
+                + "&BoundingBox=-45,146,-42,147,urn:ogc:def:crs:EPSG:6.6:4326";
+        Document dom = getAsDOM("wcs?identifier=NotThere" + queryString);
+        // print(dom);
+        checkOws11Exception(dom, "InvalidParameterValue", "identifier");
+    }
+
+    
     @Test
     public void testLayerQualified() throws Exception {
         String queryString = "&request=getcoverage&service=wcs&version=1.1.1&&format=image/geotiff"

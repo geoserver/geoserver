@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -104,6 +105,7 @@ public class CoverageResource extends AbstractCatalogResource {
         }
         
         coverage.setEnabled(true);
+        catalog.validate(coverage, true).throwIfInvalid();
         catalog.add( coverage );
         
         //create a layer for the coverage
@@ -150,6 +152,7 @@ public class CoverageResource extends AbstractCatalogResource {
         CoverageInfo original = catalog.getCoverageByCoverageStore( cs,  coverage );
         new CatalogBuilder(catalog).updateCoverage(original,c);
         calculateOptionalFields(c, original);
+        catalog.validate(original, false).throwIfInvalid();
         catalog.save( original );
         
         clear(original);

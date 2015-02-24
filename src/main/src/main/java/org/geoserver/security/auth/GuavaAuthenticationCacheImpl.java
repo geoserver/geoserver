@@ -1,4 +1,5 @@
-/* Copyright (c) 2014 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2014 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -8,7 +9,9 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -16,6 +19,8 @@ import org.geoserver.security.auth.AuthenticationCache;
 import org.geoserver.security.auth.AuthenticationCacheEntry;
 import org.geoserver.security.auth.AuthenticationCacheKey;
 import org.geotools.util.logging.Logging;
+import org.springframework.beans.factory.DisposableBean;
+import org.springframework.scheduling.concurrent.CustomizableThreadFactory;
 import org.springframework.security.core.Authentication;
 
 import com.google.common.cache.Cache;
@@ -26,7 +31,7 @@ import com.google.common.cache.CacheBuilder;
  * 
  * @author Mauro Bartolomeoli (mauro.bartolomeoli at geo-solutions.it)
  */
-public class GuavaAuthenticationCacheImpl implements AuthenticationCache {
+public class GuavaAuthenticationCacheImpl implements AuthenticationCache, DisposableBean {
 
     /**
      * Default eviction interval (double of the idle time).
@@ -41,8 +46,7 @@ public class GuavaAuthenticationCacheImpl implements AuthenticationCache {
     
     private int timeToIdleSeconds, timeToLiveSeconds;
     
-    private final ScheduledExecutorService scheduler = Executors
-            .newScheduledThreadPool(1);
+    private final ScheduledExecutorService scheduler;
     
     private Cache<AuthenticationCacheKey, AuthenticationCacheEntry> cache;
     
@@ -71,11 +75,22 @@ public class GuavaAuthenticationCacheImpl implements AuthenticationCache {
                 DEFAULT_CLEANUP_TIME, DEFAULT_CONCURRENCY_LEVEL);
     }
     
+    // Use a counter to ensure a unique prefix for each pool.
+    private static AtomicInteger poolCounter = new AtomicInteger();
+    private ThreadFactory getThreadFactory() {
+        CustomizableThreadFactory tFactory = new CustomizableThreadFactory(String.format("GuavaAuthCache-%d-", poolCounter.getAndIncrement()));
+        tFactory.setDaemon(true);
+        return tFactory;
+    }
+    
     public GuavaAuthenticationCacheImpl(int maxEntries, int timeToIdleSeconds,
             int timeToLiveSeconds, int cleanUpSeconds, int concurrencyLevel) {
         this.timeToIdleSeconds = timeToIdleSeconds;
         this.timeToLiveSeconds = timeToLiveSeconds;
-    
+        
+        scheduler = Executors
+                .newScheduledThreadPool(1, getThreadFactory());
+        
         cache = CacheBuilder.newBuilder()
                 .maximumSize(maxEntries)
                 .expireAfterAccess(timeToIdleSeconds, TimeUnit.SECONDS)
@@ -216,5 +231,10 @@ public class GuavaAuthenticationCacheImpl implements AuthenticationCache {
 
     public boolean isEmpty() {
         return cache.size() == 0;
+    }
+
+    @Override
+    public void destroy() {
+        scheduler.shutdown();
     }
 }

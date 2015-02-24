@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -128,6 +129,51 @@ public class StyleTest extends CatalogRESTTestSupport {
         JSONObject style =  ((JSONObject)json).getJSONObject("style"); 
         assertEquals( "Ponds", style.get( "name") );
         assertEquals( "Ponds.sld", style.get( "filename") );
+    }
+
+    @Test
+    public void testGetWrongStyle() throws Exception {
+        // Parameters for the request
+        String ws = "gs";
+        String style = "foooooo";
+        // Request path
+        String requestPath = "/rest/styles/" + style + ".html";
+        String requestPath2 = "/rest/workspaces/" + ws + "/styles/" + style + ".html";
+        // Exception path
+        String exception = "No such style: " + style;
+        String exception2 = "No such style "+ style +" in workspace " + ws;
+        
+        // CASE 1: No workspace set
+        
+        // First request should thrown an exception
+        MockHttpServletResponse response = getAsServletResponse(requestPath);
+        assertEquals(404, response.getStatusCode());
+        assertTrue(response.getOutputStreamContent().contains(
+                exception));
+        
+        // Same request with ?quietOnNotFound should not throw an exception
+        response = getAsServletResponse(requestPath + "?quietOnNotFound=true");
+        assertEquals(404, response.getStatusCode());
+        assertFalse(response.getOutputStreamContent().contains(
+                exception));
+        // No exception thrown
+        assertTrue(response.getOutputStreamContent().isEmpty());
+        
+        // CASE 2: workspace set
+        
+        // First request should thrown an exception
+        response = getAsServletResponse(requestPath2);
+        assertEquals(404, response.getStatusCode());
+        assertTrue(response.getOutputStreamContent().contains(
+                exception2));
+        
+        // Same request with ?quietOnNotFound should not throw an exception
+        response = getAsServletResponse(requestPath2 + "?quietOnNotFound=true");
+        assertEquals(404, response.getStatusCode());
+        assertFalse(response.getOutputStreamContent().contains(
+                exception2));
+        // No exception thrown
+        assertTrue(response.getOutputStreamContent().isEmpty());
     }
     
     @Test
@@ -489,7 +535,7 @@ public class StyleTest extends CatalogRESTTestSupport {
         in = style.in();
         try {
             out = new StringWriter();
-            IOUtils.copy(style.in(), out);
+            IOUtils.copy(in, out);
             assertFalse(out.toString().startsWith("#comment!"));
         }
         finally {
@@ -517,7 +563,7 @@ public class StyleTest extends CatalogRESTTestSupport {
         InputStream in = style.in();
         try {
             out = new StringWriter();
-            IOUtils.copy(style.in(), out);
+            IOUtils.copy(in, out);
             assertTrue(out.toString().startsWith("#comment!"));
         }
         finally {
@@ -562,7 +608,7 @@ public class StyleTest extends CatalogRESTTestSupport {
         in = style.in();
         try {
             out = new StringWriter();
-            IOUtils.copy(style.in(), out);
+            IOUtils.copy(in, out);
             assertFalse(out.toString().startsWith("#comment!"));
         }
         finally {
@@ -599,7 +645,7 @@ public class StyleTest extends CatalogRESTTestSupport {
         in = style.in();
         try {
             out = new StringWriter();
-            IOUtils.copy(style.in(), out);
+            IOUtils.copy(in, out);
             assertTrue(out.toString().startsWith("#comment!"));
         }
         finally {

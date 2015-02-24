@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
- Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ Copyright (C) 2014 - Open Source Geospatial Foundation. All rights reserved.
  This code is licensed under the GPL 2.0 license, available at the root
  application directory.
  --><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
@@ -49,8 +49,9 @@
           <descriptor>release/ext-geopkg.xml</descriptor>
           <descriptor>release/ext-grib.xml</descriptor>
           <descriptor>release/ext-dyndimension.xml</descriptor>
-          <descriptor>release/ext-rest-ext.xml</descriptor>
           <descriptor>release/ext-geofence.xml</descriptor>
+		  <descriptor>release/ext-rest-ext.xml</descriptor>
+          <descriptor>release/ext-sldservice.xml</descriptor>
         </descriptors>
       </configuration>
      </plugin>
@@ -147,7 +148,7 @@
       <modules>
         <module>authkey</module>
         <module>dds</module>
-	<module>geofence</module>
+		<module>geofence</module>
         <module>release</module>
         <module>ftp</module>
         <module>spatialite</module>
@@ -161,9 +162,10 @@
         <module>netcdf-out</module>
         <module>mbtiles</module>
         <module>geopkg</module>
-	<module>grib</module>
+		<module>grib</module>
         <module>dyndimension</module>
-	<module>rest-ext</module>
+		<module>rest-ext</module>
+        <module>sldService</module>
       </modules>
     </profile>
     <profile>

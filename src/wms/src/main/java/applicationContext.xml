@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <!-- 
- Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ Copyright (C) 2014 - Open Source Geospatial Foundation. All rights reserved.
  This code is licensed under the GPL 2.0 license, available at the root
  application directory.
  -->
@@ -673,6 +673,7 @@
      <property name="mappings">
        <props>
         <prop key="/openlayers/**">classpathPublisher</prop>
+        <prop key="/openlayers3/**">classpathPublisher</prop>
         <prop key="/options.png">classpathPublisher</prop>
        </props>
      </property>

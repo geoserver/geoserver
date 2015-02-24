@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -64,6 +65,7 @@ public class WFSAdminPage extends BaseServiceAdminPage<WFSInfo> {
     protected void build(final IModel info, Form form) {
         // max features
         form.add( new TextField<Integer>( "maxFeatures" ).add(new MinimumValidator<Integer>(0)) );
+        form.add( new TextField<Integer>("maxNumberOfFeaturesForPreview") );
         form.add( new CheckBox("featureBounding") );
         form.add( new CheckBox("hitsIgnoreMaxFeatures"));
         

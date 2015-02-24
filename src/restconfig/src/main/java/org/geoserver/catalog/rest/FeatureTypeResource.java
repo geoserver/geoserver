@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -191,6 +192,7 @@ public class FeatureTypeResource extends AbstractCatalogResource {
         }
         
         featureType.setEnabled(true);
+        catalog.validate(featureType, true).throwIfInvalid();
         catalog.add( featureType );
         
         //create a layer for the feature type
@@ -253,6 +255,7 @@ public class FeatureTypeResource extends AbstractCatalogResource {
         CatalogBuilder helper = new CatalogBuilder(catalog);
         helper.updateFeatureType(featureTypeInfo,featureTypeUpdate);
         calculateOptionalFields(featureTypeUpdate, featureTypeInfo);
+        catalog.validate(featureTypeInfo, false).throwIfInvalid();
         catalog.save( featureTypeInfo );
         catalog.getResourcePool().clear(featureTypeInfo);
         

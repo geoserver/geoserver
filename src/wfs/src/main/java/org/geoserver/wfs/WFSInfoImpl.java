@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -94,6 +95,17 @@ public class WFSInfoImpl extends ServiceInfoImpl implements WFSInfo {
     public void setHitsIgnoreMaxFeatures(boolean hitsIgnoreMaxFeatures) {
         this.hitsIgnoreMaxFeatures = hitsIgnoreMaxFeatures;
     }
+
+    @Override
+    public Integer getMaxNumberOfFeaturesForPreview() {
+        Integer i = getMetadata().get("maxNumberOfFeaturesForPreview", Integer.class);
+        return i != null ? i : 50;
+    }
+
+    @Override
+    public void setMaxNumberOfFeaturesForPreview(Integer maxNumberOfFeaturesForPreview) {
+        getMetadata().put("maxNumberOfFeaturesForPreview", maxNumberOfFeaturesForPreview);
+    }
     
     public List<String> getSRS() {
         return srs;
@@ -155,6 +167,4 @@ public class WFSInfoImpl extends ServiceInfoImpl implements WFSInfo {
         
         return true;
     }
-    
-    
 }

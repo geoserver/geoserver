@@ -38,17 +38,19 @@ Question and answer:
 License
 -------
 
-GeoServer is free software and is licensed under the :download:`GNU General Public License <gpl-2.0.txt>`.::
+For complete license information review :download:`LICENSE.txt </../../../../src/LICENSE.txt>`.
+
+* GeoServer is free software and is licensed under the :download:`GNU General Public License </../../../../src/release/GPL.txt>`::
 
     GeoServer, open geospatial information server
-    Copyright (C) 2001 - 2011 The Open Planning Project dba OpenPlans
-    http://openplans.org
-
+    Copyright (C) 2014 - Open Source Geospatial Foundation.
+    Copyright (C) 2001-2014 OpenPlans
+    
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version (collectively, "GPL").
-
+    
     As an exception to the terms of the GPL, you may copy, modify,
     propagate, and distribute a work formed by combining GeoServer with the
     Eclipse Libraries, or a work derivative of such a combination, even if
@@ -66,12 +68,12 @@ GeoServer is free software and is licensed under the :download:`GNU General Publ
     distributed by the Eclipse Foundation and licensed under the Eclipse
     Public License Version 1.0 ("EPL"), or a work based on such software and
     licensed under the EPL.
-
+    
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
-
+    
     You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
     Foundation, Inc., 51 Franklin Street, Suite 500, Boston, MA 02110-1335  USA
@@ -93,6 +95,10 @@ Additionally:
      */
 
 * SetCharacterEncodingFilter and RewindableInputStream makes use of code provided
-  under :download:`Apache License Version 2.0 <apache-2.0.txt>`.
+  under :download:`Apache License Version 2.0 </../../../../src/release/apache-2.0.txt>`.
 
-* UCSReader is provided using :download:`Apache License Version 1.1 <apache-1.1.txt>`.
+* UCSReader is provided using :download:`Apache License Version 1.1 </../../../../src/release/apache-1.1.txt>`.
+
+* Snippets from the Prototype library (www.prototypejs.org) under a MIT license.
+
+* The build process will download jars from JAI ImageIO (BSD), Jetty (Jetty License), EMF (EPL), XSD (EPL). Several projects using the Apache License 2.0: Spring, Apache Commons, Log4j, Batik, Xerces.

@@ -1,10 +1,14 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.catalog.rest;
 
 import static org.custommonkey.xmlunit.XMLAssert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
@@ -30,6 +34,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
+import org.opengis.feature.type.Name;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -280,6 +285,52 @@ public class FeatureTypeTest extends CatalogRESTTestSupport {
     }
     
     @Test
+    public void testGetWrongFeatureType() throws Exception {
+        // Parameters for the request
+        String ws = "sf";
+        String ds = "sf";
+        String ft = "PrimitiveGeoFeaturessss";
+        // Request path
+        String requestPath = "/rest/workspaces/" + ws + "/featuretypes/" + ft + ".html";
+        String requestPath2 = "/rest/workspaces/" + ws + "/datastores/" + ds + "/featuretypes/" + ft + ".html";
+        // Exception path
+        String exception = "No such feature type: "+ws+","+ft;
+        String exception2 = "No such feature type: "+ws+","+ds+","+ft;
+        
+        // CASE 1: No datastore set
+        
+        // First request should thrown an exception
+        MockHttpServletResponse response = getAsServletResponse(requestPath);
+        assertEquals(404, response.getStatusCode());
+        assertTrue(response.getOutputStreamContent().contains(
+                exception));
+        
+        // Same request with ?quietOnNotFound should not throw an exception
+        response = getAsServletResponse(requestPath + "?quietOnNotFound=true");
+        assertEquals(404, response.getStatusCode());
+        assertFalse(response.getOutputStreamContent().contains(
+                exception));
+        // No exception thrown
+        assertTrue(response.getOutputStreamContent().isEmpty());
+        
+        // CASE 2: datastore set
+        
+        // First request should thrown an exception
+        response = getAsServletResponse(requestPath2);
+        assertEquals(404, response.getStatusCode());
+        assertTrue(response.getOutputStreamContent().contains(
+                exception2));
+        
+        // Same request with ?quietOnNotFound should not throw an exception
+        response = getAsServletResponse(requestPath2 + "?quietOnNotFound=true");
+        assertEquals(404, response.getStatusCode());
+        assertFalse(response.getOutputStreamContent().contains(
+                exception2));
+        // No exception thrown
+        assertTrue(response.getOutputStreamContent().isEmpty());
+    }
+    
+    @Test
     public void testPut() throws Exception {
         String xml = 
           "<featureType>" + 
@@ -373,6 +424,7 @@ public class FeatureTypeTest extends CatalogRESTTestSupport {
         FeatureTypeInfo featureType = catalog.getFeatureTypeByName("sf", "PrimitiveGeoFeature");
         String featureTypeId = featureType.getId();
         String dataStoreId = featureType.getStore().getId();
+        Name name = featureType.getFeatureType().getName();
         
         assertNotNull( "PrmitiveGeoFeature available", featureType );
         for (LayerInfo l : catalog.getLayers( featureType ) ) {
@@ -389,7 +441,7 @@ public class FeatureTypeTest extends CatalogRESTTestSupport {
         if( catalog.getResourcePool().getDataStoreCache().containsKey( dataStoreId ) ){
             DataAccess dataStore = catalog.getResourcePool().getDataStoreCache().get( dataStoreId );
             List<String> names = dataStore.getNames();
-            assertTrue( names.contains("PrimativeGeoFeature"));
+            assertTrue( names.contains(name));
         }
     }
     

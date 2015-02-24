@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -35,6 +36,7 @@ import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.catalog.ValidationResult;
 import org.geoserver.catalog.event.CatalogListener;
 import org.geoserver.catalog.impl.AbstractDecorator;
 import org.geoserver.catalog.util.CloseableIterator;
@@ -1110,7 +1112,7 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
         delegate.add(unwrap(layerGroup));
     }
 
-    public List<RuntimeException> validate(LayerGroupInfo layerGroup, boolean isNew) {
+    public ValidationResult validate(LayerGroupInfo layerGroup, boolean isNew) {
         return delegate.validate(unwrap(layerGroup), isNew);
     }
 
@@ -1122,7 +1124,7 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
         delegate.add(unwrap(layer));
     }
 
-    public List<RuntimeException> validate(LayerInfo layer, boolean isNew) {
+    public ValidationResult validate(LayerInfo layer, boolean isNew) {
         return delegate.validate(unwrap(layer), isNew);
     }
 
@@ -1142,7 +1144,7 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
         delegate.add(namespace);
     }
 
-    public List<RuntimeException> validate(NamespaceInfo namespace, boolean isNew) {
+    public ValidationResult validate(NamespaceInfo namespace, boolean isNew) {
         return delegate.validate(namespace, isNew);
     }
 
@@ -1154,7 +1156,7 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
         delegate.add(unwrap(resource));
     }
 
-    public List<RuntimeException> validate(ResourceInfo resource, boolean isNew) {
+    public ValidationResult validate(ResourceInfo resource, boolean isNew) {
         return delegate.validate(unwrap(resource), isNew);
     }
 
@@ -1166,10 +1168,9 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
         delegate.add(unwrap(store));
     }
 
-    public List<RuntimeException> validate(StoreInfo store, boolean isNew) {
+    public ValidationResult validate(StoreInfo store, boolean isNew) {
         return delegate.validate(unwrap(store), isNew);
     }
-
     
     public <T extends StoreInfo> T detach(T store) {
         return delegate.detach(store);
@@ -1179,7 +1180,7 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
         delegate.add(style);
     }
 
-    public List<RuntimeException> validate(StyleInfo style, boolean isNew) {
+    public ValidationResult validate(StyleInfo style, boolean isNew) {
         return delegate.validate(style, isNew);
     }
 
@@ -1191,7 +1192,7 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
         delegate.add(workspace);
     }
 
-    public List<RuntimeException> validate(WorkspaceInfo workspace, boolean isNew) {
+    public ValidationResult validate(WorkspaceInfo workspace, boolean isNew) {
         return delegate.validate(workspace, isNew);
     }
 

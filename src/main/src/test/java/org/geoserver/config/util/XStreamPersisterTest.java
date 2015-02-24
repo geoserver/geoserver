@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -666,8 +667,7 @@ public class XStreamPersisterTest {
         Assert.assertEquals(LayerGroupInfo.Mode.SINGLE, group.getMode());
         
         Catalog catalog = new CatalogImpl();
-        List<RuntimeException> errors = catalog.validate(group, false);
-        Assert.assertTrue(errors == null || errors.size() == 0);
+        Assert.assertTrue(catalog.validate(group, false).isValid());
     }
     
     @Test

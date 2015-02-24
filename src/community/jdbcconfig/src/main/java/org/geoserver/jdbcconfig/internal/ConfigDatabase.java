@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -102,6 +103,7 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import java.sql.ResultSet;
@@ -301,19 +303,21 @@ public class ConfigDatabase {
         }
 
         List<T> lazyTransformed = Lists.transform(ids, new Function<String, T>() {
+            @Nullable
             @Override
             public T apply(String id) {
                 return getById(id, of);
             }
         });
 
+
         CloseableIterator<T> result;
+        Iterator<T> iterator = Iterators.filter(lazyTransformed.iterator(),
+                com.google.common.base.Predicates.notNull());
 
         if (fullySupported) {
-            Iterator<T> iterator = lazyTransformed.iterator();
             result = new CloseableIteratorAdapter<T>(iterator);
         } else {
-            Iterator<T> iterator = lazyTransformed.iterator();
             // Apply the filter
             result = CloseableIteratorAdapter.filter(iterator, filter);
             // The offset and limit should not have been applied as part of the query
@@ -768,6 +772,7 @@ public class ConfigDatabase {
         }
     }
 
+    @Nullable
     public <T extends Info> T getById(final String id, final Class<T> type) {
         Assert.notNull(id, "id");
 
@@ -793,6 +798,9 @@ public class ConfigDatabase {
         }
         if (info instanceof CatalogInfo) {
             info = resolveCatalog((CatalogInfo) info);
+        }
+        else if (info instanceof ServiceInfo) {
+            resolveTransient((ServiceInfo)info);
         }
 
         if (type.isAssignableFrom(info.getClass())) {
@@ -850,6 +858,12 @@ public class ConfigDatabase {
         }
     }
 
+    private <T extends ServiceInfo> void resolveTransient(T real) {
+        real = ModificationProxy.unwrap(real);
+        OwsUtils.resolveCollections(real);
+        real.setGeoServer(getGeoServer());
+    }
+
     /**
      * @param type
      * @return immutable list of results
@@ -863,12 +877,14 @@ public class ConfigDatabase {
         List<String> ids = template.queryForList(sql, params, String.class);
 
         List<T> transformed = Lists.transform(ids, new Function<String, T>() {
+            @Nullable
             @Override
             public T apply(String input) {
                 return getById(input, clazz);
             }
         });
-        return Collections.unmodifiableList(transformed);
+        Iterable<T> filtered = Iterables.filter(transformed, com.google.common.base.Predicates.notNull());
+        return ImmutableList.copyOf(filtered);
     }
 
     private <T extends Info> List<Integer> typesParam(final Class<T> clazz) {

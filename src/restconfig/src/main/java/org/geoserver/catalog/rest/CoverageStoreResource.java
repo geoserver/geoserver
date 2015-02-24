@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -66,6 +67,7 @@ public class CoverageStoreResource extends AbstractCatalogResource {
     @Override
     protected String handleObjectPost(Object object) throws Exception {
         CoverageStoreInfo coverageStore = (CoverageStoreInfo) object;
+        catalog.validate(coverageStore, true).throwIfInvalid();
         catalog.add( coverageStore );
         
         LOGGER.info( "POST coverage store " + coverageStore.getName() );
@@ -85,7 +87,8 @@ public class CoverageStoreResource extends AbstractCatalogResource {
         CoverageStoreInfo cs = (CoverageStoreInfo) object;
         CoverageStoreInfo original = catalog.getCoverageStoreByName(workspace, coveragestore);
         new CatalogBuilder( catalog ).updateCoverageStore( original, cs );
-        
+
+        catalog.validate(original, false).throwIfInvalid();
         catalog.save( original );
         clear(original);
         

@@ -1,11 +1,16 @@
-/* Copyright (c) 2014 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2014 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.catalog;
 
+import it.geosolutions.imageio.utilities.ImageIOUtilities;
+
 import java.awt.Rectangle;
+import java.awt.image.ColorModel;
 import java.awt.image.RenderedImage;
+import java.awt.image.SampleModel;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,8 +21,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.media.jai.ImageLayout;
+import javax.media.jai.RasterFactory;
 import javax.media.jai.operator.BandMergeDescriptor;
 
+import org.geoserver.catalog.CoverageDimensionCustomizerReader.GridCoverageWrapper;
 import org.geoserver.catalog.CoverageView.CoverageBand;
 import org.geoserver.catalog.CoverageView.InputCoverageBand;
 import org.geoserver.catalog.impl.CoverageDimensionImpl;
@@ -34,6 +41,7 @@ import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.factory.Hints;
 import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.referencing.CRS;
+import org.jaitools.imageutils.ImageLayout2;
 import org.opengis.coverage.SampleDimension;
 import org.opengis.coverage.grid.Format;
 import org.opengis.coverage.grid.GridEnvelope;
@@ -253,6 +261,8 @@ public class CoverageViewReader implements GridCoverage2DReader {
 
     private GridCoverageFactory coverageFactory;
 
+    private ImageLayout imageLayout;
+
     public CoverageViewReader(GridCoverage2DReader delegate, CoverageView coverageView,
             CoverageInfo coverageInfo, Hints hints) {
         this.coverageName = coverageView.getName();
@@ -270,6 +280,22 @@ public class CoverageViewReader implements GridCoverage2DReader {
         }
         if (this.coverageFactory == null) {
             this.coverageFactory = CoverageFactoryFinder.getGridCoverageFactory(this.hints);
+        }
+        ImageLayout layout;
+        try {
+            layout = delegate.getImageLayout(referenceName);
+            List<CoverageBand> bands = coverageView.getCoverageBands();
+            SampleModel originalSampleModel = layout.getSampleModel(null);
+            SampleModel sampleModel = RasterFactory.createBandedSampleModel(originalSampleModel.getDataType(),
+                    originalSampleModel.getWidth(), originalSampleModel.getHeight(), bands.size());
+
+            ColorModel colorModel = ImageIOUtilities.createColorModel(sampleModel);
+            this.imageLayout = new ImageLayout2(layout.getMinX(null), layout.getMinY(null), originalSampleModel.getWidth(), 
+                    originalSampleModel.getHeight());
+            imageLayout.setSampleModel(sampleModel);
+            imageLayout.setColorModel(colorModel);
+        } catch (IOException e) {
+           throw new RuntimeException(e);
         }
     }
 
@@ -338,9 +364,9 @@ public class CoverageViewReader implements GridCoverage2DReader {
         } else {
             image = sampleCoverage.getRenderedImage();
         }
-        return coverageFactory.create(coverageInfo.getName(), image,
-                sampleCoverage.getGridGeometry(),
-                dims.toArray(new GridSampleDimension[dims.size()]), null, /* props */null);
+        GridSampleDimension[] sampleDimensions = dims.toArray(new GridSampleDimension[dims.size()]);
+        GridCoverage2D mergedCoverage = coverageFactory.create(coverageInfo.getName(), image, sampleCoverage.getGridGeometry(), sampleDimensions, null, null);
+        return new GridCoverageWrapper(coverageInfo.getName(), mergedCoverage, sampleDimensions, mergedCoverage.getProperties());
     }
 
 
@@ -495,13 +521,13 @@ public class CoverageViewReader implements GridCoverage2DReader {
 
     @Override
     public ImageLayout getImageLayout() throws IOException {
-        return delegate.getImageLayout(referenceName);
+        return imageLayout;
     }
 
     @Override
     public ImageLayout getImageLayout(String coverageName) throws IOException {
         checkCoverageName(coverageName);
-        return delegate.getImageLayout(referenceName);
+        return imageLayout;
     }
 
     @Override

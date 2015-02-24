@@ -1,17 +1,41 @@
 package org.geoserver.wcs2_0.eo;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.io.File;
+import java.util.Collections;
 
 import org.apache.commons.io.FileUtils;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CatalogBuilder;
+import org.geoserver.catalog.CoverageInfo;
+import org.geoserver.catalog.CoverageStoreInfo;
+import org.geoserver.catalog.CoverageView;
+import org.geoserver.catalog.DimensionPresentation;
+import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.MetadataMap;
+import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.CoverageView.CompositionType;
+import org.geoserver.catalog.CoverageView.CoverageBand;
+import org.geoserver.catalog.CoverageView.InputCoverageBand;
+import org.geoserver.data.test.SystemTestData;
+import org.geoserver.data.test.TestData;
+import org.geoserver.data.test.SystemTestData.LayerProperty;
 import org.geoserver.wcs.WCSInfo;
+import org.geotools.feature.NameImpl;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
 public class DescribeOECoverageSetTest extends WCSEOTestSupport {
+
+    @Override
+    protected void setUpTestData(SystemTestData testData) throws Exception {
+        super.setUpTestData(testData);
+        testData.setUpDefaultRasterLayers();
+        testData.setUpRasterLayer(WATTEMP, "watertemp.zip", null, null, TestData.class);
+    }
 
     @Test
     public void testBasic() throws Exception {
@@ -280,6 +304,22 @@ public class DescribeOECoverageSetTest extends WCSEOTestSupport {
         assertEquals("4", xpath.evaluate("count(//wcs:CoverageDescriptions/wcs:CoverageDescription)", dom));
         assertEquals("1", xpath.evaluate("count(//wcseo:DatasetSeriesDescriptions)", dom));
     }
+
+    @Test
+    public void testTimeIntervalTrimContainsLenient() throws Exception {
+        // overlaps with some, contains none (dates are incomplete, we use the lenient parameter)
+        Document dom = getAsDOM("wcs?request=DescribeEOCoverageSet&version=2.0.1&service=WCS&eoid=sf__timeranges_dss" + 
+           "&subset=phenomenonTime(\"2008-10-31T00:00Z\",\"2008-10-31T23:59Z\")&containment=contains");
+        assertEquals("0", xpath.evaluate("count(//wcs:CoverageDescriptions/wcs:CoverageDescription)", dom));
+        assertEquals("0", xpath.evaluate("count(//wcseo:DatasetSeriesDescriptions)", dom));
+        
+        // contains a bunch 
+        dom = getAsDOM("wcs?request=DescribeEOCoverageSet&version=2.0.1&service=WCS&eoid=sf__timeranges_dss" +
+                "&subset=phenomenonTime(\"2008-10-30T00:00Z\",\"2008-11-03T00:00Z\")&containment=contains");
+        // print(dom);
+        assertEquals("4", xpath.evaluate("count(//wcs:CoverageDescriptions/wcs:CoverageDescription)", dom));
+        assertEquals("1", xpath.evaluate("count(//wcseo:DatasetSeriesDescriptions)", dom));
+    }    
     
     @Test
     public void testMixedTrim() throws Exception {
@@ -298,5 +338,50 @@ public class DescribeOECoverageSetTest extends WCSEOTestSupport {
         print(dom);
         assertEquals("2", xpath.evaluate("count(//wcs:CoverageDescriptions/wcs:CoverageDescription)", dom));
     }
+    
 
+    @Test
+    public void testCoverageView() throws Exception {
+
+        // Creating the coverageView
+        final Catalog catalog = getCatalog();
+        final CoverageStoreInfo storeInfo = catalog.getCoverageStoreByName("watertemp");
+
+        final InputCoverageBand band = new InputCoverageBand("watertemp", "0");
+        final CoverageBand outputBand = new CoverageBand(Collections.singletonList(band), "watertemp@0",
+                0, CompositionType.BAND_SELECT);
+        final CoverageView coverageView = new CoverageView("waterView",
+                Collections.singletonList(outputBand));
+        final CatalogBuilder builder = new CatalogBuilder(catalog);
+        builder.setStore(storeInfo);
+
+        // Adding the coverageView to the catalog
+        final String layerName = "waterview";
+        final CoverageInfo coverageInfo = coverageView.createCoverageInfo(layerName, storeInfo, builder);
+        coverageInfo.getParameters().put("USE_JAI_IMAGEREAD","false");
+        coverageInfo.getMetadata().put(WCSEOMetadata.DATASET.key, true);
+        catalog.add(coverageInfo);
+
+        // Adding the layer
+        LayerInfo layer = catalog.getLayerByName(layerName);
+        if (layer == null) {
+            layer = catalog.getFactory().createLayer();
+        }
+        layer.setResource(coverageInfo);
+        setupRasterDimension(layerName, ResourceInfo.TIME, DimensionPresentation.LIST, null);
+        enableEODataset(layerName);
+
+        layer.setType(LayerInfo.Type.RASTER);
+        layer.setEnabled(true);
+
+        if (layer.getId() == null) {
+            catalog.add(layer);
+        } else {
+            catalog.save(layer);
+        }
+
+        Document dom = getAsDOM("wcs?service=WCS&version=2.0.1&request=DescribeEOCoverageSet&eoId=sf__waterview_dss");
+        assertEquals("4", xpath.evaluate("count(//wcs:CoverageDescriptions/wcs:CoverageDescription)", dom));
+
+    }
 }

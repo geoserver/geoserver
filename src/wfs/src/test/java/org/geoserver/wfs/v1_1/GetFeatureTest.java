@@ -1,17 +1,20 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wfs.v1_1;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.net.URLEncoder;
 import java.util.Collections;
+
 import javax.xml.namespace.QName;
+
 import org.custommonkey.xmlunit.XMLAssert;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.test.RunTestSetup;
@@ -528,6 +531,15 @@ public class GetFeatureTest extends WFSTestSupport {
     }
 
     @Test
+    public void testSortedInvalidAttribute() throws Exception {
+        Document dom = getAsDOM("wfs?request=GetFeature&typename="
+                + getLayerId(SystemTestData.BUILDINGS) + "&version=1.1.0&service=wfs&sortBy=GODOT");
+        checkOws10Exception(dom, "InvalidParameterValue");
+        XMLAssert.assertXpathEvaluatesTo("Illegal property name: GODOT for feature type "
+                + getLayerId(SystemTestData.BUILDINGS), "//ows:ExceptionText", dom);
+    }
+
+    @Test
     public void testEncodeSrsDimension() throws Exception {
         Document dom = getAsDOM("wfs?request=GetFeature&version=1.1.0&service=wfs&typename=" 
             + getLayerId(SystemTestData.PRIMITIVEGEOFEATURE));
@@ -542,4 +554,15 @@ public class GetFeatureTest extends WFSTestSupport {
         XMLAssert.assertXpathNotExists("//gml:Point[@srsDimension = '2']", dom);
     }
     
+    @Test
+    public void testWfs20AndGML31() throws Exception {
+        Document doc = getAsDOM("wfs?request=GetFeature&typeName=cdf:Fifteen&version=2.0.0&service=wfs&featureid=Fifteen.2&outputFormat=gml3");
+        // print(doc);
+
+        XMLAssert.assertXpathEvaluatesTo("1",
+                "count(//wfs:FeatureCollection/gml:featureMembers/cdf:Fifteen)", doc);
+        XMLAssert.assertXpathEvaluatesTo("Fifteen.2",
+                "//wfs:FeatureCollection/gml:featureMembers/cdf:Fifteen/@gml:id", doc);
+    }
+
 }

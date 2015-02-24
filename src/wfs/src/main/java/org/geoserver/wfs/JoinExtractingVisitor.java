@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -124,37 +125,6 @@ public class JoinExtractingVisitor extends FilterVisitorSupport {
         return handle(op, op.getExpression1(), op.getExpression2(), extraData);
     }
 
-//    void handle(Filter f) {
-//        if (f instanceof And) {
-//            for (Filter g : ((And)f).getChildren()) {
-//                handle(g);
-//            }
-//        }
-//        else {
-//            //check if this is a join filter
-//            boolean join = false;
-//            if (f instanceof BinaryComparisonOperator) {
-//                join = isJoinFilter(((BinaryComparisonOperator)f).getExpression1(), 
-//                    ((BinaryComparisonOperator)f).getExpression2());
-//            }
-//            else if (f instanceof BinarySpatialOperator) {
-//                join = isJoinFilter(((BinarySpatialOperator)f).getExpression1(), 
-//                        ((BinarySpatialOperator)f).getExpression2());
-//            }
-//            else if (f instanceof BinaryTemporalOperator) {
-//                join = isJoinFilter(((BinaryTemporalOperator)f).getExpression1(), 
-//                        ((BinaryTemporalOperator)f).getExpression2());
-//            }
-//            
-//            if (join) {
-//                joinFilters.add(f);
-//            }
-//            else {
-//                filters.add(f);
-//            }
-//        }
-//    }
-
     Object handle(Filter f, Expression e1, Expression e2, Object extraData) {
         if (isJoinFilter(e1, e2)) {
             joinFilters.add(f);
@@ -199,6 +169,24 @@ public class JoinExtractingVisitor extends FilterVisitorSupport {
         }
 
         return joins;
+    }
+
+    /**
+     * Returns the joined feature types. If called past join extraction, it will return the types in
+     * the same order as the joins (which might have been reordered to locate the center of the star
+     * join)
+     * 
+     * @return
+     */
+    public List<FeatureTypeInfo> getFeatureTypes() {
+        if (primaryFeatureType == null) {
+            return featureTypes;
+        } else {
+            List<FeatureTypeInfo> result = new ArrayList<>();
+            result.add(primaryFeatureType);
+            result.addAll(featureTypes);
+            return result;
+        }
     }
 
     /**

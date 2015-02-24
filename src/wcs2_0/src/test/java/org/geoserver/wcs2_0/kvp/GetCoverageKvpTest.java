@@ -18,9 +18,11 @@ import net.opengis.wcs20.TargetAxisExtentType;
 import net.opengis.wcs20.TargetAxisSizeType;
 
 import org.eclipse.emf.common.util.EList;
+import org.geoserver.wcs2_0.WCS20Const;
 import org.geotools.wcs.v2_0.RangeSubset;
 import org.geotools.wcs.v2_0.Scaling;
 import org.junit.Test;
+import org.w3c.dom.Document;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
@@ -32,7 +34,31 @@ public class GetCoverageKvpTest extends WCSKVPTestSupport {
         
         assertEquals("theCoverage", gc.getCoverageId());
     }
-    
+
+    @Test
+    public void testGetCoverageNoWs() throws Exception {
+        MockHttpServletResponse response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1" +
+                "&coverageId=BlueMarble&&Format=image/tiff");  
+
+        assertEquals("image/tiff", response.getContentType());      
+    }
+
+    @Test
+    public void testGetCoverageLocalWs() throws Exception {
+        MockHttpServletResponse response = getAsServletResponse("wcs/wcs?request=GetCoverage&service=WCS&version=2.0.1" +
+                "&coverageId=BlueMarble&&Format=image/tiff");  
+
+        assertEquals("image/tiff", response.getContentType());      
+    }
+
+    @Test
+    public void testNotExistent() throws Exception {
+        MockHttpServletResponse response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1" +
+                "&coverageId=NotThere&&Format=image/tiff");  
+        checkOws20Exception(response, 404, "NoSuchCoverage", "coverageId");      
+    }
+
+
     @Test
     public void testExtensionScaleFactor() throws Exception {
         GetCoverageType gc = parse("wcs?request=GetCoverage&service=WCS&version=2.0.1" +
@@ -164,7 +190,20 @@ public class GetCoverageKvpTest extends WCSKVPTestSupport {
         InterpolationType interp = (InterpolationType) extensions.get("http://www.opengis.net/WCS_service-extension_interpolation/1.0:Interpolation");
         assertEquals("http://www.opengis.net/def/interpolation/OGC/1/linear", interp.getInterpolationMethod().getInterpolationMethod());
     }
-    
+
+    @Test
+    public void testExtensionOverview() throws Exception {
+        GetCoverageType gc = parse("wcs?request=GetCoverage&service=WCS&version=2.0.1"
+                + "&coverageId=theCoverage&overviewPolicy=QUALITY");
+        Map<String, Object> extensions = getExtensionsMap(gc);
+
+        assertEquals(1, extensions.size());
+        String overviewPolicy = (String) extensions
+                .get(WCS20Const.OVERVIEW_POLICY_EXTENSION_NAMESPACE + ":"
+                        + WCS20Const.OVERVIEW_POLICY_EXTENSION);
+        assertEquals(overviewPolicy, "QUALITY");
+    }
+
     @Test
     public void testGetMissingCoverage() throws Exception {
         MockHttpServletResponse response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1&coverageId=notThereBaby");

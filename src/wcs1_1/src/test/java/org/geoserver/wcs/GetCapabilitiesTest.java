@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -385,5 +386,22 @@ public class GetCapabilitiesTest extends WCSTestSupport {
         assertXpathEvaluatesTo("simple", xpathBase + "/@xlink:type", dom);
         assertXpathEvaluatesTo("http://www.geoserver.org/tasmania/dem.xml", xpathBase
                 + "/@xlink:href", dom);
+    }
+
+    @Test
+    public void testNoMetadataTypeAttribute() throws Exception {
+        Catalog catalog = getCatalog();
+        CoverageInfo ci = catalog.getCoverageByName(getLayerId(TASMANIA_DEM));
+        MetadataLinkInfo ml = catalog.getFactory().createMetadataLink();
+        ml.setContent("http://www.geoserver.org/tasmania/dem.xml");
+        ml.setAbout("http://www.geoserver.org");
+        ci.getMetadataLinks().add(ml);
+        catalog.save(ci);
+
+        Document dom = getAsDOM("wcs?request=GetCapabilities");
+        checkValidationErrors(dom, WCS11_SCHEMA);
+        String xpathBase = "//wcs:CoverageSummary[wcs:Identifier = '" + TASMANIA_DEM.getLocalPart()
+                + "']/ows:Metadata";
+        assertXpathNotExists(xpathBase + "/@metadataType", dom);
     }
 }

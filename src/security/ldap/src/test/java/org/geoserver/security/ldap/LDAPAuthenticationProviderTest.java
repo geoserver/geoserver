@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -8,20 +9,16 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.io.File;
-
-import org.geoserver.config.GeoServerDataDirectory;
-import org.geoserver.platform.GeoServerResourceLoader;
-import org.geoserver.security.GeoServerSecurityManager;
-import org.junit.After;
+import org.geoserver.security.impl.GeoServerRole;
+import org.geoserver.security.impl.MemoryRoleService;
+import org.geoserver.security.impl.MemoryRoleStore;
 import org.junit.Assume;
-import org.junit.Before;
 import org.junit.Test;
-import org.springframework.ldap.test.LdapTestUtils;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
+
+import edu.emory.mathcs.backport.java.util.Collections;
 
 /**
  * 
@@ -185,6 +182,55 @@ public class LDAPAuthenticationProviderTest extends LDAPBaseTest {
             }
         }
         assertTrue(foundAdmin);
+    }
+    
+    /**
+     * Test that active role service is applied in the LDAPAuthenticationProvider
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testRoleService() throws Exception {
+        Assume.assumeTrue(LDAPTestUtils.initLdapServer(true, ldapServerUrl,
+                basePath));
+        ((LDAPSecurityServiceConfig)config).setUserDnPattern("uid={0},ou=People");
+        
+        createAuthenticationProvider();
+                
+        authProvider.setSecurityManager(securityManager);
+        securityManager.setProviders(Collections.singletonList(authProvider));
+        MemoryRoleStore roleService = new MemoryRoleStore();
+        roleService.initializeFromService(new MemoryRoleService());
+        roleService.setSecurityManager(securityManager);
+        GeoServerRole role = roleService.createRoleObject("MyRole");
+        roleService.addRole(role);
+        roleService.associateRoleToUser(role, "other");
+        securityManager.setActiveRoleService(roleService);
+
+        Authentication result = authProvider.authenticate(authenticationOther);
+        assertTrue(result.getAuthorities().contains(role));
+        assertEquals(3, result.getAuthorities().size());
+        
+    }
+    
+    /**
+     * Test that LDAPAuthenticationProvider finds roles even if there is a colon in 
+     * the password
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testColonPassword() throws Exception {
+        Assume.assumeTrue(LDAPTestUtils.initLdapServer(true, ldapServerUrl,
+                basePath, "data3.ldif"));
+        ((LDAPSecurityServiceConfig)config).setUserDnPattern("uid={0},ou=People");
+        
+        createAuthenticationProvider();
+
+        authentication = new UsernamePasswordAuthenticationToken("colon","da:da");
+        
+        Authentication result = authProvider.authenticate(authentication);
+        assertEquals(2, result.getAuthorities().size());
     }
     
 

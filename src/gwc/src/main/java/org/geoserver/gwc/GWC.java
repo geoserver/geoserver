@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -553,13 +554,20 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         }
     }
 
+    public static void tryReload() {
+        GWC instance = GWC.INSTANCE;
+        if (instance != null) {
+            instance.reload();
+        }
+    }
+
     /**
      * Reloads the configuration and notifies GWC of any externally removed layer.
      * @throws IOException 
      * @throws ConfigurationException 
      * @throws InterruptedException 
      */
-    public void reload() {
+    void reload() {
         final Set<String> currLayerNames = new HashSet<String>(getTileLayerNames());
         try {
             tld.reInit();
@@ -1976,12 +1984,18 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
     public static String tileLayerName(LayerGroupInfo lgi) {
         return lgi.prefixedName();
     }
-    
+
+    public static void tryReset() {
+        GWC instance = GWC.INSTANCE;
+        if (instance != null) {
+            GWC.INSTANCE.reset();
+        }
+    }
 
     /**
      * Flush caches
      */
-    public void reset() {
+    void reset() {
         CatalogConfiguration c = GeoServerExtensions.bean(CatalogConfiguration.class);
         if (c != null) {
             c.reset();

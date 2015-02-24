@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -25,7 +26,6 @@ import net.opengis.wfs20.StoredQueryType;
 import org.geoserver.catalog.AttributeTypeInfo;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
-import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.ResourcePool;
 import org.geoserver.feature.TypeNameExtractingVisitor;
 import org.geoserver.ows.Dispatcher;
@@ -411,18 +411,19 @@ public class GetFeature {
                 if (filter != null) {
                     if (meta.getFeatureType() instanceof SimpleFeatureType) {                
                         if (metas.size() > 1) {
-                            //ensure that the filter is allowable
-                            if (!isValidJoinFilter(filter)) {
-                                throw new WFSException(request, 
-                                        "Unable to preform join with specified filter: " + filter);
-                            }
-                                // join, need to separate the joining filter from other filters
+                            // the join extracting visitor cannot handle negated filters,
+                            // the simplifier handles most common case removing the negation,
+                            // e.g., not(a < 10) -> a >= 10
+                            filter = SimplifyingFilterVisitor.simplify(filter);
+
+                            // join, need to separate the joining filter from other filters
                             JoinExtractingVisitor extractor = 
                                     new JoinExtractingVisitor(metas, query.getAliases());
                             filter.accept(extractor, null);
 
                             primaryAlias = extractor.getPrimaryAlias();
                             primaryMeta = extractor.getPrimaryFeatureType();
+                            metas = extractor.getFeatureTypes();
                             primaryTypeName = new QName(primaryMeta.getNamespace().getURI(),
                                     primaryMeta.getNativeName());
                             joins = extractor.getJoins();
@@ -431,9 +432,15 @@ public class GetFeature {
                                         "join filters were found", metas.size(), extractor.getJoins().size()));
                             }
 
-                            //validate the filter for each join
+                                // validate the filter for each join, as well as the join filter
                             for (int j = 1; j < metas.size(); j++) {
                                 Join join = joins.get(j-1);
+                                    if (!isValidJoinFilter(join.getJoinFilter())) {
+                                        throw new WFSException(request,
+                                                "Unable to preform join with specified join filter: "
+                                                        + filter);
+                                    }
+
                                 if (join.getFilter() != null) {
                                     validateFilter(join.getFilter(), query, metas.get(j), request);
                                 }
@@ -441,7 +448,7 @@ public class GetFeature {
 
                             filter = extractor.getPrimaryFilter();
                             if (filter != null) {
-                                validateFilter(filter, query, meta, request);
+                                    validateFilter(filter, query, primaryMeta, request);
                             }
                         }
                         else {
@@ -453,6 +460,13 @@ public class GetFeature {
                     }
                 }
                 
+                // validate sortby if present
+                List<SortBy> sortBy = query.getSortBy();
+                if (sortBy != null && !sortBy.isEmpty()
+                        && meta.getFeatureType() instanceof SimpleFeatureType) {
+                    validateSortBy(sortBy, meta, request);
+                }
+
                 // load primary feature source
                 Hints hints = null;
                 if (joins != null) {
@@ -561,8 +575,8 @@ public class GetFeature {
 
                 //JD: TODO reoptimize
                 //                if ( i == request.getQuery().size() - 1 ) { 
-                //                	//DJB: dont calculate feature count if you dont have to. The MaxFeatureReader will take care of the last iteration
-                //                	maxFeatures -= features.getCount();
+                //                  //DJB: dont calculate feature count if you dont have to. The MaxFeatureReader will take care of the last iteration
+                //                  maxFeatures -= features.getCount();
                 //                }
 
                 //GR: I don't know if the featuresults should be added here for later
@@ -994,7 +1008,7 @@ public class GetFeature {
         hints.put(Hints.RESOLVE, request.getResolve());
         BigInteger resolveTimeOut = request.getResolveTimeOut();
         if (resolveTimeOut != null) {
-        	hints.put(Hints.RESOLVE_TIMEOUT, resolveTimeOut.intValue());
+            hints.put(Hints.RESOLVE_TIMEOUT, resolveTimeOut.intValue());
         }
                 
         //handle xlink properties
@@ -1126,7 +1140,20 @@ O:      for (String propName : query.getPropertyNames()) {
         return propNames;
     }
 
-    void validateFilter(Filter filter, Query query, FeatureTypeInfo meta, final GetFeatureRequest request) 
+    void validateSortBy(List<SortBy> sortBys, FeatureTypeInfo meta, final GetFeatureRequest request)
+            throws IOException {
+        FeatureType featureType = meta.getFeatureType();
+        for (SortBy sortBy : sortBys) {
+            PropertyName name = sortBy.getPropertyName();
+            if (name.evaluate(featureType) == null) {
+                throw new WFSException(request, "Illegal property name: " + name.getPropertyName()
+                        + " for feature type " + meta.prefixedName(), "InvalidParameterValue");
+            }
+        }
+    }
+
+    void validateFilter(Filter filter, Query query, final FeatureTypeInfo meta,
+            final GetFeatureRequest request)
         throws IOException {
       //1. ensure any property name refers to a property that 
         // actually exists
@@ -1136,7 +1163,8 @@ O:      for (String propName : query.getPropertyNames()) {
                     // case of multiple geometries being returned
                     if (name.evaluate(featureType) == null) {
                         throw new WFSException(request, "Illegal property name: "
-                            + name.getPropertyName(), "InvalidParameterValue");
+                            + name.getPropertyName() + " for feature type " + meta.prefixedName(),
+                            "InvalidParameterValue");
                     }
 
                     return name;
@@ -1146,7 +1174,7 @@ O:      for (String propName : query.getPropertyNames()) {
         filter.accept(new AbstractFilterVisitor(visitor), null);
         
         //2. ensure any spatial predicate is made against a property 
-        // that is actually special
+        // that is actually spatial
         AbstractFilterVisitor fvisitor = new AbstractFilterVisitor() {
           
             protected Object visit( BinarySpatialOperator filter, Object data ) {
@@ -1159,11 +1187,13 @@ O:      for (String propName : query.getPropertyNames()) {
                 }
                 
                 if ( name != null ) {
-                    //check against fetaure type to make sure its
+                    // check against feataure type to make sure its
                     // a geometric type
                     AttributeDescriptor att = (AttributeDescriptor) name.evaluate(featureType);
                     if ( !( att instanceof GeometryDescriptor ) ) {
-                        throw new WFSException(request, "Property " + name + " is not geometric", "InvalidParameterValue");
+                        throw new WFSException(request, "Property " + name
+                                + " is not geometric in feature type " + meta.prefixedName(),
+                                "InvalidParameterValue");
                     }
                 }
                 
@@ -1193,6 +1223,7 @@ O:      for (String propName : query.getPropertyNames()) {
                             CoordinateReferenceSystem crs = null;
                             try {
                                 crs = CRS.decode( filter.getSRS() );
+                                e.setCoordinateReferenceSystem(crs);
                                 e = CRS.transform(e, geo);
                             } 
                             catch( Exception ex ) {

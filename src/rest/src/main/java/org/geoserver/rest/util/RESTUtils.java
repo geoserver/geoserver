@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -65,6 +66,8 @@ public class RESTUtils {
     static Logger LOGGER = Logging.getLogger("org.geoserver.rest.util");
 
     public static final String ROOT_KEY = "root";
+    
+    public static final String QUIET_ON_NOT_FOUND_KEY = "quietOnNotFound";
     
     /**
      * Returns the underlying HttpServletRequest from a Restlet Request object.

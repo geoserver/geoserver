@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -106,6 +107,13 @@ public class Importer implements DisposableBean, ApplicationListener {
     public Importer(Catalog catalog) {
         this.catalog = catalog;
         this.styleGen = new StyleGenerator(catalog);
+    }
+
+    /**
+     * Returns the style generator.
+     */
+    public StyleGenerator getStyleGenerator() {
+        return styleGen;
     }
 
     ImportStore createContextStore() {
@@ -1195,6 +1203,15 @@ public class Importer implements DisposableBean, ApplicationListener {
         NamespaceInfo ns = catalog.getNamespaceByPrefix(store.getWorkspace().getName());
         
         String name = resource.getName();
+
+        // make sure the name conforms to a legal layer name
+        if (!Character.isLetter(name.charAt(0))) {
+            name = "a_" + name;
+        }
+
+        // strip out any non-word characters
+        name = name.replaceAll("\\W", "_");
+
         if (catalog.getResourceByName(ns, name, ResourceInfo.class) != null) {
             int i = 0;
             name += i;

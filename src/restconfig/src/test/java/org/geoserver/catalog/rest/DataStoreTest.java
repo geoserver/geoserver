@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -120,6 +121,29 @@ public class DataStoreTest extends CatalogRESTTestSupport {
             
             assertTrue( link.getAttribute("href").endsWith( ft.getName() + ".html") );
         }
+    }
+    
+    @Test
+    public void testGetWrongDataStore() throws Exception {
+        // Parameters for the request
+        String ws = "sf";
+        String ds = "sfssssss";
+        // Request path
+        String requestPath = "/rest/workspaces/" + ws + "/datastores/" + ds + ".html";
+        // Exception path
+        String exception = "No such datastore: " + ws + "," + ds;
+        // First request should thrown an exception
+        MockHttpServletResponse response = getAsServletResponse(requestPath);
+        assertEquals(404, response.getStatusCode());
+        assertTrue(response.getOutputStreamContent().contains(
+                exception));
+        // Same request with ?quietOnNotFound should not throw an exception
+        response = getAsServletResponse(requestPath + "?quietOnNotFound=true");
+        assertEquals(404, response.getStatusCode());
+        assertFalse(response.getOutputStreamContent().contains(
+                exception));
+        // No exception thrown
+        assertTrue(response.getOutputStreamContent().isEmpty());
     }
     
     File setupNewDataStore() throws Exception {

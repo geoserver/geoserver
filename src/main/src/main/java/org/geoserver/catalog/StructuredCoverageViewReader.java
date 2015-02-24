@@ -1,4 +1,5 @@
-/* Copyright (c) 2014 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2014 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -135,7 +136,8 @@ public class StructuredCoverageViewReader extends CoverageViewReader implements
                             propName = prop.getName();
                             if (
                             !propName.getLocalPart().equalsIgnoreCase("imageIndex")
-                                    && !propName.getLocalPart().equalsIgnoreCase("the_geom")) {
+                                    && !propName.getLocalPart().equalsIgnoreCase("the_geom")
+                                    && !propName.getLocalPart().equalsIgnoreCase("location")) {
                                 propValue = prop.getValue();
                                 Filter updatedFilter = Utils.FF.equal(Utils.FF.property(propName),
                                         Utils.FF.literal(propValue), true);
@@ -222,7 +224,8 @@ public class StructuredCoverageViewReader extends CoverageViewReader implements
 
         @Override
         public void dispose() throws IOException {
-            reader.dispose();
+            // TODO: check if we need to dispose it or not
+            // Does nothing, the catalog should be disposed by the user
         }
 
         @Override

@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -150,7 +151,23 @@ public class BindingLdapAuthoritiesPopulator implements
      * @return the set of roles granted to the user.
      */
     public final Collection<GrantedAuthority> getGrantedAuthorities(
-            final DirContextOperations user, String username) {
+            final DirContextOperations user, final String username) {
+        return getGrantedAuthorities(user, username, null);
+    }
+
+    /**
+     * Obtains the authorities for the user who's directory entry is represented
+     * by the supplied LdapUserDetails object.
+     * 
+     * @param user
+     *            the user who's authorities are required 
+     * @param pw be used to bind to ldap server prior to the search
+     *            operations, null otherwise
+     * 
+     * @return the set of roles granted to the user.
+     */
+    public final Collection<GrantedAuthority> getGrantedAuthorities(
+            final DirContextOperations user, final String username, final String password) {
         final String userDn = user.getNameInNamespace();
 
         if (logger.isDebugEnabled()) {
@@ -159,12 +176,8 @@ public class BindingLdapAuthoritiesPopulator implements
 
         final List<GrantedAuthority> result = new ArrayList<GrantedAuthority>();
 
-        // username is in the form username:password -> authenticate before
-        // search
-        if (username.indexOf(":") != -1) {
-            String[] userAndPassword = username.split(":");
-            final String userName = userAndPassword[0];
-            String password = userAndPassword[1];
+        // password included -> authenticate before search
+        if (password != null) {
             // authenticate and execute role extraction in the authenticated
             // context
             ldapTemplate.authenticate(DistinguishedName.EMPTY_PATH, userDn,
@@ -173,7 +186,7 @@ public class BindingLdapAuthoritiesPopulator implements
                         @Override
                         public void executeWithContext(DirContext ctx,
                                 LdapEntryIdentification ldapEntryIdentification) {
-                            getAllRoles(user, userDn, result, userName, ctx);
+                            getAllRoles(user, userDn, result, username, ctx);
                         }
                     });
         } else {

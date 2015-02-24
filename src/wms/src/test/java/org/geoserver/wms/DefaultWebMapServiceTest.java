@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -146,6 +147,12 @@ public class DefaultWebMapServiceTest extends WMSTestSupport {
         assertEquals("image/gif", format);
         assertEquals(447, width);
         assertEquals(512, height);
+    }
+
+    @Test
+    public void testAdvancedProjectionEnabled(){
+        // Ensure that by default advanced projection handling is enabled
+        assertTrue(DefaultWebMapService.isAdvancedProjectionHandlingEnabled());
     }
 
 }

@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -1625,6 +1626,14 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
      * and ensuring that a particular exceptionCode is used.
      */
     protected void checkOws11Exception(Document dom, String exceptionCode) throws Exception {
+        checkOws11Exception(dom, exceptionCode, null);
+    }
+    
+    /**
+     * Performs basic checks on an OWS 1.1 exception, to ensure it's well formed
+     * and ensuring that a particular exceptionCode is used.
+     */
+    protected void checkOws11Exception(Document dom, String exceptionCode, String locator) throws Exception {
         Element root = dom.getDocumentElement();
         assertEquals("ows:ExceptionReport", root.getNodeName() );
         assertEquals( "1.1.0", root.getAttribute( "version") );
@@ -1635,7 +1644,14 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
             Element ex = (Element) dom.getElementsByTagName( "ows:Exception").item(0);
             assertEquals( exceptionCode, ex.getAttribute( "exceptionCode") );
         }
+        
+        if( locator != null)  {
+            assertEquals( 1, dom.getElementsByTagName( "ows:Exception").getLength() );
+            Element ex = (Element) dom.getElementsByTagName( "ows:Exception").item(0);
+            assertEquals( locator, ex.getAttribute( "locator") );
+        }
     }
+
     
     /**
      * Performs basic checks on an OWS 2.0 exception. The check for status, exception code and locator

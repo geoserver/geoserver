@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -17,6 +18,8 @@ import java.util.logging.Level;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.dom.DOMSource;
+
+import net.opengis.wfs20.FeatureCollectionType;
 
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.ResourceInfo;
@@ -118,7 +121,7 @@ public class GML32OutputFormat extends GML3OutputFormat {
     @Override
     protected void encode(FeatureCollectionResponse results, OutputStream output, Encoder encoder)
             throws IOException {
-        encoder.encode(results.getAdaptee(), WFS.FeatureCollection, output);
+        encoder.encode(results.unadapt(FeatureCollectionType.class), WFS.FeatureCollection, output);
     }
     
     @Override

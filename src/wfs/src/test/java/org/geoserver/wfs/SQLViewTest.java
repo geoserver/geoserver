@@ -1,11 +1,19 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wfs;
 
+import static junit.framework.Assert.*;
+import static org.custommonkey.xmlunit.XMLAssert.*;
+
 import java.io.File;
 import java.util.Map;
+
+import net.sf.json.JSON;
+import net.sf.json.JSONObject;
+
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.DataStoreInfo;
@@ -23,11 +31,9 @@ import org.geotools.jdbc.VirtualTableParameter;
 import org.junit.Test;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
 
 import com.vividsolutions.jts.geom.Point;
-
-import static org.custommonkey.xmlunit.XMLAssert.*;
-import org.w3c.dom.NodeList;
 
 
 public class SQLViewTest extends WFSTestSupport {
@@ -106,6 +112,15 @@ public class SQLViewTest extends WFSTestSupport {
 
         assertXpathEvaluatesTo("name-f003", "//gs:pgeo_view/gml:name", dom);
         assertXpathEvaluatesTo("1", "count(//gs:pgeo_view)", dom);
+    }
+
+    @Test
+    public void testViewParamsJsonGet() throws Exception {
+        JSON json = getAsJSON("wfs?service=WFS&request=GetFeature&typename=" + viewTypeName
+                + "&version=1.1&viewparams=bool:true;name:name-f003&outputFormat=application/json");
+        print(json);
+
+        assertEquals(1, ((JSONObject) json).getInt("totalFeatures"));
     }
 
     @Test

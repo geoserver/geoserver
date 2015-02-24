@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -21,7 +22,7 @@ import org.opengis.util.ProgressListener;
  * 
  * @author Andrea Aime - GeoSolutions
  */
-class GranuleCoverageInfo extends DecoratingCoverageInfo {
+public class GranuleCoverageInfo extends DecoratingCoverageInfo {
     private static final long serialVersionUID = 7877565589262804385L;
     private SimpleFeature feature;
     private List<DimensionDescriptor> dimensionDescriptors;

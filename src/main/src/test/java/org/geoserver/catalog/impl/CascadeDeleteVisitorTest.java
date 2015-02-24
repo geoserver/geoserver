@@ -1,16 +1,11 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.catalog.impl;
 
-import static org.easymock.EasyMock.anyObject;
-import static org.easymock.EasyMock.createMock;
-import static org.easymock.EasyMock.createNiceMock;
-import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.expectLastCall;
-import static org.easymock.EasyMock.replay;
-import static org.easymock.EasyMock.verify;
+import static org.easymock.EasyMock.*;
 import static org.geoserver.data.test.CiteTestData.CITE_PREFIX;
 import static org.geoserver.data.test.CiteTestData.FORESTS;
 import static org.geoserver.data.test.CiteTestData.LAKES;
@@ -63,9 +58,11 @@ public class CascadeDeleteVisitorTest extends GeoServerMockTestSupport {
         expect(lg.getStyles()).andReturn(new ArrayList(Arrays.asList(null, null, null))).anyTimes();
         
         expect(catalog.getLayerGroupByName(LAKES_GROUP)).andReturn(lg).anyTimes();
+        lg.accept((CatalogVisitor) anyObject());
+        expectLastCall().anyTimes();
         replay(lakes, forests, bridges, lg);
 
-        expect(catalog.getLayerGroups()).andReturn(Arrays.asList(lg));
+        expect(catalog.getLayerGroups()).andReturn(Arrays.asList(lg)).anyTimes();
         
         return lg;
     }
@@ -139,6 +136,16 @@ public class CascadeDeleteVisitorTest extends GeoServerMockTestSupport {
         StoreInfo s2 = createMock(StoreInfo.class);
         expect(catalog.getStoresByWorkspace(ws, StoreInfo.class)).andReturn(Arrays.asList(s1, s2)).anyTimes();
 
+        StyleInfo style = createMockStyle(catalog, "ws-specific-style");
+        expect(catalog.getStylesByWorkspace(ws)).andReturn(Arrays.asList(style));
+        style.accept((CatalogVisitor) anyObject());
+        expectLastCall();
+
+        LayerGroupInfo group = setUpMockLayerGroup(catalog);
+        group.accept((CatalogVisitor) anyObject());
+        expectLastCall();
+        expect(catalog.getLayerGroupsByWorkspace(ws)).andReturn(Arrays.asList(group)).anyTimes();
+
         ns.accept((CatalogVisitor)anyObject());
         expectLastCall();
 
@@ -151,7 +158,7 @@ public class CascadeDeleteVisitorTest extends GeoServerMockTestSupport {
         catalog.remove(ws);
         expectLastCall();
 
-        replay(ws, ns, s1, s2, catalog);
+        replay(ws, ns, s1, s2, catalog, style);
 
         new CascadeDeleteVisitor(catalog).visit(ws);
 

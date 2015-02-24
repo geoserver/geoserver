@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -7,6 +8,7 @@ package org.geoserver.web.data.store;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Collections;
+import java.util.List;
 import java.util.logging.Level;
 
 import javax.management.RuntimeErrorException;
@@ -49,6 +51,7 @@ public class WMSStoreNewPage extends AbstractWMSStorePage {
         // case of a failure!... strange, why a save can't fail?
         // Still, be cautious and wrap it in a try/catch block so the page does not blow up
         try {
+            getCatalog().validate(savedStore, false).throwIfInvalid();
             getCatalog().save(savedStore);
         } catch (RuntimeException e) {
             LOGGER.log(Level.INFO, "Adding the store for " + info.getCapabilitiesURL(), e);

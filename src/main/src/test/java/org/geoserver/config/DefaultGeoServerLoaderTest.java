@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -11,6 +12,7 @@ import java.net.URL;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.impl.CatalogImpl;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamPersisterFactory;
@@ -18,6 +20,8 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geotools.data.DataUtilities;
+import org.geotools.styling.SLD;
+import org.geotools.styling.Style;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -45,6 +49,17 @@ public class DefaultGeoServerLoaderTest {
     @After
     public void tearDown() {
         GeoServerExtensionsHelper.clear(); // clear singleton
+    }
+    
+    @Test
+    public void testGeneratedStyles() throws Exception {
+        XStreamPersisterFactory xpf = new XStreamPersisterFactory();
+        XStreamPersister xp = xpf.createXMLPersister();
+        xp.setCatalog( catalog );
+        loader.initializeStyles(catalog, xp);
+        
+        StyleInfo polygon = catalog.getStyleByName( StyleInfo.DEFAULT_POLYGON );
+        assertEquals( "default_polygon.sld", polygon.getFilename() );
     }
     
     @Test

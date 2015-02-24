@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -23,6 +24,12 @@ public class WCS20Const {
     public static final String SERVICE_NAME = "WCS";
 
     protected static final String URI_WCS = "http://www.opengis.net/wcs/2.0";
+
+    public static final String OVERVIEW_POLICY_EXTENSION = "OverviewPolicy";
+
+    public static final String OVERVIEW_POLICY_EXTENSION_LOWERCASE = OVERVIEW_POLICY_EXTENSION.toLowerCase();
+
+    public static final String OVERVIEW_POLICY_EXTENSION_NAMESPACE = "http://www.geoserver.org/WCS_service-extension_overviewpolicy/1.0";
 
     public static AttributesImpl getDefaultNamespaces() {
 

@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -28,11 +29,13 @@ public class AlternativesResponseStream extends ServletOutputStream {
     ServletOutputStream myStream;
     Set myCompressibleTypes;
     Logger logger = org.geotools.util.logging.Logging.getLogger("org.geoserver.filters");
+    int contentLength;
 
-    public AlternativesResponseStream(HttpServletResponse response, Set compressible) throws IOException {
+    public AlternativesResponseStream(HttpServletResponse response, Set compressible, int contentLength) throws IOException {
         super();
         myResponse = response;
         myCompressibleTypes = compressible;
+        this.contentLength = contentLength;
     }
 
     public void close() throws IOException {
@@ -67,9 +70,13 @@ public class AlternativesResponseStream extends ServletOutputStream {
 
         if (type != null && isCompressible(type)){
             logger.log(Level.FINE, "Compressing output for mimetype: {0}", type);
+            myResponse.addHeader("Content-Encoding", "gzip");
             myStream = new GZIPResponseStream(myResponse);
         } else {
             logger.log(Level.FINE, "Not compressing output for mimetype: {0}", type);
+            if(contentLength >= 0) {
+                myResponse.setContentLength(contentLength);
+            }
             myStream = myResponse.getOutputStream();
         }
 

@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -131,7 +132,12 @@ public class DefaultWebMapService implements WebMapService, ApplicationContextAw
      * Enable continuous map wrapping
      */
     private static Boolean ENABLE_MAP_WRAPPING = null;
-    
+
+    /**
+     * Enable advanced projection handling
+     */
+    private static Boolean ENABLE_ADVANCED_PROJECTION = null;
+
     /**
      * Use a global rendering pool, or use a new pool each time
      */
@@ -236,7 +242,18 @@ public class DefaultWebMapService implements WebMapService, ApplicationContextAw
             else
                 ENABLE_MAP_WRAPPING = Boolean.valueOf(wrapping);
         }
-        
+
+        // enable/disable advanced reprojection handling
+        if (ENABLE_ADVANCED_PROJECTION == null) {
+            String projection = GeoServerExtensions.getProperty("ENABLE_ADVANCED_PROJECTION",
+                    context);
+            // default to true, but allow switching off
+            if (projection == null)
+                ENABLE_ADVANCED_PROJECTION = true;
+            else
+                ENABLE_ADVANCED_PROJECTION = Boolean.valueOf(projection);
+        }
+
         // control usage of the global rendering thread pool
         if (USE_GLOBAL_RENDERING_POOL == null) {
             String usePool = GeoServerExtensions.getProperty("USE_GLOBAL_RENDERING_POOL", context);
@@ -265,6 +282,15 @@ public class DefaultWebMapService implements WebMapService, ApplicationContextAw
      */
     public static boolean isContinuousMapWrappingEnabled() {
         return ENABLE_MAP_WRAPPING;
+    }
+
+    /**
+     * Checks if AdvancedProjectionHandling is enabled or not
+     * 
+     * @return
+     */
+    public static boolean isAdvancedProjectionHandlingEnabled() {
+        return ENABLE_ADVANCED_PROJECTION;
     }
 
     /**

@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -14,6 +15,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.zip.ZipEntry;
@@ -291,10 +293,12 @@ public class DataStoreFileResource extends StoreFileResource {
         
         //add or update the datastore info
         if ( add ) {
+            catalog.validate(info, true).throwIfInvalid();
             catalog.add( info );
         }
         else {
             if (save) {
+                catalog.validate(info, false).throwIfInvalid();
                 catalog.save( info );
             }
         }
@@ -425,6 +429,7 @@ public class DataStoreFileResource extends StoreFileResource {
                         }
                         while(i < 10 && catalog.getFeatureTypeByName(namespace, ftinfo.getName()) != null);
                     }
+                    catalog.validate(ftinfo, true).throwIfInvalid();
                     catalog.add( ftinfo );
                     
                     //add a layer for the feature type as well
@@ -432,7 +437,7 @@ public class DataStoreFileResource extends StoreFileResource {
 
                     boolean valid = true;
                     try { 
-                        if (!catalog.validate(layer, true).isEmpty()) {
+                        if (!catalog.validate(layer, true).isValid()) {
                             valid = false;
                         }
                     } catch (Exception e) {
@@ -447,6 +452,7 @@ public class DataStoreFileResource extends StoreFileResource {
                 }
                 else {
                     LOGGER.info("Updated feature type " + ftinfo.getName());
+                    catalog.validate(ftinfo, false).throwIfInvalid();
                     catalog.save( ftinfo );
                 }
                 

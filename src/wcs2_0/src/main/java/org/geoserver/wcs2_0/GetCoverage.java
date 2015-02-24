@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -40,6 +41,7 @@ import net.opengis.wcs20.ScalingType;
 
 import org.eclipse.emf.common.util.EList;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CoverageDimensionCustomizerReader.GridCoverageWrapper;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.data.util.CoverageUtils;
@@ -62,6 +64,7 @@ import org.geotools.coverage.grid.GridEnvelope2D;
 import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
+import org.geotools.coverage.grid.io.OverviewPolicy;
 import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
 import org.geotools.coverage.processing.CoverageProcessor;
 import org.geotools.factory.GeoTools;
@@ -69,7 +72,10 @@ import org.geotools.factory.Hints;
 import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.ReferencingFactoryFinder;
+import org.geotools.referencing.operation.builder.GridToEnvelopeMapper;
+import org.geotools.referencing.operation.matrix.XAffineTransform;
 import org.geotools.referencing.operation.transform.AffineTransform2D;
+import org.geotools.referencing.operation.transform.ProjectiveTransform;
 import org.geotools.resources.coverage.CoverageUtilities;
 import org.geotools.util.DefaultProgressListener;
 import org.geotools.util.Utilities;
@@ -86,6 +92,7 @@ import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CRSAuthorityFactory;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.datum.PixelInCell;
+import org.opengis.referencing.operation.MathTransform;
 import org.vfny.geoserver.util.WCSUtils;
 import org.vfny.geoserver.wcs.WcsException;
 
@@ -123,6 +130,11 @@ public class GetCoverage {
     private CRSAuthorityFactory latLonCRSFactory;
 
     public final static String SRS_STARTER="http://www.opengis.net/def/crs/EPSG/0/";
+
+    /** Hints to indicate that a scale has been pre-applied, reporting the scaling factors */
+    public static Hints.Key PRE_APPLIED_SCALE = new Hints.Key(Double[].class);
+
+    private static final double EPS = 1e-6;
 
     public GetCoverage(WCSInfo serviceInfo, Catalog catalog, EnvelopeAxesLabelsMapper envelopeDimensionsMapper) {
         this.wcs = serviceInfo;
@@ -287,17 +299,20 @@ public class GetCoverage {
             ImageSizeRecorder incrementalInputSize,
             final GridCoverageFactory coverageFactory) throws Exception {
         GridCoverage2D coverage = null;
+        double[] preAppliedScale = new double[]{Double.NaN, Double.NaN};
         //
         // we setup the params to force the usage of imageread and to make it use
         // the right overview and so on
         // we really try to subset before reading with a grid geometry
         // we specify to work in streaming fashion
         // TODO elevation
-        coverage = readCoverage(helper.getCoverageInfo(), gridCoverageRequest, reader, hints,
-                incrementalInputSize);
-        if(coverage == null) {
+        ScalingType scaling = extractScaling(extensions);
+        coverage = readCoverage(helper, gridCoverageRequest, reader, hints,
+                incrementalInputSize, scaling, preAppliedScale);
+        if (coverage == null) {
             throw new IllegalStateException("Unable to read a coverage for the current request" + coverageType.toString());
         }
+        GridSampleDimension[] sampleDimensions = collectDimensions(coverage);
 
         //
         // handle range subsetting
@@ -313,7 +328,7 @@ public class GetCoverage {
         // scaling extension
         //
         // scaling is done in raster space with eventual interpolation
-        coverage=handleScaling(coverage,extensions,gridCoverageRequest.getSpatialInterpolation(),hints);
+        coverage=handleScaling(coverage,scaling,gridCoverageRequest.getSpatialInterpolation(), preAppliedScale, hints);
 
         //
         // reprojection
@@ -325,7 +340,7 @@ public class GetCoverage {
         // axes swap management
         //
         final boolean enforceLatLonAxesOrder=requestingLatLonAxesOrder(gridCoverageRequest.getOutputCRS());
-        if (enforceLatLonAxesOrder){
+        if (wcs.isLatLon() && enforceLatLonAxesOrder){
             coverage = enforceLatLongOrder(coverage, hints, gridCoverageRequest.getOutputCRS());
         }
 
@@ -357,11 +372,39 @@ public class GetCoverage {
             // Need to recreate the coverage in order to update the properties since the getProperties method returns a copy
             coverage = coverageFactory.create(coverage.getName(), coverage.getRenderedImage(), coverage.getEnvelope(), coverage.getSampleDimensions(), null, map);
         }
-        
+        if (sampleDimensions != null && sampleDimensions.length > 0) {
+            coverage = GridCoverageWrapper.wrapCoverage(coverage, coverage, sampleDimensions, null, true);
+        }
         return coverage;
     }
 
-    private WCSDimensionsSubsetHelper parseGridCoverageRequest(CoverageInfo ci, GridCoverage2DReader reader,
+    private ScalingType extractScaling(Map<String, ExtensionItemType> extensions) {
+        ScalingType scaling = null;
+        // look for a scaling extension
+        if (!(extensions == null || extensions.size() == 0 || !extensions.containsKey("Scaling"))) {
+            final ExtensionItemType extensionItem = extensions.get("Scaling");
+            assert extensionItem != null;
+
+            // get scaling
+            scaling = (ScalingType) extensionItem.getObjectContent();
+            if (scaling == null) {
+                throw new IllegalStateException("Scaling extension contained a null ScalingType");
+            }
+        }
+        return scaling;
+    }
+
+    private GridSampleDimension[] collectDimensions(GridCoverage2D coverage) {
+        List<GridSampleDimension> dimensions = new ArrayList<GridSampleDimension>();
+        if (coverage instanceof GridCoverageWrapper) {
+            for (GridSampleDimension dimension: coverage.getSampleDimensions()) {
+                dimensions.add(dimension);
+            }
+        }
+        return dimensions.toArray(new GridSampleDimension[dimensions.size()]);
+    }
+
+        private WCSDimensionsSubsetHelper parseGridCoverageRequest(CoverageInfo ci, GridCoverage2DReader reader,
             GetCoverageType request, Map<String, ExtensionItemType> extensions) throws IOException {
         //
         // Extract CRS values for relative extension
@@ -383,6 +426,7 @@ public class GetCoverage {
                 extensions);
         final Interpolation spatialInterpolation = extractSpatialInterpolation(axesInterpolations,
                 reader.getOriginalEnvelope());
+        final OverviewPolicy overviewPolicy = extractOverviewPolicy(extensions);
         // TODO time interpolation
         assert spatialInterpolation != null;
 
@@ -395,8 +439,40 @@ public class GetCoverage {
         gcr.setElevationSubset(requestSubset.getElevationSubset());
         gcr.setDimensionsSubset(requestSubset.getDimensionsSubset());
         gcr.setFilter(request.getFilter());
+        gcr.setOverviewPolicy(overviewPolicy);
         subsetHelper.setGridCoverageRequest(gcr);
         return subsetHelper;
+    }
+
+    private OverviewPolicy extractOverviewPolicy(Map<String, ExtensionItemType> extensions) {
+        if (extensions == null || extensions.size() == 0
+                || !extensions.containsKey(WCS20Const.OVERVIEW_POLICY_EXTENSION)) {
+            // NO extension at hand
+            return null;
+        }
+
+        // look for an overviewPolicy extension
+        final ExtensionItemType extensionItem = extensions.get(WCS20Const.OVERVIEW_POLICY_EXTENSION);
+        if (extensionItem.getName().equals(WCS20Const.OVERVIEW_POLICY_EXTENSION)) {
+            String overviewPolicy = extensionItem.getSimpleContent();
+
+            // checks
+            if (overviewPolicy == null) {
+                throw new WCS20Exception(WCS20Const.OVERVIEW_POLICY_EXTENSION + " was null", WCS20ExceptionCode.MissingParameterValue,
+                        "null");
+            }
+
+            // instantiate the OverviewPolicy
+            try {
+                return OverviewPolicy.valueOf(overviewPolicy);
+            } catch (Exception e) {
+                final WCS20Exception exception = new WCS20Exception("Invalid " + WCS20Const.OVERVIEW_POLICY_EXTENSION,
+                        WCS20Exception.WCS20ExceptionCode.InvalidParameterValue, overviewPolicy);
+                exception.initCause(e);
+                throw exception;
+            }
+        }
+        return null;
     }
 
     /**
@@ -503,16 +579,20 @@ public class GetCoverage {
      * @throws Exception
      */
     private GridCoverage2D readCoverage(
-            CoverageInfo cinfo, 
-            GridCoverageRequest request, 
-            GridCoverage2DReader reader, 
+            WCSDimensionsSubsetHelper helper,
+            GridCoverageRequest request,
+            GridCoverage2DReader reader,
             Hints hints,
-            ImageSizeRecorder incrementalInputSize) throws Exception {
+            ImageSizeRecorder incrementalInputSize,
+            final ScalingType scaling,
+            final double[] preAppliedScale) throws Exception {
+
+        CoverageInfo cinfo = helper.getCoverageInfo();
+        WCSEnvelope requestedEnvelope = helper.getRequestedEnvelope();
         // checks
         Interpolation spatialInterpolation = request.getSpatialInterpolation();
         Utilities.ensureNonNull("interpolation", spatialInterpolation);
 
-        
         //
         // check if we need to reproject the subset envelope back to coverageCRS
         //
@@ -606,10 +686,13 @@ public class GetCoverage {
         // hints
         if (sameCRS) {
             // we should not be reprojecting
-            // let's create a subsetting GG2D at the highest resolution available
+            // let's create a subsetting GG2D (Taking overviews and requested scaling into account)
+            MathTransform transform = getMathTransform(reader,
+                    requestedEnvelope != null ? requestedEnvelope : subset, request,
+                    PixelInCell.CELL_CENTER, scaling, preAppliedScale);
             readGG = new GridGeometry2D(
                     PixelInCell.CELL_CENTER,
-                    reader.getOriginalGridToWorld(PixelInCell.CELL_CENTER),
+                    transform,
                     subset,
                     hints);           
             
@@ -645,6 +728,7 @@ public class GetCoverage {
                 readParameters,  
                 readGG, 
                 spatialInterpolation,
+                request.getOverviewPolicy(),
                 hints);
         // check limits again
         if (coverage != null) {
@@ -659,6 +743,69 @@ public class GetCoverage {
 
         // return
         return coverage;
+
+    }
+
+    private MathTransform getMathTransform(GridCoverage2DReader reader, Envelope subset, 
+            GridCoverageRequest request, PixelInCell pixelInCell, ScalingType scaling, double[] preAppliedScale) throws IOException {
+        final OverviewPolicy overviewPolicy = request.getOverviewPolicy();
+        ScalingPolicy scalingPolicy = scaling == null ? null : ScalingPolicy.getPolicy(scaling);
+        if (overviewPolicy == null || overviewPolicy == OverviewPolicy.IGNORE || scaling == null ||
+                scalingPolicy == null || scalingPolicy == ScalingPolicy.ScaleToExtent) {
+            return reader.getOriginalGridToWorld(pixelInCell);
+        }
+
+        MathTransform transform = reader.getOriginalGridToWorld(pixelInCell);
+        AffineTransform af = (AffineTransform) transform;
+   
+        // Getting the native resolution
+        final double nativeResX = XAffineTransform.getScaleX0(af);
+        final double nativeResY = XAffineTransform.getScaleY0(af);
+
+        // Getting the requested resolution, taking the requested scaling into account 
+        final double[] requestedResolution = computeRequestedResolution(scaling, subset, nativeResX, nativeResY);
+
+        // Getting the read resolution from the reader, based on the Overview Policy
+        final double[] readResolution = reader.getReadingResolutions(overviewPolicy, requestedResolution);
+
+        // setup a scaling to get the transformation to be used to access the specified overview 
+        AffineTransform scale = new AffineTransform();
+        preAppliedScale[0] = readResolution[0] / nativeResX;
+        preAppliedScale[1] = readResolution[1] / nativeResY;
+        scale.scale(preAppliedScale[0], preAppliedScale[1]);
+        AffineTransform finalTransform = new AffineTransform(af);
+        finalTransform.concatenate(scale);
+        return ProjectiveTransform.create(finalTransform);
+    }
+
+    /**
+     * Parse the scaling type applied to that request and return a resolution satisfying that scaling.
+     * @param scaling
+     * @param subset
+     * @param nativeResX
+     * @param nativeResY
+     * @return
+     */
+    private double[] computeRequestedResolution(ScalingType scaling, Envelope subset,
+            double nativeResX, double nativeResY) {
+        ScalingPolicy policy = ScalingPolicy.getPolicy(scaling);
+        double[] requestedResolution = new double[2];
+        if (policy == ScalingPolicy.ScaleToSize) {
+            int[] scalingSize = ScalingPolicy.getTargetSize(scaling);
+
+            // Getting the requested resolution (using envelope and requested scaleSize)
+            final GridToEnvelopeMapper mapper = new GridToEnvelopeMapper(new GridEnvelope2D(0, 0,
+                    scalingSize[0], scalingSize[1]), subset);
+            AffineTransform scalingTransform = mapper.createAffineTransform();
+            requestedResolution[0] = XAffineTransform.getScaleX0(scalingTransform);
+            requestedResolution[1] = XAffineTransform.getScaleY0(scalingTransform);
+        } else {
+            // Only scaleFactors based will be handled here
+            double[] scalingFactors = ScalingPolicy.getScaleFactors(scaling);
+            requestedResolution[0] = nativeResX / scalingFactors[0];
+            requestedResolution[1] = nativeResY / scalingFactors[1];
+        }
+        return requestedResolution;
 
     }
 
@@ -796,7 +943,12 @@ public class GetCoverage {
                     if(LOGGER.isLoggable(Level.FINE)){
                         LOGGER.fine("Added extension rangeSubset");
                     }    
-                } 
+                } else if (extensionName.equals(WCS20Const.OVERVIEW_POLICY_EXTENSION)) {
+                    parsedExtensions.put(WCS20Const.OVERVIEW_POLICY_EXTENSION, extensionItem);
+                    if (LOGGER.isLoggable(Level.FINE)) {
+                        LOGGER.fine("Added extension overviewPolicy ");
+                    }
+                }
             }
         } else if(LOGGER.isLoggable(Level.FINE)){
             LOGGER.fine("No extensions found in provided request");
@@ -1034,8 +1186,10 @@ public class GetCoverage {
             GeneralEnvelope subset,
             Hints hints) {
 
-        if(subset!=null){
-            return WCSUtils.crop(coverage, subset); // TODO I hate this classes that do it all
+        if (subset != null) {
+            GridCoverage2D cropped = WCSUtils.crop(coverage, subset);
+            cropped = GridCoverageWrapper.wrapCoverage(cropped, coverage, null, null, false);
+            return cropped;
         }
         return coverage;
     }
@@ -1063,12 +1217,13 @@ public class GetCoverage {
      * @return a scaled version of the input {@link GridCoverage2D} according to what is specified in the list of extensions. It might be the source coverage itself if
      * no operations where to be applied.
      */
-    private GridCoverage2D handleScaling(GridCoverage2D coverage, Map<String, ExtensionItemType> extensions, Interpolation spatialInterpolation, Hints hints) {
+    private GridCoverage2D handleScaling(GridCoverage2D coverage, ScalingType scaling, Interpolation spatialInterpolation,
+            double preAppliedScale[], Hints hints) {
         // checks
         Utilities.ensureNonNull("interpolation", spatialInterpolation);
         
         // look for scaling extension
-        if(extensions==null||extensions.size()==0||!extensions.containsKey("Scaling")){
+        if(scaling == null){
              // NO SCALING do we need interpolation?
             if(spatialInterpolation instanceof InterpolationNearest){
                 return coverage;
@@ -1084,19 +1239,15 @@ public class GetCoverage {
             }
         }
         
-        // look for a scaling extension
-        final ExtensionItemType extensionItem=extensions.get("Scaling");
-        assert extensionItem!=null;
-            
-        // get scaling
-        ScalingType scaling = (ScalingType) extensionItem.getObjectContent();
-        if(scaling==null){
-            throw new IllegalStateException("Scaling extension contained a null ScalingType");
-        }
-
         // instantiate enum
         final ScalingPolicy scalingPolicy = ScalingPolicy.getPolicy(scaling);
-        return scalingPolicy.scale(coverage, scaling, spatialInterpolation,hints,wcs);
+        // Before doing the scaling, check if some preScaling as been applied
+        // This may occur when dealing with overviews
+        if (!Double.isNaN(preAppliedScale[0]) && !Double.isNaN(preAppliedScale[1])) {
+            final Double[] scale = new Double[]{preAppliedScale[0], preAppliedScale[1]};
+            hints.add(new Hints(GetCoverage.PRE_APPLIED_SCALE, scale));
+        }
+        return scalingPolicy.scale(coverage, scaling, spatialInterpolation, hints, wcs);
 
     }
 

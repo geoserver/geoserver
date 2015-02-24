@@ -1,9 +1,11 @@
-/* Copyright (c) 2014 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2014 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.web;
 
+import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
@@ -32,5 +34,10 @@ public class RESTSettingsPanel extends SettingsPluginPanel {
         TextField rootField = new TextField("rootdir", new MetadataMapModel(metadata,
                 RESTUtils.ROOT_KEY, String.class));
         add(rootField);
+        
+        // CheckBox associated to the root directory to map
+        CheckBox quietCheckBox = new CheckBox("quiet",  new MetadataMapModel(metadata,
+                RESTUtils.QUIET_ON_NOT_FOUND_KEY, Boolean.class));
+        add(quietCheckBox);
     }
 }

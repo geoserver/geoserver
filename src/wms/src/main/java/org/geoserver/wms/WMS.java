@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2014 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2014 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -52,6 +53,7 @@ import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.Query;
 import org.geotools.data.ows.Layer;
+import org.geotools.data.ows.OperationType;
 import org.geotools.data.ows.WMSCapabilities;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.factory.GeoTools;
@@ -861,7 +863,8 @@ public class WMS implements ApplicationContextAware {
                     return false;
                 }
                 WMSCapabilities caps = info.getStore().getWebMapServer(null).getCapabilities();
-                if (!caps.getRequest().getGetFeatureInfo().getFormats()
+                OperationType featureInfo = caps.getRequest().getGetFeatureInfo();
+                if (featureInfo == null || !featureInfo.getFormats()
                         .contains("application/vnd.ogc.gml")) {
                     return false;
                 }

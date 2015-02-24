@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -92,21 +93,33 @@ public class NCNameResourceCodec {
             String namespace = mapEntry.getKey();
             String covName = mapEntry.getValue();
 
-            LOGGER.info(" Checking pair " + namespace + " : " + covName );
+            if (namespace == null || namespace.isEmpty()) {
+                LOGGER.info(" Checking coverage name " + covName);
 
-            String fullName = namespace+":"+covName;
-            NamespaceInfo nsInfo = catalog.getNamespaceByPrefix(namespace);
-            if(nsInfo != null) {
-                LOGGER.info(" - Namespace found " + namespace);
-                LayerInfo layer = catalog.getLayerByName(fullName);
-                if(layer != null) {
+                LayerInfo layer = catalog.getLayerByName(covName);
+                if (layer != null) {
                     LOGGER.info(" - Collecting layer " + layer.prefixedName());
                     ret.add(layer);
                 } else {
-                    LOGGER.info(" - Ignoring layer " + fullName);
+                    LOGGER.info(" - Ignoring layer " + covName);
                 }
             } else {
-                LOGGER.info(" - Namespace not found " + namespace);
+                LOGGER.info(" Checking pair " + namespace + " : " + covName);
+
+                String fullName = namespace + ":" + covName;
+                NamespaceInfo nsInfo = catalog.getNamespaceByPrefix(namespace);
+                if (nsInfo != null) {
+                    LOGGER.info(" - Namespace found " + namespace);
+                    LayerInfo layer = catalog.getLayerByName(fullName);
+                    if (layer != null) {
+                        LOGGER.info(" - Collecting layer " + layer.prefixedName());
+                        ret.add(layer);
+                    } else {
+                        LOGGER.info(" - Ignoring layer " + fullName);
+                    }
+                } else {
+                    LOGGER.info(" - Namespace not found " + namespace);
+                }
             }
         }
 
@@ -119,11 +132,13 @@ public class NCNameResourceCodec {
      */
     public static List<MapEntry<String,String>> decode(String qualifiedName) {
         int lastPos = qualifiedName.lastIndexOf(DELIMITER);
-
-        if( lastPos == -1)
-            return Collections.EMPTY_LIST;
-
         List<MapEntry<String,String>> ret = new ArrayList<MapEntry<String, String>>();
+
+        if (lastPos == -1) {
+            ret.add(new MapEntry<String, String>(null, qualifiedName));
+            return ret;
+        }
+
         while (lastPos > -1) {
             String ws   = qualifiedName.substring(0, lastPos);
             String name = qualifiedName.substring(lastPos+DELIMITER.length());

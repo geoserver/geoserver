@@ -1,15 +1,21 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.data.test;
 
+import static org.easymock.EasyMock.*;
+import static org.easymock.classextension.EasyMock.createMock;
+import static org.easymock.classextension.EasyMock.createNiceMock;
+import static org.easymock.classextension.EasyMock.replay;
 import static org.geoserver.data.test.CiteTestData.DEFAULT_LATLON_ENVELOPE;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -19,12 +25,32 @@ import javax.xml.namespace.QName;
 
 import org.easymock.IAnswer;
 import org.easymock.classextension.EasyMock;
-import org.geoserver.catalog.*;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CatalogBuilder;
+import org.geoserver.catalog.CatalogInfo;
+import org.geoserver.catalog.CatalogVisitor;
+import org.geoserver.catalog.CoverageInfo;
+import org.geoserver.catalog.CoverageStoreInfo;
+import org.geoserver.catalog.DataStoreInfo;
+import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.Keyword;
+import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.MetadataMap;
+import org.geoserver.catalog.NamespaceInfo;
+import org.geoserver.catalog.ProjectionPolicy;
+import org.geoserver.catalog.PublishedInfo;
+import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.SLDHandler;
+import org.geoserver.catalog.StoreInfo;
+import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.Styles;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.CatalogImpl;
 import org.geoserver.data.util.IOUtils;
 import org.geoserver.ows.util.OwsUtils;
-import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
+import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.GridFormatFinder;
 import org.geotools.data.DataAccess;
 import org.geotools.data.DataStore;
@@ -40,8 +66,6 @@ import org.opengis.feature.type.FeatureType;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
-
-import static org.easymock.classextension.EasyMock.*;
 
 public class MockCatalogBuilder {
     public static interface Callback {
@@ -227,7 +251,7 @@ public class MockCatalogBuilder {
     }
     
     AbstractGridFormat lookupGridFormat(Object obj) {
-        AbstractGridFormat format = (AbstractGridFormat) GridFormatFinder.findFormat(obj);
+        AbstractGridFormat format = GridFormatFinder.findFormat(obj);
         if (format == null) {
             throw new RuntimeException("No format for " + obj);
         }
@@ -486,6 +510,7 @@ public class MockCatalogBuilder {
         expect(l.getType()).andReturn(LayerInfo.Type.VECTOR).anyTimes();
         expect(l.getResource()).andReturn(r).anyTimes();
         expect(l.getDefaultStyle()).andReturn(s).anyTimes();
+        expect(l.getStyles()).andReturn(Collections.singleton(s)).anyTimes();
         expect(l.isEnabled()).andReturn(true).anyTimes();
         expect(l.isAdvertised()).andReturn(true).anyTimes();
     
@@ -591,6 +616,9 @@ public class MockCatalogBuilder {
         expect(lg.getLayers()).andReturn(grpLayers).anyTimes();
         expect(lg.getStyles()).andReturn(grpStyles).anyTimes();
         
+        expect(lg.getRootLayer()).andReturn(null).anyTimes();
+        expect(lg.getRootLayerStyle()).andReturn(null).anyTimes();
+
         lg.accept((CatalogVisitor)anyObject());
         expectLastCall().andAnswer(new VisitAnswer() {
             @Override
@@ -659,7 +687,14 @@ public class MockCatalogBuilder {
     
             expect(catalog.getStoresByWorkspace(ws.getName(), StoreInfo.class)).andReturn(l).anyTimes();
             expect(catalog.getStoresByWorkspace(ws, StoreInfo.class)).andReturn(l).anyTimes();
-    
+
+            expect(catalog.getStylesByWorkspace(ws.getName())).andReturn(styles).anyTimes();
+            expect(catalog.getStylesByWorkspace(ws)).andReturn(styles).anyTimes();
+
+            expect(catalog.getLayerGroupsByWorkspace(ws.getName())).andReturn(layerGroups)
+                    .anyTimes();
+            expect(catalog.getLayerGroupsByWorkspace(ws)).andReturn(layerGroups).anyTimes();
+
             //add all the resources for this workspace
             List<ResourceInfo> m = new LinkedList(featureTypesByNamespace);
             m.addAll(coveragesByNamespace);
@@ -673,7 +708,7 @@ public class MockCatalogBuilder {
                 .andReturn(coveragesByNamespace).anyTimes();
             //expect(catalog.getResourcesByNamespace(ns.getPrefix(), CoverageInfo.class))
             //    .andReturn(coveragesByNamespace).anyTimes();
-    
+
             dataStoresAll.addAll(dataStores);
             dataStores = new LinkedList();
     
@@ -703,6 +738,9 @@ public class MockCatalogBuilder {
             expect(catalog.getStores(StoreInfo.class)).andReturn(m).anyTimes();
             expect(catalog.getStores(DataStoreInfo.class)).andReturn(dataStoresAll).anyTimes();
             expect(catalog.getStores(CoverageStoreInfo.class)).andReturn(coverageStoresAll).anyTimes();
+
+            // add all the layers
+            expect(catalog.getLayers()).andReturn(layers).anyTimes();
     
             //add all the styles
             expect(catalog.getStyles()).andReturn(styles).anyTimes();

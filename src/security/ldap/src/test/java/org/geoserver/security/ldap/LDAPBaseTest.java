@@ -1,4 +1,5 @@
-/* Copyright (c) 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -23,6 +24,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
  *
  */
 public abstract class LDAPBaseTest {
+    protected GeoServerSecurityManager securityManager;
     protected LDAPSecurityProvider securityProvider;
     
     protected Authentication authentication;
@@ -41,8 +43,7 @@ public abstract class LDAPBaseTest {
         tempFolder.mkdirs();
         GeoServerResourceLoader resourceLoader = new GeoServerResourceLoader(
                 tempFolder);
-        GeoServerSecurityManager securityManager = new GeoServerSecurityManager(
-                new GeoServerDataDirectory(resourceLoader));
+        securityManager = new GeoServerSecurityManager(new GeoServerDataDirectory(resourceLoader));
         securityProvider = new LDAPSecurityProvider(securityManager);
         
         createConfig();

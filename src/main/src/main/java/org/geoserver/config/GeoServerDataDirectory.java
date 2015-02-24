@@ -1,17 +1,16 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.config;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
@@ -23,7 +22,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.DataStoreInfo;
@@ -43,7 +41,6 @@ import org.geoserver.platform.resource.Files;
 import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
-import org.geoserver.platform.resource.ResourceListener;
 import org.geoserver.platform.resource.ResourceStore;
 import org.geoserver.platform.resource.Resources;
 import org.geotools.data.DataUtilities;
@@ -1038,13 +1035,13 @@ public class GeoServerDataDirectory implements ResourceStore {
     public @Nonnull Resource get(LayerInfo l, String... path ) {
         final Resource r;
         if ( l.getResource() instanceof FeatureTypeInfo) {
-            r = get( (FeatureTypeInfo) l.getResource(), path );
+            r = get( l.getResource(), path );
         }
         else if ( l.getResource() instanceof CoverageInfo ) {
-            r = get( (CoverageInfo) l.getResource(), path );
+            r = get( l.getResource(), path );
         }
         else if ( l.getResource() instanceof WMSLayerInfo ) {
-            r = get( (WMSLayerInfo) l.getResource(), path );
+            r = get( l.getResource(), path );
         }
         else {
             // It'd be nice if we could be generic and cover potential future ResourceInfo types.
@@ -1242,6 +1239,16 @@ public class GeoServerDataDirectory implements ResourceStore {
                 }
             }
             
+            @Override
+            protected URL validateRelativeURL(URL relativeUrl) {
+                // the resource:/ thing does not make for a valid url, so don't validate it
+                if (relativeUrl.getProtocol().equalsIgnoreCase("resource")) {
+                    return relativeUrl;
+                } else {
+                    return super.validateRelativeURL(relativeUrl);
+                }
+            }
+
         };
         locator.setSourceUrl(resourceToUrl(styleResource));
         final StyledLayerDescriptor sld =

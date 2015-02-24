@@ -10,6 +10,10 @@
           <input id="maxNumberOfFeatures" wicket:id="maxFeatures" class="field text" type="text"></input>
         </li>
         <li>
+          <label for="maxNumberOfFeaturesForPreview"><wicket:message key="maxNumberOfFeaturesForPreview">Maximum number of features for preview (Values &lt= 0 use the maximum number of features)</wicket:message></label>
+          <input class="field text" wicket:id="maxNumberOfFeaturesForPreview" type="text"></input>
+        </li>
+        <li>
           <input class="field checkbox" wicket:id="featureBounding" type="checkbox"></input>
           <label class="choice" for="featureBounding"><wicket:message key="featureBounding">Return bounding box with every feature</wicket:message></label>
         </li>

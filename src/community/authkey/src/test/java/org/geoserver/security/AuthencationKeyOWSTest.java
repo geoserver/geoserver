@@ -249,4 +249,16 @@ public class AuthencationKeyOWSTest extends GeoServerSystemTestSupport {
         String url = engine.evaluate("//wfs:FeatureCollection/@xsi:schemaLocation", doc);
         assertTrue(url.contains("&authkey=" + citeKey));
     }
+    
+    @Test
+    public void testCiteGetFeatureCaseInsensitive() throws Exception {
+        Document doc = getAsDOM("wfs?service=WFS&version=1.0.0&request=GetFeature&typeName="
+                + getLayerId(MockData.PONDS) + "&AUTHKEY=" + citeKey);
+        // print(doc);
+        assertXpathEvaluatesTo("1", "count(//wfs:FeatureCollection)", doc);
+
+        XpathEngine engine = XMLUnit.newXpathEngine();
+        String url = engine.evaluate("//wfs:FeatureCollection/@xsi:schemaLocation", doc);
+        assertTrue(url.contains("&authkey=" + citeKey));
+    }
 }

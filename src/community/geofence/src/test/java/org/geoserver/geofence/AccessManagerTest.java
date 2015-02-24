@@ -4,7 +4,12 @@ import java.util.Arrays;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.catalog.impl.DataStoreInfoImpl;
+import org.geoserver.catalog.impl.FeatureTypeInfoImpl;
+import org.geoserver.catalog.impl.LayerInfoImpl;
+import org.geoserver.catalog.impl.WorkspaceInfoImpl;
 import org.geoserver.data.test.MockData;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
@@ -19,6 +24,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.WKTReader;
+
 import org.junit.Test;
 
 
@@ -209,4 +215,45 @@ public class AccessManagerTest extends GeofenceBaseTest
 
     }
    
+    
+    /**
+     * This test is very similar to testAreaLimited(), but the source resource is set to have the 900913 SRS.
+     * We expect that the allowedarea is projected into the resource CRS.
+     *
+     * @throws Exception
+     */
+    public void testArea900913() throws Exception
+    {
+        UsernamePasswordAuthenticationToken user = new UsernamePasswordAuthenticationToken(
+                "area", "area");
+
+        LayerInfo generic = getCatalog().getLayerByName(getLayerId(MockData.GENERICENTITY));
+
+        // Create a layer using as much as info from the Mock instance, making sure we're declaring the 900913 SRS.
+        WorkspaceInfoImpl ws = new WorkspaceInfoImpl();
+        ws.setName(generic.getResource().getStore().getWorkspace().getName());
+
+        StoreInfo store = new DataStoreInfoImpl(getCatalog());
+        store.setWorkspace(ws);
+
+        FeatureTypeInfoImpl resource = new FeatureTypeInfoImpl(getCatalog());
+        resource.setNamespace(generic.getResource().getNamespace());
+        resource.setSRS("EPSG:900913");
+        resource.setName(generic.getResource().getName());
+        resource.setStore(store);
+
+        LayerInfoImpl layerInfo = new LayerInfoImpl();
+        layerInfo.setResource(resource);
+        layerInfo.setName(generic.getName());
+
+        // Check we have the geometry filter set
+        VectorAccessLimits vl = (VectorAccessLimits) accessManager.getAccessLimits(user, resource);
+
+        FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2(null);
+        Geometry limit = new WKTReader().read(" MULTIPOLYGON (((5343335.558077131 8859142.800565697, 5343335.558077131 9100250.907059547, 5454655.048870404 9100250.907059547, 5454655.048870404 8859142.800565697, 5343335.558077131 8859142.800565697)))");
+        Filter filter = ff.intersects(ff.property(""), ff.literal(limit));
+
+        assertEquals(filter, vl.getReadFilter());
+        assertEquals(filter, vl.getWriteFilter());
+    }
 }

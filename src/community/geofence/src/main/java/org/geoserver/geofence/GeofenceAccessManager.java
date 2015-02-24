@@ -425,14 +425,13 @@ public class GeofenceAccessManager implements ResourceAccessManager, DispatcherC
                 WKTReader wktReader = new WKTReader();
                 area = wktReader.read(areaWkt);
 
-                if ((area != null) && (area.getSRID() > 0)) {
-                    CoordinateReferenceSystem geomCrs = CRS.decode("EPSG:" + area.getSRID());
+                if (area != null) {
+                    // rule area is always expressed as 4326
+                    CoordinateReferenceSystem geomCrs = CRS.decode("EPSG:4326");
                     CoordinateReferenceSystem resourceCrs = resource.getCRS();
                     if ((resourceCrs != null) && !CRS.equalsIgnoreMetadata(geomCrs, resourceCrs)) {
                         MathTransform mt = CRS.findMathTransform(geomCrs, resourceCrs, true);
                         area = JTS.transform(area, mt);
-//                        rule.setArea(area);
-                        rule.setAreaWkt(area.toString());
                     }
                 }
             } catch (ParseException e) {

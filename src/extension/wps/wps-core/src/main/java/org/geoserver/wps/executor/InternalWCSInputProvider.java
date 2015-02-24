@@ -12,6 +12,7 @@ import net.opengis.wps10.MethodType;
 import org.geoserver.ows.KvpRequestReader;
 import org.geoserver.wcs.WebCoverageService100;
 import org.geoserver.wcs.WebCoverageService111;
+import org.geoserver.wcs2_0.WebCoverageService20;
 import org.geoserver.wps.WPSException;
 import org.geoserver.wps.ppio.ProcessParameterIO;
 import org.opengis.util.ProgressListener;
@@ -45,6 +46,9 @@ public class InternalWCSInputProvider extends AbstractInputProvider {
             KvpRequestReader reader;
             if (version.equals("1.0.0") || version.equals("1.0")) {
                 reader = (KvpRequestReader) context.getBean("wcs100GetCoverageRequestReader");
+                
+            } else if(version.equals("2.0.1") ){
+        	reader = (KvpRequestReader) context.getBean("wcs20getCoverageKvpParser");
             } else {
                 reader = (KvpRequestReader) context.getBean("wcs111GetCoverageRequestReader");
             }
@@ -61,7 +65,12 @@ public class InternalWCSInputProvider extends AbstractInputProvider {
             WebCoverageService100 wcs = (WebCoverageService100) context
                     .getBean("wcs100ServiceTarget");
             return wcs.getCoverage((net.opengis.wcs10.GetCoverageType) getCoverage)[0];
-        } else {
+        } else if (getCoverage instanceof net.opengis.wcs20.GetCoverageType) {
+            WebCoverageService20 wcs = (WebCoverageService20) context
+                    .getBean("wcs20ServiceTarget");
+            return wcs.getCoverage((net.opengis.wcs20.GetCoverageType) getCoverage);
+        } 
+        else {
             throw new WPSException("Unrecognized request type " + getCoverage);
         }
     }

@@ -1,5 +1,5 @@
 <assembly>
-  <id>rest—upload-plugin</id>
+  <id>rest-upload-plugin</id>
   <formats>
     <format>zip</format>
   </formats>

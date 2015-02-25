@@ -12,6 +12,7 @@
   
   <!--  format beans -->
   <bean id="kmlFormat" class="org.geoserver.importer.format.KMLFileFormat" />
+  <bean id="gmlFormat" class="org.geoserver.importer.format.GMLFileFormat" />
   <bean id="geoJsonFormat" class="org.geoserver.importer.format.GeoJSONFormat" />
 
 </beans>

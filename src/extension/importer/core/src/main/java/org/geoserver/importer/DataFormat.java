@@ -18,6 +18,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.importer.job.ProgressMonitor;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.resource.Files;
 import org.geoserver.platform.resource.Paths;
@@ -28,7 +29,6 @@ import org.geotools.data.DataStoreFactorySpi;
 import org.geotools.data.FileDataStoreFactorySpi;
 import org.geotools.data.FileDataStoreFinder;
 import org.geotools.util.logging.Logging;
-import org.geoserver.importer.job.ProgressMonitor;
 import org.vfny.geoserver.util.DataStoreUtils;
 
 /**
@@ -130,4 +130,19 @@ public abstract class DataFormat implements Serializable {
 
     public abstract List<ImportTask> list(ImportData data, Catalog catalog, ProgressMonitor monitor) 
         throws IOException;
+
+    /**
+     * Returns a File from the ImportData, assuming the import data itself is a FileData (a class
+     * cast exception will happen otherwise)
+     * 
+     * @param data
+     * @return
+     */
+    protected File getFileFromData(ImportData data) {
+        assert data instanceof FileData;
+        FileData fileData = (FileData) data;
+        File file = fileData.getFile();
+        return file;
+    }
+
 }

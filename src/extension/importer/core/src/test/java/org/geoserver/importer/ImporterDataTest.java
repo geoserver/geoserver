@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.SystemUtils;
@@ -30,11 +31,16 @@ import org.geoserver.importer.transform.AbstractInlineVectorTransform;
 import org.geoserver.importer.transform.AttributesToPointGeometryTransform;
 import org.geoserver.importer.transform.TransformChain;
 import org.geotools.data.DataStore;
+import org.geotools.data.DataUtilities;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.Query;
 import org.geotools.data.h2.H2DataStoreFactory;
+import org.geotools.data.simple.SimpleFeatureCollection;
+import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
+import org.geotools.filter.text.cql2.CQL;
+import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.junit.Test;
 import org.opengis.feature.Feature;
@@ -46,6 +52,9 @@ import org.opengis.feature.type.GeometryDescriptor;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Point;
 
 
@@ -299,7 +308,7 @@ public class ImporterDataTest extends ImporterTestSupport {
 
     @Test
     public void testImportUnknownFile() throws Exception {
-        File dir = unpack("gml/states_wfs11.xml.gz");
+        File dir = new File("./src/test/resources/org/geoserver/importer/test-data/random");
 
         ImportContext context = importer.createContext(new Directory(dir)); 
         assertEquals(1, context.getTasks().size());
@@ -313,8 +322,8 @@ public class ImporterDataTest extends ImporterTestSupport {
     public void testImportUnknownFileIndirect() throws Exception {
         
         DataStoreInfo ds = createH2DataStore(null, "foo");
-        File dir = unpack("gml/states_wfs11.xml.gz");
-        ImportContext context = importer.createContext(new Directory(dir), ds); 
+        File dir = new File("./src/test/resources/org/geoserver/importer/test-data/random");
+        ImportContext context = importer.createContext(new Directory(dir), ds);
         assertEquals(1, context.getTasks().size());
 
         ImportTask task = context.getTasks().get(0);
@@ -362,46 +371,6 @@ public class ImporterDataTest extends ImporterTestSupport {
         runChecks("line");
         runChecks("polygon");
     }
-//    
-////    public void testImportGML() throws Exception {
-////        File dir = unpack("gml/states_wfs11.gml.gz");
-////        
-////        Import imp = importer.newImport();
-////        imp.setSource(new SpatialFile(new File(dir, "states_wfs11.gml"), new GMLFormat()));
-////
-////        importer.prepare(imp);
-////        assertEquals(ImportStatus.READY, imp.getStatus());
-////        assertEquals(1, imp.getLayers().size());
-////        assertEquals(LayerStatus.READY, imp.getLayers().get(0).getStatus());
-////
-////        importer.run(imp);
-////        
-////        //converting gml leaves us without a crs and without bounds
-////        assertTrue(imp.getLayers(LayerStatus.COMPLETED).isEmpty());
-////        assertEquals(1, imp.getLayers().size());
-////        assertEquals(LayerStatus.NO_CRS, imp.getLayers().get(0).getStatus());
-////        imp.getLayers().get(0).setCRS(CRS.decode("EPSG:4326"));
-////        
-////        importer.run(imp);
-////        runChecks("states");
-////    }
-//    
-//    public void testImportGMLWithPrjFile() throws Exception {
-//        File dir = unpack("gml/states_wfs11_prj.zip");
-//        
-//        Import imp = importer.newImport();
-//        imp.setSource(new Directory(dir));
-//
-//        importer.prepare(imp);
-//        assertEquals(ImportStatus.READY, imp.getStatus());
-//        assertEquals(1, imp.getLayers().size());
-//        assertEquals(LayerStatus.READY, imp.getLayers().get(0).getStatus());
-//
-//        importer.run(imp);
-//        
-//        runChecks("states");
-//    }
-//
 
     @Test
     public void testImportIntoDatabase() throws Exception {
@@ -561,29 +530,6 @@ public class ImporterDataTest extends ImporterTestSupport {
         runChecks("EmissiveCampania");
     }
 
-//    public void testUnknownFormat() throws Exception {
-//        File dir = unpack("gml/states_wfs11.xml.gz");
-//        
-//        Import imp = importer.newImport();
-//        imp.setSource(new SpatialFile(new File(dir, "states_wfs11.xml"), new GMLFormat()));
-//
-//        importer.prepare(imp);
-//        assertEquals(ImportStatus.READY, imp.getStatus());
-//        assertEquals(1, imp.getLayers().size());
-//        assertEquals(LayerStatus.READY, imp.getLayers().get(0).getStatus());
-//
-//        importer.run(imp);
-//        
-//        //converting gml leaves us without a crs and without bounds
-//        assertTrue(imp.getCompleted().isEmpty());
-//        assertEquals(1, imp.getLayers().size());
-//        assertEquals(LayerStatus.NO_CRS, imp.getLayers().get(0).getStatus());
-//        imp.getLayers().get(0).setCRS(CRS.decode("EPSG:4326"));
-//        
-//        importer.run(imp);
-//        runChecks("states");
-//    }
-
     @Test
     public void testImportNameClash() throws Exception {
         File dir = unpack("shape/archsites_epsg_prj.zip");
@@ -670,6 +616,125 @@ public class ImporterDataTest extends ImporterTestSupport {
         GeometryDescriptor geometryDescriptor = featureType.getGeometryDescriptor();
         assertNull("Expecting no geometry", geometryDescriptor);
         assertEquals(4, featureType.getAttributeCount());
+    }
+
+    @Test
+    public void testImportGML2Poi() throws Exception {
+        File gmlFile = file("gml/poi.gml2.gml");
+        String wsName = getCatalog().getDefaultWorkspace().getName();
+        DataStoreInfo h2DataStore = createH2DataStore(wsName, "gml2poi");
+        checkGMLPoiImport(gmlFile, h2DataStore);
+    }
+
+    @Test
+    public void testImportGML3Poi() throws Exception {
+        File gmlFile = file("gml/poi.gml3.gml");
+        String wsName = getCatalog().getDefaultWorkspace().getName();
+        DataStoreInfo h2DataStore = createH2DataStore(wsName, "gml3poi");
+        checkGMLPoiImport(gmlFile, h2DataStore);
+    }
+
+    @Test
+    public void testImportGML2WithSchema() throws Exception {
+        // TODO: remove this manipulation once we get relative schema references to work
+        File gmlSourceFile = new File(
+                "src/test/resources/org/geoserver/importer/test-data/gml/states.gml2.gml");
+        File gmlFile = new File("./target/states.gml2.gml");
+        File schemaSourceFile = new File(
+                "src/test/resources/org/geoserver/importer/test-data/gml/states.gml2.xsd");
+        File schemaFile = new File("./target/states.gml2.xsd");
+        FileUtils.copyFile(schemaSourceFile, schemaFile);
+        String gml = FileUtils.readFileToString(gmlSourceFile);
+        gml = gml.replace("${schemaLocation}", schemaFile.getCanonicalPath());
+        FileUtils.writeStringToFile(gmlFile, gml);
+
+        String wsName = getCatalog().getDefaultWorkspace().getName();
+        DataStoreInfo h2DataStore = createH2DataStore(wsName, "gml2States");
+        checkGMLStatesImport(gmlFile, h2DataStore);
+    }
+
+    @Test
+    public void testImportGML3WithSchema() throws Exception {
+        // TODO: remove this manipulation once we get relative schema references to work
+        File gmlSourceFile = new File(
+                "src/test/resources/org/geoserver/importer/test-data/gml/states.gml3.gml");
+        File gmlFile = new File("./target/states.gml3.gml");
+        File schemaSourceFile = new File(
+                "src/test/resources/org/geoserver/importer/test-data/gml/states.gml3.xsd");
+        File schemaFile = new File("./target/states.gml3.xsd");
+        FileUtils.copyFile(schemaSourceFile, schemaFile);
+        String gml = FileUtils.readFileToString(gmlSourceFile);
+        gml = gml.replace("${schemaLocation}", schemaFile.getCanonicalPath());
+        FileUtils.writeStringToFile(gmlFile, gml);
+
+        String wsName = getCatalog().getDefaultWorkspace().getName();
+        DataStoreInfo h2DataStore = createH2DataStore(wsName, "gml2States");
+        checkGMLStatesImport(gmlFile, h2DataStore);
+
+    }
+
+    private void checkGMLStatesImport(File gmlFile, DataStoreInfo h2DataStore) throws IOException,
+            CQLException {
+        SpatialFile importData = new SpatialFile(gmlFile);
+        ImportContext context = importer.createContext(importData, h2DataStore);
+        assertEquals(1, context.getTasks().size());
+
+        ImportTask task = context.getTasks().get(0);
+        assertEquals(ImportTask.State.READY, task.getState());
+
+        assertEquals(ImportContext.State.PENDING, context.getState());
+        importer.run(context);
+        assertEquals(ImportContext.State.COMPLETE, context.getState());
+
+        FeatureTypeInfo fti = getCatalog().getResourceByName("states", FeatureTypeInfo.class);
+        assertNotNull(fti);
+        SimpleFeatureType featureType = (SimpleFeatureType) fti.getFeatureType();
+        GeometryDescriptor geometryDescriptor = featureType.getGeometryDescriptor();
+        assertEquals("Expecting a multipolygon", MultiPolygon.class, geometryDescriptor.getType()
+                .getBinding());
+        assertEquals(23, featureType.getAttributeCount());
+
+        // read the features, check the feature type and the axis order
+        SimpleFeatureSource fs = (SimpleFeatureSource) fti.getFeatureSource(null, null);
+        SimpleFeatureCollection fc = fs.getFeatures(CQL.toFilter("STATE_NAME = 'Illinois'"));
+        assertEquals(1, fc.size());
+        SimpleFeature sf = DataUtilities.first(fc);
+        Envelope envelope = ((Geometry) sf.getDefaultGeometry()).getEnvelopeInternal();
+        assertEquals(-91.516129, envelope.getMinX(), 1e-6);
+        assertEquals(-87.507889, envelope.getMaxX(), 1e-6);
+        assertEquals(36.986771, envelope.getMinY(), 1e-6);
+        assertEquals(42.509361, envelope.getMaxY(), 1e-6);
+    }
+
+    private void checkGMLPoiImport(File gmlFile, DataStoreInfo store) throws IOException,
+            CQLException {
+        SpatialFile importData = new SpatialFile(gmlFile);
+        ImportContext context = importer.createContext(importData, store);
+        assertEquals(1, context.getTasks().size());
+
+        ImportTask task = context.getTasks().get(0);
+        assertEquals(ImportTask.State.READY, task.getState());
+
+        assertEquals(ImportContext.State.PENDING, context.getState());
+        importer.run(context);
+        assertEquals(ImportContext.State.COMPLETE, context.getState());
+
+        FeatureTypeInfo fti = getCatalog().getResourceByName("poi", FeatureTypeInfo.class);
+        assertNotNull(fti);
+        SimpleFeatureType featureType = (SimpleFeatureType) fti.getFeatureType();
+        GeometryDescriptor geometryDescriptor = featureType.getGeometryDescriptor();
+        assertEquals("Expecting a point geometry", Point.class, geometryDescriptor.getType()
+                .getBinding());
+        assertEquals(4, featureType.getAttributeCount());
+
+        // read the features, check they are in the right order
+        SimpleFeatureSource fs = (SimpleFeatureSource) fti.getFeatureSource(null, null);
+        SimpleFeatureCollection fc = fs.getFeatures(CQL.toFilter("NAME = 'museam'"));
+        assertEquals(1, fc.size());
+        SimpleFeature sf = DataUtilities.first(fc);
+        Point p = (Point) sf.getDefaultGeometry();
+        assertEquals(-74.0104611, p.getX(), 1e-6);
+        assertEquals(40.70758763, p.getY(), 1e-6);
     }
 
     @Test

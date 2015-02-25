@@ -6,9 +6,16 @@
 package org.geoserver.importer;
 
 import java.io.IOException;
+import java.util.List;
 
+import org.geoserver.catalog.AttributeTypeInfo;
+import org.geoserver.catalog.FeatureTypeInfo;
 import org.geotools.data.FeatureReader;
+import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
+import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.opengis.feature.simple.SimpleFeatureType;
 
+import com.vividsolutions.jts.geom.Geometry;
 
 /**
  * Base class for vector based formats.
@@ -17,6 +24,12 @@ import org.geotools.data.FeatureReader;
  *
  */
 public abstract class VectorFormat extends DataFormat {
+
+    protected static ReferencedEnvelope EMPTY_BOUNDS = new ReferencedEnvelope();
+
+    static {
+        EMPTY_BOUNDS.setToNull();
+    }
 
     /**
      * Reads features from the data for the specified import item. 
@@ -32,5 +45,27 @@ public abstract class VectorFormat extends DataFormat {
      * Get the number of features from the data for the specified import item.
      */
     public abstract int getFeatureCount(ImportData data, ImportTask item) throws IOException;
+
+    /**
+     * Builds a {@link SimpleFeatureType} from the attributes declared in a {@link FeatureTypeInfo}
+     * 
+     * @param fti
+     * @return
+     */
+    protected SimpleFeatureType buildFeatureTypeFromInfo(FeatureTypeInfo fti) {
+        SimpleFeatureType ft;
+        SimpleFeatureTypeBuilder ftb = new SimpleFeatureTypeBuilder();
+        ftb.setName(fti.getName());
+        List<AttributeTypeInfo> attributes = fti.getAttributes();
+        for (AttributeTypeInfo attr : attributes) {
+            if (Geometry.class.isAssignableFrom(attr.getBinding())) {
+                ftb.add(attr.getName(), attr.getBinding(), fti.getCRS());
+            } else {
+                ftb.add(attr.getName(), attr.getBinding());
+            }
+        }
+        ft = ftb.buildFeatureType();
+        return ft;
+    }
 
 }

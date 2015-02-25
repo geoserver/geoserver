@@ -24,6 +24,7 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import net.sf.json.util.JSONBuilder;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.SystemUtils;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
@@ -197,7 +198,7 @@ public abstract class ImporterTestSupport extends GeoServerSystemTestSupport {
                 }
             });
             for (File f : dbFiles) {
-                assertTrue(f.delete());
+                assertTrue("Failed to remove file " + f.getPath(), FileUtils.deleteQuietly(f));
             }
         }
     

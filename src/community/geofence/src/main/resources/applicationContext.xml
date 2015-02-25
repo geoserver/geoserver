@@ -13,7 +13,7 @@
 	default-autowire="byName">
 
 
-	<bean id="geofence-configurer" class="it.geosolutions.geofence.config.GeoFencePropertyPlaceholderConfigurer">
+	<bean id="geofence-configurer" class="org.geoserver.geofence.config.GeoFencePropertyPlaceholderConfigurer">
 		<constructor-arg ref="dataDirectory"/>
 
         <property name="ignoreResourceNotFound" value="true" />
@@ -34,11 +34,11 @@
 
 	</bean>
 
-    <bean id="geofenceConfigurationManager" class="it.geosolutions.geofence.config.GeoFenceConfigurationManager">
+    <bean id="geofenceConfigurationManager" class="org.geoserver.geofence.config.GeoFenceConfigurationManager">
         <property name="configurer" ref="geofence-configurer"/>
 
         <property name="configuration">
-            <bean class="it.geosolutions.geofence.config.GeoFenceConfiguration">
+            <bean class="org.geoserver.geofence.config.GeoFenceConfiguration">
                   <property name="instanceName" value="${instanceName:default-gs}"/>
                   <property name="servicesUrl" value="${servicesUrl}"/>
                   <property name="allowDynamicStyles" value="${allowDynamicStyles:False}"/>
@@ -50,7 +50,7 @@
         </property>
 
         <property name="cacheConfiguration">
-            <bean class="it.geosolutions.geofence.cache.CacheConfiguration">
+            <bean class="org.geoserver.geofence.cache.CacheConfiguration">
                 <property name="size" value="${cacheSize:1000}"/>
                 <property name="refreshMilliSec" value="${cacheRefresh:30000}"/>
                 <property name="expireMilliSec" value="${cacheExpire:60000}"/>
@@ -69,10 +69,10 @@
 
 	<bean id="baseReaderService" class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean" lazy-init="true">
         <property name="serviceUrl" value="${servicesUrl}"/>
-        <property name="serviceInterface" value="it.geosolutions.geofence.services.RuleReaderService"/>
+        <property name="serviceInterface" value="org.geoserver.geofence.services.RuleReaderService"/>
     </bean>
 
-	<bean id="cachedRuleReader" class="it.geosolutions.geofence.cache.CachedRuleReader" lazy-init="true" init-method="init">
+	<bean id="cachedRuleReader" class="org.geoserver.geofence.cache.CachedRuleReader" lazy-init="true" init-method="init">
 		<constructor-arg ref="geofenceConfigurationManager" />
 
         <property name="realRuleReaderService" ref="baseReaderService"/>
@@ -81,13 +81,13 @@
     <!-- You may replace the cachedRuleReader ref with ruleReaderService ref in order to disable the caching -->
     <alias name="cachedRuleReader" alias="ruleReaderService"/>
 
-	<bean id="geofenceRuleAccessManager" class="it.geosolutions.geofence.GeofenceAccessManager">
+	<bean id="geofenceRuleAccessManager" class="org.geoserver.geofence.GeofenceAccessManager">
 		<constructor-arg index="0" ref="ruleReaderService" />
 		<constructor-arg index="1" ref="rawCatalog" />
 		<constructor-arg index="2" ref="geofenceConfigurationManager" />
 	</bean>
 
-    <bean id="geofenceConfigurationController" class="it.geosolutions.geofence.config.GeoFenceConfigurationController">
+    <bean id="geofenceConfigurationController" class="org.geoserver.geofence.config.GeoFenceConfigurationController">
         <property name="cachedRuleReader" ref="cachedRuleReader"/>
         <property name="configurationManager" ref="geofenceConfigurationManager"/>
     </bean>
@@ -117,12 +117,12 @@
     </bean>
     
     
-    <bean id="ruleCacheStatsFinder" class="it.geosolutions.geofence.cache.rest.RuleCacheStatsFinder" >
+    <bean id="ruleCacheStatsFinder" class="org.geoserver.geofence.cache.rest.RuleCacheStatsFinder" >
         <constructor-arg index="0" ref="cachedRuleReader"/>
     </bean>
     
     
-    <bean id="ruleCacheInvalidator" class="it.geosolutions.geofence.cache.rest.RuleCacheInvalidator" >
+    <bean id="ruleCacheInvalidator" class="org.geoserver.geofence.cache.rest.RuleCacheInvalidator" >
         <constructor-arg index="0" ref="cachedRuleReader"/>
     </bean>
 
@@ -142,18 +142,18 @@
         </property>
 	</bean>
 
-	<bean id="geofenceInfo" class="it.geosolutions.geofence.rest.GeoFenceInfo" >
+	<bean id="geofenceInfo" class="org.geoserver.geofence.rest.GeoFenceInfo" >
         <constructor-arg index="0" ref="geofenceConfigurationManager"/>
     </bean>
 
     <!-- geoserver auth mechanism -->
 	
-    <bean id="geofenceFilter" class="it.geosolutions.geoserver.authentication.filter.GeoFenceAuthFilterProvider">
+    <bean id="geofenceFilter" class="org.geoserver.geoserver.authentication.filter.GeoFenceAuthFilterProvider">
         <property name="ruleReaderService" ref="ruleReaderService"/>
         <property name="geofenceAuth" ref="geofenceAuth"/>
     </bean>
 
-    <bean id="geofenceAuth" class="it.geosolutions.geoserver.authentication.auth.GeoFenceSecurityProvider">
+    <bean id="geofenceAuth" class="org.geoserver.geoserver.authentication.auth.GeoFenceSecurityProvider">
         <property name="ruleReaderService" ref="ruleReaderService"/>
         <property name="securityManager" ref="geoServerSecurityManager"/>
     </bean>
@@ -163,7 +163,7 @@
       <property name="id" value="geofencePage"/>
       <property name="titleKey" value="GeofencePage.page.title"/>
       <property name="descriptionKey" value="GeofencePage.page.description"/>
-      <property name="componentClass" value="it.geosolutions.geofence.web.GeofencePage"/>
+      <property name="componentClass" value="org.geoserver.geofence.web.GeofencePage"/>
       <property name="category" ref="securityCategory" />
       <property name="order" value="1000" />
       <property name="icon" value="img/icons/geofence.png" />
@@ -171,7 +171,7 @@
 
 
   <!-- ui auth provider panel info-->
-    <bean id="geofenceAuthPanelInfo" class="it.geosolutions.geofence.web.authentication.GeoFenceAuthProviderPanelInfo">
+    <bean id="geofenceAuthPanelInfo" class="org.geoserver.geofence.web.authentication.GeoFenceAuthProviderPanelInfo">
         <property name="id" value="security.geofenceAuthProvider" />
         <property name="shortTitleKey"  value="GeoFenceAuthProviderPanel.short"/>
         <property name="titleKey"       value="GeoFenceAuthProviderPanel.title"/>

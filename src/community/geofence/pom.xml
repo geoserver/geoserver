@@ -23,12 +23,6 @@
         <dependency>
             <groupId>org.geoserver</groupId>
             <artifactId>gs-main</artifactId>
-<!--            <exclusions>
-                <exclusion>
-                    <groupId>org.springframework</groupId>
-                    <artifactId>spring-expression</artifactId>
-                </exclusion>
-            </exclusions>-->
         </dependency>
         <dependency>
             <groupId>org.geoserver.web</groupId>
@@ -45,12 +39,12 @@
         </dependency>
 
         <dependency>
-            <groupId>it.geosolutions.geofence</groupId>
+            <groupId>org.geoserver.geofence</groupId>
             <artifactId>geofence-services-api</artifactId>
             <version>${gf.version}</version>
         </dependency>
         <dependency>
-            <groupId>it.geosolutions.geofence</groupId>
+            <groupId>org.geoserver.geofence</groupId>
             <artifactId>geofence-model</artifactId>
             <version>${gf.version}</version>
         </dependency>
@@ -119,44 +113,5 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-
-	<repositories>
-		<!-- our own first to get the geofence snaphosts-->
-		<repository>
-			<id>geosolutions</id>
-			<name>GeoSolutions Maven Repository</name>
-			<url>http://maven.geo-solutions.it/</url>
-			<snapshots>
-			 <enabled>true</enabled>
-			</snapshots>
-		</repository>  
-
-		<repository>
-			<id>boundless</id>
-			<name>Boundless Maven Repository</name>
-			<url>http://repo.boundlessgeo.com/main</url>
-			<snapshots>
-			 <enabled>true</enabled>
-			</snapshots>
-		</repository>
-
-	</repositories>
-    <build>
-        <resources>
-            <resource>
-                <directory>${basedir}/src/main/java</directory>
-                <includes>
-                    <include>**/*.html</include>
-                </includes>
-            
-            </resource>
-            <resource>
-                <directory>${basedir}/src/main/resources</directory>
-                <includes>
-                    <include>**/*</include>
-                </includes>
-            </resource>
-        </resources>		
-    </build>
 </project>
 

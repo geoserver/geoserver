@@ -1273,7 +1273,8 @@
       <descriptor>release/ext-h2.xml</descriptor>
       <descriptor>release/ext-sqlserver.xml</descriptor>
       <descriptor>release/ext-imagemap.xml</descriptor>
-      <descriptor>release/ext-ogr.xml</descriptor>
+      <descriptor>release/ext-ogr-wfs.xml</descriptor>
+      <descriptor>release/ext-ogr-wps.xml</descriptor>
       <descriptor>release/ext-excel.xml</descriptor>
       <descriptor>release/ext-geosearch.xml</descriptor>
       <descriptor>release/ext-charts.xml</descriptor>

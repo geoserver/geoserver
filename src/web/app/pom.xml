@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<!-- 
- Copyright (C) 2014 - Open Source Geospatial Foundation. All rights reserved.
+<!--
+ Copyright (C) 2015 - Open Source Geospatial Foundation. All rights reserved.
  This code is licensed under the GPL 2.0 license, available at the root
  application directory.
  -->
@@ -336,7 +336,7 @@
 	</plugin>
     </plugins>
   </build>
-  
+
   <properties>
     <configId>minimal</configId>
     <configDirectory>${basedir}/../../../data</configDirectory>
@@ -360,7 +360,7 @@
       <dependencies>
         <dependency>
           <groupId>org.geotools</groupId>
-          <artifactId>gt-kml</artifactId> 
+          <artifactId>gt-kml</artifactId>
 	  <version>${gt.version}</version>
         </dependency>
       </dependencies>
@@ -510,7 +510,7 @@
         <dependency>
           <groupId>org.geoserver.extension</groupId>
           <artifactId>gs-printing</artifactId>
-          <version>${project.version}</version> 
+          <version>${project.version}</version>
         </dependency>
       </dependencies>
     </profile>
@@ -520,7 +520,7 @@
         <dependency>
           <groupId>org.geoserver.community</groupId>
           <artifactId>gs-scriptlet</artifactId>
-          <version>${project.version}</version> 
+          <version>${project.version}</version>
         </dependency>
       </dependencies>
     </profile>
@@ -540,12 +540,12 @@
         <dependency>
           <groupId>org.geoserver.extension</groupId>
           <artifactId>gs-dxf-core</artifactId>
-          <version>${project.version}</version> 
+          <version>${project.version}</version>
         </dependency>
         <dependency>
           <groupId>org.geoserver.extension</groupId>
           <artifactId>gs-dxf-wps</artifactId>
-          <version>${project.version}</version> 
+          <version>${project.version}</version>
         </dependency>
       </dependencies>
     </profile>
@@ -695,7 +695,17 @@
       <dependencies>
         <dependency>
           <groupId>org.geoserver.extension</groupId>
-          <artifactId>gs-ogr</artifactId>
+          <artifactId>gs-ogr-wfs</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>ogr-wps</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.extension</groupId>
+          <artifactId>gs-ogr-wps</artifactId>
           <version>${project.version}</version>
         </dependency>
       </dependencies>
@@ -759,7 +769,7 @@
           <version>${project.version}</version>
         </dependency>
       </dependencies>
-    </profile>    
+    </profile>
     <profile>
       <id>gdal</id>
       <dependencies>
@@ -894,7 +904,7 @@
       <id>script-py</id>
       <activation>
         <property><name>script</name></property>
-      </activation> 
+      </activation>
       <dependencies>
         <dependency>
           <groupId>org.geoserver.script</groupId>
@@ -907,7 +917,7 @@
       <id>script-js</id>
       <activation>
         <property><name>script</name></property>
-      </activation> 
+      </activation>
       <dependencies>
         <dependency>
           <groupId>org.geoserver.script</groupId>
@@ -920,7 +930,7 @@
       <id>script-bsh</id>
       <activation>
         <property><name>script</name></property>
-      </activation> 
+      </activation>
       <dependencies>
         <dependency>
           <groupId>org.geoserver.script</groupId>
@@ -933,7 +943,7 @@
       <id>script-rb</id>
       <activation>
         <property><name>script</name></property>
-      </activation> 
+      </activation>
       <dependencies>
         <dependency>
           <groupId>org.geoserver.script</groupId>
@@ -946,7 +956,7 @@
       <id>script-groovy</id>
       <activation>
         <property><name>script</name></property>
-      </activation> 
+      </activation>
       <dependencies>
         <dependency>
           <groupId>org.geoserver.script</groupId>
@@ -972,7 +982,7 @@
       <id>xslt</id>
       <activation>
         <property><name>xslt</name></property>
-      </activation> 
+      </activation>
       <dependencies>
         <dependency>
           <groupId>org.geoserver</groupId>
@@ -985,7 +995,7 @@
       <id>wms-eo</id>
       <activation>
         <property><name>wms-eo</name></property>
-      </activation> 
+      </activation>
       <dependencies>
         <dependency>
           <groupId>org.geoserver.community</groupId>
@@ -993,7 +1003,7 @@
           <version>${project.version}</version>
         </dependency>
       </dependencies>
-    </profile>	
+    </profile>
     <profile>
       <id>wcs2_0-eo</id>
       <dependencies>
@@ -1039,7 +1049,7 @@
           <version>${gs.version}</version>
         </dependency>
       </dependencies>
-		</profile>        
+		</profile>
     <profile>
       <id>importer</id>
       <dependencies>
@@ -1154,7 +1164,7 @@
 		  <version>${project.version}</version>
         </dependency>
       </dependencies>
-    </profile>    
+    </profile>
 	<profile>
       <id>kmlppio</id>
       <dependencies>
@@ -1199,7 +1209,7 @@
 			<version>${project.version}</version>
 		</dependency>
 	</dependencies>
-	</profile>	
+	</profile>
     <profile>
       <id>geofence</id>
       <dependencies>

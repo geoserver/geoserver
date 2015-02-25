@@ -59,6 +59,7 @@
           <descriptor>release/ext-solr.xml</descriptor>		  
           <descriptor>release/ext-geofence.xml</descriptor>
           <descriptor>release/ext-sldservice.xml</descriptor>
+          <descriptor>release/ext-rest-upload.xml</descriptor>
         </descriptors>
       </configuration>
      </plugin>

@@ -9,6 +9,8 @@ package org.geoserver.security;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Enumeration;
+import java.util.Map;
 import java.util.logging.Level;
 
 import javax.servlet.FilterChain;
@@ -170,18 +172,35 @@ public class GeoServerAuthenticationKeyFilter extends  GeoServerSecurityFilter
             roles.add(GeoServerRole.AUTHENTICATED_ROLE);            
         KeyAuthenticationToken result = new KeyAuthenticationToken(authKey,  authKeyParamName,user, roles);
             
-        SecurityContextHolder.getContext().setAuthentication(result);                        
+        SecurityContextHolder.getContext().setAuthentication(result);
     }
 
 
     public String getAuthKey(HttpServletRequest req) {
-        String authKey=req.getParameter(getAuthKeyParamName());
+        String authKey=getAuthKeyParamValue(req);
         if (StringUtils.hasLength(authKey)==false)
             return null;
         return authKey;
     }        
 
+    /**
+     * Extracts authkey value from the request.
+     * 
+     * @param req
+     * @return
+     */
+    private String getAuthKeyParamValue(HttpServletRequest req) {
+        String keyParamName = getAuthKeyParamName();
+        for (Enumeration<String> a = req.getParameterNames(); a.hasMoreElements();) {
+            String paramName = a.nextElement();
 
+            if (keyParamName.equalsIgnoreCase(paramName)) {
+                return req.getParameter(paramName);
+            }
+        }
+
+        return null;
+    }
 
     /**
      * The cache key is the authentication key (global identifier)

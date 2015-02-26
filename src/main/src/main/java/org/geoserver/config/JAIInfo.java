@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014-2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -107,6 +107,12 @@ public interface JAIInfo extends Cloneable, Serializable {
      */
     TileCache getTileCache();
     void setTileCache(TileCache tileCache);
+    
+    /**
+     * JAI-EXT section
+     */
+    JAIEXTInfo getJAIEXTInfo();
+    void setJAIEXTInfo(JAIEXTInfo jaiext);
 
     public JAIInfo clone();
 }

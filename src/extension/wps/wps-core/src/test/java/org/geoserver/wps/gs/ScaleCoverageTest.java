@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014-2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -13,6 +13,7 @@ import java.io.InputStream;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wps.WPSTestSupport;
+import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.gce.arcgrid.ArcGridFormat;
 import org.junit.Test;
 import org.opengis.coverage.grid.GridCoverage;
@@ -94,7 +95,7 @@ public class ScaleCoverageTest extends WPSTestSupport {
         ArcGridFormat format = new ArcGridFormat();
         GridCoverage gc = format.getReader(is).read(null);
         
-        GridCoverage original = getCatalog().getCoverageByName(getLayerId(MockData.TASMANIA_DEM)).getGridCoverage(null, null);
+        GridCoverage2D original = (GridCoverage2D) getCatalog().getCoverageByName(getLayerId(MockData.TASMANIA_DEM)).getGridCoverage(null, null);
         scheduleForDisposal(original);
         
         // check the envelope did not change

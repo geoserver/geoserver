@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014-2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -31,7 +31,6 @@ import javax.imageio.spi.ImageOutputStreamSpi;
 import javax.imageio.stream.ImageOutputStream;
 import javax.media.jai.ImageLayout;
 import javax.media.jai.JAI;
-import javax.media.jai.operator.FormatDescriptor;
 
 import org.geotools.image.ImageWorker;
 import org.geotools.resources.image.ImageUtilities;
@@ -169,7 +168,9 @@ final class TurboJpegImageWorker extends ImageWorker {
         layout.setSampleModel(sm);
         
         // Forcing the output format to remove the alpha Band
-        image = FormatDescriptor.create(image, DataBuffer.TYPE_BYTE, hints);
+        ImageWorker worker = new ImageWorker(image);
+        worker.setRenderingHints(hints);
+        image = worker.format(DataBuffer.TYPE_BYTE).getRenderedImage();
     }
 
 }

@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014-2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -41,7 +41,6 @@ import org.geotools.referencing.CRS;
 import org.geotools.util.NumberRange;
 import org.opengis.coverage.Coverage;
 import org.opengis.coverage.grid.GridCoverage;
-import org.opengis.coverage.processing.Operation;
 import org.opengis.filter.Filter;
 import org.opengis.geometry.Envelope;
 import org.opengis.parameter.GeneralParameterValue;
@@ -70,35 +69,8 @@ public class WCSUtils {
     public final static Hints LENIENT_HINT = new Hints(Hints.LENIENT_DATUM_SHIFT, Boolean.TRUE);
     
     private static final CoverageProcessor PROCESSOR = CoverageProcessor.getInstance();
-    
-    private static final Operation CROP = PROCESSOR.getOperation("CoverageCrop");
-
-    private final static SelectSampleDimension bandSelectFactory = new SelectSampleDimension();
-
-    private final static Interpolate interpolateFactory = new Interpolate();
-
-    private final static Resample resampleFactory = new Resample();
-
-    private final static ParameterValueGroup bandSelectParams;
-
-    private final static ParameterValueGroup interpolateParams;
-
-    private final static ParameterValueGroup resampleParams;
 
     private final static Hints hints = new Hints();
-
-    static {
-        hints.add(LENIENT_HINT);
-        // ///////////////////////////////////////////////////////////////////
-        //
-        // Static Processors
-        //
-        // ///////////////////////////////////////////////////////////////////
-        final CoverageProcessor processor = CoverageProcessor.getInstance((LENIENT_HINT));
-        bandSelectParams = processor.getOperation("SelectSampleDimension").getParameters();
-        interpolateParams = processor.getOperation("Interpolate").getParameters();
-        resampleParams = processor.getOperation("Resample").getParameters();        
-    }
 
     /**
      * <strong>Reprojecting</strong><br>
@@ -124,13 +96,13 @@ public class WCSUtils {
             final Interpolation interpolation) throws WcsException {
 
 
-        final ParameterValueGroup param = (ParameterValueGroup) resampleParams.clone();
+        final ParameterValueGroup param = (ParameterValueGroup) PROCESSOR.getOperation("Resample").getParameters();
         param.parameter("Source").setValue(coverage);
         param.parameter("CoordinateReferenceSystem").setValue(targetCRS);
         param.parameter("GridGeometry").setValue(gridGeometry);
         param.parameter("InterpolationType").setValue(interpolation);
 
-        return (GridCoverage2D) resampleFactory.doOperation(param, hints);
+        return (GridCoverage2D) ((Resample)PROCESSOR.getOperation("Resample")).doOperation(param, hints);
 
     }
     
@@ -155,7 +127,7 @@ public class WCSUtils {
         Geometry roi = polygon.getFactory().createMultiPolygon(new Polygon[] {polygon});
 
         // perform the crops
-        final ParameterValueGroup param = CROP.getParameters();
+        final ParameterValueGroup param = PROCESSOR.getOperation("CoverageCrop").getParameters();
         param.parameter("Source").setValue(coverage);
         param.parameter("Envelope").setValue(bounds);
         param.parameter("ROI").setValue(roi);
@@ -189,11 +161,11 @@ public class WCSUtils {
         // ///////////////////////////////////////////////////////////////////
         if (interpolation != null) {
             /* Operations.DEFAULT.interpolate(coverage, interpolation) */
-            final ParameterValueGroup param = (ParameterValueGroup) interpolateParams.clone();
+            final ParameterValueGroup param = (ParameterValueGroup) PROCESSOR.getOperation("Interpolate").getParameters();
             param.parameter("Source").setValue(coverage);
             param.parameter("Type").setValue(interpolation);
 
-            return (GridCoverage2D) interpolateFactory.doOperation(param, hints);
+            return (GridCoverage2D) ((Interpolate)PROCESSOR.getOperation("Interpolate")).doOperation(param, hints);
         }
 
         return coverage;
@@ -292,11 +264,11 @@ public class WCSUtils {
 
         if ((bands != null) && (bands.length > 0)) {
             /* Operations.DEFAULT.selectSampleDimension(coverage, bands) */
-            final ParameterValueGroup param = (ParameterValueGroup) bandSelectParams.clone();
+            final ParameterValueGroup param = (ParameterValueGroup) PROCESSOR.getOperation("SelectSampleDimension").getParameters();
             param.parameter("Source").setValue(coverage);
             param.parameter("SampleDimensions").setValue(bands);
             // param.parameter("VisibleSampleDimension").setValue(bands);
-            bandSelectedCoverage = bandSelectFactory.doOperation(param, hints);
+            bandSelectedCoverage = ((SelectSampleDimension)PROCESSOR.getOperation("SelectSampleDimension")).doOperation(param, hints);
         } else {
             bandSelectedCoverage = coverage;
         }

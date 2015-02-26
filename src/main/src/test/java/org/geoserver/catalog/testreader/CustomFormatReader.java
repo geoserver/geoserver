@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014-2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -243,8 +243,8 @@ public final class CustomFormatReader extends AbstractGridCoverage2DReader {
         GridSampleDimension[] bands;
         bands = new GridSampleDimension[1];
         bands[0] = new GridSampleDimension(null, categories, null);
-        final Map<String, Double> properties = new HashMap<String, Double>();
-        properties.put("GC_NODATA", DEFAULT_NODATA);
+        final Map<String, Object> properties = new HashMap<String, Object>();
+        CoverageUtilities.setNoDataProperty(properties, DEFAULT_NODATA);
         return this.coverageFactory.create(name, image, this.originalEnvelope,
                                            bands, null, properties);
     }

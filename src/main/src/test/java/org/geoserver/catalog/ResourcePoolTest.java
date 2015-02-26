@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014-2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -39,6 +39,7 @@ import org.geotools.data.DataAccess;
 import org.geotools.data.DataUtilities;
 import org.geotools.factory.GeoTools;
 import org.geotools.feature.NameImpl;
+import org.geotools.resources.coverage.CoverageUtilities;
 import org.geotools.resources.image.ImageUtilities;
 import org.geotools.styling.PolygonSymbolizer;
 import org.geotools.styling.Style;
@@ -345,7 +346,7 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
         try {
             // check that we maintain the native info if we don't have any
             gc = (GridCoverage2D) reader.read(null);
-            assertEquals(-9999d, (Double) gc.getProperty("GC_NODATA"), 0d);
+            assertEquals(-9999d, CoverageUtilities.getNoDataProperty(gc).getAsSingleValue(), 0d);
         } finally {
             if (gc != null) {
                 RenderedImage ri = gc.getRenderedImage();

@@ -1,9 +1,11 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014-2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wcs2_0.response;
+
+import it.geosolutions.jaiext.range.NoDataContainer;
 
 import java.awt.image.DataBuffer;
 import java.awt.image.RenderedImage;
@@ -852,8 +854,9 @@ class GMLTransformer extends TransformerBase {
                 }
             } else if (gc2d != null) {
             // do we have already a a NO_DATA value at hand?
-                if (gc2d.getProperties().containsKey("GC_NODATA")) {
-                    String nodata = (String) gc2d.getProperties().get("GC_NODATA"); // TODO test me
+                NoDataContainer noDataProperty = CoverageUtilities.getNoDataProperty(gc2d);
+                if (noDataProperty != null) {
+                    String nodata = Double.valueOf(noDataProperty.getAsSingleValue()).toString(); // TODO test me
                     final AttributesImpl nodataAttr = new AttributesImpl();
                     nodataAttr.addAttribute("", "reason", "reason", "",
                             "http://www.opengis.net/def/nil/OGC/0/unknown");

@@ -1,32 +1,25 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014-2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wms.map;
 
-import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.imageio.ImageIO;
 import javax.imageio.ImageWriter;
 import javax.imageio.spi.ImageWriterSpi;
 import javax.imageio.stream.ImageOutputStream;
-import javax.media.jai.PlanarImage;
-
 import org.geoserver.platform.ServiceException;
-import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapProducerCapabilities;
 import org.geoserver.wms.RasterCleaner;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContent;
 import org.geotools.image.io.ImageIOExt;
-import org.geotools.image.palette.InverseColorMapOp;
-import org.geotools.resources.image.ImageUtilities;
 import org.geotools.util.logging.Logging;
 
 /**

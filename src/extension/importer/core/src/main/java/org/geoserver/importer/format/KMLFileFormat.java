@@ -29,16 +29,14 @@ import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
-import org.geotools.data.FeatureReader;
-import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
-import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.geotools.referencing.CRS;
-import org.geoserver.importer.FileData;
 import org.geoserver.importer.ImportData;
 import org.geoserver.importer.ImportTask;
 import org.geoserver.importer.VectorFormat;
 import org.geoserver.importer.job.ProgressMonitor;
 import org.geoserver.importer.transform.KMLPlacemarkTransform;
+import org.geotools.data.FeatureReader;
+import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
+import org.geotools.referencing.CRS;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;
@@ -56,15 +54,12 @@ public class KMLFileFormat extends VectorFormat {
 
     private static KMLPlacemarkTransform kmlTransform = new KMLPlacemarkTransform();
 
-    private static ReferencedEnvelope EMPTY_BOUNDS = new ReferencedEnvelope();
-
     static {
         try {
             KML_CRS = CRS.decode(KML_SRS);
         } catch (Exception e) {
             throw new RuntimeException("Could not decode: EPSG:4326", e);
         }
-        EMPTY_BOUNDS.setToNull();
     }
 
     @SuppressWarnings("rawtypes")
@@ -80,13 +75,7 @@ public class KMLFileFormat extends VectorFormat {
             // we aren't able to ask for the feature type from the resource directly,
             // because we don't have a backing store
             FeatureTypeInfo fti = (FeatureTypeInfo) task.getLayer().getResource();
-            SimpleFeatureTypeBuilder ftb = new SimpleFeatureTypeBuilder();
-            ftb.setName(fti.getName());
-            List<AttributeTypeInfo> attributes = fti.getAttributes();
-            for (AttributeTypeInfo attr : attributes) {
-                ftb.add(attr.getName(), attr.getBinding());
-            }
-            ft = ftb.buildFeatureType();
+            ft = buildFeatureTypeFromInfo(fti);
             MetadataMap metadata = fti.getMetadata();
             if (metadata.containsKey("importschemanames")) {
                 Map<Object, Object> userData = ft.getUserData();
@@ -132,13 +121,6 @@ public class KMLFileFormat extends VectorFormat {
     public boolean canRead(ImportData data) throws IOException {
         File file = getFileFromData(data);
         return file.canRead() && "kml".equalsIgnoreCase(FilenameUtils.getExtension(file.getName()));
-    }
-
-    private File getFileFromData(ImportData data) {
-        assert data instanceof FileData;
-        FileData fileData = (FileData) data;
-        File file = fileData.getFile();
-        return file;
     }
 
     @Override

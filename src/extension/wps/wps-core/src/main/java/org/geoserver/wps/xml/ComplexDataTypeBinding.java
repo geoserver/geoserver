@@ -33,7 +33,7 @@ public class ComplexDataTypeBinding extends org.geotools.wps.bindings.ComplexDat
             return properties;
         }
         
-        return null;
+        return super.getProperties(object);
     }
     
     @Override

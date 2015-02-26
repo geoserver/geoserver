@@ -5,6 +5,7 @@
  */
 package org.geoserver.wps;
 
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.junit.Assert.fail;
 
 import java.io.BufferedReader;
@@ -62,6 +63,7 @@ public abstract class WPSTestSupport extends GeoServerSystemTestSupport {
 
     static {
         Processors.addProcessFactory(MonkeyProcess.getFactory());
+        Processors.addProcessFactory(MultiRawProcess.getFactory());
     }
     
     protected void scheduleForDisposal(GridCoverage coverage) {
@@ -182,6 +184,23 @@ public abstract class WPSTestSupport extends GeoServerSystemTestSupport {
         testData.addRasterLayer(TASMANIA_BM, "tazbm.tiff", TIFF, props, MockData.class, getCatalog());
         testData.addRasterLayer(ROTATED_CAD, "rotated.tiff", TIFF, props, MockData.class, getCatalog());
         testData.addRasterLayer(WORLD, "world.tiff", TIFF, props, MockData.class, getCatalog());
+    }
+
+    /**
+     * Submits an asynch execute request and waits for the final result, which is then returned
+     * 
+     * @param xml
+     * @param maxWaitSeconds
+     * @return
+     * @throws Exception
+     */
+    protected Document submitAsynchronous(String xml, long maxWaitSeconds) throws Exception {
+        Document dom = postAsDOM("wps", xml);
+        assertXpathExists("//wps:ProcessAccepted", dom);
+        XpathEngine xpath = XMLUnit.newXpathEngine();
+        String fullStatusLocation = xpath.evaluate("//wps:ExecuteResponse/@statusLocation", dom);
+        String statusLocation = fullStatusLocation.substring(fullStatusLocation.indexOf('?') - 3);
+        return waitForProcessEnd(statusLocation, maxWaitSeconds);
     }
 
     protected Document waitForProcessEnd(String statusLocation, long maxWaitSeconds)

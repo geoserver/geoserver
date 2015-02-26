@@ -106,43 +106,24 @@ public class DescribeProcessTest extends WPSTestSupport {
                 d);
     }
 
-    /* TODO Language Negotiation tests
-    public void testGetLanguageGood() throws Exception { // Standard Test A.4.3.4
-        Document d = getAsDOM( root() + "service=wps&request=describeprocess&identifier=gt:buffer&language=en-US" );
-        print(d);
-        testBufferDescription(d);
-    }
-    
-    public void testGetLanguageBad() throws Exception { // Standard Test A.4.3.4
-        Document d = getAsDOM( root() + "service=wps&request=describeprocess&identifier=gt:buffer&language=zz-ZZ" );
-        print(d);
-        testBufferDescription(d);
+    @Test
+    public void testMultiRaw() throws Exception {
+        Document d = getAsDOM(root() + "service=wps&request=describeprocess&identifier=gs:MultiRaw");
+        // print(d);
+        checkValidationErrors(d);
+        // only one input (we have two, but one is the chosen mime type for the outputs
+        assertXpathEvaluatesTo("1", "count(//Input)", d);
+        assertXpathEvaluatesTo("1", "count(//Input[ows:Identifier='id']/LiteralData)", d);
+
+        // three outputs, two complex, one literal
+        assertXpathEvaluatesTo("3", "count(//Output)", d);
+        assertXpathEvaluatesTo("text/plain",
+                "//Output[ows:Identifier='text']/ComplexOutput/Supported/Format/MimeType", d);
+        assertXpathEvaluatesTo("application/zip",
+                "//Output[ows:Identifier='binary']/ComplexOutput/Supported/Format[1]/MimeType", d);
+        assertXpathEvaluatesTo("image/png",
+                "//Output[ows:Identifier='binary']/ComplexOutput/Supported/Format[2]/MimeType", d);
+        assertXpathEvaluatesTo("1", "count(//Output[ows:Identifier='literal']/LiteralOutput)", d);
     }
 
-    public void testPostLanguageGod() throws Exception { // Standard Test A.4.3.4
-        String request = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" + 
-    		"<DescribeProcess xmlns=\"http://www.opengis.net/wps/1.0.0\" " +
-    		"xmlns:ows=\"http://www.opengis.net/ows/1.1\" " +
-    		"xmlns:xlink=\"http://www.w3.org/1999/xlink\" " +
-    		"xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" " +
-    		"language=\"en-US\">\r\n" + 
-    		"    <ows:Identifier>gt:buffer</ows:Identifier>\r\n" + 
-    		"</DescribeProcess>";
-        Document d = postAsDOM(root(), request);
-        testBufferDescription(d);
-    }
-
-    public void testPostLanguageBad() throws Exception { // Standard Test A.4.3.4
-        String request = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" + 
-			"<DescribeProcess xmlns=\"http://www.opengis.net/wps/1.0.0\" " +
-			"xmlns:ows=\"http://www.opengis.net/ows/1.1\" " +
-			"xmlns:xlink=\"http://www.w3.org/1999/xlink\" " +
-			"xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" " +
-			"language=\"zz-ZZ\">\r\n" + 
-			"    <ows:Identifier>gt:buffer</ows:Identifier>\r\n" + 
-			"</DescribeProcess>";
-        Document d = postAsDOM(root(), request);
-        testBufferDescription(d);
-    }
-    */
 }

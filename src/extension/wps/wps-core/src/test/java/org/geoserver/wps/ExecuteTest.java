@@ -5,10 +5,11 @@
  */
 package org.geoserver.wps;
 
-import static junit.framework.Assert.assertEquals;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.geoserver.data.test.MockData.PRIMITIVEGEOFEATURE;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
 import java.io.ByteArrayInputStream;
@@ -30,6 +31,7 @@ import javax.xml.namespace.QName;
 
 import net.opengis.ows11.BoundingBoxType;
 
+import org.apache.commons.codec.binary.Base64;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.custommonkey.xmlunit.exceptions.XpathException;
@@ -95,7 +97,6 @@ public class ExecuteTest extends WPSTestSupport {
         MonkeyProcess.clearCommands();
     }
     
-    /* TODO GET requests A.4.4.1 */
     @Test
     public void testDataInline() throws Exception { // Standard Test A.4.4.2, A.4.4.4
         String xml =  
@@ -1340,6 +1341,162 @@ public class ExecuteTest extends WPSTestSupport {
         Document dom = postAsDOM(root(), request);
         assertEquals("ows:BoundingBox", dom.getDocumentElement().getNodeName());
     }
+    
+    @Test
+    public void testChooseOutputSynchronous() throws Exception {
+        String xml =  
+          "<wps:Execute service='WPS' version='1.0.0' xmlns:wps='http://www.opengis.net/wps/1.0.0' " + 
+              "xmlns:ows='http://www.opengis.net/ows/1.1'>" + 
+            "<ows:Identifier>gs:MultiRaw</ows:Identifier>" + 
+             "<wps:DataInputs>" + 
+                "<wps:Input>" + 
+                   "<ows:Identifier>id</ows:Identifier>" + 
+                   "<wps:Data>" + 
+                     "<wps:LiteralData>1234</wps:LiteralData>" + 
+                   "</wps:Data>" + 
+                "</wps:Input>" + 
+           "</wps:DataInputs>" +
+           "<wps:ResponseForm>" +  
+             "<wps:ResponseDocument storeExecuteResponse='false'>" + 
+               "<wps:Output>" +
+                 "<ows:Identifier>${output}</ows:Identifier>" +
+               "</wps:Output>" + 
+             "</wps:ResponseDocument>" +
+           "</wps:ResponseForm>" + 
+         "</wps:Execute>";
+
+        
+        // literal output
+        Document d = postAsDOM("wps", xml.replace("${output}", "literal"));
+        checkValidationErrors(d);
+        // print(d);
+
+        assertEquals("wps:ExecuteResponse", d.getDocumentElement().getNodeName());
+
+        assertXpathExists("/wps:ExecuteResponse/wps:Status/wps:ProcessSucceeded", d);
+        assertXpathEvaluatesTo("1", "count(//wps:Output)", d);
+        assertXpathEvaluatesTo(
+                "1234",
+                "/wps:ExecuteResponse/wps:ProcessOutputs/wps:Output[ows:Identifier='literal']/wps:Data/wps:LiteralData",
+                d);
+
+        // text complex output
+        d = postAsDOM("wps", xml.replace("${output}", "text"));
+        // print(d);
+        checkValidationErrors(d);
+
+        assertEquals("wps:ExecuteResponse", d.getDocumentElement().getNodeName());
+
+        assertXpathExists("/wps:ExecuteResponse/wps:Status/wps:ProcessSucceeded", d);
+        assertXpathEvaluatesTo("1", "count(//wps:Output)", d);
+        assertXpathEvaluatesTo(
+                "base64",
+                "/wps:ExecuteResponse/wps:ProcessOutputs/wps:Output[ows:Identifier='text']/wps:Data/wps:ComplexData/@encoding",
+                d);
+        String value = xp
+                .evaluate(
+                        "/wps:ExecuteResponse/wps:ProcessOutputs/wps:Output[ows:Identifier='text']/wps:Data/wps:ComplexData",
+                        d);
+        assertEquals("This is the raw text", new String(Base64.decodeBase64(value)));
+
+        // binary complex output
+        d = postAsDOM("wps", xml.replace("${output}", "binary"));
+        // print(d);
+        checkValidationErrors(d);
+        
+        assertEquals( "wps:ExecuteResponse", d.getDocumentElement().getNodeName() );
+        
+        assertXpathExists( "/wps:ExecuteResponse/wps:Status/wps:ProcessSucceeded", d);
+        assertXpathEvaluatesTo("1", "count(//wps:Output)", d);
+        assertXpathEvaluatesTo(
+                "base64",
+                "/wps:ExecuteResponse/wps:ProcessOutputs/wps:Output[ows:Identifier='binary']/wps:Data/wps:ComplexData/@encoding",
+                d);
+        value = xp
+                .evaluate(
+                        "/wps:ExecuteResponse/wps:ProcessOutputs/wps:Output[ows:Identifier='binary']/wps:Data/wps:ComplexData",
+                d);
+        assertArrayEquals(new byte[100], Base64.decodeBase64(value));
+    }
+    
+    @Test
+    public void testChooseOutputAsynchronous() throws Exception {
+        String xml =  
+          "<wps:Execute service='WPS' version='1.0.0' xmlns:wps='http://www.opengis.net/wps/1.0.0' " + 
+              "xmlns:ows='http://www.opengis.net/ows/1.1'>" + 
+            "<ows:Identifier>gs:MultiRaw</ows:Identifier>" + 
+             "<wps:DataInputs>" + 
+                "<wps:Input>" + 
+                   "<ows:Identifier>id</ows:Identifier>" + 
+                   "<wps:Data>" + 
+                     "<wps:LiteralData>1234</wps:LiteralData>" + 
+                   "</wps:Data>" + 
+                "</wps:Input>" + 
+           "</wps:DataInputs>" +
+           "<wps:ResponseForm>" +  
+             "<wps:ResponseDocument storeExecuteResponse='true' status='true'>" + 
+               "<wps:Output>" +
+                 "<ows:Identifier>${output}</ows:Identifier>" +
+               "</wps:Output>" + 
+             "</wps:ResponseDocument>" +
+           "</wps:ResponseForm>" + 
+         "</wps:Execute>";
+
+        
+        // literal output
+        Document d = submitAsynchronous(xml.replace("${output}", "literal"), 60);
+        checkValidationErrors(d);
+        // print(d);
+
+        assertEquals("wps:ExecuteResponse", d.getDocumentElement().getNodeName());
+
+        assertXpathExists("/wps:ExecuteResponse/wps:Status/wps:ProcessSucceeded", d);
+        assertXpathEvaluatesTo("1", "count(//wps:Output)", d);
+        assertXpathEvaluatesTo(
+                "1234",
+                "/wps:ExecuteResponse/wps:ProcessOutputs/wps:Output[ows:Identifier='literal']/wps:Data/wps:LiteralData",
+                d);
+
+        // text complex output
+        d = submitAsynchronous(xml.replace("${output}", "text"), 60);
+        // print(d);
+        checkValidationErrors(d);
+
+        assertEquals("wps:ExecuteResponse", d.getDocumentElement().getNodeName());
+
+        assertXpathExists("/wps:ExecuteResponse/wps:Status/wps:ProcessSucceeded", d);
+        assertXpathEvaluatesTo("1", "count(//wps:Output)", d);
+        assertXpathEvaluatesTo(
+                "base64",
+                "/wps:ExecuteResponse/wps:ProcessOutputs/wps:Output[ows:Identifier='text']/wps:Data/wps:ComplexData/@encoding",
+                d);
+        String value = xp
+                .evaluate(
+                        "/wps:ExecuteResponse/wps:ProcessOutputs/wps:Output[ows:Identifier='text']/wps:Data/wps:ComplexData",
+                        d);
+        assertEquals("This is the raw text", new String(Base64.decodeBase64(value)));
+
+        // binary complex output
+        d = submitAsynchronous(xml.replace("${output}", "binary"), 60);
+        // print(d);
+        checkValidationErrors(d);
+        
+        assertEquals( "wps:ExecuteResponse", d.getDocumentElement().getNodeName() );
+        
+        assertXpathExists( "/wps:ExecuteResponse/wps:Status/wps:ProcessSucceeded", d);
+        assertXpathEvaluatesTo("1", "count(//wps:Output)", d);
+        assertXpathEvaluatesTo(
+                "base64",
+                "/wps:ExecuteResponse/wps:ProcessOutputs/wps:Output[ows:Identifier='binary']/wps:Data/wps:ComplexData/@encoding",
+                d);
+        value = xp
+                .evaluate(
+                        "/wps:ExecuteResponse/wps:ProcessOutputs/wps:Output[ows:Identifier='binary']/wps:Data/wps:ComplexData",
+                d);
+        assertArrayEquals(new byte[100], Base64.decodeBase64(value));
+    }
+    
+    
 
     private void assertProgress(String statusLocation, String progress) throws Exception {
         Document dom = getAsDOM(statusLocation);
@@ -1457,8 +1614,4 @@ public class ExecuteTest extends WPSTestSupport {
         }
         zis.close();
     }
-    
-    /* TODO Updating of Response requests A.4.4.5 */
-    
-    /* TODO Language selection requests A.4.4.6 */
 }

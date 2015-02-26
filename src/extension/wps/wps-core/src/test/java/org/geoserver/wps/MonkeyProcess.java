@@ -113,8 +113,7 @@ public class MonkeyProcess {
     }
 
     static final ProcessFactory getFactory() {
-        return new AnnotatedBeanProcessFactory(new SimpleInternationalString("Monkey process"),
-                "gs", MonkeyProcess.class);
+        return new MonkeyProcessFactory();
     }
 
     public static void clearCommands() {
@@ -126,6 +125,14 @@ public class MonkeyProcess {
         }
 
         commands.clear();
+    }
+
+    private static class MonkeyProcessFactory extends AnnotatedBeanProcessFactory {
+
+        public MonkeyProcessFactory() {
+            super(new SimpleInternationalString("Monkey process"), "gs", MonkeyProcess.class);
+        }
+
     }
 
 }

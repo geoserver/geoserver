@@ -168,7 +168,7 @@ public class RawInputOutputTest extends WPSTestSupport {
         	throw new Exception("Waited for the process to complete more than " + MAX_WAIT_FOR_ASYNCH);
         }
 
-        print(dom);
+        // print(dom);
         assertEquals(1, xp.getMatchingNodes("//wps:Status/wps:ProcessSucceeded", dom).getLength());
         String fullReference = xp.evaluate("//wps:ProcessOutputs/wps:Output[ows:Identifier='result']/wps:Reference/@href", dom);
         String reference = fullReference.substring(fullReference.indexOf('?') - 3);

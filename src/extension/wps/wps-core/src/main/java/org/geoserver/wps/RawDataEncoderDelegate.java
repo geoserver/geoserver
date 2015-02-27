@@ -55,4 +55,8 @@ public class RawDataEncoderDelegate implements EncoderDelegate {
     public void encode(OutputStream os) throws IOException {
         IOUtils.copy(rawData.getInputStream(), os);
     }
+
+    public RawData getRawData() {
+        return rawData;
+    }
 }

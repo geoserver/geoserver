@@ -13,6 +13,7 @@ import java.util.logging.Logger;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.platform.resource.Resource;
+import org.geoserver.wps.RawDataEncoderDelegate;
 import org.geoserver.wps.process.AbstractRawData;
 import org.geoserver.wps.process.FileRawData;
 import org.geoserver.wps.process.RawData;
@@ -55,9 +56,19 @@ public class RawDataPPIO extends ComplexPPIO {
     }
 
     @Override
-    public String getFileExtension() {
-        LOGGER.warning("Code is grabbing the default file extension to generate the output, it should look in the RawData instead");
-        return AbstractRawData.DEFAULT_EXTENSION;
+    public String getFileExtension(Object value) {
+        RawData rd;
+        if (value instanceof RawDataEncoderDelegate) {
+            rd = ((RawDataEncoderDelegate) value).getRawData();
+        } else {
+            rd = (RawData) value;
+        }
+        String extension = rd.getFileExtension();
+        if (extension == null) {
+            return AbstractRawData.DEFAULT_EXTENSION;
+        } else {
+            return extension;
+        }
     }
 
 }

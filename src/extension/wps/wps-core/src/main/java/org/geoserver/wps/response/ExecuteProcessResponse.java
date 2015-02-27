@@ -8,6 +8,7 @@ package org.geoserver.wps.response;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.Map;
 
 import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.sax.TransformerHandler;
@@ -20,6 +21,7 @@ import net.opengis.wps10.ExecuteType;
 import net.opengis.wps10.LiteralDataType;
 import net.opengis.wps10.OutputDataType;
 
+import org.geoserver.ows.Ows11Util;
 import org.geoserver.ows.Response;
 import org.geoserver.ows.XmlObjectEncodingResponse;
 import org.geoserver.platform.Operation;
@@ -30,9 +32,16 @@ import org.geoserver.wps.Execute;
 import org.geoserver.wps.RawDataEncoderDelegate;
 import org.geoserver.wps.WPSException;
 import org.geoserver.wps.XMLEncoderDelegate;
+import org.geoserver.wps.ppio.ComplexPPIO;
+import org.geoserver.wps.ppio.ProcessParameterIO;
+import org.geoserver.wps.process.GeoServerProcessors;
+import org.geotools.data.Parameter;
 import org.geotools.ows.v1_1.OWS;
 import org.geotools.ows.v1_1.OWSConfiguration;
+import org.geotools.process.ProcessFactory;
 import org.geotools.xml.Encoder;
+import org.opengis.feature.type.Name;
+import org.springframework.context.ApplicationContext;
 
 /**
  * Encodes the Execute response either in the normal XML format or in the raw format
@@ -42,6 +51,8 @@ import org.geotools.xml.Encoder;
 public class ExecuteProcessResponse extends Response {
 
     XmlObjectEncodingResponse standardResponse;
+
+    ApplicationContext ctx;
 
     public ExecuteProcessResponse(Class binding, String elementName, Class xmlConfiguration) {
         super(ExecuteResponseType.class);
@@ -122,19 +133,31 @@ public class ExecuteProcessResponse extends Response {
             String fname = result.getIdentifier().getValue();
             LiteralDataType literal = result.getData().getLiteralData();
             ComplexDataType complex = result.getData().getComplexData();
-            String fext;
-            // this is not the most robust way to get mime type...
+            String fext = null;
+            // if it's a literal, use text, otherwise get the complex ppio and ask for the extension
             if (literal != null) {
                 fext = "txt";
             } else if(complex != null) {
-                String mimeType = result.getData().getComplexData().getMimeType();
-                if (mimeType == null) {
-                    fext = "txt";
-                } else {
-                    fext = mimeType.split("/")[1].toLowerCase();
+                Name name = Ows11Util.name(response.getProcess().getIdentifier());
+                ProcessFactory factory = GeoServerProcessors.createProcessFactory(name, true);
+                if (factory != null) {
+                    Map<String, Parameter<?>> resultInfo = factory.getResultInfo(name, null);
+                    Parameter p = resultInfo.get(result.getIdentifier().getValue());
+                    if (p != null) {
+                        ProcessParameterIO ppio = ProcessParameterIO.find(p, ctx,
+                                complex.getMimeType());
+                        if (ppio instanceof ComplexPPIO) {
+                            fext = ((ComplexPPIO) ppio).getFileExtension(result.getData()
+                                    .getComplexData().getData().get(0));
+                        }
+                    }
                 }
-            } else {
-                fext = "xml";
+
+            }
+
+            // fallback
+            if (fext == null) {
+                fext = "bin";
             }
             return fname + "." + fext;
         }

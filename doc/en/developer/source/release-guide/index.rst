@@ -81,6 +81,53 @@ Run the `geoserver-release-jira <http://ares.boundlessgeo.com/jenkins/job/geoser
 
 This job will perform the tasks in JIRA to release ``VERSION``. Navigate to `JIRA <http://jira.codehaus.org/browse/GEOS>`__ and verify that the version has actually been released.
 
+If you are cutting the first RC of a series, create the stable branch
+---------------------------------------------------------------------
+
+When creating the first release candidate of a series, there are some extra steps to create the new stable branch and update the version on master.
+
+* Checkout the master branch and make sure it is up to date and that there are no changes in your local workspace::
+
+    git checkout master
+    git pull
+    git status
+
+* Create the new stable branch and push it to GitHub; for example, if master is ``2.7-SNAPSHOT`` and the remote for the official GeoServer is called ``geoserver``::
+
+    git checkout -b 2.7.x
+    git push geoserver 2.7.x
+
+* Checkout the master branch and update the version in all pom.xml files; for example, if changing master from ``2.7-SNAPSHOT`` to ``2.8-SNAPSHOT``::
+
+    git checkout master
+    find . -name pom.xml -exec sed -i 's/2.7-SNAPSHOT/2.8-SNAPSHOT/g' {} \;
+
+* Update GeoTools dependency; for example if changing from ``13-SNAPSHOT`` to ``14-SNAPSHOT``::
+
+    sed -i 's/13-SNAPSHOT/14-SNAPSHOT/g' src/pom.xml
+
+* Update GeoWebCache dependency; for example if changing from ``1.7-SNAPSHOT`` to ``1.8-SNAPSHOT``::
+
+    sed -i 's/1.7-SNAPSHOT/1.8-SNAPSHOT/g' src/pom.xml
+
+* Manually update hardcoded versions in configuration files:
+
+    * ``doc/en/developer/source/conf.py``
+    * ``doc/en/docguide/source/conf.py``
+    * ``doc/en/user/source/conf.py``
+    * ``doc/es/user/source/conf.py``
+    * ``doc/fr/user/source/conf.py``
+    * ``src/extension/css/project/build/GeoServerCSSProject.scala``
+
+* Commit the changes and push to the master branch on GitHub::
+
+      git commit -am "Updated version to 2.8-SNAPSHOT, updated GeoTools dependency to 14-SNAPSHOT, updated GeoWebCache dependency to 1.8-SNAPSHOT, and related changes"
+      git push geoserver master
+      
+* Create the new beta version in `JIRA <http://jira.codehaus.org/browse/GEOS>`_ for issues on master; for example, if master is now ``2.8-SNAPSHOT``, create a Jira version ``2.8-beta`` for the first release of the ``2.8.x`` series
+
+* Announce on the developer mailing list that the new stable branch has been created and that the feature freeze on master is over
+
 Build the Release
 -----------------
 

@@ -44,14 +44,13 @@ public class InternalWCSInputProvider extends AbstractInputProvider {
             // what WCS version?
             String version = getVersion(ref.getHref());
             KvpRequestReader reader;
-            if (version.equals("1.0.0") || version.equals("1.0")) {
-                reader = (KvpRequestReader) context.getBean("wcs100GetCoverageRequestReader");
-                
-            } else if(version.equals("2.0.1") ){
-        	reader = (KvpRequestReader) context.getBean("wcs20getCoverageKvpParser");
-            } else {
-                reader = (KvpRequestReader) context.getBean("wcs111GetCoverageRequestReader");
-            }
+	    if ("1.0.0".equals(version) || "1.0".equals(version)) {
+		reader = (KvpRequestReader) context.getBean("wcs100GetCoverageRequestReader");
+	    } else if ("2.0.1".equals(version) || "2.0.0".equals(version)) {
+		reader = (KvpRequestReader) context.getBean("wcs20getCoverageKvpParser");
+	    } else {
+		reader = (KvpRequestReader) context.getBean("wcs111GetCoverageRequestReader");
+	    }
 
             getCoverage = kvpParse(ref.getHref(), reader);
         }

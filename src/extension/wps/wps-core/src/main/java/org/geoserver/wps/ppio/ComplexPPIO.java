@@ -67,10 +67,24 @@ public abstract class ComplexPPIO extends ProcessParameterIO {
     public abstract void encode( Object value, OutputStream os) throws Exception;
 
     /**
-     * Provides a suitable extension for the outut file
+     * Provides a suitable extension for the output file. Implement this if the file extension is
+     * not depend on the object being encoded
      * 
      * @return
      */
-    public abstract String getFileExtension();
+    public String getFileExtension() {
+        return ".bin";
+    }
+
+    /**
+     * Provides a suitable extension for the output file given the object being encoded. The default
+     * implementation simply calls {@link #getFileExtension()}
+     * 
+     * @param object
+     * @return
+     */
+    public String getFileExtension(Object object) {
+        return getFileExtension();
+    }
 
 }

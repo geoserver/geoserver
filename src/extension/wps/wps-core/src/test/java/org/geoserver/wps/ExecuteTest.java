@@ -11,6 +11,7 @@ import static org.geoserver.data.test.MockData.PRIMITIVEGEOFEATURE;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -221,6 +222,8 @@ public class ExecuteTest extends WPSTestSupport {
         MockHttpServletResponse response = postAsServletResponse( "wps", xml );
         // System.out.println(response.getOutputStreamContent());
         assertEquals("application/wkt", response.getContentType());
+        String cd = response.getHeader("Content-Disposition");
+        assertTrue(cd.endsWith("filename=result.wkt"));
         Geometry g = new WKTReader().read(response.getOutputStreamContent());
         Assert.assertTrue(g instanceof Polygon);
     }
@@ -1419,6 +1422,44 @@ public class ExecuteTest extends WPSTestSupport {
         assertArrayEquals(new byte[100], Base64.decodeBase64(value));
     }
     
+    @Test
+    public void testRawFileExtension() throws Exception {
+        String xml = "<wps:Execute service='WPS' version='1.0.0' xmlns:wps='http://www.opengis.net/wps/1.0.0' "
+                + "xmlns:ows='http://www.opengis.net/ows/1.1'>"
+                + "<ows:Identifier>gs:MultiRaw</ows:Identifier>"
+                + "<wps:DataInputs>"
+                + "<wps:Input>"
+                + "<ows:Identifier>id</ows:Identifier>"
+                + "<wps:Data>"
+                + "<wps:LiteralData>1234</wps:LiteralData>"
+                + "</wps:Data>"
+                + "</wps:Input>"
+                + "</wps:DataInputs>"
+                + "<wps:ResponseForm>"
+                + "<wps:ResponseDocument storeExecuteResponse='false'>"
+                + "<wps:Output asReference=\"true\">"
+                + "<ows:Identifier>${output}</ows:Identifier>"
+                + "</wps:Output>"
+                + "</wps:ResponseDocument>" + "</wps:ResponseForm>" + "</wps:Execute>";
+
+        // text complex output
+        Document d = postAsDOM("wps", xml.replace("${output}", "text"));
+        // print(d);
+        checkValidationErrors(d);
+
+        assertEquals("wps:ExecuteResponse", d.getDocumentElement().getNodeName());
+
+        // check we are using the RawData file extension
+        assertXpathExists("/wps:ExecuteResponse/wps:Status/wps:ProcessSucceeded", d);
+        assertXpathEvaluatesTo("1", "count(//wps:Output)", d);
+        String reference = xp
+                .evaluate(
+                        "/wps:ExecuteResponse/wps:ProcessOutputs/wps:Output[ows:Identifier='text']/wps:Reference/@href",
+                d);
+        Map<String, Object> kvp = KvpUtils.parseQueryString(reference);
+        assertEquals("text.txt", kvp.get("outputId"));
+    }
+
     @Test
     public void testChooseOutputAsynchronous() throws Exception {
         String xml =  

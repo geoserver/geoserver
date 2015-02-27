@@ -276,7 +276,7 @@ public class ExecuteResponseBuilder {
                 output.setReference(outputReference);
                 
                 ComplexPPIO cppio = (ComplexPPIO) ppio;
-                String name = key + "." + cppio.getFileExtension();
+                String name = key + "." + cppio.getFileExtension(o);
                 Resource outputResource = resourceManager.getOutputResource(
                         status.getExecutionId(), name);
                 

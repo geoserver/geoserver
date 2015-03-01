@@ -51,7 +51,51 @@ Here is the WFS request including the filter function:
         </ogc:Filter>
         </wfs:Query>
     </wfs:GetFeature>
-    
+
+WFS 2.0 namespaces
+^^^^^^^^^^^^^^^^^^
+
+WFS 2.0 does not depend on any one GML version and thus requires an explicit namespace and schemaLocation for GML.
+This POST example selects features using a spatial query. Note the complete declaration of namespace prefixes.
+In a GET request, namespaces can be placed on a Filter element.
+
+.. code-block:: xml 
+
+    <?xml version="1.0" encoding="UTF-8"?>
+    <wfs:GetFeature service="WFS" version="2.0.0"
+        xmlns:wfs="http://www.opengis.net/wfs/2.0"
+        xmlns:fes="http://www.opengis.net/fes/2.0"
+        xmlns:gml="http://www.opengis.net/gml/3.2"
+        xmlns:sf="http://www.openplans.org/spearfish"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.opengis.net/wfs/2.0
+                            http://schemas.opengis.net/wfs/2.0/wfs.xsd
+                            http://www.opengis.net/gml/3.2
+                            http://schemas.opengis.net/gml/3.2.1/gml.xsd">
+        <wfs:Query typeNames="sf:bugsites">
+            <fes:Filter>
+                <fes:Not>
+                    <fes:Disjoint>
+                        <fes:ValueReference>sf:the_geom</fes:ValueReference>
+                        <!-- gml:id is mandatory on GML 3.2 geometry elements -->
+                        <gml:Polygon
+                                gml:id="polygon.1"
+                                srsName='http://www.opengis.net/def/crs/EPSG/0/26713'>
+                            <gml:exterior>
+                                <gml:LinearRing>
+                                    <!-- pairs must form a closed ring -->
+                                    <gml:posList>590431 4915204 590430
+                                        4915205 590429 4915204 590430
+                                        4915203 590431 4915204</gml:posList>
+                                </gml:LinearRing>
+                            </gml:exterior>
+                        </gml:Polygon>
+                    </fes:Disjoint>
+                </fes:Not>
+            </fes:Filter>
+        </wfs:Query>
+    </wfs:GetFeature>
+
 
 SLD formatting
 ^^^^^^^^^^^^^^

@@ -375,8 +375,31 @@ It contains data of one of the following types:
    * - Geometry
      - An element specifying a geometry in GML3 format.
 
+WFS 2.0 namespaces
+------------------
 
+WFS 2.0 does not depend on any one GML version and thus requires an explicit namespace and schemaLocation for GML.
+In a GET request, namespaces can be placed on a Filter element (that is, ``filter=`` the block below, URL-encoded):
 
-
-
-
+.. code-block:: xml 
+ 
+    <fes:Filter
+            xmlns:fes="http://www.opengis.net/fes/2.0"
+            xmlns:gml="http://www.opengis.net/gml/3.2">
+        <fes:Not>
+            <fes:Disjoint>
+                <fes:ValueReference>sf:the_geom</fes:ValueReference>
+                <gml:Polygon
+                        gml:id="polygon.1"
+                        srsName='http://www.opengis.net/def/crs/EPSG/0/26713'>
+                    <gml:exterior>
+                        <gml:LinearRing>
+                            <gml:posList>590431 4915204 590430
+                                4915205 590429 4915204 590430
+                                4915203 590431 4915204</gml:posList>
+                        </gml:LinearRing>
+                    </gml:exterior>
+                </gml:Polygon>
+            </fes:Disjoint>
+        </fes:Not>
+    </fes:Filter>

@@ -33,6 +33,11 @@
         </dependency>
         <dependency>
             <groupId>org.geoserver</groupId>
+            <artifactId>gs-wcs2_0</artifactId>
+            <version>${gs.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.geoserver</groupId>
             <artifactId>gs-wcs1_1</artifactId>
             <version>${gs.version}</version>
         </dependency>

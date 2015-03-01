@@ -5,16 +5,20 @@
  */
 package org.geoserver.wps.ppio;
 
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.xml.namespace.QName;
 
 import net.opengis.wfs.FeatureCollectionType;
 import net.opengis.wfs.WfsFactory;
 
+import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.geoserver.feature.RetypingFeatureCollection;
 import org.geotools.data.crs.ForceCoordinateSystemFeatureResults;
 import org.geotools.data.simple.SimpleFeatureCollection;
@@ -22,8 +26,8 @@ import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.data.store.ReprojectingFeatureCollection;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
-import org.geotools.gml3.GMLConfiguration;
 import org.geotools.referencing.CRS;
+import org.geotools.util.logging.Logging;
 import org.geotools.wfs.v1_0.WFSConfiguration;
 import org.geotools.xml.Configuration;
 import org.geotools.xml.Encoder;
@@ -35,6 +39,7 @@ import org.opengis.feature.type.GeometryDescriptor;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.xml.sax.ContentHandler;
 
+import com.google.common.io.ByteStreams;
 import com.vividsolutions.jts.geom.Geometry;
 
 /**
@@ -43,7 +48,8 @@ import com.vividsolutions.jts.geom.Geometry;
 public class WFSPPIO extends XMLPPIO {
 
     Configuration configuration;
-
+    private static final Logger LOGGER = Logging.getLogger(WFSPPIO.class);
+    
     protected WFSPPIO(Configuration configuration, String mimeType, QName element) {
         super( FeatureCollectionType.class, FeatureCollection.class, mimeType, element);
         this.configuration = configuration;
@@ -51,9 +57,26 @@ public class WFSPPIO extends XMLPPIO {
 
     @Override
     public Object decode(InputStream input) throws Exception {
-        Parser p = new Parser(configuration);
-        FeatureCollectionType fct = (FeatureCollectionType) p.parse(input);
-        return decode(fct);
+        Parser p = new Parser(configuration);        
+        byte[] streamBytes = null;
+        if(LOGGER.isLoggable(Level.FINEST)){
+            //allow WFS result to be logged for debugging purposes
+            //WFS result can be large, so use only for debugging
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+	    ByteStreams.copy(input, outputStream);
+	    streamBytes = outputStream.toByteArray();
+	    input = new ByteArrayInputStream(streamBytes);	    	    
+        }
+        Object result = p.parse(input);
+        if(result instanceof FeatureCollectionType){
+            FeatureCollectionType fct = (FeatureCollectionType) result;
+            return decode(fct);            
+        }else{
+            if(LOGGER.isLoggable(Level.FINEST)){
+        	LOGGER.log(Level.FINEST, "Decoding the following WFS response did not result in an object of type FeatureCollectionType: \n"+new String(streamBytes));
+            }
+            throw new IllegalArgumentException("Decoded WFS result is not a feature collection, got a: "+result);
+        }
     }
     
     @Override

@@ -23,6 +23,7 @@ import net.sf.json.util.JSONBuilder;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServer;
@@ -99,7 +100,7 @@ public class MapResource extends Resource {
         }
         List<LayerInfo> layersInWorkspace = new ArrayList<LayerInfo>();
         for (LayerInfo l : geoServer.getCatalog().getLayers()) {
-            if (l.getType() == LayerInfo.Type.VECTOR && l.getResource().getStore().getWorkspace().equals(workspace)) {
+            if (l.getType() == PublishedType.VECTOR && l.getResource().getStore().getWorkspace().equals(workspace)) {
                 layersInWorkspace.add(l);
             }
         }

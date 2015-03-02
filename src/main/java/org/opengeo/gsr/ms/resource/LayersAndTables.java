@@ -10,6 +10,7 @@ import org.opengeo.gsr.core.renderer.StyleEncoder;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -50,7 +51,7 @@ public class LayersAndTables {
         // short list all layers
         List<LayerInfo> layersInWorkspace = new ArrayList<LayerInfo>();
         for (LayerInfo l : catalog.getLayers()) {
-            if (l.enabled() && l.getType() == LayerInfo.Type.VECTOR &&
+            if (l.enabled() && l.getType() == PublishedType.VECTOR &&
                     l.getResource().getStore().getWorkspace().getName().equals(workspaceName)) {
                 layersInWorkspace.add(l);
             }
@@ -135,7 +136,7 @@ public class LayersAndTables {
         int idCounter = 0;
         List<LayerInfo> layersInWorkspace = new ArrayList<LayerInfo>();
         for (LayerInfo l : catalog.getLayers()) {
-            if (l.enabled() && l.getType() == LayerInfo.Type.VECTOR && l.getResource().getStore().getWorkspace().getName().equals(workspaceName)) {
+            if (l.enabled() && l.getType() == PublishedType.VECTOR && l.getResource().getStore().getWorkspace().getName().equals(workspaceName)) {
                 layersInWorkspace.add(l);
             }
         }

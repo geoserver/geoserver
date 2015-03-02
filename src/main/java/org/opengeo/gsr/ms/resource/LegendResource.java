@@ -34,6 +34,7 @@ import net.sf.json.util.JSONStringer;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geotools.styling.Style;
@@ -112,7 +113,7 @@ public class LegendResource extends Resource {
         
         List<LayerInfo> layersInWorkspace = new ArrayList<LayerInfo>();
         for (LayerInfo l : catalog.getLayers()) {
-            if (l.getType() == LayerInfo.Type.VECTOR && l.getResource().getStore().getWorkspace().getName().equals(workspaceName)) {
+            if (l.getType() == PublishedType.VECTOR && l.getResource().getStore().getWorkspace().getName().equals(workspaceName)) {
                 layersInWorkspace.add(l);
             }
         }

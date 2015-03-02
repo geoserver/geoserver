@@ -6,13 +6,14 @@ package org.opengeo.gsr.fs.resource;
 
 import org.opengeo.gsr.core.exception.ServiceError;
 import org.opengeo.gsr.ms.resource.LayerNameComparator;
-
 import org.geoserver.config.GeoServer;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.wfs.WFSInfo;
 
 import net.sf.json.util.JSONBuilder;
+
 import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
@@ -76,7 +77,7 @@ public class FeatureServiceResource extends Resource {
         }
         List<LayerInfo> layersInWorkspace = new ArrayList<LayerInfo>();
         for (LayerInfo l : geoserver.getCatalog().getLayers()) {
-            if (l.getType() == LayerInfo.Type.VECTOR && l.getResource().getStore().getWorkspace().equals(workspace)) {
+            if (l.getType() == PublishedType.VECTOR && l.getResource().getStore().getWorkspace().equals(workspace)) {
                 layersInWorkspace.add(l);
             }
         }

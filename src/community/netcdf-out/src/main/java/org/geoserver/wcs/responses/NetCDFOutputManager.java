@@ -1,9 +1,11 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014-2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wcs.responses;
+
+import it.geosolutions.jaiext.range.NoDataContainer;
 
 import java.awt.geom.AffineTransform;
 import java.awt.image.RenderedImage;
@@ -21,20 +23,24 @@ import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.measure.unit.Unit;
 import javax.media.jai.iterator.RandomIter;
 import javax.media.jai.iterator.RandomIterFactory;
 
 import org.geoserver.wcs.responses.NetCDFDimensionManager.DimensionValuesArray;
 import org.geoserver.wcs.responses.NetCDFDimensionManager.DimensionValuesSet;
 import org.geoserver.wcs2_0.response.DimensionBean;
-import org.geoserver.wcs2_0.response.GranuleStack;
 import org.geoserver.wcs2_0.response.DimensionBean.DimensionType;
+import org.geoserver.wcs2_0.response.GranuleStack;
+import org.geotools.coverage.GridSampleDimension;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.io.util.DateRangeComparator;
 import org.geotools.coverage.io.util.NumberRangeComparator;
+import org.geotools.imageio.netcdf.utilities.NetCDFUtilities;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.CRS.AxisOrder;
 import org.geotools.referencing.operation.matrix.XAffineTransform;
+import org.geotools.resources.coverage.CoverageUtilities;
 import org.geotools.util.logging.Logging;
 import org.opengis.coverage.grid.GridGeometry;
 import org.opengis.geometry.Envelope;
@@ -123,7 +129,7 @@ public class NetCDFOutputManager {
                 break;
             case CUSTOM:
                 String dataType = dimension.getDatatype();
-                if (NCUtilities.isATime(dataType)) {
+                if (NetCDFUtilities.isATime(dataType)) {
                     tree = 
                             //new TreeSet(new DateRangeComparator());
                             isRange ? new TreeSet(new DateRangeComparator()) : new TreeSet<Date>();
@@ -206,7 +212,7 @@ public class NetCDFOutputManager {
             }
             if (isRange) {
                 if (boundDimension == null) {
-                    boundDimension = writer.addDimension(null, NCUtilities.BOUNDARY_DIMENSION, 2);
+                    boundDimension = writer.addDimension(null, NetCDFUtilities.BOUNDARY_DIMENSION, 2);
                 }
             }
             final Dimension netcdfDimension = writer.addDimension(null, dimensionName, dimensionLength);
@@ -214,17 +220,17 @@ public class NetCDFOutputManager {
 
             // Assign variable to dimensions having coordinates
             Variable var = writer.addVariable(null, dimensionName,
-                    NCUtilities.getNetCDFDataType(dim.getDatatype()), dimensionName);
-            writer.addVariableAttribute(var, new Attribute(NCUtilities.LONGNAME, dimensionName));
-            writer.addVariableAttribute(var, new Attribute(NCUtilities.DESCRIPTION, dimensionName)); 
+                    NetCDFUtilities.getNetCDFDataType(dim.getDatatype()), dimensionName);
+            writer.addVariableAttribute(var, new Attribute(NetCDFUtilities.LONG_NAME, dimensionName));
+            writer.addVariableAttribute(var, new Attribute(NetCDFUtilities.DESCRIPTION, dimensionName)); 
             // TODO: introduce some lookup table to get a description if needed
 
-            if (NCUtilities.isATime(dim.getDatatype())) {
+            if (NetCDFUtilities.isATime(dim.getDatatype())) {
                 // Special management for times. We use the NetCDF convention of defining times starting from
                 // an origin. Right now we use the Linux EPOCH
-                writer.addVariableAttribute(var, new Attribute(NCUtilities.UNITS, NCUtilities.TIME_ORIGIN));
+                writer.addVariableAttribute(var, new Attribute(NetCDFUtilities.UNITS, NetCDFUtilities.TIME_ORIGIN));
             } else {
-                writer.addVariableAttribute(var, new Attribute(NCUtilities.UNITS, dim.getSymbol()));
+                writer.addVariableAttribute(var, new Attribute(NetCDFUtilities.UNITS, dim.getSymbol()));
             }
 
             // Add bounds variable for ranges
@@ -232,9 +238,9 @@ public class NetCDFOutputManager {
                 final List<Dimension> boundsDimensions = new ArrayList<Dimension>();
                 boundsDimensions.add(netcdfDimension);
                 boundsDimensions.add(boundDimension);
-                final String boundName = dimensionName + NCUtilities.BOUNDS_SUFFIX;
-                writer.addVariableAttribute(var, new Attribute(NCUtilities.BOUNDS, boundName));
-                writer.addVariable(null, boundName, NCUtilities.getNetCDFDataType(dim.getDatatype()), boundsDimensions);
+                final String boundName = dimensionName + NetCDFUtilities.BOUNDS_SUFFIX;
+                writer.addVariableAttribute(var, new Attribute(NetCDFUtilities.BOUNDS, boundName));
+                writer.addVariable(null, boundName, NetCDFUtilities.getNetCDFDataType(dim.getDatatype()), boundsDimensions);
             }
         }
 
@@ -252,7 +258,36 @@ public class NetCDFOutputManager {
             netCDFDimensions.add(manager.getNetCDFDimension());
         }
         final String coverageName = sampleGranule.getName().toString();
-        writer.addVariable(null, coverageName, DataType.FLOAT, netCDFDimensions);
+        // Set the proper dataType
+        final int dataType = sampleGranule.getRenderedImage().getSampleModel().getDataType();
+        DataType varDataType = NetCDFUtilities.transcodeImageDataType(dataType);
+        Variable var = writer.addVariable(null, coverageName, varDataType, netCDFDimensions);
+        GridSampleDimension[] sampleDimensions = sampleGranule.getSampleDimensions();
+        boolean noDataSet = false;
+        double noDataValue = Double.NaN;
+        if (sampleDimensions != null && sampleDimensions.length > 0) {
+            GridSampleDimension sampleDimension = sampleDimensions[0];
+            Unit<?> units = sampleDimension.getUnits();
+            double[] noData = sampleDimension.getNoDataValues();
+            if (noData != null && noData.length > 0) {
+                noDataValue = noData[0];
+                noDataSet = true;
+            }
+            if (units != null) {
+                writer.addVariableAttribute(var, new Attribute(NetCDFUtilities.UNITS, units.toString()));
+            }
+        }
+        if (!noDataSet) {
+            NoDataContainer noDataProperty = CoverageUtilities.getNoDataProperty(sampleGranule);
+            if (noDataProperty != null) {
+                noDataValue = noDataProperty.getAsSingleValue();
+                noDataSet = true;
+            }
+        }
+        if (noDataSet) {
+            writer.addVariableAttribute(var, new Attribute(NetCDFUtilities.FILL_VALUE, 
+                    NetCDFUtilities.transcodeNumber(varDataType, noDataValue)));
+        }
     }
 
     /**
@@ -283,7 +318,7 @@ public class NetCDFOutputManager {
             if (coverageDimension != null) { // lat and lon may be null
                 boolean isRange = coverageDimension.isRange();
                 if (isRange) {
-                    var = writer.findVariable(dimensionName + NCUtilities.BOUNDS_SUFFIX);
+                    var = writer.findVariable(dimensionName + NetCDFUtilities.BOUNDS_SUFFIX);
                     writer.write(var, manager.getDimensionData(true));
                 }
             }
@@ -313,8 +348,8 @@ public class NetCDFOutputManager {
         
         // Get the data type for a sample image (All granules of the same coverage will use
         final int imageDataType = sampleGranule.getRenderedImage().getSampleModel().getDataType();
-        final DataType netCDFDataType = NCUtilities.transcodeImageDataType(imageDataType);
-        final Array matrix = NCUtilities.getArray(dimSize, netCDFDataType);
+        final DataType netCDFDataType = NetCDFUtilities.transcodeImageDataType(imageDataType);
+        final Array matrix = NetCDFUtilities.getArray(dimSize, netCDFDataType);
 
         // Loop over all granules
         for (GridCoverage2D gridCoverage: granuleStack.getGranules()) {
@@ -475,17 +510,17 @@ public class NetCDFOutputManager {
         ymin += (periodY / 2d);
 
         // Adding lat lon dimensions
-        final Dimension latDim = writer.addDimension(null, NCUtilities.LAT, numLat);
-        final Dimension lonDim = writer.addDimension(null, NCUtilities.LON, numLon);
+        final Dimension latDim = writer.addDimension(null, NetCDFUtilities.LAT, numLat);
+        final Dimension lonDim = writer.addDimension(null, NetCDFUtilities.LON, numLon);
 
         // --------
         // latitude
         // -------- 
         final ArrayFloat latData = new ArrayFloat(new int[] { numLat });
         final Index latIndex = latData.getIndex();
-        final Variable varLat = writer.addVariable(null, NCUtilities.LAT, DataType.FLOAT, NCUtilities.LAT);
-        writer.addVariableAttribute(varLat, new Attribute(NCUtilities.LONGNAME, NCUtilities.LATITUDE));
-        writer.addVariableAttribute(varLat, new Attribute(NCUtilities.UNITS, NCUtilities.LAT_UNITS));
+        final Variable varLat = writer.addVariable(null, NetCDFUtilities.LAT, DataType.FLOAT, NetCDFUtilities.LAT);
+        writer.addVariableAttribute(varLat, new Attribute(NetCDFUtilities.LONG_NAME, NetCDFUtilities.LATITUDE));
+        writer.addVariableAttribute(varLat, new Attribute(NetCDFUtilities.UNITS, NetCDFUtilities.LAT_UNITS));
 
         for (int yPos = 0; yPos < numLat; yPos++) {
             latData.setFloat(latIndex.set(yPos),
@@ -502,9 +537,9 @@ public class NetCDFOutputManager {
         // ---------
         final ArrayFloat lonData = new ArrayFloat(new int[] { numLon });
         final Index lonIndex = lonData.getIndex();
-        final Variable varLon = writer.addVariable(null, NCUtilities.LON, DataType.FLOAT, NCUtilities.LON);
-        writer.addVariableAttribute(varLon, new Attribute(NCUtilities.LONGNAME, NCUtilities.LONGITUDE));
-        writer.addVariableAttribute(varLon, new Attribute(NCUtilities.UNITS, NCUtilities.LON_UNITS));
+        final Variable varLon = writer.addVariable(null, NetCDFUtilities.LON, DataType.FLOAT, NetCDFUtilities.LON);
+        writer.addVariableAttribute(varLon, new Attribute(NetCDFUtilities.LONG_NAME, NetCDFUtilities.LONGITUDE));
+        writer.addVariableAttribute(varLon, new Attribute(NetCDFUtilities.UNITS, NetCDFUtilities.LON_UNITS));
 
         for (int xPos = 0; xPos < numLon; xPos++) {
             lonData.setFloat(lonIndex.set(xPos), new Float(xmin
@@ -512,16 +547,16 @@ public class NetCDFOutputManager {
         }
 
         // Latitude management
-        final NetCDFDimensionManager latManager = new NetCDFDimensionManager(NCUtilities.LAT);
+        final NetCDFDimensionManager latManager = new NetCDFDimensionManager(NetCDFUtilities.LAT);
         latManager.setNetCDFDimension(latDim);
         latManager.setDimensionValues(new DimensionValuesArray(latData));
-        dimensionMapping.put(NCUtilities.LAT, latManager);
+        dimensionMapping.put(NetCDFUtilities.LAT, latManager);
 
         // Longitude management
-        final NetCDFDimensionManager lonManager = new NetCDFDimensionManager(NCUtilities.LON);
+        final NetCDFDimensionManager lonManager = new NetCDFDimensionManager(NetCDFUtilities.LON);
         lonManager.setNetCDFDimension(lonDim);
         lonManager.setDimensionValues(new DimensionValuesArray(lonData));
-        dimensionMapping.put(NCUtilities.LON, lonManager);
+        dimensionMapping.put(NetCDFUtilities.LON, lonManager);
     }
 
     /**

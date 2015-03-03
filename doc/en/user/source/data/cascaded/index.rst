@@ -12,6 +12,7 @@ GeoServer supports cascading the following services:
    :maxdepth: 1
 
    wfs
+   stored_query
    wms
 
 

@@ -5,11 +5,6 @@
  */
 package org.geoserver.importer;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Iterators;
-import com.thoughtworks.xstream.XStream;
-import com.vividsolutions.jts.geom.Geometry;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
@@ -44,6 +39,16 @@ import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamPersister.CRSConverter;
 import org.geoserver.config.util.XStreamPersisterFactory;
+import org.geoserver.importer.ImportTask.State;
+import org.geoserver.importer.job.Job;
+import org.geoserver.importer.job.JobQueue;
+import org.geoserver.importer.job.ProgressMonitor;
+import org.geoserver.importer.job.Task;
+import org.geoserver.importer.mosaic.Mosaic;
+import org.geoserver.importer.transform.RasterTransformChain;
+import org.geoserver.importer.transform.ReprojectTransform;
+import org.geoserver.importer.transform.TransformChain;
+import org.geoserver.importer.transform.VectorTransformChain;
 import org.geoserver.platform.ContextLoadedEvent;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geotools.data.DataStore;
@@ -60,25 +65,20 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.jdbc.JDBCDataStore;
 import org.geotools.referencing.CRS;
 import org.geotools.util.logging.Logging;
-import org.geoserver.importer.ImportTask.State;
-import org.geoserver.importer.job.Job;
-import org.geoserver.importer.job.JobQueue;
-import org.geoserver.importer.job.ProgressMonitor;
-import org.geoserver.importer.job.Task;
-import org.geoserver.importer.mosaic.Mosaic;
-import org.geoserver.importer.transform.RasterTransformChain;
-import org.geoserver.importer.transform.ReprojectTransform;
-import org.geoserver.importer.transform.TransformChain;
-import org.geoserver.importer.transform.VectorTransformChain;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
-
 import org.opengis.feature.type.FeatureType;
 import org.opengis.filter.Filter;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
+
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Iterators;
+import com.thoughtworks.xstream.XStream;
+import com.vividsolutions.jts.geom.Geometry;
 
 /**
  * Primary controller/facade of the import subsystem.
@@ -817,7 +817,7 @@ public class Importer implements DisposableBean, ApplicationListener {
 
         try {
             //set up transform chain
-            TransformChain tx = (TransformChain) task.getTransform();
+            TransformChain tx = task.getTransform();
             
             //apply pre transform
             if (!doPreTransform(task, task.getData(), tx)) {
@@ -834,6 +834,7 @@ public class Importer implements DisposableBean, ApplicationListener {
             task.setState(ImportTask.State.COMPLETE);
         }
         catch(Exception e) {
+            LOGGER.log(Level.WARNING, "Task failed during import: " + task, e);
             task.setState(ImportTask.State.ERROR);
             task.setError(e);
         }

@@ -515,6 +515,12 @@ public class DefaultWebCoverageService111 implements WebCoverageService111 {
                     pixelSizeY = Math.abs(offsets[1]);
                     AffineTransform tx = new AffineTransform(offsets[0], 0, 0, offsets[1], 0, 0);
                     gridToCRS = new AffineTransform2D(tx);
+                } else if (offsets.length == 6) {
+                    AffineTransform tx = new AffineTransform(offsets[0], offsets[1], offsets[3], 
+                            offsets[4], offsets[2], offsets[5]);
+                    pixelSizeX = Math.abs(XAffineTransform.getScaleX0(tx));
+                    pixelSizeY = Math.abs(XAffineTransform.getScaleY0(tx));
+                    gridToCRS = new AffineTransform2D(tx);                    
                 } else {
                     AffineTransform tx = new AffineTransform(offsets[0], offsets[1], offsets[3],
                             offsets[4], 0, 0);
@@ -597,8 +603,8 @@ public class DefaultWebCoverageService111 implements WebCoverageService111 {
                 }
             } else {
                 AffineTransform2D at = (AffineTransform2D) gridToCRS;
-                offsets = new Double[] { at.getScaleX(), at.getShearX(), 0d, at.getShearY(),
-                        at.getScaleY(), 0d };
+                offsets = new Double[] { at.getScaleX(), at.getShearX(), at.getTranslateX(), 
+                        at.getShearY(), at.getScaleY(), at.getTranslateY() };
             }
         } else {
             // the input resolution is going to be completed unrelated to the output one

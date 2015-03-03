@@ -17,11 +17,11 @@ XML Filters can be used in the following places in GeoServer:
 - in WFS ``GetFeature`` requests, using the ``filter`` parameter
 - in SLD Rules, in the :ref:`Filter <sld_intro>` element
 
-The Filter Encoding language is defined in the following OGC specifications:
+The Filter Encoding language is defined by `OGC Filter Encoding Standards <http://www.opengeospatial.org/standards/filter>`_:
 
-- `OGC Filter encoding specification v 1.0 <http://portal.opengeospatial.org/files/?artifact_id=1171>`_, used in WFS 1.0 and SLD 1.0
-- `OGC Filter encoding specification v 1.1 <http://portal.opengeospatial.org/files/?artifact_id=8340>`_, used in WFS 1.1
-
+- Filter Encoding 1.0 is used in WFS 1.0 and SLD 1.0
+- Filter Encoding 1.1 is used in WFS 1.1
+- Filter Encoding 2.0 is used in WFS 2.0
 
 CQL/ECQL
 --------

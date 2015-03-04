@@ -406,11 +406,12 @@ In case a custom opacity is desired, it can be added after the operation name:
    <VendorOption name="composite">multiply, 0.5</VendorOption>
 
 .. warning:: Blending against symbolizers causes exceptions inside the JDK when using OpenJDK, the issue is known to 
-             the OpenJDK developers, but currently not being worked on: https://bugs.openjdk.java.net/browse/JDK-8048782 .
+             the OpenJDK developers, and has been reportedly fixed in OpenJDK 9, 
+             but not in OpenJDK 8 or 7: https://bugs.openjdk.java.net/browse/JDK-8048782.
              
              Tests against Oracle JDK 8 or even Oracle JDK 7 show no issue. 
              
-             One way to keep on using OpenJDK along with symbolizer specific composite modes is to install in it 
+             One way to keep on using OpenJDK 7/8 along with symbolizer specific composite modes is to install in it 
              the `Marlin renderer <https://github.com/bourgesl/marlin-renderer>`_
              which replaces the OpenJDK core renderer, and does not suffer from the same issue (and it's faster, too).
 

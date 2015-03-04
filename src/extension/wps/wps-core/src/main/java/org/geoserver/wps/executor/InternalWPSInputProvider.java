@@ -53,6 +53,28 @@ public class InternalWPSInputProvider extends AbstractInputProvider {
     @Override
     protected Object getValueInternal(ProgressListener listener) throws Exception {
         Map<String, Object> results = executor.submitChained(executeRequest, listener);
+        
+        // Gets the suitable result item searching by name/data-type, otherwise it returns the first result item. 
+        if (executeRequest.getRequest().getResponseForm()!=null) {
+            net.opengis.wps10.ResponseFormType responseForm = executeRequest.getRequest().getResponseForm();
+            net.opengis.wps10.ResponseDocumentType responseDoc = responseForm.getResponseDocument();
+            
+            if (responseDoc!=null) {
+                for (Object output : responseDoc.getOutput()) {
+                    net.opengis.wps10.DocumentOutputDefinitionType outputType = (net.opengis.wps10.DocumentOutputDefinitionType)output;
+                    String parameterName = outputType.getIdentifier().getValue();
+                    
+                    for (Map.Entry<String,Object> entry : results.entrySet()) {
+                        
+                        if (entry.getKey().equalsIgnoreCase(parameterName)) {                          
+                            Object value = entry.getValue();
+                            if (value!=null && ppio.getType().isInstance(value)) return value;
+                        }
+                    }
+                }
+            }
+        }
+        
         Object obj = results.values().iterator().next();
         if (obj != null && !ppio.getType().isInstance(obj)) {
             throw new WPSException(

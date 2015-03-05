@@ -17,6 +17,7 @@ import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
@@ -38,11 +39,11 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MapInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.PublishedInfo;
+import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.ResourcePool;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.StyleInfo;
-import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.ValidationResult;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMSStoreInfo;
@@ -1279,29 +1280,16 @@ public class CatalogImpl implements Catalog {
     public StyleInfo getStyle(String id) {
         return facade.getStyle(id);
     }
-
-    static final String REPLACE = "[:]";
-    static final boolean STRICT_STYLE = Boolean.valueOf(System.getProperty("STRICT_STYLE", "true"));
+    
     public StyleInfo getStyleByName(String name) {
         StyleInfo result = null;
         int colon = name.indexOf(':');
         if (colon != -1) {
+            // search by resource name
             String prefix = name.substring(0, colon);
             String resource = name.substring(colon + 1);
-            if (STRICT_STYLE == true) {
-                result = getStyleByName(prefix, resource);
-            } else {
-                String resource2 = resource.replaceAll(REPLACE, "_");
-                String name2 = name.replaceAll(REPLACE, "_");
-                // check workspace: sty_le
-                result = getStyleByName(prefix, resource2);
-                // check workspace_sty_le
-                result = facade.getStyleByName(name2);
-                // check workspace: sty:le
-                result = getStyleByName(prefix, resource);
-                // check workspace:sty:le
-                result = facade.getStyleByName(name);
-            }
+            
+            result = getStyleByName(prefix, resource);
         } 
         if (result == null) {
             result = facade.getStyleByName(name);

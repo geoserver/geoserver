@@ -102,7 +102,41 @@ public class Paths {
         }
         return toPath(names);
     }
-
+    
+    // runtime flag which, if true, throws an error for the WARN characters
+    static final boolean STRICT_PATH = 
+            Boolean.valueOf(System.getProperty("STRICT_PATH", "true"));
+    
+    /**
+     * Pattern used to check for invalid file characters.
+     * <ul>
+     * <li> backslash
+     * </ul>
+     */
+    static final Pattern VALID = Pattern.compile("^[^\\\\]*$");
+    /**
+     * Pattern used to check for ill-advised file characters:
+     * <ul>
+     * <li> star
+     * <li> colon - potential conflict with xml prefix separator and workspace style separator
+     * <li> comma
+     * <li> single quote
+     * <li> ampersand
+     * <li> question mark
+     * <li> double quote
+     * <li> less than
+     * <li> greater than
+     * <li> bar
+     * </ul> 
+     * These characters can cause problems for different protocols.
+     */
+    static final Pattern WARN = Pattern.compile("^[^:*,\'&?\"<>|]*$");
+    /**
+     * Set of invalid resource names (currently used to quickly identify relative paths).
+     */
+    static final Set<String> INVALID = new HashSet<String>(
+            Arrays.asList(new String[] { "..", "." }));
+    
     /**
      * Internal method used to convert a lit of names to a normal Resource path.
      * <p>
@@ -125,6 +159,11 @@ public class Paths {
             }
             if (!VALID.matcher(item).matches()) {
                 throw new IllegalArgumentException("Contains invalid " + item + " path: " + buf);
+            }
+            if (!WARN.matcher(item).matches()) {
+                if (STRICT_PATH == true) {
+                    throw new IllegalArgumentException("Contains invalid " + item + " path: " + buf);
+                }
             }
             buf.append(item);
             if (i < LIMIT - 1) {
@@ -151,29 +190,13 @@ public class Paths {
         if (!VALID.matcher(path).matches()) {
             throw new IllegalArgumentException("Contains invalid chracters " + path);
         }
+        if (!WARN.matcher(path).matches()) {
+            if (STRICT_PATH == true) {
+                throw new IllegalArgumentException("Contains invalid chracters " + path);
+            }
+        }
         return path;
     }
-
-    /**
-     * Pattern used to check for invalid file characters.
-     * <ul>
-     * <li>backslash (sorry windows users we are following linux conventions here)
-     * <li>colon
-     * <li>star
-     * <li>question mark
-     * <li>double quote
-     * <li>less than
-     * <li>greater than
-     * <li>bar
-     * </ul>
-     */
-    static final Pattern VALID = Pattern.compile("^[^\\\\\\:*?\"<>|]*$");
-
-    /**
-     * Set of invalid resource names (currently used to quickly identify relative paths).
-     */
-    static final Set<String> INVALID = new HashSet<String>(
-            Arrays.asList(new String[] { "..", "." }));
 
     public static List<String> names(String path) {
         if (path == null || path.length() == 0) {

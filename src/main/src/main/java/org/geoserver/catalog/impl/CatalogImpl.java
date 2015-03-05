@@ -17,6 +17,7 @@ import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
@@ -38,11 +39,11 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MapInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.PublishedInfo;
+import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.ResourcePool;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.StyleInfo;
-import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.ValidationResult;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMSStoreInfo;
@@ -1279,7 +1280,7 @@ public class CatalogImpl implements Catalog {
     public StyleInfo getStyle(String id) {
         return facade.getStyle(id);
     }
-
+    
     public StyleInfo getStyleByName(String name) {
         StyleInfo result = null;
         int colon = name.indexOf(':');
@@ -1287,7 +1288,7 @@ public class CatalogImpl implements Catalog {
             // search by resource name
             String prefix = name.substring(0, colon);
             String resource = name.substring(colon + 1);
-
+            
             result = getStyleByName(prefix, resource);
         } 
         if (result == null) {

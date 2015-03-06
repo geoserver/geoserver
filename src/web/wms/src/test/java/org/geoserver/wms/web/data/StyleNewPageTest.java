@@ -56,11 +56,12 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
         tester.assertModelValue("form:styleEditor", sld);
     }
     
+    @Test
     public void testMissingName() throws Exception {
         FormTester form = tester.newFormTester("form");
         File styleFile = new File(new java.io.File(getClass().getResource("default_point.sld").toURI()));
         String sld = IOUtils.toString(new FileReader(styleFile)).replaceAll("\r\n", "\n").replaceAll("\r", "\n");
-        form.setValue("styleEditor:editorContainer:editor", sld);
+        form.setValue("styleEditor:editorContainer:editorParent:editor", sld);
         form.submit();
        
         

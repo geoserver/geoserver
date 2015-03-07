@@ -1537,6 +1537,72 @@ public class ExecuteTest extends WPSTestSupport {
         assertArrayEquals(new byte[100], Base64.decodeBase64(value));
     }
     
+    @Test
+    public void testMultiOutputProcess() throws Exception {
+        String xml = "<wps:Execute service='WPS' version='1.0.0' xmlns:wfs='http://www.opengis.net/wfs' xmlns:wps='http://www.opengis.net/wps/1.0.0' xmlns:xlink='http://www.w3.org/1999/xlink' "
+                + "xmlns:ows='http://www.opengis.net/ows/1.1'>"
+                + "<ows:Identifier>gs:MultiOutputEcho</ows:Identifier>"
+                + "<wps:DataInputs>"
+                + "<wps:Input>"
+                
+                + "<ows:Identifier>text</ows:Identifier>"                
+                + "<wps:Reference mimeType='text/xml' xlink:href='http://geoserver/wps' method='POST'>"
+                + "<wps:Body>"
+                
+                + "<wps:Execute service='WPS' version='1.0.0' xmlns:wps='http://www.opengis.net/wps/1.0.0' xmlns:ows='http://www.opengis.net/ows/1.1'>" 
+                + "<ows:Identifier>gs:MultiRaw</ows:Identifier>" 
+                + "<wps:DataInputs>" 
+                + "<wps:Input>" 
+                + "<ows:Identifier>id</ows:Identifier>" 
+                + "<wps:Data>" 
+                + "<wps:LiteralData>1234</wps:LiteralData>" 
+                + "</wps:Data>" 
+                + "</wps:Input>" 
+                + "</wps:DataInputs>" 
+                + "<wps:ResponseForm>" 
+                + "<wps:ResponseDocument storeExecuteResponse='true' status='true'>" 
+                + "<wps:Output>" 
+                + "<ows:Identifier>literal</ows:Identifier>" 
+                + "</wps:Output>"
+                + "</wps:ResponseDocument>" 
+                + "</wps:ResponseForm>" 
+                + "</wps:Execute>"
+                
+                + "</wps:Body>"
+                + "</wps:Reference>"
+                            
+                + "</wps:Input>"                
+                + "</wps:DataInputs>"
+                
+                + "<wps:ResponseForm>"
+                + "<wps:ResponseDocument>"
+                + "<wps:Output>"
+                + "<ows:Identifier>result</ows:Identifier>"
+                + "</wps:Output>"
+                + "</wps:ResponseDocument>" 
+                + "</wps:ResponseForm>" 
+                + "</wps:Execute>";
+
+        // Checks multi output result items by name.
+        // GEOS-6907:
+        // When a WPS task works with two concatenated WPS processes, if first of them returns more of one 
+        // of output result items (e.g. sextante:kriging, gs:MultiRaw), then the next WPS process only gets 
+        // the first item.
+        // The InternalWPSInputProvider class does not filter by name or data type to extract the correct 
+        // output item.        
+        Document d = postAsDOM( "wps", xml );
+        // print(d);
+        checkValidationErrors(d);
+        
+        assertEquals("wps:ExecuteResponse", d.getDocumentElement().getNodeName());
+
+        assertXpathExists("/wps:ExecuteResponse/wps:Status/wps:ProcessSucceeded", d);
+        assertXpathEvaluatesTo("1", "count(//wps:Output)", d);
+        assertXpathEvaluatesTo(
+                "Echo='1234'",
+                "/wps:ExecuteResponse/wps:ProcessOutputs/wps:Output[ows:Identifier='result']/wps:Data/wps:LiteralData",
+                d);
+    }
     
 
     private void assertProgress(String statusLocation, String progress) throws Exception {

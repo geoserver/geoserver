@@ -64,6 +64,7 @@ public abstract class WPSTestSupport extends GeoServerSystemTestSupport {
     static {
         Processors.addProcessFactory(MonkeyProcess.getFactory());
         Processors.addProcessFactory(MultiRawProcess.getFactory());
+        Processors.addProcessFactory(MultiOutputEchoProcess.getFactory());
     }
     
     protected void scheduleForDisposal(GridCoverage coverage) {

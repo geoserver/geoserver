@@ -163,9 +163,7 @@ release. The message should be relatively short. The following is an example::
    Subject: GeoServer 1.7.1 Released
 
    The GeoServer team is happy to announce the release of GeoServer 1.7.1.
-   The release is available for download from:
-
-   http://geoserver.org/display/GEOS/GeoServer+1.7.1
+   The release is available for download from http://geoserver.org/download
 
    This release comes with some exciting new features. The new and
    noteworthy include:

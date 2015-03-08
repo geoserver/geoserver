@@ -5,7 +5,6 @@ WFS versioning requirement specification
 
 First off, we don't have a full requirements list, but a general set of wishes from the following pages:
 
-    * http://docs.codehaus.org/display/GEOS/GeoCollaborator
     * http://lists.eogeo.org/pipermail/opensdi/2005-April/000071.html
     * http://lists.eogeo.org/pipermail/opensdi/2005-November/000277.html
 

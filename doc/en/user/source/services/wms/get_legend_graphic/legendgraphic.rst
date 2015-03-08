@@ -121,14 +121,14 @@ The producer for the raster legend will make use of this elements in order to bu
     - the height of the Color element is driven by the requested width for the GetLegendGraphic request, but notice that for ramps we expand this a little since the goal is to turn the various Color elements into a single long strip
     - the height of each row is set to the maximum height of the single elements
     - the width of each row is set to the sum of the width of the various elements plus the various paddings
-    - **dx,dy** the spaces between elements and rows are set to the 15% of the requested width and height. Notice that **dy** is ignored for the colormaps of type **ramp** since they must create a continous color strip.
+    - **dx,dy** the spaces between elements and rows are set to the 15% of the requested width and height. Notice that **dy** is ignored for the colormaps of type **ramp** since they must create a continuous color strip.
     - **mx,my** the margins from the border of the legends are set to the 1.5% of the total size of the legend
 
 Just to jump right to the conclusions (which is a bad practice I know, but no one is perfect ), here below I am adding an image of a sample legend with all the various options at work. The request that generated it is the following::
 
 	http://localhost:8081/geoserver/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=100&HEIGHT=20&LAYER=it.geosolutions:di08031_da&LEGEND_OPTIONS=forceRule:True;dx:0.2;dy:0.2;mx:0.2;my:0.2;fontStyle:bold;borderColor:0000ff;border:true;fontColor:ff0000;fontSize:18
 
-Do not worry if it seems like something written in ancient dead language, I am going to explain the various params here below. Nevertheless it is important to point out that basic info on how to create and set params can be found in this `page <http://rancor.boundlessgeo.com:8080/display/GEOSDOC/GetLegendGraphic+Improvements>`_.
+Do not worry if it seems like something written in ancient dead language, I am going to explain the various params here below.
 
 .. figure:: img/rasterlegend2.png
    :align: center 
@@ -170,7 +170,7 @@ Refer to the SLD rainfall_classes.sld in attachment.
 ColorMap type is RAMP
 '''''''''''''''''''''
 
-Refer to the SLD rainfall_classes.sld in attachment. Notice that the first legend show the default border behavior while the second has been force to draw a border for the breakpoint color of the the colormap entry quantity described by the rendered text. Notice that each color element has a part that show the fixed color from the colormap entry it depicts (the lowest part of it, the one that has been outlined by the boder in the second legend here below) while the upper part of the element has a gradient tha connects each element to the previous one to point out the fact that we are using linear interpolation. 
+Refer to the SLD rainfall_classes.sld in attachment. Notice that the first legend show the default border behavior while the second has been force to draw a border for the breakpoint color of the the colormap entry quantity described by the rendered text. Notice that each color element has a part that show the fixed color from the colormap entry it depicts (the lowest part of it, the one that has been outlined by the border in the second legend below) while the upper part of the element has a gradient that connects each element to the previous one to point out the fact that we are using linear interpolation. 
 
 .. figure:: img/rasterlegend5.png
    :align: center 
@@ -180,13 +180,13 @@ Refer to the SLD rainfall_classes.sld in attachment. Notice that the first legen
 The various control parameters and how to set them
 ''''''''''''''''''''''''''''''''''''''''''''''''''
 
-I am now going to briefly explain the various parameters tht we can use to control the layout and content of the legend (refer also to this `page <http://rancor.boundlessgeo.com:8080/display/GEOSDOC/GetLegendGraphic+Improvements>`_). Here below I have put a request that puts all the various options at tow::
+I am now going to briefly explain the various parameters that we can use to control the layout and content of the legend. A request that puts all the various options is shown here::
 
 	http://localhost:8081/geoserver/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=100&HEIGHT=20&LAYER=it.geosolutions:di08031_da&LEGEND_OPTIONS=forceRule:True;dx:0.2;dy:0.2;mx:0.2;my:0.2;fontStyle:bold;borderColor:0000ff;border:true;fontColor:ff0000;fontSize:18
 
 Let's now examine all the interesting elements, one by one. Notice that I am not going to discuss the mechanics of the  GetLegendGraphic operation, for that you may want to refer to the SLD 1.0 spec, my goal is to briefly discuss the LEGEND_OPTIONS parameter.
 
-    - **forceRule (boolean)** by defaul rules for a ColorMapEntry are not drawn to keep the legend small and compact, unless there are not labels at all. You can change this behaviour by setting this parameter to true.
+    - **forceRule (boolean)** by default rules for a ColorMapEntry are not drawn to keep the legend small and compact, unless there are no labels at all. You can change this behaviour by setting this parameter to true.
     - **dx,dy,mx,my (double)** can be used to set the margin and the buffers between elements
-    - **border (boolean)** activates or deactivates the boder on the color elements in order to make the separations cleare. Notice that I decided to **always** have a line that would split the various color elements for the ramp type of colormap.
+    - **border (boolean)** activates or deactivates the border on the color elements in order to make the separations clearer. Notice that I decided to **always** have a line that would split the various color elements for the ramp type of colormap.
     - **borderColor (hex)** allows us to set the color for the border in 0xRRGGBB format

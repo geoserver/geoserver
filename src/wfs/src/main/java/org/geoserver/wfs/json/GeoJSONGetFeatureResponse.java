@@ -329,16 +329,16 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat {
     private void writeCrs(final GeoJSONBuilder jsonWriter,
             CoordinateReferenceSystem crs) throws FactoryException {
         if (crs != null) {
-            String identifier = CRS.lookupIdentifier(crs, true);
-            // If we get a plain EPSG code, generate a URI as the GeoJSON spec says to 
-            // prefer them.
-            
-            if(identifier.startsWith("EPSG:")) {
-                String code = GML2EncodingUtils.epsgCode(crs);
+            String identifier = null;
+            Integer code = CRS.lookupEpsgCode(crs, true);
+            if(code != null) {
                 if (code != null) {
                     identifier = SrsSyntax.OGC_URN.getPrefix() + code;
                 }
+            } else {
+                identifier = CRS.lookupIdentifier(crs, true);
             }
+            
             jsonWriter.key("crs");
             jsonWriter.object();
             jsonWriter.key("type").value("name");

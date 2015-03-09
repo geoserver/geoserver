@@ -9,7 +9,7 @@ This tutorial demonstrates how to configure two complex feature types using the 
 GeoSciML
 ---------
 
-This example uses `Geoscience Markup Language (GeoSciML) 2.0 <http://geosciml.org/geosciml/2.0/doc/>`_, a GML application schema:
+This example uses `Geoscience Markup Language (GeoSciML) 2.0 <http://geosciml.org/geosciml/2.0/doc/>`_, a GML 3.1 application schema:
 
     *"GeoSciML is an application schema that specifies a set of feature-types and supporting structures for information used in the solid-earth geosciences."*
 
@@ -318,10 +318,6 @@ When GeoServer is running, test app-schema WFS in a web browser. If GeoServer is
 
 * http://localhost:8080/geoserver/wfs?request=GetFeature&version=1.1.0&typeName=gsml:MappedFeature
 
-You can also obtain WFS responses by using the *Demo requests* page in the GeoServer web interface. (Note that the web interface does not yet support app-schema store or layer administration.)
-
-* http://localhost:8080/geoserver/web/?wicket:bookmarkablePage=:org.geoserver.web.demo.DemoRequestsPage
-
 
 gsml:GeologicUnit
 `````````````````
@@ -329,6 +325,12 @@ gsml:GeologicUnit
 Feature chaining has been used to construct the multivalued property ``gsml:occurrence`` of ``gsml:GeologicUnit``. This property is a ``gsml:MappedFeature``. The WFS response for ``gsml:GeologicUnit`` combines the output of both feature types into a single response. The first ``gsml:GeologicUnit`` has two ``gsml:occurrence`` properties, while the second has one. The relationships between the feature instances are data driven.
 
 Because the mapping files in the tutorial configuration do not contain attribute mappings for all mandatory properties of these feature types, the WFS response is not *schema-valid* against the GeoSciML 2.0 schemas. Schema-validity can be achieved by adding more attribute mappings to the mapping files.
+
+
+.. note:: These feature types are defined in terms of GML 3.1 (the default for WFS 1.1.0); other GML versions will not work.
+
+
+.. warning:: The web interface does not yet support app-schema store or layer administration.
 
 
 Acknowledgements

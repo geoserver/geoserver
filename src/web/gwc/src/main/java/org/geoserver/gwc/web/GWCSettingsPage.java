@@ -45,11 +45,14 @@ public class GWCSettingsPage extends GeoServerSecuredPage {
 
         final GWCServicesPanel gwcServicesPanel = new GWCServicesPanel("gwcServicesPanel",
                 formModel);
-        final CachingOptionsPanel defaultCachingOptionsPanel = new CachingOptionsPanel(
+        final LayerDefaultsPanel layerDefaultsPanel = new LayerDefaultsPanel(
+                "layerDefaultsPanel", formModel);
+        final CachingOptionsPanel cachingOptionsPanel = new CachingOptionsPanel(
                 "cachingOptionsPanel", formModel);
 
         form.add(gwcServicesPanel);
-        form.add(defaultCachingOptionsPanel);
+        form.add(layerDefaultsPanel);
+        form.add(cachingOptionsPanel);
 
         form.add(new Button("submit") {
             private static final long serialVersionUID = 1L;

@@ -33,7 +33,7 @@ import org.geowebcache.grid.GridSetBroker;
 
 /**
  * Form component that edits the default {@link GWCConfig#getDefaultCachingGridSetIds() cached
- * gridsets} for {@link CachingOptionsPanel}.
+ * gridsets} for {@link LayerDefaultsPanel}.
  * 
  * @author groldan
  * 

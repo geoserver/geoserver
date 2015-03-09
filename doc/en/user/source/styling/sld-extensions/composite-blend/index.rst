@@ -9,12 +9,12 @@ GeoServer implements most of the color compositing and blending modes suggested 
 
 This section will use the following definitions for the common terms "source" and "destination":
 
-**Source** : Image currently being painted *on top of* the map
-**Destination**:  *Background* image that the source image is being drawn on
+* **Source** : Image currently being painted *on top of* the map
+* **Destination**:  *Background* image that the source image is being drawn on
 
 .. toctree::
    :maxdepth: 2
 
    syntax
-   example
    modes
+   example

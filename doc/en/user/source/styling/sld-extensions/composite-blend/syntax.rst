@@ -19,7 +19,7 @@ In case a custom opacity is desired, it can be added after the operation name se
 
    <VendorOption name="composite">multiply, 0.5</VendorOption>
 
-.. note:: See the :ref:`available modes <sld-extensions_composite-blend_modes>`.
+.. note:: See the :ref:`full list of available modes <sld-extensions_composite-blend_modes>`.
 
 .. warning::
 

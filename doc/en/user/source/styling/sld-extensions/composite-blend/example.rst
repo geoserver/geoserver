@@ -70,4 +70,4 @@ visual transparency effect on the border lines):
 
 :download:`Download the final style <files/statesblend.sld>`
 
-.. note:: See the :ref:`available modes <sld-extensions_composite-blend_modes>`.
+.. note:: See the :ref:`full list of available modes <sld-extensions_composite-blend_modes>`.

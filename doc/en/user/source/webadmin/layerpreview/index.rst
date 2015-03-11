@@ -25,7 +25,7 @@ Each layer row consists of a type, name, title, and available formats for viewin
    * - .. image:: ../images/preview_layergroup.png
      - Layer group 
 
-Name refers to the Workspace and Layer Name of a layer, while Title refers to the brief description configured in the :ref:`edit_layer_data` panel. In the following example, nurc refers to the Workspace, Arc_Sample refers to the Layer Name and "A sample ArcGrid field" is specified on the Edit Later Data panel.
+Name refers to the Workspace and Layer Name of a layer, while Title refers to the brief description configured in the :ref:`webadmin_layers_edit_data` panel. In the following example, nurc refers to the Workspace, Arc_Sample refers to the Layer Name and "A sample ArcGrid field" is specified on the Edit Later Data panel.
 
 
 .. figure:: ../images/preview_row.png

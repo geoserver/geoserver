@@ -61,7 +61,7 @@ public class WFSXmlUtils {
             strict = Boolean.TRUE;
         }
         parser.setValidating(strict.booleanValue());
-        parser.getURIHandlers().add(0, new WFSURIHandler(geoServer));
+        WFSURIHandler.addToParser(geoServer, parser);
 
         Catalog catalog = geoServer.getCatalog();
 

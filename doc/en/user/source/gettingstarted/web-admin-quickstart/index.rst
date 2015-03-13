@@ -149,7 +149,7 @@ The :guilabel:`Layer Preview` page provides layer previews in various output for
    
    *Layer Preview page*
 
-Each layer row consists of a :guilabel:`Type`, :guilabel:`Name`, :guilabel:`Title`, and available formats for viewing.  The :guilabel:`Type` column shows an icon indicating the layer datatype.  :guilabel:`Name` displays the Workspace and Layer Name of a layer, while :guilabel:`Title` displays the brief description configured in the :ref:`edit_layer_data` panel. :guilabel:`Common Formats` include OpenLayers, KML, and GML where applicable, while the :guilabel:`All Formats` include additional output formats for further use or data sharing.
+Each layer row consists of a :guilabel:`Type`, :guilabel:`Name`, :guilabel:`Title`, and available formats for viewing.  The :guilabel:`Type` column shows an icon indicating the layer datatype.  :guilabel:`Name` displays the Workspace and Layer Name of a layer, while :guilabel:`Title` displays the brief description configured in the :ref:`webadmin_layers_edit_data` panel. :guilabel:`Common Formats` include OpenLayers, KML, and GML where applicable, while the :guilabel:`All Formats` include additional output formats for further use or data sharing.
 
 .. figure:: ../../webadmin/images/preview_row.png
    :align: center

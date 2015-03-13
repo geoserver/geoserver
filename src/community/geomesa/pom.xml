@@ -21,6 +21,18 @@ application directory.
   <version>2.8-SNAPSHOT</version>  
   <name>GeoMesa Web Module</name>
 
+  <description>GeoMesa GeoServer extensions</description>
+  <developers>
+    <developer>
+      <name>Anthony Fox<name>
+      <organization>LocationTech</organization>
+    </developer>
+    <developer>
+      <name>Jim Hughes</name>
+      <organization>LocationTech</organization>
+    </developer>
+  </developers>
+
     <properties>
         <geomesa.version>1.0.0-rc.2</geomesa.version>
         <scala.version>2.10.4</scala.version>
@@ -91,12 +103,10 @@ application directory.
         <dependency>
           <groupId>com.google.guava</groupId>
           <artifactId>guava</artifactId>
-          <version>11.0.2</version>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
-            <version>2.4</version>
         </dependency>
         <dependency>
             <groupId>org.apache.avro</groupId>
@@ -112,37 +122,8 @@ application directory.
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>1.7.5</version>
-            <scope>provided</scope>
         </dependency>
 
-        <!-- provided dependencies -->
-        <dependency>
-            <groupId>org.geotools</groupId>
-            <artifactId>gt-data</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.geotools</groupId>
-            <artifactId>gt-process</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.geotools</groupId>
-            <artifactId>gt-process-feature</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.geotools.ogc</groupId>
-            <artifactId>net.opengis.wfs</artifactId>
-            <version>${gt.version}</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.geotools</groupId>
-            <artifactId>gt-coverage</artifactId>
-            <scope>provided</scope>
-        </dependency>
         <dependency>
             <groupId>org.apache.accumulo</groupId>
             <artifactId>accumulo-core</artifactId>
@@ -164,11 +145,6 @@ application directory.
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-webmvc</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>javax.media</groupId>
-            <artifactId>jai_core</artifactId>
-            <scope>provided</scope>
         </dependency>
 
         <!-- test deps -->
@@ -193,22 +169,6 @@ application directory.
     </dependencies>
 
     <repositories>
-        <repository>
-            <id>central</id>
-            <layout>default</layout>
-            <url>http://repo1.maven.org/maven2</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>geotools</id>
-            <url>http://download.osgeo.org/webdav/geotools</url>
-        </repository>
-        <repository>
-            <id>boundlessgeo</id>
-            <url>http://repo.boundlessgeo.com/main</url>
-        </repository>
         <repository>
             <id>conjars.org</id>
             <url>http://conjars.org/repo</url>

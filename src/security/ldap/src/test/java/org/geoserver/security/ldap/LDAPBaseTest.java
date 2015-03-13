@@ -12,7 +12,6 @@ import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.junit.After;
 import org.junit.Before;
-import org.springframework.ldap.test.LdapTestUtils;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -64,9 +63,8 @@ public abstract class LDAPBaseTest {
     public void tearDown() throws Exception {
         tempFolder.delete();
 
-        LdapTestUtils
-                .destroyApacheDirectoryServer(LdapTestUtils.DEFAULT_PRINCIPAL,
-                        LdapTestUtils.DEFAULT_PASSWORD);
+        LDAPTestUtils.shutdownEmbeddedServer();
+        
         if(SecurityContextHolder.getContext() != null) {
             SecurityContextHolder.getContext().setAuthentication(null);
         }

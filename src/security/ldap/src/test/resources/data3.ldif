@@ -1,8 +1,3 @@
-dn: dc=example,dc=com
-objectClass: domain
-objectClass: top
-dc: example
-
 dn: ou=People,dc=example,dc=com
 objectClass: top
 objectClass: organizationalUnit
@@ -16,12 +11,10 @@ ou: Groups
 
 dn: cn=admin,ou=Groups,dc=example,dc=com
 objectClass: top
-objectClass: organizationalRole
 objectClass: groupOfNames
 cn: admin
 member: cn=admin
 member: cn=colon
-telephoneNumber: 10
 
 dn: uid=admin,ou=People,dc=example,dc=com
 objectClass: top

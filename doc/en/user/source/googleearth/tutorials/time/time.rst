@@ -11,7 +11,7 @@ For this tutorial we will using a Shapefile which contains information about the
 
 #. Download and unzip :download:`inet_weu.zip`
 #. Configure GeoServer to serve the Shapefile ``inet_weu.zip``. (A tutorial is available :ref:`shapefile_quickstart`.)
-#. Add the SLD ":download:`inet_weu.sld` to GeoServer. ( A tutorial is available for :ref:`styling_quickstart`)
+#. Add the SLD :download:`inet_weu.sld` to GeoServer. (See the :ref:`webadmin_styles` page for more details.)
 #. Set the style of the feature type added in step 2 to the style added in step 3
 
 .. figure:: style.png

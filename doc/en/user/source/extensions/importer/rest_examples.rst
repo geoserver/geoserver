@@ -1,6 +1,6 @@
 .. _importer_rest_examples:
 
-Importer REST API exaples
+Importer REST API examples
 ==========================
 
 Mass configuring a directory of shapefiles

@@ -45,6 +45,8 @@ Another example of indirect task might involve taking a CSV file as an input, tu
 REST API Reference
 ------------------
 
+.. _importer_rest_reference_imports:
+
 All the imports
 ^^^^^^^^^^^^^^^
 
@@ -63,12 +65,12 @@ All the imports
      - Retrieve all imports
      - 200
      - n/a
-     - :ref:`Import Collection <import_collection>`
+     - Import Collection
    * - POST
      - Create a new import
      - 201 with Location header
      - n/a
-     - :ref:`Imports <import>`
+     - :ref:`Imports <importer_rest_reference_imports>`
      
 Retrieving the list of all imports
 """"""""""""""""""""""""""""""""""
@@ -199,7 +201,7 @@ Import object
      - Retrieve import with id <importId>
      - 200
      - n/a
-     - :ref:`Imports <import>`
+     - :ref:`Imports <importer_rest_reference_imports>`
    * - POST
      - Execute import with id <importId>
      - 204
@@ -212,7 +214,7 @@ Import object
        used. This allows an external system to dictate the id management.
      - 201 with Location header
      - n/a
-     - :ref:`Imports <import>`
+     - :ref:`Imports <importer_rest_reference_imports>`
    * - DELETE
      - Remove import with id <importId>
      - 200
@@ -220,7 +222,9 @@ Import object
      - n/a
     
 The representation of a import is the same as the one contained in the import creation response.    
-    
+
+.. _importer_rest_reference_tasks:
+
 Tasks
 ^^^^^
 
@@ -239,14 +243,14 @@ Tasks
      - Retrieve all tasks for import with id <importId>
      - 200
      - n/a
-     - :ref:`Task Collection <tasks>`
+     - :ref:`Task Collection <importer_rest_reference_tasks>`
    * - POST
      - Create a new task
      - 201 with Location header
-     - :ref:`Multipart form data <file_upload>`
-     - :ref:`Tasks <tasks>`
+     - :ref:`Multipart form data <importer_rest_reference_fileupload>`
+     - :ref:`Tasks <importer_rest_reference_tasks>`
 
-.. _file_upload:
+.. _importer_rest_reference_fileupload:
 
 Getting the list of tasks
 """""""""""""""""""""""""
@@ -342,12 +346,12 @@ Single task resource
      - Retrieve task with id <taskId> within import with id <importId>
      - 200
      - n/a
-     - :ref:`Task <tasks>`
+     - :ref:`Task <importer_rest_reference_tasks>`
    * - PUT
      - Modify task with id <taskId> within import with id <importId>
      - 200
-     - :ref:`Task <tasks>`
-     - :ref:`Task <tasks>`
+     - :ref:`Task <importer_rest_reference_tasks>`
+     - :ref:`Task <importer_rest_reference_tasks>`
    * - DELETE
      - Remove task with id <taskId> within import with id <importId>
      - 200
@@ -396,7 +400,7 @@ The following operations are specific to data objects of type ``directory``.
      - Retrieve the list of files for a task with id <taskId> within import with id <importId>
      - 200
      - n/a
-     - :ref:`Task <tasks>`
+     - :ref:`Task <importer_rest_reference_tasks>`
 
 The response to a GET request will be::
 
@@ -439,7 +443,7 @@ The response to a GET request will be::
      - Retrieve the file with id <fileId> from the data of a task with id <taskId> within import with id <importId>
      - 200
      - n/a
-     - :ref:`Task <tasks>`
+     - :ref:`Task <importer_rest_reference_tasks>`
    * - DELETE
      - Remove a specific file from the task with id <taskId> within import with id <importId>
      - 200
@@ -608,8 +612,8 @@ The layer defines how the target layer will be created
    * - PUT
      - Modify the target layer for a task with id <taskId> within import with id <importId>
      - 200
-     - :ref:`Task <tasks>`
-     - :ref:`Task <tasks>`
+     - :ref:`Task <importer_rest_reference_tasks>`
+     - :ref:`Task <importer_rest_reference_tasks>`
 
 
 Requesting the task layer will result in the following::

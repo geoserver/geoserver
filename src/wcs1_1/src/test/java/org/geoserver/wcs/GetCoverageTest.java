@@ -581,40 +581,4 @@ public class GetCoverageTest extends AbstractGetCoverageTest {
         }
     }
 
-    @Test
-    public void testSourceCoverageTransform() throws Exception {        
-        String request = //
-        "  <wcs:GetCoverage service=\"WCS\" version=\"1.1.1\" "
-                + "                   xmlns:wcs=\"http://www.opengis.net/wcs/1.1.1\" "
-                + "                   xmlns:gml=\"http://www.opengis.net/gml\""
-                + "                   xmlns:ows=\"http://www.opengis.net/ows/1.1\" >\n"
-                + "   <ows:Identifier>"
-                + getLayerId(MockData.TASMANIA_DEM)
-                + "   </ows:Identifier>\n"
-                + "            <wcs:DomainSubset>\n"
-                + "              <ows:BoundingBox crs=\"http://www.opengis.net/gml/srs/epsg.xml#4326\">\n"
-                + "                <ows:LowerCorner>-180.0 -90.0</ows:LowerCorner>\n"
-                + "                <ows:UpperCorner>180.0 90.0</ows:UpperCorner>\n"
-                + "              </ows:BoundingBox>\n" //
-                + "            </wcs:DomainSubset>\n"
-                + "            <wcs:Output format=\"image/tiff\"/>\n"
-                + "          </wcs:GetCoverage>";        
-        
-        GridCoverage2D coverage = (GridCoverage2D)executeGetCoverageXml(request)[0];
-        //Envelope envelope = coverage.getEnvelope();
-        //org.geotools.coverage.grid.GridGeometry2D gridGeometry = coverage.getGridGeometry();
-        //System.out.println(envelope);
-        //System.out.println(gridGeometry);
-        //System.out.println(coverage.getClass().getName());
-        coverages.add(coverage);
-        
-        // Checks if the ClassName of the output Coverage contains 'Resampler2D':
-        // GEOS-6906: 
-        // DefaultWebCoverageService111::estimateOffsets() looses the translation parameters 
-        // of the source Coverage transform and finally the source and target GridGeometry's
-        // are different even when the real GridGeometry's are equals.
-        // It does that DefaultWebCoverageService111::getCoverage() resample the 
-        // output Coverage.
-        assertTrue(!coverage.getClass().getName().toLowerCase().contains("resampler2d"));
-    }
 }

@@ -3,7 +3,7 @@
 WPS Security and input limits
 =============================
 
-GeoServer service security is normally based on the generic :ref:`OGC security configuration <sec_service>`, however, when it comes to WPS there is also a need to **restrict access to individual processes**, just like how data security restricts access to layers.
+GeoServer service security is normally based on the generic :ref:`OGC security configuration <sec_service>`, however, when it comes to WPS there is also a need to **restrict access to individual processes**, in the same way that data security restricts access to layers.
 
 WPS security allows access to be determined by process group or by single process. Each process and process group can be enabled/disabled, or subject to access control based on the user roles.
 

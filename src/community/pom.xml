@@ -404,5 +404,11 @@
           <module>hz-cluster</module>
         </modules>
     </profile>
+    <profile>
+      <id>geomesa</id>
+        <modules>
+          <module>geomesa</module>
+        </modules>
+    </profile>
   </profiles>
 </project>

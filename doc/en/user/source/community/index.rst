@@ -34,3 +34,4 @@ officially part of the GeoServer releases. They are however built along with the
    solr/index
    sldservice/index
    rest-upload/index
+   geomesa/index

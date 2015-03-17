@@ -295,6 +295,7 @@
 
     <bean id="coverageResourceListener" class="org.geoserver.wps.resource.CoverageResourceListener">
       <constructor-arg ref="wpsResourceManager"/>
+      <constructor-arg ref="coverageCleaner"/>
     </bean>
     
     <!-- Input limits support -->

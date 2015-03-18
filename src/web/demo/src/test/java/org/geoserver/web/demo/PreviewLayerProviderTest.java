@@ -9,6 +9,7 @@ import static org.junit.Assert.*;
 
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.junit.Test;
@@ -45,7 +46,7 @@ public class PreviewLayerProviderTest extends GeoServerWicketTestSupport {
         
         LayerGroupInfo group = getCatalog().getFactory().createLayerGroup();
         group.setName("testSingleLayerGroup");
-        group.setMode(LayerGroupInfo.Mode.SINGLE);        
+        group.setMode(LayerGroupInfo.Mode.SINGLE);
         group.getLayers().add(layer);
         group.setTitle("This is the title");
         group.setAbstract("This is the abstract");
@@ -58,8 +59,30 @@ public class PreviewLayerProviderTest extends GeoServerWicketTestSupport {
             assertEquals("This is the abstract", pl.getAbstract());
         } finally {
             getCatalog().remove(group);
-        }        
-    }    
+        }
+    }
+    
+    @Test
+    public void testWorkspacedLayerGroup() throws Exception {
+        String layerId = getLayerId(MockData.BUILDINGS);
+        LayerInfo layer = getCatalog().getLayerByName(layerId);
+        WorkspaceInfo ws = getCatalog().getWorkspaceByName("cite");
+        
+        LayerGroupInfo group = getCatalog().getFactory().createLayerGroup();
+        group.setName("testWorkspacedLayerGroup");
+        group.setMode(LayerGroupInfo.Mode.SINGLE);
+        group.setWorkspace(ws);
+        group.getLayers().add(layer);
+        getCatalog().add(group);
+        try {
+            PreviewLayerProvider provider = new PreviewLayerProvider();
+            PreviewLayer pl = getPreviewLayer(provider, group.prefixedName());
+            assertNotNull(pl);
+            assertEquals("cite:testWorkspacedLayerGroup", pl.getName());
+        } finally {
+            getCatalog().remove(group);
+        }
+    }
     
     @Test
     public void testContainerLayerGroup() throws Exception {

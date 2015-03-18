@@ -58,7 +58,7 @@ public class PreviewLayer {
         if (layerInfo != null) {
             return layerInfo.getResource().prefixedName();
         } else {
-            return groupInfo.getName();
+            return groupInfo.prefixedName();
         }
     }
     

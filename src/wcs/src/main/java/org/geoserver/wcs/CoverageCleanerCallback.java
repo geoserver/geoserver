@@ -43,23 +43,14 @@ public class CoverageCleanerCallback extends AbstractDispatcherCallback {
 
     @Override
     public void finished(Request request) {
-        try {
-            List<GridCoverage> coverages = COVERAGES.get();
-            if (coverages != null) {
-                for (GridCoverage coverage : coverages) {
-                    try {
-                        disposeCoverage(coverage);
-                    } catch (Exception e) {
-                        LOGGER.log(Level.WARNING, "Failed to fully dispose coverage: " + coverage,
-                                e);
-                    }
-                }
-            }
-        } finally {
-            COVERAGES.remove();
-        }
+        clean();
     }
 
+    /**
+     * Mark coverage for cleaning.
+     * 
+     * @param coverages
+     */
     public static void addCoverages(GridCoverage... coverages) {
         List<GridCoverage> list = COVERAGES.get();
         if (list == null) {
@@ -81,6 +72,27 @@ public class CoverageCleanerCallback extends AbstractDispatcherCallback {
         }
         if (ri instanceof PlanarImage) {
             ImageUtilities.disposePlanarImageChain((PlanarImage) ri);
+        }
+    }
+
+    /**
+     * Clean up any coverages collected by {@link #addCoverages(GridCoverage...)}
+     */
+    public void clean() {
+        try {
+            List<GridCoverage> coverages = COVERAGES.get();
+            if (coverages != null) {
+                for (GridCoverage coverage : coverages) {
+                    try {
+                        disposeCoverage(coverage);
+                    } catch (Exception e) {
+                        LOGGER.log(Level.WARNING, "Failed to fully dispose coverage: " + coverage,
+                                e);
+                    }
+                }
+            }
+        } finally {
+            COVERAGES.remove();
         }
     }
 }

@@ -156,9 +156,9 @@ public class LayerGroupHelper {
         }        
         
         LayerInfo l = layers.get(0);
-        ReferencedEnvelope bounds = transform(l.getResource().getLatLonBoundingBox(), crs);
-
-        for (int i = 1; i < layers.size(); i++) {
+        ReferencedEnvelope bounds = new ReferencedEnvelope(crs);
+        
+        for (int i = 0; i < layers.size(); i++) {
             l = layers.get(i);
             bounds.expandToInclude(transform(l.getResource().getLatLonBoundingBox(), crs));
         }

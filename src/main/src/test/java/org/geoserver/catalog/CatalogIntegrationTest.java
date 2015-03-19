@@ -29,8 +29,13 @@ import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.test.SystemTest;
 import org.geoserver.test.TestSetup;
 import org.geoserver.test.TestSetupFrequency;
+import org.geotools.referencing.CRS;
+import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.NoSuchAuthorityCodeException;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 @Category(SystemTest.class)
 @TestSetup(run=TestSetupFrequency.REPEAT)
@@ -258,5 +263,32 @@ public class CatalogIntegrationTest extends GeoServerSystemTestSupport {
         assertNull(catalog.getWorkspaceByName(ws.getName()));
         assertNull(catalog.getStyleByName(style.getName()));
         assertNull(catalog.getLayerGroupByName(lg.getName()));
+    }
+    
+    @Test
+    public void testReprojectLayerGroup() 
+            throws NoSuchAuthorityCodeException, FactoryException, Exception {
+        
+        Catalog catalog = getCatalog();
+        
+        CatalogBuilder cb = new CatalogBuilder(catalog);
+        LayerGroupInfo lg = catalog.getFactory().createLayerGroup();
+        LayerInfo l = catalog.getLayerByName(getLayerId(MockData.ROAD_SEGMENTS));
+        lg.getLayers().add(l);
+        lg.setName("test-reproject");
+        
+        //Give our layer a CRS without the EPSG code defined
+        CoordinateReferenceSystem lCrs = DefaultGeographicCRS.WGS84;
+        ((FeatureTypeInfo)l.getResource()).setSRS(null);
+        ((FeatureTypeInfo)l.getResource()).setNativeCRS(lCrs);
+        assertNull(CRS.lookupEpsgCode(lCrs, false));
+        
+        //EPSG:4326 should have an EPSG code
+        CoordinateReferenceSystem lgCrs = CRS.decode("EPSG:4326");
+        assertNotNull(CRS.lookupEpsgCode(lgCrs, false));
+        
+        //Reproject our layer group to EPSG:4326. We expect it to have an EPSG code.
+        cb.calculateLayerGroupBounds(lg, lgCrs);
+        assertNotNull(CRS.lookupEpsgCode(lg.getBounds().getCoordinateReferenceSystem(), false));
     }
 }

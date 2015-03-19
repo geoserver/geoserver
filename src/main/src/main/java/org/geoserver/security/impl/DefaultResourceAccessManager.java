@@ -308,18 +308,20 @@ public class DefaultResourceAccessManager implements ResourceAccessManager, Data
                 }
 
                 Filter wsFilter = null;
-                if (rootAccess) {
+                if (rootAccess && !wsAccess) {
                     wsFilter = Predicates.notEqual(wsNameProperty, wsName);
-                } else {
+                } else if (!rootAccess && wsAccess) {
                     wsFilter = Predicates.equal(wsNameProperty, wsName);
                 }
                 
                 if(layerExceptions.isEmpty()) {
-                    if (wsAccess != rootAccess) {
+                    if (wsFilter != null) {
                         exceptions.add(wsFilter);
                     }
                 } else {
-                    layerExceptions.add(wsFilter);
+                    if (wsFilter != null) {
+                        layerExceptions.add(wsFilter);
+                    }
                     Filter combined = wsAccess ? Predicates.and(layerExceptions) : Predicates
                             .or(layerExceptions);
                     exceptions.add(combined);

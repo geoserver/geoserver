@@ -93,6 +93,17 @@ public class Paths {
      * @return path Path used to identify a Resource
      */
     public static String path(String... path) {
+        return path(STRICT_PATH, path);
+    }
+
+     /**
+     * Path construction.
+     * 
+     * @param strictPath whether problematic characters are an error
+     * @param path Items defining a Path
+     * @return path Path used to identify a Resource
+     */
+    static String path(boolean strictPath, String... path) {
         if (path == null || (path.length == 1 && path[0] == null)) {
             return null;
         }
@@ -100,7 +111,7 @@ public class Paths {
         for (String item : path) {
             names.addAll(names(item));
         }
-        return toPath(names);
+        return toPath(strictPath, names);
     }
     
     // runtime flag which, if true, throws an error for the WARN characters
@@ -138,15 +149,14 @@ public class Paths {
             Arrays.asList(new String[] { "..", "." }));
     
     /**
-     * Internal method used to convert a lit of names to a normal Resource path.
-     * <p>
-     * If any {@link #INVALID} names are foun
+     * Internal method used to convert a list of names to a normal Resource path.
      * 
+     * @param strictPath whether problematic characters are an error
      * @param names List of resource names forming a path
      * @return resource path composed of provided names
      * @throws IllegalArgumentException If names includes any {@link #INVALID} chracters
      */
-    private static String toPath(List<String> names) {
+    private static String toPath(boolean strictPath, List<String> names) {
         StringBuilder buf = new StringBuilder();
         final int LIMIT = names.size();
         for (int i = 0; i < LIMIT; i++) {
@@ -161,7 +171,7 @@ public class Paths {
                 throw new IllegalArgumentException("Contains invalid " + item + " path: " + buf);
             }
             if (!WARN.matcher(item).matches()) {
-                if (STRICT_PATH == true) {
+                if (strictPath) {
                     throw new IllegalArgumentException("Contains invalid " + item + " path: " + buf);
                 }
             }
@@ -180,7 +190,19 @@ public class Paths {
      * @return path
      * @throws IllegalArgumentException If path fails {@link #VALID} check
      */
-    static public String valid(String path) {
+    public static String valid(String path) {
+        return path(STRICT_PATH, path);
+    }
+
+    /**
+     * Quick check of path for invalid characters
+     * 
+     * @param strictPath whether problematic characters are an error
+     * @param path
+     * @return path
+     * @throws IllegalArgumentException If path fails {@link #VALID} check
+     */
+    static String valid(boolean strictPath, String path) {
         if (path == null) {
             throw new NullPointerException("Resource path required");
         }
@@ -191,7 +213,7 @@ public class Paths {
             throw new IllegalArgumentException("Contains invalid chracters " + path);
         }
         if (!WARN.matcher(path).matches()) {
-            if (STRICT_PATH == true) {
+            if (strictPath) {
                 throw new IllegalArgumentException("Contains invalid chracters " + path);
             }
         }
@@ -290,7 +312,7 @@ public class Paths {
             }
             resolvedPath.add(item);
         }
-        return toPath(resolvedPath);
+        return toPath(STRICT_PATH, resolvedPath);
     }
 
     /**
@@ -328,7 +350,7 @@ public class Paths {
             }
             resolvedPath.add(item);
         }
-        return toPath(resolvedPath);
+        return toPath(STRICT_PATH, resolvedPath);
     }
 
     /**
@@ -390,7 +412,7 @@ public class Paths {
             }
             resolvedPath.add(item);
         }
-        return toPath(resolvedPath);
+        return toPath(STRICT_PATH, resolvedPath);
     }
 
     /**

@@ -92,7 +92,8 @@ public class ExecuteProcessResponse extends Response {
     private boolean isStandardDocumentResponse(Operation operation) {
         if(operation.getParameters()[0] instanceof ExecuteType) {
             ExecuteType execute = (ExecuteType) operation.getParameters()[0];
-            return execute.getResponseForm() != null && execute.getResponseForm().getRawDataOutput() == null;
+            return execute.getResponseForm() == null
+                    || execute.getResponseForm().getRawDataOutput() == null;
         }
         return true;
     }

@@ -362,6 +362,10 @@ public class ExecuteResponseBuilder {
      */
     private String getOutputMimeType(String key) {
         // lookup for the OutputDefinitionType
+        if (request.getResponseForm() == null) {
+            return null;
+        }
+
         OutputDefinitionType odt = request.getResponseForm().getRawDataOutput();
         ResponseDocumentType responseDocument = request.getResponseForm().getResponseDocument();
         if (responseDocument != null && odt == null) {

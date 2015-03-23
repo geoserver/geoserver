@@ -801,6 +801,41 @@ public class ExecuteTest extends WPSTestSupport {
     }
     
     @Test
+    public void testNoResponseForm() throws Exception {
+        String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><wps:Execute xmlns:xs=\"http://www.w3.org/2001/XMLSchema\" xmlns:wps=\"http://www.opengis.net/wps/1.0.0\" xmlns:ows=\"http://www.opengis.net/ows/1.1\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" service=\"WPS\" version=\"1.0.0\">\n" + 
+                "  <ows:Identifier>JTS:area</ows:Identifier>\n" + 
+                "  <wps:DataInputs>\n" + 
+                "    <wps:Input>\n" + 
+                "      <ows:Identifier>geom</ows:Identifier>\n" + 
+                "      <wps:Reference xlink:href=\"http://geoserver/wps\" method=\"POST\" mimeType=\"application/xml\">\n" + 
+                "        <wps:Execute service=\"WPS\" version=\"1.0.0\">\n" + 
+                "          <ows:Identifier>JTS:union</ows:Identifier>\n" + 
+                "          <wps:DataInputs>\n" + 
+                "            <wps:Input>\n" + 
+                "              <ows:Identifier>geom</ows:Identifier>\n" + 
+                "              <wps:Data>\n" + 
+                "                <wps:ComplexData mimeType=\"application/wkt\"><![CDATA[POLYGON((20 10, 30 0, 40 10, 30 20, 20 10))]]></wps:ComplexData>\n" + 
+                "              </wps:Data>\n" + 
+                "            </wps:Input>\n" + 
+                "            <wps:Input>\n" + 
+                "              <ows:Identifier>geom</ows:Identifier>\n" + 
+                "              <wps:Data>\n" + 
+                "                <wps:ComplexData mimeType=\"application/wkt\"><![CDATA[POLYGON((2 1, 3 0, 4 1, 3 2, 2 1))]]></wps:ComplexData>\n" + 
+                "              </wps:Data>\n" + 
+                "            </wps:Input>\n" + 
+                "          </wps:DataInputs>\n" + 
+                "        </wps:Execute>\n" + 
+                "\n" + 
+                "      </wps:Reference>\n" + 
+                "    </wps:Input>\n" + 
+                "  </wps:DataInputs>\n" + 
+                "</wps:Execute>";
+        
+        Document dom = postAsDOM(root(), xml);
+        print(dom);
+    }
+    
+    @Test
     public void testProcessChainingKVP() throws Exception {
         String nested = "http://geoserver/wps?service=WPS&version=1.0.0&request=Execute&Identifier=JTS:buffer" +
         "&DataInputs=" + urlEncode("geom=POINT(0 0)@mimetype=application/wkt;distance=10") + "&RawDataOutput=result";

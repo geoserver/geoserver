@@ -72,15 +72,17 @@ public class CssHandler extends StyleHandler {
                         entityResolver);
             } else {
                 // otherwise convert and write the cache
-                StyledLayerDescriptor sld = convertToSLD(toReader(input));
-                try (OutputStream fos = sldResource.out()) {
-                    sldHandler.encode(sld, SLDHandler.VERSION_10, true, fos);
+                try(Reader reader = toReader(input)) {
+                    StyledLayerDescriptor sld = convertToSLD(reader);
+                    try (OutputStream fos = sldResource.out()) {
+                        sldHandler.encode(sld, SLDHandler.VERSION_10, true, fos);
+                    }
+                    // be consistent, have the SLD always be generated from and SLD parse,
+                    // different code paths could result in different defaults/results due
+                    // to inconsistencies/bugs happening over time
+                    return sldHandler.parse(sldResource, SLDHandler.VERSION_10, resourceLocator,
+                            entityResolver);
                 }
-                // be consistent, have the SLD always be generated from and SLD parse,
-                // different code paths could result in different defaults/results due
-                // to inconsistencies/bugs happening over time
-                return sldHandler.parse(sldResource, SLDHandler.VERSION_10, resourceLocator,
-                        entityResolver);
             }
 
         }

@@ -18,6 +18,7 @@ import javax.xml.namespace.QName;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.SystemUtils;
 import org.apache.log4j.Level;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
@@ -86,6 +87,8 @@ public class SystemTestData extends CiteTestData {
     private static final QName MULTIBAND = new QName(WCS_URI, "multiband", WCS_PREFIX);
     
     static final Logger LOGGER = Logging.getLogger(SystemTestData.class);
+    
+    static final Boolean WINDOWS_LENIENCY = Boolean.valueOf(System.getProperty("windows.leniency", "true"));
 
     /**
      * Keys for overriding default layer properties
@@ -948,7 +951,23 @@ public class SystemTestData extends CiteTestData {
     
     @Override
     public void tearDown() throws Exception {
-        FileUtils.deleteDirectory(data);        
+        if(SystemUtils.IS_OS_WINDOWS && WINDOWS_LENIENCY) {
+            int MAX_ATTEMPTS = 10;
+            for (int i = 0; i < MAX_ATTEMPTS; i++) {
+                try {
+                    FileUtils.deleteDirectory(data);  
+                } catch(IOException e) {
+                    if(i >= MAX_ATTEMPTS) {
+                        throw new IOException("Failed to clean up test data dir after " + MAX_ATTEMPTS  + " attempts", e);
+                    }
+                    System.err.println("Error occurred while removing files, assuming "
+                            + "it's a transient lock, sleeping 1s and re-trying. Error message: " + e.getMessage());
+                    Thread.sleep(1);
+                }
+            }
+        } else {
+            FileUtils.deleteDirectory(data);  
+        }
     }
     
     @Override

@@ -90,7 +90,7 @@ public class CachingOptionsPanel extends Panel {
         configs.add(cacheNonDefaultStyles);
 
         List<Integer> metaTilingChoices = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13,
-                14, 16, 16, 17, 18, 19, 20);
+                14, 15, 16, 17, 18, 19, 20);
         IModel<Integer> metaTilingXModel = new PropertyModel<Integer>(gwcConfigModel, "metaTilingX");
         DropDownChoice<Integer> metaTilingX = new DropDownChoice<Integer>("metaTilingX",
                 metaTilingXModel, metaTilingChoices);

@@ -64,7 +64,8 @@ public class HTMLFeatureInfoOutputFormat extends GetFeatureInfoOutputFormat {
             public TemplateModel wrap(Object object) throws TemplateModelException {
                 if (object instanceof FeatureCollection) {
                     SimpleHash map = (SimpleHash) super.wrap(object);                    
-                    map.put("request", Dispatcher.REQUEST.get().getKvp());    
+                    map.put("request", Dispatcher.REQUEST.get().getKvp());
+                    map.put("environment", new EnvironmentVariablesTemplateModel());
                     return map;
                 }
                 return super.wrap(object);

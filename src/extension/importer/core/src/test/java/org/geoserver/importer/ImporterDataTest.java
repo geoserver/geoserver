@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -16,6 +16,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.SystemUtils;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -84,6 +85,31 @@ public class ImporterDataTest extends ImporterTestSupport {
 
         assertEquals(ImportTask.State.COMPLETE, task.getState());
 
+        runChecks("archsites");
+    }
+    
+    @Test
+    public void testImportShapefileFromDataDir() throws Exception {
+        File dataDir = getCatalog().getResourceLoader().getBaseDirectory();
+        
+        File dir = unpack("shape/archsites_epsg_prj.zip", dataDir);
+        
+        ImportContext context = 
+                importer.createContext(new SpatialFile(new File(dir, "archsites.shp")));
+        assertEquals(1, context.getTasks().size());
+        
+        ImportTask task = context.getTasks().get(0);
+        assertEquals(ImportTask.State.READY, task.getState());
+        assertEquals("archsites", task.getLayer().getResource().getName());
+        
+        importer.run(context);
+        
+        Catalog cat = getCatalog();
+        assertNotNull(cat.getLayerByName("archsites"));
+        
+        assertEquals(ImportTask.State.COMPLETE, task.getState());
+        assertEquals("file:archsites.shp", task.getLayer().getResource().getStore().getConnectionParameters().get("url"));
+        
         runChecks("archsites");
     }
 
@@ -460,6 +486,32 @@ public class ImporterDataTest extends ImporterTestSupport {
         assertNotNull(cat.getLayerByName("EmissiveCampania"));
 
         assertEquals(ImportTask.State.COMPLETE, task.getState());
+
+        runChecks("EmissiveCampania");
+    }
+    
+    @Test
+    public void testImportGeoTIFFFromDataDir() throws Exception {
+        File dataDir = getCatalog().getResourceLoader().getBaseDirectory();
+        
+        File dir = unpack("geotiff/EmissiveCampania.tif.bz2", dataDir);
+        
+        ImportContext context = 
+                importer.createContext(new SpatialFile(new File(dir, "EmissiveCampania.tif")));
+        assertEquals(1, context.getTasks().size());
+        
+        ImportTask task = context.getTasks().get(0);
+        assertEquals(ImportTask.State.READY, task.getState());
+        
+        assertEquals("EmissiveCampania", task.getLayer().getResource().getName());
+        
+        importer.run(context);
+        
+        Catalog cat = getCatalog();
+        assertNotNull(cat.getLayerByName("EmissiveCampania"));
+
+        assertEquals(ImportTask.State.COMPLETE, task.getState());
+        assertEquals("file:EmissiveCampania.tif", ((CoverageStoreInfo)task.getLayer().getResource().getStore()).getURL());
 
         runChecks("EmissiveCampania");
     }

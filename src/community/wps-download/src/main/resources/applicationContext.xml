@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+	<!--
+		====================================================================
+	-->
+	<!-- Property config files -->
+	<!-- Any customization should go in the property file -->
+	<!--
+		====================================================================
+	-->
+	<bean id="downloadServiceConfigurationWatcher" 
+		class="org.geoserver.wps.gs.download.DownloadServiceConfigurationWatcher" destroy-method="stop"/>
+ 
+	<bean id="downloadEstimatorProcess" class="org.geoserver.wps.gs.download.DownloadEstimatorProcess">
+		<constructor-arg index="0" ref="downloadServiceConfigurationWatcher" />
+		<constructor-arg index="1" ref="geoServer"/>
+	</bean>
+	   
+	<bean id="downloadProcess" class="org.geoserver.wps.gs.download.DownloadProcess">
+		<constructor-arg index="0" ref="geoServer"/>
+		<constructor-arg index="1" ref="downloadEstimatorProcess"/>
+		<constructor-arg index="2" ref="wpsResourceManager"/>
+	</bean>
+
+
+	<!-- The PPIO that need to be registered into SPI because of their dependencies -->
+	<bean id="archiveZipPPIO" class="org.geoserver.wps.ppio.ZipArchivePPIO">
+	  <constructor-arg index="0" value="4"/>
+    </bean>
+    
+</beans>

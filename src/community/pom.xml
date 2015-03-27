@@ -52,6 +52,7 @@
           <descriptor>release/ext-geofence.xml</descriptor>
 		  <descriptor>release/ext-rest-ext.xml</descriptor>
           <descriptor>release/ext-sldservice.xml</descriptor>
+          <descriptor>release/ext-wps-download.xml</descriptor>
         </descriptors>
       </configuration>
      </plugin>
@@ -166,6 +167,7 @@
         <module>dyndimension</module>
 		<module>rest-ext</module>
         <module>sldService</module>
+        <module>wps-download</module>
       </modules>
     </profile>
     <profile>
@@ -334,5 +336,11 @@
           <module>geofence</module>
         </modules>
     </profile>    
+    <profile>      
+      <id>wps-download</id>
+      <modules>
+        <module>wps-download</module>
+      </modules>
+    </profile>	
   </profiles>
 </project>

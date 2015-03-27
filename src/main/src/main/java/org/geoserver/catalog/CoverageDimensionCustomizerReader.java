@@ -5,7 +5,6 @@
  */
 package org.geoserver.catalog;
 
-import java.awt.Color;
 import java.awt.image.ColorModel;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -50,7 +49,6 @@ import org.opengis.parameter.ParameterDescriptor;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.datum.PixelInCell;
 import org.opengis.referencing.operation.MathTransform;
-import org.opengis.referencing.operation.MathTransform1D;
 import org.opengis.util.InternationalString;
 
 /**
@@ -489,10 +487,6 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
             return sampleDim.getCategory(sample);
         }
         @Override
-        public Category getBackground() {
-            return sampleDim.getBackground();
-        }
-        @Override
         public double[] getNoDataValues() throws IllegalStateException {
             return configuredNoDataValues;
         }
@@ -537,14 +531,6 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
             return sampleDim.getScale();
         }
         @Override
-        public MathTransform1D getSampleToGeophysics() {
-            return sampleDim.getSampleToGeophysics();
-        }
-        @Override
-        public GridSampleDimension geophysics(boolean geo) {
-            return sampleDim.geophysics(geo);
-        }
-        @Override
         public int[][] getPalette() {
             return sampleDim.getPalette();
         }
@@ -568,10 +554,7 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
         public ColorModel getColorModel(int visibleBand, int numBands, int type) {
             return sampleDim.getColorModel(visibleBand, numBands, type);
         }
-        @Override
-        public GridSampleDimension rescale(double scale, double offset) {
-            return sampleDim.rescale(scale, offset);
-        }
+
         @Override
         public int hashCode() {
             return sampleDim.hashCode();
@@ -695,8 +678,7 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
                             } else {
                                 // Create the wrapped category
                                 wrapped = new Category(Category.NODATA.getName(),
-                                        category.getColors(), NumberRange.create(minimum, maximum),
-                                        category.getSampleToGeophysics());
+                                        category.getColors(), NumberRange.create(minimum, maximum));
                             }
                         }
                     }

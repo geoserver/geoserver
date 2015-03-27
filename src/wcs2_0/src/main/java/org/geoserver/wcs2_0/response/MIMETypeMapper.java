@@ -5,8 +5,6 @@
  */
 package org.geoserver.wcs2_0.response;
 
-import it.geosolutions.imageio.utilities.SoftValueHashMap;
-
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
@@ -25,6 +23,7 @@ import org.geoserver.catalog.event.CatalogRemoveEvent;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.wcs.responses.CoverageResponseDelegate;
 import org.geoserver.wcs.responses.CoverageResponseDelegateFinder;
+import org.geotools.util.SoftValueHashMap;
 import org.geotools.util.Utilities;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.BeansException;

@@ -134,12 +134,12 @@
      <version>${project.version}</version>
    </dependency>
    <dependency>
-      <groupId>org.geoserver</groupId>
+      <groupId>org.geoserver.community</groupId>
       <artifactId>gs-jms-geoserver</artifactId>
      <version>${project.version}</version>
    </dependency>  
    <dependency>
-      <groupId>org.geoserver</groupId>
+      <groupId>org.geoserver.community</groupId>
       <artifactId>gs-jms-commons</artifactId>
      <version>${project.version}</version>
    </dependency>

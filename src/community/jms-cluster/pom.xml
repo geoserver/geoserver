@@ -8,7 +8,7 @@
     <version>2.8-SNAPSHOT</version>
   </parent>
 
-  <groupId>org.geoserver</groupId>
+  <groupId>org.geoserver.community</groupId>
   <artifactId>gs-jms-cluster-container</artifactId>
   <!-- Use the same version as GeoServer here, at least for the moment -->
   <version>2.8-SNAPSHOT</version>

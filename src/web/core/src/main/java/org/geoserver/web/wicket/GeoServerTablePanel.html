@@ -10,20 +10,20 @@
 	            <span wicket:id="navigatorTop">1|2|3|...</span>
             </div>
             <div class="rightwise">
-                <input id="filter" wicket:id="filter" class="rigthwise search" type="text" size="35" title="Search"></input>
+                <input id="filter" wicket:id="filter" class="rigthwise search" type="text" size="35" title="Search">
 	            <input wicket:id="submit" class="noshow" type="submit" value="Search"/>
 	            <script type="text/javascript">
 	              //<![CDATA[
                   // this one works when the page is loading for the first time
 	              jQuery(document).ready(function() {$('#filter').inlineInfoTextify();});
-                  // this one in ajax popups where the content to textify is generated on the fly 
+                  // this one in ajax popups where the content to textify is generated on the fly
                   // after the page has been loaded
 	              $('#filter').inlineInfoTextify();
 	              //]]>
 	            </script>
             </div>
 	</form>
-	
+
 	<!--  the table -->
 	<table wicket:id="listContainer" class="clearBoth" style="empty-cells: show" cellspacing="0">
 		<thead>
@@ -43,21 +43,21 @@
 			</tr>
 		</tbody>
 	</table>
-	
+
 	<!-- the bottom pager -->
     <span wicket:id="navigatorBottom">1|2|3|...</span>
-	
+
 	<!-- Sortable header fragments -->
 	<wicket:fragment wicket:id="sortableHeader">
 		<a href="#" wicket:id="link"><span wicket:id="label"></span></a>
 	</wicket:fragment>
-	
+
 	<!-- Pagination fragment -->
 	<wicket:fragment wicket:id="pagingFragment">
            <span class="paginator" wicket:id="navigator">1|2|3|...</span>
            <span wicket:id="filterMatch">Matched xxx out of yyy</span>
 	</wicket:fragment>
-	
+
 	<wicket:child></wicket:child>
 </wicket:panel>
 </body>

@@ -61,6 +61,7 @@ import org.geoserver.security.decorators.SecuredLayerInfo;
 import org.geotools.util.logging.Logging;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.opengis.filter.Filter;
@@ -80,7 +81,13 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
 
         populateCatalog();
         
+        SecurityContextHolder.getContext().setAuthentication(null);
         Dispatcher.REQUEST.remove();
+    }
+    
+    @After
+    public void cleanup() {
+        SecurityContextHolder.getContext().setAuthentication(null);
     }
     
     @Test 

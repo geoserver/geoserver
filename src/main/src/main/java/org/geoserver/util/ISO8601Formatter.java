@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -41,19 +41,22 @@ public class ISO8601Formatter {
         }
         buf.append(value);
     }
-    
+
     /**
      * Formats the specified object either as a single time, if it's a Date, or as a continuous
      * interval, if it's a DateRange (and will throw an {@link IllegalArgumentException} otherwise)
      * 
-     * @param date
-     * @return
+     * @param date the Date or DateRange to format
+     * @return string containing representation of date / date range in ISO8601 format (as modified by OGC WMS)
      */
     public String format(Object date) {
-        if(date instanceof Date) {
+        if (date instanceof Date) {
             return format((Date) date);
-        } else if(date instanceof DateRange){
+        } else if (date instanceof DateRange) {
             DateRange range = (DateRange) date;
+            if (range.getMinValue().compareTo(range.getMaxValue()) == 0) {
+                return format(range.getMinValue());
+            }
             StringBuilder sb = new StringBuilder();
             format(range.getMinValue(), sb);
             sb.append("/");
@@ -69,8 +72,8 @@ public class ISO8601Formatter {
     /**
      * Formats the specified Date in ISO8601 format
      * 
-     * @param date
-     * @return
+     * @param date the Date to format
+     * @return string containing representation of date in ISO8601 format (as modified by OGC WMS)
      */
     public String format(Date date) {
         return format(date, new StringBuilder()).toString();

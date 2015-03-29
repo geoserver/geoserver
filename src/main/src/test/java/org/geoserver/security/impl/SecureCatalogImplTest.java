@@ -1052,8 +1052,8 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
         while (it1.hasNext()) {
             LayerInfo next = it1.next();
             // topp
-            assertNotSame(next, basesLayer);
-            assertNotSame(next, statesLayer);
+            assertNotSame("Unexpectedly found bases with security filter " + security, next, basesLayer);
+            assertNotSame("Unexpectedly found states with security filter " + security, next, statesLayer);
             hasLandmLayer |= next.equals(landmarksLayer);
             hasRoadsLayer |= next.equals(roadsLayer);
             // Nurc

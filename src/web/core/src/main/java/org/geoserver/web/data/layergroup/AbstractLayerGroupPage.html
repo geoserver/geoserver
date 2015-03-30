@@ -5,11 +5,11 @@
      <ul>
        <li>
          <label for="name"><wicket:message key="name">Name</wicket:message></label>
-         <input wicket:id="name" id="name" class="text"></input>
+         <input wicket:id="name" id="name" class="text">
        </li>
        <li>
          <label for="title"><wicket:message key="layerGroupTitle">Title</wicket:message></label>
-         <input wicket:id="title" id="title" class="text"></input>
+         <input wicket:id="title" id="title" class="text">
        </li>
        <li>
          <label for="abstract"><wicket:message key="abstract">Abstract</wicket:message></label>
@@ -24,7 +24,7 @@
          <div wicket:id="bounds" class="selfclear"></div>
        </li>
        <li>
-         <input wicket:id="generateBounds" type="submit" wicket:message="value:generateBounds"></input>
+         <input wicket:id="generateBounds" type="submit" wicket:message="value:generateBounds">
        </li>
        <li>
          <label for="mode"><wicket:message key="mode">Mode</wicket:message></label>
@@ -32,7 +32,7 @@
        </li>
 	   <li wicket:id="rootLayerContainer">
 	   	 <div wicket:id="rootLayer"></div>
-	   </li>                     
+	   </li>
        <li>
          <div wicket:id="layers"></div>
        </li>
@@ -44,8 +44,8 @@
        </li>
        <li class="button-group selfclear">
          <a href="#" wicket:id="save"><wicket:message key="save">Save</wicket:message></a>
-         <a href="#" wicket:id="cancel"><wicket:message key="cancel">Cancel</wicket:message></a> 
-       </li>  
+         <a href="#" wicket:id="cancel"><wicket:message key="cancel">Cancel</wicket:message></a>
+       </li>
      </ul>
     </form>
    </wicket:extend>

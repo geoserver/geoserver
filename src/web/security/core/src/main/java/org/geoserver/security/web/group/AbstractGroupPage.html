@@ -8,14 +8,14 @@
    <ul>
      <li>
        <fieldset>
-        <ul>	
+        <ul>
           <li>
             <label for="groupname"><wicket:message key="groupname">groupname</wicket:message></label>
             <input type="text" wicket:id="groupname" id="groupname" class="text"/>
           </li>
           <li>
             <input type="checkbox" wicket:id="enabled" id="enabled" class="field checkbox"/>
-            <label for="enabled" class="choice"><wicket:message key="enabled">enabled</wicket:message></label>
+            <label class="choice"><wicket:message key="enabled">enabled</wicket:message></label>
           </li>
         </ul>
        </fieldset>
@@ -28,11 +28,11 @@
      </li>
    </ul>
    <div class="button-group selfclear">
-     <a href="#" wicket:id="save"><wicket:message key="save">Save</wicket:message></a> 
+     <a href="#" wicket:id="save"><wicket:message key="save">Save</wicket:message></a>
      <a href="#" wicket:id="cancel"><wicket:message key="cancel">Cancel</wicket:message></a>
    </div>
   </form>
-  
+
 </wicket:extend>
 </body>
 </html>

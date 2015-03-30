@@ -5,8 +5,8 @@
       <legend><span><wicket:message key="diskQuota">Disk Quota</wicket:message></span></legend>
       <ul>
         <li>
-          <input id="enableDiskQuota" class="field checkbox" type="checkbox" wicket:id="enableDiskQuota" /> 
-          <label for="enableDiskQuota" class="choice"><wicket:message key="enableDiskQuota">Enable Disk Quota</wicket:message></label>
+          <input id="enableDiskQuota" class="field checkbox" type="checkbox" wicket:id="enableDiskQuota" />
+          <label class="choice"><wicket:message key="enableDiskQuota">Enable Disk Quota</wicket:message></label>
         </li>
         <li>
           <label for="diskBlockSize"><wicket:message key="diskBlockSize">Compute cache usage based on a disk block size of:</wicket:message></label>
@@ -29,12 +29,12 @@
           <div wicket:id="globalQuotaExpirationPolicy">
           <ul>
             <li>
-              <input id="globalQuotaPolicyLFU" class="field radio" type="radio" wicket:id="globalQuotaPolicyLFU" /> 
-              <label for="globalQuotaPolicyLFU" class="choice"><wicket:message key="LFU">Least frequently used</wicket:message></label>
+              <input id="globalQuotaPolicyLFU" class="field radio" type="radio" wicket:id="globalQuotaPolicyLFU" />
+              <label class="choice"><wicket:message key="LFU">Least frequently used</wicket:message></label>
             </li>
             <li>
-              <input id="globalQuotaPolicyLRU" class="field radio" type="radio" wicket:id="globalQuotaPolicyLRU" value="LRU"/> 
-              <label for="globalQuotaPolicyLRU" class="choice"><wicket:message key="LRU">Least recently used</wicket:message></label>
+              <input id="globalQuotaPolicyLRU" class="field radio" type="radio" wicket:id="globalQuotaPolicyLRU" value="LRU"/>
+              <label class="choice"><wicket:message key="LRU">Least recently used</wicket:message></label>
             </li>
           </ul>
           </div>
@@ -55,7 +55,7 @@
 	           	<ul>
 		            <li wicket:id="jndiLocationContainer">
 			          <label for="jndiLocation"><wicket:message key="jndiLocation">jdniLocation:</wicket:message></label>
-			          <input type="text" class="text" id="jndiLocation" wicket:id="jndiLocation"></input>
+			          <input type="text" class="text" id="jndiLocation" wicket:id="jndiLocation">
 		            </li>
 		            <li wicket:id="connectionPoolConfigurator"></li>
 		        </ul>

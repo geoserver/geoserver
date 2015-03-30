@@ -21,41 +21,41 @@
         <legend><span><wicket:message key="serviceMetadata">Service Metadata</wicket:message></span></legend>
         <ul>
           <li>
-            <input wicket:id="enabled" type="checkbox" class="field checkbox"></input>
+            <input wicket:id="enabled" type="checkbox" class="field checkbox">
             <label class="choice"><span wicket:id="service.enabled">enable</span></label>
           </li>
           <li>
-            <input wicket:id="citeCompliant" type="checkbox" class="field checkbox"></input>
+            <input wicket:id="citeCompliant" type="checkbox" class="field checkbox">
             <label class="choice"><wicket:message key="strictCITECompliance">Strict CITE compliance</wicket:message></label>
           </li>
           <li>
             <label><wicket:message key="maintainer">Maintainer</wicket:message></label>
-            <input wicket:id="maintainer" class="field text"></input>          
+            <input wicket:id="maintainer" class="field text">
           </li>
           <li>
             <label><wicket:message key="onlineResource">Online resource</wicket:message></label>
-            <input wicket:id="onlineResource" class="field text"></input>          
+            <input wicket:id="onlineResource" class="field text">
           </li>
           <li>
             <label><wicket:message key="titleMsg">Title</wicket:message></label>
-            <input wicket:id="title" class="field text"></input>          
+            <input wicket:id="title" class="field text">
           </li>
           <li>
              <label><wicket:message key="abstract">Abstract</wicket:message></label>
-             <textarea wicket:id="abstract" class="field textarea" cols="30" rows="15"></textarea> 
+             <textarea wicket:id="abstract" class="field textarea" cols="30" rows="15"></textarea>
           </li>
           <li>
              <label><wicket:message key="fees">Fees</wicket:message></label>
-             <input wicket:id="fees" class="field text"></input> 
+             <input wicket:id="fees" class="field text">
           </li>
           <li>
              <label><wicket:message key="accessConstraints">Access Constraints</wicket:message></label>
-             <input wicket:id="accessConstraints" class="field text"></input> 
+             <input wicket:id="accessConstraints" class="field text">
           </li>
           <li>
              <div wicket:id="keywords"></div>
           </li>
-        </ul> 
+        </ul>
       </fieldset>
     </li>
     <wicket:child>
@@ -65,9 +65,9 @@
     </div>
     <li class="button-group selfclear">
       <button wicket:id="submit" type="submit"><wicket:message key="submit"/></button>
-      <button wicket:id="cancel" type="submit"><wicket:message key="cancel"/></button> 
+      <button wicket:id="cancel" type="submit"><wicket:message key="cancel"/></button>
     </li>
-  </ul>    
+  </ul>
 </form>
 <div wicket:id="dialog"></div>
 </wicket:extend>

@@ -9,7 +9,7 @@
 
     <ul>
         <li><label for="name"><wicket:message key="name">name</wicket:message></label>
-          <input type="text" wicket:id="name"></input>
+          <input type="text" wicket:id="name"/>
         </li>
         <li><label for="sqlDefinition"><wicket:message key="sqlDefinition">sql definition</wicket:message></label>
           <textarea rows="60" cols="20" wicket:id="sql"></textarea>
@@ -19,11 +19,11 @@
             <a href="#" wicket:id="addNewParam"><wicket:message key="addNewParam">add new</wicket:message></a>&nbsp;&nbsp;&nbsp;&nbsp;
             <a href="#" wicket:id="removeParam"><wicket:message key="removeSelected">remove selected</wicket:message></a>
             <div wicket:id="parameters"></div>
-            <input type="checkbox" wicket:id="escapeSql"><wicket:message key="escapeSql">Escape special characters</wicket:message></input>
+            <input type="checkbox" wicket:id="escapeSql"/><wicket:message key="escapeSql">Escape special characters</wicket:message>
         </li>
         <li><label for="attributes"><wicket:message key="attributes">attributes</wicket:message></label>
             <a href="#" wicket:id="refresh"><wicket:message key="refresh">refresh</wicket:message></a>&nbsp;&nbsp;&nbsp;
-            <span wicket:message="title:guessGeometrySridWarning"><input type="checkbox" wicket:id="guessGeometrySrid"><wicket:message key="guessGeometrySrid">Guess geometry type and srid</wicket:message></input></span>
+            <span wicket:message="title:guessGeometrySridWarning"><input type="checkbox" wicket:id="guessGeometrySrid"/><wicket:message key="guessGeometrySrid">Guess geometry type and srid</wicket:message></span>
             <div wicket:id="attributes"></div>
         </li>
     </ul>
@@ -34,7 +34,7 @@
     </form>
     
 <wicket:fragment wicket:id="checkbox">
-  <input type="checkbox" wicket:id="identifier"></input>
+  <input type="checkbox" wicket:id="identifier"/>
 </wicket:fragment>
 
 <wicket:fragment wicket:id="geometry">
@@ -42,9 +42,9 @@
 </wicket:fragment>
 
 <wicket:fragment wicket:id="text">
-  <input type="text""wicket:id="text"></input>
-</wicket:fragment>       
-    
+  <input type="text""wicket:id="text"/>
+</wicket:fragment>
+
 </wicket:extend>
 
 

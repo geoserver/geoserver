@@ -731,16 +731,6 @@
       </dependencies>
     </profile>
     <profile>
-      <id>sextante</id>
-      <dependencies>
-        <dependency>
-          <groupId>org.geoserver.community</groupId>
-          <artifactId>gs-wps-sextante</artifactId>
-          <version>${project.version}</version>
-        </dependency>
-      </dependencies>
-    </profile>
-    <profile>
       <id>inspire</id>
       <dependencies>
         <dependency>

@@ -46,6 +46,18 @@
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
+    <!--
+      bcprov-jdk14 must be before spring-ldap-test because the latter depends
+      on apacheds-all, which repackages an unsigned bcprov-jdk5 security
+      provider, which Oracle JDK 7 and 8 refuse to load, breaking the build on
+      those platforms. Placing the bcprov-jdk14 signed security provider here
+      places it earlier on the classpath than the unsigned provider.
+    -->
+    <dependency>
+      <groupId>org.bouncycastle</groupId>
+      <artifactId>bcprov-jdk14</artifactId>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>org.springframework.ldap</groupId>
       <artifactId>spring-ldap-test</artifactId>

@@ -5,12 +5,14 @@
  */
 package org.geoserver.flow.controller;
 
+import static junit.framework.Assert.fail;
 import static org.junit.Assert.*;
 
 import java.lang.Thread.State;
 
 import javax.servlet.http.Cookie;
 
+import org.geoserver.flow.controller.FlowControllerTestingThread.ThreadState;
 import org.geoserver.ows.Request;
 
 import com.mockrunner.mock.web.MockHttpServletRequest;
@@ -22,6 +24,8 @@ import com.mockrunner.mock.web.MockHttpServletResponse;
  *
  */
 public abstract class AbstractFlowControllerTest {
+
+    protected static final long MAX_WAIT = 5000;
 
     /**
      * Waits until the thread enters in WAITING or TIMED_WAITING state
@@ -114,5 +118,25 @@ public abstract class AbstractFlowControllerTest {
             httpRequest.setHeader("x-forwarded-for", proxyIp + ", " + ipAddress);
         }
         return request;
+    }
+
+    /**
+     * Waits for he flow controller testing thread to get into a specified state for a max
+     * given amount of time, fail otherwise
+     * @param state
+     * @param tt
+     * @param maxWait
+     * @throws InterruptedException 
+     */
+    protected void waitState(ThreadState state, FlowControllerTestingThread tt, long maxWait) throws InterruptedException {
+        long start = System.currentTimeMillis();
+        while(!state.equals(tt.state) && System.currentTimeMillis() - start < maxWait) {
+            Thread.sleep(20);
+        }
+        
+        ThreadState finalState = tt.state;
+        if(!state.equals(finalState)) {
+            fail("Waited " + maxWait + "ms for FlowControllerTestingThread to get into " + state + ", but it is still in state " + finalState);
+        }
     }
 }

@@ -15,8 +15,6 @@ import org.geoserver.ows.Request;
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
 public class UserFlowControllerTest extends AbstractFlowControllerTest {
-    private static final long MAX_WAIT = 1000;
-    
     public void testConcurrentRequestsSingleUser() {
         // a cookie based flow controller that will allow just one request at a time
         UserConcurrentFlowController controller = new UserConcurrentFlowController(1);

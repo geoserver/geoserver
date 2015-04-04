@@ -13,8 +13,6 @@ import org.junit.Test;
 
 public class IpFlowControllerTest extends AbstractFlowControllerTest {
 
-    private static final long MAX_WAIT = 10000;
-
     @Test
     public void testConcurrentRequestsSingleIPAddress() {
         // an ip based flow controller that will allow just one request at a time
@@ -53,9 +51,7 @@ public class IpFlowControllerTest extends AbstractFlowControllerTest {
             waitTerminated(t1, MAX_WAIT);
 
             assertEquals(ThreadState.COMPLETE, t1.state);
-            // Give some time to the t2 to restart
-            Thread.sleep(100);
-            assertEquals(ThreadState.PROCESSING, t2.state);
+            waitState(ThreadState.PROCESSING, t2, MAX_WAIT);
 
             t2.interrupt();
         } catch (Exception e) {
@@ -106,9 +102,7 @@ public class IpFlowControllerTest extends AbstractFlowControllerTest {
             waitTerminated(t1, MAX_WAIT);
 
             assertEquals(ThreadState.COMPLETE, t1.state);
-            // Give some time to the t2 to restart
-            Thread.sleep(100);
-            assertEquals(ThreadState.PROCESSING, t2.state);
+            waitState(ThreadState.PROCESSING, t2, MAX_WAIT);
 
             t2.interrupt();
             waitTerminated(t2, MAX_WAIT);
@@ -155,9 +149,7 @@ public class IpFlowControllerTest extends AbstractFlowControllerTest {
             waitTerminated(t1, MAX_WAIT);
 
             assertEquals(ThreadState.COMPLETE, t1.state);
-            // Give some time to the t2 to restart
-            Thread.sleep(100);
-            assertEquals(ThreadState.PROCESSING, t2.state);
+            waitState(ThreadState.PROCESSING, t2, MAX_WAIT);
 
             t2.interrupt();
         } catch (Exception e) {

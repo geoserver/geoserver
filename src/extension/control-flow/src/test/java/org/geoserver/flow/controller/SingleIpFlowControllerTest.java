@@ -13,8 +13,6 @@ import org.junit.Test;
 
 public class SingleIpFlowControllerTest extends IpFlowControllerTest {
 
-    private static final long MAX_WAIT = 10000;
-
     @Override
     @Test
     public void testConcurrentRequestsSingleIPAddress() {

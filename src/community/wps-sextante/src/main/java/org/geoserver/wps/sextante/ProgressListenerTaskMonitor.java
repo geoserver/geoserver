@@ -75,8 +75,19 @@ public class ProgressListenerTaskMonitor implements ITaskMonitor{
 
 	public void setProcessDescription(String description) {
 
-		m_ProgressListener.setDescription(description);
+		if (m_ProgressListener != null){
+			m_ProgressListener.setTask(Text.text(description));
+		}
 
+	}
+
+	@Override
+	public void setDescriptionPrefix(String prefix) {
+
+		if (m_ProgressListener != null){
+			m_ProgressListener.setTask(Text.text(prefix));
+		}		
+		
 	}
 
 }

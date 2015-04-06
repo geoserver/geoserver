@@ -25,7 +25,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.data.Parameter;
@@ -35,8 +37,7 @@ import org.geotools.process.Process;
 import org.geotools.process.ProcessFactory;
 import org.geotools.text.Text;
 import org.geotools.util.SimpleInternationalString;
-import org.jfree.chart.ChartPanel;
-import org.opengis.coverage.grid.GridCoverage;
+import org.geotools.util.logging.Logging;
 import org.opengis.feature.type.Name;
 import org.opengis.util.InternationalString;
 
@@ -60,7 +61,6 @@ import es.unex.sextante.dataObjects.ITable;
 import es.unex.sextante.dataObjects.IVectorLayer;
 import es.unex.sextante.exceptions.NullParameterAdditionalInfoException;
 import es.unex.sextante.outputs.Output;
-import es.unex.sextante.outputs.OutputChart;
 import es.unex.sextante.outputs.OutputRasterLayer;
 import es.unex.sextante.outputs.OutputTable;
 import es.unex.sextante.outputs.OutputText;
@@ -86,6 +86,8 @@ public class SextanteProcessFactory implements ProcessFactory {
     public static final String SEXTANTE_GRID_ENVELOPE = "gridEnvelope";    
     public static final String SEXTANTE_GRID_CELL_SIZE = "gridCellSize";
     
+    private static final Logger LOGGER = Logging.getLogger(SextanteProcessFactory.class);
+    
     private Set<Name> names = new HashSet<Name>();
 
     /**
@@ -94,11 +96,24 @@ public class SextanteProcessFactory implements ProcessFactory {
     public SextanteProcessFactory() {
         Sextante.initialize();
         
-        Set<Name> result = new HashSet<Name>();
-        for (String name : (Set<String>) Sextante.getAlgorithms().keySet()) {
-            result.add(new NameImpl(SEXTANTE_NAMESPACE, name));
-        }
+        int algorithmsCount = Sextante.getAlgorithmsCount();
+        LOGGER.info("Sextante loaded; it provides " + algorithmsCount + " algorithms!");
+        
+        // Register the algorithms loaded.
+        HashMap<String,HashMap<String,GeoAlgorithm>>algorithmsHash = Sextante.getAlgorithms();
+		Set<Name> result = new HashSet<Name>();
+		
+		for (HashMap<String,GeoAlgorithm> itemOb : algorithmsHash.values())
+		{
+			for (Entry<String,GeoAlgorithm> entry : itemOb.entrySet())
+			{
+				result.add(new NameImpl(SEXTANTE_NAMESPACE, entry.getValue().getCommandLineName()));
+			}
+		}
         names = Collections.unmodifiableSet(result);
+        
+        // Register this factory in the singleton Processors manager. 
+        org.geotools.process.Processors.addProcessFactory(this);
     }
 
     public InternationalString getTitle() {

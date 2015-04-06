@@ -231,4 +231,30 @@ public abstract class WPSTestSupport extends GeoServerSystemTestSupport {
         throw new Exception("Waited for the process to complete more than " + maxWaitSeconds);
     }
 
+    protected Document waitForProcessStart(String statusLocation, long maxWaitSeconds)
+            throws Exception {
+        XpathEngine xpath = XMLUnit.newXpathEngine();
+        Document dom = null;
+        long start = System.currentTimeMillis();
+        while ((((System.currentTimeMillis() - start) / 1000) < maxWaitSeconds)) {
+            MockHttpServletResponse response = getAsServletResponse(statusLocation);
+            String contents = response.getOutputStreamContent();
+            // super weird... and I believe related to the testing harness... just ignoring it
+            // for the moment.
+            if ("".equals(contents)) {
+                continue;
+            }
+            dom = dom(new ByteArrayInputStream(contents.getBytes()));
+            // print(dom);
+            // are we still waiting for termination?
+            if (xpath.getMatchingNodes("//wps:Status/wps:ProcessAccepted", dom).getLength() > 0
+                    || xpath.getMatchingNodes("//wps:Status/wps:ProcessQueued", dom).getLength() > 0) {
+                Thread.sleep(100);
+            } else {
+                return dom;
+            }
+        }
+        throw new Exception("Waited for the process to complete more than " + maxWaitSeconds);
+    }
+
 }

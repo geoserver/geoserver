@@ -545,6 +545,8 @@ public class InputLimitsTest extends WPSTestSupport {
         String fullStatusLocation = xpath.evaluate("//wps:ExecuteResponse/@statusLocation", dom);
         String statusLocation = fullStatusLocation.substring(fullStatusLocation.indexOf('?') - 3);
 
+        waitForProcessStart(statusLocation, 10);
+
         // wait for more than the limit for asynch execution
         Thread.sleep(3000);
 

@@ -19,6 +19,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.Callable;
 
 import javax.xml.namespace.QName;
 import javax.xml.parsers.ParserConfigurationException;
@@ -224,6 +225,46 @@ public abstract class WPSTestSupport extends GeoServerSystemTestSupport {
                     || xpath.getMatchingNodes("//wps:Status/wps:ProcessStarted", dom).getLength() > 0
                     || xpath.getMatchingNodes("//wps:Status/wps:ProcessQueued", dom).getLength() > 0) {
                 Thread.sleep(100);
+            } else {
+                return dom;
+            }
+        }
+        throw new Exception("Waited for the process to complete more than " + maxWaitSeconds);
+    }
+
+    protected Document waitForProcessEnd(String statusLocation, int maxWaitSeconds)
+            throws Exception {
+        return waitForProcessEnd(statusLocation, maxWaitSeconds, new Callable<Void>() {
+
+            @Override
+            public Void call() throws Exception {
+                Thread.sleep(100);
+                return null;
+            }
+
+        });
+    }
+
+    protected Document waitForProcessEnd(String statusLocation, int maxWaitSeconds,
+            Callable<Void> waitAction) throws Exception {
+        XpathEngine xpath = XMLUnit.newXpathEngine();
+        Document dom = null;
+        long start = System.currentTimeMillis();
+        while ((((System.currentTimeMillis() - start) / 1000) < maxWaitSeconds)) {
+            MockHttpServletResponse response = getAsServletResponse(statusLocation);
+            String contents = response.getOutputStreamContent();
+            // super weird... and I believe related to the testing harness... just ignoring it
+            // for the moment.
+            if ("".equals(contents)) {
+                continue;
+            }
+            dom = dom(new ByteArrayInputStream(contents.getBytes()));
+            // print(dom);
+            // are we still waiting for termination?
+            if (xpath.getMatchingNodes("//wps:Status/wps:ProcessAccepted", dom).getLength() > 0
+                    || xpath.getMatchingNodes("//wps:Status/wps:ProcessStarted", dom).getLength() > 0
+                    || xpath.getMatchingNodes("//wps:Status/wps:ProcessQueued", dom).getLength() > 0) {
+                waitAction.call();
             } else {
                 return dom;
             }

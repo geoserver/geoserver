@@ -548,7 +548,7 @@ public class InputLimitsTest extends WPSTestSupport {
         waitForProcessStart(statusLocation, 10);
 
         // wait for more than the limit for asynch execution
-        Thread.sleep(3000);
+        Thread.sleep(4000);
 
         // schedule an update that will make it fail
         MonkeyProcess.progress("x2", 50f, true);

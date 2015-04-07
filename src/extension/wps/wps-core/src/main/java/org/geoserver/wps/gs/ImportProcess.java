@@ -137,9 +137,21 @@ public class ImportProcess implements GSProcess {
         		storeInfo = catalog.getCoverageStoreByName(ws.getName(), store);
         	}
             if (storeInfo == null) {
-                throw new ProcessException("Could not find store " + store + " in workspace "
-                        + workspace);
-                // TODO: support store creation
+                // mirroring "features != null" below
+                if (features != null) {
+                    storeInfo = catalog.getDefaultDataStore(ws);
+                    if (storeInfo == null) {
+                        throw new ProcessException("Could not find a default store in workspace "
+                                + ws.getName());
+                    }
+                }
+                else if (coverage != null) {
+                    // since the store doesn't exist, create it
+                    // mirroring "create a new coverage store" below
+                    storeInfo = cb.buildCoverageStore((store));
+                    add = true;
+                    LOGGER.info("Creating store " + store + " since it did not exist");
+                }
             }
         } else if (features != null) {
             storeInfo = catalog.getDefaultDataStore(ws);

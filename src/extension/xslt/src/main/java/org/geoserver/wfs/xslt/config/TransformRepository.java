@@ -83,8 +83,10 @@ public class TransformRepository {
         
         @Override
         protected Templates loadItem(File file) throws IOException {
-            try {
-                Source xslSource = new StreamSource(file);
+            // do not trust StreamSource to do the file closing, reports on the net
+            // suggest it might not
+            try (FileInputStream fis = new FileInputStream(file)) {
+                Source xslSource = new StreamSource(fis);
                 
                 TransformerFactory tf = TransformerFactory.newInstance( );
                 final List<TransformerException> errors = new ArrayList<TransformerException>();

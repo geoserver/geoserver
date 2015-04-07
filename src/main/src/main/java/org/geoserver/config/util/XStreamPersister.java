@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014-2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -80,6 +80,7 @@ import org.geoserver.config.ContactInfo;
 import org.geoserver.config.CoverageAccessInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
+import org.geoserver.config.JAIEXTInfo;
 import org.geoserver.config.JAIInfo;
 import org.geoserver.config.LoggingInfo;
 import org.geoserver.config.ServiceInfo;
@@ -88,6 +89,7 @@ import org.geoserver.config.impl.ContactInfoImpl;
 import org.geoserver.config.impl.CoverageAccessInfoImpl;
 import org.geoserver.config.impl.GeoServerImpl;
 import org.geoserver.config.impl.GeoServerInfoImpl;
+import org.geoserver.config.impl.JAIEXTInfoImpl;
 import org.geoserver.config.impl.JAIInfoImpl;
 import org.geoserver.config.impl.LoggingInfoImpl;
 import org.geoserver.config.impl.ServiceInfoImpl;
@@ -619,6 +621,7 @@ public class XStreamPersister {
         xs.addDefaultImplementation(SettingsInfoImpl.class, SettingsInfo.class);
         xs.addDefaultImplementation(LoggingInfoImpl.class, LoggingInfo.class);
         xs.addDefaultImplementation(JAIInfoImpl.class, JAIInfo.class);
+        xs.addDefaultImplementation(JAIEXTInfoImpl.class, JAIEXTInfo.class);
         xs.addDefaultImplementation(CoverageAccessInfoImpl.class, CoverageAccessInfo.class);
         xs.addDefaultImplementation(ContactInfoImpl.class, ContactInfo.class);
         xs.addDefaultImplementation(AttributionInfoImpl.class, AttributionInfo.class);

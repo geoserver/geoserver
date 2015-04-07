@@ -1,17 +1,22 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014-2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wms.map;
 
+import it.geosolutions.jaiext.range.NoDataContainer;
+
 import java.awt.image.RenderedImage;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.imageio.stream.ImageOutputStream;
+import javax.media.jai.PlanarImage;
 
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.MapProducerCapabilities;
@@ -24,6 +29,7 @@ import org.geotools.coverage.grid.GridCoverageFactory;
 import org.geotools.gce.geotiff.GeoTiffWriter;
 import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.image.io.ImageIOExt;
+import org.geotools.resources.coverage.CoverageUtilities;
 import org.geotools.util.logging.Logging;
 
 /**
@@ -81,8 +87,21 @@ public class GeoTIFFMapResponse extends RenderedImageMapResponse {
         image = applyPalette(image, mapContent, IMAGE_GEOTIFF8, false);
         
         // crating a grid coverage
-        final GridCoverage2D gc = factory.create("geotiff", image,
+        GridCoverage2D gc = factory.create("geotiff", image,
                 new GeneralEnvelope(mapContent.getRenderingArea()));
+        
+        // NoData stuff
+        if(image instanceof PlanarImage){
+            Map properties = gc.getProperties();
+            if(properties == null){
+                properties = new HashMap();
+            }
+            Object property = ((PlanarImage)image).getProperty(NoDataContainer.GC_NODATA);
+            if(property != null){
+                CoverageUtilities.setNoDataProperty(properties, property);
+                gc = factory.create(gc.getName(), gc.getRenderedImage(), gc.getEnvelope(), gc.getSampleDimensions(), null, properties);
+            }
+        }
 
         // writing it out
         final ImageOutputStream imageOutStream = ImageIOExt.createImageOutputStream(image, outStream);

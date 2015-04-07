@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014-2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -38,19 +38,8 @@ import com.vividsolutions.jts.geom.MultiPolygon;
  */
 public class SecuredGridCoverage2DReader extends DecoratingGridCoverage2DReader {
 
-    /** Parameters used to control the {@link Crop} operation. */
-    private static final ParameterValueGroup cropParams;
-
-    /**
-     * Cached crop factory
-     */
-    private final static Crop coverageCropFactory = new Crop();
-
-    static {
-        final CoverageProcessor processor = new CoverageProcessor(new Hints(
-                Hints.LENIENT_DATUM_SHIFT, Boolean.TRUE));
-        cropParams = processor.getOperation("CoverageCrop").getParameters();
-    }
+    private static final CoverageProcessor processor = CoverageProcessor.getInstance(new Hints(
+            Hints.LENIENT_DATUM_SHIFT, Boolean.TRUE));
 
     WrapperPolicy policy;
 
@@ -122,10 +111,10 @@ public class SecuredGridCoverage2DReader extends DecoratingGridCoverage2DReader 
             
             Geometry coverageBounds = JTS.toGeometry((Envelope) new ReferencedEnvelope(grid.getEnvelope2D()));
             if(coverageBounds.intersects(rasterFilter)) {
-                final ParameterValueGroup param = (ParameterValueGroup) cropParams.clone();
+                final ParameterValueGroup param = (ParameterValueGroup) processor.getOperation("CoverageCrop").getParameters();
                 param.parameter("source").setValue(grid);
                 param.parameter("ROI").setValue(rasterFilter);
-                grid = (GridCoverage2D) coverageCropFactory.doOperation(param, null);
+                grid = (GridCoverage2D) ((Crop)processor.getOperation("CoverageCrop")).doOperation(param, null);
             } else {
                 return null;
             }

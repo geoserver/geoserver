@@ -41,3 +41,10 @@ When supporting large images it is efficient to work on image subsets without lo
 **Warp Native Acceleration**—Also for the Warp operation are provided both native and JAI implementations. If the checkbox is enabled, then the native operation is used for the warp operation.
 
 *It is quite important to remember that faster encoders are not necessarily going to visibly improve performance, if data loading and processing/rendering are dominating the response time, choosing a better encoder will likely not provide the expected benefits.*
+
+**JAI/JAI-EXT Setup**-This panel can be used for choosing which operations may be registered as *JAI* or *JAI-EXT* ones. Users have to select the operations to move and then, when clicking on *Save*, GeoServer internally will replace the *JAI/JAI-EXT* operations and the associated *GeoTools* ones. The main difference between *JAI* and *JAI-EXT* operations is the support for external **ROIs** and image **NoData**.
+
+.. note:: More information about **JAI-EXT** may be found at the `JAI-EXT Project page <https://github.com/geosolutions-it/jai-ext>`_.
+
+.. warning:: Users should take care that *JAI* native libraries are not supported by *JAI-EXT*, since *JAI-EXT* is a pure Java API.
+

@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014-2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -21,6 +21,7 @@ import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.validation.validator.NumberValidator;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
+import org.geoserver.config.JAIEXTInfo;
 import org.geoserver.config.JAIInfo;
 import org.geoserver.config.JAIInfo.PngEncoderType;
 import org.geoserver.web.wicket.ParamResourceModel;
@@ -63,8 +64,18 @@ public class JAIPage extends ServerAdminPage {
         form.add(new CheckBox("recycling"));
         form.add(new CheckBox("jpegAcceleration"));
         addPngEncoderEditor(form);
-        form.add(new CheckBox("allowNativeMosaic"));
-        form.add(new CheckBox("allowNativeWarp"));
+        CheckBox checkBoxMosaic = new CheckBox("allowNativeMosaic");
+        CheckBox checkBoxWarp = new CheckBox("allowNativeWarp");
+        JAIInfo info = (JAIInfo)jaiModel.getObject();
+        JAIEXTInfo je = info.getJAIEXTInfo();
+        boolean mosaicEnabled = je != null && !je.getJAIEXTOperations().contains("Mosaic");
+        boolean warpEnabled = je != null && !je.getJAIEXTOperations().contains("Warp");
+        checkBoxMosaic.setEnabled(mosaicEnabled);
+        checkBoxWarp.setEnabled(warpEnabled);
+        form.add(checkBoxMosaic);
+        form.add(checkBoxWarp);
+        
+        form.add(new JAIEXTPanel("jaiext", jaiModel));
 
         Button submit = new Button("submit", new StringResourceModel("submit", this, null)) {
             @Override

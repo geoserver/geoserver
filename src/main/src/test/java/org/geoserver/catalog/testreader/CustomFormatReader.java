@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014-2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -33,6 +33,7 @@ import org.geotools.factory.Hints;
 import org.geotools.gce.geotiff.GeoTiffReader;
 import org.geotools.image.ImageWorker;
 import org.geotools.image.io.ImageIOExt;
+import org.geotools.resources.coverage.CoverageUtilities;
 import org.geotools.resources.i18n.Vocabulary;
 import org.geotools.resources.i18n.VocabularyKeys;
 import org.geotools.util.Converters;
@@ -188,7 +189,7 @@ public final class CustomFormatReader extends AbstractGridCoverage2DReader {
         }
         
         final GeoTiffReader geotiffReader = new GeoTiffReader(dataFile, hints);
-        this.crs = geotiffReader.getCrs();
+        this.crs = geotiffReader.getCoordinateReferenceSystem();
         this.originalGridRange = geotiffReader.getOriginalGridRange();
         this.originalEnvelope = geotiffReader.getOriginalEnvelope();
     }
@@ -237,15 +238,13 @@ public final class CustomFormatReader extends AbstractGridCoverage2DReader {
         Category noDataCategory = new Category(
                 Vocabulary.formatInternational(VocabularyKeys.NODATA), 
                 new Color[] { new Color(0, 0, 0, 0) }, 
-                NumberRange.create(DEFAULT_NODATA, DEFAULT_NODATA), 
                 NumberRange.create(DEFAULT_NODATA, DEFAULT_NODATA));
         Category[] categories = new Category[] { noDataCategory };
         GridSampleDimension[] bands;
         bands = new GridSampleDimension[1];
-        bands[0] = 
-            new GridSampleDimension(null, categories, null).geophysics(true);
-        final Map<String, Double> properties = new HashMap<String, Double>();
-        properties.put("GC_NODATA", DEFAULT_NODATA);
+        bands[0] = new GridSampleDimension(null, categories, null);
+        final Map<String, Object> properties = new HashMap<String, Object>();
+        CoverageUtilities.setNoDataProperty(properties, DEFAULT_NODATA);
         return this.coverageFactory.create(name, image, this.originalEnvelope,
                                            bands, null, properties);
     }

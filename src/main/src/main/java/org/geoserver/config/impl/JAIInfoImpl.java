@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014-2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -10,6 +10,7 @@ import java.io.Serializable;
 import javax.media.jai.JAI;
 import javax.media.jai.TileCache;
 
+import org.geoserver.config.JAIEXTInfo;
 import org.geoserver.config.JAIInfo;
 
 public class JAIInfoImpl implements Serializable, JAIInfo {
@@ -51,6 +52,8 @@ public class JAIInfoImpl implements Serializable, JAIInfo {
     boolean allowNativeWarp = DEFAULT_WarpNative;
     
     PngEncoderType pngEncoderType = PngEncoderType.PNGJ;
+    
+    JAIEXTInfo jaiext = new JAIEXTInfoImpl();
 
     /**
      * @uml.property name="allowInterpolation"
@@ -217,6 +220,7 @@ public class JAIInfoImpl implements Serializable, JAIInfo {
         result = prime * result + tilePriority;
         result = prime * result + tileThreads;
         result = prime * result + getPngEncoderType().hashCode();
+        result = prime * result + getPngEncoderType().hashCode();
         return result;
     }
 
@@ -276,5 +280,16 @@ public class JAIInfoImpl implements Serializable, JAIInfo {
 
     public void setPngEncoderType(PngEncoderType pngEncoderType) {
         this.pngEncoderType = pngEncoderType;
+    }
+
+    public JAIEXTInfo getJAIEXTInfo() {
+        if(jaiext == null){
+            jaiext = new JAIEXTInfoImpl();
+        }
+        return jaiext;
+    }
+
+    public void setJAIEXTInfo(JAIEXTInfo jaiext) {
+        this.jaiext = jaiext;
     }
 }

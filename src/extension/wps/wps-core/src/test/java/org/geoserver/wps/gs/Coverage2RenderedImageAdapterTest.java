@@ -23,7 +23,6 @@ import org.geotools.coverage.GridSampleDimension;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridCoverageFactory;
 import org.geotools.coverage.grid.GridGeometry2D;
-import org.geotools.coverage.grid.ViewType;
 import org.geotools.geometry.Envelope2D;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.junit.Test;
@@ -106,7 +105,7 @@ public class Coverage2RenderedImageAdapterTest extends WPSTestSupport {
         GridCoverage2D rendered = factory.create("Merged coverage", ri,
                 gg, gsd, null, null);
 
-        rendered.view(ViewType.RENDERED).show();
+        rendered.show();
     }
 
     @Test
@@ -126,11 +125,6 @@ public class Coverage2RenderedImageAdapterTest extends WPSTestSupport {
         psrc = new Point2D.Double(600d,600d); // this is on dst gc
         pdst = cria.mapSourcePoint(psrc, 0);
         assertNull(pdst);
-
-//        src.view(ViewType.RENDERED).show();
-//        dst.view(ViewType.RENDERED).show();
-////        new Viewer(src.view(ViewType.RENDERED).getRenderedImage());
-//        new Viewer(getName(), cria);
 
 //        view(cria, dst.getGridGeometry(), src.getSampleDimensions());
 
@@ -157,8 +151,6 @@ public class Coverage2RenderedImageAdapterTest extends WPSTestSupport {
         pdst = cria.mapSourcePoint(psrc, 0);
         assertNull(pdst);
 
-//        src.view(ViewType.RENDERED).show();
-//        dst.view(ViewType.RENDERED).show();
 //        new Viewer(getName(), cria);
 //        Thread.sleep(15000);
     }
@@ -189,8 +181,6 @@ public class Coverage2RenderedImageAdapterTest extends WPSTestSupport {
         assertEquals(250d + 15d, pdst.getY());
         // System.out.println(pdst);
 
-//        src.view(ViewType.RENDERED).show();
-//        dst.view(ViewType.RENDERED).show();
 //        new Viewer(getName(), cria);
 //        Thread.sleep(15000);
     }
@@ -221,8 +211,6 @@ public class Coverage2RenderedImageAdapterTest extends WPSTestSupport {
         double val = cria.getData().getSampleFloat(0, 0, 0);
         assertEquals("Value should be noData", NODATA, val);
 
-//        src.view(ViewType.RENDERED).show();
-//        dst.view(ViewType.RENDERED).show();
 //        new Viewer(getName(), cria);
 //        Thread.sleep(20000);
     }

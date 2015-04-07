@@ -2,7 +2,10 @@ package org.geoserver.wcs2_0.xml;
 
 import static junit.framework.TestCase.*;
 
+import it.geosolutions.rendered.viewer.RenderedImageBrowser;
+
 import java.awt.image.Raster;
+import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -813,7 +816,8 @@ public class GetCoverageTest extends WCSTestSupport {
 
             // check we actually read the right stuff. For this case, we
             // just check we have the pixels in the range of values of that area
-            Raster data = targetCoverage.getRenderedImage().getData();
+            RenderedImage renderedImage = targetCoverage.getRenderedImage();
+            Raster data = renderedImage.getData();
             double[] pixel = new double[1];
             for (int i = data.getMinY(); i < data.getMinY() + data.getHeight(); i++) {
                 for (int j = data.getMinX(); j < data.getMinX() + data.getWidth(); j++) {

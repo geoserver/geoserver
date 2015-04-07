@@ -1,11 +1,12 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014-2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2014 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.catalog;
 
-import java.awt.Color;
+import it.geosolutions.jaiext.range.NoDataContainer;
+
 import java.awt.image.ColorModel;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -33,6 +34,7 @@ import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
 import org.geotools.factory.Hints;
 import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.resources.Classes;
+import org.geotools.resources.coverage.CoverageUtilities;
 import org.geotools.util.NumberRange;
 import org.geotools.util.SimpleInternationalString;
 import org.geotools.util.Utilities;
@@ -50,7 +52,6 @@ import org.opengis.parameter.ParameterDescriptor;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.datum.PixelInCell;
 import org.opengis.referencing.operation.MathTransform;
-import org.opengis.referencing.operation.MathTransform1D;
 import org.opengis.util.InternationalString;
 
 /**
@@ -228,17 +229,18 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
         if (coverage == null) {
             return coverage;
         }
-        final Map properties = coverage.getProperties();
+        final Map<String, Object> properties = coverage.getProperties();
         final SampleDimension[] dims = coverage.getSampleDimensions();
         GridSampleDimension[] wrappedDims = wrapDimensions(dims);
         // Wrapping sample dimensions
+        NoDataContainer noDataProperty = CoverageUtilities.getNoDataProperty(coverage);
         if (wrappedDims == null) {
             wrappedDims = (GridSampleDimension[]) dims;
-        } else if (properties != null && properties.containsKey("GC_NODATA")) {
+        } else if (properties != null && noDataProperty != null) {
             // update the GC_NODATA property (if any) with the latest value, if we have any
             double[] wrappedNoDataValues = wrappedDims[0].getNoDataValues();
             if (wrappedNoDataValues != null && wrappedNoDataValues.length > 0) {
-                properties.put("GC_NODATA", wrappedNoDataValues[0]);
+                CoverageUtilities.setNoDataProperty(properties, wrappedNoDataValues[0]);
             }
         }
 
@@ -489,10 +491,6 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
             return sampleDim.getCategory(sample);
         }
         @Override
-        public Category getBackground() {
-            return sampleDim.getBackground();
-        }
-        @Override
         public double[] getNoDataValues() throws IllegalStateException {
             return configuredNoDataValues;
         }
@@ -537,14 +535,6 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
             return sampleDim.getScale();
         }
         @Override
-        public MathTransform1D getSampleToGeophysics() {
-            return sampleDim.getSampleToGeophysics();
-        }
-        @Override
-        public GridSampleDimension geophysics(boolean geo) {
-            return sampleDim.geophysics(geo);
-        }
-        @Override
         public int[][] getPalette() {
             return sampleDim.getPalette();
         }
@@ -568,10 +558,7 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
         public ColorModel getColorModel(int visibleBand, int numBands, int type) {
             return sampleDim.getColorModel(visibleBand, numBands, type);
         }
-        @Override
-        public GridSampleDimension rescale(double scale, double offset) {
-            return sampleDim.rescale(scale, offset);
-        }
+
         @Override
         public int hashCode() {
             return sampleDim.hashCode();
@@ -695,8 +682,7 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
                             } else {
                                 // Create the wrapped category
                                 wrapped = new Category(Category.NODATA.getName(),
-                                        category.getColors(), NumberRange.create(minimum, maximum),
-                                        category.getSampleToGeophysics());
+                                        category.getColors(), NumberRange.create(minimum, maximum));
                             }
                         }
                     }

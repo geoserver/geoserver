@@ -5,7 +5,9 @@
  */
 package org.geoserver.wfs.xslt;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -38,11 +40,13 @@ public class GetFeatureXSLTTest extends WFSTestSupport {
     
     @Before
     public void setupXSLT() throws IOException {
-        File dd = getTestData().getDataDirectoryRoot();
+        File dd = getTestData().getDataDirectoryRoot().getCanonicalFile();
         File wfs = new File(dd, "wfs");
         File transform = new File(wfs, "transform");
         if (transform.exists()) {
             FileUtils.deleteDirectory(transform);
+            // just making sure
+            assertFalse(transform.exists());
         }
         assertTrue(transform.mkdirs());
         FileUtils.copyDirectory(new File("src/test/resources/org/geoserver/wfs/xslt"), transform);

@@ -201,7 +201,7 @@ public final class BilMapResponse extends RenderedImageMapResponse {
 	        	}
 	        	ImageWorker worker = new ImageWorker(transformedImage);
 	        	Double nod = inNoDataValues != null ? (outNoData != null ? outNoData : inNoDataValues[0]) : null;
-	        	worker.setnoData(nod != null ? RangeFactory.create(nod, nod) : null);
+	        	worker.setNoData(nod != null ? RangeFactory.create(nod, nod) : null);
 	        	if((bilEncoding.equals("application/bil32")) && (dtype != DataBuffer.TYPE_FLOAT))
 	        	{
 	        	    transformedImage = worker.format(DataBuffer.TYPE_FLOAT).getRenderedImage();

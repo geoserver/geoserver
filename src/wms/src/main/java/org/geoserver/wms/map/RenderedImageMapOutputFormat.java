@@ -1,4 +1,4 @@
-/* (c) 2014-2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -333,7 +333,11 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
                 && (layout == null || layout.isEmpty())) {
             List<GridCoverage2D> renderedCoverages = new ArrayList<GridCoverage2D>(2);
             try {
-                image = directRasterRender(mapContent, 0, renderedCoverages);
+                Interpolation interpolation = null;
+                if(request.getInterpolations() != null && request.getInterpolations().size() > 0) {
+                    interpolation = request.getInterpolations().get(0);
+                }
+                image = directRasterRender(mapContent, 0, renderedCoverages, interpolation);
             } catch (Exception e) {
                 throw new ServiceException("Error rendering coverage on the fast path", e);
             }
@@ -396,6 +400,8 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
             }
         }
 
+        
+        
         // make sure the hints are set before we start rendering the map
         graphic.setRenderingHints(hintsMap);
 
@@ -464,6 +470,21 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
                 }
             }
         }
+        
+        if(request.getInterpolations() != null && !request.getInterpolations().isEmpty()) {
+            int count = 0;
+            List<Interpolation> interpolations = request.getInterpolations();
+            for(Layer layer : mapContent.layers()) {
+                if(count < interpolations.size()) {
+                    Interpolation interpolation = interpolations.get(count);
+                    if(interpolation != null) {
+                        layer.getUserData().put(StreamingRenderer.BYLAYER_INTERPOLATION, interpolation);
+                    }
+                }
+                count++;
+            }
+        }
+        
         renderer.setRendererHints(rendererParams);
 
         // if abort already requested bail out
@@ -758,7 +779,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
      * @throws FactoryException
      */
     private RenderedImage directRasterRender(WMSMapContent mapContent, int layerIndex,
-            List<GridCoverage2D> renderedCoverages) throws IOException, FactoryException {
+            List<GridCoverage2D> renderedCoverages, Interpolation layerInterpolation) throws IOException, FactoryException {
         
         //
         // extract the raster symbolizers and the eventual rendering transformation
@@ -807,18 +828,22 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         // Grab the interpolation
         //
         final Interpolation interpolation;
-        if (wms != null) {
-            if (WMSInterpolation.Nearest.equals(wms.getInterpolation())) {
-                interpolation = Interpolation.getInstance(Interpolation.INTERP_NEAREST);
-            } else if (WMSInterpolation.Bilinear.equals(wms.getInterpolation())) {
-                interpolation = Interpolation.getInstance(Interpolation.INTERP_BILINEAR);
-            } else if (WMSInterpolation.Bicubic.equals(wms.getInterpolation())) {
-                interpolation = Interpolation.getInstance(Interpolation.INTERP_BICUBIC);
+        if(layerInterpolation != null) {
+            interpolation = layerInterpolation;
+        } else {
+            if (wms != null) {
+                if (WMSInterpolation.Nearest.equals(wms.getInterpolation())) {
+                    interpolation = Interpolation.getInstance(Interpolation.INTERP_NEAREST);
+                } else if (WMSInterpolation.Bilinear.equals(wms.getInterpolation())) {
+                    interpolation = Interpolation.getInstance(Interpolation.INTERP_BILINEAR);
+                } else if (WMSInterpolation.Bicubic.equals(wms.getInterpolation())) {
+                    interpolation = Interpolation.getInstance(Interpolation.INTERP_BICUBIC);
+                } else {
+                    interpolation = Interpolation.getInstance(Interpolation.INTERP_NEAREST);
+                }
             } else {
                 interpolation = Interpolation.getInstance(Interpolation.INTERP_NEAREST);
             }
-        } else {
-            interpolation = Interpolation.getInstance(Interpolation.INTERP_NEAREST);
         }
       
         // 

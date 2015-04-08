@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -16,6 +16,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
+
+import javax.media.jai.InterpolationBicubic;
+import javax.media.jai.InterpolationBilinear;
 
 import junit.framework.Test;
 
@@ -220,6 +223,32 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
         assertEquals(buildings.getDefaultStyle().getStyle(), request.getStyles().get(1));
     }
 
+    public void testInterpolations() throws Exception {
+        HashMap kvp = new HashMap();
+        kvp.put("layers", getLayerId(MockData.BASIC_POLYGONS));
+        kvp.put("interpolations", "bicubic");
+
+        GetMapRequest request = (GetMapRequest) reader.createRequest();
+        request = (GetMapRequest) reader.read(request, parseKvp(kvp), caseInsensitiveKvp(kvp));
+
+        assertNotNull(request.getInterpolations());
+        assertEquals(1, request.getInterpolations().size());
+        assertNotNull(request.getInterpolations().get(0));
+        assertTrue(request.getInterpolations().get(0) instanceof InterpolationBicubic);
+        
+        kvp.put("layers", getLayerId(MockData.BASIC_POLYGONS)+","+getLayerId(MockData.BASIC_POLYGONS)+","+getLayerId(MockData.BASIC_POLYGONS));
+        kvp.put("interpolations", "bicubic,,bilinear");
+        request = (GetMapRequest) reader.createRequest();
+        request = (GetMapRequest) reader.read(request, parseKvp(kvp), caseInsensitiveKvp(kvp));
+        
+        assertNotNull(request.getInterpolations());
+        assertEquals(3, request.getInterpolations().size());
+        assertNotNull(request.getInterpolations().get(0));
+        assertNull(request.getInterpolations().get(1));
+        assertNotNull(request.getInterpolations().get(2));
+        assertTrue(request.getInterpolations().get(2) instanceof InterpolationBilinear);
+    }
+    
     public void testFilter() throws Exception {
         HashMap kvp = new HashMap();
         kvp.put("layers", getLayerId(MockData.BASIC_POLYGONS));

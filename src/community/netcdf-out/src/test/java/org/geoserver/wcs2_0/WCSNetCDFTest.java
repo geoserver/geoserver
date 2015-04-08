@@ -30,7 +30,7 @@ import com.mockrunner.mock.web.MockHttpServletResponse;
  * @author Daniele Romagnoli, GeoSolutions
  * 
  */
-public class WCSNetCDFTest extends WCSTestSupport {
+public class WCSNetCDFTest extends WCSNetCDFBaseTest {
 
     public static QName POLYPHEMUS = new QName(CiteTestData.WCS_URI, "polyphemus", CiteTestData.WCS_PREFIX);
     public static QName NO2 = new QName(CiteTestData.WCS_URI, "NO2", CiteTestData.WCS_PREFIX);
@@ -66,7 +66,7 @@ public class WCSNetCDFTest extends WCSTestSupport {
      * @throws Exception
      */
     @Test
-    public void testCoverageNames() throws Exception {
+    public void testOutputMemoryNotExceeded() throws Exception {
      // Setting of the output limit to 40 Kb
         setOutputLimit(40);
         // http response from the request inside the string

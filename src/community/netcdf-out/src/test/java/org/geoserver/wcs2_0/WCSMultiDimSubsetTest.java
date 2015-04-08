@@ -5,7 +5,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.lang.reflect.Field;
-import java.util.HashMap;
 import java.util.Set;
 import java.util.logging.Level;
 
@@ -15,8 +14,6 @@ import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.data.test.CiteTestData;
 import org.geoserver.data.test.SystemTestData;
-import org.geoserver.data.test.SystemTestData.LayerProperty;
-import org.geoserver.wcs2_0.kvp.WCSKVPTestSupport;
 import org.geoserver.wcs2_0.response.GranuleStack;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.geometry.Envelope2D;
@@ -24,11 +21,12 @@ import org.junit.Test;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
-public class WCSMultiDimSubsetTest extends WCSKVPTestSupport{
+public class WCSMultiDimSubsetTest extends WCSNetCDFBaseTest{
     private static final QName LAMBERTMOSAIC = new QName(CiteTestData.WCS_URI,"lambert",CiteTestData.WCS_PREFIX);
 
     @Override
     protected void setUpTestData(SystemTestData testData) throws Exception {
+        super.setUpTestData(testData);
         testData.setUpDefaultRasterLayers();
     }
 

@@ -15,12 +15,16 @@ import net.opengis.wcs20.ExtensionType;
 import net.opengis.wcs20.GetCoverageType;
 
 import org.eclipse.emf.common.util.EList;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.config.GeoServer;
 import org.geoserver.ows.Response;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.OWS20Exception.OWSExceptionCode;
 import org.geoserver.platform.Operation;
 import org.geoserver.wcs.responses.CoverageResponseDelegate;
 import org.geoserver.wcs.responses.CoverageResponseDelegateFinder;
 import org.geoserver.wcs2_0.exception.WCS20Exception;
+import org.geoserver.wcs2_0.util.NCNameResourceCodec;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.opengis.coverage.grid.GridCoverage;
 
@@ -30,6 +34,8 @@ import org.opengis.coverage.grid.GridCoverage;
  */
 public class WCS20GetCoverageResponse extends Response {
 
+    public final static String COVERAGE_ID_PARAM = "coverageId";
+    
     CoverageResponseDelegateFinder responseFactory;
 
     public WCS20GetCoverageResponse(CoverageResponseDelegateFinder responseFactory) {
@@ -76,22 +82,25 @@ public class WCS20GetCoverageResponse extends Response {
         if (format == null) {
             format = "image/tiff";
         } 
-        
+
         // extract additional extensions
-        final Map<String,String> encodingParameters= new HashMap<String,String>();        
+        final Map<String,String> encodingParameters= new HashMap<String,String>();
         final ExtensionType extension = getCoverage.getExtension();
-        if(extension!=null){
+        if (extension != null) {
             final EList<ExtensionItemType> extensions = extension.getContents();
-            for(ExtensionItemType ext:extensions){
-                encodingParameters.put(ext.getName(),ext.getSimpleContent());
+            for (ExtensionItemType ext:extensions) {
+                encodingParameters.put(ext.getName(), ext.getSimpleContent());
             }            
         }
 
+        String coverageId = getCoverage.getCoverageId();
+        if (coverageId != null) {
+            encodingParameters.put(COVERAGE_ID_PARAM, coverageId);
+        }
 
         // grab the delegate
         CoverageResponseDelegate delegate = responseFactory.encoderFor(format);
-        
-        delegate.encode(coverage, format,encodingParameters, output);
+        delegate.encode(coverage, format, encodingParameters, output);
     }
     
     @Override

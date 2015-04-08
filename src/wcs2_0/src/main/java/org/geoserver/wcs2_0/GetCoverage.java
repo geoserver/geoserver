@@ -128,9 +128,10 @@ public class GetCoverage {
     private static final CoverageProcessor processor = CoverageProcessor.getInstance(HINTS);
     
     static {
-        //TODO: This one should be pluggable
+        //TODO: This one should be pluggable through Extensions
         mdFormats = new HashSet<String>();
         mdFormats.add("application/x-netcdf");
+        mdFormats.add("application/x-netcdf4");
     }
 
     /** Logger.*/
@@ -412,6 +413,9 @@ public class GetCoverage {
         if (reader instanceof StructuredGridCoverage2DReader && coverageDimensions != null) {
             // Setting dimensions as properties
             Map map = coverage.getProperties();
+            if (map == null) {
+                map = new HashMap();
+            }
             for (DimensionBean coverageDimension : coverageDimensions) {
                 helper.setCoverageDimensionProperty(map, gridCoverageRequest, coverageDimension);
             }

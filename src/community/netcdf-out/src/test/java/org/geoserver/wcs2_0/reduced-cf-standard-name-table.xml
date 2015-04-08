@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<standard_name_table xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="cf-standard-name-table-1.1.xsd">
+   <version_number>28</version_number>
+   <last_modified>2015-01-07T10:24:11Z</last_modified>
+   <institution>Program for Climate Model Diagnosis and Intercomparison</institution>
+   <contact>webmaster@pcmdi.llnl.gov</contact>
+
+   <entry id="visibility_in_air">
+      <canonical_units>m</canonical_units>
+      <grib>20</grib>
+      <amip/>
+      <description>The visibility is the distance at which something can be seen.</description>
+   </entry>
+
+</standard_name_table>

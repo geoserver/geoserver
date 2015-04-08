@@ -1576,7 +1576,7 @@
   <poi.version>3.8</poi.version>
   <wicket.version>1.4.12</wicket.version>
   <ant.version>1.8.4</ant.version>
-  <imageio-ext.version>1.1.10</imageio-ext.version>
+  <imageio-ext.version>1.1.11</imageio-ext.version>
   <java.awt.headless>true</java.awt.headless>
   <jvm.opts></jvm.opts>
   <jalopy.phase>disabled</jalopy.phase>

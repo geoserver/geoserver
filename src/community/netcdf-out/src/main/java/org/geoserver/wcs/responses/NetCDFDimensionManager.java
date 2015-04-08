@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014-2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -13,6 +13,7 @@ import java.util.Set;
 
 import org.geoserver.wcs2_0.response.DimensionBean;
 import org.geoserver.wcs2_0.response.DimensionBean.DimensionType;
+import org.geotools.imageio.netcdf.utilities.NetCDFUtilities;
 import org.geotools.util.DateRange;
 import org.geotools.util.NumberRange;
 
@@ -174,9 +175,9 @@ class NetCDFDimensionManager {
         final String dimensionName = getName();
         
         // Special management for latitude and logitude
-        if (dimensionName.equalsIgnoreCase(NCUtilities.LAT)) {
+        if (dimensionName.equalsIgnoreCase(NetCDFUtilities.LAT)) {
             return (Array) getDimensionValues().getValues();
-        } else if (dimensionName.equalsIgnoreCase(NCUtilities.LON)) {
+        } else if (dimensionName.equalsIgnoreCase(NetCDFUtilities.LON)) {
             return (Array) getDimensionValues().getValues();
         } else {
 
@@ -185,7 +186,7 @@ class NetCDFDimensionManager {
             DimensionType type = bean.getDimensionType();
             final String dataType = bean.getDatatype();
             boolean isTime = false;
-            if (type == DimensionType.TIME || NCUtilities.isATime(dataType)) {
+            if (type == DimensionType.TIME || NetCDFUtilities.isATime(dataType)) {
                 isTime = true;
             }
 
@@ -195,11 +196,11 @@ class NetCDFDimensionManager {
             final int numElements = values.size();
 
             final String dimensionDataType = getCoverageDimension().getDatatype();
-            final DataType netCDFDataType = NCUtilities.getNetCDFDataType(dimensionDataType);
+            final DataType netCDFDataType = NetCDFUtilities.getNetCDFDataType(dimensionDataType);
 
             // Get a proper array to contain the dimension values
             final int[] dimensionSize = rangeValues ? new int[] { numElements, 2 } : new int[] {numElements};
-            final Array data = NCUtilities.getArray(dimensionSize, netCDFDataType);
+            final Array data = NetCDFUtilities.getArray(dimensionSize, netCDFDataType);
 
             final Index index = data.getIndex();
             final Iterator<Object> valuesIterator = values.iterator();
@@ -242,7 +243,7 @@ class NetCDFDimensionManager {
 
     /**
      * Return the time value for this object. Note that times are referred with respect to
-     * an origin {@link NCUtilities#START_TIME}.
+     * an origin {@link NetCDFUtilities#START_TIME}.
      * @param input
      * @param endTime specify whether it needs to return the second value of a time range
      * @return
@@ -263,6 +264,6 @@ class NetCDFDimensionManager {
             throw new IllegalArgumentException("Unsupported time");
         }
         // Convert to seconds since START_TIME
-        return ((double)(time - NCUtilities.START_TIME))/1000d;
+        return ((double)(time - NetCDFUtilities.START_TIME))/1000d;
     }
 }

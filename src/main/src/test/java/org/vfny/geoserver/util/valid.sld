@@ -22,6 +22,7 @@
       <Stroke/>
      </LineSymbolizer>
     </Rule>
+    <VendorOption name="composite">destination-in</VendorOption>
    </FeatureTypeStyle>
   </UserStyle>
  </NamedLayer>

@@ -330,13 +330,89 @@ public class GetFeature {
                     metas.add(featureTypeInfo(typeName, request));
                 }
 
-                //first is the primary feature type
-                FeatureTypeInfo meta = metas.get(0);
+                    // first is the primary feature type
+                    FeatureTypeInfo meta = metas.get(0);
 
-                // parse the requested property names and distribute among requested types
-                List<List<String>> reqPropertyNames = parsePropertyNames(query, metas);
+                    // parse the requested property names and distribute among requested types
+                    List<List<String>> reqPropertyNames = parsePropertyNames(query, metas);
 
-                NamespaceSupport ns = getNamespaceSupport();
+                    NamespaceSupport ns = getNamespaceSupport();
+                
+              //set up joins (if specified)
+                List<Join> joins = null;
+                String primaryAlias = null;
+                QName primaryTypeName = query.getTypeNames().get(0);
+                    FeatureTypeInfo primaryMeta = metas.get(0);
+                
+                //make sure filters are sane
+                //
+                // Validation of filters on non-simple feature types is not yet supported.
+                // FIXME: Support validation of filters on non-simple feature types:
+                // need to consider xpath properties and how to configure namespace prefixes in
+                // GeoTools app-schema FeaturePropertyAccessorFactory.
+                Filter filter = query.getFilter();
+                
+                if (filter == null && metas.size() > 1) {
+                    throw new WFSException(request, "Join query must specify a filter");
+                }
+
+                if (filter != null) {
+                    if (meta.getFeatureType() instanceof SimpleFeatureType) {                
+                        if (metas.size() > 1) {
+                            // sanitize aliases, they must not conflict with feature type names
+                            // nor with their attributes
+                            query = AliasedQuery.fixAliases(metas, query);
+                            // the filter might have been rewritten
+                            filter = query.getFilter();
+
+                            // the join extracting visitor cannot handle negated filters,
+                            // the simplifier handles most common case removing the negation,
+                            // e.g., not(a < 10) -> a >= 10
+                            filter = SimplifyingFilterVisitor.simplify(filter);
+
+                            // join, need to separate the joining filter from other filters
+                            JoinExtractingVisitor extractor = 
+                                    new JoinExtractingVisitor(metas, query.getAliases());
+                            filter.accept(extractor, null);
+
+                            primaryAlias = extractor.getPrimaryAlias();
+                            primaryMeta = extractor.getPrimaryFeatureType();
+                            metas = extractor.getFeatureTypes();
+                            primaryTypeName = new QName(primaryMeta.getNamespace().getURI(),
+                                    primaryMeta.getNativeName());
+                            joins = extractor.getJoins();
+                            if (joins.size() != metas.size()-1) {
+                                throw new WFSException(request, String.format("Query specified %d types but %d " +
+                                        "join filters were found", metas.size(), extractor.getJoins().size()));
+                            }
+
+                            // validate the filter for each join, as well as the join filter
+                            for (int j = 1; j < metas.size(); j++) {
+                                Join join = joins.get(j-1);
+                                    if (!isValidJoinFilter(join.getJoinFilter())) {
+                                        throw new WFSException(request,
+                                                "Unable to perform join with specified join filter: "
+                                                        + filter);
+                                    }
+
+                                if (join.getFilter() != null) {
+                                    validateFilter(join.getFilter(), query, metas.get(j), request);
+                                }
+                            }
+
+                            filter = extractor.getPrimaryFilter();
+                            if (filter != null) {
+                                    validateFilter(filter, query, primaryMeta, request);
+                            }
+                        }
+                        else {
+                            validateFilter(filter, query, meta, request);
+                        }
+                    } else {
+                        BBOXNamespaceSettingVisitor filterVisitor = new BBOXNamespaceSettingVisitor(ns);
+                        filter.accept(filterVisitor, null);
+                    }
+                }
                 
                 List<List<PropertyName>> propNames = new ArrayList();
                 List<List<PropertyName>> allPropNames = new ArrayList();
@@ -395,76 +471,7 @@ public class GetFeature {
                     propNames.add(metaPropNames);
                 }
 
-                //set up joins (if specified)
-                List<Join> joins = null;
-                String primaryAlias = null;
-                QName primaryTypeName = query.getTypeNames().get(0);
-                    FeatureTypeInfo primaryMeta = metas.get(0);
-                
-                //make sure filters are sane
-                //
-                // Validation of filters on non-simple feature types is not yet supported.
-                // FIXME: Support validation of filters on non-simple feature types:
-                // need to consider xpath properties and how to configure namespace prefixes in
-                // GeoTools app-schema FeaturePropertyAccessorFactory.
-                Filter filter = query.getFilter();
-                
-                if (filter == null && metas.size() > 1) {
-                    throw new WFSException(request, "Join query must specify a filter");
-                }
 
-                if (filter != null) {
-                    if (meta.getFeatureType() instanceof SimpleFeatureType) {                
-                        if (metas.size() > 1) {
-                            // the join extracting visitor cannot handle negated filters,
-                            // the simplifier handles most common case removing the negation,
-                            // e.g., not(a < 10) -> a >= 10
-                            filter = SimplifyingFilterVisitor.simplify(filter);
-
-                            // join, need to separate the joining filter from other filters
-                            JoinExtractingVisitor extractor = 
-                                    new JoinExtractingVisitor(metas, query.getAliases());
-                            filter.accept(extractor, null);
-
-                            primaryAlias = extractor.getPrimaryAlias();
-                            primaryMeta = extractor.getPrimaryFeatureType();
-                            metas = extractor.getFeatureTypes();
-                            primaryTypeName = new QName(primaryMeta.getNamespace().getURI(),
-                                    primaryMeta.getNativeName());
-                            joins = extractor.getJoins();
-                            if (joins.size() != metas.size()-1) {
-                                throw new WFSException(request, String.format("Query specified %d types but %d " +
-                                        "join filters were found", metas.size(), extractor.getJoins().size()));
-                            }
-
-                            // validate the filter for each join, as well as the join filter
-                            for (int j = 1; j < metas.size(); j++) {
-                                Join join = joins.get(j-1);
-                                    if (!isValidJoinFilter(join.getJoinFilter())) {
-                                        throw new WFSException(request,
-                                                "Unable to perform join with specified join filter: "
-                                                        + filter);
-                                    }
-
-                                if (join.getFilter() != null) {
-                                    validateFilter(join.getFilter(), query, metas.get(j), request);
-                                }
-                            }
-
-                            filter = extractor.getPrimaryFilter();
-                            if (filter != null) {
-                                    validateFilter(filter, query, primaryMeta, request);
-                            }
-                        }
-                        else {
-                            validateFilter(filter, query, meta, request);
-                        }
-                    } else {
-                        BBOXNamespaceSettingVisitor filterVisitor = new BBOXNamespaceSettingVisitor(ns);
-                        filter.accept(filterVisitor, null);
-                    }
-                }
-                
                 // validate sortby if present
                 List<SortBy> sortBy = query.getSortBy();
                 if (sortBy != null && !sortBy.isEmpty()
@@ -680,6 +687,8 @@ public class GetFeature {
 
         return buildResults(request, totalOffset, maxFeatures, count, totalCount, results, lockId);
     }
+
+
 
     protected void processStoredQueries(GetFeatureRequest request) {
         List queries = request.getAdaptedQueries();
@@ -1136,14 +1145,12 @@ O:      for (String propName : query.getPropertyNames()) {
                 }
             }
 
-            if (query.getAliases().isEmpty()) {
-                //check for aliases
-                for (int j = 0; j < query.getAliases().size(); j++) {
-                    String alias = query.getAliases().get(j);
-                    if (propName.startsWith(alias+"/")) {
-                        propNames.get(j).add(propName.substring((alias+"/").length()));
-                        continue O;
-                    }
+            // check for aliases
+            for (int j = 0; j < query.getAliases().size(); j++) {
+                String alias = query.getAliases().get(j);
+                if (propName.startsWith(alias + "/")) {
+                    propNames.get(j).add(propName.substring((alias + "/").length()));
+                    continue O;
                 }
             }
 

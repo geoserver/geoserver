@@ -316,6 +316,29 @@ public class GetFeatureJoinTest extends WFS20TestSupport {
            XMLAssert.assertXpathExists("//wfs:Tuple/wfs:member/gs:Forests/gs:NAME[text() = 'Foo Forest']", dom);
            XMLAssert.assertXpathExists("//wfs:Tuple/wfs:member/gs:Lakes/gs:NAME[text() = 'Black Lake']", dom);
     }
+    
+    @Test
+    public void testJoinAliasConflictProperty() throws Exception {
+        String xml = 
+            "<wfs:GetFeature xmlns:wfs='" + WFS.NAMESPACE + "' xmlns:fes='" + FES.NAMESPACE + "'" +
+              " xmlns:gs='" + SystemTestData.DEFAULT_URI + "' version='2.0.0'>" + 
+               "<wfs:Query typeNames='gs:Forests gs:Lakes' aliases='a NAME'>" +
+                "<fes:Filter> " +
+                    "<PropertyIsEqualTo>" +
+                      "<ValueReference>a/FID</ValueReference>" +
+                      "<ValueReference>NAME/FID</ValueReference>" + 
+                    "</PropertyIsEqualTo>" +
+                "</fes:Filter> " + 
+               "</wfs:Query>" + 
+             "</wfs:GetFeature>";
+
+           Document dom = postAsDOM("wfs", xml);
+           print(dom);
+           XMLAssert.assertXpathEvaluatesTo("1", "count(//wfs:Tuple)", dom);
+           
+           XMLAssert.assertXpathExists("//wfs:Tuple/wfs:member/gs:Forests/gs:NAME[text() = 'Foo Forest']", dom);
+           XMLAssert.assertXpathExists("//wfs:Tuple/wfs:member/gs:Lakes/gs:NAME[text() = 'Black Lake']", dom);
+    }
 
     @Test
     public void testStandardJoinThreeWays() throws Exception {

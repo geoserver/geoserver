@@ -6,7 +6,6 @@
 package org.geoserver.wfs.xslt;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
@@ -43,10 +42,11 @@ public class GetFeatureXSLTTest extends WFSTestSupport {
         File dd = getTestData().getDataDirectoryRoot().getCanonicalFile();
         File wfs = new File(dd, "wfs");
         File transform = new File(wfs, "transform");
-        if (transform.exists()) {
+        // silly I know, but under Windows not even commons can detect if a directory
+        // was really removed...
+        long start = System.currentTimeMillis();
+        while (transform.exists() && (System.currentTimeMillis() - start) < 10000) {
             FileUtils.deleteDirectory(transform);
-            // just making sure
-            assertFalse(transform.exists());
         }
         assertTrue(transform.mkdirs());
         FileUtils.copyDirectory(new File("src/test/resources/org/geoserver/wfs/xslt"), transform);

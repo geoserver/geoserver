@@ -26,7 +26,6 @@ import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.security.impl.GeoServerUser;
 import org.geoserver.security.impl.Util;
 import org.geoserver.test.SystemTest;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -118,127 +117,129 @@ public class XMLRoleServiceTest extends AbstractRoleServiceTest {
     @Test 
     public void testLocking() throws Exception {
         File xmlFile = File.createTempFile("roles", ".xml");
-        FileUtils.copyURLToFile(getClass().getResource("rolesTemplate.xml"),xmlFile);
-        GeoServerRoleService service1 =  
-            createRoleService("locking1",xmlFile.getCanonicalPath());
-        GeoServerRoleService service2 =  
-            createRoleService("locking2",xmlFile.getCanonicalPath());
-        GeoServerRoleStore store1= createStore(service1);
-        GeoServerRoleStore store2= createStore(service2);
-        
-        
-        GeoServerRole role_test1 = store1.createRoleObject("ROLE_TEST");
-        GeoServerRole role_test2= store2.createRoleObject("ROLE_TEST");
-        
-       // obtain a lock
-        store1.addRole(role_test1);
-        boolean fail;
-        String failMessage="Concurrent lock not allowed"; 
-        fail=true;
         try {
-            store2.clear();
-        } catch (IOException ex) {
-            fail=false;
-        }
-        if (fail) 
-            Assert.fail(failMessage);
-        
-        // release lock
-        store1.load();
-        // get lock
-        store2.addRole(role_test1);
-        
-        fail=true;
-        try {
-            store1.clear();
-        } catch (IOException ex) {
-            fail=false;
-        }
-        if (fail) 
-            Assert.fail(failMessage);
-        
-        // release lock
-        store2.store();
-        store1.clear();
-        store1.store();
-        
-        //// end of part one, now check all modifying methods
+            FileUtils.copyURLToFile(getClass().getResource("rolesTemplate.xml"), xmlFile);
+            GeoServerRoleService service1 = createRoleService("locking1",
+                    xmlFile.getCanonicalPath());
+            GeoServerRoleService service2 = createRoleService("locking2",
+                    xmlFile.getCanonicalPath());
+            GeoServerRoleStore store1 = createStore(service1);
+            GeoServerRoleStore store2 = createStore(service2);
 
-        // obtain a lock
-        store1.addRole(role_test1);
-        
-        fail=true;
-        try {
-            store2.associateRoleToGroup(role_test2, "agroup");
-        } catch (IOException ex) {
+            GeoServerRole role_test1 = store1.createRoleObject("ROLE_TEST");
+            GeoServerRole role_test2 = store2.createRoleObject("ROLE_TEST");
+
+            // obtain a lock
+            store1.addRole(role_test1);
+            boolean fail;
+            String failMessage = "Concurrent lock not allowed";
+            fail = true;
             try {
-                store2.disAssociateRoleFromGroup(role_test2, "agroup");
-            } catch (IOException e) {
+                store2.clear();
+            } catch (IOException ex) {
                 fail=false;
             }
-        }
-        if (fail) 
-            Assert.fail(failMessage);
-        
-        fail=true;
-        try {
-            store2.associateRoleToUser(role_test2, "auser");
-        } catch (IOException ex) {
+            if (fail)
+                Assert.fail(failMessage);
+
+            // release lock
+            store1.load();
+            // get lock
+            store2.addRole(role_test1);
+
+            fail = true;
             try {
-                store2.disAssociateRoleFromUser(role_test2, "auser");
-            } catch (IOException e) {
+                store1.clear();
+            } catch (IOException ex) {
                 fail=false;
             }
-        }
-        if (fail) 
-            Assert.fail(failMessage);
-        
-        fail=true;
-        try {
-            store2.updateRole(role_test2);
-        } catch (IOException ex) {
+            if (fail)
+                Assert.fail(failMessage);
+
+            // release lock
+            store2.store();
+            store1.clear();
+            store1.store();
+
+            // // end of part one, now check all modifying methods
+
+            // obtain a lock
+            store1.addRole(role_test1);
+
+            fail = true;
             try {
-                store2.removeRole(role_test2);
-            } catch (IOException ex1) {
+                store2.associateRoleToGroup(role_test2, "agroup");
+            } catch (IOException ex) {
                 try {
-                    store2.addRole(role_test2);
-                } catch (IOException ex2) {
+                    store2.disAssociateRoleFromGroup(role_test2, "agroup");
+                } catch (IOException e) {
+                    fail = false;
+                }
+            }
+            if (fail)
+                Assert.fail(failMessage);
+
+            fail = true;
+            try {
+                store2.associateRoleToUser(role_test2, "auser");
+            } catch (IOException ex) {
+                try {
+                    store2.disAssociateRoleFromUser(role_test2, "auser");
+                } catch (IOException e) {
+                    fail = false;
+                }
+            }
+            if (fail)
+                Assert.fail(failMessage);
+
+            fail = true;
+            try {
+                store2.updateRole(role_test2);
+            } catch (IOException ex) {
+                try {
+                    store2.removeRole(role_test2);
+                } catch (IOException ex1) {
+                    try {
+                        store2.addRole(role_test2);
+                    } catch (IOException ex2) {
+                        fail = false;
+                    }
+                }
+            }
+            if (fail)
+                Assert.fail(failMessage);
+
+            fail = true;
+            try {
+                store2.clear();
+            } catch (IOException ex) {
+                try {
+                    store2.store();
+                } catch (IOException e) {
                     fail=false;
                 }
             }
-        }
-        if (fail) 
-            Assert.fail(failMessage);
+            if (fail)
+                Assert.fail(failMessage);
 
-        fail=true;
-        try {
-            store2.clear();
-        } catch (IOException ex) {
+            fail = true;
             try {
-                store2.store();
-            } catch (IOException e) {
+                store2.setParentRole(role_test1, null);
+            } catch (IOException ex) {
                 fail=false;
             }
+            if (fail)
+                Assert.fail(failMessage);
+        } finally {
+            xmlFile.delete();
         }
-        if (fail) 
-            Assert.fail(failMessage);
-
-        fail=true;
-        try {
-            store2.setParentRole(role_test1, null);
-        } catch (IOException ex) {
-            fail=false;
-        }
-        if (fail) 
-            Assert.fail(failMessage);
-                
     }
     
     @Test 
     public void testDynamicReload() throws Exception {
         Files.schedule(200,TimeUnit.MILLISECONDS);
+        File xmlFile = File.createTempFile("roles", ".xml");
         try {
-            File xmlFile = File.createTempFile("roles", ".xml");
             FileUtils.copyURLToFile(getClass().getResource("rolesTemplate.xml"),xmlFile);
             GeoServerRoleService service1 =  
                 createRoleService("reload1",xmlFile.getCanonicalPath());
@@ -289,6 +290,7 @@ public class XMLRoleServiceTest extends AbstractRoleServiceTest {
         }
         finally {
             Files.schedule(10,TimeUnit.SECONDS);
+            xmlFile.delete();
         }
     }
 }

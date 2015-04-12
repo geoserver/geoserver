@@ -102,17 +102,20 @@ public class GeoServerSecurityManagerTest extends GeoServerSecurityTestSupport {
         
         GeoServerSecurityManager secMgr = getSecurityManager();
         File f = File.createTempFile("masterpw", "info");
-        assertFalse(secMgr.dumpMasterPassword(f));
-        
-        TestingAuthenticationToken auth = new TestingAuthenticationToken("admin", "geoserver", 
-                (List) Arrays.asList(GeoServerRole.ADMIN_ROLE));
+        try {
+            assertFalse(secMgr.dumpMasterPassword(f));
+
+            TestingAuthenticationToken auth = new TestingAuthenticationToken("admin", "geoserver",
+                    (List) Arrays.asList(GeoServerRole.ADMIN_ROLE));
             auth.setAuthenticated(true);
-        SecurityContextHolder.getContext().setAuthentication(auth);
-        
-        assertTrue(secMgr.dumpMasterPassword(f));
-        dumpPWInfoFile(f);
-        assertTrue(masterPWInfoFileContains(f,new String(secMgr.getMasterPassword())));
-        
+            SecurityContextHolder.getContext().setAuthentication(auth);
+
+            assertTrue(secMgr.dumpMasterPassword(f));
+            dumpPWInfoFile(f);
+            assertTrue(masterPWInfoFileContains(f, new String(secMgr.getMasterPassword())));
+        } finally {
+            f.delete();
+        }
     }
     
     @Test
@@ -120,14 +123,18 @@ public class GeoServerSecurityManagerTest extends GeoServerSecurityTestSupport {
         
         GeoServerSecurityManager secMgr = getSecurityManager();
         File f = File.createTempFile("masterpw", "info");
-        assertFalse(secMgr.dumpMasterPassword(f));
-        
-        TestingAuthenticationToken auth = new TestingAuthenticationToken("admin", "geoserver", 
-                (List) Arrays.asList(GeoServerRole.ADMIN_ROLE));
+        try {
+            assertFalse(secMgr.dumpMasterPassword(f));
+
+            TestingAuthenticationToken auth = new TestingAuthenticationToken("admin", "geoserver",
+                    (List) Arrays.asList(GeoServerRole.ADMIN_ROLE));
             auth.setAuthenticated(true);
-        SecurityContextHolder.getContext().setAuthentication(auth);
-        
-        assertFalse(secMgr.dumpMasterPassword(f));                        
+            SecurityContextHolder.getContext().setAuthentication(auth);
+
+            assertFalse(secMgr.dumpMasterPassword(f));
+        } finally {
+            f.delete();
+        }
     }
 
     

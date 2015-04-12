@@ -21,6 +21,7 @@ import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
@@ -163,19 +164,25 @@ public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
         
         File target = new File("target");
         File f = File.createTempFile("rest", "dir", target);
-        f.delete();
-        f.mkdir();
-        
-        File zip = new File(f, "pds.zip");
-        IOUtils.copy(getClass().getResourceAsStream( "test-data/pds.zip" ), new FileOutputStream(zip));
-        org.geoserver.rest.util.IOUtils.inflate(new ZipFile(zip), f, null);
-        
-        MockHttpServletResponse resp = putAsServletResponse("/rest/workspaces/gs/datastores/pds/external.shp", 
-            new File(f, "pds.shp").toURL().toString(), "text/plain");
-        assertEquals(201, resp.getStatusCode());
-        
-        dom = getAsDOM( "wfs?request=getfeature&typename=gs:pds" );
-        assertFeatures(dom);
+        try {
+            f.delete();
+            f.mkdir();
+
+            File zip = new File(f, "pds.zip");
+            IOUtils.copy(getClass().getResourceAsStream("test-data/pds.zip"), new FileOutputStream(
+                    zip));
+            org.geoserver.rest.util.IOUtils.inflate(new ZipFile(zip), f, null);
+
+            MockHttpServletResponse resp = putAsServletResponse(
+                    "/rest/workspaces/gs/datastores/pds/external.shp", new File(f, "pds.shp")
+                            .toURL().toString(), "text/plain");
+            assertEquals(201, resp.getStatusCode());
+
+            dom = getAsDOM("wfs?request=getfeature&typename=gs:pds");
+            assertFeatures(dom);
+        } finally {
+            FileUtils.deleteQuietly(f);
+        }
     }
     
     @Test

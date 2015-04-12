@@ -160,11 +160,15 @@ public class WCSNetCDFMosaicTest extends WCSTestSupport {
         assertEquals("application/x-netcdf", response.getContentType());
         byte[] netcdfOut = getBinary(response);
         File file = File.createTempFile("netcdf", "out.nc", new File("./target"));
-        FileUtils.writeByteArrayToFile(file, netcdfOut);
-        
-        NetcdfDataset dataset = NetcdfDataset.openDataset(file.getAbsolutePath());
-        assertNotNull(dataset);
-        dataset.close();
+        try {
+            FileUtils.writeByteArrayToFile(file, netcdfOut);
+
+            NetcdfDataset dataset = NetcdfDataset.openDataset(file.getAbsolutePath());
+            assertNotNull(dataset);
+            dataset.close();
+        } finally {
+            FileUtils.deleteQuietly(file);
+        }
     }
 
     private void addViewToCatalog() throws Exception {

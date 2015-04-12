@@ -6,7 +6,9 @@
 
 package org.geoserver.security.xml;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,7 +17,6 @@ import java.util.logging.Logger;
 import junit.framework.Assert;
 
 import org.apache.commons.io.FileUtils;
-import org.geoserver.data.test.SystemTestData;
 import org.geoserver.security.GeoServerUserGroupService;
 import org.geoserver.security.GeoServerUserGroupStore;
 import org.geoserver.security.event.UserGroupLoadedEvent;
@@ -143,167 +144,171 @@ public class XMLUserGroupServiceTest extends AbstractUserGroupServiceTest {
     @Test
     public void testLocking() throws Exception {
         File xmlFile = File.createTempFile("users", ".xml");
-        FileUtils.copyURLToFile(getClass().getResource("usersTemplate.xml"),xmlFile);
-        GeoServerUserGroupService service1 =  
-            createUserGroupService("locking1",xmlFile.getCanonicalPath());
-        GeoServerUserGroupService service2 =  
-            createUserGroupService("locking2",xmlFile.getCanonicalPath());
-        GeoServerUserGroupStore store1= createStore(service1);
-        GeoServerUserGroupStore store2= createStore(service2);
-        
-        
-        GeoServerUser user = store1.createUserObject("user", "ps", true);
-        GeoServerUserGroup group = store2.createGroupObject("group", true);
-        
-       // obtain a lock
-        store1.addUser(user);
-        boolean fail;
-        String failMessage="Concurrent lock not allowed"; 
-        fail=true;
         try {
-            store2.clear();
-        } catch (IOException ex) {
-            fail=false;
-        }
-        if (fail) 
-            Assert.fail(failMessage);
-        
-        // release lock
-        store1.load();
-        // get lock
-        store2.addUser(user);
-        
-        fail=true;
-        try {
+            FileUtils.copyURLToFile(getClass().getResource("usersTemplate.xml"), xmlFile);
+            GeoServerUserGroupService service1 = createUserGroupService("locking1",
+                    xmlFile.getCanonicalPath());
+            GeoServerUserGroupService service2 = createUserGroupService("locking2",
+                    xmlFile.getCanonicalPath());
+            GeoServerUserGroupStore store1 = createStore(service1);
+            GeoServerUserGroupStore store2 = createStore(service2);
+
+            GeoServerUser user = store1.createUserObject("user", "ps", true);
+            GeoServerUserGroup group = store2.createGroupObject("group", true);
+
+            // obtain a lock
+            store1.addUser(user);
+            boolean fail;
+            String failMessage = "Concurrent lock not allowed";
+            fail = true;
+            try {
+                store2.clear();
+            } catch (IOException ex) {
+                fail = false;
+            }
+            if (fail)
+                Assert.fail(failMessage);
+
+            // release lock
+            store1.load();
+            // get lock
+            store2.addUser(user);
+
+            fail = true;
+            try {
+                store1.clear();
+            } catch (IOException ex) {
+                fail=false;
+            }
+            if (fail)
+                Assert.fail(failMessage);
+
+            // release lock
+            store2.store();
             store1.clear();
-        } catch (IOException ex) {
-            fail=false;
-        }
-        if (fail) 
-            Assert.fail(failMessage);
-        
-        // release lock
-        store2.store();
-        store1.clear();
-        store1.store();
-        
-        //// end of part one, now check all modifying methods
+            store1.store();
 
-        // obtain a lock
-        store1.addUser(user);
-        
-        fail=true;
-        try {
-            store2.associateUserToGroup(user, group);
-        } catch (IOException ex) {
+            // // end of part one, now check all modifying methods
+
+            // obtain a lock
+            store1.addUser(user);
+
+            fail = true;
             try {
-                store2.disAssociateUserFromGroup(user, group);
-            } catch (IOException e) {
-                fail=false;
-            }
-        }
-        if (fail) 
-            Assert.fail(failMessage);
-        
-        
-        fail=true;
-        try {
-            store2.updateUser(user);
-        } catch (IOException ex) {
-            try {
-                store2.removeUser(user);
-            } catch (IOException ex1) {
+                store2.associateUserToGroup(user, group);
+            } catch (IOException ex) {
                 try {
-                    store2.addUser(user);
-                } catch (IOException ex2) {
+                    store2.disAssociateUserFromGroup(user, group);
+                } catch (IOException e) {
                     fail=false;
                 }
             }
-        }
-        if (fail) 
-            Assert.fail(failMessage);
-        
-        fail=true;
-        try {
-            store2.updateGroup(group);
-        } catch (IOException ex) {
+            if (fail)
+                Assert.fail(failMessage);
+
+            fail = true;
             try {
-                store2.removeGroup(group);
-            } catch (IOException ex1) {
+                store2.updateUser(user);
+            } catch (IOException ex) {
                 try {
-                    store2.addGroup(group);
-                } catch (IOException ex2) {
-                    fail=false;
+                    store2.removeUser(user);
+                } catch (IOException ex1) {
+                    try {
+                        store2.addUser(user);
+                    } catch (IOException ex2) {
+                        fail = false;
+                    }
                 }
             }
-        }
-        if (fail) 
-            Assert.fail(failMessage);
+            if (fail)
+                Assert.fail(failMessage);
 
-        fail=true;
-        try {
-            store2.clear();
-        } catch (IOException ex) {
+            fail = true;
             try {
-                store2.store();
-            } catch (IOException e) {
-                fail=false;
+                store2.updateGroup(group);
+            } catch (IOException ex) {
+                try {
+                    store2.removeGroup(group);
+                } catch (IOException ex1) {
+                    try {
+                        store2.addGroup(group);
+                    } catch (IOException ex2) {
+                        fail = false;
+                    }
+                }
             }
+            if (fail)
+                Assert.fail(failMessage);
+
+            fail = true;
+            try {
+                store2.clear();
+            } catch (IOException ex) {
+                try {
+                    store2.store();
+                } catch (IOException e) {
+                    fail = false;
+                }
+            }
+            if (fail)
+                Assert.fail(failMessage);
+        } finally {
+            xmlFile.delete();
         }
-        if (fail) 
-            Assert.fail(failMessage);
-                        
     }
 
     @Test
     public void testDynamicReload() throws Exception {
         File xmlFile = File.createTempFile("users", ".xml");
-        FileUtils.copyURLToFile(getClass().getResource("usersTemplate.xml"),xmlFile);
-        GeoServerUserGroupService service1 =  
-            createUserGroupService("reload1",xmlFile.getCanonicalPath());
-        GeoServerUserGroupService service2 =  
-            createUserGroupService("reload2",xmlFile.getCanonicalPath());
-        
-        GeoServerUserGroupStore store1= createStore(service1);
-        
-        
-        GeoServerUserGroup group = store1.createGroupObject("group",true);
-        
-        checkEmpty(service1);
-        checkEmpty(service2);
-        
-        // prepare for syncing
-        
-        UserGroupLoadedListener listener = new UserGroupLoadedListener() {
+        try {
+            FileUtils.copyURLToFile(getClass().getResource("usersTemplate.xml"), xmlFile);
+            GeoServerUserGroupService service1 = createUserGroupService("reload1",
+                    xmlFile.getCanonicalPath());
+            GeoServerUserGroupService service2 = createUserGroupService("reload2",
+                    xmlFile.getCanonicalPath());
+
+            GeoServerUserGroupStore store1 = createStore(service1);
+
+            GeoServerUserGroup group = store1.createGroupObject("group", true);
+
+            checkEmpty(service1);
+            checkEmpty(service2);
+
+            // prepare for syncing
             
-            @Override
-            public void usersAndGroupsChanged(UserGroupLoadedEvent event) {
-                synchronized (this) {
-                    this.notifyAll();
+            UserGroupLoadedListener listener = new UserGroupLoadedListener() {
+
+                @Override
+                public void usersAndGroupsChanged(UserGroupLoadedEvent event) {
+                    synchronized (this) {
+                        this.notifyAll();
+                    }
                 }
+            };
+
+            service2.registerUserGroupLoadedListener(listener);
+
+            // modifiy store1
+            store1.addGroup(group);
+            store1.store();
+            assertTrue(service1.getUserGroups().size() == 1);
+            assertTrue(service1.getGroupCount() == 1);
+
+            // increment lastmodified adding a second manually, the test is too fast
+            xmlFile.setLastModified(xmlFile.lastModified() + 2000);
+
+            // wait for the listener to unlock when
+            // service 2 triggers a load event
+            synchronized (listener) {
+                listener.wait();
             }
-        };
             
-        service2.registerUserGroupLoadedListener(listener);
-        
-        // modifiy store1
-        store1.addGroup(group);
-        store1.store();
-        assertTrue(service1.getUserGroups().size()==1);
-        assertTrue(service1.getGroupCount()==1);
-        
-     // increment lastmodified adding a second manually, the test is too fast
-        xmlFile.setLastModified(xmlFile.lastModified()+2000);  
-        
-        // wait for the listener to unlock when 
-        // service 2 triggers a load event
-        synchronized (listener) {
-            listener.wait();            
+            // here comes the magic !!!
+            assertTrue(service2.getUserGroups().size() == 1);
+            assertTrue(service2.getGroupCount() == 1);
+        } finally {
+            xmlFile.delete();
         }
-        
-        // here comes the magic !!!
-        assertTrue(service2.getUserGroups().size()==1);
-        assertTrue(service2.getGroupCount()==1);
     }
 
 }

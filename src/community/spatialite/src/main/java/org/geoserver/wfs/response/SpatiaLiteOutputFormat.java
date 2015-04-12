@@ -77,51 +77,50 @@ public class SpatiaLiteOutputFormat extends WFSGetFeatureOutputFormat {
          * base location to temporally store spatialite database `es
          */
         File dbFile = File.createTempFile("spatialite", ".db");
-
-        Map dbParams = new HashMap();
-        dbParams.put(SpatiaLiteDataStoreFactory.DBTYPE.key, "spatialite");
-        dbParams.put(SpatiaLiteDataStoreFactory.DATABASE.key, dbFile.getAbsolutePath());
-
-        DataStore dataStore = dsFactory.createDataStore(dbParams);
         try {
-            for (FeatureCollection fc : featureCollection.getFeatures()) {
+            Map dbParams = new HashMap();
+            dbParams.put(SpatiaLiteDataStoreFactory.DBTYPE.key, "spatialite");
+            dbParams.put(SpatiaLiteDataStoreFactory.DATABASE.key, dbFile.getAbsolutePath());
 
-                SimpleFeatureType featureType = (SimpleFeatureType) fc.getSchema()
-                        ; 
-                //create a feature type
-                dataStore.createSchema(featureType);
+            DataStore dataStore = dsFactory.createDataStore(dbParams);
+            try {
+                for (FeatureCollection fc : featureCollection.getFeatures()) {
 
-                FeatureWriter fw = dataStore.getFeatureWriterAppend(
-                    featureType.getTypeName(), Transaction.AUTO_COMMIT);
+                    SimpleFeatureType featureType = (SimpleFeatureType) fc.getSchema();
+                    // create a feature type
+                    dataStore.createSchema(featureType);
 
-                //Start populating the table: tbl_name.
-                SimpleFeatureIterator it = (SimpleFeatureIterator) fc.features();
-                while(it.hasNext()) {
-                    SimpleFeature f = it.next(); 
-                    SimpleFeature g = (SimpleFeature) fw.next();
+                    FeatureWriter fw = dataStore.getFeatureWriterAppend(featureType.getTypeName(),
+                            Transaction.AUTO_COMMIT);
 
-                    for (AttributeDescriptor att : f.getFeatureType().getAttributeDescriptors()) {
-                        String attName = att.getLocalName();
-                        g.setAttribute(attName, f.getAttribute(attName));
+                    // Start populating the table: tbl_name.
+                    SimpleFeatureIterator it = (SimpleFeatureIterator) fc.features();
+                    while (it.hasNext()) {
+                        SimpleFeature f = it.next();
+                        SimpleFeature g = (SimpleFeature) fw.next();
+
+                        for (AttributeDescriptor att : f.getFeatureType().getAttributeDescriptors()) {
+                            String attName = att.getLocalName();
+                            g.setAttribute(attName, f.getAttribute(attName));
+                        }
+                        fw.write();
                     }
-                    fw.write();
                 }
+            } finally {
+                dataStore.dispose();
             }
+
+            BufferedInputStream bin = new BufferedInputStream(new FileInputStream(dbFile));
+
+            ZipOutputStream zout = new ZipOutputStream(output);
+            zout.putNextEntry(new ZipEntry(getDbFileName(getFeature)));
+
+            IOUtils.copy(bin, zout);
+            zout.flush();
+            zout.closeEntry();
+        } finally {
+            dbFile.delete();
         }
-        finally {
-            dataStore.dispose();
-        }
-
-        BufferedInputStream bin = new BufferedInputStream(new FileInputStream(dbFile));
-
-        ZipOutputStream zout = new ZipOutputStream(output);
-        zout.putNextEntry(new ZipEntry(getDbFileName(getFeature)));
-
-        IOUtils.copy(bin, zout);
-        zout.flush();
-        zout.closeEntry();
-
-        dbFile.delete();
     }
 
     public String getCapabilitiesElementName() {

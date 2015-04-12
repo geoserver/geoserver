@@ -5,7 +5,7 @@
  */
 package org.geoserver.flow.controller;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import org.geoserver.flow.controller.FlowControllerTestingThread.ThreadState;
 import org.geoserver.ows.Request;
@@ -52,7 +52,7 @@ public class SingleIpFlowControllerTest extends IpFlowControllerTest {
             waitTerminated(t1, MAX_WAIT);
 
             assertEquals(ThreadState.COMPLETE, t1.state);
-            assertEquals(ThreadState.PROCESSING, t2.state);
+            waitState(ThreadState.PROCESSING, t2, MAX_WAIT);
 
             t2.interrupt();
         } catch (Exception e) {
@@ -100,7 +100,7 @@ public class SingleIpFlowControllerTest extends IpFlowControllerTest {
             waitTerminated(t1, MAX_WAIT);
 
             assertEquals(ThreadState.COMPLETE, t1.state);
-            assertEquals(ThreadState.PROCESSING, t2.state);
+            waitState(ThreadState.PROCESSING, t2, MAX_WAIT);
 
             t2.interrupt();
         } catch (Exception e) {

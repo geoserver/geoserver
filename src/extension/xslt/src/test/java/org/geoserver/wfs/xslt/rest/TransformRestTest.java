@@ -25,7 +25,6 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.wfs.xslt.config.TransformInfo;
 import org.geoserver.wfs.xslt.config.TransformRepository;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
@@ -45,7 +44,10 @@ public class TransformRestTest extends GeoServerSystemTestSupport {
         File dd = testData.getDataDirectoryRoot();
         File wfs = new File(dd, "wfs");
         File transform = new File(wfs, "transform");
-        if (transform.exists()) {
+        // silly I know, but under Windows not even commons can detect if a directory
+        // was really removed...
+        long start = System.currentTimeMillis();
+        while (transform.exists() && (System.currentTimeMillis() - start) < 10000) {
             FileUtils.deleteDirectory(transform);
         }
         assertTrue(transform.mkdirs());

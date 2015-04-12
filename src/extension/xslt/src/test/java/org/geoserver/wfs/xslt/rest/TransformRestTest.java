@@ -22,7 +22,7 @@ import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.data.test.SystemTestData;
-import org.geoserver.test.GeoServerSystemTestSupport;
+import org.geoserver.wfs.xslt.XSLTTestSupport;
 import org.geoserver.wfs.xslt.config.TransformInfo;
 import org.geoserver.wfs.xslt.config.TransformRepository;
 import org.junit.Before;
@@ -31,7 +31,7 @@ import org.w3c.dom.Document;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
-public class TransformRestTest extends GeoServerSystemTestSupport {
+public class TransformRestTest extends XSLTTestSupport {
 
     private XpathEngine xpath;
     private TransformRepository repository; 
@@ -44,12 +44,7 @@ public class TransformRestTest extends GeoServerSystemTestSupport {
         File dd = testData.getDataDirectoryRoot();
         File wfs = new File(dd, "wfs");
         File transform = new File(wfs, "transform");
-        // silly I know, but under Windows not even commons can detect if a directory
-        // was really removed...
-        long start = System.currentTimeMillis();
-        while (transform.exists() && (System.currentTimeMillis() - start) < 10000) {
-            FileUtils.deleteDirectory(transform);
-        }
+        deleteDirectory(transform);
         assertTrue(transform.mkdirs());
         FileUtils.copyDirectory(new File("src/test/resources/org/geoserver/wfs/xslt"), transform);
     }

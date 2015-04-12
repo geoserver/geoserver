@@ -5,7 +5,8 @@
  */
 package org.geoserver.wfs.xslt.config;
 
-import static org.easymock.EasyMock.*;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.replay;
 import static org.junit.Assert.*;
 
 import java.io.File;
@@ -28,6 +29,7 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.impl.FeatureTypeInfoImpl;
 import org.geoserver.config.GeoServerDataDirectory;
+import org.geoserver.wfs.xslt.XSLTTestSupport;
 import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
@@ -47,7 +49,7 @@ public class TransformRepositoryTest {
         // make sure the test root exists and it's empty
         File dataDir = new File("./target/repository-test");
         if (dataDir.exists()) {
-            FileUtils.deleteDirectory(dataDir);
+            XSLTTestSupport.deleteDirectory(dataDir);
         }
         assertTrue(dataDir.mkdirs());
         

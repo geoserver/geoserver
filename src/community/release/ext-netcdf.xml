@@ -9,8 +9,10 @@
       <directory>release/target/dependency</directory>
       <outputDirectory></outputDirectory>
       <includes>
+        <include>cdm*.jar</include>
         <include>*netcdf*.jar</include>
         <include>udunits*.jar</include>
+        <include>httpservices*.jar</include>
         <include>joda-time*.jar</include>
         <include>jcip-annotations*.jar</include>
         <include>ehcache-core*.jar</include>

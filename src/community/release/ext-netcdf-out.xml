@@ -11,6 +11,8 @@
       <includes>
         <include>gs-netcdf*.jar</include>
         <include>netcdf*.jar</include>
+        <include>cdm*.jar</include>
+        <include>httpservices*.jar</include>
         <include>udunits*.jar</include>
         <include>joda-time*.jar</include>
         <include>jcip-annotations*.jar</include>

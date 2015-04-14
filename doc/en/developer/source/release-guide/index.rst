@@ -32,7 +32,7 @@ The following are necessary to perform a GeoServer release:
 #. Commit access to the GeoServer `Git repository <https://Github.com/geoserver/geoserver>`_
 #. Build access to `Jenkins <http://ares.boundlessgeo.com/jenkins/>`_
 #. Edit access to the GeoServer `Blog <http://blog.geoserver.org>`_
-#. Administration rights to GeoServer `JIRA <https://jira.codehaus.org/browse/GEOS>`__
+#. Administration rights to GeoServer `JIRA <https://osgeo-org.atlassian.net/projects/GEOS>`__
 #. Release/file management privileges in `SourceForge <https://sourceforge.net/projects/geoserver/>`_
 
 Versions and revisions
@@ -79,7 +79,7 @@ Run the `geoserver-release-jira <http://ares.boundlessgeo.com/jenkins/job/geoser
 
   The password for the ``JIRA_USER``.
 
-This job will perform the tasks in JIRA to release ``VERSION``. Navigate to `JIRA <http://jira.codehaus.org/browse/GEOS>`__ and verify that the version has actually been released.
+This job will perform the tasks in JIRA to release ``VERSION``. Navigate to `JIRA <https://osgeo-org.atlassian.net/projects/GEOS>`__ and verify that the version has actually been released.
 
 If you are cutting the first RC of a series, create the stable branch
 ---------------------------------------------------------------------
@@ -124,7 +124,7 @@ When creating the first release candidate of a series, there are some extra step
       git commit -am "Updated version to 2.8-SNAPSHOT, updated GeoTools dependency to 14-SNAPSHOT, updated GeoWebCache dependency to 1.8-SNAPSHOT, and related changes"
       git push geoserver master
       
-* Create the new beta version in `JIRA <http://jira.codehaus.org/browse/GEOS>`_ for issues on master; for example, if master is now ``2.8-SNAPSHOT``, create a Jira version ``2.8-beta`` for the first release of the ``2.8.x`` series
+* Create the new beta version in `JIRA <https://osgeo-org.atlassian.net/projects/GEOS>`_ for issues on master; for example, if master is now ``2.8-SNAPSHOT``, create a Jira version ``2.8-beta`` for the first release of the ``2.8.x`` series
 
 * Announce on the developer mailing list that the new stable branch has been created and that the feature freeze on master is over
 
@@ -290,7 +290,7 @@ GeoServer Blog
          </li>
       </ul>
       More details can be found in the
-      <a href="http://jira.codehaus.org/secure/ReleaseNote.jspa?projectId=10311&amp;version=19231">GeoServer 2.5.1 Release Notes</a>.
+      <a href="https://osgeo-org.atlassian.net/jira/secure/ReleaseNote.jspa?projectId=10000&version=10164">GeoServer 2.5.1 Release Notes</a>.
 
 #. Examples of content:
 
@@ -354,7 +354,7 @@ The following is an example::
    
    Along with many other improvements and bug fixes:
    
-   * https://jira.codehaus.org/secure/ReleaseNote.jspa?projectId=10311&version=20202
+   * https://osgeo-org.atlassian.net/jira/secure/ReleaseNote.jspa?projectId=10000&version=10164
 
    Thanks to Andrea and Jody (GeoSolutions and Boundless) for publishing this release. A very special thanks to all those who contributed bug fixes, new
    features, bug reports, and testing to this release.
@@ -406,8 +406,8 @@ Example::
 
   Along with many other improvements and bug fixes. The entire change log for
   the 1.7.1 series is available in the issue tracker:
-
-  http://jira.codehaus.org/browse/GEOS/fixforversion/14502
+  
+  https://osgeo-org.atlassian.net/jira/secure/ReleaseNote.jspa?projectId=10000&version=
 
 FreshMeat
 ^^^^^^^^^

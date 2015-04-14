@@ -42,7 +42,7 @@ The  :ref:`cql_tutorial` tutorial shows examples of defining filters.
 The CQL and ECQL languages are defined in:
 
 - `OpenGIS Catalog Services Specification <http://portal.opengeospatial.org/files/?artifact_id=3843>`_ contains the standard definition of CQL 
-- `ECQL Grammar <http://docs.codehaus.org/display/GEOTOOLS/ECQL+Parser+Design>`_ is the grammar defining the GeoTools ECQL implementation
+- `ECQL Grammar <https://github.com/geotools/geotools/blob/master/modules/library/cql/ECQL.md>`_ is the grammar defining the GeoTools ECQL implementation
 
 
 

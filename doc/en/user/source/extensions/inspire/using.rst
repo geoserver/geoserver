@@ -75,7 +75,7 @@ Once on the WMS configuration page, there will be a block titled :guilabel:`INSP
 
 After clicking :guilabel:`Submit` on this page, any changes will be immediately reflected in the WMS 1.3.0 capabilities document.
 
-.. note:: Currently GeoServer does not offer the ability to configure alternate languages, as there is no way for an administrator to configure multiple responses.  There is an `open issue <http://jira.codehaus.org/browse/GEOS-4502>`_ on the GeoServer issue tracker that we are hoping to secure funding for.  If you are interested in implementing or funding this improvement, please raise the issue on the :ref:`GeoServer mailing list <getting_involved>`.
+.. note:: Currently GeoServer does not offer the ability to configure alternate languages, as there is no way for an administrator to configure multiple responses.  There is an :geos:`open issue <4502>` on the GeoServer issue tracker that we are hoping to secure funding for.  If you are interested in implementing or funding this improvement, please raise the issue on the :ref:`GeoServer mailing list <getting_involved>`.
 
 Extended WFS Capabilities
 -------------------------
@@ -149,7 +149,7 @@ Once on the WFS configuration page, there will be a block titled :guilabel:`INSP
 
 After clicking :guilabel:`Submit` on this page, any changes will be immediately reflected in the WFS 1.1 and WFS 2.0 capabilities documents.
 
-.. note:: Currently GeoServer does not offer the ability to configure alternate languages, as there is no way for an administrator to configure multiple responses.  There is an `open issue <http://jira.codehaus.org/browse/GEOS-4502>`_ on the GeoServer issue tracker that we are hoping to secure funding for.  If you are interested in implementing or funding this improvement, please raise the issue on the :ref:`GeoServer mailing list <getting_involved>`.
+.. note:: Currently GeoServer does not offer the ability to configure alternate languages, as there is no way for an administrator to configure multiple responses.  There is an :geos:`open issue <4502>` on the GeoServer issue tracker that we are hoping to secure funding for.  If you are interested in implementing or funding this improvement, please raise the issue on the :ref:`GeoServer mailing list <getting_involved>`.
 
 
 More information

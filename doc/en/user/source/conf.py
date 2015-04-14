@@ -94,8 +94,8 @@ extlinks = {
     'website': ('http://geoserver.org/%s',''),
     'user': ('http://docs.geoserver.org/latest/en/user/%s',''),
     'developer': ('http://docs.geoserver.org/latest/en/developer/%s',''),
-    'geos': ('https://jira.codehaus.org/browse/GEOS-%s','GEOS-'),
-    'geot': ('https://jira.codehaus.org/browse/GEOT-%s','GEOT-')
+    'geos': ('https://osgeo-org.atlassian.net/browse/GEOS--%s','GEOS-'),
+    'geot': ('https://osgeo-org.atlassian.net/browse/GEOT--%s','GEOT-')
 }
 
 # Common substitutions

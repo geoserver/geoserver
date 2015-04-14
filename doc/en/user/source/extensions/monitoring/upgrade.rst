@@ -39,7 +39,7 @@ Column ``resource`` renamed to ``name`` in ``request_resources`` table
 * *Version*: n/a, extension still community status
 * *Date*: Dec 09, 2011
 * *Subversion revision*: 16632
-* *Reference*: `GEOS-4871 <https://jira.codehaus.org/browse/GEOS-4871>`_
+* *Reference*: :geos:`4871
  
 Upgrading without performing any action will result in the ``name`` column being added to the ``request_resources`` table, 
 leaving the ``resource`` column in tact. From that point forward the ``resource`` column will essentially be ignored.
@@ -62,7 +62,7 @@ Column ``remote_user_agent`` added to ``request`` table
 * *Version*: n/a, extension still community status
 * *Date*: Dec 09, 2011
 * *Subversion revision*: 16634
-* *Reference*: `GEOS-4872 <https://jira.codehaus.org/browse/GEOS-4871>`_
+* *Reference*: :geos:`4872`
 
 No action should be required here as Hibernate will simply append the new column to the table. If for some reason this does
 not happen the column can be added manually::

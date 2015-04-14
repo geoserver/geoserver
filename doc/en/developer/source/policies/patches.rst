@@ -71,7 +71,7 @@ a simple workflow for generating a patch is as follows.
 
      git diff master > my_bugfix.patch
      
-#. Open a `JIRA <https://jira.codehaus.org/browse/GEOS>`_ ticket and attach the patch file to the ticket. 
+#. Open a `JIRA <https://osgeo-org.atlassian.net/projects/GEOS>`_ ticket and attach the patch file to the ticket. 
 
 At this point the core developers will be notified of the ticket t and review it at the earliest 
 convenience. 
@@ -96,7 +96,7 @@ manually generate a patch with unix diff tools.
 
      diff -ru geoserver.orig geoserver > my_bugfix.patch
 
-#. Open a `JIRA <https://jira.codehaus.org/browse/GEOS>`_ ticket and attach the patch file to the ticket. 
+#. Open a `JIRA <https://osgeo-org.atlassian.net/projects/GEOS>`_ ticket and attach the patch file to the ticket. 
 
 At this point the core developers will be notified of the ticket t and review it at the earliest 
 convenience. 
@@ -140,4 +140,4 @@ Tips
 
 Include a test case that shows your patch fixes an issue (or adds new functionality). If you do not include a test case the developer reviewing your work will need to create one.
 
-`JIRA Issue <http://jira.codehaus.org/browse/GEOS>`_ are used to list your fix in the release notes each release. You can link to the JIRA ticket in your pull request description.
+`JIRA Issue <https://osgeo-org.atlassian.net/projects/GEOS>`_ are used to list your fix in the release notes each release. You can link to the JIRA ticket in your pull request description.

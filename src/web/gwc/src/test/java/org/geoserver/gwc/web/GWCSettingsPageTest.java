@@ -10,15 +10,21 @@ import static com.google.common.collect.Sets.*;
 import static org.junit.Assert.*;
 
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.form.DropDownChoice;
+import org.apache.wicket.markup.html.list.ListItem;
+import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.gwc.ConfigurableLockProvider;
 import org.geoserver.gwc.GWC;
 import org.geoserver.gwc.config.GWCConfig;
+import org.geoserver.gwc.web.plugin.DefaultCachingPluginPanel;
+import org.geoserver.gwc.web.plugin.GWCSettingsPluginPanel;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.web.GeoServerHomePage;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geowebcache.locks.MemoryLockProvider;
@@ -283,5 +289,35 @@ public class GWCSettingsPageTest extends GeoServerWicketTestSupport {
                 .getComponentFromLastRenderedPage("form:cachingOptionsPanel:container:configs:cachedGridsets:availableGridsets");
         // Ensure that the one used above is no more present
         assertFalse(availableItems.getChoices().contains(item));
+    }
+
+    @Test
+    public void testExtensions() {
+        // Create a new instance of the GWCSettingsPage
+        GWCSettingsPage page = new GWCSettingsPage();
+        tester.startPage(page);
+        tester.assertRenderedPage(GWCSettingsPage.class);
+
+        // Ensure the extension point is defined
+        tester.assertComponent("form:extensions", ListView.class);
+
+        // Get the list
+        ListView view = (ListView) tester.getComponentFromLastRenderedPage("form:extensions");
+
+        // Ensure at least the default component is present
+        List list = view.getList();
+        assertTrue(list.size() > 0);
+
+        Iterator it = view.iterator();
+        boolean defaultComponentFound = false;
+        while (it.hasNext()) {
+            ListItem item = (ListItem) it.next();
+            GWCSettingsPluginPanel component = (GWCSettingsPluginPanel) item.get("content");
+            if (component instanceof DefaultCachingPluginPanel) {
+                defaultComponentFound = true;
+                break;
+            }
+        }
+        assertTrue(defaultComponentFound);
     }
 }

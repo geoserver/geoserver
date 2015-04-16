@@ -70,7 +70,7 @@ public class GTRasterLayer
       m_sName = name;
       m_sFilename = filename;
       m_LayerExtent = ge;
-      m_image = (PlanarImage) gc.geophysics(true).getRenderedImage();
+      m_image = (PlanarImage) gc.getRenderedImage();
       m_dNoDataValue = defaultNoDataValue;
       initNoData((GridCoverage2D) m_BaseDataObject);
 
@@ -110,7 +110,7 @@ public class GTRasterLayer
          m_LayerExtent.setCellSize((env.getMaxX() - env.getMinX()) / gc.getRenderedImage().getWidth());
          m_LayerExtent.setXRange(env.getMinX(), env.getMaxX(), true);
          m_LayerExtent.setYRange(env.getMinY(), env.getMaxY(), true);
-         m_image = (PlanarImage) gc.geophysics(true).getRenderedImage();
+         m_image = (PlanarImage) gc.getRenderedImage();
          m_sName = gc.getName().toString();
          m_dNoDataValue = -99999; //-> Default value in 'OutputFactory::getDefaultNoDataValue()'. 
          initNoData(gc);

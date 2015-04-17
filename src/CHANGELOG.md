@@ -7,6 +7,9 @@ This file is a temporary workaround as our issue tracker is currently unavailabl
 Bug:
 
  * GEOS-5857 - Fix StringIndexOutOfBoundsException on some WFS-T requests
+ * GEOS-6949 - Caching defaults has metatile size 15 shown as 16
+ * GEOS-6182 - Execute goes NPE if the responseForm is missing in the request
+ * GEOS-6811 - regression in allowed style and other names
  * GEOS-6134 - WFS 2.0 cannot output GML 3.1
  * GEOS-6182 - Execute goes NPE if the responseForm is missing in the request
  * GEOS-6555 - Restrict FormatOptionsKvpParser parsers usage by service (WMS or WFS)

@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogException;
@@ -31,7 +32,9 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StoreInfo;
+import org.geoserver.catalog.StyleHandler;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.Styles;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
@@ -580,23 +583,53 @@ public class GeoServerPersister implements CatalogListener, ConfigurationListene
     
     private void renameStyle( StyleInfo s, String newName ) throws IOException {
         LOGGER.fine( "Renameing style " + s.getName() + " to " + newName );
+        
+        // rename xml configuration file
         Resource xml = dd.config(s);
         renameRes( xml, newName+".xml" );
         
+        // rename style definition file
         Resource style = dd.style(s);
-        String sldFileName = newName + ".sld";
-        Resource target = style.parent().get(sldFileName);
+        StyleHandler format = Styles.handler( s.getFormat() );
+        
+        Resource target = uniqueResource( style, newName, format.getFileExtension() );
+        renameRes(style, target.name());
+        s.setFilename(target.name());
+        
+        // rename generated sld if appropriate
+        if( !"sld".equals(format.getFormat())){
+            Resource sld = style.parent().get(FilenameUtils.getBaseName(style.name()) + ".sld");
+            if( sld.getType() == Type.RESOURCE ){
+                Resource generated = uniqueResource( sld, newName, "sld" );
+                renameRes(sld, generated.name());    
+            }
+        }
+    }
+    
+    /**
+     * Determine unique name of the form <code>newName.extension</code>. newName will
+     * have a number appended as required to produce a unique resource name.
+     * 
+     * @param resource Resource being renamed
+     * @param newName proposed name to use as a template
+     * @param extension extension
+     * @return New UNDEFINED resource suitable for use with rename
+     * @throws IOException If unique resource cannot be produced
+     */
+    private Resource uniqueResource(Resource resource, String newName, String extension)
+            throws IOException {
+        Resource target = resource.parent().get(newName + "." + extension);
+
         int i = 0;
-        while(target.getType()!=Type.UNDEFINED && ++i <= MAX_RENAME_ATTEMPTS) {
-            sldFileName = newName + i + ".sld";
-            target = style.parent().get(sldFileName);
+        while (target.getType() != Type.UNDEFINED && ++i <= MAX_RENAME_ATTEMPTS) {
+            target = resource.parent().get(newName + i + "." + extension);
         }
         if (i > MAX_RENAME_ATTEMPTS) {
-            throw new IOException("All target files between " + newName + "1.sld and " + newName
-                    + MAX_RENAME_ATTEMPTS + ".sld are in use already, giving up");
+            throw new IOException("All target files between " + newName + "1." + extension
+                    + " and " + newName + MAX_RENAME_ATTEMPTS + "." + extension
+                    + " are in use already, giving up");
         }
-        renameRes(style, target.name());
-        s.setFilename(sldFileName);
+        return target;
     }
     
     private void modifyStyle( StyleInfo s ) throws IOException {

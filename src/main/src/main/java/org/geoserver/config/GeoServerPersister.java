@@ -582,8 +582,8 @@ public class GeoServerPersister implements CatalogListener, ConfigurationListene
         Resource style = dd.style(s);
         String sldFileName = newName + ".sld";
         Resource target = style.parent().get(sldFileName);
-        int i = 1;
-        while(target.getType()!=Type.UNDEFINED && i <= MAX_RENAME_ATTEMPTS) {
+        int i = 0;
+        while(target.getType()!=Type.UNDEFINED && ++i <= MAX_RENAME_ATTEMPTS) {
             sldFileName = newName + i + ".sld";
             target = style.parent().get(sldFileName);
         }

@@ -95,18 +95,7 @@ public class WFSException extends ServiceException {
             }
 
             if (locator == null) {
-                //default to name of operation, use the request object class name to determine the
-                // operation
-                String className = request.getClass().getSimpleName();
-                if (request instanceof RequestObject) {
-                    //request object adapter
-                    className = request.getClass().getSuperclass().getSimpleName();
-                    locator = className.substring(0, className.length()-"Request".length());
-                }
-                else if (className.endsWith("TypeImpl")) {
-                    //underlying emf request object
-                    locator = className.substring(0, className.length()-"TypeImpl".length());
-                }
+                locator = determineDefaultLocator(request);
             }
 
             if (code == null) {
@@ -115,6 +104,32 @@ public class WFSException extends ServiceException {
         }
         return this;
     }
+
+	private String determineDefaultLocator(Object request) {
+		//default to name of operation, use the request object class name to determine the
+		// operation
+		String className = request.getClass().getSimpleName();
+		if (request instanceof RequestObject) {
+		    //request object adapter
+			
+		    className = request.getClass().getSuperclass().getSimpleName();
+		    if(className.endsWith("Request")){
+		    	return className.substring(0, className.length()-"Request".length());
+		    }
+			RequestObject requestObject = (RequestObject) request;
+			EObject adaptee = requestObject.getAdaptee();
+			if (adaptee.getClass().getName().contains("wfs20")) {
+				// locator only for WFS20, implementation package is currently net.opengis.wfs20
+				return className;
+			}
+			return null;
+		}
+		else if (className.endsWith("TypeImpl")) {
+		    //underlying emf request object
+		    return className.substring(0, className.length()-"TypeImpl".length());
+		}
+		return null;
+	}
 
     public WFSException(String message) {
         super(message);

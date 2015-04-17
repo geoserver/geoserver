@@ -5,8 +5,10 @@
  */
 package org.geoserver.wfs;
 
-import static junit.framework.Assert.*;
-import static org.custommonkey.xmlunit.XMLAssert.*;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertNotNull;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 
 import java.io.File;
 import java.util.Map;
@@ -49,6 +51,7 @@ public class SQLViewTest extends WFSTestSupport {
         ds.setName("sqlviews");
         WorkspaceInfo ws = cat.getDefaultWorkspace();
         ds.setWorkspace(ws);
+        ds.setEnabled(true);
 
         Map params = ds.getConnectionParameters();
         params.put("dbtype", "h2");
@@ -108,7 +111,7 @@ public class SQLViewTest extends WFSTestSupport {
     @Test
     public void testViewParamsGet() throws Exception {
         Document dom = getAsDOM("wfs?service=WFS&request=GetFeature&typename=" + viewTypeName + "&version=1.1&viewparams=bool:true;name:name-f003");
-        print(dom);
+        // print(dom);
 
         assertXpathEvaluatesTo("name-f003", "//gs:pgeo_view/gml:name", dom);
         assertXpathEvaluatesTo("1", "count(//gs:pgeo_view)", dom);
@@ -118,7 +121,7 @@ public class SQLViewTest extends WFSTestSupport {
     public void testViewParamsJsonGet() throws Exception {
         JSON json = getAsJSON("wfs?service=WFS&request=GetFeature&typename=" + viewTypeName
                 + "&version=1.1&viewparams=bool:true;name:name-f003&outputFormat=application/json");
-        print(json);
+        // print(json);
 
         assertEquals(1, ((JSONObject) json).getInt("totalFeatures"));
     }

@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -16,6 +16,7 @@ import java.util.Collections;
 import javax.xml.namespace.QName;
 
 import org.custommonkey.xmlunit.XMLAssert;
+import org.geoserver.config.GeoServer;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.test.RunTestSetup;
 import org.geoserver.wfs.GMLInfo;
@@ -563,6 +564,38 @@ public class GetFeatureTest extends WFSTestSupport {
                 "count(//wfs:FeatureCollection/gml:featureMembers/cdf:Fifteen)", doc);
         XMLAssert.assertXpathEvaluatesTo("Fifteen.2",
                 "//wfs:FeatureCollection/gml:featureMembers/cdf:Fifteen/@gml:id", doc);
+    }
+
+    @Test
+    public void testFeatureMembers() throws Exception {
+        WFSInfo wfs = getWFS();
+        GeoServer gs = getGeoServer();
+        try {
+            wfs.setEncodeFeatureMember(false);
+            gs.save(wfs);
+
+            Document dom = getAsDOM("wfs?request=GetFeature&typename="
+                    + getLayerId(SystemTestData.BUILDINGS)
+                    + "&version=1.1.0&service=wfs&sortBy=ADDRESS");
+            // print(dom);
+            XMLAssert.assertXpathEvaluatesTo("1", "count(//gml:featureMembers)", dom);
+            XMLAssert.assertXpathEvaluatesTo("0", "count(//gml:featureMember)", dom);
+
+            wfs.setEncodeFeatureMember(true);
+            gs.save(wfs);
+
+            dom = getAsDOM("wfs?request=GetFeature&typename="
+                    + getLayerId(SystemTestData.BUILDINGS)
+                    + "&version=1.1.0&service=wfs&sortBy=ADDRESS");
+            // print(dom);
+            XMLAssert.assertXpathEvaluatesTo("0", "count(//gml:featureMembers)", dom);
+            XMLAssert.assertXpathEvaluatesTo("2", "count(//gml:featureMember)", dom);
+
+
+        } finally {
+            wfs.setEncodeFeatureMember(false);
+            gs.save(wfs);
+        }
     }
 
 }

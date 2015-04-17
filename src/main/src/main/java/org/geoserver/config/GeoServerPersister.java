@@ -31,6 +31,7 @@ import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.SLDHandler;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.StyleHandler;
 import org.geoserver.catalog.StyleInfo;
@@ -582,7 +583,7 @@ public class GeoServerPersister implements CatalogListener, ConfigurationListene
     }
     
     private void renameStyle( StyleInfo s, String newName ) throws IOException {
-        LOGGER.fine( "Renameing style " + s.getName() + " to " + newName );
+        LOGGER.fine( "Renaming style " + s.getName() + " to " + newName );
         
         // rename xml configuration file
         Resource xml = dd.config(s);
@@ -597,7 +598,7 @@ public class GeoServerPersister implements CatalogListener, ConfigurationListene
         s.setFilename(target.name());
         
         // rename generated sld if appropriate
-        if( !"sld".equals(format.getFormat())){
+        if( !SLDHandler.FORMAT.equals(format.getFormat())){
             Resource sld = style.parent().get(FilenameUtils.getBaseName(style.name()) + ".sld");
             if( sld.getType() == Type.RESOURCE ){
                 Resource generated = uniqueResource( sld, newName, "sld" );

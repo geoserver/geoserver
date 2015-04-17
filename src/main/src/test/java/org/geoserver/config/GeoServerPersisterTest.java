@@ -689,7 +689,7 @@ public class GeoServerPersisterTest extends GeoServerSystemTestSupport {
         StyleInfo s = catalog.getStyleByName( "foostyle" );
         
         s.setWorkspace(catalog.getDefaultWorkspace());
-        catalog.save( s ); // note: 
+        catalog.save( s );
 
         assertThat(new File( testData.getDataDirectoryRoot(), "styles/foostyle.xml"), not(fileExists()));
         assertThat(new File( testData.getDataDirectoryRoot(), "styles/foostyle.sld"), not(fileExists()));

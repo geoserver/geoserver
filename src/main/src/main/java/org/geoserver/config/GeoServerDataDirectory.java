@@ -6,6 +6,7 @@
 package org.geoserver.config;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -1202,7 +1203,7 @@ public class GeoServerDataDirectory implements ResourceStore {
     protected @Nonnull Style parsedStyleResources(StyleInfo s) throws IOException {
         final Resource styleResource = style(s);
         if ( styleResource.getType() == Type.UNDEFINED ){
-            throw new IOException( "No such resource: " + s.getFilename());
+            throw new FileNotFoundException( "No such resource: " + s.getFilename());
         }
         final DefaultResourceLocator locator = new DefaultResourceLocator();
         locator.setSourceUrl(resourceToUrl(styleResource));
@@ -1355,6 +1356,9 @@ public class GeoServerDataDirectory implements ResourceStore {
                 }
                 
             });
+        }
+        catch(FileNotFoundException e){
+            GeoServerPersister.LOGGER.log(Level.WARNING, "Error loading style:"+ e);
         }
         catch(IOException e) {
             GeoServerPersister.LOGGER.log(Level.WARNING, "Error loading style", e);

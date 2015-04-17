@@ -128,7 +128,9 @@ public class FileSystemResourceStore implements ResourceStore {
         if (!file.exists() && !dest.exists()) {
             return true; // moving an undefined resource
         }
-
+        if( !file.exists() ){
+            throw new IllegalStateException("Unable to find " + path + " to move to " + target);
+        }
         try {
             dest.getParentFile().mkdirs(); // Make sure there's somewhere to move to.
             return Files.move(file, dest);

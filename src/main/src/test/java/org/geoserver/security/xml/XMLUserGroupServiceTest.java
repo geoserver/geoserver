@@ -87,58 +87,44 @@ public class XMLUserGroupServiceTest extends AbstractUserGroupServiceTest {
     }
     
     @Test
-    public void testCopyFrom() {
-        try {
-    
-            GeoServerUserGroupService service1 = createUserGroupService("copyFrom");
-            GeoServerUserGroupService service2 = createUserGroupService("copyTo");
-            GeoServerUserGroupStore store1 = createStore(service1);
-            GeoServerUserGroupStore store2 = createStore(service2);                        
+    public void testCopyFrom() throws Exception {
+        GeoServerUserGroupService service1 = createUserGroupService("copyFrom");
+        GeoServerUserGroupService service2 = createUserGroupService("copyTo");
+        GeoServerUserGroupStore store1 = createStore(service1);
+        GeoServerUserGroupStore store2 = createStore(service2);
 
-            
-            store1.clear();
-            checkEmpty(store1);        
-            insertValues(store1);
-            
-            Util.copyFrom(store1, store2);
-            store1.clear();
-            checkEmpty(store1);
-            
-            checkValuesInserted(store2);
-            
-        } catch (Exception ex) {
-            Assert.fail(ex.getMessage());
-        }
+        
+        store1.clear();
+        checkEmpty(store1);
+        insertValues(store1);
 
+        Util.copyFrom(store1, store2);
+        store1.clear();
+        checkEmpty(store1);
+
+        checkValuesInserted(store2);
     }
 
     @Test
-    public void testDefault() {
-        try {
-//            GeoserverUserGroupService service = createUserGroupService(
-//                    XMLUserGroupService.DEFAULT_NAME);
-            
-            GeoServerUserGroupService service = 
-                    getSecurityManager().loadUserGroupService(XMLUserGroupService.DEFAULT_NAME);
-                        
-            assertEquals(1, service.getUsers().size());
-            assertEquals(1, service.getUserCount());
-            assertEquals(0, service.getUserGroups().size());
-            assertEquals(0, service.getGroupCount());
-                        
-            GeoServerUser admin= service.getUserByUsername(GeoServerUser.ADMIN_USERNAME);
-            assertNotNull(admin);
-            assertEquals(GeoServerUser.AdminEnabled,admin.isEnabled());
-            
-            GeoServerMultiplexingPasswordEncoder enc= getEncoder(service);
-            assertTrue(enc.isPasswordValid(admin.getPassword(), GeoServerUser.DEFAULT_ADMIN_PASSWD,null));
-            assertEquals(admin.getProperties().size(),0);
-            
-            assertEquals(0, service.getGroupsForUser(admin).size());
-                        
-        } catch (IOException ex) {
-            Assert.fail(ex.getMessage());
-        }                
+    public void testDefault() throws Exception {
+        GeoServerUserGroupService service = getSecurityManager().loadUserGroupService(
+                XMLUserGroupService.DEFAULT_NAME);
+
+        assertEquals(1, service.getUsers().size());
+        assertEquals(1, service.getUserCount());
+        assertEquals(0, service.getUserGroups().size());
+        assertEquals(0, service.getGroupCount());
+
+        GeoServerUser admin = service.getUserByUsername(GeoServerUser.ADMIN_USERNAME);
+        assertNotNull(admin);
+        assertEquals(GeoServerUser.AdminEnabled, admin.isEnabled());
+
+        GeoServerMultiplexingPasswordEncoder enc = getEncoder(service);
+        assertTrue(enc.isPasswordValid(admin.getPassword(), GeoServerUser.DEFAULT_ADMIN_PASSWD,
+                null));
+        assertEquals(admin.getProperties().size(), 0);
+
+        assertEquals(0, service.getGroupsForUser(admin).size());
     }
     
     @Test

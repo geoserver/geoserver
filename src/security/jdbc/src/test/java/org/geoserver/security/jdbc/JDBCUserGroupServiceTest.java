@@ -6,13 +6,12 @@
 
 package org.geoserver.security.jdbc;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.logging.Logger;
-
-import junit.framework.Assert;
 
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.security.GeoServerUserGroupService;
@@ -88,8 +87,8 @@ public abstract class JDBCUserGroupServiceTest extends AbstractUserGroupServiceT
         return store;        
     }
     @Test
-    public void testUserGroupDatabaseSetup() {
-        try {                        
+    public void testUserGroupDatabaseSetup() throws IOException {
+
             JDBCUserGroupStore jdbcStore = 
                 (JDBCUserGroupStore) store;            
             assertTrue(jdbcStore.tablesAlreadyCreated());
@@ -100,10 +99,6 @@ public abstract class JDBCUserGroupServiceTest extends AbstractUserGroupServiceT
             jdbcStore.store();
             assertFalse(jdbcStore.tablesAlreadyCreated());
             jdbcStore.load();
-
-        } catch (IOException ex) {
-            Assert.fail(ex.getMessage());
-        }
     }
         
 

@@ -65,53 +65,41 @@ public class XMLRoleServiceTest extends AbstractRoleServiceTest {
         
     
     @Test 
-    public void testCopyFrom() {
-        try {
-            
-            GeoServerRoleService service1 = createRoleService("copyFrom");
-            GeoServerRoleService service2 = createRoleService("copyTo");
-            GeoServerRoleStore store1 = createStore(service1);
-            GeoServerRoleStore store2 = createStore(service2);                        
-            
-            store1.clear();
-            checkEmpty(store1);        
-            insertValues(store1);
-            Util.copyFrom(store1, store2);
-            store1.clear();
-            checkEmpty(store1);
-            checkValuesInserted(store2);
-            
-            
-            
-        } catch (Exception ex) {
-            Assert.fail(ex.getMessage());
-        }                
+    public void testCopyFrom() throws Exception {
+        GeoServerRoleService service1 = createRoleService("copyFrom");
+        GeoServerRoleService service2 = createRoleService("copyTo");
+        GeoServerRoleStore store1 = createStore(service1);
+        GeoServerRoleStore store2 = createStore(service2);                        
+        
+        store1.clear();
+        checkEmpty(store1);        
+        insertValues(store1);
+        Util.copyFrom(store1, store2);
+        store1.clear();
+        checkEmpty(store1);
+        checkValuesInserted(store2);
+                                    
     }
 
     @Test 
-    public void testDefault() {
-        try {
-            GeoServerRoleService service = getSecurityManager().loadRoleService(XMLRoleService.DEFAULT_NAME);
+    public void testDefault() throws Exception {
+        GeoServerRoleService service = getSecurityManager().loadRoleService(XMLRoleService.DEFAULT_NAME);
+        
+        assertEquals(2, service.getRoles().size());
+        GeoServerRole adminRole =
+            service.getRoleByName(XMLRoleService.DEFAULT_LOCAL_ADMIN_ROLE);
+        GeoServerRole groupAdminRole = 
+            service.getRoleByName(XMLRoleService.DEFAULT_LOCAL_GROUP_ADMIN_ROLE);
+        
+        assertEquals(0,service.getGroupNamesForRole(adminRole).size());
+        assertEquals(0,service.getGroupNamesForRole(groupAdminRole).size());
+        assertEquals(1,service.getUserNamesForRole(adminRole).size());
+        assertEquals(0,service.getUserNamesForRole(groupAdminRole).size());
+        assertEquals(1, 
+                service.getRolesForUser(GeoServerUser.ADMIN_USERNAME).size());
+        assertTrue(service.getRolesForUser(GeoServerUser.ADMIN_USERNAME).contains(adminRole));
             
-            assertEquals(2, service.getRoles().size());
-            GeoServerRole adminRole =
-                service.getRoleByName(XMLRoleService.DEFAULT_LOCAL_ADMIN_ROLE);
-            GeoServerRole groupAdminRole = 
-                service.getRoleByName(XMLRoleService.DEFAULT_LOCAL_GROUP_ADMIN_ROLE);
             
-            assertEquals(0,service.getGroupNamesForRole(adminRole).size());
-            assertEquals(0,service.getGroupNamesForRole(groupAdminRole).size());
-            assertEquals(1,service.getUserNamesForRole(adminRole).size());
-            assertEquals(0,service.getUserNamesForRole(groupAdminRole).size());
-            assertEquals(1, 
-                    service.getRolesForUser(GeoServerUser.ADMIN_USERNAME).size());
-            assertTrue(service.getRolesForUser(GeoServerUser.ADMIN_USERNAME).contains(adminRole));
-            
-            
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            Assert.fail(ex.getMessage());
-        }                
     }
     
     @Test 

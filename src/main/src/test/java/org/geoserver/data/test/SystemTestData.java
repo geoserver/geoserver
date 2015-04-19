@@ -19,7 +19,6 @@ import javax.xml.namespace.QName;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.SystemUtils;
-import org.apache.log4j.Level;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.CoverageInfo;
@@ -30,8 +29,8 @@ import org.geoserver.catalog.Keyword;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.ProjectionPolicy;
-import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.PublishedType;
+import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.CatalogImpl;
 import org.geoserver.config.GeoServer;
@@ -40,10 +39,8 @@ import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.GeoServerPersister;
 import org.geoserver.config.LoggingInfo;
 import org.geoserver.config.ServiceInfo;
-import org.geoserver.config.ServiceLoader;
 import org.geoserver.config.SettingsInfo;
 import org.geoserver.config.impl.GeoServerImpl;
-import org.geoserver.config.impl.ServiceInfoImpl;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.config.util.XStreamServiceLoader;
@@ -52,8 +49,8 @@ import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.test.GeoServerSystemTestSupport;
-import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
+import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.GridFormatFinder;
 import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
 import org.geotools.data.DataUtilities;
@@ -64,7 +61,6 @@ import org.geotools.gce.imagemosaic.ImageMosaicFormat;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.util.logging.Logging;
-import org.springframework.context.ApplicationContext;
 
 /**
  * Test setup uses for GeoServer system tests.
@@ -742,13 +738,13 @@ public class SystemTestData extends CiteTestData {
         }
 
         //load the format/reader
-        AbstractGridFormat format = (AbstractGridFormat) GridFormatFinder.findFormat(file);
+        AbstractGridFormat format = GridFormatFinder.findFormat(file);
         if (format == null) {
             throw new RuntimeException("No format for " + file.getCanonicalPath());
         }
         GridCoverage2DReader reader = null;
         try {
-            reader = (GridCoverage2DReader) format.getReader(file);
+            reader = format.getReader(file);
             if (reader == null) {
                 throw new RuntimeException("No reader for " + file.getCanonicalPath() + " with format " + format.getName());
             }
@@ -952,7 +948,7 @@ public class SystemTestData extends CiteTestData {
     @Override
     public void tearDown() throws Exception {
         if(SystemUtils.IS_OS_WINDOWS && WINDOWS_LENIENCY) {
-            int MAX_ATTEMPTS = 10;
+            int MAX_ATTEMPTS = 100;
             for (int i = 0; i < MAX_ATTEMPTS; i++) {
                 try {
                     FileUtils.deleteDirectory(data);  
@@ -961,8 +957,9 @@ public class SystemTestData extends CiteTestData {
                         throw new IOException("Failed to clean up test data dir after " + MAX_ATTEMPTS  + " attempts", e);
                     }
                     System.err.println("Error occurred while removing files, assuming "
-                            + "it's a transient lock, sleeping 1s and re-trying. Error message: " + e.getMessage());
-                    Thread.sleep(1);
+                                    + "it's a transient lock, sleeping 100ms and re-trying. Error message: "
+                                    + e.getMessage());
+                    Thread.sleep(100);
                 }
             }
         } else {

@@ -959,6 +959,7 @@ public class SystemTestData extends CiteTestData {
                     System.err.println("Error occurred while removing files, assuming "
                                     + "it's a transient lock, sleeping 100ms and re-trying. Error message: "
                                     + e.getMessage());
+                    System.gc();
                     Thread.sleep(100);
                 }
             }

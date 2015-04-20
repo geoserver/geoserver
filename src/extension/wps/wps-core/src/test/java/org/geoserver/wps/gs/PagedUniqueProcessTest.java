@@ -7,7 +7,9 @@ package org.geoserver.wps.gs;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.xml.namespace.QName;
 
@@ -19,7 +21,15 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wps.WPSTestSupport;
+import org.geoserver.wps.gs.PagedUniqueProcess.Results;
+import org.geotools.data.simple.SimpleFeatureCollection;
+import org.geotools.feature.visitor.UniqueVisitor;
 import org.junit.Test;
+import org.mockito.Mockito;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
+import org.opengis.feature.simple.SimpleFeatureType;
+import org.opengis.util.ProgressListener;
 
 import com.google.common.collect.Ordering;
 
@@ -133,6 +143,32 @@ public class PagedUniqueProcessTest extends WPSTestSupport {
             assertEquals(2,values.size());
     }
     
+    @Test
+    public void testUniqueVisitorAlwaysDeclaresLimits() throws Exception {
+            PagedUniqueProcess process = new PagedUniqueProcess();
+            SimpleFeatureCollection features = Mockito.mock(SimpleFeatureCollection.class);
+            SimpleFeatureType featureType = (SimpleFeatureType)catalog.getFeatureTypeByName("states").getFeatureType();
+            Mockito.when(features.getSchema()).thenReturn(featureType);
+            final AtomicInteger counter = new AtomicInteger();
+            // mock optimized store behaviour to always
+            // use hasLimits
+            Mockito.doAnswer(new Answer() {
+                @Override
+                public Object answer(InvocationOnMock invocation) throws Throwable {
+                    UniqueVisitor visitor = (UniqueVisitor)invocation.getArguments()[0];
+                    if(visitor.hasLimits()) {
+                        counter.incrementAndGet();
+                    }
+                    visitor.setValue(Arrays.asList("a", "b", "c", "d"));
+                    return null;
+                }}
+            ).when(features).accepts(Mockito.any(UniqueVisitor.class), Mockito.any(ProgressListener.class));
+            process.execute(features, FIELD_NAME, 0, 2);
+            // checks that hasLimits is always true
+            // both for size calculation query and for page extraction query
+            assertEquals(2, counter.intValue());
+    }
+    
     
     /*
      * MaxFeature overflow is not an error: return all result from startIndex to end
@@ -237,9 +273,10 @@ public class PagedUniqueProcessTest extends WPSTestSupport {
             assertEquals(TOTAL_DISTINCT,size);
             assertEquals(true,Ordering.natural().reverse().isOrdered(values));
     }
-    
+
     private String buildInputXml(String fieldName, String fieldFilter,
             Integer startIndex, Integer maxFeatures, String sort) {
+
         String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
                 + "<wps:Execute version=\"1.0.0\" service=\"WPS\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.opengis.net/wps/1.0.0\" xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:wps=\"http://www.opengis.net/wps/1.0.0\" xmlns:ows=\"http://www.opengis.net/ows/1.1\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:wcs=\"http://www.opengis.net/wcs/1.1.1\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xsi:schemaLocation=\"http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd\">\n"
                 + "  <ows:Identifier>gs:PagedUnique</ows:Identifier>\n"

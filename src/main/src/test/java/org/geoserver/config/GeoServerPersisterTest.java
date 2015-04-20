@@ -571,6 +571,30 @@ public class GeoServerPersisterTest extends GeoServerSystemTestSupport {
         assertThat( sldFile, not(fileExists()) );
         assertThat( renamedSldFile, fileExists() );
     }
+    
+    @Test
+    public void testRenameStyleWithExistingIncrementedVersion() throws Exception {
+        testAddStyle();
+        File sldFile = new File(testData.getDataDirectoryRoot(), "styles/foostyle.sld");
+        sldFile.createNewFile();
+
+        File sldFile1 = new File(testData.getDataDirectoryRoot(), "styles/foostyle1.sld");
+        sldFile1.createNewFile();
+
+        File xmlFile1 = new File(testData.getDataDirectoryRoot(), "styles/foostyle1.xml");
+        xmlFile1.createNewFile();
+
+        StyleInfo s = catalog.getStyleByName("foostyle");
+        s.setName("foostyle");
+        catalog.save(s);
+
+        assertThat( sldFile, fileExists() );
+        assertThat( sldFile1, fileExists() );
+        assertThat( xmlFile1, fileExists() );
+
+        sldFile1.delete();
+        xmlFile1.delete();
+    }
 
     @Test
     public void testModifyStyleChangeWorkspace() throws Exception {

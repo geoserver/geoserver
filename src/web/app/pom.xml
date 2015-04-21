@@ -414,8 +414,7 @@
         </dependency>
         <dependency>
             <groupId>com.oracle</groupId>
-            <artifactId>ojdbc14</artifactId>
-            <version>10.2.0.3.0</version>
+            <artifactId>ojdbc7</artifactId>
         </dependency>
       </dependencies>
     </profile>

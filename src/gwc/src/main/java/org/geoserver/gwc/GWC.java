@@ -838,7 +838,8 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
             }
         }
         if (null != request.getFilter() && !request.getFilter().isEmpty()) {
-            if (!filterApplies(filters, request, "FILTER", requestMistmatchTarget)) {
+            boolean sameFilters = checkFilter(request.getFilter(), request.getCQLFilter(), filters);
+            if (!sameFilters && !filterApplies(filters, request, "FILTER", requestMistmatchTarget)) {
                 return false;
             }
         }
@@ -888,6 +889,41 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         }
 
         return true;
+    }
+
+    /**
+     * Method for checking if CQL_FILTER list and FILTER lists are equals
+     * 
+     * @param filter
+     * @param cqlFilter
+     * @param filters
+     * @return
+     */
+    private boolean checkFilter(List filter, List cqlFilter, Map<String, ParameterFilter> filters) {
+        // Check if the two filters are equals and the FILTER parameter is not a ParameterFilter
+        // Check is done only if the FILTER parameter is not present
+        if (!filters.containsKey("FILTER")) {
+            // Check if the filter List and cqlFilter lists are not null and not empty
+            boolean hasFilter = filter != null && !filter.isEmpty();
+            boolean hasCQLFilter = cqlFilter != null && !cqlFilter.isEmpty();
+            // If the filters are present, check if they are equals.
+            // In this case the Filter List has been taken from the CQL_FILTER list
+            if (hasCQLFilter && hasFilter) {
+                // First check on the size
+                int size = filter.size();
+                if (size == cqlFilter.size()) {
+                    // Check same elements
+                    boolean equals = true;
+                    // Loop on the elements
+                    for (int i = 0; i < size; i++) {
+                        equals &= filter.get(i).equals(cqlFilter.get(i));
+                    }
+                    return equals;
+                }
+            }
+        }
+        // By default return false
+        return false;
     }
 
     private boolean filterApplies(Map<String, ParameterFilter> filters, GetMapRequest request,

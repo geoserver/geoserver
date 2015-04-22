@@ -165,6 +165,7 @@ The Publishing tab is for configuring HTTP and WMS/WCS settings.
 
      *WMS Settings*
 
+* **Queryable**:—Controls whether the layer is queryable via WMS ``GetFeatureInfo`` requests.
 * **Default style**:—Style that will be used when the client does not specify a named style in GetMap requests.
 * **Additional styles**—Other styles that can be associated with this layer. Some clients (and the GeoServer Layer Preview) will present those as styling alternatives for that layer to the user.
 * **Default rendering buffer**—Default value of the ``buffer`` GetMap/GetFeatureInfo vendor parameter. See the :ref:`wms_vendor_parameters` for more details.

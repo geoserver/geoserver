@@ -223,7 +223,7 @@ To configure GeoServer to include the Oracle datastore extension module, do the 
 Obtain the appropriate Oracle JDBC driver (possibly by downloading from Oracle or from the Geoserver ORACLE-extension on http://geoserver.org/release/stable/).
 Install it in the Maven repository using the command::
 	
-  mvn install:install-file -Dfile=ojdbc14.jar -DgroupId=com.oracle -DartifactId=ojdbc14 -Dversion=10.2.0.3.0 -Dpackaging=jar -DgeneratePom=true
+  mvn install:install-file -Dfile=ojdbc7.jar -DgroupId=com.oracle -DartifactId=ojdbc7 -Dversion=12.1.0.2 -Dpackaging=jar -DgeneratePom=true
   
 Configure the Eclipse project using::
 

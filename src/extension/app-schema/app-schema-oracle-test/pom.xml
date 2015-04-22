@@ -160,8 +160,7 @@
         <!-- Must ensure this has been installed in M2 repository -->
         <dependency>
             <groupId>com.oracle</groupId>
-            <artifactId>ojdbc14</artifactId> 
-            <version>10.2.0.3.0</version>
+            <artifactId>ojdbc7</artifactId> 
         </dependency>
 	</dependencies>  
 	

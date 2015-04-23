@@ -442,6 +442,8 @@ public class ExecuteTest extends WPSTestSupport {
                  "</wps:ResponseForm>" + 
                "</wps:Execute>";
         
+        // System.out.println(postAsServletResponse("wps", xml).getOutputStreamContent());
+
         Document d = postAsDOM( "wps", xml );
         // print(d);
         checkValidationErrors(d);

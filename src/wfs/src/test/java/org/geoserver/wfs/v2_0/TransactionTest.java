@@ -6,12 +6,14 @@
 package org.geoserver.wfs.v2_0;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.util.Collections;
+
 import javax.xml.namespace.QName;
+
 import org.custommonkey.xmlunit.XMLAssert;
 import org.geoserver.data.test.CiteTestData;
 import org.geoserver.data.test.SystemTestData;
@@ -170,7 +172,8 @@ public class TransactionTest extends WFS20TestSupport {
             + "</wfs:Query> "
             + "</wfs:GetFeature>";
         dom = postAsDOM("wfs", getFeature);
-        assertEquals("20.0 40.0", getFirstElementByTagName(dom, "gml:pos").getFirstChild().getNodeValue());
+        assertEquals("20 40", getFirstElementByTagName(dom, "gml:pos").getFirstChild()
+                .getNodeValue());
     }
 
     @Test
@@ -266,7 +269,7 @@ public class TransactionTest extends WFS20TestSupport {
          Element location = getFirstElementByTagName( feature, "gml:location" );
          Element pos = getFirstElementByTagName(location, "gml:pos");
          
-         assertEquals( "2.0 2.0", pos.getFirstChild().getNodeValue() );
+        assertEquals("2 2", pos.getFirstChild().getNodeValue());
          
          xml = "<wfs:Transaction service=\"WFS\" version=\"2.0.0\" " + 
          "xmlns:wfs='" + WFS.NAMESPACE + "' " + 
@@ -301,7 +304,7 @@ public class TransactionTest extends WFS20TestSupport {
          location = getFirstElementByTagName( feature, "gml:location" );
          pos = getFirstElementByTagName(location, "gml:pos");
          
-         assertEquals( "3.0 3.0", pos.getFirstChild().getNodeValue() );
+        assertEquals("3 3", pos.getFirstChild().getNodeValue());
     }
     
     @Test
@@ -355,7 +358,7 @@ public class TransactionTest extends WFS20TestSupport {
         Element location = getFirstElementByTagName( feature, "gml:location" );
         Element pos = getFirstElementByTagName(location, "gml:pos");
         
-        assertEquals( "2.0 2.0", pos.getFirstChild().getNodeValue() );
+        assertEquals("2 2", pos.getFirstChild().getNodeValue());
         
         xml = 
             "<wfs:Transaction service=\"WFS\" version=\"2.0.0\" " + 
@@ -407,7 +410,7 @@ public class TransactionTest extends WFS20TestSupport {
         location = getFirstElementByTagName( feature, "gml:location" );
         pos = getFirstElementByTagName(location, "gml:pos");
         
-        assertEquals( "3.0 3.0", pos.getFirstChild().getNodeValue() );
+        assertEquals("3 3", pos.getFirstChild().getNodeValue());
     }
     
     @Test

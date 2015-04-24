@@ -6,9 +6,12 @@
 package org.geoserver.platform;
 
 
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertThat;
 
 import java.io.File;
 
@@ -50,6 +53,21 @@ public class GeoServerExtensionsHelperTest {
         GeoServerExtensionsHelper.clear();
         assertNull(GeoServerExtensions.bean("bean"));
         assertNull(GeoServerExtensions.bean(GeoServerExtensionsHelperTest.class));
+    }
+    
+    class TestClass {
+        
+    }
+    @SuppressWarnings("unchecked")
+    @Test
+    public void helperMultipleSingleton() {
+        TestClass o1 = new TestClass();
+        TestClass o2 = new TestClass();
+        GeoServerExtensionsHelper.singleton("o1", o1, TestClass.class);
+        GeoServerExtensionsHelper.singleton("o2", o2, TestClass.class);
+        
+        assertThat(GeoServerExtensions.extensions(TestClass.class), 
+                containsInAnyOrder(sameInstance(o1), sameInstance(o2)));
     }  
     
     @Test

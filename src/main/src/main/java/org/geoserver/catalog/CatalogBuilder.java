@@ -50,7 +50,6 @@ import org.geotools.util.Version;
 import org.geotools.util.logging.Logging;
 import org.opengis.coverage.grid.Format;
 import org.opengis.coverage.grid.GridEnvelope;
-import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.GeometryDescriptor;
 import org.opengis.feature.type.Name;
@@ -898,9 +897,16 @@ public class CatalogBuilder {
         // mind the default projection policy, Coverages do not have a flexible
         // handling as feature types, they do reproject if the native srs is set,
         // force if missing
-        if (nativeCRS != null && !nativeCRS.getIdentifiers().isEmpty()) {
-            cinfo.setSRS(nativeCRS.getIdentifiers().toArray()[0].toString());
-            cinfo.setProjectionPolicy(ProjectionPolicy.REPROJECT_TO_DECLARED);
+        if (nativeCRS != null) {
+            try {
+                Integer code = CRS.lookupEpsgCode(nativeCRS, false);
+                if (code != null) {
+                    cinfo.setSRS("EPSG:" + code);
+                    cinfo.setProjectionPolicy(ProjectionPolicy.REPROJECT_TO_DECLARED);
+                }
+            } catch (FactoryException e) {
+                LOGGER.log(Level.WARNING, "SRS lookup failed", e);
+            }
         }
         if (nativeCRS == null) {
             cinfo.setProjectionPolicy(ProjectionPolicy.FORCE_DECLARED);
@@ -965,7 +971,7 @@ public class CatalogBuilder {
         parameters.put(AbstractGridFormat.READ_GRIDGEOMETRY2D.getName().toString(), new GridGeometry2D(testRange, testEnvelope));
 
         // try to read this coverage
-        gc = (GridCoverage2D) reader.read(CoverageUtils.getParameters(readParams, parameters, true));
+        gc = reader.read(CoverageUtils.getParameters(readParams, parameters, true));
         if (gc == null) {
             throw new Exception("Unable to acquire test coverage for format:" + format.getName());
         }
@@ -1508,7 +1514,7 @@ public class CatalogBuilder {
             att.setMaxOccurs(pd.getMaxOccurs());
             att.setNillable(pd.isNillable());
             att.setBinding(pd.getType().getBinding());
-            int length = FeatureTypes.getFieldLength((AttributeDescriptor) pd);
+            int length = FeatureTypes.getFieldLength(pd);
             if(length > 0) {
                 att.setLength(length);
             }

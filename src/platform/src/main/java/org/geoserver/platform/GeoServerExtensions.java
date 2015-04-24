@@ -7,6 +7,8 @@ package org.geoserver.platform;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -122,37 +124,8 @@ public class GeoServerExtensions implements ApplicationContextAware, Application
      */
     @SuppressWarnings("unchecked")
     public static final <T> List<T> extensions(Class<T> extensionPoint, ApplicationContext context) {
-        String[] names;
-        if(GeoServerExtensions.context == context){
-            names = extensionsCache.get(extensionPoint);
-        }else{
-            names = null;
-        }
-        if(names == null) {
-            checkContext(context,extensionPoint.getSimpleName());
-            if ( context != null ) {
-                try {
-                    names = context.getBeanNamesForType(extensionPoint);
-                    if( names == null ){
-                        names = new String[0];
-                    }
-                    //update cache only if dealing with the same context
-                    if(GeoServerExtensions.context == context){
-                        extensionsCache.put(extensionPoint, names);
-                    }
-                }
-                catch( Exception e ) {
-                    //JD: this can happen during testing... if the application 
-                    // context has been closed and a non-one time setup test is
-                    // run that triggers an extension lookup
-                    LOGGER.log( Level.WARNING, "bean lookup error", e );
-                    return Collections.EMPTY_LIST;
-                }
-            }
-            else {
-                return Collections.EMPTY_LIST;
-            }
-        }
+        Collection<String> names;
+        names = extensionNames(extensionPoint, context);
         
         // lookup extension filters preventing recursion
         List<ExtensionFilter> filters;
@@ -163,7 +136,7 @@ public class GeoServerExtensions implements ApplicationContextAware, Application
         }
         
         // look up all the beans
-        List<T> result = new ArrayList<T>(names.length);
+        List<T> result = new ArrayList<T>(names.size());
         for(String name : names) {
             Object bean = getBean(context, name);
             if(!excludeBean(name, bean, filters))
@@ -219,6 +192,46 @@ public class GeoServerExtensions implements ApplicationContextAware, Application
         });
         
         return result;
+    }
+    
+    public static <T> Collection<String> extensionNames(Class<T> extensionPoint) {
+        return extensionNames(extensionPoint, context);
+    }
+    
+    public static <T> Collection<String> extensionNames(Class<T> extensionPoint,
+            ApplicationContext context) {
+        String[] names;
+        if(GeoServerExtensions.context == context){
+            names = extensionsCache.get(extensionPoint);
+        }else{
+            names = null;
+        }
+        if(names == null) {
+            checkContext(context,extensionPoint.getSimpleName());
+            if ( context != null ) {
+                try {
+                    names = context.getBeanNamesForType(extensionPoint);
+                    if( names == null ){
+                        names = new String[0];
+                    }
+                    //update cache only if dealing with the same context
+                    if(GeoServerExtensions.context == context){
+                        extensionsCache.put(extensionPoint, names);
+                    }
+                }
+                catch( Exception e ) {
+                    //JD: this can happen during testing... if the application 
+                    // context has been closed and a non-one time setup test is
+                    // run that triggers an extension lookup
+                    LOGGER.log( Level.WARNING, "bean lookup error", e );
+                    return Collections.emptyList();
+                }
+            }
+            else {
+                return Collections.emptyList();
+            }
+        }
+        return Arrays.asList(names);
     }
 
     private static Object getBean(ApplicationContext context, String name) {
@@ -296,7 +309,7 @@ public class GeoServerExtensions implements ApplicationContextAware, Application
      *
      * @param type THe type of the bean to lookup.
      * 
-     * @throws IllegalArgumentException If there are multiple beans of the specified
+     * @throws MultipleBeansException If there are multiple beans of the specified
      * type in the context. 
      */
     public static final <T> T bean(Class<T> type) throws IllegalArgumentException {
@@ -314,7 +327,7 @@ public class GeoServerExtensions implements ApplicationContextAware, Application
      * @param type THe type of the bean to lookup.
      * @param context The application context
      * 
-     * @throws IllegalArgumentException If there are multiple beans of the specified
+     * @throws MultipleBeansException If there are multiple beans of the specified
      * type in the context. 
      */
     public static final <T> T bean(Class<T> type, ApplicationContext context) throws IllegalArgumentException {
@@ -324,10 +337,44 @@ public class GeoServerExtensions implements ApplicationContextAware, Application
         }
         
         if ( beans.size() > 1 ) {
-            throw new IllegalArgumentException( "Multiple beans of type " + type.getName() );
+            throw new MultipleBeansException(type, extensionNames(type, context));
         }
         
         return beans.get( 0 );
+    }
+    
+    /**
+     * 
+     * Exception thrown when multiple beans implementing an extension point and only one is expected.
+     *
+     */
+    public static class MultipleBeansException extends IllegalArgumentException {
+        /** serialVersionUID */
+        private static final long serialVersionUID = -8039187466594032626L;
+        
+        private final Class<?> extensionPoint;
+        private final Collection<String> availableBeans;
+        
+        public MultipleBeansException(Class<?> extensionPoint,
+                Collection<String> availableBeans) {
+            super("Multiple beans of type " + extensionPoint.getName());
+            this.extensionPoint = extensionPoint;
+            this.availableBeans = availableBeans;
+        }
+        
+        /**
+         * @return the extension point
+         */
+        public Class<?> getExtensionPoint() {
+            return extensionPoint;
+        }
+        
+        /**
+         * @return the names of the beans
+         */
+        public Collection<String> getAvailableBeans() {
+            return availableBeans;
+        }
     }
     
     public void onApplicationEvent(ApplicationEvent event) {

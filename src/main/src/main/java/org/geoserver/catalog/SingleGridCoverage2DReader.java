@@ -1,9 +1,11 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014-2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.catalog;
+
+import it.geosolutions.imageio.maskband.DatasetLayout;
 
 import java.io.IOException;
 import java.util.List;
@@ -210,6 +212,16 @@ public class SingleGridCoverage2DReader implements GridCoverage2DReader {
     public double[][] getResolutionLevels(String coverageName) throws IOException {
         checkCoverageName(coverageName);
         return delegate.getResolutionLevels(coverageName);
+    }
+
+    @Override
+    public DatasetLayout getDatasetLayout() {
+        return delegate.getDatasetLayout();
+    }
+
+    @Override
+    public DatasetLayout getDatasetLayout(String coverageName) {
+        return delegate.getDatasetLayout(coverageName);
     }
 
 }

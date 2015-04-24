@@ -1,13 +1,13 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.importer.transform;
 
+import org.geoserver.importer.ImportTask;
 import org.geotools.data.DataStore;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
-import org.geoserver.importer.ImportTask;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.GeometryDescriptor;
@@ -16,7 +16,7 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Point;
 
-public class AttributesToPointGeometryTransform extends AbstractVectorTransform implements
+public class AttributesToPointGeometryTransform extends AbstractTransform implements
         InlineVectorTransform {
 
     /** serialVersionUID */

@@ -1,19 +1,16 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.importer.transform;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.geoserver.importer.ImportTask;
 import org.geotools.data.DataStore;
 import org.geotools.util.logging.Logging;
-import org.geoserver.importer.ImportData;
-import org.geoserver.importer.ImportTask;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 
@@ -23,6 +20,7 @@ import org.opengis.feature.simple.SimpleFeatureType;
  * @author Justin Deoliveira, OpenGeo
  */
 public class VectorTransformChain extends TransformChain<VectorTransform> {
+    private static final long serialVersionUID = 7406010540766743012L;
 
     static Logger LOGGER = Logging.getLogger(VectorTransformChain.class);
 
@@ -34,16 +32,6 @@ public class VectorTransformChain extends TransformChain<VectorTransform> {
         super(transforms);
     }
     
-    public void pre(ImportTask item, ImportData data) throws Exception {
-        for (PreVectorTransform tx : filter(transforms, PreVectorTransform.class)) {
-            try {
-                tx.apply(item, data);
-            } catch (Exception e) {
-                error(tx, e);
-            }
-        }
-    }
-
     public SimpleFeatureType inline(ImportTask task, DataStore dataStore, SimpleFeatureType featureType) 
         throws Exception {
         
@@ -76,33 +64,9 @@ public class VectorTransformChain extends TransformChain<VectorTransform> {
         return feature;
     }
 
-    public void post(ImportTask task, ImportData data) throws Exception {
-        for (PostVectorTransform tx : filter(transforms, PostVectorTransform.class)) {
-            try {
-                tx.apply(task, data);
-            } catch (Exception e) {
-                error(tx, e);
-            }
-        }
-    }
 
-    <T> List<T> filter(List<VectorTransform> transforms, Class<T> type) {
-        List<T> filtered = new ArrayList<T>();
-        for (VectorTransform tx : transforms) {
-            if (type.isInstance(tx)) {
-                filtered.add((T) tx);
-            }
-        }
-        return filtered;
-    }
 
-    void error(VectorTransform tx, Exception e) throws Exception {
-        if (tx.stopOnError(e)) {
-            throw e;
-        }
-        else {
-            //log and continue
-            LOGGER.log(Level.WARNING, "Transform " + tx + " failed", e);
-        }
-    }
+
+
+
 }

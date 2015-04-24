@@ -402,3 +402,68 @@ If all goes well the new layer is created in PostGIS and registered in GeoServer
 In case the features in the CSV need to be appended to an existing layer a PUT request against the task might be performed, changing its
 updateMode from "CREATE" to "APPEND". Changing it to "REPLACE" instead will preserve the layer, but remove the old conents and replace
 them with the newly uploaded ones.
+
+Uploading and optimizing a GeoTiff with ground control points 
+-------------------------------------------------------------
+
+A data supplier is periodically providing GeoTiffs that we need to configure in GeoServer.
+The GeoTIFF is referenced via Ground Control Points, is organized by stripes, and has no overviews.
+The objective is to rectify, optimize and publish it via the importer.
+
+First, we are going to create a empty import with no store as the target::
+
+    curl -u admin:geoserver -XPOST -H "Content-type: application/json" -d @import.json "http://localhost:8080/geoserver/rest/imports"
+
+Where import.json is::
+
+    {
+       "import": {
+          "targetWorkspace": {
+             "workspace": {
+                "name": "sf"
+             }
+          }
+       }
+    }
+
+Then, we are going to POST the GeoTiff file to the tasks list, in order to create an import task for it::
+
+    curl -u admin:geoserver -F name=test -F filedata=@box_gcp_fixed.tif "http://localhost:8080/geoserver/rest/imports/0/tasks"
+    
+We are then going to append the transformations to rectify (gdalwarp), retile (gdal_translate) and add overviews (gdaladdo) to it:
+
+   curl -u admin:geoserver -XPOST -H "Content-type: application/json" -d @warp.json "http://localhost:8080/geoserver/rest/imports/0/tasks/0/transforms"
+   curl -u admin:geoserver -XPOST -H "Content-type: application/json" -d @gtx.json "http://localhost:8080/geoserver/rest/imports/0/tasks/0/transforms"
+   curl -u admin:geoserver -XPOST -H "Content-type: application/json" -d @gad.json "http://localhost:8080/geoserver/rest/imports/0/tasks/0/transforms"
+   
+
+``warp.json`` is::
+
+    {
+      "type": "GdalWarpTransform",
+      "options": [ "-t_srs", "EPSG:4326"]
+    }
+
+
+``gtx.json`` is:
+
+    {
+      "type": "GdalTranslateTransform",
+      "options": [ "-co", "TILED=YES", "-co", "BLOCKXSIZE=512", "-co", "BLOCKYSIZE=512"]
+    }
+
+``gad.json`` is::
+
+    {
+      "type": "GdalAddoTransform",
+      "options": [ "-r", "average"],
+      "levels" : [2, 4, 8, 16]
+    }
+
+    
+Now the import is ready to run, and we'll execute it using::
+
+    curl -u admin:geoserver -XPOST "http://localhost:8080/geoserver/rest/imports/0"
+
+A new layer ``box_gcp_fixed`` layer will appear in GeoServer, with an underlying GeoTiff file ready
+for web serving.

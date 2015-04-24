@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -11,20 +11,20 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.commons.lang.StringUtils;
+import org.geoserver.importer.FeatureDataConverter;
+import org.geoserver.importer.ImportTask;
+import org.geoserver.importer.format.KMLFileFormat;
 import org.geotools.data.DataStore;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.kml.Folder;
-import org.geoserver.importer.FeatureDataConverter;
-import org.geoserver.importer.ImportTask;
-import org.geoserver.importer.format.KMLFileFormat;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;
 
 import com.vividsolutions.jts.geom.Geometry;
 
-public class KMLPlacemarkTransform extends AbstractVectorTransform implements InlineVectorTransform {
+public class KMLPlacemarkTransform extends AbstractTransform implements InlineVectorTransform {
 
     /** serialVersionUID */
     private static final long serialVersionUID = 1L;

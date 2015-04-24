@@ -914,3 +914,54 @@ Reprojects a vector layer from a source CRS to a target CRS
      - N
      - Identifier of the target coordinate reference system
      
+GdalTranslateTransform
+""""""""""""""""""""""
+
+Applies ``gdal_translate`` to a single file raster input. Requires ``gdal_translate`` to be inside the PATH used by the web container running GeoServer.
+
+
+.. list-table::
+   :header-rows: 1
+
+   * - Parameter
+     - Optional
+     - Description
+   * - options
+     - N
+     - Array of options that will be passed to ``gdal_translate`` (beside the input and output names, which are internally managed)
+     
+GdalWarpTransform
+"""""""""""""""""
+
+Applies ``gdalwarp`` to a single file raster input. Requires ``gdalwarp`` to be inside the PATH used by the web container running GeoServer.
+
+
+.. list-table::
+   :header-rows: 1
+
+   * - Parameter
+     - Optional
+     - Description
+   * - options
+     - N
+     - Array of options that will be passed to ``gdalwarp`` (beside the input and output names, which are internally managed)
+     
+GdalAddoTransform
+"""""""""""""""""
+
+Applies ``gdaladdo`` to a single file raster input. Requires ``gdaladdo`` to be inside the PATH used by the web container running GeoServer.
+
+
+.. list-table::
+   :header-rows: 1
+
+   * - Parameter
+     - Optional
+     - Description
+   * - options
+     - N
+     - Array of options that will be passed to ``gdaladdo`` (beside the input file name, which is internally managed)
+   * - levels
+     - N
+     - Array of integers with the overview levels that will be passed to ``gdaladdo``
+     

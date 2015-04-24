@@ -816,17 +816,17 @@ public class Importer implements DisposableBean, ApplicationListener {
         task.setState(ImportTask.State.RUNNING);
 
         try {
-            //set up transform chain
+            // set up transform chain
             TransformChain tx = task.getTransform();
             
-            //apply pre transform
+            // apply pre transform
             if (!doPreTransform(task, task.getData(), tx)) {
                 return;
             }
 
             addToCatalog(task);
 
-            //apply pre transform
+            // apply post transform
             if (!doPostTransform(task, task.getData(), tx)) {
                 return;
             }

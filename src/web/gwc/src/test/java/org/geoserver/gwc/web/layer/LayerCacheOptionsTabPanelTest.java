@@ -16,6 +16,7 @@ import java.util.Arrays;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.util.tester.FormTester;
@@ -64,6 +65,8 @@ public class LayerCacheOptionsTabPanelTest extends GeoServerWicketTestSupport {
 
         tester.assertComponent("form:panel", LayerCacheOptionsTabPanel.class);
         tester.assertComponent("form:panel:tileLayerEditor", GeoServerTileLayerEditor.class);
+        // Ensure the InMemoryCaching checkbox is present
+        tester.assertComponent("form:panel:tileLayerEditor:container:configs:inMemoryCached", CheckBox.class);
     }
 
     @Test

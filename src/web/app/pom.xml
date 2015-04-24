@@ -1228,6 +1228,16 @@
           <version>${project.version}</version>
         </dependency>
       </dependencies>
+    </profile>   
+	<profile>
+      <id>gwc-distributed</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-gwc-distributed</artifactId>
+	  <version>${project.version}</version>
+        </dependency>
+      </dependencies>
     </profile>
     <profile>
       <id>rest-upload</id>

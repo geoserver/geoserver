@@ -29,6 +29,7 @@ import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.validation.IValidatable;
 import org.apache.wicket.validation.IValidator;
 import org.apache.wicket.validation.ValidationError;
+import org.geoserver.gwc.ConfigurableBlobStore;
 import org.geoserver.gwc.config.GWCConfig;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.wicket.LocalizedChoiceRenderer;
@@ -166,6 +167,10 @@ public class CachingOptionsPanel extends Panel {
             otherFormatsGroup.add(formatsList);
         }
 
+        // Add a new Panel for configuring In Memory caching
+        BlobStorePanel storePanel = new BlobStorePanel("blobstores", gwcConfigModel);
+        configs.add(storePanel.setOutputMarkupId(true));
+        
         IModel<Set<String>> cachedGridsetsModel = new PropertyModel<Set<String>>(gwcConfigModel,
                 "defaultCachingGridSetIds");
         DefaultGridsetsEditor cachedGridsets = new DefaultGridsetsEditor("cachedGridsets",

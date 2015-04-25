@@ -8,8 +8,8 @@ Getting commit access
 
 All contributors are asked to provide an assignment agreement for working on the project:
 
-* `corporate_contributor.txt <http://www.osgeo.org/sites/osgeo.org/files/Page/corporate_contributor.txt>`_
-* `individual_contributor.txt <http://www.osgeo.org/sites/osgeo.org/files/Page/individual_contributor.txt>`_
+* `corporate_contributor.txt <http://www.osgeo.org/sites/osgeo.org/files/Page/corporate_contributor.txt>`__
+* `individual_contributor.txt <http://www.osgeo.org/sites/osgeo.org/files/Page/individual_contributor.txt>`__
 
 
 This agreement can be printed, signed, scanned and emailed to `info@osgeo.org <mailto:info@osgeo.org>`_ at Open Source Geospatial Foundation (OSGeo). `OSGeo <http://www.osgeo.org/content/foundation/about.html>`_
@@ -41,7 +41,7 @@ The process of getting community commit access is as follows:
 #. **Print, sign, scan and send the contributor agreement**
    
    * `corporate_contributor.txt <http://www.osgeo.org/sites/osgeo.org/files/Page/corporate_contributor.tx>`_
-   * `individual_contributor.txt <http://www.osgeo.org/sites/osgeo.org/files/Page/individual_contributor.txt>`_
+   * `individual_contributor.txt <http://www.osgeo.org/sites/osgeo.org/files/Page/individual_contributor.txt>`__
    
    Scanned assignment agreement can be emailed `info@osgeo.org <mailto:info@osgeo.org>`_ at OSGeo.
 

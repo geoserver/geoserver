@@ -6,6 +6,7 @@ import org.geotools.styling.DefaultResourceLocator;
 import org.geotools.styling.ResourceLocator;
 import org.geotools.styling.StyledLayerDescriptor;
 import org.geotools.util.Version;
+import org.geotools.ysld.UomMapper;
 import org.geotools.ysld.Ysld;
 import org.geotools.ysld.parse.WellKnownZoomContextFinder;
 import org.xml.sax.EntityResolver;
@@ -27,7 +28,7 @@ public class YsldHandler extends StyleHandler {
     /**
      * Creates a new handler with an explicit zoom finder.
      */
-    public YsldHandler(ZoomContextFinder zoomFinder) {
+    public YsldHandler(ZoomContextFinder zoomFinder, UomMapper uomMapper) {
         super("Ysld", FORMAT);
         this.zoomFinder = zoomFinder;
     }
@@ -40,7 +41,7 @@ public class YsldHandler extends StyleHandler {
      * </p>
      */
     public YsldHandler() {
-        this(WellKnownZoomContextFinder.getInstance());
+        this(WellKnownZoomContextFinder.getInstance(), new UomMapper());
     }
 
     @Override
@@ -54,6 +55,7 @@ public class YsldHandler extends StyleHandler {
     }
     
     ZoomContextFinder zoomFinder;
+    UomMapper uomMapper;
     
     @Override
     public StyledLayerDescriptor parse(Object input, Version version, @Nullable ResourceLocator resourceLocator,
@@ -64,18 +66,18 @@ public class YsldHandler extends StyleHandler {
             ((DefaultResourceLocator)resourceLocator).setSourceUrl(DataUtilities.fileToURL((File) input));
         }
         
-        return Ysld.parse(toReader(input), Collections.singletonList(zoomFinder), resourceLocator);
+        return Ysld.parse(toReader(input), Collections.singletonList(zoomFinder), resourceLocator, uomMapper);
     }
 
     @Override
     public void encode(StyledLayerDescriptor sld, Version version, boolean pretty, OutputStream output) throws IOException {
-        Ysld.encode(sld, output);
+        Ysld.encode(sld, output, uomMapper);
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
     public List<Exception> validate(Object input, Version version, EntityResolver entityResolver) throws IOException {
-        return (List) Ysld.validate(toReader(input), Collections.singletonList(zoomFinder));
+        return (List) Ysld.validate(toReader(input), Collections.singletonList(zoomFinder), uomMapper);
     }
 
     @Override

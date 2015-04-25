@@ -74,7 +74,6 @@ Tests that exercise a component by that must integrate with another component to
 In GeoServer these are tests that somehow mock up the dependencies for the component under
 test either by creating it directly or via a mocking library.
 
-
 System
 ^^^^^^
 
@@ -82,6 +81,7 @@ Tests that exercise a component or set of components by testing it in a fully ru
 In GeoServer these are tests that create a fully functional GeoServer system, including
 a data directory/configuration and a spring context.
 
+Helper classes are provided to help inject your classes into the system configuration including ``GeoServerExtensionsHelper``.
 
 Writing System Tests
 --------------------

@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 -2015 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -36,6 +36,7 @@ public class InputLimitsTest extends WPSTestSupport {
     @Override
     protected void setUpTestData(SystemTestData testData) throws Exception {
         // need no layers for this test
+        testData.setUpSecurity();
     }
 
     @Before

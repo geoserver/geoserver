@@ -1,30 +1,22 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.web.data.layer;
 
-import static org.junit.Assert.*;
-import static org.geoserver.data.test.SystemTestData.*;
+import static org.geoserver.data.test.CiteTestData.BUILDINGS;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
 
 import javax.xml.namespace.QName;
 
-import org.apache.wicket.Component;
-import org.apache.wicket.IPageMap;
-import org.apache.wicket.ajax.markup.html.AjaxLink;
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.data.test.MockData;
@@ -42,6 +34,7 @@ public class LayerPageTest extends GeoServerWicketTestSupport {
     @Override
     protected void setUpTestData(SystemTestData testData) throws Exception {
         //we don't want any of the defaults
+        testData.setUpSecurity();
     }
 
     @Override

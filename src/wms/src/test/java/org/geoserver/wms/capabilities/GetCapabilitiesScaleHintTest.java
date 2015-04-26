@@ -1,7 +1,8 @@
-/**
- * 
- */
-package org.geoserver.wms.capabilities;
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2013 OpenPlans
+ * This code is licensed under the GPL 2.0 license, availible at the root
+ * application directory.
+ */package org.geoserver.wms.capabilities;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
@@ -71,6 +72,7 @@ public class GetCapabilitiesScaleHintTest extends WMSTestSupport {
     @Override
     protected void setUpTestData(SystemTestData testData) throws Exception {
         // all the data we need is registered in this test
+        testData.setUpSecurity();
     }
 
 

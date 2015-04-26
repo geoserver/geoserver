@@ -67,6 +67,7 @@ public class GetFeatureCurvesTest extends WFSTestSupport {
     @Override
     protected void setUpTestData(SystemTestData testData) throws Exception {
         // do not call super, we only need the curved data sets
+        testData.setUpSecurity();
     }
 
     @Test

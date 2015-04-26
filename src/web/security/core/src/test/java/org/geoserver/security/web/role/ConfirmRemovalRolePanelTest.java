@@ -1,16 +1,14 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.security.web.role;
 
-import java.io.IOException;
 import java.util.List;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.StringResourceModel;
 import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.security.web.AbstractConfirmRemovalPanelTest;
 import org.geoserver.web.ComponentBuilder;
@@ -59,13 +57,12 @@ public class ConfirmRemovalRolePanelTest extends AbstractConfirmRemovalPanelTest
 
     @Override
     protected GeoServerRole getProblematicObject() throws Exception {
-        return gaService.getRoleByName(
-                GeoServerRole.ADMIN_ROLE.getAuthority());
+    	return null;
     }
 
     @Override
     protected String getProblematicObjectRegExp() throws Exception{
-        return ".*"+getProblematicObject().getAuthority()+".*";
+        return null;
     }
 
     @Override

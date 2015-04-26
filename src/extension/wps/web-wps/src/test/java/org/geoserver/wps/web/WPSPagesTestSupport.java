@@ -12,6 +12,7 @@ public abstract class WPSPagesTestSupport extends GeoServerWicketTestSupport {
     @Override
     protected void setUpTestData(SystemTestData testData) throws Exception {
         // no data needed
+        testData.setUpSecurity();
     }
 
 }

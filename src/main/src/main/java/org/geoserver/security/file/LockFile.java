@@ -14,8 +14,6 @@ import java.net.UnknownHostException;
 import java.util.Properties;
 import java.util.logging.Logger;
 
-import org.apache.commons.io.IOUtils;
-
 import org.geoserver.security.impl.Util;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -95,13 +93,10 @@ public class LockFile  {
                         
         if (lockFile.exists()) {             
             LOGGER.warning("Cannot obtain  lock: " + lockFile.getCanonicalPath());
-            FileInputStream in = new FileInputStream(lockFile);
             Properties props = new Properties();
 
-            try {
+            try (FileInputStream in = new FileInputStream(lockFile)) {
                 props.load(in);
-            } finally {
-                IOUtils.closeQuietly(in);
             }
 
             throw new IOException(Util.convertPropsToString(props,"Already locked" ));
@@ -123,10 +118,8 @@ public class LockFile  {
      */
     protected void writeLockFileContent(File lockFile) throws IOException {
         
-        FileOutputStream out = new FileOutputStream(lockFile); 
         Properties props = new Properties();
-
-        try {
+        try (FileOutputStream out = new FileOutputStream(lockFile)) {
             props.store(out, "Locking info");
 
             String hostname="UNKNOWN";
@@ -151,8 +144,6 @@ public class LockFile  {
             props.put("principal", auth==null ? "UNKNOWN" :auth.getName());
 
             props.store(out, "Locking info");
-        } finally {
-            IOUtils.closeQuietly(out);
         }
     }
         

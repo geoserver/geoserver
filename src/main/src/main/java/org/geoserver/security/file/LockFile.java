@@ -146,18 +146,5 @@ public class LockFile  {
             props.store(out, "Locking info");
         }
     }
-        
-    /**
-     * remove the lock file if the garbage
-     * collector removes this object
-     */
-    @Override
-    protected void finalize() throws Throwable {
-        // check for left locks
-        if (lockFile!=null && hasWriteLock()) {
-            writeUnLock();
-            LOGGER.warning("Unlocking due to garbage collection for "+lockFile.getCanonicalPath());
-        }
-    }
 
 }

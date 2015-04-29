@@ -23,6 +23,5 @@
    </bean>
    
    <bean id="hzExtensionFilter" class="org.geoserver.cluster.hazelcast.HzExtensionFilter">
-      <constructor-arg ref="hzCluster"/>
    </bean>
 </beans>

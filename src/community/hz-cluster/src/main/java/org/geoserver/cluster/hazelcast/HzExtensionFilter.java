@@ -18,27 +18,18 @@ import org.geotools.util.logging.Logging;
  *
  */
 public class HzExtensionFilter implements ExtensionFilter {
-    HzCluster cluster;
     
     protected static Logger LOGGER = Logging.getLogger("org.geoserver.cluster.hazelcast");
     
-    public HzExtensionFilter(HzCluster cluster) {
-        this.cluster = cluster;
+    public HzExtensionFilter() {
     }
     
     @Override
     public boolean exclude(String beanId, Object bean) {
-        if(cluster.isEnabled()) {
-            if((bean instanceof CacheProvider) && !(bean instanceof HzCacheProvider)) {
-                // If another extension does this too then we're in trouble as only the default will be used.
-                LOGGER.log(Level.INFO, "hz-cluster module is supressing conflicting CacheProvider {0}", new Object[]{beanId});
-                return true;
-            }
-        } else {
-            if(bean instanceof HzCacheProvider) {
-                LOGGER.log(Level.CONFIG, "Supressing HzCacheProvider as it is not needed when hz-cluster is disabled.");
-                return true;
-            }
+        if((bean instanceof CacheProvider) && !(bean instanceof HzCacheProvider)) {
+            // If another extension does this too then we're in trouble as only the default will be used.
+            LOGGER.log(Level.INFO, "hz-cluster module is supressing conflicting CacheProvider {0}", new Object[]{beanId});
+            return true;
         }
         return false;
     }

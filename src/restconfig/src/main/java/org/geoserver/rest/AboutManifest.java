@@ -13,8 +13,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import jj2000.j2k.NotImplementedError;
-
 import org.geoserver.ManifestLoader;
 import org.geoserver.ManifestLoader.AboutModel;
 import org.geoserver.ManifestLoader.AboutModel.AboutModelType;
@@ -157,7 +155,7 @@ public class AboutManifest extends ReflectiveResource {
                         @Override
                         public Object unmarshal(HierarchicalStreamReader reader,
                                 UnmarshallingContext context) {
-                            throw new NotImplementedError("Not implemented");
+                            throw new UnsupportedOperationException("Not implemented");
                         }
 
                     });
@@ -165,7 +163,7 @@ public class AboutManifest extends ReflectiveResource {
 
             @Override
             public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {
-                throw new NotImplementedError("Not implemented");
+                throw new UnsupportedOperationException("Not implemented");
             }
 
         });

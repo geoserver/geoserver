@@ -467,3 +467,64 @@ Now the import is ready to run, and we'll execute it using::
 
 A new layer ``box_gcp_fixed`` layer will appear in GeoServer, with an underlying GeoTiff file ready
 for web serving.
+
+Adding a new granule into an existing mosaic 
+--------------------------------------------
+
+A data supplier is periodically providing new time based imagery that we need to add into an existing mosaic
+in GeoServer.
+The imagery is in GeoTiff format, and lacks a good internal structure, which needs to be aligned with
+the one into the other images.
+  
+First, we are going to create a import with an indication of where the granule is located, and
+the target store:
+
+    curl -u admin:geoserver -XPOST -H "Content-type: application/json" -d @import.json "http://localhost:8080/geoserver/rest/imports"
+
+Where import.json is::
+
+    {
+       "import": {
+          "targetWorkspace": {
+             "workspace": {
+                "name": "topp"
+             }
+          },
+          "data": {
+            "type": "file",
+            "file": "/home/aaime/devel/gisData/ndimensional/data/world/world.200407.3x5400x2700.tiff"
+          },
+          "targetStore": {
+             "dataStore": {
+                "name": "bluemarble"
+             }
+          }
+       }
+    }
+
+We are then going to append the transformations to harmonize the file with the rest of the mosaic:
+
+   curl -u admin:geoserver -XPOST -H "Content-type: application/json" -d @gtx.json "http://localhost:8080/geoserver/rest/imports/0/tasks/0/transforms"
+   curl -u admin:geoserver -XPOST -H "Content-type: application/json" -d @gad.json "http://localhost:8080/geoserver/rest/imports/0/tasks/0/transforms"
+   
+``gtx.json`` is:
+
+    {
+      "type": "GdalTranslateTransform",
+      "options": [ "-co", "TILED=YES"]
+    }
+
+``gad.json`` is::
+
+{
+      "type": "GdalAddoTransform",
+      "options": [ "-r", "average"],
+      "levels" : [2, 4, 8, 16, 32, 64, 128]
+    }
+
+    
+Now the import is ready to run, and we'll execute it using::
+
+    curl -u admin:geoserver -XPOST "http://localhost:8080/geoserver/rest/imports/0"
+
+The new granule will be ingested into the mosaic, and will thus be available for time based requests.

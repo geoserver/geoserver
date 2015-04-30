@@ -5,6 +5,7 @@
  */
 package org.geoserver.catalog;
 
+import it.geosolutions.imageio.maskband.DatasetLayout;
 import it.geosolutions.jaiext.range.NoDataContainer;
 
 import java.awt.image.ColorModel;
@@ -718,5 +719,15 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
             label.append("]".intern());
             configuredDescription = new SimpleInternationalString(label.toString());
         }
+    }
+
+    @Override
+    public DatasetLayout getDatasetLayout() {
+        return delegate.getDatasetLayout();
+    }
+
+    @Override
+    public DatasetLayout getDatasetLayout(String coverageName) {
+        return delegate.getDatasetLayout(coverageName);
     }
 }

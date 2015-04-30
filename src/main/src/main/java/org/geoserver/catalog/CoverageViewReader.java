@@ -5,6 +5,7 @@
  */
 package org.geoserver.catalog;
 
+import it.geosolutions.imageio.maskband.DatasetLayout;
 import it.geosolutions.imageio.utilities.ImageIOUtilities;
 
 import java.awt.Rectangle;
@@ -551,6 +552,16 @@ public class CoverageViewReader implements GridCoverage2DReader {
     @Override
     public double[][] getResolutionLevels() throws IOException {
         return delegate.getResolutionLevels(referenceName);
+    }
+
+    @Override
+    public DatasetLayout getDatasetLayout() {
+        return delegate.getDatasetLayout();
+    }
+
+    @Override
+    public DatasetLayout getDatasetLayout(String coverageName) {
+        return delegate.getDatasetLayout(coverageName);
     }
 
 }

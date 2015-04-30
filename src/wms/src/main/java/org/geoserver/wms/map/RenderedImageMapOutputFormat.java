@@ -1207,6 +1207,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
             // Check if we need to crop a subset of the produced image, else return it right away
             if (imageBounds.contains(mapRasterArea) && !imageBounds.equals(mapRasterArea)) { // the produced image does not need a final mosaicking operation but a crop!
                 ImageWorker iw = new ImageWorker(image);
+                iw.setBackground(bgValues);
                 iw.crop(0, 0, mapWidth, mapHeight);
                 image = iw.getRenderedImage();
             }

@@ -355,8 +355,8 @@ public class ImportJSONReader {
             //return new FileData(new File(file));
         }
         else {
-            //TODO: create a temp file
-            return new FileData((File)null);
+            throw new IOException(
+                    "Could not find 'file' entry in data, mandatory for file type data");
         }
     }
 

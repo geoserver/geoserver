@@ -90,69 +90,81 @@ public abstract class AbstractCommandLineTransform extends AbstractTransform imp
 
         // grab at least some part of the outputs
         int limit = 16 * 1024;
-        try (OutputStream os = new BoundedOutputStream(new ByteArrayOutputStream(), limit);
-                OutputStream es = new BoundedOutputStream(new ByteArrayOutputStream(), limit)) {
-            PumpStreamHandler streamHandler = new PumpStreamHandler(os, es);
-            executor.setStreamHandler(streamHandler);
-            int result = executor.execute(cmd);
+        try {
+            try (OutputStream os = new BoundedOutputStream(new ByteArrayOutputStream(), limit);
+                    OutputStream es = new BoundedOutputStream(new ByteArrayOutputStream(), limit)) {
+                PumpStreamHandler streamHandler = new PumpStreamHandler(os, es);
+                executor.setStreamHandler(streamHandler);
+                try {
+                int result = executor.execute(cmd);
 
-            if (result != 0) {
-                // toString call is routed to ByteArrayOutputStream, which does the right string
-                // conversion
-                throw new IOException("Failed to execute command " + cmd.toString()
-                        + "\nStandard output is:\n" + os.toString() + "\nStandard error is:\n"
-                        + es.toString());
-            }
+                if (result != 0) {
+                    // toString call is routed to ByteArrayOutputStream, which does the right string
+                    // conversion
+                    throw new IOException("Failed to execute command " + cmd.toString()
+                            + "\nStandard output is:\n" + os.toString() + "\nStandard error is:\n"
+                            + es.toString());
+                }
 
-        } catch (Exception e) {
-            throw new IOException("Failure to execute command " + cmd.toString(), e);
-        }
-
-        // if not inline, replace inputs with output
-        if (!inline) {
-            List<String> names = getReplacementTargetNames(data);
-            File inputParent = inputFile.getParentFile();
-            for (String name : names) {
-                File output = new File(outputDirectory, name);
-                File input = new File(inputParent, name);
-                if (output.exists()) {
-                    // uses atomic rename on *nix, delete and copy on Windows
-                    IOUtils.rename(output, input);
-                } else if (input.exists()) {
-                    input.delete();
+                } catch (Exception e) {
+                    throw new IOException("Failure to execute command " + cmd.toString() + "\nStandard output is:\n" + os.toString() + "\nStandard error is:\n"
+                            + es.toString(), e);
                 }
             }
-            FileUtils.deleteDirectory(outputDirectory);
+
+            // if not inline, replace inputs with output
+            if (!inline) {
+                List<String> names = getReplacementTargetNames(data);
+                File inputParent = inputFile.getParentFile();
+                for (String name : names) {
+                    File output = new File(outputDirectory, name);
+                    File input = new File(inputParent, name);
+                    if (output.exists()) {
+                        // uses atomic rename on *nix, delete and copy on Windows
+                        IOUtils.rename(output, input);
+                    } else if (input.exists()) {
+                        input.delete();
+                    }
+                }
+            }
+        } finally {
+            if (outputDirectory != null) {
+                FileUtils.deleteQuietly(outputDirectory);
+            }
         }
     }
 
     protected boolean checkAvailable() throws IOException {
-        CommandLine cmd = new CommandLine(getExecutable());
-        for (String option : getAvailabilityTestOptions()) {
-            cmd.addArgument(option);
-        }
-
-        // prepare to run
-        DefaultExecutor executor = new DefaultExecutor();
-
-        // grab at least some part of the outputs
-        int limit = 16 * 1024;
-        try (OutputStream os = new BoundedOutputStream(new ByteArrayOutputStream(), limit);
-                OutputStream es = new BoundedOutputStream(new ByteArrayOutputStream(), limit)) {
-            PumpStreamHandler streamHandler = new PumpStreamHandler(os, es);
-            executor.setStreamHandler(streamHandler);
-            int result = executor.execute(cmd);
-
-            if (result != 0) {
-                LOGGER.log(Level.SEVERE,
-                        "Failed to execute command " + cmd.toString()
-                        + "\nStandard output is:\n" + os.toString() + "\nStandard error is:\n"
-                        + es.toString());
-                return false;
+        try {
+            CommandLine cmd = new CommandLine(getExecutable());
+            for (String option : getAvailabilityTestOptions()) {
+                cmd.addArgument(option);
             }
 
+            // prepare to run
+            DefaultExecutor executor = new DefaultExecutor();
+
+            // grab at least some part of the outputs
+            int limit = 16 * 1024;
+            try (OutputStream os = new BoundedOutputStream(new ByteArrayOutputStream(), limit);
+                    OutputStream es = new BoundedOutputStream(new ByteArrayOutputStream(), limit)) {
+                PumpStreamHandler streamHandler = new PumpStreamHandler(os, es);
+                executor.setStreamHandler(streamHandler);
+                int result = executor.execute(cmd);
+
+                if (result != 0) {
+                    LOGGER.log(Level.SEVERE, "Failed to execute command " + cmd.toString()
+                            + "\nStandard output is:\n" + os.toString() + "\nStandard error is:\n"
+                            + es.toString());
+                    return false;
+                }
+
+            } catch (Exception e) {
+                LOGGER.log(Level.SEVERE, "Failure to execute command " + cmd.toString(), e);
+                return false;
+            }
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Failure to execute command " + cmd.toString(), e);
+            LOGGER.log(Level.SEVERE, "Failure to locate executable for class " + this.getClass(), e);
             return false;
         }
 

@@ -49,6 +49,8 @@ import org.geoserver.importer.transform.TransformChain;
 import org.geoserver.importer.transform.VectorTransformChain;
 import org.geoserver.platform.ContextLoadedEvent;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geotools.coverage.grid.io.HarvestedSource;
+import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
 import org.geotools.data.DataStore;
 import org.geotools.data.DefaultTransaction;
 import org.geotools.data.FeatureReader;
@@ -63,6 +65,7 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.jdbc.JDBCDataStore;
 import org.geotools.referencing.CRS;
 import org.geotools.util.logging.Logging;
+import org.opengis.coverage.grid.GridCoverageReader;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.FeatureType;
@@ -738,7 +741,7 @@ public class Importer implements DisposableBean, ApplicationListener {
             doDirectImport(task);
         }
         else {
-            //indirect import, read data from the source and into the target datastore 
+            // indirect import, read data from the source and into the target store
             doIndirectImport(task);
         }
 
@@ -908,7 +911,27 @@ public class Importer implements DisposableBean, ApplicationListener {
             }
         }
         else {
-            throw new UnsupportedOperationException("Indirect raster import not yet supported");
+            // see if the store exposes a structured grid coverage reader
+            StoreInfo store = task.getStore();
+            final String errorMessage = "Indirect raster import can only work against a structured grid coverage store (e.g., mosaic), this one is not: ";
+            if (!(store instanceof CoverageStoreInfo)) {
+                throw new IllegalArgumentException(
+                        errorMessage
+                                + store);
+            }
+
+            CoverageStoreInfo cs = (CoverageStoreInfo) store;
+            GridCoverageReader reader = cs.getGridCoverageReader(null, null);
+
+            if (!(reader instanceof StructuredGridCoverage2DReader)) {
+                throw new IllegalArgumentException(
+                        errorMessage
+                                + store);
+            }
+
+            StructuredGridCoverage2DReader sr = (StructuredGridCoverage2DReader) reader;
+            ImportData data = task.getData();
+            harvestImportData(sr, data);
         }
 
         if (!canceled && !doPostTransform(task, task.getData(), tx)) {
@@ -917,6 +940,41 @@ public class Importer implements DisposableBean, ApplicationListener {
 
         task.setState(canceled ? ImportTask.State.CANCELED : ImportTask.State.COMPLETE);
 
+    }
+
+    private void checkSingleHarvest(List<HarvestedSource> harvests) throws IOException {
+        for (HarvestedSource harvested : harvests) {
+            if (!harvested.success()) {
+                throw new IOException("Failed to harvest " + harvested.getSource() + ": "
+                        + harvested.getMessage());
+            }
+        }
+    }
+
+    private void harvestDirectory(StructuredGridCoverage2DReader sr, Directory data)
+            throws UnsupportedOperationException, IOException {
+        for (FileData fd : data.getFiles()) {
+            harvestImportData(sr, fd);
+        }
+    }
+
+    private void harvestImportData(StructuredGridCoverage2DReader sr, ImportData data)
+            throws IOException {
+        if (data instanceof SpatialFile) {
+            SpatialFile sf = (SpatialFile) data;
+            List<HarvestedSource> harvests = sr.harvest(sr.getGridCoverageNames()[0], sf.getFile(),
+                    null);
+            checkSingleHarvest(harvests);
+        } else if (data instanceof Directory) {
+            harvestDirectory(sr, (Directory) data);
+        } else {
+            unsupportedHarvestFileData(data);
+        }
+    }
+
+    private void unsupportedHarvestFileData(ImportData fd) {
+        throw new IllegalArgumentException(
+                "Unsupported data type for raster harvesting (use SpatialFile or Directory): " + fd);
     }
 
     boolean doPreTransform(ImportTask task, ImportData data, TransformChain tx) {

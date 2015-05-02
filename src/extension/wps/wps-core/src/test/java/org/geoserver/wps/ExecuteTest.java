@@ -1194,9 +1194,9 @@ public class ExecuteTest extends WPSTestSupport {
         // print(dom);
         assertXpathExists("//wps:ProcessFailed", dom);
 
-        // on the status tracker, the process is being dismissed
+        // on the status tracker, the process is being dismissed or it's already gone
         ExecutionStatus status = statusTracker.getStatus(executionId);
-        Assert.assertEquals(ProcessState.DISMISSING, status.getPhase());
+        Assert.assertTrue(status == null || ProcessState.DISMISSING.equals(status.getPhase()));
 
         // let it move on and wait for end
         returnFlag.set(true);

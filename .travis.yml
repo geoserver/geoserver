@@ -10,6 +10,7 @@ jdk:
 before_script:
   - cd src
 script:
+  - mvn dependency:purge-local-repository
   - mvn -B -U -T2 -fae -Prelease clean install
 notifications:
   email:

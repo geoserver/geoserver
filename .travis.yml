@@ -10,7 +10,6 @@ jdk:
 before_script:
   - cd src
 script:
-  - rm -rf /home/travis/.m2/repository/org/apache/xmlgraphics/fop
   - mvn -B -U -T2 -fae -Prelease clean install
 notifications:
   email:

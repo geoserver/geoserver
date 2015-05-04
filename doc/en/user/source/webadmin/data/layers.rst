@@ -93,7 +93,7 @@ Basic Info
 
 The beginning sections—Basic Resource Info, Keywords and Metadata link—are analogous to the :ref:`service_metadata` section for WCS, WFS, and WMS. 
 These sections provide "data about the data," specifically textual information that make the layer data easier to understand and work with.
-The metadate information will appear in the capabilities documents which refer to the layer.
+The metadata information will appear in the capabilities documents which refer to the layer.
 
 * **Name**—Identifier used to reference the layer in WMS requests.  (Note that for a new layer for an already-published resource, the name must be changed to avoid conflict.)
 * **Title**—Human-readable description to briefly identify the layer to clients (required)   

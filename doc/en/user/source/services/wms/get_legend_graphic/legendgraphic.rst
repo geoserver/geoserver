@@ -190,3 +190,9 @@ Let's now examine all the interesting elements, one by one. Notice that I am not
     - **dx,dy,mx,my (double)** can be used to set the margin and the buffers between elements
     - **border (boolean)** activates or deactivates the border on the color elements in order to make the separations clearer. Notice that I decided to **always** have a line that would split the various color elements for the ramp type of colormap.
     - **borderColor (hex)** allows us to set the color for the border in 0xRRGGBB format
+    
+CQL Expressions and ENV
+'''''''''''''''''''''''
+
+If cql expressions are used in ColorMapEntry attributes (see :ref:`here <sld_reference_rastersymbolizer_colormap_cql>`) to create a dynamic color map taking values
+from ENV, the same ENV parameters used for GetMap can be given to GetLegendGraphic to get the desired legend entries.

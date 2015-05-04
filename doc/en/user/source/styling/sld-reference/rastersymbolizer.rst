@@ -191,7 +191,26 @@ extended
 The ``extended`` attribute specifies whether the color map gradient uses 256 (8-bit) or 65536 (16-bit) colors. 
 The value ``false`` (the default) specifies that the color scale is calculated using 8-bit color, and ``true`` specifies using 16-bit color.  
 
+.. _sld_reference_rastersymbolizer_colormap_cql:
 
+CQL Expressions
+"""""""""""""""
+
+Most of the ColorMapEntry attributes (color, quantity and opacity) can be defined using ``cql expressions``, with the ${...expression...} syntax.
+
+CQL expressions are useful to make the color map dynamic, using values taken from the client:    
+
+.. code-block:: xml
+
+    <ColorMapEntry color="#00FF00" quantity="${env('low',3)}" label="Low" opacity="1"/>
+    <ColorMapEntry color="#FFFF00" quantity="${env('medium',10)}" label="Medium" opacity="1"/>
+    <ColorMapEntry color="#FF0000" quantity="${env('high',1000)}" label="High" opacity="1"/>
+
+In this example quantity values are not fixed, but can be specified by the client using the ENV request parameter:
+    
+    http://localhost:8080/geoserver/wms?REQUEST=GetMap&VERSION=1.0.0&...&ENV=low:10;medium:100;high:500
+
+For a complete reference of CQL capabilities, see :ref:`here <filter_ecql_reference>`
    
 ChannelSelection
 ^^^^^^^^^^^^^^^^

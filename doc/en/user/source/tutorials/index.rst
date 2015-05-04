@@ -22,4 +22,4 @@ Tutorials
    imagemosaic-jdbc/imagemosaic-jdbc_tutorial.rst
    feature-pregeneralized/feature-pregeneralized_tutorial.rst
    tomcat-jndi/tomcat-jndi.rst
-   
+   jboss/jboss_tutorial.rst

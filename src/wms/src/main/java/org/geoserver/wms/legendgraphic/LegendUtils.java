@@ -32,6 +32,7 @@ import org.geotools.renderer.i18n.ErrorKeys;
 import org.geotools.renderer.i18n.Errors;
 import org.geotools.renderer.lite.RendererUtilities;
 import org.geotools.renderer.lite.StreamingRenderer;
+import org.geotools.renderer.style.ExpressionExtractor;
 import org.geotools.styling.ColorMapEntry;
 import org.geotools.styling.FeatureTypeStyle;
 import org.geotools.styling.RasterSymbolizer;
@@ -43,6 +44,7 @@ import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.PropertyDescriptor;
 import org.opengis.feature.type.PropertyType;
 import org.opengis.filter.expression.Expression;
+import org.opengis.filter.expression.Literal;
 import org.opengis.style.ChannelSelection;
 
 /**
@@ -296,12 +298,17 @@ public class LegendUtils {
 		// opacity is 1.0 (fully opaque)."
 		//
 		// //
-		final Expression opacity = entry.getOpacity();
+		Expression opacity = entry.getOpacity();
 		Double opacityValue = null;
 		if (opacity != null)
 			opacityValue = opacity.evaluate(null, Double.class);
 		else
 			return 1.0;
+		if(opacityValue == null && opacity instanceof Literal) {
+		    String opacityExp = opacity.evaluate(null, String.class);
+		    opacity = ExpressionExtractor.extractCqlExpressions(opacityExp);
+		    opacityValue = opacity.evaluate(null, Double.class);
+		}
 		if ((opacityValue.doubleValue() - 1) > 0
 				|| opacityValue.doubleValue() < 0) {
 			throw new IllegalArgumentException(Errors.format(
@@ -341,9 +348,13 @@ public class LegendUtils {
 	 */
 	public static Color color(final ColorMapEntry entry){
 		ensureNotNull(entry, "entry");
-		final Expression color = entry.getColor();
+		Expression color = entry.getColor();
 		ensureNotNull(color, "color");
-		final String  colorString= color.evaluate(null, String.class);
+		String  colorString= color.evaluate(null, String.class);
+		if(colorString != null && colorString.startsWith("${")) {
+		    color = ExpressionExtractor.extractCqlExpressions(colorString);
+		    colorString = color.evaluate(null, String.class);
+		}
 		ensureNotNull(colorString, "colorString");
 		return color(colorString);
 	}
@@ -359,6 +370,11 @@ public class LegendUtils {
 		Expression quantity = entry.getQuantity();
 		ensureNotNull(quantity, "quantity");
 		Double quantityString = quantity.evaluate(null, Double.class);
+		if(quantityString == null && quantity instanceof Literal) {
+		    String quantityExp = quantity.evaluate(null, String.class);
+		    quantity = ExpressionExtractor.extractCqlExpressions(quantityExp);
+		    quantityString = quantity.evaluate(null, Double.class);
+		}
 		ensureNotNull(quantityString, "quantityString");
 		return quantityString.doubleValue();
 	}

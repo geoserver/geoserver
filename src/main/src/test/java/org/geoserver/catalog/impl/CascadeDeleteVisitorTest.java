@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -65,6 +65,26 @@ public class CascadeDeleteVisitorTest extends CascadeVisitorAbstractTest {
         visitor.visit(layer);
 
         LayerGroupInfo group = catalog.getLayerGroupByName(LAKES_GROUP);
+        assertEquals(2, group.getLayers().size());
+        assertFalse(group.getLayers().contains(layer));
+    }
+    
+    @Test
+    public void testCascadeLayerDuplicate() {
+        Catalog catalog = getCatalog();
+        String name = toString(LAKES);
+        LayerInfo layer = catalog.getLayerByName(name);
+        assertNotNull(layer);
+        
+        LayerGroupInfo group = catalog.getLayerGroupByName(LAKES_GROUP);
+        group.getLayers().add(layer);
+        group.getStyles().add(null);
+        catalog.save(group);
+
+        CascadeDeleteVisitor visitor = new CascadeDeleteVisitor(catalog);
+        visitor.visit(layer);
+
+        group = catalog.getLayerGroupByName(LAKES_GROUP);
         assertEquals(2, group.getLayers().size());
         assertFalse(group.getLayers().contains(layer));
     }

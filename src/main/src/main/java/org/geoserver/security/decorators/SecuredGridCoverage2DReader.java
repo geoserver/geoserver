@@ -11,6 +11,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
+import org.geoserver.catalog.Predicates;
 import org.geoserver.data.util.CoverageUtils;
 import org.geoserver.security.CoverageAccessLimits;
 import org.geoserver.security.WrapperPolicy;
@@ -25,6 +26,7 @@ import org.opengis.coverage.grid.Format;
 import org.opengis.filter.Filter;
 import org.opengis.parameter.GeneralParameterDescriptor;
 import org.opengis.parameter.GeneralParameterValue;
+import org.opengis.parameter.ParameterValue;
 import org.opengis.parameter.ParameterValueGroup;
 
 import com.vividsolutions.jts.geom.Envelope;
@@ -101,17 +103,38 @@ public class SecuredGridCoverage2DReader extends DecoratingGridCoverage2DReader 
                     params.add(lparam);
                 }
 
-                parameters = (GeneralParameterValue[]) params
+                parameters = params
                         .toArray(new GeneralParameterValue[params.size()]);
             }
             
             if(readFilter != null && !Filter.INCLUDE.equals(readFilter)) {
+                Format format = delegate.getFormat();
+                ParameterValueGroup readParameters = format.getReadParameters();
+                List<GeneralParameterDescriptor> descriptors = readParameters.getDescriptor()
+                        .descriptors();
+
+                // scan all the params looking for the one we want to add
+                boolean replacedOriginalFilter = false;
+                for (GeneralParameterValue pv : parameters) {
+                    String pdCode = pv.getDescriptor().getName().getCode();
+                    if ("FILTER".equals(pdCode) || "Filter".equals(pdCode)) {
+                        replacedOriginalFilter = true;
+                        ParameterValue pvalue = (ParameterValue) pv;
+                        Filter originalFilter = (Filter) pvalue.getValue();
+                        if (Filter.INCLUDE.equals(originalFilter)) {
+                            pvalue.setValue(readFilter);
+                        } else {
+                            Filter combined = Predicates.and(originalFilter, readFilter);
+                            pvalue.setValue(combined);
+                        }
+                    }
+                }
+                if (!replacedOriginalFilter) {
+                    parameters = CoverageUtils.mergeParameter(descriptors, parameters, readFilter,
+                            "FILTER", "Filter");
+                }
+
                 
-                
-                ParameterValueGroup readParameters = delegate.getFormat().getReadParameters();
-                List<GeneralParameterDescriptor> descriptors = readParameters.getDescriptor().descriptors();
-                parameters = CoverageUtils.mergeParameter(descriptors, 
-                        parameters, readFilter, "FILTER", "Filter");
             }
         }
 
@@ -122,7 +145,7 @@ public class SecuredGridCoverage2DReader extends DecoratingGridCoverage2DReader 
             
             Geometry coverageBounds = JTS.toGeometry((Envelope) new ReferencedEnvelope(grid.getEnvelope2D()));
             if(coverageBounds.intersects(rasterFilter)) {
-                final ParameterValueGroup param = (ParameterValueGroup) cropParams.clone();
+                final ParameterValueGroup param = cropParams.clone();
                 param.parameter("source").setValue(grid);
                 param.parameter("ROI").setValue(rasterFilter);
                 grid = (GridCoverage2D) coverageCropFactory.doOperation(param, null);

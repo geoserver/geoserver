@@ -23,10 +23,10 @@
  </scm>
 
  <organization>
-  <name>The Open Planning Project</name>
-  <url>http://www.openplans.org</url>
+  <name>Open Source Geospatial Foundation</name>
+  <url>http://www.osgeo.org</url>
  </organization>
- <inceptionYear>2005</inceptionYear>
+ <inceptionYear>2006</inceptionYear>
 
  <licenses>
   <license>

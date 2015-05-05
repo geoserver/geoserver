@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -67,10 +67,69 @@ public class CascadeDeleteVisitorTest extends GeoServerMockTestSupport {
         return lg;
     }
 
+    LayerGroupInfo setUpMockLayerGroupDuplicateLayer(final Catalog catalog) {
+        LayerGroupInfo lg = createMock(LayerGroupInfo.class);
+        expect(lg.getName()).andReturn(LAKES_GROUP).anyTimes();
+
+        LayerInfo lakes = createNiceMock(LayerInfo.class);
+        expect(lakes.getResource()).andReturn(createNiceMock(ResourceInfo.class)).anyTimes();
+        expect(catalog.getLayerByName(toString(LAKES))).andReturn(lakes).anyTimes();
+
+        LayerInfo forests = createNiceMock(LayerInfo.class);
+        expect(forests.getResource()).andReturn(createNiceMock(ResourceInfo.class)).anyTimes();
+        expect(catalog.getLayerByName(toString(FORESTS))).andReturn(forests).anyTimes();
+
+        LayerInfo bridges = createNiceMock(LayerInfo.class);
+        expect(bridges.getResource()).andReturn(createNiceMock(ResourceInfo.class)).anyTimes();
+        expect(catalog.getLayerByName(toString(FORESTS))).andReturn(bridges).anyTimes();
+
+        expect(lg.getLayers()).andReturn(
+                new ArrayList(Arrays.asList(lakes, lakes, forests, bridges))).anyTimes();
+        expect(lg.getStyles()).andReturn(new ArrayList(Arrays.asList(null, null, null, null)))
+                .anyTimes();
+
+        expect(catalog.getLayerGroupByName(LAKES_GROUP)).andReturn(lg).anyTimes();
+        lg.accept((CatalogVisitor) anyObject());
+        expectLastCall().anyTimes();
+        replay(lakes, forests, bridges, lg);
+
+        expect(catalog.getLayerGroups()).andReturn(Arrays.asList(lg)).anyTimes();
+
+        return lg;
+    }
+
     @Test
     public void testCascadeLayer() {
         Catalog catalog = createMock(Catalog.class);
         LayerGroupInfo lg = setUpMockLayerGroup(catalog);
+        catalog.save(lg);
+        expectLastCall();
+
+        catalog.remove((LayerInfo) lg.getLayers().get(0));
+        expectLastCall();
+
+        catalog.remove(((LayerInfo) lg.getLayers().get(0)).getResource());
+        expectLastCall();
+
+        replay(catalog);
+
+        String name = toString(LAKES);
+        LayerInfo layer = catalog.getLayerByName(name);
+        assertNotNull(layer);
+
+        CascadeDeleteVisitor visitor = new CascadeDeleteVisitor(catalog);
+        visitor.visit(layer);
+        verify(catalog);
+
+        LayerGroupInfo group = catalog.getLayerGroupByName(LAKES_GROUP);
+        assertEquals(2, group.getLayers().size());
+        assertFalse(group.getLayers().contains(layer));
+    }
+    
+    @Test
+    public void testCascadeLayerDuplicate() {
+        Catalog catalog = createMock(Catalog.class);
+        LayerGroupInfo lg = setUpMockLayerGroupDuplicateLayer(catalog);
         catalog.save(lg);
         expectLastCall();
 

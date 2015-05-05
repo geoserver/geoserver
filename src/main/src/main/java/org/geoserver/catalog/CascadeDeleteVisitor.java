@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -118,8 +118,11 @@ public class CascadeDeleteVisitor implements CatalogVisitor {
             if(group.getLayers().contains(layer)) {
                 // parallel remove of layer and styles
                 int index = group.getLayers().indexOf(layer);
-                group.getLayers().remove(index);
-                group.getStyles().remove(index);
+                while (index != -1) {
+                    group.getLayers().remove(index);
+                    group.getStyles().remove(index);
+                    index = group.getLayers().indexOf(layer);
+                }
                 
                 // either update or remove the group
                 if(group.getLayers().size() == 0) {

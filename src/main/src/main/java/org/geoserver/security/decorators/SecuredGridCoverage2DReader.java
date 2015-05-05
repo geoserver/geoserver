@@ -110,7 +110,7 @@ public class SecuredGridCoverage2DReader extends DecoratingGridCoverage2DReader 
                         replacedOriginalFilter = true;
                         ParameterValue pvalue = (ParameterValue) pv;
                         Filter originalFilter = (Filter) pvalue.getValue();
-                        if (Filter.INCLUDE.equals(originalFilter)) {
+                        if (originalFilter == null || Filter.INCLUDE.equals(originalFilter)) {
                             pvalue.setValue(readFilter);
                         } else {
                             Filter combined = Predicates.and(originalFilter, readFilter);

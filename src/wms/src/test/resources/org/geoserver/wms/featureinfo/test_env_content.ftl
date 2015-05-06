@@ -1,0 +1,1 @@
+${environment.TEST_PROPERTY},${environment.TEST_INIT_PARAM}

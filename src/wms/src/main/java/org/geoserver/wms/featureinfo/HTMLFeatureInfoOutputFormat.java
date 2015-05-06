@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -65,7 +65,8 @@ public class HTMLFeatureInfoOutputFormat extends GetFeatureInfoOutputFormat {
             public TemplateModel wrap(Object object) throws TemplateModelException {
                 if (object instanceof FeatureCollection) {
                     SimpleHash map = (SimpleHash) super.wrap(object);                    
-                    map.put("request", Dispatcher.REQUEST.get().getKvp());    
+                    map.put("request", Dispatcher.REQUEST.get().getKvp());
+                    map.put("environment", new EnvironmentVariablesTemplateModel());
                     return map;
                 }
                 return super.wrap(object);

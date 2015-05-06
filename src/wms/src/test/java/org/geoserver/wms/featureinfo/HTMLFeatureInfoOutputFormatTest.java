@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -38,6 +38,9 @@ import org.geoserver.wms.WMSTestSupport;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.mockrunner.mock.web.MockHttpServletResponse;
+import com.mockrunner.mock.web.MockServletContext;
+
 public class HTMLFeatureInfoOutputFormatTest extends WMSTestSupport {
     private HTMLFeatureInfoOutputFormat outputFormat;
     
@@ -49,10 +52,13 @@ public class HTMLFeatureInfoOutputFormatTest extends WMSTestSupport {
     
     private static final String templateFolder = "/org/geoserver/wms/featureinfo/";
     
+    private String currentTemplate;
+    
     @Before
     public void setUp() throws URISyntaxException, IOException {
         outputFormat = new HTMLFeatureInfoOutputFormat(getWMS());
         
+        currentTemplate = "test_content.ftl";
         // configure template loader
         GeoServerTemplateLoader templateLoader = new GeoServerTemplateLoader(
                 this.getClass(), getDataDirectory()) {
@@ -61,7 +67,7 @@ public class HTMLFeatureInfoOutputFormatTest extends WMSTestSupport {
             public Object findTemplateSource(String path) throws IOException {
                 String templatePath;
                 if (path.toLowerCase().contains("content")) {
-                    templatePath = "test_content.ftl";
+                    templatePath = currentTemplate;
     
                 } else {
                     templatePath = "empty.ftl";
@@ -126,6 +132,24 @@ public class HTMLFeatureInfoOutputFormatTest extends WMSTestSupport {
         String result = new String(outStream.toByteArray());
          
         assertEquals("VALUE1,VALUE2,testLayer" , result);    
+    }
+    
+    
+    @Test
+    public void testEnvironmentVariablesAreEvaluatedInTemplate() throws IOException {
+        currentTemplate = "test_env_content.ftl";
+        System.setProperty("TEST_PROPERTY", "MYVALUE");
+        MockServletContext servletContext = (MockServletContext)applicationContext.getServletContext();
+        servletContext.setInitParameter("TEST_INIT_PARAM", "MYPARAM");
+        try {
+            ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+            outputFormat.write(fcType, getFeatureInfoRequest, outStream);
+            String result = new String(outStream.toByteArray());
+             
+            assertEquals("MYVALUE,MYPARAM" , result);
+        } finally {
+            System.clearProperty("TEST_PROPERTY");
+        }
     }
     
     /**

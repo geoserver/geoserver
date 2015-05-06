@@ -38,7 +38,7 @@ The data model is a sort of a tree, where each element has a name and a type. Be
 * map: a key/value map, that you usually access using the dot notation, as in ``${myMap.myKey``}, and can be nested;
 * listMap: a special construct that is, at the same time, a Map, and a list of the values.
 
-Here are the three data models (as you can see there are redundancies, in particular in attributes, we chose this approach to make template building easier):
+Here are the data models (as you can see there are redundancies, in particular in attributes, we chose this approach to make template building easier):
 
 **FeatureType (map)**
 
@@ -85,6 +85,30 @@ Here are the three data models (as you can see there are redundancies, in partic
 * type (FeatureType, see above)
 
 
+**request (map)**
+
+Contains the GetFeatureInfo request parameters and related values.
+
+**environment (map)**
+
+Allows accessing several environment variables, in particular those defined in:
+
+ * JVM system properties
+ * OS environment variables
+ * web.xml context parameters 
+
+
+Examples
+``````````````````
+**request**
+
+ * ${request.LAYERS}
+ * ${request.ENV.PROPERTY}
+
+**environment**
+
+ * ${environment.GEOSERVER_DATA_DIR}
+ * ${environment.WEB_SITE_URL}
 
 
 

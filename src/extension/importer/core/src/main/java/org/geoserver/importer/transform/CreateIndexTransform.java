@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -9,18 +9,20 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.logging.Level;
+
 import org.geoserver.catalog.DataStoreInfo;
+import org.geoserver.importer.ImportData;
+import org.geoserver.importer.ImportTask;
 import org.geotools.data.DataAccess;
 import org.geotools.data.Transaction;
 import org.geotools.jdbc.JDBCDataStore;
-import org.geoserver.importer.ImportData;
-import org.geoserver.importer.ImportTask;
 
 /**
  *
  * @author Ian Schneider <ischneider@opengeo.org>
  */
-public class CreateIndexTransform extends AbstractVectorTransform implements PostVectorTransform {
+public class CreateIndexTransform extends AbstractTransform implements PostTransform,
+        VectorTransform {
     
     private static final long serialVersionUID = 1L;
     

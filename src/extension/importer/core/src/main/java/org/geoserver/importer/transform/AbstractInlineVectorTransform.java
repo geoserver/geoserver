@@ -1,12 +1,12 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.importer.transform;
 
-import org.geotools.data.DataStore;
 import org.geoserver.importer.ImportTask;
+import org.geotools.data.DataStore;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 
@@ -14,7 +14,7 @@ import org.opengis.feature.simple.SimpleFeatureType;
  * Convenience base class to make creating inline vector transforms easier
  * 
  */
-public abstract class AbstractInlineVectorTransform extends AbstractVectorTransform implements
+public abstract class AbstractInlineVectorTransform extends AbstractTransform implements
         InlineVectorTransform {
 
     /** serialVersionUID */

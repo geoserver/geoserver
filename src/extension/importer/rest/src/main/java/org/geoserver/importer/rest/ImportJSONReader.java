@@ -10,6 +10,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -23,18 +25,16 @@ import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.util.XStreamPersister;
-import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.geotools.referencing.CRS;
 import org.geoserver.importer.Archive;
 import org.geoserver.importer.Database;
 import org.geoserver.importer.Directory;
 import org.geoserver.importer.FileData;
 import org.geoserver.importer.ImportContext;
+import org.geoserver.importer.ImportContext.State;
 import org.geoserver.importer.ImportData;
 import org.geoserver.importer.ImportTask;
 import org.geoserver.importer.Importer;
 import org.geoserver.importer.UpdateMode;
-import org.geoserver.importer.ImportContext.State;
 import org.geoserver.importer.ValidationException;
 import org.geoserver.importer.mosaic.Mosaic;
 import org.geoserver.importer.mosaic.TimeMode;
@@ -42,12 +42,17 @@ import org.geoserver.importer.transform.AttributeRemapTransform;
 import org.geoserver.importer.transform.AttributesToPointGeometryTransform;
 import org.geoserver.importer.transform.CreateIndexTransform;
 import org.geoserver.importer.transform.DateFormatTransform;
+import org.geoserver.importer.transform.GdalAddoTransform;
+import org.geoserver.importer.transform.GdalTranslateTransform;
+import org.geoserver.importer.transform.GdalWarpTransform;
 import org.geoserver.importer.transform.ImportTransform;
 import org.geoserver.importer.transform.IntegerFieldToDateTransform;
 import org.geoserver.importer.transform.RasterTransformChain;
 import org.geoserver.importer.transform.ReprojectTransform;
 import org.geoserver.importer.transform.TransformChain;
 import org.geoserver.importer.transform.VectorTransformChain;
+import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.referencing.CRS;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 public class ImportJSONReader {
@@ -281,10 +286,35 @@ public class ImportJSONReader {
             catch(Exception e) {
                 throw new ValidationException("Error parsing reproject transform", e);
             }
+        } else if ("GdalTranslateTransform".equalsIgnoreCase(type)) {
+            List<String> options = getOptions(json);
+            transform = new GdalTranslateTransform(options);
+        } else if ("GdalWarpTransform".equalsIgnoreCase(type)) {
+            List<String> options = getOptions(json);
+            transform = new GdalWarpTransform(options);
+        } else if ("GdalAddoTransform".equalsIgnoreCase(type)) {
+            List<String> options = getOptions(json);
+            JSONArray array = json.getJSONArray("levels");
+            List<Integer> levels = new ArrayList<>();
+            for (int i = 0; i < array.size(); i++) {
+                int level = array.getInt(i);
+                levels.add(level);
+            }
+            transform = new GdalAddoTransform(options, levels);
         } else {
             throw new ValidationException("Invalid transform type '" + type + "'");
         }
         return transform;
+    }
+
+    List<String> getOptions(JSONObject json) {
+        JSONArray array = json.getJSONArray("options");
+        List<String> options = new ArrayList<>();
+        for (int i = 0; i < array.size(); i++) {
+            String option = array.getString(i);
+            options.add(option);
+        }
+        return options;
     }
 
     public ImportData data() throws IOException {
@@ -325,8 +355,8 @@ public class ImportJSONReader {
             //return new FileData(new File(file));
         }
         else {
-            //TODO: create a temp file
-            return new FileData((File)null);
+            throw new IOException(
+                    "Could not find 'file' entry in data, mandatory for file type data");
         }
     }
 
@@ -407,7 +437,7 @@ public class ImportJSONReader {
 
     <T> T fromJSON(JSONObject json, Class<T> clazz) throws IOException {
         XStreamPersister xp = importer.createXStreamPersisterJSON();
-        return (T) xp.load(new ByteArrayInputStream(json.toString().getBytes()), clazz);
+        return xp.load(new ByteArrayInputStream(json.toString().getBytes()), clazz);
     }
 
     <T> T fromJSON(Class<T> clazz) throws IOException {

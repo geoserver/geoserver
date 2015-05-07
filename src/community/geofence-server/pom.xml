@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <!-- set parent pom to community pom -->
+    <parent>
+        <groupId>org.geoserver</groupId>
+        <artifactId>community</artifactId>
+        <version>2.8-SNAPSHOT</version>
+    </parent>
+
+    <groupId>org.geoserver.community</groupId>
+    <artifactId>gs-geofence-server</artifactId>
+    <packaging>jar</packaging>
+    <version>2.8-SNAPSHOT</version>
+    <name>GeoFence Server</name>
+    <description>GeoFence security internal server</description>
+
+    <dependencies>
+         <dependency>
+            <groupId>com.googlecode.genericdao</groupId>
+                <artifactId>dao</artifactId>
+                <version>1.1.0</version>
+                    <exclusions>
+                        <exclusion>
+                            <groupId>javax.persistence</groupId>
+                            <artifactId>persistence-api</artifactId>
+                        </exclusion>
+                    </exclusions>                
+         </dependency>
+         <dependency>
+                <groupId>com.googlecode.genericdao</groupId>
+                <artifactId>search-jpa-hibernate</artifactId>
+                <version>${hibernate-generic-dao-version}</version>
+         </dependency>
+         <dependency>
+                <groupId>org.hibernate</groupId>
+                <artifactId>hibernate-entitymanager</artifactId>
+                <version>${hibernate-version}</version>
+         </dependency>
+         <dependency>
+                <groupId>org.hibernate</groupId>
+                <artifactId>hibernate-core</artifactId>
+                <version>${hibernate-version}</version>
+         </dependency>
+         <dependency>
+                <groupId>org.hibernatespatial</groupId>
+                <artifactId>hibernate-spatial</artifactId>
+                <version>${hibernate-spatial-version}</version>
+        </dependency>
+        <dependency>
+                <groupId>org.hibernatespatial</groupId>
+                <artifactId>hibernate-spatial-h2-geodb</artifactId>
+                <version>${hibernate-spatial-h2-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-expression</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+        </dependency>        
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-beans</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
+        </dependency>
+                
+        <dependency>
+            <groupId>org.geoserver</groupId>
+            <artifactId>gs-main</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.geoserver.web</groupId>
+            <artifactId>gs-web-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.geoserver.geofence</groupId>
+            <artifactId>geofence-services-impl</artifactId>
+            <version>${gf.version}</version>
+        </dependency>
+        
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-geofence</artifactId>
+          <version>${project.version}</version>
+          <exclusions>
+            <exclusion>
+              <groupId>org.geoserver.geofence</groupId>
+              <artifactId>geofence-model</artifactId>
+            </exclusion>
+          </exclusions>
+        </dependency>
+        
+        <dependency>
+            <groupId>xerces</groupId>
+            <artifactId>xercesImpl</artifactId>
+        </dependency>
+        
+        <!-- test dependencies -->
+        <dependency>
+            <groupId>org.geoserver</groupId>
+            <artifactId>gs-main</artifactId>
+            <version>${project.version}</version>
+            <classifier>tests</classifier>
+            <scope>test</scope>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.geoserver.web</groupId>
+            <artifactId>gs-web-core</artifactId>
+            <version>${project.version}</version>
+            <classifier>tests</classifier>
+            <scope>test</scope>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.geoserver.community</groupId>
+            <artifactId>gs-geofence</artifactId>
+            <version>${project.version}</version>
+            <classifier>tests</classifier> 
+            <scope>test</scope>
+        </dependency>
+        
+        <dependency>
+            <groupId>com.mockrunner</groupId>
+            <artifactId>mockrunner</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>xmlunit</groupId>
+            <artifactId>xmlunit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.geoserver</groupId>
+            <artifactId>gs-wfs</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+  
+      <build>
+        <resources>
+            <resource>
+                <directory>${basedir}/src/main/java</directory>
+                <includes>
+                    <include>**/*.html</include>
+                </includes>            
+            </resource>
+            <resource>
+                <directory>${basedir}/src/main/resources</directory>
+                <includes>
+                    <include>**/*</include>
+                </includes>
+            </resource>
+        </resources>		
+    </build>
+</project>
+

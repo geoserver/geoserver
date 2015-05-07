@@ -77,6 +77,15 @@
       <enabled>false</enabled>
     </snapshots>
   </repository>
+
+  <repository>
+    <id>hibspat</id>
+    <name>Hibernate Spatial</name>
+    <url>http://www.hibernatespatial.org/repository</url>
+    <snapshots>
+      <enabled>true</enabled>
+    </snapshots>
+   </repository>
  </repositories>
 
  <pluginRepositories>
@@ -861,8 +870,13 @@
    </dependency>
    <dependency>
      <groupId>org.slf4j</groupId>
+     <artifactId>slf4j-api</artifactId>
+     <version>1.6.1</version>
+   </dependency>
+   <dependency>
+     <groupId>org.slf4j</groupId>
      <artifactId>slf4j-log4j12</artifactId>
-     <version>1.4.2</version>
+     <version>1.7.10</version>
    </dependency>
    <dependency>
     <groupId>log4j</groupId>
@@ -1057,6 +1071,11 @@
       <artifactId>pngj</artifactId>
       <version>2.0.1</version>
     </dependency>
+        <dependency>
+            <groupId>xerces</groupId>
+            <artifactId>xercesImpl</artifactId>
+            <version>2.11.0</version>
+        </dependency>
 	<dependency>
 	  <groupId>javax.jms</groupId>
 	  <artifactId>jms-api</artifactId>
@@ -1609,6 +1628,11 @@
   <image.tests>true</image.tests>
   <interactive.tests>false</interactive.tests>
   <windows.leniency>true</windows.leniency>
+  <gf.version>3.0-SNAPSHOT</gf.version>
+  <hibernate-version>3.6.0.Final</hibernate-version>
+  <hibernate-generic-dao-version>1.1.0</hibernate-generic-dao-version>
+  <hibernate-spatial-version>1.1.1</hibernate-spatial-version>
+  <hibernate-spatial-h2-version>1.1.1</hibernate-spatial-h2-version>
  </properties>
 
  <profiles>

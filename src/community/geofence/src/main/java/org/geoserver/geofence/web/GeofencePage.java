@@ -45,6 +45,7 @@ import org.geoserver.geofence.services.dto.RuleFilter;
 import org.geoserver.geofence.services.dto.ShortRule;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.web.GeoServerSecuredPage;
+import org.geoserver.web.wicket.model.ExtPropertyModel;
 import org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean;
 
 import com.google.common.cache.CacheStats;
@@ -56,7 +57,6 @@ import com.google.common.cache.CacheStats;
  *
  */
 public class GeofencePage extends GeoServerSecuredPage {
-
     
     /**
      * Configuration object.
@@ -81,12 +81,12 @@ public class GeofencePage extends GeoServerSecuredPage {
                         configModel));
         form.setOutputMarkupId(true);
         add(form);
-    
         form.add(new TextField<String>("instanceName", 
                 new PropertyModel<String>(configModel, "instanceName")).setRequired(true));
         form.add(new TextField<String>("servicesUrl", 
-                new PropertyModel<String>(configModel, "servicesUrl")).setRequired(true));
-    
+                new ExtPropertyModel<String>(configModel, "servicesUrl").setReadOnly(config.isInternal()))                    
+                 .setRequired(true).setEnabled(!config.isInternal()));
+            
         form.add(new AjaxSubmitLink("test") {
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
@@ -107,11 +107,15 @@ public class GeofencePage extends GeoServerSecuredPage {
             }
 
             private RuleReaderService getRuleReaderService(String servicesUrl) {
-                HttpInvokerProxyFactoryBean invoker = new org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean();
-                invoker.setServiceUrl(servicesUrl);
-                invoker.setServiceInterface(RuleReaderService.class);
-                invoker.afterPropertiesSet();
-                return (RuleReaderService)invoker.getObject();
+                if (config.isInternal()) {
+                    return (RuleReaderService) GeoServerExtensions.bean("ruleReaderService");
+                } else {
+                    HttpInvokerProxyFactoryBean invoker = new org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean();
+                    invoker.setServiceUrl(servicesUrl);
+                    invoker.setServiceInterface(RuleReaderService.class);
+                    invoker.afterPropertiesSet();
+                    return (RuleReaderService)invoker.getObject();
+                }
             }
         }.setDefaultFormProcessing(false));
         

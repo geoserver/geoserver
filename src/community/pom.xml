@@ -403,6 +403,16 @@
         </modules>
     </profile>
     <profile>
+      <id>geofence-server</id>
+        <activation>
+          <property><name>geofence</name></property>
+        </activation>
+        <modules>
+          <module>geofence</module>
+	  <module>geofence-server</module>
+        </modules>
+    </profile>
+    <profile>
       <id>hz-cluster</id>
         <modules>
           <module>hz-cluster</module>

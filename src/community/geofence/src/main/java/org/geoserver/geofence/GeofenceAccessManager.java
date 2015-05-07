@@ -366,7 +366,7 @@ public class GeofenceAccessManager implements ResourceAccessManager, DispatcherC
                 }
                 LOGGER.log(Level.FINE, "Setting role for filter: {0}",
                         new Object[] { role });
-                ruleFilter.setUserGroup(role);
+                ruleFilter.setRole(role);
             } else {
                 String username = user.getName();
                 if (username == null) {

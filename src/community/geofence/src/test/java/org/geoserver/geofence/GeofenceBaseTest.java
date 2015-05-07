@@ -40,7 +40,8 @@ public abstract class GeofenceBaseTest extends GeoServerTestSupport {
 
         // get the beans we use for testing
         accessManager = (GeofenceAccessManager) applicationContext.getBean("geofenceRuleAccessManager");
-        geofenceService = (RuleReaderService) applicationContext.getBean("ruleReaderService");
+        geofenceService = (RuleReaderService) applicationContext.getBean(
+                applicationContext.getBeanFactory().resolveEmbeddedValue("${ruleReaderBackend}"));
         configManager = (GeoFenceConfigurationManager) applicationContext.getBean("geofenceConfigurationManager");
 
     }

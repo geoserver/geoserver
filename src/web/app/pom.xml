@@ -1259,5 +1259,15 @@
         </dependency>
       </dependencies>
    </profile>
+   <profile>
+      <id>geofence-server</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-geofence-server</artifactId>
+          <version>${project.version}</version>
+        </dependency>              
+      </dependencies>      
+   </profile>
  </profiles>
 </project>

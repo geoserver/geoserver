@@ -51,6 +51,7 @@ import com.google.common.collect.Iterables;
 public class GeoJSONFormat extends VectorFormat {
 
     static Logger LOG = Logging.getLogger(GeoJSONFormat.class);
+    private static ReferencedEnvelope EMPTY_BOUNDS = new ReferencedEnvelope();
 
     @Override
     public FeatureReader read(ImportData data, ImportTask item) throws IOException {
@@ -197,16 +198,9 @@ public class GeoJSONFormat extends VectorFormat {
         }
 
         // bounds
-        ReferencedEnvelope bounds = new ReferencedEnvelope(crs);
-
-        FeatureJSON reader = new FeatureJSON();
-        reader.setFeatureType(featureType);
-        FeatureIterator<SimpleFeature> it = reader.streamFeatureCollection(file);
-        while(it.hasNext()) {
-            SimpleFeature f = it.next();
-            bounds.include(f.getBounds());
-        }
-        ft.setNativeBoundingBox(bounds);
+        ft.setNativeBoundingBox(EMPTY_BOUNDS);
+        ft.setLatLonBoundingBox(EMPTY_BOUNDS);
+        ft.getMetadata().put("recalculate-bounds", Boolean.TRUE);
 
         LayerInfo layer = catalogBuilder.buildLayer((ResourceInfo) ft);
 

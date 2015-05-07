@@ -26,7 +26,7 @@ If a layer is included in any non *single* mode group, it will no longer be list
 Edit a Layer Group
 ----------------
 
-To bring up the layer group edit page, click a layer group name. The initial fields allow you configure the name, title, abstract, workspace, bounds, projection and mode of the layer group. To automatically set the bounding box, select the :guilabel:`Generate Bounds` button. You may also provide your own custom bounding box extents. To select an appropriate projection click the :guilabel:`Find` button.
+To bring up the layer group edit page, click a layer group name. The initial fields allow you to configure the name, title, abstract, workspace, bounds, projection and mode of the layer group. To automatically set the bounding box, select the :guilabel:`Generate Bounds` button. You may also provide your own custom bounding box extents. To select an appropriate projection click the :guilabel:`Find` button.
 
 .. note:: A layer group can contain layers with dissimilar bounds and projections. GeoServer automatically reprojects all layers to the projection of the layer group.
 

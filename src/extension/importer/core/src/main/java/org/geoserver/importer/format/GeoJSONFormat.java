@@ -20,6 +20,10 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.catalog.CatalogBuilder;
+import org.geoserver.catalog.CatalogFactory;
+import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.AttributeTypeInfo;
 import org.geotools.data.FeatureReader;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
@@ -36,6 +40,7 @@ import org.geoserver.importer.job.ProgressMonitor;
 import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
+import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
@@ -46,6 +51,7 @@ import com.google.common.collect.Iterables;
 public class GeoJSONFormat extends VectorFormat {
 
     static Logger LOG = Logging.getLogger(GeoJSONFormat.class);
+    private static ReferencedEnvelope EMPTY_BOUNDS = new ReferencedEnvelope();
 
     @Override
     public FeatureReader read(ImportData data, ImportTask item) throws IOException {
@@ -147,6 +153,8 @@ public class GeoJSONFormat extends VectorFormat {
 
     ImportTask task(ImportData data, Catalog catalog) throws IOException {
         File file = maybeFile(data).get();
+        CatalogFactory factory = catalog.getFactory();
+        CatalogBuilder catalogBuilder = new CatalogBuilder(catalog);
 
         // get the composite feature type
         SimpleFeatureType featureType = new FeatureJSON().readFeatureCollectionSchema(file, false);
@@ -161,6 +169,14 @@ public class GeoJSONFormat extends VectorFormat {
         FeatureTypeInfo ft = catalog.getFactory().createFeatureType();
         ft.setName(FilenameUtils.getBaseName(file.getName()));
         ft.setNativeName(ft.getName());
+
+        List<AttributeTypeInfo> attributes = ft.getAttributes();
+        for (AttributeDescriptor ad : featureType.getAttributeDescriptors()) {
+            AttributeTypeInfo att = factory.createAttribute();
+            att.setName(ad.getLocalName());
+            att.setBinding(ad.getType().getBinding());
+            attributes.add(att);
+        }
 
         // crs
         CoordinateReferenceSystem crs = null;
@@ -182,19 +198,11 @@ public class GeoJSONFormat extends VectorFormat {
         }
 
         // bounds
-        ReferencedEnvelope bounds = new ReferencedEnvelope(crs);
+        ft.setNativeBoundingBox(EMPTY_BOUNDS);
+        ft.setLatLonBoundingBox(EMPTY_BOUNDS);
+        ft.getMetadata().put("recalculate-bounds", Boolean.TRUE);
 
-        FeatureJSON reader = new FeatureJSON();
-        reader.setFeatureType(featureType);
-        FeatureIterator<SimpleFeature> it = reader.streamFeatureCollection(file);
-        while(it.hasNext()) {
-            SimpleFeature f = it.next();
-            bounds.include(f.getBounds());
-        }
-        ft.setNativeBoundingBox(bounds);
-
-        LayerInfo layer = catalog.getFactory().createLayer();
-        layer.setResource(ft);
+        LayerInfo layer = catalogBuilder.buildLayer((ResourceInfo) ft);
 
         ImportTask task = new ImportTask(data);
         task.setLayer(layer);

@@ -371,7 +371,7 @@ Vendor options can be used to enable some quite spectacular effects, while still
    .. code-block:: css
 
        * {
-         stroke: ededff;
+         stroke: #ededff;
          stroke-width: 10;
          label: [level] " " [name];
          font-fill: black;
@@ -384,7 +384,7 @@ Vendor options can be used to enable some quite spectacular effects, while still
        :emphasize-lines: 3
     
        * {
-         stroke: ededff;
+         stroke: #ededff;
          stroke-width: 10;
          label: [level] " " [name];
          font-fill: black;
@@ -397,7 +397,7 @@ Vendor options can be used to enable some quite spectacular effects, while still
        :emphasize-lines: 4
 
        * {
-         stroke: ededff;
+         stroke: #ededff;
          stroke-width: 10;
          label: [level] " " [name];
          font-fill: black;
@@ -418,7 +418,7 @@ Vendor options can be used to enable some quite spectacular effects, while still
        :emphasize-lines: 6
     
        * {
-         stroke: ededff;
+         stroke: #ededff;
          stroke-width: 10;
          label: [level] " " [name];
          font-fill: black;
@@ -467,7 +467,7 @@ Features can have various attributes which we can select in our CSS. This allows
       }
       [type = 'Road']{
           stroke: #888888;
-          stroke-width: .75;
+          stroke-width: 0.75;
       }
       [type = 'Unknown' ]{
           stroke: #888888;

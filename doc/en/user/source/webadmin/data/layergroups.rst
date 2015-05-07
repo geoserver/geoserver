@@ -4,7 +4,7 @@ Layer Groups
 ============
 
 A layer group is a container in which layers and other layer groups can be organized in a hierarchical structure. A layer group can be referred to by a single name in WMS requests.  This allows simpler requests, as one layer can be specified instead of multiple individual layers.
-A layer group also provides a consistent, fixed ordering of the layers it contains, and can specify different (non-default) styles for layers.
+A layer group also provides a consistent, fixed ordering of the layers it contains, and can specify alternate (non-default) styles for layers.
 
 Layer group behaviour can be configured by setting its :guilabel:`mode`. There are 4 available values:
 

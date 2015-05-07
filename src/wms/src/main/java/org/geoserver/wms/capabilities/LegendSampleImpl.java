@@ -212,6 +212,7 @@ public class LegendSampleImpl implements CatalogListener, LegendSample,
         GetLegendGraphicRequest legendGraphicRequest = new GetLegendGraphicRequest();
         File sampleLegendFolder = getSamplesFolder(); 
         
+        legendGraphicRequest.setStrict(false);
         legendGraphicRequest.setLayers(Arrays.asList((FeatureType) null));
         legendGraphicRequest.setStyles(Arrays.asList(style.getStyle()));
         legendGraphicRequest.setFormat(pngOutputFormat.getContentType());

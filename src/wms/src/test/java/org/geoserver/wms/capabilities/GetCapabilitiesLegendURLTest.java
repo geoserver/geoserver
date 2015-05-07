@@ -102,6 +102,7 @@ public abstract class GetCapabilitiesLegendURLTest extends WMSTestSupport {
     /** Test layers */
     public static QName SQUARES = new QName(MockData.CITE_URI, "squares", MockData.CITE_PREFIX);
     public static QName STATES = new QName(MockData.CITE_URI, "states", MockData.CITE_PREFIX);
+    public static QName WORLD = new QName("http://www.geo-solutions.it", "world", "gs");
     
     
     /**
@@ -128,6 +129,11 @@ public abstract class GetCapabilitiesLegendURLTest extends WMSTestSupport {
         testData.addVectorLayer(STATES,properties,"states.properties",
                 GetCapabilitiesLegendURLTest.class,catalog);
         LocalWorkspace.set(null);
+
+        testData.addStyle("temperature", "temperature.sld", WMSTestSupport.class, catalog);
+        properties = new HashMap<LayerProperty, Object>();
+        properties.put(LayerProperty.STYLE, "temperature");
+        testData.addRasterLayer(WORLD, "world.tiff", null, properties, SystemTestData.class, catalog);
     }
     
     @Before
@@ -256,6 +262,25 @@ public abstract class GetCapabilitiesLegendURLTest extends WMSTestSupport {
         assertFalse("20".equals(legendURL.getAttribute("height")));
         
         File sampleFile = getSampleFile("squares");
+        assertTrue(sampleFile.exists());
+    }
+
+    @Test
+    public void testCreatedRasterLegendURLSize() throws Exception {
+        TransformerBase tr = createTransformer();
+        tr.setIndentation(2);
+        Document dom = WMSTestSupport.transform(req, tr);
+
+        NodeList legendURLs = XPATH.getMatchingNodes(
+                getLegendURLXPath("gs:world"), dom);
+        assertEquals(1, legendURLs.getLength());
+        Element legendURL = (Element) legendURLs.item(0);
+        assertTrue(legendURL.hasAttribute("width"));
+        assertFalse("20".equals(legendURL.getAttribute("width")));
+        assertTrue(legendURL.hasAttribute("height"));
+        assertFalse("20".equals(legendURL.getAttribute("height")));
+
+        File sampleFile = getSampleFile("temperature");
         assertTrue(sampleFile.exists());
     }
 

@@ -6,6 +6,9 @@ Layer Groups
 A layer group is a container in which layers and other layer groups can be organized in a hierarchical structure. A layer group can be referred to by a single name in WMS requests.  This allows simpler requests, as one layer can be specified instead of multiple individual layers.
 A layer group also provides a consistent, fixed ordering of the layers it contains, and can specify alternate (non-default) styles for layers.
 
+Layer Group Modes
+-----------------
+
 Layer group behaviour can be configured by setting its :guilabel:`mode`. There are 4 available values:
 
 * **single**: the layer group is exposed as a single layer with a name.
@@ -20,7 +23,7 @@ If a layer is included in any non *single* mode group, it will no longer be list
 
    *Layer Groups page*
 
-Edit Layer Group
+Edit a Layer Group
 ----------------
 
 To bring up the layer group edit page, click a layer group name. The initial fields allow you configure the name, title, abstract, workspace, bounds, projection and mode of the layer group. To automatically set bounding box, select the :guilabel:`Generate Bounds` button. You may also provide your own custom bounding box parameters. To select an appropriate projection click the :guilabel:`Find` button.
@@ -92,7 +95,7 @@ When finished, click :guilabel:`Submit`. You will be redirected to an empty laye
 
    *New layer group configuration page*
 
-Remove a layer group
+Remove a Layer Group
 --------------------
 
 To remove a layer group, click the check box next to the layer group. Multiple layer groups can be selected for batch removal. Click the :guilabel:`remove selected layer group(s)` link. You will be asked to confirm or cancel the deletion. Selecting :guilabel:`OK` successfully removes the layer group. 

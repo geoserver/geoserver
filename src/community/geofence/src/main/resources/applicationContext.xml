@@ -14,7 +14,9 @@
 
 
 	<bean id="geofence-configurer" class="org.geoserver.geofence.config.GeoFencePropertyPlaceholderConfigurer">
-		<constructor-arg ref="dataDirectory"/>
+		<property name="order" value="5"/>
+        
+        <constructor-arg ref="dataDirectory"/>
 
         <property name="ignoreResourceNotFound" value="true" />
 		<property name="ignoreUnresolvablePlaceholders" value="true" />
@@ -29,6 +31,14 @@
                      anyway this value is used at least twice, so it's better to define it here
                 -->
                 <prop key="servicesUrl">http://localhost:8081/geofence/remoting/RuleReader</prop>
+                                
+                <!-- The frontend will be injected in the access manager. -->
+                <!-- You may replace the cachedRuleReader ref with remoteReaderService in order to disable the caching -->
+                <prop key="ruleReaderFrontend">cachedRuleReader</prop>
+
+                <!-- The backend will be injected in the cached reader. -->
+                <!-- We need this entry to allow geofence-server to replace the backend with the local bean -->
+                <prop key="ruleReaderBackend">remoteReaderService</prop>
             </props>
           </property>
 
@@ -67,22 +77,19 @@
 	    see if you can add some ehcache proxy interceptor when we switch to using remoted services
 	-->
 
-	<bean id="baseReaderService" class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean" lazy-init="true">
+	<bean id="remoteReaderService" class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean" lazy-init="true">
         <property name="serviceUrl" value="${servicesUrl}"/>
         <property name="serviceInterface" value="org.geoserver.geofence.services.RuleReaderService"/>
     </bean>
 
-	<bean id="cachedRuleReader" class="org.geoserver.geofence.cache.CachedRuleReader" lazy-init="true" init-method="init">
-		<constructor-arg ref="geofenceConfigurationManager" />
+    <bean id="cachedRuleReader" class="org.geoserver.geofence.cache.CachedRuleReader" lazy-init="true" init-method="init">
+	<constructor-arg ref="geofenceConfigurationManager" />
 
-        <property name="realRuleReaderService" ref="baseReaderService"/>
+        <property name="realRuleReaderService" ref="${ruleReaderBackend}"/>
     </bean>
 
-    <!-- You may replace the cachedRuleReader ref with ruleReaderService ref in order to disable the caching -->
-    <alias name="cachedRuleReader" alias="ruleReaderService"/>
-
 	<bean id="geofenceRuleAccessManager" class="org.geoserver.geofence.GeofenceAccessManager">
-		<constructor-arg index="0" ref="ruleReaderService" />
+		<constructor-arg index="0" ref="${ruleReaderFrontend}" />
 		<constructor-arg index="1" ref="rawCatalog" />
 		<constructor-arg index="2" ref="geofenceConfigurationManager" />
 	</bean>
@@ -149,12 +156,12 @@
     <!-- geoserver auth mechanism -->
 	
     <bean id="geofenceFilter" class="org.geoserver.geoserver.authentication.filter.GeoFenceAuthFilterProvider">
-        <property name="ruleReaderService" ref="ruleReaderService"/>
+        <property name="ruleReaderService" ref="${ruleReaderFrontend}"/>
         <property name="geofenceAuth" ref="geofenceAuth"/>
     </bean>
 
     <bean id="geofenceAuth" class="org.geoserver.geoserver.authentication.auth.GeoFenceSecurityProvider">
-        <property name="ruleReaderService" ref="ruleReaderService"/>
+        <property name="ruleReaderService" ref="${ruleReaderFrontend}"/>
         <property name="securityManager" ref="geoServerSecurityManager"/>
     </bean>
 

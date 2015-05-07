@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+ Copyright (C) 2015 - Open Source Geospatial Foundation. All rights reserved.
+ This code is licensed under the GPL 2.0 license, available at the root
+ application directory.
+ -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   
+       xmlns:context="http://www.springframework.org/schema/context"
+   xsi:schemaLocation="
+   			http://www.springframework.org/schema/beans     http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+            http://www.springframework.org/schema/context   http://www.springframework.org/schema/context/spring-context-3.0.xsd"      
+ default-autowire="byName">
+
+    <context:annotation-config />
+          
+    <!-- ================================================================ -->
+    <!-- =============== Property override ============================== -->
+    <!-- ================================================================ -->	
+    
+    <bean id="geofence-server-configurer" class="org.geoserver.geofence.config.GeoFencePropertyPlaceholderConfigurer">
+       <property name="order" value="4"/>
+        
+        <constructor-arg ref="dataDirectory"/>
+
+        <property name="ignoreResourceNotFound" value="true" />
+	    <property name="ignoreUnresolvablePlaceholders" value="true" />
+
+        <!-- default properties -->
+        <property name="properties">
+            <props>
+                <!-- The backend will be injected in the cached reader. -->
+                <!-- use the server rule reader service directly -->
+                <prop key="ruleReaderBackend">ruleReaderService</prop>
+
+                <!-- The frontend will be injected in the access manager. -->
+                <!-- You may replace the cachedRuleReader ref with ruleReaderService in order to disable the caching -->
+                <!--<prop key="ruleReaderFrontend">ruleReaderService</prop>-->
+
+            </props>
+        </property>
+	</bean>
+       
+    <bean class="org.geoserver.config.GeoServerPropertyOverrideConfigurer" >
+        <constructor-arg ref="dataDirectory"/>
+        <property name="ignoreResourceNotFound" value="true"/>
+        <property name="locations">
+            <list>
+                <value>classpath*:geofence-datasource-ovr.properties</value>
+                <value>${GEOSERVER_DATA_DIR}/geofence/geofence-datasource-ovr.properties</value> <!-- optional -->
+                <value>${geofence-ovr}</value> <!-- optional -->
+            </list>
+        </property>
+        <property name="properties"> 
+            <props>
+            	<prop key="geofenceConfigurationManager.configuration.servicesUrl">internal:/</prop>
+              <!--  db inside data directory -->
+	            <prop key="geofenceDataSource.url">jdbc:h2:${GEOSERVER_DATA_DIR}/geofence/geofence_db/geofence</prop>
+            </props>
+        </property>
+    </bean>    
+    
+    <!-- ================================================================ -->
+    <!-- === Geofence Remote Service ==================================== -->
+    <!-- ================================================================ -->
+	
+	<!-- The following code publishes the rulereader as a URL.
+    Is normally not necessary for internal rulereader, leaving the code here in case it can be useful for testing.
+   
+    <bean name="geofenceRuleReader" class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter">
+        <property name="service" ref="ruleReaderService"/>
+        <property name="serviceInterface" value="org.geoserver.geofence.services.RuleReaderService"/>
+    </bean>
+    
+	<bean id="geofenceURLMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+		<property name="alwaysUseFullPath" value="true"/>
+		<property name="mappings">
+			<props>
+				<prop key="/geofence/RuleReader">geofenceRuleReader</prop>
+			</props>
+		</property>
+	</bean> -->
+		
+    <!-- use the internal user resolver so geofence uses geoserver users and roles rather than its own -->
+    <bean id="internalUserResolver" class="org.geoserver.geofence.internal.InternalUserResolver" >
+	   <constructor-arg index="0" ref="geoServerSecurityManager"/>
+	</bean>
+	
+	<alias name="internalUserResolver" alias="defaultUserResolver" />
+    
+    <!-- web admin page -->
+    <bean id="geofenceServerPage" class="org.geoserver.web.MenuPageInfo">
+       <property name="id" value="geofenceServerPage"/>
+       <property name="titleKey" value="GeofenceServerPage.page.title"/>
+       <property name="descriptionKey" value="GeofenceServerPage.page.description"/>
+       <property name="componentClass" value="org.geoserver.geofence.web.GeofenceServerPage"/>
+       <property name="category" ref="securityCategory" />
+       <property name="order" value="1001" />
+       <property name="icon" value="img/icons/geofence.png" />
+    </bean>
+    
+</beans>

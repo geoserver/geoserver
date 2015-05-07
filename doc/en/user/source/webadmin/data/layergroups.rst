@@ -13,7 +13,7 @@ Layer group behaviour can be configured by setting its :guilabel:`mode`. There a
 * **container tree**: the layer group is exposed in the capabilities document, but does not have a name, making it impossible to render it on its own. This is called "containing category" in the WMS specification.
 * **Earth Observation tree**: a special type of group created to manage the WMS Earth Observation requirements. This group does not render its nested layers and groups, but only a "preview layer" called Root Layer. When this mode is chosen, a new field "Root Layer" will be exposed in the configuration UI.
 
-In case a layer is included in a any non *single* group it won't be listed anymore in the flat layer list, although it will still be possible to include the same layer in different layer groups. 
+If a layer is included in any non *single* mode group, it will no longer be listed in the flat layer list.  It will still be possible to include the layer in other layer groups. 
 
 .. figure:: ../images/data_layergroups.png
    :align: center

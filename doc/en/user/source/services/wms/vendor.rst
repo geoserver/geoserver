@@ -253,3 +253,23 @@ The following code shows how to specify the meta-tiling parameters:
         {buffer: 0} 
     );
 
+interpolations
+--------------
+
+The ``interpolations`` parameter allows choosing a specific resampling (interpolation) method. 
+It can be used in the ``GetMap`` operation. 
+
+If more than one layer is specified in the ``layers`` parameter, then a separate interpolation method can be specified for each layer, separated by commas.
+The syntax is::
+
+   interpolations=method1,method2,... 
+
+method<n> values can be one of the following: 
+
+ * **nearest neighbor**
+ * **bilinear**
+ * **bicubic**
+
+or empty if the default method has to be used for the related layer. 
+
+The parameter allows to override the global WMS Raster Rendering Options setting (see :ref:`WMS Settings<webadmin_wms>` for more info), on a layer by layer basis. 

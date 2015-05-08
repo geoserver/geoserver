@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -6,6 +6,7 @@
 package org.geoserver.wms.map;
 
 import static org.geoserver.data.test.SystemTestData.STREAMS;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -15,37 +16,48 @@ import java.awt.geom.NoninvertibleTransformException;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.media.jai.Interpolation;
+import javax.media.jai.RenderedOp;
 import javax.xml.namespace.QName;
 
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.data.test.MockData;
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.security.decorators.DecoratingFeatureSource;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WMSTestSupport;
+import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.Query;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureSource;
+import org.geotools.factory.FactoryRegistryException;
 import org.geotools.feature.IllegalAttributeException;
+import org.geotools.feature.SchemaException;
 import org.geotools.filter.IllegalFilterException;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.FeatureLayer;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.geotools.resources.coverage.FeatureUtilities;
+import org.geotools.resources.image.ImageUtilities;
 import org.geotools.styling.Style;
 import org.geotools.util.logging.Logging;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.opengis.parameter.GeneralParameterValue;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.operation.TransformException;
 
@@ -161,7 +173,108 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
         imageMap.dispose();
         assertNotBlank("testBlueLake", image);
     }
+    
+    
+    
+    @Override
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        super.onSetUp(testData);
+        testData.addDefaultRasterLayer(MockData.TASMANIA_DEM, getCatalog());
+    }
+    
+    @Test 
+    public void testInterpolationBicubic() throws IOException, IllegalFilterException, Exception {
+        final Catalog catalog = getCatalog();
+        CoverageInfo coverageInfo = catalog.getCoverageByName(MockData.TASMANIA_DEM.getNamespaceURI(),
+                MockData.TASMANIA_DEM.getLocalPart());
+        
+        Envelope env = coverageInfo.boundingBox();
+        double shift = env.getWidth() / 6;
 
+        env = new Envelope(env.getMinX() - shift, env.getMaxX() + shift, env.getMinY() - shift,
+                env.getMaxY() + shift);
+
+        GetMapRequest request = new GetMapRequest();
+        final WMSMapContent map = new WMSMapContent();
+        int w = 400;
+        int h = (int) Math.round((env.getHeight() * w) / env.getWidth());
+        map.setMapWidth(w);
+        map.setMapHeight(h);
+        map.setBgColor(BG_COLOR);
+        map.setTransparent(true);
+        map.setRequest(request);
+        addRasterToMap(map, MockData.TASMANIA_DEM);
+        
+        map.getViewport().setBounds(new ReferencedEnvelope(env, DefaultGeographicCRS.WGS84));
+        request.setInterpolations(Arrays.asList(Interpolation
+                .getInstance(Interpolation.INTERP_BICUBIC)));
+        request.setFormat(getMapFormat());
+        RenderedImageMap imageMap = this.rasterMapProducer.produceMap(map);
+        BufferedImage image = (BufferedImage)imageMap.getImage(); 
+        imageMap.dispose();
+        
+        assertNotBlank("testInterpolation", image);
+        
+        // bicubic creates shades of gray instead of white
+        assertTrue(getPixelColor(image, 200, 200).getRGB() < Color.DARK_GRAY.getRGB());
+        assertPixelIsTransparent(image, 50 , 650);
+        assertTrue(getPixelColor(image, 200, 200).getRGB() < Color.WHITE.getRGB());
+        
+    }
+    
+    @Test 
+    public void testInterpolationNearest() throws IOException, IllegalFilterException, Exception {
+        final Catalog catalog = getCatalog();
+        CoverageInfo coverageInfo = catalog.getCoverageByName(MockData.TASMANIA_DEM.getNamespaceURI(),
+                MockData.TASMANIA_DEM.getLocalPart());
+        
+        Envelope env = coverageInfo.boundingBox();
+        double shift = env.getWidth() / 6;
+
+        env = new Envelope(env.getMinX() - shift, env.getMaxX() + shift, env.getMinY() - shift,
+                env.getMaxY() + shift);
+
+        GetMapRequest request = new GetMapRequest();
+        final WMSMapContent map = new WMSMapContent();
+        int w = 400;
+        int h = (int) Math.round((env.getHeight() * w) / env.getWidth());
+        map.setMapWidth(w);
+        map.setMapHeight(h);
+        map.setBgColor(BG_COLOR);
+        map.setTransparent(true);
+        map.setRequest(request);
+        addRasterToMap(map, MockData.TASMANIA_DEM);
+        
+        map.getViewport().setBounds(new ReferencedEnvelope(env, DefaultGeographicCRS.WGS84));
+        request.setInterpolations(Arrays.asList(Interpolation
+                .getInstance(Interpolation.INTERP_NEAREST)));
+        request.setFormat(getMapFormat());
+        RenderedImageMap imageMap = this.rasterMapProducer.produceMap(map);
+        BufferedImage image = (BufferedImage)imageMap.getImage();
+        imageMap.dispose();
+        
+        assertNotBlank("testInterpolation", image);
+        // nearest neighbor creates "almost black" / white images
+        assertTrue(getPixelColor(image, 200, 200).getRGB() < Color.DARK_GRAY.getRGB());
+        assertPixelIsTransparent(image, 50 , 650);
+        assertPixel(image, 100, 350, Color.WHITE);
+        
+    }
+
+    private void addRasterToMap(final WMSMapContent map, final QName typeName) throws IOException, FactoryRegistryException, TransformException, SchemaException {
+        final CoverageInfo coverageInfo = getCatalog().getCoverageByName(typeName.getNamespaceURI(),
+                typeName.getLocalPart());
+
+
+        List<LayerInfo> layers = getCatalog().getLayers(coverageInfo);
+        StyleInfo defaultStyle = layers.get(0).getDefaultStyle();
+        Style style = defaultStyle.getStyle();
+        
+        SimpleFeatureCollection fc = FeatureUtilities.wrapGridCoverageReader(
+                (GridCoverage2DReader)coverageInfo.getGridCoverageReader(null, null), new GeneralParameterValue[] {});
+        map.addLayer(new FeatureLayer(fc, style));
+    }
+    
     private void addToMap(final WMSMapContent map, final QName typeName) throws IOException {
         final FeatureTypeInfo ftInfo = getCatalog().getFeatureTypeByName(
                 typeName.getNamespaceURI(), typeName.getLocalPart());

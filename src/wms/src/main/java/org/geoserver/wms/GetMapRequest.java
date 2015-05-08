@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -17,6 +17,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
+import javax.media.jai.Interpolation;
 
 import org.geoserver.catalog.SLDHandler;
 import org.geoserver.ows.util.CaseInsensitiveMap;
@@ -139,6 +141,15 @@ public class GetMapRequest extends WMSRequest implements Cloneable {
      */
     public List<Style> getStyles() {
         return this.mandatoryParams.styles;
+    }
+    
+    /**
+     * Gets a list of the interpolation methods to be returned by the server.
+     * 
+     * @return A list of {@link Interpolation}
+     */
+    public List<Interpolation> getInterpolations() {
+        return this.optionalParams.interpolationMethods;
     }
 
     /**
@@ -410,6 +421,16 @@ public class GetMapRequest extends WMSRequest implements Cloneable {
                 : new ArrayList<Style>(styles);
     }
 
+    /**
+     * Sets interpolations methods for layers.
+     * 
+     * @param interpolations
+     */
+    public void setInterpolations(List<Interpolation> interpolations) {
+        this.optionalParams.interpolationMethods = interpolations == null ? Collections.EMPTY_LIST
+                : interpolations;
+    }
+    
     /**
      * Sets the url specified by the "SLD" parameter.
      */
@@ -770,7 +791,10 @@ public class GetMapRequest extends WMSRequest implements Cloneable {
 
         /** map rotation */
         double angle;
-        
+ 
+        /** by layer interpolation methods **/
+        List<Interpolation> interpolationMethods = Collections.EMPTY_LIST;
+
         @Override
         public Object clone() throws CloneNotSupportedException {
         	return super.clone();

@@ -8,8 +8,8 @@ package org.geoserver.wps.gs.download;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -277,31 +277,26 @@ final class DownloadUtilities {
      * @throws IOException
      */
     static List<File> collectStyles(LayerInfo layerInfo) throws IOException {
-        final List<File> styles = new ArrayList<File>();
+        final List<File> styleFiles = new ArrayList<File>();
 
         if (LOGGER.isLoggable(Level.FINE)) {
             LOGGER.log(Level.FINE, "Searching for default style");
         }
-        // default style
-        final StyleInfo style = layerInfo.getDefaultStyle();
-        File styleFile = findStyle(style);
-        if (styleFile != null) {
-            styles.add(styleFile);
+
+        // collect in a set to avoid duplicates (the styles can contain a copy of the
+        // default style)
+        LinkedHashSet<StyleInfo> styles = new LinkedHashSet<>();
+        styles.add(layerInfo.getDefaultStyle());
+        if (layerInfo.getStyles() != null) {
+            styles.addAll(layerInfo.getStyles());
         }
 
-        // other styles
-        if (LOGGER.isLoggable(Level.FINE)) {
-            LOGGER.log(Level.FINE, "Searching for other styles");
-        }
-        final Set<StyleInfo> otherStyles = layerInfo.getStyles();
-        if (otherStyles != null && !otherStyles.isEmpty()) {
-            for (StyleInfo si : otherStyles) {
-                styleFile = findStyle(si);
-                if (styleFile != null) {
-                    styles.add(styleFile);
-                }
+        for (StyleInfo si : styles) {
+            File styleFile = findStyle(si);
+            if (styleFile != null) {
+                styleFiles.add(styleFile);
             }
         }
-        return styles;
+        return styleFiles;
     }
 }

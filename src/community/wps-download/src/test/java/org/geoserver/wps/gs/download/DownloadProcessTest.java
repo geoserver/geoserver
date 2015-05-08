@@ -19,6 +19,7 @@ import java.util.zip.ZipInputStream;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.LayerInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.util.IOUtils;
@@ -48,6 +49,7 @@ import org.geotools.util.DefaultProgressListener;
 import org.geotools.util.NullProgressListener;
 import org.geotools.util.logging.Logging;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.util.InternationalString;
@@ -141,6 +143,11 @@ public class DownloadProcessTest extends WPSTestSupport {
                         "download-process/download.properties"), "download.properties");
     }
 
+    @Before
+    public void clearPolygons() throws IOException {
+        revertLayer(MockData.POLYGONS);
+    }
+
     /**
      * Test get features as shapefile.
      * 
@@ -179,6 +186,22 @@ public class DownloadProcessTest extends WPSTestSupport {
         Assert.assertNotNull(rawTarget);
 
         Assert.assertEquals(rawSource.size(), rawTarget.size());
+    }
+
+    /**
+     * Test downloading with a duplicate style
+     * 
+     * @throws Exception the exception
+     */
+    @Test
+    public void testDownloadWithDuplicateStyle() throws Exception {
+        String polygonsName = getLayerId(MockData.POLYGONS);
+        LayerInfo li = getCatalog().getLayerByName(polygonsName);
+        // setup an alternative equal to the main style
+        li.getStyles().add(li.getDefaultStyle());
+        getCatalog().save(li);
+
+        testGetFeaturesAsShapefile();
     }
 
     /**

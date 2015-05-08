@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2014 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -36,6 +36,7 @@ import org.apache.commons.lang.StringUtils;
 import org.geoserver.catalog.AttributionInfo;
 import org.geoserver.catalog.AuthorityURLInfo;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.DataLinkInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.KeywordInfo;
 import org.geoserver.catalog.LayerGroupInfo;
@@ -45,9 +46,9 @@ import org.geoserver.catalog.LegendInfo;
 import org.geoserver.catalog.MetadataLinkInfo;
 import org.geoserver.catalog.Predicates;
 import org.geoserver.catalog.PublishedInfo;
+import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
-import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.config.ContactInfo;
@@ -69,6 +70,7 @@ import org.geotools.referencing.CRS;
 import org.geotools.referencing.CRS.AxisOrder;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.styling.Style;
+import org.geotools.util.NumberRange;
 import org.geotools.util.logging.Logging;
 import org.geotools.xml.transform.TransformerBase;
 import org.geotools.xml.transform.Translator;
@@ -85,7 +87,6 @@ import org.xml.sax.helpers.AttributesImpl;
 
 import com.google.common.collect.Iterables;
 import com.vividsolutions.jts.geom.Envelope;
-import org.geoserver.catalog.DataLinkInfo;
 
 /**
  * Geotools xml framework based encoder for a Capabilities WMS 1.3.0 document.
@@ -670,6 +671,9 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             if (srsList != null) {
                 srs.addAll(srsList);
             }
+            for (ExtendedCapabilitiesProvider provider : extCapsProviders) {
+                provider.customizeRootCrsList(srs);
+            }
             handleRootCrsList(srs);
 
             CloseableIterator<LayerInfo> layers;
@@ -988,26 +992,30 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
          * 
          * @param layer
          */
-		private void handleScaleDenominator(final LayerInfo layer) {
+        private void handleScaleDenominator(final LayerInfo layer) {
 
-			try {
-				final String MIN_SCALE_DENOMINATOR = "MinScaleDenominator";
-				final String MAX_SCALE_DENOMINATOR = "MaxScaleDenominator";
-				Map<String, Double> denominators = CapabilityUtil.searchMinMaxScaleDenominator(
-														MIN_SCALE_DENOMINATOR, MAX_SCALE_DENOMINATOR, layer);
+            try {
+                NumberRange<Double> scaleDenominators = CapabilityUtil
+                        .searchMinMaxScaleDenominator(layer);
 
-				if(denominators.get(MIN_SCALE_DENOMINATOR) != 0.0){
-					element(MIN_SCALE_DENOMINATOR, String.valueOf(denominators.get(MIN_SCALE_DENOMINATOR)) ); 					
-				}
-				
-				if(denominators.get(MAX_SCALE_DENOMINATOR) != Double.POSITIVE_INFINITY){
-                    element(MAX_SCALE_DENOMINATOR, String.valueOf(denominators.get(MAX_SCALE_DENOMINATOR)) ); 					
-				}
+                // allow extension points to customize
+                for (ExtendedCapabilitiesProvider provider : extCapsProviders) {
+                    scaleDenominators = provider
+                            .overrideScaleDenominators(layer, scaleDenominators);
+                }
 
-			} catch (IOException e) {
-				LOGGER.log(Level.WARNING, e.getLocalizedMessage(), e);
-			}
-		}
+                if (scaleDenominators.getMinimum() != 0.0) {
+                    element("MinScaleDenominator", String.valueOf(scaleDenominators.getMinimum()));
+                }
+
+                if (scaleDenominators.getMaximum() != Double.POSITIVE_INFINITY) {
+                    element("MaxScaleDenominator", String.valueOf(scaleDenominators.getMaximum()));
+                }
+
+            } catch (IOException e) {
+                LOGGER.log(Level.WARNING, e.getLocalizedMessage(), e);
+            }
+        }
 
 		private void handleStyles(final LayerInfo layer) {
             if (layer.getResource() instanceof WMSLayerInfo) {

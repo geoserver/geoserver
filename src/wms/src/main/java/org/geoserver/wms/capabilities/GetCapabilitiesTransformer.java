@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2014 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -37,6 +37,7 @@ import javax.xml.transform.TransformerException;
 import org.apache.commons.lang.StringUtils;
 import org.geoserver.catalog.AttributionInfo;
 import org.geoserver.catalog.AuthorityURLInfo;
+import org.geoserver.catalog.DataLinkInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.KeywordInfo;
 import org.geoserver.catalog.LayerGroupInfo;
@@ -45,9 +46,9 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.LegendInfo;
 import org.geoserver.catalog.MetadataLinkInfo;
 import org.geoserver.catalog.PublishedInfo;
+import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
-import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.config.ContactInfo;
 import org.geoserver.config.GeoServer;
@@ -68,11 +69,11 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.styling.Style;
+import org.geotools.util.NumberRange;
 import org.geotools.xml.transform.TransformerBase;
 import org.geotools.xml.transform.Translator;
 import org.opengis.feature.type.Name;
 import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.TransformException;
 import org.springframework.util.Assert;
 import org.vfny.geoserver.util.ResponseUtils;
@@ -82,7 +83,6 @@ import org.xml.sax.helpers.AttributesImpl;
 
 import com.google.common.collect.Iterables;
 import com.vividsolutions.jts.geom.Envelope;
-import org.geoserver.catalog.DataLinkInfo;
 
 /**
  * Geotools xml framework based encoder for a Capabilities WMS 1.1.1 document.
@@ -680,6 +680,9 @@ public class GetCapabilitiesTransformer extends TransformerBase {
             if (srsList != null) {
                 srs.addAll(srsList);
             }
+            for (ExtendedCapabilitiesProvider provider : extCapsProviders) {
+                provider.customizeRootCrsList(srs);
+            }
             handleRootCrsList(srs);
 
             handleRootBbox(layers);
@@ -881,21 +884,6 @@ public class GetCapabilitiesTransformer extends TransformerBase {
             final String srs = layer.getResource().getSRS();
             element("SRS", srs);
 
-            // DJB: I want to be nice to the people reading the capabilities
-            // file - I'm going to get the
-            // human readable name and stick it in the capabilities file
-            // NOTE: this isnt well done because "comment()" isnt in the
-            // ContentHandler interface...
-            try {
-                CoordinateReferenceSystem crs = layer.getResource().getCRS();
-                String desc = "WKT definition of this CRS:\n" + crs;
-                comment(desc);
-            } catch (Exception e) {
-                if (LOGGER.isLoggable(Level.WARNING)) {
-                    LOGGER.log(Level.WARNING, e.getLocalizedMessage(), e);
-                }
-            }
-
             ReferencedEnvelope bbox;
             try {
                 bbox = layer.getResource().boundingBox();
@@ -998,27 +986,31 @@ public class GetCapabilitiesTransformer extends TransformerBase {
         private void handleScaleHint(LayerInfo layer) {
 
             try {
-                Map<String, Double>  denominators = CapabilityUtil.searchMinMaxScaleDenominator(MIN_DENOMINATOR_ATTR, MAX_DENOMINATOR_ATTR, layer);
+                NumberRange<Double> scaleDenominators = CapabilityUtil.searchMinMaxScaleDenominator(layer);
 
+                // allow extension points to customize
+                for (ExtendedCapabilitiesProvider provider : extCapsProviders) {
+                    scaleDenominators = provider.overrideScaleDenominators(layer, scaleDenominators);
+                }
                 // makes the element taking into account that if the min and max denominators have got the default 
                 // values the ScaleHint element is not generated
-
-                if( (denominators.get(MIN_DENOMINATOR_ATTR) == 0.0) && 
-                        (denominators.get(MAX_DENOMINATOR_ATTR) == Double.POSITIVE_INFINITY) ){
-
+                if( (scaleDenominators.getMinimum() == 0.0) && 
+                        (scaleDenominators.getMaximum() == Double.POSITIVE_INFINITY) ){
                     return; 
                 }
 
                 Double minScaleHint;
                 Double maxScaleHint;
-                if(wmsConfig.getScalehintUnitPixel()!=null && wmsConfig.getScalehintUnitPixel()){                
+                boolean scaleUnitPixel = wmsConfig.getScalehintUnitPixel() !=null && wmsConfig.getScalehintUnitPixel();
+                if(scaleUnitPixel){                
                     // makes the scalehint computation taking into account the OGC standardized rendering pixel size" that is 0.28mm × 0.28mm (millimeters).
-                    minScaleHint =  CapabilityUtil.computeScaleHint(denominators.get(MIN_DENOMINATOR_ATTR));
-                    maxScaleHint =  CapabilityUtil.computeScaleHint(denominators.get(MAX_DENOMINATOR_ATTR));
+                    minScaleHint =  CapabilityUtil.computeScaleHint(scaleDenominators.getMinValue());
+                    maxScaleHint =  CapabilityUtil.computeScaleHint(scaleDenominators.getMaxValue());
                 }else{
-                    minScaleHint=denominators.get(MIN_DENOMINATOR_ATTR);
-                    maxScaleHint=denominators.get(MAX_DENOMINATOR_ATTR);
-                }			
+                    minScaleHint = scaleDenominators.getMinValue();
+                    maxScaleHint = scaleDenominators.getMaxValue();
+                }	
+                
 
                 AttributesImpl attrs = new AttributesImpl();
                 attrs.addAttribute("", MIN_DENOMINATOR_ATTR, MIN_DENOMINATOR_ATTR, "", String.valueOf(minScaleHint));

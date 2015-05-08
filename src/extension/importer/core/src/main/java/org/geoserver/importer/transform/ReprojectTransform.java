@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -6,11 +6,11 @@
 package org.geoserver.importer.transform;
 
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.importer.ImportTask;
 import org.geotools.data.DataStore;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.referencing.CRS;
-import org.geoserver.importer.ImportTask;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -18,7 +18,7 @@ import org.opengis.referencing.operation.MathTransform;
 
 import com.vividsolutions.jts.geom.Geometry;
 
-public class ReprojectTransform extends AbstractVectorTransform implements InlineVectorTransform {
+public class ReprojectTransform extends AbstractTransform implements InlineVectorTransform {
     
     private static final long serialVersionUID = 1L;
 

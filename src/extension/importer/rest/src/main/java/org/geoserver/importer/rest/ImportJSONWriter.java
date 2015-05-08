@@ -23,6 +23,7 @@ import net.sf.json.JSONObject;
 import net.sf.json.JSONSerializer;
 import net.sf.json.util.JSONBuilder;
 
+import org.geoserver.catalog.AttributeTypeInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -33,10 +34,6 @@ import org.geoserver.catalog.StyleInfo;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamPersister.Callback;
 import org.geoserver.config.util.XStreamPersisterFactory;
-import org.geoserver.rest.PageInfo;
-import org.geoserver.rest.RestletException;
-import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.geotools.referencing.CRS;
 import org.geoserver.importer.Database;
 import org.geoserver.importer.Directory;
 import org.geoserver.importer.FileData;
@@ -52,17 +49,23 @@ import org.geoserver.importer.transform.AttributeRemapTransform;
 import org.geoserver.importer.transform.AttributesToPointGeometryTransform;
 import org.geoserver.importer.transform.CreateIndexTransform;
 import org.geoserver.importer.transform.DateFormatTransform;
+import org.geoserver.importer.transform.GdalAddoTransform;
+import org.geoserver.importer.transform.GdalTranslateTransform;
+import org.geoserver.importer.transform.GdalWarpTransform;
 import org.geoserver.importer.transform.ImportTransform;
 import org.geoserver.importer.transform.IntegerFieldToDateTransform;
 import org.geoserver.importer.transform.ReprojectTransform;
 import org.geoserver.importer.transform.TransformChain;
 import org.geoserver.importer.transform.VectorTransformChain;
+import org.geoserver.rest.PageInfo;
+import org.geoserver.rest.RestletException;
+import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.referencing.CRS;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.restlet.data.Status;
 
 import com.thoughtworks.xstream.converters.MarshallingContext;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
-import org.geoserver.catalog.AttributeTypeInfo;
 
 /**
  * Utility class for reading/writing import/tasks/etc... to/from JSON.
@@ -389,12 +392,38 @@ public class ImportJSONWriter {
                 ReprojectTransform rt = (ReprojectTransform) transform;
                 json.key("source").value(srs(rt.getSource()));
                 json.key("target").value(srs(rt.getTarget()));
+            } else if (transform.getClass().equals(GdalTranslateTransform.class)) {
+                GdalTranslateTransform gtx = (GdalTranslateTransform) transform;
+                List<String> options = gtx.getOptions();
+                buildJsonOptions(json, "options", options);
+            } else if (transform.getClass().equals(GdalWarpTransform.class)) {
+                GdalWarpTransform gw = (GdalWarpTransform) transform;
+                List<String> options = gw.getOptions();
+                buildJsonOptions(json, "options", options);
+            } else if (transform.getClass().equals(GdalAddoTransform.class)) {
+                GdalAddoTransform gad = (GdalAddoTransform) transform;
+                List<String> options = gad.getOptions();
+                buildJsonOptions(json, "options", options);
+                JSONBuilder arrayBuilder = json.key("levels").array();
+                for (Integer level : gad.getLevels()) {
+                    arrayBuilder.value(level);
+                }
+                arrayBuilder.endArray();
             } else {
                 throw new IOException("Serializaiton of " + transform.getClass() + " not implemented");
             }
         }
         json.endObject();
         json.flush();
+    }
+
+    private void buildJsonOptions(FlushableJSONBuilder json, String key, List<String> options) {
+        JSONBuilder arrayBuilder = json.key(key).array();
+        for (String option : options) {
+            arrayBuilder.value(option);
+        }
+        arrayBuilder.endArray();
+
     }
 
     void bbox(JSONBuilder json, ReferencedEnvelope bbox) {

@@ -28,7 +28,7 @@ public class DefaultWebMapServiceTest extends WMSTestSupport {
      * @throws Exception
      */
     @Test 
-    public void test1() throws Exception {
+    public void testBasic() throws Exception {
         GetMapRequest mockGMR = createGetMapRequest(MockData.BASIC_POLYGONS);
 
         /* Create a request */
@@ -56,8 +56,8 @@ public class DefaultWebMapServiceTest extends WMSTestSupport {
         assertTrue(bbox.getMinX() == -180.0 && bbox.getMaxX() == 180.0 && bbox.getMinY() == -90.0
                 && bbox.getMaxY() == 90.0);
         assertEquals("image/png", format);
-        assertEquals(width, 512);
-        assertEquals(height, 256);
+        assertEquals(width, 768);
+        assertEquals(height, 384);
     }
 
     /**
@@ -66,7 +66,7 @@ public class DefaultWebMapServiceTest extends WMSTestSupport {
      * @throws Exception
      */
     @Test 
-    public void test2() throws Exception {
+    public void testReprojection() throws Exception {
         GetMapRequest mockGMR = createGetMapRequest(MockData.BASIC_POLYGONS);
 
         /* Create a request */
@@ -98,8 +98,8 @@ public class DefaultWebMapServiceTest extends WMSTestSupport {
                 && Math.abs(bbox.getMaxX() - 1.9236008009077676E7) < 1E-4
                 && Math.abs(bbox.getMaxY() - 2.2026354993694823E7) < 1E-4);
         assertEquals("image/gif", format);
-        assertEquals(447, width);
-        assertEquals(512, height);
+        assertEquals(670, width);
+        assertEquals(768, height);
     }
 
     /**
@@ -109,7 +109,7 @@ public class DefaultWebMapServiceTest extends WMSTestSupport {
      * @throws Exception
      */
     @Test
-    public void test3() throws Exception {
+    public void testAutoSetWidthHeight() throws Exception {
         GetMapRequest mockStreams = createGetMapRequest(MockData.BRIDGES);
         GetMapRequest mockBridges = createGetMapRequest(MockData.STREAMS);
 
@@ -145,12 +145,39 @@ public class DefaultWebMapServiceTest extends WMSTestSupport {
                 && Math.abs(bbox.getMaxX() - 1.9236008009077676E7) < 1E-4
                 && Math.abs(bbox.getMaxY() - 2.2026354993694823E7) < 1E-4);
         assertEquals("image/gif", format);
-        assertEquals(447, width);
-        assertEquals(512, height);
+        assertEquals(670, width);
+        assertEquals(768, height);
+    }
+
+    /**
+     * This test is incomplete because I (arneke) had trouble finding mock data with proper bounding
+     * boxes
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testAutoSetWidthHeightOL() throws Exception {
+        DefaultWebMapService reflector = new DefaultWebMapService(getWMS());
+
+        // request too stretched east/west
+        GetMapRequest request = createGetMapRequest(MockData.BRIDGES);
+        request.setBbox(new Envelope(-180, 180, 0, 10));
+        request.setFormat("application/openlayers");
+        reflector.autoSetBoundsAndSize(request);
+        assertEquals(768, request.getWidth());
+        assertEquals(330, request.getHeight());
+
+        // request too stretched south/north
+        request = createGetMapRequest(MockData.BRIDGES);
+        request.setBbox(new Envelope(-0, 10, -90, 90));
+        request.setFormat("application/openlayers");
+        reflector.autoSetBoundsAndSize(request);
+        assertEquals(330, request.getWidth());
+        assertEquals(768, request.getHeight());
     }
 
     @Test
-    public void testAdvancedProjectionEnabled(){
+    public void testAdvancedProjectionEnabled() {
         // Ensure that by default advanced projection handling is enabled
         assertTrue(DefaultWebMapService.isAdvancedProjectionHandlingEnabled());
     }

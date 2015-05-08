@@ -135,32 +135,36 @@ public abstract class AbstractCommandLineTransform extends AbstractTransform imp
     }
 
     protected boolean checkAvailable() throws IOException {
-        CommandLine cmd = new CommandLine(getExecutable());
-        for (String option : getAvailabilityTestOptions()) {
-            cmd.addArgument(option);
-        }
-
-        // prepare to run
-        DefaultExecutor executor = new DefaultExecutor();
-
-        // grab at least some part of the outputs
-        int limit = 16 * 1024;
-        try (OutputStream os = new BoundedOutputStream(new ByteArrayOutputStream(), limit);
-                OutputStream es = new BoundedOutputStream(new ByteArrayOutputStream(), limit)) {
-            PumpStreamHandler streamHandler = new PumpStreamHandler(os, es);
-            executor.setStreamHandler(streamHandler);
-            int result = executor.execute(cmd);
-
-            if (result != 0) {
-                LOGGER.log(Level.SEVERE,
-                        "Failed to execute command " + cmd.toString()
-                        + "\nStandard output is:\n" + os.toString() + "\nStandard error is:\n"
-                        + es.toString());
-                return false;
+        try {
+            CommandLine cmd = new CommandLine(getExecutable());
+            for (String option : getAvailabilityTestOptions()) {
+                cmd.addArgument(option);
             }
 
+            // prepare to run
+            DefaultExecutor executor = new DefaultExecutor();
+
+            // grab at least some part of the outputs
+            int limit = 16 * 1024;
+            try (OutputStream os = new BoundedOutputStream(new ByteArrayOutputStream(), limit);
+                    OutputStream es = new BoundedOutputStream(new ByteArrayOutputStream(), limit)) {
+                PumpStreamHandler streamHandler = new PumpStreamHandler(os, es);
+                executor.setStreamHandler(streamHandler);
+                int result = executor.execute(cmd);
+
+                if (result != 0) {
+                    LOGGER.log(Level.SEVERE, "Failed to execute command " + cmd.toString()
+                            + "\nStandard output is:\n" + os.toString() + "\nStandard error is:\n"
+                            + es.toString());
+                    return false;
+                }
+
+            } catch (Exception e) {
+                LOGGER.log(Level.SEVERE, "Failure to execute command " + cmd.toString(), e);
+                return false;
+            }
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Failure to execute command " + cmd.toString(), e);
+            LOGGER.log(Level.SEVERE, "Failure to locate executable for class " + this.getClass(), e);
             return false;
         }
 

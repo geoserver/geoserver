@@ -230,7 +230,8 @@ public class AnimatorTest extends WMSTestSupport {
                 LayerGroupInfo eoGroup = createLakesPlacesLayerGroup(catalog, "eoGroup", LayerGroupInfo.Mode.EO, catalog.getLayerByName(getLayerId(MockData.LAKES)));                
                 try {
                     
-                    String requestURL = "wms/animate?BBOX=0.0000,-0.0020,0.0035,0.0010&aparam=layers&avalues=" +
+                    String requestURL = "wms/animate?BBOX=0.0000,-0.0020,0.0035,0.0010&width=512&aparam=layers&avalues="
+                            +
                             singleGroup.getName() + "," +
                             namedGroup.getName() + "," +
                             eoGroup.getName();

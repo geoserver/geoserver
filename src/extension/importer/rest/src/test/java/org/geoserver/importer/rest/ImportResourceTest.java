@@ -47,9 +47,6 @@ public class ImportResourceTest extends ImporterTestSupport {
         
         dir = unpack("shape/archsites_no_crs.zip");
         importer.createContext(new SpatialFile(new File(dir, "archsites.shp")));
-
-        dir = unpack("geojson/point.json.zip");
-        importer.createContext(new SpatialFile(new File(dir, "point.json")));
     }
     
     @After
@@ -64,7 +61,7 @@ public class ImportResourceTest extends ImporterTestSupport {
         assertNotNull(json.get("imports"));
 
         JSONArray imports = (JSONArray) json.get("imports");
-        assertEquals(4, imports.size());
+        assertEquals(3, imports.size());
 
         JSONObject imprt = imports.getJSONObject(0);
         assertEquals(0, imprt.getInt("id"));
@@ -169,31 +166,6 @@ public class ImportResourceTest extends ImporterTestSupport {
         assertEquals("file", source.getString("type"));
         assertEquals("Shapefile", source.getString("format"));
         assertEquals("archsites.shp", source.getString("file"));
-    }
-
-    @Test
-    public void testGetImportGeoJSON() throws Exception {
-        JSONObject json = (JSONObject) getAsJSON("/rest/imports/3?expand=3");
-        assertNotNull(json);
-
-        JSONObject imprt = json.optJSONObject("import");
-        assertEquals(3, imprt.getInt("id"));
-
-        JSONArray tasks = imprt.getJSONArray("tasks");
-        assertEquals(1, tasks.size());
-
-        JSONObject task = tasks.getJSONObject(0);
-
-        JSONObject source = task.getJSONObject("data");
-        assertEquals("file", source.getString("type"));
-        assertEquals("GeoJSON", source.getString("format"));
-        assertEquals("point.json", source.getString("file"));
-
-        JSONObject layer = task.getJSONObject("layer");
-        JSONArray attributes = layer.getJSONArray("attributes");
-        assertNotEquals(0, attributes.size());
-
-        assertTrue(layer.containsKey("bbox"));
     }
 
     @Test
@@ -334,5 +306,34 @@ public class ImportResourceTest extends ImporterTestSupport {
 
         res = dispatch(req);
         assertEquals("text/html", res.getContentType());
+    }
+
+    @Test
+    public void testGetImportGeoJSON() throws Exception {
+        File dir = unpack("geojson/point.json.zip");
+        importer.createContext(new SpatialFile(new File(dir, "point.json")));
+        int id = lastId();
+
+        JSONObject json = (JSONObject) getAsJSON("/rest/imports/" + id + "?expand=3");
+        assertNotNull(json);
+
+        JSONObject imprt = json.optJSONObject("import");
+        assertEquals(id, imprt.getInt("id"));
+
+        JSONArray tasks = imprt.getJSONArray("tasks");
+        assertEquals(1, tasks.size());
+
+        JSONObject task = tasks.getJSONObject(0);
+
+        JSONObject source = task.getJSONObject("data");
+        assertEquals("file", source.getString("type"));
+        assertEquals("GeoJSON", source.getString("format"));
+        assertEquals("point.json", source.getString("file"));
+
+        JSONObject layer = task.getJSONObject("layer");
+        JSONArray attributes = layer.getJSONArray("attributes");
+        assertNotEquals(0, attributes.size());
+
+        assertTrue(layer.containsKey("bbox"));
     }
 }

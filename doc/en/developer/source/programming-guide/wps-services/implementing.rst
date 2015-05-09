@@ -53,6 +53,11 @@ For this example the project will be called "hello_wps".
            <version>14-SNAPSHOT</version> <!-- change this to the proper GeoTools version -->
          </dependency>
          <dependency>
+           <groupId>org.geoserver.extension</groupId>
+           <artifactId>gs-wps-core</artifactId>
+           <version>2.8-SNAPSHOT</version>
+         </dependency>
+         <dependency>
            <groupId>org.geoserver</groupId>
            <artifactId>gs-main</artifactId>
            <version>2.8-SNAPSHOT</version> <!-- change this to the proper GeoServer version -->

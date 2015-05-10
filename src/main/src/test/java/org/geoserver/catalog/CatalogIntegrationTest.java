@@ -42,11 +42,6 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 public class CatalogIntegrationTest extends GeoServerSystemTestSupport {
     
     @Override
-    protected boolean isFullInitRequired() {
-        return true;
-    }
-
-    @Override
     protected void setUpTestData(SystemTestData testData) throws Exception {
         super.setUpTestData(testData);
         testData.setUpDefaultRasterLayers();

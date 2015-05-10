@@ -170,7 +170,7 @@
 	<bean id="wfsXsd-1.0" class="org.geoserver.wfs.xml.v1_0_0.WFS">
 	    <constructor-arg ref="gml2SchemaBuilder"/>
 	</bean>
-	<bean id="xmlConfiguration-1.0" class="org.geoserver.wfs.xml.v1_0_0.WFSConfiguration">
+	<bean id="xmlConfiguration-1.0" class="org.geoserver.wfs.xml.v1_0_0.WFSConfiguration" lazy-init="false">
 		<constructor-arg ref="catalog"/>
 		<constructor-arg ref="gml2SchemaBuilder"/>
 		<constructor-arg ref="wfsXsd-1.0"/>
@@ -180,7 +180,7 @@
 	<bean id="wfsXsd-1.1" class="org.geoserver.wfs.xml.v1_1_0.WFS">
         <constructor-arg ref="gml3SchemaBuilder"/>
     </bean>
-	<bean id="xmlConfiguration-1.1" class="org.geoserver.wfs.xml.v1_1_0.WFSConfiguration">
+	<bean id="xmlConfiguration-1.1" class="org.geoserver.wfs.xml.v1_1_0.WFSConfiguration" lazy-init="false">
 		<constructor-arg ref="geoServer"/>
 		<constructor-arg ref="gml3SchemaBuilder"/>
 		<constructor-arg ref="wfsXsd-1.1"/>

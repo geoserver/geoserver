@@ -38,18 +38,9 @@ public class GeoServerTestApplicationContext extends ClassPathXmlApplicationCont
 
     boolean useLegacyGeoServerLoader = true;
 
-    boolean fullInitRequired;
-    
-    public GeoServerTestApplicationContext(String configLocation, ServletContext servletContext)
-        throws BeansException {
-        this(new String[] { configLocation }, servletContext, true);
-    }
-
-    public GeoServerTestApplicationContext(String[] configLocation, ServletContext servletContext,
-            boolean fullInitRequired)
+    public GeoServerTestApplicationContext(String[] configLocation, ServletContext servletContext)
         throws BeansException {
         super(configLocation, false);
-        this.fullInitRequired = true;
         setValidating(false);
         try {
             servletContext.setAttribute(
@@ -109,9 +100,7 @@ public class GeoServerTestApplicationContext extends ClassPathXmlApplicationCont
     @Override
     protected void initBeanDefinitionReader(XmlBeanDefinitionReader reader) {
         super.initBeanDefinitionReader(reader);
-        if (!fullInitRequired) {
-            reader.setDocumentReaderClass(LazyBeanDefinitionDocumentReader.class);
-        }
+        reader.setDocumentReaderClass(LazyBeanDefinitionDocumentReader.class);
     }
 
     static class LazyBeanDefinitionDocumentReader extends DefaultBeanDefinitionDocumentReader {

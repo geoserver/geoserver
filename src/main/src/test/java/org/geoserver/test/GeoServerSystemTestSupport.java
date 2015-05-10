@@ -172,10 +172,6 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
      */
     protected static DispatcherServlet dispatcher;
 
-    protected boolean isFullInitRequired() {
-        return false;
-    }
-
     protected final void setUp(SystemTestData testData) throws Exception {
         // speed up xpath evaluations
         try {
@@ -227,8 +223,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
             setUpSpring(contexts);
 
             applicationContext = new GeoServerTestApplicationContext(
-                    contexts.toArray(new String[contexts.size()]), servletContext,
-                    isFullInitRequired());
+                    contexts.toArray(new String[contexts.size()]), servletContext);
             applicationContext.setUseLegacyGeoServerLoader(false);
             applicationContext.refresh();
             applicationContext.publishEvent(new ContextLoadedEvent(applicationContext));

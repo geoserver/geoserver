@@ -152,10 +152,6 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
         password = null;
     }
     
-    protected boolean isFullInitRequired() {
-        return false;
-    }
-
     /**
      * If subclasses override they *must* call super.setUp() first.
      */
@@ -206,7 +202,7 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
             }
             
             applicationContext = new GeoServerTestApplicationContext(getSpringContextLocations(),
-                    servletContext, isFullInitRequired());
+                    servletContext);
             applicationContext.setUseLegacyGeoServerLoader(useLegacyDataDirectory());
             applicationContext.refresh();
             applicationContext.publishEvent(new ContextLoadedEvent(applicationContext));

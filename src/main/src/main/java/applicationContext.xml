@@ -28,7 +28,7 @@
        <constructor-arg ref="resourceLoader"/>
     </bean>
     
-    <bean id="manifestLoader" class="org.geoserver.ManifestLoader">
+    <bean id="manifestLoader" class="org.geoserver.ManifestLoader" lazy-init="false">
        <constructor-arg ref="resourceLoader"/>
     </bean>
     
@@ -205,11 +205,11 @@
      <constructor-arg ref="geoServer"/>  
   </bean>
   
-  <bean id="updateSequenceListener" class="org.geoserver.config.UpdateSequenceListener">
+  <bean id="updateSequenceListener" class="org.geoserver.config.UpdateSequenceListener" lazy-init="false">
 	<constructor-arg ref="geoServer"/>
   </bean>
   
-  <bean id="namespaceWorkspaceConsistencyListener" class="org.geoserver.catalog.NamespaceWorkspaceConsistencyListener">
+  <bean id="namespaceWorkspaceConsistencyListener" class="org.geoserver.catalog.NamespaceWorkspaceConsistencyListener" lazy-init="false">
     <constructor-arg ref="catalog"/>
   </bean>
   

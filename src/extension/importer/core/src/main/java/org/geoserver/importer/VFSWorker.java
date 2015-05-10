@@ -184,6 +184,7 @@ public class VFSWorker {
         };
         target.copyFrom(source, selector);
         source.close();
+        target.close();
         manager.closeFileSystem(source.getFileSystem());
     }
 

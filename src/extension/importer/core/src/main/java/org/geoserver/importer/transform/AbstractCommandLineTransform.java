@@ -96,16 +96,15 @@ public abstract class AbstractCommandLineTransform extends AbstractTransform imp
                 PumpStreamHandler streamHandler = new PumpStreamHandler(os, es);
                 executor.setStreamHandler(streamHandler);
                 try {
-                int result = executor.execute(cmd);
-
-                if (result != 0) {
-                    // toString call is routed to ByteArrayOutputStream, which does the right string
-                    // conversion
-                    throw new IOException("Failed to execute command " + cmd.toString()
-                            + "\nStandard output is:\n" + os.toString() + "\nStandard error is:\n"
-                            + es.toString());
-                }
-
+                    int result = executor.execute(cmd);
+                    
+                    if (executor.isFailure(result)) {
+                        // toString call is routed to ByteArrayOutputStream, which does the right string
+                        // conversion
+                        throw new IOException("Failed to execute command " + cmd.toString()
+                                + "\nStandard output is:\n" + os.toString() + "\nStandard error is:\n"
+                                + es.toString());
+                    }
                 } catch (Exception e) {
                     throw new IOException("Failure to execute command " + cmd.toString() + "\nStandard output is:\n" + os.toString() + "\nStandard error is:\n"
                             + es.toString(), e);

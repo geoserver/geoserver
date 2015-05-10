@@ -920,6 +920,7 @@ public class Importer implements DisposableBean, ApplicationListener {
                                 + store);
             }
 
+            // this is a ResourcePool reader, we should not close it
             CoverageStoreInfo cs = (CoverageStoreInfo) store;
             GridCoverageReader reader = cs.getGridCoverageReader(null, null);
 

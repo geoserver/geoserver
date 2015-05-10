@@ -79,38 +79,45 @@ public class GridFormat extends RasterFormat {
     @Override
     public List<ImportTask> list(ImportData data, Catalog catalog, ProgressMonitor monitor) 
             throws IOException {
-        AbstractGridCoverage2DReader reader = gridReader(data);
+        AbstractGridCoverage2DReader reader = null;
+        try {
+            reader = gridReader(data);
         
-        List<ImportTask> tasks = new ArrayList<ImportTask>();
-        if (reader != null) {
-            CatalogBuilder cb = new CatalogBuilder(catalog);
-
-            //create a dummy store
-            CoverageStoreInfo store = cb.buildCoverageStore("dummy");
-            store.setType(gridFormat().getName());
-            cb.setStore(store);
-
-            try {
-                CoverageInfo coverage = cb.buildCoverage(reader, null);
-                coverage.setStore(null);
-                coverage.setNamespace(null);
-                cb.setupBounds(coverage, reader);
-
-                LayerInfo layer = cb.buildLayer((ResourceInfo)coverage);
-
-                ImportTask task = new ImportTask(data);
-                task.setLayer(layer);
-                tasks.add(task);
-
-            } catch (OperationNotFoundException onfe) {
-                throw new ValidationException("Unable to process "
-                        + " coordinate reference system of data. The specific"
-                        + " problem is : " + onfe.getMessage(), onfe);
-            } catch (Exception e) {
-                throw (IOException) new IOException(). initCause(e);
+            List<ImportTask> tasks = new ArrayList<ImportTask>();
+            if (reader != null) {
+                CatalogBuilder cb = new CatalogBuilder(catalog);
+    
+                //create a dummy store
+                CoverageStoreInfo store = cb.buildCoverageStore("dummy");
+                store.setType(gridFormat().getName());
+                cb.setStore(store);
+    
+                try {
+                    CoverageInfo coverage = cb.buildCoverage(reader, null);
+                    coverage.setStore(null);
+                    coverage.setNamespace(null);
+                    cb.setupBounds(coverage, reader);
+    
+                    LayerInfo layer = cb.buildLayer((ResourceInfo)coverage);
+    
+                    ImportTask task = new ImportTask(data);
+                    task.setLayer(layer);
+                    tasks.add(task);
+    
+                } catch (OperationNotFoundException onfe) {
+                    throw new ValidationException("Unable to process "
+                            + " coordinate reference system of data. The specific"
+                            + " problem is : " + onfe.getMessage(), onfe);
+                } catch (Exception e) {
+                    throw (IOException) new IOException(). initCause(e);
+                }
+            }
+            return tasks;
+        } finally {
+            if(reader != null) {
+                reader.dispose();
             }
         }
-        return tasks;
     }
 
     public AbstractGridCoverage2DReader gridReader(ImportData data) throws IOException {

@@ -5,11 +5,16 @@
  */
 package org.geoserver.gwc;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -17,7 +22,6 @@ import java.util.logging.Logger;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.geoserver.gwc.ConfigurableBlobStore;
 import org.geoserver.gwc.config.GWCConfig;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geotools.util.logging.Logging;
@@ -25,14 +29,14 @@ import org.geowebcache.io.ByteArrayResource;
 import org.geowebcache.io.Resource;
 import org.geowebcache.storage.BlobStore;
 import org.geowebcache.storage.TileObject;
+import org.geowebcache.storage.blobstore.file.FileBlobStore;
 import org.geowebcache.storage.blobstore.memory.CacheConfiguration;
 import org.geowebcache.storage.blobstore.memory.CacheProvider;
+import org.geowebcache.storage.blobstore.memory.MemoryBlobStore;
+import org.geowebcache.storage.blobstore.memory.NullBlobStore;
 import org.geowebcache.storage.blobstore.memory.distributed.HazelcastCacheProvider;
 import org.geowebcache.storage.blobstore.memory.distributed.HazelcastLoader;
 import org.geowebcache.storage.blobstore.memory.guava.GuavaCacheProvider;
-import org.geowebcache.storage.blobstore.memory.MemoryBlobStore;
-import org.geowebcache.storage.blobstore.memory.NullBlobStore;
-import org.geowebcache.storage.blobstore.file.FileBlobStore;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -101,30 +105,39 @@ public class HazelcastTest extends GeoServerSystemTestSupport {
         }
     }
     
+    @SuppressWarnings("serial")
     @Test
     public void testHazelcast() throws Exception {
-    	// Configuring hazelcast caching
-    	Config config = new Config();
-    	MapConfig mapConfig = new MapConfig(HazelcastCacheProvider.HAZELCAST_MAP_DEFINITION);
-    	MaxSizeConfig maxSizeConf = new MaxSizeConfig(16, MaxSizePolicy.USED_HEAP_SIZE);
-    	mapConfig.setMaxSizeConfig(maxSizeConf);
-    	mapConfig.setEvictionPolicy(EvictionPolicy.LRU);
-    	config.addMapConfig(mapConfig);
-    	HazelcastInstance instance1 = Hazelcast.newHazelcastInstance(config);
-    	HazelcastLoader loader1 = new HazelcastLoader();
-    	loader1.setInstance(instance1);
-    	loader1.afterPropertiesSet();
-    	
-    	// Creating another cacheprovider for ensuring hazelcast is behaving correctly
-    	HazelcastCacheProvider cacheProvider1 = new HazelcastCacheProvider(loader1);
-    	
-    	HazelcastInstance instance2 = Hazelcast.newHazelcastInstance(config);
-    	HazelcastLoader loader2 = new HazelcastLoader();
-    	loader2.setInstance(instance2);
-    	loader2.afterPropertiesSet();
-    	
-    	HazelcastCacheProvider cacheProvider2 = new HazelcastCacheProvider(loader2);
-    	
+        // Configuring hazelcast caching
+        Config config = new Config();
+        MapConfig mapConfig = new MapConfig(HazelcastCacheProvider.HAZELCAST_MAP_DEFINITION);
+        MaxSizeConfig maxSizeConf = new MaxSizeConfig(16, MaxSizePolicy.USED_HEAP_SIZE);
+        mapConfig.setMaxSizeConfig(maxSizeConf);
+        mapConfig.setEvictionPolicy(EvictionPolicy.LRU);
+        config.addMapConfig(mapConfig);
+        config.getNetworkConfig().getJoin().getMulticastConfig().setEnabled(false);
+        config.getNetworkConfig().getJoin().getTcpIpConfig().setEnabled(true);
+        config.getNetworkConfig().getJoin().getTcpIpConfig().setMembers(new ArrayList<String>() {
+            {
+                add("127.0.0.1");
+            }
+        });
+        config.getNetworkConfig().getInterfaces().addInterface("127.0.0.1");
+        HazelcastInstance instance1 = Hazelcast.newHazelcastInstance(config);
+        HazelcastLoader loader1 = new HazelcastLoader();
+        loader1.setInstance(instance1);
+        loader1.afterPropertiesSet();
+
+        // Creating another cacheprovider for ensuring hazelcast is behaving correctly
+        HazelcastCacheProvider cacheProvider1 = new HazelcastCacheProvider(loader1);
+
+        HazelcastInstance instance2 = Hazelcast.newHazelcastInstance(config);
+        HazelcastLoader loader2 = new HazelcastLoader();
+        loader2.setInstance(instance2);
+        loader2.afterPropertiesSet();
+
+        HazelcastCacheProvider cacheProvider2 = new HazelcastCacheProvider(loader2);
+
         // Configure the blobstore
         GWCConfig gwcConfig = new GWCConfig();
         gwcConfig.setInnerCachingEnabled(true);

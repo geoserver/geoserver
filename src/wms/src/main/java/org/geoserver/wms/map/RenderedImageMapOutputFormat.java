@@ -53,6 +53,7 @@ import org.geoserver.wms.DefaultWebMapService;
 import org.geoserver.wms.GetMapOutputFormat;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapProducerCapabilities;
+import org.geoserver.wms.RenderingVariables;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSInfo.WMSInterpolation;
@@ -68,6 +69,7 @@ import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.data.Query;
+import org.geotools.filter.function.EnvFunction;
 import org.geotools.gce.imagemosaic.ImageMosaicFormat;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.image.ImageWorker;
@@ -505,36 +507,49 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         
         onBeforeRender(renderer);
 
-        // setup the timeout enforcer (the enforcer is neutral when the timeout is 0)
+        //Timeout on the smallest nonzero value of the WMS timeout and the timeout format option
+        //If both are zero then there is no timeout
         int maxRenderingTime = wms.getMaxRenderingTime() * 1000;
-        RenderingTimeoutEnforcer timeout = new RenderingTimeoutEnforcer(maxRenderingTime, renderer,
-                graphic);
-        timeout.start();
-        try {
-            // finally render the image;
-            renderer.paint(graphic, paintArea, mapContent.getRenderingArea(),
-                    mapContent.getRenderingTransform());
-
-            // apply watermarking
-            if (layout != null) {
-                try {
-                    layout.paint(graphic, paintArea, mapContent);
-                } catch (Exception e) {
-                    throw new ServiceException("Problem occurred while trying to watermark data", e);
-                }
+        int localMaxRenderingTime = 0;
+        
+        Object timeoutOption = request.getFormatOptions().get("timeout");
+        if (timeoutOption != null) {
+            try {
+                localMaxRenderingTime = Integer.parseInt(timeoutOption.toString());
+            } catch (NumberFormatException e) {
+                LOGGER.log(Level.WARNING,"Could not parse format_option \"timeout\": "+timeoutOption, e);
             }
-        } finally {
-            timeout.stop();
-            graphic.dispose();
         }
-
-        // check if the request did timeout
-        if (timeout.isTimedOut()) {
+        if (maxRenderingTime == 0) {
+            maxRenderingTime = localMaxRenderingTime;
+        } else if (localMaxRenderingTime != 0) {
+            maxRenderingTime = Math.min(maxRenderingTime, localMaxRenderingTime);
+        }
+        
+        //Run rendering in a separate thread so that we can exit promptly if the timeout is reached,
+        //rather than waiting for the renderer to finish the current task.
+        MapPainter painter = new MapPainter(renderer, paintArea, mapContent, graphic, layout);
+        Thread painterThread = new Thread(painter);
+        try {
+            painterThread.start();
+            //Wait until the rendering finishes or timeout is reached.
+            painterThread.join(maxRenderingTime);
+        } catch (InterruptedException e) {
+            LOGGER.log(Level.FINE, "WMS Rendering was interrupted", e);
+        }
+        
+        //If the thread is still alive, we have timed out.
+        if (painterThread.isAlive()) {
+            //We have what we need, defer cleanup to a separate thread
+            new Thread(new MapPaintTerminator(painterThread, renderer, graphic)).start();
+            
             throw new ServiceException(
-                    "This requested used more time than allowed and has been forcefully stopped. "
+                    "This request used more time than allowed and has been forcefully stopped. "
                             + "Max rendering time is " + (maxRenderingTime / 1000.0) + "s");
         }
-
+        if (painter.getException() != null) {
+            throw new ServiceException("Rendering process failed", painter.getException());
+        }
         // check if a non ignorable error occurred
         if (nonIgnorableExceptionListener.exceptionOccurred()) {
             Exception renderError = nonIgnorableExceptionListener.getException();
@@ -1442,6 +1457,93 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
 //    static List<RasterSymbolizer> getRasterSymbolizers(WMSMapContent mc, int layerIndex) {
 //        
 //    }
-
-
+    
+    /**
+     * Runnable that enables rendering the map in a separate thread, in order to return the 
+     * WMS response promptly if there is a timeout.
+     */
+    private class MapPainter implements Runnable {
+        StreamingRenderer renderer;
+        Rectangle paintArea;
+        WMSMapContent mapContent;
+        
+        Graphics2D graphic;
+        MapDecorationLayout layout;
+        
+        Exception exception = null;
+        
+        MapPainter(StreamingRenderer renderer, Rectangle paintArea, WMSMapContent mapContent, 
+                Graphics2D graphic, MapDecorationLayout layout) {
+            this.renderer = renderer;
+            this.paintArea = paintArea;
+            this.mapContent = mapContent;
+            this.graphic = graphic;
+            this.layout = layout;
+        }
+        
+        @Override
+        public void run() {
+            try {
+                EnvFunction.setLocalValues(mapContent.getRequest().getEnv());
+                RenderingVariables.setupEnvironmentVariables(mapContent);
+                
+                // finally render the image;
+                renderer.paint(graphic, paintArea, mapContent.getRenderingArea(),
+                        mapContent.getRenderingTransform());
+                
+                // apply watermarking
+                if (layout != null) {
+                    try {
+                        layout.paint(graphic, paintArea, mapContent);
+                    } catch (Exception e) {
+                        exception = new ServiceException("Problem occurred while trying to watermark data", e);
+                    }
+                }
+            } catch (Throwable t) {
+                LOGGER.log(Level.FINER, "produceMap() threw an unexpected error", t);
+            }
+        }
+        
+        Exception getException() {
+            return exception;
+        }
+    }
+    
+    /**
+     * Runnable used to terminate a MapPainter Thread and clean up rendering resources
+     * If the renderer does not clean up after itself promptly, it is forcibly terminated to 
+     * free up memory and processor time.
+     */
+    private class MapPaintTerminator implements Runnable {
+        Thread painterThread;
+        StreamingRenderer renderer;
+        Graphics2D graphic;
+        
+        MapPaintTerminator(Thread mapPainterThread, StreamingRenderer renderer, Graphics2D graphic) {
+            this.painterThread = mapPainterThread;
+            this.renderer = renderer;
+            this.graphic = graphic;
+        }
+        
+        @Override
+        public void run() {
+            //ask nicely
+            renderer.stopRendering();
+            // ... but also be rude for extra measure (coverage rendering is
+            // an atomic call to the graphics, it cannot be stopped
+            // by the above)
+            graphic.dispose();
+            
+            //If the rendering does not finish in a timely fashion, force the thread to stop
+            try {
+                painterThread.join(1000);
+            } catch (InterruptedException e) {
+                LOGGER.log(Level.FINE, "Rendering cleanup interrupted, this should not happen", e);
+            }
+            if (painterThread.isAlive()) {
+                LOGGER.log(Level.WARNING,"Renderer stopRendering() timed out. Killing renderer thread");
+                painterThread.stop();
+            }
+        }
+    }
 }

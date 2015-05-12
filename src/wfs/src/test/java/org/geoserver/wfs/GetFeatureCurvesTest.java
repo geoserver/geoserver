@@ -8,12 +8,19 @@ package org.geoserver.wfs;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import javax.measure.unit.SI;
+import java.util.Collections;
 
+import javax.measure.unit.SI;
+import javax.xml.namespace.QName;
+
+import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.custommonkey.xmlunit.exceptions.XpathException;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.data.test.MockData;
+import org.geoserver.data.test.SystemTestData;
 import org.geotools.measure.Measure;
+import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
 

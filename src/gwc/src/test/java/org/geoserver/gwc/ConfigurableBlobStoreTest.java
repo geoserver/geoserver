@@ -111,13 +111,11 @@ public class ConfigurableBlobStoreTest extends GeoServerSystemTestSupport {
         parameters.put("b", "ø");
         TileObject to = TileObject.createCompleteTileObject("test:123123 112", xyz, "EPSG:4326",
                 "image/jpeg", parameters, bytes);
-        to.setId(11231231);
 
         blobStore.put(to);
         // Try to get the Tile Object
         TileObject to2 = TileObject.createQueryTileObject("test:123123 112", xyz, "EPSG:4326",
                 "image/jpeg", parameters);
-        to2.setId(11231231);
         blobStore.get(to2);
 
         // Check formats
@@ -160,13 +158,11 @@ public class ConfigurableBlobStoreTest extends GeoServerSystemTestSupport {
         parameters.put("b", "ø");
         TileObject to = TileObject.createCompleteTileObject("test:123123 112", xyz, "EPSG:4326",
                 "image/jpeg", parameters, bytes);
-        to.setId(11231231);
 
         blobStore.put(to);
         // Try to get the Tile Object
         TileObject to2 = TileObject.createQueryTileObject("test:123123 112", xyz, "EPSG:4326",
                 "image/jpeg", parameters);
-        to2.setId(11231231);
         blobStore.get(to2);
 
         // Check formats
@@ -205,13 +201,11 @@ public class ConfigurableBlobStoreTest extends GeoServerSystemTestSupport {
         long[] xyz = { 5L, 6L, 7L };
         TileObject to = TileObject.createCompleteTileObject("test:123123 112", xyz, "EPSG:4326",
                 "image/jpeg", parameters, bytes);
-        to.setId(11231231);
 
         blobStore.put(to);
         // Try to get the Tile Object
         TileObject to2 = TileObject.createQueryTileObject("test:123123 112", xyz, "EPSG:4326",
                 "image/jpeg", parameters);
-        to2.setId(11231231);
         blobStore.get(to2);
 
         // Check if the resources are equals

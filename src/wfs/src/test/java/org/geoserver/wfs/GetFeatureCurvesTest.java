@@ -8,66 +8,17 @@ package org.geoserver.wfs;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.util.Collections;
-
 import javax.measure.unit.SI;
-import javax.xml.namespace.QName;
 
-import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.custommonkey.xmlunit.exceptions.XpathException;
 import org.geoserver.catalog.FeatureTypeInfo;
-import org.geoserver.data.test.MockData;
-import org.geoserver.data.test.SystemTestData;
 import org.geotools.measure.Measure;
-import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
-public class GetFeatureCurvesTest extends WFSTestSupport {
+public class GetFeatureCurvesTest extends WFSCurvesTestSupport {
 
-    QName CURVELINES = new QName(MockData.CITE_URI, "curvelines", MockData.CITE_PREFIX);
-
-    QName CURVEMULTILINES = new QName(MockData.CITE_URI, "curvemultilines", MockData.CITE_PREFIX);
-
-    QName CURVEPOLYGONS = new QName(MockData.CITE_URI, "curvepolygons", MockData.CITE_PREFIX);
-    
-    XpathEngine xpath;
-
-    @Override
-    protected void setUpInternal(SystemTestData testData) throws Exception {
-        // TODO Auto-generated method stub
-        super.setUpInternal(testData);
-
-        testData.addWorkspace(MockData.CITE_PREFIX, MockData.CITE_URI, getCatalog());
-        testData.addVectorLayer(CURVELINES, Collections.EMPTY_MAP, "curvelines.properties",
-                MockData.class, getCatalog());
-        testData.addVectorLayer(CURVEMULTILINES, Collections.EMPTY_MAP,
-                "curvemultilines.properties", MockData.class, getCatalog());
-        testData.addVectorLayer(CURVEPOLYGONS, Collections.EMPTY_MAP,
-                "curvepolygons.properties", MockData.class, getCatalog());
-        
-        FeatureTypeInfo curveLines = getCatalog().getFeatureTypeByName(getLayerId(CURVELINES));
-        curveLines.setCircularArcPresent(true);
-        curveLines.setLinearizationTolerance(null);
-        getCatalog().save(curveLines);
-
-        FeatureTypeInfo curveMultiLines = getCatalog().getFeatureTypeByName(
-                getLayerId(CURVEMULTILINES));
-        curveMultiLines.setCircularArcPresent(true);
-        curveMultiLines.setLinearizationTolerance(null);
-        getCatalog().save(curveMultiLines);
-    }
-
-    @Before
-    public void setXPath() {
-        xpath = XMLUnit.newXpathEngine();
-    }
-
-    @Override
-    protected void setUpTestData(SystemTestData testData) throws Exception {
-        // do not call super, we only need the curved data sets
-    }
 
     @Test
     public void testLinearizeWFS10() throws Exception {

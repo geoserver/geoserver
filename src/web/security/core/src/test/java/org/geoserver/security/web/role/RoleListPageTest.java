@@ -1,11 +1,14 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.security.web.role;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.lang.reflect.Method;
 import java.util.List;
@@ -127,19 +130,23 @@ public class RoleListPageTest extends AbstractTabbedListPageTest<GeoServerRole> 
     
     @Override
     protected void simulateDeleteSubmit() throws Exception {
-                    
+                            
         SelectionRoleRemovalLink link = (SelectionRoleRemovalLink) getRemoveLink();
         Method m = link.delegate.getClass().getDeclaredMethod("onSubmit", AjaxRequestTarget.class,Component.class);
         m.invoke(link.delegate, null,null);
         
         SortedSet<GeoServerRole> roles = gaService.getRoles();
-        assertEquals(0,roles.size(),4);
-        assertTrue(roles.contains(GeoServerRole.ADMIN_ROLE));
+        assertEquals(3,roles.size());        
+        assertFalse(roles.contains(createNewRoleForRemvovalTest()));
     }
 
+    GeoServerRole createNewRoleForRemvovalTest() throws Exception {
+    	return gaStore.createRoleObject("NEW_ROLE");
+    }
+    
     @Override
     protected void doRemove(String pathForLink) throws Exception {
-        GeoServerRole newRole = gaStore.createRoleObject("NEW_ROLE");
+        GeoServerRole newRole = createNewRoleForRemvovalTest();
         gaStore.addRole(newRole);
         gaStore.store();
         assertEquals(5,gaService.getRoles().size());

@@ -64,6 +64,7 @@ public class GetFeatureCurvesTest extends WFS20TestSupport {
     @Override
     protected void setUpTestData(SystemTestData testData) throws Exception {
         // do not call super, we only need the curved data sets
+        testData.setUpSecurity();
     }
 
     private int countCoordinates(Document dom, XpathEngine xpath, String path)

@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -24,7 +24,6 @@ import org.custommonkey.xmlunit.XMLAssert;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.data.test.SystemTestData;
-import org.geoserver.data.test.TestData;
 import org.geotools.data.SampleDataAccess;
 import org.geotools.data.SampleDataAccessData;
 import org.junit.Test;
@@ -175,8 +174,7 @@ public class SampleDataAccessWfsTest extends SampleDataAccessTestSupport {
 
     @Override
     protected void setUpTestData(SystemTestData testData) throws Exception {
-        // TODO Auto-generated method stub
-        
+        testData.setUpSecurity();
     }
 
 }

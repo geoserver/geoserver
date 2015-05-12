@@ -1,4 +1,4 @@
-/* (c) 2014-2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -35,6 +35,7 @@ import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.CoverageView;
 import org.geoserver.catalog.CoverageView.CoverageBand;
 import org.geoserver.catalog.CoverageView.InputCoverageBand;
+import org.geoserver.catalog.DataLinkInfo;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.Keyword;
@@ -138,7 +139,7 @@ import com.thoughtworks.xstream.converters.reflection.FieldDictionary;
 import com.thoughtworks.xstream.converters.reflection.ReflectionConverter;
 import com.thoughtworks.xstream.converters.reflection.ReflectionProvider;
 import com.thoughtworks.xstream.converters.reflection.SortableFieldKeySorter;
-import com.thoughtworks.xstream.converters.reflection.Sun14ReflectionProvider;
+import com.thoughtworks.xstream.converters.reflection.SunUnsafeReflectionProvider;
 import com.thoughtworks.xstream.io.ExtendedHierarchicalStreamWriterHelper;
 import com.thoughtworks.xstream.io.HierarchicalStreamDriver;
 import com.thoughtworks.xstream.io.HierarchicalStreamReader;
@@ -146,7 +147,6 @@ import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 import com.thoughtworks.xstream.mapper.ClassAliasingMapper;
 import com.thoughtworks.xstream.mapper.Mapper;
 import com.vividsolutions.jts.geom.Geometry;
-import org.geoserver.catalog.DataLinkInfo;
 
 /**
  * Utility class which loads and saves catalog and configuration objects to and
@@ -678,7 +678,7 @@ public class XStreamPersister {
      * Custom reflection provider which unwraps proxies, and skips empty collections
      * and maps.
      */
-    class CustomReflectionProvider extends Sun14ReflectionProvider {
+    class CustomReflectionProvider extends SunUnsafeReflectionProvider {
         
         public CustomReflectionProvider( FieldDictionary fd ) {
             super( fd );

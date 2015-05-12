@@ -20,6 +20,48 @@ import org.w3c.dom.Document;
 public class GetFeatureCurvesTest extends WFSCurvesTestSupport {
 
 
+    QName CURVEMULTILINES = new QName(MockData.CITE_URI, "curvemultilines", MockData.CITE_PREFIX);
+
+    QName CURVEPOLYGONS = new QName(MockData.CITE_URI, "curvepolygons", MockData.CITE_PREFIX);
+    
+    XpathEngine xpath;
+
+    @Override
+    protected void setUpInternal(SystemTestData testData) throws Exception {
+        // TODO Auto-generated method stub
+        super.setUpInternal(testData);
+
+        testData.addWorkspace(MockData.CITE_PREFIX, MockData.CITE_URI, getCatalog());
+        testData.addVectorLayer(CURVELINES, Collections.EMPTY_MAP, "curvelines.properties",
+                MockData.class, getCatalog());
+        testData.addVectorLayer(CURVEMULTILINES, Collections.EMPTY_MAP,
+                "curvemultilines.properties", MockData.class, getCatalog());
+        testData.addVectorLayer(CURVEPOLYGONS, Collections.EMPTY_MAP,
+                "curvepolygons.properties", MockData.class, getCatalog());
+        
+        FeatureTypeInfo curveLines = getCatalog().getFeatureTypeByName(getLayerId(CURVELINES));
+        curveLines.setCircularArcPresent(true);
+        curveLines.setLinearizationTolerance(null);
+        getCatalog().save(curveLines);
+
+        FeatureTypeInfo curveMultiLines = getCatalog().getFeatureTypeByName(
+                getLayerId(CURVEMULTILINES));
+        curveMultiLines.setCircularArcPresent(true);
+        curveMultiLines.setLinearizationTolerance(null);
+        getCatalog().save(curveMultiLines);
+    }
+
+    @Before
+    public void setXPath() {
+        xpath = XMLUnit.newXpathEngine();
+    }
+
+    @Override
+    protected void setUpTestData(SystemTestData testData) throws Exception {
+        // do not call super, we only need the curved data sets
+        testData.setUpSecurity();
+    }
+
     @Test
     public void testLinearizeWFS10() throws Exception {
         Document dom = getAsDOM("wfs?service=wfs&version=1.0&request=GetFeature&typeName="

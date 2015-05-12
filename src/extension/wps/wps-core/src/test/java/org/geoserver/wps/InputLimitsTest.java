@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 -2015 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -36,12 +36,21 @@ public class InputLimitsTest extends WPSTestSupport {
     @Override
     protected void setUpTestData(SystemTestData testData) throws Exception {
         // need no layers for this test
+        testData.setUpSecurity();
     }
 
     @Before
     public void setUpInternal() throws Exception {
         // make extra sure we don't have anything else going
         MonkeyProcess.clearCommands();
+    }
+
+    @Before
+    public void resetExecutionTimes() throws Exception {
+        WPSInfo wps = getGeoServer().getService(WPSInfo.class);
+        wps.setMaxSynchronousExecutionTime(0);
+        wps.setMaxAsynchronousExecutionTime(0);
+        getGeoServer().save(wps);
     }
 
     @Override
@@ -55,10 +64,6 @@ public class InputLimitsTest extends WPSTestSupport {
 
         // global size limits
         wps.setMaxComplexInputSize(10);
-
-        // max execution times
-        wps.setMaxSynchronousExecutionTime(1);
-        wps.setMaxAsynchronousExecutionTime(2);
 
         // for the buffer process
         ProcessGroupInfo geoGroup = new ProcessGroupInfoImpl();
@@ -521,7 +526,7 @@ public class InputLimitsTest extends WPSTestSupport {
                 + "  </wps:ResponseForm>\n" + "</wps:Execute>";
 
         Document dom = postAsDOM("wps", xml);
-        print(dom);
+        // print(dom);
         assertXpathExists("//wps:Status/wps:ProcessFailed", dom);
 
         assertXpathExists("//wps:Status/wps:ProcessFailed", dom);
@@ -537,6 +542,10 @@ public class InputLimitsTest extends WPSTestSupport {
 
     @Test
     public void testAsyncExecutionLimits() throws Exception {
+        WPSInfo wps = getGeoServer().getService(WPSInfo.class);
+        wps.setMaxAsynchronousExecutionTime(2);
+        getGeoServer().save(wps);
+
         // submit asynch request with no updates
         String request = "wps?service=WPS&version=1.0.0&request=Execute&Identifier=gs:Monkey&storeExecuteResponse=true&DataInputs="
                 + urlEncode("id=x2");
@@ -570,6 +579,10 @@ public class InputLimitsTest extends WPSTestSupport {
 
     @Test
     public void testSyncExecutionLimits() throws Exception {
+        WPSInfo wps = getGeoServer().getService(WPSInfo.class);
+        wps.setMaxSynchronousExecutionTime(1);
+        getGeoServer().save(wps);
+
         // setup the set of commands for the monkey process
         MonkeyProcess.wait("x2", 2000);
         MonkeyProcess.progress("x2", 50f, false);

@@ -1,11 +1,12 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.vfny.geoserver.crs;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 import java.io.File;
 
@@ -30,6 +31,7 @@ public class OverrideCRSTest extends GeoServerSystemTestSupport {
             "user_projections/epsg_overrides.properties");
 
         CRS.reset("all");
+        testData.setUpSecurity();
     }
 
     @Test

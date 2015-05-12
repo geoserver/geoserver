@@ -107,7 +107,7 @@
 	</bean>
         
 	<!-- wms service + descriptor -->
- 	<bean id="wmsServiceTarget" class="org.geoserver.wms.DefaultWebMapService">
+ 	<bean id="wmsServiceTarget" class="org.geoserver.wms.DefaultWebMapService" lazy-init="false">
  	  <constructor-arg ref="wms"/>
       <property name="getCapabilities" ref="wmsGetCapabilities"/>
       <property name="describeLayer" ref="wmsDescribeLayer"/>
@@ -759,7 +759,7 @@
     </property>    
   </bean>
   
-  <bean id="legendSample" class="org.geoserver.wms.capabilities.LegendSampleImpl">
+  <bean id="legendSample" class="org.geoserver.wms.capabilities.LegendSampleImpl" lazy-init="false">
     <constructor-arg ref="catalog"/>
     <constructor-arg ref="resourceLoader"/>
   </bean>

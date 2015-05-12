@@ -18,7 +18,9 @@ import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -122,6 +124,40 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
         BufferedImage image = (BufferedImage) imageMap.getImage();
         imageMap.dispose();
         assertNotBlank("testSimpleGetMapQuery", image);
+    }
+    
+    @Test
+    public void testTimeoutOption() throws Exception {
+        Catalog catalog = getCatalog();
+        final FeatureSource fs = catalog.getFeatureTypeByName(MockData.BASIC_POLYGONS.getPrefix(),
+                MockData.BASIC_POLYGONS.getLocalPart()).getFeatureSource(null, null);
+
+        final Envelope env = fs.getBounds();
+
+        LOGGER.info("about to create map ctx for BasicPolygons with bounds " + env);
+
+        GetMapRequest request = new GetMapRequest();
+        final WMSMapContent map = new WMSMapContent();
+        map.getViewport().setBounds(new ReferencedEnvelope(env, DefaultGeographicCRS.WGS84));
+        map.setMapWidth(1000);
+        map.setMapHeight(1000);
+        map.setRequest(request);
+
+        StyleInfo styleByName = catalog.getStyleByName("Default");
+        Style basicStyle = styleByName.getStyle();
+        map.addLayer(new FeatureLayer(fs, basicStyle));
+
+        request.setFormat(getMapFormat());
+        Map formatOptions = new HashMap();
+        //1 ms timeout
+        formatOptions.put("timeout", 1);
+        request.setFormatOptions(formatOptions);
+        try {
+            RenderedImageMap imageMap = this.rasterMapProducer.produceMap(map);
+            fail("Timeout was not reached");
+        } catch (ServiceException e) {
+            assertTrue(e.getMessage().startsWith("This request used more time than allowed"));
+        }
     }
 
     @Test

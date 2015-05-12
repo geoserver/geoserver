@@ -24,8 +24,8 @@ public class DescribeCoverageTest extends WCSEOTestSupport {
         assertEquals("2008-11-07T00:00:00.000Z", xpath.evaluate("//eop:EarthObservation/om:phenomenonTime/gml:TimePeriod/gml:endPosition", dom));
         assertEquals("2008-11-07T00:00:00.000Z", xpath.evaluate("//eop:EarthObservation/om:resultTime/gml:TimeInstant/gml:timePosition", dom));
         
-        assertEquals("1", xpath.evaluate("count(//eop:EarthObservation/om:FeatureOfInterest/eop:Footprint/eop:multiExtentOf/gml:MultiSurface)", dom));
-        assertEquals("1", xpath.evaluate("count(//eop:EarthObservation/om:FeatureOfInterest/eop:Footprint/eop:centerOf/gml:Point)", dom));
+        assertEquals("1", xpath.evaluate("count(//eop:EarthObservation/om:featureOfInterest/eop:Footprint/eop:multiExtentOf/gml:MultiSurface)", dom));
+        assertEquals("1", xpath.evaluate("count(//eop:EarthObservation/om:featureOfInterest/eop:Footprint/eop:centerOf/gml:Point)", dom));
         
         assertEquals("sf__timeranges", xpath.evaluate("//eop:EarthObservation/eop:metaDataProperty/eop:EarthObservationMetaData/eop:identifier", dom));
         assertEquals("NOMINAL", xpath.evaluate("//eop:EarthObservation/eop:metaDataProperty/eop:EarthObservationMetaData/eop:acquisitionType", dom));
@@ -60,8 +60,8 @@ public class DescribeCoverageTest extends WCSEOTestSupport {
         assertEquals("2008-11-07T00:00:00.000Z", xpath.evaluate("//eop:EarthObservation/om:phenomenonTime/gml:TimePeriod/gml:endPosition", dom));
         assertEquals("2008-11-07T00:00:00.000Z", xpath.evaluate("//eop:EarthObservation/om:resultTime/gml:TimeInstant/gml:timePosition", dom));
         
-        assertEquals("1", xpath.evaluate("count(//eop:EarthObservation/om:FeatureOfInterest/eop:Footprint/eop:multiExtentOf/gml:MultiSurface)", dom));
-        assertEquals("1", xpath.evaluate("count(//eop:EarthObservation/om:FeatureOfInterest/eop:Footprint/eop:centerOf/gml:Point)", dom));
+        assertEquals("1", xpath.evaluate("count(//eop:EarthObservation/om:featureOfInterest/eop:Footprint/eop:multiExtentOf/gml:MultiSurface)", dom));
+        assertEquals("1", xpath.evaluate("count(//eop:EarthObservation/om:featureOfInterest/eop:Footprint/eop:centerOf/gml:Point)", dom));
         
         assertEquals("sf__timeranges", xpath.evaluate("//eop:EarthObservation/eop:metaDataProperty/eop:EarthObservationMetaData/eop:identifier", dom));
         assertEquals("NOMINAL", xpath.evaluate("//eop:EarthObservation/eop:metaDataProperty/eop:EarthObservationMetaData/eop:acquisitionType", dom));

@@ -165,7 +165,7 @@ public class WCSEOCoverageMetadataProvider implements WCS20CoverageMetadataProvi
         double miny = ge.getLowerCorner().getOrdinate(axisSwap ? 0 : 1);
         double maxx = ge.getUpperCorner().getOrdinate(axisSwap ? 1 : 0);
         double maxy = ge.getUpperCorner().getOrdinate(axisSwap ? 0 : 1);
-        tx.start("om:FeatureOfInterest");
+        tx.start("om:featureOfInterest");
         tx.start("eop:Footprint", atts("gml:id", coverageId + "_fp"));
         tx.start("eop:multiExtentOf");
         tx.start("gml:MultiSurface", atts("gml:id", coverageId + "_ms", "srsName", srsName));
@@ -189,7 +189,7 @@ public class WCSEOCoverageMetadataProvider implements WCS20CoverageMetadataProvi
         tx.end("gml:Point");
         tx.end("eop:centerOf");
         tx.end("eop:Footprint");
-        tx.end("om:FeatureOfInterest");
+        tx.end("om:featureOfInterest");
         
         // fixed metadata properties (at least for the moment)
         tx.start("eop:metaDataProperty");

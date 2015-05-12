@@ -44,25 +44,36 @@ For this example the project will be called "hello_wps".
        <groupId>org.geoserver</groupId>  
        <artifactId>hello_wps</artifactId>
        <packaging>jar</packaging>
-       <version>2.6-SNAPSHOT</version>
+       <version>2.8-SNAPSHOT</version>
        <name>hello_wps</name>
+       
+       <properties>
+         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+         <gt.version>14-SNAPSHOT</gt.version>  <!-- change to GeoTools version -->
+         <gs.version>2.8-SNAPSHOT</gs.version>  <!-- change to GeoServer version -->
+       </properties>
        <dependencies>
          <dependency>
            <groupId>org.geotools</groupId>
            <artifactId>gt-process</artifactId>
-           <version>14-SNAPSHOT</version> <!-- change this to the proper GeoTools version -->
+           <version>${gt.version}</version>
          </dependency>
          <dependency>
            <groupId>org.geoserver.extension</groupId>
            <artifactId>gs-wps-core</artifactId>
-           <version>2.8-SNAPSHOT</version>
+           <version>${gs.version}</version>
          </dependency>
          <dependency>
            <groupId>org.geoserver</groupId>
            <artifactId>gs-main</artifactId>
-           <version>2.8-SNAPSHOT</version> <!-- change this to the proper GeoServer version -->
+           <version>${gs.version}</version>
            <classifier>tests</classifier>
            <scope>test</scope>
+         </dependency>
+         <dependency>
+           <groupId>org.geoserver.extension</groupId>
+           <artifactId>gs-wps-core</artifactId>
+           <version>${gs.version}</version>
          </dependency>
          <dependency>
            <groupId>junit</groupId>

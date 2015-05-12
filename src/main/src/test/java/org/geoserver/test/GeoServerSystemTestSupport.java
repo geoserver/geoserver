@@ -1,11 +1,12 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 -2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.test;
 
-import static junit.framework.Assert.*;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.fail;
 
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
@@ -164,9 +165,29 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
     /**
      * credentials for mock requests
      */
-    protected String username, password; 
+    protected String username, password;
+
+    /**
+     * Cached dispatcher, it has its own app context, so it's expensive to build
+     */
+    protected static DispatcherServlet dispatcher;
 
     protected final void setUp(SystemTestData testData) throws Exception {
+        // speed up xpath evaluations
+        try {
+            // see
+            // http://stackoverflow.com/questions/6340802/java-xpath-apache-jaxp-implementation-performance
+            Class.forName("com.sun.org.apache.xml.internal.dtm.ref.DTMManagerDefault");
+            System.setProperty("com.sun.org.apache.xml.internal.dtm.DTMManager",
+                    "com.sun.org.apache.xml.internal.dtm.ref.DTMManagerDefault");
+        } catch (Exception e) {
+            // ignore on VM where this optimization does not apply
+        }
+
+        // disable security manager to speed up tests, we are spending a lot of time in privileged
+        // blocks
+        System.setSecurityManager(null);
+
         // setup quiet logging (we need to to this here because Data
         // is loaded before GoeServer has a chance to setup logging for good)
         try {
@@ -202,7 +223,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
             setUpSpring(contexts);
 
             applicationContext = new GeoServerTestApplicationContext(
-                contexts.toArray(new String[contexts.size()]), servletContext);
+                    contexts.toArray(new String[contexts.size()]), servletContext);
             applicationContext.setUseLegacyGeoServerLoader(false);
             applicationContext.refresh();
             applicationContext.publishEvent(new ContextLoadedEvent(applicationContext));
@@ -212,6 +233,8 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
             // out all parameters
             servletContext.setAttribute(
                 WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, applicationContext);
+
+            dispatcher = buildDispatcher();
 
             onSetUp(testData);
         }
@@ -1389,18 +1412,23 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
     } 
     
     protected DispatcherServlet getDispatcher() throws Exception {
+        return dispatcher;
+    }
+
+    protected DispatcherServlet buildDispatcher() throws ServletException {
         // create an instance of the spring dispatcher
         ServletContext context = applicationContext.getServletContext();
-        
+
         MockServletConfig config = new MockServletConfig();
         config.setServletContext(context);
         config.setServletName("dispatcher");
-        
-        DispatcherServlet dispatcher = new DispatcherServlet();
-        
-        dispatcher.setContextConfigLocation(GeoServerAbstractTestSupport.class.getResource("dispatcher-servlet.xml").toString());
+
+        DispatcherServlet dispatcher = new DispatcherServlet(applicationContext);
+
+        dispatcher.setContextConfigLocation(GeoServerAbstractTestSupport.class.getResource(
+                "dispatcher-servlet.xml").toString());
         dispatcher.init(config);
-        
+
         return dispatcher;
     }
  

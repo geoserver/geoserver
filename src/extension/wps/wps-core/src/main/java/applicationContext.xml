@@ -218,7 +218,7 @@
     <!--
     Factory for deprecated processes 
     -->
-    <bean id="deprecatedProcessFactory" class="org.geoserver.wps.DeprecatedProcessFactory">
+    <bean id="deprecatedProcessFactory" class="org.geoserver.wps.DeprecatedProcessFactory" lazy-init="false">
     </bean>
 
     <!-- 
@@ -279,11 +279,11 @@
     </bean>
 
     <!-- The uber-process factory used by GeoServer -->
-    <bean id="wpsProcessors" class="org.geoserver.wps.process.GeoServerProcessors"/>
+    <bean id="wpsProcessors" class="org.geoserver.wps.process.GeoServerProcessors" lazy-init="false"/>
     
     <!-- The default process filters -->
-    <bean id="unsupportedParameterTypeProcessFilter" class="org.geoserver.wps.UnsupportedParameterTypeProcessFilter"/>
-    <bean id="configuredProcessesFilter" class="org.geoserver.wps.DisabledProcessesSelector"/>
+    <bean id="unsupportedParameterTypeProcessFilter" class="org.geoserver.wps.UnsupportedParameterTypeProcessFilter" lazy-init="false"/>
+    <bean id="configuredProcessesFilter" class="org.geoserver.wps.DisabledProcessesSelector" lazy-init="false"/>
 
     <bean id="wpsLocalWorkspaceURLManger" class="org.geoserver.ows.LocalWorkspaceURLMangler">
       <constructor-arg value="wps"/>
@@ -293,17 +293,17 @@
       <constructor-arg ref="wpsResourceManager"/>
     </bean>
 
-    <bean id="coverageResourceListener" class="org.geoserver.wps.resource.CoverageResourceListener">
+    <bean id="coverageResourceListener" class="org.geoserver.wps.resource.CoverageResourceListener" lazy-init="false">
       <constructor-arg ref="wpsResourceManager"/>
       <constructor-arg ref="coverageCleaner"/>
     </bean>
     
     <!-- Input limits support -->
-    <bean id="processLimitsFilter" class="org.geoserver.wps.validator.ProcessLimitsFilter" >
+    <bean id="processLimitsFilter" class="org.geoserver.wps.validator.ProcessLimitsFilter" lazy-init="false">
       <constructor-arg index="0" ref="geoServer"/>
     </bean>
     <!-- Size estimation portion of limits -->
-    <bean id="objectSizeEstimators" class="org.geoserver.wps.validator.ObjectSizeEstimators"/>
+    <bean id="objectSizeEstimators" class="org.geoserver.wps.validator.ObjectSizeEstimators" lazy-init="false"/>
     <bean id="featureSizeEstimators" class="org.geoserver.wps.validator.FeatureSizeEstimator"/>
     <bean id="rasterSizeEstimators" class="org.geoserver.wps.validator.RasterSizeEstimator"/>
     <bean id="rawDataSizeEstimator" class="org.geoserver.wps.validator.RawDataSizeEstimator"/>

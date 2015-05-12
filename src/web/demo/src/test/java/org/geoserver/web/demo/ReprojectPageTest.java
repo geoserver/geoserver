@@ -1,19 +1,16 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.web.demo;
 
-import static org.junit.Assert.*;
-
-import java.io.Serializable;
+import static org.junit.Assert.assertEquals;
 
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.feedback.FeedbackMessage;
 import org.apache.wicket.markup.html.form.ValidationErrorFeedback;
 import org.apache.wicket.util.tester.FormTester;
-import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geoserver.web.wicket.ParamResourceModel;
@@ -24,6 +21,7 @@ public class ReprojectPageTest extends GeoServerWicketTestSupport {
     @Override
     protected void setUpTestData(SystemTestData testData) throws Exception {
         // we don't need data configured in the catalog
+        testData.setUpSecurity();
     }
 
     @Test

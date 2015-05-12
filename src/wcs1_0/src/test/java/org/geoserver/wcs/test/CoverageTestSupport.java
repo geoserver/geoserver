@@ -1,11 +1,9 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wcs.test;
-
-import java.net.URL;
 
 import javax.xml.namespace.QName;
 
@@ -13,7 +11,6 @@ import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.TestData;
 import org.geoserver.test.GeoServerSystemTestSupport;
-import org.geoserver.test.ows.KvpRequestReaderTestSupport;
 import org.geoserver.wcs.WCSInfo;
 
 /**
@@ -41,6 +38,7 @@ public abstract class CoverageTestSupport extends GeoServerSystemTestSupport {
 
     @Override
     protected void setUpTestData(SystemTestData testData) throws Exception {
+        testData.setUpSecurity();
         testData.setUpDefaultRasterLayers();
         if(SpatioTemporalRasterTests) {
             testData.setUpRasterLayer(WATTEMP, "watertemp.zip", null, null, TestData.class);

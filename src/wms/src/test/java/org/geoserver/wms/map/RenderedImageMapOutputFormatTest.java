@@ -42,6 +42,7 @@ import org.geoserver.security.decorators.DecoratingFeatureSource;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContent;
+import org.geoserver.wms.WMSServiceException;
 import org.geoserver.wms.WMSTestSupport;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.data.FeatureSource;
@@ -157,6 +158,22 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
             fail("Timeout was not reached");
         } catch (ServiceException e) {
             assertTrue(e.getMessage().startsWith("This request used more time than allowed"));
+        }
+        
+        //Test partial image exception format
+        Map rawKvp = new HashMap();
+        rawKvp.put("EXCEPTIONS", "PARTIALMAP");
+        request.setRawKvp(rawKvp);
+        
+        try {
+            RenderedImageMap imageMap = this.rasterMapProducer.produceMap(map);
+            fail("Timeout was not reached");
+        } catch (ServiceException e) {
+            assertTrue(e instanceof WMSServiceException);
+            assertTrue(e.getCause().getMessage().startsWith("This request used more time than allowed"));
+            RenderedImageMap partialMap = (RenderedImageMap) ((WMSServiceException)e).getMap();
+            assertNotNull(partialMap);
+            assertNotNull(partialMap.getImage());
         }
     }
 

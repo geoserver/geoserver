@@ -39,6 +39,7 @@ import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.json.JSONType;
+import org.geoserver.wms.map.RenderedImageMap;
 import org.geotools.util.Version;
 
 /**
@@ -155,13 +156,26 @@ public class WMSServiceExceptionHandler extends ServiceExceptionHandler {
                 // use default
                 handleXmlException(exception, request);
             }
+        } else if (isPartialMapExceptionType(exceptions)) {
+            try {
+                format = (String) request.getKvp().get("FORMAT");
+                if (exception instanceof WMSServiceException && FORMATS.contains(format)) {
+                    handlePartialMapException(exception, request, format);
+                } else {
+                    handleXmlException(exception, request);
+                }
+            } catch (Exception e) {
+                // may have invalid exception type (not WMSServiceException)
+                // use default
+                handleXmlException(exception, request);
+            }
         } else {
         	// use default
             handleXmlException(exception, request);
         }
     }
     
-    private boolean isImageExceptionType(String exceptions) {
+    public static boolean isImageExceptionType(String exceptions) {
         return "application/vnd.ogc.se_inimage".equals(exceptions) || "INIMAGE".equals(exceptions)
                 || "BLANK".equals(exceptions) || "application/vnd.ogc.se_blank".equals(exceptions);
     }
@@ -203,6 +217,28 @@ public class WMSServiceExceptionHandler extends ServiceExceptionHandler {
             }
             final ServletOutputStream os = response.getOutputStream();
             ImageIO.write(img, IMAGEIO_FORMATS.get(format), os);
+            os.flush();
+        } catch (IOException e) {
+            LOGGER.log(Level.INFO, "Problem writing exception information back to calling client:",
+                    e);
+        }
+    }
+    public static boolean isPartialMapExceptionType(String exceptions) {
+        return "application/vnd.gs.wms_partial".equals(exceptions) 
+                || "PARTIALMAP".equals(exceptions);
+    }
+    private void handlePartialMapException(ServiceException exception, Request request, String format) {
+        RenderedImageMap map = (RenderedImageMap) ((WMSServiceException)exception).getMap();
+        try {
+            final HttpServletResponse response = request.getHttpResponse();
+            if("image/png8".equals(format)) {
+                response.setContentType("image/png");
+            } else {
+                response.setContentType(format);
+            }
+            
+            final ServletOutputStream os = response.getOutputStream();
+            ImageIO.write(map.getImage(), IMAGEIO_FORMATS.get(format), os);
             os.flush();
         } catch (IOException e) {
             LOGGER.log(Level.INFO, "Problem writing exception information back to calling client:",

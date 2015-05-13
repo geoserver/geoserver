@@ -4,31 +4,9 @@ Data
 ====
 
 
-This section is the largest and perhaps the most important section of the Web Administration Interface. Each subsection links directly to a data type page with add, edit, and delete capabilities.
-
-In the example below, the data view page displays a table of indexed data. 
-
-.. figure:: ../images/data_layers.png
-   :align: center
-
-   *Layers page*
-   
-To sort a data type alphabetically, click the column header. 
-
-.. figure:: ../images/data_sort.png
-   :align: center
-
-   *Unsorted (left) and sorted (right) columns*
-
-For simple searching of data type contents, enter the search criteria in the search box and click Enter. GeoServer will search the data types that are relevant to your query, and return a Search Results page.
-
-.. figure:: ../images/data_search_results.png
-   :align: center
-   
-   *Search results for the query "top"*
-
-Specific details for adding, editing and deleting various data types are discussed in the following sections. 
-
+This section is the largest and perhaps the most important section of the Web Administration Interface. 
+It describes the core configuration data types that GeoServer uses to access and publish geospatial information.
+Each subsection describes a data type page which provides add, view, edit, and delete capabilities.
 
 .. toctree::
    :maxdepth: 2
@@ -38,3 +16,42 @@ Specific details for adding, editing and deleting various data types are discuss
    layers
    layergroups
    styles
+   
+Using Data type List views
+--------------------------
+
+The main page for each data type is a list view showing the items of that data type configured in the GeoServer instance.
+The page displays links to the data type items, and where applicable their parent data types.
+To facilitate working with large sets of items, the list allows sorting and searching across all items in the data type.
+
+In the example below, the :guilabel:`Layers` list page displays a table of layers and their parent Store and Workspace. 
+
+.. figure:: ../images/data_layers.png
+   :align: center
+
+   *Layers list page*
+
+Sorting
+^^^^^^^
+
+To sort a data type alphabetically, click the column header. 
+
+.. figure:: ../images/data_sort.png
+   :align: center
+
+   *Unsorted (left) and sorted (right) columns*
+
+Searching
+^^^^^^^^^
+
+To search data type items, enter the search string in the search box and click Enter. GeoServer will search the data type for items that match your query, and display a list view showing the search results.
+Searching is useful for working with data types that contain a large number of items.
+
+.. figure:: ../images/data_search_results.png
+   :align: center
+   
+   *Search results for the query "top" on the Workspace page*
+
+
+
+

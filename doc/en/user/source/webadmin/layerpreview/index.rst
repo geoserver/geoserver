@@ -8,7 +8,7 @@ This page provides layer views in various output formats. A layer must be enable
 .. figure:: ../images/preview_list.png
    :align: center
    
-   *Layer's Preview Page*
+   *Layer Preview Page*
    
 Each layer row consists of a type, name, title, and available formats for viewing.
 

@@ -58,6 +58,8 @@ import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSInfo.WMSInterpolation;
 import org.geoserver.wms.WMSMapContent;
+import org.geoserver.wms.WMSServiceException;
+import org.geoserver.wms.WMSServiceExceptionHandler;
 import org.geoserver.wms.WatermarkInfo;
 import org.geoserver.wms.decoration.MapDecoration;
 import org.geoserver.wms.decoration.MapDecorationLayout;
@@ -538,39 +540,55 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
             LOGGER.log(Level.FINE, "WMS Rendering was interrupted", e);
         }
         
+        
+         // 1. Determine what exception we are throwing.
+        ServiceException serviceException = null;
+        
+        if (painter.getException() != null) {
+            serviceException = new ServiceException("Rendering process failed", painter.getException());
+        }
+        // check if too many errors occurred
+        if (errorChecker.exceedsMaxErrors()) {
+            serviceException = new ServiceException("More than " + maxErrors
+                    + " rendering errors occurred, bailing out.", errorChecker.getLastException(),
+                    "internalError");
+        }
         //If the thread is still alive, we have timed out.
         if (painterThread.isAlive()) {
-            //We have what we need, defer cleanup to a separate thread
-            new Thread(new MapPaintTerminator(painterThread, renderer, graphic)).start();
-            
-            throw new ServiceException(
+            serviceException = new ServiceException(
                     "This request used more time than allowed and has been forcefully stopped. "
                             + "Max rendering time is " + (maxRenderingTime / 1000.0) + "s");
-        }
-        if (painter.getException() != null) {
-            throw new ServiceException("Rendering process failed", painter.getException());
         }
         // check if a non ignorable error occurred
         if (nonIgnorableExceptionListener.exceptionOccurred()) {
             Exception renderError = nonIgnorableExceptionListener.getException();
-            throw new ServiceException("Rendering process failed", renderError, "internalError");
+            serviceException = new ServiceException("Rendering process failed", renderError, "internalError");
         }
-
-        // check if too many errors occurred
-        if (errorChecker.exceedsMaxErrors()) {
-            throw new ServiceException("More than " + maxErrors
-                    + " rendering errors occurred, bailing out.", errorChecker.getLastException(),
-                    "internalError");
+        
+        // 2. IF there were no exceptions, OR the exception format is PARTIALMAP, save the map
+        if (serviceException == null || (request.getRawKvp() != null && 
+                WMSServiceExceptionHandler.isPartialMapExceptionType(request.getRawKvp().get("EXCEPTIONS")))) {
+            if (palette != null && palette.getMapSize() < 256) {
+                image = optimizeSampleModel(preparedImage);
+            } else {
+                image = preparedImage;
+            }
+            RenderedImageMap map = buildMap(mapContent, image);
+            
+            if (serviceException != null) {
+                //Wrap the serviceException in a WMSServiceException to hold the map
+                serviceException = new WMSServiceException(serviceException, map);
+            } else {
+                //No exceptions, return normally
+                return map;
+            }
         }
-
-        if (palette != null && palette.getMapSize() < 256) {
-            image = optimizeSampleModel(preparedImage);
-        } else {
-            image = preparedImage;
+        //There was an exception, the renderer may still be running
+        if (painterThread.isAlive()) {
+            //We have what we need, defer cleanup to a separate thread
+            new Thread(new MapPaintTerminator(painterThread, renderer, graphic)).start();
         }
-
-        RenderedImageMap map = buildMap(mapContent, image);
-        return map;
+        throw serviceException;
     }
 
     protected Graphics2D getGraphics(final boolean transparent, final Color bgColor,

@@ -159,7 +159,7 @@ public class WMSServiceExceptionHandler extends ServiceExceptionHandler {
         } else if (isPartialMapExceptionType(exceptions)) {
             try {
                 format = (String) request.getKvp().get("FORMAT");
-                if (exception instanceof WMSServiceException && FORMATS.contains(format)) {
+                if (exception instanceof WMSPartialMapException && FORMATS.contains(format)) {
                     handlePartialMapException(exception, request, format);
                 } else {
                     handleXmlException(exception, request);
@@ -228,7 +228,7 @@ public class WMSServiceExceptionHandler extends ServiceExceptionHandler {
                 || "PARTIALMAP".equals(exceptions);
     }
     private void handlePartialMapException(ServiceException exception, Request request, String format) {
-        RenderedImageMap map = (RenderedImageMap) ((WMSServiceException)exception).getMap();
+        RenderedImageMap map = (RenderedImageMap) ((WMSPartialMapException)exception).getMap();
         try {
             final HttpServletResponse response = request.getHttpResponse();
             if("image/png8".equals(format)) {

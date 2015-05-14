@@ -237,6 +237,57 @@ public class CoverageTest extends CatalogRESTTestSupport {
         assertXpathEvaluatesTo("983 598", "/coverage/grid/range/high", dom);
 
     }
+  
+  
+    @Test
+    public void testPostAsXMLWithNativeName() throws Exception {
+        removeStore("gs", "usaWorldImage");
+        String req = "wcs?service=wcs&request=getcoverage&version=1.1.1&identifier=gs:differentName" +
+            "&boundingbox=-100,30,-80,44,EPSG:4326&format=image/tiff" +
+            "&gridbasecrs=EPSG:4326&store=true";
+        
+        Document dom = getAsDOM( req );
+        assertEquals( "ows:ExceptionReport", dom.getDocumentElement().getNodeName());
+        
+        addCoverageStore(false);
+        dom = getAsDOM( "/rest/workspaces/gs/coveragestores/usaWorldImage/coverages.xml");
+        assertEquals( 0, dom.getElementsByTagName( "coverage").getLength() );
+        
+        String xml = 
+            "<coverage>" +
+                "<name>differentName</name>"+
+                "<title>usa is a A raster file accompanied by a spatial data file</title>" + 
+                "<description>Generated from WorldImage</description>" + 
+                "<srs>EPSG:4326</srs>" +
+                "<supportedFormats>"+
+                  "<string>PNG</string>"+
+                  "<string>GEOTIFF</string>"+
+                "</supportedFormats>"+
+                "<requestSRS>"+
+                  "<string>EPSG:4326</string>"+
+                "</requestSRS>"+
+                "<responseSRS>"+
+                  "<string>EPSG:4326</string>"+
+                "</responseSRS>"+
+                "<store>usaWorldImage</store>"+
+                "<namespace>gs</namespace>"+
+                "<nativeCoverageName>usa</nativeCoverageName>"+
+              "</coverage>";
+        MockHttpServletResponse response = 
+            postAsServletResponse( "/rest/workspaces/gs/coveragestores/usaWorldImage/coverages/", xml, "text/xml");
+        
+        assertEquals( 201, response.getStatusCode() );
+        assertNotNull( response.getHeader( "Location") );
+        assertTrue( response.getHeader("Location").endsWith( "/workspaces/gs/coveragestores/usaWorldImage/coverages/differentName" ) );
+
+        dom = getAsDOM( req );
+        assertEquals( "wcs:Coverages", dom.getDocumentElement().getNodeName() );
+
+        dom = getAsDOM("/rest/workspaces/gs/coveragestores/usaWorldImage/coverages/differentName.xml");
+        assertXpathEvaluatesTo("-130.85168", "/coverage/latLonBoundingBox/minx", dom);
+        assertXpathEvaluatesTo("983 598", "/coverage/grid/range/high", dom);
+
+    }
 
     @Test
     public void testPutWithCalculation() throws Exception {

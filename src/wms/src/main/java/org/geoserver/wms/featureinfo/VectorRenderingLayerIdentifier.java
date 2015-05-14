@@ -171,12 +171,12 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
             if(radius < buffer) {
                 radius = buffer;
             }
-            Envelope targetRasterSpace = new Envelope(params.getX() - radius - 0.5, params.getX() + radius + 0.5,
-                    params.getY() - radius - 0.5, params.getY() + radius + 0.5);
+            Envelope targetRasterSpace = new Envelope(params.getX() - radius, params.getX() + radius,
+                    params.getY() - radius, params.getY() + radius);
             Envelope targetModelSpace = JTS.transform(targetRasterSpace, new AffineTransform2D(screenToWorld));
             
             // prepare the image we are going to check rendering against
-            int paintAreaSize = radius * 2 + 1;
+            int paintAreaSize = radius * 2;
             final BufferedImage image = ImageTypeSpecifier.createFromBufferedImageType(
                     BufferedImage.TYPE_INT_ARGB).createBufferedImage(paintAreaSize,
                     paintAreaSize);

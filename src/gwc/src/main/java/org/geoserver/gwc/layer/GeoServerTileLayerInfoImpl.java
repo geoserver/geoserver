@@ -17,11 +17,14 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.annotation.Nullable;
+
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 import org.geotools.util.logging.Logging;
+import org.geowebcache.config.BlobStoreConfig;
 import org.geowebcache.config.XMLGridSubset;
 import org.geowebcache.filter.parameters.ParameterFilter;
 import org.geowebcache.filter.request.RequestFilter;
@@ -55,6 +58,8 @@ public class GeoServerTileLayerInfoImpl implements Serializable, GeoServerTileLa
 
     private String name;
 
+    private String blobStoreId;
+    
     @SuppressWarnings("unused")
     transient private LayerMetaInformation metaInformation;
 
@@ -216,6 +221,17 @@ public class GeoServerTileLayerInfoImpl implements Serializable, GeoServerTileLa
     @Override
     public void setName(String name) {
         this.name = name;
+    }
+
+    @Override
+    @Nullable
+    public String getBlobStoreId() {
+        return blobStoreId;
+    }
+
+    @Override
+    public void setBlobStoreId(@Nullable String blobStoreId) {
+        this.blobStoreId = blobStoreId;
     }
 
     /**

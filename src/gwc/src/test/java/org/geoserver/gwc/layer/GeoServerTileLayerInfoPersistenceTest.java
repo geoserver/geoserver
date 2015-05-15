@@ -48,7 +48,7 @@ public class GeoServerTileLayerInfoPersistenceTest {
         defaultVectorInfo.getMimeFormats().addAll(defaults.getDefaultVectorCacheFormats());
     }
 
-    private void testMarshaling(GeoServerTileLayerInfo info) {
+    private GeoServerTileLayerInfo testMarshaling(GeoServerTileLayerInfo info) {
 
         XStream xstream = XMLConfiguration.getConfiguredXStream(new XStream(), (WebApplicationContext) null);
         xstream = new GWCGeoServerConfigurationProvider().getConfiguredXStream(xstream);
@@ -72,6 +72,7 @@ public class GeoServerTileLayerInfoPersistenceTest {
                 unmarshalled.getParameterFilters());
 
         assertEquals("info", info, unmarshalled);
+        return unmarshalled;
     }
 
     private void assertCollection(String message, Collection<?> c1, Collection<?> c2) {
@@ -90,6 +91,16 @@ public class GeoServerTileLayerInfoPersistenceTest {
         LayerInfo layerInfo = mockLayer("testLayer", new String[]{}, PublishedType.RASTER);
         info = loadOrCreate(layerInfo, oldDefaults);
         testMarshaling(info);
+    }
+
+    @Test
+    public void testMarshallingBlobStoreId() {
+        GWCConfig oldDefaults = GWCConfig.getOldDefaults();
+        LayerInfo layerInfo = mockLayer("testLayer", new String[]{}, PublishedType.RASTER);
+        info = loadOrCreate(layerInfo, oldDefaults);
+        info.setBlobStoreId("myBlobStore");
+        GeoServerTileLayerInfo unmarshalled = testMarshaling(info);
+        assertEquals("myBlobStore", unmarshalled.getBlobStoreId());
     }
 
     @Test

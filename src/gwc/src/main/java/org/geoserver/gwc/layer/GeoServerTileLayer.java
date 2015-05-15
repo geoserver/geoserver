@@ -158,6 +158,11 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
     }
 
     @Override
+    public String getBlobStoreId(){
+        return info.getBlobStoreId();
+    }
+    
+    @Override
     public String getName() {
         return info.getName();
     }

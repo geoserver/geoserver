@@ -19,6 +19,7 @@ import java.util.TimeZone;
 
 import javax.media.jai.InterpolationBicubic;
 import javax.media.jai.InterpolationBilinear;
+import javax.media.jai.InterpolationNearest;
 
 import junit.framework.Test;
 
@@ -70,6 +71,15 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
         gi.getStyles().add(getCatalog().getStyleByName("polygon"));
         cb.calculateLayerGroupBounds(gi);
         getCatalog().add(gi);
+        
+        LayerGroupInfo gi2 = cf.createLayerGroup();
+        gi2.setName("testGroup2");
+        gi2.getLayers().add(getCatalog().getLayerByName(MockData.BASIC_POLYGONS.getLocalPart()));
+        gi2.getStyles().add(getCatalog().getStyleByName("raster"));
+        gi2.getLayers().add(getCatalog().getLayerByName(MockData.BUILDINGS.getLocalPart()));
+        gi2.getStyles().add(getCatalog().getStyleByName("raster"));
+        cb.calculateLayerGroupBounds(gi2);
+        getCatalog().add(gi2);
     }
     
     @Override
@@ -246,6 +256,54 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
         assertNull(request.getInterpolations().get(1));
         assertNotNull(request.getInterpolations().get(2));
         assertTrue(request.getInterpolations().get(2) instanceof InterpolationBilinear);
+    }
+    
+    public void testInterpolationsForLayerGroups() throws Exception {
+        HashMap kvp = new HashMap();
+        kvp.put("layers", "testGroup2");
+        kvp.put("interpolations", "bicubic");
+
+        GetMapRequest request = (GetMapRequest) reader.createRequest();
+        request = (GetMapRequest) reader.read(request, parseKvp(kvp), caseInsensitiveKvp(kvp));
+
+        assertNotNull(request.getInterpolations());
+        assertEquals(2, request.getInterpolations().size());
+        assertNotNull(request.getInterpolations().get(0));
+        assertTrue(request.getInterpolations().get(0) instanceof InterpolationBicubic);
+        
+        assertNotNull(request.getInterpolations().get(1));
+        assertTrue(request.getInterpolations().get(1) instanceof InterpolationBicubic);
+        
+        kvp.put("layers", "testGroup2,testGroup,"+getLayerId(MockData.BASIC_POLYGONS));
+        kvp.put("interpolations", "bicubic,bilinear,nearest neighbor");
+        
+        request = (GetMapRequest) reader.createRequest();
+        request = (GetMapRequest) reader.read(request, parseKvp(kvp), caseInsensitiveKvp(kvp));
+        
+        assertNotNull(request.getInterpolations());
+        assertEquals(4, request.getInterpolations().size());
+        assertNotNull(request.getInterpolations().get(0));
+        assertTrue(request.getInterpolations().get(0) instanceof InterpolationBicubic);
+        assertNotNull(request.getInterpolations().get(1));
+        assertTrue(request.getInterpolations().get(1) instanceof InterpolationBicubic);
+        assertNotNull(request.getInterpolations().get(2));
+        assertTrue(request.getInterpolations().get(2) instanceof InterpolationBilinear);
+        assertNotNull(request.getInterpolations().get(3));
+        assertTrue(request.getInterpolations().get(3) instanceof InterpolationNearest);
+        
+        kvp.put("layers", "testGroup2,testGroup,"+getLayerId(MockData.BASIC_POLYGONS));
+        kvp.put("interpolations", ",bilinear");
+        
+        request = (GetMapRequest) reader.createRequest();
+        request = (GetMapRequest) reader.read(request, parseKvp(kvp), caseInsensitiveKvp(kvp));
+        
+        assertNotNull(request.getInterpolations());
+        assertEquals(4, request.getInterpolations().size());
+        assertNull(request.getInterpolations().get(0));
+        assertNull(request.getInterpolations().get(1));
+        assertNotNull(request.getInterpolations().get(2));
+        assertTrue(request.getInterpolations().get(2) instanceof InterpolationBilinear);
+        assertNull(request.getInterpolations().get(3));
     }
     
     public void testFilter() throws Exception {

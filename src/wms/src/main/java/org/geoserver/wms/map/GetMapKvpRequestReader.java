@@ -260,7 +260,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
         }
         
         if(interpolationList.size() > 0) {
-            getMap.setInterpolations(parseInterpolations(interpolationList));
+            getMap.setInterpolations(parseInterpolations(requestedLayerInfos, interpolationList));
         }
         
         // pre parse filters
@@ -506,20 +506,38 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
         return getMap;
     }
 
-    private List<Interpolation> parseInterpolations(List<String> interpolationList) {
+    private List<Interpolation> parseInterpolations(List<Object> requestedLayers,
+            List<String> interpolationList) {
         List<Interpolation> interpolations = new ArrayList<Interpolation>();
-        for (String interpolation : interpolationList) {
-            if ("".equals(interpolation)) {
-                // return null, this should flag request reader to use default for
-                // the associated layer
-                interpolations.add(null);
+        for (int i = 0; i < requestedLayers.size(); i++) {
+            // null interpolation means:
+            // use the default WMS one
+            Interpolation interpolation = null;
+            if(i < interpolationList.size()) {
+                String interpolationName = interpolationList.get(i);
+                if(!interpolationName.trim().equals("")) {
+                    interpolation = getInterpolationObject(interpolationName);
+                }
+            }
+            Object o = requestedLayers.get(i);
+            if (o instanceof LayerInfo) {
+                interpolations.add(interpolation);
+            } else if (o instanceof LayerGroupInfo) {
+                List<LayerInfo> subLayers = ((LayerGroupInfo) o).layers();
+                for (LayerInfo layer : subLayers) {
+                    interpolations.add(interpolation);
+                }
             } else {
-                interpolations.add(Interpolation.getInstance(interpolationMethods.get(interpolation
-                        .toUpperCase())));
-                
+                throw new IllegalArgumentException("Unknown layer info type: " + o);
             }
         }
+        
         return interpolations;
+    }
+
+    private Interpolation getInterpolationObject(String interpolation) {
+        return Interpolation.getInstance(interpolationMethods.get(interpolation
+                .toUpperCase()));
     }
 
 

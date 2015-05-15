@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -1234,7 +1234,9 @@ public class GeoServerDataDirectory implements ResourceStore {
             public URL locateResource(String uri) {
                 URL url = super.locateResource(uri);
                 if(url.getProtocol().equalsIgnoreCase("resource")) {
-                    return fileToUrlPreservingCqlTemplates(urlToResource(url).file());
+                    //GEOS-7025: Just get the path; don't try to create the file
+                    return fileToUrlPreservingCqlTemplates(
+                            Paths.toFile(root(), urlToResource(url).path()));
                 } else {
                     return url;
                 }

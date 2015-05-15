@@ -253,34 +253,6 @@ public class RenderingBasedFeatureInfoTest extends WMSTestSupport {
         assertEquals(2, result.getJSONArray("features").size());
     }
 
-    @Test
-    public void testPureLabelGenericGeometry() throws Exception {
-        String layer = getLayerId(MockData.GENERICENTITY);
-        String request = "wms?REQUEST=GetFeatureInfo&&BBOX=0.778809%2C45.421875%2C12.021973%2C59.921875&SERVICE=WMS"
-                + "&INFO_FORMAT=application/json&QUERY_LAYERS="
-                + layer
-                + "&Layers="
-                + layer
-                + "&WIDTH=397&HEIGHT=512&format=image%2Fpng&styles=pureLabel&srs=EPSG%3A4326&version=1.1.1&x=182&y=241";
-        JSONObject result = (JSONObject) getAsJSON(request);
-        // we used to get no results
-        assertEquals(1, result.getJSONArray("features").size());
-    }
-
-    @Test
-    public void testPureLabelPolygon() throws Exception {
-        String layer = getLayerId(MockData.FORESTS);
-        String request = "wms?version=1.1.1&bbox=-0.002,-0.002,0.002,0.002&format=jpeg"
-                + "&request=GetFeatureInfo&layers=" + layer + "&query_layers=" + layer
-                + "&styles=pureLabel"
-                + "&width=20&height=20&x=10&y=10&info_format=application/json";
-
-        JSONObject result = (JSONObject) getAsJSON(request);
-        // we used to get two results when two rules matched the same feature
-        // print(result);
-        assertEquals(1, result.getJSONArray("features").size());
-    }
-    
     /**
      * Tests GEOS-7020: imprecise scale calculation in StreamingRenderer 
      * with VectorRenderingLayerIdentifier, due to 1 pixel missing

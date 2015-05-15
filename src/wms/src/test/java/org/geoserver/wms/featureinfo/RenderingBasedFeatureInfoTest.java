@@ -2,19 +2,46 @@ package org.geoserver.wms.featureinfo;
 
 import static org.junit.Assert.*;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.xml.namespace.QName;
 
 import net.sf.json.JSONObject;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.mutable.MutableDouble;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.platform.ServiceException;
+import org.geoserver.wms.FeatureInfoRequestParameters;
+import org.geoserver.wms.GetFeatureInfoRequest;
+import org.geoserver.wms.GetMapOutputFormat;
+import org.geoserver.wms.GetMapRequest;
+import org.geoserver.wms.MapLayerInfo;
+import org.geoserver.wms.MapProducerCapabilities;
+import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WMSTestSupport;
+import org.geoserver.wms.WebMap;
+import org.geoserver.wms.featureinfo.VectorRenderingLayerIdentifier.FeatureInfoRenderListener;
+import org.geoserver.wms.map.AbstractMapOutputFormat;
+import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.geotools.renderer.lite.RendererUtilities;
 import org.junit.After;
 import org.junit.Test;
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.operation.TransformException;
+
+import com.google.common.util.concurrent.AtomicDouble;
+import com.vividsolutions.jts.geom.Envelope;
 
 public class RenderingBasedFeatureInfoTest extends WMSTestSupport {
 
@@ -226,5 +253,116 @@ public class RenderingBasedFeatureInfoTest extends WMSTestSupport {
         assertEquals(2, result.getJSONArray("features").size());
     }
 
+    @Test
+    public void testPureLabelGenericGeometry() throws Exception {
+        String layer = getLayerId(MockData.GENERICENTITY);
+        String request = "wms?REQUEST=GetFeatureInfo&&BBOX=0.778809%2C45.421875%2C12.021973%2C59.921875&SERVICE=WMS"
+                + "&INFO_FORMAT=application/json&QUERY_LAYERS="
+                + layer
+                + "&Layers="
+                + layer
+                + "&WIDTH=397&HEIGHT=512&format=image%2Fpng&styles=pureLabel&srs=EPSG%3A4326&version=1.1.1&x=182&y=241";
+        JSONObject result = (JSONObject) getAsJSON(request);
+        // we used to get no results
+        assertEquals(1, result.getJSONArray("features").size());
+    }
+
+    @Test
+    public void testPureLabelPolygon() throws Exception {
+        String layer = getLayerId(MockData.FORESTS);
+        String request = "wms?version=1.1.1&bbox=-0.002,-0.002,0.002,0.002&format=jpeg"
+                + "&request=GetFeatureInfo&layers=" + layer + "&query_layers=" + layer
+                + "&styles=pureLabel"
+                + "&width=20&height=20&x=10&y=10&info_format=application/json";
+
+        JSONObject result = (JSONObject) getAsJSON(request);
+        // we used to get two results when two rules matched the same feature
+        // print(result);
+        assertEquals(1, result.getJSONArray("features").size());
+    }
     
+    /**
+     * Tests GEOS-7020: imprecise scale calculation in StreamingRenderer 
+     * with VectorRenderingLayerIdentifier, due to 1 pixel missing
+     * in map size. 
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testCalculatedScale() throws Exception {
+        int mapWidth = 1000;
+        int mapHeight = 500;
+        Envelope mapbbox = new Envelope(-2, 2, -1, 1);
+        ReferencedEnvelope mapEnvelope = new ReferencedEnvelope(mapbbox,
+                DefaultGeographicCRS.WGS84);
+        
+        final HashMap<String, String> hints = new HashMap<String, String>();
+        
+        double originalScale = RendererUtilities.calculateScale(mapEnvelope, mapWidth, mapHeight, hints);
+        double originalOGCScale = RendererUtilities.calculateOGCScale(mapEnvelope, mapWidth, hints);
+        
+        final MutableDouble calculatedScale = new MutableDouble(0.0);
+        final MutableDouble calculatedOGCScale = new MutableDouble(0.0);
+        
+        VectorRenderingLayerIdentifier vrli = new VectorRenderingLayerIdentifier(getWMS(), null) {
+
+            @Override
+            protected GetMapOutputFormat createMapOutputFormat(BufferedImage image,
+                    FeatureInfoRenderListener featureInfoListener) {
+                return new AbstractMapOutputFormat("image/png", new String[] { "png" }) {
+
+                    @Override
+                    public WebMap produceMap(WMSMapContent mapContent) throws ServiceException,
+                            IOException {
+                        // let's capture mapContent for identify purpose, so
+                        // that we can store the scale(s), to be verified later
+                        try {
+                            ReferencedEnvelope referencedEnvelope = new ReferencedEnvelope(mapContent.getViewport().getBounds(),
+                                    DefaultGeographicCRS.WGS84);
+                            calculatedScale.setValue(RendererUtilities.calculateScale(
+                                    referencedEnvelope, mapContent.getMapWidth(),
+                                    mapContent.getMapHeight(), hints));
+                            calculatedOGCScale.setValue(RendererUtilities.calculateOGCScale(
+                                    referencedEnvelope, mapContent.getMapWidth(), hints));
+                        } catch (TransformException e) {
+                            throw new ServiceException(e);
+                        } catch (FactoryException e) {
+                            throw new ServiceException(e);
+                        }
+                        return null;
+                    }
+
+                    @Override
+                    public MapProducerCapabilities getCapabilities(String format) {
+                        return null;
+                    }
+
+                };
+            }
+
+        };
+        
+        GetFeatureInfoRequest request = new GetFeatureInfoRequest();
+        GetMapRequest getMapRequest = new GetMapRequest();
+        List<MapLayerInfo> layers = new ArrayList<MapLayerInfo>();
+
+        layers.add(new MapLayerInfo(getCatalog().getLayerByName(
+                MockData.BASIC_POLYGONS.getLocalPart())));
+        getMapRequest.setLayers(layers);
+        getMapRequest.setSRS("EPSG:4326");
+        getMapRequest.setBbox(mapbbox);
+        getMapRequest.setWidth(mapWidth);
+        
+        getMapRequest.setHeight(mapHeight);
+        request.setGetMapRequest(getMapRequest);
+        request.setQueryLayers(layers);
+
+        
+
+        FeatureInfoRequestParameters params = new FeatureInfoRequestParameters(request);
+        vrli.identify(params, 10);
+        // 1% of error tolerance
+        assertEquals(originalScale, calculatedScale.doubleValue(), originalScale * 0.01);
+        assertEquals(originalOGCScale, calculatedOGCScale.doubleValue(), originalScale * 0.01);
+    }
 }

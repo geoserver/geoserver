@@ -22,15 +22,27 @@ Once that is done, the Tomcat configuration file :file:`{TOMCAT_HOME}/conf/conte
   
   <Context>
      ...
-     <Resource name="jdbc/oralocal" auth="Container" type="javax.sql.DataSource"
-               url="jdbc:oracle:thin:@localhost:1521:xe"
-               driverClassName="oracle.jdbc.driver.OracleDriver"
-               username="dbuser" password="dbpasswd"
-               maxActive="20" maxIdle="3" maxWait="10000"
-               poolPreparedStatements="true"
-               maxOpenPreparedStatements="100"
-               validationQuery="SELECT SYSDATE FROM DUAL" />
-  </Context>
+     <Resource name="jdbc/oralocal"
+        auth="Container"
+        type="javax.sql.DataSource"
+        driverClassName="oracle.jdbc.driver.OracleDriver"
+        url="jdbc:oracle:thin:@localhost:1521:xe"
+        username="xxxxx" password="xxxxxx"
+        maxActive="20"
+        initialSize="0"
+        minIdle="0"
+        maxIdle="8"
+        maxWait="10000"
+        timeBetweenEvictionRunsMillis="30000"
+        minEvictableIdleTimeMillis="60000"
+        testWhileIdle="true"
+        poolPreparedStatements="true"
+        maxOpenPreparedStatements="100"
+        validationQuery="SELECT SYSDATE FROM DUAL"
+        maxAge="600000" <!-- only on Tomcat >= 7 -->
+        rollbackOnReturn="true" <!-- only on Tomcat >= 7 -->
+        />
+   </Context>
 
 
 The example sets up a connection pool connecting to the local Oracle XE instance. 
@@ -95,13 +107,24 @@ Then the following code must be written in the Tomcat configuration file :file:`
 .. code-block:: xml
   
   <Context>
-     ...
-     	<Resource
-		 name="jdbc/postgres" auth="Container" type="javax.sql.DataSource"
-		 driverClassName="org.postgresql.Driver"
-		 url="jdbc:postgresql://localhost:5432/test"
-		 username="admin" password="admin"
-		 maxActive="20" maxIdle="10" maxWait="-1"/>
+	  <Resource name="jdbc/postgres"
+        auth="Container"
+        type="javax.sql.DataSource"
+        driverClassName="org.postgresql.Driver"
+        url="jdbc:postgresql://localhost:5432/test"
+        username="xxxxx" password="xxxxxx"
+        maxActive="20"
+        initialSize="0"
+        minIdle="0"
+        maxIdle="8"
+        maxWait="10000"
+        timeBetweenEvictionRunsMillis="30000"
+        minEvictableIdleTimeMillis="60000"
+        testWhileIdle="true"
+        validationQuery="SELECT 1"
+        maxAge="600000" <!-- only on Tomcat >= 7 -->
+        rollbackOnReturn="true" <!-- only on Tomcat >= 7 -->
+      />
   </Context>
 
 GeoServer setup
@@ -131,11 +154,26 @@ Then the following code must be written in the Tomcat configuration file :file:`
   
   <Context>
      ...
-     	<Resource name="jdbc/sqlserver" auth="Container" type="javax.sql.DataSource"
-		 url="jdbc:sqlserver://localhost:1433;databaseName=test;user=admin;password=admin;"
-		 driverClassName="com.microsoft.sqlserver.jdbc.SQLServerDriver"
-		 username="admin" password="admin"
-		 maxActive="20" maxIdle="10" maxWait="-1"/>
+     	<Resource name="jdbc/sqlserver"
+        auth="Container"
+        type="javax.sql.DataSource"
+        driverClassName="com.microsoft.sqlserver.jdbc.SQLServerDriver"
+        url="jdbc:sqlserver://localhost:1433;databaseName=test;user=admin;password=admin;"
+        username="admin" password="admin"
+        maxActive="20"
+        initialSize="0"
+        minIdle="0"
+        maxIdle="8"
+        maxWait="10000"
+        timeBetweenEvictionRunsMillis="30000"
+        minEvictableIdleTimeMillis="60000"
+        testWhileIdle="true"
+        poolPreparedStatements="true"
+        maxOpenPreparedStatements="100"
+        validationQuery="SELECT SYSDATE FROM DUAL"
+        maxAge="600000" <!-- only on Tomcat >= 7 -->
+        rollbackOnReturn="true" <!-- only on Tomcat >= 7 -->
+        />
   </Context>
 
 .. note:: Note that database name,username and password must be defined directly in the URL.  

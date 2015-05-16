@@ -9,8 +9,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.xml.namespace.QName;
 
@@ -30,7 +28,6 @@ import org.geoserver.wms.MapProducerCapabilities;
 import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WMSTestSupport;
 import org.geoserver.wms.WebMap;
-import org.geoserver.wms.featureinfo.VectorRenderingLayerIdentifier.FeatureInfoRenderListener;
 import org.geoserver.wms.map.AbstractMapOutputFormat;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
@@ -40,7 +37,6 @@ import org.junit.Test;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.operation.TransformException;
 
-import com.google.common.util.concurrent.AtomicDouble;
 import com.vividsolutions.jts.geom.Envelope;
 
 public class RenderingBasedFeatureInfoTest extends WMSTestSupport {

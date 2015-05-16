@@ -151,7 +151,7 @@ public class CSWRecordDescriptor extends AbstractRecordDescriptor {
             throw new RuntimeException("Failed to parse CSW Record Schemas" , e);
         }
 
-        FeatureTypeRegistry featureTypeRegistry = new FeatureTypeRegistry(NAMESPACES, typeFactory, new RecordFeatureTypeRegistryHelper("RecordType"));
+        FeatureTypeRegistry featureTypeRegistry = new FeatureTypeRegistry(NAMESPACES, typeFactory, new RecordFeatureTypeRegistryConfiguration("RecordType"));
 
         featureTypeRegistry.register(SIMPLE_LITERAL);
         

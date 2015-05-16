@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -145,6 +145,7 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
             return null;
         }
         GetMapRequest getMap = params.getGetMapRequest();
+        getMap.getFormatOptions().put("antialias", "NONE");
         WMSMapContent mc = new WMSMapContent(getMap);
         try {
             // prepare the fake web map content

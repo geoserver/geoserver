@@ -52,6 +52,7 @@ public abstract class ImporterTestSupport extends GeoServerSystemTestSupport {
     static final Set<String> DEFAULT_STYLEs = new HashSet<String>() {{
         add(StyleInfo.DEFAULT_POINT);
         add(StyleInfo.DEFAULT_LINE);
+        add(StyleInfo.DEFAULT_GENERIC);
         add(StyleInfo.DEFAULT_POLYGON);
         add(StyleInfo.DEFAULT_RASTER);
     }};

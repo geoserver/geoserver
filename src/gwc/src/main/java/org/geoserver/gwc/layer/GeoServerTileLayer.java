@@ -76,6 +76,7 @@ import org.geowebcache.util.GWCVars;
 import org.geowebcache.util.ServletUtils;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
+import com.google.common.base.Throwables;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 
@@ -570,6 +571,7 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
                     metaTile.setWebMap(map);
                     saveTiles(metaTile, tile, requestTime);
                 } catch (Exception e) {
+                    Throwables.propagateIfInstanceOf(e, GeoWebCacheException.class);
                     throw new GeoWebCacheException("Problem communicating with GeoServer", e);
                 } 
             }

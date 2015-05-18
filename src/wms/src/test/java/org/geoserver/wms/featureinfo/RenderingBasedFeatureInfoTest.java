@@ -80,6 +80,53 @@ public class RenderingBasedFeatureInfoTest extends WMSTestSupport {
         VectorRenderingLayerIdentifier.RENDERING_FEATUREINFO_ENABLED = true;
     }
     
+    /**
+     * Test hitArea does not overflow out of painted area.
+     * @throws Exception
+     */
+    @Test
+    public void  testHitAreaSize()  throws Exception {
+        int mapWidth = 100;
+        int mapHeight = 100;
+        
+        
+        Envelope mapbbox = new Envelope(0.0001955, 0.0002035, 0.000696, 0.000704);
+        
+        VectorRenderingLayerIdentifier vrli = new VectorRenderingLayerIdentifier(getWMS(), null) {
+
+            @Override
+            protected int getBuffer(int userBuffer) {
+                return 3;
+            }
+            
+
+        };
+        
+        GetFeatureInfoRequest request = new GetFeatureInfoRequest();
+        GetMapRequest getMapRequest = new GetMapRequest();
+        List<MapLayerInfo> layers = new ArrayList<MapLayerInfo>();
+        
+        layers.add(new MapLayerInfo(getCatalog().getLayerByName(
+                MockData.BRIDGES.getLocalPart())));
+        getMapRequest.setLayers(layers);
+        getMapRequest.setSRS("EPSG:4326");
+        getMapRequest.setBbox(mapbbox);
+        getMapRequest.setWidth(mapWidth);
+        getMapRequest.setFormat("image/png");
+        
+        getMapRequest.setHeight(mapHeight);
+        request.setGetMapRequest(getMapRequest);
+        request.setQueryLayers(layers);
+        request.setXPixel(50);
+        request.setYPixel(50);
+        
+
+        FeatureInfoRequestParameters params = new FeatureInfoRequestParameters(request);
+        
+        assertEquals(0, vrli.identify(params, 10).size());
+    }
+
+    
     @Test
     public void testBoxOffset() throws Exception {
         // try the old way clicking in the area of the symbol that is transparent

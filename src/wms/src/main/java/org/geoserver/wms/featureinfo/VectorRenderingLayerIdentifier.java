@@ -137,7 +137,7 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
         
         final Style style = preprocessStyle(params.getStyle(), params.getLayer().getFeature().getFeatureType());
         final int userBuffer = params.getBuffer() > 0 ? params.getBuffer() : MIN_BUFFER_SIZE;
-        final int buffer = Math.min(userBuffer, wms.getMaxBuffer());
+        final int buffer = getBuffer(userBuffer);
 
         // check the style to see what's active
         final List<Rule> rules = getActiveRules(style, params.getScaleDenominator());
@@ -186,6 +186,9 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
             // and now the listener that will check for painted pixels
             int mid = radius;
             int hitAreaSize = buffer * 2 + 1;
+            if(hitAreaSize > paintAreaSize) {
+                hitAreaSize = paintAreaSize;
+            }
             Rectangle hitArea = new Rectangle(mid - buffer, mid - buffer, hitAreaSize, hitAreaSize);
             final FeatureInfoRenderListener featureInfoListener = new FeatureInfoRenderListener(
                     image, hitArea, maxFeatures, params.getPropertyNames());
@@ -204,6 +207,10 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
         } finally {
             mc.dispose();
         }
+    }
+
+    protected int getBuffer(final int userBuffer) {
+        return Math.min(userBuffer, wms.getMaxBuffer());
     }
 
     protected GetMapOutputFormat createMapOutputFormat(final BufferedImage image,

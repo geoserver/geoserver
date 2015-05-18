@@ -14,11 +14,16 @@ Oracle
 Installing the Oracle extension
 -------------------------------
 
+.. warning:: Due to licensing requirements, not all files are included with the extension.  To install Oracle support, it is necessary to download additional files. 
+
 #. Download the Oracle extension from the `GeoServer download page <http://geoserver.org/download>`_.
 
    .. warning:: Make sure to match the version of the extension to the version of the GeoServer instance!
 
 #. Extract the contents of the archive into the ``WEB-INF/lib`` directory of the GeoServer installation.
+
+#. Get the Oracle JDBC driver from either your Oracle installation (e.g. ``ojdbc6.jar``, ``ojdbc7.jar``)
+   or download them from `the Oracle JDBC driver distribution page <http://www.oracle.com/technetwork/database/features/jdbc/index-091264.html>`_
 
 Consider replacing the Oracle JDBC driver
 -----------------------------------------

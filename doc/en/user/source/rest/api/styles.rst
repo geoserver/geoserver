@@ -96,7 +96,7 @@ Controls a given style.
      - 200
      - SLD, HTML, XML, JSON
      - HTML
-     - :ref:`quietOnNotFound <rest_api_styles_quietOnNotFound>`
+     - :ref:`quietOnNotFound <rest_api_styles_quietOnNotFound>` :ref:`pretty <rest_api_styles_pretty>`
    * - POST
      - 
      - 405
@@ -147,6 +147,13 @@ The ``purge`` parameter specifies whether the underlying SLD file for the style 
 ^^^^^^^^^^^^^^^^^^^^
 
 The ``quietOnNotFound`` parameter avoids to log an Exception when the style is not present. Note that 404 status code will be returned anyway.
+
+.. _rest_api_styles_pretty:
+
+``pretty``
+^^^^^^^^^^
+
+The ``pretty`` parameter returns the style in a human-readable format, with proper whitespace and indentation. This parameter has no effect if you request a style in its native format - in this case the API returns the exact content of the underlying file. The HTML, XML, and JSON formats do not support this parameter.
 
 ``/workspaces/<ws>/styles[.<format>]``
 --------------------------------------

@@ -5,12 +5,11 @@
  */
 package org.geoserver.inspire.wms;
 
-import static org.geoserver.inspire.wms.WMSExtendedCapabilitiesProvider.NAMESPACE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import org.geoserver.inspire.InspireMetadata;
-import org.geoserver.test.GeoServerTestSupport;
+import static org.geoserver.inspire.InspireSchema.VS_NAMESPACE;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.wms.WMSInfo;
 import org.junit.Test;
@@ -28,7 +27,7 @@ public class WMSExtendedCapabilitiesTest extends GeoServerSystemTestSupport {
         getGeoServer().save(wms);
 
         Document dom = getAsDOM("wms?request=getcapabilities");
-        assertEquals(NAMESPACE, dom.getDocumentElement().getAttribute("xmlns:inspire_vs"));
+        assertEquals(VS_NAMESPACE, dom.getDocumentElement().getAttribute("xmlns:inspire_vs"));
 
         final Element extendedCaps = getFirstElementByTagName(dom,
                 "inspire_vs:ExtendedCapabilities");
@@ -66,14 +65,14 @@ public class WMSExtendedCapabilitiesTest extends GeoServerSystemTestSupport {
         getGeoServer().save(wms);
 
         Document dom = getAsDOM("wms?request=getcapabilities");
-        assertEquals(NAMESPACE, dom.getDocumentElement().getAttribute("xmlns:inspire_vs"));
+        assertEquals(VS_NAMESPACE, dom.getDocumentElement().getAttribute("xmlns:inspire_vs"));
         assertMetadataUrlAndMediaType(dom, "http://foo.com?bar=baz", "application/vnd.iso.19139+xml");
 
         wms.getMetadata().put(InspireMetadata.SERVICE_METADATA_TYPE.key, "application/xml");
         getGeoServer().save(wms);
 
         dom = getAsDOM("wms?request=getcapabilities");
-        assertEquals(NAMESPACE, dom.getDocumentElement().getAttribute("xmlns:inspire_vs"));
+        assertEquals(VS_NAMESPACE, dom.getDocumentElement().getAttribute("xmlns:inspire_vs"));
         assertMetadataUrlAndMediaType(dom, "http://foo.com?bar=baz", "application/xml");
     }
 

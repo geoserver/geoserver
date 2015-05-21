@@ -8,6 +8,9 @@ package org.geoserver.inspire.wms;
 import static org.geoserver.inspire.InspireMetadata.LANGUAGE;
 import static org.geoserver.inspire.InspireMetadata.SERVICE_METADATA_TYPE;
 import static org.geoserver.inspire.InspireMetadata.SERVICE_METADATA_URL;
+import static org.geoserver.inspire.InspireSchema.COMMON_NAMESPACE;
+import static org.geoserver.inspire.InspireSchema.VS_NAMESPACE;
+import static org.geoserver.inspire.InspireSchema.VS_SCHEMA;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -15,8 +18,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.geoserver.catalog.LayerInfo;
-import org.geoserver.ows.URLMangler.URLType;
-import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.wms.ExtendedCapabilitiesProvider;
 import org.geoserver.wms.GetCapabilitiesRequest;
 import org.geoserver.wms.WMS;
@@ -29,39 +30,36 @@ import org.xml.sax.helpers.NamespaceSupport;
 
 public class WMSExtendedCapabilitiesProvider implements ExtendedCapabilitiesProvider {
 
-    /**
-     * IGN : inspire_vs namespace as defined in the "INSPIRE View Service Technical Guidance
-     * 3.0/Annex C/Example of Extended Capabilities Response Scenario 1"
-     */
-    public static final String NAMESPACE = "http://inspire.ec.europa.eu/schemas/inspire_vs/1.0";
-
-    /**
-     * IGN : Do we still need to host this xsd ?
-     */
+    @Override
     public String[] getSchemaLocations(String schemaBaseURL) {
-        String schemaLocation = ResponseUtils.buildURL(schemaBaseURL, "www/inspire/inspire_vs.xsd",
-                null, URLType.RESOURCE);
-        return new String[] { NAMESPACE, schemaLocation };
+        return new String[]{VS_NAMESPACE, VS_SCHEMA};
     }
 
     /**
      * @return empty list, INSPIRE profile for WMS 1.1.1 not supported.
-     * @see org.geoserver.wms.ExtendedCapabilitiesProvider#getVendorSpecificCapabilitiesRoots()
+     * @see
+     * org.geoserver.wms.ExtendedCapabilitiesProvider#getVendorSpecificCapabilitiesRoots()
      */
+    @Override
     public List<String> getVendorSpecificCapabilitiesRoots(GetCapabilitiesRequest request) {
         return Collections.emptyList();
     }
 
     /**
      * @return empty list, INSPIRE profile for WMS 1.1.1 not supported.
-     * @see org.geoserver.wms.ExtendedCapabilitiesProvider#getVendorSpecificCapabilitiesChildDecls()
+     * @see
+     * org.geoserver.wms.ExtendedCapabilitiesProvider#getVendorSpecificCapabilitiesChildDecls()
      */
+    @Override
     public List<String> getVendorSpecificCapabilitiesChildDecls(GetCapabilitiesRequest request) {
         return Collections.emptyList();
     }
 
+    @Override
     public void registerNamespaces(NamespaceSupport namespaces) {
-        namespaces.declarePrefix("inspire_vs", NAMESPACE);
+        namespaces.declarePrefix("inspire_vs", VS_NAMESPACE);
+        namespaces
+                .declarePrefix("inspire_common", COMMON_NAMESPACE);
         namespaces.declarePrefix("gml", "http://schemas.opengis.net/gml");
         namespaces
                 .declarePrefix("gmd", "http://schemas.opengis.net/iso/19139/20060504/gmd/gmd.xsd");
@@ -69,11 +67,9 @@ public class WMSExtendedCapabilitiesProvider implements ExtendedCapabilitiesProv
                 .declarePrefix("gco", "http://schemas.opengis.net/iso/19139/20060504/gco/gco.xsd");
         namespaces
                 .declarePrefix("srv", "http://schemas.opengis.net/iso/19139/20060504/srv/srv.xsd");
-        // IGN : We add another xmlns for inspire_common
-        namespaces
-                .declarePrefix("inspire_common", "http://inspire.ec.europa.eu/schemas/common/1.0");
     }
 
+    @Override
     public void encode(Translator tx, WMSInfo wms, GetCapabilitiesRequest request)
             throws IOException {
         Version requestVersion = WMS.version(request.getVersion());

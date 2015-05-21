@@ -15,7 +15,7 @@ import java.util.Properties;
 import java.util.Set;
 
 import org.apache.wicket.model.IModel;
-import org.geoserver.inspire.InspireInitializer;
+import org.geoserver.inspire.InspireSchema;
 
 /**
  * Model for the list of INSPIRE supported languages.
@@ -34,6 +34,7 @@ public class AllLanguagesModel implements IModel<List<String>> {
     /**
      * @see org.apache.wicket.model.IModel#setObject(java.lang.Object)
      */
+    @Override
     public void setObject(List<String> object) {
         this.langs = object;
     }
@@ -41,6 +42,7 @@ public class AllLanguagesModel implements IModel<List<String>> {
     /**
      * @see org.apache.wicket.model.IModel#getObject()
      */
+    @Override
     public List<String> getObject() {
         if (langs == null) {
             try {
@@ -55,6 +57,7 @@ public class AllLanguagesModel implements IModel<List<String>> {
     /**
      * @see org.apache.wicket.model.IDetachable#detach()
      */
+    @Override
     public void detach() {
         langs = null;
     }
@@ -62,7 +65,7 @@ public class AllLanguagesModel implements IModel<List<String>> {
     @SuppressWarnings({ "unchecked", "rawtypes" })
     List<String> getAvailableLanguages() throws IOException {
         List<String> langs = new ArrayList<String>();
-        URL resource = InspireInitializer.class.getResource(LANGUAGES_FILE);
+        URL resource = InspireSchema.class.getResource(LANGUAGES_FILE);
         InputStream inStream = resource.openStream();
         try {
             Properties list = new Properties();

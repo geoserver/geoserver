@@ -16,15 +16,20 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.net.URL;
+import java.util.Collections;
+import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
+import javax.servlet.Filter;
+
 import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.data.test.MockData;
+import org.geoserver.filters.LoggingFilter;
 import org.geotools.data.DataUtilities;
 import org.h2.tools.DeleteDbFiles;
 import org.junit.After;
@@ -36,6 +41,14 @@ import org.w3c.dom.Document;
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
 public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
+
+    @Override
+    protected List<Filter> getFilters() {
+        LoggingFilter filter = new LoggingFilter();
+        filter.setEnabled(true);
+        filter.setLogBodies(true);
+        return Collections.singletonList((Filter) filter);
+    }
 
     @Before
     public void removePdsDataStore() {

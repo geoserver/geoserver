@@ -10,8 +10,10 @@ import static org.junit.Assert.assertNotNull;
 
 import org.geoserver.inspire.InspireMetadata;
 import static org.geoserver.inspire.InspireSchema.VS_NAMESPACE;
+import static org.geoserver.inspire.InspireSchema.VS_SCHEMA;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.wms.WMSInfo;
+import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -28,6 +30,16 @@ public class WMSExtendedCapabilitiesTest extends GeoServerSystemTestSupport {
 
         Document dom = getAsDOM("wms?request=getcapabilities");
         assertEquals(VS_NAMESPACE, dom.getDocumentElement().getAttribute("xmlns:inspire_vs"));
+        
+        String schemaLocation = dom.getDocumentElement().getAttribute("xsi:schemaLocation"); 
+        assertTrue(schemaLocation.contains(VS_NAMESPACE));
+        
+        String[] schemaLocationParts = schemaLocation.split("\\s+");
+        for (int i = 0; i < schemaLocationParts .length; i++) {
+            if (schemaLocationParts[i].equals(VS_NAMESPACE)) {
+                assertTrue(schemaLocationParts[i+1].equals(VS_SCHEMA));
+            }
+        }
 
         final Element extendedCaps = getFirstElementByTagName(dom,
                 "inspire_vs:ExtendedCapabilities");

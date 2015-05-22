@@ -5,7 +5,7 @@
  */
 package org.geoserver.filters;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -21,7 +21,7 @@ public class BufferedRequestStreamTest {
 	@Before
     public void setUpInternal() throws Exception{
 		myTestString = "Hello, this is a test";
-		myBRS = new BufferedRequestStream(myTestString);
+        myBRS = new BufferedRequestStream(myTestString.getBytes());
 	}
 
 	@Test

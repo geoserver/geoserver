@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -29,9 +29,11 @@ import org.geoserver.rest.format.DataFormat;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.styling.SLDParser;
 import org.geotools.styling.Style;
+import org.geotools.util.Converters;
 import org.geotools.util.Version;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
+import org.restlet.data.Form;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
@@ -49,14 +51,20 @@ public class StyleResource extends AbstractCatalogResource {
     @Override
     protected List<DataFormat> createSupportedFormats(Request request,Response response) {
         List<DataFormat> formats =  super.createSupportedFormats(request,response);
-
+        boolean prettyPrint = isPrettyPrint(request);
         for (StyleHandler sh : Styles.handlers()) {
             for (Version ver : sh.getVersions()) {
-                formats.add(new StyleFormat(sh.mimeType(ver), ver, false, sh, request));
+                formats.add(new StyleFormat(sh.mimeType(ver), ver, prettyPrint, sh, request));
             }
         }
 
         return formats;
+    }
+    
+    boolean isPrettyPrint(Request request) {
+        Form q = request.getResourceRef().getQueryAsForm();
+        String pretty = q.getFirstValue("pretty");
+        return pretty != null && Boolean.TRUE.equals(Converters.convert(pretty, Boolean.class));
     }
     
     @Override

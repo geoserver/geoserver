@@ -1,12 +1,12 @@
 package org.geoserver.script.wps;
 
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+
 import java.io.File;
 
 import org.apache.commons.io.FileUtils;
 import org.geoserver.script.ScriptIntTestSupport;
 import org.w3c.dom.Document;
-
-import static  org.custommonkey.xmlunit.XMLAssert.*;
 
 public abstract class ScriptProcessIntTest extends ScriptIntTestSupport {
 

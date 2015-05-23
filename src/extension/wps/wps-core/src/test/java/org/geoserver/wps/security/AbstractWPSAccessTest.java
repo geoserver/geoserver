@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -95,7 +95,7 @@ public abstract class AbstractWPSAccessTest extends WPSTestSupport {
             + "<wps:Input>"
             + "<ows:Identifier>geom</ows:Identifier>"
             + "<wps:Data>"
-            + "<wps:ComplexData>"
+            + "<wps:ComplexData mimeType=\"text/xml; subtype=gml/2.1.2\">"
             + "<gml:Polygon xmlns:gml='http://www.opengis.net/gml'>"
             + "<gml:exterior>"
             + "<gml:LinearRing>"

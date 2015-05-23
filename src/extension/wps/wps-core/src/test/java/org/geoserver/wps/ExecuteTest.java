@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -43,6 +43,7 @@ import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.test.RemoteOWSTestSupport;
+import org.geoserver.util.NoExternalEntityResolver;
 import org.geoserver.wps.executor.ExecutionStatus;
 import org.geoserver.wps.executor.ProcessState;
 import org.geoserver.wps.executor.ProcessStatusTracker;
@@ -97,6 +98,56 @@ public class ExecuteTest extends WPSTestSupport {
         // make extra sure we don't have anything else going
         MonkeyProcess.clearCommands();
     }
+    
+    @Test
+    public void testEntityExpansion() throws Exception { 
+        String xml =  
+          "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>" +
+          "<!DOCTYPE foo [<!ELEMENT foo ANY >\n" + 
+          "  <!ENTITY xxe SYSTEM \"file:///file/not/there\" >]>\n" +
+          "<wps:Execute service='WPS' version='1.0.0' xmlns:wps='http://www.opengis.net/wps/1.0.0' " + 
+              "xmlns:ows='http://www.opengis.net/ows/1.1'>" + 
+            "<ows:Identifier>JTS:buffer</ows:Identifier>" + 
+             "<wps:DataInputs>" + 
+                "<wps:Input>" + 
+                   "<ows:Identifier>distance</ows:Identifier>" + 
+                   "<wps:Data>" + 
+                     "<wps:LiteralData>1</wps:LiteralData>" + 
+                   "</wps:Data>" + 
+                "</wps:Input>" + 
+                "<wps:Input>" + 
+                "<ows:Identifier>&xxe;</ows:Identifier>" + 
+                "<wps:Data>" +
+                  "<wps:ComplexData>" + 
+                    "<gml:Polygon xmlns:gml='http://www.opengis.net/gml'>" +
+                      "<gml:exterior>" + 
+                        "<gml:LinearRing>" + 
+                          "<gml:coordinates>1 1 2 1 2 2 1 2 1 1</gml:coordinates>" + 
+                        "</gml:LinearRing>" + 
+                      "</gml:exterior>" + 
+                    "</gml:Polygon>" +
+                  "</wps:ComplexData>" + 
+                "</wps:Data>" +     
+            "</wps:Input>" + 
+           "</wps:DataInputs>" +
+           "<wps:ResponseForm>" +  
+             "<wps:ResponseDocument storeExecuteResponse='false'>" + 
+               "<wps:Output>" +
+                 "<ows:Identifier>result</ows:Identifier>" +
+               "</wps:Output>" + 
+             "</wps:ResponseDocument>" +
+           "</wps:ResponseForm>" + 
+         "</wps:Execute>";
+        // System.out.println(xml);
+        
+        Document d = postAsDOM( "wps", xml );
+        checkValidationErrors(d);
+        // print(d);
+        
+        String text = xp.evaluate("//ows:ExceptionText", d);
+        assertTrue(text.contains(NoExternalEntityResolver.ERROR_MESSAGE_BASE));
+    }
+    
     
     @Test
     public void testDataInline() throws Exception { // Standard Test A.4.4.2, A.4.4.4

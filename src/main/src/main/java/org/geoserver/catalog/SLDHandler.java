@@ -1,15 +1,32 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2014 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.catalog;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Arrays;
+import java.util.List;
+import java.util.logging.Logger;
+
+import javax.xml.transform.TransformerException;
+
 import org.geoserver.ows.util.RequestUtils;
 import org.geotools.data.DataUtilities;
-import org.geotools.sld.v1_1.*;
 import org.geotools.sld.v1_1.SLD;
-import org.geotools.styling.*;
+import org.geotools.sld.v1_1.SLDConfiguration;
+import org.geotools.styling.DefaultResourceLocator;
+import org.geotools.styling.NamedLayer;
+import org.geotools.styling.ResourceLocator;
+import org.geotools.styling.SLDParser;
+import org.geotools.styling.SLDTransformer;
+import org.geotools.styling.Style;
+import org.geotools.styling.StyledLayerDescriptor;
 import org.geotools.util.Version;
 import org.geotools.util.logging.Logging;
 import org.geotools.xml.Encoder;
@@ -20,12 +37,6 @@ import org.xml.sax.InputSource;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
-
-import javax.xml.transform.TransformerException;
-import java.io.*;
-import java.util.Arrays;
-import java.util.List;
-import java.util.logging.Logger;
 
 /**
  * SLD style handler.
@@ -170,7 +181,11 @@ public class SLDHandler extends StyleHandler {
             sld = new SLDConfiguration();
         }
 
-        return new Parser(sld);
+        Parser parser = new Parser(sld);
+        if (entityResolver != null) {
+            parser.setEntityResolver(entityResolver);
+        }
+        return parser;
     }
 
     @Override
@@ -224,7 +239,7 @@ public class SLDHandler extends StyleHandler {
     }
 
     List<Exception> validate11(Object input, EntityResolver entityResolver) throws IOException {
-        Parser p = createSld11Parser(input, null, null);
+        Parser p = createSld11Parser(input, null, entityResolver);
         try {
             p.validate(toReader(input));
             return p.getValidationErrors();

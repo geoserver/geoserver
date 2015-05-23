@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -13,6 +13,7 @@ import net.opengis.wcs11.GetCapabilitiesType;
 
 import org.geoserver.wcs.xml.v1_1_1.WCSConfiguration;
 import org.geoserver.wcs.xml.v1_1_1.WcsXmlReader;
+import org.geoserver.util.EntityResolverProvider;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -25,7 +26,8 @@ public class GetCapabilitiesXmlParserTest {
     @Before
     public void setUp() throws Exception {
         configuration = new WCSConfiguration();
-        reader = new WcsXmlReader("GetCapabilities", "1.1.1", configuration);
+        reader = new WcsXmlReader("GetCapabilities", "1.1.1", configuration,
+                EntityResolverProvider.RESOLVE_DISABLED_PROVIDER);
     }
 
     @Test
@@ -63,10 +65,10 @@ public class GetCapabilitiesXmlParserTest {
                 new StringReader(request), null);
         assertEquals("WCS", cap.getService());
         assertEquals(1, cap.getAcceptVersions().getVersion().size());
-        assertEquals("1.0.0", (String) cap.getAcceptVersions().getVersion().get(0));
+        assertEquals("1.0.0", cap.getAcceptVersions().getVersion().get(0));
         assertEquals(1, cap.getSections().getSection().size());
-        assertEquals("Section1", (String) cap.getSections().getSection().get(0));
+        assertEquals("Section1", cap.getSections().getSection().get(0));
         assertEquals(1, cap.getAcceptFormats().getOutputFormat().size());
-        assertEquals("text/xml", (String) cap.getAcceptFormats().getOutputFormat().get(0));
+        assertEquals("text/xml", cap.getAcceptFormats().getOutputFormat().get(0));
     }
 }

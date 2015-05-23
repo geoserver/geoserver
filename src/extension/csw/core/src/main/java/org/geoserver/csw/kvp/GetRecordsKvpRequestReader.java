@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -27,6 +27,7 @@ import org.geotools.csw.CSW;
 import org.geotools.filter.text.cql2.CQL;
 import org.geotools.filter.v1_1.OGC;
 import org.geotools.filter.v1_1.OGCConfiguration;
+import org.geoserver.util.EntityResolverProvider;
 import org.geotools.xml.Parser;
 import org.opengis.filter.Filter;
 import org.opengis.filter.sort.SortBy;
@@ -54,9 +55,12 @@ public class GetRecordsKvpRequestReader extends CSWKvpRequestReader implements A
     
     HashMap<String, RecordDescriptor> descriptors;
 
-    public GetRecordsKvpRequestReader() {
+    EntityResolverProvider resolverProvider;
+
+    public GetRecordsKvpRequestReader(EntityResolverProvider resolverProvider) {
         super(GetRecordsType.class);
         setRepeatedParameters(true);
+        this.resolverProvider = resolverProvider;
     }
 
     @Override
@@ -143,6 +147,7 @@ public class GetRecordsKvpRequestReader extends CSWKvpRequestReader implements A
                     Parser parser = new Parser(new OGCConfiguration());
                     parser.setFailOnValidationError(true);
                     parser.setValidating(true);
+                    parser.setEntityResolver(resolverProvider.getEntityResolver());
                     parser.getNamespaces().declarePrefix("ogc", OGC.NAMESPACE);
                     Filter filter = (Filter) parser.parse(new StringReader(constraint));
                     query.getConstraint().setFilter(filter);

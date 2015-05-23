@@ -17,10 +17,10 @@ import javax.xml.namespace.QName;
 import net.opengis.cat.csw20.DescribeRecordType;
 
 import org.apache.commons.io.IOUtils;
-import org.custommonkey.xmlunit.exceptions.XpathException;
 import org.geoserver.csw.kvp.DescribeRecordKvpRequestReader;
 import org.geoserver.csw.xml.v2_0_2.CSWXmlReader;
 import org.geoserver.platform.ServiceException;
+import org.geoserver.util.EntityResolverProvider;
 import org.geotools.csw.CSWConfiguration;
 import org.junit.Test;
 import org.w3c.dom.Document;
@@ -96,7 +96,8 @@ public class DescribeRecordTest extends CSWSimpleTestSupport {
 
     @Test 
     public void testXMLReader() throws Exception {
-        CSWXmlReader reader = new CSWXmlReader("DescribeRecord", "2.0.2", new CSWConfiguration());
+        CSWXmlReader reader = new CSWXmlReader("DescribeRecord", "2.0.2", new CSWConfiguration(),
+                EntityResolverProvider.RESOLVE_DISABLED_PROVIDER);
         DescribeRecordType dr = (DescribeRecordType) reader.read(null,
                 getResourceAsReader("DescribeRecord.xml"), (Map) null);
         assertDescribeRecordValid(dr);

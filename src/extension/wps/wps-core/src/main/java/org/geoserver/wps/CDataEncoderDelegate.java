@@ -35,6 +35,7 @@ public class CDataEncoderDelegate implements EncoderDelegate {
 
     public void encode(ContentHandler output) throws Exception {
         ((LexicalHandler) output).startCDATA();
+
         PipedInputStream pins = new PipedInputStream();
         PipedOutputStream pos = new PipedOutputStream(pins);
         ppio.encode(object, pos);

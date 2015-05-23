@@ -45,7 +45,7 @@ public class FilterPPIO extends XMLPPIO {
 
     @Override
     public Object decode(InputStream input) throws Exception {
-        Parser p = new Parser(xml);
+        Parser p = getParser(xml);
         return p.parse(input);
     }
 

@@ -25,7 +25,9 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import org.geoserver.config.ServiceInfo;
+import org.geoserver.ows.kvp.CQLFilterKvpParser;
 import org.geoserver.ows.util.KvpUtils;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.util.XCQL;
 import org.geotools.factory.CommonFactoryFinder;
@@ -34,11 +36,14 @@ import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.gml.GMLFilterDocument;
 import org.geotools.gml.GMLFilterGeometry;
 import org.geotools.util.Converters;
+import org.geoserver.util.EntityResolverProvider;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory;
 import org.opengis.filter.Id;
+import org.springframework.context.ApplicationContextAware;
 import org.vfny.geoserver.Request;
 import org.vfny.geoserver.util.requests.FilterHandlerImpl;
+import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.ParserAdapter;
@@ -67,7 +72,7 @@ import com.vividsolutions.jts.geom.Envelope;
  * @author Gabriel Roldan
  * @version $Id$
  */
-abstract public class KvpRequestReader {
+abstract public class KvpRequestReader implements ApplicationContextAware {
     /** Class logger */
     private static Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.vfny.geoserver.requests.readers");
 
@@ -93,6 +98,8 @@ abstract public class KvpRequestReader {
     //protected AbstractService service;
     protected ServiceInfo serviceConfig;
     
+    protected EntityResolverProvider entityResolverProvider;
+
     /**
      * Creates a reader from paramters and a service configuration.
      *
@@ -102,6 +109,7 @@ abstract public class KvpRequestReader {
     public KvpRequestReader(Map kvpPairs, ServiceInfo service) {
         this.kvpPairs = kvpPairs;
         this.serviceConfig = service;
+        this.entityResolverProvider = GeoServerExtensions.bean(EntityResolverProvider.class);
     }
     
     /**
@@ -473,8 +481,12 @@ abstract public class KvpRequestReader {
         // translate string into a proper SAX input source
         InputSource requestSource = new InputSource(rawRequest);
 
+        // locate the entity resolver (we might have entity resolution disabled)
+        EntityResolver entityResolver = entityResolverProvider.getEntityResolver();
+
         // instantiante parsers and content handlers
         FilterHandlerImpl contentHandler = new FilterHandlerImpl();
+        contentHandler.setEntityResolver(entityResolver);
         FilterFilter filterParser = new FilterFilter(contentHandler, null);
         GMLFilterGeometry geometryFilter = new GMLFilterGeometry(filterParser);
         GMLFilterDocument documentFilter = new GMLFilterDocument(geometryFilter);
@@ -484,6 +496,8 @@ abstract public class KvpRequestReader {
             SAXParserFactory factory = SAXParserFactory.newInstance();
             SAXParser parser = factory.newSAXParser();
             ParserAdapter adapter = new ParserAdapter(parser.getParser());
+
+            adapter.setEntityResolver(entityResolver);
 
             adapter.setContentHandler(documentFilter);
             adapter.parse(requestSource);

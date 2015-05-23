@@ -5,12 +5,14 @@
  */
 package org.geoserver.wms.capabilities;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.io.Reader;
 import java.io.StringReader;
 
-import static org.junit.Assert.*;
-
 import org.geoserver.wms.GetCapabilitiesRequest;
+import org.geoserver.util.EntityResolverProvider;
 import org.junit.Test;
 
 /**
@@ -21,7 +23,8 @@ public class CapabilitiesXmlReaderTest {
 
     @Test
     public void testParseXmlGetCapabilities() throws Exception {
-        CapabilitiesXmlReader reader = new CapabilitiesXmlReader();
+        CapabilitiesXmlReader reader = new CapabilitiesXmlReader(
+                EntityResolverProvider.RESOLVE_DISABLED_PROVIDER);
 
         String plainRequest = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" //
                 + "<ogc:GetCapabilities xmlns:ogc=\"http://www.opengis.net/ows\" " //

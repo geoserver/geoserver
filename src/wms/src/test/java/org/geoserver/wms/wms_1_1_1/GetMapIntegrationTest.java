@@ -6,7 +6,6 @@
 package org.geoserver.wms.wms_1_1_1;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -33,7 +32,6 @@ import javax.imageio.ImageIO;
 import javax.servlet.ServletResponse;
 import javax.xml.namespace.QName;
 
-import org.apache.batik.bridge.svg12.SVG12BridgeContext;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.spi.LoggingEvent;
@@ -58,9 +56,6 @@ import org.geoserver.wms.GetMapOutputFormat;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSTestSupport;
-import org.geoserver.wms.featureinfo.GML3FeatureInfoOutputFormat;
-import org.geoserver.wms.featureinfo.GetFeatureInfoOutputFormat;
-import org.geoserver.wms.featureinfo.TextFeatureInfoOutputFormat;
 import org.geoserver.wms.map.OpenLayersMapOutputFormat;
 import org.geoserver.wms.map.RenderedImageMapOutputFormat;
 import org.geotools.gce.imagemosaic.ImageMosaicFormat;
@@ -967,7 +962,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
             // if entities evaluation is disabled
             // the parser will throw a MalformedURLException when it finds an entity
             response = getAsString(url);
-            assertTrue(response.indexOf("java.net.MalformedURLException") > -1);
+            assertTrue(response.indexOf("Entity resolution disallowed") > -1);
 
             // try default value: disabled entities
             geoserverInfo.setXmlExternalEntitiesEnabled(null);
@@ -976,7 +971,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
             // if entities evaluation is disabled
             // the parser will throw a MalformedURLException when it finds an entity
             response = getAsString(url);
-            assertTrue(response.indexOf("java.net.MalformedURLException") > -1);            
+            assertTrue(response.indexOf("Entity resolution disallowed") > -1);
         } finally {
             // default
             geoserverInfo.setXmlExternalEntitiesEnabled(null);

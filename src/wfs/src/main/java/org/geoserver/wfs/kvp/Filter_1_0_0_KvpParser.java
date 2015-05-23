@@ -5,6 +5,7 @@
  */
 package org.geoserver.wfs.kvp;
 
+import org.geoserver.config.GeoServer;
 import org.geotools.xml.Configuration;
 
 /**
@@ -18,6 +19,10 @@ import org.geotools.xml.Configuration;
  * @author Gabriel Roldan
  */
 public class Filter_1_0_0_KvpParser extends FilterKvpParser {
+
+    public Filter_1_0_0_KvpParser(GeoServer geoServer) {
+        super(geoServer);
+    }
 
     /**
      * Provides the 1.0 filter configuration for the superclass to perform the

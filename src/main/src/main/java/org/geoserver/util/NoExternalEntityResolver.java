@@ -25,6 +25,7 @@ import org.xml.sax.SAXException;
  */
 public class NoExternalEntityResolver implements EntityResolver {
 
+    public static final String ERROR_MESSAGE_BASE = "Entity resolution disallowed for ";
     private static final Logger LOGGER = Logging.getLogger(NoExternalEntityResolver.class);
     
     @Override
@@ -39,6 +40,6 @@ public class NoExternalEntityResolver implements EntityResolver {
         }
         
         // do not allow external entities
-        return new InputSource();
+        throw new SAXException(ERROR_MESSAGE_BASE + systemId);
     }
 }

@@ -37,7 +37,7 @@ public class SLDStylePPIO extends XMLPPIO {
 
     @Override
     public Object decode(InputStream input) throws Exception {
-        Parser p = new Parser(sldConfiguration);
+        Parser p = getParser(sldConfiguration);
 
         // extract the first style in the first sld
         StyledLayerDescriptor sld = (StyledLayerDescriptor) p.parse(input);
@@ -60,7 +60,7 @@ public class SLDStylePPIO extends XMLPPIO {
     
     @Override
     public Object decode(Object input) throws Exception {
-        Parser p = new Parser(sldConfiguration);
+        Parser p = getParser(sldConfiguration);
 
         // extract the first style in the first sld
         StyledLayerDescriptor sld = (StyledLayerDescriptor) p.parse(new StringReader((String) input));

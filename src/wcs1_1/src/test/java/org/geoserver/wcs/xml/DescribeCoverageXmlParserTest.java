@@ -13,6 +13,7 @@ import net.opengis.wcs11.DescribeCoverageType;
 
 import org.geoserver.wcs.xml.v1_1_1.WCSConfiguration;
 import org.geoserver.wcs.xml.v1_1_1.WcsXmlReader;
+import org.geoserver.util.EntityResolverProvider;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -25,7 +26,8 @@ public class DescribeCoverageXmlParserTest {
     @Before
     public void setUp() throws Exception {
         configuration = new WCSConfiguration();
-        reader = new WcsXmlReader("DescribeCoverage", "1.1.1", configuration);
+        reader = new WcsXmlReader("DescribeCoverage", "1.1.1", configuration,
+                EntityResolverProvider.RESOLVE_DISABLED_PROVIDER);
     }
 
     @Test

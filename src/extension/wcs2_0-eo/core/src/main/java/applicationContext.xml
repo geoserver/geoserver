@@ -53,6 +53,7 @@
   <bean id="wcs201DescribeEOCoverageSetRequestReader" class="org.geoserver.wcs2_0.eo.xml.WcsEOXmlReader">
     <constructor-arg value="DescribeEOCoverageSet" />
     <constructor-arg value="2.0.1" />
+    <constructor-arg ref="entityResolverProvider" />
   </bean>
 
   <bean id="wcs20DescribeEOCoverageSetResponse"

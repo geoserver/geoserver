@@ -29,7 +29,7 @@ public class Filter_1_0_0_KvpParserTest {
                 + "%2Fogc%3APropertyIsEqualTo%3E%3C%2Fogc%3AFilter%3E";
         filter = URLDecoder.decode(filter, "UTF-8");
 
-        List filters = (List) new Filter_1_0_0_KvpParser().parse(filter);
+        List filters = (List) new Filter_1_0_0_KvpParser(null).parse(filter);
         assertNotNull(filters);
         assertEquals(1, filters.size());
 
@@ -45,7 +45,7 @@ public class Filter_1_0_0_KvpParserTest {
                 + "%20fid=%22tiger_roads.3%22/%3E%3C/Filter%3E)";
         filter = URLDecoder.decode(filter, "UTF-8");
 
-        List filters = (List) new Filter_1_0_0_KvpParser().parse(filter);
+        List filters = (List) new Filter_1_0_0_KvpParser(null).parse(filter);
         assertNotNull(filters);
         assertEquals(2, filters.size());
 
@@ -66,7 +66,7 @@ public class Filter_1_0_0_KvpParserTest {
                 + "%22%3E%3CFeatureId%20fid=%22roads.3%22/%3E%3C/Filter%3E)";
         param = URLDecoder.decode(param, "UTF-8");
         
-        List filters = (List) new Filter_1_0_0_KvpParser().parse(param);
+        List filters = (List) new Filter_1_0_0_KvpParser(null).parse(param);
         assertNotNull(filters);
         assertEquals(2, filters.size());
         

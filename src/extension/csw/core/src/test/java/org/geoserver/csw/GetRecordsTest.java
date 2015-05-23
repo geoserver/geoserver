@@ -5,8 +5,10 @@
  */
 package org.geoserver.csw;
 
-import static junit.framework.Assert.*;
-import static org.custommonkey.xmlunit.XMLAssert.*;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertTrue;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -15,17 +17,21 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
+
 import javax.xml.namespace.QName;
+
 import net.opengis.cat.csw20.ElementSetNameType;
 import net.opengis.cat.csw20.ElementSetType;
 import net.opengis.cat.csw20.GetRecordsType;
 import net.opengis.cat.csw20.QueryType;
 import net.opengis.cat.csw20.ResultType;
+
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.csw.kvp.GetRecordsKvpRequestReader;
 import org.geoserver.csw.xml.v2_0_2.CSWXmlReader;
 import org.geoserver.platform.ServiceException;
+import org.geoserver.util.EntityResolverProvider;
 import org.geotools.csw.CSWConfiguration;
 import org.geotools.xml.XmlConverterFactory;
 import org.junit.Test;
@@ -60,7 +66,8 @@ public class GetRecordsTest extends CSWSimpleTestSupport {
         raw.put("distributedSearch", "true");
         raw.put("hopCount", "10");
         raw.put("responsehandler", "http://www.geoserver.org");
-        GetRecordsKvpRequestReader reader = new GetRecordsKvpRequestReader();
+        GetRecordsKvpRequestReader reader = new GetRecordsKvpRequestReader(
+                EntityResolverProvider.RESOLVE_DISABLED_PROVIDER);
         reader.setApplicationContext(applicationContext);
         Object request = reader.createRequest();
         GetRecordsType gr = (GetRecordsType) reader.read(request, parseKvp(raw), raw);
@@ -101,7 +108,8 @@ public class GetRecordsTest extends CSWSimpleTestSupport {
         raw.put("constraint",
                 "<ogc:Filter xmlns:ogc=\"http://www.opengis.net/ogc\"><ogc:Not><ogc:PropertyIsEqualTo><ogc:PropertyName>dc:title</ogc:PropertyName><ogc:Literal>foo</ogc:Literal></ogc:PropertyIsEqualTo></ogc:Not></ogc:Filter>");
 
-        GetRecordsKvpRequestReader reader = new GetRecordsKvpRequestReader();
+        GetRecordsKvpRequestReader reader = new GetRecordsKvpRequestReader(
+                EntityResolverProvider.RESOLVE_DISABLED_PROVIDER);
         reader.setApplicationContext(applicationContext);
         Object request = reader.createRequest();
         GetRecordsType gr = (GetRecordsType) reader.read(request, parseKvp(raw), raw);
@@ -130,7 +138,8 @@ public class GetRecordsTest extends CSWSimpleTestSupport {
 
     @Test 
     public void testXMLReaderParameter() throws Exception {
-        CSWXmlReader reader = new CSWXmlReader("GetRecords", "2.0.2", new CSWConfiguration());
+        CSWXmlReader reader = new CSWXmlReader("GetRecords", "2.0.2", new CSWConfiguration(),
+                EntityResolverProvider.RESOLVE_DISABLED_PROVIDER);
         GetRecordsType gr = (GetRecordsType) reader.read(null,
                 getResourceAsReader("GetRecordsBrief.xml"), (Map) null);
         // check the attributes

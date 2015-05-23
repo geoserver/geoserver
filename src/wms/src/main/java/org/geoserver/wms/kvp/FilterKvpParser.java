@@ -26,6 +26,7 @@ import org.geotools.filter.FilterFilter;
 import org.geotools.filter.v1_0.OGCConfiguration;
 import org.geotools.gml.GMLFilterDocument;
 import org.geotools.gml.GMLFilterGeometry;
+import org.geoserver.util.EntityResolverProvider;
 import org.geotools.xml.Configuration;
 import org.geotools.xml.Parser;
 import org.opengis.filter.Filter;
@@ -48,8 +49,12 @@ import org.xml.sax.helpers.ParserAdapter;
  * @since 1.7.x
  */
 public class FilterKvpParser extends KvpParser {
-    public FilterKvpParser() {
+
+    private EntityResolverProvider resolverProvider;
+
+    public FilterKvpParser(EntityResolverProvider resolverProvider) {
         super("filter", List.class);
+        this.resolverProvider = resolverProvider;
     }
 
     /**
@@ -77,6 +82,7 @@ public class FilterKvpParser extends KvpParser {
                     //create the parser
                     Configuration configuration = new OGCConfiguration();
                     Parser parser_1_0_0 = new Parser(configuration);
+                    parser_1_0_0.setEntityResolver(resolverProvider.getEntityResolver());
                     filter = (Filter) parser_1_0_0.parse(input);
                 } catch (Exception e) {
                     //parsing failed, try with a Filter 1.1.0 parser
@@ -84,10 +90,11 @@ public class FilterKvpParser extends KvpParser {
                         input = new ByteArrayInputStream(rawContent);
                         Configuration configuration = new org.geotools.filter.v1_1.OGCConfiguration();
                         Parser parser_1_1_0 = new Parser(configuration);
+                        parser_1_1_0.setEntityResolver(resolverProvider.getEntityResolver());
                         filter = (Filter) parser_1_1_0.parse(input);
                         
                         filters.add(filter);
-                    }catch(Exception e2){
+                    } catch (Exception e2) {
                         //parsing failed, fall back to old parser
                         String msg = "Unable to parse filter: " + string;
                         LOGGER.log(Level.WARNING, msg, e);
@@ -128,6 +135,7 @@ public class FilterKvpParser extends KvpParser {
 
         // instantiante parsers and content handlers
         FilterHandlerImpl contentHandler = new FilterHandlerImpl();
+        contentHandler.setEntityResolver(resolverProvider.getEntityResolver());
         FilterFilter filterParser = new FilterFilter(contentHandler, null);
         GMLFilterGeometry geometryFilter = new GMLFilterGeometry(filterParser);
         GMLFilterDocument documentFilter = new GMLFilterDocument(geometryFilter);
@@ -137,6 +145,7 @@ public class FilterKvpParser extends KvpParser {
             SAXParserFactory factory = SAXParserFactory.newInstance();
             SAXParser parser = factory.newSAXParser();
             ParserAdapter adapter = new ParserAdapter(parser.getParser());
+            adapter.setEntityResolver(resolverProvider.getEntityResolver());
 
             adapter.setContentHandler(documentFilter);
             adapter.parse(requestSource);

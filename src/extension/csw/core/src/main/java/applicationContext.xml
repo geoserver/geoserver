@@ -90,7 +90,9 @@
     <bean id="cswGetCapabilitesKvpRequestReader" class="org.geoserver.csw.kvp.GetCapabilitiesKvpRequestReader"/>
     <bean id="cswDescribeRecordKvpRequestReader" class="org.geoserver.csw.kvp.DescribeRecordKvpRequestReader"/>
     <bean id="cswGetDomainKvpRequestReader" class="org.geoserver.csw.kvp.GetDomainKvpRequestReader"/>
-    <bean id="cswGetRecordsKvpRequestReader" class="org.geoserver.csw.kvp.GetRecordsKvpRequestReader"/>
+    <bean id="cswGetRecordsKvpRequestReader" class="org.geoserver.csw.kvp.GetRecordsKvpRequestReader">
+      <constructor-arg ref="entityResolverProvider"/>
+    </bean>
     <bean id="cswGetRecordByIdKvpRequestReader" class="org.geoserver.csw.kvp.GetRecordByIdKvpRequestReader"/>
     <bean id="cswGetRepositoryItemKvpRequestReader" class="org.geoserver.csw.kvp.GetRepositoryItemKvpRequestReader">
     	<constructor-arg ref="cswService-2.0.2" />
@@ -112,30 +114,35 @@
         <constructor-arg index="0" value="GetCapabilities" />
         <constructor-arg index="1" value="2.0.2" />
         <constructor-arg index="2" ref="cswXmlConfiguration-2.0.2" />
+        <constructor-arg ref="entityResolverProvider"/>
     </bean>
     <bean id="cswDescribeRecordXmlReader-2.0.2"
         class="org.geoserver.csw.xml.v2_0_2.CSWXmlReader">
         <constructor-arg index="0" value="DescribeRecord" />
         <constructor-arg index="1" value="2.0.2" />
         <constructor-arg index="2" ref="cswXmlConfiguration-2.0.2" />
+        <constructor-arg ref="entityResolverProvider"/>
     </bean>
     <bean id="cswGetDomainXmlReader-2.0.2"
         class="org.geoserver.csw.xml.v2_0_2.CSWXmlReader">
         <constructor-arg index="0" value="GetDomain" />
         <constructor-arg index="1" value="2.0.2" />
         <constructor-arg index="2" ref="cswXmlConfiguration-2.0.2" />
+        <constructor-arg ref="entityResolverProvider"/>
     </bean>
     <bean id="cswGetRecordsXmlReader-2.0.2"
         class="org.geoserver.csw.xml.v2_0_2.CSWRecordingXmlReader">
         <constructor-arg index="0" value="GetRecords" />
         <constructor-arg index="1" value="2.0.2" />
         <constructor-arg index="2" ref="cswXmlConfiguration-2.0.2" />
+        <constructor-arg ref="entityResolverProvider"/>
     </bean>
     <bean id="cswGetRecordByIdXmlReader-2.0.2"
         class="org.geoserver.csw.xml.v2_0_2.CSWRecordingXmlReader">
         <constructor-arg index="0" value="GetRecordById" />
         <constructor-arg index="1" value="2.0.2" />
         <constructor-arg index="2" ref="cswXmlConfiguration-2.0.2" />
+        <constructor-arg ref="entityResolverProvider"/>
     </bean>
     
     

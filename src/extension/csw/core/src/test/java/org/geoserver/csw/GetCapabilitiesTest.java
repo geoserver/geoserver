@@ -5,8 +5,11 @@
  */
 package org.geoserver.csw;
 
-import static junit.framework.Assert.*;
-import static org.custommonkey.xmlunit.XMLAssert.*;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.fail;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 
 import java.io.StringReader;
 import java.util.HashMap;
@@ -23,6 +26,7 @@ import org.geoserver.csw.kvp.GetCapabilitiesKvpRequestReader;
 import org.geoserver.csw.xml.v2_0_2.CSWXmlReader;
 import org.geoserver.ows.xml.v1_0.OWS;
 import org.geoserver.platform.ServiceException;
+import org.geoserver.util.EntityResolverProvider;
 import org.geotools.csw.CSWConfiguration;
 import org.geotools.filter.v1_1.OGC;
 import org.geotools.xlink.XLINK;
@@ -83,7 +87,8 @@ public class GetCapabilitiesTest extends CSWSimpleTestSupport {
 
     @Test 
     public void testXMLReader() throws Exception {
-        CSWXmlReader reader = new CSWXmlReader("GetCapabilities", "2.0.2", new CSWConfiguration());
+        CSWXmlReader reader = new CSWXmlReader("GetCapabilities", "2.0.2", new CSWConfiguration(),
+                EntityResolverProvider.RESOLVE_DISABLED_PROVIDER);
         GetCapabilitiesType caps = (GetCapabilitiesType) reader.read(null,
                 getResourceAsReader("GetCapabilities.xml"), (Map) null);
         assertReturnedCapabilitiesComplete(caps);
@@ -96,7 +101,7 @@ public class GetCapabilitiesTest extends CSWSimpleTestSupport {
         capRequest = capRequest.replace("ows:Sections", "ows:foo");
         try {
             CSWXmlReader reader = new CSWXmlReader("GetCapabilities", "2.0.2",
-                    new CSWConfiguration());
+                    new CSWConfiguration(), EntityResolverProvider.RESOLVE_DISABLED_PROVIDER);
             reader.read(null, new StringReader(capRequest), (Map) null);
             fail("the parsing should have failed, the document is invalid");
         } catch (ServiceException e) {

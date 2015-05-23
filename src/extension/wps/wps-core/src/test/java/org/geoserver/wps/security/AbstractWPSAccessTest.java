@@ -95,7 +95,7 @@ public abstract class AbstractWPSAccessTest extends WPSTestSupport {
             + "<wps:Input>"
             + "<ows:Identifier>geom</ows:Identifier>"
             + "<wps:Data>"
-            + "<wps:ComplexData>"
+            + "<wps:ComplexData mimeType=\"text/xml; subtype=gml/2.1.2\">"
             + "<gml:Polygon xmlns:gml='http://www.opengis.net/gml'>"
             + "<gml:exterior>"
             + "<gml:LinearRing>"

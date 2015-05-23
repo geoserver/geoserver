@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014-2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2014 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -16,6 +16,8 @@ import javax.servlet.ServletContextEvent;
 import org.geotools.coverage.grid.GridCoverageFactory;
 import org.geotools.factory.GeoTools;
 import org.geotools.factory.Hints;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.opengis.feature.FeatureFactory;
 import org.opengis.filter.FilterFactory;
@@ -24,6 +26,18 @@ import org.opengis.style.StyleFactory;
 import com.mockrunner.mock.web.MockServletContext;
 
 public class GeoServerInitStartupListenerTest {
+
+    private static final double CUSTOM_TOLERANCE = 1E-7d;
+
+    @Before
+    public void init() {
+        System.setProperty("COMPARISON_TOLERANCE", Double.toString(CUSTOM_TOLERANCE));
+    }
+
+    @After
+    public void reset() {
+        System.clearProperty("COMPARISON_TOLERANCE");
+    }
 
     @Test
     public void testStartupListener() {
@@ -42,7 +56,7 @@ public class GeoServerInitStartupListenerTest {
 
         final Object tolerance = hints.get(Hints.COMPARISON_TOLERANCE);
         assertNotNull(tolerance);
-        assertEquals((Double) tolerance, 1e-9d, 1e-12d);
+        assertEquals(CUSTOM_TOLERANCE, (Double) tolerance, 1e-12d);
 
         final Object filterFactory = hints.get(Hints.FILTER_FACTORY);
         assertNotNull(filterFactory);

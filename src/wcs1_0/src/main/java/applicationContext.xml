@@ -133,6 +133,7 @@
     <constructor-arg value="1.0.0" />
 
     <constructor-arg ref="wcs-1.0.0-configuration" />
+    <constructor-arg ref="entityResolverProvider" />
 
   </bean>
 
@@ -147,6 +148,7 @@
     <constructor-arg value="1.0.0" />
 
     <constructor-arg ref="wcs-1.0.0-configuration" />
+    <constructor-arg ref="entityResolverProvider" />
 
   </bean>
 
@@ -159,6 +161,7 @@
     <constructor-arg value="1.0.0" />
 
     <constructor-arg ref="wcs-1.0.0-configuration" />
+    <constructor-arg ref="entityResolverProvider" />
 
   </bean>
 

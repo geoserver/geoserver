@@ -55,6 +55,7 @@
     <constructor-arg value="GetCapabilities" />
     <constructor-arg value="2.0.1" />
     <constructor-arg ref="wcs-2.0.1-configuration" />
+    <constructor-arg ref="entityResolverProvider" />
   </bean>
 
   <bean id="wcs20GetCapabilitiesResponse"
@@ -75,6 +76,7 @@
     <constructor-arg value="DescribeCoverage" />
     <constructor-arg value="2.0.1" />
     <constructor-arg ref="wcs-2.0.1-configuration" />
+    <constructor-arg ref="entityResolverProvider" />
   </bean>
 
   <bean id="wcs20DescribeCoverageResponse"
@@ -113,6 +115,7 @@
     <constructor-arg value="GetCoverage" />
     <constructor-arg value="2.0.1" />
     <constructor-arg ref="wcs-2.0.1-configuration" />
+    <constructor-arg ref="entityResolverProvider" />
   </bean>
 
   <bean id="wcs201GetCoverageResponse" class="org.geoserver.wcs2_0.response.WCS20GetCoverageResponse">

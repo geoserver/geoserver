@@ -2,15 +2,30 @@ package org.geoserver.wcs2_0.xml;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 
 import org.apache.commons.io.FileUtils;
+import org.geoserver.util.NoExternalEntityResolver;
 import org.geoserver.wcs2_0.WCSTestSupport;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
 public class DescribeCoverageTest extends WCSTestSupport {
+
+    @Test
+    public void testEntityExpansion() throws Exception {
+        final File xml = new File("./src/test/resources/testDescribeCoverageEntityExpansion.xml");
+        final String request = FileUtils.readFileToString(xml);
+
+        Document dom = postAsDOM("wcs", request);
+        assertNotNull(dom);
+        // print(dom, System.out);
+
+        String text = xpath.evaluate("//ows:ExceptionText", dom);
+        assertTrue(text.contains(NoExternalEntityResolver.ERROR_MESSAGE_BASE));
+    }
 
     @Test
     public void testDescribeCoverageSimple() throws Exception {

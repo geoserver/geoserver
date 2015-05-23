@@ -219,4 +219,9 @@
   <bean id="authenticationTransfer" class="org.geoserver.threadlocals.AuthenticationThreadLocalTransfer"/>
   <bean id="localLayerTransfer" class="org.geoserver.threadlocals.LocalLayerThreadLocalTransfer"/>
   <bean id="localWorkspaceTransfer" class="org.geoserver.threadlocals.LocalWorkspaceThreadLocalTransfer"/>
+  
+  <!-- Entity resolver provider, to stop xml attacks via system entity resolution -->
+  <bean id="entityResolverProvider" class="org.geoserver.util.EntityResolverProvider">
+    <constructor-arg ref="geoServer"/>
+  </bean>
 </beans>

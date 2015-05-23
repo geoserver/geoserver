@@ -158,7 +158,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
         if (httpRequest != null) {
             request.setRequestCharset(httpRequest.getCharacterEncoding());
             request.setGet("GET".equalsIgnoreCase(httpRequest.getMethod()));
-            List<String> headerNames = (List<String>) EnumerationUtils.toList(httpRequest
+            List<String> headerNames = EnumerationUtils.toList(httpRequest
                     .getHeaderNames());
             for (String headerName : headerNames) {
                 request.putHttpRequestHeader(headerName, httpRequest.getHeader(headerName));
@@ -390,7 +390,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
                 }
 
                 for (int i = 0; i < styles.size(); i++) {
-                    Style currStyle = (Style) getMap.getStyles().get(i);
+                    Style currStyle = getMap.getStyles().get(i);
                     if (currStyle == null)
                         throw new ServiceException(
                                 "Could not find a style for layer "

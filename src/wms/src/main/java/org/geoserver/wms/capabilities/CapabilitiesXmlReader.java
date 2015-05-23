@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -18,7 +18,7 @@ import org.geoserver.ows.XmlRequestReader;
 import org.geoserver.ows.xml.v1_0.OWS;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetCapabilitiesRequest;
-import org.geoserver.wms.WMS;
+import org.geoserver.util.EntityResolverProvider;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.InputSource;
@@ -34,14 +34,17 @@ import org.xml.sax.helpers.XMLFilterImpl;
  */
 public class CapabilitiesXmlReader extends XmlRequestReader {
 
+    EntityResolverProvider resolverProvider;
+
     /**
      * Creates the new reader.
      * 
      * @param wms
      *            The WMS service config.
      */
-    public CapabilitiesXmlReader() {
+    public CapabilitiesXmlReader(EntityResolverProvider resolverProvider) {
         super(OWS.GETCAPABILITIES, null, "WMS");
+        this.resolverProvider = resolverProvider;
     }
 
     /**
@@ -54,12 +57,14 @@ public class CapabilitiesXmlReader extends XmlRequestReader {
         // instantiante parsers and content handlers
         GetCapabilitiesRequest req = new GetCapabilitiesRequest();
         CapabilitiesHandler currentRequest = new CapabilitiesHandler(req);
+        currentRequest.setEntityResolver(resolverProvider.getEntityResolver());
 
         // read in XML file and parse to content handler
         try {
             SAXParserFactory factory = SAXParserFactory.newInstance();
             SAXParser parser = factory.newSAXParser();
             ParserAdapter adapter = new ParserAdapter(parser.getParser());
+            adapter.setEntityResolver(resolverProvider.getEntityResolver());
             adapter.setContentHandler(currentRequest);
             adapter.parse(new InputSource(reader));
         } catch (SAXException e) {

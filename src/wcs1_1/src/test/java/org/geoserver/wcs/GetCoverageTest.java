@@ -30,6 +30,7 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.util.NoExternalEntityResolver;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.gce.geotiff.GeoTiffReader;
 import org.geotools.geometry.Envelope2D;
@@ -457,6 +458,28 @@ public class GetCoverageTest extends AbstractGetCoverageTest {
         RenderedImage image = reader.read(0);
     }
     
+    @Test
+    public void testEntityExpansion() throws Exception {
+        String request = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+                + "<!DOCTYPE wcs:GetCoverage [<!ELEMENT wcs:GetCoverage (ows:Identifier) >\n"
+                + "  <!ATTLIST wcs:GetCoverage\n"
+                + "    service CDATA #FIXED \"WCS\"\n"
+                + "            version CDATA #FIXED \"1.1.1\"\n"
+                + "            xmlns:ows CDATA #FIXED \"http://www.opengis.net/ows/1.1\"\n"
+                + "            xmlns:wcs CDATA #FIXED \"http://www.opengis.net/wcs/1.1.1\">\n"
+                + "  <!ELEMENT ows:Identifier (#PCDATA) >\n"
+                + "  <!ENTITY xxe SYSTEM \"file:///file/not/there\" >]>\n"
+                + "  <wcs:GetCoverage service=\"WCS\" version=\"1.1.1\" "
+                + "                   xmlns:ows=\"http://www.opengis.net/ows/1.1\"\n"
+                + "                   xmlns:wcs=\"http://www.opengis.net/wcs/1.1.1\">\n"
+                + "   <ows:Identifier>&xxe;</ows:Identifier>\n" + "  </wcs:GetCoverage>";
+
+        Document dom = postAsDOM("wcs", request);
+        // print(dom);
+        String error = xpath.evaluate("//ows:ExceptionText", dom);
+        assertTrue(error.contains(NoExternalEntityResolver.ERROR_MESSAGE_BASE));
+    }
+
     /**
      * This tests just ended up throwing an exception as the coverage being encoded
      * was too large due to a bug in the scales estimation

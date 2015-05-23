@@ -108,18 +108,21 @@
         <constructor-arg index="0" value="GetCapabilities" />
         <constructor-arg index="1" value="1.0.0" />
         <constructor-arg index="2" ref="wpsXmlConfiguration-1.0.0" />
+        <constructor-arg index="3" ref="entityResolverProvider" />
     </bean>
     <bean id="wpsDescribeProcessXmlReader-1.0.0"
         class="org.geoserver.wps.xml.v1_0_0.WpsXmlReader">
         <constructor-arg index="0" value="DescribeProcess" />
         <constructor-arg index="1" value="1.0.0" />
         <constructor-arg index="2" ref="wpsXmlConfiguration-1.0.0" />
+        <constructor-arg index="3" ref="entityResolverProvider" />
     </bean>
     <bean id="wpsExecuteXmlReader-1.0.0"
         class="org.geoserver.wps.xml.v1_0_0.WpsXmlReader">
         <constructor-arg index="0" value="Execute" />
         <constructor-arg index="1" value="1.0.0" />
         <constructor-arg index="2" ref="wpsXmlConfiguration-1.0.0" />
+        <constructor-arg index="3" ref="entityResolverProvider" />
     </bean>
  
 

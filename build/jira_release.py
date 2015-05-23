@@ -69,7 +69,7 @@ class JIRA(object):
 if __name__ == "__main__":
   
   p = optparse.OptionParser('Usage: %prog [options] version next_version')
-  p.add_option('-j', '--host', dest='host', default='http://jira.codehaus.org', 
+  p.add_option('-j', '--host', dest='host', default='https://osgeo-org.atlassian.net', 
     help='JIRA host, default is codehaus') 
   p.add_option('-k', '--key', dest='key', default='GEOS',
     help='JIRA project key, default is GEOS') 

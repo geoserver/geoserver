@@ -4,9 +4,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import org.apache.commons.io.IOUtils;
+import org.geoserver.util.EntityResolverProvider;
 import org.geoserver.wps.ppio.ComplexPPIO;
-import org.geotools.geopkg.wps.xml.GPKGConfiguration;
 import org.geotools.geopkg.wps.GeoPackageProcessRequest;
+import org.geotools.geopkg.wps.xml.GPKGConfiguration;
 import org.geotools.ows.ServiceException;
 import org.geotools.xml.Configuration;
 import org.geotools.xml.Parser;
@@ -15,14 +16,18 @@ public class GeoPackageProcessRequestPPIO extends ComplexPPIO {
     
     Configuration config = new GPKGConfiguration();
 
-    protected GeoPackageProcessRequestPPIO() {
+    EntityResolverProvider resolverProvider;
+
+    protected GeoPackageProcessRequestPPIO(EntityResolverProvider resolverProvider) {
         super(GeoPackageProcessRequest.class, GeoPackageProcessRequest.class, "text/xml; subtype=geoserver/geopackage");
+        this.resolverProvider = resolverProvider;
     }
 
     @Override
     public Object decode(InputStream input) throws Exception {
         Parser p = new Parser(config);
         p.validate(input);
+        p.setEntityResolver(resolverProvider.getEntityResolver());
         
         if (!p.getValidationErrors().isEmpty()) {
             throw new ServiceException("Errors were encountered while parsing GeoPackage contents: " + p.getValidationErrors());        

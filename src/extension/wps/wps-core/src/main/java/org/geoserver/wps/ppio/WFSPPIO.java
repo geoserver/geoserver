@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -22,7 +22,6 @@ import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.data.store.ReprojectingFeatureCollection;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
-import org.geotools.gml3.GMLConfiguration;
 import org.geotools.referencing.CRS;
 import org.geotools.wfs.v1_0.WFSConfiguration;
 import org.geotools.xml.Configuration;
@@ -51,7 +50,7 @@ public class WFSPPIO extends XMLPPIO {
 
     @Override
     public Object decode(InputStream input) throws Exception {
-        Parser p = new Parser(configuration);
+        Parser p = getParser(configuration);
         FeatureCollectionType fct = (FeatureCollectionType) p.parse(input);
         return decode(fct);
     }
@@ -61,7 +60,7 @@ public class WFSPPIO extends XMLPPIO {
         // xml parsing will most likely return it as parsed already, but if CDATA is used or if
         // it's a KVP parse it will be a string instead
         if(input instanceof String) {
-            Parser p = new Parser(configuration);
+            Parser p = getParser(configuration);
             input = p.parse(new StringReader((String) input));
         }
         
@@ -124,7 +123,7 @@ public class WFSPPIO extends XMLPPIO {
         }
         
         if(names.size() < original.getDescriptors().size()) {
-            String[] namesArray = (String[]) names.toArray(new String[names.size()]);
+            String[] namesArray = names.toArray(new String[names.size()]);
             SimpleFeatureType target = SimpleFeatureTypeBuilder.retype(original, namesArray);
             return new RetypingFeatureCollection(fc, target);
         }

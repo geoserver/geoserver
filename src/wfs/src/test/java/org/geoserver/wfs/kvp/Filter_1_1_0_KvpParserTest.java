@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -25,7 +25,7 @@ public class Filter_1_1_0_KvpParserTest {
                 + "<gml:Polygon><gml:exterior><gml:LinearRing>"
                 + "<gml:posList>-112 46 -109 46 -109 47 -112 47 -112 46</gml:posList>"
                 + "</gml:LinearRing></gml:exterior></gml:Polygon></ogc:Intersects></ogc:Filter>";
-        List filters = (List) new Filter_1_1_0_KvpParser().parse(filterString);
+        List filters = (List) new Filter_1_1_0_KvpParser(null).parse(filterString);
         assertNotNull(filters);
         assertEquals(1, filters.size());
 

@@ -24,7 +24,9 @@
       <constructor-arg index="3" ref="filterFactory"/>
     </bean>
     
-    <bean id="geopkgProcessRequestPPIO" class="org.geoserver.geopkg.wps.GeoPackageProcessRequestPPIO" />
+    <bean id="geopkgProcessRequestPPIO" class="org.geoserver.geopkg.wps.GeoPackageProcessRequestPPIO" >
+      <constructor-arg ref="entityResolverProvider"/>
+    </bean>
     <bean id="geopkgDataStoreFactoryInitializer" class="org.geoserver.geopkg.GeoPkgDataStoreFactoryInitializer">
         <property name="resourceLoader" ref="resourceLoader"/>
     </bean>

@@ -242,4 +242,9 @@
   
   <!-- WFS Cascaded Stored Query callback  -->
   <bean id="cascadedStoredQueryCallback" class="org.geoserver.catalog.CascadedStoredQueryCallback"/>
+  
+  <!-- Entity resolver provider, to stop xml attacks via system entity resolution -->
+  <bean id="entityResolverProvider" class="org.geoserver.util.EntityResolverProvider">
+    <constructor-arg ref="geoServer"/>
+  </bean>
 </beans>

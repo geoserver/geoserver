@@ -5,13 +5,14 @@
  */
 package org.geoserver.wcs.xml;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.io.StringReader;
 
 import net.opengis.wcs10.GetCapabilitiesType;
 
 import org.geoserver.wcs.xml.v1_0_0.WcsXmlReader;
+import org.geoserver.util.EntityResolverProvider;
 import org.geotools.wcs.WCSConfiguration;
 import org.junit.Before;
 import org.junit.Test;
@@ -25,7 +26,8 @@ public class GetCapabilitiesXmlParserTest {
     @Before
     public void setUp() throws Exception {
         configuration = new WCSConfiguration();
-        reader = new WcsXmlReader("GetCapabilities", "1.0.0", configuration);
+        reader = new WcsXmlReader("GetCapabilities", "1.0.0", configuration,
+                EntityResolverProvider.RESOLVE_DISABLED_PROVIDER);
     }
 
     @Test

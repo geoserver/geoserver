@@ -16,6 +16,12 @@ import org.xml.sax.EntityResolver;
  */
 public class EntityResolverProvider {
     
+    /**
+     * A entity resolver provider that always disabled entity resolution
+     */
+    public static final EntityResolverProvider RESOLVE_DISABLED_PROVIDER = new EntityResolverProvider(
+            null);
+
     private GeoServer geoServer;
     
     public EntityResolverProvider(GeoServer geoServer) {
@@ -23,13 +29,15 @@ public class EntityResolverProvider {
     }
     
     public EntityResolver getEntityResolver() {
-        Boolean externalEntitiesEnabled = geoServer.getGlobal().isXmlExternalEntitiesEnabled();
-        if (externalEntitiesEnabled != null && externalEntitiesEnabled.booleanValue()) {
-            // XML parser will try to resolve entities
-            return null;
-        } else {
-            // default behaviour: entities disabled
-            return new NoExternalEntityResolver();
+        if (geoServer != null) {
+            Boolean externalEntitiesEnabled = geoServer.getGlobal().isXmlExternalEntitiesEnabled();
+            if (externalEntitiesEnabled != null && externalEntitiesEnabled.booleanValue()) {
+                // XML parser will try to resolve entities
+                return null;
+            }
         }
+
+        // default behaviour: entities disabled
+        return new NoExternalEntityResolver();
     } 
 }

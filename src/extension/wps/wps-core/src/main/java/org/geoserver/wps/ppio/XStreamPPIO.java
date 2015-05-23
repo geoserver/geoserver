@@ -53,6 +53,7 @@ public class XStreamPPIO extends XMLPPIO {
                 return new UppercaseTagMapper(new PackageStrippingMapper(next));
             };
         };
+
         return stream;
     }
 

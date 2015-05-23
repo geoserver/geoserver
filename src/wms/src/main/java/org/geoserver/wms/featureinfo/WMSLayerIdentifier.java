@@ -25,6 +25,7 @@ import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.WMSLayer;
+import org.geoserver.util.EntityResolverProvider;
 import org.geotools.util.logging.Logging;
 import org.geotools.wfs.v1_0.WFSConfiguration;
 import org.geotools.xml.Parser;
@@ -39,6 +40,12 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 public class WMSLayerIdentifier implements LayerIdentifier {
     
     static final Logger LOGGER = Logging.getLogger(WMSLayerIdentifier.class);
+
+    private EntityResolverProvider resolverProvider;
+
+    public WMSLayerIdentifier(EntityResolverProvider resolverProvider) {
+        this.resolverProvider = resolverProvider;
+    }
 
     public List<FeatureCollection> identify(FeatureInfoRequestParameters params, int maxFeatures) throws IOException {
         final int x = params.getX();
@@ -80,6 +87,7 @@ public class WMSLayerIdentifier implements LayerIdentifier {
         try {
             Parser parser = new Parser(new WFSConfiguration());
             parser.setStrict(false);
+            parser.setEntityResolver(resolverProvider.getEntityResolver());
             Object result = parser.parse(is);
             if (result instanceof FeatureCollectionType) {
                 FeatureCollectionType fcList = (FeatureCollectionType) result;

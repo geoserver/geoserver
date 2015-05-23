@@ -11,6 +11,7 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 
 import org.geoserver.ows.XmlRequestReader;
+import org.geoserver.util.EntityResolverProvider;
 import org.geotools.util.Version;
 import org.geotools.wcs.v2_0.WCSEO;
 import org.geotools.wcs.v2_0.WCSEOConfiguration;
@@ -26,15 +27,19 @@ import org.vfny.geoserver.wcs.WcsException;
 public class WcsEOXmlReader extends XmlRequestReader {
     Configuration configuration;
 
-    public WcsEOXmlReader(String element, String version) {
+    private EntityResolverProvider resolverProvider;
+
+    public WcsEOXmlReader(String element, String version, EntityResolverProvider resolverProvider) {
         super(new QName(WCSEO.NAMESPACE, element), new Version(version), "wcs");
         this.configuration = new WCSEOConfiguration();
+        this.resolverProvider = resolverProvider;
     }
     
     @SuppressWarnings("rawtypes")
     public Object read(Object request, Reader reader, Map kvp) throws Exception {
         // create the parser instance
         Parser parser = new Parser(configuration);
+        parser.setEntityResolver(resolverProvider.getEntityResolver());
         
         // uncomment this once we have a working validator (now it fails due to
         // xlink issues)

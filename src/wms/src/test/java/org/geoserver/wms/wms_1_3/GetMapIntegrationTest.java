@@ -378,7 +378,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
             // if entities evaluation is disabled
             // the parser will throw a MalformedURLException when it finds an entity
             response = getAsString(url);
-            assertTrue(response.indexOf("java.net.MalformedURLException") > -1);
+            assertTrue(response.indexOf("Entity resolution disallowed") > -1);
 
             // try default: disabled entities
             geoserverInfo.setXmlExternalEntitiesEnabled(null);
@@ -387,7 +387,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
             // if entities evaluation is disabled
             // the parser will throw a MalformedURLException when it finds an entity
             response = getAsString(url);
-            assertTrue(response.indexOf("java.net.MalformedURLException") > -1);            
+            assertTrue(response.indexOf("Entity resolution disallowed") > -1);
             
         } finally {
             // default

@@ -5,8 +5,10 @@
  */
 package org.geoserver.csw;
 
-import static junit.framework.Assert.*;
-import static org.custommonkey.xmlunit.XMLAssert.*;
+import static junit.framework.Assert.assertEquals;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,7 +18,10 @@ import net.opengis.cat.csw20.GetRecordByIdType;
 
 import org.geoserver.csw.kvp.GetRecordByIdKvpRequestReader;
 import org.geoserver.csw.xml.v2_0_2.CSWXmlReader;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
+import org.geoserver.util.EntityResolverProvider;
+import org.geoserver.util.NoExternalEntityResolver;
 import org.geotools.csw.CSWConfiguration;
 import org.junit.Test;
 import org.w3c.dom.Document;
@@ -58,9 +63,25 @@ public class GetRecordByIdTest extends CSWSimpleTestSupport {
 
     @Test 
     public void testXMLReader() throws Exception {
-        CSWXmlReader reader = new CSWXmlReader("GetRecordById", "2.0.2", new CSWConfiguration());
+        CSWXmlReader reader = new CSWXmlReader("GetRecordById", "2.0.2", new CSWConfiguration(),
+                EntityResolverProvider.RESOLVE_DISABLED_PROVIDER);
         GetRecordByIdType dr = (GetRecordByIdType)  reader.read(null, getResourceAsReader("GetRecordById.xml"), (Map) null);
         assertGetRecordByIdValid(dr);
+    }
+
+    @Test
+    public void testEntityExpansion() throws Exception {
+        CSWXmlReader reader = new CSWXmlReader("GetRecordById", "2.0.2", new CSWConfiguration(),
+                GeoServerExtensions.bean(EntityResolverProvider.class));
+        try {
+            GetRecordByIdType dr = (GetRecordByIdType) reader.read(null,
+                    getResourceAsReader("GetRecordByIdEntityExpansion.xml"), (Map) null);
+            fail("Should have failed with an entity expansion disallowed exception");
+        } catch (ServiceException e) {
+            Throwable cause = e.getCause();
+            assertTrue(cause.getMessage().contains(NoExternalEntityResolver.ERROR_MESSAGE_BASE));
+        }
+
     }
 
     @Test 

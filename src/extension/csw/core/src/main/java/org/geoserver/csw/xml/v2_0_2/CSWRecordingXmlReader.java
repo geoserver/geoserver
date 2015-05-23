@@ -17,6 +17,7 @@ import org.geoserver.platform.Operation;
 import org.geoserver.platform.Service;
 import org.geoserver.platform.ServiceException;
 import org.geotools.csw.CSWConfiguration;
+import org.geoserver.util.EntityResolverProvider;
 
 /**
  * The GetRecords request has a "validate" mode in which we have to return an Acknowledgement
@@ -26,8 +27,9 @@ public class CSWRecordingXmlReader extends CSWXmlReader implements DispatcherCal
     
     public static final ThreadLocal<String> RECORDED_REQUEST = new ThreadLocal<String>();
 
-    public CSWRecordingXmlReader(String element, String version, CSWConfiguration configuration) {
-        super(element, version, configuration);
+    public CSWRecordingXmlReader(String element, String version, CSWConfiguration configuration,
+            EntityResolverProvider resolverProvider) {
+        super(element, version, configuration, resolverProvider);
     }
 
     public Object read(Object request, Reader reader, Map kvp) throws Exception {

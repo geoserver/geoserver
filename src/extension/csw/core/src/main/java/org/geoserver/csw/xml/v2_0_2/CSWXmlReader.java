@@ -16,6 +16,7 @@ import javax.xml.namespace.QName;
 import org.geoserver.ows.XmlRequestReader;
 import org.geoserver.platform.ServiceException;
 import org.geotools.csw.CSWConfiguration;
+import org.geoserver.util.EntityResolverProvider;
 import org.geotools.util.Version;
 import org.geotools.util.logging.Logging;
 import org.geotools.xml.Parser;
@@ -30,9 +31,13 @@ public class CSWXmlReader extends XmlRequestReader {
 
     private CSWConfiguration configuration;
 
-    public CSWXmlReader(String element, String version, CSWConfiguration configuration) {
+    private EntityResolverProvider resolverProvider;
+
+    public CSWXmlReader(String element, String version, CSWConfiguration configuration,
+            EntityResolverProvider resolverProvider) {
         super(new QName(org.geotools.csw.CSW.NAMESPACE, element), new Version("2.0.2"), "csw");
         this.configuration = configuration;
+        this.resolverProvider = resolverProvider;
     }
 
     @SuppressWarnings("unchecked")
@@ -41,6 +46,7 @@ public class CSWXmlReader extends XmlRequestReader {
         parser.setValidating(true);
         parser.setFailOnValidationError(true);
         parser.setStrict(true);
+        parser.setEntityResolver(resolverProvider.getEntityResolver());
 
         Object parsed;
         try {

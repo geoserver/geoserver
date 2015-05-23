@@ -5,11 +5,14 @@
  */
 package org.geoserver.csw;
 
-import static junit.framework.Assert.*;
-import static org.custommonkey.xmlunit.XMLAssert.*;
+import static junit.framework.Assert.assertEquals;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+
 import java.util.HashMap;
 import java.util.Map;
+
 import net.opengis.cat.csw20.GetDomainType;
+
 import org.custommonkey.xmlunit.NamespaceContext;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
@@ -17,6 +20,7 @@ import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.csw.kvp.GetDomainKvpRequestReader;
 import org.geoserver.csw.xml.v2_0_2.CSWXmlReader;
 import org.geoserver.ows.xml.v1_0.OWS;
+import org.geoserver.util.EntityResolverProvider;
 import org.geotools.csw.CSWConfiguration;
 import org.geotools.filter.v1_1.OGC;
 import org.geotools.xlink.XLINK;
@@ -74,7 +78,8 @@ public class GetDomainTest extends CSWSimpleTestSupport {
 
     @Test 
     public void testXMLReaderParameter() throws Exception {
-        CSWXmlReader reader = new CSWXmlReader("GetDomain", "2.0.2", new CSWConfiguration());
+        CSWXmlReader reader = new CSWXmlReader("GetDomain", "2.0.2", new CSWConfiguration(),
+                EntityResolverProvider.RESOLVE_DISABLED_PROVIDER);
         GetDomainType gd = (GetDomainType) reader.read(null,
                 getResourceAsReader("GetDomainParameter.xml"), (Map) null);
         assertEquals("CSW", gd.getService());
@@ -84,7 +89,8 @@ public class GetDomainTest extends CSWSimpleTestSupport {
 
     @Test 
     public void testXMLReaderProperty() throws Exception {
-        CSWXmlReader reader = new CSWXmlReader("GetDomain", "2.0.2", new CSWConfiguration());
+        CSWXmlReader reader = new CSWXmlReader("GetDomain", "2.0.2", new CSWConfiguration(),
+                EntityResolverProvider.RESOLVE_DISABLED_PROVIDER);
         GetDomainType gd = (GetDomainType) reader.read(null,
                 getResourceAsReader("GetDomainProperty.xml"), (Map) null);
         assertEquals("CSW", gd.getService());

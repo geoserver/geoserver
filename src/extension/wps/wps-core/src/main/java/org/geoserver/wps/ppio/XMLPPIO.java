@@ -8,12 +8,14 @@ package org.geoserver.wps.ppio;
 import java.io.OutputStream;
 
 import javax.xml.namespace.QName;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.sax.TransformerHandler;
 import javax.xml.transform.stream.StreamResult;
 
+import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.util.EntityResolverProvider;
+import org.geotools.xml.Configuration;
+import org.geotools.xml.Parser;
 import org.xml.sax.ContentHandler;
 
 /**
@@ -25,6 +27,8 @@ public abstract class XMLPPIO extends ComplexPPIO {
 
     /** */
     protected QName element;
+
+    protected volatile EntityResolverProvider resolverProvider;
     
     /**
      * Constructor specifying 'text/xml' as mime type.
@@ -76,6 +80,33 @@ public abstract class XMLPPIO extends ComplexPPIO {
     public String getFileExtension() {
         return "xml";
     }
+    
+    /**
+     * Returns a parser using the given configuration
+     * 
+     * @param configuration
+     * @return
+     */
+    protected Parser getParser(Configuration configuration) {
+        Parser parser = new Parser(configuration);
+        // spring injection would have been preferred, but it changes the order in which PPIO
+        // are listed, which in turn chances the behavior of WPS (e.g., default mimeType)
+        parser.setEntityResolver(getResolveProvider().getEntityResolver());
+        return parser;
+    }
 
+    private EntityResolverProvider getResolveProvider() {
+        // double checked locking with volatile, works fine since Java 5.0
+        // (http://en.wikipedia.org/wiki/Double-checked_locking#Usage_in_Java, scroll down towards the end)
+        if (resolverProvider == null) {
+            synchronized (this) {
+                if (resolverProvider == null) {
+                    resolverProvider = GeoServerExtensions.bean(EntityResolverProvider.class);
+                }
+            }
+        }
+
+        return resolverProvider;
+    }
 
 }

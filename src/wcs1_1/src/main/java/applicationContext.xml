@@ -133,6 +133,7 @@
     <constructor-arg value="GetCapabilities" />
     <constructor-arg value="1.1.1" />
     <constructor-arg ref="wcs-1.1.1-configuration" />
+    <constructor-arg ref="entityResolverProvider" />
   </bean>
 
   <bean id="wcs111DescribeCoverageRequestReader"
@@ -140,12 +141,14 @@
     <constructor-arg value="DescribeCoverage" />
     <constructor-arg value="1.1.1" />
     <constructor-arg ref="wcs-1.1.1-configuration" />
+    <constructor-arg ref="entityResolverProvider" />
   </bean>
 
   <bean id="wcs111GetCoverageRequestXMLReader" class="org.geoserver.wcs.xml.v1_1_1.WcsXmlReader">
     <constructor-arg value="GetCoverage" />
     <constructor-arg value="1.1.1" />
     <constructor-arg ref="wcs-1.1.1-configuration" />
+    <constructor-arg ref="entityResolverProvider" />
   </bean>
 
 

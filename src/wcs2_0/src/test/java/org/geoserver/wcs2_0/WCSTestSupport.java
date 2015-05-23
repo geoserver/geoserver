@@ -296,11 +296,6 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
         return null;
     }
 
-    @Override
-    protected String getLogConfiguration() {
-        return "/DEFAULT_LOGGING.properties";
-    }
-
     protected void setInputLimit(int kbytes) {
         GeoServer gs = getGeoServer();
         WCSInfo info = gs.getService(WCSInfo.class);

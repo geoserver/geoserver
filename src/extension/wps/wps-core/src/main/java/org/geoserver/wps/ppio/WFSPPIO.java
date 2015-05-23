@@ -57,7 +57,7 @@ public class WFSPPIO extends XMLPPIO {
 
     @Override
     public Object decode(InputStream input) throws Exception {
-        Parser p = new Parser(configuration);        
+        Parser p = getParser(configuration);
         byte[] streamBytes = null;
         if(LOGGER.isLoggable(Level.FINEST)){
             //allow WFS result to be logged for debugging purposes
@@ -84,7 +84,7 @@ public class WFSPPIO extends XMLPPIO {
         // xml parsing will most likely return it as parsed already, but if CDATA is used or if
         // it's a KVP parse it will be a string instead
         if(input instanceof String) {
-            Parser p = new Parser(configuration);
+            Parser p = getParser(configuration);
             input = p.parse(new StringReader((String) input));
         }
         
@@ -147,7 +147,7 @@ public class WFSPPIO extends XMLPPIO {
         }
         
         if(names.size() < original.getDescriptors().size()) {
-            String[] namesArray = (String[]) names.toArray(new String[names.size()]);
+            String[] namesArray = names.toArray(new String[names.size()]);
             SimpleFeatureType target = SimpleFeatureTypeBuilder.retype(original, namesArray);
             return new RetypingFeatureCollection(fc, target);
         }

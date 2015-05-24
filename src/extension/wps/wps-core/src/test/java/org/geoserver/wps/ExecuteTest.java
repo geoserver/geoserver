@@ -8,10 +8,8 @@ package org.geoserver.wps;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.geoserver.data.test.MockData.PRIMITIVEGEOFEATURE;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -144,6 +142,56 @@ public class ExecuteTest extends WPSTestSupport {
         assertXpathExists( "/wps:ExecuteResponse/wps:Status/wps:ProcessSucceeded", d);
         assertXpathExists( 
             "/wps:ExecuteResponse/wps:ProcessOutputs/wps:Output/wps:Data/wps:ComplexData/gml:Polygon", d);
+    }
+    
+    @Test
+    public void testCDataOutput() throws Exception { 
+        // @formatter:off
+        String xml = "<wps:Execute service='WPS' version='1.0.0' xmlns:wps='http://www.opengis.net/wps/1.0.0' " + 
+              "xmlns:ows='http://www.opengis.net/ows/1.1'>" + 
+            "<ows:Identifier>JTS:buffer</ows:Identifier>" + 
+             "<wps:DataInputs>" + 
+                "<wps:Input>" + 
+                   "<ows:Identifier>distance</ows:Identifier>" + 
+                   "<wps:Data>" + 
+                     "<wps:LiteralData>1</wps:LiteralData>" + 
+                   "</wps:Data>" + 
+                "</wps:Input>" + 
+                "<wps:Input>" + 
+                "<ows:Identifier>geom</ows:Identifier>" + 
+                "<wps:Data>" +
+                  "<wps:ComplexData>" + 
+                    "<gml:Polygon xmlns:gml='http://www.opengis.net/gml'>" +
+                      "<gml:exterior>" + 
+                        "<gml:LinearRing>" + 
+                          "<gml:coordinates>1 1 2 1 2 2 1 2 1 1</gml:coordinates>" + 
+                        "</gml:LinearRing>" + 
+                      "</gml:exterior>" + 
+                    "</gml:Polygon>" +
+                  "</wps:ComplexData>" + 
+                "</wps:Data>" +     
+            "</wps:Input>" + 
+           "</wps:DataInputs>" +
+           "<wps:ResponseForm>" +  
+             "<wps:ResponseDocument storeExecuteResponse='false'>" + 
+               "<wps:Output mimeType=\"application/wkt\">" +
+                 "<ows:Identifier>result</ows:Identifier>" +
+               "</wps:Output>" + 
+             "</wps:ResponseDocument>" +
+           "</wps:ResponseForm>" + 
+         "</wps:Execute>";
+        // @formatter:on 
+        System.out.println(xml);
+        
+        Document d = postAsDOM( "wps", xml );
+        print(d);
+        checkValidationErrors(d);
+        
+        assertEquals( "wps:ExecuteResponse", d.getDocumentElement().getNodeName() );
+        
+        assertXpathExists( "/wps:ExecuteResponse/wps:Status/wps:ProcessSucceeded", d);
+        String wkt = xp.evaluate("/wps:ExecuteResponse/wps:ProcessOutputs/wps:Output/wps:Data/wps:ComplexData", d);
+        assertThat(new WKTReader().read(wkt), instanceOf(Polygon.class));
     }
     
     @Test

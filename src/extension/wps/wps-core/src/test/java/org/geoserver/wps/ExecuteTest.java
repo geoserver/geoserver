@@ -42,9 +42,6 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.test.RemoteOWSTestSupport;
 import org.geoserver.wps.executor.ExecutionStatus;
-import org.geoserver.wps.executor.ProcessState;
-import org.geoserver.wps.executor.ProcessStatusTracker;
-import org.geoserver.wps.resource.ProcessArtifactsStore;
 import org.geoserver.wps.resource.WPSResourceManager;
 import org.geotools.data.collection.ListFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
@@ -181,10 +178,10 @@ public class ExecuteTest extends WPSTestSupport {
            "</wps:ResponseForm>" + 
          "</wps:Execute>";
         // @formatter:on 
-        System.out.println(xml);
+        // System.out.println(xml);
         
         Document d = postAsDOM( "wps", xml );
-        print(d);
+        // print(d);
         checkValidationErrors(d);
         
         assertEquals( "wps:ExecuteResponse", d.getDocumentElement().getNodeName() );

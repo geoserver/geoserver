@@ -1,11 +1,11 @@
-GeoServer @VER@
+GeoServer 2.8-M0
 -------------------
 
-This release was built on @DATE@. The changelog for this release can be found:
+This release was built on May 26, 2015. The changelog for this release can be found:
 
-  http://jira.codehaus.org/browse/GEOS/fixforversion/@JIRA_VER@
+  http://jira.codehaus.org/browse/GEOS/fixforversion/10163
 
 This release is based on:
 
-  GeoTools @GT_VER@
-  GeoWebCache @GWC_VER@
+  GeoTools 14-M0
+  GeoWebCache 1.8-M0

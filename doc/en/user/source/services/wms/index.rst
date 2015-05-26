@@ -11,6 +11,7 @@ Web Map Service
    time
    outputformats
    vendor
+   nonstandardautonamespace
    configuration
    global
    get_legend_graphic/legendgraphic

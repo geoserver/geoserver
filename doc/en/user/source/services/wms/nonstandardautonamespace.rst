@@ -2,7 +2,6 @@
 
 Non Standard AUTO Namespace
 ===========================
-
 The WMS standard supports a small number of "automatic" coordinate reference systems that include a user-selected centre of projection.  These are specified using::
 
     AUTO:auto_crs_id,factor,lon0,lat0
@@ -11,8 +10,8 @@ for example::
 
     CRS=AUTO:42003,1,-100,45
 
-.. note::   in GeoTools 13 AUTO and AUTO2 namespaces are treated identically.
-.. note::   in GeoTools 13 the factor parameter in the AUTO namespace is ignored.  The BBOX parameter to GetMap must therefore be specified in metres.
+.. note::   in GeoServer 2.8.x AUTO and AUTO2 namespaces are treated identically.
+.. note::   in GeoServer 2.8.x the factor parameter in the AUTO namespace is ignored.  The BBOX parameter to GetMap must therefore be specified in metres.
     
 The WMS standard provide projections with IDs in the range 42001 to 42005.
 
@@ -30,7 +29,7 @@ The WMS standard provide projections with IDs in the range 42001 to 42005.
     * - 42004   
       - Equirectangular
     * - 42005
-      - Mollweide   (not supported in GeoTools 13)
+      - Mollweide   (not supported in GeoServer 2.8.x)
 
 GeoServer also supports some non-standard coordinate reference systems.
 These are

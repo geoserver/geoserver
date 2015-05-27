@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -108,9 +108,10 @@ public class BufferedRequestWrapper extends HttpServletRequestWrapper {
 
 	protected void parseParameters(){
 		if (myParameterMap != null) return;
-		if (myWrappedRequest.getMethod().equals("POST") &&
-			myWrappedRequest.getContentType().startsWith("application/x-www-form-urlencoded")) {
-			parseFormBody();
+		String contentType = myWrappedRequest.getContentType();
+        if (myWrappedRequest.getMethod().equals("POST") && contentType != null
+                && contentType.startsWith("application/x-www-form-urlencoded")) {
+            parseFormBody();
 		} else {
 			myParameterMap = new HashMap(super.getParameterMap());
 			

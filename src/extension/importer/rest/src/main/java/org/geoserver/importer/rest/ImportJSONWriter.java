@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -41,6 +41,7 @@ import org.geoserver.importer.ImportContext;
 import org.geoserver.importer.ImportData;
 import org.geoserver.importer.ImportTask;
 import org.geoserver.importer.Importer;
+import org.geoserver.importer.RemoteData;
 import org.geoserver.importer.SpatialFile;
 import org.geoserver.importer.Table;
 import org.geoserver.importer.mosaic.Granule;
@@ -116,6 +117,9 @@ public class ImportJSONWriter {
         json.key("id").value(context.getId());
         json.key("href").value(page.rootURI(pathTo(context)));
         json.key("state").value(context.getState());
+        if (context.getMessage() != null) {
+            json.key("message").value(context.getMessage());
+        }
         
         if (expand > 0) {
             json.key("archive").value(context.isArchive());
@@ -457,7 +461,29 @@ public class ImportJSONWriter {
             database((Database) data, parent, expand);
         } else if (data instanceof Table) {
             table((Table)data, parent, expand);
+        } else if (data instanceof RemoteData) {
+            remote((RemoteData) data, parent, expand);
         }
+        json.flush();
+    }
+
+    public void remote(RemoteData data, Object parent, int expand) throws IOException {
+
+        json.object();
+
+        json.key("type").value("remote");
+        json.key("location").value(data.getLocation());
+        if (data.getUsername() != null) {
+            json.key("username").value(data.getUsername());
+        }
+        if (data.getPassword() != null) {
+            json.key("password").value(data.getPassword());
+        }
+        if (data.getDomain() != null) {
+            json.key("domain").value(data.getDomain());
+        }
+
+        json.endObject();
         json.flush();
     }
 

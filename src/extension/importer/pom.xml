@@ -58,8 +58,8 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>commons-vfs</groupId>
-      <artifactId>commons-vfs</artifactId>
+	 <groupId>org.apache.commons</groupId>
+     <artifactId>commons-vfs2</artifactId>
     </dependency>
     <dependency>
       <groupId>xmlunit</groupId>

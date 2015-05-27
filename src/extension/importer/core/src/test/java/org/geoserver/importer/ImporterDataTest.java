@@ -8,6 +8,8 @@ package org.geoserver.importer;
 import static org.junit.Assert.*;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -88,6 +90,49 @@ public class ImporterDataTest extends ImporterTestSupport {
         runChecks("archsites");
     }
     
+    @Test
+    public void testImportRemoteDataFromDirectory() throws Exception {
+        File dir = unpack("shape/archsites_epsg_prj.zip");
+
+        ImportContext context = importer.createContext(new RemoteData(dir.getCanonicalPath()));
+        assertEquals(1, context.getTasks().size());
+
+        ImportTask task = context.getTasks().get(0);
+        assertEquals(ImportTask.State.READY, task.getState());
+        assertEquals("archsites", task.getLayer().getResource().getName());
+
+        importer.run(context);
+
+        Catalog cat = getCatalog();
+        assertNotNull(cat.getLayerByName("archsites"));
+
+        assertEquals(ImportTask.State.COMPLETE, task.getState());
+
+        runChecks("archsites");
+    }
+
+    @Test
+    public void testImportRemoteDataFromZip() throws Exception {
+        URL resource = ImporterTestSupport.class
+                .getResource("test-data/shape/archsites_epsg_prj.zip");
+
+        ImportContext context = importer.createContext(new RemoteData(resource.toExternalForm()));
+        assertEquals(1, context.getTasks().size());
+
+        ImportTask task = context.getTasks().get(0);
+        assertEquals(ImportTask.State.READY, task.getState());
+        assertEquals("archsites", task.getLayer().getResource().getName());
+
+        importer.run(context);
+
+        Catalog cat = getCatalog();
+        assertNotNull(cat.getLayerByName("archsites"));
+
+        assertEquals(ImportTask.State.COMPLETE, task.getState());
+
+        runChecks("archsites");
+    }
+
     @Test
     public void testImportShapefileFromDataDir() throws Exception {
         File dataDir = getCatalog().getResourceLoader().getBaseDirectory();

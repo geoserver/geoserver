@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -25,6 +25,10 @@ import java.util.zip.ZipOutputStream;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.vfs2.AllFileSelector;
+import org.apache.commons.vfs2.FileName;
+import org.apache.commons.vfs2.FileObject;
+import org.apache.commons.vfs2.VFS;
 import org.geoserver.data.util.IOUtils;
 import org.geoserver.importer.job.ProgressMonitor;
 import org.geotools.util.logging.Logging;
@@ -378,6 +382,23 @@ public class Directory extends FileData {
         return file.getPath();
     }
 
+    public void accept(FileObject fo) throws IOException {
+        FileName name = fo.getName();
+        String localName = name.getBaseName();
+        File dest = child(localName);
+        FileObject dfo = null;
+        try {
+            dfo = VFS.getManager().resolveFile(dest.getAbsolutePath());
+            dfo.copyFrom(fo, new AllFileSelector());
+
+            unpack(dest);
+        } finally {
+            if (dfo != null) {
+                dfo.close();
+            }
+        }
+    }
+
     public void accept(String childName, InputStream in) throws IOException {
         File dest = child(childName);
         
@@ -498,4 +519,5 @@ public class Directory extends FileData {
             format = format();
         }
     }
+
 }

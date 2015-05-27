@@ -1,9 +1,11 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.importer;
+
+import static org.geoserver.importer.ImporterUtils.resolve;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -17,8 +19,6 @@ import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.importer.job.ProgressMonitor;
 
-import static org.geoserver.importer.ImporterUtils.*;
-
 /**
  * Maintains state about an import.
  * 
@@ -31,7 +31,27 @@ public class ImportContext implements Serializable {
     private static final long serialVersionUID = 8790675013874051197L;
 
     public static enum State {
-        PENDING, RUNNING, COMPLETE;
+        /**
+         * Context is ready to be initialized, but still misses tasks. Used to create a context
+         * while planning for an asynchronous initialization
+         */
+        INIT,
+        /**
+         * Context init failed
+         */
+        INIT_ERROR,
+        /**
+         * Context ready to be started
+         */
+        PENDING,
+        /**
+         * Import is running
+         */
+        RUNNING,
+        /**
+         * Import is complete
+         */
+        COMPLETE;
     }
 
     /** identifier */
@@ -87,6 +107,11 @@ public class ImportContext implements Serializable {
      * being deleted
      */
     boolean archive = false;
+
+    /**
+     * Used for error messages
+     */
+    String message;
 
     volatile ProgressMonitor progress;
 
@@ -188,7 +213,16 @@ public class ImportContext implements Serializable {
     }
 
     private void updateState() {
-        State newState = tasks.isEmpty() ? State.PENDING : State.COMPLETE;
+        State newState;
+        if (tasks.isEmpty()) {
+            if (state == State.INIT) {
+                newState = State.INIT;
+            } else {
+                newState = State.PENDING;
+            }
+        } else {
+            newState = State.COMPLETE;
+        }
      O: for (ImportTask task : tasks) {
             switch(task.getState()) {
             case COMPLETE:
@@ -278,6 +312,24 @@ public class ImportContext implements Serializable {
             tasks = new ArrayList();
         }
         return this;
+    }
+
+    /**
+     * Returns the current context message, if any
+     * 
+     * @return the message
+     */
+    public String getMessage() {
+        return message;
+    }
+
+    /**
+     * Sets the context message
+     * 
+     * @param message the message to set
+     */
+    public void setMessage(String message) {
+        this.message = message;
     }
 }
     

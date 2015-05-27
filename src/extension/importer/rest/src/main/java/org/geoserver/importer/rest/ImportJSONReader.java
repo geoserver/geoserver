@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -34,6 +34,7 @@ import org.geoserver.importer.ImportContext.State;
 import org.geoserver.importer.ImportData;
 import org.geoserver.importer.ImportTask;
 import org.geoserver.importer.Importer;
+import org.geoserver.importer.RemoteData;
 import org.geoserver.importer.UpdateMode;
 import org.geoserver.importer.ValidationException;
 import org.geoserver.importer.mosaic.Mosaic;
@@ -342,6 +343,9 @@ public class ImportJSONReader {
         else if ("database".equalsIgnoreCase(type)) {
             return database(json);
         }
+ else if ("remote".equalsIgnoreCase(type)) {
+            return remote(json);
+        }
         else {
             throw new IllegalArgumentException("Unknown data type: " + type);
         }
@@ -357,6 +361,26 @@ public class ImportJSONReader {
         else {
             throw new IOException(
                     "Could not find 'file' entry in data, mandatory for file type data");
+        }
+    }
+
+    RemoteData remote(JSONObject json) throws IOException {
+        if (json.has("location")) {
+            String location = json.getString("location");
+            RemoteData data = new RemoteData(location);
+            if (json.has("username")) {
+                data.setUsername(json.getString("username"));
+            }
+            if (json.has("password")) {
+                data.setPassword(json.getString("password"));
+            }
+            if (json.has("domain")) {
+                data.setDomain(json.getString("domain"));
+            }
+            return data;
+        } else {
+            throw new IOException(
+                    "Could not find 'location' entry in data, mandatory for remote type data");
         }
     }
 

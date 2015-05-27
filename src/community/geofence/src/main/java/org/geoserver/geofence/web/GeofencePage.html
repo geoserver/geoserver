@@ -70,8 +70,44 @@
                   <input id="cacheExpire" wicket:id="cacheExpire" type="text" class="text"></input>
                 </li>
 	           <li>
-	               <div wicket:id="rulestats"></div>
-	               <div wicket:id="userstats"></div>
+
+                       <table>
+                           <thead>
+                               <tr>
+                                   <th><span class="noshow"></span></th>
+                                   <th class="actions"><wicket:message key="statsCacheSize">Size</wicket:message></th>
+                                   <th class="actions"><wicket:message key="statsCacheHits">Hits</wicket:message></th>
+                                   <th class="actions"><wicket:message key="statsCacheMisses">Misses</wicket:message></th>
+                                   <th class="actions"><wicket:message key="statsLoadOk">Load ok</wicket:message></th>
+                                   <th class="actions"><wicket:message key="statsLoadKo">Load ko</wicket:message></th>
+                                   <th class="actions"><wicket:message key="statsLoadTime">Load time</wicket:message></th>
+                                   <th class="actions"><wicket:message key="statsEvict">Evictions</wicket:message></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="odd">
+                                    <th scope="row"><wicket:message key="ruleCache">Rule cache</wicket:message></th>
+                                    <td wicket:id="rule.size">-</td>
+                                    <td wicket:id="rule.hit">-</td>
+                                    <td wicket:id="rule.miss">-</td>
+                                    <td wicket:id="rule.loadok">-</td>
+                                    <td wicket:id="rule.loadko">-</td>
+                                    <td wicket:id="rule.loadtime">-</td>
+                                    <td wicket:id="rule.evict">-</td>
+                                </tr>
+                                <tr class="even">
+                                    <th scope="row"><wicket:message key="userCache">User cache</wicket:message></th>
+                                    <td wicket:id="user.size">-</td>
+                                    <td wicket:id="user.hit">-</td>
+                                    <td wicket:id="user.miss">-</td>
+                                    <td wicket:id="user.loadok">-</td>
+                                    <td wicket:id="user.loadko">-</td>
+                                    <td wicket:id="user.loadtime">-</td>
+                                    <td wicket:id="user.evict">-</td>
+                                </tr>
+                            </tbody>
+                       </table>
+
 	           </li>
 	           <li>
 		        <div class="button-group">

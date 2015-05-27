@@ -528,3 +528,42 @@ Now the import is ready to run, and we'll execute it using::
     curl -u admin:geoserver -XPOST "http://localhost:8080/geoserver/rest/imports/0"
 
 The new granule will be ingested into the mosaic, and will thus be available for time based requests.
+
+Asynchronously fetching and importing data from a remote server 
+---------------------------------------------------------------
+
+We assume a remote FTP server contains multiple shapefiles that we need to import in GeoServer
+as new layers. The files are large, and the server has much better bandwith than the client,
+so it's best if GeoServer performs the data fetching on its own.
+
+In this case a asynchronous request using ``remote`` data will be the best fit::
+
+    curl -u admin:geoserver -XPOST -H "Content-type: application/json" -d @import.json "http://localhost:8080/geoserver/rest/imports?async=true"
+
+Where import.json is::
+
+    {
+       "import": {
+          "targetWorkspace": {
+             "workspace": {
+                "name": "topp"
+             }
+          },
+          "data": {
+            "type": "remote",
+            "location": "ftp://myserver/data/bc_shapefiles",
+            "username": "dan",
+            "password": "secret"
+          }
+       }
+    }
+    
+The request will return immediately with an import context in "INIT" state, and it will remain in such
+state until the data is fetched and the tasks created.
+Once the state switches to "PENDING" the import will be ready for execution. Since there is
+a lot of shapefiles to process, also the import run will be done in asynchronous mode::
+
+    curl -u admin:geoserver -XPOST "http://localhost:8080/geoserver/rest/imports/0?async=true"
+    
+The response will return immediately in this case as well, and the progress can be followed as the
+tasks in the import switch state.

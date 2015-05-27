@@ -1790,7 +1790,9 @@ public class XStreamPersister {
             // TODO: remove this when resource/publishing split is done
             LayerInfo l = (LayerInfo) source;
             writer.startNode("name");
-            writer.setValue(l.getName());
+            if (l.getName() != null) {
+                writer.setValue(l.getName());
+            }
             writer.endNode();
             
 //            {

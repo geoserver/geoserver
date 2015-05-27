@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -15,6 +15,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.junit.Test;
 import org.springframework.web.util.WebUtils;
+
+import com.mockrunner.mock.web.MockHttpServletRequest;
 
 public class BufferedRequestWrapperTest extends RequestWrapperTestSupport {
 
@@ -91,5 +93,39 @@ public class BufferedRequestWrapperTest extends RequestWrapperTestSupport {
         assertEquals("2", ((String[]) params.get("b"))[0]);
         assertEquals("3", ((String[]) params.get("c"))[0]);
         assertEquals("4", ((String[]) params.get("d"))[0]);
+    }
+
+    @Test
+    public void testNoContentType() throws Exception {
+        String body = "a=1&b=2";
+        String queryString = "c=3&d=4";
+        MockHttpServletRequest req = makeRequest(body, queryString);
+        // reset the content type
+        req.setContentType(null);
+
+        BufferedReader br = req.getReader();
+        while ((br.readLine()) != null) { /* clear out the body */
+        }
+
+        // should not NPE like it did
+        BufferedRequestWrapper wrapper = new BufferedRequestWrapper(req, "UTF-8", body.getBytes());
+        Map params = wrapper.getParameterMap();
+        assertEquals(0, params.size());
+    }
+
+    @Test
+    public void testEmptyPost() throws Exception {
+        MockHttpServletRequest req = makeRequest("", "");
+        // reset the content type
+        req.setContentType(null);
+
+        BufferedReader br = req.getReader();
+        while ((br.readLine()) != null) { /* clear out the body */
+        }
+
+        // should not NPE like it did
+        BufferedRequestWrapper wrapper = new BufferedRequestWrapper(req, "UTF-8", "".getBytes());
+        Map params = wrapper.getParameterMap();
+        assertEquals(0, params.size());
     }
 }

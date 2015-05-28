@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014-2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -20,6 +20,7 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wcs2_0.response.GranuleStack;
 import org.geotools.coverage.grid.GridCoverage2D;
+import org.geotools.imageio.netcdf.utilities.NetCDFUtilities;
 import org.geotools.util.logging.Logging;
 
 import ucar.ma2.InvalidRangeException;
@@ -32,35 +33,33 @@ import ucar.ma2.InvalidRangeException;
 public class NetCDFCoverageResponseDelegate extends BaseCoverageResponseDelegate implements
         CoverageResponseDelegate {
 
-    private final static String MIME_TYPE = "application/x-netcdf";
-
     public static final Logger LOGGER = Logging.getLogger("org.geoserver.wcs.responses.NetCDFCoverageResponseDelegate");
 
     @SuppressWarnings("serial")
     public NetCDFCoverageResponseDelegate(GeoServer geoserver) {
-        super(geoserver, Arrays.asList("NetCDF"/* ,"netcdf-GZIP" */), // output formats
+        super(geoserver, Arrays.asList(NetCDFUtilities.NETCDF), // output formats
                 new HashMap<String, String>() { // file extensions
                     {
-                        put("NetCDF", "nc");
-                        put("netcdf", "nc");
-                        put("NETCDF", "nc");
-                        put(MIME_TYPE, "nc");
+                        put(NetCDFUtilities.NETCDF, "nc");
+                        put(NetCDFUtilities.NETCDF.toLowerCase(), "nc");
+                        put(NetCDFUtilities.NETCDF.toUpperCase(), "nc");
+                        put(NetCDFUtilities.NETCDF3_MIMETYPE, "nc");
+                        put(NetCDFUtilities.NETCDF4_MIMETYPE, "nc");
                     }
                 }, new HashMap<String, String>() { // mime types
                     {
-                        put("NetCDF", MIME_TYPE);
-                        put("netcdf", MIME_TYPE);
-                        put("NETCDF", MIME_TYPE);
+                        put(NetCDFUtilities.NETCDF, NetCDFUtilities.NETCDF3_MIMETYPE);
+                        put(NetCDFUtilities.NETCDF.toLowerCase(), NetCDFUtilities.NETCDF3_MIMETYPE);
+                        put(NetCDFUtilities.NETCDF.toUpperCase(), NetCDFUtilities.NETCDF3_MIMETYPE);
+                        put(NetCDFUtilities.NETCDF4, NetCDFUtilities.NETCDF4_MIMETYPE);
+                        put(NetCDFUtilities.NETCDF4.toLowerCase(), NetCDFUtilities.NETCDF4_MIMETYPE);
+                        put(NetCDFUtilities.NETCDF4.toUpperCase(), NetCDFUtilities.NETCDF4_MIMETYPE);
                     }
                 });
     }
 
-//    private boolean isOutputCompressed(String outputFormat) {
-//        return false;// "NetCDF-GZIP".equalsIgnoreCase(outputFormat) || "application/netcdf;gzipped=\"true\"".equals(outputFormat);
-//    }
-
     public void encode(GridCoverage2D sourceCoverage, String outputFormat,
-            Map<String, String> econdingParameters, OutputStream output) throws ServiceException,
+            Map<String, String> encodingParameters, OutputStream output) throws ServiceException,
             IOException {
         if (sourceCoverage == null) {
             throw new IllegalStateException(new StringBuffer(
@@ -73,16 +72,11 @@ public class NetCDFCoverageResponseDelegate extends BaseCoverageResponseDelegate
         }
         GranuleStack granuleStack = (GranuleStack) sourceCoverage;
 
-        // GZIPOutputStream gzipOut = null;
-        // if (isOutputCompressed(outputFormat)) {
-        // gzipOut = new GZIPOutputStream(output);
-        // output = gzipOut;
-        // }
         File tempFile = null;
         NetCDFOutputManager manager = null;
         try {
             tempFile = File.createTempFile("tempNetCDF", ".nc");
-            manager = new NetCDFOutputManager(granuleStack, tempFile);
+            manager = new NetCDFOutputManager(granuleStack, tempFile, encodingParameters, outputFormat);
             manager.write();
             streamBack(tempFile, output);
 
@@ -94,7 +88,9 @@ public class NetCDFCoverageResponseDelegate extends BaseCoverageResponseDelegate
             if (!deleted) {
                 LOGGER.warning("Could not delete temp file: " + tempFile.getAbsolutePath());
             }
-            manager.close();
+            if (manager != null) {
+                manager.close();
+            }
         }
     }
 

@@ -26,6 +26,10 @@
     <artifactId>gs-main</artifactId>
   </dependency>
   <dependency>
+    <groupId>org.geoserver.web</groupId>
+    <artifactId>gs-web-core</artifactId>
+  </dependency>
+  <dependency>
     <groupId>org.geoserver</groupId>
     <artifactId>gs-main</artifactId>
     <classifier>tests</classifier>
@@ -39,6 +43,13 @@
     <groupId>org.geoserver</groupId>
     <artifactId>gs-ows</artifactId>
     <scope>test</scope>
+  </dependency>
+  <dependency>
+    <groupId>org.geoserver.web</groupId>
+    <artifactId>gs-web-core</artifactId>
+    <classifier>tests</classifier>
+    <scope>test</scope>
+    <version>${project.version}</version>
   </dependency>
   <dependency>
     <groupId>org.geoserver</groupId>
@@ -58,6 +69,11 @@
     <artifactId>gs-wcs2_0</artifactId>
   </dependency>
   <dependency>
+    <groupId>org.geoserver.community</groupId>
+    <artifactId>gs-netcdf</artifactId>
+	<version>${project.version}</version>
+  </dependency>
+  <dependency>
     <groupId>org.geoserver</groupId>
     <artifactId>gs-wcs2_0</artifactId>
     <classifier>tests</classifier>
@@ -66,7 +82,6 @@
   <dependency>
     <groupId>org.geotools</groupId>
     <artifactId>gt-imagemosaic</artifactId>
-    
     <scope>test</scope>
   </dependency>
 

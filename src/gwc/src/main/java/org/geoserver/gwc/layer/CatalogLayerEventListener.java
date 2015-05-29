@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -231,7 +231,7 @@ public class CatalogLayerEventListener implements CatalogListener {
         PRE_MODIFY_EVENT.remove();
 
         if (tileLayerInfo == null && !(source instanceof WorkspaceInfo)) {
-            return;// no tile layer assiociated, no need to continue
+            return;// no tile layer associated, no need to continue
         }
         if (preModifyEvent == null) {
             throw new IllegalStateException(
@@ -245,6 +245,14 @@ public class CatalogLayerEventListener implements CatalogListener {
         log.finer("Handling modify event for " + source);
         if (source instanceof FeatureTypeInfo || source instanceof CoverageInfo
                 || source instanceof WMSLayerInfo || source instanceof LayerGroupInfo) {
+            /*
+             * Handle changing the filter definition, this is the kind of change that affects the
+             * full output contents
+             */
+            if (changedProperties.contains("cqlFilter") && source instanceof FeatureTypeInfo) {
+                mediator.truncate(((FeatureTypeInfo) source).prefixedName());
+            }
+
             /*
              * Handle the rename case. For LayerInfos it's actually the related ResourceInfo what
              * gets renamed, at least until the data/publish split is implemented in GeoServer. For

@@ -5,11 +5,12 @@
  */
 package org.geoserver.wms.capabilities;
 
-import static junit.framework.Assert.*;
-import static org.custommonkey.xmlunit.XMLAssert.*;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -19,6 +20,7 @@ import java.util.Set;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
+import org.custommonkey.xmlunit.exceptions.XpathException;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.Keyword;
 import org.geoserver.catalog.impl.CatalogImpl;
@@ -49,6 +51,68 @@ import org.xml.sax.helpers.NamespaceSupport;
  * @version $Id$
  */
 public class GetCapabilitiesTransformerTest {
+
+    private static final class EmptyExtendedCapabilitiesProvider
+            implements ExtendedCapabilitiesProvider {
+        public String[] getSchemaLocations(String schemaBaseURL) {
+            throw new UnsupportedOperationException();
+        }
+
+        public void registerNamespaces(NamespaceSupport namespaces) {
+            throw new UnsupportedOperationException();
+        }
+
+        public List<String> getVendorSpecificCapabilitiesRoots(GetCapabilitiesRequest request) {
+            return null;
+        }
+
+        /**
+         * 
+         * @see org.geoserver.wms.ExtendedCapabilitiesProvider#getVendorSpecificCapabilitiesChildDecls()
+         */
+        public List<String> getVendorSpecificCapabilitiesChildDecls(
+                GetCapabilitiesRequest request) {
+            return null;
+        }
+
+        public void encode(Translator tx, WMSInfo wms, GetCapabilitiesRequest request)
+                throws IOException {
+        }
+
+    }
+
+    private static final class TestExtendedCapabilitiesProvider
+            implements ExtendedCapabilitiesProvider {
+        public String[] getSchemaLocations(String schemaBaseURL) {
+            throw new UnsupportedOperationException();
+        }
+
+        public void registerNamespaces(NamespaceSupport namespaces) {
+            throw new UnsupportedOperationException();
+        }
+
+        public List<String> getVendorSpecificCapabilitiesRoots(GetCapabilitiesRequest request) {
+            return Collections.singletonList("TestElement?");
+        }
+
+        /**
+         * 
+         * @see org.geoserver.wms.ExtendedCapabilitiesProvider#getVendorSpecificCapabilitiesChildDecls()
+         */
+        public List<String> getVendorSpecificCapabilitiesChildDecls(
+                GetCapabilitiesRequest request) {
+            return Collections.singletonList("<!ELEMENT TestSubElement (#PCDATA) >");
+        }
+
+        public void encode(Translator tx, WMSInfo wms, GetCapabilitiesRequest request)
+                throws IOException {
+            tx.start("TestElement");
+            tx.start("TestSubElement");
+            tx.end("TestSubElement");
+            tx.end("TestElement");
+        }
+
+    }
 
     private XpathEngine XPATH;
 
@@ -251,43 +315,29 @@ public class GetCapabilitiesTransformerTest {
 
     @Test
     public void testVendorSpecificCapabilities() throws Exception {
-        ExtendedCapabilitiesProvider vendorCapsProvider = new ExtendedCapabilitiesProvider() {
-
-            public String[] getSchemaLocations(String schemaBaseURL) {
-                throw new UnsupportedOperationException();
-            }
-
-            public void registerNamespaces(NamespaceSupport namespaces) {
-                throw new UnsupportedOperationException();
-            }
-
-            public List<String> getVendorSpecificCapabilitiesRoots(GetCapabilitiesRequest request) {
-                return Collections.singletonList("TestElement?");
-            }
-
-            /**
-             * 
-             * @see org.geoserver.wms.ExtendedCapabilitiesProvider#getVendorSpecificCapabilitiesChildDecls()
-             */
-            public List<String> getVendorSpecificCapabilitiesChildDecls(
-                    GetCapabilitiesRequest request) {
-                return Collections.singletonList("<!ELEMENT TestSubElement (#PCDATA) >");
-            }
-
-            public void encode(Translator tx, WMSInfo wms, GetCapabilitiesRequest request)
-                    throws IOException {
-                tx.start("TestElement");
-                tx.start("TestSubElement");
-                tx.end("TestSubElement");
-                tx.end("TestElement");
-            }
-
-        };
+        ExtendedCapabilitiesProvider vendorCapsProvider = new TestExtendedCapabilitiesProvider();
 
         GetCapabilitiesTransformer tr;
         tr = new GetCapabilitiesTransformer(wmsConfig, baseUrl, mapFormats, legendFormats,
                 Collections.singletonList(vendorCapsProvider));
         tr.setIndentation(2);
+        checkVendorSpecificCapsProviders(tr);
+    }
+
+    @Test
+    public void testVendorSpecificCapabilitiesWithEmptyProvider() throws Exception {
+        ExtendedCapabilitiesProvider emptyCapsProvider = new EmptyExtendedCapabilitiesProvider();
+        ExtendedCapabilitiesProvider vendorCapsProvider = new TestExtendedCapabilitiesProvider();
+
+        GetCapabilitiesTransformer tr;
+        tr = new GetCapabilitiesTransformer(wmsConfig, baseUrl, mapFormats, legendFormats,
+                Arrays.asList(emptyCapsProvider, vendorCapsProvider));
+        tr.setIndentation(2);
+        checkVendorSpecificCapsProviders(tr);
+    }
+
+    private void checkVendorSpecificCapsProviders(GetCapabilitiesTransformer tr)
+            throws Exception, XpathException {
         Document dom = WMSTestSupport.transform(req, tr);
         NodeList list = XPATH.getMatchingNodes(
                 "/WMT_MS_Capabilities/Capability/VendorSpecificCapabilities/TestElement", dom);

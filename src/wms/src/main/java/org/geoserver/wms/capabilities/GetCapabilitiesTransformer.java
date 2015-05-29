@@ -595,11 +595,15 @@ public class GetCapabilitiesTransformer extends TransformerBase {
              * need to output the VendorSpecificCapabilities element. Moreover, the document will
              * not validate if it's there but not declared in the internal DTD
              */
+            int numberRoots = 0;
             for (ExtendedCapabilitiesProvider cp : extCapsProviders) {
                 List<String> roots = cp.getVendorSpecificCapabilitiesRoots(request);
-                if (roots == null || roots.size() == 0) {
-                    return;
+                if (roots != null) {
+                  numberRoots += roots.size();
                 }
+            }
+            if (numberRoots == 0) {
+               return;
             }
 
             start("VendorSpecificCapabilities");

@@ -158,7 +158,7 @@ public class NewDataAccessRulePageTest extends AbstractSecurityWicketTestSupport
         form.select("workspace", index);
         tester.executeAjaxEvent("form:workspace", "onchange");
         form = tester.newFormTester("form");
-        index = indexOf(page.layerChoice.getChoices(),MockData.STREAMS.getLocalPart());
+        index = indexOf(page.layerChoice.getChoices(),DataAccessRule.ANY);
         form.select("layer", index);
         
         index = page.accessModeChoice.getChoices().indexOf(AccessMode.ADMIN);
@@ -186,13 +186,14 @@ public class NewDataAccessRulePageTest extends AbstractSecurityWicketTestSupport
         
         DataAccessRuleDAO dao = DataAccessRuleDAO.get();
 
-        DataAccessRule rule = new DataAccessRule(MockData.CITE_PREFIX, MockData.STREAMS.getLocalPart(), AccessMode.ADMIN);
+        DataAccessRule rule = new DataAccessRule(MockData.CITE_PREFIX, DataAccessRule.ANY, AccessMode.ADMIN);
         assertFalse(dao.getRules().contains(rule));
        
         // now save
         form=tester.newFormTester("form");
         form.submit("save");
 
+        dao.reload();
         assertTrue(dao.getRules().contains(rule));
     }
 

@@ -70,14 +70,17 @@ public class DataSecurityPageTest extends AbstractListPageTest<DataAccessRule> {
     
     @Override
     protected void simulateDeleteSubmit() throws Exception {
-        
+
+        DataAccessRuleDAO.get().reload();
         assertTrue (DataAccessRuleDAO.get().getRules().size()>0);
         
         SelectionDataRuleRemovalLink link = (SelectionDataRuleRemovalLink) getRemoveLink();
         Method m = link.delegate.getClass().getDeclaredMethod("onSubmit", AjaxRequestTarget.class,Component.class);
         m.invoke(link.delegate, null,null);
-        
-        assertEquals(0,DataAccessRuleDAO.get().getRules().size());        
+
+        DataAccessRuleDAO.get().reload();
+        // if there are no rules, DataAccessRuleDAO.loadRules adds two basic rules
+        assertEquals(2,DataAccessRuleDAO.get().getRules().size());        
     }
 
     @Test

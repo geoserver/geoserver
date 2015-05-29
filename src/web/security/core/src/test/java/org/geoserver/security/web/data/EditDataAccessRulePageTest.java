@@ -111,6 +111,7 @@ public class EditDataAccessRulePageTest extends AbstractSecurityWicketTestSuppor
     }
 
     DataAccessRule getRule(String key) {
+        DataAccessRuleDAO.get().reload();
         for (DataAccessRule rule : DataAccessRuleDAO.get().getRules()) {
             if (key.equals(rule.getKey())) {
                 return rule;

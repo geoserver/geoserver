@@ -18,7 +18,7 @@ import org.geotools.util.ConverterFactory;
 import org.geotools.util.logging.Logging;
 
 /**
- * Marhals {@link UniqueResourceIdentifiers} to and from String for including in the {@link WFSInfo}
+ * Marshals {@link UniqueResourceIdentifiers} to and from String for including in the {@link WFSInfo}
  * {@link MetadataMap}
  * 
  * @author Andrea Aime - GeoSolutions
@@ -66,6 +66,9 @@ public class InspireConverterFactory implements ConverterFactory {
                             LOGGER.log(Level.WARNING, "Skipping InspireDatasetIdentifier because "
                                     + "namespace is not a valid URI: " + value, e);
                             continue;
+                        }
+                        if (namespace.trim().equals("")) {
+                            namespace = null;
                         }
                     }
                     String metadataURL = null;

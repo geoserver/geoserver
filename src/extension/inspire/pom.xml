@@ -54,6 +54,11 @@
     <artifactId>mockrunner</artifactId>
     <scope>test</scope>
   </dependency>
+  <dependency>
+    <groupId>xmlunit</groupId>
+    <artifactId>xmlunit</artifactId>
+    <scope>test</scope>
+  </dependency>
  </dependencies>
 
 </project>

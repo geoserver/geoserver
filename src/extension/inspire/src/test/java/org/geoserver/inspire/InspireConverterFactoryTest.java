@@ -29,6 +29,16 @@ public class InspireConverterFactoryTest {
     }
     
     @Test
+    public void testCodeMetadata() {
+        UniqueResourceIdentifiers ids = new UniqueResourceIdentifiers();
+        ids.add(new UniqueResourceIdentifier("code", null, "http://metadata.geoserver.org/id?code"));
+        String str = Converters.convert(ids, String.class);
+        assertEquals("code,,http://metadata.geoserver.org/id?code", str);
+        UniqueResourceIdentifiers ids2 = Converters.convert(str, UniqueResourceIdentifiers.class);
+        assertEquals(ids, ids2);
+    }
+    
+    @Test
     public void testCodeNamespaceMetadata() {
         UniqueResourceIdentifiers ids = new UniqueResourceIdentifiers();
         ids.add(new UniqueResourceIdentifier("code", "http://www.geoserver.org", "http://www.geoserver.org/metadata"));

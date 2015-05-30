@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -320,7 +320,9 @@ public class ExecuteResponseBuilder {
                     ComplexPPIO cppio = (ComplexPPIO) ppio;
                     complex.setMimeType(cppio.getMimeType());
 
-                    if (cppio instanceof RawDataPPIO) {
+                    if (o == null) {
+                        complex.getData().add(null);
+                    } else if (cppio instanceof RawDataPPIO) {
                         RawData rawData = (RawData) o;
                         complex.setMimeType(rawData.getMimeType());
                         complex.setEncoding("base64");

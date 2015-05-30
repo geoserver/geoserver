@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2014 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -24,7 +24,11 @@ public class RawProcess {
             "mimeTypes=application/json,text/xml", "chosenMimeType=outputMimeType" })
     public RawData execute(
             @DescribeParameter(name = "data", description = "Input features", meta = { "mimeTypes=application/json,text/xml" }) final RawData input,
-            @DescribeParameter(name = "outputMimeType", min = 0) final String outputMimeType) {
+            @DescribeParameter(name = "outputMimeType", min = 0) final String outputMimeType,
+            @DescribeParameter(name = "returnNull", min = 0, defaultValue = "false") final boolean returnNull) {
+        if (returnNull) {
+            return null;
+        }
         return new RawData() {
 
             @Override

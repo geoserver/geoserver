@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -51,7 +51,6 @@ import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
-import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.renderer.crs.ProjectionHandler;
 import org.geotools.renderer.crs.ProjectionHandlerFinder;
 import org.geotools.util.DateRange;
@@ -207,7 +206,7 @@ public class WCSDimensionsSubsetHelper {
                 try {
                     // see if we can get a valid restricted area using the projection handlers
                     ProjectionHandler handler = ProjectionHandlerFinder.getHandler(
-                            new ReferencedEnvelope(0, 1, 0, 1, subsettingCRS), sourceCRS, false);
+                            new ReferencedEnvelope(0, 1, 0, 1, subsettingCRS), sourceCRS, true);
                     if (handler != null) {
                         ReferencedEnvelope validArea = handler.getValidAreaBounds();
                         Envelope intersection = validArea.intersection(ReferencedEnvelope

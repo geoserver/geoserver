@@ -435,9 +435,9 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         }
         
         // turn on advanced projection handling
-        if(DefaultWebMapService.isAdvancedProjectionHandlingEnabled()){
+        if (wms.isAdvancedProjectionHandlingEnabled()) {
             rendererParams.put(StreamingRenderer.ADVANCED_PROJECTION_HANDLING_KEY, true);
-            if(DefaultWebMapService.isContinuousMapWrappingEnabled()) {
+            if (wms.isContinuousMapWrappingEnabled()) {
                 rendererParams.put(StreamingRenderer.CONTINUOUS_MAP_WRAPPING, true);
             }
         }
@@ -927,7 +927,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         try {
             final Color readerBgColor = transparent ? null : bgColor;
             if (transformation == null
-                    && DefaultWebMapService.isAdvancedProjectionHandlingEnabled()) {
+                    && wms.isAdvancedProjectionHandlingEnabled()) {
                 //
                 // Get the reader
                 //
@@ -943,7 +943,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
                 final GridCoverageRenderer gcr = new GridCoverageRenderer(mapEnvelope.getCoordinateReferenceSystem(), mapEnvelope,
                         mapRasterArea, worldToScreen, interpolationHints);
                 gcr.setAdvancedProjectionHandlingEnabled(true);
-                gcr.setWrapEnabled(DefaultWebMapService.isContinuousMapWrappingEnabled());
+                gcr.setWrapEnabled(wms.isContinuousMapWrappingEnabled());
                 image = gcr.renderImage(reader, readParameters, symbolizer, interpolation,
                         mapContent.getBgColor(), tileSizeX, tileSizeY);
                 if (image == null) {

@@ -69,6 +69,33 @@ The GeoServer WMS supports SVG (Scalable Vector Graphics) as an output format. G
 **Enable Anti-aliasing**
 Anti-aliasing is a technique for making edges appear smoother by filling in the edges of an object with pixels that are between the object's color and the background color. Anti-aliasing creates the illusion of smoother lines and smoother selections. Turning on anti-aliasing will generally make maps look nicer, but will increase the size of the images, and will take longer to return. If you are overlaying the anti-aliased map on top of others, beware of using transparencies as the anti-aliasing process mixes with the colors behind and can create a "halo" effect.
 
+
+Advanced projection handling and map wrapping
+---------------------------------------------
+
+Advanced projection handling is a set of extra "smarts" applied while rendering that help getting
+a good looking map despite the data touching or crossing "difficult areas" in selected map
+projection. This includes, among others:
+
+* Cutting the geometries so that they fit within the area of mathematical stability of the projection math,
+  e.g., it will cut any bit at more than 45 degrees west and east from the central meridian of a 
+  transverse mercator projection, or beyond 85 degrees north or south in a mercator projection
+* Make sure both "ends" of the world get queried for data when a map in polar stereographic is
+  hitting an area that includes the dateline
+
+Along with advanced projection handling there is the possibility of creating a continuous map 
+across the dateline, wrapping the data on the other side of the longitude range, to get a continuous
+map. This is called continous map wrapping, and it's enabled in Mercator and Equirectangular (plate carrée) projections.
+
+Both functionality is rather useful, and enabled by default, but the tendency to generate multiple
+or-ed bounding boxes (to query both sides of the dateline) can cause extreme slowness in certain databases (e.g. Oracle),
+and some might simply not like the wrapping output, thus, it's possible to disable them both
+in the WMS UI: 
+
+.. figure:: ../images/services_WMS_aph.png
+   :align: center
+ 
+
      
 Restricting MIME types for GetMap and GetFeatureInfo requests
 -------------------------------------------------------------

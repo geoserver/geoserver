@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -171,6 +171,9 @@ public abstract class GeoServerLoader {
         }
         if ( catalog.getStyleByName( StyleInfo.DEFAULT_RASTER ) == null ) {
             initializeStyle( catalog, StyleInfo.DEFAULT_RASTER, "default_raster.sld" );
+        }
+        if (catalog.getStyleByName(StyleInfo.DEFAULT_GENERIC) == null) {
+            initializeStyle(catalog, StyleInfo.DEFAULT_GENERIC, "default_generic.sld");
         }
     }
     

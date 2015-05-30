@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -25,7 +25,9 @@ import org.opengis.feature.type.GeometryDescriptor;
 
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.MultiLineString;
+import com.vividsolutions.jts.geom.MultiPoint;
 import com.vividsolutions.jts.geom.MultiPolygon;
+import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 
 /**
@@ -37,7 +39,7 @@ import com.vividsolutions.jts.geom.Polygon;
 public class StyleGenerator {
 
     static enum StyleType {
-        POINT, LINE, POLYGON, RASTER
+        POINT, LINE, POLYGON, RASTER, GENERIC
     };
 
     static final Map<StyleType, String> TEMPLATES = new HashMap<StyleType, String>();
@@ -51,6 +53,8 @@ public class StyleGenerator {
                     .getResourceAsStream("template_line.sld")));
             TEMPLATES.put(StyleType.RASTER, IOUtils.toString(StyleGenerator.class
                     .getResourceAsStream("template_raster.sld")));
+            TEMPLATES.put(StyleType.GENERIC, IOUtils.toString(StyleGenerator.class
+                    .getResourceAsStream("template_generic.sld")));
         } catch (IOException e) {
             throw new RuntimeException("Error loading up the style templates", e);
         }
@@ -82,6 +86,10 @@ public class StyleGenerator {
         ramp.add("cyan", Color.decode("0x0099CC"));
         ramp.add("azure", Color.decode("0x0033CC"));
         ramp.add("violet", Color.decode("0x3300FF"));
+        randomizeRamp();
+    }
+
+    protected void randomizeRamp() {
         ramp.initRandom();
     }
 
@@ -117,8 +125,10 @@ public class StyleGenerator {
         } else if (Polygon.class.isAssignableFrom(gtype)
                 || MultiPolygon.class.isAssignableFrom(gtype)) {
             st = StyleType.POLYGON;
-        } else {
+        } else if (Point.class.isAssignableFrom(gtype) || MultiPoint.class.isAssignableFrom(gtype)) {
             st = StyleType.POINT;
+        } else {
+            st = StyleType.GENERIC;
         }
 
         return doCreateStyle(st, featureType);
@@ -146,9 +156,6 @@ public class StyleGenerator {
 
         catalog.getResourcePool().writeStyle(style, new ByteArrayInputStream(sld.getBytes()));
         
-        //catalog.add(style);
-        //catalog.getResourcePool().writeStyle(style, new ByteArrayInputStream(sld.getBytes()));
-
         return style;
     }
 

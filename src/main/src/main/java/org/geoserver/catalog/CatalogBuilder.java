@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -1325,9 +1325,11 @@ public class CatalogBuilder {
         } else if (Polygon.class.isAssignableFrom(gtype)
                 || MultiPolygon.class.isAssignableFrom(gtype)) {
             styleName = StyleInfo.DEFAULT_POLYGON;
-        } else {
-            // fall back to point
+        } else if (Point.class.isAssignableFrom(gtype) || MultiPoint.class.isAssignableFrom(gtype)) {
             styleName = StyleInfo.DEFAULT_POINT;
+        } else {
+            // fall back to the generic style
+            styleName = StyleInfo.DEFAULT_GENERIC;
         }
 
         return catalog.getStyleByName(styleName);

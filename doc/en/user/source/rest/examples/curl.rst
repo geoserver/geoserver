@@ -961,5 +961,88 @@ Changing the master password using the file:
 
    curl -v -u admin:geoserver -XPUT -H "Content-type: text/xml" -d @change.xml http://localhost:8080/geoserver/rest/security/masterpw.xml
    
+Changing the catalog mode
+-------------------------
+
+Fetch the current catalog mode wit a GET request
+
+.. code-block:: console
+
+   curl -v -u admin:geoserver -XGET   http://localhost:8080/geoserver/rest/security/acl/catalog.xml
    
+.. code-block:: xml
+
+    <?xml version="1.0" encoding="UTF-8"?>
+    <catalog>
+        <mode>HIDE</mode>
+    </catalog>
+
+Create a file newMode.xml
+
+.. code-block:: xml
+
+    <?xml version="1.0" encoding="UTF-8"?>
+    <catalog>
+        <mode>MIXED</mode>
+    </catalog>
+   
+Change the catalog mode using the file (check with the GET request after modifying)
+
+.. code-block:: console
+
+   curl -v -u admin:geoserver -XPUT -H "Content-type: text/xml" -d @newMode.xml http://localhost:8080/geoserver/rest/security/acl/catalog.xml
+
+Working with access control rules
+---------------------------------
+   
+Fetch the all current rules for layers
+
+.. code-block:: console
+
+   curl -v -u admin:geoserver -XGET   http://localhost:8080/geoserver/rest/security/acl/layers.xml
+   
+.. code-block:: xml
+
+   <?xml version="1.0" encoding="UTF-8"?>
+   <rules />
+   
+No rules specified. Create a file rules.xml
+
+.. code-block:: xml
+
+   <?xml version="1.0" encoding="UTF-8"?>
+   <rules>
+      <rule resource="topp.*.r">*</rule>
+      <rule resource="topp.mylayer.w">*</rule>      
+   </rules>
+   
+Add the rules (check with the GET request after adding).
+
+.. code-block:: console
+
+   curl -v -u admin:geoserver -XPOST -H "Content-type: text/xml" -d @rules.xml http://localhost:8080/geoserver/rest/security/acl/layers.xml 
+   
+Modify the files rules.xml:
+
+.. code-block:: xml
+
+   <?xml version="1.0" encoding="UTF-8"?>
+   <rules>
+      <rule resource="topp.*.r">ROLE_AUTHORIZED</rule>
+      <rule resource="topp.mylayer.w">ROLE_1,ROLE_2</rule>      
+   </rules>
+   
+Modify the rules (check with the GET request after modifying).
+
+.. code-block:: console
+
+   curl -v -u admin:geoserver -XPUT -H "Content-type: text/xml" -d @rules.xml http://localhost:8080/geoserver/rest/security/acl/layers.xml 
+
+Delete the rules individually (check with the GET request after deleting)
+
+.. code-block:: console
+
+   curl -v -u admin:geoserver -XDELETE  http://localhost:8080/geoserver/rest/security/acl/layers/topp.*.r
+   curl -v -u admin:geoserver -XDELETE  http://localhost:8080/geoserver/rest/security/acl/layers/topp.mylayer.w
+
    

@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -21,7 +21,6 @@ import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
 import org.geoserver.catalog.MetadataMap;
@@ -33,7 +32,7 @@ import org.geoserver.web.util.MetadataMapModel;
 import org.geoserver.wfs.WFSInfo;
 
 /**
- * Panel for the WMS admin page to set the WMS INSPIRE extension preferences.
+ * Panel for the service admin page to set the service INSPIRE extension preferences.
  */
 public class InspireAdminPanel extends AdminPagePanel {
 
@@ -63,6 +62,7 @@ public class InspireAdminPanel extends AdminPagePanel {
         IChoiceRenderer<String> urlTypeChoiceRenderer = new IChoiceRenderer<String>() {
             private static final long serialVersionUID = 1L;
 
+            @Override
             public Object getDisplayValue(final String key) {
                 final String resourceKey = "InspireAdminPanel.metadataURLType." + key;// as found in
                                                                                       // GeoServerApplication.properties
@@ -72,6 +72,7 @@ public class InspireAdminPanel extends AdminPagePanel {
                 return displayValue;
             }
 
+            @Override
             public String getIdValue(final String key, int index) {
                 return key;
             }
@@ -88,18 +89,6 @@ public class InspireAdminPanel extends AdminPagePanel {
         boolean isWfs = model.getObject() instanceof WFSInfo;
         identifiersContainer.setVisible(isWfs);
         add(identifiersContainer);
-//        IModel<SpatialDatasetIdentifiers> sdiModel;
-//        if(isWfs) {
-//            SpatialDatasetIdentifiers identifiers = model.getObject().getMetadata().get(SPATIAL_DATASET_IDENTIFIER_TYPE.key, SpatialDatasetIdentifiers.class);
-//            if(identifiers != null) {
-//                model.getObject().getMetadata().put(SPATIAL_DATASET_IDENTIFIER_TYPE.key, identifiers);
-//            } else {
-//                identifiers = new SpatialDatasetIdentifiers();
-//            }
-//            sdiModel = new Model<SpatialDatasetIdentifiers>(identifiers);
-//        } else {
-//            sdiModel = new Model<SpatialDatasetIdentifiers>(null);
-//        }
         IModel<UniqueResourceIdentifiers> sdiModel = new MetadataMapModel(metadata, SPATIAL_DATASET_IDENTIFIER_TYPE.key, UniqueResourceIdentifiers.class);
         UniqueResourceIdentifiersEditor identifiersEditor = new UniqueResourceIdentifiersEditor(
                 "spatialDatasetIdentifiers", sdiModel);

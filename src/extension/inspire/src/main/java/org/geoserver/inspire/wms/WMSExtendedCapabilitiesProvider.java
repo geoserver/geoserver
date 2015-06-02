@@ -60,72 +60,49 @@ public class WMSExtendedCapabilitiesProvider implements ExtendedCapabilitiesProv
         namespaces.declarePrefix("inspire_vs", VS_NAMESPACE);
         namespaces
                 .declarePrefix("inspire_common", COMMON_NAMESPACE);
-        namespaces.declarePrefix("gml", "http://schemas.opengis.net/gml");
-        namespaces
-                .declarePrefix("gmd", "http://schemas.opengis.net/iso/19139/20060504/gmd/gmd.xsd");
-        namespaces
-                .declarePrefix("gco", "http://schemas.opengis.net/iso/19139/20060504/gco/gco.xsd");
-        namespaces
-                .declarePrefix("srv", "http://schemas.opengis.net/iso/19139/20060504/srv/srv.xsd");
     }
 
     @Override
     public void encode(Translator tx, WMSInfo wms, GetCapabilitiesRequest request)
             throws IOException {
         Version requestVersion = WMS.version(request.getVersion());
-
         // if this is not a wms 1.3.0 request
         if (!WMS.VERSION_1_3_0.equals(requestVersion)) {
+            return;
+        }
+        String metadataURL = (String) wms.getMetadata().get(SERVICE_METADATA_URL.key);
+        String mediaType = (String) wms.getMetadata().get(SERVICE_METADATA_TYPE.key);
+        String language = (String) wms.getMetadata().get(LANGUAGE.key);
+        //Don't create extended capabilities element if mandatory content not present
+        if (metadataURL == null) {
             return;
         }
 
         // IGN : INSPIRE SCENARIO 1
         tx.start("inspire_vs:ExtendedCapabilities");
-
-        // Metadata URL
-        tx.start("inspire_common:MetadataUrl",
-                atts("xsi:type", "inspire_common:resourceLocatorType"));
-        String metadataURL = (String) wms.getMetadata().get(SERVICE_METADATA_URL.key);
+        tx.start("inspire_common:MetadataUrl");
         tx.start("inspire_common:URL");
-        if (metadataURL != null) {
-            tx.chars(metadataURL);
-        }
+        tx.chars(metadataURL);
         tx.end("inspire_common:URL");
-
-        String metadataMediaType = (String) wms.getMetadata().get(SERVICE_METADATA_TYPE.key);
-        if (metadataMediaType == null) {
-            //default
-            metadataMediaType = "application/vnd.iso.19139+xml";
+        if (mediaType != null) {
+            tx.start("inspire_common:MediaType");
+            tx.chars(mediaType);
+            tx.end("inspire_common:MediaType");
         }
-        tx.start("inspire_common:MediaType");
-        tx.chars(metadataMediaType);
-        tx.end("inspire_common:MediaType");
         tx.end("inspire_common:MetadataUrl");
-
-        // SupportedLanguages
-        tx.start("inspire_common:SupportedLanguages",
-                atts("xsi:type", "inspire_common:supportedLanguagesType"));
-        String language = (String) wms.getMetadata().get(LANGUAGE.key);
+        tx.start("inspire_common:SupportedLanguages");
         language = language != null ? language : "eng";
         tx.start("inspire_common:DefaultLanguage");
         tx.start("inspire_common:Language");
         tx.chars(language);
         tx.end("inspire_common:Language");
         tx.end("inspire_common:DefaultLanguage");
-        tx.start("inspire_common:SupportedLanguage");
-        tx.start("inspire_common:Language");
-        tx.chars(language);
-        tx.end("inspire_common:Language");
-        tx.end("inspire_common:SupportedLanguage");
         tx.end("inspire_common:SupportedLanguages");
-
-        // ResponseLanguage
         tx.start("inspire_common:ResponseLanguage");
         tx.start("inspire_common:Language");
         tx.chars(language);
         tx.end("inspire_common:Language");
         tx.end("inspire_common:ResponseLanguage");
-
         tx.end("inspire_vs:ExtendedCapabilities");
 
     }

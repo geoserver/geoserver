@@ -51,7 +51,7 @@ public class InspirePanelTest extends GeoServerWicketTestSupport {
         wfs.getMetadata().put(InspireMetadata.SERVICE_METADATA_URL.key, "http://foo.com?bar=baz");
         wfs.getMetadata().put(InspireMetadata.SERVICE_METADATA_TYPE.key, "application/vnd.iso.19139+xml");
         wfs.getMetadata().put(InspireMetadata.SPATIAL_DATASET_IDENTIFIER_TYPE.key,
-                "one,http://www.geoserver.org/one;two,http://www.geoserver.org/two");
+                "one,http://www.geoserver.org/one;two,http://www.geoserver.org/two,http://metadata.geoserver.org/id?two");
         getGeoServer().save(wfs);
 
         tester.startPage(new FormTestPage(new ComponentBuilder() {
@@ -110,7 +110,7 @@ public class InspirePanelTest extends GeoServerWicketTestSupport {
 
         // the spatial identifiers editor
         tester.assertComponent("form:panel:datasetIdentifiersContainer:spatialDatasetIdentifiers", UniqueResourceIdentifiersEditor.class);
-        UniqueResourceIdentifiers expected = Converters.convert("one,http://www.geoserver.org/one;two,http://www.geoserver.org/two", UniqueResourceIdentifiers.class);
+        UniqueResourceIdentifiers expected = Converters.convert("one,http://www.geoserver.org/one;two,http://www.geoserver.org/two,http://metadata.geoserver.org/id?two", UniqueResourceIdentifiers.class);
         tester.assertModelValue("form:panel:datasetIdentifiersContainer:spatialDatasetIdentifiers", expected);
     }
     

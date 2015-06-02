@@ -28,9 +28,7 @@ public class UniqueResourceIdentifiersProvider extends
         return Arrays.asList(
                 new BeanProperty<UniqueResourceIdentifier>("code", "code"),
                 new BeanProperty<UniqueResourceIdentifier>("namespace", "namespace"),
-                // for the moment we leave this one out, while it's in the XSD no example
-                // ever shows how to use it, it's most likely used somewhere else in INSPIRE, not in DLS
-                // new BeanProperty<UniqueResourceIdentifier>("metadataURL", "metadataURL"),
+                new BeanProperty<UniqueResourceIdentifier>("metadataURL", "metadataURL"),
                 new PropertyPlaceholder<UniqueResourceIdentifier>("remove")
                 );
     }

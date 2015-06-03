@@ -474,6 +474,16 @@
       </dependencies>
     </profile>
     <profile>
+      <id>programming-guide</id>
+      <dependencies>
+        <dependency>
+            <groupId>org.geoserver.community</groupId>
+            <artifactId>gs-programming-guide</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
       <id>geosearch</id>
       <dependencies>
         <dependency>

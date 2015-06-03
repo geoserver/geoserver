@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -20,7 +20,6 @@ import net.opengis.wps10.ProcessDescriptionsType;
 import net.opengis.wps10.WPSCapabilitiesType;
 
 import org.geoserver.config.GeoServer;
-import org.geoserver.config.GeoServerInfo;
 import org.geoserver.wps.executor.WPSExecutionManager;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.BeansException;
@@ -35,17 +34,14 @@ import org.springframework.context.ApplicationContextAware;
 public class DefaultWebProcessingService implements WebProcessingService, ApplicationContextAware {
     private static final Logger LOGGER = Logging.getLogger(DefaultWebProcessingService.class);
 
-    protected WPSInfo wps;
-
-    protected GeoServerInfo gs;
+    protected GeoServer gs;
 
     protected ApplicationContext context;
 
     protected WPSExecutionManager executionManager;
 
     public DefaultWebProcessingService(GeoServer gs, WPSExecutionManager executionManager) {
-        this.wps = gs.getService(WPSInfo.class);
-        this.gs = gs.getGlobal();
+        this.gs = gs;
         this.executionManager = executionManager;
     }
 
@@ -53,21 +49,21 @@ public class DefaultWebProcessingService implements WebProcessingService, Applic
      * @see WebMapService#getServiceInfo()
      */
     public WPSInfo getServiceInfo() {
-        return wps;
+        return gs.getService(WPSInfo.class);
     }
 
     /**
      * @see org.geoserver.wps.WebProcessingService#getCapabilities
      */
     public WPSCapabilitiesType getCapabilities(GetCapabilitiesType request) throws WPSException {
-        return new GetCapabilities(this.wps, context).run(request);
+        return new GetCapabilities(getServiceInfo(), context).run(request);
     }
 
     /**
      * @see org.geoserver.wps.WebProcessingService#describeProcess
      */
     public ProcessDescriptionsType describeProcess(DescribeProcessType request) throws WPSException {
-        return new DescribeProcess(this.wps, context).run(request);
+        return new DescribeProcess(getServiceInfo(), context).run(request);
     }
 
     /**
@@ -82,7 +78,7 @@ public class DefaultWebProcessingService implements WebProcessingService, Applic
      */
     public void getSchema(HttpServletRequest request, HttpServletResponse response)
             throws WPSException {
-        new GetSchema(this.wps).run(request, response);
+        new GetSchema(getServiceInfo()).run(request, response);
     }
 
     /**

@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -11,6 +11,7 @@ import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
+import org.geoserver.config.GeoServer;
 import org.geoserver.data.test.MockData;
 import org.junit.Test;
 import org.w3c.dom.Document;
@@ -24,6 +25,22 @@ public class GetCapabilitiesTest extends WPSTestSupport {
         basicCapabilitiesTest(d, null);
     }
     
+    @Test
+    public void testGetDisabledService() throws Exception {
+        GeoServer gs = getGeoServer();
+        WPSInfo info = gs.getService(WPSInfo.class);
+        try {
+            info.setEnabled(false);
+            gs.save(info);
+            Document dom = getAsDOM("wps?service=wps&request=getcapabilities");
+            // print(dom);
+            checkOws10Exception(dom);
+        } finally {
+            info.setEnabled(true);
+            gs.save(info);
+        }
+    }
+
     @Test
     public void testGetBasicWorkspaceQualified() throws Exception {
         // this one did not report the workspace specific urls

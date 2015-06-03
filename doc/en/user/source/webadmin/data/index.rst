@@ -17,8 +17,8 @@ Each subsection describes a data type page which provides add, view, edit, and d
    layergroups
    styles
    
-Using Data type List views
---------------------------
+**Using Data type List views**
+
 
 The main page for each data type is a list view showing the items of that data type configured in the GeoServer instance.
 The page displays links to the data type items, and where applicable their parent data types.
@@ -31,8 +31,7 @@ In the example below, the :guilabel:`Layers` list page displays a table of layer
 
    *Layers list page*
 
-Sorting
-^^^^^^^
+**Sorting**
 
 To sort a data type alphabetically, click the column header. 
 
@@ -41,8 +40,7 @@ To sort a data type alphabetically, click the column header.
 
    *Unsorted (left) and sorted (right) columns*
 
-Searching
-^^^^^^^^^
+**Searching**
 
 To search data type items, enter the search string in the search box and click Enter. GeoServer will search the data type for items that match your query, and display a list view showing the search results.
 Searching is useful for working with data types that contain a large number of items.

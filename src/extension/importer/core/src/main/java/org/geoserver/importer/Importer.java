@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -49,6 +49,7 @@ import org.geoserver.importer.transform.TransformChain;
 import org.geoserver.importer.transform.VectorTransformChain;
 import org.geoserver.platform.ContextLoadedEvent;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.security.GeoServerSecurityManager;
 import org.geotools.coverage.grid.io.HarvestedSource;
 import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
 import org.geotools.data.DataStore;
@@ -248,6 +249,12 @@ public class Importer implements DisposableBean, ApplicationListener {
         return createContext(data, null, null); 
     }
     
+    public ImportContext registerContext(Long id) throws IOException, IllegalArgumentException {
+        ImportContext context = createContext(id);
+        context.setState(org.geoserver.importer.ImportContext.State.INIT);
+        return context;
+    }
+
     /**
      * Create a context with the provided optional id.
      * The provided id must be higher than the current mark.
@@ -316,6 +323,33 @@ public class Importer implements DisposableBean, ApplicationListener {
         });
     }
 
+    /**
+     * Performs an asynchronous initialization of tasks in the specified context, and eventually
+     * saves the result in the {@link ImportStore}
+     * 
+     * @param context
+     * @param prepData
+     * @return
+     */
+    public Long initAsynch(final ImportContext context, final boolean prepData) {
+        return jobs.submit(new Job<ImportContext>() {
+            @Override
+            protected ImportContext call(ProgressMonitor monitor) throws Exception {
+                try {
+                    init(context, prepData);
+                } finally {
+                    changed(context);
+                }
+                return context;
+            }
+
+            @Override
+            public String toString() {
+                return "Initializing context " + context.getId();
+            }
+        });
+    }
+
     public void init(ImportContext context) throws IOException {
         init(context, true);
     }
@@ -323,11 +357,33 @@ public class Importer implements DisposableBean, ApplicationListener {
     public void init(ImportContext context, boolean prepData) throws IOException {
         context.reattach(catalog);
 
-        ImportData data = context.getData();
-        if (data != null) {
-            addTasks(context, data, prepData); 
+        try {
+            ImportData data = context.getData();
+            if (data != null) {
+                if (data instanceof RemoteData) {
+
+                    data = ((RemoteData) data).resolve(this);
+                    context.setData(data);
+                }
+
+                addTasks(context, data, prepData);
+            }
+
+            // switch from init to pending as needed
+            context.setState(ImportContext.State.PENDING);
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Failed to init the context ", e);
+
+            // switch to complete to make the error evident, since we
+            // cannot attach it to a task
+            context.setState(ImportContext.State.INIT_ERROR);
+            context.setMessage(e.getMessage());
+            return;
         }
+
     }
+
+
 
     public List<ImportTask> update(ImportContext context, ImportData data) throws IOException {
         List<ImportTask> tasks = addTasks(context, data, true);
@@ -674,6 +730,10 @@ public class Importer implements DisposableBean, ApplicationListener {
     }
     
     public void run(ImportContext context, ImportFilter filter, ProgressMonitor monitor) throws IOException {
+        if (context.getState() == ImportContext.State.INIT) {
+            throw new IllegalStateException("Importer is still initializing, cannot run it");
+        }
+
         context.setProgress(monitor);
         context.setState(ImportContext.State.RUNNING);
         
@@ -1436,8 +1496,15 @@ public class Importer implements DisposableBean, ApplicationListener {
 
         xs.registerLocalConverter( ReferencedEnvelope.class, "crs", new CRSConverter() );
         xs.registerLocalConverter( GeneralEnvelope.class, "crs", new CRSConverter() );
+
+        GeoServerSecurityManager securityManager = GeoServerExtensions
+                .bean(GeoServerSecurityManager.class);
+        xs.registerLocalConverter(RemoteData.class, "password", new EncryptedFieldConverter(
+                securityManager));
         
         return xp;
     }
+
+
 
 }

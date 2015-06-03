@@ -36,6 +36,7 @@ This data comes in a variety of forms including:
 * A spatial file (Shapefile, GeoTiff, KML, etc...)
 * A directory of spatial files
 * A table in a spatial database
+* A remote location that the server will download data from
 
 A task is classified as either "direct" or "indirect". A *direct task* is one in which the data being imported requires no transformation to be imported. 
 It is imported directly. An example of such a task is one that involves simply importing an existing Shapefile as is. 
@@ -59,16 +60,19 @@ All the imports
      - Status Code/Headers
      - Input
      - Output
+     - Parameters
    * - GET
      - Retrieve all imports
      - 200
      - n/a
      - :ref:`Import Collection <import_collection>`
+     - n/a
    * - POST
      - Create a new import
      - 201 with Location header
      - n/a
      - :ref:`Imports <import>`
+     - async=false/true
      
 Retrieving the list of all imports
 """"""""""""""""""""""""""""""""""
@@ -180,6 +184,14 @@ The response to the above POST request will be::
 	    ]
 	  }
 	}
+	
+The operation of populating the tasks can require time, especially if done against a large set of
+files, or against a "remote" data (more on this later), in this case the POST request can include ``?async=true``
+at the end of the URL to make the importer run it asynchronously. 
+In this case the import will be created in INIT state and will remain in such state until all
+the data transfer and task creation operations are completed. In case of failure to fetch data
+the import will immediately stop, the state will switch to the ``INIT_ERROR`` state,
+and a error message will appear in the import context "message" field.
 
 Import object
 ^^^^^^^^^^^^^
@@ -195,16 +207,19 @@ Import object
      - Status Code/Headers
      - Input
      - Output
+     - Parameters
    * - GET
      - Retrieve import with id <importId>
      - 200
      - n/a
      - :ref:`Imports <import>`
+     - n/a
    * - POST
      - Execute import with id <importId>
      - 204
      - n/a
      - n/a
+     - async=true/false
    * - PUT
      - Create import with proposed id <importId>. If the proposed id is
        ahead of the current (next) id, the current id will be advanced. If the
@@ -213,13 +228,46 @@ Import object
      - 201 with Location header
      - n/a
      - :ref:`Imports <import>`
+     - n/a
    * - DELETE
      - Remove import with id <importId>
      - 200
      - n/a
      - n/a
+     - n/a  
     
-The representation of a import is the same as the one contained in the import creation response.    
+The representation of a import is the same as the one contained in the import creation response.
+The execution of a import can be a long task, as such, it's possible to add ``async=true`` to the
+request to make it run in a asynchronous fashion, the client will have to poll the import representation
+and check when it reaches the "COMPLETE" state. 
+
+Data
+^^^^
+
+A import can have a "data" representing the source of the data to be imported. The data can
+be of different types, in particular, "file", "directory", "mosaic", "database" and "remote".
+During the import initialization the importer will scan the contents of said resource, and
+generate import tasks for each data found in it.
+
+Most data types are discussed in the task section, the only type that's specific to the whole
+import context is the "remote" one, that is used to ask the importer to fetch the data from
+a remote location autonomusly, without asking the client to perform an upload.
+
+The representation of a remote resource looks as follows::
+
+      "data": {
+        "type": "remote",
+        "location": "ftp://fthost/path/to/importFile.zip",
+        "username": "user",
+        "password": "secret",
+        "domain" : "mydomain"
+      }
+
+The location can be `any URI supported by Commons VFS <http://commons.apache.org/proper/commons-vfs/filesystems.html>`_,
+including HTTP and FTP servers. The ``username``, ``password`` and ``domain`` elements are all optional,
+and required only if the remote server demands an authentication of sorts.
+In case the referred file is compressed, it will be unpacked as the download completes, and the
+tasks will be created over the result of unpacking.
     
 Tasks
 ^^^^^

@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -19,8 +19,10 @@ import net.sf.json.JSONObject;
 
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.importer.Directory;
+import org.geoserver.importer.ImportContext;
 import org.geoserver.importer.ImportTask;
 import org.geoserver.importer.ImporterTestSupport;
+import org.geoserver.importer.RemoteData;
 import org.geoserver.importer.transform.DateFormatTransform;
 import org.geoserver.importer.transform.TransformChain;
 import org.geoserver.rest.PageInfo;
@@ -122,6 +124,33 @@ public class ImportJSONIOTest extends ImporterTestSupport {
         DateFormatTransform dft = (DateFormatTransform) chain.getTransforms().get(0);
         assertEquals("foobar",dft.getField());
         assertEquals("yyyy-MM-dd",dft.getDatePattern().dateFormat().toPattern());
+    }
 
+    @Test
+    public void testRemoteDataFreeAccess() throws IOException {
+        ImportContext context = importer.registerContext(null);
+        context.setData(new RemoteData("http://www.geoserver.org/data"));
+
+        writer.context(context, true, 3);
+        ByteArrayInputStream inbuf = new ByteArrayInputStream(buf.toByteArray());
+        ImportContext readBack = new ImportJSONReader(importer, inbuf).context();
+
+        assertEquals(context.getData(), readBack.getData());
+    }
+
+    @Test
+    public void testRemoteDataFullDataAccess() throws IOException {
+        ImportContext context = importer.registerContext(null);
+        RemoteData data = new RemoteData("http://www.geoserver.org/data");
+        data.setUsername("foo");
+        data.setPassword("bar");
+        data.setDomain("myDomain");
+        context.setData(data);
+
+        writer.context(context, true, 3);
+        ByteArrayInputStream inbuf = new ByteArrayInputStream(buf.toByteArray());
+        ImportContext readBack = new ImportJSONReader(importer, inbuf).context();
+
+        assertEquals(context.getData(), readBack.getData());
     }
 }

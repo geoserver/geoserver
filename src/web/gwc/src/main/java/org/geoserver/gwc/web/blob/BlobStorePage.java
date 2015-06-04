@@ -1,0 +1,290 @@
+/* (c) 2015 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
+package org.geoserver.gwc.web.blob;
+
+import static org.apache.commons.lang.StringEscapeUtils.escapeHtml;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.wicket.AttributeModifier;
+import org.apache.wicket.Component;
+import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
+import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
+import org.apache.wicket.markup.html.WebMarkupContainer;
+import org.apache.wicket.markup.html.basic.MultiLineLabel;
+import org.apache.wicket.markup.html.form.CheckBox;
+import org.apache.wicket.markup.html.form.DropDownChoice;
+import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.FormComponent;
+import org.apache.wicket.markup.html.form.TextField;
+import org.apache.wicket.markup.html.form.validation.AbstractFormValidator;
+import org.apache.wicket.markup.html.link.BookmarkablePageLink;
+import org.apache.wicket.model.CompoundPropertyModel;
+import org.apache.wicket.model.Model;
+import org.apache.wicket.model.ResourceModel;
+import org.geoserver.gwc.GWC;
+import org.geoserver.gwc.web.blob.BlobStoreTypeStore.BlobStoreType;
+import org.geoserver.web.GeoServerSecuredPage;
+import org.geoserver.web.wicket.GeoServerDialog;
+import org.geoserver.web.wicket.ParamResourceModel;
+import org.geowebcache.config.BlobStoreConfig;
+import org.geowebcache.config.ConfigurationException;
+import org.geowebcache.layer.TileLayer;
+
+/**
+ * 
+ * Page to configure a BlobStore
+ * 
+ * @author Niels Charlier
+ *
+ */
+public class BlobStorePage extends GeoServerSecuredPage {
+
+    private DropDownChoice<BlobStoreType> typeOfBlobStore;
+
+    private WebMarkupContainer blobConfigContainer;
+
+    private Form<BlobStoreConfig> blobStoreForm;
+
+    private TextField<String> tfId;
+
+    private CheckBox cbDefault, cbEnabled;
+
+    private GeoServerDialog dialog;
+
+    public BlobStorePage() {
+        this(null);
+    }
+
+    public BlobStorePage(final BlobStoreConfig originalStore) {
+
+        final List<String> assignedLayers = new ArrayList<String>();
+
+        add(dialog = new GeoServerDialog("confirmDisableDialog"));
+        dialog.setTitle(new ParamResourceModel("confirmDisableDialog.title", getPage()));
+        dialog.setInitialHeight(200);
+
+        typeOfBlobStore = new DropDownChoice<BlobStoreType>("typeOfBlobStore",
+                new Model<BlobStoreType>(), BlobStoreTypeStore.getInstance().getAll());
+        typeOfBlobStore.setOutputMarkupId(true);
+        typeOfBlobStore.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+            private static final long serialVersionUID = 359589121400814043L;
+
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                blobStoreForm.setVisible(typeOfBlobStore.getModelObject() != null);
+                if (typeOfBlobStore.getModelObject() != null) {
+                    blobStoreForm.getModel().setObject(
+                            typeOfBlobStore.getModelObject().newConfigObject());
+                    blobStoreForm.addOrReplace(typeOfBlobStore.getModelObject().createPanel(
+                            "blobSpecificPanel", blobStoreForm.getModel()));
+                }
+
+                target.addComponent(blobConfigContainer);
+            }
+
+        });
+        typeOfBlobStore.add(new AttributeModifier("title", true, new ResourceModel(
+                "typeOfBlobStore.title")));
+
+        Form selector = new Form("selector");
+        selector.add(typeOfBlobStore);
+        add(selector);
+
+        blobConfigContainer = new WebMarkupContainer("blobConfigContainer");
+        blobConfigContainer.setOutputMarkupId(true);
+        add(blobConfigContainer);
+
+        blobStoreForm = new Form<BlobStoreConfig>("blobStoreForm",
+                new CompoundPropertyModel<BlobStoreConfig>(originalStore == null ? null
+                        : originalStore.clone()));
+        blobConfigContainer.add(blobStoreForm);
+        blobStoreForm.setVisible(originalStore != null);
+
+        blobStoreForm.add((tfId = new TextField<String>("id")).setRequired(true));
+        tfId.add(new AttributeModifier("title", true, new ResourceModel("id.title")));
+        blobStoreForm.add(cbEnabled = new CheckBox("enabled"));
+        cbEnabled.add(new AttributeModifier("title", true, new ResourceModel("enabled.title")));
+        blobStoreForm.add(cbDefault = new CheckBox("default"));
+        cbDefault.add(new AttributeModifier("title", true, new ResourceModel("default.title")));
+
+        if (originalStore != null) {
+            typeOfBlobStore.getModel().setObject(
+                    BlobStoreTypeStore.getInstance().getFromClass(originalStore.getClass()));
+            blobStoreForm.addOrReplace(typeOfBlobStore.getModelObject().createPanel(
+                    "blobSpecificPanel", blobStoreForm.getModel()));
+            typeOfBlobStore.setEnabled(false);
+
+            for (TileLayer layer : GWC.get().getTileLayers()) {
+                if (originalStore.getId().equals(layer.getBlobStoreId())) {
+                    assignedLayers.add(layer.getName());
+                }
+            }
+        }
+
+        blobStoreForm.add(new AbstractFormValidator() {
+            private static final long serialVersionUID = 5240602030478856537L;
+
+            @Override
+            public FormComponent<?>[] getDependentFormComponents() {
+                return new FormComponent<?>[] { cbDefault, cbEnabled };
+            }
+
+            @Override
+            public void validate(Form<?> form) {
+                BlobStoreConfig blobStore = (BlobStoreConfig) form.getModelObject();
+                if (blobStore.isDefault() && !cbDefault.getConvertedInput()) {
+                    form.error(new ParamResourceModel("defaultError", getPage()).getString());
+                } else if (cbDefault.getConvertedInput() && !cbEnabled.getConvertedInput()) {
+                    form.error(new ParamResourceModel("enabledError", getPage()).getString());
+                }
+            }
+        });
+
+        blobStoreForm.add(new AbstractFormValidator() {
+            private static final long serialVersionUID = 5240602030478856537L;
+
+            @Override
+            public FormComponent<?>[] getDependentFormComponents() {
+                return new FormComponent<?>[] { tfId };
+            }
+
+            @Override
+            public void validate(Form<?> form) {
+                for (BlobStoreConfig otherBlobStore : GWC.get().getBlobStores()) {
+                    if (otherBlobStore != originalStore
+                            && otherBlobStore.getId().equals(tfId.getConvertedInput())) {
+                        form.error(new ParamResourceModel("duplicateIdError", getPage())
+                                .getString());
+                    }
+                }
+            }
+        });
+
+        // build the submit/cancel
+        blobStoreForm.add(new AjaxSubmitLink("save") {
+            private static final long serialVersionUID = 3735176778941168701L;
+
+            @Override
+            public void onSubmit(AjaxRequestTarget target, Form<?> form) {
+
+                final BlobStoreConfig blobStore = (BlobStoreConfig) getForm().getModelObject();
+
+                if (originalStore != null && originalStore.isEnabled() && !blobStore.isEnabled()
+                        && assignedLayers.size() > 0) {
+                    dialog.showOkCancel(target, new GeoServerDialog.DialogDelegate() {
+                        private static final long serialVersionUID = 5257987095800108993L;
+
+                        private boolean success;
+
+                        private String error = null;
+
+                        @Override
+                        protected Component getContents(String id) {
+                            StringBuilder sb = new StringBuilder();
+                            sb.append(new ParamResourceModel("confirmDisableDialog.content",
+                                    getPage()).getString());
+                            for (String layer : assignedLayers) {
+                                sb.append("\n&nbsp;&nbsp;");
+                                sb.append(escapeHtml(layer));
+                            }
+                            return new MultiLineLabel("userPanel", sb.toString())
+                                    .setEscapeModelStrings(false);
+                        }
+
+                        @Override
+                        protected boolean onSubmit(AjaxRequestTarget target, Component contents) {
+                            try {
+                                save(originalStore, blobStore, assignedLayers);
+                                success = true;
+                            } catch (ConfigurationException e) {
+                                error = e.getMessage();
+                            }
+                            return true;
+                        }
+
+                        @Override
+                        public void onClose(AjaxRequestTarget target) {
+                            if (success) {
+                                doReturn(BlobStoresPage.class);
+                            } else if (error != null) {
+                                error(error);
+                                target.addComponent(feedbackPanel);
+                            }
+                        }
+
+                    });
+                } else {
+                    try {
+                        save(originalStore, blobStore, assignedLayers);
+                        doReturn(BlobStoresPage.class);
+                    } catch (ConfigurationException e) {
+                        error(e.getMessage());
+                        target.addComponent(feedbackPanel);
+                    }
+                }
+            }
+
+            protected void onError(AjaxRequestTarget target, Form<?> form) {
+                target.addComponent(feedbackPanel);
+            }
+        });
+        blobStoreForm
+                .add(new BookmarkablePageLink<BlobStoreConfig>("cancel", BlobStoresPage.class));
+
+    }
+
+    protected void save(BlobStoreConfig originalStore, BlobStoreConfig blobStore,
+            List<String> assignedLayers) throws ConfigurationException {
+
+        // remove default if necessary
+        BlobStoreConfig defaultStore = null;
+        if (blobStore.isDefault() && (originalStore == null || !originalStore.isDefault())) {
+            defaultStore = GWC.get().getDefaultBlobStore();
+            if (defaultStore != null) {
+                defaultStore.setDefault(false);
+                GWC.get().modifyBlobStore(defaultStore.getId(), defaultStore);
+            }
+        }
+
+        // save
+        try {
+            if (originalStore == null) {
+                GWC.get().addBlobStore(blobStore);
+            } else {
+                GWC.get().modifyBlobStore(originalStore.getId(), blobStore);
+            }
+        } catch (ConfigurationException e) {
+            // reverse default
+            if (defaultStore != null) {
+                defaultStore.setDefault(true);
+                GWC.get().modifyBlobStore(defaultStore.getId(), defaultStore);
+            }
+            throw e;
+        }
+
+        // update layers if necessary
+        if (originalStore != null) {
+            boolean updateId = !blobStore.getId().equals(originalStore.getId());
+            boolean disable = originalStore.isEnabled() && !blobStore.isEnabled();
+
+            if (updateId || disable) {
+                for (String layerName : assignedLayers) {
+                    TileLayer layer = GWC.get().getTileLayerByName(layerName);
+                    if (updateId) {
+                        layer.setBlobStoreId(blobStore.getId());
+                    }
+                    if (disable) {
+                        layer.setEnabled(false);
+                    }
+                    GWC.get().save(layer);
+                }
+            }
+        }
+    }
+
+}

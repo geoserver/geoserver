@@ -6,6 +6,7 @@
 package org.geoserver.gwc.web.layer;
 
 import static org.geoserver.gwc.web.layer.CachedLayerProvider.ACTIONS;
+import static org.geoserver.gwc.web.layer.CachedLayerProvider.BLOBSTORE;
 import static org.geoserver.gwc.web.layer.CachedLayerProvider.ENABLED;
 import static org.geoserver.gwc.web.layer.CachedLayerProvider.NAME;
 import static org.geoserver.gwc.web.layer.CachedLayerProvider.PREVIEW_LINKS;
@@ -105,6 +106,8 @@ public class CachedLayersPage extends GeoServerSecuredPage {
                     return previewLinks(id, itemModel);
                 } else if (property == ACTIONS) {
                     return actionsLinks(id, itemModel);
+                } else if (property == BLOBSTORE) {
+                    return null;
                 }
 
                 throw new IllegalArgumentException("Don't know a property named "

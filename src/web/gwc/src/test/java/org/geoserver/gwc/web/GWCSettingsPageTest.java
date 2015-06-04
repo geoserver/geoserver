@@ -302,7 +302,7 @@ public class GWCSettingsPageTest extends GeoServerWicketTestSupport {
         tester.assertRenderedPage(GWCSettingsPage.class);
         // Ensure the component blobstores belongs to the BlobStorePanel class
         tester.assertComponent("form:cachingOptionsPanel:container:configs:blobstores",
-                BlobStorePanel.class);
+                InMemoryBlobStorePanel.class);
 
         // Selection of the form tests
         FormTester form = tester.newFormTester("form");

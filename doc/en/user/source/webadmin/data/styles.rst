@@ -5,17 +5,17 @@ Styles
 
 Styles render, or make available, geospatial data. Styles for GeoServer are written in Styled Layer Descriptor (SLD), a subset of XML. Please see the section on :ref:`styling` for more information on working with styles. 
 
-On the Styles page, you can register or create a new style, edit an existing style, or delete remove a style.
+On the Styles page, you can add a new style, view or edit an existing style, or remove a style.
 
 .. figure:: ../images/data_style.png
    :align: center
    
    *Styles page*
 
-Edit Styles
------------
+Edit a Style
+------------
 
-The :guilabel:`Style Editor` page presents options for configuring a style's name and code. SLD names are specified at the top in the name field. Typing or pasting of SLD code can be done in one of two modes. The first mode is an embedded `EditArea <http://www.cdolivet.com/index.php?page=editArea>`_ a rich editor. The second mode is an unformatted text editor. Check the :guilabel:`Toggle Editor` to switch between modes.
+To view or edit a style, click the style name. A :guilabel:`Style Editor` page will be diplayed.  The page presents options for configuring a style's name and code. Style names are specified at the top in the name field. Typing or pasting of SLD code can be done in one of two modes. The first mode is an embedded `EditArea <http://www.cdolivet.com/index.php?page=editArea>`_ a rich editor. The second mode is an unformatted text editor. Check the :guilabel:`Toggle Editor` to switch between modes.
 
 .. figure:: ../images/data_style_editor.png
    :align: center
@@ -77,7 +77,7 @@ The buttons for adding and removing a style can be found at the top of the :guil
 
    *Adding or removing a style*
    
-To add a new layer group, select the :guilabel:`Add a new style` button. You will be redirected to an editor page. Enter a name for the style. The editor page provides two options for submitting an SLD. You can paste the SLD directly into the editor, or you can select and upload a local file that contains the SLD.
+To add a new style, select the :guilabel:`Add a new style` button. You will be redirected to an editor page. Enter a name for the style. The editor page provides two options for submitting an SLD. You can paste the SLD directly into the editor, or you can select and upload a local file that contains the SLD.
 
 .. figure:: ../images/data_style_upload.png
    :align: center
@@ -89,7 +89,7 @@ Once a style is successfully submitted, you will be redirected to the main :guil
 Remove a Style
 --------------
 
-To remove a style, select the check box next to the style. Multiple layer groups can be selected for batch removal. Click the :guilabel:`Remove selected style(s)` link at the top of the page. You will be asked to confirm or cancel the deletion. Clicking :guilabel:`OK` removes the layer group. 
+To remove a style, select it by clicking the checkbox next to the style. Multiple styles can be selected, or all can be selected by clicking the checkbox in the header. Click the :guilabel:`Remove selected style(s)` link at the top of the page. You will be asked to confirm or cancel the removal. Clicking :guilabel:`OK` removes the selected style(s). 
  
 .. figure:: ../images/data_style_delete.png
    :align: center

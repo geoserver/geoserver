@@ -3,9 +3,9 @@
 Layers
 ======
 
-In GeoServer, the term "layer" refers to raster or vector data that contains a collection of geographic features. Vector layers are analogous to "featureTypes" and raster layers are analogous to "coverages". All layers have a source of data, known as a Store.
+In GeoServer, the term "layer" refers to a raster or vector dataset that represents a collection of geographic features. Vector layers are analogous to "featureTypes" and raster layers are analogous to "coverages". All layers have a source of data, known as a Store. The layer is associated with the Workspace in which the Store is defined.
 
-In the Layers section of the web interface, you can view and edit existing layer, add (register) a new layer, or delete (unregister) a layer. The Layers View page displays the not only the list of layers, but the Store and Workspace where those layers are contained. The View page also displays the layer's status and native SRS.
+In the Layers section of the web interface, you can view and edit existing layers, add (register) a new layer, or remove (unregister) a layer. The Layers View page displays the list of layers, and the Store and Workspace in which each layer is contained. The View page also displays the layer's status and native SRS.
 
 .. figure:: ../images/data_layers.png
 
@@ -28,17 +28,14 @@ Layers can be divided into two types of data: raster and vector. These two forma
      - vector (feature)  
 
 
-Add or delete a layer
----------------------
+Add a Layer
+-----------
 
-At the upper left-hand corner of the layers view page there are two buttons for the adding and deletion of layers. The green plus button allows you to add a new layer, referred to as resource. The red minus button allows you to remove selected layers. 
+At the upper left-hand corner of the layers view page there are two buttons for the adding and removal of layers. The green plus button allows you to add a new layer (referred to as *resource*). The red minus button allows you to remove selected layers. 
 
 .. figure:: ../images/data_layers_add_remove.png
    
-   *Buttons to Add or Remove a Layer*
-
-Add a Layer
-^^^^^^^^^^^
+   *Buttons to Add and Remove a Layer*
 
 Clicking the :guilabel:`Add a new resource` button brings up a :guilabel:`New Layer Chooser` panel. The menu displays all currently enabled stores. From this menu, select the Store where the layer should be added. 
 
@@ -60,29 +57,29 @@ To add a new layer for a published resource click :guilabel:`Publish Again`.
 (Note that when re-publishing the name of the new layer may have to be modified to avoid conflict with an existing layer.)
 The actions display an :ref:`Edit Layer<webadmin_layers_edit_data>` page to enter the definition of the new layer.
 
-Delete a Layer
-^^^^^^^^^^^^^^
+Remove a Layer
+--------------
 
-To delete a layer, click the check box on the left side of each layer row. As shown below, multiple layers can be selected for removal on a single results page. It should be noted, however, that selections for removal will not persist from one results pages to the next. 
+To remove a layer, select it by clicking the checkbox next to the layer. As shown below, multiple layers can be selected for batch removal. Note that selections for removal will not persist from one results pages to the next. 
   
 .. figure:: ../images/data_layers_delete.png
    
-   *Some layers selected for deletion*
+   *Some layers selected for removal*
 
-All layers can be selected for removal by selecting the check box in the header row. 
+All layers can be selected for removal by clicking the checkbox in the header. 
 
 .. figure:: ../images/data_layers_delete_all.png
    
-   *All layers selected for deletion*
+   *All layers selected for removal*
 
-Once layer(s) are selected, the :guilabel:`Remove selected resources` link is activated. Once you've clicked the link, you will be asked to confirm or cancel the deletion. Selecting :guilabel:`OK` successfully deletes the layer. 
+Once layer(s) are selected, the :guilabel:`Remove selected resources` link is activated. Once you've clicked the link, you will be asked to confirm or cancel the removal. Selecting :guilabel:`OK` removes the selected layer(s). 
      
 .. _webadmin_layers_edit_data:
 
 Edit Layer: Data 
 ----------------
 
-Clicking the layer name opens a layer configuration panel. The :guilabel:`Data` tab, activated by default, allows you to define and change data parameters for a layer. 
+To view or edit a layer, click the layer name.  A layer configuration page will be displayed. The :guilabel:`Data` tab, activated by default, allows you to define and change data parameters for a layer. 
 
 .. figure:: ../images/data_layers_edit_data.png
    

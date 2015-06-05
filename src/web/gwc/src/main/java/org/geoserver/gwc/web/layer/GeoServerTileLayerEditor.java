@@ -255,7 +255,7 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
         configs.add(cacheFormats);
 
         final List<String> formats = Arrays.asList("image/png", "image/png8", "image/jpeg",
-                "image/gif", "application/json");
+                "image/gif", "application/json;type=topojson");
 
         ListView<String> cacheFormatsList = new ListView<String>("cacheFormats", formats) {
             private static final long serialVersionUID = 1L;

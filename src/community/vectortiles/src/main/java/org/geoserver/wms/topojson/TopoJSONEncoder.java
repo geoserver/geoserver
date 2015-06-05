@@ -5,14 +5,377 @@
  */
 package org.geoserver.wms.topojson;
 
+import java.awt.geom.AffineTransform;
 import java.io.IOException;
 import java.io.Writer;
+import java.lang.reflect.Type;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.annotation.Nullable;
+
+import org.geoserver.wms.topojson.TopoGeom.GeometryColleciton;
+import org.geoserver.wms.topojson.TopoGeom.LineString;
+import org.geoserver.wms.topojson.TopoGeom.MultiLineString;
+import org.geoserver.wms.topojson.TopoGeom.MultiPoint;
+import org.geoserver.wms.topojson.TopoGeom.MultiPolygon;
+import org.geoserver.wms.topojson.TopoGeom.Point;
+import org.geoserver.wms.topojson.TopoGeom.Polygon;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.CoordinateSequence;
+import com.vividsolutions.jts.geom.PrecisionModel;
 
 public class TopoJSONEncoder {
 
+    private static class TopologyAdapter implements JsonSerializer<Topology>,
+            JsonDeserializer<Topology> {
+
+        @Override
+        public JsonElement serialize(Topology topology, Type typeOfSrc,
+                JsonSerializationContext context) {
+
+            JsonObject root = new JsonObject();
+            root.addProperty("type", "Topology");
+
+            AffineTransform transform = topology.getScreenToWorldTransform();
+            if (!transform.isIdentity()) {
+                addTransform(root, transform);
+            }
+            addArcs(root, topology);
+
+            addLayers(root, topology.getLayers());
+            return root;
+        }
+
+        private void addLayers(JsonObject root, Map<String, GeometryColleciton> layers) {
+            
+            JsonObject objects = new JsonObject();
+            root.add("objects", objects);
+            
+            for (Map.Entry<String, GeometryColleciton> e : layers.entrySet()) {
+                String name = e.getKey();
+                GeometryColleciton geometries = e.getValue();
+
+                JsonObject layer = TopologyEncoder.encode(geometries);
+                objects.add(name, layer);
+            }
+        }
+
+        private void addTransform(JsonObject root, AffineTransform transform) {
+            if (transform.isIdentity()) {
+                return;
+            }
+            JsonObject tx = new JsonObject();
+            JsonArray scale = new JsonArray();
+            scale.add(new JsonPrimitive(transform.getScaleX()));
+            scale.add(new JsonPrimitive(transform.getScaleY()));
+            tx.add("scale", scale);
+
+            JsonArray translate = new JsonArray();
+            translate.add(new JsonPrimitive(transform.getTranslateX()));
+            translate.add(new JsonPrimitive(transform.getTranslateY()));
+            tx.add("translate", translate);
+
+            root.add("transform", tx);
+        }
+
+        private void addArcs(JsonObject root, Topology topology) {
+
+            JsonArray arcs = new JsonArray();
+
+            JsonArray jsonArc;
+            for (com.vividsolutions.jts.geom.LineString arc : topology.getArcs()) {
+                if (topology.getScreenToWorldTransform().isIdentity()) {
+                    jsonArc = TopoJSONEncoder.serialize(arc.getCoordinateSequence());
+                } else {
+                    jsonArc = TopoJSONEncoder.quantize(arc.getCoordinateSequence(), arc
+                            .getFactory().getPrecisionModel());
+                }
+                arcs.add(jsonArc);
+            }
+            root.add("arcs", arcs);
+
+        }
+
+        @Override
+        public Topology deserialize(JsonElement arg0, Type arg1, JsonDeserializationContext arg2)
+                throws JsonParseException {
+            throw new UnsupportedOperationException();
+        }
+    }
+
+    private static final TopologyAdapter TOPOLOGY_ADAPTER = new TopologyAdapter();
+
+    private static final GsonBuilder gsonBuilder = new GsonBuilder();
+    static {
+        gsonBuilder.registerTypeAdapter(Topology.class, TOPOLOGY_ADAPTER);
+    }
+
     public void encode(Topology topology, Writer writer) throws IOException {
-        String fake = "{\"objects\":{\"vectile\":{\"type\":\"GeometryCollection\",\"geometries\":[{\"arcs\":[[[0],[1],[2],[3],[4],[5],[6],[7],[8],[9],[10],[11],[12],[13],[14],[15],[16],[17],[18],[19],[20],[21],[22],[23],[24],[25],[26],[27],[28],[29],[30],[31],[32],[33],[34],[35],[36],[37],[38],[39],[40],[41],[42],[43],[44],[45],[46],[47],[48]],[[49]]],\"type\":\"MultiPolygon\",\"properties\":{\"source\":\"naturalearthdata.com\",\"kind\":\"ocean\",\"name\":\"\",\"area\":988584488873782},\"clipped\":true,\"id\":\"100aacd007\"},{\"arcs\":[[50]],\"type\":\"Polygon\",\"properties\":{\"source\":\"naturalearthdata.com\",\"kind\":\"lake\",\"name\":\"Great\rBear Lake\",\"area\":209330815140},\"clipped\":true,\"id\":\"84105b7347\"},{\"arcs\":[[51]],\"type\":\"Polygon\",\"properties\":{\"source\":\"naturalearthdata.com\",\"kind\":\"lake\",\"name\":\"Great Salt Lake\",\"area\":4173072840},\"clipped\":true,\"id\":\"65772e8a96\"},{\"arcs\":[[52]],\"type\":\"Polygon\",\"properties\":{\"source\":\"naturalearthdata.com\",\"kind\":\"lake\",\"name\":\"Great\rSlave Lake\",\"area\":168321053847},\"clipped\":true,\"id\":\"a70958f18a\"},{\"arcs\":[[53]],\"type\":\"Polygon\",\"properties\":{\"source\":\"naturalearthdata.com\",\"kind\":\"lake\",\"name\":\"Lago de\rNicaragua\",\"area\":5475066802},\"clipped\":true,\"id\":\"c45cb239e7\"},{\"arcs\":[[54]],\"type\":\"Polygon\",\"properties\":{\"source\":\"naturalearthdata.com\",\"kind\":\"lake\",\"name\":\"Lake Athabasca\",\"area\":29958545276},\"clipped\":true,\"id\":\"175b30a6c3\"},{\"arcs\":[[55]],\"type\":\"Polygon\",\"properties\":{\"source\":\"naturalearthdata.com\",\"kind\":\"lake\",\"name\":\"Lake\rHuron\",\"area\":130728146989},\"clipped\":true,\"id\":\"c48f662116\"},{\"arcs\":[[56]],\"type\":\"Polygon\",\"properties\":{\"source\":\"naturalearthdata.com\",\"kind\":\"lake\",\"name\":\"Lake\rMichigan\",\"area\":110243738781},\"clipped\":true,\"id\":\"b104968eba\"},{\"arcs\":[[57]],\"type\":\"Polygon\",\"properties\":{\"source\":\"naturalearthdata.com\",\"kind\":\"lake\",\"name\":\"Lake Okeechobee\",\"area\":777755257},\"clipped\":true,\"id\":\"1cedbad966\"},{\"arcs\":[[58]],\"type\":\"Polygon\",\"properties\":{\"source\":\"naturalearthdata.com\",\"kind\":\"lake\",\"name\":\"Lake Superior\",\"area\":179547351838},\"clipped\":true,\"id\":\"026a3560e7\"},{\"arcs\":[[59]],\"type\":\"Polygon\",\"properties\":{\"source\":\"naturalearthdata.com\",\"kind\":\"lake\",\"name\":\"Lake\rWinnipeg\",\"area\":86442092231},\"clipped\":true,\"id\":\"7d887998e6\"},{\"arcs\":[[60]],\"type\":\"Polygon\",\"properties\":{\"source\":\"naturalearthdata.com\",\"kind\":\"lake\",\"name\":\"Lake\rWinnipegosis\",\"area\":10948989846},\"clipped\":true,\"id\":\"83d021e81e\"},{\"arcs\":[[61]],\"type\":\"Polygon\",\"properties\":{\"source\":\"naturalearthdata.com\",\"kind\":\"lake\",\"name\":\"L. Erie\",\"area\":45490570589},\"clipped\":true,\"id\":\"c2909a6cca\"},{\"arcs\":[[62]],\"type\":\"Polygon\",\"properties\":{\"source\":\"naturalearthdata.com\",\"kind\":\"lake\",\"name\":\"L. Ontario\",\"area\":34922632904},\"clipped\":true,\"id\":\"7fa06f443e\"},{\"arcs\":[[63]],\"type\":\"Polygon\",\"properties\":{\"source\":\"naturalearthdata.com\",\"kind\":\"lake\",\"name\":\"Reindeer\rLake\",\"area\":20796682455},\"clipped\":true,\"id\":\"8f9e1f86b7\"}]}},\"type\":\"Topology\",\"transform\":{\"translate\":[-179.99999999999997,2.5444437451708134e-14],\"scale\":[0.17578124999999994,0.08305774294902984]},\"arcs\":[[[1024,598],[-11,1],[2,-13],[-17,0],[19,-32],[-1,-24],[-3,-7],[-34,4],[-8,-9],[-1,-52],[3,-22],[14,1],[6,-12],[19,9],[12,23],[0,-32],[-12,-10],[-22,8],[-19,-39],[-1,-32],[-28,-44],[-15,-53],[5,-45],[-8,-41],[26,-83],[23,-36],[51,9],[0,-67],[-287,0],[3,21],[-8,30],[-15,18],[-18,3],[-30,48],[3,9],[-36,-2],[-10,19],[-10,-37],[0,41],[-18,-17],[-11,-29],[-16,12],[-15,-8],[-9,26],[2,50],[-31,7],[11,68],[-19,-6],[-6,-26],[-17,-9],[-9,9],[-11,43],[3,60],[20,28],[25,-7],[-1,12],[18,3],[16,-6],[11,-49],[8,-8],[-6,76],[32,49],[-7,32],[4,11],[2,-23],[2,28],[4,-7],[5,22],[12,2],[-10,0],[21,8],[-4,17],[20,25],[15,2],[-9,-10],[4,-11],[32,29],[-4,13],[-6,-14],[-9,-1],[-8,6],[-3,22],[5,8],[-5,6],[-35,-29],[27,41],[36,0],[25,23],[-9,30],[-26,20],[3,8],[-18,40],[-18,-25],[-9,9],[-2,25],[-10,1],[-14,16],[-24,-2],[4,-29],[-7,-13],[12,-27],[-19,-23],[7,-25],[-8,-16],[-12,24],[-1,23],[-16,2],[-33,24],[-8,-3],[-5,21],[-9,2],[9,37],[33,33],[9,21],[14,-1],[11,8],[1,25],[-8,6],[-17,2],[-10,-32],[-4,17],[-7,8],[-7,-10],[0,13],[-11,2],[5,6],[-7,14],[-14,7],[-7,-22],[13,-12],[-11,-22],[0,12],[-9,4],[-4,-10],[-17,-2],[-17,5],[-10,9],[-11,-1],[-4,-5],[6,-5],[-6,-6],[-6,7],[-31,0],[8,6],[-8,6],[-35,10],[-16,-4],[-1,9],[-7,-8],[-14,12],[-5,-9],[-4,5],[-18,-8],[-9,1],[-12,-8],[-40,15],[-41,3],[-8,5],[-12,-2],[-13,8],[-30,-12],[-7,-12],[-18,-6],[-3,-6],[29,-27],[-12,0],[1,6],[-5,0],[-20,-11],[18,-15],[23,4],[-4,-5],[4,-7],[-21,-8],[-7,-13],[2,-19],[9,-8],[7,2],[4,-16],[9,5],[7,-8],[12,6],[-10,-23],[-34,-31],[36,19],[24,26],[5,9],[-4,6],[19,23],[-6,-26],[21,10],[-1,8],[6,3],[41,-16],[19,-16],[14,-1],[28,-65],[8,-5],[2,-18],[10,-5],[16,-17],[2,-23],[-3,11],[-9,2],[1,-95],[22,-68],[19,-19],[18,-54],[-6,-10],[32,-55],[-29,84],[-1,20],[9,-8],[6,-26],[35,-75],[6,-41],[39,-39],[19,1],[20,-27],[21,-8],[11,-40],[27,-33],[13,18],[8,-59],[-17,-46],[-568,0],[1,793],[6,3],[2,-9],[13,0],[18,-13],[2,14],[15,6],[-11,12],[-15,1],[1,-8],[-3,10],[-29,21],[0,23],[14,5],[-14,3],[0,163],[1024,0],[0,-378],[-12,27],[-6,1],[7,21],[-12,-2],[6,13],[-12,0],[-6,-22],[3,-18],[3,6],[1,-12],[11,-10],[-1,-7],[-8,1],[2,-14],[-6,-4],[11,-7],[-14,-15],[33,7],[0,-13]],[[870,1006],[-46,1],[-20,-1],[-7,-5],[-20,1],[-19,-7],[-1,-5],[14,-7],[-34,10],[-15,-7],[-6,4],[-35,-2],[-13,-3],[2,-6],[-28,-10],[-5,-4],[15,-5],[-2,-4],[-42,-12],[-1,-4],[13,-5],[24,-3],[-26,-5],[16,-11],[41,0],[16,-7],[22,-35],[-7,-11],[11,-2],[15,-11],[-17,3],[-2,-15],[7,-4],[15,8],[-4,-15],[-8,-4],[-6,-14],[2,-13],[25,-57],[25,-16],[8,1],[3,31],[10,9],[8,24],[19,6],[26,26],[23,4],[31,20],[-23,2],[7,6],[-2,8],[11,-12],[10,3],[-2,9],[-15,11],[3,3],[11,-5],[-7,14],[16,1],[-5,10],[13,1],[-8,10],[7,1],[-2,10],[-10,7],[18,4],[-7,8],[0,13],[11,17],[-13,0],[18,2],[27,12],[-4,5],[-17,2],[-42,-9],[6,7],[-4,4],[-11,-3],[-17,4],[-21,-1],[-2,2],[52,1],[10,5],[-35,10]],[[941,800],[-9,1],[-9,-6],[-7,3],[-9,-7],[-9,9],[-9,-2],[-3,-8],[12,-6],[-10,-3],[12,-6],[-5,-5],[23,-6],[29,20],[-6,16]],[[532,881],[4,8],[-15,-4],[-10,-15],[2,-12],[8,-1],[-6,-5],[4,-4],[42,-8],[14,5],[15,-12],[-3,-4],[22,-14],[-6,-27],[-22,-2],[-4,-9],[5,-4],[16,6],[22,-22],[28,-11],[-15,21],[21,-12],[2,8],[-20,28],[1,7],[7,1],[16,-16],[12,22],[-9,1],[-8,11],[-22,10],[10,6],[-5,11],[-25,18],[-11,-3],[0,5],[-21,12],[-16,-8],[0,7],[-9,13],[-15,-5],[-5,-10],[-4,8]],[[590,880],[-10,7],[-16,0],[8,-11],[18,1],[0,3]],[[558,755],[-8,2],[-3,-8],[4,-1],[7,7]],[[573,748],[-4,3],[-1,-8],[3,-1],[2,6]],[[540,791],[-5,0],[-7,-26],[8,1],[1,-7],[14,13],[12,-9],[5,4],[-28,24]],[[592,808],[5,6],[-5,8],[-7,-8],[1,-6],[6,0]],[[453,889],[-7,-6],[7,-8],[-12,2],[0,-4],[23,-15],[10,5],[1,11],[-9,5],[5,6],[-1,3],[-17,1]],[[494,876],[15,13],[-23,4],[-8,-9],[3,-16],[7,-1],[6,9]],[[339,860],[7,13],[21,12],[-12,8],[-22,3],[-20,-2],[6,-7],[-11,-22],[16,-11],[15,6]],[[375,880],[-6,3],[-16,-8],[-8,-13],[18,-3],[-13,-5],[3,-5],[31,-2],[-28,-5],[7,-9],[13,-2],[3,-6],[42,8],[20,-5],[-1,9],[9,1],[1,5],[-20,12],[-12,25],[-11,0],[2,-17],[-10,15],[-7,-6],[-8,6],[-12,-3],[3,5]],[[430,884],[-5,3],[-9,-3],[9,-8],[5,8]],[[480,832],[-15,13],[-9,-9],[20,-8],[4,4]],[[408,917],[-7,8],[-6,-5],[9,-11],[-10,1],[-11,7],[-16,4],[-13,-15],[34,-1],[-12,-5],[1,-4],[42,7],[3,12],[-11,-2],[-3,4]],[[464,924],[-23,-5],[0,-9],[9,1],[0,-7],[6,-2],[10,1],[-2,21]],[[485,928],[-11,1],[-3,-5],[19,-5],[8,-18],[25,-5],[43,3],[3,8],[-7,5],[-45,-2],[-11,6],[-3,8],[-11,0],[-7,4]],[[634,1001],[-24,1],[-17,-2],[-3,1],[-17,0],[-18,-3],[-4,-7],[-13,4],[-9,-4],[-26,-5],[13,-13],[10,-4],[32,0],[-9,-5],[-20,2],[11,-11],[-16,-11],[9,-3],[8,-7],[-19,4],[3,-9],[-11,-3],[1,-5],[36,-1],[15,-3],[15,7],[0,3],[-10,0],[-1,3],[25,15],[-5,6],[4,3],[-8,1],[18,1],[15,5],[10,10],[22,10],[-12,0],[33,11],[0,3],[-10,3],[-28,3]],[[363,935],[-17,-2],[-21,-17],[8,-2],[25,7],[5,14]],[[397,935],[2,4],[-8,2],[-13,-5],[9,-4],[10,3]],[[455,943],[-5,6],[-26,6],[7,-8],[-5,-3],[31,-6],[-2,5]],[[400,946],[-10,3],[-6,-5],[9,0],[7,2]],[[529,959],[-5,8],[-18,5],[-8,6],[-13,0],[3,-3],[-6,-1],[-8,-9],[10,-9],[10,0],[-4,-8],[6,-5],[21,0],[19,12],[-7,4]],[[479,940],[1,4],[-6,4],[-11,2],[3,-10],[4,-3],[9,3]],[[490,933],[-3,4],[-12,0],[2,-3],[13,-1]],[[491,903],[-7,8],[-11,-9],[15,-4],[3,5]],[[705,610],[4,11],[-11,-10],[-11,-38],[17,0],[5,-9],[6,11],[1,-11],[6,-2],[-2,31],[-19,7],[4,10]],[[662,560],[-2,6],[-1,-7],[7,-6],[5,6],[-9,1]],[[672,591],[-6,7],[-9,2],[5,-5],[10,-4]],[[985,629],[7,28],[-6,7],[-17,-15],[-2,-25],[18,5]],[[586,320],[-5,6],[4,-14],[1,8]],[[581,320],[0,3],[-6,0],[0,-5],[6,2]],[[583,286],[-2,17],[-2,1],[-1,-8],[5,-10]],[[571,274],[-15,5],[-15,-15],[18,9],[17,-13],[9,-14],[-3,-7],[19,2],[-30,33]],[[611,239],[-5,-3],[6,-11],[-12,-4],[18,-9],[17,12],[-24,15]],[[651,219],[-4,4],[-6,-2],[1,-5],[9,3]],[[587,215],[4,0],[-13,4],[7,-6],[2,2]],[[677,122],[-1,9],[-4,-10],[1,-1],[4,2]],[[139,230],[4,5],[-6,9],[0,-15],[2,1]],[[136,249],[-1,3],[-3,0],[2,-4],[2,1]],[[132,255],[-3,0],[0,-1],[3,0],[0,1]],[[127,257],[-2,4],[-2,-1],[1,-3],[3,0]],[[118,265],[-1,2],[-2,-1],[2,-3],[1,2]],[[321,584],[-12,22],[-15,5],[15,-23],[12,-4]],[[269,651],[-2,-8],[11,-15],[-4,24],[-5,-1]],[[154,688],[2,9],[-12,-5],[4,-9],[6,5]],[[82,721],[-1,5],[-10,-1],[8,-6],[3,2]],[[47,768],[1,-6],[16,-1],[-10,6],[-7,1]],[[1024,468],[-2,5],[2,7],[0,-12]],[[354,797],[-20,-16],[1,7],[-12,-3],[5,8],[-15,2],[31,11],[-4,-6],[15,1],[-1,-4]],[[386,498],[0,-6],[-4,9],[3,-3],[1,0]],[[370,746],[-6,10],[15,-9],[18,12],[6,-3],[-25,-21],[-16,-2],[-11,6],[19,7]],[[541,134],[-5,5],[-1,4],[2,1],[4,-10]],[[400,711],[-8,-6],[11,12],[15,-3],[-18,-3]],[[567,549],[3,-9],[-9,5],[-6,-28],[-1,12],[-7,-4],[3,19],[-9,7],[6,3],[-2,7],[22,-12]],[[537,554],[5,-1],[-10,-22],[2,-21],[-7,-9],[2,44],[-6,-6],[14,15]],[[565,323],[-1,0],[0,3],[1,-1],[0,-2]],[[514,578],[8,11],[10,-3],[12,-23],[-15,-4],[-5,13],[-23,-10],[13,16]],[[461,649],[6,5],[7,-47],[-15,34],[2,8]],[[459,640],[-6,2],[1,11],[1,-10],[4,-3]],[[551,507],[3,-1],[21,11],[-15,-17],[-9,7]],[[574,521],[-4,0],[20,9],[-4,-9],[-12,0]],[[444,698],[0,-9],[-7,-11],[2,14],[5,6]]]}";
-        writer.write(fake);
+
+        Gson gson = gsonBuilder/*.setPrettyPrinting()*/.create();
+
+        // gson.fromjson
+        gson.toJson(topology, writer);
+        writer.flush();
+    }
+
+    private static abstract class TopologyEncoder {
+        private static Map<String, TopologyEncoder> encoders = new HashMap<>();
+        static {
+            encoders.put("Point", new PointEncoder());
+            encoders.put("MultiPoint", new MultiPointEncoder());
+            encoders.put("LineString", new LineStringEncoder());
+            encoders.put("MultiLineString", new MultiLineStringEncoder());
+            encoders.put("Polygon", new PolygonEncoder());
+            encoders.put("MultiPolygon", new MultiPolygonEncoder());
+            encoders.put("GeometryCollection", new GeometryCollecitonEncoder());
+        }
+
+        public static JsonObject encode(TopoGeom geom) {
+            JsonObject obj = new JsonObject();
+            String geometryType = geom.getGeometryType();
+            TopologyEncoder encoder = encoders.get(geometryType);
+            encoder.encode(geom, obj);
+            return obj;
+        }
+
+        public void encode(TopoGeom geom, JsonObject target) {
+            target.addProperty("type", geom.getGeometryType());
+
+            JsonObject properties = properties(geom.getProperties());
+            if (properties != null) {
+                target.add("properties", properties);
+            }
+            encodeInternal(geom, target);
+        }
+
+        protected abstract void encodeInternal(TopoGeom geom, JsonObject target);
+
+        @SuppressWarnings("unchecked")
+        @Nullable
+        private JsonObject properties(Map<String, Object> properties) {
+            if (properties.isEmpty()) {
+                return null;
+            }
+            JsonObject props = new JsonObject();
+            for (Map.Entry<String, Object> e : properties.entrySet()) {
+                String name = e.getKey();
+                Object value = e.getValue();
+
+                JsonElement jsonValue;
+                if (value instanceof Map) {
+                    jsonValue = properties((Map<String, Object>) value);
+                } else if (value instanceof Boolean) {
+                    jsonValue = new JsonPrimitive((Boolean) value);
+                } else if (value instanceof Number) {
+                    Number n = (Number) value;
+                    if (n instanceof Double && n.doubleValue() % 1 == 0) {
+                        n = Long.valueOf(n.longValue());
+                    } else if (n instanceof Float && n.floatValue() % 1 == 0) {
+                        n = Integer.valueOf(n.intValue());
+                    }
+                    jsonValue = new JsonPrimitive(n);
+                } else {
+                    jsonValue = new JsonPrimitive(String.valueOf(value));
+                }
+                props.add(name, jsonValue);
+            }
+            return props;
+        }
+
+    }
+
+    private static class GeometryCollecitonEncoder extends TopologyEncoder {
+
+        @Override
+        protected void encodeInternal(TopoGeom geom, JsonObject target) {
+            GeometryColleciton coll = (GeometryColleciton) geom;
+            JsonArray geoms = new JsonArray();
+            target.add("geometries", geoms);
+
+            for (TopoGeom obj : coll.getGeometries()) {
+                geoms.add(TopologyEncoder.encode(obj));
+            }
+
+        }
+
+    }
+
+    private static class PointEncoder extends TopologyEncoder {
+
+        @Override
+        protected void encodeInternal(TopoGeom geom, JsonObject target) {
+            TopoGeom.Point point = (Point) geom;
+            JsonArray coordinates = new JsonArray();
+            target.add("coordinates", coordinates);
+            coordinates.add(new JsonPrimitive(point.getX()));
+            coordinates.add(new JsonPrimitive(point.getY()));
+        }
+    }
+
+    private static class MultiPointEncoder extends TopologyEncoder {
+
+        @Override
+        protected void encodeInternal(TopoGeom geom, JsonObject target) {
+            TopoGeom.MultiPoint multipoint = (MultiPoint) geom;
+            JsonArray coordinates = new JsonArray();
+            target.add("coordinates", coordinates);
+            Iterable<Point> points = multipoint.getPoints();
+            for (Point p : points) {
+                JsonArray point = new JsonArray();
+                coordinates.add(point);
+                point.add(new JsonPrimitive(p.getX()));
+                point.add(new JsonPrimitive(p.getY()));
+            }
+        }
+    }
+
+    private static class LineStringEncoder extends TopologyEncoder {
+
+        @Override
+        protected void encodeInternal(TopoGeom geom, JsonObject target) {
+            TopoGeom.LineString arc = (LineString) geom;
+            target.add("arcs", LineStringEncoder.indexes(arc));
+        }
+
+        public static JsonArray indexes(LineString arc) {
+            JsonArray arcs = new JsonArray();
+            for (Integer index : arc.getIndexes()) {
+                arcs.add(new JsonPrimitive(index));
+            }
+            return arcs;
+        }
+    }
+
+    private static class MultiLineStringEncoder extends TopologyEncoder {
+
+        @Override
+        protected void encodeInternal(TopoGeom geom, JsonObject target) {
+            TopoGeom.MultiLineString marc = (MultiLineString) geom;
+            JsonArray arcs = new JsonArray();
+            target.add("arcs", arcs);
+            for (LineString arc : marc.getArcs()) {
+                arcs.add(LineStringEncoder.indexes(arc));
+            }
+        }
+    }
+
+    private static class PolygonEncoder extends TopologyEncoder {
+
+        @Override
+        protected void encodeInternal(TopoGeom geom, JsonObject target) {
+            TopoGeom.Polygon poly = (Polygon) geom;
+            target.add("arcs", PolygonEncoder.indexes(poly));
+        }
+
+        public static JsonArray indexes(TopoGeom.Polygon poly) {
+            JsonArray arcs = new JsonArray();
+            Iterable<LineString> rings = poly.getRings();
+            for (LineString ring : rings) {
+                arcs.add(LineStringEncoder.indexes(ring));
+            }
+            return arcs;
+        }
+    }
+
+    private static class MultiPolygonEncoder extends TopologyEncoder {
+
+        @Override
+        protected void encodeInternal(TopoGeom geom, JsonObject target) {
+            TopoGeom.MultiPolygon poly = (MultiPolygon) geom;
+            JsonArray polygons = new JsonArray();
+            target.add("arcs", polygons);
+            for (Polygon p : poly.getPolygons()) {
+                polygons.add(PolygonEncoder.indexes(p));
+            }
+        }
+
+    }
+
+    public static JsonArray serialize(final CoordinateSequence coords) {
+        JsonArray arc = new JsonArray();
+        final int size = coords.size();
+
+        if (size > 0) {
+            Coordinate buff = new Coordinate();
+
+            coords.getCoordinate(0, buff);
+            addCoordinate(arc, buff);// first coordinate as-is
+
+            for (int i = 0; i < size; i++) {// subsequent coordinates delta encoded
+                coords.getCoordinate(i, buff);
+                addCoordinate(arc, buff);
+            }
+        }
+        return arc;
+    }
+
+    public static JsonArray quantize(final CoordinateSequence coords, PrecisionModel precisionModel) {
+        JsonArray arc = new JsonArray();
+        final int size = coords.size();
+
+        if (size > 0) {
+            Coordinate buff = new Coordinate();
+
+            coords.getCoordinate(0, buff);
+            precisionModel.makePrecise(buff);
+            addCoordinate(arc, buff);// first coordinate as-is
+
+            double lastX;
+            double lastY;
+
+            lastX = buff.x;
+            lastY = buff.y;
+
+            for (int i = 1; i < size; i++) {// subsequent coordinates delta encoded
+                coords.getCoordinate(i, buff);
+                precisionModel.makePrecise(buff);
+                double deltaX = buff.x - lastX;
+                double deltaY = buff.y - lastY;
+                lastX = buff.x;
+                lastY = buff.y;
+                buff.x = deltaX;
+                buff.y = deltaY;
+                precisionModel.makePrecise(buff);
+                addCoordinate(arc, buff);
+            }
+        }
+        return arc;
+    }
+
+    private static void addCoordinate(JsonArray arc, Coordinate c) {
+        JsonArray coord = new JsonArray();
+
+        double x = c.x;
+        double y = c.y;
+        Number X, Y;
+        if (x % 1 == 0) {
+            X = Integer.valueOf((int) x);
+        } else {
+            X = new Double(x);
+        }
+        if (y % 1 == 0) {
+            Y = Integer.valueOf((int) y);
+        } else {
+            Y = new Double(y);
+        }
+
+        coord.add(new JsonPrimitive(X));
+        coord.add(new JsonPrimitive(Y));
+        arc.add(coord);
     }
 
 }

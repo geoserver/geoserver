@@ -77,7 +77,9 @@ Configuring an Oracle datastore
        ``validate connections``
      - Connection pool configuration parameters. See :ref:`connection_pooling` for details.
    * - ``Loose bbox``
-     - 	Controls how bounding box comparisons are made against geometries in the database. See the :ref:`oracle_loose_bbox` section below.
+     - 	Controls how bounding box filters are made against geometries in the database. See the :ref:`oracle_loose_bbox` section below.
+   * - ``Metadata bbox``
+     - 	Flag controlling the use of MDSYS.USER_SDO_GEOM_METADATA or MDSYS.ALL_SDO_GEOM_METADATA table for bounding box calculations, this brings a better performance if the views access is fast and the bounds are configured right in the tables default is false  
 
 Connecting to an Oracle cluster
 -------------------------------

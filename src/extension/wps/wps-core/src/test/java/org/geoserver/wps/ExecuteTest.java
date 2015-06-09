@@ -1186,6 +1186,12 @@ public class ExecuteTest extends WPSTestSupport {
                 "                  </wps:Body>\n" + 
                 "                </wps:Reference>\n" + 
                 "              </wps:Input>\n" + 
+                "              <wps:Input>\n" + 
+                "                <ows:Identifier>extra</ows:Identifier>\n" + 
+                "                <wps:Data>\n" + 
+                "                  <wps:LiteralData>extra value</wps:LiteralData>\n" + 
+                "                </wps:Data>\n" + 
+                "              </wps:Input>\n" + 
                 "            </wps:DataInputs>\n" + 
                 "            <wps:ResponseForm>\n" + 
                 "              <wps:RawDataOutput mimeType=\"text/xml; subtype=gml/3.1.1\">\n" + 

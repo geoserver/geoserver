@@ -73,6 +73,7 @@ public class RenderingBasedFeatureInfoTest extends WMSTestSupport {
         testData.addStyle("polydash", "polydash.sld", this.getClass(), getCatalog());
         testData.addStyle("doublepoly", "doublepoly.sld", this.getClass(), getCatalog());
         testData.addStyle("pureLabel", "purelabel.sld", this.getClass(), getCatalog());
+        testData.addStyle("transform", "transform.sld", this.getClass(), getCatalog());
     }
     
     @After 
@@ -407,5 +408,18 @@ public class RenderingBasedFeatureInfoTest extends WMSTestSupport {
         // 1% of error tolerance
         assertEquals(originalScale, calculatedScale.doubleValue(), originalScale * 0.01);
         assertEquals(originalOGCScale, calculatedOGCScale.doubleValue(), originalScale * 0.01);
+    }
+    
+    @Test
+    public void testRenderingTransform() throws Exception {
+        String layer = getLayerId(MockData.FORESTS);
+        String request = "wms?version=1.1.1&bbox=-0.002,-0.002,0.002,0.002&format=image/png"
+                + "&request=GetFeatureInfo&layers=" + layer
+                + "&query_layers=" + layer + "&styles=transform&transparent=true&srs=EPSG:4326"
+                + "&width=20&height=20&x=10&y=10" + "&info_format=application/json&feature_count=50";
+        
+        JSONObject result = (JSONObject) getAsJSON(request);
+        
+        assertEquals(1, result.getJSONArray("features").size());
     }
 }

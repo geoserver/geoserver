@@ -120,7 +120,7 @@ public class TopoJSONMapOutputFormat extends AbstractMapOutputFormat {
             Query query = styleQuery;
             query.setCoordinateSystem(renderingArea.getCoordinateReferenceSystem());
             query.setCoordinateSystemReproject(renderingArea.getCoordinateReferenceSystem());
-            query.setMaxFeatures(10_000);
+            //query.setMaxFeatures(1_000);
 
             FeatureCollection<?, ?> features = featureSource.getFeatures(query);
             Feature next;

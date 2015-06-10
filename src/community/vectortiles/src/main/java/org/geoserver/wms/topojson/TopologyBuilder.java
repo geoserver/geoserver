@@ -115,6 +115,7 @@ public class TopologyBuilder {
         Map<String, Object> properties = getProperties(feature);
         geometry.setProperties(properties);
 
+        geometry.setId(feature.getIdentifier().getID());
         return geometry;
     }
 

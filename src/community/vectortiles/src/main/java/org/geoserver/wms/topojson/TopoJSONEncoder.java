@@ -60,10 +60,10 @@ public class TopoJSONEncoder {
         }
 
         private void addLayers(JsonObject root, Map<String, GeometryColleciton> layers) {
-            
+
             JsonObject objects = new JsonObject();
             root.add("objects", objects);
-            
+
             for (Map.Entry<String, GeometryColleciton> e : layers.entrySet()) {
                 String name = e.getKey();
                 GeometryColleciton geometries = e.getValue();
@@ -125,7 +125,7 @@ public class TopoJSONEncoder {
 
     public void encode(Topology topology, Writer writer) throws IOException {
 
-        Gson gson = gsonBuilder/*.setPrettyPrinting()*/.create();
+        Gson gson = gsonBuilder/* .setPrettyPrinting() */.create();
 
         // gson.fromjson
         gson.toJson(topology, writer);
@@ -154,7 +154,9 @@ public class TopoJSONEncoder {
 
         public void encode(TopoGeom geom, JsonObject target) {
             target.addProperty("type", geom.getGeometryType());
-
+            if (geom.getId() != null) {
+                target.addProperty("id", geom.getId());
+            }
             JsonObject properties = properties(geom.getProperties());
             if (properties != null) {
                 target.add("properties", properties);

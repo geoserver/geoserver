@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Nullable;
+
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
@@ -11,10 +13,21 @@ public abstract class TopoGeom {
 
     private Map<String, Object> properties = ImmutableMap.of();
 
+    private String id;
+
     public abstract String getGeometryType();
 
     public Map<String, Object> getProperties() {
         return properties;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    @Nullable
+    public String getId() {
+        return id;
     }
 
     public void setProperties(Map<String, Object> properties) {

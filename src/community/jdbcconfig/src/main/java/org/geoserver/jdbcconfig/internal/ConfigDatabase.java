@@ -16,6 +16,7 @@ import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Proxy;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -32,6 +33,7 @@ import java.util.logging.Logger;
 import javax.annotation.Nullable;
 import javax.sql.DataSource;
 
+import org.apache.wicket.util.string.Strings;
 import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.CatalogVisitorAdapter;
 import org.geoserver.catalog.CoverageInfo;
@@ -106,8 +108,10 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
 import org.springframework.jdbc.core.RowMapper;
 
 /**
@@ -509,15 +513,12 @@ public class ConfigDatabase {
 
         final String localPropertyName = prop.getPropertyName();
         String[] steps = localPropertyName.split("\\.");
+        // Step back through ancestor property references If starting at a.b.c.d, then look at a.b.c, then a.b, then a
         for (int i = steps.length - 1; i >= 0; i--) {
-            String backPropName = steps[0];
-            for (int j = 1; j < i; j++) {
-                backPropName += "." + steps[j];
-            }
+            String backPropName = Strings.join(".", Arrays.copyOfRange(steps, 0, i));
             Object backProp = ff.property(backPropName).evaluate(info);
             if (backProp != null) {
-                if (prop.isCollectionProperty()) {
-                    checkState(backProp instanceof Set || backProp instanceof List);
+                if (prop.isCollectionProperty() && (backProp instanceof Set || backProp instanceof List)) {
                     List<?> list;
                     if (backProp instanceof Set) {
                         list = asValueList(backProp);

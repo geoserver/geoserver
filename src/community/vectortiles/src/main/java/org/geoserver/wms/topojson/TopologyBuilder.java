@@ -12,6 +12,7 @@ import javax.annotation.Nullable;
 
 import org.geoserver.wms.topojson.TopoGeom.GeometryColleciton;
 import org.geotools.geometry.jts.GeometryCoordinateSequenceTransformer;
+import org.geotools.geometry.jts.JTS;
 import org.geotools.referencing.operation.transform.ProjectiveTransform;
 import org.opengis.feature.Attribute;
 import org.opengis.feature.ComplexAttribute;
@@ -27,6 +28,7 @@ import com.google.common.base.Throwables;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Multimap;
+import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -55,7 +57,9 @@ public class TopologyBuilder {
 
     private GeometryFactory fixedGeometryFactory;
 
-    public TopologyBuilder(AffineTransform worldToScreen) {
+    private final Polygon clipBounds;
+
+    public TopologyBuilder(AffineTransform worldToScreen, Envelope mapArea) {
         this.worldToScreen = worldToScreen;
         this.screenToWorld = new AffineTransform(this.worldToScreen);
         try {
@@ -70,6 +74,15 @@ public class TopologyBuilder {
 
         PrecisionModel precisionModel = new PrecisionModel(10.0);
         fixedGeometryFactory = new GeometryFactory(precisionModel);
+
+        Polygon bounds = JTS.toGeometry(mapArea, fixedGeometryFactory);
+        try {
+            bounds = (Polygon) transformer.transform(bounds);
+        } catch (TransformException e) {
+            throw Throwables.propagate(e);
+        }
+        bounds = (Polygon) fixedGeometryFactory.createGeometry(bounds);
+        this.clipBounds = bounds;
     }
 
     public void addFeature(Feature feature) {
@@ -104,6 +117,11 @@ public class TopologyBuilder {
 
         // transform to screen coordinates
         geom = transformer.transform(geom);
+
+        // clip
+        if (clipBounds.overlaps(geom)) {
+            geom = clipBounds.intersection(geom);
+        }
 
         // snap to pixel
         geom = fixedGeometryFactory.createGeometry(geom);

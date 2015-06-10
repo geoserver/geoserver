@@ -81,7 +81,7 @@ public class TopoJSONMapOutputFormat extends AbstractMapOutputFormat {
 
         // final FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2();
 
-        TopologyBuilder topologyBuilder = new TopologyBuilder(worldToScreen);
+        TopologyBuilder topologyBuilder = new TopologyBuilder(worldToScreen, renderingArea);
 
         List<Layer> layers = mapContent.layers();
         for (Layer layer : layers) {

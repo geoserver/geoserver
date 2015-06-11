@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -15,9 +15,9 @@ import java.io.Serializable;
 public class UniqueResourceIdentifier implements Serializable {
     private static final long serialVersionUID = 3277074136449520282L;
 
-    String code;
+    private String code;
 
-    String namespace;
+    private String namespace;
 
     private String metadataURL;
 

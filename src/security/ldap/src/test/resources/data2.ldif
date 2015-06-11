@@ -1,8 +1,3 @@
-dn: dc=example,dc=com
-objectClass: domain
-objectClass: top
-dc: example
-
 dn: ou=People,dc=example,dc=com
 objectClass: top
 objectClass: organizationalUnit
@@ -16,11 +11,9 @@ ou: Groups
 
 dn: cn=admin,ou=Groups,dc=example,dc=com
 objectClass: top
-objectClass: organizationalRole
 objectClass: groupOfNames
 cn: admin
 member: uid=admin,ou=People,dc=example,dc=com
-telephoneNumber: 10
 
 
 dn: uid=admin,ou=People,dc=example,dc=com
@@ -35,12 +28,10 @@ telephoneNumber: 1
 
 dn: cn=other,ou=Groups,dc=example,dc=com
 objectClass: top
-objectClass: organizationalRole
 objectClass: groupOfNames
 cn: other
 member: uid=admin,ou=People,dc=example,dc=com
 member: uid=other,ou=People,dc=example,dc=com
-telephoneNumber: 20
 
 
 dn: uid=other,ou=People,dc=example,dc=com
@@ -55,8 +46,6 @@ telephoneNumber: 2
 
 dn: cn=extra,ou=Groups,dc=example,dc=com
 objectClass: top
-objectClass: organizationalRole
 objectClass: groupOfNames
 cn: extra
 member: cn=extra
-telephoneNumber: 30

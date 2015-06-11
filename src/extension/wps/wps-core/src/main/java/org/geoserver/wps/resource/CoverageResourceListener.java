@@ -7,6 +7,7 @@ package org.geoserver.wps.resource;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.geoserver.wcs.CoverageCleanerCallback;
 import org.geoserver.wps.ProcessListenerAdapter;
 import org.geoserver.wps.ProcessEvent;
 import org.geoserver.wps.WPSException;
@@ -32,11 +33,13 @@ public class CoverageResourceListener extends ProcessListenerAdapter {
     }
 
     WPSResourceManager resourceManager;
-
+    CoverageCleanerCallback  cleaner;
+    
     Map<String, ResourceStatus> resourceStates = new ConcurrentHashMap<>();
 
-    public CoverageResourceListener(WPSResourceManager resourceManager) {
+    public CoverageResourceListener(WPSResourceManager resourceManager, CoverageCleanerCallback cleaner) {
         this.resourceManager = resourceManager;
+        this.cleaner = cleaner;
     }
 
     @Override
@@ -90,6 +93,7 @@ public class CoverageResourceListener extends ProcessListenerAdapter {
     @Override
     public void failed(ProcessEvent event) {
         cleanResourceStatus(event);
+        cleaner.clean();
     }
 
     private void cleanResourceStatus(ProcessEvent event) {

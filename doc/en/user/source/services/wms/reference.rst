@@ -62,12 +62,15 @@ Formats in which WMS can report exceptions. The supported values for exceptions 
    * - XML
      - ``EXCEPTIONS=application/vnd.ogc.se_xml``
      - Xml output. (The default format)
-   * - PNG
+   * - INIMAGE
      - ``EXCEPTIONS=application/vnd.ogc.se_inimage``
      - Generates an image
-   * - Blank
+   * - BLANK
      - ``EXCEPTIONS=application/vnd.ogc.se_blank``
      - Generates a blank image
+   * - PARTIALMAP
+     - ``EXCEPTIONS=application/vnd.gs.wms_partial``
+     - This is a GeoServer vendor parameter and only applicable for getMap requests. Returns everything that was rendered at the time the rendering process threw an exception. Can be used with the :ref:`WMS Configuration Limits <wms_configuration_limits>` to return a partial image even if the request is terminated for exceeding one of these limits. It also works with the ``timeout`` :ref:`vendor parameter <wms_vendor_parameters>`.
    * - JSON
      - ``EXCEPTIONS=application/json``
      - Simple Json representation.

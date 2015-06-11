@@ -5,16 +5,19 @@
  */
 package org.geoserver.ows;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.lang.reflect.Method;
 import java.net.URL;
-import java.rmi.ServerException;
 import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import javax.mail.MessagingException;
-import javax.mail.Multipart;
 import javax.mail.internet.InternetHeaders;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMultipart;
@@ -25,7 +28,6 @@ import junit.framework.TestCase;
 
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.Service;
-import org.geoserver.platform.ServiceException;
 import org.geoserver.test.CodeExpectingHttpServletResponse;
 import org.geotools.util.Version;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
@@ -152,22 +154,26 @@ public class DispatcherTest extends TestCase {
 
         String body = "<Hello service=\"hello\" message=\"Hello world!\"/>";
         File file = File.createTempFile("geoserver", "req");
-        file.deleteOnExit();
+        try {
 
-        FileOutputStream output = new FileOutputStream(file);
-        output.write(body.getBytes());
-        output.flush();
-        output.close();
+            FileOutputStream output = new FileOutputStream(file);
+            output.write(body.getBytes());
+            output.flush();
+            output.close();
 
-        BufferedReader input = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
+            BufferedReader input = new BufferedReader(new InputStreamReader(new FileInputStream(
+                    file)));
 
-        input.mark(8192);
+            input.mark(8192);
 
-        Request req = new Request();
-        req.setInput(input);
+            Request req = new Request();
+            req.setInput(input);
 
-        Object object = dispatcher.parseRequestXML(null,input, req);
-        assertEquals(new Message("Hello world!"), object);
+            Object object = dispatcher.parseRequestXML(null, input, req);
+            assertEquals(new Message("Hello world!"), object);
+        } finally {
+            file.delete();
+        }
     }
 
     public void testHelloOperationGet() throws Exception {

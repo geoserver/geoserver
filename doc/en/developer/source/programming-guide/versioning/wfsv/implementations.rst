@@ -3,7 +3,7 @@
 Versioning implementations
 ==========================
 
-Before starting to work some existing versioing implementations have been analyzed:
+Before starting to work some existing versioning implementations have been analyzed:
 
 .. toctree::
    :maxdepth: 2

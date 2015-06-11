@@ -28,7 +28,7 @@
        <constructor-arg ref="resourceLoader"/>
     </bean>
     
-    <bean id="manifestLoader" class="org.geoserver.ManifestLoader">
+    <bean id="manifestLoader" class="org.geoserver.ManifestLoader" lazy-init="false">
        <constructor-arg ref="resourceLoader"/>
     </bean>
     
@@ -205,11 +205,11 @@
      <constructor-arg ref="geoServer"/>  
   </bean>
   
-  <bean id="updateSequenceListener" class="org.geoserver.config.UpdateSequenceListener">
+  <bean id="updateSequenceListener" class="org.geoserver.config.UpdateSequenceListener" lazy-init="false">
 	<constructor-arg ref="geoServer"/>
   </bean>
   
-  <bean id="namespaceWorkspaceConsistencyListener" class="org.geoserver.catalog.NamespaceWorkspaceConsistencyListener">
+  <bean id="namespaceWorkspaceConsistencyListener" class="org.geoserver.catalog.NamespaceWorkspaceConsistencyListener" lazy-init="false">
     <constructor-arg ref="catalog"/>
   </bean>
   
@@ -236,10 +236,18 @@
 
   <!-- default style handlers -->
   <bean id="sldHandler" class="org.geoserver.catalog.SLDHandler"/>
+  <bean id="sldPackageHandler" class="org.geoserver.catalog.SLDPackageHandler">
+    <constructor-arg ref="sldHandler"/>
+  </bean>
 
   <!-- JDBC VirtualTable callback -->
   <bean id="virtualTableCallback" class="org.geoserver.catalog.VirtualTableCallback"/>
   
   <!-- WFS Cascaded Stored Query callback  -->
   <bean id="cascadedStoredQueryCallback" class="org.geoserver.catalog.CascadedStoredQueryCallback"/>
+  
+  <!-- Entity resolver provider, to stop xml attacks via system entity resolution -->
+  <bean id="entityResolverProvider" class="org.geoserver.util.EntityResolverProvider">
+    <constructor-arg ref="geoServer"/>
+  </bean>
 </beans>

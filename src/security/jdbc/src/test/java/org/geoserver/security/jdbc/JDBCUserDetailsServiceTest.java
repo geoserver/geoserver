@@ -118,18 +118,14 @@ public abstract class JDBCUserDetailsServiceTest extends AbstractUserDetailsServ
     }
     
     @Test
-    public void testConfiguration() {
-        try {
-            setServices("config");
-            assertEquals(roleService, getSecurityManager().getActiveRoleService());
-            //assertEquals(usergroupService,getSecurityManager().getActiveUserGroupService());
-            assertEquals(usergroupService.getName(), 
-                    getSecurityManager().loadUserGroupService(getFixtureId()).getName());
-            assertTrue(roleService.canCreateStore());
-            assertTrue(usergroupService.canCreateStore());
-        } catch (Exception ex) {
-            fail(ex.getMessage());
-        }
+    public void testConfiguration() throws Exception {
+        setServices("config");
+        assertEquals(roleService, getSecurityManager().getActiveRoleService());
+        //assertEquals(usergroupService,getSecurityManager().getActiveUserGroupService());
+        assertEquals(usergroupService.getName(), 
+                getSecurityManager().loadUserGroupService(getFixtureId()).getName());
+        assertTrue(roleService.canCreateStore());
+        assertTrue(usergroupService.canCreateStore());
     }
 
 }

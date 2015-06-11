@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -100,11 +100,9 @@ public class LayerInfoImpl implements LayerInfo {
     @Override    
     public String getName() {
         if (resource == null) {
-            throw new NullPointerException("Unable to get Layer name without an underlying resource");
+            return name;
         }
         return resource.getName();
-        // TODO: uncomment back when resource/publish split is complete
-        // return name;
     }
 
     @Override    

@@ -48,7 +48,6 @@ public class CacheReaderTest extends GeofenceBaseTest {
     protected void setUpInternal() throws Exception {
         super.setUpInternal();
 
-        realReader = (RuleReaderService) applicationContext.getBean("ruleReaderService");
         configurer = (GeoFencePropertyPlaceholderConfigurer) applicationContext.getBean("geofence-configurer");
         configurer.setLocation(new UrlResource(this.getClass().getResource("/test-cache-config.properties")));
     }

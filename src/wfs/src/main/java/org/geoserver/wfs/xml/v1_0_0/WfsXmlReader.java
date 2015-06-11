@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -16,10 +16,10 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.XmlRequestReader;
-import org.geoserver.util.EntityResolverProvider;
 import org.geoserver.wfs.CatalogNamespaceSupport;
 import org.geoserver.wfs.WFSException;
 import org.geoserver.wfs.xml.WFSURIHandler;
+import org.geoserver.util.EntityResolverProvider;
 import org.geotools.util.Version;
 import org.geotools.xml.Configuration;
 import org.geotools.xml.Parser;
@@ -73,7 +73,7 @@ public class WfsXmlReader extends XmlRequestReader {
 
         //set validation based on strict or not
         parser.setValidating(strict.booleanValue());
-        parser.getURIHandlers().add(0, new WFSURIHandler(geoServer));
+        WFSURIHandler.addToParser(geoServer, parser);
 
         //parse
         Object parsed = parser.parse(reader); 

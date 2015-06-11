@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -19,7 +19,6 @@ import net.opengis.wps10.ProcessDescriptionsType;
 import net.opengis.wps10.WPSCapabilitiesType;
 
 import org.geoserver.config.GeoServer;
-import org.geoserver.config.GeoServerInfo;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.wps.executor.ProcessStatusTracker;
 import org.geoserver.wps.executor.WPSExecutionManager;
@@ -37,9 +36,7 @@ import org.springframework.context.ApplicationContextAware;
 public class DefaultWebProcessingService implements WebProcessingService, ApplicationContextAware {
     private static final Logger LOGGER = Logging.getLogger(DefaultWebProcessingService.class);
 
-    protected WPSInfo wps;
-
-    protected GeoServerInfo gs;
+    protected GeoServer gs;
 
     protected ApplicationContext context;
 
@@ -51,8 +48,7 @@ public class DefaultWebProcessingService implements WebProcessingService, Applic
 
     public DefaultWebProcessingService(GeoServer gs, WPSExecutionManager executionManager,
             WPSResourceManager resources, ProcessStatusTracker tracker) {
-        this.wps = gs.getService(WPSInfo.class);
-        this.gs = gs.getGlobal();
+        this.gs = gs;
         this.executionManager = executionManager;
         this.resources = resources;
         this.tracker = tracker;
@@ -62,21 +58,21 @@ public class DefaultWebProcessingService implements WebProcessingService, Applic
      * @see WebMapService#getServiceInfo()
      */
     public WPSInfo getServiceInfo() {
-        return wps;
+        return gs.getService(WPSInfo.class);
     }
 
     /**
      * @see org.geoserver.wps.WebProcessingService#getCapabilities
      */
     public WPSCapabilitiesType getCapabilities(GetCapabilitiesType request) throws WPSException {
-        return new GetCapabilities(this.wps, context).run(request);
+        return new GetCapabilities(getServiceInfo(), context).run(request);
     }
 
     /**
      * @see org.geoserver.wps.WebProcessingService#describeProcess
      */
     public ProcessDescriptionsType describeProcess(DescribeProcessType request) throws WPSException {
-        return new DescribeProcess(this.wps, context).run(request);
+        return new DescribeProcess(getServiceInfo(), context).run(request);
     }
 
     /**
@@ -91,7 +87,7 @@ public class DefaultWebProcessingService implements WebProcessingService, Applic
      */
     public void getSchema(HttpServletRequest request, HttpServletResponse response)
             throws WPSException {
-        new GetSchema(this.wps).run(request, response);
+        new GetSchema(getServiceInfo()).run(request, response);
     }
 
     /**

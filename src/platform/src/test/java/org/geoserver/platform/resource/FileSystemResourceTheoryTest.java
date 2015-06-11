@@ -52,9 +52,9 @@ public class FileSystemResourceTheoryTest extends ResourceTheoryTest {
     @Test
     public void invalid() {
         try {
-            Resource resource = store.get("foo|");
+            Resource resource = store.get("..");
             assertNotNull(resource);
-            fail("| invalid");
+            fail(".. invalid");
         } catch (IllegalArgumentException expected) {
         }
     }

@@ -24,7 +24,7 @@ When supporting large images it is efficient to work on image subsets without lo
  
 **Tile Threads Priority**—Sets the global JAI Tile Scheduler thread priorities. Values range from 1 (Min) to 10 (Max), with default priority set to 5 (Normal).
 
-**Tile Recycling**—Enable/Disable JAI Cache Tile Recycling. If selected, Tile Recycling allows JAI to re-use already loaded tiles, with vital capability for performances. 
+**Tile Recycling**—Enable/Disable JAI Cache Tile Recycling. If selected, Tile Recycling allows JAI to re-use already loaded tiles, which can provide significant performance improvement. 
 
 **Native Acceleration**—To improve the computation speed of image processing applications, the JAI comes with both Java Code and native code for many platform. If the Java Virtual Machine (JVM) finds the native code, then that will be used. If the native code is not available, the Java code will be used. As such, the JAI package is able to provide optimized implementations for different platforms that can take advantage of each platform's capabilities.    
 
@@ -32,12 +32,19 @@ When supporting large images it is efficient to work on image subsets without lo
 
 **PNG Encoder Type**—Provides a selection of the PNG encoder between the Java own encoder, the JAI ImageIO native one, and a `PNGJ <https://code.google.com/p/pngj/>`_ based one:
 
-  * The Java own encoder is always set to maximum compression. It provides the smallest output images, balanced by a high performance cost (up to six times slower than the other two alternatives).
+  * The Java standard encoder is always set to maximum compression. It provides the smallest output images, balanced by a high performance cost (up to six times slower than the other two alternatives).
   * The ImageIO native encoder, available only when the ImageIO native extensions are installed, provided higher performance, but also generated significantly larger PNG images
-  * The PNGJ based encoder provides the best performance and generated PNG images that are just slighly larged than the Java own encoder. It is the recommended choice, but it's also newer than the other two, so in case of misbehavior the other two encoders are left as an option for the administrator. 
+  * The PNGJ based encoder provides the best performance and generated PNG images that are just slightly larger than the Java standard encoder. It is the recommended choice, but it's also newer than the other two, so in case of misbehavior the other two encoders are left as an option for the administrator. 
 
-**Mosaic Native Acceleration**—To reduce the overhead of handling them, large data sets are often split into smaller chunks and then combined to create an image mosaic. An example of this is aerial imagery which is usually comprises thousands of small images at very high resolution. Both native and JAI implementations of mosaic are provided. When selected, Mosaic Native Acceleration use the native implementation for creating mosaics. 
+**Mosaic Native Acceleration**—To reduce the overhead of handling them, large data sets are often split into smaller chunks and then combined to create an image mosaic. An example of this is aerial imagery which usually comprises thousands of small images at very high resolution. Both native and JAI implementations of mosaic are provided. When selected, Mosaic Native Acceleration use the native implementation for creating mosaics. 
 
 **Warp Native Acceleration**—Also for the Warp operation are provided both native and JAI implementations. If the checkbox is enabled, then the native operation is used for the warp operation.
 
 *It is quite important to remember that faster encoders are not necessarily going to visibly improve performance, if data loading and processing/rendering are dominating the response time, choosing a better encoder will likely not provide the expected benefits.*
+
+**JAI/JAI-EXT Setup**-This panel can be used for choosing which operations may be registered as *JAI* or *JAI-EXT* ones. Users have to select the operations to move and then, when clicking on *Save*, GeoServer internally will replace the *JAI/JAI-EXT* operations and the associated *GeoTools* ones. The main difference between *JAI* and *JAI-EXT* operations is the support for external **ROIs** and image **NoData**.
+
+.. note:: More information about **JAI-EXT** may be found at the `JAI-EXT Project page <https://github.com/geosolutions-it/jai-ext>`_.
+
+.. warning:: Users should take care that *JAI* native libraries are not supported by *JAI-EXT*, since *JAI-EXT* is a pure Java API.
+

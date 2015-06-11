@@ -476,3 +476,8 @@ The final CSS should looks like this::
 .. figure:: images/tutorial_finalstyle.png
 
    Final style with rule names
+
+CSS Workshop
+^^^^^^^^^^^^
+
+For more details, visit the next section, the `CSS workshop <../workshop/index.html>`_. This workshop has been used in the past for classroom settings to teach the CSS extension and has been ported to the user documentation.

@@ -104,7 +104,7 @@ function get_pom_version() {
 # gets the jira id for a version named <tag>
 function get_jira_id() {
   local tag=$1
-  local jira_id=`curl -s -G $JIRA_REST/project/$JIRA_PROJ/versions | tr "{" "\n" | grep "\"$tag\"" | tr "," "\n" | grep "\"id\"" | sed 's/"id": *"\([0-9]\+\).*/\1/g'`
+  local jira_id=`curl -s -G $JIRA_REST/project/$JIRA_PROJ/versions | tr "{" "\n" | grep -F "\"$tag\"" | tr "," "\n" | grep "\"id\"" | sed 's/"id": *"\([0-9]\+\).*/\1/g'`
 
   #sed 's/"id": *\([0-9]*\).*/\1/g'`
   if [ ! -z $jira_id ]; then

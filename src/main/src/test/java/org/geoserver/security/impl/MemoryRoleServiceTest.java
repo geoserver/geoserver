@@ -11,8 +11,6 @@ import static org.junit.Assert.*;
 import java.io.IOException;
 import java.util.SortedSet;
 
-import junit.framework.Assert;
-
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.GeoServerRoleService;
@@ -51,14 +49,10 @@ public class MemoryRoleServiceTest extends AbstractRoleServiceTest {
 
 
     @Test 
-    public void testInsert() {
+    public void testInsert() throws Exception{
         super.testInsert();
-        try {
-            for (GeoServerRole role : store.getRoles()) {
-                assertTrue(role.getClass()==MemoryGeoserverRole.class);
-            }
-        } catch (IOException e) {
-            Assert.fail(e.getMessage());
+        for (GeoServerRole role : store.getRoles()) {
+            assertTrue(role.getClass()==MemoryGeoserverRole.class);
         }
     }
     

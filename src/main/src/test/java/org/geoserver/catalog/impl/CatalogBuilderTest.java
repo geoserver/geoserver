@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -8,11 +8,7 @@ package org.geoserver.catalog.impl;
 import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.net.URL;
 import java.util.Arrays;
@@ -28,8 +24,8 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.Keyword;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.TestHttpClientProvider;
 import org.geoserver.catalog.PublishedType;
+import org.geoserver.catalog.TestHttpClientProvider;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.data.test.MockData;
@@ -118,6 +114,18 @@ public class CatalogBuilderTest extends GeoServerMockTestSupport {
         assertNotNull(fti.getNativeBoundingBox());
         assertNotNull(fti.getNativeBoundingBox().getCoordinateReferenceSystem());
         assertNotNull(fti.getLatLonBoundingBox());
+    }
+
+    @Test
+    public void testGenericStyle() throws Exception {
+        Catalog cat = getCatalog();
+        CatalogBuilder cb = new CatalogBuilder(cat);
+        cb.setStore(cat.getDataStoreByName(MockData.GENERICENTITY.getPrefix()));
+        FeatureTypeInfo fti = cb.buildFeatureType(toName(MockData.GENERICENTITY));
+        LayerInfo li = cb.buildLayer(fti);
+
+        // check we assigned the generic style
+        assertEquals("generic", li.getDefaultStyle().getName());
     }
 
     @Test

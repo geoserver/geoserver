@@ -36,26 +36,26 @@ Create a new module
        <dependencies>
          <dependency>
            <groupId>org.geoserver</groupId>
-           <artifactId>rest</artifactId>
-           <version>2.0-SNAPSHOT</version>
+           <artifactId>gs-rest</artifactId>
+           <version>2.8-SNAPSHOT</version> <!-- change this to the proper GeoServer version -->
          </dependency>
          <dependency>
            <groupId>org.geoserver</groupId>
-           <artifactId>main</artifactId>
-           <version>2.0-SNAPSHOT</version>
+           <artifactId>gs-main</artifactId>
+           <version>2.8-SNAPSHOT</version> <!-- change this to the proper GeoServer version -->
            <classifier>tests</classifier>
            <scope>test</scope>
          </dependency>
          <dependency>
            <groupId>junit</groupId>
            <artifactId>junit</artifactId>
-           <version>3.8.1</version>
+           <version>4.11</version>
            <scope>test</scope>
          </dependency>
          <dependency>
            <groupId>com.mockrunner</groupId>
            <artifactId>mockrunner</artifactId>
-           <version>0.3.1</version>
+           <version>0.3.6</version>
           <scope>test</scope>
          </dependency>
 

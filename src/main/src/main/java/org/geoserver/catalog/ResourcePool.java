@@ -9,6 +9,7 @@ import java.awt.RenderingHints;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -2125,8 +2126,20 @@ public class ResourcePool {
     class WMSCache extends CatalogResourceCache<String, WebMapServer> {
 
         @Override
-        protected void dispose(String key, WebMapServer object) {
-            // nothing to do
+        protected void dispose(String key, WebMapServer server) {
+            HTTPClient client = server.getHTTPClient();
+            if (client instanceof Closeable) {
+                // dispose the client, and the connection pool hosted into it as a consequence
+                // the connection pool additionally holds a few threads that are also getting
+                // disposed with this call
+                Closeable closeable = (Closeable) client;
+                try {
+                    closeable.close();
+                } catch (IOException e) {
+                    LOGGER.log(Level.FINE,
+                            "Failure while disposing the http client for a WMS store", e);
+                }
+            }
         }
 
     }

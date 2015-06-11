@@ -32,7 +32,7 @@ The following are necessary to perform a GeoServer release:
 #. Commit access to the GeoServer `Git repository <https://Github.com/geoserver/geoserver>`_
 #. Build access to `Jenkins <http://ares.boundlessgeo.com/jenkins/>`_
 #. Edit access to the GeoServer `Blog <http://blog.geoserver.org>`_
-#. Administration rights to GeoServer `JIRA <https://jira.codehaus.org/browse/GEOS>`__
+#. Administration rights to GeoServer `JIRA <https://osgeo-org.atlassian.net/projects/GEOS>`__
 #. Release/file management privileges in `SourceForge <https://sourceforge.net/projects/geoserver/>`_
 
 Versions and revisions
@@ -79,7 +79,54 @@ Run the `geoserver-release-jira <http://ares.boundlessgeo.com/jenkins/job/geoser
 
   The password for the ``JIRA_USER``.
 
-This job will perform the tasks in JIRA to release ``VERSION``. Navigate to `JIRA <http://jira.codehaus.org/browse/GEOS>`__ and verify that the version has actually been released.
+This job will perform the tasks in JIRA to release ``VERSION``. Navigate to `JIRA <https://osgeo-org.atlassian.net/projects/GEOS>`__ and verify that the version has actually been released.
+
+If you are cutting the first RC of a series, create the stable branch
+---------------------------------------------------------------------
+
+When creating the first release candidate of a series, there are some extra steps to create the new stable branch and update the version on master.
+
+* Checkout the master branch and make sure it is up to date and that there are no changes in your local workspace::
+
+    git checkout master
+    git pull
+    git status
+
+* Create the new stable branch and push it to GitHub; for example, if master is ``2.7-SNAPSHOT`` and the remote for the official GeoServer is called ``geoserver``::
+
+    git checkout -b 2.7.x
+    git push geoserver 2.7.x
+
+* Checkout the master branch and update the version in all pom.xml files; for example, if changing master from ``2.7-SNAPSHOT`` to ``2.8-SNAPSHOT``::
+
+    git checkout master
+    find . -name pom.xml -exec sed -i 's/2.7-SNAPSHOT/2.8-SNAPSHOT/g' {} \;
+
+* Update GeoTools dependency; for example if changing from ``13-SNAPSHOT`` to ``14-SNAPSHOT``::
+
+    sed -i 's/13-SNAPSHOT/14-SNAPSHOT/g' src/pom.xml
+
+* Update GeoWebCache dependency; for example if changing from ``1.7-SNAPSHOT`` to ``1.8-SNAPSHOT``::
+
+    sed -i 's/1.7-SNAPSHOT/1.8-SNAPSHOT/g' src/pom.xml
+
+* Manually update hardcoded versions in configuration files:
+
+    * ``doc/en/developer/source/conf.py``
+    * ``doc/en/docguide/source/conf.py``
+    * ``doc/en/user/source/conf.py``
+    * ``doc/es/user/source/conf.py``
+    * ``doc/fr/user/source/conf.py``
+    * ``src/extension/css/project/build/GeoServerCSSProject.scala``
+
+* Commit the changes and push to the master branch on GitHub::
+
+      git commit -am "Updated version to 2.8-SNAPSHOT, updated GeoTools dependency to 14-SNAPSHOT, updated GeoWebCache dependency to 1.8-SNAPSHOT, and related changes"
+      git push geoserver master
+      
+* Create the new beta version in `JIRA <https://osgeo-org.atlassian.net/projects/GEOS>`_ for issues on master; for example, if master is now ``2.8-SNAPSHOT``, create a Jira version ``2.8-beta`` for the first release of the ``2.8.x`` series
+
+* Announce on the developer mailing list that the new stable branch has been created and that the feature freeze on master is over
 
 Build the Release
 -----------------
@@ -155,84 +202,7 @@ to the SourceForge FRS server. Navigate to `Sourceforge <http://sourceforge.net/
 Create the download page
 ------------------------
 
-Get the JIRA version for this release:
-
-#. Go to `JIRA <https://jira.codehaus.org/browse/GEOS/>`__
-#. Select "Change log"
-#. Open the release notes for the version being released
-#. The version will be in the url, e.g. ``http://jira.codehaus.org/secure/ReleaseNote.jspa?projectId=10311&version=18700`` -> 18700
-
-Create the new download page:
-
-#. Go to `GeoServer web site <http://geoserver.org/>`_ and make sure you are logged in.
-#. Select the "Add Page" link in the menu
-#. Click "select a page template to start from"
-#. Choose the "Download" template
-#. Fill in the version, release date (e.g., May 17th, 2012) and the jira version
-#. Set the page title to the version being released (e.g. "GeoServer 2.2-RC3")
-#. Save and check all the links are working. The template includes links for all plugins; for a stable or maintenance release, remove links to plugins that are not available for that branch.
-
-Update the download short cuts:
-
-#. If you are releasing a beta/RC, edit the `dev version` setting for the website in `_config.yml <https://github.com/geoserver/geoserver.github.io/blob/master/_config.yml>`_.
-
-   Edit the details for `release/dev/index.html https://github.com/geoserver/geoserver.github.io/blob/master/release/dev/index.html>`_
-   
-   ```
-   ---
-   layout: release
-   title: GeoServer
-   version: 2.6-RC2
-   jira_version: 20356
-   release_date: August 18th, 2014
-   ---
-   ```
-   
-   We do not keep landing pages for beta releases so there is no need to create a copy of this file.
-   
-#. If you are releasing a stable version, edit the `stable_version` setting for the website in `_config.yml <https://github.com/geoserver/geoserver.github.io/blob/master/_config.yml>`_. If this is the first stable release you will want to remove the `dev version` setting (as we no longer need to offer a release candidate download).
-   
-   Edit the details for `release/stable/index.html <https://github.com/geoserver/geoserver.github.io/blob/master/release/stable/index.html>`_
-   
-   ```
-   ---
-   layout: release
-   title: GeoServer
-   version: 2.6.0
-   jira_version: 20402
-   release_date:  Sep 7, 2014
-   ---
-   ```
-   
-   And copy this page when you are done:
-   
-   ```
-   cp -R stable 2.6.0
-   ```
-   
-   Finally update the `download/index.html <https://github.com/geoserver/geoserver.github.io/blob/master/download/index.html>`_ page adding a link to 2.6.0 to the list.
-   
-#. If you are releasing a maintenance version, edit the `maintenance_version` setting for the website in `_config.yml <https://github.com/geoserver/geoserver.github.io/blob/master/_config.yml>`_.
-   
-   Edit the details for `release/maintenance/index.html <https://github.com/geoserver/geoserver.github.io/blob/master/release/stable/index.html>`_
-   
-   ```
-   ---
-   layout: release
-   title: GeoServer
-   version: 2.5.8
-   jira_version: 20457
-   release_date:  August 18, 2014
-   ---
-   ```
-   
-    And copy this page when you are done:
-   
-   ```
-   cp -R maintenance 2.5.8
-   ```
-   
-   Adding a link to the download page when you are done.
+The `GeoServer web site <http://geoserver.org/>`_ is now managed as a `GitHub Pages repository <https://github.com/geoserver/geoserver.github.io>`_. Follow the instructions in the repository to create a download page for the release.
 
 Post the Documentation
 ----------------------
@@ -320,7 +290,7 @@ GeoServer Blog
          </li>
       </ul>
       More details can be found in the
-      <a href="http://jira.codehaus.org/secure/ReleaseNote.jspa?projectId=10311&amp;version=19231">GeoServer 2.5.1 Release Notes</a>.
+      <a href="https://osgeo-org.atlassian.net/jira/secure/ReleaseNote.jspa?projectId=10000&version=10164">GeoServer 2.5.1 Release Notes</a>.
 
 #. Examples of content:
 
@@ -384,7 +354,7 @@ The following is an example::
    
    Along with many other improvements and bug fixes:
    
-   * https://jira.codehaus.org/secure/ReleaseNote.jspa?projectId=10311&version=20202
+   * https://osgeo-org.atlassian.net/jira/secure/ReleaseNote.jspa?projectId=10000&version=10164
 
    Thanks to Andrea and Jody (GeoSolutions and Boundless) for publishing this release. A very special thanks to all those who contributed bug fixes, new
    features, bug reports, and testing to this release.
@@ -436,8 +406,8 @@ Example::
 
   Along with many other improvements and bug fixes. The entire change log for
   the 1.7.1 series is available in the issue tracker:
-
-  http://jira.codehaus.org/browse/GEOS/fixforversion/14502
+  
+  https://osgeo-org.atlassian.net/jira/secure/ReleaseNote.jspa?projectId=10000&version=
 
 FreshMeat
 ^^^^^^^^^

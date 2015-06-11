@@ -43,7 +43,7 @@ Users can join the IRC channel, `#geoserver <irc://irc.freenode.net/geoserver>`_
 Bug tracking
 ------------
 
-If you have a problem when working with GeoServer, then please let us know through the mailing lists. GeoServer uses `JIRA <http://jira.codehaus.org/browse/GEOS>`_ , a bug tracking website, to manage issue reports. In order to submit an issue, you'll need to `create an account first <https://xircles.codehaus.org/>`_.
+If you have a problem when working with GeoServer, then please let us know through the mailing lists. GeoServer uses `JIRA <https://osgeo-org.atlassian.net/projects/GEOS>`_ , a bug tracking website, to manage issue reports. In order to submit an issue, you'll need to `create an account first <https://osgeo-org.atlassian.net/admin/users/sign-up>`_.
 
 Everyone is encouraged to submit patches and, if possible, fix issues as well. We welcome patches through JIRA, or pull requests to GitHub.
 

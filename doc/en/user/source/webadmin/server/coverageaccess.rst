@@ -1,6 +1,6 @@
 .. _Coverage Access:
 
-Coverage Access settings
+Coverage Access Settings
 ========================
 
 The Coverage Access Settings page in the Server menu in the :ref:`web_admin` provides configuration options to customize thread pool executors and ImageIO caching memory.
@@ -16,7 +16,8 @@ Thread Pool Executor Settings
 -----------------------------
 The imageMosaic reader may load, in parallel, different files that make up the mosaic by means of a 
 `ThreadPoolExecutor <http://docs.oracle.com/javase/1.5.0/docs/api/java/util/concurrent/ThreadPoolExecutor.html/>`_ .
-A global ThreadPoolExecutor instance is shared by all the readers supporting and using concurrent reads. This section of the Coverage Access Settings administration page allows to configure the parameters of the executor.
+A global ThreadPoolExecutor instance is shared by all the readers supporting and using concurrent reads. This section
+of the Coverage Access Settings administration page allows configuration of the Executor parameters.
 
 **Core Pool Size**—Sets the core pool size of the thread pool executor. A positive integer must be specified.
 

@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -81,7 +81,7 @@ public class DataStoreFormat extends VectorFormat {
     }
 
     public DataStoreInfo createStore(ImportData data, WorkspaceInfo workspace, Catalog catalog) throws IOException {
-        Map<String,Serializable> params = createConnectionParameters(data);
+        Map<String,Serializable> params = createConnectionParameters(data, catalog);
         if (params == null) {
             return null;
         }
@@ -191,7 +191,7 @@ public class DataStoreFormat extends VectorFormat {
     public DataStore createDataStore(ImportData data) throws IOException {
         DataStoreFactorySpi dataStoreFactory = factory();
 
-        Map<String,Serializable> params = createConnectionParameters(data);
+        Map<String,Serializable> params = createConnectionParameters(data, null);
         if (params != null && dataStoreFactory.canProcess(params)) {
             DataStore dataStore = dataStoreFactory.createDataStore(params); 
             if (dataStore != null) {
@@ -202,7 +202,7 @@ public class DataStoreFormat extends VectorFormat {
         return null;
     }
 
-    public Map<String,Serializable> createConnectionParameters(ImportData data) throws IOException {
+    public Map<String,Serializable> createConnectionParameters(ImportData data, Catalog catalog) throws IOException {
         //try file based
         if (dataStoreFactory instanceof FileDataStoreFactorySpi) {
             File f = null;
@@ -215,7 +215,7 @@ public class DataStoreFormat extends VectorFormat {
 
             if (f != null) {
                 Map<String,Serializable> map = new HashMap<String, Serializable>();
-                map.put("url", f.toURI().toURL());
+                map.put("url", relativeDataFileURL(f.toURI().toURL().toString(), catalog));
                 if (data.getCharsetEncoding() != null) {
                     // @todo this map only work for shapefile
                     map.put("charset",data.getCharsetEncoding());

@@ -14,6 +14,7 @@ import net.opengis.wfs.WfsFactory;
 import net.opengis.wfs20.Wfs20Factory;
 
 import org.eclipse.emf.ecore.EObject;
+import org.geoserver.wfs.WFSException;
 import org.geotools.feature.FeatureCollection;
 
 /**
@@ -67,6 +68,8 @@ public abstract class FeatureCollectionResponse extends RequestObject {
     
     public abstract List<FeatureCollection> getFeatures();
     
+    public abstract Object unadapt(Class target);
+
     public List<FeatureCollection> getFeature() {
         //alias
         return getFeatures();
@@ -127,6 +130,25 @@ public abstract class FeatureCollectionResponse extends RequestObject {
         public List<FeatureCollection> getFeatures() {
             return eGet(adaptee, "feature", List.class);
         }
+
+        @Override
+        public Object unadapt(Class target) {
+            if (target.equals(FeatureCollectionType.class)) {
+                return adaptee;
+            } else if (target.equals(net.opengis.wfs20.FeatureCollectionType.class)) {
+                FeatureCollectionType source = (FeatureCollectionType) adaptee;
+                net.opengis.wfs20.FeatureCollectionType result = Wfs20Factory.eINSTANCE
+                        .createFeatureCollectionType();
+                result.getMember().addAll(source.getFeature());
+                result.setNumberReturned(source.getNumberOfFeatures());
+                result.setLockId(source.getLockId());
+                result.setTimeStamp(source.getTimeStamp());
+                return result;
+            } else {
+                throw new WFSException("Cannot transform " + adaptee
+                        + " to the specified target class " + target);
+            }
+        }
     }
 
     public static class WFS20 extends FeatureCollectionResponse {
@@ -182,5 +204,24 @@ public abstract class FeatureCollectionResponse extends RequestObject {
         public List<FeatureCollection> getFeatures() {
             return eGet(adaptee, "member", List.class);
         }
+
+        @Override
+        public Object unadapt(Class target) {
+            if (target.equals(net.opengis.wfs20.FeatureCollectionType.class)) {
+                return adaptee;
+            } else if (target.equals(FeatureCollectionType.class)) {
+                net.opengis.wfs20.FeatureCollectionType source = (net.opengis.wfs20.FeatureCollectionType) adaptee;
+                FeatureCollectionType result = WfsFactory.eINSTANCE.createFeatureCollectionType();
+                result.getFeature().addAll(source.getMember());
+                result.setNumberOfFeatures(source.getNumberReturned());
+                result.setLockId(source.getLockId());
+                result.setTimeStamp(source.getTimeStamp());
+                return result;
+            } else {
+                throw new WFSException("Cannot transform " + adaptee
+                        + " to the specified target class " + target);
+            }
+        }
     }
+
 }

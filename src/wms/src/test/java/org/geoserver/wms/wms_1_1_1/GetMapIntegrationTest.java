@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2014 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -6,7 +6,6 @@
 package org.geoserver.wms.wms_1_1_1;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -33,7 +32,6 @@ import javax.imageio.ImageIO;
 import javax.servlet.ServletResponse;
 import javax.xml.namespace.QName;
 
-import org.apache.batik.bridge.svg12.SVG12BridgeContext;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.spi.LoggingEvent;
@@ -48,6 +46,7 @@ import org.geoserver.catalog.CoverageView.InputCoverageBand;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
@@ -55,12 +54,10 @@ import org.geoserver.data.test.SystemTestData.LayerProperty;
 import org.geoserver.test.RemoteOWSTestSupport;
 import org.geoserver.wms.GetMap;
 import org.geoserver.wms.GetMapOutputFormat;
+import org.geoserver.wms.GetMapTest;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSTestSupport;
-import org.geoserver.wms.featureinfo.GML3FeatureInfoOutputFormat;
-import org.geoserver.wms.featureinfo.GetFeatureInfoOutputFormat;
-import org.geoserver.wms.featureinfo.TextFeatureInfoOutputFormat;
 import org.geoserver.wms.map.OpenLayersMapOutputFormat;
 import org.geoserver.wms.map.RenderedImageMapOutputFormat;
 import org.geotools.gce.imagemosaic.ImageMosaicFormat;
@@ -77,6 +74,9 @@ public class GetMapIntegrationTest extends WMSTestSupport {
     private static final QName MOSAIC_HOLES = new QName(MockData.SF_URI, "mosaic_holes", MockData.SF_PREFIX);
 
     private static final QName MOSAIC = new QName(MockData.SF_URI, "mosaic", MockData.SF_PREFIX);
+
+    public static QName GIANT_POLYGON = new QName(MockData.CITE_URI, "giantPolygon",
+            MockData.CITE_PREFIX);
 
     String bbox = "-130,24,-66,50";
 
@@ -182,6 +182,9 @@ public class GetMapIntegrationTest extends WMSTestSupport {
 
         testData.addRasterLayer(MOSAIC,
                 "mosaic.zip", null, properties,GetMapIntegrationTest.class,catalog);
+
+        testData.addVectorLayer(GIANT_POLYGON, Collections.EMPTY_MAP, "giantPolygon.properties",
+                GetMapTest.class, getCatalog());
 
         addCoverageViewLayer();
     }
@@ -967,7 +970,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
             // if entities evaluation is disabled
             // the parser will throw a MalformedURLException when it finds an entity
             response = getAsString(url);
-            assertTrue(response.indexOf("java.net.MalformedURLException") > -1);
+            assertTrue(response.indexOf("Entity resolution disallowed") > -1);
 
             // try default value: disabled entities
             geoserverInfo.setXmlExternalEntitiesEnabled(null);
@@ -976,7 +979,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
             // if entities evaluation is disabled
             // the parser will throw a MalformedURLException when it finds an entity
             response = getAsString(url);
-            assertTrue(response.indexOf("java.net.MalformedURLException") > -1);            
+            assertTrue(response.indexOf("Entity resolution disallowed") > -1);
         } finally {
             // default
             geoserverInfo.setXmlExternalEntitiesEnabled(null);
@@ -1010,6 +1013,36 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         assertEquals(0, countNonBlankPixels(testName, image.getSubimage(100, 0, 100, 200), BG_COLOR));
         // bottom 35% should be blank
         assertEquals(0, countNonBlankPixels(testName, image.getSubimage(0, 130, 200, 70), BG_COLOR));
+    }
+
+    @Test
+    public void testMapWrapping() throws Exception {
+        GeoServer gs = getGeoServer();
+        WMSInfo wms = gs.getService(WMSInfo.class);
+        Boolean original = wms.getMetadata().get(WMS.MAP_WRAPPING_KEY, Boolean.class);
+        try {
+            wms.getMetadata().put(WMS.MAP_WRAPPING_KEY, Boolean.TRUE);
+            gs.save(wms);
+
+            String layer = getLayerId(GIANT_POLYGON);
+            String request = "wms?version=1.1.1&bbox=170,-10,190,10&format=image/png"
+                    + "&request=GetMap&layers=" + layer + "&styles=polygon"
+                    + "&width=100&height=100&srs=EPSG:4326";
+
+            BufferedImage image = getAsImage(request, "image/png");
+            // with wrapping enabled we should get a gray pixel
+            assertPixel(image, 75, 0, new Color(170, 170, 170));
+
+            wms.getMetadata().put(WMS.MAP_WRAPPING_KEY, Boolean.FALSE);
+            gs.save(wms);
+            image = getAsImage(request, "image/png");
+            // with wrapping disabled we should get a white one (nothing)
+            assertPixel(image, 75, 0, Color.WHITE);
+        } finally {
+            wms.getMetadata().put(WMS.MAP_WRAPPING_KEY, original);
+            gs.save(wms);
+        }
+
     }
 
 }

@@ -138,7 +138,7 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
         assertEquals(storeInfo, ci.getStore());
         
         // Harvesting of the Mosaic
-        URL zipHarvest = getClass().getResource( "test-data/harvesting.zip" );
+        URL zipHarvest = MockData.class.getResource("harvesting.zip");
         // Extract a Byte array from the zip file
         is = null;
         try  {
@@ -198,13 +198,11 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
         assertEquals(storeInfo, ci.getStore());
 
         // Harvesting of the Mosaic
-        URL zipHarvest = getClass().getResource("test-data/harvesting.zip");
-        File zipFile = DataUtilities.urlToFile(zipHarvest);
-        // Creation of another zip file which is a copy of the one before
-        File newZip = new File(zipFile.getParentFile(), "harvesting2.zip");
+        URL zipHarvest = MockData.class.getResource("harvesting.zip");
+        File newZip = new File("./target/harvesting2.zip");
         // Copy the content of the first zip to the second
-        FileUtils.copyFile(zipFile, newZip);
-        File outputDirectory = new File(zipFile.getParentFile(), "harvesting");
+        FileUtils.copyInputStreamToFile(zipHarvest.openStream(), newZip);
+        File outputDirectory = new File("./target/harvesting");
         outputDirectory.mkdir();
         RESTUtils.unzipFile(newZip, outputDirectory);
         // Create the POST request
@@ -274,7 +272,7 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
             assertEquals(storeInfo, ci.getStore());
 
             // Harvesting of the Mosaic
-            URL zipHarvest = getClass().getResource("test-data/harvesting.zip");
+            URL zipHarvest = MockData.class.getResource("harvesting.zip");
             // Extract a Byte array from the zip file
             InputStream is = null;
             byte[] bytes;

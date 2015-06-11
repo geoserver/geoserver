@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -11,8 +11,8 @@ import static org.easymock.EasyMock.expectLastCall;
 import static org.easymock.classextension.EasyMock.createMock;
 import static org.easymock.classextension.EasyMock.createNiceMock;
 import static org.easymock.classextension.EasyMock.replay;
-import static org.geoserver.security.SecurityUtils.toBytes;
 import static org.geoserver.data.test.CiteTestData.*;
+import static org.geoserver.security.SecurityUtils.toBytes;
 
 import java.io.File;
 import java.io.IOException;
@@ -48,7 +48,6 @@ import org.geoserver.security.KeyStoreProviderImpl;
 import org.geoserver.security.MasterPasswordProvider;
 import org.geoserver.security.config.PasswordPolicyConfig;
 import org.geoserver.security.config.SecurityAuthProviderConfig;
-import org.geoserver.security.config.SecurityFilterConfig;
 import org.geoserver.security.config.SecurityInterceptorFilterConfig;
 import org.geoserver.security.config.SecurityUserGroupServiceConfig;
 import org.geoserver.security.filter.GeoServerAnonymousAuthenticationFilter;
@@ -117,6 +116,7 @@ public class MockCreator implements Callback {
         b.setCallback(this);
     
         b.style(DEFAULT_VECTOR_STYLE);
+        b.style("generic");
     
         createWorkspace(DEFAULT_PREFIX, DEFAULT_URI, null, b);
         createWorkspace(CGF_PREFIX, CGF_URI, CGF_TYPENAMES, b);

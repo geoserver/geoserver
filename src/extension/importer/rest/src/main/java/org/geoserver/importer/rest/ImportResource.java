@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -15,14 +15,15 @@ import java.util.List;
 
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.importer.ImportContext;
+import org.geoserver.importer.ImportData;
+import org.geoserver.importer.ImportFilter;
+import org.geoserver.importer.Importer;
+import org.geoserver.importer.ValidationException;
 import org.geoserver.rest.PageInfo;
 import org.geoserver.rest.RestletException;
 import org.geoserver.rest.format.DataFormat;
 import org.geoserver.rest.format.StreamDataFormat;
-import org.geoserver.importer.ImportContext;
-import org.geoserver.importer.ImportFilter;
-import org.geoserver.importer.Importer;
-import org.geoserver.importer.ValidationException;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
@@ -109,7 +110,12 @@ public class ImportResource extends BaseResource {
     }
 
     private void runImport(ImportContext context) throws IOException {
-        //if the import is empty, prep it but leave data as is
+        if (context.getState() == ImportContext.State.INIT) {
+            getResponse().setStatus(Status.CLIENT_ERROR_PRECONDITION_FAILED,
+                    "Import context is still in INIT state, cannot run it yet");
+        }
+
+        // if the import is empty, prep it but leave data as is
         if (context.getTasks().isEmpty()) {
             importer.init(context, false);
         }
@@ -130,8 +136,16 @@ public class ImportResource extends BaseResource {
         //create a new import
         ImportContext context;
         try {
-            context = importer.createContext(id);
+            Form query = getRequest().getResourceRef().getQueryAsForm();
+            boolean async = query.getNames().contains("async");
 
+            if (async) {
+                context = importer.registerContext(id);
+            } else {
+                context = importer.createContext(id);
+            }
+
+            ImportData data = null;
             if (MediaType.APPLICATION_JSON.equals(getRequest().getEntity().getMediaType())) {
                 //read representation specified by user, use it to read 
                 ImportContext newContext = 
@@ -165,16 +179,23 @@ public class ImportResource extends BaseResource {
                 }
 
                 context.setData(newContext.getData());
-                if (newContext.getData() != null) {
-                    importer.init(context, true);
-                }
+            }
+
+            if (!async && context.getData() != null) {
+                importer.init(context, true);
             }
 
             context.reattach(importer.getCatalog(), true);
+            importer.changed(context);
+
+            if (async && context.getData() != null) {
+                importer.initAsynch(context, true);
+            }
+
             getResponse().redirectSeeOther(getPageInfo().rootURI("/imports/"+context.getId()));
             getResponse().setEntity(getFormatGet().toRepresentation(context));
             getResponse().setStatus(Status.SUCCESS_CREATED);
-            importer.changed(context);
+
         } 
         catch (IOException e) {
             throw new RestletException("Unable to create import", Status.SERVER_ERROR_INTERNAL, e);

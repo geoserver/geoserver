@@ -53,27 +53,78 @@ public class PathsTest {
         } catch (IllegalArgumentException expected) {
         }
 
-        try {
-            assertEquals("foo?", path("foo?"));
-            fail("? invalid character");
-        } catch (IllegalArgumentException expected) {
+        // test path elements that are always valid regardless of strictPath
+        for (String name : new String[] { "foo", "foo.txt", "directory/bar" }) {
+            assertEquals(name, Paths.path(true, name));
+            assertEquals(name, Paths.path(false, name));
+        }
+        // test path elements that are always invalid regardless of strictPath
+        for (String name : new String[] { ".", "..", "foo\\" }) {
+            try {
+                assertEquals(name, Paths.path(true, name));
+                fail("invalid: " + name);
+            } catch (IllegalArgumentException expected) {
+                // ignore
+            }
+            try {
+                assertEquals(name, Paths.path(false, name));
+                fail("invalid: " + name);
+            } catch (IllegalArgumentException expected) {
+                // ignore
+            }
+        }
+        // test path elements that are invalid if and only if strictPath is true
+        for (char c : "*:,'&?\"<>|".toCharArray()) {
+            for (String prefix : new String[] { "foo", "" }) {
+                for (String suffix : new String[] { "bar", "" }) {
+                    String name = prefix + c + suffix;
+                    try {
+                        assertEquals(name, Paths.path(true, name));
+                        fail("invalid: " + name);
+                    } catch (IllegalArgumentException expected) {
+                        // ignore
+                    }
+                    assertEquals(name, Paths.path(false, name));
+                }
+            }
         }
     }
 
     @Test
     public void validTest() {
-        List<String> valid = Arrays.asList(new String[] { "foo","foo.txt","directory/bar" });
-        for (String name : valid) {
-            assertEquals(name, Paths.valid(name));
+        // test path elements that are always valid regardless of strictPath
+        for (String name : new String[] { "foo", "foo.txt", "directory/bar" }) {
+            assertEquals(name, Paths.valid(true, name));
+            assertEquals(name, Paths.valid(false, name));
         }
-        
-        List<String> invalid = Arrays.asList(new String[] { ".", "..", "foo?", "foo:", "foo*",
-                "foo\"", "foo<", "foo>?", "foo|", "foo\\" });
-        for (String name : invalid) {
+        // test path elements that are always invalid regardless of strictPath
+        for (String name : new String[] { ".", "..", "foo\\" }) {
             try {
-                assertEquals(name, Paths.valid(name));
-                fail("invalid:" + name);
+                assertEquals(name, Paths.valid(true, name));
+                fail("invalid: " + name);
             } catch (IllegalArgumentException expected) {
+                // ignore
+            }
+            try {
+                assertEquals(name, Paths.valid(false, name));
+                fail("invalid: " + name);
+            } catch (IllegalArgumentException expected) {
+                // ignore
+            }
+        }
+        // test path elements that are invalid if and only if strictPath is true
+        for (char c : "*:,'&?\"<>|".toCharArray()) {
+            for (String prefix : new String[] { "foo", "" }) {
+                for (String suffix : new String[] { "bar", "" }) {
+                    String name = prefix + c + suffix;
+                    try {
+                        assertEquals(name, Paths.valid(true, name));
+                        fail("invalid: " + name);
+                    } catch (IllegalArgumentException expected) {
+                        // ignore
+                    }
+                    assertEquals(name, Paths.valid(false, name));
+                }
             }
         }
     }

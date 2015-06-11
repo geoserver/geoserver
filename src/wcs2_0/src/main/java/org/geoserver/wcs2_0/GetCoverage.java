@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -120,22 +120,19 @@ import org.vfny.geoserver.wcs.WcsException;
  */
 public class GetCoverage {
     
-    private final static Set<String> mdFormats;
+    private static final Hints HINTS = new Hints(
+            Hints.LENIENT_DATUM_SHIFT, Boolean.TRUE);
 
+	private final static Set<String> mdFormats;
+
+    private static final CoverageProcessor processor = CoverageProcessor.getInstance(HINTS);
+    
     static {
-        //TODO: This one should be pluggable
+        //TODO: This one should be pluggable through Extensions
         mdFormats = new HashSet<String>();
         mdFormats.add("application/x-netcdf");
-        final CoverageProcessor processor = new CoverageProcessor(new Hints(
-                Hints.LENIENT_DATUM_SHIFT, Boolean.TRUE));
-        MOSAIC_PARAMS = processor.getOperation("Mosaic").getParameters();
+        mdFormats.add("application/x-netcdf4");
     }
-    
-    /** Cached factory for the {@link Mosaic} operation. */
-    final static Mosaic MOSAIC_FACTORY = new Mosaic();
-
-    /** Parameters used to control the {@link Mosaic} operation. */
-    static ParameterValueGroup MOSAIC_PARAMS;
 
     /** Logger.*/
     private static Logger LOGGER= Logging.getLogger(GetCoverage.class);
@@ -169,7 +166,7 @@ public class GetCoverage {
         this.envelopeDimensionsMapper=envelopeDimensionsMapper;
 
         // building the needed URI CRS Factories
-        Hints hints = GeoTools.getDefaultHints().clone();
+        Hints hints = GeoTools.getDefaultHints();
         hints.add(new Hints(Hints.FORCE_LONGITUDE_FIRST_AXIS_ORDER,Boolean.TRUE));
         hints.add(new Hints(Hints.FORCE_AXIS_ORDER_HONORING, "http-uri"));
         lonLatCRSFactory = ReferencingFactoryFinder.getCRSAuthorityFactory("http://www.opengis.net/def", hints); 
@@ -416,6 +413,9 @@ public class GetCoverage {
         if (reader instanceof StructuredGridCoverage2DReader && coverageDimensions != null) {
             // Setting dimensions as properties
             Map map = coverage.getProperties();
+            if (map == null) {
+                map = new HashMap();
+            }
             for (DimensionBean coverageDimension : coverageDimensions) {
                 helper.setCoverageDimensionProperty(map, gridCoverageRequest, coverageDimension);
             }
@@ -486,10 +486,10 @@ public class GetCoverage {
 
         // mosaic
         try {
-            final ParameterValueGroup param = MOSAIC_PARAMS.clone();
+            final ParameterValueGroup param = processor.getOperation("Mosaic").getParameters();
             param.parameter("sources").setValue(coverages);
             param.parameter("policy").setValue(GridGeometryPolicy.FIRST.name());
-            return (GridCoverage2D) MOSAIC_FACTORY.doOperation(param, hints);
+            return (GridCoverage2D) ((Mosaic)processor.getOperation("Mosaic")).doOperation(param, hints);
         } catch (Exception e) {
             throw new RuntimeException("Failed to mosaic the input coverages", e);
         }
@@ -777,7 +777,7 @@ public class GetCoverage {
         // leverage GeoTools projection handlers to figure out exactly which areas we should be
         // reading
         ProjectionHandler handler = ProjectionHandlerFinder.getHandler(new ReferencedEnvelope(
-                envelope), readerCRS, false);
+                envelope), readerCRS, true);
         if (handler == null) {
             readEnvelopes.add(new GeneralEnvelope(envelope));
         } else {

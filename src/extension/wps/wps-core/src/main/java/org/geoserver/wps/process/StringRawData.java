@@ -40,4 +40,9 @@ public class StringRawData extends AbstractRawData {
         return data;
     }
 
+    @Override
+    public String getFileExtension() {
+        return "txt";
+    }
+
 }

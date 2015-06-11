@@ -44,31 +44,47 @@ For this example the project will be called "hello_wps".
        <groupId>org.geoserver</groupId>  
        <artifactId>hello_wps</artifactId>
        <packaging>jar</packaging>
-       <version>2.6-SNAPSHOT</version>
+       <version>2.8-SNAPSHOT</version>
        <name>hello_wps</name>
+       
+       <properties>
+         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+         <gt.version>14-SNAPSHOT</gt.version>  <!-- change to GeoTools version -->
+         <gs.version>2.8-SNAPSHOT</gs.version>  <!-- change to GeoServer version -->
+       </properties>
        <dependencies>
          <dependency>
            <groupId>org.geotools</groupId>
            <artifactId>gt-process</artifactId>
-           <version>12-SNAPSHOT</version>
+           <version>${gt.version}</version>
+         </dependency>
+         <dependency>
+           <groupId>org.geoserver.extension</groupId>
+           <artifactId>gs-wps-core</artifactId>
+           <version>${gs.version}</version>
          </dependency>
          <dependency>
            <groupId>org.geoserver</groupId>
-           <artifactId>main</artifactId>
-           <version>2.6-SNAPSHOT</version>
+           <artifactId>gs-main</artifactId>
+           <version>${gs.version}</version>
            <classifier>tests</classifier>
            <scope>test</scope>
          </dependency>
          <dependency>
+           <groupId>org.geoserver.extension</groupId>
+           <artifactId>gs-wps-core</artifactId>
+           <version>${gs.version}</version>
+         </dependency>
+         <dependency>
            <groupId>junit</groupId>
            <artifactId>junit</artifactId>
-           <version>3.8.1</version>
+           <version>4.11</version>
            <scope>test</scope>
          </dependency>
          <dependency>
            <groupId>com.mockrunner</groupId>
            <artifactId>mockrunner</artifactId>
-           <version>0.3.1</version>
+           <version>0.3.6</version>
           <scope>test</scope>
          </dependency>
        </dependencies>
@@ -85,13 +101,16 @@ For this example the project will be called "hello_wps".
         </plugins>
        </build>
 
-       <repositories>
-         <repository>
-           <id>opengeo</id>
-       	   <name>opengeo</name>
-       	   <url>http://repo.opengeo.org</url>
-        </repository>
-       </repositories>
+        <repositories>
+            <repository>
+                <id>boundless</id>
+                <name>Boundless Maven Repository</name>
+                <url>http://repo.boundlessgeo.com/main</url>
+                <snapshots>
+                    <enabled>true</enabled>
+                </snapshots>
+            </repository>
+        </repositories>
 
     </project>  
 

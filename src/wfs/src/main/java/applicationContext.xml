@@ -170,7 +170,7 @@
 	<bean id="wfsXsd-1.0" class="org.geoserver.wfs.xml.v1_0_0.WFS">
 	    <constructor-arg ref="gml2SchemaBuilder"/>
 	</bean>
-	<bean id="xmlConfiguration-1.0" class="org.geoserver.wfs.xml.v1_0_0.WFSConfiguration">
+	<bean id="xmlConfiguration-1.0" class="org.geoserver.wfs.xml.v1_0_0.WFSConfiguration" lazy-init="false">
 		<constructor-arg ref="catalog"/>
 		<constructor-arg ref="gml2SchemaBuilder"/>
 		<constructor-arg ref="wfsXsd-1.0"/>
@@ -180,7 +180,7 @@
 	<bean id="wfsXsd-1.1" class="org.geoserver.wfs.xml.v1_1_0.WFS">
         <constructor-arg ref="gml3SchemaBuilder"/>
     </bean>
-	<bean id="xmlConfiguration-1.1" class="org.geoserver.wfs.xml.v1_1_0.WFSConfiguration">
+	<bean id="xmlConfiguration-1.1" class="org.geoserver.wfs.xml.v1_1_0.WFSConfiguration" lazy-init="false">
 		<constructor-arg ref="geoServer"/>
 		<constructor-arg ref="gml3SchemaBuilder"/>
 		<constructor-arg ref="wfsXsd-1.1"/>
@@ -333,21 +333,26 @@
 	
 	<bean id="bboxKvpParser" class="org.geoserver.wfs.kvp.BBoxKvpParser"/>
 	<bean id="filter1_0_0_KvpParser" class="org.geoserver.wfs.kvp.Filter_1_0_0_KvpParser">
+        <constructor-arg ref="geoServer"/>
 		<property name="service"><value>WFS</value></property>
 		<property name="version"><value>1.0.0</value></property>
 	</bean>
 	<bean id="filter1_1_0_KvpParser" class="org.geoserver.wfs.kvp.Filter_1_1_0_KvpParser">
+        <constructor-arg ref="geoServer"/>
 		<property name="service"><value>WFS</value></property>
 		<property name="version"><value>1.1.0</value></property>
 	</bean>
 	<bean id="filter2_0_0_KvpParser" class="org.geoserver.wfs.kvp.Filter_2_0_0_KvpParser">
+        <constructor-arg ref="geoServer"/>
         <property name="service"><value>WFS</value></property>
         <property name="version"><value>2.0.0</value></property>
     </bean>
 	<!-- the filter kvp parser to use when the version and/or service parameters are not supplied
 	     (they're mandatory, but we're lax, so without this default catch-all parser the dispatcher
 	     may not find out the one to use) -->
-	<bean id="filter1_1_0_KvpParserDefault" class="org.geoserver.wfs.kvp.Filter_1_1_0_KvpParser"/>
+	<bean id="filter1_1_0_KvpParserDefault" class="org.geoserver.wfs.kvp.Filter_1_1_0_KvpParser">
+         <constructor-arg ref="geoServer"/>
+    </bean>
 
     <bean id="cqlKvpParser" class="org.geoserver.ows.kvp.CQLFilterKvpParser"/>
 	<bean id="propertyName10KvpParser" class="org.geoserver.ows.NestedKvpParser">

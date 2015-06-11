@@ -7,18 +7,15 @@
     <parent>
         <groupId>org.geoserver</groupId>
         <artifactId>community</artifactId>
-        <version>2.7-SNAPSHOT</version>
+        <version>2.8-SNAPSHOT</version>
     </parent>
 
     <groupId>org.geoserver.community</groupId>
     <artifactId>gs-geofence</artifactId>
     <packaging>jar</packaging>
-    <version>2.7-SNAPSHOT</version>
+    <version>2.8-SNAPSHOT</version>
     <name>GeoFence security integration</name>
 
-    <properties>
-        <gf.version>2.2-SNAPSHOT</gf.version>
-    </properties>
     <dependencies>
         <dependency>
             <groupId>org.geoserver</groupId>

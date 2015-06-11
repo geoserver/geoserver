@@ -240,7 +240,7 @@ public class TimeKvpParserTest extends TestCase {
         final int millisInDay = (int) TimeKvpParser.MILLIS_IN_DAY;
         TimeKvpParser timeKvpParser = new TimeKvpParser("TIME");
         Calendar back = Calendar.getInstance();
-        Calendar now = Calendar.getInstance();
+        Calendar now = (Calendar) back.clone();
 
         List l = new ArrayList((Collection) timeKvpParser.parse(CONTINUOUS_RELATIVE_PERIOD_H));
         // Verify that the list contains at least one element.
@@ -254,7 +254,7 @@ public class TimeKvpParserTest extends TestCase {
         assertEquals(now.getTime(), range.getMaxValue());
 
         back = Calendar.getInstance();
-        now = Calendar.getInstance();
+        now = (Calendar) back.clone();
         l = new ArrayList((Collection) timeKvpParser.parse(CONTINUOUS_RELATIVE_PERIOD_D));
         // Verify that the list contains at least one element.
         now.set(Calendar.MILLISECOND, 0);
@@ -267,7 +267,7 @@ public class TimeKvpParserTest extends TestCase {
         assertEquals(now.getTime(), range.getMaxValue());
 
         back = Calendar.getInstance();
-        now = Calendar.getInstance();
+        now = (Calendar) back.clone();
         l = new ArrayList((Collection) timeKvpParser.parse(CONTINUOUS_RELATIVE_PERIOD_W));
         // Verify that the list contains at least one element.
         now.set(Calendar.MILLISECOND, 0);

@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -41,6 +41,7 @@ import org.geotools.data.DataAccess;
 import org.geotools.filter.v1_0.OGCBBOXTypeBinding;
 import org.geotools.filter.v1_1.OGC;
 import org.geotools.filter.v1_1.OGCConfiguration;
+import org.geotools.geometry.jts.CurvedGeometryFactory;
 import org.geotools.gml2.FeatureTypeCache;
 import org.geotools.gml2.SrsSyntax;
 import org.geotools.gml3.GML;
@@ -131,8 +132,18 @@ public class WFSConfiguration extends Configuration {
             }
         });
         addDependency(new OGCConfiguration());
-        addDependency(new GMLConfiguration());
         addDependency(new OWSConfiguration());
+        addDependency(new GMLConfiguration());
+        // OGC and OWS add two extra GML configurations in the mix, make sure to configure them
+        // all...
+        CurvedGeometryFactory gf = new CurvedGeometryFactory(Double.MAX_VALUE);
+        for (Object configuration : allDependencies()) {
+            if (configuration instanceof GMLConfiguration) {
+                GMLConfiguration gml = (GMLConfiguration) configuration;
+                gml.setGeometryFactory(gf);
+            }
+        }
+
     }
 
     public void setSrsSyntax(SrsSyntax srsSyntax) {
@@ -238,6 +249,9 @@ public class WFSConfiguration extends Configuration {
 
         //seed the cache with entries from the catalog
         context.registerComponentInstance(FeatureTypeCache.class, new CatalogFeatureTypeCache(getCatalog()));
+
+        context.registerComponentInstance(new CurvedGeometryFactory(Double.MAX_VALUE));
+
     }
 
     @SuppressWarnings("unchecked")

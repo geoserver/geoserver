@@ -1,11 +1,14 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.rest;
 
-import static org.easymock.EasyMock.*;
+import static org.easymock.EasyMock.anyObject;
+import static org.easymock.EasyMock.expectLastCall;
+import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.verify;
 
 import org.easymock.EasyMock;
 import org.geoserver.test.GeoServerSystemTestSupport;
@@ -41,7 +44,7 @@ public class RESTDispatcherCallbackTest extends GeoServerSystemTestSupport {
         });
         applicationContext.getBeanFactory().destroySingletons();
         applicationContext.getBeanFactory().preInstantiateSingletons();
-        
+        dispatcher = buildDispatcher();
     }
     
     @Test

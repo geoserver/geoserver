@@ -4,7 +4,7 @@
 # constants
 GT_GIT_URL=git://github.com/geotools/geotools.git
 GWC_GIT_URL=git://github.com/GeoWebCache/geowebcache.git
-JIRA_REST=http://jira.codehaus.org/rest/api/latest
+JIRA_REST=https://osgeo-org.atlassian.net/rest/api/latest
 JIRA_PROJ=GEOS
 WIN_JENKINS=http://162.209.53.106:8080
 WIN_JENKINS_USER=build

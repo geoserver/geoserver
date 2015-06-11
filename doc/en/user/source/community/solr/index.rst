@@ -16,31 +16,40 @@ as WKT and index them with a spatial index.
 SOLR version
 ------------
 
-The GeoServer SORL extension has been tested with SORL version 4.8 and 4.9.
+The GeoServer SOLR extension has been tested with SORL version 4.8, 4.9, and 4.10.
 
  .. _solr_install:
- 
-Matching documents with layers and feature types
-------------------------------------------------
+
+Mapping documents to layers
+---------------------------
 
 SOLR indexes almost free form documents, the SOLR instance has a collection of fields, and 
 each document can contain any field, in any combination.
 On the other side, GeoServer organizes data in fixed structure feature types, and exposes 
-data in separate layers.
+data in separate layers. This leaves the question of how documents in the index
+should be organized into layers.
 
-In order to identify the layers, GeoServer demands that the documents contain a special property,
-identified by the administrator, that will contain the name of the layer/feature type to which
-the document is associated: this helps GeoServer identify the documents associated to each layer.
+Referred to as "layer mapping", at this time there are two options.
 
-Then, when configuring a new layer, GeoServer will ask the administrator to pick the fields
-that will make up the new feature type, effectively casting the variable structure in the document
-to a fixed one that GeoServer can manage: in case the document contained in the feature type miss
-some of the fields, a null value will be associated to them.
+Using a field to group documents
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+The first option is to use a field to classify documents in the index. The unique
+set of values of the field in the index becomes the list of layers. This field is
+chosen by the administrator when configuring the data store.
+
+This mapping strategy is referred to as "FIELD" in the configuration UI. 
+
+
+Mapping the index as a single layer
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The second option is to map the entire SOLR index as a single layer. This mapping
+mode requires no further configuration. It is refereed to as "SINGLE" in the 
+configuration UI. 
 
 Installing the SOLR extension
 -----------------------------------
-
 
 #. Download the SOLR extension from the `nightly GeoServer community module builds <http://ares.boundlessgeo.com/geoserver/master/community-latest/>`_.
 
@@ -63,6 +72,8 @@ Once the extension is properly installed ``SOLR`` will show up as an option when
 
    *SOLR in the list of vector data sources*
 
+.. _config_solr:
+
 Configuring a SOLR data store
 -----------------------------
 
@@ -76,8 +87,11 @@ Configuring a SOLR data store
 
    * - ``solr_url``
      - Provide a link to the SORL server that provides the documents
+   * - ``layer_mapper``
+     - Layer mapping strategy to use as described above. Must be one of "FIELD" or "SINGLE".
    * - ``layer_name_field``
-     - Name of the field that associated the documents to their layer name.  
+     - Name of the field to use with the "FIELD" mapping strategy. The unique values of this
+       field become the layers published by the data store.
      
 Once the parameters are entered and confirmed, GeoServer will contact the SORL server and 
 fetch a list of layer names and fill the layer chooser page accordingly:

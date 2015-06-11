@@ -17,10 +17,10 @@ Client side view of the world
 
 It's interesting to note how commands do behave on the client side, and how they do parallel with the WFS.
 
-There are a few similiarities in all commands:
+There are a few similarities in all commands:
 
 * If no revision number is provided, the last revision is assumed.
-* Almost all commands support authentication provided thru username/password, and these are stored in a special folder so that authentication is required just once (and it's not in the checkout, but in the user home).
+* Almost all commands support authentication provided through username/password, and these are stored in a special folder so that authentication is required just once (and it's not in the checkout, but in the user home).
 * commands can work both on the checkout or directly against the server.
 
 Let's have a look at some interesting commands that we may want to replicate in a versioned WFS:
@@ -32,8 +32,8 @@ Let's have a look at some interesting commands that we may want to replicate in 
 * **svn log** provides a history of changes for a specific URL and revision, citing for each change revision, author, date and commit log, eventually it may return a list of all files changed during the commit. The output format can be plain text (human readable) or XML (machine processable), and eventually a limit to the number of changes reported can be specified.
 * **svn diff** returns the difference between two revisions of a given path, or even between two revisions at different paths. The difference is encoded as a standard unix diff.
 * **svn checkout** checks out the content from the repository.
-  It builds a quite specific checkout format, containing informations about the file revisions, full server URL for each file (which allows to indenty the branch the file comes from) and a "base copy" that allows to perform status and diffing operations without being connected to the server.
-  The latter is most important because it allows for far more efficient and pleasand usage when the versioning server is not in your local network, or when connection is not available at all.
+  It builds a quite specific checkout format, containing informations about the file revisions, full server URL for each file (which identifies the branch the file comes from) and a "base copy" that allows to perform status and diffing operations without being connected to the server.
+  The latter is most important because it allows for far more efficient and pleasant usage when the versioning server is not in your local network, or when connection is not available at all.
 * **svn commit** commits local changes to the server. It's a command that requires a local checkout, so it's quite unlike the WFS Transaction that does not need it, but at the same time similar, since it sends diffs to the server which are akin to updates.
 * **svn revert** reverts local changes, so again works against a local checkout.
   There's no such a thing as a server revert, going back adds to the revision history, unlike SDE or Oracle where a revert wipes out the reverted changes.

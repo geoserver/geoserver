@@ -50,6 +50,8 @@ public class GeoServerTileLayerInfoImpl implements Serializable, GeoServerTileLa
     // // AbstractTileLayer mirror properties ////
 
     private boolean enabled;
+    
+    private Boolean inMemoryCached;
 
     private String name;
 
@@ -421,5 +423,15 @@ public class GeoServerTileLayerInfoImpl implements Serializable, GeoServerTileLa
     @Override
     public ParameterFilter getParameterFilter(String key) {
         return parameterFiltersMap.get(key.toUpperCase());
+    }
+
+    @Override
+    public boolean isInMemoryCached() {
+        return inMemoryCached != null ? inMemoryCached : true;
+    }
+
+    @Override
+    public void setInMemoryCached(boolean inMemoryCached) {
+        this.inMemoryCached = inMemoryCached;
     }
 }

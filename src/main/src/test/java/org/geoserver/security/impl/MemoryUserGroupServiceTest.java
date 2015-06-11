@@ -6,12 +6,9 @@
 
 package org.geoserver.security.impl;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
-import java.util.logging.Logger;
-
-import junit.framework.Assert;
 
 import org.geoserver.security.GeoServerUserGroupService;
 import org.geoserver.security.config.SecurityUserGroupServiceConfig;
@@ -50,18 +47,13 @@ public class MemoryUserGroupServiceTest extends AbstractUserGroupServiceTest {
      }
 
     @Test
-    public void testInsert() {
+    public void testInsert() throws Exception {
         super.testInsert();
-        try {
-            for (GeoServerUser user : store.getUsers()) {
-                assertTrue(user.getClass()==MemoryGeoserverUser.class);
-            }
-            for (GeoServerUserGroup group : store.getUserGroups()) {
-                assertTrue(group.getClass()==MemoryGeoserverUserGroup.class);
-            }
-
-        } catch (IOException e) {
-            Assert.fail(e.getMessage());
+        for (GeoServerUser user : store.getUsers()) {
+            assertTrue(user.getClass() == MemoryGeoserverUser.class);
+        }
+        for (GeoServerUserGroup group : store.getUserGroups()) {
+            assertTrue(group.getClass() == MemoryGeoserverUserGroup.class);
         }
     }
     

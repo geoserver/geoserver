@@ -1,10 +1,11 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014-2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2014 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.catalog;
 
+import it.geosolutions.imageio.maskband.DatasetLayout;
 import it.geosolutions.imageio.utilities.ImageIOUtilities;
 
 import java.awt.Rectangle;
@@ -16,13 +17,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.media.jai.ImageLayout;
 import javax.media.jai.RasterFactory;
-import javax.media.jai.operator.BandMergeDescriptor;
 
 import org.geoserver.catalog.CoverageDimensionCustomizerReader.GridCoverageWrapper;
 import org.geoserver.catalog.CoverageView.CoverageBand;
@@ -45,7 +44,6 @@ import org.jaitools.imageutils.ImageLayout2;
 import org.opengis.coverage.SampleDimension;
 import org.opengis.coverage.grid.Format;
 import org.opengis.coverage.grid.GridEnvelope;
-import org.opengis.coverage.processing.Operation;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.parameter.GeneralParameterValue;
 import org.opengis.parameter.ParameterDescriptor;
@@ -63,31 +61,9 @@ import org.opengis.referencing.operation.MathTransform;
  */
 public class CoverageViewReader implements GridCoverage2DReader {
 
-    private final static Logger LOGGER = org.geotools.util.logging.Logging
-            .getLogger(CoverageViewReader.class);
-
     public final static FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
 
-    private static final CoverageProcessor PROCESSOR;
-
-    private static Operation BANDMERGE;
-
-    private static Operation BANDSELECT;
-
-    static {
-        PROCESSOR = CoverageProcessor.getInstance();
-        try {
-            BANDMERGE = PROCESSOR.getOperation("BandMergeOp");
-            BANDSELECT = PROCESSOR.getOperation("SelectSampleDimension");
-        } catch (Exception e) {
-            if (LOGGER.isLoggable(Level.WARNING)) {
-                LOGGER.warning("MultiInputs BandMerge operation unavailable. Band Merge will be made through standard JAI BandMerge operations:\n "
-                        + e.getLocalizedMessage());
-            }
-            BANDMERGE = null;
-            BANDSELECT = null;
-        }
-    }
+    private static final CoverageProcessor PROCESSOR = CoverageProcessor.getInstance();
 
     /**
      * A CoveragesConsistencyChecker checks if the composing coverages respect the constraints which currently are:
@@ -328,12 +304,10 @@ public class CoverageViewReader implements GridCoverage2DReader {
                 // We may consider revisiting this to use integers instead of String
                 // For the moment, let's continue using String
                 String selectedBand = inputBand.getBand();
-                if (BANDSELECT != null) {
-                    final ParameterValueGroup param = BANDSELECT.getParameters();
-                    param.parameter("Source").setValue(coverage);
-                    param.parameter("SampleDimensions").setValue(new int[]{Integer.valueOf(selectedBand)});
-                    coverage = (GridCoverage2D) PROCESSOR.doOperation(param, hints);
-                }
+                final ParameterValueGroup param = PROCESSOR.getOperation("SelectSampleDimension").getParameters();
+                param.parameter("Source").setValue(coverage);
+                param.parameter("SampleDimensions").setValue(new int[]{Integer.valueOf(selectedBand)});
+                coverage = (GridCoverage2D) PROCESSOR.doOperation(param, hints);
 
                 coverages.add(coverage);
                 dims.addAll(Arrays.asList(coverage.getSampleDimensions()));
@@ -346,26 +320,19 @@ public class CoverageViewReader implements GridCoverage2DReader {
         GridCoverage2D sampleCoverage = coverages.get(0);
 
         RenderedImage image = null;
+        Map properties = null;
         if (coverages.size() > 1) {
-            if (BANDMERGE != null) {
-                final ParameterValueGroup param = BANDMERGE.getParameters();
+                final ParameterValueGroup param = PROCESSOR.getOperation("BandMerge").getParameters();
                 param.parameter("sources").setValue(coverages);
                 GridCoverage2D merge = (GridCoverage2D) PROCESSOR.doOperation(param, hints);
                 image = merge.getRenderedImage();
-
-            } else {
-                final int coveragesSize = coverages.size();
-                image = sampleCoverage.getRenderedImage();
-                for (int i = 1; i < coveragesSize; i++) {
-                    image = BandMergeDescriptor.create(image, coverages.get(i).getRenderedImage(),
-                            hints);
-                }
-            }
+                properties = merge.getProperties();
         } else {
+            properties = sampleCoverage.getProperties();
             image = sampleCoverage.getRenderedImage();
         }
         GridSampleDimension[] sampleDimensions = dims.toArray(new GridSampleDimension[dims.size()]);
-        GridCoverage2D mergedCoverage = coverageFactory.create(coverageInfo.getName(), image, sampleCoverage.getGridGeometry(), sampleDimensions, null, null);
+        GridCoverage2D mergedCoverage = coverageFactory.create(coverageInfo.getName(), image, sampleCoverage.getGridGeometry(), sampleDimensions, null, properties);
         return new GridCoverageWrapper(coverageInfo.getName(), mergedCoverage, sampleDimensions, mergedCoverage.getProperties());
     }
 
@@ -585,6 +552,16 @@ public class CoverageViewReader implements GridCoverage2DReader {
     @Override
     public double[][] getResolutionLevels() throws IOException {
         return delegate.getResolutionLevels(referenceName);
+    }
+
+    @Override
+    public DatasetLayout getDatasetLayout() {
+        return delegate.getDatasetLayout();
+    }
+
+    @Override
+    public DatasetLayout getDatasetLayout(String coverageName) {
+        return delegate.getDatasetLayout(coverageName);
     }
 
 }

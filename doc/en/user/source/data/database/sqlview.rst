@@ -113,6 +113,8 @@ The computed geometry type and column identifier details can be corrected if req
 From this point on the workflow is the same as for a non-parameterized query.
 
 
+.. _using_a_parametric_sql_view:
+
 Using a parametric SQL View
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 

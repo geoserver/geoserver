@@ -3,7 +3,7 @@
 Versioning 
 ==========
 
-Versioning refers to the ability of storing the history of the changes occurred to a feature, along with the user tha performed the change and an optional comment, performing point in time extractions of the values and eventually rolling back the changes to a previous state.
+Versioning refers to the ability of storing the history of the changes occurred to a feature, along with the user that performed the change and an optional comment, performing point in time extractions of the values and eventually rolling back the changes to a previous state.
 
 GeoServer uses the GeoTools versioning PostGIS data store to provide two different kinds of versioning services:
 

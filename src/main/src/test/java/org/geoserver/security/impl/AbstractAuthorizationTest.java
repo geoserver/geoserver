@@ -197,6 +197,8 @@ public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
         ResourceInfo resource = createNiceMock(resourceClass);
         expect(resource.getStore()).andReturn(store).anyTimes();
         expect(resource.getName()).andReturn(name).anyTimes();
+        expect(resource.getPrefixedName()).andReturn(ws.getName() + ":" + name).anyTimes();
+        expect(resource.prefixedName()).andReturn(ws.getName() + ":" + name).anyTimes();
         expect(resource.getNamespace()).andReturn(ns).anyTimes();
         if (resource instanceof FeatureTypeInfo) {
             expect(
@@ -208,6 +210,8 @@ public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
 
         LayerInfo layer = createNiceMock(LayerInfo.class);
         expect(layer.getName()).andReturn(name).anyTimes();
+        expect(layer.getPrefixedName()).andReturn(ws.getName() + ":" + name).anyTimes();
+        expect(layer.prefixedName()).andReturn(ws.getName() + ":" + name).anyTimes();
         expect(layer.getResource()).andReturn(resource).anyTimes();
         if (!advertised) expect(layer.isAdvertised()).andReturn(advertised).anyTimes();
         replay(layer);

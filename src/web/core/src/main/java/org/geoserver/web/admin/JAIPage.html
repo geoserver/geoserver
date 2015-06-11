@@ -22,11 +22,11 @@
     </li>
     <li>
       <input id="recycling" class="field checkbox" type="checkbox" wicket:id="recycling" />
-      <label for="recycling" class="choice"><wicket:message key="recycling">recycling</wicket:message></label>
+      <label class="choice"><wicket:message key="recycling">recycling</wicket:message></label>
     </li>
     <li>
       <input id="jpegAcceleration" class="field checkbox" type="checkbox" wicket:id="jpegAcceleration" />
-      <label for="jpegAcceleration" class="choice"><wicket:message key="jpegAcceleration">jpegAcceleration</wicket:message></label>
+      <label class="choice"><wicket:message key="jpegAcceleration">jpegAcceleration</wicket:message></label>
     </li>
     <li>
       <label for="pngEncoderType"><wicket:message key="pngEncoderType">pngEncoderType</wicket:message></label>
@@ -34,11 +34,14 @@
     </li>
     <li>
       <input id="allowNativeMosaic" class="field checkbox" type="checkbox" wicket:id="allowNativeMosaic" />
-      <label for="allowNativeMosaic" class="choice"><wicket:message key="allowNativeMosaic">allowNativeMosaic</wicket:message></label>
+      <label class="choice"><wicket:message key="allowNativeMosaic">allowNativeMosaic</wicket:message></label>
     </li>
     <li>
       <input id="allowNativeWarp" class="field checkbox" type="checkbox" wicket:id="allowNativeWarp" />
       <label for="allowNativeWarp" class="choice"><wicket:message key="allowNativeWarp">allowNativeWarp</wicket:message></label>
+    </li>
+    <li>
+	   <div wicket:id="jaiext"></div>
     </li>
     <li class="button-group selfclear">
       <button type="submit" wicket:id="submit"><wicket:message key="submit">submit</wicket:message></button>

@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -38,6 +38,7 @@ import org.geoserver.platform.ExtensionPriority;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.security.decorators.DecoratingFeatureSource;
 import org.geoserver.wms.FeatureInfoRequestParameters;
+import org.geoserver.wms.GetMapOutputFormat;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.RenderingVariables;
@@ -136,7 +137,7 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
         
         final Style style = preprocessStyle(params.getStyle(), params.getLayer().getFeature().getFeatureType());
         final int userBuffer = params.getBuffer() > 0 ? params.getBuffer() : MIN_BUFFER_SIZE;
-        final int buffer = Math.min(userBuffer, wms.getMaxBuffer());
+        final int buffer = getBuffer(userBuffer);
 
         // check the style to see what's active
         final List<Rule> rules = getActiveRules(style, params.getScaleDenominator());
@@ -144,6 +145,7 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
             return null;
         }
         GetMapRequest getMap = params.getGetMapRequest();
+        getMap.getFormatOptions().put("antialias", "NONE");
         WMSMapContent mc = new WMSMapContent(getMap);
         try {
             // prepare the fake web map content
@@ -175,7 +177,7 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
             Envelope targetModelSpace = JTS.transform(targetRasterSpace, new AffineTransform2D(screenToWorld));
             
             // prepare the image we are going to check rendering against
-            int paintAreaSize = radius * 2 + 1;
+            int paintAreaSize = radius * 2;
             final BufferedImage image = ImageTypeSpecifier.createFromBufferedImageType(
                     BufferedImage.TYPE_INT_ARGB).createBufferedImage(paintAreaSize,
                     paintAreaSize);
@@ -184,6 +186,9 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
             // and now the listener that will check for painted pixels
             int mid = radius;
             int hitAreaSize = buffer * 2 + 1;
+            if(hitAreaSize > paintAreaSize) {
+                hitAreaSize = paintAreaSize;
+            }
             Rectangle hitArea = new Rectangle(mid - buffer, mid - buffer, hitAreaSize, hitAreaSize);
             final FeatureInfoRenderListener featureInfoListener = new FeatureInfoRenderListener(
                     image, hitArea, maxFeatures, params.getPropertyNames());
@@ -194,39 +199,7 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
             mc.setMapHeight(paintAreaSize);
             
             // and now run the rendering _almost_ like a GetMap
-            RenderedImageMapOutputFormat rim = new RenderedImageMapOutputFormat(wms) {
-    
-                private Graphics2D graphics;
-
-                @Override
-                protected RenderedImage prepareImage(int width, int height, IndexColorModel palette,
-                        boolean transparent) {
-                    return image;
-                }
-
-                @Override
-                protected Graphics2D getGraphics(boolean transparent, Color bgColor,
-                        RenderedImage preparedImage, Map<Key, Object> hintsMap) {
-                    graphics = super.getGraphics(transparent, bgColor, preparedImage,
-                            hintsMap);
-                    return graphics;
-                }
-    
-                @Override
-                protected void onBeforeRender(StreamingRenderer renderer) {
-                    // force the renderer into serial painting mode, as we need to check what
-                    // was painted to decide which features to include in the results
-                    Map hints = renderer.getRendererHints();
-                    hints.put(StreamingRenderer.OPTIMIZE_FTS_RENDERING_KEY, Boolean.FALSE);
-                    // disable antialiasing to speed up rendering
-                    hints.put(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
-    
-                    // TODO: should we disable the screenmap as well?
-                    featureInfoListener.setGraphics(graphics);
-                    featureInfoListener.setRenderer(renderer);
-                    renderer.addRenderListener(featureInfoListener);
-                }
-            };
+            GetMapOutputFormat rim = createMapOutputFormat(image, featureInfoListener);
             rim.produceMap(mc);
             
             List<SimpleFeature> features = featureInfoListener.getFeatures();
@@ -234,6 +207,47 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
         } finally {
             mc.dispose();
         }
+    }
+
+    protected int getBuffer(final int userBuffer) {
+        return Math.min(userBuffer, wms.getMaxBuffer());
+    }
+
+    protected GetMapOutputFormat createMapOutputFormat(final BufferedImage image,
+            final FeatureInfoRenderListener featureInfoListener) {
+        return new RenderedImageMapOutputFormat(wms) {
+   
+            private Graphics2D graphics;
+
+            @Override
+            protected RenderedImage prepareImage(int width, int height, IndexColorModel palette,
+                    boolean transparent) {
+                return image;
+            }
+
+            @Override
+            protected Graphics2D getGraphics(boolean transparent, Color bgColor,
+                    RenderedImage preparedImage, Map<Key, Object> hintsMap) {
+                graphics = super.getGraphics(transparent, bgColor, preparedImage,
+                        hintsMap);
+                return graphics;
+            }
+   
+            @Override
+            protected void onBeforeRender(StreamingRenderer renderer) {
+                // force the renderer into serial painting mode, as we need to check what
+                // was painted to decide which features to include in the results
+                Map hints = renderer.getRendererHints();
+                hints.put(StreamingRenderer.OPTIMIZE_FTS_RENDERING_KEY, Boolean.FALSE);
+                // disable antialiasing to speed up rendering
+                hints.put(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+   
+                // TODO: should we disable the screenmap as well?
+                featureInfoListener.setGraphics(graphics);
+                featureInfoListener.setRenderer(renderer);
+                renderer.addRenderListener(featureInfoListener);
+            }
+        };
     }
 
     private void rescaleRules(List<Rule> rules, FeatureInfoRequestParameters params) {

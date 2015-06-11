@@ -5,12 +5,7 @@
  */
 package org.geoserver.gwc;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
-import static junit.framework.Assert.assertTrue;
-import static junit.framework.Assert.fail;
+import static junit.framework.Assert.*;
 import static org.geoserver.gwc.GWC.tileLayerName;
 import static org.geoserver.gwc.GWCTestHelpers.mockGroup;
 import static org.geoserver.gwc.GWCTestHelpers.mockLayer;
@@ -20,19 +15,11 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.same;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -54,10 +41,14 @@ import org.geoserver.gwc.layer.GeoServerTileLayerInfo;
 import org.geoserver.gwc.layer.TileLayerInfoUtil;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.util.CaseInsensitiveMap;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.config.SecurityManagerConfig;
+
 import org.geoserver.wms.GetMapRequest;
+import org.geoserver.wms.WMS;
 import org.geoserver.wms.kvp.PaletteManager;
+import org.geoserver.wms.map.GetMapKvpRequestReader;
 import org.geotools.filter.identity.FeatureIdImpl;
 import org.geotools.filter.text.cql2.CQL;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -76,6 +67,7 @@ import org.geowebcache.grid.GridSet;
 import org.geowebcache.grid.GridSetBroker;
 import org.geowebcache.grid.GridSubset;
 import org.geowebcache.grid.SRS;
+import org.geowebcache.io.Resource;
 import org.geowebcache.layer.TileLayer;
 import org.geowebcache.layer.TileLayerDispatcher;
 import org.geowebcache.mime.MimeType;
@@ -91,6 +83,7 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+import org.opengis.filter.Filter;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -598,7 +591,7 @@ public class GWCTest {
         mediator.truncateByLayerAndStyle(layerName, styleName);
         verify(tileBreeder, never()).dispatchTasks(any(GWCTask[].class));
 
-        styleName = layer.getDefaultStyle().getName();
+        styleName = layer.getDefaultStyle().prefixedName();
         mediator.truncateByLayerAndStyle(layerName, styleName);
 
         int expected = tileLayer.getGridSubsets().size() * tileLayer.getMimeTypes().size();
@@ -933,6 +926,49 @@ public class GWCTest {
         cachingPossible = mediator.isCachingPossible(tileLayer, request, target);
         assertTrue(cachingPossible);
         assertEquals(0, target.length());
+    }
+
+    /**
+     * Since GeoServer sets a new FILTER parameter equal to an input CQL_FILTER parameter (if present) for each WMS requests (using direct WMS
+     * integration), this may result in a caching error. This test ensures that no error is thrown and caching is allowed.
+     */
+    @Test
+    public void testCQLFILTERParameters() throws Exception {
+        // Define a CQL_FILTER
+        TileLayerInfoUtil.updateAcceptAllRegExParameterFilter(tileLayerInfo, "CQL_FILTER", true);
+        tileLayer = new GeoServerTileLayer(layer, gridSetBroker, tileLayerInfo);
+        // Create the new GetMapRequest
+        GetMapRequest request = new GetMapRequest();
+        @SuppressWarnings("unchecked")
+        Map<String, String> rawKvp = new CaseInsensitiveMap(new HashMap<String, String>());
+        rawKvp.put("CQL_FILTER", "include");
+        request.setRawKvp(rawKvp);
+        StringBuilder target = new StringBuilder();
+
+        // Setting CQL FILTER
+        List<Filter> cqlFilters = Arrays.asList(CQL.toFilter("include"));
+        request.setCQLFilter(cqlFilters);
+        // Checking if caching is possible
+        assertTrue(mediator.isCachingPossible(tileLayer, request, target));
+        // Ensure No error is logged
+        assertEquals(0, target.length());
+
+        // Setting FILTER parameter equal to CQL FILTER (GeoServer does it internally)
+        request.setFilter(cqlFilters);
+        // Checking if caching is possible
+        assertTrue(mediator.isCachingPossible(tileLayer, request, target));
+        // Ensure No error is logged
+        assertEquals(0, target.length());
+
+        // Ensure that if another filter is set an error is thrown
+        List filters = new ArrayList(cqlFilters);
+        filters.add(Filter.INCLUDE);
+        request.setFilter(filters);
+
+        // Ensuring caching is not possible
+        assertFalse(mediator.isCachingPossible(tileLayer, request, target));
+        // Ensure No error is logged
+        assertFalse(0 == target.length());
     }
 
     private void assertDispatchMismatch(GetMapRequest request, String expectedReason) {

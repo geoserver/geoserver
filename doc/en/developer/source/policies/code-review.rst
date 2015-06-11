@@ -3,11 +3,11 @@
 Code Review
 ===========
 
-Reviewing code is an invaluble process that is used to ensure that the highest
-quality code possible gets comitted into GeoServer at all times. There is no 
+Reviewing code is an invaluable process that is used to ensure that the highest
+quality code possible gets committed into GeoServer at all times. There is no 
 hard policy relating to code review such that every line of code needs to be 
 reviewed but the unofficial practice which has been adopted over time by 
-GeoServer developers is summed up as follows:
+GeoServer developers is summarized as follows:
 
 * if the change is to a core module and the developer does not have core 
   commit access it requires review
@@ -16,5 +16,5 @@ GeoServer developers is summed up as follows:
   not require a review
 
 The above guidelines are not rules. In general code review is always welcome and
-if there is a question as to if a change should be reviewed or not, always heir
+if there is a question as to whether a change should be reviewed or not, always err
 on the side of getting it reviewed.

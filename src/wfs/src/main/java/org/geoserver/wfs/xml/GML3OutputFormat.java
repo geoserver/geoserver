@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 -2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -39,6 +39,8 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
+import net.opengis.wfs.FeatureCollectionType;
+
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.ResourceInfo;
@@ -66,6 +68,12 @@ import org.w3c.dom.Document;
 
 public class GML3OutputFormat extends WFSGetFeatureOutputFormat {
     
+    /**
+     * Enables the optimized encoders
+     */
+    public static final boolean OPTIMIZED_ENCODING = Boolean.parseBoolean(System.getProperty(
+            "GML_OPTIMIZED_ENCODING", "true"));
+
     GeoServer geoServer;
     Catalog catalog;
     WFSConfiguration configuration;
@@ -111,6 +119,8 @@ public class GML3OutputFormat extends WFSGetFeatureOutputFormat {
             throws ServiceException, IOException, UnsupportedEncodingException {
         List featureCollections = results.getFeature();
 
+        int numDecimals = getNumDecimals(featureCollections, geoServer, catalog);
+
         GetFeatureRequest request = GetFeatureRequest.adapt(getFeature.getParameters()[0]);
 
         // round up the info objects for each feature collection
@@ -152,7 +162,7 @@ public class GML3OutputFormat extends WFSGetFeatureOutputFormat {
                         featureType.getName() + " in the GeoServer catalog");
 
                 //add it to the map
-                Set metas = (Set) ns2metas.get(namespaceURI);
+                Set metas = ns2metas.get(namespaceURI);
 
                 if (metas == null) {
                     metas = new HashSet();
@@ -183,6 +193,13 @@ public class GML3OutputFormat extends WFSGetFeatureOutputFormat {
             configuration.getProperties().remove(GMLConfiguration.NO_SRS_DIMENSION);
         }
 
+        if (OPTIMIZED_ENCODING) {
+            configuration.getProperties().add(GMLConfiguration.OPTIMIZED_ENCODING);
+        } else {
+            configuration.getProperties().remove(GMLConfiguration.OPTIMIZED_ENCODING);
+        }
+
+
         //set up the srsname syntax
         configuration.setSrsSyntax(wfs.getGML().get(WFSInfo.Version.V_11).getSrsNameStyle().toSrsSyntax());
 
@@ -196,6 +213,8 @@ public class GML3OutputFormat extends WFSGetFeatureOutputFormat {
             configuration.getProperties().remove(GMLConfiguration.ENCODE_FEATURE_MEMBER);
         }
         
+        setNumDecimals(numDecimals);
+
         //declare wfs schema location
         Object gft = getFeature.getParameters()[0];
         
@@ -237,6 +256,9 @@ public class GML3OutputFormat extends WFSGetFeatureOutputFormat {
                             typeNames.append(",");
                         }
                     }
+                } else {
+                    encoder.getNamespaces().declarePrefix(ri.getStore().getWorkspace().getName(),
+                            namespaceURI);
                 }
             }
 
@@ -259,6 +281,13 @@ public class GML3OutputFormat extends WFSGetFeatureOutputFormat {
         
     }
     
+    protected void setNumDecimals(int numDecimals) {
+        GMLConfiguration gml = configuration.getDependency(GMLConfiguration.class);
+        if (gml != null) {
+            gml.setNumDecimals(numDecimals);
+        }
+    }
+
     protected Encoder createEncoder(Configuration configuration, 
         Map<String, Set<ResourceInfo>> featureTypes, Object request ) {
         return new Encoder(configuration, configuration.schema());
@@ -270,7 +299,8 @@ public class GML3OutputFormat extends WFSGetFeatureOutputFormat {
     
     protected void encode(FeatureCollectionResponse results, OutputStream output, Encoder encoder)
         throws IOException {
-        encoder.encode(results.getAdaptee(), org.geoserver.wfs.xml.v1_1_0.WFS.FEATURECOLLECTION, output);
+        encoder.encode(results.unadapt(FeatureCollectionType.class),
+                org.geoserver.wfs.xml.v1_1_0.WFS.FEATURECOLLECTION, output);
     }
     
     protected DOMSource getXSLT() {
@@ -318,7 +348,7 @@ public class GML3OutputFormat extends WFSGetFeatureOutputFormat {
     public static boolean isComplexFeature(FeatureCollectionResponse results) {
         boolean hasComplex = false;
         for (int fcIndex = 0; fcIndex < results.getFeature().size(); fcIndex++) {
-            if (!(((FeatureCollection) results.getFeature().get(fcIndex)).getSchema() instanceof SimpleFeatureTypeImpl)) {
+            if (!(results.getFeature().get(fcIndex).getSchema() instanceof SimpleFeatureTypeImpl)) {
                 hasComplex = true;
                 break;
             }

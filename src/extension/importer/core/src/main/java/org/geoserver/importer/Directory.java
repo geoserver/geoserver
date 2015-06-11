@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -25,9 +25,13 @@ import java.util.zip.ZipOutputStream;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.vfs2.AllFileSelector;
+import org.apache.commons.vfs2.FileName;
+import org.apache.commons.vfs2.FileObject;
+import org.apache.commons.vfs2.VFS;
 import org.geoserver.data.util.IOUtils;
-import org.geotools.util.logging.Logging;
 import org.geoserver.importer.job.ProgressMonitor;
+import org.geotools.util.logging.Logging;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
@@ -135,17 +139,23 @@ public class Directory extends FileData {
         while(!q.isEmpty()) {
             File dir = q.poll();
 
-            if (m.isCanceled()){
+            if (m.isCanceled()) {
                 return;
             }
             m.setTask("Scanning " + dir.getPath());
 
             //get all the regular (non directory) files
-            Set<File> all = new LinkedHashSet<File>(Arrays.asList(dir.listFiles(new FilenameFilter() {
+            File[] fileList = dir.listFiles(new FilenameFilter() {
                 public boolean accept(File dir, String name) {
                     return !new File(dir, name).isDirectory();
                 }
-            })));
+            });
+            if (fileList == null) {
+                // it can be null in case of I/O error, even if the
+                // dir is indeed a directory
+                continue;
+            }
+            Set<File> all = new LinkedHashSet<File>(Arrays.asList(fileList));
 
             //scan all the files looking for spatial ones
             for (File f : dir.listFiles()) {
@@ -372,6 +382,23 @@ public class Directory extends FileData {
         return file.getPath();
     }
 
+    public void accept(FileObject fo) throws IOException {
+        FileName name = fo.getName();
+        String localName = name.getBaseName();
+        File dest = child(localName);
+        FileObject dfo = null;
+        try {
+            dfo = VFS.getManager().resolveFile(dest.getAbsolutePath());
+            dfo.copyFrom(fo, new AllFileSelector());
+
+            unpack(dest);
+        } finally {
+            if (dfo != null) {
+                dfo.close();
+            }
+        }
+    }
+
     public void accept(String childName, InputStream in) throws IOException {
         File dest = child(childName);
         
@@ -492,4 +519,5 @@ public class Directory extends FileData {
             format = format();
         }
     }
+
 }

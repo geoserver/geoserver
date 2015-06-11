@@ -15,4 +15,4 @@ This guide covers creating and maintaining the User Manual and Developer Manual.
    style
    tutorial
 
-.. note:: GeoServer documentation is distributed under `CCbyA 3.0 <http://creativecommons.org/licenses/by/3.0/>`_ by the Open Source Geospatial Foundation (OSGeo). To provide documentation changes to the GeoServer team need some OSGeo paperwork filled in (see :download:`/../../../../CONTRIBUTING.md` for details)
+.. note:: GeoServer documentation is distributed under `CCbyA 3.0 <http://creativecommons.org/licenses/by/3.0/>`_ by the Open Source Geospatial Foundation (OSGeo). To provide documentation changes to the GeoServer team need some OSGeo paperwork filled in (see `CONTRIBUTING.md <https://github.com/geoserver/geoserver/blob/master/CONTRIBUTING.md>`__ for details.)

@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -6,6 +6,7 @@
 package org.geoserver.config;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -1202,7 +1203,7 @@ public class GeoServerDataDirectory implements ResourceStore {
     protected @Nonnull Style parsedStyleResources(StyleInfo s) throws IOException {
         final Resource styleResource = style(s);
         if ( styleResource.getType() == Type.UNDEFINED ){
-            throw new IOException( "No such resource: " + s.getFilename());
+            throw new FileNotFoundException( "No such resource: " + s.getFilename());
         }
         final DefaultResourceLocator locator = new DefaultResourceLocator();
         locator.setSourceUrl(resourceToUrl(styleResource));
@@ -1233,7 +1234,9 @@ public class GeoServerDataDirectory implements ResourceStore {
             public URL locateResource(String uri) {
                 URL url = super.locateResource(uri);
                 if(url.getProtocol().equalsIgnoreCase("resource")) {
-                    return fileToUrlPreservingCqlTemplates(urlToResource(url).file());
+                    //GEOS-7025: Just get the path; don't try to create the file
+                    return fileToUrlPreservingCqlTemplates(
+                            Paths.toFile(root(), urlToResource(url).path()));
                 } else {
                     return url;
                 }
@@ -1356,6 +1359,9 @@ public class GeoServerDataDirectory implements ResourceStore {
                 
             });
         }
+        catch(FileNotFoundException e){
+            GeoServerPersister.LOGGER.log(Level.WARNING, "Error loading style:"+ e);
+        }
         catch(IOException e) {
             GeoServerPersister.LOGGER.log(Level.WARNING, "Error loading style", e);
         }
@@ -1404,7 +1410,7 @@ public class GeoServerDataDirectory implements ResourceStore {
     
     @Nullable Resource urlToResource(URL url) {
         if(url.getProtocol().equalsIgnoreCase("resource")) {
-            return get(url.getPath());
+            return get(Paths.convert(url.getPath()));
         } else if (url.getProtocol().equalsIgnoreCase("file")){
             return Files.asResource(DataUtilities.urlToFile(url));
         } else {

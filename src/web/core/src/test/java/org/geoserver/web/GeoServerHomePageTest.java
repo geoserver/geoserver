@@ -44,6 +44,14 @@ public class GeoServerHomePageTest extends GeoServerWicketTestSupport {
         tester.assertListView("contributedContent", providers);
     }
 
+    @Test
+    public void testEmailIfNull() {
+        GeoServerApplication geoServerApplication = getGeoServerApplication();
+        String contactEmail = geoServerApplication.getGeoServer().getGlobal().getSettings().getContact().
+                getContactEmail();
+        assertEquals("geoserver@example.org", contactEmail == null ? "geoserver@example.org" : contactEmail);
+    }
+
     public static class MockHomePageContentProvider implements GeoServerHomePageContentProvider {
         public Component getPageBodyComponent(final String id) {
             return new Label(id, "MockHomePageContentProvider");

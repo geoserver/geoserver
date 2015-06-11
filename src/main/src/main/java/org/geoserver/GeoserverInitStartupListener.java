@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014-2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -70,6 +70,10 @@ public class GeoserverInitStartupListener implements ServletContextListener {
 
     private Iterator<Class<?>> products;
 
+    private final static String COMPARISON_TOLERANCE_PROPERTY = "COMPARISON_TOLERANCE";
+
+    private final static double DEFAULT_COMPARISON_TOLERANCE = 1e-9;
+
     public void contextInitialized(ServletContextEvent sce) {
         // start up tctool - remove it before committing!!!!
         // new tilecachetool.TCTool().setVisible(true);
@@ -134,12 +138,25 @@ public class GeoserverInitStartupListener implements ServletContextListener {
             Hints.putSystemDefault(Hints.FORCE_AXIS_ORDER_HONORING, "http");
         }
         Hints.putSystemDefault(Hints.LENIENT_DATUM_SHIFT, true);
-        
+
         // setup the referencing tolerance to make it more tolerant to tiny differences
         // between projections (increases the chance of matching a random prj file content
         // to an actual EPSG code
-        Hints.putSystemDefault(Hints.COMPARISON_TOLERANCE, 1e-9);
-        
+        String comparisonToleranceProperty = GeoServerExtensions.getProperty(COMPARISON_TOLERANCE_PROPERTY);
+        double comparisonTolerance = DEFAULT_COMPARISON_TOLERANCE;
+        if (comparisonToleranceProperty != null) {
+            try {
+                comparisonTolerance = Double.parseDouble(comparisonToleranceProperty);
+            } catch (NumberFormatException nfe) {
+                if (LOGGER.isLoggable(Level.WARNING)) {
+                    LOGGER.warning("Unable to parse the specified COMPARISON_TOLERANCE "
+                            + "system property: " + comparisonToleranceProperty + 
+                            " which should be a number. Using Default: " + DEFAULT_COMPARISON_TOLERANCE);
+                }
+            }
+        }
+        Hints.putSystemDefault(Hints.COMPARISON_TOLERANCE, comparisonTolerance);
+
         final Hints defHints = GeoTools.getDefaultHints();
 
         // Initialize GridCoverageFactory so that we don't make a lookup every time a factory is needed

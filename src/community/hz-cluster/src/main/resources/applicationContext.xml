@@ -21,4 +21,7 @@
    <bean id="hzCacheProvider" class="org.geoserver.cluster.hazelcast.HzCacheProvider">
       <constructor-arg ref="xstreamPersisterFactory"/>
    </bean>
+   
+   <bean id="hzExtensionFilter" class="org.geoserver.cluster.hazelcast.HzExtensionFilter">
+   </bean>
 </beans>

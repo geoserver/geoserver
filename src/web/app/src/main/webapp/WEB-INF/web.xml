@@ -75,7 +75,7 @@
      
     <filter>
       <filter-name>Set Character Encoding</filter-name>
-      <filter-class>org.vfny.geoserver.filters.SetCharacterEncodingFilter</filter-class>
+      <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
       <init-param>
         <param-name>encoding</param-name>
         <param-value>UTF-8</param-value>
@@ -114,7 +114,7 @@
               parameter defaults to false.
               -->
          <param-name>enabled</param-name>
-         <param-value>false</param-value>
+         <param-value>true</param-value>
      </init-param>
      <init-param>
      <!-- The 'log-request-bodies' parameter is a boolean value, "true" (case-insensitive) for
@@ -125,7 +125,7 @@
           server.
           -->
      <param-name>log-request-bodies</param-name>
-     <param-value>false</param-value>
+     <param-value>true</param-value>
      </init-param>
    </filter>
    

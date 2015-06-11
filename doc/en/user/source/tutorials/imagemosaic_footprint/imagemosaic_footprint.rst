@@ -70,7 +70,7 @@ images already cut in a regular grid.
 Each modification of the **footprints.properties** file requires to *Reload* GeoServer. This operation can be achieved by going to :guilabel:`Server Status` and cliking on the 
 :guilabel:`Reload` button on the bottom-right side of the page.
 
-The two datasets used in the tutorial can be downloaded here: `Mosaic with a single image <https://drive.google.com/file/d/0B_H-B1p4qGi6TjBqV196TndhX3c/edit?usp=sharing>`_  which represents Boulder (Colorado), `Mosaic with multiple images <https://drive.google.com/file/d/0B_H-B1p4qGi6QWtTcXE3Y3AwZ1E/edit?usp=sharing>`_ which represents Italy. 
+The two datasets used in the tutorial can be downloaded here: `Mosaic with a single image <http://demo.geo-solutions.it/share/tutorial/mosaic_single_tiff.zip>`_  which represents Boulder (Colorado), `Mosaic with multiple images <http://demo.geo-solutions.it/share/tutorial/mosaic_sample.zip>`_ which represents Italy. 
 The first can be used for testing footprint configuration with a *Sidecar File* and the second for the other two configurations.
 
 Examples
@@ -158,6 +158,41 @@ The **footprints.properties** file is::
 	footprint_inset_type=border
 	
 
+Raster Masking
+------------------------
+
+From 2.8.x version, GeoServer is able to support also Raster Masks. Those masks can be internal or external, adding the **.msk** extension to the file name, for each file. Those files also should have the same size as the image they are masking.
+
+It must be pointed out that external/internal masks may have overviews like the related original images.
+
+More information about Mask bands may be found at the `GDAL Mask Band Page <http://trac.osgeo.org/gdal/wiki/rfc15_nodatabitmask>`_
+
+.. note :: Raster masking is supported for GeoTiff format only and it does not take into account inset definition.
+
+Below you may find an example of configuring a Mosaic with Raster masks:
+
+Step 1: Create a new ImageMosaic Layer
+``````````````````````````````````````
+Download data from the following :download:`link <rastermask.zip>` and configure an ImageMosaic layer called *rastermask* without changing default configuration parameters.
+
+Zip file contains two images and their related **.msk** files. For this example the two masks are two simple squares. 
+
+Step 2: Watch the layer using LayerPreview
+```````````````````````````````````````````
+
+Go to :menuselection:`LayerPreview --> rastermask --> OpenLayers`. The result should be similar to the one below.
+
+.. figure:: img/footprint_none.png
 
 
+Step 3: Change the Footprint Behavior
+``````````````````````````````````````
+Change the **FootprintBehavior** parameter to *Transparent*. *Cut* value should not be used since the files are RGB.
 
+.. figure:: img/footprint_transparent_setting.png
+
+Step 4: Check the result
+``````````````````````````````````````
+Go to :menuselection:`LayerPreview --> rastermask --> OpenLayers`. The result should be changed now.
+
+.. figure:: img/footprint_transparent.png

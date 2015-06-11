@@ -1,9 +1,12 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wms.map;
+
+import it.geosolutions.jaiext.lookup.LookupTable;
+import it.geosolutions.jaiext.lookup.LookupTableFactory;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -39,10 +42,7 @@ import javax.media.jai.LookupTableJAI;
 import javax.media.jai.PlanarImage;
 import javax.media.jai.ROI;
 import javax.media.jai.ROIShape;
-import javax.media.jai.operator.BandMergeDescriptor;
 import javax.media.jai.operator.ConstantDescriptor;
-import javax.media.jai.operator.FormatDescriptor;
-import javax.media.jai.operator.LookupDescriptor;
 import javax.media.jai.operator.MosaicDescriptor;
 
 import org.geoserver.platform.GeoServerResourceLoader;
@@ -57,6 +57,8 @@ import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSInfo.WMSInterpolation;
 import org.geoserver.wms.WMSMapContent;
+import org.geoserver.wms.WMSPartialMapException;
+import org.geoserver.wms.WMSServiceExceptionHandler;
 import org.geoserver.wms.WatermarkInfo;
 import org.geoserver.wms.decoration.MapDecoration;
 import org.geoserver.wms.decoration.MapDecorationLayout;
@@ -281,11 +283,11 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
             antialias = antialias.toUpperCase();
 
         // figure out a palette for buffered image creation
-        IndexColorModel palette = null;
+        IndexColorModel potentialPalette = null;
         final boolean transparent = mapContent.isTransparent() && isTransparencySupported();
         final Color bgColor = mapContent.getBgColor();
         if (AA_NONE.equals(antialias)) {
-            palette = mapContent.getPalette();
+            potentialPalette = mapContent.getPalette();
         } else if (AA_NONE.equals(antialias)) {
             PaletteExtractor pe = new PaletteExtractor(transparent ? null : bgColor);
             List<Layer> layers = mapContent.layers();
@@ -295,8 +297,9 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
                     break;
             }
             if (pe.canComputePalette())
-                palette = pe.getPalette();
+                potentialPalette = pe.getPalette();
         }
+        final IndexColorModel palette = potentialPalette;
 
         // before even preparing the rendering surface, check it's not too big,
         // if so, throw a service exception
@@ -333,7 +336,11 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
                 && (layout == null || layout.isEmpty())) {
             List<GridCoverage2D> renderedCoverages = new ArrayList<GridCoverage2D>(2);
             try {
-                image = directRasterRender(mapContent, 0, renderedCoverages);
+                Interpolation interpolation = null;
+                if(request.getInterpolations() != null && request.getInterpolations().size() > 0) {
+                    interpolation = request.getInterpolations().get(0);
+                }
+                image = directRasterRender(mapContent, 0, renderedCoverages, interpolation);
             } catch (Exception e) {
                 throw new ServiceException("Error rendering coverage on the fast path", e);
             }
@@ -396,6 +403,8 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
             }
         }
 
+        
+        
         // make sure the hints are set before we start rendering the map
         graphic.setRenderingHints(hintsMap);
 
@@ -426,9 +435,9 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         }
         
         // turn on advanced projection handling
-        if(DefaultWebMapService.isAdvancedProjectionHandlingEnabled()){
+        if (wms.isAdvancedProjectionHandlingEnabled()) {
             rendererParams.put(StreamingRenderer.ADVANCED_PROJECTION_HANDLING_KEY, true);
-            if(DefaultWebMapService.isContinuousMapWrappingEnabled()) {
+            if (wms.isContinuousMapWrappingEnabled()) {
                 rendererParams.put(StreamingRenderer.CONTINUOUS_MAP_WRAPPING, true);
             }
         }
@@ -464,6 +473,21 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
                 }
             }
         }
+        
+        if(request.getInterpolations() != null && !request.getInterpolations().isEmpty()) {
+            int count = 0;
+            List<Interpolation> interpolations = request.getInterpolations();
+            for(Layer layer : mapContent.layers()) {
+                if(count < interpolations.size()) {
+                    Interpolation interpolation = interpolations.get(count);
+                    if(interpolation != null) {
+                        layer.getUserData().put(StreamingRenderer.BYLAYER_INTERPOLATION, interpolation);
+                    }
+                }
+                count++;
+            }
+        }
+        
         renderer.setRendererHints(rendererParams);
 
         // if abort already requested bail out
@@ -483,11 +507,32 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         renderer.addRenderListener(nonIgnorableExceptionListener);
         
         onBeforeRender(renderer);
-
-        // setup the timeout enforcer (the enforcer is neutral when the timeout is 0)
-        int maxRenderingTime = wms.getMaxRenderingTime() * 1000;
+        
+        int localMaxRenderingTime = 0;
+        Object timeoutOption = request.getFormatOptions().get("timeout");
+        if (timeoutOption != null) {
+            try {
+                localMaxRenderingTime = Integer.parseInt(timeoutOption.toString());
+            } catch (NumberFormatException e) {
+                LOGGER.log(Level.WARNING,"Could not parse format_option \"timeout\": "+timeoutOption, e);
+            }
+        }
+        int maxRenderingTime = getMaxRenderingTime(localMaxRenderingTime);
+        
+        ServiceException serviceException = null;
+        boolean saveMap = (request.getRawKvp() != null && WMSServiceExceptionHandler
+                .isPartialMapExceptionType(request.getRawKvp().get("EXCEPTIONS")));
         RenderingTimeoutEnforcer timeout = new RenderingTimeoutEnforcer(maxRenderingTime, renderer,
-                graphic);
+                graphic, saveMap) {
+            
+            /**
+             * Save the map before disposing of the graphics
+             */
+            @Override
+            public void saveMap() {
+                this.map = optimizeAndBuildMap(palette, preparedImage, mapContent);
+            }
+        };
         timeout.start();
         try {
             // finally render the image;
@@ -502,45 +547,82 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
                     throw new ServiceException("Problem occurred while trying to watermark data", e);
                 }
             }
+            timeout.stop();
+            
+            // Determine what (if any) exception should be thrown
+            
+            // check if too many errors occurred
+            if (errorChecker.exceedsMaxErrors()) {
+                serviceException = new ServiceException("More than " + maxErrors
+                        + " rendering errors occurred, bailing out.", errorChecker.getLastException(),
+                        "internalError");
+            }
+            // check if the request did timeout
+            if (timeout.isTimedOut()) {
+                serviceException =  new ServiceException(
+                        "This request used more time than allowed and has been forcefully stopped. "
+                                + "Max rendering time is " + (maxRenderingTime / 1000.0) + "s");
+            }
+            // check if a non ignorable error occurred
+            if (nonIgnorableExceptionListener.exceptionOccurred()) {
+                Exception renderError = nonIgnorableExceptionListener.getException();
+                serviceException = new ServiceException("Rendering process failed", renderError, "internalError");
+            }
+            
+            // If there were no exceptions, return the map
+            if (serviceException == null) {
+                return optimizeAndBuildMap(palette, preparedImage, mapContent);
+            
+            // If the exception format is PARTIALMAP, return whatever did get rendered with the exception
+            } else if (saveMap) {
+                RenderedImageMap map = (RenderedImageMap) timeout.getMap();
+                //We hit an error other than a timeout during rendering
+                if (map == null) {
+                    map = optimizeAndBuildMap(palette, preparedImage, mapContent);
+                }
+                //Wrap the serviceException in a WMSServiceException to hold the map
+                serviceException = new WMSPartialMapException(serviceException, map);
+            }
         } finally {
             timeout.stop();
             graphic.dispose();
         }
-
-        // check if the request did timeout
-        if (timeout.isTimedOut()) {
-            throw new ServiceException(
-                    "This requested used more time than allowed and has been forcefully stopped. "
-                            + "Max rendering time is " + (maxRenderingTime / 1000.0) + "s");
-        }
-
-        // check if a non ignorable error occurred
-        if (nonIgnorableExceptionListener.exceptionOccurred()) {
-            Exception renderError = nonIgnorableExceptionListener.getException();
-            throw new ServiceException("Rendering process failed", renderError, "internalError");
-        }
-
-        // check if too many errors occurred
-        if (errorChecker.exceedsMaxErrors()) {
-            throw new ServiceException("More than " + maxErrors
-                    + " rendering errors occurred, bailing out.", errorChecker.getLastException(),
-                    "internalError");
-        }
-
+        throw serviceException;
+    }
+    private RenderedImageMap optimizeAndBuildMap(IndexColorModel palette, RenderedImage preparedImage, WMSMapContent mapContent) {
+        RenderedImage image;
         if (palette != null && palette.getMapSize() < 256) {
             image = optimizeSampleModel(preparedImage);
         } else {
             image = preparedImage;
         }
-
-        RenderedImageMap map = buildMap(mapContent, image);
-        return map;
+        return buildMap(mapContent, image);
     }
 
     protected Graphics2D getGraphics(final boolean transparent, final Color bgColor,
             final RenderedImage preparedImage, final Map<RenderingHints.Key, Object> hintsMap) {
         return ImageUtils.prepareTransparency(transparent, bgColor,
                 preparedImage, hintsMap);
+    }
+    
+    /**
+     * Timeout on the smallest nonzero value of the WMS timeout and the timeout format option
+     * If both are zero then there is no timeout
+     * 
+     * @param localMaxRenderingTime
+     * @return
+     */
+    public int getMaxRenderingTime(int localMaxRenderingTime) {
+        
+        int maxRenderingTime = wms.getMaxRenderingTime() * 1000;
+        
+        if (maxRenderingTime == 0) {
+            maxRenderingTime = localMaxRenderingTime;
+        } else if (localMaxRenderingTime != 0) {
+            maxRenderingTime = Math.min(maxRenderingTime, localMaxRenderingTime);
+        }
+        
+        return maxRenderingTime;
     }
 
     /**
@@ -736,9 +818,12 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         layout.setTileWidth(w);
         layout.setTileHeight(h);
         RenderingHints hints = new RenderingHints(JAI.KEY_IMAGE_LAYOUT, layout);
+        LookupTable table = LookupTableFactory.create(IDENTITY_TABLE);
         // TODO SIMONE why not format?
-        return LookupDescriptor.create(source, IDENTITY_TABLE, hints);
-
+        ImageWorker worker = new ImageWorker(source);
+        worker.setRenderingHints(hints);
+        worker.lookup(table);
+        return worker.getRenderedImage();
     }
 
     /**
@@ -755,7 +840,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
      * @throws FactoryException
      */
     private RenderedImage directRasterRender(WMSMapContent mapContent, int layerIndex,
-            List<GridCoverage2D> renderedCoverages) throws IOException, FactoryException {
+            List<GridCoverage2D> renderedCoverages, Interpolation layerInterpolation) throws IOException, FactoryException {
         
         //
         // extract the raster symbolizers and the eventual rendering transformation
@@ -804,18 +889,22 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         // Grab the interpolation
         //
         final Interpolation interpolation;
-        if (wms != null) {
-            if (WMSInterpolation.Nearest.equals(wms.getInterpolation())) {
-                interpolation = Interpolation.getInstance(Interpolation.INTERP_NEAREST);
-            } else if (WMSInterpolation.Bilinear.equals(wms.getInterpolation())) {
-                interpolation = Interpolation.getInstance(Interpolation.INTERP_BILINEAR);
-            } else if (WMSInterpolation.Bicubic.equals(wms.getInterpolation())) {
-                interpolation = Interpolation.getInstance(Interpolation.INTERP_BICUBIC);
+        if(layerInterpolation != null) {
+            interpolation = layerInterpolation;
+        } else {
+            if (wms != null) {
+                if (WMSInterpolation.Nearest.equals(wms.getInterpolation())) {
+                    interpolation = Interpolation.getInstance(Interpolation.INTERP_NEAREST);
+                } else if (WMSInterpolation.Bilinear.equals(wms.getInterpolation())) {
+                    interpolation = Interpolation.getInstance(Interpolation.INTERP_BILINEAR);
+                } else if (WMSInterpolation.Bicubic.equals(wms.getInterpolation())) {
+                    interpolation = Interpolation.getInstance(Interpolation.INTERP_BICUBIC);
+                } else {
+                    interpolation = Interpolation.getInstance(Interpolation.INTERP_NEAREST);
+                }
             } else {
                 interpolation = Interpolation.getInstance(Interpolation.INTERP_NEAREST);
             }
-        } else {
-            interpolation = Interpolation.getInstance(Interpolation.INTERP_NEAREST);
         }
       
         // 
@@ -838,7 +927,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         try {
             final Color readerBgColor = transparent ? null : bgColor;
             if (transformation == null
-                    && DefaultWebMapService.isAdvancedProjectionHandlingEnabled()) {
+                    && wms.isAdvancedProjectionHandlingEnabled()) {
                 //
                 // Get the reader
                 //
@@ -854,7 +943,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
                 final GridCoverageRenderer gcr = new GridCoverageRenderer(mapEnvelope.getCoordinateReferenceSystem(), mapEnvelope,
                         mapRasterArea, worldToScreen, interpolationHints);
                 gcr.setAdvancedProjectionHandlingEnabled(true);
-                gcr.setWrapEnabled(DefaultWebMapService.isContinuousMapWrappingEnabled());
+                gcr.setWrapEnabled(wms.isContinuousMapWrappingEnabled());
                 image = gcr.renderImage(reader, readParameters, symbolizer, interpolation,
                         mapContent.getBgColor(), tileSizeX, tileSizeY);
                 if (image == null) {
@@ -1032,8 +1121,9 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
                         ImageLayout ilColorModel = new ImageLayout(image);
                         ilColorModel.setColorModel(icm);
                         RenderingHints hints = new RenderingHints(JAI.KEY_IMAGE_LAYOUT, ilColorModel);
-                        image = FormatDescriptor.create(image, image.getSampleModel().getDataType(), hints);
-                        worker.setImage(image);
+                        worker.setRenderingHints(hints);
+                        worker.format(image.getSampleModel().getDataType());
+                        image = worker.getRenderedImage();
                     } 
                     bgColorIndex = ColorUtilities.findColorIndex(bgColor, icm);
                 }
@@ -1164,14 +1254,21 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
             double[][] thresholds = new double[][] { { ColorUtilities.getThreshold(image
                     .getSampleModel().getDataType()) } };
             // apply the mosaic
-            image = MosaicDescriptor.create(new RenderedImage[] { image },
-                    alphaChannels != null && transparencyType==Transparency.TRANSLUCENT ? MosaicDescriptor.MOSAIC_TYPE_BLEND: MosaicDescriptor.MOSAIC_TYPE_OVERLAY,
-                    alphaChannels, rois, thresholds, bgValues, new RenderingHints(
-                            JAI.KEY_IMAGE_LAYOUT, layout));
+            ImageWorker w = new ImageWorker(image);
+            w.setRenderingHint(JAI.KEY_IMAGE_LAYOUT, layout);
+            w.setBackground(bgValues);
+            w.mosaic(new RenderedImage[] { image }, 
+                    alphaChannels != null && transparencyType==Transparency.TRANSLUCENT ? MosaicDescriptor.MOSAIC_TYPE_BLEND: MosaicDescriptor.MOSAIC_TYPE_OVERLAY, 
+                    alphaChannels, 
+                    rois, 
+                    thresholds, 
+                    null);
+            image = w.getRenderedImage();
         } else {
             // Check if we need to crop a subset of the produced image, else return it right away
             if (imageBounds.contains(mapRasterArea) && !imageBounds.equals(mapRasterArea)) { // the produced image does not need a final mosaicking operation but a crop!
                 ImageWorker iw = new ImageWorker(image);
+                iw.setBackground(bgValues);
                 iw.crop(0, 0, mapWidth, mapHeight);
                 image = iw.getRenderedImage();
             }
@@ -1204,8 +1301,11 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
                 Float.valueOf(image.getHeight()),
                 new Byte[] { Byte.valueOf((byte) 255) }, 
                 new RenderingHints(JAI.KEY_IMAGE_LAYOUT,tempLayout));
-        image = BandMergeDescriptor.create(image, alpha, null);
-        return image;
+        // Using an ImageWorker
+        ImageWorker iw =  new ImageWorker(image);
+        // Adding Alpha band
+        iw.addBand(alpha, false, true, null);
+        return iw.getRenderedImage();
     }
 
     /**

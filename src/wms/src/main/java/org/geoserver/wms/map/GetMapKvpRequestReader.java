@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 
+import javax.media.jai.Interpolation;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.collections.EnumerationUtils;
@@ -38,7 +39,6 @@ import org.geoserver.ows.HttpServletRequestAware;
 import org.geoserver.ows.KvpRequestReader;
 import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.platform.ServiceException;
-import org.geoserver.util.EntityResolverProvider;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.WMS;
@@ -67,7 +67,7 @@ import org.geotools.styling.StyleFactory;
 import org.geotools.styling.StyledLayer;
 import org.geotools.styling.StyledLayerDescriptor;
 import org.geotools.styling.UserLayer;
-import org.geotools.util.Version;
+import org.geoserver.util.EntityResolverProvider;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.FeatureType;
@@ -87,6 +87,15 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
      */
     private HttpServletRequest httpRequest;
 
+    private static Map<String, Integer> interpolationMethods;
+    
+    static {
+        interpolationMethods = new HashMap<String, Integer>();
+        interpolationMethods.put("NEAREST NEIGHBOR", Interpolation.INTERP_NEAREST);
+        interpolationMethods.put("BILINEAR", Interpolation.INTERP_BILINEAR);
+        interpolationMethods.put("BICUBIC", Interpolation.INTERP_BICUBIC);
+    }
+    
     /**
      * style factory
      */
@@ -243,6 +252,17 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
             styleNameList.addAll(KvpUtils.readFlat(stylesParam));
         }
 
+        // raw interpolations parameter
+        String interpolationParam = (String) kvp.get("INTERPOLATIONS");
+        List<String> interpolationList = new ArrayList<String>();
+        if (interpolationParam != null) {
+            interpolationList.addAll(KvpUtils.readFlat(interpolationParam));
+        }
+        
+        if(interpolationList.size() > 0) {
+            getMap.setInterpolations(parseInterpolations(requestedLayerInfos, interpolationList));
+        }
+        
         // pre parse filters
         List<Filter> filters = parseFilters(getMap);
 
@@ -485,6 +505,41 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
 
         return getMap;
     }
+
+    private List<Interpolation> parseInterpolations(List<Object> requestedLayers,
+            List<String> interpolationList) {
+        List<Interpolation> interpolations = new ArrayList<Interpolation>();
+        for (int i = 0; i < requestedLayers.size(); i++) {
+            // null interpolation means:
+            // use the default WMS one
+            Interpolation interpolation = null;
+            if(i < interpolationList.size()) {
+                String interpolationName = interpolationList.get(i);
+                if(!interpolationName.trim().equals("")) {
+                    interpolation = getInterpolationObject(interpolationName);
+                }
+            }
+            Object o = requestedLayers.get(i);
+            if (o instanceof LayerInfo) {
+                interpolations.add(interpolation);
+            } else if (o instanceof LayerGroupInfo) {
+                List<LayerInfo> subLayers = ((LayerGroupInfo) o).layers();
+                for (LayerInfo layer : subLayers) {
+                    interpolations.add(interpolation);
+                }
+            } else {
+                throw new IllegalArgumentException("Unknown layer info type: " + o);
+            }
+        }
+        
+        return interpolations;
+    }
+
+    private Interpolation getInterpolationObject(String interpolation) {
+        return Interpolation.getInstance(interpolationMethods.get(interpolation
+                .toUpperCase()));
+    }
+
 
     private Style getDefaultStyle (LayerInfo layer) throws IOException{
         if (layer.getResource() instanceof WMSLayerInfo) {

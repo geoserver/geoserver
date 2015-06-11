@@ -9,7 +9,7 @@
   <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>geoserver</artifactId>
-    <version>2.7-SNAPSHOT</version>
+    <version>2.8-SNAPSHOT</version>
   </parent>
 
   <groupId>org.geoserver</groupId>
@@ -55,10 +55,13 @@
           <descriptor>release/ext-gpx.xml</descriptor>
           <descriptor>release/ext-wps-download.xml</descriptor>
           <descriptor>release/ext-jms-cluster.xml</descriptor>
+          <descriptor>release/ext-hz-cluster.xml</descriptor>
           <descriptor>release/ext-activeMQ.xml</descriptor>	
           <descriptor>release/ext-solr.xml</descriptor>		  
           <descriptor>release/ext-geofence.xml</descriptor>
           <descriptor>release/ext-sldservice.xml</descriptor>
+          <descriptor>release/ext-rest-upload.xml</descriptor>
+          <descriptor>release/ext-gwc-distributed.xml</descriptor>	
         </descriptors>
       </configuration>
      </plugin>
@@ -159,7 +162,6 @@
       <modules>
         <module>authkey</module>
         <module>dds</module>
-        <module>release</module>
         <module>ftp</module>
         <module>spatialite</module>
         <module>jdbcconfig</module>
@@ -180,9 +182,13 @@
         <module>kmlppio</module>
         <module>wps-download</module>
         <module>jms-cluster</module>
+        <module>hz-cluster</module>
         <module>solr</module>
+	<module>rest-upload</module>
         <module>geofence</module>
         <module>sldService</module>
+        <module>release</module>
+	<module>gwc-distributed</module>
       </modules>
     </profile>
     <profile>
@@ -370,6 +376,12 @@
       </modules>
     </profile>
     <profile>
+      <id>rest-upload</id>
+      <modules>
+        <module>rest-upload</module>
+      </modules>
+    </profile>
+    <profile>
       <id>jms-cluster</id>
       <modules>
         <module>jms-cluster</module>
@@ -391,10 +403,38 @@
         </modules>
     </profile>
     <profile>
+      <id>geofence-server</id>
+        <activation>
+          <property><name>geofence</name></property>
+        </activation>
+        <modules>
+          <module>geofence</module>
+	  <module>geofence-server</module>
+        </modules>
+    </profile>
+    <profile>
       <id>hz-cluster</id>
         <modules>
           <module>hz-cluster</module>
         </modules>
+    </profile>
+    <profile>
+      <id>geomesa</id>
+        <modules>
+          <module>geomesa</module>
+        </modules>
+    </profile>    
+    <profile>
+      <id>gwc-distributed</id>
+      <activation>
+        <property>
+          <name>all</name>
+          <value>true</value>
+        </property>
+      </activation>
+      <modules>
+        <module>gwc-distributed</module>
+      </modules>
     </profile>
   </profiles>
 </project>

@@ -5,15 +5,31 @@
  */
 package org.geoserver.security.impl;
 
-import static org.easymock.EasyMock.*;
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import static org.easymock.EasyMock.createNiceMock;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.replay;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.everyItem;
+import static org.hamcrest.Matchers.hasSize;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Logger;
+
+import javax.annotation.Nullable;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogInfo;
@@ -22,6 +38,9 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.Predicates;
+import org.geoserver.catalog.PublishedInfo;
+import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.AbstractCatalogDecorator;
 import org.geoserver.catalog.util.CloseableIterator;
@@ -31,21 +50,35 @@ import org.geoserver.ows.Request;
 import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.geoserver.security.AbstractCatalogFilter;
 import org.geoserver.security.CatalogFilterAccessManager;
+import org.geoserver.security.DataAccessManager;
+import org.geoserver.security.ResourceAccessManager;
 import org.geoserver.security.decorators.ReadOnlyDataStoreTest;
 import org.geoserver.security.decorators.SecuredCoverageInfo;
 import org.geoserver.security.decorators.SecuredDataStoreInfo;
 import org.geoserver.security.decorators.SecuredFeatureTypeInfo;
 import org.geoserver.security.decorators.SecuredLayerGroupInfo;
 import org.geoserver.security.decorators.SecuredLayerInfo;
+import org.geotools.util.logging.Logging;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
+import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.opengis.filter.Filter;
 import org.opengis.filter.sort.SortBy;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterators;
+
 public class SecureCatalogImplTest extends AbstractAuthorizationTest {
+    
+    public final static Logger LOGGER = Logging.getLogger(SecureCatalogImplTest.class);
+    
+    @Rule
+    public GeoServerExtensionsHelper.ExtensionsHelperRule extensions = 
+        new GeoServerExtensionsHelper.ExtensionsHelperRule();
 
     @Before
     public void setUp() throws Exception {
@@ -53,7 +86,13 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
 
         populateCatalog();
         
+        SecurityContextHolder.getContext().setAuthentication(null);
         Dispatcher.REQUEST.remove();
+    }
+    
+    @After
+    public void cleanup() {
+        SecurityContextHolder.getContext().setAuthentication(null);
     }
     
     @Test 
@@ -427,7 +466,7 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
             }
         };
         this.catalog = withLayers;
-        GeoServerExtensionsHelper.singleton("catalog", catalog, Catalog.class);
+        extensions.singleton("catalog", catalog, Catalog.class);
 
         // and the secure catalog with the filter
         buildManager("publicRead.properties", filter);
@@ -543,7 +582,7 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
         expect(eoCatalog.getLayerGroupByName("topp", eoStatesLayerGroup.getName())).andReturn(eoStatesLayerGroup).anyTimes();        
         replay(eoCatalog);
         this.catalog = eoCatalog;
-        GeoServerExtensionsHelper.singleton("catalog", eoCatalog, Catalog.class);
+        extensions.singleton("catalog", eoCatalog, Catalog.class);
         
         buildManager("lockedLayerInLayerGroup.properties");
         SecurityContextHolder.getContext().setAuthentication(roUser);
@@ -556,6 +595,698 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
         // if root layer is hidden
         layerGroup = sc.getLayerGroupByName("topp", "eoStatesLayerGroup");                
         assertNull(layerGroup);        
+    }
+
+    @Test
+    public void testSecurityFilterWideOpen() throws Exception {
+        // getting the resourceAccessManager
+        ResourceAccessManager resourceManager = getResourceAccessManager(buildLegacyAccessManager("wideOpen.properties"));
+
+        // Workspace test
+        Class<? extends CatalogInfo> clazz = WorkspaceInfo.class;
+        // Creating filter for anonymous user
+        Filter security = resourceManager.getSecurityFilter(anonymous, clazz);
+        // Creating filter for military user
+        Filter security2 = resourceManager.getSecurityFilter(milUser, clazz);
+        // Since we should see all the CatalogInfo elements, we should have an include filter
+        assertSame(security, Filter.INCLUDE);
+        assertSame(security2, Filter.INCLUDE);
+
+        // PublishedInfo test
+        clazz = PublishedInfo.class;
+        // Creating filter for anonymous user
+        security = resourceManager.getSecurityFilter(anonymous, clazz);
+        // Creating filter for military user
+        security2 = resourceManager.getSecurityFilter(milUser, clazz);
+        // Since we should see all the CatalogInfo elements, we should have an include filter
+        assertSame(security, Filter.INCLUDE);
+        assertSame(security2, Filter.INCLUDE);
+
+        // Style test
+        clazz = StyleInfo.class;
+        // Creating filter for anonymous user
+        security = resourceManager.getSecurityFilter(anonymous, clazz);
+        // Creating filter for military user
+        security2 = resourceManager.getSecurityFilter(milUser, clazz);
+        // Since we should see all the CatalogInfo elements, we should have an include filter
+        assertSame(security, Filter.INCLUDE);
+        assertSame(security2, Filter.INCLUDE);
+
+        // Resource test
+        clazz = ResourceInfo.class;
+        // Creating filter for anonymous user
+        security = resourceManager.getSecurityFilter(anonymous, clazz);
+        // Creating filter for military user
+        security2 = resourceManager.getSecurityFilter(milUser, clazz);
+        // Since we should see all the CatalogInfo elements, we should have an include filter
+        assertSame(security, Filter.INCLUDE);
+        assertSame(security2, Filter.INCLUDE);
+
+        // Coverage
+        clazz = CoverageInfo.class;
+        // Creating filter for anonymous user
+        security = resourceManager.getSecurityFilter(anonymous, clazz);
+        // Creating filter for military user
+        security2 = resourceManager.getSecurityFilter(milUser, clazz);
+        // Since we should see all the CatalogInfo elements, we should have an include filter
+        assertSame(security, Filter.INCLUDE);
+        assertSame(security2, Filter.INCLUDE);
+    }
+
+    @Test
+    public void testSecurityFilterLockedDown() throws Exception {
+        // getting the resourceAccessManager
+        ResourceAccessManager resourceManager = getResourceAccessManager(buildLegacyAccessManager("lockedDown.properties"));
+
+        // Workspace test
+        Class<? extends CatalogInfo> clazz = WorkspaceInfo.class;
+        // Creating filter for anonymous user
+        Filter security = resourceManager.getSecurityFilter(anonymous, clazz);
+        // Creating filter for military user
+        Filter security2 = resourceManager.getSecurityFilter(milUser, clazz);
+        // Creating filter for writer role user
+        Filter security3 = resourceManager.getSecurityFilter(rwUser, clazz);
+        // Since we cannot see the CatalogInfo elements, we should have an exclude filter
+        // for all the users except those having WRITER role
+        assertSame(security, Filter.EXCLUDE);
+        assertSame(security2, Filter.EXCLUDE);
+        assertSame(security3, Filter.INCLUDE);
+
+        // PublishedInfo test
+        clazz = PublishedInfo.class;
+        // Creating filter for anonymous user
+        security = resourceManager.getSecurityFilter(anonymous, clazz);
+        // Creating filter for military user
+        security2 = resourceManager.getSecurityFilter(milUser, clazz);
+        // Creating filter for writer role user
+        security3 = resourceManager.getSecurityFilter(rwUser, clazz);
+        // Since we cannot see the CatalogInfo elements, we should have an exclude filter
+        // for all the users except those having WRITER role
+        assertSame(security, Filter.EXCLUDE);
+        assertSame(security2, Filter.EXCLUDE);
+        assertSame(security3, Filter.INCLUDE);
+
+        // Style test
+        clazz = StyleInfo.class;
+        // Creating filter for anonymous user
+        security = resourceManager.getSecurityFilter(anonymous, clazz);
+        // Creating filter for military user
+        security2 = resourceManager.getSecurityFilter(milUser, clazz);
+        // Creating filter for writer role user
+        security3 = resourceManager.getSecurityFilter(rwUser, clazz);
+        // Since we cannot see the CatalogInfo elements, we should have an exclude filter
+        // for all the users except those having WRITER role
+        assertSame(security, Filter.EXCLUDE);
+        assertSame(security2, Filter.EXCLUDE);
+        assertSame(security3, Filter.INCLUDE);
+
+        // Resource test
+        clazz = ResourceInfo.class;
+        // Creating filter for anonymous user
+        security = resourceManager.getSecurityFilter(anonymous, clazz);
+        // Creating filter for military user
+        security2 = resourceManager.getSecurityFilter(milUser, clazz);
+        // Creating filter for writer role user
+        security3 = resourceManager.getSecurityFilter(rwUser, clazz);
+        // Since we cannot see the CatalogInfo elements, we should have an exclude filter
+        // for all the users except those having WRITER role
+        assertSame(security, Filter.EXCLUDE);
+        assertSame(security2, Filter.EXCLUDE);
+        assertSame(security3, Filter.INCLUDE);
+
+        // Coverage
+        clazz = CoverageInfo.class;
+        // Creating filter for anonymous user
+        security = resourceManager.getSecurityFilter(anonymous, clazz);
+        // Creating filter for military user
+        security2 = resourceManager.getSecurityFilter(milUser, clazz);
+        // Creating filter for writer role user
+        security3 = resourceManager.getSecurityFilter(rwUser, clazz);
+        // Since we cannot see the CatalogInfo elements, we should have an exclude filter
+        // for all the users except those having WRITER role
+        assertSame(security, Filter.EXCLUDE);
+        assertSame(security2, Filter.EXCLUDE);
+        assertSame(security3, Filter.INCLUDE);
+    }
+
+    @Test
+    public void testSecurityFilterWsLock() throws Exception {
+        // getting the resourceAccessManager
+        ResourceAccessManager resourceManager = getResourceAccessManager(buildLegacyAccessManager("wsLock.properties"));
+
+        // Workspace test
+        Class<? extends CatalogInfo> clazz = WorkspaceInfo.class;
+        // Creating filter for anonymous user
+        Filter security = resourceManager.getSecurityFilter(anonymous, clazz);
+        // Creating filter for military user
+        Filter security2 = resourceManager.getSecurityFilter(milUser, clazz);
+        // Creating filter for writer role user
+        Filter security3 = resourceManager.getSecurityFilter(rwUser, clazz);
+        // Since only military role can see the topp WorkSpace, we should have a more complex filter
+        // for all the users except those having military role
+        assertNotSame(security, Filter.INCLUDE);
+        assertNotSame(security, Filter.EXCLUDE);
+        assertSame(security2, Filter.INCLUDE);
+        assertNotSame(security3, Filter.INCLUDE);
+        assertNotSame(security3, Filter.EXCLUDE);
+        // Checks on the workspaces
+        List<WorkspaceInfo> ws = catalog.getWorkspaces();
+        Iterator<WorkspaceInfo> it = Iterators.filter(ws.iterator(), new PredicateFilter(security));
+        while (it.hasNext()) {
+            assertSame(it.next(), nurcWs);
+        }
+        it = Iterators.filter(ws.iterator(), new PredicateFilter(security3));
+        while (it.hasNext()) {
+            assertSame(it.next(), nurcWs);
+        }
+
+        // PublishedInfo test
+        clazz = PublishedInfo.class;
+        // Creating filter for anonymous user
+        security = resourceManager.getSecurityFilter(anonymous, clazz);
+        // Creating filter for military user
+        security2 = resourceManager.getSecurityFilter(milUser, clazz);
+        // Creating filter for writer role user
+        security3 = resourceManager.getSecurityFilter(rwUser, clazz);
+        // Since only military role can see the topp WorkSpace, we should have a more complex filter
+        // for all the users except those having military role
+        assertNotSame(security, Filter.INCLUDE);
+        assertNotSame(security, Filter.EXCLUDE);
+        assertSame(security2, Filter.INCLUDE);
+        assertNotSame(security3, Filter.INCLUDE);
+        assertNotSame(security3, Filter.EXCLUDE);
+        // Checks on the workspaces
+        List<LayerInfo> ly = catalog.getLayers();
+        Iterator<LayerInfo> it1 = Iterators.filter(ly.iterator(), new PredicateFilter(security));
+        while (it1.hasNext()) {
+            LayerInfo next = it1.next();
+            String wsName = next.getResource().getNamespace().getName();
+            assertTrue(wsName.equalsIgnoreCase("nurc"));
+        }
+        it1 = Iterators.filter(ly.iterator(), new PredicateFilter(security3));
+        while (it1.hasNext()) {
+            LayerInfo next = it1.next();
+            String wsName = next.getResource().getNamespace().getName();
+            assertTrue(wsName.equalsIgnoreCase("nurc"));
+        }
+
+        // Style test
+        clazz = StyleInfo.class;
+        // Creating filter for anonymous user
+        security = resourceManager.getSecurityFilter(anonymous, clazz);
+        // Creating filter for military user
+        security2 = resourceManager.getSecurityFilter(milUser, clazz);
+        // Creating filter for writer role user
+        security3 = resourceManager.getSecurityFilter(rwUser, clazz);
+        // Since only military role can see the topp WorkSpace, we should have a more complex filter
+        // for all the users except those having military role
+        assertNotSame(security, Filter.INCLUDE);
+        assertNotSame(security, Filter.EXCLUDE);
+        assertSame(security2, Filter.INCLUDE);
+        assertNotSame(security3, Filter.INCLUDE);
+        assertNotSame(security3, Filter.EXCLUDE);
+        // Checks on the workspaces
+        List<StyleInfo> sy = catalog.getStyles();
+        Iterator<StyleInfo> it3 = Iterators.filter(sy.iterator(), new PredicateFilter(security));
+        while (it3.hasNext()) {
+            StyleInfo next = it3.next();
+            WorkspaceInfo wsi = next.getWorkspace();
+            if (wsi != null) {
+                String wsName = wsi.getName();
+                assertTrue(wsName.equalsIgnoreCase("nurc"));
+            }
+        }
+        it3 = Iterators.filter(sy.iterator(), new PredicateFilter(security3));
+        while (it3.hasNext()) {
+            StyleInfo next = it3.next();
+            WorkspaceInfo wsi = next.getWorkspace();
+            if (wsi != null) {
+                String wsName = wsi.getName();
+                assertTrue(wsName.equalsIgnoreCase("nurc"));
+            }
+        }
+
+        // Resource test
+        clazz = ResourceInfo.class;
+        // Creating filter for anonymous user
+        security = resourceManager.getSecurityFilter(anonymous, clazz);
+        // Creating filter for military user
+        security2 = resourceManager.getSecurityFilter(milUser, clazz);
+        // Creating filter for writer role user
+        security3 = resourceManager.getSecurityFilter(rwUser, clazz);
+        // Since only military role can see the topp WorkSpace, we should have a more complex filter
+        // for all the users except those having military role
+        assertNotSame(security, Filter.INCLUDE);
+        assertNotSame(security, Filter.EXCLUDE);
+        assertSame(security2, Filter.INCLUDE);
+        assertNotSame(security3, Filter.INCLUDE);
+        assertNotSame(security3, Filter.EXCLUDE);
+        // Checks on the workspaces
+        List<FeatureTypeInfo> fy = catalog.getFeatureTypes();
+        Iterator<FeatureTypeInfo> it4 = Iterators.filter(fy.iterator(), new PredicateFilter(
+                security));
+        while (it4.hasNext()) {
+            FeatureTypeInfo next = it4.next();
+            String name = next.getNamespace().getName();
+            assertTrue(name.equalsIgnoreCase("nurc"));
+        }
+        it4 = Iterators.filter(fy.iterator(), new PredicateFilter(security3));
+        while (it4.hasNext()) {
+            FeatureTypeInfo next = it4.next();
+            String name = next.getNamespace().getName();
+            assertTrue(name.equalsIgnoreCase("nurc"));
+        }
+
+        // Coverage
+        clazz = CoverageInfo.class;
+        // Creating filter for anonymous user
+        security = resourceManager.getSecurityFilter(anonymous, clazz);
+        // Creating filter for military user
+        security2 = resourceManager.getSecurityFilter(milUser, clazz);
+        // Creating filter for writer role user
+        security3 = resourceManager.getSecurityFilter(rwUser, clazz);
+        // Since only military role can see the topp WorkSpace, we should have a more complex filter
+        // for all the users except those having military role
+        assertNotSame(security, Filter.INCLUDE);
+        assertNotSame(security, Filter.EXCLUDE);
+        assertSame(security2, Filter.INCLUDE);
+        assertNotSame(security3, Filter.INCLUDE);
+        assertNotSame(security3, Filter.EXCLUDE);
+        // Checks on the workspaces
+        List<CoverageInfo> cy = catalog.getCoverages();
+        Iterator<CoverageInfo> it5 = Iterators.filter(cy.iterator(), new PredicateFilter(security));
+        while (it5.hasNext()) {
+            CoverageInfo next = it5.next();
+            String name = next.getNamespace().getName();
+            assertTrue(name.equalsIgnoreCase("nurc"));
+        }
+        it5 = Iterators.filter(cy.iterator(), new PredicateFilter(security3));
+        while (it5.hasNext()) {
+            CoverageInfo next = it5.next();
+            String name = next.getNamespace().getName();
+            assertTrue(name.equalsIgnoreCase("nurc"));
+        }
+    }
+
+    @Test
+    public void testSecurityFilterLayerLock() throws Exception {
+        // getting the resourceAccessManager
+        ResourceAccessManager resourceManager = getResourceAccessManager(buildLegacyAccessManager("layerLock.properties"));
+
+        // Workspace test
+        Class<? extends CatalogInfo> clazz = WorkspaceInfo.class;
+        // Creating filter for anonymous user
+        Filter security = resourceManager.getSecurityFilter(anonymous, clazz);
+        // Creating filter for read only user
+        Filter security2 = resourceManager.getSecurityFilter(roUser, clazz);
+        // Creating filter for rw role user
+        Filter security3 = resourceManager.getSecurityFilter(rwUser, clazz);
+        // Since the restriction is only at layer level, workspaces may be seen without problems
+        assertSame(security, Filter.INCLUDE);
+        assertSame(security2, Filter.INCLUDE);
+        assertSame(security3, Filter.INCLUDE);
+
+        // PublishedInfo test
+        clazz = PublishedInfo.class;
+        // Creating filter for anonymous user
+        security = resourceManager.getSecurityFilter(anonymous, clazz);
+        // Creating filter for read only user
+        security2 = resourceManager.getSecurityFilter(roUser, clazz);
+        // Creating filter for rw role user
+        security3 = resourceManager.getSecurityFilter(rwUser, clazz);
+        // Since we are restricting access on a single layer, all the users
+        // except the rw one will have a more complex filter
+        assertNotSame(security, Filter.INCLUDE);
+        assertNotSame(security, Filter.EXCLUDE);
+        assertNotSame(security2, Filter.INCLUDE);
+        assertNotSame(security2, Filter.EXCLUDE);
+        assertSame(security3, Filter.INCLUDE);
+        // Checks on the layers
+        List<LayerInfo> ly = catalog.getLayers();
+        Iterator<LayerInfo> it1 = Iterators.filter(ly.iterator(), new PredicateFilter(security));
+        // Checking if the roads layer is present
+        boolean hasRoadsLayer = false;
+        // Ensure the base layer is present
+        boolean hasBasesLayer = false;
+        while (it1.hasNext()) {
+            LayerInfo next = it1.next();
+            assertNotSame(next, roadsLayer);
+            assertNotSame(next, statesLayer);
+            hasBasesLayer |= next.equals(basesLayer);
+        }
+        assertTrue(hasBasesLayer);
+        hasRoadsLayer = false;
+        hasBasesLayer = false;
+        it1 = Iterators.filter(ly.iterator(), new PredicateFilter(security2));
+        while (it1.hasNext()) {
+            LayerInfo next = it1.next();
+            assertNotSame(next, statesLayer);
+            hasRoadsLayer |= next.equals(roadsLayer);
+            hasBasesLayer |= next.equals(basesLayer);
+        }
+        assertTrue(hasRoadsLayer);
+        assertTrue(hasRoadsLayer);
+
+        // Style test
+        clazz = StyleInfo.class;
+        // Creating filter for anonymous user
+        security = resourceManager.getSecurityFilter(anonymous, clazz);
+        // Creating filter for read only user
+        security2 = resourceManager.getSecurityFilter(roUser, clazz);
+        // Creating filter for rw role user
+        security3 = resourceManager.getSecurityFilter(rwUser, clazz);
+        // Since the restriction is only at layer level, workspaces may be seen without problems
+        assertSame(security, Filter.INCLUDE);
+        assertSame(security2, Filter.INCLUDE);
+        assertSame(security3, Filter.INCLUDE);
+
+        // Resource test
+        clazz = ResourceInfo.class;
+        // Creating filter for anonymous user
+        security = resourceManager.getSecurityFilter(anonymous, clazz);
+        // Creating filter for read only user
+        security2 = resourceManager.getSecurityFilter(roUser, clazz);
+        // Creating filter for rw role user
+        security3 = resourceManager.getSecurityFilter(rwUser, clazz);
+        // Since we are restricting access on a single layer, all the users
+        // except the rw one will have a more complex filter
+        assertNotSame(security, Filter.INCLUDE);
+        assertNotSame(security, Filter.EXCLUDE);
+        assertNotSame(security2, Filter.INCLUDE);
+        assertNotSame(security2, Filter.EXCLUDE);
+        assertSame(security3, Filter.INCLUDE);
+        // Checks on the featuretypes
+        List<FeatureTypeInfo> fy = catalog.getFeatureTypes();
+        Iterator<FeatureTypeInfo> it3 = Iterators.filter(fy.iterator(), new PredicateFilter(
+                security));
+        hasBasesLayer = false;
+        while (it3.hasNext()) {
+            FeatureTypeInfo next = it3.next();
+            assertNotSame(next, roads);
+            assertNotSame(next, states);
+            hasBasesLayer |= next.equals(bases);
+        }
+        assertTrue(hasBasesLayer);
+        hasRoadsLayer = false;
+        hasBasesLayer = false;
+        it3 = Iterators.filter(fy.iterator(), new PredicateFilter(security2));
+        while (it3.hasNext()) {
+            FeatureTypeInfo next = it3.next();
+            hasRoadsLayer |= next.equals(roads);
+            hasBasesLayer |= next.equals(bases);
+            assertNotSame(next, states);
+        }
+        assertTrue(hasBasesLayer);
+        assertTrue(hasRoadsLayer);
+    }
+
+    @Test
+    public void testSecurityFilterComplex() throws Exception {
+        // getting the resourceAccessManager
+        ResourceAccessManager resourceManager = getResourceAccessManager(buildLegacyAccessManager("complex.properties"));
+
+        // Workspace test
+        Class<? extends CatalogInfo> clazz = WorkspaceInfo.class;
+        // Creating filter for anonymous user
+        Filter security = resourceManager.getSecurityFilter(anonymous, clazz);
+        // Creating filter for read write user
+        Filter security2 = resourceManager.getSecurityFilter(rwUser, clazz);
+        // Creating filter for military user
+        Filter security3 = resourceManager.getSecurityFilter(milUser, clazz);
+        // anonymous and military can access only to topp
+        assertNotSame(security, Filter.EXCLUDE);
+        assertNotSame(security, Filter.INCLUDE);
+        assertSame(security2, Filter.INCLUDE);
+        assertNotSame(security3, Filter.EXCLUDE);
+        assertNotSame(security3, Filter.INCLUDE);
+        // Checks on the workspaces
+        List<WorkspaceInfo> ws = catalog.getWorkspaces();
+        Iterator<WorkspaceInfo> it = Iterators.filter(ws.iterator(), new PredicateFilter(security));
+        while (it.hasNext()) {
+            assertSame(it.next(), toppWs);
+        }
+        it = Iterators.filter(ws.iterator(), new PredicateFilter(security3));
+        while (it.hasNext()) {
+            assertSame(it.next(), toppWs);
+        }
+
+        // PublishedInfo test
+        clazz = PublishedInfo.class;
+        // Creating filter for anonymous user
+        security = resourceManager.getSecurityFilter(anonymous, clazz);
+        // Creating filter for read write user
+        security2 = resourceManager.getSecurityFilter(rwUser, clazz);
+        // Creating filter for military user
+        security3 = resourceManager.getSecurityFilter(milUser, clazz);
+        // Anonymous can access to topp layers except for states and bases
+        // Read/Writer can access all layers except for bases and arcgrid
+        // Military can access only topp layers except for states and can access to arcgrid
+        assertNotSame(security, Filter.INCLUDE);
+        assertNotSame(security, Filter.EXCLUDE);
+        assertNotSame(security2, Filter.INCLUDE);
+        assertNotSame(security2, Filter.EXCLUDE);
+        assertNotSame(security3, Filter.INCLUDE);
+        assertNotSame(security3, Filter.EXCLUDE);
+        // Checks on the layers
+        List<LayerInfo> ly = catalog.getLayers();
+        // ANON
+        Iterator<LayerInfo> it1 = Iterators.filter(ly.iterator(), new PredicateFilter(security));
+        // Boolean checking the various layers
+        boolean hasRoadsLayer = false;
+        boolean hasLandmLayer = false;
+        while (it1.hasNext()) {
+            LayerInfo next = it1.next();
+            // topp
+            assertNotSame("Unexpectedly found bases with security filter " + security, next, basesLayer);
+            assertNotSame("Unexpectedly found states with security filter " + security, next, statesLayer);
+            hasLandmLayer |= next.equals(landmarksLayer);
+            hasRoadsLayer |= next.equals(roadsLayer);
+            // Nurc
+            assertNotSame(next, arcGridLayer);
+        }
+        // We see the roads and landmarks layer
+        assertTrue(hasRoadsLayer);
+        assertTrue(hasLandmLayer);
+
+        // READER/WRITER
+        // Reset boolean
+        hasRoadsLayer = false;
+        boolean hasStatesLayer = false;
+        hasLandmLayer = false;
+        it1 = Iterators.filter(ly.iterator(), new PredicateFilter(security2));
+        while (it1.hasNext()) {
+            LayerInfo next = it1.next();
+            // Topp
+            assertNotSame(next, basesLayer);
+            hasStatesLayer |= next.equals(statesLayer);
+            hasLandmLayer |= next.equals(landmarksLayer);
+            hasRoadsLayer |= next.equals(roadsLayer);
+            // Nurc
+            assertNotSame(next, arcGridLayer);
+        }
+        // We see landmarks,states and roads
+        assertTrue(hasLandmLayer);
+        assertTrue(hasStatesLayer);
+        assertTrue(hasRoadsLayer);
+
+        // MILITARY
+        // Reset boolean
+        boolean hasArcGridLayer = false;
+        boolean hasBasesLayer = false;
+        hasLandmLayer = false;
+        hasRoadsLayer = false;
+        it1 = Iterators.filter(ly.iterator(), new PredicateFilter(security3));
+        while (it1.hasNext()) {
+            LayerInfo next = it1.next();
+            // Topp
+            assertNotSame(next, statesLayer);
+            hasLandmLayer |= next.equals(landmarksLayer);
+            hasRoadsLayer |= next.equals(roadsLayer);
+            hasBasesLayer |= next.equals(basesLayer);
+            // Nurc
+            hasArcGridLayer |= next.equals(arcGridLayer);
+        }
+        // We see landmarks,bases,arcgrid and roads
+        assertTrue(hasLandmLayer);
+        assertTrue(hasBasesLayer);
+        assertTrue(hasArcGridLayer);
+        assertTrue(hasRoadsLayer);
+
+        // Style test
+        clazz = StyleInfo.class;
+        // Creating filter for anonymous user
+        security = resourceManager.getSecurityFilter(anonymous, clazz);
+        // Creating filter for read write user
+        security2 = resourceManager.getSecurityFilter(rwUser, clazz);
+        // Creating filter for military user
+        security3 = resourceManager.getSecurityFilter(milUser, clazz);
+        // anonymous and military can access only to topp
+        assertNotSame(security, Filter.EXCLUDE);
+        assertNotSame(security, Filter.INCLUDE);
+        assertSame(security2, Filter.INCLUDE);
+        assertNotSame(security3, Filter.EXCLUDE);
+        assertNotSame(security3, Filter.INCLUDE);
+        // Checks on the workspaces
+        List<StyleInfo> sy = catalog.getStyles();
+        Iterator<StyleInfo> it2 = Iterators.filter(sy.iterator(), new PredicateFilter(security));
+        while (it2.hasNext()) {
+            StyleInfo next = it2.next();
+            WorkspaceInfo wsi = next.getWorkspace();
+            if (wsi != null) {
+                String wsName = wsi.getName();
+                assertTrue(wsName.equalsIgnoreCase("topp"));
+            }
+        }
+        it2 = Iterators.filter(sy.iterator(), new PredicateFilter(security3));
+        while (it2.hasNext()) {
+            StyleInfo next = it2.next();
+            WorkspaceInfo wsi = next.getWorkspace();
+            if (wsi != null) {
+                String wsName = wsi.getName();
+                assertTrue(wsName.equalsIgnoreCase("topp"));
+            }
+        }
+
+        // Resource test
+        clazz = ResourceInfo.class;
+        // Creating filter for anonymous user
+        security = resourceManager.getSecurityFilter(anonymous, clazz);
+        // Creating filter for read write user
+        security2 = resourceManager.getSecurityFilter(rwUser, clazz);
+        // Creating filter for military user
+        security3 = resourceManager.getSecurityFilter(milUser, clazz);
+        // Anonymous can access to topp layers except for states and bases
+        // Read/Writer can access all layers except for bases and arcgrid
+        // Military can access only topp layers except for states and can access to arcgrid
+        assertNotSame(security, Filter.INCLUDE);
+        assertNotSame(security, Filter.EXCLUDE);
+        assertNotSame(security2, Filter.INCLUDE);
+        assertNotSame(security2, Filter.EXCLUDE);
+        assertNotSame(security3, Filter.INCLUDE);
+        assertNotSame(security3, Filter.EXCLUDE);
+        // Checks on the featuretypes
+        List<FeatureTypeInfo> fy = catalog.getFeatureTypes();
+        Iterator<FeatureTypeInfo> it3 = Iterators.filter(fy.iterator(), new PredicateFilter(
+                security));
+
+        // Boolean checking the various layers
+        hasRoadsLayer = false;
+        hasLandmLayer = false;
+        while (it3.hasNext()) {
+            FeatureTypeInfo next = it3.next();
+            // topp
+            assertNotSame(next, bases);
+            assertNotSame(next, states);
+            hasLandmLayer |= next.equals(landmarks);
+            hasRoadsLayer |= next.equals(roads);
+            // Nurc
+            assertNotSame(next, arcGrid);
+        }
+        // We see the roads and landmarks layer
+        assertTrue(hasRoadsLayer);
+        assertTrue(hasLandmLayer);
+
+        // READER/WRITER
+        // Reset boolean
+        hasRoadsLayer = false;
+        hasStatesLayer = false;
+        hasLandmLayer = false;
+        it3 = Iterators.filter(fy.iterator(), new PredicateFilter(security2));
+        while (it3.hasNext()) {
+            FeatureTypeInfo next = it3.next();
+            // Topp
+            assertNotSame(next, bases);
+            hasStatesLayer |= next.equals(states);
+            hasLandmLayer |= next.equals(landmarks);
+            hasRoadsLayer |= next.equals(roads);
+            // Nurc
+            assertNotSame(next, arcGrid);
+        }
+        // We see landmarks,states and roads
+        assertTrue(hasLandmLayer);
+        assertTrue(hasStatesLayer);
+        assertTrue(hasRoadsLayer);
+
+        // MILITARY
+        // Reset boolean
+        hasBasesLayer = false;
+        hasLandmLayer = false;
+        hasRoadsLayer = false;
+        it3 = Iterators.filter(fy.iterator(), new PredicateFilter(security3));
+        while (it3.hasNext()) {
+            FeatureTypeInfo next = it3.next();
+            // Topp
+            assertNotSame(next, states);
+            hasLandmLayer |= next.equals(landmarks);
+            hasRoadsLayer |= next.equals(roads);
+            hasBasesLayer |= next.equals(bases);
+        }
+        // We see landmarks,bases and roads
+        assertTrue(hasLandmLayer);
+        assertTrue(hasBasesLayer);
+        assertTrue(hasRoadsLayer);
+
+        // Coverage
+        clazz = CoverageInfo.class;
+        // Creating filter for anonymous user
+        security = resourceManager.getSecurityFilter(anonymous, clazz);
+        // Creating filter for read write user
+        security2 = resourceManager.getSecurityFilter(rwUser, clazz);
+        // Creating filter for military user
+        security3 = resourceManager.getSecurityFilter(milUser, clazz);
+        // Anonymous can access to topp layers except for states and bases
+        // Read/Writer can access all layers except for bases and arcgrid
+        // Military can access only topp layers except for states and can access to arcgrid
+        assertNotSame(security, Filter.INCLUDE);
+        assertNotSame(security, Filter.EXCLUDE);
+        assertNotSame(security2, Filter.INCLUDE);
+        assertNotSame(security2, Filter.EXCLUDE);
+        assertNotSame(security3, Filter.INCLUDE);
+        assertNotSame(security3, Filter.EXCLUDE);
+
+        // Checks on the featuretypes
+        List<CoverageInfo> cy = catalog.getCoverages();
+        Iterator<CoverageInfo> it4 = Iterators.filter(cy.iterator(), new PredicateFilter(security));
+
+        // Boolean checking the various coverages
+        while (it4.hasNext()) {
+            CoverageInfo next = it4.next();
+            // Nurc
+            assertNotSame(next, arcGrid);
+        }
+
+        // READER/WRITER
+        // Reset boolean
+        it4 = Iterators.filter(cy.iterator(), new PredicateFilter(security2));
+        while (it4.hasNext()) {
+            CoverageInfo next = it4.next();
+            // Nurc
+            assertNotSame(next, arcGrid);
+        }
+
+        // MILITARY
+        // Reset boolean
+        hasArcGridLayer = false;
+        it4 = Iterators.filter(cy.iterator(), new PredicateFilter(security3));
+        while (it4.hasNext()) {
+            CoverageInfo next = it4.next();
+            // Nurc
+            hasArcGridLayer |= next.equals(arcGrid);
+        }
+        // We see arcgrid
+        assertTrue(hasArcGridLayer);
+    }
+
+    protected ResourceAccessManager getResourceAccessManager(DataAccessManager manager)
+            throws Exception {
+        // Getting the DefaultResourceAccessManager
+        ResourceAccessManager resourceManager;
+        if (manager instanceof ResourceAccessManager) {
+            resourceManager = (ResourceAccessManager) manager;
+        } else {
+            throw new IllegalArgumentException("We should have a ResourceAccessManager");
+        }
+        return resourceManager;
     }
     
     static <T> void assertThatBoth(List<T> result1, CloseableIterator<T> result2, Matcher<?> expected) throws IOException {
@@ -576,4 +1307,20 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
         }
     }
 
+    static class PredicateFilter implements Predicate<CatalogInfo>{
+        
+        private Filter f;
+        
+        public PredicateFilter(Filter f){
+            this.f = f;
+        }
+
+        @Override
+        public boolean apply(@Nullable CatalogInfo input) {
+            if(input != null){
+                return f.evaluate(input);
+            }
+            return false;
+        }
+    }
 }

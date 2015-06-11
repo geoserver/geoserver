@@ -163,7 +163,7 @@ public class AppSchemaTestOracleSetup extends ReferenceDataOracleSetup {
                 .append("END DROP_TABLE_OR_VIEW;\n"); 
 
         for (String fileName : propertyFiles.keySet()) {
-            File file = new File(fileName);
+            File file = new File(propertyFiles.get(fileName), fileName);
             
             try ( PropertyFeatureReader reader = new PropertyFeatureReader("test", file ) ){            
                 SimpleFeatureType schema = reader.getFeatureType();

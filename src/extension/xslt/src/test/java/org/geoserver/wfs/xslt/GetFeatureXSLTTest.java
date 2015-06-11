@@ -5,7 +5,8 @@
  */
 package org.geoserver.wfs.xslt;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -16,14 +17,13 @@ import org.custommonkey.xmlunit.XMLAssert;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.ServiceException;
-import org.geoserver.wfs.WFSTestSupport;
 import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
-public class GetFeatureXSLTTest extends WFSTestSupport {
+public class GetFeatureXSLTTest extends XSLTTestSupport {
     
     @Override
     protected void setUpTestData(SystemTestData testData) throws Exception {
@@ -38,12 +38,10 @@ public class GetFeatureXSLTTest extends WFSTestSupport {
     
     @Before
     public void setupXSLT() throws IOException {
-        File dd = getTestData().getDataDirectoryRoot();
+        File dd = getTestData().getDataDirectoryRoot().getCanonicalFile();
         File wfs = new File(dd, "wfs");
         File transform = new File(wfs, "transform");
-        if (transform.exists()) {
-            FileUtils.deleteDirectory(transform);
-        }
+        deleteDirectory(transform);
         assertTrue(transform.mkdirs());
         FileUtils.copyDirectory(new File("src/test/resources/org/geoserver/wfs/xslt"), transform);
 
@@ -174,7 +172,7 @@ public class GetFeatureXSLTTest extends WFSTestSupport {
         File wfs = new File(dd, "wfs");
         File transform = new File(wfs, "transform");
         if (transform.exists()) {
-            FileUtils.deleteDirectory(transform);
+            deleteDirectory(transform);
         }
 
         // makes sure the output format list is updated

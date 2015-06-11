@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014-2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -22,7 +22,6 @@ import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.map.png.PNGJWriter;
 import org.geotools.image.ImageWorker;
-import org.geotools.image.palette.ColorIndexerDescriptor;
 import org.geotools.util.logging.Logging;
 
 /**
@@ -48,10 +47,6 @@ public class PNGMapResponse extends RenderedImageMapResponse {
     public enum QuantizeMethod {
         Octree, MedianCut
     };
-
-    static {
-        ColorIndexerDescriptor.register();
-    }
 
     /**
      * Default capabilities for PNG format.

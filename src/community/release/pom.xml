@@ -11,7 +11,7 @@
  <parent>
   <groupId>org.geoserver</groupId>
   <artifactId>community</artifactId>
-  <version>2.7-SNAPSHOT</version>
+  <version>2.8-SNAPSHOT</version>
  </parent>
  <groupId>org.geoserver.community</groupId>
  <artifactId>gs-release</artifactId>
@@ -134,15 +134,20 @@
      <version>${project.version}</version>
    </dependency>
    <dependency>
-      <groupId>org.geoserver</groupId>
+      <groupId>org.geoserver.community</groupId>
       <artifactId>gs-jms-geoserver</artifactId>
      <version>${project.version}</version>
    </dependency>  
    <dependency>
-      <groupId>org.geoserver</groupId>
+      <groupId>org.geoserver.community</groupId>
       <artifactId>gs-jms-commons</artifactId>
      <version>${project.version}</version>
    </dependency>
+   <dependency>
+      <groupId>org.geoserver.community</groupId>
+      <artifactId>gs-hz-cluster</artifactId>
+      <version>${project.version}</version>
+   </dependency>  
    <dependency>
      <groupId>org.geoserver.community</groupId>
      <artifactId>gs-geofence</artifactId>
@@ -158,6 +163,12 @@
      <artifactId>gs-web-solr</artifactId>
      <version>${project.version}</version>
    </dependency>     
+   <dependency>
+      <groupId>org.geoserver.community</groupId>
+      <artifactId>gs-gwc-distributed</artifactId>
+     <version>${project.version}</version>
+   </dependency>
+
  </dependencies>
  <build>
   <plugins>

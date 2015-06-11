@@ -1,78 +1,67 @@
-.. _security_wps:
+.. _wps_security:
 
 WPS Security and input limits
 =============================
 
-Geoserver service security is normally based on the generic <OGC security configuration `_sec_service`>_, however, when it
-comes to WPS there is also a need to restrict single process availability. 
-WPS security allows access to be determined on a per process group or per single process, similarly
-to how data security restricts access to layers.
+GeoServer service security is normally based on the generic :ref:`OGC security configuration <sec_service>`, however, when it comes to WPS there is also a need to **restrict access to individual processes**, in the same way that data security restricts access to layers.
 
-Each process and process group can be either disabled entirely, or subject to access control based on the
-user roles.
+WPS security allows access to be determined by process group or by single process. Each process and process group can be enabled/disabled, or subject to access control based on the user roles.
 
-The WPS security configurations can be changed using the Web Administration Interface. 
-The "Security"/"WPS security" page contains list of WPS groups with ability to enable/disable them, 
-limit their access to specific roles, and links to process list and process access mode configuration.
-
-.. figure:: images/security-groups.png
-   :align: center
+.. figure:: images/security.png
    
-   *The WPS security page*
-   
-The process access mode configuration specifies how GeoServer will advertise 
-secured processes and behave when a secured processes is accessed without the necessary privileges.
-The parameter can assume the values: HIDE (default), CHALLENGE, MIXED:
+   The WPS security page
 
-* In **HIDE** mode the processes not available to the current user will simply be removed, denying their existence to the clients,
-  in particular they will not be listed to GetCapabilities output and a direct access will result in GeoServer claiming the process does not exists
-* In **CHALLENGE** mode all the processes will be available in the GetCapabilities output, but a authentication 
-  request will be raised if a secured process is requested via any other service call by a user that does not have sufficient access rights
-* In **MIXED** mode the secured processes will be hidden from the GetCapabilities document to the users not having sufficient access rights, 
-  but an authentication request will be raised if a secured process is requested anyways via any other WPS request 
-  
-The list of roles attached to each group or process will determine which users can access the
-processes, if the list is empty the group/process will be available to all users (unless it has
-been disabled, in which case it won't be available to anyone).
-The role editor provide auto-completion to ease up filling values, and allowing quick copy and paste of 
-role lists from one process definition to the other. 
-The roles string must be a simple semicolon separated list:
+The WPS security configurations can be changed using the :ref:`web_admin` on the :guilabel:`WPS security` page under :guilabel:`Security`.
 
-.. figure:: images/security-process.png
-   :align: center
+.. figure:: images/security_link.png
 
-   *The role editor inside the process list page*
-   
+   Click to access the WPS security settings
+
+Setting access roles
+--------------------
+
+The list of roles attached to each group or process will determine which users can access which processes. If the list is empty the group/process will be available to all users, unless it has been disabled, in which case it won't be available to anyone.
+
+The roles string must be a list of roles separated by semicolons. The role editor provides auto-completion and also allows quick copy and paste of role lists from one process definition to the other:
+
+.. figure:: images/security_roles.png
+
+   Role selector field with auto-complete
+
+Access modes
+------------
+
+The process access mode configuration specifies how GeoServer will advertise secured processes and behave when a secured process is accessed without the necessary privileges. The parameter can be one of three values:
+
+* **HIDE** (default): The processes not available to the current user will be hidden from the user (not listed in the capabilities documents). Direct access will result in GeoServer claiming the process does not exist.
+* **CHALLENGE**: All processes will be shown in the capabilities documents, but an authentication request will be raised if a secured process is specifically requested by a user that does not have sufficient access rights
+* **MIXED**: The secured processes will not be shown in the capabilities documents for users not having sufficient access rights, but an authentication request will still be raised if a secured process is requested. 
+
 Input limits
 ------------
 
-The amount of resources used by a process is normally directly related to the inputs of the process itself.
-The WPS specification is conscious of that, and allows to declare three different type of limits on each process inputs:
+The amount of resources used by a process is usually related directly to the inputs of the process itself. With this in mind, administrators can set three different type of limits on each process inputs:
 
-* The maximum size of complex inputs, in megabytes
+* The maximum size of complex inputs
 * The range of acceptable values for numeric values
-* The max multiplicity of repeatable inputs (think of contour extraction, where the number of levels affects the execution time)
+* The maximum multiplicity of repeatable inputs
 
-Starting with GeoServer 2.7.0, GeoServer allows the administrator to configure said limits, and fail requests that 
-are not respecting them.
+  .. note:: As an example of the last point, think of contour extraction, where the number of levels for the contours can drastically affect the execution time
 
-The maximum size can be given a global default in the "WPS security" page (see screenshot above).
-It is otherwise possible to define limits on a process by process basis getting in the process list
-and getting in the process limits editor (processes having a "*" besides the link have a defined
-set of limits):
+GeoServer allows the administrator to configure these limits, and fail requests that don't respect them.
 
-.. figure:: images/process_selector.png
-   :align: center
+The maximum size can be given a global default on the :guilabel:`WPS security` page. It is also possible to define limits on a per-process basis by navigating to the process limits editor in the process list.
 
-   *The process selector, with access constraints and links to the limits configuration*
-   
-The process limits configurator shows all inputs for which a limit can be provided, and
-sets a "emtpy" set of limits for it: if empty or unmodified, the limits won't be applied to 
-the input (e..g, a max input with a 0 value means no limit, and so on).
+.. note:: Processes having a ``*`` beside the link have a defined set of limits
 
-.. figure:: images/process_limits.png
-   :align: center
+.. figure:: images/security_processselector.png
 
-   *The process limit page, with a variety of input limits configured in it*
+   The process selector, with access constraints and links to the limits configuration
 
-.. warning:: In order for the limits to be actually saved, the process list page needs to be "applied", and then the main WPS security page needs to be saved
+The process limits editor shows all inputs for which a limit can be provided. An empty field means that limits are disabled for that input.
+
+.. figure:: images/security_processlimits.png
+
+   The process limit page, with input limits configured
+
+.. warning:: In order for the limits to be saved, click **both** :guilabel:`Apply` on this page and then :guilabel:`Submit` on the main WPS security page.

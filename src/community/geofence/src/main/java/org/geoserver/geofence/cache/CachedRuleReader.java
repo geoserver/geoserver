@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2007 - 2014 GeoSolutions S.A.S.
+ *  Copyright (C) 2007 - 2015 GeoSolutions S.A.S.
  *  http://www.geo-solutions.it
  * 
  *  GPLv3 + Classpath exception
@@ -114,7 +114,9 @@ public class CachedRuleReader implements RuleReaderService {
         public AccessInfo load(RuleFilter filter) throws Exception {
             if(LOGGER.isLoggable(Level.FINE))
                 LOGGER.log(Level.FINE, "Loading {0}", filter);
-            return realRuleReaderService.getAccessInfo(filter);
+            // the service, when integrated, may modify the filter
+            RuleFilter clone = filter.clone();
+            return realRuleReaderService.getAccessInfo(clone);
         }
 
         @Override
@@ -122,8 +124,11 @@ public class CachedRuleReader implements RuleReaderService {
             if(LOGGER.isLoggable(Level.FINE))
                 LOGGER.log(Level.FINE, "Reloading {0}", filter);
 
+            // the service, when integrated, may modify the filter
+            RuleFilter clone = filter.clone();
+
             // this is a sync implementation
-            AccessInfo ret = realRuleReaderService.getAccessInfo(filter);
+            AccessInfo ret = realRuleReaderService.getAccessInfo(clone);
             return Futures.immediateFuture(ret);
 
             // next there is an asynchronous implementation, but in tests it seems to hang

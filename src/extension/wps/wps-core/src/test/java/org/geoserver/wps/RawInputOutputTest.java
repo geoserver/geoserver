@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2014 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -168,7 +168,7 @@ public class RawInputOutputTest extends WPSTestSupport {
         	throw new Exception("Waited for the process to complete more than " + MAX_WAIT_FOR_ASYNCH);
         }
 
-        print(dom);
+        // print(dom);
         assertEquals(1, xp.getMatchingNodes("//wps:Status/wps:ProcessSucceeded", dom).getLength());
         String fullReference = xp.evaluate("//wps:ProcessOutputs/wps:Output[ows:Identifier='result']/wps:Reference/@href", dom);
         String reference = fullReference.substring(fullReference.indexOf('?') - 3);
@@ -176,6 +176,45 @@ public class RawInputOutputTest extends WPSTestSupport {
         MockHttpServletResponse response = getAsServletResponse(reference);
         assertEquals("application/json", response.getContentType());
         assertEquals("ABCDE", response.getOutputStreamContent());
+    }
+    
+    @Test
+    public void testReturnNull() throws Exception {
+        String xml =  
+                "<wps:Execute service='WPS' version='1.0.0' xmlns:wps='http://www.opengis.net/wps/1.0.0' " + 
+                    "xmlns:ows='http://www.opengis.net/ows/1.1'>" + 
+                  "<ows:Identifier>gs:Raw</ows:Identifier>" + 
+                   "<wps:DataInputs>" +
+                      "<wps:Input>" + 
+                          "<ows:Identifier>data</ows:Identifier>" + 
+                          "<wps:Data>" +
+                             "<wps:ComplexData mimeType=\"application/json\"><![CDATA[ABCDE]]>" +
+                            "</wps:ComplexData>" + 
+                          "</wps:Data>" +     
+                      "</wps:Input>" + 
+                      "<wps:Input>" + 
+                      "<ows:Identifier>returnNull</ows:Identifier>" + 
+                      "<wps:Data>" +
+                         "<wps:LiteralData>true</wps:LiteralData>" +
+                      "</wps:Data>" +     
+                  "</wps:Input>" + 
+                 "</wps:DataInputs>" +
+                 "<wps:ResponseForm>" +  
+                     "<wps:ResponseDocument>" + 
+                       "<wps:Output>" +
+                         "<ows:Identifier>result</ows:Identifier>" +
+                       "</wps:Output>" + 
+                     "</wps:ResponseDocument>" +
+                   "</wps:ResponseForm>" + 
+               "</wps:Execute>";
+        // System.out.println(xml);
+              
+        Document dom = postAsDOM("wps", xml);
+        // print(dom);
+        checkValidationErrors(dom);
+        assertEquals(1, xp.getMatchingNodes("//wps:Status/wps:ProcessSucceeded", dom).getLength());
+        assertEquals("1", xp.evaluate("count(//wps:ProcessOutputs/wps:Output[ows:Identifier='result']/wps:Data/wps:ComplexData)", dom));
+        assertEquals("0", xp.evaluate("count(//wps:ProcessOutputs/wps:Output[ows:Identifier='result']/wps:Data/wps:ComplexData/*)", dom));
     }
     
     

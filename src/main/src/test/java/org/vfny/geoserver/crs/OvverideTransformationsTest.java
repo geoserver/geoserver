@@ -94,7 +94,7 @@ public class OvverideTransformationsTest extends GeoServerSystemTestSupport {
     @Test
     public void testFallbackOnEPSGDatabaseStd() throws Exception {
         // Test CRSs
-        CoordinateReferenceSystem source = CRS.decode("EPSG:3003");
+        CoordinateReferenceSystem source = CRS.decode("EPSG:3002");
         CoordinateReferenceSystem target = CRS.decode("EPSG:4326");
         CoordinateOperation co = CRS.getCoordinateOperationFactory(true).createOperation(source, target);
         ConcatenatedOperation cco = (ConcatenatedOperation) co;

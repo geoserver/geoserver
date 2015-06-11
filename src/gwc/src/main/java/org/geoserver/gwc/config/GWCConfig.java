@@ -10,11 +10,16 @@ import static com.google.common.base.Preconditions.*;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.geowebcache.locks.LockProvider;
+import org.geowebcache.storage.blobstore.memory.CacheConfiguration;
+import org.geowebcache.storage.blobstore.memory.CacheProvider;
+import org.geowebcache.storage.blobstore.memory.guava.GuavaCacheProvider;
 
 public class GWCConfig implements Cloneable, Serializable {
 
@@ -31,6 +36,30 @@ public class GWCConfig implements Cloneable, Serializable {
     private boolean TMSEnabled;
     
     private boolean securityEnabled;
+
+    /**
+     * Boolean indicating if InnerCaching should be used instead of
+     * default FileSystem caching
+     */
+    private boolean innerCachingEnabled;
+
+    /**
+     * Boolean indicating if the Tiles stored in memory should be also stored
+     * in the FileSystem as backup
+     */
+    private boolean persistenceEnabled;
+
+    /**
+     * String indicating the class of the {@link CacheProvider} instance used for caching
+     * GWC Tiles
+     */
+    private String cacheProviderClass;
+
+    /**
+     * {@link Map} containing all the {@link CacheConfiguration} object stored for each
+     * {@link CacheProvider} instance.
+     */
+    private Map<String, CacheConfiguration> cacheConfigurations;
 
     /**
      * Whether to automatically cache GeoServer layers or they should be enabled explicitly
@@ -85,6 +114,9 @@ public class GWCConfig implements Cloneable, Serializable {
         setDefaultCoverageCacheFormats(Collections.singleton(jpeg));
         setDefaultOtherCacheFormats(new HashSet<String>(Arrays.asList(png, jpeg)));
         setDefaultVectorCacheFormats(Collections.singleton(png));
+        Map<String, CacheConfiguration> map = new HashMap<String, CacheConfiguration>();
+        map.put(GuavaCacheProvider.class.toString(), new CacheConfiguration());
+        setCacheConfigurations(map);
 
         readResolve();
     }
@@ -105,6 +137,10 @@ public class GWCConfig implements Cloneable, Serializable {
         }
         if (defaultVectorCacheFormats == null) {
             defaultVectorCacheFormats = new HashSet<String>();
+        }
+        if (cacheConfigurations == null) {
+            cacheConfigurations = new HashMap<String, CacheConfiguration>();
+            cacheConfigurations.put(GuavaCacheProvider.class.toString(), new CacheConfiguration());
         }
 
         return this;
@@ -278,6 +314,12 @@ public class GWCConfig implements Cloneable, Serializable {
         setWMSCEnabled(true);
         setWMTSEnabled(true);
         setTMSEnabled(true);
+        setEnabledPersistence(true);
+        setInnerCachingEnabled(false);
+        HashMap<String, CacheConfiguration> map = new HashMap<String, CacheConfiguration>();
+        map.put(GuavaCacheProvider.class.toString(), new CacheConfiguration());
+        setCacheConfigurations(map);
+        setCacheProviderClass(GuavaCacheProvider.class.toString());
     }
 
     public int getMetaTilingX() {
@@ -317,6 +359,7 @@ public class GWCConfig implements Cloneable, Serializable {
         clone.setDefaultCoverageCacheFormats(getDefaultCoverageCacheFormats());
         clone.setDefaultVectorCacheFormats(getDefaultVectorCacheFormats());
         clone.setDefaultOtherCacheFormats(getDefaultOtherCacheFormats());
+        clone.setCacheConfigurations(getCacheConfigurations());
 
         return clone;
     }
@@ -352,5 +395,86 @@ public class GWCConfig implements Cloneable, Serializable {
      */
     public void setLockProviderName(String lockProviderName) {
         this.lockProviderName = lockProviderName;
+    }
+
+    /**
+     * Checks whether GWC Tiles should be cached in memory
+     * instead of caching them in the File System
+     *
+     * @return a boolean indicating if tiles are cached in memory
+     */
+    public boolean isInnerCachingEnabled() {
+        return innerCachingEnabled;
+    }
+
+    /**
+     * This method sets a flag indicating if GWC tiles must be cached in memory
+     *
+     * @param innerCachingEnabled If this flag is set to true, GWC tiles will be cached
+     * in memory instead of being cached on the disk.
+     */
+    public void setInnerCachingEnabled(boolean innerCachingEnabled) {
+        this.innerCachingEnabled = innerCachingEnabled;
+    }
+
+    /**
+     * Checks whether GWC Tiles are stored in the File System also if they are already
+     * stored in memory
+     *
+     * @return a boolean indicating if GWC tiles are also cached in FileSystem
+     */
+    public boolean isPersistenceEnabled() {
+        return persistenceEnabled;
+    }
+
+    /**
+     * This method sets a flag indicating if GWC tiles must be stored in File System
+     * even if they are also cached in memory
+     *
+     * @param persistenceEnabled If this flag is set to true, GWC tiles are stored
+     * in the File System as backup.
+     */
+    public void setEnabledPersistence(boolean persistenceEnabled) {
+        this.persistenceEnabled = persistenceEnabled;
+    }
+
+    /**
+     * Method returning the current {@link CacheProvider} class name
+     *
+     * @return the currently used {@link CacheProvider} name
+     */
+    public String getCacheProviderClass() {
+        return cacheProviderClass;
+    }
+
+    /**
+     * This method allows to set a new {@link CacheProvider} instance by defining its name.
+     *
+     * @param cacheProviderClass The name of the new {@link CacheProvider} instance to
+     * set.
+     */
+    public void setCacheProviderClass(String cacheProviderClass) {
+        this.cacheProviderClass = cacheProviderClass;
+    }
+
+    /**
+     * This method returns a {@link Map} containing the {@link CacheConfiguration} instances
+     * related to each {@link CacheProvider}.
+     *
+     * @return A {@link Map} which maps {@link CacheConfiguration}s to {@link CacheProvider}s
+     */
+    public Map<String, CacheConfiguration> getCacheConfigurations() {
+        return cacheConfigurations;
+    }
+
+    /**
+     * This method sets a new {@link Map} which associates to each {@link CacheProvider},
+     * the related {@link CacheConfiguration}.
+     *
+     * @param cacheConfigurations A {@link Map} containing {@link CacheConfiguration}s associated
+     * to the {@link CacheProvider} keys.
+     */
+    public void setCacheConfigurations(Map<String, CacheConfiguration> cacheConfigurations) {
+        this.cacheConfigurations = new HashMap<String, CacheConfiguration>(cacheConfigurations);
     }
 }

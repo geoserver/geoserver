@@ -32,6 +32,8 @@ import java.util.List;
  */
 public class GeoFenceConfiguration implements Serializable, Cloneable {
     
+    public static final String URL_INTERNAL = "internal:/";
+    
     private static final long serialVersionUID = 3L;
 
     private String servicesUrl;    
@@ -183,8 +185,11 @@ public class GeoFenceConfiguration implements Serializable, Cloneable {
     public List<String> getRoles() {
         return roles;
     }
+        
+    public boolean isInternal() {
+        return servicesUrl.startsWith(URL_INTERNAL);
+    }
 
-    
     /**
      * Creates a copy of the configuration object.
      */

@@ -5,358 +5,334 @@
  */
 package org.geoserver.wps.sextante;
 
-import java.awt.geom.Rectangle2D;
+import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
-import org.geotools.data.DataStore;
-import org.geotools.data.DefaultQuery;
+import org.geotools.data.DefaultTransaction;
 import org.geotools.data.FeatureSource;
-import org.geotools.data.FeatureStore;
-import org.geotools.data.Query;
+import org.geotools.data.FileDataStore;
+import org.geotools.data.FileDataStoreFinder;
+import org.geotools.data.Transaction;
+import org.geotools.data.shapefile.ShapefileDataStore;
+import org.geotools.data.shapefile.ShapefileDataStoreFactory;
+import org.geotools.data.simple.SimpleFeatureSource;
+import org.geotools.data.simple.SimpleFeatureStore;
 import org.geotools.feature.FeatureCollection;
-import org.geotools.feature.FeatureCollections;
+import org.geotools.feature.DefaultFeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
-import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeType;
-import org.opengis.filter.Filter;
+import org.opengis.feature.type.FeatureType;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.MultiLineString;
+import com.vividsolutions.jts.geom.MultiPoint;
 import com.vividsolutions.jts.geom.MultiPolygon;
+import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 
+import es.unex.sextante.core.Sextante;
 import es.unex.sextante.dataObjects.AbstractVectorLayer;
+import es.unex.sextante.dataObjects.IFeature;
 import es.unex.sextante.dataObjects.IFeatureIterator;
 import es.unex.sextante.dataObjects.IVectorLayer;
+import es.unex.sextante.dataObjects.vectorFilters.IVectorLayerFilter;
+import es.unex.sextante.outputs.FileOutputChannel;
+import es.unex.sextante.outputs.IOutputChannel;
 
-public class GTVectorLayer extends AbstractVectorLayer {
+public class GTVectorLayer
+         extends
+            AbstractVectorLayer {
 
-	// Factory methods:
-	/**
-	 * Creates a vector layer from the FeatureCollection resulting from applying
-	 * the query to the Datastore.
-	 * <p>
-	 * Note throws an exception if the query's typename is not one of the
-	 * datastores featuretypes
-	 * </p>
-	 *
-	 * @param source
-	 *            the DataStore to query
-	 * @param query
-	 *            the query to use for obtaining the data
-	 * @throws IOException
-	 */
-	public static GTVectorLayer createLayer(DataStore source, Query query)
-			throws IOException {
-		if (!Arrays.asList(source.getTypeNames()).contains(query.getTypeName())) {
-			throw new IllegalArgumentException(
-					query.getTypeName()
-							+ " is not one of the FeatureTypes contained by the Datasource.  Options are: "
-							+ Arrays.asList(source.getTypeNames()));
-		}
-		FeatureSource<SimpleFeatureType, SimpleFeature> featureSource = source.getFeatureSource(query
-				.getTypeName());
-		GTVectorLayer layer = new GTVectorLayer();
-		layer.create(featureSource, query);
-		return layer;
-	}
-	
-	/**
-	 * Creates a vector layer from the FeatureCollection resulting from applying
-	 * the query to the Datastore.
-	 * <p>
-	 * Note throws an exception if the query's typename is not one of the
-	 * datastores featuretypes
-	 * </p>
-	 *
-	 * @param source
-	 *            the DataStore to query
-	 * @param query
-	 *            the query to use for obtaining the data
-	 * @throws IOException
-	 */
-	public static GTVectorLayer createLayer(FeatureSource featureSource, Query query) {
-		GTVectorLayer layer = new GTVectorLayer();
-		layer.create(featureSource, query);
-		return layer;
-	}
+   private FeatureSource     m_FeatureSource;
+   private DefaultFeatureCollection m_FeatureCollection;
+   private String            m_sName;
+   private String            m_sFilename;
+   private int               m_iShapeType;
+   private Class[]           m_Types;
+   private String[]          m_sFields;
+   private Object            m_CRS;
+   private SimpleFeatureType m_SFT;
 
 
-	/**
-	 * Creates a vector layer from the datasource.
-	 *
-	 * @param source
-	 *            the source to query
-	 * @param typename
-	 *            the typename (must be one of the datasources typenames) to use
-	 *            for the layer
-	 * @param filter
-	 *            a filter to apply to the features that are used in the layer
-	 * @param crs
-	 *            the crs to reproject the features to (if necessary). If null
-	 *            no reprojection will be applied
-	 */
-	public static GTVectorLayer createLayer(DataStore source, String typename,
-			Filter filter, CoordinateReferenceSystem crs) throws IOException {
-		DefaultQuery query = new DefaultQuery(typename, filter);
-		if (crs != null) {
-			query.setCoordinateSystemReproject(crs);
-		}
-		return createLayer(source, query);
-	}
+   public void create(final FeatureSource fs) {
 
-	/**
-	 * Creates a vector layer from the datasource.
-	 *
-	 * @param source
-	 *            the source to query
-	 * @param typename
-	 *            the typename (must be one of the datasources typenames) to use
-	 *            for the layer
-	 * @param crs
-	 *            the crs to reproject the features to (if necessary). If null
-	 *            no reprojection will be applied
-	 */
-	public static GTVectorLayer createLayer(DataStore source, String typename,
-			CoordinateReferenceSystem crs) throws IOException {
-		return createLayer(source, typename, Filter.INCLUDE, crs);
-	}
 
-	/**
-	 * Creates a vector layer from the datasource.
-	 *
-	 * @param source
-	 *            the source to query
-	 * @param typename
-	 *            the typename (must be one of the datasources typenames) to use
-	 *            for the layer
-	 */
-	public static GTVectorLayer createLayer(DataStore source, String typename)
-			throws IOException {
-		return createLayer(source, typename, Filter.INCLUDE, null);
-	}
+      m_FeatureSource = fs;
+      try {
+         final FeatureType ft = fs.getSchema();
+         final Class<?> type = ft.getGeometryDescriptor().getType().getBinding();
+         if (type.isAssignableFrom(Polygon.class) || type.isAssignableFrom(MultiPolygon.class)) {
+            m_iShapeType = IVectorLayer.SHAPE_TYPE_POLYGON;
+         }
+         else if (type.isAssignableFrom(LineString.class) || type.isAssignableFrom(MultiLineString.class)) {
+            m_iShapeType = IVectorLayer.SHAPE_TYPE_LINE;
+         }
+         else {
+            m_iShapeType = IVectorLayer.SHAPE_TYPE_POINT;
+         }
+      }
+      catch (final Exception e) {
+         Sextante.addErrorToLog(e);
+         m_iShapeType = IVectorLayer.SHAPE_TYPE_POLYGON;
+      }
 
-	private String m_sFilename;
-	private String m_sName;
-	private int m_iCount;
-	private CoordinateReferenceSystem m_CRS;
-	private Query m_Query;
+      try {
+         final SimpleFeatureType ft = (SimpleFeatureType) fs.getSchema();
+         m_CRS = ft.getCoordinateReferenceSystem();
+         m_sFields = new String[ft.getAttributeCount() - 1];
+         m_Types = new Class[ft.getAttributeCount() - 1];
+         for (int j = 0; j < m_sFields.length; j++) {
+            final AttributeType at = ft.getType(j + 1);
+            m_sFields[j] = at.getName().getLocalPart();
+            m_Types[j] = at.getBinding();
+         }
+      }
+      catch (final Exception e) {
+         Sextante.addErrorToLog(e);
+      }
 
-	public void create(FeatureSource<SimpleFeatureType, SimpleFeature> featureSource, Query query) {
 
-		try {
-			this.m_Query = query;
-			m_BaseDataObject = featureSource;
-			m_iCount = featureSource.getFeatures(query).size();
-			m_CRS = featureSource.getSchema().getCoordinateReferenceSystem();
-			m_sName = query.getTypeName();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+   }
 
-	}
 
-	public void open() {
-	}
+   public void create(final String name,
+                      final int shapeType,
+                      final Class[] types,
+                      final String[] fields,
+                      final String filename,
+                      final Object crs) {
 
-	public void close() {
-		if (this.getFeatureSource() != null) {
-			this.getFeatureSource().getDataStore().dispose();
-		}
-	}
+      try {
+         m_sName = name;
+         m_sFilename = filename;
+         m_iShapeType = shapeType;
+         m_Types = types;
+         m_sFields = fields;
+         m_CRS = crs;
 
-	public void addFeature(Geometry g, Object[] values) {
+         m_FeatureCollection = new DefaultFeatureCollection();
 
-		if (getFeatureSource() instanceof FeatureStore) {
-			Geometry geom;
-			GeometryFactory gf = new GeometryFactory();
-			if (g instanceof Polygon) {
-				geom = gf.createMultiPolygon(new Polygon[] { (Polygon) g });
-			} else if (g instanceof LineString) {
-				geom = gf.createMultiLineString(new LineString[] { (LineString) g });
-			} else {
-				geom = g;
-			}
+         final SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
+         builder.setName("Location");
+         builder.setCRS((CoordinateReferenceSystem) m_CRS);
 
-			try {
-				FeatureStore<SimpleFeatureType, SimpleFeature> store = ((FeatureStore<SimpleFeatureType, SimpleFeature>) getFeatureSource());
-				List<Object> attributes = new ArrayList<Object>();
-				attributes.add(geom);
-				attributes.addAll(Arrays.asList(values));
-				SimpleFeatureType ft = store.getSchema();
-				FeatureCollection<SimpleFeatureType, SimpleFeature> collection = FeatureCollections
-						.newCollection();
+         if (m_iShapeType == IVectorLayer.SHAPE_TYPE_POINT) {
+            builder.add("geom", MultiPoint.class);
+         }
+         else if (m_iShapeType == IVectorLayer.SHAPE_TYPE_LINE) {
+            builder.add("geom", MultiLineString.class);
+         }
+         else {
+            builder.add("geom", MultiPolygon.class);
+         }
 
-				SimpleFeature feature = SimpleFeatureBuilder.build(ft, attributes, SimpleFeatureBuilder.createDefaultFeatureId());
-				collection.add(feature);
-				store.addFeatures(collection);
-				m_iCount++;
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
+         for (int i = 0; i < m_sFields.length; i++) {
+            builder.add(m_sFields[i], m_Types[i]);
+         }
 
-	}
+         m_SFT = builder.buildFeatureType();
 
-	public IFeatureIterator iterator() {
+      }
+      catch (final Exception e) {
+         //TODO:handle this
+      }
 
-		if (m_BaseDataObject != null) {
-			try {
-				FeatureCollection<SimpleFeatureType, SimpleFeature> features = getFeatureSource().getFeatures(
-						m_Query);
-				return new GTFeatureIterator(features);
-			} catch (Exception e) {
-				e.printStackTrace();
-				return null;
-			}
-		} else {
-			return null;
-		}
+   }
 
-	}
 
-	public String getFieldName(int i) {
+   @Override
+   public void addFeature(final Geometry g,
+                          final Object[] attributes) {
 
-		if (m_BaseDataObject != null) {
-			try {
+      Geometry geom;
+      final GeometryFactory gf = new GeometryFactory();
+      if (g instanceof Point) {
+         geom = gf.createMultiPoint(new Point[] { (Point) g });
+      }
+      else if (g instanceof Polygon) {
+         geom = gf.createMultiPolygon(new Polygon[] { (Polygon) g });
+      }
+      else if (g instanceof LineString) {
+         geom = gf.createMultiLineString(new LineString[] { (LineString) g });
+      }
+      else {
+         geom = g;
+      }
 
-				SimpleFeatureType ft = getFeatureSource().getSchema();
-				AttributeType at = ft.getType(i + 1);
-				return at.getName().getLocalPart();
-			} catch (Exception e) {
-				e.printStackTrace();
-				return null;
-			}
-		}
+      final SimpleFeatureBuilder featureBuilder = new SimpleFeatureBuilder(m_SFT);
+      featureBuilder.add(geom);
+      featureBuilder.addAll(attributes);
+      final SimpleFeature feature = featureBuilder.buildFeature(null);
+      m_FeatureCollection.add(feature);
 
-		return null;
+   }
 
-	}
 
-	public Class<?> getFieldType(int i) {
+   @Override
+   public void addFeature(final IFeature feature) {
 
-		if (m_BaseDataObject != null) {
-			try {
-				SimpleFeatureType ft = getFeatureSource().getSchema();
-				AttributeType at = ft.getType(i + 1);
-				return at.getBinding();
-			} catch (Exception e) {
-				e.printStackTrace();
-				return null;
-			}
-		}
+      addFeature(feature.getGeometry(), feature.getRecord().getValues());
 
-		return null;
+   }
 
-	}
 
-	public int getFieldCount() {
+   @Override
+   public void addFilter(final IVectorLayerFilter filter) {
+   // TODO Auto-generated method stub
 
-		if (m_BaseDataObject != null) {
-			try {
-				SimpleFeatureType ft = getFeatureSource().getSchema();
-				return ft.getAttributeCount() - 1;
-			} catch (Exception e) {
-				e.printStackTrace();
-				return 0;
-			}
-		}
+   }
 
-		return 0;
 
-	}
+   @Override
+   public boolean canBeEdited() {
 
-	public int getShapesCount() {
+      return true;
 
-		return m_iCount;
+   }
 
-	}
 
-	public int getShapeType() {
+   @Override
+   public int getFieldCount() {
 
-		if (m_BaseDataObject != null) {
-			try {
+      return m_sFields.length;
 
-				SimpleFeatureType ft = getFeatureSource().getSchema();
-				Class<?> type = ft.getGeometryDescriptor().getType().getBinding();
-				if (type.isAssignableFrom(Polygon.class)
-						|| type.isAssignableFrom(MultiPolygon.class)) {
-					return IVectorLayer.SHAPE_TYPE_POLYGON;
-				} else if (type.isAssignableFrom(LineString.class)
-						|| type.isAssignableFrom(MultiLineString.class)) {
-					return IVectorLayer.SHAPE_TYPE_LINE;
-				} else {
-					return IVectorLayer.SHAPE_TYPE_POINT;
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-				return IVectorLayer.SHAPE_TYPE_POLYGON;
-			}
-		}
+   }
 
-		return IVectorLayer.SHAPE_TYPE_POLYGON;
 
-	}
+   @Override
+   public String getFieldName(final int index) {
 
-	public String getName() {
+      return m_sFields[index];
 
-		return m_sName;
+   }
 
-	}
 
-	public Rectangle2D getFullExtent() {
+   @Override
+   public Class getFieldType(final int index) {
 
-		if (m_BaseDataObject != null) {
-			try {
-				ReferencedEnvelope bounds = getFeatureSource().getFeatures(
-						m_Query).getBounds();
-				return new Rectangle2D.Double(bounds.getMinX(), bounds
-						.getMinY(), bounds.getWidth(), bounds.getHeight());
-			} catch (Exception e) {
-				e.printStackTrace();
-				return null;
-			}
-		} else {
-			return null;
-		}
+      return m_Types[index];
 
-	}
+   }
 
-	public String getFilename() {
 
-		return m_sFilename;
+   @Override
+   public int getShapeType() {
 
-	}
+      return m_iShapeType;
 
-	public Object getCRS() {
+   }
 
-		return m_CRS;
 
-	}
+   @Override
+   public IFeatureIterator iterator() {
 
-	public void setName(String name) {
+      if (m_FeatureSource != null) {
+         FeatureCollection fc;
+         try {
+            fc = m_FeatureSource.getFeatures();
+         }
+         catch (final IOException e) {
+            return null;
+         }
+         return new GTFeatureIterator(fc);
+      }
+      else {
+         return null;
+      }
 
-		m_sName = name;
+   }
 
-	}
 
-	@SuppressWarnings("unchecked")
-	private FeatureSource<SimpleFeatureType, SimpleFeature> getFeatureSource() {
-		return (FeatureSource<SimpleFeatureType, SimpleFeature>) m_BaseDataObject;
-	}
+   @Override
+   public Object getCRS() {
 
-	public void postProcess() throws Exception {
-		// TODO Auto-generated method stub
-		
-	}
+      return m_CRS;
+
+   }
+
+
+   @Override
+   public void close() {
+   // TODO Auto-generated method stub
+
+   }
+
+
+   @Override
+   public void free() {
+   // TODO Auto-generated method stub
+
+   }
+
+
+   @Override
+   public Object getBaseDataObject() {
+
+      if (m_FeatureCollection != null) {
+         return m_FeatureCollection;
+      }
+      else {
+         return m_FeatureSource;
+      }
+
+   }
+
+
+   @Override
+   public String getName() {
+
+      return m_sName;
+
+   }
+
+
+   @Override
+   public IOutputChannel getOutputChannel() {
+
+      return new FileOutputChannel(m_sFilename);
+   }
+
+
+   @Override
+   public void open() {
+
+      try {
+         if (m_FeatureCollection != null) {
+            postProcess();
+         }
+         if (m_sFilename != null) {
+            final FileDataStore store = FileDataStoreFinder.getDataStore(new File(m_sFilename));
+            final SimpleFeatureSource featureSource = store.getFeatureSource();
+            create(featureSource);
+         }
+      }
+      catch (final Exception e) {
+         e.printStackTrace();
+      }
+
+
+   }
+
+
+   @Override
+   public void postProcess() {}
+
+
+   @Override
+   public void setName(final String name) {
+
+      m_sName = name;
+
+   }
 
 
 }

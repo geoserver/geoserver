@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -18,7 +18,10 @@ import org.apache.commons.io.FilenameUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.importer.job.ProgressMonitor;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.resource.Files;
+import org.geoserver.platform.resource.Paths;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.grid.io.GridFormatFinder;
 import org.geotools.coverage.grid.io.UnknownFormat;
@@ -26,7 +29,6 @@ import org.geotools.data.DataStoreFactorySpi;
 import org.geotools.data.FileDataStoreFactorySpi;
 import org.geotools.data.FileDataStoreFinder;
 import org.geotools.util.logging.Logging;
-import org.geoserver.importer.job.ProgressMonitor;
 import org.vfny.geoserver.util.DataStoreUtils;
 
 /**
@@ -104,6 +106,20 @@ public abstract class DataFormat implements Serializable {
         }
         return null;
     }
+    
+    /**
+     * Converts an absolute URL to a resource to be relative to the data directory if applicable.
+     * @return The relative path, or the original path if it does not contain the data directory
+     */
+    protected String relativeDataFileURL(String url, Catalog catalog) {
+        if (catalog == null) {
+            return url;
+        }
+        File baseDirectory = catalog.getResourceLoader().getBaseDirectory();
+        File f = Files.url(baseDirectory, url);
+  
+        return f == null ? url : "file:"+Paths.convert(baseDirectory, f);
+    }
 
     public abstract String getName();
 
@@ -114,4 +130,19 @@ public abstract class DataFormat implements Serializable {
 
     public abstract List<ImportTask> list(ImportData data, Catalog catalog, ProgressMonitor monitor) 
         throws IOException;
+
+    /**
+     * Returns a File from the ImportData, assuming the import data itself is a FileData (a class
+     * cast exception will happen otherwise)
+     * 
+     * @param data
+     * @return
+     */
+    protected File getFileFromData(ImportData data) {
+        assert data instanceof FileData;
+        FileData fileData = (FileData) data;
+        File file = fileData.getFile();
+        return file;
+    }
+
 }

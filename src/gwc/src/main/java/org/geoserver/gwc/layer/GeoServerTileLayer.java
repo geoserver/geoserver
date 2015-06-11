@@ -5,9 +5,10 @@
  */
 package org.geoserver.gwc.layer;
 
-import static com.google.common.base.Preconditions.*;
-import static com.google.common.base.Throwables.*;
-import static org.geoserver.gwc.GWC.*;
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkState;
+import static com.google.common.base.Throwables.propagate;
+import static org.geoserver.gwc.GWC.tileLayerName;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -404,7 +405,7 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
             setConfigErrorMessage("Underlying GeoSever Layer has no default style");
             return null;
         }
-        return defaultStyle.getName();
+        return defaultStyle.prefixedName();
     }
 
     /**

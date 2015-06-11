@@ -1,7 +1,12 @@
 package org.geoserver.platform;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.Map;
 
+import org.junit.rules.TestRule;
+import org.junit.runner.Description;
+import org.junit.runners.model.Statement;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 
@@ -70,7 +75,7 @@ public class GeoServerExtensionsHelper {
      * @param name Singleton name
      * @param bean Singleton
      */
-    public static void singleton(String name, Object bean, Class... declaredClasses) {
+    public static void singleton(String name, Object bean, Class<?>... declaredClasses) {
         if( GeoServerExtensions.context != null ){
             if( GeoServerExtensions.context.containsBean(name) ){
                 Object conflict = GeoServerExtensions.context.getBean(name);
@@ -87,13 +92,24 @@ public class GeoServerExtensionsHelper {
         }
         GeoServerExtensions.singletonBeanCache.put( name,  bean );
         if (declaredClasses != null && declaredClasses.length > 0) {
-            for (Class clazz : declaredClasses) {
-                GeoServerExtensions.extensionsCache.put(clazz, new String[] { name });
+            for (Class<?> clazz : declaredClasses) {
+                addToCache(GeoServerExtensions.extensionsCache, clazz, name);
             }
         } else {
             Class<?> type = bean.getClass();
-            GeoServerExtensions.extensionsCache.put(type, new String[] { name });
+            addToCache(GeoServerExtensions.extensionsCache, type, name);
         }
+    }
+    
+    static <T> void addToCache(Map<T, String[]> cache, T key, String name) {
+        String[] cached = cache.get(key);
+        if(cached!=null) {
+            cached = Arrays.copyOf(cached, cached.length+1);
+            cached[cached.length-1] = name;
+        } else {
+            cached = new String[]{name};
+        }
+        cache.put(key, cached);
     }
     
     /**
@@ -107,5 +123,74 @@ public class GeoServerExtensionsHelper {
      */ 
     public static void file(String path, File file ){
         GeoServerExtensions.fileCache.put(path, file);
+    }
+    
+    /**
+     * JUnit Rule which automatically initialises and clears mocked extensions.
+     * 
+     * @author Kevin Smith, Boundless
+     *
+     */
+    public static class ExtensionsHelperRule implements TestRule {
+        ApplicationContext context;
+        Boolean isSpringContext;
+        Boolean active =false;
+        
+        public Statement apply(Statement base, Description description) {
+            return statement(base);
+        }
+        
+        private Statement statement(final Statement base) {
+            return new Statement() {
+                @Override
+                public void evaluate() throws Throwable {
+                    try {
+                        if(context!=null){
+                            GeoServerExtensionsHelper.init(context);
+                        } else {
+                            GeoServerExtensionsHelper.clear();
+                        }
+                        if(isSpringContext!=null){
+                            GeoServerExtensionsHelper.setIsSpringContext(isSpringContext);
+                        }
+                        
+                        active=true;
+                        
+                        base.evaluate();
+                    } finally {
+                        active=false;
+                        GeoServerExtensionsHelper.clear();
+                    }
+                }
+            };
+        }
+        
+        /**
+         * Directly register singleton for use with {@link GeoServerExtensions#bean(String)} (and {@link GeoServerExtensions#bean(Class)}).
+         * <p>
+         * If GeoServerExtensions has been configured with a context
+         * @param name Singleton name
+         * @param bean Singleton
+         */
+        public void singleton(String name, Object bean, Class<?>... declaredClasses){
+            if(!active) throw new IllegalStateException();
+            GeoServerExtensionsHelper.singleton(name, bean, declaredClasses);
+        }
+        
+        /**
+         * Directly register property for use with {@link GeoServerExtensions#getProperty(String)}.
+         */    
+        public void property(String propertyName, String property ){
+            if(!active) throw new IllegalStateException();
+            GeoServerExtensionsHelper.property(propertyName,  property );
+        }
+        
+        /**
+         * Directly register file for use with {@link GeoServerExtensions#file(String)}.
+         */ 
+        public void file(String path, File file ){
+            if(!active) throw new IllegalStateException();
+            GeoServerExtensionsHelper.file(path, file);
+        }
     }
 }

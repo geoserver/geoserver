@@ -1,14 +1,14 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.importer.transform;
 
+import org.geoserver.importer.ImportTask;
 import org.geotools.data.DataStore;
 import org.geotools.feature.AttributeTypeBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
-import org.geoserver.importer.ImportTask;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;
@@ -18,7 +18,7 @@ import org.opengis.feature.type.AttributeDescriptor;
  * 
  * @author Justin Deoliveira, OpenGeo
  */
-public class AttributeRemapTransform extends AbstractVectorTransform implements InlineVectorTransform {
+public class AttributeRemapTransform extends AbstractTransform implements InlineVectorTransform {
     
     private static final long serialVersionUID = 1L;
 

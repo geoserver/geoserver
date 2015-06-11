@@ -6,19 +6,8 @@
 package org.geoserver.catalog.impl;
 
 import static com.google.common.collect.Sets.newHashSet;
-import static org.geoserver.catalog.Predicates.acceptAll;
-import static org.geoserver.catalog.Predicates.asc;
-import static org.geoserver.catalog.Predicates.contains;
-import static org.geoserver.catalog.Predicates.desc;
-import static org.geoserver.catalog.Predicates.equal;
-import static org.geoserver.catalog.Predicates.or;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.geoserver.catalog.Predicates.*;
+import static org.junit.Assert.*;
 
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;
@@ -35,6 +24,7 @@ import org.geoserver.catalog.CatalogFactory;
 import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
+import org.geoserver.catalog.DataLinkInfo;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.Keyword;
@@ -65,10 +55,8 @@ import org.opengis.filter.MultiValuedFilter.MatchAction;
 import org.opengis.filter.sort.SortBy;
 
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import org.geoserver.catalog.DataLinkInfo;
 
 public class CatalogImplTest {
 
@@ -2721,6 +2709,72 @@ public class CatalogImplTest {
 
         filter = Predicates.fullTextSearch("geotools");
         assertEquals(newHashSet(l2), asSet(catalog.list(LayerInfo.class, filter)));
+
+        // geos-6882
+        catalog.add(lg);
+        filter = Predicates.fullTextSearch("Group");
+        assertEquals(newHashSet(lg), asSet(catalog.list(LayerGroupInfo.class, filter)));
+
+        // test layer group title and abstract search
+        lg.setTitle("LayerGroup title");
+        filter = Predicates.fullTextSearch("title");
+        assertEquals(newHashSet(lg), asSet(catalog.list(LayerGroupInfo.class, filter)));
+
+        lg.setAbstract("GeoServer OpenSource GIS");
+        filter = Predicates.fullTextSearch("geoserver");
+        assertEquals(newHashSet(lg), asSet(catalog.list(LayerGroupInfo.class, filter)));
+
+        // test layer title search
+        ft.setTitle("Global .5 deg Air Temperature [C]");
+        cv.setTitle("Global .5 deg Dewpoint Depression [C]");
+
+        filter = Predicates.fullTextSearch("Global");
+        assertEquals(newHashSet(l, l2), asSet(catalog.list(LayerInfo.class, filter)));
+
+        filter = Predicates.fullTextSearch("Temperature");
+        assertEquals(newHashSet(l), asSet(catalog.list(LayerInfo.class, filter)));
+
+        filter = Predicates.fullTextSearch("Depression");
+        assertEquals(newHashSet(l2), asSet(catalog.list(LayerInfo.class, filter)));
+    }
+
+    @Test
+    public void testFullTextSearchKeywords() {
+        l.setResource(ft);
+        addLayer();
+        catalog.add(cs);
+        catalog.add(cv);
+        LayerInfo l2 = newLayer(cv, s);
+        catalog.add(l2);
+
+        ft.getKeywords().add(new Keyword("air_temp"));
+        ft.getKeywords().add(new Keyword("temperatureAir"));
+        cv.getKeywords().add(new Keyword("dwpt_dprs"));
+        cv.getKeywords().add(new Keyword("temperatureDewpointDepression"));
+
+        Filter filter = Predicates.fullTextSearch("temperature");
+        assertEquals(newHashSet(l, l2), asSet(catalog.list(LayerInfo.class, filter)));
+        assertEquals(newHashSet(ft, cv), asSet(catalog.list(ResourceInfo.class, filter)));
+        assertEquals(newHashSet(ft), asSet(catalog.list(FeatureTypeInfo.class, filter)));
+        assertEquals(newHashSet(cv), asSet(catalog.list(CoverageInfo.class, filter)));
+
+        filter = Predicates.fullTextSearch("air");
+        assertEquals(newHashSet(l), asSet(catalog.list(LayerInfo.class, filter)));
+        assertEquals(newHashSet(ft), asSet(catalog.list(ResourceInfo.class, filter)));
+        assertEquals(newHashSet(ft), asSet(catalog.list(FeatureTypeInfo.class, filter)));
+        assertEquals(newHashSet(), asSet(catalog.list(CoverageInfo.class, filter)));
+
+        filter = Predicates.fullTextSearch("dewpoint");
+        assertEquals(newHashSet(l2), asSet(catalog.list(LayerInfo.class, filter)));
+        assertEquals(newHashSet(cv), asSet(catalog.list(ResourceInfo.class, filter)));
+        assertEquals(newHashSet(), asSet(catalog.list(FeatureTypeInfo.class, filter)));
+        assertEquals(newHashSet(cv), asSet(catalog.list(CoverageInfo.class, filter)));
+
+        filter = Predicates.fullTextSearch("pressure");
+        assertEquals(newHashSet(), asSet(catalog.list(LayerInfo.class, filter)));
+        assertEquals(newHashSet(), asSet(catalog.list(ResourceInfo.class, filter)));
+        assertEquals(newHashSet(), asSet(catalog.list(FeatureTypeInfo.class, filter)));
+        assertEquals(newHashSet(), asSet(catalog.list(CoverageInfo.class, filter)));
     }
 
     private <T> Set<T> asSet(CloseableIterator<T> list) {

@@ -19,7 +19,7 @@
     <constructor-arg index="1" ref="geoServerSecurityManager"/>
   </bean>
   
-  <bean id="gwcFacade" class="org.geoserver.gwc.GWC" depends-on="geoWebCacheExtensions">
+  <bean id="gwcFacade" class="org.geoserver.gwc.GWC" depends-on="geoWebCacheExtensions" lazy-init="false">
     <constructor-arg ref="gwcGeoServervConfigPersister" />
     <constructor-arg ref="gwcStorageBroker" />
     <constructor-arg ref="gwcTLDispatcher" />
@@ -53,6 +53,7 @@
     <constructor-arg ref="gwcGeoServervConfigPersister" />
     <constructor-arg ref="rawCatalog" />
     <constructor-arg ref="GeoSeverTileLayerCatalog" />
+    <property name="blobStore" ref="gwcConfigBlobStore" />
   </bean>
 
   <bean id="cachingWebMapService" class="org.geoserver.gwc.wms.CachingWebMapService">

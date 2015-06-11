@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014-2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -13,11 +13,11 @@ import java.io.InputStream;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wps.WPSTestSupport;
+import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.gce.arcgrid.ArcGridFormat;
 import org.geotools.geometry.DirectPosition2D;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.junit.Test;
-import org.opengis.coverage.grid.GridCoverage;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
 import com.vividsolutions.jts.geom.Envelope;
@@ -87,12 +87,14 @@ public class BinaryProcessingsTest extends WPSTestSupport {
         InputStream is = getBinaryInputStream(response);
         
         ArcGridFormat format = new ArcGridFormat();
-        GridCoverage gc = format.getReader(is).read(null);
+        GridCoverage2D gc = format.getReader(is).read(null);
         
         assertTrue(new Envelope(144.9, 146.1, -40.9, -43.1).contains(new ReferencedEnvelope(gc.getEnvelope())));
         
         addToSameCoverageValue = (double[]) gc.evaluate(new DirectPosition2D(145.9584, -41.6587));
         assertEquals(1978.0, addToSameCoverageValue[0], DELTA);
+
+        gc.dispose(true);
     }
     
     @Test
@@ -146,12 +148,14 @@ public class BinaryProcessingsTest extends WPSTestSupport {
         InputStream is = getBinaryInputStream(response);
         
         ArcGridFormat format = new ArcGridFormat();
-        GridCoverage gc = format.getReader(is).read(null);
+        GridCoverage2D gc = format.getReader(is).read(null);
         
         assertTrue(new Envelope(144.9, 146.1, -40.9, -43.1).contains(new ReferencedEnvelope(gc.getEnvelope())));
         
         multiplyForSameCoverageValue = (double[]) gc.evaluate(new DirectPosition2D(145.9584, -41.6587));
         assertEquals(978121.0, multiplyForSameCoverageValue[0], DELTA);
+
+        gc.dispose(true);
     }
     
     @Test

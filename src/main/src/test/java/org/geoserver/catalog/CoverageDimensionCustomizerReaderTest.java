@@ -5,7 +5,9 @@
  */
 package org.geoserver.catalog;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.awt.Color;
 import java.io.IOException;
@@ -20,8 +22,6 @@ import org.geoserver.catalog.impl.CoverageDimensionImpl;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geotools.coverage.Category;
 import org.geotools.coverage.GridSampleDimension;
-import org.geotools.referencing.operation.transform.IdentityTransform;
-import org.geotools.referencing.operation.transform.LinearTransform1D;
 import org.geotools.resources.i18n.Vocabulary;
 import org.geotools.resources.i18n.VocabularyKeys;
 import org.geotools.util.NumberRange;
@@ -103,7 +103,7 @@ public class CoverageDimensionCustomizerReaderTest extends GeoServerSystemTestSu
         GridSampleDimension sampleDim = new GridSampleDimension("original",
                 new Category[] { new Category(
                         Vocabulary.formatInternational(VocabularyKeys.NODATA),
-                        new Color(0, 0, 0, 0), 0) }, null);
+                        new Color(0, 0, 0, 0), Double.NaN) }, null);
 
         // Wrap the dimension
         GridSampleDimension wrappedDim = new WrappedSampleDimension(sampleDim, coverageDim);
@@ -122,15 +122,13 @@ public class CoverageDimensionCustomizerReaderTest extends GeoServerSystemTestSu
         assertTrue(category.getName().equals(Category.NODATA.getName()));
 
         // Check that it does not contain sampleToGeophisics and that the Range contains only NaN
-        assertNull(category.getSampleToGeophysics());
-        assertEquals(category.geophysics(true).getRange().getMinimum(), Double.NaN, DELTA);
-        assertEquals(category.geophysics(true).getRange().getMaximum(), Double.NaN, DELTA);
+        assertEquals(category.getRange().getMinimum(), Double.NaN, DELTA);
+        assertEquals(category.getRange().getMaximum(), Double.NaN, DELTA);
 
         // Quantitative nodata category
         sampleDim = new GridSampleDimension("original", new Category[] { new Category(
                 Vocabulary.formatInternational(VocabularyKeys.NODATA), new Color[] { new Color(0,
-                        0, 0, 0) }, NumberRange.create(-9999, -9999), NumberRange.create(-9999,
-                        -9999)) }, null);
+                        0, 0, 0) }, NumberRange.create(-9999, -9999)) }, null);
 
         // Wrap the dimension
         wrappedDim = new WrappedSampleDimension(sampleDim, coverageDim);
@@ -149,9 +147,8 @@ public class CoverageDimensionCustomizerReaderTest extends GeoServerSystemTestSu
         assertTrue(category.getName().equals(Category.NODATA.getName()));
 
         // Check if it contains sampleToGeophisics and the Range contains the first nodata defined
-        assertNotNull(category.getSampleToGeophysics());
-        assertEquals(category.geophysics(true).getRange().getMinimum(), noData1, DELTA);
-        assertEquals(category.geophysics(true).getRange().getMaximum(), noData1, DELTA);
+        assertEquals(category.getRange().getMinimum(), noData1, DELTA);
+        assertEquals(category.getRange().getMaximum(), noData1, DELTA);
     }
 
     /**

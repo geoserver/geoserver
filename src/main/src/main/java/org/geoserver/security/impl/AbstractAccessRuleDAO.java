@@ -5,7 +5,7 @@
  */
 package org.geoserver.security.impl;
 
-import static org.geoserver.security.impl.DataAccessRule.*;
+import static org.geoserver.security.impl.DataAccessRule.ANY;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -158,6 +158,7 @@ public abstract class AbstractAccessRuleDAO<R extends Comparable<?>> {
             File propFile = new File(securityDir, propertyFileName);
             os = new FileOutputStream(propFile);
             p.store(os, null);
+            lastModified = System.currentTimeMillis();
         } catch (Exception e) {
             if (e instanceof IOException)
                 throw (IOException) e;

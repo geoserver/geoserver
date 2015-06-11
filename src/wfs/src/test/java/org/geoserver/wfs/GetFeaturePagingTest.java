@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -35,6 +35,7 @@ public class GetFeaturePagingTest extends WFSTestSupport {
         Map params = ds.getConnectionParameters(); 
         params.put("dbtype", "h2");
         params.put("database", getTestData().getDataDirectoryRoot().getAbsolutePath());
+        ds.setEnabled(true);
         cat.add(ds);
         
         FeatureSource fs1 = getFeatureSource(SystemTestData.FIFTEEN);
@@ -143,7 +144,7 @@ public class GetFeaturePagingTest extends WFSTestSupport {
         String typeNames = fifteen+","+seven;
         Document doc = getAsDOM("/wfs?request=GetFeature&version=1.0.0&service=wfs&" +
             "typename=" + typeNames + "&startIndex=10");
-        print(doc);
+        // print(doc);
         XMLAssert.assertXpathEvaluatesTo("5", "count(//" + fifteen + ")", doc);
         XMLAssert.assertXpathEvaluatesTo("7", "count(//" + seven + ")", doc);
 
@@ -222,6 +223,7 @@ public class GetFeaturePagingTest extends WFSTestSupport {
     public void doTestWithFilter(String typeName) throws Exception {
         Document doc = getAsDOM("/wfs?request=GetFeature&version=1.1.0&service=wfs&" +
             "typename=" + typeName + "&startIndex=10");
+        // print(doc);
         XMLAssert.assertXpathEvaluatesTo("5", "count(//" + typeName + ")", doc);
         
         doc = getAsDOM("/wfs?request=GetFeature&version=1.1.0&service=wfs&" +

@@ -9,15 +9,19 @@
       <ul>
         <li>
           <input id="createTileLayer" wicket:id="createTileLayer" class="field checkbox" type="checkbox"/>
-          <label for="createTileLayer" wicket:id="createTileLayerLabel" class="choice">Create a cached Layer for this Layer/Group</label>
+          <label wicket:id="createTileLayerLabel" class="choice">Create a cached Layer for this Layer/Group</label>
         </li>
         <li wicket:id="container">
           <div wicket:id="configs">
             <ul>
               <li>
                 <input id="tileCacheEnabled" wicket:id="enabled" class="field checkbox" type="checkbox"/>
-                <label for="tileCacheEnabled" class="choice"><wicket:message key="enabled">Enable tile caching</wicket:message></label>
+                <label class="choice"><wicket:message key="enabled">Enable tile caching</wicket:message></label>
               </li>
+              <li>
+                <input id="inMemoryCached" wicket:id="inMemoryCached" class="field checkbox" type="checkbox"/>
+                <label for="inMemoryCached" class="choice"><wicket:message key="inMemoryCached">Disable in memory caching for this Layer</wicket:message></label>
+              </li>              
               <li>
                 <label><wicket:message key="metaTiling">Meta tiling factors</wicket:message></label>
                 <select class="select" id="metaTilingX" wicket:id="metaTilingX"></select>
@@ -33,7 +37,7 @@
               <li>
                 <label for="cacheFormatsGroup"><wicket:message key="cacheFormats">Cache formats:</wicket:message></label>
                 <span wicket:id="cacheFormatsGroup">
-                  <span wicket:id="cacheFormats" style="padding: 2px;">            
+                  <span wicket:id="cacheFormats" style="padding: 2px;">
                     <input wicket:id="cacheFormatsOption" type="checkbox" style="margin: 1px;"/>
                     <label wicket:id="name" class="choice" style="padding: 1px;">[this is where name will be]</label>
                   </span></span>

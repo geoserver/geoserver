@@ -8,6 +8,7 @@ package org.geoserver.wps.executor;
 import java.util.AbstractMap;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -28,7 +29,7 @@ class LazyInputMap extends AbstractMap<String, Object> {
 
     private static ProgressListener DEFAULT_LISTENER = new NullProgressListener();
 
-    Map<String, InputProvider> providers = new HashMap<String, InputProvider>();
+    Map<String, InputProvider> providers = new LinkedHashMap<String, InputProvider>();
 
     Map<String, Object> values = new HashMap<String, Object>();
 
@@ -61,7 +62,7 @@ class LazyInputMap extends AbstractMap<String, Object> {
         // count long parses
         int totalSteps = 0;
         for (InputProvider provider : providers.values()) {
-            totalSteps = provider.longStepCount();
+            totalSteps += provider.longStepCount();
         }
 
         listener.started();
@@ -79,7 +80,7 @@ class LazyInputMap extends AbstractMap<String, Object> {
                 } else {
                     subListener = new NullProgressListener();
                 }
-                totalSteps += providerLongSteps;
+                stepsSoFar += providerLongSteps;
                 subListener.started();
                 subListener.progress(0);
                 Object value = provider.getValue(subListener);

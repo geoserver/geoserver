@@ -1,7 +1,10 @@
 package org.geoserver.wfs;
 
-import static org.easymock.EasyMock.*;
-import static org.junit.Assert.*;
+import static org.easymock.EasyMock.createNiceMock;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.replay;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import java.util.Arrays;
 import java.util.List;
@@ -29,14 +32,17 @@ public class JoinExtractingVisitorTest {
         lakes = createNiceMock(FeatureTypeInfo.class);
         expect(lakes.prefixedName()).andReturn("gs:Lakes").anyTimes();
         expect(lakes.getNativeName()).andReturn("Lakes").anyTimes();
+        expect(lakes.getName()).andReturn("Lakes").anyTimes();
 
         forests = createNiceMock(FeatureTypeInfo.class);
         expect(forests.prefixedName()).andReturn("gs:Forests").anyTimes();
         expect(forests.getNativeName()).andReturn("Forests").anyTimes();
+        expect(forests.getName()).andReturn("Forests").anyTimes();
 
         buildings = createNiceMock(FeatureTypeInfo.class);
         expect(buildings.prefixedName()).andReturn("gs:Buildings").anyTimes();
         expect(buildings.getNativeName()).andReturn("Buildings").anyTimes();
+        expect(buildings.getName()).andReturn("Buildings").anyTimes();
 
         replay(lakes, forests, buildings);
     }
@@ -62,12 +68,36 @@ public class JoinExtractingVisitorTest {
     }
 
     @Test
-    public void testThreeWayJoin() {
+    public void testThreeWayJoinWithAliases() {
         JoinExtractingVisitor visitor = new JoinExtractingVisitor(Arrays.asList(lakes, forests,
                 buildings), Arrays.asList("a", "b", "c"));
         Filter f1 = ff.equals(ff.property("a/FID"), ff.property("b/FID"));
         Filter f2 = ff.equals(ff.property("b/FID"), ff.property("c/FID"));
         Filter f = ff.and(Arrays.asList(f1, f2));
+        testThreeWayJoin(visitor, f);
+    }
+
+    @Test
+    public void testThreeWayJoinNoAliasesUnqualified() {
+        JoinExtractingVisitor visitor = new JoinExtractingVisitor(Arrays.asList(lakes, forests,
+                buildings), null);
+        Filter f1 = ff.equals(ff.property("Lakes/FID"), ff.property("Forests/FID"));
+        Filter f2 = ff.equals(ff.property("Forests/FID"), ff.property("Buildings/FID"));
+        Filter f = ff.and(Arrays.asList(f1, f2));
+        testThreeWayJoin(visitor, f);
+    }
+
+    @Test
+    public void testThreeWayJoinNoAliasesQualified() {
+        JoinExtractingVisitor visitor = new JoinExtractingVisitor(Arrays.asList(lakes, forests,
+                buildings), null);
+        Filter f1 = ff.equals(ff.property("gs:Lakes/FID"), ff.property("gs:Forests/FID"));
+        Filter f2 = ff.equals(ff.property("gs:Forests/FID"), ff.property("gs:Buildings/FID"));
+        Filter f = ff.and(Arrays.asList(f1, f2));
+        testThreeWayJoin(visitor, f);
+    }
+
+    private void testThreeWayJoin(JoinExtractingVisitor visitor, Filter f) {
         f.accept(visitor, null);
 
         assertEquals("b", visitor.getPrimaryAlias());

@@ -10,7 +10,8 @@ jdk:
 before_script:
   - cd src
 script:
-  - mvn clean test -Prelease -B -T2 -fae -U
+  - rm -rf /home/travis/.m2/repository/org/apache/xmlgraphics/fop
+  - mvn -B -U -T2 -fae -Prelease clean install
 notifications:
   email:
     on_success: never
@@ -18,4 +19,3 @@ notifications:
 branches:
   only:
     - master
-

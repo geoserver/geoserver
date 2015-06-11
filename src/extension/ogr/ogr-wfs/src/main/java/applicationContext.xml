@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright (C) 2014 - 2015 Open Source Geospatial Foundation. All rights
+    reserved. This code is licensed under the GPL 2.0 license, available at the
+    root application directory. -->
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+    <bean id="ogr2ogrOutputFormat" class="org.geoserver.wfs.response.Ogr2OgrOutputFormat">
+        <constructor-arg ref="geoServer" />
+    </bean>
+    <bean id="ogr2ogrConfigurator" class="org.geoserver.wfs.response.Ogr2OgrConfigurator">
+        <constructor-arg>
+            <ref local="ogr2ogrOutputFormat" />
+        </constructor-arg>
+    </bean>
+
+</beans>

@@ -1,19 +1,12 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.importer;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Iterators;
-import com.thoughtworks.xstream.XStream;
-import com.vividsolutions.jts.geom.Geometry;
 import java.io.File;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -44,8 +37,21 @@ import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamPersister.CRSConverter;
 import org.geoserver.config.util.XStreamPersisterFactory;
+import org.geoserver.importer.ImportTask.State;
+import org.geoserver.importer.job.Job;
+import org.geoserver.importer.job.JobQueue;
+import org.geoserver.importer.job.ProgressMonitor;
+import org.geoserver.importer.job.Task;
+import org.geoserver.importer.mosaic.Mosaic;
+import org.geoserver.importer.transform.RasterTransformChain;
+import org.geoserver.importer.transform.ReprojectTransform;
+import org.geoserver.importer.transform.TransformChain;
+import org.geoserver.importer.transform.VectorTransformChain;
 import org.geoserver.platform.ContextLoadedEvent;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.security.GeoServerSecurityManager;
+import org.geotools.coverage.grid.io.HarvestedSource;
+import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
 import org.geotools.data.DataStore;
 import org.geotools.data.DefaultTransaction;
 import org.geotools.data.FeatureReader;
@@ -60,25 +66,21 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.jdbc.JDBCDataStore;
 import org.geotools.referencing.CRS;
 import org.geotools.util.logging.Logging;
-import org.geoserver.importer.ImportTask.State;
-import org.geoserver.importer.job.Job;
-import org.geoserver.importer.job.JobQueue;
-import org.geoserver.importer.job.ProgressMonitor;
-import org.geoserver.importer.job.Task;
-import org.geoserver.importer.mosaic.Mosaic;
-import org.geoserver.importer.transform.RasterTransformChain;
-import org.geoserver.importer.transform.ReprojectTransform;
-import org.geoserver.importer.transform.TransformChain;
-import org.geoserver.importer.transform.VectorTransformChain;
+import org.opengis.coverage.grid.GridCoverageReader;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
-
 import org.opengis.feature.type.FeatureType;
 import org.opengis.filter.Filter;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
+
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Iterators;
+import com.thoughtworks.xstream.XStream;
+import com.vividsolutions.jts.geom.Geometry;
 
 /**
  * Primary controller/facade of the import subsystem.
@@ -247,6 +249,12 @@ public class Importer implements DisposableBean, ApplicationListener {
         return createContext(data, null, null); 
     }
     
+    public ImportContext registerContext(Long id) throws IOException, IllegalArgumentException {
+        ImportContext context = createContext(id);
+        context.setState(org.geoserver.importer.ImportContext.State.INIT);
+        return context;
+    }
+
     /**
      * Create a context with the provided optional id.
      * The provided id must be higher than the current mark.
@@ -315,6 +323,33 @@ public class Importer implements DisposableBean, ApplicationListener {
         });
     }
 
+    /**
+     * Performs an asynchronous initialization of tasks in the specified context, and eventually
+     * saves the result in the {@link ImportStore}
+     * 
+     * @param context
+     * @param prepData
+     * @return
+     */
+    public Long initAsynch(final ImportContext context, final boolean prepData) {
+        return jobs.submit(new Job<ImportContext>() {
+            @Override
+            protected ImportContext call(ProgressMonitor monitor) throws Exception {
+                try {
+                    init(context, prepData);
+                } finally {
+                    changed(context);
+                }
+                return context;
+            }
+
+            @Override
+            public String toString() {
+                return "Initializing context " + context.getId();
+            }
+        });
+    }
+
     public void init(ImportContext context) throws IOException {
         init(context, true);
     }
@@ -322,11 +357,33 @@ public class Importer implements DisposableBean, ApplicationListener {
     public void init(ImportContext context, boolean prepData) throws IOException {
         context.reattach(catalog);
 
-        ImportData data = context.getData();
-        if (data != null) {
-            addTasks(context, data, prepData); 
+        try {
+            ImportData data = context.getData();
+            if (data != null) {
+                if (data instanceof RemoteData) {
+
+                    data = ((RemoteData) data).resolve(this);
+                    context.setData(data);
+                }
+
+                addTasks(context, data, prepData);
+            }
+
+            // switch from init to pending as needed
+            context.setState(ImportContext.State.PENDING);
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Failed to init the context ", e);
+
+            // switch to complete to make the error evident, since we
+            // cannot attach it to a task
+            context.setState(ImportContext.State.INIT_ERROR);
+            context.setMessage(e.getMessage());
+            return;
         }
+
     }
+
+
 
     public List<ImportTask> update(ImportContext context, ImportData data) throws IOException {
         List<ImportTask> tasks = addTasks(context, data, true);
@@ -506,8 +563,10 @@ public class Importer implements DisposableBean, ApplicationListener {
             // from the input data
             for (ImportTask t : format.list(data, catalog, context.progress())) {
                 //initialize transform chain based on vector vs raster
-                t.setTransform(format instanceof VectorFormat 
-                        ? new VectorTransformChain() : new RasterTransformChain());
+                if (t.getTransform() == null) {
+                    t.setTransform(format instanceof VectorFormat ? new VectorTransformChain()
+                            : new RasterTransformChain());
+                }
                 t.setDirect(direct);
                 t.setStore(targetStore);
 
@@ -671,6 +730,10 @@ public class Importer implements DisposableBean, ApplicationListener {
     }
     
     public void run(ImportContext context, ImportFilter filter, ProgressMonitor monitor) throws IOException {
+        if (context.getState() == ImportContext.State.INIT) {
+            throw new IllegalStateException("Importer is still initializing, cannot run it");
+        }
+
         context.setProgress(monitor);
         context.setState(ImportContext.State.RUNNING);
         
@@ -738,7 +801,7 @@ public class Importer implements DisposableBean, ApplicationListener {
             doDirectImport(task);
         }
         else {
-            //indirect import, read data from the source and into the target datastore 
+            // indirect import, read data from the source and into the target store
             doIndirectImport(task);
         }
 
@@ -816,17 +879,17 @@ public class Importer implements DisposableBean, ApplicationListener {
         task.setState(ImportTask.State.RUNNING);
 
         try {
-            //set up transform chain
-            TransformChain tx = (TransformChain) task.getTransform();
+            // set up transform chain
+            TransformChain tx = task.getTransform();
             
-            //apply pre transform
+            // apply pre transform
             if (!doPreTransform(task, task.getData(), tx)) {
                 return;
             }
 
             addToCatalog(task);
 
-            //apply pre transform
+            // apply post transform
             if (!doPostTransform(task, task.getData(), tx)) {
                 return;
             }
@@ -834,6 +897,7 @@ public class Importer implements DisposableBean, ApplicationListener {
             task.setState(ImportTask.State.COMPLETE);
         }
         catch(Exception e) {
+            LOGGER.log(Level.WARNING, "Task failed during import: " + task, e);
             task.setState(ImportTask.State.ERROR);
             task.setError(e);
         }
@@ -907,7 +971,28 @@ public class Importer implements DisposableBean, ApplicationListener {
             }
         }
         else {
-            throw new UnsupportedOperationException("Indirect raster import not yet supported");
+            // see if the store exposes a structured grid coverage reader
+            StoreInfo store = task.getStore();
+            final String errorMessage = "Indirect raster import can only work against a structured grid coverage store (e.g., mosaic), this one is not: ";
+            if (!(store instanceof CoverageStoreInfo)) {
+                throw new IllegalArgumentException(
+                        errorMessage
+                                + store);
+            }
+
+            // this is a ResourcePool reader, we should not close it
+            CoverageStoreInfo cs = (CoverageStoreInfo) store;
+            GridCoverageReader reader = cs.getGridCoverageReader(null, null);
+
+            if (!(reader instanceof StructuredGridCoverage2DReader)) {
+                throw new IllegalArgumentException(
+                        errorMessage
+                                + store);
+            }
+
+            StructuredGridCoverage2DReader sr = (StructuredGridCoverage2DReader) reader;
+            ImportData data = task.getData();
+            harvestImportData(sr, data);
         }
 
         if (!canceled && !doPostTransform(task, task.getData(), tx)) {
@@ -916,6 +1001,41 @@ public class Importer implements DisposableBean, ApplicationListener {
 
         task.setState(canceled ? ImportTask.State.CANCELED : ImportTask.State.COMPLETE);
 
+    }
+
+    private void checkSingleHarvest(List<HarvestedSource> harvests) throws IOException {
+        for (HarvestedSource harvested : harvests) {
+            if (!harvested.success()) {
+                throw new IOException("Failed to harvest " + harvested.getSource() + ": "
+                        + harvested.getMessage());
+            }
+        }
+    }
+
+    private void harvestDirectory(StructuredGridCoverage2DReader sr, Directory data)
+            throws UnsupportedOperationException, IOException {
+        for (FileData fd : data.getFiles()) {
+            harvestImportData(sr, fd);
+        }
+    }
+
+    private void harvestImportData(StructuredGridCoverage2DReader sr, ImportData data)
+            throws IOException {
+        if (data instanceof SpatialFile) {
+            SpatialFile sf = (SpatialFile) data;
+            List<HarvestedSource> harvests = sr.harvest(sr.getGridCoverageNames()[0], sf.getFile(),
+                    null);
+            checkSingleHarvest(harvests);
+        } else if (data instanceof Directory) {
+            harvestDirectory(sr, (Directory) data);
+        } else {
+            unsupportedHarvestFileData(data);
+        }
+    }
+
+    private void unsupportedHarvestFileData(ImportData fd) {
+        throw new IllegalArgumentException(
+                "Unsupported data type for raster harvesting (use SpatialFile or Directory): " + fd);
     }
 
     boolean doPreTransform(ImportTask task, ImportData data, TransformChain tx) {
@@ -1326,19 +1446,9 @@ public class Importer implements DisposableBean, ApplicationListener {
         // @todo this needs implementation in geotools
         SimpleFeatureType schema = ds.getSchema(featureTypeName);
         if (schema != null) {
-            if (ds instanceof JDBCDataStore) {
-                JDBCDataStore dataStore = (JDBCDataStore) ds;
-                Connection conn = dataStore.getConnection(Transaction.AUTO_COMMIT);
-                Statement st = null;
-                try {
-                    st = conn.createStatement();
-                    st.execute("drop table " + featureTypeName);
-                    LOGGER.fine("dropSchema " + featureTypeName + " successful");
-                } finally {
-                    dataStore.closeSafe(conn);
-                    dataStore.closeSafe(st);
-                }
-            } else {
+            try {
+                ds.removeSchema(featureTypeName);
+            } catch(Exception e) {
                 LOGGER.warning("Unable to dropSchema " + featureTypeName + " from datastore " + ds.getClass());
             }
         } else {
@@ -1386,8 +1496,15 @@ public class Importer implements DisposableBean, ApplicationListener {
 
         xs.registerLocalConverter( ReferencedEnvelope.class, "crs", new CRSConverter() );
         xs.registerLocalConverter( GeneralEnvelope.class, "crs", new CRSConverter() );
+
+        GeoServerSecurityManager securityManager = GeoServerExtensions
+                .bean(GeoServerSecurityManager.class);
+        xs.registerLocalConverter(RemoteData.class, "password", new EncryptedFieldConverter(
+                securityManager));
         
         return xp;
     }
+
+
 
 }

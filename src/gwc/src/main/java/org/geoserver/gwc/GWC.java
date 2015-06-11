@@ -12,7 +12,6 @@ import static com.google.common.base.Throwables.propagate;
 import static org.geowebcache.grid.GridUtil.findBestMatchingGrid;
 import static org.geowebcache.seed.GWCTask.TYPE.TRUNCATE;
 
-import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -54,9 +53,8 @@ import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Response;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.Operation;
-import org.geoserver.security.CoverageAccessLimits;
-import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.AccessLimits;
+import org.geoserver.security.CoverageAccessLimits;
 import org.geoserver.security.DataAccessLimits;
 import org.geoserver.security.WMSAccessLimits;
 import org.geoserver.security.WrapperPolicy;
@@ -64,7 +62,6 @@ import org.geoserver.security.decorators.SecuredLayerInfo;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.map.RenderedImageMap;
-import org.opengis.filter.Filter;
 import org.geotools.filter.visitor.ExtractBoundsFilterVisitor;
 import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.geometry.jts.JTS;
@@ -84,7 +81,6 @@ import org.geowebcache.diskquota.DiskQuotaConfig;
 import org.geowebcache.diskquota.DiskQuotaMonitor;
 import org.geowebcache.diskquota.QuotaStore;
 import org.geowebcache.diskquota.jdbc.JDBCConfiguration;
-import org.geowebcache.diskquota.jdbc.JDBCQuotaStoreFactory;
 import org.geowebcache.diskquota.storage.LayerQuota;
 import org.geowebcache.diskquota.storage.Quota;
 import org.geowebcache.diskquota.storage.TileSet;
@@ -114,6 +110,7 @@ import org.geowebcache.storage.DefaultStorageFinder;
 import org.geowebcache.storage.StorageBroker;
 import org.geowebcache.storage.StorageException;
 import org.geowebcache.storage.TileRange;
+import org.opengis.filter.Filter;
 import org.opengis.metadata.extent.GeographicBoundingBox;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
@@ -210,7 +207,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         this.storageFinder = storageFinder;
 
         catalogLayerEventListener = new CatalogLayerEventListener(this, rawCatalog);
-        catalogStyleChangeListener = new CatalogStyleChangeListener(this);
+        catalogStyleChangeListener = new CatalogStyleChangeListener(this, rawCatalog);
         this.rawCatalog.addListener(catalogLayerEventListener);
         this.rawCatalog.addListener(catalogStyleChangeListener);
         
@@ -838,7 +835,8 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
             }
         }
         if (null != request.getFilter() && !request.getFilter().isEmpty()) {
-            if (!filterApplies(filters, request, "FILTER", requestMistmatchTarget)) {
+            boolean sameFilters = checkFilter(request.getFilter(), request.getCQLFilter(), filters);
+            if (!sameFilters && !filterApplies(filters, request, "FILTER", requestMistmatchTarget)) {
                 return false;
             }
         }
@@ -888,6 +886,41 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         }
 
         return true;
+    }
+
+    /**
+     * Method for checking if CQL_FILTER list and FILTER lists are equals
+     * 
+     * @param filter
+     * @param cqlFilter
+     * @param filters
+     * @return
+     */
+    private boolean checkFilter(List filter, List cqlFilter, Map<String, ParameterFilter> filters) {
+        // Check if the two filters are equals and the FILTER parameter is not a ParameterFilter
+        // Check is done only if the FILTER parameter is not present
+        if (!filters.containsKey("FILTER")) {
+            // Check if the filter List and cqlFilter lists are not null and not empty
+            boolean hasFilter = filter != null && !filter.isEmpty();
+            boolean hasCQLFilter = cqlFilter != null && !cqlFilter.isEmpty();
+            // If the filters are present, check if they are equals.
+            // In this case the Filter List has been taken from the CQL_FILTER list
+            if (hasCQLFilter && hasFilter) {
+                // First check on the size
+                int size = filter.size();
+                if (size == cqlFilter.size()) {
+                    // Check same elements
+                    boolean equals = true;
+                    // Loop on the elements
+                    for (int i = 0; i < size; i++) {
+                        equals &= filter.get(i).equals(cqlFilter.get(i));
+                    }
+                    return equals;
+                }
+            }
+        }
+        // By default return false
+        return false;
     }
 
     private boolean filterApplies(Map<String, ParameterFilter> filters, GetMapRequest request,
@@ -1559,18 +1592,18 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
      *         style
      */
     public Iterable<LayerInfo> getLayerInfosFor(final StyleInfo style) {
-        final String styleName = style.getName();
+        final String styleName = style.prefixedName();
         List<LayerInfo> result = new ArrayList<LayerInfo>();
         {
             for (LayerInfo layer : getLayerInfos()) {
                 try {
-                    String name = layer.getDefaultStyle().getName();
+                    String name = layer.getDefaultStyle().prefixedName();
                     if (styleName.equals(name)) {
                         result.add(layer);
                         continue;
                     }
                     for (StyleInfo alternateStyle : layer.getStyles()) {
-                        name = alternateStyle.getName();
+                        name = alternateStyle.prefixedName();
                         if (styleName.equals(name)) {
                             result.add(layer);
                             break;

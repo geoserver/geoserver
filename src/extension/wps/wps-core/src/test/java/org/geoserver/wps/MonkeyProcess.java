@@ -88,6 +88,7 @@ public class MonkeyProcess {
     @DescribeResult(name = "result")
     public SimpleFeatureCollection execute(@DescribeParameter(name = "id") String id,
             @DescribeParameter(name = "fc", min = 0) SimpleFeatureCollection fc,
+            @DescribeParameter(name = "extra", min = 0) String extra,
             ProgressListener listener) throws Exception {
         BlockingQueue<Command> queue = getCommandQueue(id);
         while (true) {
@@ -113,8 +114,7 @@ public class MonkeyProcess {
     }
 
     static final ProcessFactory getFactory() {
-        return new AnnotatedBeanProcessFactory(new SimpleInternationalString("Monkey process"),
-                "gs", MonkeyProcess.class);
+        return new MonkeyProcessFactory();
     }
 
     public static void clearCommands() {
@@ -126,6 +126,14 @@ public class MonkeyProcess {
         }
 
         commands.clear();
+    }
+
+    private static class MonkeyProcessFactory extends AnnotatedBeanProcessFactory {
+
+        public MonkeyProcessFactory() {
+            super(new SimpleInternationalString("Monkey process"), "gs", MonkeyProcess.class);
+        }
+
     }
 
 }

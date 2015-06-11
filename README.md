@@ -34,8 +34,8 @@ for more details.
 
 ## Bugs
 
-GeoServer uses [JIRA](http://jira.codehaus.org/browse/GEOS), hosted by 
-[CodeHaus](http://www.codehaus.org/), for issue tracking.
+GeoServer uses [JIRA](https://osgeo-org.atlassian.net/projects/GEOS), hosted by 
+[Atlassian](https://www.atlassian.com/), for issue tracking.
 
 ## Mailing Lists
 

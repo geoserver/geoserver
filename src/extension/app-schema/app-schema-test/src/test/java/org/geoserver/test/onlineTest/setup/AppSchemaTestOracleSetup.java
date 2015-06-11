@@ -283,6 +283,7 @@ public class AppSchemaTestOracleSetup extends ReferenceDataOracleSetup {
                 }
             }
             buf.append(spatialIndex.toString());
+            spatialIndex.delete(0, spatialIndex.length());
             if (buf.length() > 0) {
                 this.sql = buf.toString();
             }

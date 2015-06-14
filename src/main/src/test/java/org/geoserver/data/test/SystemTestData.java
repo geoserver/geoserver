@@ -279,6 +279,12 @@ public class SystemTestData extends CiteTestData {
     public void setUpSecurity() throws IOException {
         File secDir = new File(getDataDirectoryRoot(), "security");
         IOUtils.decompress(SystemTestData.class.getResourceAsStream("security.zip"), secDir);
+        String javaVendor = System.getProperty("java.vendor");
+        if (javaVendor.contains("IBM")) {
+            IOUtils.copy(new File(secDir,"geoserver.jceks.ibm"), new File(secDir,"geoserver.jceks"));
+        } else {
+            IOUtils.copy(new File(secDir,"geoserver.jceks.default"), new File(secDir,"geoserver.jceks"));
+        }
     }
 
     protected void createCatalog() throws IOException {

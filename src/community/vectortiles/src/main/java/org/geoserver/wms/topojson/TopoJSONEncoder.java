@@ -352,6 +352,9 @@ public class TopoJSONEncoder {
                 buff.x = deltaX;
                 buff.y = deltaY;
                 precisionModel.makePrecise(buff);
+                if(buff.x == 0d && buff.y == 0d){
+                    continue;
+                }
                 addCoordinate(arc, buff);
             }
         }

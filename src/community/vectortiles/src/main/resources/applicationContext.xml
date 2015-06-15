@@ -10,8 +10,23 @@
 	<!--  
 		Map producers and responses
 	 -->
+  <!--  
     <bean id="wmsTopoJSONMapOutputFormat" class="org.geoserver.wms.topojson.TopoJSONMapOutputFormat">
-      <!--constructor-arg ref="wms" /-->
     </bean>
+   -->
   
+  <bean id="wmsTopoJSONBuilderFactory" class="org.geoserver.wms.topojson.TopoJSONBuilderFactory">
+  </bean>
+
+  <bean id="wmsTopoJSONMapOutputFormat" class="org.geoserver.wms.vector.VectorTileMapOutputFormat">
+    <constructor-arg ref="wms"/>
+    <constructor-arg ref="wmsTopoJSONBuilderFactory"/>
+    <property name="clipToMapBounds" value="true">
+      <description>Use geometries clipped to tile bounds</description>
+    </property>
+    <property name="transformToScreenCoordinates" value="true">
+      <description>The topoJSON map builder expects geometries in screen coordinates</description>
+    </property>
+  </bean>
+
 </beans>

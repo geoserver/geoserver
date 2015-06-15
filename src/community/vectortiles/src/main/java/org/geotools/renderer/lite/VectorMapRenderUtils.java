@@ -27,7 +27,6 @@ import org.geotools.renderer.ScreenMap;
 import org.geotools.renderer.style.SLDStyleFactory;
 import org.geotools.styling.FeatureTypeStyle;
 import org.geotools.styling.Rule;
-import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.GeometryDescriptor;
 import org.opengis.filter.Filter;
@@ -41,7 +40,7 @@ import org.opengis.referencing.operation.TransformException;
 
 import com.google.common.base.Throwables;
 
-public class TopoJSONRenderUtils {
+public class VectorMapRenderUtils {
     /** Factory that will resolve symbolizers into rendered styles */
     private static SLDStyleFactory styleFactory = new SLDStyleFactory();
 
@@ -50,7 +49,7 @@ public class TopoJSONRenderUtils {
     private static final double generalizationDistance = 0.8;
 
     public static Query getStyleQuery(//
-            FeatureSource<FeatureType, Feature> source, //
+            FeatureSource<?, ?> source, //
             FeatureType schema, //
             List<LiteFeatureTypeStyle> styleList, //
             ReferencedEnvelope mapArea,//
@@ -226,7 +225,7 @@ public class TopoJSONRenderUtils {
      * @return the transform, or null if any of the crs is null, or if the the two crs are equal
      * @throws FactoryException If no transform is available to the destCRS
      */
-    private static MathTransform buildTransform(CoordinateReferenceSystem sourceCRS,
+    public static MathTransform buildTransform(CoordinateReferenceSystem sourceCRS,
             CoordinateReferenceSystem destCRS) throws FactoryException {
         MathTransform transform = null;
         if (sourceCRS != null && sourceCRS.getCoordinateSystem().getDimension() >= 3) {

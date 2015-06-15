@@ -1,7 +1,14 @@
 package org.geoserver.wms.topojson;
 
+import static org.geoserver.wms.topojson.TopoJSONBuilderFactory.MIME_TYPE;
+
+import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -10,25 +17,29 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
+import org.apache.commons.io.output.DeferredFileOutputStream;
+import org.geoserver.wms.WMSMapContent;
+import org.geoserver.wms.map.RawMap;
 import org.geoserver.wms.topojson.TopoGeom.GeometryColleciton;
-import org.geotools.geometry.jts.GeometryCoordinateSequenceTransformer;
-import org.geotools.geometry.jts.JTS;
-import org.geotools.referencing.operation.transform.ProjectiveTransform;
+import org.geoserver.wms.vector.DeferredFileOutputStreamWebMap;
+import org.geoserver.wms.vector.VectorTileBuilder;
+import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.renderer.lite.RendererUtilities;
 import org.opengis.feature.Attribute;
 import org.opengis.feature.ComplexAttribute;
 import org.opengis.feature.Feature;
 import org.opengis.feature.GeometryAttribute;
 import org.opengis.feature.Property;
+import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.geometry.MismatchedDimensionException;
-import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
 
+import com.google.common.base.Charsets;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Throwables;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Multimap;
-import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -39,9 +50,8 @@ import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.geom.PrecisionModel;
-import com.vividsolutions.jts.simplify.TopologyPreservingSimplifier;
 
-public class TopologyBuilder {
+public class TopologyBuilder implements VectorTileBuilder {
 
     private AffineTransform worldToScreen;
 
@@ -51,16 +61,10 @@ public class TopologyBuilder {
 
     private Multimap<String, TopoGeom> layers = ArrayListMultimap.create();
 
-    private MathTransform mathTransform;
-
-    private GeometryCoordinateSequenceTransformer transformer;
-
     private GeometryFactory fixedGeometryFactory;
 
-    private final Polygon clipBounds;
-
-    public TopologyBuilder(AffineTransform worldToScreen, Envelope mapArea) {
-        this.worldToScreen = worldToScreen;
+    public TopologyBuilder(Rectangle mapSize, ReferencedEnvelope mapArea) {
+        this.worldToScreen = RendererUtilities.worldToScreenTransform(mapArea, mapSize);
         this.screenToWorld = new AffineTransform(this.worldToScreen);
         try {
             this.screenToWorld.invert();
@@ -68,24 +72,12 @@ public class TopologyBuilder {
             throw Throwables.propagate(e);
         }
 
-        mathTransform = ProjectiveTransform.create(this.worldToScreen);
-        transformer = new GeometryCoordinateSequenceTransformer();
-        transformer.setMathTransform(mathTransform);
-
         PrecisionModel precisionModel = new PrecisionModel(10.0);
         fixedGeometryFactory = new GeometryFactory(precisionModel);
-
-        Polygon bounds = JTS.toGeometry(mapArea, fixedGeometryFactory);
-        try {
-            bounds = (Polygon) transformer.transform(bounds);
-        } catch (TransformException e) {
-            throw Throwables.propagate(e);
-        }
-        bounds = (Polygon) fixedGeometryFactory.createGeometry(bounds);
-        this.clipBounds = bounds;
     }
 
-    public void addFeature(Feature feature) {
+    @Override
+    public void addFeature(SimpleFeature feature) {
         String layer = feature.getName().getLocalPart();
         TopoGeom topoObj;
         try {
@@ -98,6 +90,48 @@ public class TopologyBuilder {
         if (topoObj != null) {
             layers.put(layer, topoObj);
         }
+    }
+
+    @Override
+    public RawMap build(WMSMapContent mapContent) throws IOException {
+
+        Map<String, TopoGeom.GeometryColleciton> layers = new HashMap<>();
+        for (String layer : this.layers.keySet()) {
+            Collection<TopoGeom> collection = this.layers.get(layer);
+            GeometryColleciton layerCollection = new TopoGeom.GeometryColleciton(collection);
+            layers.put(layer, layerCollection);
+        }
+
+        List<LineString> arcs = this.arcs;
+        this.arcs = null;
+        this.layers = null;
+        Topology topology = new Topology(screenToWorld, arcs, layers);
+
+        final int threshold = 8096;
+        DeferredFileOutputStream out = new DeferredFileOutputStream(threshold, "topology",
+                ".topojson", null);
+        TopoJSONEncoder encoder = new TopoJSONEncoder();
+
+        Writer writer = new OutputStreamWriter(out, Charsets.UTF_8);
+        encoder.encode(topology, writer);
+        writer.flush();
+        writer.close();
+        out.close();
+
+        long length;
+        RawMap map;
+        if (out.isInMemory()) {
+            byte[] data = out.getData();
+            length = data.length;
+            map = new RawMap(mapContent, data, MIME_TYPE);
+        } else {
+            File f = out.getFile();
+            length = f.length();
+            map = new DeferredFileOutputStreamWebMap(mapContent, out, MIME_TYPE);
+        }
+        map.setResponseHeader("Content-Length", String.valueOf(length));
+
+        return map;
     }
 
     @Nullable
@@ -115,19 +149,16 @@ public class TopologyBuilder {
             }
         }
 
-        // transform to screen coordinates
-        geom = transformer.transform(geom);
-
-        // clip
-        if (clipBounds.overlaps(geom)) {
-            geom = clipBounds.intersection(geom);
-        }
-
-        // snap to pixel
+        // // snap to pixel
         geom = fixedGeometryFactory.createGeometry(geom);
 
-        // simplify
-        geom = TopologyPreservingSimplifier.simplify(geom, 0.8);
+        if (geom.isEmpty()) {
+            return null;
+        }
+
+        if (geom instanceof GeometryCollection && geom.getNumGeometries() == 1) {
+            geom = geom.getGeometryN(0);
+        }
 
         TopoGeom geometry = createGeometry(geom);
         Map<String, Object> properties = getProperties(feature);
@@ -237,19 +268,6 @@ public class TopologyBuilder {
 
     private TopoGeom.Point createPoint(Point geom) {
         return new TopoGeom.Point(geom.getX(), geom.getY());
-    }
-
-    public Topology build() {
-
-        Map<String, TopoGeom.GeometryColleciton> layers = new HashMap<>();
-        for (String layer : this.layers.keySet()) {
-            Collection<TopoGeom> collection = this.layers.get(layer);
-            GeometryColleciton layerCollection = new TopoGeom.GeometryColleciton(collection);
-            layers.put(layer, layerCollection);
-        }
-
-        Topology topology = new Topology(screenToWorld, arcs, layers);
-        return topology;
     }
 
 }

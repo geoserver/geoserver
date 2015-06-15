@@ -29,7 +29,7 @@ public class YsldHandler extends StyleHandler {
      * Creates a new handler with an explicit zoom finder.
      */
     public YsldHandler(ZoomContextFinder zoomFinder, UomMapper uomMapper) {
-        super("Ysld", FORMAT);
+        super("YSLD", FORMAT);
         this.zoomFinder = zoomFinder;
     }
 

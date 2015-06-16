@@ -563,7 +563,9 @@ public class GetFeature {
                     isNumberMatchedSkipped = meta.getSkipNumberMatched()
                             && !request.isResultTypeHits();
                 if (!isNumberMatchedSkipped) {
-                    if (calculateSize && queryMaxFeatures == Integer.MAX_VALUE && offset == 0) {
+                        if (calculateSize
+                                && (queryMaxFeatures == Integer.MAX_VALUE || size < queryMaxFeatures)
+                                && offset <= 0) {
                         totalCountExecutors.add(new CountExecutor(size));
                     } else {
                         org.geotools.data.Query qTotal = toDataQuery(query, filter, 0,

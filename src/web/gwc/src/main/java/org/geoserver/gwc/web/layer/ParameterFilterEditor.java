@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -51,6 +51,7 @@ import org.geoserver.web.wicket.Icon;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geotools.util.logging.Logging;
 import org.geowebcache.filter.parameters.FloatParameterFilter;
+import org.geowebcache.filter.parameters.IntegerParameterFilter;
 import org.geowebcache.filter.parameters.ParameterFilter;
 import org.geowebcache.filter.parameters.RegexParameterFilter;
 import org.geowebcache.filter.parameters.StringParameterFilter;
@@ -242,6 +243,7 @@ class ParameterFilterEditor extends FormComponentPanel<Set<ParameterFilter>> {
                 new ArrayList<Class<? extends ParameterFilter>>();
         filterTypes.add(StringParameterFilter.class);
         filterTypes.add(FloatParameterFilter.class);
+        filterTypes.add(IntegerParameterFilter.class);
         filterTypes.add(RegexParameterFilter.class);
         
         
@@ -315,13 +317,7 @@ class ParameterFilterEditor extends FormComponentPanel<Set<ParameterFilter>> {
                         newFilterKey.setModel(Model.of("")); // Reset the key field
                     } catch (NoSuchMethodException ex) {
                         LOGGER.log(Level.WARNING, "No Default Constructor for "+type ,ex);
-                    } catch (InvocationTargetException ex) {
-                        LOGGER.log(Level.WARNING, "Could not execute default Constructor for "+type ,ex);
-                    } catch (SecurityException ex) {
-                        LOGGER.log(Level.WARNING, "Could not execute default Constructor for "+type ,ex);
-                    } catch (InstantiationException ex) {
-                        LOGGER.log(Level.WARNING, "Could not execute default Constructor for "+type ,ex);
-                    } catch (IllegalAccessException ex) {
+                    } catch (InvocationTargetException | SecurityException  | InstantiationException | IllegalAccessException ex) {
                         LOGGER.log(Level.WARNING, "Could not execute default Constructor for "+type ,ex);
                     }
                 }
@@ -351,6 +347,9 @@ class ParameterFilterEditor extends FormComponentPanel<Set<ParameterFilter>> {
         }
         if (model.getObject() instanceof FloatParameterFilter) {
             return new FloatParameterFilterSubform(id, (IModel<FloatParameterFilter>) model);
+        }
+        if (model.getObject() instanceof IntegerParameterFilter) {
+            return new IntegerParameterFilterSubform(id, (IModel<IntegerParameterFilter>) model);
         }
         return new DefaultParameterFilterSubform(id, (IModel<ParameterFilter>) model);
     }

@@ -10,16 +10,20 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Properties;
 
 import javax.xml.namespace.QName;
 
+import org.apache.commons.io.FileUtils;
 import org.custommonkey.xmlunit.XMLAssert;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -181,6 +185,54 @@ public class ImporterMosaicTest extends ImporterTestSupport {
                 gs.getCount(new Query(null, ECQL.toFilter("location = '" + fileName1 + "'"))));
         assertEquals(1,
                 gs.getCount(new Query(null, ECQL.toFilter("location = '" + fileName2 + "'"))));
+    }
+
+    @Test
+    public void testPopulateEmptyMosaic() throws Exception {
+        Catalog catalog = getCatalog();
+
+        // prepare an empty mosaic
+        File root = getTestData().getDataDirectoryRoot();
+        String mosaicName = "emptyMosaic";
+        File mosaicRoot = new File(root, mosaicName);
+        if (mosaicRoot.exists()) {
+            FileUtils.deleteDirectory(mosaicRoot);
+        }
+        mosaicRoot.mkdirs();
+        Properties props = new Properties();
+        props.put("SPI", "org.geotools.data.h2.H2DataStoreFactory");
+        props.put("database", "empty");
+        try (FileOutputStream fos = new FileOutputStream(new File(mosaicRoot,
+                "datastore.properties"))) {
+            props.store(fos, null);
+        }
+        CatalogBuilder cb = new CatalogBuilder(catalog);
+        cb.setWorkspace(catalog.getDefaultWorkspace());
+
+        CoverageStoreInfo store = cb.buildCoverageStore(mosaicName);
+        store.setURL("./" + mosaicName);
+        store.setType("ImageMosaic");
+        catalog.save(store);
+
+        // put a granule in the mosaic
+        unpack("geotiff/EmissiveCampania.tif.bz2", mosaicRoot);
+        File granule = new File(mosaicRoot, "EmissiveCampania.tif");
+
+        store = catalog.getCoverageStoreByName(mosaicName);
+        ImportContext context = importer.createContext(new SpatialFile(granule), store);
+        assertEquals(1, context.getTasks().size());
+
+        importer.run(context);
+
+        // check the import produced a granule
+        StructuredGridCoverage2DReader reader = (StructuredGridCoverage2DReader) store
+                .getGridCoverageReader(null, null);
+        GranuleSource granules = reader.getGranules(mosaicName, true);
+        assertEquals(1, granules.getCount(Query.ALL));
+
+        // check we now also have a layer
+        LayerInfo layer = catalog.getLayerByName(mosaicName);
+        assertNotNull(layer);
     }
 
     Date date(int year, int month) {

@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -342,13 +342,21 @@ public class AuthenticationPage extends AbstractSecurityPage {
                             return null;
                         }
                         public String getQueryString() {
-                            return null;
+                            if(urlPath == null || urlPath.indexOf("?") == -1) {
+                                return null;
+                            } else {
+                                return urlPath.substring(urlPath.indexOf("?") + 1);
+                            }
                         }
                         public String getPathTranslated() {
                             return null;
                         }
                         public String getPathInfo() {
-                            return urlPath;
+                            if(urlPath == null || urlPath.indexOf("?") == -1) {
+                                return urlPath;
+                            } else {
+                                return urlPath.substring(0, urlPath.indexOf("?"));
+                            }
                         }
                         public String getMethod() {
                             return httpMethod.toString();

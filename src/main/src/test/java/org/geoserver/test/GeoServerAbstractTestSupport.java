@@ -117,6 +117,8 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
 
     protected static TestData testData;
     
+    private boolean validating = false;
+    
     String username;
     
     String password;
@@ -152,6 +154,14 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
         password = null;
     }
     
+    public boolean isValidating() {
+        return validating;
+    }
+
+    public void setValidating(boolean validating) {
+        this.validating = validating;
+    }
+
     /**
      * If subclasses override they *must* call super.setUp() first.
      */
@@ -203,6 +213,7 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
             
             applicationContext = new GeoServerTestApplicationContext(getSpringContextLocations(),
                     servletContext);
+            applicationContext.setValidating(validating);
             applicationContext.setUseLegacyGeoServerLoader(useLegacyDataDirectory());
             applicationContext.refresh();
             applicationContext.publishEvent(new ContextLoadedEvent(applicationContext));

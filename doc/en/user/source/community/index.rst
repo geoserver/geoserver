@@ -36,3 +36,5 @@ officially part of the GeoServer releases. They are however built along with the
    rest-upload/index
    geomesa/index
    gwc-distributed/index
+   geofence-server/index
+

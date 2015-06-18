@@ -21,6 +21,7 @@ public class InternalServicesTest extends ServicesTest {
     
     @Override
     public void oneTimeSetUp() throws Exception {
+        setValidating(true);
         super.oneTimeSetUp();
         
         RuleAdminService adminService = (RuleAdminService) applicationContext.getBean("ruleAdminService");

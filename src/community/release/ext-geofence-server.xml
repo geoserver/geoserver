@@ -1,0 +1,21 @@
+<assembly>
+  <id>geofence-server-plugin</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <fileSets>
+    <fileSet>
+      <directory>release/target/dependency</directory>
+      <outputDirectory></outputDirectory>
+      <includes>
+	<include>*gs-geofence*</include>
+	<include>*geofence-model-internal*</include>
+	<include>*geofence-services*</include>
+	<include>*geofence-persistence*</include>
+        <include>*hibernate*</include>
+        <include>*oxm*</include>
+      </includes>
+    </fileSet>
+  </fileSets>
+</assembly>

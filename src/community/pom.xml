@@ -61,7 +61,8 @@
           <descriptor>release/ext-geofence.xml</descriptor>
           <descriptor>release/ext-sldservice.xml</descriptor>
           <descriptor>release/ext-rest-upload.xml</descriptor>
-          <descriptor>release/ext-gwc-distributed.xml</descriptor>	
+          <descriptor>release/ext-gwc-distributed.xml</descriptor>  
+          <descriptor>release/ext-geofence-server.xml</descriptor>	
         </descriptors>
       </configuration>
      </plugin>
@@ -186,6 +187,7 @@
         <module>solr</module>
 	<module>rest-upload</module>
         <module>geofence</module>
+        <module>geofence-server</module>
         <module>sldService</module>
         <module>release</module>
 	<module>gwc-distributed</module>

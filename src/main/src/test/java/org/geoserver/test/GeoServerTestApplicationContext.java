@@ -41,7 +41,6 @@ public class GeoServerTestApplicationContext extends ClassPathXmlApplicationCont
     public GeoServerTestApplicationContext(String[] configLocation, ServletContext servletContext)
         throws BeansException {
         super(configLocation, false);
-        setValidating(false);
         try {
             servletContext.setAttribute(
                 "javax.servlet.context.tempdir", 

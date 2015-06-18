@@ -514,6 +514,14 @@ public class Importer implements DisposableBean, ApplicationListener {
                 t.setDirect(direct);
                 t.setStore(targetStore);
 
+                // in case of indirect import against a coverage store with no published
+                // layers, do not use the granule name, but the store name
+                if (!direct && targetStore instanceof CoverageStoreInfo
+                        && catalog.getCoveragesByStore((CoverageStoreInfo) targetStore).isEmpty()) {
+                    t.getLayer().setName(targetStore.getName());
+                    t.getLayer().getResource().setName(targetStore.getName());
+                }
+
                 prep(t);
                 tasks.add(t);
             }
@@ -933,6 +941,11 @@ public class Importer implements DisposableBean, ApplicationListener {
             StructuredGridCoverage2DReader sr = (StructuredGridCoverage2DReader) reader;
             ImportData data = task.getData();
             harvestImportData(sr, data);
+
+            // check we have a target resource, if not, create it
+            if (task.getLayer().getId() == null) {
+                addToCatalog(task);
+            }
         }
 
         if (!canceled && !doPostTransform(task, task.getData(), tx)) {

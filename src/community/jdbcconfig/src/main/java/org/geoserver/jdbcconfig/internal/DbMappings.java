@@ -227,7 +227,7 @@ public class DbMappings {
                     targetPropertyName = targetClassPropName.substring(1 + classNameSeparatorIndex);
                 }
                 String colType = propTarget.length > 1 ? propTarget[1] : null;
-                String textType = propTarget.length > 1 ? (propTarget.length > 2 ? propTarget[1]
+                String textType = propTarget.length > 1 ? (propTarget.length > 2 ? propTarget[2]
                         : propTarget[1]) : null;
 
                 collectionProperty = "list".equalsIgnoreCase(colType)

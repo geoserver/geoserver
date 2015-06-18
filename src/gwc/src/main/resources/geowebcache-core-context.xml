@@ -51,7 +51,7 @@
   </bean-->
   
   <!-- For each configuration bean above, add them below to activate -->
-  <bean id="gwcTLDispatcher" class="org.geowebcache.layer.TileLayerDispatcher">
+  <bean id="gwcTLDispatcher" class="org.geowebcache.layer.TileLayerDispatcher" depends-on="gwcCatalogConfiguration,geoWebCacheExtensions">
     <description>
       TileLayerDispatcher serves up TileLayers from the available Configurations in the application context
     </description>
@@ -62,8 +62,10 @@
   	<constructor-arg ref="gwcAppCtx" />
   </bean>
 
-  <bean id="gwcBlobStore" class="org.geowebcache.storage.blobstore.file.FileBlobStore" destroy-method="destroy">
+  <bean id="gwcBlobStore" class="org.geowebcache.storage.CompositeBlobStore" destroy-method="destroy">
+    <constructor-arg ref="gwcTLDispatcher"/>
     <constructor-arg ref="gwcDefaultStorageFinder" />
+    <constructor-arg ref="gwcXmlConfig"/>
   </bean>
   
   <!-- Static definition of where to put the blobstore. 

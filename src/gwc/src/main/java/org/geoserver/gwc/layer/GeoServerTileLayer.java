@@ -1201,4 +1201,9 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
     public void setTransientLayer(boolean transientLayer){
         return;
     }
+
+    @Override
+    public void setBlobStoreId(String blobStoreId) {
+        info.setBlobStoreId(blobStoreId);
+    }
 }

@@ -121,6 +121,7 @@ bill is a member of the ``admin`` group so he would be assigned a role named
 
    * Set ``Group search base`` to "ou=groups"
    * Set ``Group search filter`` to "member={0}"
+   
 
    The first field specifies the node of the LDAP directory tree at which groups
    are located. In this case the organizational unit named ``groups``. The 
@@ -128,43 +129,15 @@ bill is a member of the ``admin`` group so he would be assigned a role named
    groups that a specific user is a member of. The ``{0}`` is a placeholder 
    which is replaced with the ``uid`` of the user.
 
+   * Set ``Group to use as ADMIN`` to "ADMIN"
+   * Set ``Group to use as GROUP_ADMIN`` to "ADMIN"
+
+   These settings let users in the LDAP admin group to be recognized as GeoServer administrators.
+   
 #. Save.
 
 At this point the LDAP provider will populate an authenticated user with roles 
-based on the groups the user is a member of. But the GeoServer administrative 
-role is named ``ROLE_ADMINISTRATOR``. Therefore even bill who is assigned the 
-role ``ROLE_ADMIN`` will not be granted administrative rights. To remedy this 
-the GeoServer role service will be reconfigured to treat ``ROLE_ADMIN`` as an 
-adminstrative role. 
-
-#. Click the ``Users,Group,Roles`` link located under the ``Security`` section 
-   of the navigation sidebar.
-
-   .. figure:: images/ldap8.jpg
-      :align: center
-
-#. Scroll to the ``Role Services`` panel and click the ``default`` link.
-
-   .. figure:: images/ldap9.jpg
-      :align: center
-
-#. Switch to the ``Roles`` tab. 
-#. Add a new role named ``ROLE_ADMIN``.
-#. Save.
-
-   .. figure:: images/ldap10.jpg
-      :align: center
-
-   .. figure:: images/ldap11.jpg
-      :align: center
-
-#. Switch to the ``Settings`` tab.
-#. Select ``ROLE_ADMIN`` from the ``Administrator role`` drop down.
-   
-   .. figure:: images/ldap12.jpg
-      :align: center
-
-#. Save.
+based on the groups the user is a member of. 
 
 At this point members of the ``admin`` LDAP group should be given full 
 administrative privileges once authenticated. Log out of the admin account and
@@ -188,7 +161,7 @@ from the LDAP repository and allow access rights to be assigned to those roles.
       
 #. Enter ``ldaprs`` in the  ``Name`` text field.
 
-#. Enter ``ldap://127.0.0.1:10389/dc=acme,dc=org`` in the  ``Server URL`` text field.
+#. Enter ``ldap://localhost:10389/dc=acme,dc=org`` in the  ``Server URL`` text field.
 
 #. Enter ``ou=groups`` in the  ``Group search base`` text field.
 

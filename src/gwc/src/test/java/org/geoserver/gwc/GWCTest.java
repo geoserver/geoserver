@@ -5,17 +5,32 @@
  */
 package org.geoserver.gwc;
 
-import static junit.framework.Assert.*;
 import static org.geoserver.gwc.GWC.tileLayerName;
 import static org.geoserver.gwc.GWCTestHelpers.mockGroup;
 import static org.geoserver.gwc.GWCTestHelpers.mockLayer;
 import static org.geoserver.gwc.layer.TileLayerInfoUtil.updateAcceptAllFloatParameterFilter;
 import static org.geoserver.gwc.layer.TileLayerInfoUtil.updateStringParameterFilter;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.same;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.net.URL;
@@ -41,14 +56,8 @@ import org.geoserver.gwc.layer.GeoServerTileLayerInfo;
 import org.geoserver.gwc.layer.TileLayerInfoUtil;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.util.CaseInsensitiveMap;
-import org.geoserver.platform.GeoServerExtensions;
-import org.geoserver.security.GeoServerSecurityManager;
-import org.geoserver.security.config.SecurityManagerConfig;
-
 import org.geoserver.wms.GetMapRequest;
-import org.geoserver.wms.WMS;
 import org.geoserver.wms.kvp.PaletteManager;
-import org.geoserver.wms.map.GetMapKvpRequestReader;
 import org.geotools.filter.identity.FeatureIdImpl;
 import org.geotools.filter.text.cql2.CQL;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -67,7 +76,6 @@ import org.geowebcache.grid.GridSet;
 import org.geowebcache.grid.GridSetBroker;
 import org.geowebcache.grid.GridSubset;
 import org.geowebcache.grid.SRS;
-import org.geowebcache.io.Resource;
 import org.geowebcache.layer.TileLayer;
 import org.geowebcache.layer.TileLayerDispatcher;
 import org.geowebcache.mime.MimeType;
@@ -123,6 +131,8 @@ public class GWCTest {
     private QuotaStore quotaStore;
 
     private DiskQuotaMonitor diskQuotaMonitor;
+    
+    private ConfigurableQuotaStoreProvider diskQuotaStoreProvider;
 
     private Dispatcher owsDispatcher;
 
@@ -174,6 +184,8 @@ public class GWCTest {
         diskQuotaMonitor = mock(DiskQuotaMonitor.class);
         when(diskQuotaMonitor.getQuotaStore()).thenReturn(quotaStore);
         owsDispatcher = mock(Dispatcher.class);
+        diskQuotaStoreProvider = mock(ConfigurableQuotaStoreProvider.class);
+        when(diskQuotaMonitor.getQuotaStoreProvider()).thenReturn(diskQuotaStoreProvider);
         
         storageFinder = mock(DefaultStorageFinder.class);
         jdbcStorage = mock(JDBCConfigurationStorage.class);
@@ -697,12 +709,14 @@ public class GWCTest {
     public void testReload() throws Exception {
         mediator.reload();
         verify(tld, times(1)).reInit();
-        doThrow(new RuntimeException("fake")).when(tld).reInit();
+        verify(diskQuotaStoreProvider, times(1)).reloadQuotaStore();
+        RuntimeException expected = new RuntimeException("expected");
+        doThrow(expected).when(tld).reInit();
         try {
             mediator.reload();
             fail("Expected RTE");
         } catch (RuntimeException e) {
-            assertTrue(true);
+            assertSame(expected, e);
         }
     }
 

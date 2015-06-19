@@ -1,6 +1,5 @@
 package org.geotools.renderer.lite;
 
-import java.awt.Composite;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
@@ -9,6 +8,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.geotools.data.FeatureSource;
 import org.geotools.data.Query;
@@ -24,9 +25,9 @@ import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.referencing.operation.transform.ConcatenatedTransform;
 import org.geotools.referencing.operation.transform.ProjectiveTransform;
 import org.geotools.renderer.ScreenMap;
-import org.geotools.renderer.style.SLDStyleFactory;
 import org.geotools.styling.FeatureTypeStyle;
 import org.geotools.styling.Rule;
+import org.geotools.util.logging.Logging;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.GeometryDescriptor;
 import org.opengis.filter.Filter;
@@ -38,13 +39,21 @@ import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.MathTransform2D;
 import org.opengis.referencing.operation.TransformException;
 
+import com.google.common.base.Preconditions;
 import com.google.common.base.Throwables;
 
+/**
+ * Utility methods to deal with transformations and style based queries.
+ * <p>
+ * Note this class is in this package to access some package visible fields from the same geotools
+ * package.
+ *
+ */
 public class VectorMapRenderUtils {
-    /** Factory that will resolve symbolizers into rendered styles */
-    private static SLDStyleFactory styleFactory = new SLDStyleFactory();
 
-    private static final FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2();
+    private static final Logger LOGGER = Logging.getLogger(VectorMapRenderUtils.class);
+
+    private static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
 
     private static final double generalizationDistance = 0.8;
 
@@ -63,19 +72,11 @@ public class VectorMapRenderUtils {
         Query query = new Query(Query.ALL);
 
         String geomName = geometryAttribute.getLocalName();
-        Filter filter = ff.bbox(ff.property(geomName), mapArea);
+        Filter filter = FF.bbox(FF.property(geomName), mapArea);
 
         LiteFeatureTypeStyle[] styles = styleList
                 .toArray(new LiteFeatureTypeStyle[styleList.size()]);
 
-        // build a list of attributes used in the rendering
-        // List<PropertyName> attributes;
-        // if (styles == null) {
-        // attributes = null;
-        // } else {
-        // attributes = findStyleAttributes(styles, schema);
-        // }
-        //
         // ReferencedEnvelope envelope = new ReferencedEnvelope(mapArea, mapCRS);
         // see what attributes we really need by exploring the styles
         // for testing purposes we have a null case -->
@@ -222,13 +223,17 @@ public class VectorMapRenderUtils {
      * 
      * @param sourceCRS
      * @param destCRS
-     * @return the transform, or null if any of the crs is null, or if the the two crs are equal
+     * @return the transform from {@code sourceCRS} to {@code destCRS}, will be an identity
+     *         transform if the the two crs are equal
      * @throws FactoryException If no transform is available to the destCRS
      */
     public static MathTransform buildTransform(CoordinateReferenceSystem sourceCRS,
             CoordinateReferenceSystem destCRS) throws FactoryException {
+        Preconditions.checkNotNull(sourceCRS, "sourceCRS");
+        Preconditions.checkNotNull(destCRS, "destCRS");
+
         MathTransform transform = null;
-        if (sourceCRS != null && sourceCRS.getCoordinateSystem().getDimension() >= 3) {
+        if (sourceCRS.getCoordinateSystem().getDimension() >= 3) {
             // We are going to transform over to DefaultGeographic.WGS84 on the fly
             // so we will set up our math transform to take it from there
             MathTransform toWgs84_3d = CRS.findMathTransform(sourceCRS,
@@ -238,23 +243,18 @@ public class VectorMapRenderUtils {
             transform = ConcatenatedTransform.create(toWgs84_3d, toWgs84_2d);
             sourceCRS = DefaultGeographicCRS.WGS84;
         }
-        // the basic crs transformation, if any
-        MathTransform2D mt;
-        if (sourceCRS == null || destCRS == null || CRS.equalsIgnoreMetadata(sourceCRS, destCRS)) {
-            mt = null;
-        } else {
-            mt = (MathTransform2D) CRS.findMathTransform(sourceCRS, destCRS, true);
-        }
 
-        if (transform != null) {
-            if (mt == null) {
-                return transform;
-            } else {
-                return ConcatenatedTransform.create(transform, mt);
-            }
-        } else {
-            return mt;
+        // the basic crs transformation, if any
+        MathTransform2D sourceToTarget;
+        sourceToTarget = (MathTransform2D) CRS.findMathTransform(sourceCRS, destCRS, true);
+
+        if (transform == null) {
+            return sourceToTarget;
         }
+        if (sourceToTarget.isIdentity()) {
+            return transform;
+        }
+        return ConcatenatedTransform.create(transform, sourceToTarget);
     }
 
     /**
@@ -315,16 +315,17 @@ public class VectorMapRenderUtils {
             if (filtersToDS.size() == 1) {
                 ruleFiltersCombined = filtersToDS.get(0);
             } else {
-                ruleFiltersCombined = ff.or(filtersToDS);
+                ruleFiltersCombined = FF.or(filtersToDS);
             }
 
             // combine with the pre-existing filter
-            ruleFiltersCombined = ff.and(query.getFilter(), ruleFiltersCombined);
+            ruleFiltersCombined = FF.and(query.getFilter(), ruleFiltersCombined);
             query.setFilter(ruleFiltersCombined);
         } catch (Exception e) {
-            // if (LOGGER.isLoggable(Level.WARNING))
-            // LOGGER.log(Level.SEVERE,
-            // "Could not send rules to datastore due to: " + e.getLocalizedMessage(), e);
+            if (LOGGER.isLoggable(Level.WARNING)) {
+                LOGGER.log(Level.SEVERE,
+                        "Could not send rules to datastore due to: " + e.getMessage(), e);
+            }
         }
     }
 
@@ -335,31 +336,25 @@ public class VectorMapRenderUtils {
         ArrayList<LiteFeatureTypeStyle> result = new ArrayList<LiteFeatureTypeStyle>();
 
         LiteFeatureTypeStyle lfts;
-        boolean foundComposite = false;
+
         for (FeatureTypeStyle fts : featureStyles) {
             if (isFeatureTypeStyleActive(ftype, fts)) {
                 // DJB: this FTS is compatible with this FT.
 
                 // get applicable rules at the current scale
-                List[] splittedRules = splitRules(fts, scaleDenominator);
-                List ruleList = splittedRules[0];
-                List elseRuleList = splittedRules[1];
+                List<Rule>[] splittedRules = splitRules(fts, scaleDenominator);
+                List<Rule> ruleList = splittedRules[0];
+                List<Rule> elseRuleList = splittedRules[1];
 
                 // if none, skip it
                 if ((ruleList.isEmpty()) && (elseRuleList.isEmpty()))
                     continue;
-
-                // get the fts level composition, if any
-                Composite composite = styleFactory.getComposite(fts.getOptions());
-                foundComposite |= composite != null;
 
                 // we can optimize this one and draw directly on the graphics, assuming
                 // there is no composition
                 Graphics2D graphics = null;
                 lfts = new LiteFeatureTypeStyle(graphics, ruleList, elseRuleList,
                         fts.getTransformation());
-
-                lfts.composite = composite;
 
                 if (FeatureTypeStyle.VALUE_EVALUATION_MODE_FIRST.equals(fts.getOptions().get(
                         FeatureTypeStyle.KEY_EVALUATION_MODE))) {
@@ -380,19 +375,15 @@ public class VectorMapRenderUtils {
         return result;
     }
 
-    private static List[] splitRules(FeatureTypeStyle fts, double scaleDenominator) {
-        Rule[] rules;
+    private static List<Rule>[] splitRules(final FeatureTypeStyle fts, final double scaleDenominator) {
+
         List<Rule> ruleList = new ArrayList<Rule>();
         List<Rule> elseRuleList = new ArrayList<Rule>();
 
-        rules = fts.getRules();
-        ruleList = new ArrayList();
-        elseRuleList = new ArrayList();
+        ruleList = new ArrayList<>();
+        elseRuleList = new ArrayList<>();
 
-        for (int j = 0; j < rules.length; j++) {
-            // getting rule
-            Rule r = rules[j];
-
+        for (Rule r : fts.rules()) {
             if (isWithInScale(r, scaleDenominator)) {
                 if (r.isElseFilter()) {
                     elseRuleList.add(r);
@@ -402,7 +393,9 @@ public class VectorMapRenderUtils {
             }
         }
 
-        return new List[] { ruleList, elseRuleList };
+        @SuppressWarnings("unchecked")
+        List<Rule>[] ret = new List[] { ruleList, elseRuleList };
+        return ret;
     }
 
     /**

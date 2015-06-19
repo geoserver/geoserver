@@ -2793,6 +2793,25 @@ public class CatalogImplTest {
         assertEquals(newHashSet(), asSet(catalog.list(FeatureTypeInfo.class, filter)));
         assertEquals(newHashSet(), asSet(catalog.list(CoverageInfo.class, filter)));
     }
+    
+    @Test
+    public void testFullTextSearchAddedKeyword() {
+        ft.getKeywords().add(new Keyword("air_temp"));
+        ft.getKeywords().add(new Keyword("temperatureAir"));
+        
+        l.setResource(ft);
+        addLayer();
+        
+        LayerInfo lproxy = catalog.getLayer(l.getId());
+        FeatureTypeInfo ftproxy = (FeatureTypeInfo)lproxy.getResource();
+        
+        ftproxy.getKeywords().add(new Keyword("newKeyword"));
+        catalog.save(ftproxy);
+
+        Filter filter = Predicates.fullTextSearch("newKeyword");
+        assertEquals(newHashSet(ft), asSet(catalog.list(FeatureTypeInfo.class, filter)));
+        assertEquals(newHashSet(l), asSet(catalog.list(LayerInfo.class, filter)));
+    }
 
     private <T> Set<T> asSet(CloseableIterator<T> list) {
         ImmutableSet<T> set;

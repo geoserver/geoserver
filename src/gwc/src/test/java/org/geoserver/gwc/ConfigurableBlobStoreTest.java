@@ -23,6 +23,7 @@ import org.geotools.util.logging.Logging;
 import org.geowebcache.io.ByteArrayResource;
 import org.geowebcache.io.Resource;
 import org.geowebcache.storage.BlobStore;
+import org.geowebcache.storage.BlobStoreListener;
 import org.geowebcache.storage.TileObject;
 import org.geowebcache.storage.blobstore.memory.CacheConfiguration;
 import org.geowebcache.storage.blobstore.memory.CacheProvider;
@@ -34,6 +35,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 /**
  * This class tests the functionalities of the {@link ConfigurableBlobStore} class.
@@ -51,12 +53,14 @@ public class ConfigurableBlobStoreTest extends GeoServerSystemTestSupport {
     /** {@link CacheProvider} object used for testing purposes */
     private static CacheProvider cache;
 
+    private BlobStore defaultStore;
+
     /** {@link ConfigurableBlobStore} object to test */
     private static ConfigurableBlobStore blobStore;
 
     /** Directory containing files for the {@link FileBlobStore} */
     private File directory;
-
+    
     @BeforeClass
     public static void initialSetup() {
         cache = new GuavaCacheProvider(new CacheConfiguration());
@@ -77,7 +81,7 @@ public class ConfigurableBlobStoreTest extends GeoServerSystemTestSupport {
         }
         directory.mkdirs();
 
-        BlobStore defaultStore = new FileBlobStore(directory.getAbsolutePath());
+        defaultStore = Mockito.spy(new FileBlobStore(directory.getAbsolutePath()));
         blobStore = new ConfigurableBlobStore(defaultStore, mbs, nbs);
         blobStore.setCache(cache);
     }
@@ -222,6 +226,38 @@ public class ConfigurableBlobStoreTest extends GeoServerSystemTestSupport {
         TileObject to4 = TileObject.createQueryTileObject("test:123123 112", xyz, "EPSG:4326",
                 "image/jpeg", parameters);
         assertFalse(blobStore.get(to4));
+    }
+
+    @Test
+    public void testListeners() throws Exception {
+        // Configure the blobstore
+        GWCConfig gwcConfig = new GWCConfig();
+        gwcConfig.setInnerCachingEnabled(true);
+        gwcConfig.setEnabledPersistence(true);
+        blobStore.setChanged(gwcConfig, false);
+        
+        BlobStoreListener l1 = Mockito.mock(BlobStoreListener.class);
+        BlobStoreListener l2 = Mockito.mock(BlobStoreListener.class);
+        
+        assertTrue(blobStore.getDelegate() instanceof MemoryBlobStore);
+
+        blobStore.addListener(l1);
+        blobStore.addListener(l2);
+
+        Mockito.verify(defaultStore, Mockito.times(2)).addListener(Mockito.any(BlobStoreListener.class));
+        Mockito.reset(defaultStore);
+        
+        // change the configuration
+        GWCConfig newConfig = new GWCConfig();
+        newConfig.setInnerCachingEnabled(false);
+        newConfig.setEnabledPersistence(true);
+        blobStore.setChanged(newConfig, false);
+
+        assertFalse(blobStore.getDelegate() instanceof MemoryBlobStore);
+
+        Mockito.verify(defaultStore, Mockito.times(2)).removeListener(Mockito.any(BlobStoreListener.class));
+        Mockito.verify(defaultStore, Mockito.times(2)).addListener(Mockito.any(BlobStoreListener.class));
+
     }
 
     /**

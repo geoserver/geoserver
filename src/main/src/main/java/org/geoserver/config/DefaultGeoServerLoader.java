@@ -1,25 +1,14 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.config;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.logging.Level;
 
 import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.MetadataMap;
-import org.geoserver.catalog.event.CatalogListener;
-import org.geoserver.catalog.impl.CatalogImpl;
-import org.geoserver.config.impl.CoverageAccessInfoImpl;
-import org.geoserver.config.impl.GeoServerInfoImpl;
-import org.geoserver.config.util.LegacyConfigurationImporter;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamServiceLoader;
 import org.geoserver.platform.GeoServerExtensions;
@@ -58,7 +47,10 @@ public class DefaultGeoServerLoader extends GeoServerLoader {
             final List<XStreamServiceLoader> loaders = 
                 GeoServerExtensions.extensions( XStreamServiceLoader.class );
             listener = new ServicePersister(loaders, geoServer);
-            geoServer.addListener(listener);
+        } else {
+            // avoid re-dumping all service config files during load,
+            // we'll attach it back once done
+            geoserver.removeListener(listener);
         }
         
         try {
@@ -72,8 +64,9 @@ public class DefaultGeoServerLoader extends GeoServerLoader {
             }
             readConfiguration(geoServer, xp);
         } finally {
-            // attach back the persister
+            // attach back the catalog persister and the service one
             geoserver.addListener(persister);
+            geoserver.addListener(listener);
         }
     }
     

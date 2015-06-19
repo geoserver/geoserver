@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -6,10 +6,9 @@
 package org.geoserver.config.util;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -19,6 +18,8 @@ import org.geoserver.config.ServiceInfo;
 import org.geoserver.config.ServiceLoader;
 import org.geoserver.config.impl.ServiceInfoImpl;
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Paths;
+import org.geoserver.platform.resource.Resource;
 
 /**
  * Service loader which loads and saves a service configuration with xstream.
@@ -122,21 +123,14 @@ public abstract class XStreamServiceLoader<T extends ServiceInfo> implements Ser
 
     public final void save(T service, GeoServer gs, File directory) throws Exception {
         String filename = getFilename();
-        File file = resourceLoader.find( directory, filename );
-        if ( file == null ) {
-            file = resourceLoader.createFile(directory, filename);
-        }
+        Resource resource = resourceLoader.get(Paths.convert(resourceLoader.getBaseDirectory(),
+                directory, filename));
         
-        BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(file));
-        try {
+        // using resource output stream makes sure we write on a temp file and them move
+        try (OutputStream out = resource.out()) {
             XStreamPersister xp = xpf.createXMLPersister();
             initXStreamPersister(xp, gs);
             xp.save( service, out );
-            
-            out.flush();
-        }
-        finally {
-            out.close();
         }
     }
     

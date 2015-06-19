@@ -39,6 +39,8 @@ import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataMap;
+import org.geoserver.catalog.PublishedInfo;
+import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.impl.ModificationProxy;
 import org.geoserver.gwc.ConfigurableBlobStore;
@@ -58,6 +60,7 @@ import org.geowebcache.layer.TileLayer;
 import org.geowebcache.storage.blobstore.memory.CacheProvider;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 
 /**
  * Edit panel for a {@link GeoServerTileLayerInfo} (used to edit caching options for both
@@ -140,7 +143,7 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
      * @param tileLayerModel must be a {@link GeoServerTileLayerInfoModel}
      */
     public GeoServerTileLayerEditor(final String id,
-            final IModel<? extends CatalogInfo> layerModel,
+            final IModel<? extends PublishedInfo> layerModel,
             final IModel<GeoServerTileLayerInfo> tileLayerModel) {
         super(id);
         checkArgument(tileLayerModel instanceof GeoServerTileLayerInfoModel);
@@ -150,7 +153,7 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
         final GWC mediator = GWC.get();
         final IModel<String> createTileLayerLabelModel;
 
-        final CatalogInfo info = layerModel.getObject();
+        final PublishedInfo info = layerModel.getObject();
         final GeoServerTileLayerInfo tileLayerInfo = tileLayerModel.getObject();
 
         if (info instanceof LayerInfo) {
@@ -254,8 +257,8 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
         cacheFormats.setLabel(new ResourceModel("cacheFormats"));
         configs.add(cacheFormats);
 
-        final List<String> formats = Arrays.asList("image/png", "image/png8", "image/jpeg",
-                "image/gif", "application/json;type=topojson");
+        final List<String> formats;
+        formats = Lists.newArrayList(GWC.get().getAdvertisedCachedFormats(info.getType()));
 
         ListView<String> cacheFormatsList = new ListView<String>("cacheFormats", formats) {
             private static final long serialVersionUID = 1L;

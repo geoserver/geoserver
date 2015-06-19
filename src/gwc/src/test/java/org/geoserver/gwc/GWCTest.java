@@ -5,6 +5,7 @@
  */
 package org.geoserver.gwc;
 
+import static com.google.common.collect.Sets.union;
 import static org.geoserver.gwc.GWC.tileLayerName;
 import static org.geoserver.gwc.GWCTestHelpers.mockGroup;
 import static org.geoserver.gwc.GWCTestHelpers.mockLayer;
@@ -1161,5 +1162,29 @@ public class GWCTest {
         Map<String, String> fullParameters = tileRequest.getFullParameters();
         assertEquals(fullParameters.toString(), rawKvpParamValue,
                 fullParameters.get(rawKvpParamName.toUpperCase()));
+    }
+    
+    @Test
+    public void testGetAdvertisedCachedFormats() {
+        // from src/main/resources/org/geoserver/gwc/advertised_formats.properties
+        Set<String> defaultFormats = ImmutableSet.of("image/png", "image/png8", "image/jpeg",
+                "image/gif");
+
+        // see src/test/resources/org/geoserver/gwc/advertised_formats.properties
+        Set<String> expectedVector = union(defaultFormats,
+                ImmutableSet.of("test/vector1", "test/vector2"));
+        Set<String> expectedRaster = union(defaultFormats,
+                ImmutableSet.of("test/raster1", "test/raster2;type=test"));
+        Set<String> expectedGroup = union(defaultFormats,
+                ImmutableSet.of("test/group1", "test/group2"));
+
+        assertEquals(expectedVector, mediator.getAdvertisedCachedFormats(PublishedType.VECTOR));
+        assertEquals(expectedVector, mediator.getAdvertisedCachedFormats(PublishedType.REMOTE));
+
+        assertEquals(expectedRaster, mediator.getAdvertisedCachedFormats(PublishedType.RASTER));
+        assertEquals(expectedRaster, mediator.getAdvertisedCachedFormats(PublishedType.WMS));
+
+        assertEquals(expectedGroup, mediator.getAdvertisedCachedFormats(PublishedType.GROUP));
+
     }
 }

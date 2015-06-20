@@ -1222,7 +1222,6 @@
     <version>2.1</version>
     <configuration>
      <descriptors>
-      <descriptor>release/src.xml</descriptor>
       <descriptor>release/war.xml</descriptor>
       <descriptor>release/javadoc.xml</descriptor>
       <descriptor>release/bin.xml</descriptor>

@@ -1,6 +1,8 @@
 package org.geoserver.platform;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.Map;
 
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -70,7 +72,7 @@ public class GeoServerExtensionsHelper {
      * @param name Singleton name
      * @param bean Singleton
      */
-    public static void singleton( String name, Object bean ){
+    public static void singleton(String name, Object bean, Class<?>... declaredClasses) {
         if( GeoServerExtensions.context != null ){
             if( GeoServerExtensions.context.containsBean(name) ){
                 Object conflict = GeoServerExtensions.context.getBean(name);
@@ -86,8 +88,25 @@ public class GeoServerExtensionsHelper {
             return;
         }
         GeoServerExtensions.singletonBeanCache.put( name,  bean );
-        Class<?> type = bean.getClass();
-        GeoServerExtensions.extensionsCache.put( type, new String[]{ name } );
+        if (declaredClasses != null && declaredClasses.length > 0) {
+            for (Class<?> clazz : declaredClasses) {
+                addToCache(GeoServerExtensions.extensionsCache, clazz, name);
+            }
+        } else {
+            Class<?> type = bean.getClass();
+            addToCache(GeoServerExtensions.extensionsCache, type, name);
+        }
+    }
+
+    static <T> void addToCache(Map<T, String[]> cache, T key, String name) {
+        String[] cached = cache.get(key);
+        if (cached != null) {
+            cached = Arrays.copyOf(cached, cached.length + 1);
+            cached[cached.length - 1] = name;
+        } else {
+            cached = new String[] { name };
+        }
+        cache.put(key, cached);
     }
     
     /**

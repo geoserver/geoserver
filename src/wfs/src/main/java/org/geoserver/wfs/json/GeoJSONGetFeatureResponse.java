@@ -430,14 +430,11 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat {
             }
             
             int count = 0;
-            count = source.getCount(countQuery);
-            if (count == -1) {
-                // information was not available in the header!
-                org.geotools.data.Query gtQuery = new org.geotools.data.Query(countQuery);
-                FeatureCollection<? extends FeatureType, ? extends Feature> features = source
-                        .getFeatures(gtQuery);
-                count = features.size();
-            }
+            // information was not available in the header!
+            org.geotools.data.Query gtQuery = new org.geotools.data.Query(countQuery);
+            FeatureCollection<? extends FeatureType, ? extends Feature> features = source
+                    .getFeatures(gtQuery);
+            count = features.size();
             totalCount +=count;
         }
 

@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -6,12 +6,10 @@
 
 package org.geoserver.wfs.json;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.*;
 
 import java.io.File;
 import java.util.Collection;
@@ -20,10 +18,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.xml.namespace.QName;
-
-import net.sf.json.JSONArray;
-import net.sf.json.JSONNull;
-import net.sf.json.JSONObject;
 
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.ProjectionPolicy;
@@ -41,13 +35,19 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
+import net.sf.json.JSONArray;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONNull;
+import net.sf.json.JSONNull;
+import net.sf.json.JSONObject;
+import net.sf.json.JSONObject;
+
 /**
  * 
- * @author carlo cancellieri - GeoSolutions
+ * @author carlo cancellieri - Geimport org.geoserver.config.Geoolutions
  *
  */
 public class GeoJSONTest extends WFSTestSupport {
-       
     public static QName LINE3D = new QName(SystemTestData.CITE_URI, "Line3D", SystemTestData.CITE_PREFIX);
     public static QName POINT_LATLON = new QName(SystemTestData.CITE_URI, "PointLatLon", SystemTestData.CITE_PREFIX);
     public static QName POINT_LONLAT = new QName(SystemTestData.CITE_URI, "PointLonLat", SystemTestData.CITE_PREFIX);
@@ -309,6 +309,31 @@ public class GeoJSONTest extends WFSTestSupport {
         JSONObject rootObject4 = JSONObject.fromObject( out4 );
         assertEquals(rootObject4.get("totalFeatures"),3);
         
+        //post with spatial-filter in another projection than layer-projection
+        String xml = "<wfs:GetFeature " + "service=\"WFS\" " + "outputFormat=\""+JSONType.json+"\" "
+                + "version=\"1.1.0\" "
+                + "xmlns:cdf=\"http://www.opengis.net/cite/data\" "
+                + "xmlns:ogc=\"http://www.opengis.net/ogc\" "
+                + "xmlns:wfs=\"http://www.opengis.net/wfs\" " + "> "
+                + "<wfs:Query typeName=\"sf:AggregateGeoFeature\" srsName=\"EPSG:900913\"> "
+                + "<ogc:Filter xmlns:ogc=\"http://www.opengis.net/ogc\"> "
+                + "<ogc:Intersects> "
+                + "<ogc:PropertyName></ogc:PropertyName> "
+                + "<gml:Polygon xmlns:gml=\"http://www.opengis.net/gml\" srsName=\"EPSG:900913\"> "
+                + "<gml:exterior> "
+                + "<gml:LinearRing> "
+                + "<gml:posList>7666573.330932751 3485566.812628661 8010550.557483965 3485566.812628661 8010550.557483965 3788277.001334882 7666573.330932751 3788277.001334882 7666573.330932751 3485566.812628661</gml:posList> "
+                + "</gml:LinearRing> "
+                + "</gml:exterior> "
+                + "</gml:Polygon> "
+                + "</ogc:Intersects> "
+                + "</ogc:Filter> "
+                + "</wfs:Query> " + "</wfs:GetFeature>";
+
+        String out5 = postAsServletResponse( "wfs", xml ).getOutputStreamContent();
+        
+        JSONObject rootObject5 = JSONObject.fromObject( out5 );
+        assertEquals(rootObject5.get("totalFeatures"),1);
     }
 
     @Test

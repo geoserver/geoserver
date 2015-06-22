@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -124,9 +124,18 @@ public class NamespaceWorkspaceConsistencyListener implements CatalogListener {
         // ignore
     }
 
-
+    /**
+     * When a namespace is removed, makes sure the associated workspace is removed as well.
+     */
     public void handleRemoveEvent(CatalogRemoveEvent event) throws CatalogException {
-        // ignore
+        if (event.getSource() instanceof NamespaceInfo) {
+            NamespaceInfo ns = (NamespaceInfo) event.getSource();
+
+            WorkspaceInfo ws = catalog.getWorkspaceByName(ns.getPrefix());
+            if(ws != null) {
+                catalog.remove(ws);
+            }
+        }
     }
 
     public void reloaded() {

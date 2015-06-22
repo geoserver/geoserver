@@ -19,9 +19,13 @@ import org.geoserver.importer.ImportTask;
 import org.geoserver.importer.ImporterTestSupport;
 import org.geoserver.importer.transform.AttributesToPointGeometryTransform;
 import org.geoserver.importer.transform.TransformChain;
+import org.geotools.data.DataUtilities;
 import org.geotools.data.FeatureSource;
+import org.geotools.data.simple.SimpleFeatureCollection;
+import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
+import org.geotools.filter.text.cql2.CQL;
 import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Test;
@@ -179,4 +183,80 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
         assertEquals("Invalid y coordinate", 46.07, coordinate.y, 0.1);
         featureIterator.close();
     }
+
+    @Test
+    public void testDirectExecuteAsync() throws Exception {
+        testDirectExecuteInternal(true);
+    }
+
+    @Test
+    public void testDirectExecuteSync() throws Exception {
+        testDirectExecuteInternal(false);
+    }
+
+    void testDirectExecuteInternal(boolean async) throws Exception {
+        File gmlFile = file("gml/poi.gml2.gml");
+        String wsName = getCatalog().getDefaultWorkspace().getName();
+
+        // @formatter:off 
+        String contextDefinition = "{\n" + 
+                "   \"import\": {\n" +
+                "      \"targetWorkspace\": {\n" + 
+                "         \"workspace\": {\n" + 
+                "            \"name\": \"" + wsName + "\"\n" + 
+                "         }\n" + 
+                "      },\n" + 
+                "      \"data\": {\n" + 
+                "        \"type\": \"file\",\n" + 
+                "        \"file\": \"" + gmlFile.getCanonicalPath() +  "\"\n" + 
+                "      }," +
+                "      targetStore: {\n" + 
+                "        dataStore: {\n" + 
+                "        name: \"h2\",\n" + 
+                "        }\n" +
+                "      }\n" +    
+                "   }\n" + 
+                "}";
+        // @formatter:on 
+
+        JSONObject json = (JSONObject) json(postAsServletResponse("/rest/imports?execute=true"
+                + (async ? "&async=true" : ""), contextDefinition, "application/json"));
+        // print(json);
+        String state = null;
+        if (async) {
+            int importId = json.getJSONObject("import").getInt("id");
+            for (int i = 0; i < 60 * 2 * 2; i++) {
+                json = (JSONObject) getAsJSON("/rest/imports/" + importId);
+                // print(json);
+                state = json.getJSONObject("import").getString("state");
+                if ("INIT".equals(state) || "RUNNING".equals(state) || "PENDING".equals(state)) {
+                    Thread.sleep(500);
+                }
+            }
+        } else {
+            state = json.getJSONObject("import").getString("state");
+        }
+        assertEquals("COMPLETE", state);
+        checkPoiImport();
+    }
+
+    private void checkPoiImport() throws Exception {
+        FeatureTypeInfo fti = getCatalog().getResourceByName("poi", FeatureTypeInfo.class);
+        assertNotNull(fti);
+        SimpleFeatureType featureType = (SimpleFeatureType) fti.getFeatureType();
+        GeometryDescriptor geometryDescriptor = featureType.getGeometryDescriptor();
+        assertEquals("Expecting a point geometry", Point.class, geometryDescriptor.getType()
+                .getBinding());
+        assertEquals(4, featureType.getAttributeCount());
+
+        // read the features, check they are in the right order
+        SimpleFeatureSource fs = (SimpleFeatureSource) fti.getFeatureSource(null, null);
+        SimpleFeatureCollection fc = fs.getFeatures(CQL.toFilter("NAME = 'museam'"));
+        assertEquals(1, fc.size());
+        SimpleFeature sf = DataUtilities.first(fc);
+        Point p = (Point) sf.getDefaultGeometry();
+        assertEquals(-74.0104611, p.getX(), 1e-6);
+        assertEquals(40.70758763, p.getY(), 1e-6);
+    }
+
 }

@@ -123,7 +123,7 @@ public class ImportResource extends BaseResource {
         Form query = getRequest().getResourceRef().getQueryAsForm();
 
         if (query.getNames().contains("async")) {
-            importer.runAsync(context, ImportFilter.ALL);
+            importer.runAsync(context, ImportFilter.ALL, false);
         } else {
             importer.run(context);
             // @todo revisit - if errors occur, they are logged. A second request
@@ -138,6 +138,7 @@ public class ImportResource extends BaseResource {
         try {
             Form query = getRequest().getResourceRef().getQueryAsForm();
             boolean async = query.getNames().contains("async");
+            boolean execute = query.getNames().contains("execute");
 
             if (async) {
                 context = importer.registerContext(id);
@@ -190,7 +191,13 @@ public class ImportResource extends BaseResource {
             importer.changed(context);
 
             if (async && context.getData() != null) {
-                importer.initAsynch(context, true);
+                if (execute) {
+                    importer.runAsync(context, ImportFilter.ALL, true);
+                } else {
+                    importer.initAsync(context, true);
+                }
+            } else if (execute && context.getData() != null) {
+                importer.run(context);
             }
 
             getResponse().redirectSeeOther(getPageInfo().rootURI("/imports/"+context.getId()));

@@ -138,10 +138,6 @@ import com.vividsolutions.jts.geom.Polygon;
  * @version $Id$
  * 
  */
-/**
- * @author groldan
- * 
- */
 public class GWC implements DisposableBean, InitializingBean, ApplicationContextAware {
 
     private static final String GLOBAL_LOCK_KEY = "global";

@@ -31,5 +31,17 @@
       <description>The topoJSON map builder expects geometries in screen coordinates</description>
     </property>
   </bean>
+  
+  <bean id="wmsMapBoxBuilderFactory" class="org.geoserver.wms.mapbox.MapBoxTileBuilderFactory">
+    <!--  <property name="forceCrs" value="true" />  -->
+  </bean>
+
+  <bean id="wmsMapBoxMapOutputFormat" class="org.geoserver.wms.vector.VectorTileMapOutputFormat">
+    <constructor-arg ref="wms"/>
+    <constructor-arg ref="wmsMapBoxBuilderFactory"/>
+    <property name="clipToMapBounds" value="true" />
+    <property name="transformToScreenCoordinates" value="false" />
+  </bean>
+  
 
 </beans>

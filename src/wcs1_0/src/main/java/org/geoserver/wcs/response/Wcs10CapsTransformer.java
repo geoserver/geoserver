@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -38,7 +38,6 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.config.SettingsInfo;
 import org.geoserver.config.ResourceErrorHandling;
 import org.geoserver.ows.URLMangler.URLType;
-import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.wcs.WCSInfo;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.factory.GeoTools;
@@ -47,6 +46,7 @@ import org.geotools.util.logging.Logging;
 import org.geotools.xml.transform.TransformerBase;
 import org.geotools.xml.transform.Translator;
 import org.vfny.geoserver.global.CoverageInfoLabelComparator;
+import org.vfny.geoserver.util.ResponseUtils;
 import org.vfny.geoserver.wcs.WcsException;
 import org.vfny.geoserver.wcs.WcsException.WcsExceptionCode;
 import org.xml.sax.ContentHandler;
@@ -294,7 +294,7 @@ public class Wcs10CapsTransformer extends TransformerBase {
 
             if ((mdl.getContent() != null) && (mdl.getContent() != "")) {
                 attributes.addAttribute("", "xlink:href", "xlink:href", 
-                        "", mdl.getContent());
+                        "", ResponseUtils.proxifyMetadataLink(mdl, request.getBaseUrl()));
             }
 
             if (attributes.getLength() > 0) {
@@ -491,7 +491,7 @@ public class Wcs10CapsTransformer extends TransformerBase {
 
             // String baseURL = RequestUtils.proxifiedBaseURL(request.getBaseUrl(),
             // wcs.getGeoServer().getGlobal().getProxyBaseUrl());
-            String url = ResponseUtils.buildURL(request.getBaseUrl(), "wcs", null, URLType.SERVICE);
+            String url = buildURL(request.getBaseUrl(), "wcs", null, URLType.SERVICE);
             attributes.addAttribute("", "xlink:href", "xlink:href", "", url+"?");
 
             start("wcs:Get");

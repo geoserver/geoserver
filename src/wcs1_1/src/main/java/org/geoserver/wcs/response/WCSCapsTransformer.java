@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -35,6 +35,7 @@ import org.geotools.util.logging.Logging;
 import org.geotools.xml.transform.TransformerBase;
 import org.geotools.xml.transform.Translator;
 import org.vfny.geoserver.global.CoverageInfoLabelComparator;
+import org.vfny.geoserver.util.ResponseUtils;
 import org.vfny.geoserver.wcs.WcsException;
 import org.vfny.geoserver.wcs.WcsException.WcsExceptionCode;
 import org.xml.sax.ContentHandler;
@@ -485,7 +486,7 @@ public class WCSCapsTransformer extends TransformerBase {
 
             if ((mdl.getContent() != null) && (mdl.getContent() != "")) {
                 attributes.addAttribute("", "xlink:href", "xlink:href", 
-                        "", mdl.getContent());
+                        "", ResponseUtils.proxifyMetadataLink(mdl, request.getBaseUrl()));
                 element("ows:Metadata", null, attributes);
             }
         }

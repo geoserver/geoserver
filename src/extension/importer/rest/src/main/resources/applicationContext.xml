@@ -97,6 +97,18 @@
         </entry>
         <entry>
           <key>
+            <value>/imports/{import}/transforms</value>
+          </key>
+          <value>txFinder</value>
+        </entry>
+        <entry>
+          <key>
+            <value>/imports/{import}/transforms/{transform}</value>
+          </key>
+          <value>txFinder</value>
+        </entry>
+        <entry>
+          <key>
             <value>/imports/{import}/tasks/{task}/data/files</value>
           </key>
           <value>dirFinder</value>

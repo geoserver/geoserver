@@ -12,6 +12,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -135,6 +136,9 @@ public class ImportJSONWriter {
             if (context.getData() != null) {
                 json.key("data");
                 data(context.getData(), context, expand-1);
+            }
+            if (!context.getDefaultTransforms().isEmpty()) {
+                transforms(context, expand - 1, context.getDefaultTransforms());
             }
             tasks(context.getTasks(), false, expand-1);
         }
@@ -347,15 +351,8 @@ public class ImportJSONWriter {
         json.key("transformChain").object();
         json.key("type").value(txChain instanceof VectorTransformChain ? "vector" : "raster");
 
-        json.key("transforms").array();
-
-        if (txChain != null) {
-            for (int i = 0; i < txChain.getTransforms().size(); i++) {
-                transform(txChain.getTransforms().get(i), i, task, false, expand);
-            }
-        }
-
-        json.endArray();
+        transforms(task, expand, txChain != null ? txChain.getTransforms()
+                : new ArrayList<ImportTransform>());
         json.endObject();
 
         if (top) {
@@ -365,11 +362,22 @@ public class ImportJSONWriter {
         json.flush();
     }
 
-    public void transform(ImportTransform transform, int index, ImportTask task, boolean top, 
+    private void transforms(Object parent, int expand, List<? extends ImportTransform> transforms)
+            throws IOException {
+        json.key("transforms").array();
+
+        for (int i = 0; i < transforms.size(); i++) {
+            transform(transforms.get(i), i, parent, false, expand);
+        }
+
+        json.endArray();
+    }
+
+    public void transform(ImportTransform transform, int index, Object parent, boolean top,
         int expand) throws IOException {
         json.object();
         json.key("type").value(transform.getClass().getSimpleName());
-        json.key("href").value(page.rootURI(pathTo(task)+"/transform/" + index));
+        json.key("href").value(page.rootURI(pathTo(parent) + "/transforms/" + index));
         if (expand > 0) {
             if (transform instanceof DateFormatTransform) {
                 DateFormatTransform df = (DateFormatTransform) transform;

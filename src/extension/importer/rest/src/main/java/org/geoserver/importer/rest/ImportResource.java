@@ -179,6 +179,7 @@ public class ImportResource extends BaseResource {
                 }
 
                 context.setData(newContext.getData());
+                context.getDefaultTransforms().addAll(newContext.getDefaultTransforms());
             }
 
             if (!async && context.getData() != null) {

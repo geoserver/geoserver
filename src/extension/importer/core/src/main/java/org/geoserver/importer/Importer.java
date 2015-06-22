@@ -333,7 +333,7 @@ public class Importer implements DisposableBean, ApplicationListener {
      * @param prepData
      * @return
      */
-    public Long initAsynch(final ImportContext context, final boolean prepData) {
+    public Long initAsync(final ImportContext context, final boolean prepData) {
         return jobs.submit(new Job<ImportContext>() {
             @Override
             protected ImportContext call(ProgressMonitor monitor) throws Exception {
@@ -836,9 +836,16 @@ public class Importer implements DisposableBean, ApplicationListener {
     }
 
     public Long runAsync(final ImportContext context, final ImportFilter filter) {
+        return runAsync(context, filter, false);
+    }
+
+    public Long runAsync(final ImportContext context, final ImportFilter filter, final boolean init) {
         return jobs.submit(new Job<ImportContext>() {
             @Override
             protected ImportContext call(ProgressMonitor monitor) throws Exception {
+                if (init) {
+                    init(context, true);
+                }
                 run(context, filter, monitor);
                 return context;
             }

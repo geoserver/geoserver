@@ -21,8 +21,11 @@
   <bean id="wmsTopoJSONMapOutputFormat" class="org.geoserver.wms.vector.VectorTileMapOutputFormat">
     <constructor-arg ref="wms"/>
     <constructor-arg ref="wmsTopoJSONBuilderFactory"/>
-    <property name="clipToMapBounds" value="true">
-      <description>Use geometries clipped to tile bounds</description>
+    <property name="clipToMapBounds" value="false">
+      <description>Use geometries clipped to tile bounds
+      Clipping is set to false since OL3 does not yet have a way to deal with clipped geometries.
+      It should be set to true once OL3 knows what to do with clipped geometries.
+      </description>
     </property>
     <property name="transformToScreenCoordinates" value="true">
       <description>The topoJSON map builder expects geometries in screen coordinates</description>

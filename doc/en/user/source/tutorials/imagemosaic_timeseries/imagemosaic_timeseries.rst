@@ -132,7 +132,7 @@ indexer.properties
      - Specifies the name of the elevation attribute.
    * - *Schema*
      - Y
-     - A coma separated sequence that describes the mapping between attribute and the data type.
+     - A comma separated sequence that describes the mapping between attribute and the data type.
    * - *PropertyCollectors*
      - Y
      - Specifies the extractor classes.

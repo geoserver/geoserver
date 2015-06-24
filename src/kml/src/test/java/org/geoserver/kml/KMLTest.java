@@ -171,13 +171,13 @@ public class KMLTest extends WMSTestSupport {
         assertXpathEvaluatesTo("1", "count(//kml:Placemark)", doc);
         assertXpathEvaluatesTo("RoadSegments.1107532045088", "//kml:Placemark/@id", doc);
         assertXpathEvaluatesTo("RoadSegments.1107532045088", "//kml:Placemark/kml:name", doc);
-        String expectedDescription = String.format("<h4>RoadSegments</h4>%n" + 
-                "%n" + 
-                "<ul class=\"textattributes\">%n" + 
-                "  %n" + 
-                "  <li><strong><span class=\"atr-name\">FID</span>:</strong> <span class=\"atr-value\">102</span></li>%n" + 
-                "  <li><strong><span class=\"atr-name\">NAME</span>:</strong> <span class=\"atr-value\">Route 5</span></li>%n" + 
-                "</ul>%n");
+        String expectedDescription = String.format("<h4>RoadSegments</h4>\n" + 
+                "\n" + 
+                "<ul class=\"textattributes\">\n" + 
+                "  \n" + 
+                "  <li><strong><span class=\"atr-name\">FID</span>:</strong> <span class=\"atr-value\">102</span></li>\n" + 
+                "  <li><strong><span class=\"atr-name\">NAME</span>:</strong> <span class=\"atr-value\">Route 5</span></li>\n" + 
+                "</ul>\n");
         assertXpathEvaluatesTo(expectedDescription, "//kml:Placemark/kml:description", doc);
         // check look-at
         assertXpathEvaluatesTo("-0.0020000000000095497", "//kml:Placemark/kml:LookAt/kml:longitude", doc);

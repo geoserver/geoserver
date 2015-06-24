@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014-2015 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -75,6 +75,20 @@ public interface WPSInfo extends ServiceInfo {
      * @param maxAsynchronousProcesses
      */
     public void setMaxAsynchronousProcesses(int maxAsynchronousProcesses);
+
+    /**
+      * Returns if synchronous mode is disabled
+      * 
+      * @return
+    */
+    public boolean getSynchronousDisabled();
+
+    /**
+      * Sets if synchronous mode is disabled
+      * 
+      * @return
+    */
+    public void setSynchronousDisabled(boolean synchronousDisabled);
 
     /**
      * Retrieves the process groups configurations

@@ -18,7 +18,7 @@ import org.opengis.util.ProgressListener;
 
 /**
  * Handles notification to all the {@link ProcessListener} implementations for a given process
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
 public class ProcessListenerNotifier {
@@ -45,7 +45,7 @@ public class ProcessListenerNotifier {
         this.inputs = inputs;
         this.listeners = listeners;
         fireProcessSubmitted();
-        
+
     }
 
     public void fireProcessSubmitted() {
@@ -124,7 +124,7 @@ public class ProcessListenerNotifier {
 
     /**
      * Listens to the process progress and allows to cancel it
-     * 
+     *
      * @author Andrea Aime - GeoSolutions
      */
     class WPSProgressListener implements ProgressListener {
@@ -160,7 +160,9 @@ public class ProcessListenerNotifier {
 
         @Override
         public void started() {
-            progress(0f);
+            if(task != null) {
+                progress(0f);
+            }
         }
 
         @Override

@@ -174,8 +174,9 @@ public class WPSExecutionManager implements ApplicationContextAware,
                 request.isAsynchronous());
         status.setRequest(request.getRequest());
         long maxExecutionTime = getMaxExecutionTime(synchronous);
+        long maxTotalTime = getMaxTotalTime(synchronous);
         Executor executor = new Executor(request, processManager, processName, inputs, synchronous,
-                status, resourceManager, maxExecutionTime);
+                status, resourceManager, maxExecutionTime, maxTotalTime);
 
         ExecuteResponseType response;
         if (synchronous) {
@@ -207,6 +208,15 @@ public class WPSExecutionManager implements ApplicationContextAware,
             return wps.getMaxSynchronousExecutionTime() * 1000;
         } else {
             return wps.getMaxAsynchronousExecutionTime() * 1000;
+        }
+    }
+
+    private long getMaxTotalTime(boolean synchronous) {
+        WPSInfo wps = geoServer.getService(WPSInfo.class);
+        if (synchronous) {
+            return wps.getMaxSynchronousTotalTime() * 1000;
+        } else {
+            return wps.getMaxAsynchronousTotalTime() * 1000;
         }
     }
 
@@ -307,15 +317,20 @@ public class WPSExecutionManager implements ApplicationContextAware,
 
         private long maxExecutionTime;
 
+        private long maxTotalTime;
+
         private Executor(ExecuteRequest request, ProcessManager processManager, Name processName,
                 LazyInputMap inputs, boolean synchronous, ExecutionStatus status,
-                WPSResourceManager resources, long maxExecutionTime) {
+                WPSResourceManager resources, long maxExecutionTime, long maxTotalTime) {
+
             this.request = request;
             this.processManager = processManager;
             this.status = status;
             this.inputs = inputs;
             this.synchronous = synchronous;
             this.maxExecutionTime = maxExecutionTime;
+            this.maxTotalTime = maxTotalTime;
+
             // if we execute asynchronously we'll need to make sure all thread locals are
             // transferred (in particular, the executionId in WPSResourceManager)
             if (status.isAsynchronous()) {
@@ -379,10 +394,8 @@ public class WPSExecutionManager implements ApplicationContextAware,
             float outputPercentage = (hasComplexOutputs() ? longStepPercentage : 0) + 1;
             float executionPercentage = 100 - inputPercentage - outputPercentage;
             ProgressListener listener = notifier.getProgressListener();
-            // do we have a processing time limit?
-            if (maxExecutionTime > 0) {
-                listener = new MaxExecutionTimeListener(listener, maxExecutionTime);
-            }
+
+            listener = new MaxExecutionTimeListener(listener, maxExecutionTime, maxTotalTime);
             try {
                 // have the input map give us progress report
                 inputs.setListener(new SubProgressListener(listener, 0, inputPercentage));

@@ -39,7 +39,9 @@ public class ProcessDismissedException extends RuntimeException {
             if(max.isExpired()) {
                 return "The process executed got interrupted because it went "
                         + "beyond the configured limits of "
-                        + (max.getMaxExecutionTime() / 1000 + " seconds");
+                        + "maxExecutionTime " + (max.getMaxExecutionTime() / 1000) + " seconds, "
+                        + "maxTotalTime " + (max.getMaxTotalTime() / 1000) + " seconds"
+                ;
             }
         }
 

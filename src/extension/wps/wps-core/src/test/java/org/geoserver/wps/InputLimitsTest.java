@@ -65,6 +65,10 @@ public class InputLimitsTest extends WPSTestSupport {
         // global size limits
         wps.setMaxComplexInputSize(10);
 
+        // max execution times
+        wps.setMaxSynchronousTotalTime(1);
+        wps.setMaxAsynchronousTotalTime(2);
+
         // for the buffer process
         ProcessGroupInfo geoGroup = new ProcessGroupInfoImpl();
         geoGroup.setFactoryClass(GeometryProcessFactory.class);
@@ -541,7 +545,7 @@ public class InputLimitsTest extends WPSTestSupport {
     }
 
     @Test
-    public void testAsyncExecutionLimits() throws Exception {
+    public void testAsyncTotalLimits() throws Exception {
         WPSInfo wps = getGeoServer().getService(WPSInfo.class);
         wps.setMaxAsynchronousExecutionTime(2);
         getGeoServer().save(wps);
@@ -574,11 +578,13 @@ public class InputLimitsTest extends WPSTestSupport {
         String message = xpath.evaluate(
                         "//wps:Status/wps:ProcessFailed/ows:ExceptionReport/ows:Exception/ows:ExceptionText",
                         dom);
-        assertTrue(message.contains("went beyond the configured limits of 2 seconds"));
+
+        assertTrue(message.contains("went beyond the configured limits"));
+        assertTrue(message.contains("maxTotalTime 2 seconds"));
     }
 
     @Test
-    public void testSyncExecutionLimits() throws Exception {
+    public void testSyncTotalLimits() throws Exception {
         WPSInfo wps = getGeoServer().getService(WPSInfo.class);
         wps.setMaxSynchronousExecutionTime(1);
         getGeoServer().save(wps);
@@ -597,7 +603,9 @@ public class InputLimitsTest extends WPSTestSupport {
         String message = xpath.evaluate(
                         "//wps:Status/wps:ProcessFailed/ows:ExceptionReport/ows:Exception/ows:ExceptionText",
                         dom);
-        assertTrue(message.contains("went beyond the configured limits of 1 seconds"));
+
+        assertTrue(message.contains("went beyond the configured limits"));
+        assertTrue(message.contains("maxTotalTime 1 seconds"));
     }
 
     String urlEncode(String string) throws Exception {

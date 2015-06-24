@@ -77,6 +77,20 @@ public interface WPSInfo extends ServiceInfo {
     public void setMaxAsynchronousProcesses(int maxAsynchronousProcesses);
 
     /**
+      * Returns if synchronous mode is disabled
+      * 
+      * @return
+    */
+    public boolean getSynchronousDisabled();
+
+    /**
+      * Sets if synchronous mode is disabled
+      * 
+      * @return
+    */
+    public void setSynchronousDisabled(boolean synchronousDisabled);
+
+    /**
      * Retrieves the process groups configurations
      * 
      * @return

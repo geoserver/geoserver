@@ -309,8 +309,8 @@ Code
           font-style: normal
           font-weight: bold
           placement: point
-          anchor: (0.5,0.0)
-          displacement: (0,5)
+          anchor: [0.5,0.0]
+          displacement: [0,5]
 
 Details
 ~~~~~~~
@@ -356,8 +356,8 @@ Code
           font-style: normal
           font-weight: bold
           placement: point
-          anchor: (0.5,0.0)
-          displacement: (0,25)
+          anchor: [0.5,0.0]
+          displacement: [0,25]
           rotation: -45
 
 Details
@@ -490,7 +490,7 @@ Code
   - name: name
     rules:
     - name: Large
-      scale: (,1.6e8)
+      scale: [min,1.6e8]
       symbolizers:
       - point:
           size: 12
@@ -499,7 +499,7 @@ Code
               shape: circle
               fill-color: '#CC3300'
     - name: Medium
-      scale: (1.6e8,3.2e8)
+      scale: [1.6e8,3.2e8]
       symbolizers:
       - point:
           size: 8
@@ -508,7 +508,7 @@ Code
               shape: circle
               fill-color: '#CC3300'
     - name: Small
-      scale: (3.2e8,)
+      scale: [3.2e8,max]
       symbolizers:
       - point:
           size: 4

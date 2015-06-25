@@ -17,5 +17,5 @@ feature-styles:
         font-style: normal
         font-weight: bold
         placement: point
-        anchor: (0.5,0.0)
-        displacement: (0,5)
+        anchor: [0.5,0.0]
+        displacement: [0,5]

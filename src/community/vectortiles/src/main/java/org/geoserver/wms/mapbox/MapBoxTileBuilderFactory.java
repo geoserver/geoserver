@@ -16,7 +16,7 @@ import com.google.common.collect.ImmutableSet;
  */
 public class MapBoxTileBuilderFactory implements VectorTileBuilderFactory {
         
-    public static final String MIME_TYPE = "application/x-vtile";
+    public static final String MIME_TYPE = "application/x-protobuf;type=mapbox-vector";
 
     public static final Set<String> OUTPUT_FORMATS = ImmutableSet.of(MIME_TYPE, "pbf");
     

@@ -40,7 +40,7 @@
     <constructor-arg ref="wms"/>
     <constructor-arg ref="wmsMapBoxBuilderFactory"/>
     <property name="clipToMapBounds" value="true" />
-    <property name="transformToScreenCoordinates" value="false" />
+    <property name="transformToScreenCoordinates" value="true" />
   </bean>
   
 

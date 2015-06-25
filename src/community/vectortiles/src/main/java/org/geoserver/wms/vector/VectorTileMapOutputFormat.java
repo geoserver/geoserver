@@ -91,6 +91,9 @@ public class VectorTileMapOutputFormat extends AbstractMapOutputFormat {
     @Override
     public WebMap produceMap(final WMSMapContent mapContent) throws ServiceException, IOException {
 
+        mapContent.setMapWidth(5 * mapContent.getMapWidth());
+        mapContent.setMapHeight(5 * mapContent.getMapHeight());
+        
         final ReferencedEnvelope renderingArea = mapContent.getRenderingArea();
         final CoordinateReferenceSystem mapCrs = renderingArea.getCoordinateReferenceSystem();
         final AffineTransform worldToScreen = mapContent.getRenderingTransform();
@@ -146,7 +149,7 @@ public class VectorTileMapOutputFormat extends AbstractMapOutputFormat {
 
             final MathTransform tx = transformToScreenCoordinates ? sourceToScreen
                     : sourceToTargetCrs;
-            final double pixelDistance = 0.5;
+            final double pixelDistance = 1;
             final double simplificationDistance = getSimplificationDistance(sourceToScreen,
                     paintArea, pixelDistance);
             final double distanceTolerance = transformToScreenCoordinates ? pixelDistance

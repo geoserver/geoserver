@@ -3,7 +3,7 @@ feature-styles:
 - name: name
   rules:
   - name: Large
-    scale: (,1.0e8)
+    scale: [min,1.0e8]
     symbolizers:
     - polygon:
         stroke-color: '#000000'
@@ -17,16 +17,16 @@ feature-styles:
         font-style: normal
         font-weight: bold
         placement: point
-        anchor: (0.5,0.5)
+        anchor: [0.5,0.5]
   - name: Medium
-    scale: (1.0e8,2.0e8)
+    scale: [1.0e8,2.0e8]
     symbolizers:
     - polygon:
         stroke-color: '#000000'
         stroke-width: 4
         fill-color: '#0000CC'
   - name: Small
-    scale: (2.0e8,)
+    scale: [2.0e8,max]
     symbolizers:
     - polygon:
         stroke-color: '#000000'

@@ -3,7 +3,7 @@ feature-styles:
 - name: name
   rules:
   - name: Large
-    scale: (,1.6e8)
+    scale: [min,1.6e8]
     symbolizers:
     - point:
         size: 12
@@ -12,7 +12,7 @@ feature-styles:
             shape: circle
             fill-color: '#CC3300'
   - name: Medium
-    scale: (1.6e8,3.2e8)
+    scale: [1.6e8,3.2e8]
     symbolizers:
     - point:
         size: 8
@@ -21,7 +21,7 @@ feature-styles:
             shape: circle
             fill-color: '#CC3300'
   - name: Small
-    scale: (3.2e8,)
+    scale: [3.2e8,max]
     symbolizers:
     - point:
         size: 4

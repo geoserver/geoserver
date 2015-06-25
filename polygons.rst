@@ -340,7 +340,7 @@ Code
           font-style: normal
           font-weight: bold
           placement: point
-          anchor: (0.5,0.5)
+          anchor: [0.5,0.5]
           x-autoWrap: 60
           x-maxDisplacement: 150
 
@@ -464,7 +464,7 @@ Code
   - name: name
     rules:
     - name: Large
-      scale: (,1.0e8)
+      scale: [min,1.0e8]
       symbolizers:
       - polygon:
           stroke-color: '#000000'
@@ -478,16 +478,16 @@ Code
           font-style: normal
           font-weight: bold
           placement: point
-          anchor: (0.5,0.5)
+          anchor: [0.5,0.5]
     - name: Medium
-      scale: (1.0e8,2.0e8)
+      scale: [1.0e8,2.0e8]
       symbolizers:
       - polygon:
           stroke-color: '#000000'
           stroke-width: 4
           fill-color: '#0000CC'
     - name: Small
-      scale: (2.0e8,)
+      scale: [2.0e8,max]
       symbolizers:
       - polygon:
           stroke-color: '#000000'
@@ -530,7 +530,7 @@ This style contains three rules, defined as follows:
      - 2
      - No
 
-The first rule, on **lines 5-20**, is for the smallest scale denominator, corresponding to when the view is "zoomed in". The scale rule is set on **line 6** such that the rule will apply only where the scale denominator is 100,000,000 or less. **Line 11** defines the fill as blue (``'#0000CC'``). Note that the fill is kept constant across all rules regardless of the scale denominator. As in the :ref:`ysld_cookbook_polygons_polygonwithdefaultlabel` or :ref:`ysld_cookbook_polygons_polygonwithstyledlabel` examples, the rule also contains a text symbolizer at **lines 12-20** for drawing a text label on top of the polygon. **Lines 15-18** set the font information to be Arial, 14 pixels, and bold with no italics. The label is centered both horizontally and vertically along the centroid of the polygon on by setting ``anchor`` to be ``(0.5, 0.5)`` (or 50%) on **line 20**. Finally, the color of the font is set to white (``'#FFFFFF'``) in **line 14**.
+The first rule, on **lines 5-20**, is for the smallest scale denominator, corresponding to when the view is "zoomed in". The scale rule is set on **line 6** such that the rule will apply only where the scale denominator is 100,000,000 or less. **Line 11** defines the fill as blue (``'#0000CC'``). Note that the fill is kept constant across all rules regardless of the scale denominator. As in the :ref:`ysld_cookbook_polygons_polygonwithdefaultlabel` or :ref:`ysld_cookbook_polygons_polygonwithstyledlabel` examples, the rule also contains a text symbolizer at **lines 12-20** for drawing a text label on top of the polygon. **Lines 15-18** set the font information to be Arial, 14 pixels, and bold with no italics. The label is centered both horizontally and vertically along the centroid of the polygon on by setting ``anchor`` to be ``[0.5, 0.5]`` (or 50%) on **line 20**. Finally, the color of the font is set to white (``'#FFFFFF'``) in **line 14**.
 
 The second rule, on **lines 21-27**, is for the intermediate scale denominators, corresponding to when the view is "partially zoomed". The scale rules on **lines 22** set the rule such that it will apply to any map with a scale denominator between 100,000,000 and 200,000,000. (The lower bound is inclusive and the upper bound is exclusive, so a zoom level of exactly 200,000,000 would *not* apply here.)  Aside from the scale, there are two differences between this rule and the first: the width of the stroke is set to 4 pixels on **line 26** and a text symbolizer is not present so that no labels will be displayed.
 

@@ -15,6 +15,6 @@ feature-styles:
         font-style: normal
         font-weight: bold
         placement: point
-        anchor: (0.5,0.5)
+        anchor: [0.5,0.5]
         x-autoWrap: 60
         x-maxDisplacement: 150

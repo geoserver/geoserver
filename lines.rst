@@ -668,19 +668,19 @@ Code
   - name: name
     rules:
     - name: Large
-      scale: (,1.8e8)
+      scale: [min,1.8e8]
       symbolizers:
       - line:
           stroke-color: '#009933'
           stroke-width: 6
     - name: Medium
-      scale: (1.8e8,3.6e8)
+      scale: [1.8e8,3.6e8]
       symbolizers:
       - line:
           stroke-color: '#009933'
           stroke-width: 4
     - name: Small
-      scale: (3.6e8,)
+      scale: [3.6e8,max]
       symbolizers:
       - line:
           stroke-color: '#009933'

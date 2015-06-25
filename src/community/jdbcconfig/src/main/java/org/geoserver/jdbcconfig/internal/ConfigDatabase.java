@@ -16,6 +16,7 @@ import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Proxy;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -32,6 +33,9 @@ import java.util.logging.Logger;
 import javax.annotation.Nullable;
 import javax.sql.DataSource;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Predicate;
+import org.apache.wicket.util.string.Strings;
 import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.CatalogVisitorAdapter;
 import org.geoserver.catalog.CoverageInfo;
@@ -106,8 +110,10 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
 import org.springframework.jdbc.core.RowMapper;
 
 /**
@@ -509,15 +515,12 @@ public class ConfigDatabase {
 
         final String localPropertyName = prop.getPropertyName();
         String[] steps = localPropertyName.split("\\.");
+        // Step back through ancestor property references If starting at a.b.c.d, then look at a.b.c, then a.b, then a
         for (int i = steps.length - 1; i >= 0; i--) {
-            String backPropName = steps[0];
-            for (int j = 1; j < i; j++) {
-                backPropName += "." + steps[j];
-            }
+            String backPropName = Strings.join(".", Arrays.copyOfRange(steps, 0, i));
             Object backProp = ff.property(backPropName).evaluate(info);
             if (backProp != null) {
-                if (prop.isCollectionProperty()) {
-                    checkState(backProp instanceof Set || backProp instanceof List);
+                if (prop.isCollectionProperty() && (backProp instanceof Set || backProp instanceof List)) {
                     List<?> list;
                     if (backProp instanceof Set) {
                         list = asValueList(backProp);
@@ -631,7 +634,15 @@ public class ConfigDatabase {
         // see HACK block bellow
         final boolean updateResouceLayersName = info instanceof ResourceInfo
                 && modificationProxy.getPropertyNames().contains("name");
-
+        final boolean updateResourceLayersKeywords = 
+                CollectionUtils.exists(modificationProxy.getPropertyNames(), new Predicate() {
+            @Override
+            public boolean evaluate(Object input) {
+                return ((String)input).contains("keyword");
+            }
+            
+        });
+        
         modificationProxy.commit();
 
         Map<String, ?> params;
@@ -663,6 +674,9 @@ public class ConfigDatabase {
             if (updateResouceLayersName) {
                 updateResourceLayerName((ResourceInfo) info);
             }
+            if (updateResourceLayersKeywords) {
+                updateResourceLayerKeywords((ResourceInfo) info);
+            }
         }
         // / </HACK>
         return getById(id, clazz);
@@ -675,6 +689,19 @@ public class ConfigDatabase {
         resourceLayers = this.queryAsList(LayerInfo.class, filter, null, null, null);
         for (LayerInfo layer : resourceLayers) {
             Set<PropertyType> propertyTypes = dbMappings.getPropertyTypes(LayerInfo.class, "name");
+            PropertyType propertyType = propertyTypes.iterator().next();
+            Property changedProperty = new Property(propertyType, newValue);
+            Integer layerOid = findObjectId(layer);
+            updateQueryableProperties(layer, layerOid, ImmutableSet.of(changedProperty));
+        }
+    }
+    private <T> void updateResourceLayerKeywords(ResourceInfo info) {
+        final Object newValue = info.getKeywords();
+        Filter filter = Predicates.equal("resource.id", info.getId());
+        List<LayerInfo> resourceLayers;
+        resourceLayers = this.queryAsList(LayerInfo.class, filter, null, null, null);
+        for (LayerInfo layer : resourceLayers) {
+            Set<PropertyType> propertyTypes = dbMappings.getPropertyTypes(LayerInfo.class, "resource.keywords.value");
             PropertyType propertyType = propertyTypes.iterator().next();
             Property changedProperty = new Property(propertyType, newValue);
             Integer layerOid = findObjectId(layer);

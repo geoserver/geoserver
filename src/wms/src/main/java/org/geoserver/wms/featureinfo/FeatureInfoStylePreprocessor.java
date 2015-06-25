@@ -174,7 +174,7 @@ class FeatureInfoStylePreprocessor extends SymbolizerFilteringVisitor {
     }
 
     private boolean sameTranformation(Expression t1, Expression t2) {
-        return (t1 == null && t2 == null) || t1.equals(t2);
+        return (t1 == null && t2 == null) || (t1 != null && t1.equals(t2));
     }
 
     @Override

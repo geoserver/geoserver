@@ -2683,6 +2683,10 @@ public class CatalogImplTest {
 
     @Test 
     public void testFullTextSearch() {
+        // test layer title search
+        ft.setTitle("Global .5 deg Air Temperature [C]");
+        cv.setTitle("Global .5 deg Dewpoint Depression [C]");
+
         ft.setDescription("FeatureType description");
         ft.setAbstract("GeoServer OpenSource GIS");
         cv.setDescription("Coverage description");
@@ -2710,23 +2714,6 @@ public class CatalogImplTest {
         filter = Predicates.fullTextSearch("geotools");
         assertEquals(newHashSet(l2), asSet(catalog.list(LayerInfo.class, filter)));
 
-        // geos-6882
-        catalog.add(lg);
-        filter = Predicates.fullTextSearch("Group");
-        assertEquals(newHashSet(lg), asSet(catalog.list(LayerGroupInfo.class, filter)));
-
-        // test layer group title and abstract search
-        lg.setTitle("LayerGroup title");
-        filter = Predicates.fullTextSearch("title");
-        assertEquals(newHashSet(lg), asSet(catalog.list(LayerGroupInfo.class, filter)));
-
-        lg.setAbstract("GeoServer OpenSource GIS");
-        filter = Predicates.fullTextSearch("geoserver");
-        assertEquals(newHashSet(lg), asSet(catalog.list(LayerGroupInfo.class, filter)));
-
-        // test layer title search
-        ft.setTitle("Global .5 deg Air Temperature [C]");
-        cv.setTitle("Global .5 deg Dewpoint Depression [C]");
 
         filter = Predicates.fullTextSearch("Global");
         assertEquals(newHashSet(l, l2), asSet(catalog.list(LayerInfo.class, filter)));
@@ -2737,20 +2724,50 @@ public class CatalogImplTest {
         filter = Predicates.fullTextSearch("Depression");
         assertEquals(newHashSet(l2), asSet(catalog.list(LayerInfo.class, filter)));
     }
+    
+    @Test 
+    public void testFullTextSearchLayerGroupTitle() {
+        addLayer();
+        // geos-6882
+        lg.setTitle("LayerGroup title");
+        catalog.add(lg);
+        
+        // test layer group title and abstract search
+        Filter filter = Predicates.fullTextSearch("title");
+        assertEquals(newHashSet(lg), asSet(catalog.list(LayerGroupInfo.class, filter)));
+    }
+    
+    @Test 
+    public void testFullTextSearchLayerGroupName() {
+        addLayer();
+        // geos-6882
+        catalog.add(lg);
+        Filter filter = Predicates.fullTextSearch("Group");
+        assertEquals(newHashSet(lg), asSet(catalog.list(LayerGroupInfo.class, filter)));
+    }
+    
+    @Test 
+    public void testFullTextSearchLayerGroupAbstract() {
+        addLayer();
+        lg.setAbstract("GeoServer OpenSource GIS");
+        catalog.add(lg);
+        Filter filter = Predicates.fullTextSearch("geoserver");
+        assertEquals(newHashSet(lg), asSet(catalog.list(LayerGroupInfo.class, filter)));
+    }
 
     @Test
     public void testFullTextSearchKeywords() {
+        ft.getKeywords().add(new Keyword("air_temp"));
+        ft.getKeywords().add(new Keyword("temperatureAir"));
+        cv.getKeywords().add(new Keyword("dwpt_dprs"));
+        cv.getKeywords().add(new Keyword("temperatureDewpointDepression"));
+        
         l.setResource(ft);
         addLayer();
         catalog.add(cs);
         catalog.add(cv);
         LayerInfo l2 = newLayer(cv, s);
         catalog.add(l2);
-
-        ft.getKeywords().add(new Keyword("air_temp"));
-        ft.getKeywords().add(new Keyword("temperatureAir"));
-        cv.getKeywords().add(new Keyword("dwpt_dprs"));
-        cv.getKeywords().add(new Keyword("temperatureDewpointDepression"));
 
         Filter filter = Predicates.fullTextSearch("temperature");
         assertEquals(newHashSet(l, l2), asSet(catalog.list(LayerInfo.class, filter)));
@@ -2775,6 +2792,25 @@ public class CatalogImplTest {
         assertEquals(newHashSet(), asSet(catalog.list(ResourceInfo.class, filter)));
         assertEquals(newHashSet(), asSet(catalog.list(FeatureTypeInfo.class, filter)));
         assertEquals(newHashSet(), asSet(catalog.list(CoverageInfo.class, filter)));
+    }
+    
+    @Test
+    public void testFullTextSearchAddedKeyword() {
+        ft.getKeywords().add(new Keyword("air_temp"));
+        ft.getKeywords().add(new Keyword("temperatureAir"));
+        
+        l.setResource(ft);
+        addLayer();
+        
+        LayerInfo lproxy = catalog.getLayer(l.getId());
+        FeatureTypeInfo ftproxy = (FeatureTypeInfo)lproxy.getResource();
+        
+        ftproxy.getKeywords().add(new Keyword("newKeyword"));
+        catalog.save(ftproxy);
+
+        Filter filter = Predicates.fullTextSearch("newKeyword");
+        assertEquals(newHashSet(ft), asSet(catalog.list(FeatureTypeInfo.class, filter)));
+        assertEquals(newHashSet(l), asSet(catalog.list(LayerInfo.class, filter)));
     }
 
     private <T> Set<T> asSet(CloseableIterator<T> list) {

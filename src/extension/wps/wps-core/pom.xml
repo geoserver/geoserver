@@ -23,10 +23,6 @@
     
     <dependencies>
         <dependency>
-          <groupId>org.mockito</groupId>
-          <artifactId>mockito-core</artifactId>
-        </dependency>    
-        <dependency>
             <groupId>org.geoserver</groupId>
             <artifactId>gs-wfs</artifactId>
             <version>${gs.version}</version>
@@ -117,6 +113,11 @@
           <artifactId>mockrunner</artifactId>
           <scope>test</scope>
         </dependency>
+        <dependency>
+          <groupId>org.mockito</groupId>
+          <artifactId>mockito-core</artifactId>
+          <scope>test</scope>
+        </dependency>    
         <dependency>
            <groupId>org.geoserver</groupId>
            <artifactId>gs-main</artifactId>

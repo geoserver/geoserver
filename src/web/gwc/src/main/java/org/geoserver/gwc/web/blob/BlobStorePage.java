@@ -69,7 +69,7 @@ public class BlobStorePage extends GeoServerSecuredPage {
         dialog.setInitialHeight(200);
 
         typeOfBlobStore = new DropDownChoice<BlobStoreType>("typeOfBlobStore",
-                new Model<BlobStoreType>(), BlobStoreTypeStore.getInstance().getAll());
+                new Model<BlobStoreType>(), BlobStoreTypeStore.newInstance().getAll());
         typeOfBlobStore.setOutputMarkupId(true);
         typeOfBlobStore.add(new AjaxFormComponentUpdatingBehavior("onchange") {
             private static final long serialVersionUID = 359589121400814043L;
@@ -114,7 +114,7 @@ public class BlobStorePage extends GeoServerSecuredPage {
 
         if (originalStore != null) {
             typeOfBlobStore.getModel().setObject(
-                    BlobStoreTypeStore.getInstance().getFromClass(originalStore.getClass()));
+                    BlobStoreTypeStore.newInstance().getFromClass(originalStore.getClass()));
             blobStoreForm.addOrReplace(typeOfBlobStore.getModelObject().createPanel(
                     "blobSpecificPanel", blobStoreForm.getModel()));
             typeOfBlobStore.setEnabled(false);

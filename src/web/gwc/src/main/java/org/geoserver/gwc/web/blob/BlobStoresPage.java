@@ -21,12 +21,12 @@ import org.apache.wicket.model.IModel;
 import org.geoserver.gwc.GWC;
 import org.geoserver.web.CatalogIconFactory;
 import org.geoserver.web.GeoServerSecuredPage;
+import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.Icon;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geoserver.web.wicket.SimpleAjaxLink;
-import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geowebcache.config.BlobStoreConfig;
 import org.geowebcache.config.ConfigurationException;
 import org.geowebcache.layer.TileLayer;
@@ -182,8 +182,7 @@ public class BlobStoresPage extends GeoServerSecuredPage {
                         return new Label(id, "");
                     }
                 } else if (property == BlobStoresProvider.TYPE) {
-                    return new Label(id, BlobStoreTypeStore.getInstance()
-                            .getFromClass(blobStore.getClass()).toString());
+                    return new Label(id, BlobStoreTypeStore.getType(blobStore));
                 }
                 return null;
             }

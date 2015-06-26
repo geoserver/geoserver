@@ -6,16 +6,18 @@ package org.geoserver.gwc.web.blob;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.Comparator;
 
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.geowebcache.config.BlobStoreConfig;
 import org.geowebcache.config.FileBlobStoreConfig;
 import org.geowebcache.s3.S3BlobStoreConfig;
+
+import com.google.common.base.Preconditions;
 
 /**
  *
@@ -25,10 +27,8 @@ import org.geowebcache.s3.S3BlobStoreConfig;
  */
 public class BlobStoreTypeStore {
 
-    protected static BlobStoreTypeStore THE_STORE = new BlobStoreTypeStore();
-
-    public static BlobStoreTypeStore getInstance() {
-        return THE_STORE;
+    public static BlobStoreTypeStore newInstance() {
+        return new BlobStoreTypeStore();
     }
 
     /**
@@ -74,10 +74,11 @@ public class BlobStoreTypeStore {
     protected static class FileBlobStoreType implements BlobStoreType<FileBlobStoreConfig> {
         private static final long serialVersionUID = 6825505034831901062L;
 
-        public String toString() {
+        @Override
+        public String toString(){
             return "File BlobStore";
         }
-
+        
         @Override
         public FileBlobStoreConfig newConfigObject() {
             FileBlobStoreConfig config = new FileBlobStoreConfig();
@@ -101,7 +102,8 @@ public class BlobStoreTypeStore {
     protected static class S3BlobStoreType implements BlobStoreType<S3BlobStoreConfig> {
         private static final long serialVersionUID = 7349157660150568235L;
 
-        public String toString() {
+        @Override
+        public String toString(){
             return "S3 BlobStore";
         }
 
@@ -128,6 +130,18 @@ public class BlobStoreTypeStore {
     protected BlobStoreTypeStore() {
         addBlobStoreType(new FileBlobStoreType());
         addBlobStoreType(new S3BlobStoreType());
+    }
+
+    public static String getType(BlobStoreConfig blobStore) {
+        Preconditions.checkNotNull(blobStore);
+        if (blobStore instanceof FileBlobStoreConfig) {
+            return "File  BlobStore";
+        }
+        if (blobStore instanceof S3BlobStoreConfig) {
+            return "S3 BlobStore";
+        }
+        throw new IllegalArgumentException("Unknown blobstore config type: "
+                + blobStore.getClass().getName());
     }
 
 }

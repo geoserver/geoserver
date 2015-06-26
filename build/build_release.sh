@@ -270,7 +270,9 @@ find src -name pom.xml -exec sed -i "s/$old_ver/$tag/g" {} \;
 find doc -name conf.py -exec sed -i "s/$old_ver/$tag/g" {} \;
 
 pushd src/release > /dev/null
-sed -i "s/$old_ver/$tag/g" *.xml installer/win/*.nsi installer/win/*.conf 
+shopt -s extglob
+sed -i "s/$old_ver/$tag/g" !(pom).xml installer/win/*.nsi installer/win/*.conf 
+shopt -u extglob
 popd > /dev/null
 
 pushd src > /dev/null

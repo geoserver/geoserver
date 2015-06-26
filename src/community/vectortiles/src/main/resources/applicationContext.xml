@@ -17,6 +17,9 @@
   
   <bean id="wmsTopoJSONBuilderFactory" class="org.geoserver.wms.topojson.TopoJSONBuilderFactory">
   </bean>
+  
+    <bean id="wmsGeoJsonBuilderFactory" class="org.geoserver.wms.geojson.GeoJsonBuilderFactory">
+  </bean>
 
   <bean id="wmsTopoJSONMapOutputFormat" class="org.geoserver.wms.vector.VectorTileMapOutputFormat">
     <constructor-arg ref="wms"/>
@@ -31,5 +34,16 @@
       <description>The topoJSON map builder expects geometries in screen coordinates</description>
     </property>
   </bean>
+  
+    <bean id="wmsGeoJsonMapOutputFormat" class="org.geoserver.wms.vector.VectorTileMapOutputFormat">
+    <constructor-arg ref="wms"/>
+    <constructor-arg ref="wmsGeoJsonBuilderFactory"/>
+    <property name="clipToMapBounds" value="false">
+    </property>
+    <property name="transformToScreenCoordinates" value="false">
+      <description>The geoJson map builder expects geometries in map coordinates</description>
+    </property>
+  </bean>
+  
 
 </beans>

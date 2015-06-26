@@ -33,7 +33,6 @@
   </bean>
   
   <bean id="wmsMapBoxBuilderFactory" class="org.geoserver.wms.mapbox.MapBoxTileBuilderFactory">
-    <!--  <property name="forceCrs" value="true" />  -->
   </bean>
 
   <bean id="wmsMapBoxMapOutputFormat" class="org.geoserver.wms.vector.VectorTileMapOutputFormat">

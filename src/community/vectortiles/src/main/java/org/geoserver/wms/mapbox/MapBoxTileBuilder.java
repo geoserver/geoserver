@@ -31,7 +31,7 @@ public class MapBoxTileBuilder implements VectorTileBuilder {
 
     private VectorTileEncoder encoder;
 
-    public MapBoxTileBuilder(Rectangle mapSize, ReferencedEnvelope mapArea, boolean forceCrs) {
+    public MapBoxTileBuilder(Rectangle mapSize, ReferencedEnvelope mapArea) {
         final int extent = Math.max(mapSize.width, mapSize.height);
         this.encoder = new VectorTileEncoder(extent, extent / 32, false);
     }

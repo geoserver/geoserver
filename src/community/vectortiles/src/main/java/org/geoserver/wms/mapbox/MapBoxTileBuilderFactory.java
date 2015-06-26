@@ -20,16 +20,6 @@ public class MapBoxTileBuilderFactory implements VectorTileBuilderFactory {
 
     public static final Set<String> OUTPUT_FORMATS = ImmutableSet.of(MIME_TYPE, "pbf");
     
-    private boolean forceCrs;    
-
-    public boolean isForceCrs() {
-        return forceCrs;
-    }
-
-    public void setForceCrs(boolean forceCrs) {
-        this.forceCrs = forceCrs;
-    }
-
     @Override
     public Set<String> getOutputFormats() {
         return OUTPUT_FORMATS;
@@ -42,7 +32,7 @@ public class MapBoxTileBuilderFactory implements VectorTileBuilderFactory {
 
     @Override
     public VectorTileBuilder newBuilder(Rectangle screenSize, ReferencedEnvelope mapArea) {
-       return new MapBoxTileBuilder(screenSize, mapArea, forceCrs);
+       return new MapBoxTileBuilder(screenSize, mapArea);
     }
 
 }

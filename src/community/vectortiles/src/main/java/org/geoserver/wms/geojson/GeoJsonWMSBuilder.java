@@ -40,7 +40,8 @@ public class GeoJsonWMSBuilder implements VectorTileBuilder {
         out = new DeferredFileOutputStream(threshold, "geojson", ".geojson", null);
         writer = new OutputStreamWriter(out, Charsets.UTF_8);
         jsonWriter = new org.geoserver.wfs.json.GeoJSONBuilder(writer);
-        jsonWriter.object().key("type").value("FeatureCollection");
+        jsonWriter.object();// start root object
+        jsonWriter.key("type").value("FeatureCollection");
         jsonWriter.key("totalFeatures").value("unknown");
         jsonWriter.key("features");
         jsonWriter.array();
@@ -136,6 +137,7 @@ public class GeoJsonWMSBuilder implements VectorTileBuilder {
     @Override
     public WebMap build(WMSMapContent mapContent) throws IOException {
         jsonWriter.endArray(); // end features
+        jsonWriter.endObject();// end root object
         writer.flush();
         writer.close();
         out.close();

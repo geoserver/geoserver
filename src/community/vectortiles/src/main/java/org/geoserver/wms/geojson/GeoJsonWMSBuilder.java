@@ -9,6 +9,9 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.List;
 
+import javax.measure.unit.SI;
+import javax.measure.unit.Unit;
+
 import org.apache.commons.io.output.DeferredFileOutputStream;
 import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WebMap;
@@ -24,20 +27,26 @@ import org.opengis.feature.type.GeometryDescriptor;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import com.google.common.base.Charsets;
+import com.google.common.base.Preconditions;
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryCollection;
+import com.vividsolutions.jts.geom.PrecisionModel;
+import com.vividsolutions.jts.precision.CoordinatePrecisionReducerFilter;
 
 public class GeoJsonWMSBuilder implements VectorTileBuilder {
 
     private Writer writer;
 
-    DeferredFileOutputStream out;
+    private CoordinatePrecisionReducerFilter precisionReducerFilter;
+
+    private DeferredFileOutputStream out;
 
     private org.geoserver.wfs.json.GeoJSONBuilder jsonWriter;
 
     public GeoJsonWMSBuilder(Rectangle mapSize, ReferencedEnvelope mapArea) {
 
-        final int threshold = 8096;
-        out = new DeferredFileOutputStream(threshold, "geojson", ".geojson", null);
+        final int memotyBufferThreshold = 8096;
+        out = new DeferredFileOutputStream(memotyBufferThreshold, "geojson", ".geojson", null);
         writer = new OutputStreamWriter(out, Charsets.UTF_8);
         jsonWriter = new org.geoserver.wfs.json.GeoJSONBuilder(writer);
         jsonWriter.object();// start root object
@@ -45,62 +54,61 @@ public class GeoJsonWMSBuilder implements VectorTileBuilder {
         jsonWriter.key("totalFeatures").value("unknown");
         jsonWriter.key("features");
         jsonWriter.array();
+
+        CoordinateReferenceSystem mapCrs = mapArea.getCoordinateReferenceSystem();
+        jsonWriter.setAxisOrder(CRS.getAxisOrder(mapCrs));
+
+        Unit<?> unit = mapCrs.getCoordinateSystem().getAxis(0).getUnit();
+        Unit<?> standardUnit = unit.getStandardUnit();
+
+        PrecisionModel pm = null;
+        if (SI.RADIAN.equals(standardUnit)) {
+            pm = new PrecisionModel(1e6);// truncate coords at 6 decimals
+        } else if (SI.METRE.equals(standardUnit)) {
+            pm = new PrecisionModel(100);// truncate coords at 2 decimals
+        }
+        if (pm != null) {
+            precisionReducerFilter = new CoordinatePrecisionReducerFilter(pm);
+        }
     }
 
     @Override
     public void addFeature(SimpleFeature feature) {
-        CoordinateReferenceSystem crs = null;
-        boolean hasGeom = false;
+
+        final SimpleFeatureType fType = feature.getFeatureType();
+        final GeometryDescriptor defaultGeomType = fType.getGeometryDescriptor();
+        Preconditions.checkNotNull(defaultGeomType);
+
+        Geometry aGeom = (Geometry) feature.getDefaultGeometry();
+        if (aGeom == null) {
+            return;
+        }
+        if (aGeom instanceof GeometryCollection && aGeom.getNumGeometries() == 1) {
+            aGeom = aGeom.getGeometryN(0);
+        }
+        if (precisionReducerFilter != null) {
+            aGeom.apply(precisionReducerFilter);
+        }
+
         jsonWriter.object();
         jsonWriter.key("type").value("Feature");
 
-        SimpleFeatureType fType = feature.getFeatureType();
         List<AttributeDescriptor> types = fType.getAttributeDescriptors();
 
         jsonWriter.key("id").value(feature.getID());
 
-        GeometryDescriptor defaultGeomType = fType.getGeometryDescriptor();
-        if (defaultGeomType != null) {
-            CoordinateReferenceSystem featureCrs = defaultGeomType.getCoordinateReferenceSystem();
-
-            jsonWriter.setAxisOrder(CRS.getAxisOrder(featureCrs));
-
-            if (crs == null)
-                crs = featureCrs;
-        } else {
-            // If we don't know, assume EAST_NORTH so that no swapping occurs
-            jsonWriter.setAxisOrder(CRS.AxisOrder.EAST_NORTH);
-        }
-
         jsonWriter.key("geometry");
-        Geometry aGeom = (Geometry) feature.getDefaultGeometry();
 
-        if (aGeom == null) {
-            // In case the default geometry is not set, we will
-            // just use the first geometry we find
-            for (int j = 0; j < types.size() && aGeom == null; j++) {
-                Object value = feature.getAttribute(j);
-                if (value != null && value instanceof Geometry) {
-                    aGeom = (Geometry) value;
-                }
-            }
-        }
         // Write the geometry, whether it is a null or not
-        if (aGeom != null) {
-            jsonWriter.writeGeom(aGeom);
-            hasGeom = true;
-        } else {
-            jsonWriter.value(null);
-        }
-        if (defaultGeomType != null)
-            jsonWriter.key("geometry_name").value(defaultGeomType.getLocalName());
+        jsonWriter.writeGeom(aGeom);
+        jsonWriter.key("geometry_name").value(defaultGeomType.getLocalName());
 
         jsonWriter.key("properties");
         jsonWriter.object();
 
         for (int j = 0; j < types.size(); j++) {
             Object value = feature.getAttribute(j);
-            AttributeDescriptor ad = types.get(j);
+            AttributeDescriptor attributeDescriptor = types.get(j);
 
             if (value != null) {
                 if (value instanceof Geometry) {
@@ -111,20 +119,20 @@ public class GeoJsonWMSBuilder implements VectorTileBuilder {
                     // geometry here if it's not the default.
                     // If it's the default that you already
                     // printed above, so you don't need it here.
-                    if (ad.equals(defaultGeomType)) {
+                    if (attributeDescriptor.equals(defaultGeomType)) {
                         // Do nothing, we wrote it above
                         // jsonWriter.value("geometry_name");
                     } else {
-                        jsonWriter.key(ad.getLocalName());
+                        jsonWriter.key(attributeDescriptor.getLocalName());
                         jsonWriter.writeGeom((Geometry) value);
                     }
                 } else {
-                    jsonWriter.key(ad.getLocalName());
+                    jsonWriter.key(attributeDescriptor.getLocalName());
                     jsonWriter.value(value);
                 }
 
             } else {
-                jsonWriter.key(ad.getLocalName());
+                jsonWriter.key(attributeDescriptor.getLocalName());
                 jsonWriter.value(null);
             }
         }

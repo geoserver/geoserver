@@ -25,12 +25,6 @@ import org.geoserver.wms.vector.DeferredFileOutputStreamWebMap;
 import org.geoserver.wms.vector.VectorTileBuilder;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.renderer.lite.RendererUtilities;
-import org.opengis.feature.Attribute;
-import org.opengis.feature.ComplexAttribute;
-import org.opengis.feature.Feature;
-import org.opengis.feature.GeometryAttribute;
-import org.opengis.feature.Property;
-import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.geometry.MismatchedDimensionException;
 import org.opengis.referencing.operation.TransformException;
 
@@ -77,18 +71,18 @@ public class TopologyBuilder implements VectorTileBuilder {
     }
 
     @Override
-    public void addFeature(SimpleFeature feature) {
-        String layer = feature.getName().getLocalPart();
+    public void addFeature(String layerName, String featureId, String geometryName,
+            Geometry geometry, Map<String, Object> properties) {
         TopoGeom topoObj;
         try {
-            topoObj = createObject(feature);
+            topoObj = createObject(featureId, geometry, properties);
         } catch (MismatchedDimensionException | TransformException e) {
             e.printStackTrace();
             throw Throwables.propagate(e);
         }
 
         if (topoObj != null) {
-            layers.put(layer, topoObj);
+            layers.put(layerName, topoObj);
         }
     }
 
@@ -135,19 +129,8 @@ public class TopologyBuilder implements VectorTileBuilder {
     }
 
     @Nullable
-    private TopoGeom createObject(Feature feature) throws MismatchedDimensionException,
-            TransformException {
-        Geometry geom;
-        {// ignore geometry-less features
-            GeometryAttribute defaultGeometryProperty = feature.getDefaultGeometryProperty();
-            if (null == defaultGeometryProperty) {
-                return null;
-            }
-            geom = (Geometry) defaultGeometryProperty.getValue();
-            if (geom == null) {
-                return null;
-            }
-        }
+    private TopoGeom createObject(String featureId, Geometry geom, Map<String, Object> properties)
+            throws MismatchedDimensionException, TransformException {
 
         // // snap to pixel
         geom = fixedGeometryFactory.createGeometry(geom);
@@ -161,31 +144,11 @@ public class TopologyBuilder implements VectorTileBuilder {
         }
 
         TopoGeom geometry = createGeometry(geom);
-        Map<String, Object> properties = getProperties(feature);
+
         geometry.setProperties(properties);
 
-        geometry.setId(feature.getIdentifier().getID());
+        geometry.setId(featureId);
         return geometry;
-    }
-
-    private Map<String, Object> getProperties(ComplexAttribute feature) {
-        Map<String, Object> props = new HashMap<>();
-        for (Property p : feature.getProperties()) {
-            if (!(p instanceof Attribute) || (p instanceof GeometryAttribute)) {
-                continue;
-            }
-            String name = p.getName().getLocalPart();
-            Object value;
-            if (p instanceof ComplexAttribute) {
-                value = getProperties((ComplexAttribute) p);
-            } else {
-                value = p.getValue();
-            }
-            if (value != null) {
-                props.put(name, value);
-            }
-        }
-        return props;
     }
 
     private TopoGeom createGeometry(Geometry geom) {

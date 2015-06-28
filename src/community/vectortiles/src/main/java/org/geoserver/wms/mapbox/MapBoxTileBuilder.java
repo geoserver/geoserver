@@ -4,9 +4,6 @@ import static org.geoserver.wms.mapbox.MapBoxTileBuilderFactory.MIME_TYPE;
 
 import java.awt.Rectangle;
 import java.io.IOException;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import no.ecc.vectortile.VectorTileEncoder;
@@ -16,8 +13,6 @@ import org.geoserver.wms.WebMap;
 import org.geoserver.wms.map.RawMap;
 import org.geoserver.wms.vector.VectorTileBuilder;
 import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.opengis.feature.Property;
-import org.opengis.feature.simple.SimpleFeature;
 
 import com.vividsolutions.jts.geom.Geometry;
 
@@ -37,28 +32,14 @@ public class MapBoxTileBuilder implements VectorTileBuilder {
     }
 
     @Override
-    public void addFeature(SimpleFeature feature) {
-        String layerName = feature.getFeatureType().getTypeName();
-        Map<String, ?> attributes = propertiesToAttributes(feature.getProperties());
-        Geometry geometry = (Geometry) feature.getDefaultGeometry();
-        encoder.addFeature(layerName, attributes, geometry);
-    }
+    public void addFeature(String layerName, String featureId, String geometryName,
+            Geometry geometry, Map<String, Object> properties) {
 
-    protected Map<String, Object> propertiesToAttributes(Collection<Property> properties) {
-        Map<String, Object> attributes = new HashMap<String, Object>();
-        Iterator<Property> it = properties.iterator();
-        while (it.hasNext()) {
-            Property property = it.next();
-            if (!(property.getValue() instanceof Geometry)) {
-                attributes.put(property.getName().getLocalPart(), property.getValue());
-            }
-        }
-        return attributes;
+        encoder.addFeature(layerName, properties, geometry);
     }
 
     @Override
     public WebMap build(WMSMapContent mapContent) throws IOException {
-
         byte[] contents = encoder.encode();
         return new RawMap(mapContent, contents, MIME_TYPE);
     }

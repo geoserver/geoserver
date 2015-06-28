@@ -7,7 +7,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.util.List;
+import java.util.Map;
 
 import javax.measure.unit.SI;
 import javax.measure.unit.Unit;
@@ -20,16 +20,10 @@ import org.geoserver.wms.vector.DeferredFileOutputStreamWebMap;
 import org.geoserver.wms.vector.VectorTileBuilder;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
-import org.opengis.feature.simple.SimpleFeature;
-import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.feature.type.AttributeDescriptor;
-import org.opengis.feature.type.GeometryDescriptor;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import com.google.common.base.Charsets;
-import com.google.common.base.Preconditions;
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryCollection;
 import com.vividsolutions.jts.geom.PrecisionModel;
 import com.vividsolutions.jts.precision.CoordinatePrecisionReducerFilter;
 
@@ -73,19 +67,9 @@ public class GeoJsonWMSBuilder implements VectorTileBuilder {
     }
 
     @Override
-    public void addFeature(SimpleFeature feature) {
+    public void addFeature(String layerName, String featureId, String geometryName, Geometry aGeom,
+            Map<String, Object> properties) {
 
-        final SimpleFeatureType fType = feature.getFeatureType();
-        final GeometryDescriptor defaultGeomType = fType.getGeometryDescriptor();
-        Preconditions.checkNotNull(defaultGeomType);
-
-        Geometry aGeom = (Geometry) feature.getDefaultGeometry();
-        if (aGeom == null) {
-            return;
-        }
-        if (aGeom instanceof GeometryCollection && aGeom.getNumGeometries() == 1) {
-            aGeom = aGeom.getGeometryN(0);
-        }
         if (precisionReducerFilter != null) {
             aGeom.apply(precisionReducerFilter);
         }
@@ -93,47 +77,26 @@ public class GeoJsonWMSBuilder implements VectorTileBuilder {
         jsonWriter.object();
         jsonWriter.key("type").value("Feature");
 
-        List<AttributeDescriptor> types = fType.getAttributeDescriptors();
-
-        jsonWriter.key("id").value(feature.getID());
+        jsonWriter.key("id").value(featureId);
 
         jsonWriter.key("geometry");
 
         // Write the geometry, whether it is a null or not
         jsonWriter.writeGeom(aGeom);
-        jsonWriter.key("geometry_name").value(defaultGeomType.getLocalName());
+        jsonWriter.key("geometry_name").value(geometryName);
 
         jsonWriter.key("properties");
         jsonWriter.object();
 
-        for (int j = 0; j < types.size(); j++) {
-            Object value = feature.getAttribute(j);
-            AttributeDescriptor attributeDescriptor = types.get(j);
+        for (Map.Entry<String, Object> e : properties.entrySet()) {
+            String attributeName = e.getKey();
+            Object value = e.getValue();
 
-            if (value != null) {
-                if (value instanceof Geometry) {
-                    // This is an area of the spec where they
-                    // decided to 'let convention evolve',
-                    // that is how to handle multiple
-                    // geometries. My take is to print the
-                    // geometry here if it's not the default.
-                    // If it's the default that you already
-                    // printed above, so you don't need it here.
-                    if (attributeDescriptor.equals(defaultGeomType)) {
-                        // Do nothing, we wrote it above
-                        // jsonWriter.value("geometry_name");
-                    } else {
-                        jsonWriter.key(attributeDescriptor.getLocalName());
-                        jsonWriter.writeGeom((Geometry) value);
-                    }
-                } else {
-                    jsonWriter.key(attributeDescriptor.getLocalName());
-                    jsonWriter.value(value);
-                }
-
-            } else {
-                jsonWriter.key(attributeDescriptor.getLocalName());
+            jsonWriter.key(attributeName);
+            if (value == null) {
                 jsonWriter.value(null);
+            } else {
+                jsonWriter.value(value);
             }
         }
 
@@ -165,5 +128,4 @@ public class GeoJsonWMSBuilder implements VectorTileBuilder {
 
         return map;
     }
-
 }

@@ -12,6 +12,8 @@ import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -42,8 +44,11 @@ import org.geotools.renderer.lite.VectorMapRenderUtils;
 import org.geotools.styling.FeatureTypeStyle;
 import org.geotools.styling.Style;
 import org.geotools.util.logging.Logging;
+import org.opengis.feature.Attribute;
+import org.opengis.feature.ComplexAttribute;
 import org.opengis.feature.Feature;
-import org.opengis.feature.simple.SimpleFeature;
+import org.opengis.feature.GeometryAttribute;
+import org.opengis.feature.Property;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.GeometryDescriptor;
 import org.opengis.geometry.MismatchedDimensionException;
@@ -91,9 +96,9 @@ public class VectorTileMapOutputFormat extends AbstractMapOutputFormat {
     @Override
     public WebMap produceMap(final WMSMapContent mapContent) throws ServiceException, IOException {
 
-        mapContent.setMapWidth(5 * mapContent.getMapWidth());
-        mapContent.setMapHeight(5 * mapContent.getMapHeight());
-        
+        // mapContent.setMapWidth(5 * mapContent.getMapWidth());
+        // mapContent.setMapHeight(5 * mapContent.getMapHeight());
+
         final ReferencedEnvelope renderingArea = mapContent.getRenderingArea();
         final CoordinateReferenceSystem mapCrs = renderingArea.getCoordinateReferenceSystem();
         final AffineTransform worldToScreen = mapContent.getRenderingTransform();
@@ -139,7 +144,7 @@ public class VectorTileMapOutputFormat extends AbstractMapOutputFormat {
             query.getHints().remove(Hints.SCREENMAP);
 
             FeatureCollection<?, ?> features = featureSource.getFeatures(query);
-            Feature next;
+            Feature feature;
             Stopwatch sw = Stopwatch.createStarted();
             int count = 0;
             int total = 0;
@@ -149,7 +154,7 @@ public class VectorTileMapOutputFormat extends AbstractMapOutputFormat {
 
             final MathTransform tx = transformToScreenCoordinates ? sourceToScreen
                     : sourceToTargetCrs;
-            final double pixelDistance = 1;
+            final double pixelDistance = 0.25;
             final double simplificationDistance = getSimplificationDistance(sourceToScreen,
                     paintArea, pixelDistance);
             final double distanceTolerance = transformToScreenCoordinates ? pixelDistance
@@ -158,13 +163,13 @@ public class VectorTileMapOutputFormat extends AbstractMapOutputFormat {
 
             try (FeatureIterator<?> it = features.features()) {
                 while (it.hasNext()) {
-                    next = it.next();
+                    feature = it.next();
                     total++;
                     Geometry originalGeom;
                     Geometry preProcessed;
                     Geometry finalGeom;
 
-                    originalGeom = (Geometry) next.getDefaultGeometryProperty().getValue();
+                    originalGeom = (Geometry) feature.getDefaultGeometryProperty().getValue();
                     try {
                         preProcessed = preprocess(originalGeom, projectionHandler, screenMap);
                     } catch (TransformException | FactoryException e) {
@@ -182,6 +187,9 @@ public class VectorTileMapOutputFormat extends AbstractMapOutputFormat {
                     }
                     if (finalGeom.getDimension() > 0) {
                         finalGeom = DouglasPeuckerSimplifier.simplify(finalGeom, distanceTolerance);
+                        if (finalGeom.isEmpty()) {
+                            continue;
+                        }
                     }
 
                     Geometry clipped = finalGeom;
@@ -202,11 +210,15 @@ public class VectorTileMapOutputFormat extends AbstractMapOutputFormat {
                         clipped = clipped.getGeometryN(0);
                     }
 
-                    // Can't do this, SimpleFeatureImpl is broken
-                    // next.getDefaultGeometryProperty().setValue(screenGeom);
-                    ((SimpleFeature) next).setDefaultGeometry(clipped);
+                    final String layerName = feature.getName().getLocalPart();
+                    final String featureId = feature.getIdentifier().toString();
+                    final String geometryName = geometryDescriptor.getName().getLocalPart();
 
-                    vectorTileBuilder.addFeature((SimpleFeature) next);
+                    final Map<String, Object> properties = getProperties(feature);
+                    final Geometry geometry = clipped;
+
+                    vectorTileBuilder.addFeature(layerName, featureId, geometryName, geometry,
+                            properties);
                     count++;
                 }
             }
@@ -214,13 +226,33 @@ public class VectorTileMapOutputFormat extends AbstractMapOutputFormat {
             if (LOGGER.isLoggable(Level.FINE)) {
                 String msg = String.format("Added %,d out of %,d features of '%s' in %s", count,
                         total, layer.getTitle(), sw);
-                System.err.println(msg);
+                // System.err.println(msg);
                 LOGGER.fine(msg);
             }
         }
 
         WebMap map = vectorTileBuilder.build(mapContent);
         return map;
+    }
+
+    private Map<String, Object> getProperties(ComplexAttribute feature) {
+        Map<String, Object> props = new TreeMap<>();
+        for (Property p : feature.getProperties()) {
+            if (!(p instanceof Attribute) || (p instanceof GeometryAttribute)) {
+                continue;
+            }
+            String name = p.getName().getLocalPart();
+            Object value;
+            if (p instanceof ComplexAttribute) {
+                value = getProperties((ComplexAttribute) p);
+            } else {
+                value = p.getValue();
+            }
+            if (value != null) {
+                props.put(name, value);
+            }
+        }
+        return props;
     }
 
     private double getSimplificationDistance(MathTransform worldToScreen, Rectangle paintArea,

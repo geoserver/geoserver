@@ -16,14 +16,17 @@ import org.opengis.util.ProgressListener;
  */
 public class MaxExecutionTimeListener extends DelegateProgressListener {
 
+    long maxExecutionTime;
+    long maxTotalTime;
+    long queuedTime;
     long startTime;
 
-    long maxExecutionTime;
-
-    public MaxExecutionTimeListener(ProgressListener progress, long maxExecutionTime) {
+    public MaxExecutionTimeListener(ProgressListener progress, long maxExecutionTime, long maxTotalTime) {
         super(progress);
-        this.startTime = System.currentTimeMillis();
         this.maxExecutionTime = maxExecutionTime;
+        this.maxTotalTime = maxTotalTime;
+        this.queuedTime = System.currentTimeMillis();
+        this.startTime = 0;
     }
 
     @Override
@@ -47,7 +50,9 @@ public class MaxExecutionTimeListener extends DelegateProgressListener {
      * @return
      */
     public boolean isExpired() {
-        return maxExecutionTime > 0 && (System.currentTimeMillis() - startTime) > maxExecutionTime;
+        boolean maxExecutionTimeExceeded = maxExecutionTime > 0 && startTime > 0 && (System.currentTimeMillis() - startTime) > maxExecutionTime;
+        boolean maxTotalTimeExceeded = maxTotalTime > 0 && (System.currentTimeMillis() - queuedTime) > maxTotalTime;
+        return maxExecutionTimeExceeded || maxTotalTimeExceeded;
     }
 
     /**
@@ -59,7 +64,17 @@ public class MaxExecutionTimeListener extends DelegateProgressListener {
         return maxExecutionTime;
     }
 
+    /**
+     * The maximum total time
+     * 
+     * @return
+     */
+    public long getMaxTotalTime() {
+        return maxTotalTime;
+    }
+
     public void started() {
+        this.startTime = System.currentTimeMillis();
         checkNotExpired();
         super.started();
     }

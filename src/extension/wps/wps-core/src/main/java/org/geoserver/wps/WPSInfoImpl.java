@@ -86,10 +86,23 @@ public class WPSInfoImpl extends ServiceInfoImpl implements WPSInfo {
     int maxSynchronousExecutionTime;
 
     /**
-     * How many seconds a process can run in synchronous mode (with the user polling for its status)
+     * How many seconds a process can run or queue in synchronous mode (with the user waiting on the HTTP
+     * connection) before it gets killed by the WPS container
+     */
+    int maxSynchronousTotalTime;
+
+    /**
+     * How many seconds a process can run in asynchronous mode (with the user polling for its status)
      * before it gets killed by the WPS container
      */
     int maxAsynchronousExecutionTime;
+
+    /*
+     * How many seconds a process can run or queue in asynchronous mode (with the user polling for its status)
+     * before it gets killed by the WPS container
+     */
+    int maxAsynchronousTotalTime;
+
 
     public WPSInfoImpl() {
         title = "Prototype GeoServer WPS";
@@ -244,6 +257,20 @@ public class WPSInfoImpl extends ServiceInfoImpl implements WPSInfo {
     }
 
     /**
+     * How many seconds a process can run or queue in synchronous mode (with the user waiting on the HTTP
+     * connection) before it gets killed by the WPS container
+     */
+    @Override
+    public int getMaxSynchronousTotalTime() {
+        return maxSynchronousTotalTime;
+    }
+
+    @Override
+    public void setMaxSynchronousTotalTime(int maxSynchronousTotalTime) {
+        this.maxSynchronousTotalTime = maxSynchronousTotalTime;
+    }
+
+    /**
      * How many seconds a process can run in synchronous mode (with the user polling for its status)
      * before it gets killed by the WPS container
      */
@@ -257,6 +284,20 @@ public class WPSInfoImpl extends ServiceInfoImpl implements WPSInfo {
         this.maxAsynchronousExecutionTime = maxAsynchrornousExecutionTime;
     }
 
+    /**
+     * How many seconds a process can run in synchronous mode (with the user polling for its status)
+     * before it gets killed by the WPS container
+     */
+    @Override
+    public int getMaxAsynchronousTotalTime() {
+        return maxAsynchronousTotalTime;
+    }
+
+    @Override
+    public void setMaxAsynchronousTotalTime(int maxAsynchrornousTotalTime) {
+        this.maxAsynchronousTotalTime = maxAsynchrornousTotalTime;
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -266,8 +307,10 @@ public class WPSInfoImpl extends ServiceInfoImpl implements WPSInfo {
         result = prime * result
                 + ((maxAsynchronousProcesses == null) ? 0 : maxAsynchronousProcesses.hashCode());
         result = prime * result + maxAsynchronousExecutionTime;
+        result = prime * result + maxAsynchronousTotalTime;
         result = prime * result + maxComplexInputSize;
         result = prime * result + maxSynchronousExecutionTime;
+        result = prime * result + maxSynchronousTotalTime;
         result = prime * result
                 + ((maxSynchronousProcesses == null) ? 0 : maxSynchronousProcesses.hashCode());
         result = prime * result + ((processGroups == null) ? 0 : processGroups.hashCode());
@@ -300,9 +343,13 @@ public class WPSInfoImpl extends ServiceInfoImpl implements WPSInfo {
             return false;
         if (maxAsynchronousExecutionTime != other.maxAsynchronousExecutionTime)
             return false;
+        if (maxAsynchronousTotalTime != other.maxAsynchronousTotalTime)
+            return false;
         if (maxComplexInputSize != other.maxComplexInputSize)
             return false;
         if (maxSynchronousExecutionTime != other.maxSynchronousExecutionTime)
+            return false;
+        if (maxSynchronousTotalTime != other.maxSynchronousTotalTime)
             return false;
         if (maxSynchronousProcesses == null) {
             if (other.maxSynchronousProcesses != null)

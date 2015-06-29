@@ -31,9 +31,9 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-        <groupId>no.ecc.vectortile</groupId>
-        <artifactId>java-vector-tile</artifactId>
-        <version>1.0.8-SNAPSHOT</version>
+      <groupId>no.ecc.vectortile</groupId>
+      <artifactId>java-vector-tile</artifactId>
+      <version>1.0.8-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>
@@ -46,12 +46,7 @@
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
       <scope>test</scope>
-    </dependency>    
-     <dependency>
-            <groupId>com.mockrunner</groupId>
-            <artifactId>mockrunner</artifactId>
-            <scope>test</scope>
-        </dependency>
+    </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>
       <artifactId>gs-wms</artifactId>
@@ -59,7 +54,12 @@
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.apache.wicket</groupId>
+      <artifactId>wicket-spring</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
-  
-  
+
+
 </project>

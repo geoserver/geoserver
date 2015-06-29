@@ -1,3 +1,7 @@
+/* (c) 2015 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.wms.vector;
 
 import static org.geotools.renderer.lite.VectorMapRenderUtils.buildTransform;
@@ -94,12 +98,13 @@ class PipelineBuilder {
 
         double[] spans;
         try {
-            spans = Decimator.computeGeneralizationDistances(context.sourceToScreen.inverse(),
-                    context.paintArea, context.pixelDistance);
+            MathTransform screenToWorld = context.sourceToScreen.inverse();
+            spans = Decimator.computeGeneralizationDistances(screenToWorld, context.paintArea,
+                    context.pixelDistance);
         } catch (TransformException e) {
             throw Throwables.propagate(e);
         }
-        context.simplificationDistance = Math.max(spans[0], spans[1]);
+        context.simplificationDistance = Math.min(spans[0], spans[1]);
         context.screenMap = new ScreenMap(0, 0, paintArea.width, paintArea.height);
         context.screenMap.setSpans(spans[0], spans[1]);
         context.screenMap.setTransform(context.sourceToScreen);

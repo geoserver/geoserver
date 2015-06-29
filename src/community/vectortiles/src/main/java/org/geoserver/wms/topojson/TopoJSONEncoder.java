@@ -1,5 +1,4 @@
 /* (c) 2015 Open Source Geospatial Foundation - all rights reserved
- * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -48,7 +47,7 @@ public class TopoJSONEncoder {
 
             JsonObject root = new JsonObject();
             root.addProperty("type", "Topology");
-
+            root.addProperty("count", topology.getArcs().size());
             AffineTransform transform = topology.getScreenToWorldTransform();
             if (!transform.isIdentity()) {
                 addTransform(root, transform);

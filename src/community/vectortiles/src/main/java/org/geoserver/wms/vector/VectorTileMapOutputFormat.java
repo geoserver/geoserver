@@ -1,10 +1,11 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
- * (c) 2001 - 2013 OpenPlans
+/* (c) 2015 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wms.vector;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
 import static org.geotools.renderer.lite.VectorMapRenderUtils.createLiteFeatureTypeStyles;
 
 import java.awt.Rectangle;
@@ -81,6 +82,13 @@ public class VectorTileMapOutputFormat extends AbstractMapOutputFormat {
 
     @Override
     public WebMap produceMap(final WMSMapContent mapContent) throws ServiceException, IOException {
+        checkNotNull(mapContent);
+        checkNotNull(mapContent.getRenderingArea());
+        checkArgument(mapContent.getMapWidth() > 0);
+        checkArgument(mapContent.getMapHeight() > 0);
+
+        // mapContent.setMapWidth(5 * mapContent.getMapWidth());
+        // mapContent.setMapHeight(5 * mapContent.getMapHeight());
 
         final ReferencedEnvelope renderingArea = mapContent.getRenderingArea();
         final Rectangle paintArea = new Rectangle(mapContent.getMapWidth(),
@@ -156,10 +164,10 @@ public class VectorTileMapOutputFormat extends AbstractMapOutputFormat {
                 }
             }
             sw.stop();
-            if (LOGGER.isLoggable(Level.FINE)) {
+            if (true || LOGGER.isLoggable(Level.FINE)) {
                 String msg = String.format("Added %,d out of %,d features of '%s' in %s", count,
                         total, layer.getTitle(), sw);
-                // System.err.println(msg);
+                System.err.println(msg);
                 LOGGER.fine(msg);
             }
         }
@@ -225,7 +233,7 @@ public class VectorTileMapOutputFormat extends AbstractMapOutputFormat {
         Query query = styleQuery;
         // query.setProperties(ImmutableList.of(FF.property(geometryDescriptor.getName())));
         query.setProperties(Query.ALL_PROPERTIES);
-        query.setCoordinateSystem(renderingArea.getCoordinateReferenceSystem());
+        // query.setCoordinateSystem(renderingArea.getCoordinateReferenceSystem());
         // query.setCoordinateSystemReproject(renderingArea.getCoordinateReferenceSystem());
         // query.setMaxFeatures(1_000);
 
@@ -239,26 +247,6 @@ public class VectorTileMapOutputFormat extends AbstractMapOutputFormat {
         hints.put(Hints.FEATURE_2D, Boolean.TRUE);
 
         return query;
-    }
-
-    /**
-     * Timeout on the smallest nonzero value of the WMS timeout and the timeout format option If
-     * both are zero then there is no timeout
-     * 
-     * @param localMaxRenderingTime
-     * @return
-     */
-    public int getMaxRenderingTime(int localMaxRenderingTime) {
-
-        int maxRenderingTime = wms.getMaxRenderingTime() * 1000;
-
-        if (maxRenderingTime == 0) {
-            maxRenderingTime = localMaxRenderingTime;
-        } else if (localMaxRenderingTime != 0) {
-            maxRenderingTime = Math.min(maxRenderingTime, localMaxRenderingTime);
-        }
-
-        return maxRenderingTime;
     }
 
     /**

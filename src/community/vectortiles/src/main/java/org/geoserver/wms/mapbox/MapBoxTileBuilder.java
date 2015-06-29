@@ -1,3 +1,7 @@
+/* (c) 2015 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.wms.mapbox;
 
 import static org.geoserver.wms.mapbox.MapBoxTileBuilderFactory.MIME_TYPE;
@@ -9,7 +13,6 @@ import java.util.Map;
 import no.ecc.vectortile.VectorTileEncoder;
 
 import org.geoserver.wms.WMSMapContent;
-import org.geoserver.wms.WebMap;
 import org.geoserver.wms.map.RawMap;
 import org.geoserver.wms.vector.VectorTileBuilder;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -28,7 +31,9 @@ public class MapBoxTileBuilder implements VectorTileBuilder {
 
     public MapBoxTileBuilder(Rectangle mapSize, ReferencedEnvelope mapArea) {
         final int extent = Math.max(mapSize.width, mapSize.height);
-        this.encoder = new VectorTileEncoder(extent, extent / 32, false);
+        final int polygonClipBuffer = extent / 32;
+        final boolean autoScale = false;
+        this.encoder = new VectorTileEncoder(extent, polygonClipBuffer, autoScale);
     }
 
     @Override
@@ -39,7 +44,7 @@ public class MapBoxTileBuilder implements VectorTileBuilder {
     }
 
     @Override
-    public WebMap build(WMSMapContent mapContent) throws IOException {
+    public RawMap build(WMSMapContent mapContent) throws IOException {
         byte[] contents = encoder.encode();
         return new RawMap(mapContent, contents, MIME_TYPE);
     }

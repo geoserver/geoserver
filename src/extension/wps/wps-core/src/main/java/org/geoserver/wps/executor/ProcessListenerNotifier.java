@@ -165,9 +165,11 @@ public class ProcessListenerNotifier {
 
         @Override
         public void progress(float percent) {
-            // force process to just exit immediately
-            checkDismissed();
-            fireProgress(percent, task.toString());
+            if(task != null) {
+                // force process to just exit immediately
+                checkDismissed();
+                fireProgress(percent, task.toString());
+            }
         }
 
         @Override

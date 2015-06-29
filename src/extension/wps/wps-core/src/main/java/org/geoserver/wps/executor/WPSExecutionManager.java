@@ -166,6 +166,11 @@ public class WPSExecutionManager implements ApplicationContextAware,
     public ExecuteResponseType submit(final ExecuteRequest request, boolean synchronous)
             throws ProcessException {
 
+        WPSInfo wps = geoServer.getService(WPSInfo.class);
+        if(synchronous && wps.getSynchronousDisabled()) {
+            throw new WPSException("Synchronous WPS requests are disabled");
+        }
+
         Name processName = request.getProcessName();
         ProcessManager processManager = getProcessManager(processName);
         String executionId = resourceManager.getExecutionId(synchronous);

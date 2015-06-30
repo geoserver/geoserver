@@ -33,10 +33,7 @@ import com.vividsolutions.jts.simplify.DouglasPeuckerSimplifier;
 
 class PipelineBuilder {
 
-    private static class Context {
-        boolean clipToMapBounds;
-
-        boolean transformToScreenCoordinates;
+    static class Context {
 
         @Nullable
         ProjectionHandler projectionHandler;
@@ -57,12 +54,13 @@ class PipelineBuilder {
 
         public AffineTransform worldToScreen;
 
-        public double pixelDistance;
+        public double sourceCRSSimplificationDistance;
 
-        public double simplificationDistance;
+        public double screenSimplificationDistance;
+
     }
 
-    private Context context;
+    Context context;
 
     private Pipeline first = Pipeline.END, last = Pipeline.END;
 
@@ -85,7 +83,6 @@ class PipelineBuilder {
         context.paintArea = paintArea;
         context.sourceCrs = sourceCrs;
         context.worldToScreen = RendererUtilities.worldToScreenTransform(mapArea, paintArea);
-        context.pixelDistance = 0.25;
 
         final boolean wrap = false;
         context.projectionHandler = ProjectionHandlerFinder.getHandler(mapArea, sourceCrs, wrap);
@@ -99,27 +96,17 @@ class PipelineBuilder {
         double[] spans;
         try {
             MathTransform screenToWorld = context.sourceToScreen.inverse();
-            spans = Decimator.computeGeneralizationDistances(screenToWorld, context.paintArea,
-                    context.pixelDistance);
+            spans = Decimator.computeGeneralizationDistances(screenToWorld, context.paintArea, 0.8);
         } catch (TransformException e) {
             throw Throwables.propagate(e);
         }
-        context.simplificationDistance = Math.min(spans[0], spans[1]);
+        context.screenSimplificationDistance = 0.25;
+        context.sourceCRSSimplificationDistance = Math.min(spans[0], spans[1]);
         context.screenMap = new ScreenMap(0, 0, paintArea.width, paintArea.height);
         context.screenMap.setSpans(spans[0], spans[1]);
         context.screenMap.setTransform(context.sourceToScreen);
 
         return context;
-    }
-
-    public PipelineBuilder transformToScreenCoordinates(boolean transformToScreenCoordinates) {
-        context.transformToScreenCoordinates = transformToScreenCoordinates;
-        return this;
-    }
-
-    public PipelineBuilder clipToMapBounds(boolean clipToMapBounds) {
-        context.clipToMapBounds = clipToMapBounds;
-        return this;
     }
 
     public PipelineBuilder preprocess() {
@@ -198,8 +185,7 @@ class PipelineBuilder {
 
     }
 
-    public PipelineBuilder transform() {
-        final boolean transformToScreenCoordinates = context.transformToScreenCoordinates;
+    public PipelineBuilder transform(final boolean transformToScreenCoordinates) {
         final MathTransform sourceToScreen = context.sourceToScreen;
         final MathTransform sourceToTargetCrs = context.sourceToTargetCrs;
 
@@ -209,25 +195,28 @@ class PipelineBuilder {
         return this;
     }
 
-    public PipelineBuilder simplify() {
-        boolean transformToScreenCoordinates = context.transformToScreenCoordinates;
-        double pixelDistance = context.pixelDistance;
-        double simplificationDistance = context.simplificationDistance;
+    public PipelineBuilder simplify(boolean isTransformToScreenCoordinates) {
 
-        double distanceTolerance = transformToScreenCoordinates ? pixelDistance
+        double pixelDistance = context.screenSimplificationDistance;
+        double simplificationDistance = context.sourceCRSSimplificationDistance;
+
+        double distanceTolerance = isTransformToScreenCoordinates ? pixelDistance
                 : simplificationDistance;
 
         addLast(new Simplify(distanceTolerance));
         return this;
     }
 
-    public PipelineBuilder clip() {
-        if (context.clipToMapBounds) {
+    public PipelineBuilder clip(boolean clipToMapBounds, boolean transformToScreenCoordinates) {
+        if (clipToMapBounds) {
 
             Geometry clippingPolygon;
 
-            if (context.transformToScreenCoordinates) {
-                Rectangle paintArea = context.paintArea;
+            if (transformToScreenCoordinates) {
+                // use an Envelope instead of context.paintArea or JTS.toGeometry returns a
+                // LinearRing instead of a Polygon
+                Rectangle screen = context.paintArea;
+                Envelope paintArea = new Envelope(0, screen.getWidth(), 0, screen.getHeight());
                 clippingPolygon = JTS.toGeometry(paintArea);
             } else {
                 ReferencedEnvelope renderingArea = context.renderingArea;
@@ -268,7 +257,11 @@ class PipelineBuilder {
             if (geom.getDimension() == 0) {
                 return geom;
             }
-            Geometry simplified = DouglasPeuckerSimplifier.simplify(geom, this.distanceTolerance);
+            DouglasPeuckerSimplifier simplifier = new DouglasPeuckerSimplifier(geom);
+            simplifier.setDistanceTolerance(this.distanceTolerance);
+            simplifier.setEnsureValid(true);
+
+            Geometry simplified = simplifier.getResultGeometry();
             return simplified;
         }
     }

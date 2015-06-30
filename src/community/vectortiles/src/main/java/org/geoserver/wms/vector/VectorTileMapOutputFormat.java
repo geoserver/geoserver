@@ -115,13 +115,12 @@ public class VectorTileMapOutputFormat extends AbstractMapOutputFormat {
             } catch (FactoryException e) {
                 throw new ServiceException(e);
             }
+
             Pipeline pipeline = builder//
-                    .transformToScreenCoordinates(transformToScreenCoordinates)//
-                    .clipToMapBounds(clipToMapBounds)//
                     .preprocess()//
-                    .transform()//
-                    .simplify()//
-                    .clip()//
+                    .transform(transformToScreenCoordinates)//
+                    .simplify(transformToScreenCoordinates)//
+                    .clip(clipToMapBounds, transformToScreenCoordinates)//
                     .collapseCollections()//
                     .build();
 
@@ -164,10 +163,10 @@ public class VectorTileMapOutputFormat extends AbstractMapOutputFormat {
                 }
             }
             sw.stop();
-            if (true || LOGGER.isLoggable(Level.FINE)) {
+            if (LOGGER.isLoggable(Level.FINE)) {
                 String msg = String.format("Added %,d out of %,d features of '%s' in %s", count,
                         total, layer.getTitle(), sw);
-                System.err.println(msg);
+                // System.err.println(msg);
                 LOGGER.fine(msg);
             }
         }

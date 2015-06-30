@@ -6,12 +6,10 @@ package org.geoserver.wms.vector;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
-import static org.geotools.renderer.lite.VectorMapRenderUtils.createLiteFeatureTypeStyles;
+import static org.geoserver.wms.vector.VectorMapRenderUtils.getStyleQuery;
 
 import java.awt.Rectangle;
-import java.awt.geom.AffineTransform;
 import java.io.IOException;
-import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.logging.Level;
@@ -28,28 +26,19 @@ import org.geotools.data.Query;
 import org.geotools.factory.Hints;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
-import org.geotools.filter.IllegalFilterException;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.Layer;
-import org.geotools.renderer.lite.LiteFeatureTypeStyle;
-import org.geotools.renderer.lite.RendererUtilities;
-import org.geotools.renderer.lite.VectorMapRenderUtils;
-import org.geotools.styling.FeatureTypeStyle;
-import org.geotools.styling.Style;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.Attribute;
 import org.opengis.feature.ComplexAttribute;
 import org.opengis.feature.Feature;
 import org.opengis.feature.GeometryAttribute;
 import org.opengis.feature.Property;
-import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.GeometryDescriptor;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.operation.TransformException;
 
 import com.google.common.base.Stopwatch;
-import com.google.common.base.Throwables;
 import com.vividsolutions.jts.geom.Geometry;
 
 public class VectorTileMapOutputFormat extends AbstractMapOutputFormat {
@@ -193,59 +182,6 @@ public class VectorTileMapOutputFormat extends AbstractMapOutputFormat {
             }
         }
         return props;
-    }
-
-    private Query getStyleQuery(Layer layer, WMSMapContent mapContent) throws IOException {
-
-        final ReferencedEnvelope renderingArea = mapContent.getRenderingArea();
-        final Rectangle screenSize = new Rectangle(mapContent.getMapWidth(),
-                mapContent.getMapHeight());
-        final double mapScale;
-        try {
-            mapScale = RendererUtilities.calculateScale(renderingArea, mapContent.getMapWidth(),
-                    mapContent.getMapHeight(), null);
-        } catch (TransformException | FactoryException e) {
-            throw Throwables.propagate(e);
-        }
-
-        FeatureSource<?, ?> featureSource = layer.getFeatureSource();
-        FeatureType schema = featureSource.getSchema();
-        GeometryDescriptor geometryDescriptor = schema.getGeometryDescriptor();
-        AffineTransform worldToScreen = mapContent.getRenderingTransform();
-
-        Style style = layer.getStyle();
-        List<FeatureTypeStyle> featureStyles = style.featureTypeStyles();
-        List<LiteFeatureTypeStyle> styleList = createLiteFeatureTypeStyles(featureStyles, schema,
-                mapScale, screenSize);
-        Query styleQuery;
-        CoordinateReferenceSystem mapCRS;
-        CoordinateReferenceSystem sourceCrs;
-        try {
-            mapCRS = renderingArea.getCoordinateReferenceSystem();
-            sourceCrs = geometryDescriptor.getCoordinateReferenceSystem();
-            styleQuery = VectorMapRenderUtils
-                    .getStyleQuery(featureSource, schema, styleList, renderingArea, mapCRS,
-                            sourceCrs, screenSize, geometryDescriptor, worldToScreen);
-        } catch (IllegalFilterException | FactoryException e1) {
-            throw Throwables.propagate(e1);
-        }
-        Query query = styleQuery;
-        // query.setProperties(ImmutableList.of(FF.property(geometryDescriptor.getName())));
-        query.setProperties(Query.ALL_PROPERTIES);
-        // query.setCoordinateSystem(renderingArea.getCoordinateReferenceSystem());
-        // query.setCoordinateSystemReproject(renderingArea.getCoordinateReferenceSystem());
-        // query.setMaxFeatures(1_000);
-
-        // CoordinateSequenceFactory coordSeq = PackedCoordinateSequenceFactory.FLOAT_FACTORY;
-        // PrecisionModel precisionModel = new PrecisionModel(PrecisionModel.FLOATING_SINGLE);
-        // GeometryFactory geomFact = new GeometryFactory(precisionModel, 0, coordSeq);
-
-        Hints hints = query.getHints();
-        // hints.put(Hints.JTS_COORDINATE_SEQUENCE_FACTORY, coordSeq);
-        // hints.put(Hints.JTS_GEOMETRY_FACTORY, geomFact);
-        hints.put(Hints.FEATURE_2D, Boolean.TRUE);
-
-        return query;
     }
 
     /**

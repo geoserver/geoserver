@@ -2,19 +2,17 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geotools.renderer.lite;
+package org.geoserver.wms.vector;
 
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
-import java.awt.RenderingHints;
-import java.awt.geom.AffineTransform;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.geoserver.wms.WMSMapContent;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.Query;
 import org.geotools.factory.CommonFactoryFinder;
@@ -22,15 +20,16 @@ import org.geotools.factory.Hints;
 import org.geotools.feature.FeatureTypes;
 import org.geotools.filter.IllegalFilterException;
 import org.geotools.filter.visitor.SimplifyingFilterVisitor;
-import org.geotools.geometry.jts.Decimator;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.map.Layer;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.referencing.operation.transform.ConcatenatedTransform;
-import org.geotools.referencing.operation.transform.ProjectiveTransform;
-import org.geotools.renderer.ScreenMap;
+import org.geotools.renderer.lite.LiteFeatureTypeStyle;
+import org.geotools.renderer.lite.RendererUtilities;
 import org.geotools.styling.FeatureTypeStyle;
 import org.geotools.styling.Rule;
+import org.geotools.styling.Style;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.GeometryDescriptor;
@@ -38,7 +37,6 @@ import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.crs.SingleCRS;
 import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.MathTransform2D;
 import org.opengis.referencing.operation.TransformException;
@@ -49,9 +47,7 @@ import com.google.common.base.Throwables;
 /**
  * Utility methods to deal with transformations and style based queries.
  * <p>
- * Note this class is in this package to access some package visible fields from the same geotools
- * package.
- *
+ * Note, most code in this class has been taken and adapted from GeoTools' StreamingRenderer.
  */
 public class VectorMapRenderUtils {
 
@@ -59,47 +55,74 @@ public class VectorMapRenderUtils {
 
     private static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
 
-    private static final double generalizationDistance = 0.8;
+    public static Query getStyleQuery(Layer layer, WMSMapContent mapContent) throws IOException {
 
-    public static Query getStyleQuery(//
+        final ReferencedEnvelope renderingArea = mapContent.getRenderingArea();
+        final Rectangle screenSize = new Rectangle(mapContent.getMapWidth(),
+                mapContent.getMapHeight());
+        final double mapScale;
+        try {
+            mapScale = RendererUtilities.calculateScale(renderingArea, mapContent.getMapWidth(),
+                    mapContent.getMapHeight(), null);
+        } catch (TransformException | FactoryException e) {
+            throw Throwables.propagate(e);
+        }
+
+        FeatureSource<?, ?> featureSource = layer.getFeatureSource();
+        FeatureType schema = featureSource.getSchema();
+        GeometryDescriptor geometryDescriptor = schema.getGeometryDescriptor();
+
+        Style style = layer.getStyle();
+        List<FeatureTypeStyle> featureStyles = style.featureTypeStyles();
+        List<LiteFeatureTypeStyle> styleList = createLiteFeatureTypeStyles(featureStyles, schema,
+                mapScale, screenSize);
+        Query styleQuery;
+        try {
+            styleQuery = VectorMapRenderUtils.getStyleQuery(featureSource, styleList,
+                    renderingArea, screenSize, geometryDescriptor);
+        } catch (IllegalFilterException | FactoryException e1) {
+            throw Throwables.propagate(e1);
+        }
+        Query query = styleQuery;
+        // query.setProperties(ImmutableList.of(FF.property(geometryDescriptor.getName())));
+        query.setProperties(Query.ALL_PROPERTIES);
+
+        Hints hints = query.getHints();
+        hints.put(Hints.FEATURE_2D, Boolean.TRUE);
+
+        return query;
+    }
+
+    private static Query getStyleQuery(//
             FeatureSource<?, ?> source, //
-            FeatureType schema, //
             List<LiteFeatureTypeStyle> styleList, //
             ReferencedEnvelope mapArea,//
-            CoordinateReferenceSystem mapCRS, //
-            CoordinateReferenceSystem featCrs,//
             Rectangle screenSize, //
-            GeometryDescriptor geometryAttribute,//
-            AffineTransform worldToScreenTransform//
+            GeometryDescriptor geometryAttribute//
     ) throws IllegalFilterException, IOException, FactoryException {
 
-        Query query = new Query(Query.ALL);
+        final FeatureType schema = source.getSchema();
+        Query query = new Query(schema.getName().getLocalPart());
+        query.setProperties(Query.ALL_PROPERTIES);
 
         String geomName = geometryAttribute.getLocalName();
         Filter filter = FF.bbox(FF.property(geomName), mapArea);
+        query.setFilter(filter);
 
         LiteFeatureTypeStyle[] styles = styleList
                 .toArray(new LiteFeatureTypeStyle[styleList.size()]);
 
-        // ReferencedEnvelope envelope = new ReferencedEnvelope(mapArea, mapCRS);
-        // see what attributes we really need by exploring the styles
-        // for testing purposes we have a null case -->
         try {
-            // now build the query using only the attributes and the
-            // bounding box needed
-            query = new Query(schema.getName().getLocalPart());
-            query.setFilter(filter);
-            // query.setProperties(attributes);
             processRuleForQuery(styles, query);
         } catch (Exception e) {
             throw Throwables.propagate(e);
             // final Exception txException = new Exception("Error transforming bbox", e);
             // query = new Query(schema.getName().getLocalPart());
-            // query.setProperties(attributes);
+            // query.setProperties(Query.ALL_PROPERTIES);
             // Envelope bounds = source.getBounds();
-            // if (bounds != null && envelope.intersects(bounds)) {
+            // if (bounds != null && mapArea.intersects(bounds)) {
             // filter = null;
-            // filter = createBBoxFilters(schema, attributes, Collections.singletonList(envelope));
+            // filter = createBBoxFilters(schema, Collections.singletonList(mapArea));
             // query.setFilter(filter);
             // } else {
             // // LOGGER.log(Level.WARNING,
@@ -111,78 +134,8 @@ public class VectorMapRenderUtils {
 
         }
 
-        // prepare hints
-        // ... basic one, we want fast and compact coordinate sequences and geometries optimized
-        // for the collection of one item case (typical in shapefiles)
-
-        // LiteCoordinateSequenceFactory csFactory = new LiteCoordinateSequenceFactory();
-        // GeometryFactory gFactory = new SimpleGeometryFactory(csFactory);
-        // Hints hints = new Hints(Hints.JTS_COORDINATE_SEQUENCE_FACTORY, csFactory);
-        Hints hints = new Hints();
-        // hints.put(Hints.JTS_GEOMETRY_FACTORY, gFactory);
-        // hints.put(Hints.FEATURE_2D, Boolean.TRUE);
-
-        // update the screenmaps
-
-        CoordinateReferenceSystem crs = featCrs;// getNativeCRS(schema, attributes);
-        if (crs != null) {
-            Set<RenderingHints.Key> fsHints = source.getSupportedHints();
-
-            SingleCRS crs2D = crs == null ? null : CRS.getHorizontalCRS(crs);
-            MathTransform mt = buildFullTransform(crs2D, mapCRS, worldToScreenTransform);
-            // MathTransform mt = ProjectiveTransform.create(worldToScreenTransform);
-            double[] spans;
-            try {
-                spans = Decimator.computeGeneralizationDistances(mt.inverse(), screenSize,
-                        generalizationDistance);
-            } catch (TransformException e) {
-                throw Throwables.propagate(e);
-            }
-            double distance = spans[0] < spans[1] ? spans[0] : spans[1];
-            for (LiteFeatureTypeStyle fts : styles) {
-                if (fts.screenMap != null) {
-                    fts.screenMap.setTransform(mt);
-                    fts.screenMap.setSpans(spans[0], spans[1]);
-                    if (fsHints.contains(Hints.SCREENMAP)) {
-                        // replace the renderer screenmap with the hint, and avoid doing
-                        // the work twice
-                        hints.put(Hints.SCREENMAP, fts.screenMap);
-                        fts.screenMap = null;
-                    }
-                }
-            }
-        }
-
-        // if (renderingTransformation) {
-        // // the RT might need valid geometries, we can at most apply a topology
-        // // preserving generalization
-        // if (fsHints.contains(Hints.GEOMETRY_GENERALIZATION)) {
-        // hints.put(Hints.GEOMETRY_GENERALIZATION, distance);
-        // inMemoryGeneralization = false;
-        // }
-        // } else {
-        // // ... if possible we let the datastore do the generalization
-        // if (fsHints.contains(Hints.GEOMETRY_SIMPLIFICATION)) {
-        // // good, we don't need to perform in memory generalization, the datastore
-        // // does it all for us
-        // hints.put(Hints.GEOMETRY_SIMPLIFICATION, distance);
-        // inMemoryGeneralization = false;
-        // } else if (fsHints.contains(Hints.GEOMETRY_DISTANCE)) {
-        // // in this case the datastore can get us close, but we can still
-        // // perform some in memory generalization
-        // hints.put(Hints.GEOMETRY_DISTANCE, distance);
-        // }
-        // }
-        // }
-        // } catch (Exception e) {
-        // // LOGGER.log(Level.INFO, "Error computing the generalization hints", e);
-        // }
-
-        if (query.getHints() == null) {
-            query.setHints(hints);
-        } else {
-            query.getHints().putAll(hints);
-        }
+        // Hints hints = new Hints();
+        // query.getHints().putAll(hints);
 
         // simplify the filter
         SimplifyingFilterVisitor simplifier = new SimplifyingFilterVisitor();
@@ -190,30 +143,6 @@ public class VectorMapRenderUtils {
         Filter simplifiedFilter = (Filter) query.getFilter().accept(simplifier, null);
         query.setFilter(simplifiedFilter);
         return query;
-    }
-
-    /**
-     * Builds a full transform going from the source CRS to the destination CRS and from there to
-     * the screen.
-     * <p>
-     * Although we ask for 2D content (via {@link Hints#FEATURE_2D} ) not all DataStore
-     * implementations are capable. In this event we will manually stage the information into
-     * {@link DefaultGeographicCRS#WGS84}) and before using this transform.
-     */
-    private static MathTransform buildFullTransform(CoordinateReferenceSystem sourceCRS,
-            CoordinateReferenceSystem destCRS, AffineTransform worldToScreenTransform)
-            throws FactoryException {
-        MathTransform mt = buildTransform(sourceCRS, destCRS);
-
-        // concatenate from world to screen
-        if (mt != null && !mt.isIdentity()) {
-            mt = ConcatenatedTransform.create(mt,
-                    ProjectiveTransform.create(worldToScreenTransform));
-        } else {
-            mt = ProjectiveTransform.create(worldToScreenTransform);
-        }
-
-        return mt;
     }
 
     /**
@@ -333,7 +262,7 @@ public class VectorMapRenderUtils {
         }
     }
 
-    public static ArrayList<LiteFeatureTypeStyle> createLiteFeatureTypeStyles(
+    private static ArrayList<LiteFeatureTypeStyle> createLiteFeatureTypeStyles(
             List<FeatureTypeStyle> featureStyles, FeatureType ftype, double scaleDenominator,
             Rectangle screenSize) throws IOException {
 
@@ -359,18 +288,6 @@ public class VectorMapRenderUtils {
                 Graphics2D graphics = null;
                 lfts = new LiteFeatureTypeStyle(graphics, ruleList, elseRuleList,
                         fts.getTransformation());
-
-                if (FeatureTypeStyle.VALUE_EVALUATION_MODE_FIRST.equals(fts.getOptions().get(
-                        FeatureTypeStyle.KEY_EVALUATION_MODE))) {
-                    lfts.matchFirst = true;
-                }
-                final boolean screenMapEnabled = true;// we don't care about opacity
-                if (screenMapEnabled) {
-                    int renderingBuffer = 0;// getRenderingBuffer();
-                    lfts.screenMap = new ScreenMap(screenSize.x - renderingBuffer, screenSize.y
-                            - renderingBuffer, screenSize.width + renderingBuffer * 2,
-                            screenSize.height + renderingBuffer * 2);
-                }
 
                 result.add(lfts);
             }

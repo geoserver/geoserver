@@ -18,7 +18,6 @@ import javax.measure.unit.Unit;
 
 import org.apache.commons.io.output.DeferredFileOutputStream;
 import org.geoserver.wms.WMSMapContent;
-import org.geoserver.wms.WebMap;
 import org.geoserver.wms.map.RawMap;
 import org.geoserver.wms.vector.DeferredFileOutputStreamWebMap;
 import org.geoserver.wms.vector.VectorTileBuilder;
@@ -110,7 +109,7 @@ public class GeoJsonWMSBuilder implements VectorTileBuilder {
     }
 
     @Override
-    public WebMap build(WMSMapContent mapContent) throws IOException {
+    public RawMap build(WMSMapContent mapContent) throws IOException {
         jsonWriter.endArray(); // end features
         jsonWriter.endObject();// end root object
         writer.flush();

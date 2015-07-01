@@ -29,7 +29,7 @@ public class GeoJsonBuilderFactory implements VectorTileBuilderFactory {
     }
 
     @Override
-    public VectorTileBuilder newBuilder(Rectangle screenSize, ReferencedEnvelope mapArea) {
+    public GeoJsonWMSBuilder newBuilder(Rectangle screenSize, ReferencedEnvelope mapArea) {
         return new GeoJsonWMSBuilder(screenSize, mapArea);
     }
 

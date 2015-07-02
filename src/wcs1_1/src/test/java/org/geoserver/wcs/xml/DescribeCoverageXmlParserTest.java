@@ -11,8 +11,8 @@ import java.io.StringReader;
 
 import net.opengis.wcs11.DescribeCoverageType;
 
-import org.geoserver.wcs.xml.v1_1_1.WCSConfiguration;
 import org.geoserver.wcs.xml.v1_1_1.WcsXmlReader;
+import org.geotools.wcs.v1_1.WCSConfiguration;
 import org.geoserver.util.EntityResolverProvider;
 import org.junit.Before;
 import org.junit.Test;

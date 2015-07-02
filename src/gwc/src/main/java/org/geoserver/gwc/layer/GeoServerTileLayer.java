@@ -642,7 +642,7 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
         MimeType responseFormat = tile.getMimeType();
         FormatModifier formatModifier = null;
         long[] tileGridPosition = tile.getTileIndex();
-        int gutter = info.getGutter();
+        int gutter = responseFormat.isVector() ? 0 : info.getGutter();
         metaTile = new GeoServerMetaTile(gridSubset, responseFormat, formatModifier,
                 tileGridPosition, metaX, metaY, gutter);
 

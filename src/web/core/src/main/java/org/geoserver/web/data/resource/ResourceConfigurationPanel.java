@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -7,6 +7,7 @@ package org.geoserver.web.data.resource;
 
 import java.util.logging.Logger;
 
+import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
@@ -34,4 +35,14 @@ public class ResourceConfigurationPanel extends Panel {
 	public ResourceInfo getResourceInfo(){
 		return (ResourceInfo)getDefaultModelObject();
 	}
+
+    /**
+     * Called when the resource gets updated in the main page. The ajax request target might be null
+     * in case there is none.
+     *
+     * @param target
+     */
+    public void resourceUpdated(AjaxRequestTarget target) {
+        // nothing to do;
+    }
 }

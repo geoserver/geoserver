@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -17,6 +17,7 @@ import java.util.logging.Level;
 import org.apache.wicket.Component;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.WicketRuntimeException;
+import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.markup.html.tabs.AbstractTab;
 import org.apache.wicket.extensions.markup.html.tabs.ITab;
 import org.apache.wicket.extensions.markup.html.tabs.TabbedPanel;
@@ -38,7 +39,6 @@ import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.ProjectionPolicy;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.web.ComponentAuthorizer;
-import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.data.layer.LayerPage;
 import org.geoserver.web.publish.LayerConfigurationPanel;
@@ -391,7 +391,7 @@ public class ResourceConfigurationPage extends GeoServerSecuredPage {
         }
 
         protected ListView createList(String id) {
-            List dataPanels = filterResourcePanels(((GeoServerApplication) getGeoServerApplication())
+            List dataPanels = filterResourcePanels(getGeoServerApplication()
                     .getBeansOfType(ResourceConfigurationPanelInfo.class));
             ListView dataPanelList = new ListView(id, dataPanels) {
                 @Override
@@ -426,7 +426,7 @@ public class ResourceConfigurationPage extends GeoServerSecuredPage {
 
         @Override
         public ListView createList(String id) {
-            List pubPanels = filterLayerPanels(((GeoServerApplication) getGeoServerApplication())
+            List pubPanels = filterLayerPanels(getGeoServerApplication()
                     .getBeansOfType(LayerConfigurationPanelInfo.class));
             ListView pubPanelList = new ListView(id, pubPanels) {
                 @Override
@@ -485,9 +485,33 @@ public class ResourceConfigurationPage extends GeoServerSecuredPage {
      * Allows collaborating pages to update the resource info object
      * 
      * @param info
+     * @param target
      */
     public void updateResource(ResourceInfo info) {
+        updateResource(info, null);
+    }
+
+    /**
+     * Allows collaborating pages to update the resource info object
+     * 
+     * @param info
+     * @param target
+     */
+    public void updateResource(ResourceInfo info, final AjaxRequestTarget target) {
         myResourceModel.setObject(info);
+        visitChildren(new IVisitor<Component>() {
+
+            @Override
+            public Object component(Component component) {
+                if (component instanceof ResourceConfigurationPanel) {
+                    ResourceConfigurationPanel rcp = (ResourceConfigurationPanel) component;
+                    rcp.resourceUpdated(target);
+                    return IVisitor.CONTINUE_TRAVERSAL_BUT_DONT_GO_DEEPER;
+                }
+                return IVisitor.CONTINUE_TRAVERSAL;
+            }
+        });
+
     }
 
     /**

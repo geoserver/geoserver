@@ -61,6 +61,10 @@ public class FeatureResourceConfigurationPanel extends ResourceConfigurationPane
     static final Logger LOGGER = Logging.getLogger(FeatureResourceConfigurationPanel.class);
 
     ModalWindow reloadWarningDialog;
+
+    ListView attributes;
+
+    private Fragment attributePanel;
     
     public FeatureResourceConfigurationPanel(String id, final IModel model) {
         super(id, model);
@@ -71,7 +75,7 @@ public class FeatureResourceConfigurationPanel extends ResourceConfigurationPane
         TextField<Measure> tolerance = new TextField<Measure>("linearizationTolerance", Measure.class);
         add(tolerance);
 
-        final Fragment attributePanel = new Fragment("attributePanel", "attributePanelFragment", this);
+        attributePanel = new Fragment("attributePanel", "attributePanelFragment", this);
         attributePanel.setOutputMarkupId(true);
         add(attributePanel);
         
@@ -81,7 +85,7 @@ public class FeatureResourceConfigurationPanel extends ResourceConfigurationPane
         // to the ResourcePoool
         
         // just use the direct attributes, this is not editable atm
-        ListView attributes = new ListView("attributes", new AttributeListModel()) {
+        attributes = new ListView("attributes", new AttributeListModel()) {
             @Override
             protected void populateItem(ListItem item) {
                 
@@ -199,6 +203,11 @@ public class FeatureResourceConfigurationPanel extends ResourceConfigurationPane
         cascadedStoredQueryContainer.setVisible(typeInfo.getMetadata().get(FeatureTypeInfo.STORED_QUERY_CONFIGURATION, StoredQueryConfiguration.class) != null);
     }
     
+    @Override
+    public void resourceUpdated(AjaxRequestTarget target) {
+        target.addComponent(attributePanel);
+    }
+
     static class ReloadWarningDialog extends WebPage {
         public ReloadWarningDialog(StringResourceModel message) {
             add(new Label("message", message));

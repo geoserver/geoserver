@@ -42,6 +42,10 @@
       <artifactId>gt-xsd-filter</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.geotools.xsd</groupId>
+      <artifactId>gt-xsd-wcs</artifactId>
+    </dependency>
+    <dependency>
       <groupId>javax.mail</groupId>
       <artifactId>mail</artifactId>
       <version>1.4</version>

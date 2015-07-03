@@ -16,7 +16,6 @@
   <import resource="geowebcache-wmtsservice-context.xml"/>
 
   <import resource="geowebcache-diskquota-context.xml"/>
-  <import resource="geowebcache-s3storage-context.xml"/>
     
   <!--
     This mappings are different from the standalone gwc ones in that they prepend the /gwc prefix to the context so it

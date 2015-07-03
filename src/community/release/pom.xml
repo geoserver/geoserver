@@ -172,6 +172,11 @@
       <groupId>org.geoserver.community</groupId>
       <artifactId>gs-gwc-distributed</artifactId>
      <version>${project.version}</version>
+   </dependency>  
+   <dependency>
+      <groupId>org.geoserver.community</groupId>
+      <artifactId>gs-gwc-s3</artifactId>
+     <version>${project.version}</version>
    </dependency>
 
  </dependencies>

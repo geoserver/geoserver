@@ -63,6 +63,7 @@
           <descriptor>release/ext-rest-upload.xml</descriptor>
           <descriptor>release/ext-gwc-distributed.xml</descriptor>  
           <descriptor>release/ext-geofence-server.xml</descriptor>	
+          <descriptor>release/ext-gwc-s3.xml</descriptor>	
         </descriptors>
       </configuration>
      </plugin>
@@ -191,6 +192,7 @@
         <module>sldService</module>
         <module>release</module>
 	<module>gwc-distributed</module>
+	<module>gwc-s3</module>
       </modules>
     </profile>
     <profile>
@@ -438,5 +440,11 @@
         <module>gwc-distributed</module>
       </modules>
     </profile>
-  </profiles>
+    <profile>
+      <id>gwc-s3</id>
+      <modules>
+        <module>gwc-s3</module>
+      </modules>
+    </profile>
+  </profiles>   
 </project>

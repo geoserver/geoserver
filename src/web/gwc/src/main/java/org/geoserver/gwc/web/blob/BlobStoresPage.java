@@ -182,7 +182,7 @@ public class BlobStoresPage extends GeoServerSecuredPage {
                         return new Label(id, "");
                     }
                 } else if (property == BlobStoresProvider.TYPE) {
-                    return new Label(id, BlobStoreTypeStore.getType(blobStore));
+                    return new Label(id, BlobStoreTypes.getFromClass(blobStore.getClass()).toString());
                 }
                 return null;
             }

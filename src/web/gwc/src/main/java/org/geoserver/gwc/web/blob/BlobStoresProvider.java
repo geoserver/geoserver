@@ -46,8 +46,8 @@ public class BlobStoresProvider extends GeoServerDataProvider<BlobStoreConfig> {
             return new Comparator<BlobStoreConfig>() {
                 @Override
                 public int compare(BlobStoreConfig o1, BlobStoreConfig o2) {
-                    int r = BlobStoreTypeStore.getType(o1)
-                            .compareTo(BlobStoreTypeStore.getType(o2));
+                    int r = BlobStoreTypes.getFromClass(o1.getClass()).toString()
+                            .compareTo(BlobStoreTypes.getFromClass(o2.getClass()).toString());
                     return sort.isAscending() ? r : -r;
                 }
             };

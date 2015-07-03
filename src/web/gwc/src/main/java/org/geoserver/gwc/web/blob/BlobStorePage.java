@@ -27,7 +27,7 @@ import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
 import org.geoserver.gwc.GWC;
-import org.geoserver.gwc.web.blob.BlobStoreTypeStore.BlobStoreType;
+import org.geoserver.gwc.web.blob.BlobStoreType;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.ParamResourceModel;
@@ -69,7 +69,7 @@ public class BlobStorePage extends GeoServerSecuredPage {
         dialog.setInitialHeight(200);
 
         typeOfBlobStore = new DropDownChoice<BlobStoreType>("typeOfBlobStore",
-                new Model<BlobStoreType>(), BlobStoreTypeStore.newInstance().getAll());
+                new Model<BlobStoreType>(), BlobStoreTypes.getAll());
         typeOfBlobStore.setOutputMarkupId(true);
         typeOfBlobStore.add(new AjaxFormComponentUpdatingBehavior("onchange") {
             private static final long serialVersionUID = 359589121400814043L;
@@ -114,7 +114,7 @@ public class BlobStorePage extends GeoServerSecuredPage {
 
         if (originalStore != null) {
             typeOfBlobStore.getModel().setObject(
-                    BlobStoreTypeStore.newInstance().getFromClass(originalStore.getClass()));
+                    BlobStoreTypes.getFromClass(originalStore.getClass()));
             blobStoreForm.addOrReplace(typeOfBlobStore.getModelObject().createPanel(
                     "blobSpecificPanel", blobStoreForm.getModel()));
             typeOfBlobStore.setEnabled(false);

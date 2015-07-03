@@ -83,4 +83,6 @@
   </bean>
   
   <bean id="diskQuotaWarningProvider" class="org.geoserver.gwc.web.diskquota.DiskQuotaWarningProvider"/>
+  
+  <bean class="org.geoserver.gwc.web.blob.FileBlobStoreType" /> 
 </beans>

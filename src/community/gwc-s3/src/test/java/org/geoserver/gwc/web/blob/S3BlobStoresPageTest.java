@@ -9,6 +9,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -25,16 +26,17 @@ import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geowebcache.config.BlobStoreConfig;
 import org.geowebcache.config.FileBlobStoreConfig;
 import org.geowebcache.layer.TileLayer;
+import org.geowebcache.s3.S3BlobStoreConfig;
 import org.junit.Test;
 
 /**
  * 
- * Test for the BlobStoresPage
+ * Modified Test for the BlobStoresPage, but now with a S3 BlobStore
  * 
  * @author Niels Charlier
  *
  */
-public class BlobStoresPageTest extends GeoServerWicketTestSupport {
+public class S3BlobStoresPageTest extends GeoServerWicketTestSupport {
     
     private static final String ID_DUMMY1 = "zzz";
     private static final String ID_DUMMY2 = "yyy";
@@ -47,10 +49,12 @@ public class BlobStoresPageTest extends GeoServerWicketTestSupport {
     }
     
     public BlobStoreConfig dummyStore2() throws Exception {
-        FileBlobStoreConfig config = new FileBlobStoreConfig(ID_DUMMY2);
-        config.setFileSystemBlockSize(1024);
-        config.setBaseDirectory("/tmp");
-        return config;
+        S3BlobStoreConfig config = new S3BlobStoreConfig();
+        Field id = BlobStoreConfig.class.getDeclaredField("id");
+        id.setAccessible(true);
+        id.set(config, ID_DUMMY2);
+        config.setBucket("bucket");
+        return config; 
     }
                 
     @Test
@@ -87,10 +91,15 @@ public class BlobStoresPageTest extends GeoServerWicketTestSupport {
         GWC.get().addBlobStore(dummy2);
         
         assertEquals(blobStores.size() + 1, table.getDataProvider().size());        
-        assertTrue(getStoresFromTable(table).contains(dummy2));        
+        assertTrue(getStoresFromTable(table).contains(dummy2));   
         
+        //sort descending on type, S3 should be on top
+        tester.clickLink("storesPanel:listContainer:sortableLinks:1:header:link", true);
+        tester.clickLink("storesPanel:listContainer:sortableLinks:1:header:link", true);
+        assertEquals(dummy2, getStoresFromTable(table).get(0));           
+                        
         GWC.get().removeBlobStores(Collections.singleton(ID_DUMMY1));
-        GWC.get().removeBlobStores(Collections.singleton(ID_DUMMY2)); 
+        GWC.get().removeBlobStores(Collections.singleton(ID_DUMMY2));
         
     }
     

@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -10,6 +10,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Collections;
 
@@ -27,6 +28,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
+
+import com.mockrunner.mock.web.MockHttpServletRequest;
+import com.mockrunner.mock.web.MockHttpServletResponse;
 
 public class GetFeatureTest extends WFSTestSupport {
 	
@@ -54,6 +58,30 @@ public class GetFeatureTest extends WFSTestSupport {
     	testGetFifteenAll("wfs?request=GetFeature&typename=cdf:Fifteen&version=1.0.0&service=wfs");
     }
     
+    @Test
+    public void testPostForm() throws Exception {
+        String contentType = "application/x-www-form-urlencoded; charset=UTF-8";
+        String body = "request=GetFeature&typename=cdf:Fifteen&version=1.0.0&service=wfs";
+        MockHttpServletRequest request = createRequest("wfs");
+        request.setBodyContent(body);
+        // this is normally done by the servlet container, but the mock system won't do it
+        request.setupAddParameter("request", "GetFeature");
+        request.setupAddParameter("typename", "cdf:Fifteen");
+        request.setupAddParameter("version", "1.0.0");
+        request.setupAddParameter("service", "wfs");
+        request.setContentType(contentType);
+        MockHttpServletResponse response = dispatch(request);
+        try (ByteArrayInputStream bis = new ByteArrayInputStream(
+                response.getOutputStreamContent().getBytes())) {
+            Document doc = dom(bis);
+            assertEquals("wfs:FeatureCollection", doc.getDocumentElement().getNodeName());
+
+            NodeList featureMembers = doc.getElementsByTagName("gml:featureMember");
+            assertEquals(15, featureMembers.getLength());
+        }
+
+    }
+
     @Test
     public void testGetPropertyNameEmpty() throws Exception {
     	testGetFifteenAll("wfs?request=GetFeature&typename=cdf:Fifteen&version=1.0.0&service=wfs&propertyname=");

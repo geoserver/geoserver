@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -14,7 +14,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -24,8 +23,8 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
@@ -37,15 +36,11 @@ import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.eclipse.emf.ecore.EObject;
@@ -321,8 +316,7 @@ public class Dispatcher extends AbstractController {
 
         String reqContentType = httpRequest.getContentType();
         //figure out method
-        request.setGet("GET".equalsIgnoreCase(httpRequest.getMethod())
-            || "application/x-www-form-urlencoded".equals(reqContentType));
+        request.setGet("GET".equalsIgnoreCase(httpRequest.getMethod()) || isForm(reqContentType));
 
         //create the kvp map
         parseKVP(request);
@@ -427,6 +421,14 @@ public class Dispatcher extends AbstractController {
         request.setPath(path);
         
         return fireInitCallback(request);
+    }
+
+    private boolean isForm(String contentType) {
+        if (contentType == null) {
+            return false;
+        } else {
+            return contentType.startsWith("application/x-www-form-urlencoded");
+        }
     }
 
     Request fireInitCallback(Request req) {

@@ -6,7 +6,7 @@
             version CDATA #FIXED "2.0.1"
             xmlns:wcs CDATA #FIXED "http://www.opengis.net/wcs/2.0">
   <!ELEMENT wcs:CoverageId (#PCDATA)>
-  <!ENTITY xxe SYSTEM "file:///file/not/there.txt" >]>
+  <!ENTITY xxe SYSTEM "file:///file/not/there?.xsd" >]>
 <wcs:DescribeCoverage 
 	xmlns:wcs='http://www.opengis.net/wcs/2.0' 
 	service="WCS" 

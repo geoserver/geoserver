@@ -52,6 +52,7 @@ public class LoggingFilter implements Filter {
                 message = "" + path;
                 message += " \"" + noNull(hreq.getHeader("User-Agent"));
                 message += "\" \"" + noNull(hreq.getHeader("Referer")) + "\" ";
+                message += "\" \"" + noNull(hreq.getHeader("Content-type")) + "\" ";
 
                 if (logBodies && (hreq.getMethod().equals("PUT") || hreq.getMethod().equals("POST"))){
                     message += " request-size: " + hreq.getContentLength();

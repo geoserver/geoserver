@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -18,7 +19,9 @@ import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
@@ -31,10 +34,13 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.ResourcePool;
 import org.geoserver.web.GeoServerApplication;
+import org.geoserver.web.data.layer.CascadedWFSStoredQueryEditPage;
 import org.geoserver.web.data.layer.SQLViewEditPage;
 import org.geoserver.web.wicket.GeoServerAjaxFormLink;
 import org.geoserver.web.wicket.ParamResourceModel;
+import org.geotools.data.wfs.internal.v2_0.storedquery.StoredQueryConfiguration;
 import org.geotools.jdbc.VirtualTable;
+import org.geotools.measure.Measure;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.type.FeatureType;
 
@@ -46,7 +52,13 @@ public class FeatureResourceConfigurationPanel extends ResourceConfigurationPane
     
     public FeatureResourceConfigurationPanel(String id, final IModel model) {
         super(id, model);
+
+        CheckBox circularArcs = new CheckBox("circularArcPresent");
+        add(circularArcs);
         
+        TextField<Measure> tolerance = new TextField<Measure>("linearizationTolerance", Measure.class);
+        add(tolerance);
+
         final Fragment attributePanel = new Fragment("attributePanel", "attributePanelFragment", this);
         attributePanel.setOutputMarkupId(true);
         add(attributePanel);
@@ -152,6 +164,23 @@ public class FeatureResourceConfigurationPanel extends ResourceConfigurationPane
         FeatureTypeInfo typeInfo = (FeatureTypeInfo) model.getObject();
         reloadContainer.setVisible(typeInfo.getMetadata().get(FeatureTypeInfo.JDBC_VIRTUAL_TABLE, VirtualTable.class) == null);
         sqlViewContainer.setVisible(!reloadContainer.isVisible());
+        
+        // Cascaded Stored Query
+        WebMarkupContainer cascadedStoredQueryContainer = new WebMarkupContainer("editCascadedStoredQueryContainer");
+        attributePanel.add(cascadedStoredQueryContainer);
+        cascadedStoredQueryContainer.add(new Link("editCascadedStoredQuery") {
+            @Override
+            public void onClick() {
+                FeatureTypeInfo typeInfo = (FeatureTypeInfo) model.getObject();
+                try {
+                    setResponsePage(new CascadedWFSStoredQueryEditPage(typeInfo, ((ResourceConfigurationPage) this.getPage())));
+                } catch(Exception e) {
+                    LOGGER.log(Level.SEVERE, "Failure opening the sql view edit page", e);
+                    error(e.toString());
+                }
+            }
+        });
+        cascadedStoredQueryContainer.setVisible(typeInfo.getMetadata().get(FeatureTypeInfo.STORED_QUERY_CONFIGURATION, StoredQueryConfiguration.class) != null);
     }
     
     static class ReloadWarningDialog extends WebPage {
@@ -170,7 +199,7 @@ public class FeatureResourceConfigurationPanel extends ResourceConfigurationPane
                 final ResourcePool resourcePool = catalog.getResourcePool();
                 return resourcePool.getAttributes(typeInfo);
             } catch (Exception e) {
-                LOGGER.log(Level.INFO, "Grabbing the attribute list failed", e);
+                LOGGER.log(Level.SEVERE, "Grabbing the attribute list failed", e);
                 String error = new ParamResourceModel("attributeListingFailed", FeatureResourceConfigurationPanel.this, e.getMessage()).getString();
                 FeatureResourceConfigurationPanel.this.getPage().error(error);
                 return Collections.emptyList();

@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -90,7 +91,7 @@ public abstract class WorkspaceQualifyingCallback implements DispatcherCallback 
         return name;
     }
     
-    protected void qualifyNames(List<String> names, WorkspaceInfo ws) {
+    protected void qualifyLayerNames(List<String> names, WorkspaceInfo ws) {
         for (int i = 0; i < names.size(); i++) {
             names.set(i, qualifyName(names.get(i), ws));
         }

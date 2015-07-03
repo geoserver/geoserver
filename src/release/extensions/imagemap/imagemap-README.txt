@@ -15,11 +15,11 @@ INSTALLATION
 
 COMPATIBILITY
 
-This jar should work with any version of GeoServer based on GeoTools 10.x.  
-Currently this is anything in 2.4.x. 
+This jar should work with any version of GeoServer based on GeoTools 13.x  
+Currently this is anything in 2.7.x. 
 
 For more information see on needed libraries and parameters, see:
-http://geoserver.org/display/GEOS/HTML+ImageMap+support
+http://docs.geoserver.org/latest/en/user/extensions/imagemap.html
 
 Please report any bugs with jira (http://jira.codehaus.org/browse/GEOS). 
 

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!-- 
- Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ Copyright (C) 2014 - Open Source Geospatial Foundation. All rights reserved.
  This code is licensed under the GPL 2.0 license, available at the root
  application directory.
  -->
@@ -11,22 +11,28 @@
  <parent>
   <groupId>org.geoserver</groupId>
   <artifactId>geoserver</artifactId>
-  <version>2.4-SNAPSHOT</version>
+  <version>2.8-SNAPSHOT</version>
  </parent>
  
  <groupId>org.geoserver</groupId>
- <artifactId>main</artifactId>
+ <artifactId>gs-main</artifactId>
  <packaging>jar</packaging>
  <name>Main Module</name>
  
  <dependencies>
   <dependency>
    <groupId>org.geoserver</groupId>
-   <artifactId>ows</artifactId>
+   <artifactId>gs-ows</artifactId>
   </dependency>
   <dependency>
    <groupId>org.geoserver</groupId>
-   <artifactId>ows</artifactId>
+   <artifactId>gs-ows</artifactId>
+   <classifier>tests</classifier>
+   <scope>test</scope>
+  </dependency>
+  <dependency>
+   <groupId>org.geoserver</groupId>
+   <artifactId>gs-platform</artifactId>
    <classifier>tests</classifier>
    <scope>test</scope>
   </dependency>
@@ -44,10 +50,6 @@
    <artifactId>commons-beanutils</artifactId>
   </dependency>
   <dependency>
-   <groupId>commons-digester</groupId>
-   <artifactId>commons-digester</artifactId>
-  </dependency>
-  <dependency>
    <groupId>commons-fileupload</groupId>
    <artifactId>commons-fileupload</artifactId>
   </dependency>
@@ -60,16 +62,8 @@
    <artifactId>commons-httpclient</artifactId>
   </dependency>
   <dependency>
-   <groupId>commons-validator</groupId>
-   <artifactId>commons-validator</artifactId>
-  </dependency>
-  <dependency>
    <groupId>org.freemarker</groupId>
    <artifactId>freemarker</artifactId>
-  </dependency>
-  <dependency>
-   <groupId>oro</groupId>
-   <artifactId>oro</artifactId>
   </dependency>
   <dependency>
    <groupId>org.geotools</groupId>
@@ -85,15 +79,15 @@
   </dependency>
   <dependency>
    <groupId>org.geotools</groupId>
-   <artifactId>gt-validation</artifactId>
-  </dependency>
-  <dependency>
-   <groupId>org.geotools</groupId>
    <artifactId>gt-data</artifactId>
   </dependency>
   <dependency>
    <groupId>org.geotools</groupId>
    <artifactId>gt-jdbc</artifactId>
+  </dependency>
+  <dependency>
+   <groupId>org.geotools</groupId>
+   <artifactId>gt-wfs-ng</artifactId>
   </dependency>
   <dependency>
    <groupId>org.geotools</groupId>
@@ -131,10 +125,19 @@
     <groupId>com.google.guava</groupId>
     <artifactId>guava</artifactId>
   </dependency>
+  <dependency>
+    <groupId>com.google.code.findbugs</groupId>
+    <artifactId>jsr305</artifactId>
+  </dependency>
   
   <dependency>
    <groupId>com.mockrunner</groupId>
    <artifactId>mockrunner</artifactId>
+   <scope>test</scope>
+  </dependency>
+  <dependency>
+   <groupId>org.hamcrest</groupId>
+   <artifactId>hamcrest-library</artifactId>
    <scope>test</scope>
   </dependency>
   <dependency>
@@ -182,13 +185,13 @@
    <artifactId>gt-imagemosaic</artifactId>
   </dependency>
   <dependency>
-   <groupId>org.geotools</groupId>
-   <artifactId>gt-wfs</artifactId>
+  <groupId>org.geotools.jdbc</groupId>
+   <artifactId>gt-jdbc-postgis</artifactId>
    <scope>test</scope>
   </dependency>
   <dependency>
     <groupId>org.geoserver</groupId>
-    <artifactId>platform</artifactId>
+    <artifactId>gs-platform</artifactId>
   </dependency>
   <dependency>
    <groupId>org.springframework.security</groupId>

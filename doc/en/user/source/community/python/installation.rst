@@ -4,7 +4,7 @@ Installing the Python Extension
 ===============================
 
 #. Download the Python extension from the `GeoServer download page 
-   <http://geoserver.org/display/GEOS/Download>`_.
+   <http://geoserver.org/download>`_.
 
    .. warning:: 
 
@@ -17,5 +17,5 @@ Installing the Python Extension
 Verifiying the Installation
 ---------------------------
 
-To verify the extension has been installed properly start the GeoServer instance and navigate to the data directory. Upon a successfull install a new directory
+To verify the extension has been installed properly start the GeoServer instance and navigate to the data directory. Upon a successful install a new directory
  named ``python`` will be created.

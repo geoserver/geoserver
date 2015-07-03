@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -48,6 +49,10 @@ public class WMSLifecycleHandler implements GeoServerLifecycleHandler, Applicati
     public void onDispose() {
         // dispose the WMS Animator Executor Service
         shutdownAnimatorExecutorService();
+    }
+
+    public void beforeReload() {
+        // nothing to do
     }
 
     public void onReload() {

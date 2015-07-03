@@ -1,10 +1,11 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.kml.icons;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.awt.image.BufferedImage;
 import java.util.Arrays;
@@ -14,27 +15,30 @@ import javax.imageio.ImageIO;
 
 import org.geoserver.kml.KMLTest;
 import org.geotools.factory.CommonFactoryFinder;
+import org.geotools.image.test.ImageAssert;
+import org.geotools.renderer.lite.StyledShapePainter;
 import org.geotools.styling.StyleFactory;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import org.opengis.feature.type.Name;
 import org.opengis.filter.FilterFactory;
 import org.opengis.filter.expression.Expression;
+import org.opengis.style.FeatureTypeStyle;
 import org.opengis.style.Graphic;
 import org.opengis.style.GraphicalSymbol;
 import org.opengis.style.Mark;
-import org.opengis.style.FeatureTypeStyle;
 import org.opengis.style.Rule;
 import org.opengis.style.SemanticType;
 import org.opengis.style.Style;
 import org.opengis.style.Symbolizer;
-import org.junit.Test;
-import org.geotools.image.test.ImageAssert;
 
 public class IconRendererTest {
     /**
      * Upscaled images need a higher threshold for pdiff
      */
-    static final int THRESHOLD = 400; 
-
+    static final int THRESHOLD = 400;
+    
     @Test
     public void testSimpleCircle() throws Exception {
         StyleFactory sfact =  CommonFactoryFinder.getStyleFactory();
@@ -54,7 +58,7 @@ public class IconRendererTest {
         BufferedImage img = IconRenderer.renderIcon((org.geotools.styling.Style)s);
         
         // Default mark size, plus border, plus padding, times rendering scale, plus extra padding.
-        final int size = (16+1+1)*4+1;
+        final int size = (16+1+1+1)*4;
         assertEquals(size, img.getHeight());
         assertEquals(size, img.getWidth());
         
@@ -82,7 +86,7 @@ public class IconRendererTest {
         BufferedImage img = IconRenderer.renderIcon((org.geotools.styling.Style)s);
         
         // Default mark size, plus border, plus padding, times rendering scale, plus extra padding.
-        final int size = (16+1+1)*4+1;
+        final int size = (16+1+1+1)*4;
         assertEquals(size, img.getHeight());
         assertEquals(size, img.getWidth());
         
@@ -112,7 +116,7 @@ public class IconRendererTest {
         // Default mark size, plus border, plus padding, times rendering scale, plus extra padding.
         final int baseSize = 16;
         final int rotated = (int)Math.ceil(baseSize*Math.sqrt(2));
-        final int size = (rotated+1+1)*4+1;
+        final int size = (rotated+1+1+1)*4;
         assertEquals(size, img.getHeight());
         assertEquals(size, img.getWidth());
         
@@ -137,7 +141,7 @@ public class IconRendererTest {
         BufferedImage img = IconRenderer.renderIcon((org.geotools.styling.Style)s);
         
         // Default mark size, plus border, plus padding, times rendering scale, plus extra padding.
-        final int size = (16+0+1)*4+1;
+        final int size = (16+0+1+1)*4;
         assertEquals(size, img.getHeight());
         assertEquals(size, img.getWidth());
         
@@ -164,7 +168,7 @@ public class IconRendererTest {
         // Default mark size, plus border, plus padding, times rendering scale, plus extra padding.
         final int baseSize = 16;
         final int rotated = (int) Math.ceil(baseSize*Math.sqrt(2));
-        final int size = (rotated+0+1)*4+1;
+        final int size = (rotated+0+1+1)*4;
         assertEquals(size, img.getHeight());
         assertEquals(size, img.getWidth());
         
@@ -189,7 +193,7 @@ public class IconRendererTest {
         BufferedImage img = IconRenderer.renderIcon((org.geotools.styling.Style)s);
         
         // Default mark size, plus border, plus padding, times rendering scale, plus extra padding.
-        final int size = (42+0+1)*4+1;
+        final int size = (42+0+1+1)*4;
         assertEquals(size, img.getHeight());
         assertEquals(size, img.getWidth());
         
@@ -214,7 +218,7 @@ public class IconRendererTest {
         BufferedImage img = IconRenderer.renderIcon((org.geotools.styling.Style)s);
         
         // Default mark size, plus border, plus padding, times rendering scale, plus extra padding.
-        final int size = (42+0+1)*4+1;
+        final int size = (42+0+1+1)*4;
         assertEquals(size, img.getHeight());
         assertEquals(size, img.getWidth());
         
@@ -239,7 +243,7 @@ public class IconRendererTest {
         BufferedImage img = IconRenderer.renderIcon((org.geotools.styling.Style)s);
         
         // Default mark size, plus border, plus padding, times rendering scale, plus extra padding.
-        final int size = (42+0+1)*4+1;
+        final int size = (42+0+1+1)*4;
         assertEquals(size, img.getHeight());
         assertEquals(size, img.getWidth());
         

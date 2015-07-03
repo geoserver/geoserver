@@ -1,0 +1,120 @@
+<project name="osx-installer" default="build" basedir=".">
+  
+  <property name="work.dir" value="target"/>
+
+  <target name="bootstrap">
+    <mkdir dir="lib"/>
+    <get dest="lib" usetimestamp="true"
+       src="http://repo.boundlessgeo.com/main/com/oracle/appbundler/1.0ea/appbundler-1.0ea.jar"/>
+     <get dest="lib" usetimestamp="true"
+       src="http://central.maven.org/maven2/ant-contrib/ant-contrib/1.0b3/ant-contrib-1.0b3.jar"/>
+  </target>
+
+  <target name="clean">
+    <delete dir="${work.dir}"/>
+  </target>
+
+  <target name="init" depends="clean,bootstrap">
+    <!-- task definitions we need -->
+    <taskdef name="bundleapp" classname="com.oracle.appbundler.AppBundlerTask"
+      classpath="lib/appbundler-1.0ea.jar" />
+
+    <taskdef resource="net/sf/antcontrib/antlib.xml">
+      <classpath>
+        <pathelement location="lib/ant-contrib-1.0b3.jar"/>
+      </classpath>
+    </taskdef>
+
+    <!-- check for build file -->
+    <pathconvert property="gs.bin" setonempty="false">
+      <path id="gs.bin.path">
+        <fileset dir="${basedir}" includes="geoserver-*-bin.zip"/>
+      </path>
+    </pathconvert>
+    <fail unless="gs.bin" 
+      message="GeoServer build not found. Copy -bin.zip into this directory."/>
+
+    <!-- extract version number -->
+    <property name="gs.bin.file" refid="gs.bin.path"/>
+    <propertyregex property="gs.version" input="${gs.bin.file}"
+      regexp="mac/geoserver-(.*)-bin.zip" select="\1"/>
+
+    <fail unless="gs.version" 
+      message="Unable to determine GeoServer version number from bin file."/>
+  </target>
+
+  <target name="build" depends="init">
+    <mkdir dir="${work.dir}"/>
+
+    <unzip src="${gs.bin.file}" dest="${work.dir}"/>
+    <property name="gs.dir" value="${work.dir}/geoserver-${gs.version}"/>
+
+    <antcall target="build-console"/>
+    <antcall target="assemble"/>
+  </target>
+
+  <target name="build-console">
+    <property name="console.dir" value="${work.dir}/console"/>
+    <mkdir dir="${console.dir}"/>
+    <javac srcdir="console/src/main/java" destdir="${console.dir}" debug="true">
+      <classpath>
+        <fileset dir="${gs.dir}">
+          <include name="start.jar"/>
+        </fileset>
+        <fileset dir="${gs.dir}/lib">
+          <include name="jetty-*.jar"/>
+          <include name="log4j-*.jar"/>
+        </fileset>
+      </classpath>
+    </javac>
+    <copy todir="${console.dir}">
+      <fileset dir="console/src/main/resources" includes="**/*"/>
+    </copy>
+    <jar destfile="${gs.dir}/gs-console-${gs.version}.jar"
+      basedir="${console.dir}"/>
+    <jar destfile="${gs.dir}/log4j-config.jar" basedir="${gs.dir}/resources"/>
+  </target>
+
+  <target name="assemble">
+    <property name="app.dir" value="${work.dir}"/>
+    <property environment="env"/>
+
+    <path id="gs.app.classpath">
+      <fileset dir="${gs.dir}" includes="*.jar"/>
+      <fileset dir="${gs.dir}/lib" includes="log4j*.jar"/>
+      <pathelement path="${gs.dir}/resources"/>
+    </path>
+
+    <bundleapp 
+        classpathref="gs.app.classpath"
+        outputdirectory="${app.dir}"
+        name="GeoServer"
+        displayname="GeoServer"
+        identifier="org.geoserver"
+        executableName="GeoServer"
+        version="${gs.version}"
+        shortversion="${gs.version}"
+        icon="GeoServer.icns"
+        mainclassname="org.geoserver.console.GeoServer"
+        workingDirectory="$APP_ROOT/Contents/Java">
+
+      <runtime dir="${env.JAVA_HOME}"/>
+
+      <option value="-DGEOSERVER_DATA_DIR=data_dir"/>
+      <option value="-DSTOP.PORT=8079"/>
+      <option value="-DSTOP.KEY=geoserver"/>
+      <option value="-Xms128m"/>
+      <option value="-Xmx512m"/>
+      <option value="-XX:MaxPermSize=128m"/>
+      <option value="-Dapple.laf.useScreenMenuBar=true"/>
+
+      <!-- Workaround since the icon parameter for bundleapp doesn't work -->
+      <option value="-Xdock:icon=Contents/Resources/GeoServer.icns"/>
+
+    </bundleapp>
+    <copy todir="${app.dir}/GeoServer.app/Contents/Java">
+      <fileset dir="${gs.dir}" includes="**/*"/>
+    </copy>
+  </target>
+
+</project>

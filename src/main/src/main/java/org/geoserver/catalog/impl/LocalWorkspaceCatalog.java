@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -15,6 +16,7 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.catalog.ValidationResult;
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.catalog.util.CloseableIteratorAdapter;
 import org.geoserver.config.GeoServer;
@@ -138,7 +140,7 @@ public class LocalWorkspaceCatalog extends AbstractCatalogDecorator implements C
     }
 
     @Override
-    public List<RuntimeException> validate(LayerInfo layer, boolean isNew) {
+    public ValidationResult validate(LayerInfo layer, boolean isNew) {
         return super.validate(unwrap(layer), isNew);
     }
 
@@ -224,7 +226,7 @@ public class LocalWorkspaceCatalog extends AbstractCatalogDecorator implements C
         return super.detach(unwrap(layerGroup));
     }
 
-    public List<RuntimeException> validate(LayerGroupInfo layerGroup, boolean isNew) {
+    public ValidationResult validate(LayerGroupInfo layerGroup, boolean isNew) {
         return super.validate(unwrap(layerGroup), isNew);
     }
 

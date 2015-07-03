@@ -1,0 +1,27 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<head></head>
+<body>
+<wicket:panel>
+  <div wicket:id="container">
+    <table wicket:id="table">
+      <tr>
+        <th><wicket:message key="format">Format</wicket:message></th>
+        <th><wicket:message key="url">URL</wicket:message></th>
+        <th></th>
+      </tr>
+      <tr wicket:id="links">
+        <td><input wicket:id="format" type="text" class="text"/></td>
+        <td><span wicket:id="urlBorder"><input wicket:id="dataLinkURL" type="text" class="text"/></span></td>
+        <td><a href="#" wicket:id="removeLink"><wicket:message key="remove">Remove</wicket:message></a></td>
+      </tr>
+    </table>
+    <p wicket:id="noLinks"></p>
+  </div>
+  <div>
+   <span>
+    <button wicket:id="addlink"><wicket:message key="addLink">Add link</wicket:message></button>
+   </span>
+  </div>
+</wicket:panel>
+</body>
+</html>

@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -74,7 +75,7 @@ public class GeoServerHomePage extends GeoServerBasePage {
             String contactEmail = contact.getContactEmail();
             HashMap<String, String>params = new HashMap<String, String>();
             params.put("version", version);
-            params.put("contactEmail", contactEmail);
+            params.put("contactEmail", (contactEmail == null ? "geoserver@example.org" : contactEmail));
             Label label = new Label("footerMessage", new StringResourceModel("GeoServerHomePage.footer", this, new Model(params)));
             label.setEscapeModelStrings(false);
             add(label);
@@ -83,8 +84,7 @@ public class GeoServerHomePage extends GeoServerBasePage {
         
         Authentication auth = getSession().getAuthentication();
         if(isAdmin(auth)) {
-            Stopwatch sw = new Stopwatch();
-            sw.start();
+            Stopwatch sw = Stopwatch.createStarted();
             Fragment f = new Fragment("catalogLinks", "catalogLinksFragment", this);
             Catalog catalog = getCatalog();
             

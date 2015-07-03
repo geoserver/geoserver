@@ -1,12 +1,13 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wfs.v1_1;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Collections;
 import java.util.Map;
@@ -173,7 +174,8 @@ public class TransactionTest extends WFSTestSupport {
             + "</wfs:GetFeature>";
         dom = postAsDOM("wfs", getFeature);
 //        print(dom);
-        assertEquals("20.0 40.0", getFirstElementByTagName(dom, "gml:pos").getFirstChild().getNodeValue());
+        assertEquals("20 40", getFirstElementByTagName(dom, "gml:pos").getFirstChild()
+                .getNodeValue());
     }
 
     @Test
@@ -262,7 +264,7 @@ public class TransactionTest extends WFSTestSupport {
          Element location = getFirstElementByTagName( feature, "gml:location" );
          Element pos = getFirstElementByTagName(location, "gml:pos");
          
-         assertEquals( "2.0 2.0", pos.getFirstChild().getNodeValue() );
+        assertEquals("2 2", pos.getFirstChild().getNodeValue());
          
          xml = "<wfs:Transaction service=\"WFS\" version=\"1.1.0\" " + 
          "xmlns:wfs=\"http://www.opengis.net/wfs\" " + 
@@ -297,7 +299,7 @@ public class TransactionTest extends WFSTestSupport {
          location = getFirstElementByTagName( feature, "gml:location" );
          pos = getFirstElementByTagName(location, "gml:pos");
          
-         assertEquals( "3.0 3.0", pos.getFirstChild().getNodeValue() );
+        assertEquals("3 3", pos.getFirstChild().getNodeValue());
     }
     
     @Test
@@ -352,7 +354,7 @@ public class TransactionTest extends WFSTestSupport {
         Element location = getFirstElementByTagName( feature, "gml:location" );
         Element pos = getFirstElementByTagName(location, "gml:pos");
         
-        assertEquals( "2.0 2.0", pos.getFirstChild().getNodeValue() );
+        assertEquals("2 2", pos.getFirstChild().getNodeValue());
         
         xml = 
             "<wfs:Transaction service=\"WFS\" version=\"1.1.0\"" + 
@@ -404,7 +406,7 @@ public class TransactionTest extends WFSTestSupport {
         location = getFirstElementByTagName( feature, "gml:location" );
         pos = getFirstElementByTagName(location, "gml:pos");
         
-        assertEquals( "3.0 3.0", pos.getFirstChild().getNodeValue() );
+        assertEquals("3 3", pos.getFirstChild().getNodeValue());
     }
     
     @Test
@@ -691,6 +693,7 @@ public class TransactionTest extends WFSTestSupport {
        DataStoreInfo ds = cat.getFactory().createDataStore();
        ds.setName("foo");
        ds.setWorkspace(cat.getDefaultWorkspace());
+       ds.setEnabled(true);
        
        Map params = ds.getConnectionParameters(); 
        params.put("dbtype", "h2");
@@ -740,6 +743,7 @@ public class TransactionTest extends WFSTestSupport {
        XMLAssert.assertXpathExists("//ogc:FeatureId[@fid = 'bar.1234']", dom);
 
        dom = getAsDOM("wfs?request=GetFeature&version=1.1.0&service=wfs&featureId=bar.1234");
+        print(dom);
        XMLAssert.assertXpathExists("//gs:bar[@gml:id = 'bar.1234']",dom);
    }
 }

@@ -1,38 +1,48 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.security.impl;
 
-import static org.easymock.EasyMock.anyObject;
-import static org.easymock.EasyMock.createNiceMock;
-import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
+import org.easymock.Capture;
+import org.easymock.EasyMock;
+import org.easymock.IAnswer;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.catalog.util.CloseableIterator;
+import org.geoserver.catalog.util.CloseableIteratorAdapter;
+import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.geoserver.security.DataAccessManager;
 import org.geoserver.security.DataAccessManagerAdapter;
 import org.geoserver.security.ResourceAccessManager;
+import org.geoserver.security.ResourceAccessManagerWrapper;
+import org.geoserver.security.SecureCatalogImpl;
 import org.geotools.data.DataStore;
 import org.geotools.data.FeatureStore;
 import org.geotools.factory.Hints;
 import org.junit.Before;
+import org.opengis.filter.Filter;
+import org.opengis.filter.sort.SortBy;
 import org.opengis.util.ProgressListener;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -101,6 +111,8 @@ public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
 
     protected List<WorkspaceInfo> workspaces;
 
+    protected SecureCatalogImpl sc;
+
     @Before
     public void setUp() throws Exception {
         rwUser = new TestingAuthenticationToken("rw", "supersecret", Arrays.asList(new GrantedAuthority[] {
@@ -136,7 +148,7 @@ public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
         states = (FeatureTypeInfo) statesLayer.getResource();
         statesStore = states.getStore();
         arcGrid = (CoverageInfo) arcGridLayer.getResource();
-        arcGridStore = (CoverageStoreInfo) arcGrid.getStore();
+        arcGridStore = arcGrid.getStore();
         roads = (FeatureTypeInfo) roadsLayer.getResource();
         roadsStore = roads.getStore();
         landmarks = (FeatureTypeInfo) landmarksLayer.getResource();
@@ -176,9 +188,18 @@ public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
         expect(store.getWorkspace()).andReturn(ws).anyTimes();
         replay(store);
 
+        NamespaceInfo ns = createNiceMock(NamespaceInfo.class);
+        expect(ns.getName()).andReturn(ws.getName()).anyTimes();
+        expect(ns.getPrefix()).andReturn(ws.getName()).anyTimes();
+        expect(ns.getURI()).andReturn("http://www.geoserver.org/test/" + ws.getName()).anyTimes();
+        replay(ns);
+
         ResourceInfo resource = createNiceMock(resourceClass);
         expect(resource.getStore()).andReturn(store).anyTimes();
         expect(resource.getName()).andReturn(name).anyTimes();
+        expect(resource.getPrefixedName()).andReturn(ws.getName() + ":" + name).anyTimes();
+        expect(resource.prefixedName()).andReturn(ws.getName() + ":" + name).anyTimes();
+        expect(resource.getNamespace()).andReturn(ns).anyTimes();
         if (resource instanceof FeatureTypeInfo) {
             expect(
                     ((FeatureTypeInfo) resource).getFeatureSource((ProgressListener) anyObject(),
@@ -189,6 +210,8 @@ public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
 
         LayerInfo layer = createNiceMock(LayerInfo.class);
         expect(layer.getName()).andReturn(name).anyTimes();
+        expect(layer.getPrefixedName()).andReturn(ws.getName() + ":" + name).anyTimes();
+        expect(layer.prefixedName()).andReturn(ws.getName() + ":" + name).anyTimes();
         expect(layer.getResource()).andReturn(resource).anyTimes();
         if (!advertised) expect(layer.isAdvertised()).andReturn(advertised).anyTimes();
         replay(layer);
@@ -222,13 +245,36 @@ public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
     }
     
     protected ResourceAccessManager buildManager(String propertyFile) throws Exception {
-        return new DataAccessManagerAdapter(buildLegacyAccessManager(propertyFile));
+        return buildManager(propertyFile, null);
     }
-    
+
+    protected ResourceAccessManager buildManager(String propertyFile,
+            ResourceAccessManagerWrapper wrapper) throws Exception {
+        ResourceAccessManager manager = new DataAccessManagerAdapter(
+                buildLegacyAccessManager(propertyFile));
+
+        if (wrapper != null) {
+            wrapper.setDelegate(manager);
+            manager = wrapper;
+        }
+
+        sc = new SecureCatalogImpl(catalog, manager) {
+
+            @Override
+            protected boolean isAdmin(Authentication authentication) {
+                return false;
+            }
+
+        };
+        GeoServerExtensionsHelper.singleton("secureCatalog", sc, SecureCatalogImpl.class);
+
+        return manager;
+    }
+
     protected DataAccessManager buildLegacyAccessManager(String propertyFile) throws Exception {
         Properties props = new Properties();
         props.load(getClass().getResourceAsStream(propertyFile));
-        return new DefaultDataAccessManager(new MemoryDataAccessRuleDAO(catalog, props));
+        return new DefaultResourceAccessManager(new MemoryDataAccessRuleDAO(catalog, props));
     }
     
     /**
@@ -249,32 +295,37 @@ public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
 
         // prime the catalog
         catalog = createNiceMock(Catalog.class);
-        expect(catalog.getFeatureTypeByName("topp:states")).andReturn((FeatureTypeInfo) states)
+        expect(catalog.getFeatureTypeByName("topp:states")).andReturn(states)
                 .anyTimes();
         expect(catalog.getResourceByName("topp:states", FeatureTypeInfo.class)).andReturn(
-                (FeatureTypeInfo) states).anyTimes();
+                states).anyTimes();
         expect(catalog.getLayerByName("topp:states")).andReturn(statesLayer).anyTimes();
-        expect(catalog.getCoverageByName("nurc:arcgrid")).andReturn((CoverageInfo) arcGrid)
+        expect(catalog.getCoverageByName("nurc:arcgrid")).andReturn(arcGrid)
                 .anyTimes();
         expect(catalog.getResourceByName("nurc:arcgrid", CoverageInfo.class)).andReturn(
-                (CoverageInfo) arcGrid).anyTimes();
-        expect(catalog.getFeatureTypeByName("topp:roads")).andReturn((FeatureTypeInfo) roads)
+                arcGrid).anyTimes();
+        expect(catalog.getFeatureTypeByName("topp:roads")).andReturn(roads)
                 .anyTimes();
         expect(catalog.getLayerByName("topp:roads")).andReturn(roadsLayer).anyTimes();
         expect(catalog.getFeatureTypeByName("topp:landmarks")).andReturn(
-                (FeatureTypeInfo) landmarks).anyTimes();
-        expect(catalog.getFeatureTypeByName("topp:bases")).andReturn((FeatureTypeInfo) bases)
+                landmarks).anyTimes();
+        expect(catalog.getFeatureTypeByName("topp:bases")).andReturn(bases)
                 .anyTimes();
-        expect(catalog.getDataStoreByName("states")).andReturn((DataStoreInfo) statesStore)
+        expect(catalog.getDataStoreByName("states")).andReturn(statesStore)
                 .anyTimes();
-        expect(catalog.getDataStoreByName("roads")).andReturn((DataStoreInfo) roadsStore)
+        expect(catalog.getDataStoreByName("roads")).andReturn(roadsStore)
                 .anyTimes();
         expect(catalog.getCoverageStoreByName("arcGrid")).andReturn(
-                (CoverageStoreInfo) arcGridStore).anyTimes();
+                arcGridStore).anyTimes();
         expect(catalog.getLayers()).andReturn(layers).anyTimes();
+        stubList(catalog, LayerInfo.class, layers);
         expect(catalog.getFeatureTypes()).andReturn(featureTypes).anyTimes();
+        stubList(catalog, FeatureTypeInfo.class, featureTypes);
         expect(catalog.getCoverages()).andReturn(coverages).anyTimes();
+        stubList(catalog, CoverageInfo.class, coverages);
         expect(catalog.getWorkspaces()).andReturn(workspaces).anyTimes();
+        stubList(catalog, WorkspaceInfo.class, workspaces);
+        stubList(catalog, StyleInfo.class, Arrays.asList(pointStyle, lineStyle));
         expect(catalog.getWorkspaceByName("topp")).andReturn(toppWs).anyTimes();
         expect(catalog.getWorkspaceByName("nurc")).andReturn(nurcWs).anyTimes();
         expect(catalog.getStyles()).andReturn(Arrays.asList(pointStyle, lineStyle)).anyTimes();
@@ -285,5 +336,27 @@ public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
         expect(catalog.getLayerGroupsByWorkspace("nurc")).andReturn(Arrays.asList(layerGroupGlobal)).anyTimes();
         expect(catalog.getLayerGroupByName("topp", layerGroupWithSomeLockedLayer.getName())).andReturn(layerGroupWithSomeLockedLayer).anyTimes();
         replay(catalog);
+
+        GeoServerExtensionsHelper.singleton("catalog", catalog);
+    }
+    
+    <T extends CatalogInfo> void stubList(Catalog mock, Class<T> clazz, final List<T> source) {
+        final Capture<Filter> cap = new Capture<Filter>();
+        expect(catalog.list(eq(clazz), capture(cap))).andStubAnswer(new IAnswer<CloseableIterator<T>>(){
+            @Override
+            public CloseableIterator<T> answer() throws Throwable {
+                return makeCIterator(source, cap.getValue());
+            }
+        });
+        expect(catalog.list(eq(clazz), capture(cap), EasyMock.anyInt(), EasyMock.anyInt(), (SortBy)anyObject())).andStubAnswer(new IAnswer<CloseableIterator<T>>(){
+            @Override
+            public CloseableIterator<T> answer() throws Throwable {
+                return makeCIterator(source, cap.getValue());
+            }
+        });
+    }
+    
+    static <T> CloseableIterator<T> makeCIterator(List<T> source, Filter f) {
+        return CloseableIteratorAdapter.filter(source.iterator(), f);
     }
 }

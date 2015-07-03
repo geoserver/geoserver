@@ -8,7 +8,7 @@ This page provides layer views in various output formats. A layer must be enable
 .. figure:: ../images/preview_list.png
    :align: center
    
-   *Layer's Preview Page*
+   *Layer Preview Page*
    
 Each layer row consists of a type, name, title, and available formats for viewing.
 
@@ -25,7 +25,7 @@ Each layer row consists of a type, name, title, and available formats for viewin
    * - .. image:: ../images/preview_layergroup.png
      - Layer group 
 
-Name refers to the Workspace and Layer Name of a layer, while Title refers to the brief description configured in the :ref:`edit_layer_data` panel. In the following example, nurc refers to the Workspace, Arc_Sample refers to the Layer Name and "A sample ArcGrid field" is specified on the Edit Later Data panel.
+Name refers to the Workspace and Layer Name of a layer, while Title refers to the brief description configured in the :ref:`webadmin_layers_edit_data` panel. In the following example, nurc refers to the Workspace, Arc_Sample refers to the Layer Name and "A sample ArcGrid field" is specified on the Edit Later Data panel.
 
 
 .. figure:: ../images/preview_row.png
@@ -63,7 +63,7 @@ vector or coverage data. WMS are methods that allows visual display of spatial d
    * - PNG
      - WMS output in raster format. The PNG (Portable Network Graphics) file format was created as the free, open-source successor to the GIF. The PNG file format supports truecolor (16 million colors) while the GIF supports only 256 colors. The PNG file excels when the image has large, uniformly coloured areas.       
    * - OpenLayers
-     - WMS GetMap request outputs a simple OpenLayers preview window. `OpenLayers <http://openlayers.org/>`_ is an open source JavaScript library for displaying map data in web browsers. The OpenLayers output has some advanced filters that are not available when using a standalone version of OpenLayers. Further, the generated preview contains a header with easy  configuration options for display.
+     - WMS GetMap request outputs a simple OpenLayers preview window. `OpenLayers <http://openlayers.org/>`_ is an open source JavaScript library for displaying map data in web browsers. The OpenLayers output has some advanced filters that are not available when using a standalone version of OpenLayers. Further, the generated preview contains a header with easy  configuration options for display. Version 2 of the OpenLayers library is uses by default. Version 3 can be enabled with the `ENABLE_OL3` (true/false) format option or system property. For older browsers not supported by OpenLayers 3, version 2 is used regardless of the setting.
    * - PDF
      - A PDF (Portable Document Format) encapsulates a complete description of a fixed-layout 2D document,including any text, fonts, raster images, and 2D vector graphics.  
  

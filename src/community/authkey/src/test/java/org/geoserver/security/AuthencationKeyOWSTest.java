@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -55,7 +56,12 @@ public class AuthencationKeyOWSTest extends GeoServerSystemTestSupport {
         props.put("sf.*.r", "*");
         props.put("cite.*.r", "cite");
         props.put("cite.*.w", "cite");
-        props.store(new FileOutputStream(layers), "");
+        FileOutputStream outputFile = new FileOutputStream(layers);
+        try {
+            props.store(outputFile, "");
+        } finally {
+            outputFile.close();
+        }
 
     }
     
@@ -236,6 +242,18 @@ public class AuthencationKeyOWSTest extends GeoServerSystemTestSupport {
     public void testCiteGetFeature() throws Exception {
         Document doc = getAsDOM("wfs?service=WFS&version=1.0.0&request=GetFeature&typeName="
                 + getLayerId(MockData.PONDS) + "&authkey=" + citeKey);
+        // print(doc);
+        assertXpathEvaluatesTo("1", "count(//wfs:FeatureCollection)", doc);
+
+        XpathEngine engine = XMLUnit.newXpathEngine();
+        String url = engine.evaluate("//wfs:FeatureCollection/@xsi:schemaLocation", doc);
+        assertTrue(url.contains("&authkey=" + citeKey));
+    }
+    
+    @Test
+    public void testCiteGetFeatureCaseInsensitive() throws Exception {
+        Document doc = getAsDOM("wfs?service=WFS&version=1.0.0&request=GetFeature&typeName="
+                + getLayerId(MockData.PONDS) + "&AUTHKEY=" + citeKey);
         // print(doc);
         assertXpathEvaluatesTo("1", "count(//wfs:FeatureCollection)", doc);
 

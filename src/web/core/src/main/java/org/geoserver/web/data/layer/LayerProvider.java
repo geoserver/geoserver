@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -191,22 +192,5 @@ public class LayerProvider extends GeoServerDataProvider<LayerInfo> {
         Iterator<LayerInfo> items = catalog.list(LayerInfo.class, filter, first, count, sortOrder);
 
         return items;
-    }
-
-    private Filter getFilter() {
-        final String[] keywords = getKeywords();
-        Filter filter = acceptAll();
-        if (null != keywords) {
-            for (String keyword : keywords) {
-                Filter propContains = Predicates.fullTextSearch(keyword);
-                // chain the filters together
-                if (Filter.INCLUDE == filter) {
-                    filter = propContains;
-                } else {
-                    filter = or(filter, propContains);
-                }
-            }
-        }
-        return filter;
     }
 }

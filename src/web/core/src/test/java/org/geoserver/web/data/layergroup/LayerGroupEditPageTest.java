@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -18,7 +19,7 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
         
         tester.assertRenderedPage(LayerGroupEditPage.class);
         // remove the first and second elements
-        tester.clickLink("form:layers:layers:listContainer:items:1:itemProperties:4:component:link");
+        // tester.clickLink("form:layers:layers:listContainer:items:1:itemProperties:4:component:link");
         // the regenerated list will have ids starting from 4
         //tester.clickLink("form:layers:layers:listContainer:items:4:itemProperties:4:component:link");
         // manually regenerate bounds

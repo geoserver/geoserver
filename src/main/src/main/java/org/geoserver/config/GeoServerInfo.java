@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -8,6 +9,7 @@ import java.util.Map;
 
 import org.geoserver.catalog.Info;
 import org.geoserver.catalog.MetadataMap;
+import org.geoserver.platform.resource.LockProvider;
 
 /**
  * Global GeoServer configuration.
@@ -293,6 +295,26 @@ public interface GeoServerInfo extends Info {
      * Enabling this feature is a security risk.
      */
     Boolean isXmlExternalEntitiesEnabled();
+
+    /**
+     * Name of lock provider used for resource access.
+     * 
+     * @return name of spring bean to use as lock provider
+     */
+    public String getLockProviderName();
+    
+    /**
+     * Sets the name of the {@link LockProvider} to use for resoruce access.
+     * 
+     * The following spring bean names are initially provided with the application:
+     * <ul>
+     * <li>nullLockProvider
+     * <li>memoryLockProvider
+     * <li>fileLockProvider
+     * </ul>
+     * @param lockProviderName Name of lock provider used for resource access.
+     */
+    public void setLockProviderName(String lockProviderName);
     
     /**
      * A map of metadata for services.
@@ -313,4 +335,5 @@ public interface GeoServerInfo extends Info {
      * Disposes the global configuration object.
      */
     void dispose();
+
 }

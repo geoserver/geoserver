@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
- Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ Copyright (C) 2014 - Open Source Geospatial Foundation. All rights reserved.
  This code is licensed under the GPL 2.0 license, available at the root
  application directory.
  -->
@@ -11,22 +11,22 @@
 
 	<parent>
 		<groupId>org.geoserver.extension</groupId>
-		<artifactId>app-schema</artifactId>
-		<version>2.4-SNAPSHOT</version>
+		<artifactId>gs-app-schema</artifactId>
+		<version>2.8-SNAPSHOT</version>
 	</parent>
 
 	<groupId>org.geoserver.extension</groupId>
-	<artifactId>app-schema-postgis-test</artifactId>
+	<artifactId>gs-app-schema-postgis-test</artifactId>
 	<name>Application Schema Integration Online Test with Postgis Database</name>
 
 	<dependencies>
 		<dependency>
 			<groupId>org.geoserver</groupId>
-			<artifactId>main</artifactId>
+			<artifactId>gs-main</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.geoserver</groupId>
-			<artifactId>main</artifactId>
+			<artifactId>gs-main</artifactId>
 			<classifier>tests</classifier>
 		</dependency>
 		<dependency>
@@ -35,24 +35,30 @@
 				compile but will not run.
 			-->
 			<groupId>org.geoserver</groupId>
-			<artifactId>wfs</artifactId>
+			<artifactId>gs-wfs</artifactId>
 		</dependency>
         <dependency>
             <!--
                 //NC - wms package required for wms support
             -->
             <groupId>org.geoserver</groupId>
-            <artifactId>wms</artifactId>
+            <artifactId>gs-wms</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>net.sf.opencsv</groupId>
+            <artifactId>opencsv</artifactId>
+            <version>1.8</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.geoserver</groupId>
-            <artifactId>restconfig</artifactId>
+            <artifactId>gs-restconfig</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.geoserver</groupId>
-            <artifactId>restconfig</artifactId>
+            <artifactId>gs-restconfig</artifactId>
             <version>${project.version}</version>
             <classifier>tests</classifier>
             <scope>test</scope>
@@ -135,6 +141,12 @@
         </dependency>
         <dependency>
             <groupId>org.geotools.schemas</groupId>
+            <artifactId>geosciml-3.2</artifactId>
+            <version>3.2.0-1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.geotools.schemas</groupId>
             <artifactId>wfs-2.0</artifactId>
             <version>2.0.0-2</version>
             <scope>test</scope>
@@ -159,7 +171,7 @@
 				        <exclude>**/onlineTest/*.java</exclude>
 				        <exclude>${test.exclude.pattern}</exclude>
 				    </excludes>
-				    <argLine>-Xmx${test.maxHeapSize} -XX:MaxPermSize=${test.maxPermSize} -enableassertions ${jvm.opts} -Djava.awt.headless=${java.awt.headless} -Dapp-schema.joining=true -DtestDatabase=postgis</argLine>
+				    <argLine>-Xmx${test.maxHeapSize} -XX:MaxPermSize=${test.maxPermSize} -enableassertions ${jvm.opts} -Djava.awt.headless=${java.awt.headless} -DquietTests=${quietTests} -Dapp-schema.joining=true -DtestDatabase=postgis</argLine>
 				</configuration>
 	        </plugin>
 	   </plugins>
@@ -172,7 +184,7 @@
 			        <include>**/*.xsd</include>
 		    	    <include>**/*.sql</include>
                     <include>**/*.sld</include>
-                    <include>**/*.tiff</include>
+                    <include>**/*.png</include>
 	            </includes>
 		    </testResource>
 	    </testResources>

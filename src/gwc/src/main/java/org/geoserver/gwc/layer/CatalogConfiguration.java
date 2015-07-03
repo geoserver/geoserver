@@ -1,14 +1,14 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.gwc.layer;
 
-import static com.google.common.base.Objects.equal;
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Throwables.propagate;
-import static com.google.common.collect.Maps.newConcurrentMap;
+import static com.google.common.base.Objects.*;
+import static com.google.common.base.Preconditions.*;
+import static com.google.common.base.Throwables.*;
+import static com.google.common.collect.Maps.*;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -28,6 +28,7 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.PublishedType;
 import org.geoserver.gwc.GWC;
 import org.geotools.util.logging.Logging;
 import org.geowebcache.config.Configuration;
@@ -37,7 +38,6 @@ import org.geowebcache.grid.BoundingBox;
 import org.geowebcache.grid.GridSetBroker;
 import org.geowebcache.layer.TileLayer;
 import org.geowebcache.layer.TileLayerDispatcher;
-import org.geowebcache.locks.LockProvider;
 
 import com.google.common.base.Function;
 import com.google.common.base.Objects;
@@ -94,15 +94,8 @@ public class CatalogConfiguration implements Configuration {
                             + "' does not exist.");
                 }
 
-                LayerInfo layerInfo = geoServerCatalog.getLayer(layerId);
-                if (layerInfo != null) {
-                    tileLayer = new GeoServerTileLayer(layerInfo, gridSetBroker, tileLayerInfo);
-                } else {
-                    LayerGroupInfo lgi = geoServerCatalog.getLayerGroup(layerId);
-                    if (lgi != null) {
-                        tileLayer = new GeoServerTileLayer(lgi, gridSetBroker, tileLayerInfo);
-                    }
-                }
+                tileLayer = new GeoServerTileLayer(geoServerCatalog, layerId, gridSetBroker,
+                        tileLayerInfo);
             } finally {
                 lock.readLock().unlock();
             }
@@ -433,7 +426,7 @@ public class CatalogConfiguration implements Configuration {
      */
     @Override
     public boolean canSave(TileLayer tl) {
-        return tl instanceof GeoServerTileLayer;
+        return tl instanceof GeoServerTileLayer && (!tl.isTransientLayer());
     }
     
     public static boolean isLayerExposable(LayerInfo layer) {
@@ -444,11 +437,11 @@ public class CatalogConfiguration implements Configuration {
         
         // no sense in exposing a geometryless layer through wms...
         boolean wmsExposable = false;
-        if (layer.getType() == LayerInfo.Type.RASTER || layer.getType() == LayerInfo.Type.WMS) {
+        if (layer.getType() == PublishedType.RASTER || layer.getType() == PublishedType.WMS) {
             wmsExposable = true;
         } else {
             try {
-                wmsExposable = layer.getType() == LayerInfo.Type.VECTOR
+                wmsExposable = layer.getType() == PublishedType.VECTOR
                         && ((FeatureTypeInfo) layer.getResource()).getFeatureType()
                                 .getGeometryDescriptor() != null;
             } catch (Exception e) {
@@ -624,8 +617,8 @@ public class CatalogConfiguration implements Configuration {
                             issueTileLayerInfoChangeNotifications(old, modified);
                         }
                     } catch (RuntimeException e) {
-                        LOGGER.log(Level.SEVERE, "Error issuing chanve events for tile layer "
-                                + modified, e);
+                        LOGGER.log(Level.SEVERE, "Error issuing change events for tile layer "
+                                + modified +".  This may result in leaked tiles that will not be truncated.", e);
                     }
                 }
             } finally {
@@ -654,6 +647,8 @@ public class CatalogConfiguration implements Configuration {
         if (isRename) {
             mediator.layerRenamed(oldLayerName, layerName);
         }
+        // FIXME: There should be a way to ask GWC to "truncate redundant caches" rather than doing
+        //         all this detective work.
 
         // First, remove the entire layer cache for any removed gridset
         Set<XMLGridSubset> oldGridSubsets = oldInfo.getGridSubsets();
@@ -681,9 +676,11 @@ public class CatalogConfiguration implements Configuration {
             }
         }
 
-        if (!newInfo.cachedStyles().equals(oldInfo.cachedStyles())) {
-            Set<String> oldStyles = new HashSet<String>(oldInfo.cachedStyles());
-            Set<String> newStyles = new HashSet<String>(newInfo.cachedStyles());
+        Set<String> oldStyles = oldInfo.cachedStyles();
+        Set<String> newStyles = newInfo.cachedStyles();
+        
+        if (!newStyles.equals(oldStyles)) {
+            oldStyles = new HashSet<String>(oldStyles);
             oldStyles.removeAll(newStyles);
             for (String removedStyle : oldStyles) {
                 mediator.truncateByLayerAndStyle(layerName, removedStyle);

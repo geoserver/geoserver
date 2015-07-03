@@ -218,9 +218,6 @@ Geometric functions
    * - bufferWithSegments
      - ``geometry``:Geometry, ``distance``:Double, ``segments``:Integer
      - Returns the buffered area around the geometry using the specified distance and using the specified number of segments to represent a quadrant of a circle.
-   * - bufferWithSegments
-     - ``geometry``:Geometry, ``distance``:Double, ``segments``:Integer
-     - Returns the buffered area around the geometry using the specified distance and using the specified number of segments to represent a quadrant of a circle.
    * - centroid
      - ``geometry``:Geometry
      - Returns the centroid of the geometry. Can be often used as a label point for polygons, though there is no guarantee it will actually lie inside the geometry 
@@ -250,7 +247,7 @@ Geometric functions
      - Returns the exterior ring of the specified polygon
    * - geometryType
      - ``geometry``:Geometry
-     - Returns the type of the geometry as a string. May be ``Point``, ``MultiPoint``, ``LineString``, ``LinearRing``, ``MultiLineString``, ``Polygon``, ``MultiPoligon``, ``GeometryCollection``
+     - Returns the type of the geometry as a string. May be ``Point``, ``MultiPoint``, ``LineString``, ``LinearRing``, ``MultiLineString``, ``Polygon``, ``MultiPolygon``, ``GeometryCollection``
    * - geomFromWKT
      - ``wkt``:String
      - Returns the ``Geometry`` represented in the Well Known Text format contained in the ``wkt`` parameter

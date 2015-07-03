@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -8,12 +9,13 @@ import java.io.File;
 
 import org.apache.commons.io.FileUtils;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.script.ScriptIntTestSupport;
 import org.geoserver.script.ScriptManager;
 import org.geoserver.test.GeoServerTestSupport;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
-public class PyAppTest extends GeoServerTestSupport {
+public class PyAppTest extends ScriptIntTestSupport {
 
     File app;
    
@@ -22,10 +24,6 @@ public class PyAppTest extends GeoServerTestSupport {
         super.setUpInternal();
 
         app = getScriptManager().findOrCreateAppDir("foo");
-    }
-
-    protected ScriptManager getScriptManager() {
-        return GeoServerExtensions.bean(ScriptManager.class);
     }
 
     public void testSimple() throws Exception {

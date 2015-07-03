@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -61,6 +62,7 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
         add(new TextArea("abstract"));
         add(new KeywordsEditor("keywords", LiveCollectionModel.list(new PropertyModel(model, "keywords"))));
         add(new MetadataLinkEditor("metadataLinks", model));
+        add(new DataLinkEditor("dataLinks", model));
 
         final Form refForm = new Form("referencingForm");
         add(refForm);

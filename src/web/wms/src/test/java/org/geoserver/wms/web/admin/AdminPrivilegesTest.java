@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -6,11 +7,8 @@ package org.geoserver.wms.web.admin;
 
 import static org.junit.Assert.*;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.util.Arrays;
 import java.util.Iterator;
-import java.util.Properties;
 
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.markup.html.form.DropDownChoice;
@@ -18,7 +16,6 @@ import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.StyleInfo;
-import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.security.AccessMode;
 import org.geoserver.security.AdminRequest;
@@ -92,7 +89,8 @@ public class AdminPrivilegesTest extends GeoServerWicketTestSupport {
         DataView view = 
             (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items");
     
-        int expected = cat.getStyles().size() - cat.getStylesByWorkspace("sf").size();
+        // logged in as CITE, will only see styles in this workspace
+        int expected = 1;
     
         AdminRequest.start(new Object());
         assertEquals(expected, view.getItemCount());

@@ -7,7 +7,7 @@ The ImageMosaic data store allows the creation of a mosaic from a number of geor
 
 The "Mosaic" operation creates a mosaic of two or more source images. This operation could be used for example to assemble a set of overlapping geospatially rectified images into a contiguous image. It could also be used to create a montage of photographs such as a panorama.
 
-The best current source of information on configuring an ImageMosiac is the tutorial: :ref:`tutorial_imagemosaic_extension`.
+The best current source of information on configuring an ImageMosaic is the tutorial: :ref:`tutorial_imagemosaic_extension`.
 
 
 Adding an ImageMosaic data store

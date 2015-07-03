@@ -35,6 +35,8 @@
     <transparency>0</transparency>
   </watermark>
   <interpolation>Nearest</interpolation>
+  <getFeatureInfoMimeTypeCheckingEnabled>false</getFeatureInfoMimeTypeCheckingEnabled>
+  <getMapMimeTypeCheckingEnabled>false</getMapMimeTypeCheckingEnabled>
   <maxBuffer>25</maxBuffer>
   <maxRequestMemory>65536</maxRequestMemory>
   <maxRenderingTime>60</maxRenderingTime>

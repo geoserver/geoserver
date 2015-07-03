@@ -77,8 +77,12 @@ public class ResourceAccessManagerWPSTest extends WPSTestSupport {
         
         assertEquals("0", xp.evaluate("count(//wps:ProcessFailed)", dom));
         assertEquals("1", xp.evaluate("count(//wps:ProcessSucceeded)", dom));
-        assertEquals("8.0E-4 5.0E-4", xp.evaluate("//wps:Output[ows:Identifier = 'bounds']/wps:Data/wps:BoundingBoxData/ows:LowerCorner", dom));
-        assertEquals("0.0024 0.0010", xp.evaluate("//wps:Output[ows:Identifier = 'bounds']/wps:Data/wps:BoundingBoxData/ows:UpperCorner", dom));
+        String[] lc = xp.evaluate("//wps:Output[ows:Identifier = 'bounds']/wps:Data/wps:BoundingBoxData/ows:LowerCorner", dom).split("\\s+");
+        assertEquals(8.0E-4, Double.parseDouble(lc[0]), 0d);
+        assertEquals(5.0E-4, Double.parseDouble(lc[1]), 0d);
+        String[] uc = xp.evaluate("//wps:Output[ows:Identifier = 'bounds']/wps:Data/wps:BoundingBoxData/ows:UpperCorner", dom).split("\\s+");
+        assertEquals(0.0024, Double.parseDouble(uc[0]), 0d);
+        assertEquals(0.001, Double.parseDouble(uc[1]), 0d);
     }
 
     private Document runBuildingsRequest() throws Exception {

@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -174,6 +175,14 @@ public class GetCapabilitiesTest extends WCSTestSupport {
         assertXpathEvaluatesTo("1", "count(//wcs:Service)", dom);
         assertXpathEvaluatesTo("1", "count(//wcs:Capability)", dom);
         assertXpathEvaluatesTo("1", "count(//wcs:ContentMetadata)", dom);
+    }
+
+    @Test
+    public void testAcceptVersions() throws Exception {
+        Document dom = getAsDOM(BASEPATH
+                + "?request=GetCapabilities&service=WCS&version=1.0.0&acceptversions=1.0.0");
+
+        checkValidationErrors(dom, WCS10_GETCAPABILITIES_SCHEMA);
     }
 
     @Test

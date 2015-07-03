@@ -1,0 +1,30 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<body>
+<wicket:panel>
+  <div wicket:id="remapsContainer">
+   <ul class="plain" wicket:id="remaps">
+     <li>
+       <ul class="plain horizontal">
+         <li>
+           <!--label for="att">Attribute</label-->
+           <select name="att" wicket:id="att"/>
+         </li>
+         <li>
+           <!--label for="type">Type</label-->
+           <select wicket:id="type"/>
+         </li>
+         <li>
+           <input wicket:id="dateFormat"/>
+         </li>
+         <li>
+           <a wicket:id="apply" href="" class="apply-link"><span><wicket:message key="apply">Apply</wicket:message></span></a>
+           <a wicket:id="cancel" href="" class="remove-link"><span><wicket:message key="cancel">Cancel</wicket:message></span></a>
+         </li>
+       </ul>
+    </li>
+   </ul>
+   </div>
+   <a href="" class="add-link" wicket:id="add">Add</a>
+</wicket:panel>
+</body>
+</html>

@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -31,7 +32,7 @@ import org.geoserver.web.wicket.SimpleChoiceRenderer;
 public class WCSLayerConfig extends LayerConfigurationPanel {
 
     private static final List<String> WCS_FORMATS = Arrays.asList("GIF","PNG","JPEG","TIFF","GTOPO30","GEOTIFF","IMAGEMOSAIC","ARCGRID");
-    private static final List<String> INTERPOLATIONS = Arrays.asList("nearest neighbour","bilinear","bicubic");
+    private static final List<String> INTERPOLATIONS = Arrays.asList("nearest neighbor","bilinear","bicubic");
     
     private List<String> selectedRequestSRSs;
     private List<String> selectedResponseSRSs;

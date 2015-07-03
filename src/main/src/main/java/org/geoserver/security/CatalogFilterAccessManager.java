@@ -1,16 +1,20 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.security;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.Predicates;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WMSLayerInfo;
@@ -151,6 +155,23 @@ public class CatalogFilterAccessManager extends ResourceAccessManagerWrapper {
      */
     public void setCatalogFilters(List<? extends CatalogFilter> filters) {
         this.filters = filters;
+    }
+
+    @Override
+    public Filter getSecurityFilter(Authentication user,
+            Class<? extends CatalogInfo> clazz) {
+        // If there are no CatalogFilters, just get the delegate's filter
+        if(filters==null || filters.isEmpty())
+            return delegate.getSecurityFilter(user, clazz);
+        
+        // Result is the conjunction of delegate's filter, and those of all the CatalogFilters
+        ArrayList<Filter> convertedFilters = new ArrayList<Filter>(this.filters.size()+1);
+        convertedFilters.add(delegate.getSecurityFilter(user, clazz));  // Delegate's filter
+        
+        for (CatalogFilter filter : getCatalogFilters()) {
+            convertedFilters.add(filter.getSecurityFilter(clazz)); // Each CatalogFilter's filter
+        }
+        return Predicates.and(convertedFilters.toArray(new Filter[convertedFilters.size()]));
     }
 
 }

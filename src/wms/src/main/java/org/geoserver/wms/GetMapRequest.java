@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -9,6 +10,7 @@ import java.awt.geom.Point2D;
 import java.awt.image.IndexColorModel;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -16,10 +18,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.media.jai.Interpolation;
+
+import org.geoserver.catalog.SLDHandler;
 import org.geoserver.ows.util.CaseInsensitiveMap;
 import org.geotools.styling.Style;
 import org.geotools.util.DateRange;
 import org.geotools.util.NumberRange;
+import org.geotools.util.Version;
 import org.opengis.filter.Filter;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
@@ -32,7 +38,7 @@ import com.vividsolutions.jts.geom.Envelope;
  * @author Simone Giannecchini
  * @version $Id$
  */
-public class GetMapRequest extends WMSRequest {
+public class GetMapRequest extends WMSRequest implements Cloneable {
 
     static final Color DEFAULT_BG = Color.white;
 
@@ -136,26 +142,91 @@ public class GetMapRequest extends WMSRequest {
     public List<Style> getStyles() {
         return this.mandatoryParams.styles;
     }
+    
+    /**
+     * Gets a list of the interpolation methods to be returned by the server.
+     * 
+     * @return A list of {@link Interpolation}
+     */
+    public List<Interpolation> getInterpolations() {
+        return this.optionalParams.interpolationMethods;
+    }
 
     /**
      * Gets the url specified by the "SLD" parameter.
+     * <p>
+     * This parameter is an alias for "STYLE_URL".
+     * </p>
      */
     public URL getSld() {
-        return this.optionalParams.sld;
+        return getStyleUrl();
+    }
+
+    /**
+     * Gets the url specified by the "STYLE_URL" parameter.
+     * <p>
+     * This parameter is used to point to a remote style via url.
+     * </p>
+     */
+    public URL getStyleUrl() {
+        return this.optionalParams.styleUrl;
     }
 
     /**
      * Gets the string specified the "SLD_BODY" parameter.
+     * <p>
+     * This parameter is an alias for "STYLE_BODY".
+     * </p>
      */
     public String getSldBody() {
-        return this.optionalParams.sldBody;
+        return getStyleBody();
+    }
+
+    /**
+     * Gets the String specified by the "STYLE_BODY" parameter.
+     * <p>
+     * This parameter is used to directly supply a complete style in the request.
+     * </p>
+     */
+    public String getStyleBody() {
+        return this.optionalParams.styleBody;
     }
 
     /**
      * Gets the string specified by the "SLD_VERSION" parameter.
+     * <p>
+     * This parameter is an alias for "STYLE_VERSION".
+     * </p>
      */
     public String getSldVersion() {
-        return this.optionalParams.sldVersion;
+        return getStyleVersion();
+    }
+
+    /**
+     * Gets the String specified by the "STYLE_VERSION" parameter.
+     * <p>
+     * This parameter is used to supply a version of the style language being specified.
+     * It only applies when the style is being supplied directly in the request with one
+     * of the "STYLE_URL", "STYLE_BODY" parameters.
+     *
+     * </p>
+     */
+    public String getStyleVersion() {
+        return this.optionalParams.styleVersion;
+    }
+
+    /**
+     * Returns {@link #getStyleVersion()} as a Version object, or null if no version is set.
+     */
+    public Version styleVersion() {
+        return getStyleVersion() != null ? new Version(getStyleVersion()) : null;
+    }
+
+    /**
+     * Gets the string specified by the "STYLE_FORMAT" parameter.
+     */
+    public String getStyleFormat() {
+        return this.optionalParams.styleFormat;
     }
 
     /**
@@ -351,24 +422,62 @@ public class GetMapRequest extends WMSRequest {
     }
 
     /**
+     * Sets interpolations methods for layers.
+     * 
+     * @param interpolations
+     */
+    public void setInterpolations(List<Interpolation> interpolations) {
+        this.optionalParams.interpolationMethods = interpolations == null ? Collections.EMPTY_LIST
+                : interpolations;
+    }
+    
+    /**
      * Sets the url specified by the "SLD" parameter.
      */
     public void setSld(URL sld) {
-        this.optionalParams.sld = sld;
+        setStyleUrl(sld);
+    }
+
+    /**
+     * Sets the url specified by the "STYLE_URL" parameter.
+     */
+    public void setStyleUrl(URL styleUrl) {
+        this.optionalParams.styleUrl = styleUrl;
     }
 
     /**
      * Sets the string specified by the "SLD_BODY" parameter
      */
     public void setSldBody(String sldBody) {
-        this.optionalParams.sldBody = sldBody;
+        setStyleBody(sldBody);
+    }
+
+    /**
+     * Sets the url specified by the "STYLE_BODY" parameter.
+     */
+    public void setStyleBody(String styleBody) {
+        this.optionalParams.styleBody = styleBody;
     }
 
     /**
      * Sets the string specified by the "SLD_VERSION" parameter
      */
     public void setSldVersion(String sldVersion) {
-        this.optionalParams.sldVersion = sldVersion;
+        setStyleVersion(sldVersion);
+    }
+
+    /**
+     * Sets the url specified by the "STYLE_VERSION" parameter.
+     */
+    public void setStyleVersion(String styleVersion) {
+        this.optionalParams.styleVersion = styleVersion;
+    }
+
+    /**
+     * Sets the string specified by the "STYLE_FORMAT" parameter
+     */
+    public void setStyleFormat(String styleFormat) {
+        this.optionalParams.styleFormat = styleFormat;
     }
 
     /**
@@ -548,7 +657,20 @@ public class GetMapRequest extends WMSRequest {
         this.optionalParams.angle = rotation;
     }
 
-    private class MandatoryParameters {
+    public ScaleComputationMethod getScaleMethod() {
+        return this.optionalParams.scaleMethod;
+    }
+
+    /**
+     * Sets the scale computation method ({@link ScaleComputationMethod#OGC} by default)
+     * 
+     * @param rotation
+     */
+    public void setScaleMethod(ScaleComputationMethod scaleMethod) {
+        this.optionalParams.scaleMethod = scaleMethod;
+    }
+
+    private class MandatoryParameters implements Cloneable {
         /** ordered list of requested layers */
         List<MapLayerInfo> layers = Collections.emptyList();
 
@@ -565,9 +687,15 @@ public class GetMapRequest extends WMSRequest {
         int height;
 
         String format;
+        
+        @Override
+        public Object clone() throws CloneNotSupportedException {
+        	return super.clone();
+        } 
+
     }
 
-    private class OptionalParameters {
+    private class OptionalParameters implements Cloneable {
     	
         /**
          * Tells us whether or not we should loop forever in an ani,mated gif
@@ -638,20 +766,25 @@ public class GetMapRequest extends WMSRequest {
         List<Object> elevation = Collections.emptyList();
 
         /**
-         * SLD parameter
+         * STYLE_URL parameter
          */
-        URL sld;
+        URL styleUrl;
 
         /**
-         * SLD_BODY parameter
+         * STYLE_BODY parameter
          */
-        String sldBody;
+        String styleBody;
 
         /** 
-         * SLD_VERSION parameter
+         * STYLE_VERSION parameter
          */
-        String sldVersion;
-        
+        String styleVersion;
+
+        /**
+         * STYLE_FORMAT parameter
+         */
+        String styleFormat = SLDHandler.FORMAT;
+
         /** flag to validate SLD parameter */
         Boolean validateSLD = Boolean.FALSE;
 
@@ -671,6 +804,19 @@ public class GetMapRequest extends WMSRequest {
 
         /** map rotation */
         double angle;
+        
+        /** scale computation method */
+        ScaleComputationMethod scaleMethod;
+        
+        /** by layer interpolation methods **/
+        List<Interpolation> interpolationMethods = Collections.EMPTY_LIST;
+
+        @Override
+        public Object clone() throws CloneNotSupportedException {
+        	return super.clone();
+        	
+        } 
+
     }
 
     /**
@@ -719,5 +865,38 @@ public class GetMapRequest extends WMSRequest {
             httpRequestHeaders = new CaseInsensitiveMap(new HashMap<String, String>());
         }
         httpRequestHeaders.put(headerName, value);
+    }
+    
+    @Override
+    public Object clone() {
+    	try {
+			GetMapRequest copy = (GetMapRequest) super.clone();
+			copy.mandatoryParams = (MandatoryParameters) mandatoryParams.clone();
+			copy.optionalParams = (OptionalParameters) optionalParams.clone();
+			
+			return copy;
+		} catch (CloneNotSupportedException e) {
+			throw new RuntimeException("Unexpected, could not clone GetMapRequest", e);
+		}
+    }
+
+    public List<String> getCustomDimension(String dimensionName) {
+        if (getRawKvp() != null) {
+            String key = "DIM_" + dimensionName;
+            String value = getRawKvp().get(key);
+            if (value != null) {
+
+                final ArrayList<String> values = new ArrayList<String>(1);
+                if (value.indexOf(",") > 0) {
+                    String[] elements = value.split("\\s*,\\s*");
+                    values.addAll(Arrays.asList(elements));
+                } else {
+                    values.add(value);
+                }
+                return values;
+            }
+        }
+
+        return null;
     }
 }

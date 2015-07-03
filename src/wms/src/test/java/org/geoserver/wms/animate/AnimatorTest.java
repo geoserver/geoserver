@@ -1,20 +1,26 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wms.animate;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
-import java.io.File;
+import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
+import javax.imageio.metadata.IIOMetadata;
+import javax.imageio.metadata.IIOMetadataNode;
 import javax.imageio.stream.ImageInputStream;
 import javax.xml.namespace.QName;
 
@@ -25,6 +31,8 @@ import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.WMSTestSupport;
 import org.geoserver.wms.WebMapService;
 import org.geoserver.wms.map.RenderedImageMap;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.NodeList;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
@@ -118,13 +126,75 @@ public class AnimatorTest extends WMSTestSupport {
         final String layerName = MockData.BASIC_POLYGONS.getPrefix() + ":" +
             MockData.BASIC_POLYGONS.getLocalPart();
 
-        String requestURL = "wms/animate?layers=" + layerName + "&aparam=fake_param&avalues=val0,val\\,1,val2\\,\\,,val3";
+        String requestURL = "wms/animate?layers=" + layerName
+                + "&aparam=fake_param&avalues=val0,val\\,1,val2\\,\\,,val3";
         
+        checkAnimatedGif(requestURL, false);
+        checkAnimatedGif(requestURL + "&format_options=gif_loop_continuously:true", true);
+        checkAnimatedGif(requestURL + "&format_options=gif_loop_continuosly:true", true);
+
+    }
+
+    private void checkAnimatedGif(String requestURL, boolean loopContinously) throws Exception,
+            IOException {
         MockHttpServletResponse resp = getAsServletResponse(requestURL);
         
         assertEquals("image/gif", resp.getContentType());
+        try (ImageInputStream is = ImageIO.createImageInputStream(getBinaryInputStream(resp))) {
+            ImageReader reader = ImageIO.getImageReadersByFormatName("gif").next();
+            reader.setInput(is);
+
+            // check we have the right number of images
+            assertEquals(4, reader.getNumImages(true));
+
+            IIOMetadata imageMetadata = reader.getImageMetadata(0);
+            System.out.println(Arrays.toString(imageMetadata.getMetadataFormatNames()));
+            IIOMetadataNode node = (IIOMetadataNode) imageMetadata
+                    .getAsTree("javax_imageio_gif_image_1.0");
+            // print("", node);
+            NodeList nodes = node.getElementsByTagName("ApplicationExtensions");
+            node = (IIOMetadataNode) nodes.item(0);
+            nodes = node.getElementsByTagName("ApplicationExtension");
+            boolean found = false;
+            for (int i = 0; i < nodes.getLength(); i++) {
+                node = (IIOMetadataNode) nodes.item(i);
+                if ("NETSCAPE".equals(node.getAttribute("applicationID"))
+                        && "2.0".equals(node.getAttribute("authenticationCode"))) {
+                    found = true;
+                    byte[] flags = (byte[]) node.getUserObject();
+                    if (loopContinously) {
+                        assertArrayEquals(new byte[] { 0x1, 0x0, 0x0 }, flags);
+                    } else {
+                        assertArrayEquals(new byte[] { 0x1, 0x1, 0x0 }, flags);
+                    }
+                }
+            }
+            if(!found) {
+                fail("Could not find custom metadata node containing the loop control extension");
+            }
+        }
     }
     
+    /**
+     * Utility method to print a metadata node
+     * 
+     * @param prefix
+     * @param node
+     */
+    private void print(String prefix, IIOMetadataNode node) {
+        Object user = node.getUserObject();
+        System.out.println(prefix + node.getNodeName() + ": " + node.getNodeValue() + ", "
+                + (user instanceof byte[] ? Arrays.toString((byte[]) user) : user));
+        NamedNodeMap attributes = node.getAttributes();
+        for (int i = 0; i < attributes.getLength(); i++) {
+            print(prefix + "Attribute ", (IIOMetadataNode) attributes.item(i));
+        }
+        NodeList children = node.getChildNodes();
+        for (int i = 0; i < children.getLength(); i++) {
+            print("  " + prefix, (IIOMetadataNode) children.item(i));
+        }
+    }
+
     /**
      * Animate layers
      */
@@ -160,7 +230,8 @@ public class AnimatorTest extends WMSTestSupport {
                 LayerGroupInfo eoGroup = createLakesPlacesLayerGroup(catalog, "eoGroup", LayerGroupInfo.Mode.EO, catalog.getLayerByName(getLayerId(MockData.LAKES)));                
                 try {
                     
-                    String requestURL = "wms/animate?BBOX=0.0000,-0.0020,0.0035,0.0010&aparam=layers&avalues=" +
+                    String requestURL = "wms/animate?BBOX=0.0000,-0.0020,0.0035,0.0010&width=512&aparam=layers&avalues="
+                            +
                             singleGroup.getName() + "," +
                             namedGroup.getName() + "," +
                             eoGroup.getName();

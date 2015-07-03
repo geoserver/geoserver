@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -32,7 +32,8 @@ public class SecondaryNamespaceExceptionTest extends AbstractAppSchemaTestSuppor
     public void testNamespaces() {
         Document doc = getAsDOM("wfs?request=GetFeature&typeName=ex:ShapeContent");
         LOGGER.info("Secondary Namespace Response:\n" + prettyString(doc));
-        assertEquals("ows:ExceptionReport", doc.getDocumentElement().getNodeName());
+        assertEquals("wfs:FeatureCollection", doc.getDocumentElement().getNodeName());
+       
     }
 
 }

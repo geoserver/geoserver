@@ -1,0 +1,27 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+    <bean id="hzHomePageContentProvider" 
+          class="org.geoserver.cluster.hazelcast.web.HazelcastHomePageContentProvider">
+      <constructor-arg ref="hzCluster"/>
+    </bean>
+
+   <bean id="hzSynchronizerInitializer" 
+         class="org.geoserver.cluster.hazelcast.HzSynchronizerInitializer">
+      <property name="cluster" ref="hzCluster"/>
+   </bean>
+   <bean id="hzCluster" 
+         class="org.geoserver.cluster.hazelcast.HzCluster">
+      <property name="dataDirectory" ref="dataDirectory"/>
+      <property name="rawCatalog" ref="rawCatalog"/>
+   </bean>
+
+   <bean id="hzCacheProvider" class="org.geoserver.cluster.hazelcast.HzCacheProvider">
+      <constructor-arg ref="xstreamPersisterFactory"/>
+   </bean>
+   
+   <bean id="hzExtensionFilter" class="org.geoserver.cluster.hazelcast.HzExtensionFilter">
+   </bean>
+</beans>

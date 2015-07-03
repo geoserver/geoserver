@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -80,7 +81,7 @@ public class GeoServerCasAuthenticationFilter extends GeoServerPreAuthenticatedU
         
         casLogoutURL=GeoServerCasConstants.createCasURl(authConfig.getCasServerUrlPrefix(), GeoServerCasConstants.LOGOUT_URI);
         if (StringUtils.hasLength(authConfig.getUrlInCasLogoutPage()))
-                casLogoutURL+=GeoServerCasConstants.LOGOUT_URL_PARAM+"="+URLEncoder.encode(authConfig.getUrlInCasLogoutPage(),"utf-8");
+                casLogoutURL+="?"+GeoServerCasConstants.LOGOUT_URL_PARAM+"="+URLEncoder.encode(authConfig.getUrlInCasLogoutPage(),"utf-8");
                 
         singleSignOut=authConfig.isSingleSignOut();
         aep = new GeoServerCasAuthenticationEntryPoint(authConfig);
@@ -107,15 +108,28 @@ public class GeoServerCasAuthenticationFilter extends GeoServerPreAuthenticatedU
     }
     
     protected static String retrieveService(HttpServletRequest request) {
-        StringBuffer buff  = new StringBuffer(request.getRequestURL().toString());
+        
+        String serviceBaseUrl = null;
+        String proxyBaseUrl = GeoServerExtensions.getProperty("PROXY_BASE_URL");
+        if (StringUtils.hasLength(proxyBaseUrl)) {
+            serviceBaseUrl = proxyBaseUrl;
+        } else {
+            serviceBaseUrl = request.getRequestURL().toString();
+        }
+        StringBuffer buff  = new StringBuffer(serviceBaseUrl);
+        
+        
         if (StringUtils.hasLength(request.getQueryString())) {
             String query = request.getQueryString();
             String[] params = query.split("&");
             boolean firsttime=true;
             for (String param : params)  
             {  
-                String name = param.split("=")[0];  
-                String value = param.split("=")[1];  
+                                
+                String[] keyValue = param.split("=");
+                if (keyValue.length == 0) continue;
+                String name = keyValue[0];
+                
                 if (GeoServerCasConstants.ARTIFACT_PARAMETER.equals(name.trim()))
                     continue;
                 if (GeoServerCasAuthenticationEntryPoint.CAS_REDIRECT.equals(name.trim()))
@@ -126,7 +140,7 @@ public class GeoServerCasAuthenticationFilter extends GeoServerPreAuthenticatedU
                 } else {
                     buff.append("&");
                 }                                    
-                buff.append(name).append("=").append(value);
+                buff.append(param);
             }                            
         }
         String serviceUrl = buff.toString();

@@ -1,8 +1,14 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014-2015 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wms.map;
+
+import it.geosolutions.jaiext.colorindexer.CachingColorIndexer;
+import it.geosolutions.jaiext.colorindexer.ColorIndexer;
+import it.geosolutions.jaiext.colorindexer.LRUColorIndexer;
+import it.geosolutions.jaiext.colorindexer.Quantizer;
 
 import java.awt.Transparency;
 import java.awt.image.IndexColorModel;
@@ -21,11 +27,6 @@ import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.kvp.PaletteManager;
 import org.geoserver.wms.map.PNGMapResponse.QuantizeMethod;
-import org.geoserver.wms.map.quantize.CachingColorIndexer;
-import org.geoserver.wms.map.quantize.ColorIndexer;
-import org.geoserver.wms.map.quantize.ColorIndexerDescriptor;
-import org.geoserver.wms.map.quantize.LRUColorIndexer;
-import org.geoserver.wms.map.quantize.Quantizer;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.image.ImageWorker;
 import org.geotools.image.palette.InverseColorMapOp;
@@ -154,8 +155,10 @@ public abstract class RenderedImageMapResponse extends AbstractMapResponse {
                 || !supportsTranslucency
                 || (method == null && image.getColorModel().getTransparency() != Transparency.TRANSLUCENT);
 
+
+        // format: split on ';' to handle subtypes like 'image/gif;subtype=animated'
+        final String format = request.getFormat().split(";")[0];
         // do we have to use the bitmask quantizer?
-        final String format = request.getFormat();
         IndexColorModel icm = mapContent.getPalette();
         if (useBitmaskQuantizer) {
             // user provided palette?
@@ -182,7 +185,7 @@ public abstract class RenderedImageMapResponse extends AbstractMapResponse {
 
                 // if we have an indexer transform the image
                 if (indexer != null) {
-                    image = ColorIndexerDescriptor.create(image, indexer, null);
+                    image = new ImageWorker(image).colorIndex(indexer).getRenderedImage();
                 }
             }
         }

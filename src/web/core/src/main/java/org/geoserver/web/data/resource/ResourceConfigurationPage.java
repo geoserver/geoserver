@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -8,15 +9,12 @@ import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Level;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.Page;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.extensions.markup.html.tabs.AbstractTab;
@@ -295,6 +293,7 @@ public class ResourceConfigurationPage extends GeoServerSecuredPage {
                     }
                 }
 
+                catalog.validate(resourceInfo, true).throwIfInvalid();
                 catalog.add(resourceInfo);
                 try {
                     catalog.add(getLayerInfo());
@@ -305,6 +304,8 @@ public class ResourceConfigurationPage extends GeoServerSecuredPage {
             } else {
                 ResourceInfo oldState = catalog.getResource(resourceInfo.getId(),
                         ResourceInfo.class);
+                
+                catalog.validate(resourceInfo, true).throwIfInvalid();
                 catalog.save(resourceInfo);
                 try {
                     LayerInfo layer = getLayerInfo();

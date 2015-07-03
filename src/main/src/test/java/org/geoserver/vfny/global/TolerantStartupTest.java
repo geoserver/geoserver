@@ -1,10 +1,11 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.vfny.global;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -32,6 +33,7 @@ public class TolerantStartupTest extends GeoServerSystemTestSupport {
         testData.setUpVectorLayer(name, props, name.getLocalPart() + ".properties", SystemTestData.class);
         
         testData.setUpVectorLayer(SystemTestData.BUILDINGS);
+        testData.setUpSecurity();
     }
     
 //    @Override

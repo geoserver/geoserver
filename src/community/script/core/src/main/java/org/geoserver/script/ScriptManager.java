@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -24,6 +25,7 @@ import org.geoserver.script.app.AppHook;
 import org.geoserver.script.function.FunctionHook;
 import org.geoserver.script.wfs.WfsTxHook;
 import org.geoserver.script.wps.WpsHook;
+import org.geoserver.security.GeoServerSecurityManager;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -43,6 +45,7 @@ public class ScriptManager implements InitializingBean {
 
     GeoServerDataDirectory dataDir;
     ScriptEngineManager engineMgr;
+    GeoServerSecurityManager secMgr;
 
     volatile List<ScriptPlugin> plugins;
     Cache<Long, ScriptSession> sessions;
@@ -56,6 +59,14 @@ public class ScriptManager implements InitializingBean {
 
     public GeoServerDataDirectory getDataDirectory() {
         return dataDir;
+    }
+
+    public GeoServerSecurityManager getSecurityManager() {
+        return secMgr != null ? secMgr :GeoServerExtensions.bean(GeoServerSecurityManager.class);
+    }
+
+    public void setSecurityManager(GeoServerSecurityManager secMgr) {
+        this.secMgr = secMgr;
     }
 
     /**
@@ -129,6 +140,17 @@ public class ScriptManager implements InitializingBean {
     }
 
     /**
+     * Finds a script file at the specified path, creating it if necessary.
+     */
+    public File findOrCreateScriptFile(String path) throws IOException {
+        File f = new File(getScriptRoot(), path);
+        if (!f.getParentFile().exists()) {
+            f.getParentFile().mkdirs();
+        }
+        return f;
+    }
+
+    /**
      * The root "apps" directory, located directly under {@link #getScriptRoot()}.
      */
     public File getAppRoot() throws IOException {
@@ -149,6 +171,22 @@ public class ScriptManager implements InitializingBean {
         return findOrCreateScriptDir("apps" + File.separator + app);
     }
 
+    /**
+     * Find the main script File
+     */
+    public File findAppMainScript(File appDir) {
+        File main = null;
+        if (appDir != null) {
+            for (File f : appDir.listFiles()) {
+                if ("main".equals(FilenameUtils.getBaseName(f.getName()))) {
+                    main = f;
+                    break;
+                }
+            }
+        }
+        return main;
+    }
+    
     /**
      * The root "wps" directory, located directly under {@link #getScriptRoot()} 
      */
@@ -356,6 +394,74 @@ public class ScriptManager implements InitializingBean {
         }
         return ext;
     }
+    
+    /**
+     * Find the File based on the name, ScriptType and extension.  The File and it's parent directories
+     * do not have to exist, they will be created.
+     * @param name The name of the script
+     * @param type The ScriptType (wps, function wfstx, app)
+     * @param extension The extension (js, py, groovy)
+     * @return The script File
+     */
+    public File findScriptFile(String name, ScriptType type, String extension) throws IOException {
+        File dir = null;
+        if (type == ScriptType.WPS) {
+            dir = this.getWpsRoot();
+        } else if (type == ScriptType.FUNCTION) {
+            dir = this.getFunctionRoot();
+        } else if (type == ScriptType.WFSTX) {
+            dir = this.getWfsTxRoot();
+        } else if (type == ScriptType.APP) {
+            dir = this.getAppRoot();
+        }
+        if (type == ScriptType.APP) {
+            File appDir = new File(dir, name);
+            appDir.mkdirs();
+            return new File(appDir, "main." + extension);
+        } else {
+            return new File(dir, name + "." + extension);
+        }
+    }
+    
+    /**
+     * Determine the ScriptType for the File
+     * @param file The File
+     * @return The ScriptType
+     */
+    public ScriptType getScriptType(File file) {
+        File dir = file.getParentFile();
+        if (dir.getName().equals("function")) {
+            return ScriptType.FUNCTION;
+        } else if (dir.getName().equals("tx") && dir.getParentFile().getName().equals("wfs")) {
+            return ScriptType.WFSTX;
+        } else if (dir.getName().equals("wps") || dir.getParentFile().getName().equals("wps")) {
+            return ScriptType.WPS;
+        } else if (dir.getParentFile().getName().equals("apps")) {
+            return ScriptType.APP;
+        } else {
+            throw new IllegalArgumentException("Can't determine ScriptType for " + file + "'!");
+        }
+    }
+
+    /**
+     * Look up the editor mode by File extension
+     * @param ext The file extension (js, groovy, py)
+     * @return The codemirror editor mode or null
+     */
+    public String lookupEditorModeByExtension(String ext) {
+        ScriptPlugin p = null;
+        for (ScriptPlugin plugin : plugins()) {
+            if (ext.equalsIgnoreCase(plugin.getExtension())) {
+                p = plugin;
+            }
+        }
+        if (p != null) {
+            return p.getEditorMode();
+        } else {
+            return null;
+        }
+    }
+
 
     @Override
     public void afterPropertiesSet() throws Exception {

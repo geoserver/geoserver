@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -137,7 +138,7 @@ public interface GeoServer {
     void save(ServiceInfo service);
 
     /**
-     * GeoServer services.
+     * GeoServer services in the local workspace, or global services if there's no local workspace.
      * 
      * @uml.property name="services"
      * @uml.associationEnd multiplicity="(0 -1)"
@@ -153,7 +154,8 @@ public interface GeoServer {
     Collection<? extends ServiceInfo> getServices(WorkspaceInfo workspace);
 
     /**
-     * GeoServer services filtered by class.
+     * GeoServer services filtered by class. In the local workspace, or global services if there's 
+     * no local workspace.
      * <p>
      * 
      * </p>

@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -20,6 +21,8 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.geoserver.config.GeoServerInfo;
+
 @SuppressWarnings("rawtypes")
 class FakeHttpServletRequest implements HttpServletRequest {
 
@@ -36,14 +39,21 @@ class FakeHttpServletRequest implements HttpServletRequest {
             return null;
         }
     };
+    
+    private String workspace;
 
     private Map<String, String> parameterMap = new HashMap<String, String>(10);
 
     private Cookie[] cookies;
 
     public FakeHttpServletRequest(Map<String, String> parameterMap, Cookie[] cookies) {
+        this(parameterMap, cookies, null);
+    }
+    
+    public FakeHttpServletRequest(Map<String, String> parameterMap, Cookie[] cookies, String workspace) {
         this.parameterMap = parameterMap;
         this.cookies = cookies;
+        this.workspace = workspace;
     }
 
     /**
@@ -103,7 +113,11 @@ class FakeHttpServletRequest implements HttpServletRequest {
     }
 
     public String getRequestURI() {
-        return "geoserver/gwc";
+        if(workspace != null && !workspace.isEmpty()) {
+            return "/geoserver/"+workspace+"/wms";
+        } else {
+            return "/geoserver/wms";
+        }
     }
 
     public StringBuffer getRequestURL() {
@@ -167,7 +181,7 @@ class FakeHttpServletRequest implements HttpServletRequest {
     }
 
     public String getContentType() {
-        throw new ServletDebugException();
+        return null;
     }
 
     public ServletInputStream getInputStream() throws IOException {

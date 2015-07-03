@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -22,7 +23,6 @@ import org.geotools.coverage.GridSampleDimension;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridCoverageFactory;
 import org.geotools.coverage.grid.GridGeometry2D;
-import org.geotools.coverage.grid.ViewType;
 import org.geotools.geometry.Envelope2D;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.junit.Test;
@@ -105,7 +105,7 @@ public class Coverage2RenderedImageAdapterTest extends WPSTestSupport {
         GridCoverage2D rendered = factory.create("Merged coverage", ri,
                 gg, gsd, null, null);
 
-        rendered.view(ViewType.RENDERED).show();
+        rendered.show();
     }
 
     @Test
@@ -126,11 +126,6 @@ public class Coverage2RenderedImageAdapterTest extends WPSTestSupport {
         pdst = cria.mapSourcePoint(psrc, 0);
         assertNull(pdst);
 
-//        src.view(ViewType.RENDERED).show();
-//        dst.view(ViewType.RENDERED).show();
-////        new Viewer(src.view(ViewType.RENDERED).getRenderedImage());
-//        new Viewer(getName(), cria);
-
 //        view(cria, dst.getGridGeometry(), src.getSampleDimensions());
 
 //        Viewer.show(src);
@@ -142,7 +137,7 @@ public class Coverage2RenderedImageAdapterTest extends WPSTestSupport {
         GridCoverage2D src = createTestCoverage(500,500, 0,0 ,10,10);
         GridCoverage2D dst = createTestCoverage(250,250, 0,0 ,10,10);
 
-        GridCoverage2DRIA cria = GridCoverage2DRIA.create(src, dst, NODATA);
+        GridCoverage2DRIA cria = GridCoverage2DRIA.create(dst, src, NODATA);
 
         //--- internal points should double coords (no interp on coords)
         Point2D psrc = new Point2D.Double(13d,16d); // this is on dst gc
@@ -156,8 +151,6 @@ public class Coverage2RenderedImageAdapterTest extends WPSTestSupport {
         pdst = cria.mapSourcePoint(psrc, 0);
         assertNull(pdst);
 
-//        src.view(ViewType.RENDERED).show();
-//        dst.view(ViewType.RENDERED).show();
 //        new Viewer(getName(), cria);
 //        Thread.sleep(15000);
     }
@@ -173,12 +166,12 @@ public class Coverage2RenderedImageAdapterTest extends WPSTestSupport {
 
 //        double nodata[] = src.getSampleDimension(0).getNoDataValues();
 
-        GridCoverage2DRIA cria = GridCoverage2DRIA.create(src, dst, NODATA);
+        GridCoverage2DRIA cria = GridCoverage2DRIA.create(dst, src, NODATA);
 
         //--- internal points should halves coords (no interp on coords)
         Point2D psrc = new Point2D.Double(0d,0d);
         Point2D pdst = cria.mapSourcePoint(psrc, 0);
-        System.out.println(pdst);
+        // System.out.println(pdst);
         assertEquals(0d, pdst.getX());
         assertEquals(250d, pdst.getY());
 
@@ -186,10 +179,8 @@ public class Coverage2RenderedImageAdapterTest extends WPSTestSupport {
         pdst = cria.mapSourcePoint(psrc, 0);
         assertEquals(10d, pdst.getX());
         assertEquals(250d + 15d, pdst.getY());
-        System.out.println(pdst);
+        // System.out.println(pdst);
 
-//        src.view(ViewType.RENDERED).show();
-//        dst.view(ViewType.RENDERED).show();
 //        new Viewer(getName(), cria);
 //        Thread.sleep(15000);
     }
@@ -203,7 +194,7 @@ public class Coverage2RenderedImageAdapterTest extends WPSTestSupport {
         GridCoverage2D src = createTestCoverage(500,500, 0,0 ,5,5);
         GridCoverage2D dst = createTestCoverage(500,500, 2,2 ,5,5);
 
-        GridCoverage2DRIA cria = GridCoverage2DRIA.create(src, dst, NODATA);
+        GridCoverage2DRIA cria = GridCoverage2DRIA.create(dst, src, NODATA);
 
         //--- internal points should halves coords (no interp on coords)
         Point2D psrc = new Point2D.Double(0d,499d); // this is on dst gc
@@ -220,8 +211,6 @@ public class Coverage2RenderedImageAdapterTest extends WPSTestSupport {
         double val = cria.getData().getSampleFloat(0, 0, 0);
         assertEquals("Value should be noData", NODATA, val);
 
-//        src.view(ViewType.RENDERED).show();
-//        dst.view(ViewType.RENDERED).show();
 //        new Viewer(getName(), cria);
 //        Thread.sleep(20000);
     }

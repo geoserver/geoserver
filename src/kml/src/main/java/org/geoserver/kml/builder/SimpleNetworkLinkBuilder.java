@@ -7,6 +7,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.SystemUtils;
+import org.geoserver.catalog.LayerInfo;
 import org.geoserver.kml.KmlEncodingContext;
 import org.geoserver.kml.decorator.LookAtDecoratorFactory;
 import org.geoserver.kml.utils.LookAtOptions;
@@ -18,10 +21,13 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.styling.Style;
 import org.geotools.util.logging.Logging;
 
+import com.vividsolutions.jts.geom.Envelope;
+
 import de.micromata.opengis.kml.v_2_2_0.Document;
 import de.micromata.opengis.kml.v_2_2_0.Link;
 import de.micromata.opengis.kml.v_2_2_0.LookAt;
 import de.micromata.opengis.kml.v_2_2_0.NetworkLink;
+import de.micromata.opengis.kml.v_2_2_0.RefreshMode;
 import de.micromata.opengis.kml.v_2_2_0.ViewRefreshMode;
 
 /**
@@ -34,6 +40,9 @@ public class SimpleNetworkLinkBuilder extends AbstractNetworkLinkBuilder {
     
     static final Logger LOGGER = Logging.getLogger(SimpleNetworkLinkBuilder.class);
     
+    static final String REFRESH_KEY = "kmlrefresh";
+    
+    static final String VISIBLE_KEY = "kmlvisible";
 
     public SimpleNetworkLinkBuilder(KmlEncodingContext context) {
         super(context);
@@ -64,23 +73,37 @@ public class SimpleNetworkLinkBuilder extends AbstractNetworkLinkBuilder {
         for (int i = 0; i < layers.size(); i++) {
             MapLayerInfo layerInfo = layers.get(i);
             NetworkLink nl = container.createAndAddNetworkLink();
-            nl.setName(layerInfo.getName());
-            nl.setVisibility(true);
+            nl.setName(layerInfo.getLabel());
+            if (layerInfo.getDescription() != null && layerInfo.getDescription().length() > 0) {
+                nl.setDescription(layerInfo.getDescription());
+            }
+            
+            // Allow for all layers to be disabled by default.  This can be advantageous with
+            // multiple large data-sets.
+            if (formatOptions.get(VISIBLE_KEY) != null) {
+            	boolean visible = Boolean.parseBoolean(formatOptions.get(VISIBLE_KEY).toString());
+            	nl.setVisibility(visible);
+            }
+            else {
+            	nl.setVisibility(true);
+            }
             nl.setOpen(true);
 
             // look at for this layer
-            ReferencedEnvelope latLongBoundingBox = layerBounds.get(i);
-            if (latLongBoundingBox != null) {
-                LookAt la = lookAtFactory.buildLookAt(latLongBoundingBox, lookAtOptions, false);
+            Envelope requestBox = context.getRequestBoxWGS84();
+            
+            if (requestBox != null) {
+                LookAt la = lookAtFactory.buildLookAt(requestBox, lookAtOptions, false);
                 nl.setAbstractView(la);
             }
 
             // set bbox to null so its not included in the request, google
             // earth will append it for us
-            request.setBbox(null);
+            GetMapRequest requestCopy = (GetMapRequest) request.clone();
+            requestCopy.setBbox(null);
 
             String style = i < styles.size() ? styles.get(i).getName() : null;
-            String href = WMSRequests.getGetMapUrl(request, layers.get(i).getName(), i, style,
+            String href = WMSRequests.getGetMapUrl(requestCopy, layers.get(i).getName(), i, style,
                     null, null);
             try {
                 // WMSRequests.getGetMapUrl returns a URL encoded query string, but GoogleEarth
@@ -95,7 +118,22 @@ public class SimpleNetworkLinkBuilder extends AbstractNetworkLinkBuilder {
             url.setViewRefreshMode(ViewRefreshMode.ON_STOP);
             url.setViewRefreshTime(1);
             url.setViewBoundScale(1);
-        }
+            
+            // Attempt to parse a value from kmlrefresh format_options parameter.
+            // It can be either a set interval in seconds or "expires".
+            // "expires" uses the HTTP max-age header and falls-back to expires header
+			// to determine the time when a refresh should occur.
+			if (formatOptions.get(REFRESH_KEY) != null) {
+				String refreshValue = formatOptions.get(REFRESH_KEY).toString();
+				if (refreshValue.equalsIgnoreCase("expires")) {
+					url.setRefreshMode(RefreshMode.ON_EXPIRE);
+				} else {
+					int interval = Integer.parseInt(refreshValue);
+					url.setRefreshInterval(interval);
+					url.setRefreshMode(RefreshMode.ON_INTERVAL);
+				}
+			}
+		}
     }
 
    

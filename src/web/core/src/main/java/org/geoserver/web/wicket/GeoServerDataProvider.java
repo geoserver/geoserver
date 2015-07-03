@@ -1,8 +1,12 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.web.wicket;
+
+import static org.geoserver.catalog.Predicates.acceptAll;
+import static org.geoserver.catalog.Predicates.or;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -25,8 +29,10 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.Predicates;
 import org.geoserver.web.GeoServerApplication;
 import org.geotools.util.logging.Logging;
+import org.opengis.filter.Filter;
 
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
@@ -351,7 +357,30 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider {
             return newModel(object);
         }
     }
-    
+
+    /**
+     * This method returns a filter based on the defined keywords.
+     * 
+     * @return a {@link Filter} which uses the defined Keywords. If no keyword is present Filter.INCLUDE is returned
+     */
+    protected Filter getFilter() {
+        final String[] keywords = getKeywords();
+        Filter filter = acceptAll();
+        if (null != keywords) {
+            for (String keyword : keywords) {
+                Filter propContains = Predicates.fullTextSearch(keyword);
+                // chain the filters together
+                if (Filter.INCLUDE == filter) {
+                    filter = propContains;
+                } else {
+                    filter = or(filter, propContains);
+                }
+            }
+        }
+
+        return filter;
+    }
+
     /**
      * Simply wraps the object into a Model assuming the Object is serializable. Subclasses
      * can override this

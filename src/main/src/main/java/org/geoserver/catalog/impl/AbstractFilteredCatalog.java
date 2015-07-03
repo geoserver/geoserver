@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -25,6 +26,7 @@ import org.geoserver.catalog.ResourcePool;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.catalog.ValidationResult;
 import org.geoserver.catalog.event.CatalogListener;
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.catalog.util.CloseableIteratorAdapter;
@@ -539,7 +541,7 @@ public abstract class AbstractFilteredCatalog extends AbstractDecorator<Catalog>
         delegate.add(layerGroup);
     }
 
-    public List<RuntimeException> validate(LayerGroupInfo layerGroup, boolean isNew) {
+    public ValidationResult validate(LayerGroupInfo layerGroup, boolean isNew) {
         return delegate.validate(layerGroup, isNew);
     }
 
@@ -555,7 +557,7 @@ public abstract class AbstractFilteredCatalog extends AbstractDecorator<Catalog>
         return delegate.detach(layer);
     }    
     
-    public List<RuntimeException> validate(LayerInfo layer, boolean isNew) {
+    public ValidationResult validate(LayerInfo layer, boolean isNew) {
         return delegate.validate(layer, isNew);
     }
     
@@ -571,7 +573,7 @@ public abstract class AbstractFilteredCatalog extends AbstractDecorator<Catalog>
         delegate.add(namespace);
     }
 
-    public List<RuntimeException> validate(NamespaceInfo namespace, boolean isNew) {
+    public ValidationResult validate(NamespaceInfo namespace, boolean isNew) {
         return delegate.validate(namespace, isNew);
     }
 
@@ -583,7 +585,7 @@ public abstract class AbstractFilteredCatalog extends AbstractDecorator<Catalog>
         delegate.add(resource);
     }
 
-    public List<RuntimeException> validate(ResourceInfo resource, boolean isNew) {
+    public ValidationResult validate(ResourceInfo resource, boolean isNew) {
         return delegate.validate(resource, isNew);
     }
 
@@ -595,7 +597,7 @@ public abstract class AbstractFilteredCatalog extends AbstractDecorator<Catalog>
         delegate.add(store);
     }
 
-    public List<RuntimeException> validate(StoreInfo store, boolean isNew) {
+    public ValidationResult validate(StoreInfo store, boolean isNew) {
         return delegate.validate(store, isNew);
     }
     
@@ -607,7 +609,7 @@ public abstract class AbstractFilteredCatalog extends AbstractDecorator<Catalog>
         delegate.add(style);
     }
 
-    public List<RuntimeException> validate(StyleInfo style, boolean isNew) {
+    public ValidationResult validate(StyleInfo style, boolean isNew) {
         return delegate.validate(style, isNew);
     }
 
@@ -619,7 +621,7 @@ public abstract class AbstractFilteredCatalog extends AbstractDecorator<Catalog>
         delegate.add(workspace);
     }
 
-    public List<RuntimeException> validate(WorkspaceInfo workspace, boolean isNew) {
+    public ValidationResult validate(WorkspaceInfo workspace, boolean isNew) {
         return delegate.validate(workspace, isNew);
     }
 

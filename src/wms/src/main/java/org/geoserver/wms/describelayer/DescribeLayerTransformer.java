@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -149,8 +150,7 @@ public class DescribeLayerTransformer extends TransformerBase {
                 String owsUrl;
                 String owsType;
                 if (MapLayerInfo.TYPE_VECTOR == layer.getType()) {
-                    // REVISIT: not sure why we need WfsDispatcher, "wfs?" should suffice imho
-                    owsUrl = buildURL(baseURL, "wfs/WfsDispatcher", null, URLType.SERVICE);
+                    owsUrl = buildURL(baseURL, "wfs", null, URLType.SERVICE);
                     owsUrl = appendQueryString(owsUrl, "");
                     owsType = "WFS";
                     layerAtts.addAttribute("", "wfs", "wfs", "", owsUrl);

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!-- 
- Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ Copyright (C) 2014 - Open Source Geospatial Foundation. All rights reserved.
  This code is licensed under the GPL 2.0 license, available at the root
  application directory.
  -->
@@ -12,18 +12,18 @@
   <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>extension</artifactId>
-    <version>2.4-SNAPSHOT</version>
+    <version>2.8-SNAPSHOT</version>
   </parent>
 
   <groupId>org.geoserver.extension</groupId>
-  <artifactId>imagemap</artifactId>
+  <artifactId>gs-imagemap</artifactId>
   <packaging>jar</packaging>
   <name>ImageMap Output Format</name>
 
   <dependencies>
     <dependency>
       <groupId>org.geoserver</groupId>
-      <artifactId>wms</artifactId>
+      <artifactId>gs-wms</artifactId>
     </dependency>
     <dependency>
       <groupId>org.geotools</groupId>

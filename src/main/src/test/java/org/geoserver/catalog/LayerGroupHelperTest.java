@@ -88,7 +88,7 @@ public class LayerGroupHelperTest extends GeoServerMockTestSupport {
         layer.setResource(ri);
         layer.setName(ri.getName());
         layer.setEnabled(true);
-        layer.setType(LayerInfo.Type.VECTOR);
+        layer.setType(PublishedType.VECTOR);
 
         return layer;
     }

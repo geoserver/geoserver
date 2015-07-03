@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -145,7 +146,7 @@ public abstract class AbstractUserGroupService extends AbstractGeoServerSecurity
      * @see org.geoserver.security.GeoserverUserGroupService#load()
      */
     public void load() throws IOException{
-        LOGGER.info("Start reloading user/grous for service named "+getName());
+        LOGGER.info("Start reloading user/groups for service named "+getName());
         // prevent concurrent write from store and
         // read from service
         synchronized (this) { 

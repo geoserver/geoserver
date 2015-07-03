@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -244,11 +245,11 @@ public class CatalogWriter {
      *             In event of a writing error.
      */
     public void write(File file) throws IOException {
-        try {
+        try(FileOutputStream os = new FileOutputStream(file)) {
             Transformer tx = TransformerFactory.newInstance().newTransformer();
             tx.setOutputProperty(OutputKeys.INDENT, "yes");
             DOMSource source = new DOMSource(document);
-            StreamResult result = new StreamResult(new FileOutputStream(file));
+            StreamResult result = new StreamResult(os);
 
             tx.transform(source, result);
         } catch (Exception e) {

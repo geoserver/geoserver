@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
- Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ Copyright (C) 2014 - Open Source Geospatial Foundation. All rights reserved.
  This code is licensed under the GPL 2.0 license, available at the root
  application directory.
  -->
@@ -14,14 +14,6 @@
 	  <constructor-arg ref="resourceLoader"/>
 	</bean>
 	
-	<!-- the abstract base bean -->
-	<bean id="wcsAbstractService" abstract="true"
-		class="org.vfny.geoserver.servlets.AbstractService">
-		<!--  reference to geoserver bean defined in the 'main' context -->
-		<property name="geoServer" ref="geoServer"/>
-		<property name="catalog" ref="catalog"/>
-	</bean>
-
     <bean id="wcsFactoryExtension" class="org.geoserver.wcs.WCSFactoryExtension"/>
 
 	<!-- http url mapping -->

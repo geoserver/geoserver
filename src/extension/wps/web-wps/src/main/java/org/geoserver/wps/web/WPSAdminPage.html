@@ -14,8 +14,16 @@
             <input type="text" wicket:id="maxSynchronousProcesses" class="field"/>
           </li>
           <li>
+            <label><wicket:message key="maxSynchronousExecutionTime">maxSynchExecutionTime</wicket:message></label>
+            <input type="text" wicket:id="maxSynchronousExecutionTime" class="field"/>
+          </li>
+          <li>
             <label><wicket:message key="maxAsynchronousProcesses">MaxAsynchProcesses</wicket:message></label>
             <input type="text" wicket:id="maxAsynchronousProcesses" class="field"/>
+          </li>
+          <li>
+            <label><wicket:message key="maxAsynchronousExecutionTime">"maxAsynchExecutionTime"</wicket:message></label>
+            <input type="text" wicket:id="maxAsynchronousExecutionTime" class="field"/>
           </li>
         </ul>
       </fieldset>
@@ -27,26 +35,12 @@
             <label><wicket:message key="resourceExpirationTimeout">ResourceExpirationTimeout</wicket:message></label>
             <input type="text" wicket:id="resourceExpirationTimeout" class="field text"/>
           </li>
-        </ul>
-      </fieldset>
-      <br/>
-      <fieldset>
-        <legend><span><wicket:message key="processFilter">process_filtering</wicket:message></span></legend>
-        <ul>
           <li>
-            <div wicket:id="processFilterTable"/>
+            <div wicket:id="storageDirectory"></div>
           </li>
         </ul>
       </fieldset>
     </li>
-    
-    <wicket:fragment wicket:id="enabledFragment">
-        <input type="checkbox" wicket:id="enabled"/>
-    </wicket:fragment>
-    
-    <wicket:fragment wicket:id="linkFragment">
-        <a href="#" wicket:id="link"><wicket:message key="edit">edit...</wicket:message></a>
-    </wicket:fragment>
 </wicket:extend>
 </body>
 </html>

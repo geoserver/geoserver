@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -80,7 +81,7 @@ public class WFSException extends ServiceException {
 
     public WFSException init(Object request) {
         if (request != null) {
-            //wfs 2.0 has more requirements for exception codes and handles
+            // wfs 2.0 has more requirements for exception codes and handles
             if (OwsUtils.has(request, "version")) {
                 Object ver = OwsUtils.get(request, "version");
                 Version version = Version.negotiate(ver != null ? ver.toString() : null);
@@ -94,18 +95,7 @@ public class WFSException extends ServiceException {
             }
 
             if (locator == null) {
-                //default to name of operation, use the request object class name to determine the
-                // operation
-                String className = request.getClass().getSimpleName();
-                if (request instanceof RequestObject) {
-                    //request object adapter
-                    className = request.getClass().getSuperclass().getSimpleName();
-                    locator = className.substring(0, className.length()-"Request".length());
-                }
-                else if (className.endsWith("TypeImpl")) {
-                    //underlying emf request object
-                    locator = className.substring(0, className.length()-"TypeImpl".length());
-                }
+                locator = determineDefaultLocator(request);
             }
 
             if (code == null) {
@@ -113,6 +103,32 @@ public class WFSException extends ServiceException {
             }
         }
         return this;
+    }
+
+    private String determineDefaultLocator(Object request) {
+        // default to name of operation, use the request object class name to determine the
+        // operation
+        String className = request.getClass().getSimpleName();
+        if (request instanceof RequestObject) {
+            //request object adapter
+            
+            className = request.getClass().getSuperclass().getSimpleName();
+            if(className.endsWith("Request")){
+                return className.substring(0, className.length()-"Request".length());
+            }
+            RequestObject requestObject = (RequestObject) request;
+            EObject adaptee = requestObject.getAdaptee();
+            if (adaptee.getClass().getName().contains("wfs20")) {
+                // locator only for WFS20, implementation package is currently net.opengis.wfs20
+                return className;
+            }
+            return null;
+        }
+        else if (className.endsWith("TypeImpl")) {
+            //underlying emf request object
+            return className.substring(0, className.length()-"TypeImpl".length());
+        }
+        return null;
     }
 
     public WFSException(String message) {

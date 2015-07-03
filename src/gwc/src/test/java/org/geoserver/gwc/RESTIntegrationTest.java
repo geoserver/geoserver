@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -8,8 +9,11 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertThat;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathNotExists;
+import static org.hamcrest.Matchers.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -24,11 +28,14 @@ import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.gwc.layer.GeoServerTileLayer;
 import org.geoserver.gwc.layer.GeoServerTileLayerInfo;
+import org.geoserver.gwc.layer.StyleParameterFilter;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geowebcache.filter.parameters.FloatParameterFilter;
 import org.geowebcache.filter.parameters.ParameterFilter;
 import org.geowebcache.filter.parameters.StringParameterFilter;
 import org.geowebcache.util.ServletUtils;
+import org.hamcrest.Matcher;
+import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
@@ -98,6 +105,7 @@ public class RESTIntegrationTest extends GeoServerSystemTestSupport {
         assertXpathEvaluatesTo("image/jpeg", "/GeoServerLayer/mimeFormats/string[2]", dom);
         assertXpathEvaluatesTo("EPSG:900913",
                 "/GeoServerLayer/gridSubsets/gridSubset[1]/gridSetName", dom);
+        assertXpathNotExists("/GeoServerLayer/autoCacheStyles", dom);
     }
 
     /**
@@ -244,10 +252,15 @@ public class RESTIntegrationTest extends GeoServerSystemTestSupport {
                 + " <metaWidthHeight><int>9</int><int>6</int></metaWidthHeight>"//
                 + " <parameterFilters>"//
                 + "  <stringParameterFilter>"//
-                + "   <key>STYLES</key>"//
-                + "   <defaultValue>capitals</defaultValue>"//
-                + "   <values><string>burg</string><string>point</string></values>"//
+                + "   <key>BGCOLOR</key>"//
+                + "   <defaultValue>0xFFFFFF</defaultValue>"//
+                + "   <values><string>0x000000</string><string>0x888888</string></values>"//
                 + "  </stringParameterFilter>"//
+                + "  <styleParameterFilter>"//
+                + "   <key>STYLES</key>"//
+                + "   <defaultValue>capital</defaultValue>"//
+                + "   <allowedStyles><string>point</string><string>burg</string></allowedStyles>"//
+                + "  </styleParameterFilter>"//
                 + "  <floatParameterFilter>"//
                 + "   <key>ELEVATION</key>"//
                 + "   <defaultValue>10.1</defaultValue>"//
@@ -258,7 +271,6 @@ public class RESTIntegrationTest extends GeoServerSystemTestSupport {
                 + "  </floatParameterFilter>"//
                 + " </parameterFilters>"//
                 + " <gutter>20</gutter>"//
-                + " <autoCacheStyles>true</autoCacheStyles>"//
                 + "</GeoServerLayer>";
 
         final String url = "gwc/rest/layers/" + layerName + ".xml";
@@ -279,18 +291,22 @@ public class RESTIntegrationTest extends GeoServerSystemTestSupport {
         assertEquals(6, info.getMetaTilingY());
 
         List<ParameterFilter> filters = Lists.newArrayList(info.getParameterFilters());
-        assertEquals(2, filters.size());
+        assertEquals(3, filters.size()); // Float, String, and a Style filter that should replace 
+                                         // the old String style filter.
 
-        ParameterFilter f1 = filters.get(0);
-        ParameterFilter f2 = filters.get(1);
-
-        FloatParameterFilter floatFilter = (FloatParameterFilter) (f1 instanceof FloatParameterFilter ? f1
-                : (f2 instanceof FloatParameterFilter ? f2 : null));
-        StringParameterFilter stringFilter = (StringParameterFilter) (f1 instanceof StringParameterFilter ? f1
-                : (f2 instanceof StringParameterFilter ? f2 : null));
+        FloatParameterFilter floatFilter=null;
+        StringParameterFilter stringFilter=null;
+        StyleParameterFilter styleFilter=null;
+        
+        for(ParameterFilter filter: filters) {
+            if(filter instanceof FloatParameterFilter) floatFilter = (FloatParameterFilter) filter;
+            if(filter instanceof StringParameterFilter) stringFilter = (StringParameterFilter) filter;
+            if(filter instanceof StyleParameterFilter) styleFilter = (StyleParameterFilter) filter;
+        }
 
         assertNotNull(floatFilter);
         assertNotNull(stringFilter);
+        assertNotNull(styleFilter);
 
         assertEquals("ELEVATION", floatFilter.getKey());
         assertEquals("10.1", floatFilter.getDefaultValue());
@@ -298,9 +314,66 @@ public class RESTIntegrationTest extends GeoServerSystemTestSupport {
         assertEquals(ImmutableList.of(new Float(10.1f), new Float(10.2f), new Float(10.3f)),
                 floatFilter.getValues());
 
-        assertEquals("STYLES", stringFilter.getKey());
-        assertEquals("capitals", stringFilter.getDefaultValue());
-        assertEquals(ImmutableList.of("burg", "point"), stringFilter.getLegalValues());
+        assertEquals("BGCOLOR", stringFilter.getKey());
+        assertEquals("0xFFFFFF", stringFilter.getDefaultValue());
+        assertEquals(ImmutableList.of("0x000000", "0x888888"), stringFilter.getLegalValues());
+        
+        assertEquals("STYLES", styleFilter.getKey());
+    }
+    
+    @Test
+    public void testPutStyleParameterFilter() throws Exception {
+        final String layerName = getLayerId(MockData.LAKES);
+
+        final GWC mediator = GWC.get();
+        assertTrue(mediator.tileLayerExists(layerName));
+        mediator.removeTileLayers(Lists.newArrayList(layerName));
+        assertFalse(mediator.tileLayerExists(layerName));
+
+        final String xml = "<GeoServerLayer>"//
+                + " <enabled>true</enabled>"//
+                + " <name>" + layerName + "</name>"//
+                + " <mimeFormats><string>image/png8</string></mimeFormats>"//
+                + " <gridSubsets>"//
+                + "  <gridSubset><gridSetName>GoogleCRS84Quad</gridSetName></gridSubset>"//
+                + "  <gridSubset><gridSetName>EPSG:4326</gridSetName></gridSubset>"//
+                + " </gridSubsets>"//
+                + " <metaWidthHeight><int>9</int><int>6</int></metaWidthHeight>"//
+                + " <parameterFilters>"//
+                + "  <styleParameterFilter>"//
+                + "   <key>STYLES</key>"//
+                + "   <defaultValue>capitals</defaultValue>"//
+                + "   <allowedStyles><string>points</string><string>bergs</string></allowedStyles>"//
+                + "  </styleParameterFilter>"//
+                + " </parameterFilters>"//
+                + " <gutter>20</gutter>"//
+                + "</GeoServerLayer>";
+
+        final String url = "gwc/rest/layers/" + layerName + ".xml";
+
+        MockHttpServletResponse response = super.putAsServletResponse(url, xml, "text/xml");
+
+        assertEquals(HttpServletResponse.SC_OK, response.getStatusCode());
+
+        assertTrue(mediator.tileLayerExists(layerName));
+        GeoServerTileLayer tileLayer = (GeoServerTileLayer) mediator.getTileLayerByName(layerName);
+        GeoServerTileLayerInfo info = tileLayer.getInfo();
+        assertEquals(20, info.getGutter());
+        assertEquals(2, tileLayer.getGridSubsets().size());
+        assertTrue(tileLayer.getGridSubsets().contains("GoogleCRS84Quad"));
+        assertTrue(tileLayer.getGridSubsets().contains("EPSG:4326"));
+        assertEquals(ImmutableSet.of("image/png8"), info.getMimeFormats());
+        assertEquals(9, info.getMetaTilingX());
+        assertEquals(6, info.getMetaTilingY());
+
+        List<ParameterFilter> filters = Lists.newArrayList(info.getParameterFilters());
+        assertEquals(1, filters.size());
+        
+        StyleParameterFilter styleFilter=(StyleParameterFilter) filters.get(0);
+
+        assertEquals("STYLES", styleFilter.getKey());
+        assertEquals("capitals", styleFilter.getDefaultValue());
+        assertEquals(ImmutableSet.of("points", "bergs"), styleFilter.getStyles());
     }
 
     private MockHttpServletResponse putLayer(String url, String id, String name) throws Exception {
@@ -368,11 +441,11 @@ public class RESTIntegrationTest extends GeoServerSystemTestSupport {
                 + " </gridSubsets>"//
                 + " <metaWidthHeight><int>9</int><int>6</int></metaWidthHeight>"//
                 + " <parameterFilters>"//
-                + "  <stringParameterFilter>"//
+                + "  <styleParameterFilter>"//
                 + "   <key>STYLES</key>"//
                 + "   <defaultValue>capitals</defaultValue>"//
-                + "   <values><string>burg</string><string>point</string></values>"//
-                + "  </stringParameterFilter>"//
+                + "   <allowedStyles><string>burg</string><string>point</string></allowedStyles>"//
+                + "  </styleParameterFilter>"//
                 + "  <floatParameterFilter>"//
                 + "   <key>ELEVATION</key>"//
                 + "   <defaultValue>10.1</defaultValue>"//
@@ -383,7 +456,6 @@ public class RESTIntegrationTest extends GeoServerSystemTestSupport {
                 + "  </floatParameterFilter>"//
                 + " </parameterFilters>"//
                 + " <gutter>20</gutter>"//
-                + " <autoCacheStyles>true</autoCacheStyles>"//
                 + "</GeoServerLayer>";
 
         final String url = "gwc/rest/layers/" + layerName + ".xml";
@@ -406,16 +478,16 @@ public class RESTIntegrationTest extends GeoServerSystemTestSupport {
         List<ParameterFilter> filters = Lists.newArrayList(info.getParameterFilters());
         assertEquals(2, filters.size());
 
-        ParameterFilter f1 = filters.get(0);
-        ParameterFilter f2 = filters.get(1);
-
-        FloatParameterFilter floatFilter = (FloatParameterFilter) (f1 instanceof FloatParameterFilter ? f1
-                : (f2 instanceof FloatParameterFilter ? f2 : null));
-        StringParameterFilter stringFilter = (StringParameterFilter) (f1 instanceof StringParameterFilter ? f1
-                : (f2 instanceof StringParameterFilter ? f2 : null));
+        FloatParameterFilter floatFilter=null;
+        StyleParameterFilter styleFilter=null;
+        
+        for(ParameterFilter filter: filters) {
+            if(filter instanceof FloatParameterFilter) floatFilter = (FloatParameterFilter) filter;
+            if(filter instanceof StyleParameterFilter) styleFilter = (StyleParameterFilter) filter;
+        }
 
         assertNotNull(floatFilter);
-        assertNotNull(stringFilter);
+        assertNotNull(styleFilter);
 
         assertEquals("ELEVATION", floatFilter.getKey());
         assertEquals("10.1", floatFilter.getDefaultValue());
@@ -423,8 +495,66 @@ public class RESTIntegrationTest extends GeoServerSystemTestSupport {
         assertEquals(ImmutableList.of(new Float(10.1f), new Float(10.2f), new Float(10.3f)),
                 floatFilter.getValues());
 
-        assertEquals("STYLES", stringFilter.getKey());
-        assertEquals("capitals", stringFilter.getDefaultValue());
-        assertEquals(ImmutableList.of("burg", "point"), stringFilter.getLegalValues());
+        assertEquals("STYLES", styleFilter.getKey());
+        assertEquals("capitals", styleFilter.getDefaultValue());
+        assertEquals(ImmutableSet.of("burg", "point"), styleFilter.getStyles());
     }
+
+    @Test
+    public void testPostLegacyAutoStyles() throws Exception {
+        final String layerName = getLayerId(MockData.ROAD_SEGMENTS);
+
+        final GWC mediator = GWC.get();
+        assertTrue(mediator.tileLayerExists(layerName));
+
+        final String url = "gwc/rest/layers/" + layerName + ".xml";
+        {
+            final String xml = "<GeoServerLayer>"//
+                    + " <name>" + layerName + "</name>"//
+                    + " <autoCacheStyles>true</autoCacheStyles>"
+                    + "</GeoServerLayer>";
+    
+    
+            MockHttpServletResponse response = super.postAsServletResponse(url, xml, "text/xml");
+    
+            assertEquals(HttpServletResponse.SC_OK, response.getStatusCode());
+    
+            GeoServerTileLayer tileLayer = (GeoServerTileLayer) mediator.getTileLayerByName(layerName);
+            GeoServerTileLayerInfo info = tileLayer.getInfo();
+    
+    
+            List<ParameterFilter> filters = Lists.newArrayList(info.getParameterFilters());
+            assertThat(
+                    filters, 
+                    contains(allOf(
+                            Matchers.<ParameterFilter>hasProperty("key", is("STYLES")),
+                            isA((Class<ParameterFilter>)StyleParameterFilter.class.asSubclass(ParameterFilter.class))))
+                    );
+        }
+        {
+            final String xml = "<GeoServerLayer>"//
+                    + " <name>" + layerName + "</name>"//
+                    + " <autoCacheStyles>false</autoCacheStyles>"
+                    + "</GeoServerLayer>";
+    
+    
+            MockHttpServletResponse response = super.postAsServletResponse(url, xml, "text/xml");
+    
+            assertEquals(HttpServletResponse.SC_OK, response.getStatusCode());
+    
+            GeoServerTileLayer tileLayer = (GeoServerTileLayer) mediator.getTileLayerByName(layerName);
+            GeoServerTileLayerInfo info = tileLayer.getInfo();
+    
+    
+            List<ParameterFilter> filters = Lists.newArrayList(info.getParameterFilters());
+            assertThat(
+                    filters, 
+                    not(contains(allOf(
+                            Matchers.<ParameterFilter>hasProperty("key", is("STYLES")),
+                            isA((Class<ParameterFilter>)StyleParameterFilter.class.asSubclass(ParameterFilter.class))))
+                    ));
+        }
+        
+    }
+
 }

@@ -1,10 +1,11 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.security.impl;
 
-import static org.geoserver.security.impl.DataAccessRule.*;
+import static org.geoserver.security.impl.DataAccessRule.ANY;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -22,6 +23,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.geoserver.config.GeoServerDataDirectory;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.PropertyFileWatcher;
 import org.geotools.util.logging.Logging;
 
@@ -41,7 +43,7 @@ public abstract class AbstractAccessRuleDAO<R extends Comparable<?>> {
     /**
      * Parsed rules
      */
-    Set<R> rules;
+    protected Set<R> rules;
 
     /**
      * Used to check the file for modifications
@@ -51,7 +53,7 @@ public abstract class AbstractAccessRuleDAO<R extends Comparable<?>> {
     /**
      * Stores the time of the last rule list loading
      */
-    long lastModified;
+    protected long lastModified;
     
     /**
      * The security dir
@@ -77,7 +79,8 @@ public abstract class AbstractAccessRuleDAO<R extends Comparable<?>> {
     protected AbstractAccessRuleDAO(File securityDirectory, String propertyFileName) {
         this.securityDir = securityDirectory; 
         this.propertyFileName = propertyFileName;
-        this.dd = org.vfny.geoserver.global.GeoserverDataDirectory.accessor();
+        this.dd = GeoServerExtensions.bean(GeoServerDataDirectory.class);
+        //this.dd = org.vfny.geoserver.global.GeoserverDataDirectory.accessor();
     }
     
     /**
@@ -155,6 +158,7 @@ public abstract class AbstractAccessRuleDAO<R extends Comparable<?>> {
             File propFile = new File(securityDir, propertyFileName);
             os = new FileOutputStream(propFile);
             p.store(os, null);
+            lastModified = System.currentTimeMillis();
         } catch (Exception e) {
             if (e instanceof IOException)
                 throw (IOException) e;
@@ -171,7 +175,7 @@ public abstract class AbstractAccessRuleDAO<R extends Comparable<?>> {
     /**
      * Checks the property file is up to date, eventually rebuilds the tree
      */
-    void checkPropertyFile(boolean force) {
+    protected void checkPropertyFile(boolean force) {
         try {
             if (rules == null || force) {
                 // no security folder, let's work against an empty properties then

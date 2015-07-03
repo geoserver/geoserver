@@ -65,3 +65,12 @@ Cache your data
 ---------------
 
 Server-side caching of WMS tiles is the best way to increase performance.  In caching, pre-rendered tiles will be saved, eliminating the need for redundant WMS calls.  There are several ways to set up WMS caching for GeoServer.  GeoWebCache is the simplest method, as it comes bundled with GeoServer.  (See the section on :ref:`geowebcache` for more details.)  Another option is `TileCache <http://tilecache.org>`_.  You can also use a more generic caching system, such as `OSCache <http://www.opensymphony.com/oscache/>`_ (an embedded cache service) or `Squid <http://www.squid-cache.org>`_ (a web cache proxy).
+
+Disable the GeoServer web administration interface
+--------------------------------------------------
+
+In some circumstances, you might want to completely disable the web administration interface.  There are two ways of doing this:
+
+* Set the Java system property GEOSERVER_CONSOLE_DISABLED to true by adding -DGEOSERVER_CONSOLE_DISABLED=true to your container's JVM options
+* Remove all of the gs-web*-.jar files from WEB-INF/lib
+

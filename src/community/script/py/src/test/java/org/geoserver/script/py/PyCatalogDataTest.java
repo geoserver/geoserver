@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -20,6 +21,7 @@ import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.geoserver.script.ScriptTestSupport;
 import org.geotools.data.DataAccess;
 import org.geotools.data.DataStore;
@@ -131,11 +133,11 @@ public class PyCatalogDataTest extends ScriptTestSupport {
         replay(cat);
         replay(app);
         
-        new GeoServerExtensions().setApplicationContext(app);
+        GeoServerExtensionsHelper.init(app);
     }
     
     void tearDownMock() throws Exception {
-        new GeoServerExtensions().setApplicationContext(null);
+        GeoServerExtensionsHelper.init(null);
         DeleteDbFiles.execute("target", "acme", true);
     }
 

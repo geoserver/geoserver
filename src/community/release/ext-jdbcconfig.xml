@@ -9,7 +9,8 @@
       <directory>release/target/dependency</directory>
       <outputDirectory></outputDirectory>
       <includes>
-        <include>jdbcconfig-*.jar</include>
+        <include>gs-jdbcconfig-*.jar</include>
+        <include>compress-lzf-*.jar</include>
       </includes>
     </fileSet>
   </fileSets>

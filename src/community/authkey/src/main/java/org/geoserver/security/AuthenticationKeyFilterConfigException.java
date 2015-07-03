@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -31,5 +32,6 @@ public class AuthenticationKeyFilterConfigException extends FilterConfigExceptio
     public static final String AUTH_KEY_MAPPER_NAME_REQUIRED ="AUTH_KEY_MAPPER_NAME_REQUIRED";
     public static final String AUTH_KEY_MAPPER_NOT_FOUND_$1 ="AUTH_KEY_MAPPER_NOT_FOUND";
     public static final String INVALID_AUTH_KEY_MAPPER_$2="INVALID_AUTH_KEY_MAPPER";
+    public static final String INVALID_AUTH_KEY_MAPPER_PARAMETER_$3 ="INVALID_AUTH_KEY_MAPPER_PARAMETER";
                 
 }

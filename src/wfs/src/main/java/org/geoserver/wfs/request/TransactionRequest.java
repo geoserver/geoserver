@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -24,6 +25,7 @@ import net.opengis.wfs20.UpdateType;
 import net.opengis.wfs20.Wfs20Factory;
 
 import org.eclipse.emf.ecore.EObject;
+import org.geotools.data.Transaction;
 
 /**
  * WFS Transaction request.
@@ -42,6 +44,9 @@ public abstract class TransactionRequest extends RequestObject {
         }
         return null;
     }
+    
+    private Transaction transaction;
+    
     protected TransactionRequest(EObject adaptee) {
         super(adaptee);
     }
@@ -56,6 +61,14 @@ public abstract class TransactionRequest extends RequestObject {
     
     public void setLockId(String lockId) {
         eSet(adaptee, "lockId", lockId);
+    }
+    
+    public Transaction getTransaction() {
+        return transaction;
+    }
+    
+    public void setTransaction(Transaction transaction) {
+        this.transaction = transaction;
     }
 
     public abstract boolean isReleaseActionAll();

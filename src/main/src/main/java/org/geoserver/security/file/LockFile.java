@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -12,8 +13,6 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Properties;
 import java.util.logging.Logger;
-
-import org.apache.commons.io.IOUtils;
 
 import org.geoserver.security.impl.Util;
 import org.springframework.security.core.Authentication;
@@ -94,13 +93,10 @@ public class LockFile  {
                         
         if (lockFile.exists()) {             
             LOGGER.warning("Cannot obtain  lock: " + lockFile.getCanonicalPath());
-            FileInputStream in = new FileInputStream(lockFile);
             Properties props = new Properties();
 
-            try {
+            try (FileInputStream in = new FileInputStream(lockFile)) {
                 props.load(in);
-            } finally {
-                IOUtils.closeQuietly(in);
             }
 
             throw new IOException(Util.convertPropsToString(props,"Already locked" ));
@@ -122,10 +118,8 @@ public class LockFile  {
      */
     protected void writeLockFileContent(File lockFile) throws IOException {
         
-        FileOutputStream out = new FileOutputStream(lockFile); 
         Properties props = new Properties();
-
-        try {
+        try (FileOutputStream out = new FileOutputStream(lockFile)) {
             props.store(out, "Locking info");
 
             String hostname="UNKNOWN";
@@ -150,21 +144,6 @@ public class LockFile  {
             props.put("principal", auth==null ? "UNKNOWN" :auth.getName());
 
             props.store(out, "Locking info");
-        } finally {
-            IOUtils.closeQuietly(out);
-        }
-    }
-        
-    /**
-     * remove the lock file if the garbage
-     * collector removes this object
-     */
-    @Override
-    protected void finalize() throws Throwable {
-        // check for left locks
-        if (lockFile!=null && hasWriteLock()) {
-            writeUnLock();
-            LOGGER.warning("Unlocking due to garbage collection for "+lockFile.getCanonicalPath());
         }
     }
 

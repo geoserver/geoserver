@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -79,12 +80,27 @@ public class DefaultWebMapService implements WebMapService, ApplicationContextAw
     /**
      * longest side for the preview
      */
-    public static int MAX_SIDE = 512;
+    public static int MAX_SIDE = 768;
 
     /**
-     * minimum height to have a decent looking OL preview
+     * minimum height to have a reasonable looking OL preview
      */
     public static int MIN_OL_HEIGHT = 330;
+
+    /**
+     * minimum width to have a reasonable looking OL preview
+     */
+    public static int MIN_OL_WIDTH = 330;
+
+    /**
+     * max height to have a reasonable looking OL preview
+     */
+    public static int MAX_OL_HEIGHT = 768;
+
+    /**
+     * max width to have a reasonable looking OL preview
+     */
+    public static int MAX_OL_WIDTH = 1024;
 
     /**
      * default for 'srs' parameter.
@@ -126,11 +142,6 @@ public class DefaultWebMapService implements WebMapService, ApplicationContextAw
      * Max number of rule filters to be used against the data source
      */
     private static Integer MAX_FILTER_RULES = null;
-    
-    /**
-     * Enable continuous map wrapping
-     */
-    private static Boolean ENABLE_MAP_WRAPPING = null;
     
     /**
      * Use a global rendering pool, or use a new pool each time
@@ -227,16 +238,6 @@ public class DefaultWebMapService implements WebMapService, ApplicationContextAw
                 MAX_FILTER_RULES = Integer.valueOf(rules);
         }
         
-        // enable/disable map wrapping
-        if (ENABLE_MAP_WRAPPING == null) {
-            String wrapping = GeoServerExtensions.getProperty("ENABLE_MAP_WRAPPING", context);
-            // default to true, but allow switching off
-            if (wrapping == null)
-                ENABLE_MAP_WRAPPING = true;
-            else
-                ENABLE_MAP_WRAPPING = Boolean.valueOf(wrapping);
-        }
-        
         // control usage of the global rendering thread pool
         if (USE_GLOBAL_RENDERING_POOL == null) {
             String usePool = GeoServerExtensions.getProperty("USE_GLOBAL_RENDERING_POOL", context);
@@ -258,15 +259,6 @@ public class DefaultWebMapService implements WebMapService, ApplicationContextAw
         return OPTIMIZE_LINE_WIDTH;
     }
     
-    /**
-     * Checks if continuous map wrapping is enabled or not
-     * 
-     * @return
-     */
-    public static boolean isContinuousMapWrappingEnabled() {
-        return ENABLE_MAP_WRAPPING;
-    }
-
     /**
      * If true (default) use the sld rule filters to compose the query to the DB, otherwise don't
      * and get down only with the bbox and eventual definition filter)
@@ -386,7 +378,7 @@ public class DefaultWebMapService implements WebMapService, ApplicationContextAw
      * @see org.geoserver.wms.WebMapService#getStyles(org.geoserver.sld.GetStylesRequest)
      */
     public StyledLayerDescriptor getStyles(GetStylesRequest request) {
-        return (StyledLayerDescriptor) getStyles.run(request);
+        return getStyles.run(request);
 
     }
 
@@ -597,14 +589,20 @@ public class DefaultWebMapService implements WebMapService, ApplicationContextAw
                         mwidth = (mheight * bbratio >= 1) ? mheight * bbratio : 1;
                     }
 
-                    // make sure OL output height is sufficient to show the OL scale bar fully
-                    if (mheight < MIN_OL_HEIGHT
-                            && ("application/openlayers".equalsIgnoreCase(getMap.getFormat()) || "openlayers"
-                                    .equalsIgnoreCase(getMap.getFormat()))) {
-                        mheight = MIN_OL_HEIGHT;
-                        mwidth = (mheight * bbratio >= 1) ? mheight * bbratio : 1;
+                    // OL specific adjustments
+                    if ("application/openlayers".equalsIgnoreCase(getMap.getFormat())
+                            || "openlayers".equalsIgnoreCase(getMap.getFormat())) {
+                        if (mheight < MIN_OL_HEIGHT) {
+                            mheight = MIN_OL_HEIGHT;
+                        } else if (mheight > MAX_OL_HEIGHT) {
+                            mheight = MAX_OL_HEIGHT;
+                        }
+                        if (mwidth < MIN_OL_WIDTH) {
+                            mwidth = MIN_OL_WIDTH;
+                        } else if (mwidth > MAX_OL_WIDTH) {
+                            mwidth = MAX_OL_WIDTH;
+                        }
                     }
-
                 }
 
             }

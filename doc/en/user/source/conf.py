@@ -12,7 +12,7 @@
 # serve to show the default value.
 
 import sys, os, string
-
+   
 # If your extensions are in another directory, add it here. If the directory
 # is relative to the documentation root, use os.path.abspath to make it
 # absolute, like shown here.
@@ -23,7 +23,7 @@ import sys, os, string
 
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
-extensions = ['sphinx.ext.todo']
+extensions = ['sphinx.ext.todo', 'sphinx.ext.extlinks']
 
 #todo_include_todos = True
 
@@ -39,18 +39,18 @@ master_doc = 'index'
 # General substitutions.
 project = u'GeoServer'
 manual = u'User Manual'
-copyright = u'2013, OpenPlans'
+copyright = u'2015, Open Source Geospatial Foundation'
 
 # The default replacements for |version| and |release|, also used in various
 # other places throughout the built documents.
 #
 # The short X.Y version.
-version = '2.4'
+version = '2.8'
 # The full version, including alpha/beta/rc tags.
-release = '2.4-SNAPSHOT'
+release = '2.8-SNAPSHOT'
 # Users don't need to see the "SNAPSHOT" notation when it's there
 if release.find('SNAPSHOT') != -1:
-   release = '2.4.x'
+   release = '2.8.x'
 
 # There are two options for replacing |today|: either, you set today to some
 # non-false value, then it is used:
@@ -82,6 +82,33 @@ exclude_trees = []
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = 'sphinx'
 
+# Options for extlinks
+#
+# :website:`license <License>`
+# :geos:`1234`
+# :wiki:`Proposals`
+# -----------------------------------
+
+extlinks = { 
+    'wiki': ('https://github.com/geoserver/geoserver/wiki/%s',''),
+    'website': ('http://geoserver.org/%s',''),
+    'user': ('http://docs.geoserver.org/latest/en/user/%s',''),
+    'developer': ('http://docs.geoserver.org/latest/en/developer/%s',''),
+    'geos': ('https://osgeo-org.atlassian.net/browse/GEOS-%s','GEOS-'),
+    'geot': ('https://osgeo-org.atlassian.net/browse/GEOT-%s','GEOT-')
+}
+
+# Common substitutions
+
+rst_epilog = "\n" \
+ ".. |install_directory_winXP| replace:: :file:`C:\Program Files\\\\GeoServer "+release+"`\n" \
+ ".. |install_directory_win| replace:: :file:`C:\\\\Program Files (x86)\\\\GeoServer "+release+"`\n" \
+ ".. |install_directory_linux| replace:: :file:`/var/lib/tomcat7/webapps/geoserver`\n" \
+ ".. |install_directory_mac| replace:: :file:`/Applications`\n" \
+ ".. |data_directory_winXP| replace:: :file:`C:\Program Files\\\\GeoServer "+release+"\\\\data_dir`\n" \
+ ".. |data_directory_win| replace:: :file:`C:\\\\Program Files (x86)\\\\GeoServer "+release+"\\\\data_dir`\n" \
+ ".. |data_directory_linux| replace:: :file:`/var/lib/tomcat7/webapps/geoserver/data`\n" \
+ ".. |data_directory_mac| replace:: :file:`/Applications/GeoServer.app/Contents/Resources/Java/data_dir`"
 
 # Options for HTML output
 # -----------------------
@@ -184,7 +211,7 @@ latex_logo = '../../themes/geoserver/static/GeoServer_500.png'
 latex_elements = {
   'fontpkg': '\\usepackage{palatino}',
   'fncychap': '\\usepackage[Sonny]{fncychap}',
-  'preamble': #"""\\usepackage[parfill]{parskip}
+'preamble': #"""\\usepackage[parfill]{parskip}
   """
 	\\hypersetup{
 		colorlinks = true,

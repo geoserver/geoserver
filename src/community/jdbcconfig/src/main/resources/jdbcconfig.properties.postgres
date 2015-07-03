@@ -1,18 +1,45 @@
-# This is a sample configuration file for running the GeoServer Catalog against a PostgreSQL database.
-# Adapt the url, user, password, and other configuration options to your set up and rename this
-# file as jdbcconfig.properties
+# This is a sample configuration file for running the GeoServer Catalog against a PostgreSQL 
+# database.
+#
+# Set the jndiName for a JNDI dataSource provided by your container, or set the jdbcUrl, username, 
+# password, and pool.* parameters appropriately to connect directly. If both are specified, then 
+# JNDI lookup will be attempted first, and a direct JDBC connection if that fails.
+#
 # Note the initialization DDL script for PostgreSQL must have been run before starting GeoServer.
-# The initialization script is located in the jdbcconfig_scripts directory, named initdb.postgres.sql
-# The importCatalog configuration option tells GeoServer whether to import the current catalog from the file system
-# to the database or not. If set to true, it will be imported and the config option will be set the value 'false'
-# for the next start up to avoid trying to re-import the catalog configuration.
+# The initialization script is located in the jdbcconfig_scripts directory, named 
+# 'initdb.postgres.sql'.
+#
+# The import configuration option tells GeoServer whether to import the current catalog from the 
+# file system to the database or not. If set to true, it will be imported and the config option will
+# be set the value 'false' for the next start up to avoid trying to re-import the catalog 
+# configuration.
 
+#
+# Use JDBCConfig.  Turn off to use the data directory for all configuration instead.
+#
 enabled=true
 
+#
+# Initialize an empty database.  Should be set to false and done manually before starting GeoServer 
+# when using Postgres
+#
 initdb=false
 initScript=${GEOSERVER_DATA_DIR}/jdbcconfig/scripts/initdb.postgres.sql
+
+#
+# Import the data directory into a new database.  Should only be used on the first run.
+#
 import=true
 
+#
+# The JNDI name for the data source.  Uncomment to use JNDI.
+#
+#jndiName=java\:/comp/env/jdbc/gsconfig
+
+#
+# JDBC direct connection parameters.  Comment out following lines if using JNDI and you don't want 
+# a fallback.
+#
 jdbcUrl=jdbc:postgresql://localhost:5432/gscatalog
 driverClassName=org.postgresql.Driver
 username=postgres

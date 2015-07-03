@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -21,6 +22,7 @@ import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.data.util.IOUtils;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geotools.util.logging.Logging;
+import org.geowebcache.storage.blobstore.memory.CacheConfiguration;
 
 import com.thoughtworks.xstream.XStream;
 
@@ -122,6 +124,7 @@ public class GWCConfigPersister {
         xs.alias("defaultCoverageCacheFormats", HashSet.class);
         xs.alias("defaultVectorCacheFormats", HashSet.class);
         xs.alias("defaultOtherCacheFormats", HashSet.class);
+        xs.alias("InnerCacheConfiguration", CacheConfiguration.class);
     }
 
     private File getConfigRoot() {

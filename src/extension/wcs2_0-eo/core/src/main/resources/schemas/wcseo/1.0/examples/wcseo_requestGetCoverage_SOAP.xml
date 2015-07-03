@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<soapenv:Envelope
+    xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+    xmlns:wcs="http://www.opengis.net/wcs/2.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation='http://www.opengis.net/wcs/2.0 http://schemas.opengis.net/wcs/2.0/wcsAll.xsd'>
+    <soapenv:Header />
+    <soapenv:Body>
+        <wcs:GetCoverage service="WCS" version="2.0.0">
+            <wcs:requestParameters>
+                <wcs:mediatype>multipart/related</wcs:mediatype>
+                <wcs:Format>image/tiff</wcs:Format>
+            </wcs:requestParameters>
+            <wcs:CoverageId>someEOCoverage1</wcs:CoverageId>
+            <wcs:DimensionTrim>
+                <wcs:Dimension>Lat</wcs:Dimension>
+                <wcs:TrimLow>43</wcs:TrimLow>
+                <wcs:TrimHigh>43.1</wcs:TrimHigh>
+            </wcs:DimensionTrim>
+            <wcs:DimensionTrim>
+                <wcs:Dimension>Long</wcs:Dimension>
+                <wcs:TrimLow>2</wcs:TrimLow>
+                <wcs:TrimHigh>2.1</wcs:TrimHigh>
+            </wcs:DimensionTrim>
+        </wcs:GetCoverage>
+    </soapenv:Body>
+</soapenv:Envelope>

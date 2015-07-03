@@ -1,4 +1,5 @@
-/* Copyright (c) 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -13,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.LayerGroupInfo;
@@ -22,8 +24,10 @@ import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.test.GeoServerSystemTestSupport;
+import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
 import org.junit.Before;
 import org.junit.Test;
+import org.opengis.coverage.grid.GridCoverageReader;
 
 
 /**
@@ -115,9 +119,11 @@ public class EoCatalogBuilderTest extends GeoServerSystemTestSupport {
         assertEquals(EoLayerType.BROWSE_IMAGE.name(), browseLayer.getMetadata().get(EoLayerType.KEY));   
         checkTimeDimension(browseLayer);
         
-        LayerInfo layer = builder.createEoOutlineLayer(getUrl("EO_Nat"), ws, groupName);
+        CoverageInfo coverage = (CoverageInfo) browseLayer.getResource();
+        StructuredGridCoverage2DReader reader = (StructuredGridCoverage2DReader) coverage.getGridCoverageReader(null, null);
+        LayerInfo layer = builder.createEoOutlineLayer(getUrl("EO_Nat"), ws, groupName, coverage.getNativeCoverageName(), reader);
         assertNotNull(layer);
-        assertEquals(groupName + "_OUTLINES", layer.getName());
+        assertEquals(groupName + "_outlines", layer.getName());
         checkTimeDimension(layer);
         
         layer = catalog.getLayerByName(layer.getName());

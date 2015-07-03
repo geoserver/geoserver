@@ -1,17 +1,13 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.catalog.impl;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
-import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.CatalogVisitor;
-import org.geoserver.catalog.StyleInfo;
-import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.catalog.*;
 import org.geotools.styling.Style;
 import org.geotools.util.Version;
 
@@ -23,8 +19,14 @@ public class StyleInfoImpl implements StyleInfo {
 
     protected WorkspaceInfo workspace;
 
-    protected Version sldVersion = new Version("1.0.0");
-    
+    @Deprecated
+    //not used, maininting this property for xstream backward compatability
+    protected Version sldVersion = null;
+
+    protected String format = SLDHandler.FORMAT;
+
+    protected Version languageVersion = SLDHandler.VERSION_10;
+
     protected String filename;
 
     protected transient Catalog catalog;
@@ -65,13 +67,29 @@ public class StyleInfoImpl implements StyleInfo {
     }
 
     public Version getSLDVersion() {
-        return sldVersion;
+        return getFormatVersion();
     }
     
     public void setSLDVersion(Version v) {
-        this.sldVersion = v;
+        setFormatVersion(v);
     }
-    
+
+    public String getFormat() {
+        return format;
+    }
+
+    public void setFormat(String language) {
+        this.format = language;
+    };
+
+    public Version getFormatVersion() {
+        return languageVersion;
+    }
+
+    public void setFormatVersion(Version version) {
+        this.languageVersion = version;
+    }
+
     public String getFilename() {
         return filename;
     }
@@ -96,7 +114,8 @@ public class StyleInfoImpl implements StyleInfo {
         result = prime * result + ((id == null) ? 0 : id.hashCode());
         result = prime * result + ((name == null) ? 0 : name.hashCode());
         result = prime * result + ((workspace == null) ? 0 : workspace.hashCode());
-        result = prime * result + ((sldVersion == null) ? 0 : sldVersion.hashCode());
+        result = prime * result + ((format == null) ? 0 : format.hashCode());
+        result = prime * result + ((languageVersion == null) ? 0 : languageVersion.hashCode());
         return result;
     }
 
@@ -128,26 +147,52 @@ public class StyleInfoImpl implements StyleInfo {
                 return false;
         } else if (!workspace.equals(other.getWorkspace()))
             return false;
-        if (sldVersion == null) {
-            if (other.getSLDVersion() != null)
+        if (format == null) {
+            if (other.getFormat() != null)
                 return false;
-        } else if (!sldVersion.equals(other.getSLDVersion()))
+        }
+        else {
+            if (!format.equals(other.getFormat()))
+                return false;
+        }
+        if (languageVersion == null) {
+            if (other.getFormatVersion() != null)
+                return false;
+        } else if (!languageVersion.equals(other.getFormatVersion()))
             return false;
         return true;
     }
 
     @Override
     public String toString() {
-        return new StringBuilder(getClass().getSimpleName()).append('[').append(name).append(']')
+        return new StringBuilder(getClass().getSimpleName()).append('[').append(prefixedName()).append(']')
                 .toString();
     }
     
     private Object readResolve() {
         //this check is here to enable smooth migration from old configurations that don't have 
-        // the sldVersion property
-        if (sldVersion == null) {
-            sldVersion = new Version("1.0.0");
+        // the version property, and a transition from the deprecated sldVersion property
+
+        if (format == null) {
+            format = SLDHandler.FORMAT;
         }
+
+        if (languageVersion == null && sldVersion != null) {
+            languageVersion = sldVersion;
+        }
+        if (languageVersion == null) {
+            languageVersion = SLDHandler.VERSION_10;
+        }
+
         return this;
+    }
+
+    @Override
+    public String prefixedName() {
+        if(workspace != null) {
+            return workspace.getName() + ":" + getName();
+        } else {
+            return getName();
+        }
     }
 }

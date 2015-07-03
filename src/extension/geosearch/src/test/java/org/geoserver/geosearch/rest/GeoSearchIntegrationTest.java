@@ -1,12 +1,14 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.geosearch.rest;
 
-import static junit.framework.Assert.*;
-import static org.custommonkey.xmlunit.XMLAssert.*;
-import static org.geoserver.data.test.MockData.*;
+import static junit.framework.Assert.assertEquals;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
+import static org.geoserver.data.test.MockData.BASIC_POLYGONS;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -21,7 +23,7 @@ import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
-import org.geoserver.config.GeoServerInfo;
+import org.geoserver.config.SettingsInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.test.GeoServerSystemTestSupport;
@@ -91,24 +93,24 @@ public class GeoSearchIntegrationTest extends GeoServerSystemTestSupport {
     public void testKml() throws Exception {
 
         Document kml = getAsDOM("/geosearch/cite%3ABasicPolygons.kml");
-        print(kml);
+        // print(kml);
 
         FeatureTypeInfo ft = getCatalog().getFeatureTypeByName(BASIC_POLYGONS.getNamespaceURI(),
                 BASIC_POLYGONS.getLocalPart());
 
         assertXpathEvaluatesTo(ft.getTitle(), "/kml:kml/kml:Document/kml:name", kml);
 
-        GeoServerInfo global = getGeoServer().getGlobal();
+        SettingsInfo global = getGeoServer().getGlobal().getSettings();
 
         assertXpathEvaluatesTo(global.getContact().getContactPerson(),
-                "/kml:kml/kml:Document/atom:author", kml);
+                "/kml:kml/kml:Document/atom:author/atom:nameOrUriOrEmail", kml);
 
         assertXpathEvaluatesTo(global.getOnlineResource(), "/kml:kml/kml:Document/atom:link/@href",
                 kml);
 
         assertXpathExists("/kml:kml/kml:Document/kml:description", kml);
 
-        assertXpathEvaluatesTo("cite:BasicPolygons",
+        assertXpathEvaluatesTo("BasicPolygons",
                 "/kml:kml/kml:Document/kml:NetworkLink/kml:name", kml);
     }
 

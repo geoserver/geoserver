@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -37,6 +38,7 @@ public class WMSLayerConfig extends LayerConfigurationPanel {
         super(id, layerModel);
         
         add(new CheckBox("queryableEnabled", new PropertyModel(layerModel,"queryable")));
+        add(new CheckBox("opaqueEnabled", new PropertyModel(layerModel,"opaque")));
         
         // styles block container
         WebMarkupContainer styleContainer = new WebMarkupContainer("styles");
@@ -56,16 +58,9 @@ public class WMSLayerConfig extends LayerConfigurationPanel {
         defStyleImg.setOutputMarkupId(true);
         styleContainer.add(defStyleImg);
 
+        // the wms url is build without qualification to allow usage of global styles,
+        // the style name and layer name will be ws qualified instead
         String wmsURL = getRequest().getRelativePathPrefixToContextRoot();
-        //append the workspace
-        String wsName = null;
-        if (resource.getStore() != null && resource.getStore().getWorkspace() != null) {
-            wsName = resource.getStore().getWorkspace().getName();
-        }
-
-        if (wsName != null) {
-            wmsURL += wmsURL.endsWith("/") ? wsName : ("/" + wsName);
-        }
         wmsURL += wmsURL.endsWith("/") ? "wms?" : "/wms?";
 
         final LegendGraphicAjaxUpdater defaultStyleUpdater;

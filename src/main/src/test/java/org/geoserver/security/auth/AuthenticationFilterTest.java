@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -11,6 +12,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.net.URLEncoder;
 import java.security.Principal;
 import java.util.Arrays;
 import java.util.List;
@@ -25,16 +27,20 @@ import org.geoserver.security.GeoServerSecurityFilterChain;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.RequestFilterChain;
 import org.geoserver.security.config.BasicAuthenticationFilterConfig;
+import org.geoserver.security.config.CredentialsFromRequestHeaderFilterConfig;
 import org.geoserver.security.config.DigestAuthenticationFilterConfig;
+import org.geoserver.security.config.J2eeAuthenticationBaseFilterConfig;
+import org.geoserver.security.config.J2eeAuthenticationBaseFilterConfig.J2EERoleSource;
 import org.geoserver.security.config.J2eeAuthenticationFilterConfig;
 import org.geoserver.security.config.LogoutFilterConfig;
-import org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig.RoleSource;
+import org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig.PreAuthenticatedUserNameRoleSource;
 import org.geoserver.security.config.RequestHeaderAuthenticationFilterConfig;
 import org.geoserver.security.config.SecurityFilterConfig;
 import org.geoserver.security.config.SecurityManagerConfig;
 import org.geoserver.security.config.UsernamePasswordAuthenticationFilterConfig;
 import org.geoserver.security.config.X509CertificateAuthenticationFilterConfig;
 import org.geoserver.security.filter.GeoServerBasicAuthenticationFilter;
+import org.geoserver.security.filter.GeoServerCredentialsFromRequestHeaderFilter;
 import org.geoserver.security.filter.GeoServerDigestAuthenticationFilter;
 import org.geoserver.security.filter.GeoServerJ2eeAuthenticationFilter;
 import org.geoserver.security.filter.GeoServerLogoutFilter;
@@ -72,6 +78,7 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
     public final static String testFilterName7 = "formLoginTestFilterWithRememberMe";
     public final static String testFilterName8 = "x509TestFilter";
     public final static String testFilterName9 = "logoutTestFilter";
+    public final static String testFilterName10 = "credentialsFromHeaderTestFilter";
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
@@ -271,12 +278,151 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
     }
     
     @Test
+    public void testCredentialsFromHeader() throws Exception {
+            
+            
+        CredentialsFromRequestHeaderFilterConfig config = new CredentialsFromRequestHeaderFilterConfig();
+        config.setClassName(GeoServerCredentialsFromRequestHeaderFilter.class.getName());
+        config.setUserNameHeaderName("X-Credentials");
+        config.setPasswordHeaderName("X-Credentials");
+        config.setUserNameRegex("private-user=([^&]*)");
+        config.setPasswordRegex("private-pw=([^&]*)");
+        config.setParseAsUriComponents(true);
+        config.setName(testFilterName10);
+        getSecurityManager().saveFilter(config);
+        
+        prepareFilterChain(pattern,
+                testFilterName10);
+        modifyChain(pattern, false, true,null);
+                
+        // Test entry point
+        MockHttpServletRequest request= createRequest("/foo/bar");
+        MockHttpServletResponse response= new MockHttpServletResponse();
+        MockFilterChain chain = new MockFilterChain();
+        
+        getProxy().doFilter(request, response, chain);
+        assertEquals(HttpServletResponse.SC_FORBIDDEN,response.getErrorCode());
+        SecurityContext ctx = (SecurityContext)request.getSession(true).getAttribute(
+                HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
+        assertNull(ctx);
+        assertNull(SecurityContextHolder.getContext().getAuthentication());
+        
+        // check success
+        request= createRequest("/foo/bar");
+        response= new MockHttpServletResponse();
+        chain = new MockFilterChain();
+        request.addHeader("X-Credentials",  "private-user="+testUserName+"&private-pw="+testPassword);
+        
+        getProxy().doFilter(request, response, chain);
+        assertEquals(HttpServletResponse.SC_OK, response.getErrorCode());
+        ctx = (SecurityContext)request.getSession(true).getAttribute(
+                HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
+        assertNotNull(ctx);
+        Authentication auth = ctx.getAuthentication();
+        assertNotNull(auth);
+        assertNull(SecurityContextHolder.getContext().getAuthentication());
+        checkForAuthenticatedRole(auth);
+        assertEquals(testUserName, ((UserDetails) auth.getPrincipal()).getUsername());
+        assertTrue(auth.getAuthorities().contains(new GeoServerRole(rootRole)));
+        assertTrue(auth.getAuthorities().contains(new GeoServerRole(derivedRole)));
+
+        // check wrong password
+        request= createRequest("/foo/bar");
+        response= new MockHttpServletResponse();
+        chain = new MockFilterChain();
+        
+        request.addHeader("X-Credentials",  "private-user="+testUserName+"&private-pw=wrongpass");
+        getProxy().doFilter(request, response, chain);
+        assertEquals(HttpServletResponse.SC_FORBIDDEN, response.getErrorCode());
+        ctx = (SecurityContext)request.getSession(true).getAttribute(
+                HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
+        assertNull(ctx);
+        assertNull(SecurityContextHolder.getContext().getAuthentication());
+        
+        // check unknown user
+        request= createRequest("/foo/bar");
+        response= new MockHttpServletResponse();
+        chain = new MockFilterChain();
+        request.addHeader("X-Credentials",  "private-user=wronguser&private-pw="+testPassword);
+        getProxy().doFilter(request, response, chain);
+        assertEquals(HttpServletResponse.SC_FORBIDDEN, response.getErrorCode());
+        ctx = (SecurityContext)request.getSession(true).getAttribute(
+                HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
+        assertNull(ctx);
+        assertNull(SecurityContextHolder.getContext().getAuthentication());
+        
+        // check root user
+        request= createRequest("/foo/bar");
+        response= new MockHttpServletResponse();
+        chain = new MockFilterChain();        
+        String masterPassword = URLEncoder.encode(getMasterPassword(), "UTF-8");
+        request.addHeader("X-Credentials",  "private-user="+GeoServerUser.ROOT_USERNAME+"&private-pw=" + masterPassword);
+        getProxy().doFilter(request, response, chain);
+        assertEquals(HttpServletResponse.SC_OK, response.getErrorCode());
+        ctx = (SecurityContext)request.getSession(true).getAttribute(
+                HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
+        auth = ctx.getAuthentication();
+        assertNotNull(auth);
+        assertNull(SecurityContextHolder.getContext().getAuthentication());
+        //checkForAuthenticatedRole(auth);
+        assertEquals(GeoServerUser.ROOT_USERNAME, auth.getPrincipal());
+        assertTrue(auth.getAuthorities().size()==2);
+        assertTrue(auth.getAuthorities().contains(GeoServerRole.ADMIN_ROLE));
+        
+        // check root user with wrong password
+        request= createRequest("/foo/bar");
+        response= new MockHttpServletResponse();
+        chain = new MockFilterChain();        
+        
+        request.addHeader("X-Credentials",  "private-user="+GeoServerUser.ROOT_USERNAME+"&private-pw=geoserver1");
+        getProxy().doFilter(request, response, chain);
+        
+        assertEquals(HttpServletResponse.SC_FORBIDDEN, response.getErrorCode());
+        ctx = (SecurityContext)request.getSession(true).getAttribute(
+                HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
+        assertNull(ctx);
+        assertNull(SecurityContextHolder.getContext().getAuthentication());
+
+        
+        // check disabled user, clear cache first
+        getSecurityManager().getAuthenticationCache().removeAll();
+        updateUser("ug1", testUserName, false);
+        request= createRequest("/foo/bar");
+        response= new MockHttpServletResponse();
+        chain = new MockFilterChain();
+        request.addHeader("X-Credentials",  "private-user="+testUserName+"&private-pw="+testPassword);
+        
+        getProxy().doFilter(request, response, chain);
+        
+        assertEquals(HttpServletResponse.SC_FORBIDDEN, response.getErrorCode());
+        ctx = (SecurityContext)request.getSession(true).getAttribute(
+                HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
+        assertNull(ctx);
+        assertNull(SecurityContextHolder.getContext().getAuthentication());
+        
+        updateUser("ug1", testUserName, true);
+        
+        // Test anonymous
+        insertAnonymousFilter();
+        request= createRequest("/foo/bar");
+        response= new MockHttpServletResponse();
+        chain = new MockFilterChain();
+        getProxy().doFilter(request, response, chain);
+        assertEquals(HttpServletResponse.SC_OK, response.getErrorCode());
+        // Anonymous context is not stored in http session, no further testing
+        removeAnonymousFilter();
+    }
+    
+    @Test
     public void testJ2eeProxy() throws Exception{
 
         J2eeAuthenticationFilterConfig config = new J2eeAuthenticationFilterConfig();        
         config.setClassName(GeoServerJ2eeAuthenticationFilter.class.getName());        
         config.setName(testFilterName3);
-        config.setRoleServiceName("rs1");        
+        config.setRoleSource(J2EERoleSource.J2EE);
+        config.setRoleServiceName("rs1");
+        config.setUserGroupServiceName("ug1");
+        config.setRolesHeaderAttribute("roles");
         getSecurityManager().saveFilter(config);
         
         prepareFilterChain(pattern,                
@@ -298,34 +444,43 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
                 HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);        
         assertNull(ctx);
         assertNull(SecurityContextHolder.getContext().getAuthentication());
-
-
-        // test preauthenticated with dedicated role service        
-        request= createRequest("/foo/bar");
-        response= new MockHttpServletResponse();
-        chain = new MockFilterChain();                
-        request.setUserPrincipal(new Principal() {            
-            @Override
-            public String getName() {
-                return testUserName;
+        Authentication auth;
+        
+        for(J2EERoleSource rs : J2eeAuthenticationBaseFilterConfig.J2EERoleSource.values()) {
+            config.setRoleSource(rs);
+            getSecurityManager().saveFilter(config);
+            // test preauthenticated with various role sources
+            request= createRequest("/foo/bar");
+            response= new MockHttpServletResponse();
+            chain = new MockFilterChain();
+            request.setUserPrincipal(new Principal() {
+                @Override
+                public String getName() {
+                    return testUserName;
+                }
+            });
+            if (rs==J2EERoleSource.Header) {
+                request.setHeader("roles", derivedRole+";"+rootRole);
             }
-        });
-        request.setUserInRole(derivedRole,true);
-        request.setUserInRole(rootRole,false);
-        getProxy().doFilter(request, response, chain);
-        
-        assertEquals(HttpServletResponse.SC_OK, response.getErrorCode());
-        ctx = (SecurityContext)request.getSession(true).getAttribute(
-                HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);        
-        assertNotNull(ctx);
-        Authentication auth = ctx.getAuthentication();
-        assertNotNull(auth);
-        assertNull(SecurityContextHolder.getContext().getAuthentication());
-        checkForAuthenticatedRole(auth);
-        assertEquals(testUserName, auth.getPrincipal());
-        assertTrue(auth.getAuthorities().contains(new GeoServerRole(rootRole)));
-        assertTrue(auth.getAuthorities().contains(new GeoServerRole(derivedRole)));
-        
+            if(rs==J2EERoleSource.J2EE) {
+                request.setUserInRole(derivedRole,true);
+                request.setUserInRole(rootRole,false);
+            }
+            
+            getProxy().doFilter(request, response, chain);
+            
+            assertEquals(HttpServletResponse.SC_OK, response.getErrorCode());
+            ctx = (SecurityContext)request.getSession(true).getAttribute(
+                    HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
+            assertNotNull(ctx);
+            auth = ctx.getAuthentication();
+            assertNotNull(auth);
+            assertNull(SecurityContextHolder.getContext().getAuthentication());
+            checkForAuthenticatedRole(auth);
+            assertEquals(testUserName, auth.getPrincipal());
+            assertTrue(auth.getAuthorities().contains(new GeoServerRole(rootRole)));
+            assertTrue(auth.getAuthorities().contains(new GeoServerRole(derivedRole)));
+        }
         // test root                
         request= createRequest("/foo/bar");
         response= new MockHttpServletResponse();
@@ -401,7 +556,7 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         config.setName(testFilterName4);
         config.setRoleServiceName("rs1");
         config.setPrincipalHeaderAttribute("principal");
-        config.setRoleSource(RoleSource.RoleService);
+        config.setRoleSource(PreAuthenticatedUserNameRoleSource.RoleService);
         config.setUserGroupServiceName("ug1");
         config.setPrincipalHeaderAttribute("principal");
         config.setRolesHeaderAttribute("roles");;
@@ -428,14 +583,14 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         assertNull(SecurityContextHolder.getContext().getAuthentication());
         
         
-        for (RoleSource rs : RoleSource.values()) {
+        for (PreAuthenticatedUserNameRoleSource rs : PreAuthenticatedUserNameRoleSource.values()) {
             config.setRoleSource(rs);
             getSecurityManager().saveFilter(config);
             request= createRequest("/foo/bar");
             response= new MockHttpServletResponse();
             chain = new MockFilterChain();            
             request.setHeader("principal", testUserName);
-            if (rs==RoleSource.Header) {
+            if (rs.equals(PreAuthenticatedUserNameRoleSource.Header)) {
                 request.setHeader("roles", derivedRole+";"+rootRole);
             }
             getProxy().doFilter(request, response, chain);            
@@ -453,7 +608,7 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         }
 
         // unknown user
-        for (RoleSource rs : RoleSource.values()) {
+        for (PreAuthenticatedUserNameRoleSource rs : PreAuthenticatedUserNameRoleSource.values()) {
             config.setRoleSource(rs);
             getSecurityManager().saveFilter(config);
 
@@ -476,7 +631,7 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
 
         // test disabled user
         updateUser("ug1", testUserName, false);
-        config.setRoleSource(RoleSource.UserGroupService);
+        config.setRoleSource(PreAuthenticatedUserNameRoleSource.UserGroupService);
         getSecurityManager().saveFilter(config);
         request= createRequest("/foo/bar");
         request.setHeader("principal", testUserName);
@@ -1140,7 +1295,7 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         config.setClassName(GeoServerX509CertificateAuthenticationFilter.class.getName());        
         config.setName(testFilterName8);
         config.setRoleServiceName("rs1");
-        config.setRoleSource(org.geoserver.security.config.X509CertificateAuthenticationFilterConfig.RoleSource.RoleService);
+        config.setRoleSource(org.geoserver.security.config.X509CertificateAuthenticationFilterConfig.J2EERoleSource.RoleService);
         config.setUserGroupServiceName("ug1");        
         config.setRolesHeaderAttribute("roles");
         getSecurityManager().saveFilter(config);
@@ -1166,17 +1321,21 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         assertNull(SecurityContextHolder.getContext().getAuthentication());
         
         
-        for (org.geoserver.security.config.X509CertificateAuthenticationFilterConfig.RoleSource rs : 
-            org.geoserver.security.config.X509CertificateAuthenticationFilterConfig.RoleSource.values()) {
+        for (org.geoserver.security.config.X509CertificateAuthenticationFilterConfig.J2EERoleSource rs : 
+            org.geoserver.security.config.X509CertificateAuthenticationFilterConfig.J2EERoleSource.values()) {
             config.setRoleSource(rs);
             getSecurityManager().saveFilter(config);
             request= createRequest("/foo/bar");
             response= new MockHttpServletResponse();
             chain = new MockFilterChain();
-            if (rs==RoleSource.Header) {
+            if (rs==J2EERoleSource.Header) {
                 request.setHeader("roles", derivedRole+";"+rootRole);
             }
-
+            if(rs==J2EERoleSource.J2EE) {                
+                request.setUserInRole(derivedRole,true);
+                request.setUserInRole(rootRole,false);
+            }
+            
             setCertifacteForUser(testUserName, request);                        
             getProxy().doFilter(request, response, chain);            
             assertEquals(HttpServletResponse.SC_OK, response.getErrorCode());
@@ -1193,8 +1352,8 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         }
 
         // unknown user
-        for (org.geoserver.security.config.X509CertificateAuthenticationFilterConfig.RoleSource rs : 
-            org.geoserver.security.config.X509CertificateAuthenticationFilterConfig.RoleSource.values()) {
+        for (org.geoserver.security.config.X509CertificateAuthenticationFilterConfig.J2EERoleSource rs : 
+            org.geoserver.security.config.X509CertificateAuthenticationFilterConfig.J2EERoleSource.values()) {
             config.setRoleSource(rs);
             getSecurityManager().saveFilter(config);
 
@@ -1202,6 +1361,10 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
             request= createRequest("/foo/bar");
             response= new MockHttpServletResponse();
             chain = new MockFilterChain();
+            if(rs==J2EERoleSource.J2EE) {                
+                request.setUserInRole(derivedRole,false);
+                request.setUserInRole(rootRole,false);
+            }
             //TODO
             setCertifacteForUser("unknown", request);
             getProxy().doFilter(request, response, chain);            
@@ -1218,7 +1381,7 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
 
         // test disabled user
         updateUser("ug1", testUserName, false);
-        config.setRoleSource(org.geoserver.security.config.X509CertificateAuthenticationFilterConfig.RoleSource.UserGroupService);
+        config.setRoleSource(org.geoserver.security.config.X509CertificateAuthenticationFilterConfig.J2EERoleSource.UserGroupService);
         getSecurityManager().saveFilter(config);
         request= createRequest("/foo/bar");
         response= new MockHttpServletResponse();

@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -38,6 +39,8 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wms.GetLegendGraphic;
 import org.geoserver.wms.GetLegendGraphicRequest;
 import org.geoserver.wms.WMSTestSupport;
+import org.geoserver.wms.legendgraphic.Cell.ColorMapEntryLegendBuilder;
+import org.geoserver.wms.legendgraphic.Cell.SingleColorMapEntryLegendBuilder;
 import org.geoserver.wms.map.ImageUtils;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.data.simple.SimpleFeatureCollection;
@@ -52,6 +55,9 @@ import org.geotools.referencing.CRS;
 import org.geotools.renderer.lite.RendererUtilities;
 import org.geotools.resources.coverage.FeatureUtilities;
 import org.geotools.resources.image.ImageUtilities;
+import org.geotools.styling.ColorMapEntry;
+import org.geotools.styling.FeatureTypeStyle;
+import org.geotools.styling.RasterSymbolizer;
 import org.geotools.styling.Rule;
 import org.geotools.styling.SLDParser;
 import org.geotools.styling.Style;
@@ -910,6 +916,78 @@ public class AbstractLegendGraphicOutputFormatTest extends WMSTestSupport {
     	
     }
     
+    /**
+     * Test that the legend is not the same if there is a rendering transformation that 
+     * converts the rendered layer from raster to vector
+     */
+    @org.junit.Test
+    public void testColorMapWithCql() throws Exception {
+                   
+        Style style = readSLD("ColorMapWithCql.sld");
+        assertNotNull(style.featureTypeStyles());
+        assertEquals(1, style.featureTypeStyles().size());
+        FeatureTypeStyle fts = style.featureTypeStyles().get(0);
+        assertNotNull(fts.rules());
+        assertEquals(1, fts.rules().size());
+        Rule rule = fts.rules().get(0);
+        assertNotNull(rule.symbolizers());
+        assertEquals(1, rule.symbolizers().size());
+        assertTrue(rule.symbolizers().get(0) instanceof RasterSymbolizer);
+        RasterSymbolizer symbolizer = (RasterSymbolizer)rule.symbolizers().get(0);
+        assertNotNull(symbolizer.getColorMap());
+        assertEquals(3, symbolizer.getColorMap().getColorMapEntries().length);
+        ColorMapEntry[] entries = symbolizer.getColorMap().getColorMapEntries();
+        
+        Color color = LegendUtils.color(entries[0]);
+        int red = color.getRed();
+        assertEquals(255, red);
+        int green = color.getGreen();
+        assertEquals(0, green);
+        int blue = color.getBlue();
+        assertEquals(0, blue);
+        
+        double quantity = LegendUtils.getQuantity(entries[1]);
+        assertEquals(20.0, quantity, 0.0);
+        
+        double opacity = LegendUtils.getOpacity(entries[2]);
+        assertEquals(0.5, opacity, 0.0);
+        
+        GetLegendGraphicRequest req = new GetLegendGraphicRequest();
+        CoverageInfo cInfo = getCatalog().getCoverageByName("world");
+        assertNotNull(cInfo);
+
+        GridCoverage coverage = cInfo.getGridCoverage(null, null);
+        try {
+            SimpleFeatureCollection feature;
+            feature = FeatureUtilities.wrapGridCoverage((GridCoverage2D) coverage);
+            req.setLayer(feature.getSchema());
+            req.setStyle(style);
+            req.setLegendOptions(new HashMap());
+            
+            final int HEIGHT_HINT = 30;
+            req.setHeight(HEIGHT_HINT);
+            
+            // use default values for the rest of parameters
+            this.legendProducer.buildLegendGraphic(req);
+
+            BufferedImage image = this.legendProducer.buildLegendGraphic(req);
+
+            // was the legend painted?
+            assertNotBlank("testColorMapWithCql", image, LegendUtils.DEFAULT_BG_COLOR);
+            
+            // was the legend painted?
+            assertNotBlank("testColorMapWithCql", image, LegendUtils.DEFAULT_BG_COLOR);
+        } finally {
+            RenderedImage ri = coverage.getRenderedImage();
+            if(coverage instanceof GridCoverage2D) {
+                ((GridCoverage2D) coverage).dispose(true);
+            }
+            if(ri instanceof PlanarImage) {
+                ImageUtilities.disposePlanarImageChain((PlanarImage) ri);
+            }
+        }
+    }
+    
     
     /**
      * Test that the legend is not the same if there is a rendering transformation that 
@@ -941,6 +1019,47 @@ public class AbstractLegendGraphicOutputFormatTest extends WMSTestSupport {
         assertPixel(image, 10, 70, new Color(188, 188, 255));
         assertPixel(image, 10, 80, new Color (68, 68, 255));            
         assertPixel(image, 10, 130, new Color (255, 152, 0));    	
+    }
+    
+    /**
+     * Tests that a legend containing an ExternalGraphic icon is rendered properly.
+     */
+    @org.junit.Test
+    public void testExternalGraphic() throws Exception {
+        // load a style with 3 rules
+        Style externalGraphicStyle = readSLD("ExternalGraphicDemo.sld");
+
+        assertNotNull(externalGraphicStyle);
+
+        GetLegendGraphicRequest req = new GetLegendGraphicRequest();
+        CoverageInfo cInfo = getCatalog().getCoverageByName("world");
+        assertNotNull(cInfo);
+
+        GridCoverage coverage = cInfo.getGridCoverage(null, null);
+        try {
+            req.setStyle(externalGraphicStyle);
+            req.setLayer(null);
+            req.setScale(1.0);
+            
+            final int HEIGHT_HINT = 30;
+            req.setHeight(HEIGHT_HINT);
+            
+            // use default values for the rest of parameters
+            this.legendProducer.buildLegendGraphic(req);
+
+            BufferedImage image = this.legendProducer.buildLegendGraphic(req);
+
+            // was our external graphic icon painted?
+            assertPixel(image, 10, HEIGHT_HINT + HEIGHT_HINT/2, Color.YELLOW);
+        } finally {
+            RenderedImage ri = coverage.getRenderedImage();
+            if(coverage instanceof GridCoverage2D) {
+                ((GridCoverage2D) coverage).dispose(true);
+            }
+            if(ri instanceof PlanarImage) {
+                ImageUtilities.disposePlanarImageChain((PlanarImage) ri);
+            }
+        }
     }
 
     /**

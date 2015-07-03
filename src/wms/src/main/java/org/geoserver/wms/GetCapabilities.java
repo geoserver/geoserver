@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2014 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -69,13 +70,13 @@ public class GetCapabilities {
         TransformerBase transformer;
         String baseUrl = request.getBaseUrl();
         if (WMS.VERSION_1_1_1.equals(version)) {
-            Set<String> mapFormats = wms.getAvailableMapFormatNames();
+            Set<String> mapFormats = wms.getAllowedMapFormatNames();
             List<ExtendedCapabilitiesProvider> extCapsProviders;
             extCapsProviders = wms.getAvailableExtendedCapabilitiesProviders();
             transformer = new GetCapabilitiesTransformer(wms, baseUrl, mapFormats, legendFormats,
                     extCapsProviders);
         } else if (WMS.VERSION_1_3_0.equals(version)) {
-            Collection<GetMapOutputFormat> mapFormats = wms.getAvailableMapFormats();
+            Collection<GetMapOutputFormat> mapFormats = wms.getAllowedMapFormats();
             Collection<ExtendedCapabilitiesProvider> extCapsProviders = 
                 wms.getAvailableExtendedCapabilitiesProviders();
             transformer = new Capabilities_1_3_0_Transformer(wms, baseUrl, mapFormats, extCapsProviders);

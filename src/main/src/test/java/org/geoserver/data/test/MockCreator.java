@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -10,8 +11,8 @@ import static org.easymock.EasyMock.expectLastCall;
 import static org.easymock.classextension.EasyMock.createMock;
 import static org.easymock.classextension.EasyMock.createNiceMock;
 import static org.easymock.classextension.EasyMock.replay;
-import static org.geoserver.security.SecurityUtils.toBytes;
 import static org.geoserver.data.test.CiteTestData.*;
+import static org.geoserver.security.SecurityUtils.toBytes;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,6 +36,7 @@ import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.event.CatalogListener;
 import org.geoserver.catalog.impl.CatalogFactoryImpl;
 import org.geoserver.data.test.MockCatalogBuilder.Callback;
+import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.security.GeoServerAuthenticationProvider;
 import org.geoserver.security.GeoServerRoleStore;
@@ -46,7 +48,6 @@ import org.geoserver.security.KeyStoreProviderImpl;
 import org.geoserver.security.MasterPasswordProvider;
 import org.geoserver.security.config.PasswordPolicyConfig;
 import org.geoserver.security.config.SecurityAuthProviderConfig;
-import org.geoserver.security.config.SecurityFilterConfig;
 import org.geoserver.security.config.SecurityInterceptorFilterConfig;
 import org.geoserver.security.config.SecurityUserGroupServiceConfig;
 import org.geoserver.security.filter.GeoServerAnonymousAuthenticationFilter;
@@ -66,17 +67,35 @@ import org.geoserver.security.validation.PasswordValidatorImpl;
 import org.geoserver.security.xml.XMLRoleService;
 import org.geoserver.security.xml.XMLUserGroupService;
 import org.springframework.context.ApplicationContext;
-import org.vfny.geoserver.global.GeoserverDataDirectory;
 
+/**
+ * Helper class used to creat mock objects during GeoServer testing.
+ * <p>
+ * Utility methods are provided to create many common configuration and resource access objects.
+ */
 public class MockCreator implements Callback {
-
-    public Catalog createCatalog(MockTestData testData) throws Exception {
     
+    /**
+     * Creates GeoServerResouceLoader around provided test data.
+     * <p>
+     * Created bean is registered with GeoServerExtensions as the singleton resourceLoader.
+     * 
+     * @param testData Used to access base directory
+     * @return GeoServerResourceLoader (registered with GeoServerExtensions)
+     * @throws Exception
+     */
+    public GeoServerResourceLoader createResourceLoader(MockTestData testData) throws Exception {
         File data = testData.getDataDirectoryRoot();
-    
         GeoServerResourceLoader loader = new GeoServerResourceLoader(data);
-        GeoserverDataDirectory.setResourceLoader(loader);
+        
+        GeoServerExtensionsHelper.singleton("resourceLoader", loader ); // treat as singleton
+        
+        return loader;
+    }
     
+    public Catalog createCatalog(MockTestData testData) throws Exception {
+        GeoServerResourceLoader loader = createResourceLoader(testData);
+        
         final Catalog catalog = createMock(Catalog.class);
         expect(catalog.getFactory()).andReturn(new CatalogFactoryImpl(catalog)).anyTimes();
         expect(catalog.getResourceLoader()).andReturn(loader).anyTimes();
@@ -93,11 +112,11 @@ public class MockCreator implements Callback {
                 return ResourcePool.create(catalog);
             }
         }).anyTimes();
-    
-        MockCatalogBuilder b = new MockCatalogBuilder(catalog, data);
+        MockCatalogBuilder b = new MockCatalogBuilder(catalog, loader.getBaseDirectory() );
         b.setCallback(this);
     
         b.style(DEFAULT_VECTOR_STYLE);
+        b.style("generic");
     
         createWorkspace(DEFAULT_PREFIX, DEFAULT_URI, null, b);
         createWorkspace(CGF_PREFIX, CGF_URI, CGF_TYPENAMES, b);

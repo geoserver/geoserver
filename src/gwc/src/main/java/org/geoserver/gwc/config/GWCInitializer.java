@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -10,6 +11,8 @@ import static org.geoserver.gwc.GWC.tileLayerName;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -19,6 +22,7 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInitializer;
+import org.geoserver.gwc.ConfigurableBlobStore;
 import org.geoserver.gwc.layer.CatalogConfiguration;
 import org.geoserver.gwc.layer.GeoServerTileLayerInfo;
 import org.geoserver.gwc.layer.GeoServerTileLayerInfoImpl;
@@ -28,6 +32,9 @@ import org.geoserver.gwc.layer.TileLayerInfoUtil;
 import org.geoserver.wms.WMSInfo;
 import org.geotools.util.Version;
 import org.geotools.util.logging.Logging;
+import org.geowebcache.storage.blobstore.memory.CacheConfiguration;
+import org.geowebcache.storage.blobstore.memory.CacheProvider;
+import org.geowebcache.storage.blobstore.memory.guava.GuavaCacheProvider;
 
 /**
  * GeoSever initialization hook that preserves backwards compatible GWC configuration at start up.
@@ -65,6 +72,8 @@ public class GWCInitializer implements GeoServerInitializer {
     private final Catalog rawCatalog;
 
     private final TileLayerCatalog tileLayerCatalog;
+    
+    private ConfigurableBlobStore blobStore;
 
     public GWCInitializer(GWCConfigPersister configPersister, Catalog rawCatalog,
             TileLayerCatalog tileLayerCatalog) {
@@ -104,6 +113,43 @@ public class GWCInitializer implements GeoServerInitializer {
 
         final GWCConfig gwcConfig = configPersister.getConfig();
         checkNotNull(gwcConfig);
+
+        // Setting default CacheProvider class if not present
+        if(gwcConfig.getCacheProviderClass() == null || gwcConfig.getCacheProviderClass().isEmpty()){
+            gwcConfig.setCacheProviderClass(GuavaCacheProvider.class.toString());
+            configPersister.save(gwcConfig);
+        }
+        
+        // Setting default Cache Configuration
+        if (gwcConfig.getCacheConfigurations() == null) {
+            if(LOGGER.isLoggable(Level.FINEST)){
+                LOGGER.finest("Setting default CacheConfiguration");
+            }
+            Map<String, CacheConfiguration> map = new HashMap<String, CacheConfiguration>();
+            map.put(GuavaCacheProvider.class.toString(), new CacheConfiguration());
+            gwcConfig.setCacheConfigurations(map);
+            configPersister.save(gwcConfig);
+        } else {
+            if(LOGGER.isLoggable(Level.FINEST)){
+                LOGGER.finest("CacheConfiguration loaded");
+            }
+        }
+
+        // Change ConfigurableBlobStore behavior
+        if (blobStore != null) {
+            String cacheProviderClass = gwcConfig.getCacheProviderClass();
+            if(!blobStore.getCacheProviders().containsKey(cacheProviderClass)){
+                gwcConfig.setCacheProviderClass(GuavaCacheProvider.class.toString());
+                configPersister.save(gwcConfig);
+                if(LOGGER.isLoggable(Level.FINEST)){
+                    LOGGER.finest("Unable to find: "+ cacheProviderClass +", used default configuration");
+                }
+            }
+            blobStore.setChanged(gwcConfig, true);
+            CacheProvider cache = blobStore.getCache();
+            // Add all the various Layers to avoid caching
+            addLayersToNotCache(cache, gwcConfig);
+        }
     }
 
     /**
@@ -220,4 +266,58 @@ public class GWCInitializer implements GeoServerInitializer {
         }
     }
 
+    /**
+     * Private method for adding all the Layer that must not be cached to the {@link CacheProvider} instance.
+     * 
+     * @param cache
+     * @param defaultSettings
+     */
+    private void addLayersToNotCache(CacheProvider cache, GWCConfig defaultSettings) {
+        if(LOGGER.isLoggable(Level.FINEST)){
+            LOGGER.finest("Adding Layers to avoid In Memory Caching");
+        }
+        // Cycle on the Layers
+        for (LayerInfo layer : rawCatalog.getLayers()) {
+            if (!CatalogConfiguration.isLayerExposable(layer)) {
+                continue;
+            }
+            try {
+                // Check if the Layer must not be cached
+                GeoServerTileLayerInfo tileLayerInfo = tileLayerCatalog.getLayerById(layer.getId());
+                if (tileLayerInfo != null && tileLayerInfo.isEnabled()
+                        && !tileLayerInfo.isInMemoryCached()) {
+                    // Add it to the cache
+                    cache.addUncachedLayer(tileLayerInfo.getName());
+                }
+            } catch (RuntimeException e) {
+                LOGGER.log(Level.WARNING, "Error occurred retrieving Layer '" + layer.getName()
+                        + "'", e);
+            }
+        }
+
+        // Cycle on the Layergroups
+        for (LayerGroupInfo layer : rawCatalog.getLayerGroups()) {
+            try {
+                // Check if the LayerGroup must not be cached
+                GeoServerTileLayerInfo tileLayerInfo = tileLayerCatalog.getLayerById(layer.getId());
+                if (tileLayerInfo != null && tileLayerInfo.isEnabled()
+                        && !tileLayerInfo.isInMemoryCached()) {
+                    // Add it to the cache
+                    cache.addUncachedLayer(tileLayerInfo.getName());
+                }
+            } catch (RuntimeException e) {
+                LOGGER.log(Level.WARNING, "Error occurred retrieving LayerGroup '"
+                        + tileLayerName(layer) + "'", e);
+            }
+        }
+    }
+
+    /**
+     * Setter for the blobStore parameter
+     * 
+     * @param blobStore
+     */
+    public void setBlobStore(ConfigurableBlobStore blobStore) {
+        this.blobStore = blobStore;
+    }
 }

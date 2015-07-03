@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -90,7 +91,6 @@ import org.geotools.referencing.CRS;
 import org.geotools.util.Version;
 import org.opengis.feature.type.FeatureType;
 import org.springframework.context.ApplicationContext;
-import org.vfny.geoserver.global.GeoserverDataDirectory;
 
 /**
  * Test setup uses for GeoServer mock tests.

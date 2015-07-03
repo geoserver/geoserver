@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014-2015 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -13,13 +14,18 @@ import java.awt.image.RenderedImage;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -28,9 +34,6 @@ import javax.media.jai.JAI;
 import javax.media.jai.operator.ConstantDescriptor;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.tools.ant.Project;
-import org.apache.tools.ant.taskdefs.ExecTask;
-import org.apache.tools.ant.types.Environment.Variable;
 import org.geoserver.wps.WPSException;
 import org.geoserver.wps.resource.WPSFileResource;
 import org.geoserver.wps.resource.WPSResourceManager;
@@ -40,7 +43,6 @@ import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.data.Query;
 import org.geotools.gce.geotiff.GeoTiffReader;
 import org.geotools.image.ImageWorker;
-import org.geotools.process.ProcessException;
 import org.geotools.process.factory.DescribeParameter;
 import org.geotools.process.factory.DescribeProcess;
 import org.geotools.process.factory.DescribeResult;
@@ -48,6 +50,7 @@ import org.geotools.process.factory.DescribeResults;
 import org.geotools.process.gs.GSProcess;
 import org.geotools.referencing.CRS;
 import org.geotools.util.Utilities;
+import org.geotools.util.logging.Logging;
 import org.opengis.coverage.grid.GridGeometry;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -62,9 +65,11 @@ import com.vividsolutions.jts.geom.Envelope;
  */
 @DescribeProcess(title = "Georectify Coverage", description = "Georectifies a raster via Ground Control Points using gdal_warp")
 public class GeorectifyCoverage implements GSProcess {
+    
+    static final Logger LOGGER = Logging.getLogger(GeorectifyCoverage.class); 
 
     private final static Pattern GCP_PATTERN = Pattern
-            .compile("\\[((\\+|-)?[0-9]+(.[0-9]+)?), ((\\+|-)?[0-9]+(.[0-9]+)?)(, ((\\+|-)?[0-9]+(.[0-9]+)?))?\\]");
+            .compile("\\[((\\+|-)?[0-9]+(.[0-9]+)?),\\s*((\\+|-)?[0-9]+(.[0-9]+)?)(,\\s*((\\+|-)?[0-9]+(.[0-9]+)?))?\\]");
 
     GeorectifyConfiguration config;
 
@@ -98,8 +103,8 @@ public class GeorectifyCoverage implements GSProcess {
             @DescribeParameter(name = "width", description = "Width of output raster in pixels", min = 0) Integer width,
             @DescribeParameter(name = "height", description = "Height of output raster in pixels", min = 0) Integer height,
             @DescribeParameter(name = "warpOrder", min = 0, description = "Order of the warping polynomial (1 to 3)") Integer warpOrder,
-            @DescribeParameter(name = "transparent", min = 0, description = "Force output to have transparent background") Boolean transparent,
-            @DescribeParameter(name = "store", min = 0, description = "Indicates whether to keep the output file after processing") Boolean store,
+            @DescribeParameter(name = "transparent", min = 0, description = "Force output to have transparent background", defaultValue = "true") Boolean transparent,
+            @DescribeParameter(name = "store", min = 0, description = "Indicates whether to keep the output file after processing", defaultValue = "false") Boolean store,
             @DescribeParameter(name = "outputPath", min = 0, description = "Pathname where the output file is stored") String outputPath)
             throws IOException {
 
@@ -246,8 +251,9 @@ public class GeorectifyCoverage implements GSProcess {
     }
 
     GridCoverage2D addLocationProperty(GridCoverage2D coverage, File warpedFile) {
-        Map <String, String> properties = new HashMap<String,String>();
+        Map  properties = new HashMap();
         properties.put(GridCoverage2DReader.FILE_SOURCE_PROPERTY, warpedFile.getAbsolutePath());
+        properties.putAll(coverage.getProperties());
 
         return new GridCoverageFactory().create(coverage.getName(), coverage.getRenderedImage(), 
                 coverage.getGridGeometry(), coverage.getSampleDimensions(), null, properties);
@@ -321,7 +327,7 @@ public class GeorectifyCoverage implements GSProcess {
                 vrtFilePath, outputFilePath, warpingParameters);
         final String gdalCommand = config.getWarpingCommand();
 
-        executeCommand(gdalCommand, argument, loggingFolder, timeOut, config.getEnvVariables());
+        executeCommand(gdalCommand, argument, loggingFolder, config.getEnvVariables());
         return file;
     }
 
@@ -343,11 +349,11 @@ public class GeorectifyCoverage implements GSProcess {
         String imageSize = width != null && height != null ? " -ts " + width + " " + height : "";
         String te = targetEnvelope != null && targetEnvelope.length() > 0 ? "-te " + targetEnvelope : ""; 
         return  te + imageSize + " -t_srs " + targetCrs
-                + " " + (order != null ? " -order " + order : "") + " " + warpingParameters + " \""
-                + inputFilePath + "\" \"" + outputFilePath + "\"";
+                + " " + (order != null ? " -order " + order : "") + " " + warpingParameters + " "
+                + inputFilePath + " " + outputFilePath + "";
     }
 
-    private static void checkError(File logFile) {
+    private static String getError(File logFile) throws IOException {
         InputStream stream = null;
         InputStreamReader streamReader = null;
         BufferedReader reader = null;
@@ -360,9 +366,7 @@ public class GeorectifyCoverage implements GSProcess {
             while ((strLine = reader.readLine()) != null) {
                 message.append(strLine);
             }
-            throw new ProcessException(message.toString());
-        } catch (Throwable t) {
-
+            return message.toString();
         } finally {
             IOUtils.closeQuietly(reader);
             IOUtils.closeQuietly(streamReader);
@@ -390,7 +394,7 @@ public class GeorectifyCoverage implements GSProcess {
     private static String parseCrs(CoordinateReferenceSystem crs) {
         Utilities.ensureNonNull("coordinateReferenceSystem", crs);
         try {
-            return "\"epsg:" + CRS.lookupEpsgCode(crs, true) + "\"";
+            return "EPSG:" + CRS.lookupEpsgCode(crs, true);
         } catch (FactoryException e) {
             throw new WPSException("Error occurred looking up target SRS");
         }
@@ -408,11 +412,11 @@ public class GeorectifyCoverage implements GSProcess {
     private File addGroundControlPoints(final String originalFilePath, final String gcp,
             final String parameters) throws IOException {
         final File vrtFile = File.createTempFile("vrt_", ".vrt", config.getTempFolder());
-        final String argument = "-of VRT " + parameters + " " + gcp + "\"" + originalFilePath
-                + "\" \"" + vrtFile.getAbsolutePath() + "\"";
+        final String argument = "-of VRT " + parameters + " " + gcp + " " + originalFilePath
+                + " " + vrtFile.getAbsolutePath();
         final String gdalCommand = config.getTranslateCommand();
         executeCommand(gdalCommand, argument, config.getLoggingFolder(),
-                config.getExecutionTimeout(), config.getEnvVariables());
+                config.getEnvVariables());
         if (vrtFile != null && vrtFile.exists() && vrtFile.canRead()) {
             return vrtFile;
         }
@@ -425,7 +429,7 @@ public class GeorectifyCoverage implements GSProcess {
                 + expandedFile.getAbsolutePath();
         final String gdalCommand = config.getTranslateCommand();
         executeCommand(gdalCommand, argument, config.getLoggingFolder(),
-                config.getExecutionTimeout(), config.getEnvVariables());
+                config.getEnvVariables());
         return expandedFile;
     }
 
@@ -434,50 +438,67 @@ public class GeorectifyCoverage implements GSProcess {
      * logged error messages (if any).
      */
     private static void executeCommand(final String gdalCommand, final String argument,
-            final File loggingFolder, final long timeOut, final List<Variable> envVars)
+            final File loggingFolder, final Map<String,String> envVars)
             throws IOException {
+
         final File logFile = File.createTempFile("LOG", ".log", loggingFolder);
 
-        Project project = new Project();
-        project.init();
-
-        ExecTask execTask = new ExecTask();
-        execTask.setProject(project);
-
-        // Setting executable
-        execTask.setExecutable(gdalCommand);
-        if (envVars != null) {
-            for (Variable var : envVars) {
-                execTask.addEnv(var);
-            }
+        // run the process and grab the output for error reporting purposes
+        List<String> commands = new ArrayList<String>(Arrays.asList(argument.trim().split("\\s+")));
+        commands.add(0, gdalCommand);
+        ProcessBuilder builder = new ProcessBuilder(commands);
+        if(envVars != null) {
+            builder.environment().putAll(envVars);
+        } else {
+            builder.environment().putAll(System.getenv());
         }
+        builder.redirectErrorStream(true);
 
-        // Setting command line argument
-        execTask.createArg().setLine(argument);
-        execTask.setLogError(true);
-
-        execTask.setError(logFile);
-        execTask.setOutput(logFile);
-        execTask.setFailonerror(true);
-        execTask.setTimeout(timeOut);
-
-        System.out.println("Executing " + gdalCommand + " " + argument);
-
-        // Executing
+        OutputStream log = null;
+        int exitValue = 0;
         try {
-            execTask.execute();
-        } catch (Exception e) {
-            if (logFile.exists() && logFile.canRead()) {
-                checkError(logFile);
+            log = new FileOutputStream(logFile);
+            Process p = builder.start();
+            IOUtils.copy(p.getInputStream(), log);
+    
+            p.waitFor();
+            log.flush();
+            exitValue = p.exitValue();
+        }
+        catch(Exception e) {
+            throw new WPSException("Error launching OS command: " + gdalCommand + " with arguments " + argument + " and env vars " + envVars, e);
+        }
+        finally {
+            if(exitValue != 0) {
+                if (logFile.exists() && logFile.canRead()) {
+                    String error = getError(logFile);
+                    throw new WPSException("Error launching OS command: '" + gdalCommand + "' with arguments '" + argument + "' and env vars '" + envVars + "': \n" + error);
+                }
             }
-            throw new WPSException("Error launching OS command", e);
-        } finally {
+            
             if (logFile != null) {
                 logFile.delete();
             }
+            IOUtils.closeQuietly(log);
         }
-
     }
+    
+    public boolean isAvailable() {
+        File tmp = new File(System.getProperty("java.io.tmpdir"));
+        try {
+            executeCommand(GeorectifyConfiguration.GRDefaults.GDAL_TRANSLATE_COMMAND, "--version",
+                    tmp, config.getEnvVariables());
+            executeCommand(GeorectifyConfiguration.GRDefaults.GDAL_WARP_COMMAND, "--version", tmp,
+                    config.getEnvVariables());
+            return true;
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "GDAL utilities are not available", e);
+            return false;
+        } finally {
+            tmp.delete();
+        }
+    }
+
 
     /**
      * @param gcps

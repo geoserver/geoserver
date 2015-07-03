@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -23,14 +24,9 @@ import org.apache.wicket.protocol.http.WebRequest;
 import org.apache.wicket.protocol.http.WebRequestCycle;
 import org.apache.wicket.protocol.http.WebRequestCycleProcessor;
 import org.apache.wicket.protocol.http.WebResponse;
-import org.apache.wicket.protocol.http.request.CryptedUrlWebRequestCodingStrategy;
-import org.apache.wicket.protocol.http.request.WebRequestCodingStrategy;
 import org.apache.wicket.request.IRequestCodingStrategy;
 import org.apache.wicket.request.IRequestCycleProcessor;
 import org.apache.wicket.request.RequestParameters;
-import org.apache.wicket.request.target.coding.WebRequestEncoder;
-import org.apache.wicket.resource.loader.ClassStringResourceLoader;
-import org.apache.wicket.resource.loader.ComponentStringResourceLoader;
 import org.apache.wicket.resource.loader.IStringResourceLoader;
 import org.apache.wicket.spring.SpringWebApplication;
 import org.apache.wicket.util.convert.ConverterLocator;
@@ -44,6 +40,8 @@ import org.geoserver.web.util.DataDirectoryConverterLocator;
 import org.geoserver.web.util.GeoToolsConverterAdapter;
 import org.geoserver.web.util.converters.StringBBoxConverter;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.measure.Measure;
+import org.geotools.util.MeasureConverterFactory;
 import org.geotools.util.logging.Logging;
 import org.springframework.context.ApplicationContext;
 import org.wicketstuff.htmlvalidator.HtmlValidationResponseFilter;
@@ -63,6 +61,9 @@ public class GeoServerApplication extends SpringWebApplication {
      * logger for web application
      */
     public static Logger LOGGER = Logging.getLogger("org.geoserver.web");
+
+    public static boolean DETECT_BROWSER = Boolean.valueOf(System.getProperty(
+            "org.geoserver.web.browser.detect", "true"));
 
     /**
      * The {@link GeoServerHomePage}.
@@ -191,6 +192,9 @@ public class GeoServerApplication extends SpringWebApplication {
 
         getApplicationSettings().setPageExpiredErrorPage(GeoServerExpiredPage.class);
         getSecuritySettings().setCryptFactory(GeoserverWicketEncrypterFactory.get());
+
+        // figure out which browser we're running against
+        getRequestCycleSettings().setGatherExtendedBrowserInfo(DETECT_BROWSER);
     }
 
     @Override
@@ -241,6 +245,8 @@ public class GeoServerApplication extends SpringWebApplication {
         locator.set(File.class, dd.getConverter(File.class));
         locator.set(URI.class, dd.getConverter(URI.class));
         locator.set(URL.class, dd.getConverter(URL.class));
+        locator.set(Measure.class, new GeoToolsConverterAdapter(
+                MeasureConverterFactory.CONVERTER, Measure.class));
 
         return locator;
     }

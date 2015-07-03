@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -45,61 +46,7 @@ import org.springframework.util.Assert;
 public class BindingLdapAuthoritiesPopulator implements
         LdapAuthoritiesPopulator {
 
-    /**
-     * Alternative SpringSecurityLdapTemplate, executing authentication without
-     * a prior search that could raise errors by some LDAP servers.
-     * 
-     * @author "Mauro Bartolomeoli - mauro.bartolomeoli@geo-solutions.it"
-     * 
-     */
-    public static class BindingLdapTemplate extends SpringSecurityLdapTemplate {
-
-        public BindingLdapTemplate(ContextSource contextSource) {
-            super(contextSource);
-        }
-
-        /**
-         * Alternative authenticate implementation, requiring a username instead
-         * of a filter.
-         */
-        @Override
-        public boolean authenticate(Name base, String username,
-                String password,
-                final AuthenticatedLdapEntryContextCallback callback,
-                AuthenticationErrorCallback errorCallback) {
-
-            try {
-                DirContext ctx = getContextSource().getContext(username,
-                        password);
-                ContextExecutor ce = new ContextExecutor() {
-                    public Object executeWithContext(DirContext ctx)
-                            throws javax.naming.NamingException {
-                        callback.executeWithContext(ctx, null);
-                        return null;
-                    }
-                };
-                try {
-                    ce.executeWithContext(ctx);
-                } catch (javax.naming.NamingException e) {
-                    throw LdapUtils.convertLdapException(e);
-                } finally {
-                    if (ctx != null) {
-                        try {
-                            ctx.close();
-                        } catch (Exception e) {
-                            // Never mind this.
-                        }
-                    }
-                }
-
-                return true;
-            } catch (Exception e) {
-                errorCallback.execute(e);
-                return false;
-            }
-        }
-
-    }
+    
 
     // ~ Static fields/initializers
     // =====================================================================================
@@ -204,7 +151,23 @@ public class BindingLdapAuthoritiesPopulator implements
      * @return the set of roles granted to the user.
      */
     public final Collection<GrantedAuthority> getGrantedAuthorities(
-            final DirContextOperations user, String username) {
+            final DirContextOperations user, final String username) {
+        return getGrantedAuthorities(user, username, null);
+    }
+
+    /**
+     * Obtains the authorities for the user who's directory entry is represented
+     * by the supplied LdapUserDetails object.
+     * 
+     * @param user
+     *            the user who's authorities are required 
+     * @param pw be used to bind to ldap server prior to the search
+     *            operations, null otherwise
+     * 
+     * @return the set of roles granted to the user.
+     */
+    public final Collection<GrantedAuthority> getGrantedAuthorities(
+            final DirContextOperations user, final String username, final String password) {
         final String userDn = user.getNameInNamespace();
 
         if (logger.isDebugEnabled()) {
@@ -213,12 +176,8 @@ public class BindingLdapAuthoritiesPopulator implements
 
         final List<GrantedAuthority> result = new ArrayList<GrantedAuthority>();
 
-        // username is in the form username:password -> authenticate before
-        // search
-        if (username.indexOf(":") != -1) {
-            String[] userAndPassword = username.split(":");
-            final String userName = userAndPassword[0];
-            String password = userAndPassword[1];
+        // password included -> authenticate before search
+        if (password != null) {
             // authenticate and execute role extraction in the authenticated
             // context
             ldapTemplate.authenticate(DistinguishedName.EMPTY_PATH, userDn,
@@ -227,7 +186,7 @@ public class BindingLdapAuthoritiesPopulator implements
                         @Override
                         public void executeWithContext(DirContext ctx,
                                 LdapEntryIdentification ldapEntryIdentification) {
-                            getAllRoles(user, userDn, result, userName, ctx);
+                            getAllRoles(user, userDn, result, username, ctx);
                         }
                     });
         } else {
@@ -253,31 +212,8 @@ public class BindingLdapAuthoritiesPopulator implements
         }
         SpringSecurityLdapTemplate authTemplate;
 
-        if (ctx == null) {
-            authTemplate = ldapTemplate;
-        } else {
-            // if we have the authenticated context we build a new LdapTemplate
-            // using it
-            authTemplate = new SpringSecurityLdapTemplate(new ContextSource() {
-
-                @Override
-                public DirContext getReadOnlyContext() throws NamingException {
-                    return ctx;
-                }
-
-                @Override
-                public DirContext getReadWriteContext() throws NamingException {
-                    return ctx;
-                }
-
-                @Override
-                public DirContext getContext(String principal,
-                        String credentials) throws NamingException {
-                    return ctx;
-                }
-
-            });
-        }
+        authTemplate = (SpringSecurityLdapTemplate) LDAPUtils
+                .getLdapTemplateInContext(ctx, ldapTemplate);
         Set<String> userRoles = authTemplate.searchForSingleAttributeValues(
                 getGroupSearchBase(), groupSearchFilter, new String[] { userDn,
                         username }, groupRoleAttribute);
@@ -297,6 +233,8 @@ public class BindingLdapAuthoritiesPopulator implements
 
         return authorities;
     }
+
+    
 
     protected ContextSource getContextSource() {
         return ldapTemplate.getContextSource();

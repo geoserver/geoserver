@@ -1,0 +1,1195 @@
+<schema attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="http://www.opengis.net/eop/2.0" version="2.0.0" xmlns:eop="http://www.opengis.net/eop/2.0" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:om="http://www.opengis.net/om/2.0" xmlns:ows="http://www.opengis.net/ows/2.0" xmlns:swe="http://www.opengis.net/swe/1.0" xmlns:wcs="http://www.opengis.net/wcs/1.0" xmlns="http://www.w3.org/2001/XMLSchema">
+    <annotation>
+        <documentation>Earth Observation Products application schema, also the base schema which other products, OPT, ATM etc., extend.</documentation>
+    </annotation>
+    <import namespace="http://www.opengis.net/gml/3.2" schemaLocation="http://schemas.opengis.net/gml/3.2.1/gml.xsd" />
+    <import namespace="http://www.opengis.net/ows/2.0" schemaLocation="http://schemas.opengis.net/ows/2.0/owsAll.xsd" />
+    <import namespace="http://www.opengis.net/om/2.0" schemaLocation="http://schemas.opengis.net/om/2.0/observation.xsd" />
+    <import namespace="http://www.opengis.net/swe/1.0" schemaLocation="http://schemas.opengis.net/sweCommon/1.0.0/phenomenon.xsd" />
+    <element name="EarthObservation" substitutionGroup="om:OM_Observation" type="eop:EarthObservationType">
+        <annotation>
+            <documentation>
+The Observations and Measurements (ISO 19156) observedProperty may be a reference to any type. A useful model is the SWE Phenomenon from SWE Common 1.0
+The observedProperty may describe the  geophysical or biophysical measurements available in the product. E.g. Sea Surface Heights, Significant Wave Heights. Ozone concentration, NDVI
+Multiple properties may be described by the SWE CompoundPhenomenon</documentation>
+        </annotation>
+    </element>
+    <complexType name="EarthObservationType">
+        <complexContent>
+            <extension base="om:OM_ObservationType">
+                <sequence>
+                    <element name="metaDataProperty" type="eop:EarthObservationMetaDataPropertyType" />
+                </sequence>
+            </extension>
+        </complexContent>
+    </complexType>
+    <complexType name="EarthObservationPropertyType">
+        <sequence minOccurs="0">
+            <element ref="eop:EarthObservation" />
+        </sequence>
+        <attributeGroup ref="gml:AssociationAttributeGroup" />
+        <attributeGroup ref="gml:OwnershipAttributeGroup" />
+    </complexType>
+    <element name="EarthObservationResult" substitutionGroup="gml:AbstractFeature" type="eop:EarthObservationResultType">
+        <annotation>
+            <documentation>Information about the available data product</documentation>
+        </annotation>
+    </element>
+    <complexType name="EarthObservationResultType">
+        <complexContent>
+            <extension base="gml:AbstractFeatureType">
+                <sequence>
+                    <element maxOccurs="unbounded" minOccurs="0" name="browse" type="eop:BrowseInformationPropertyType">
+                        <annotation>
+                            <documentation>Contains Browse information</documentation>
+                        </annotation>
+                    </element>
+                    <element maxOccurs="unbounded" minOccurs="0" name="product" type="eop:ProductInformationPropertyType">
+                        <annotation>
+                            <documentation>Contains product information</documentation>
+                        </annotation>
+                    </element>
+                    <element maxOccurs="unbounded" minOccurs="0" name="mask" type="eop:MaskInformationPropertyType">
+                        <annotation>
+                            <documentation>Contains mask information</documentation>
+                        </annotation>
+                    </element>
+                    <element maxOccurs="1" minOccurs="0" name="parameter" type="eop:ParameterInformationPropertyType">
+                        <annotation>
+                            <documentation>Contains parameter information about any measured parameters e.g. sea surface height
+In the OandM model this is the 'observedProperty'
+The ParameterInformation class is used to allow grouping of units of measure with the SWE Phenomonon.</documentation>
+                        </annotation>
+                    </element>
+                    <element maxOccurs="unbounded" minOccurs="0" name="coverage" type="gml:ReferenceType">
+                        <annotation>
+                            <appinfo>
+                                <gml:targetElement xmlns:gml="http://www.opengis.net/gml/3.2">wcs:CoverageDescriptions</gml:targetElement>
+                            </appinfo>
+                            <documentation>Reference to coverage exploitation metadata (domainSet, RangeType, ...) as offered by a corresponding WCS using a HTTP GET encoded DescribeCoverage Request.</documentation>
+                        </annotation>
+                    </element>
+                </sequence>
+            </extension>
+        </complexContent>
+    </complexType>
+    <complexType name="EarthObservationResultPropertyType">
+        <sequence minOccurs="0">
+            <element ref="eop:EarthObservationResult" />
+        </sequence>
+        <attributeGroup ref="gml:AssociationAttributeGroup" />
+        <attributeGroup ref="gml:OwnershipAttributeGroup" />
+    </complexType>
+    <element name="EarthObservationEquipment" substitutionGroup="gml:AbstractFeature" type="eop:EarthObservationEquipmentType">
+        <annotation>
+            <documentation>Information about the equipment used in the data acquisition</documentation>
+        </annotation>
+    </element>
+    <complexType name="EarthObservationEquipmentType">
+        <complexContent>
+            <extension base="gml:AbstractFeatureType">
+                <sequence>
+                    <element maxOccurs="1" minOccurs="0" name="platform" type="eop:PlatformPropertyType" />
+                    <element maxOccurs="1" minOccurs="0" name="instrument" type="eop:InstrumentPropertyType" />
+                    <element maxOccurs="1" minOccurs="0" name="sensor" type="eop:SensorPropertyType" />
+                    <element maxOccurs="1" minOccurs="0" name="acquisitionParameters" type="eop:AcquisitionPropertyType" />
+                </sequence>
+            </extension>
+        </complexContent>
+    </complexType>
+    <complexType name="EarthObservationEquipmentPropertyType">
+        <sequence minOccurs="0">
+            <element ref="eop:EarthObservationEquipment" />
+        </sequence>
+        <attributeGroup ref="gml:AssociationAttributeGroup" />
+        <attributeGroup ref="gml:OwnershipAttributeGroup" />
+    </complexType>
+    <element name="Footprint" substitutionGroup="gml:AbstractFeature" type="eop:FootprintType">
+        <annotation>
+            <documentation>Information about the geographic footprint of the data collection</documentation>
+        </annotation>
+    </element>
+    <complexType name="FootprintType">
+        <complexContent>
+            <extension base="gml:AbstractFeatureType">
+                <sequence>
+                    <element name="multiExtentOf" type="gml:MultiSurfacePropertyType">
+                        <annotation>
+                            <documentation>Acquisition footprint coordinates, described by a closed polygon (last point=first point), using CRS:WGS84, Latitude,Longitude pairs (per-WGS84 definition of point ordering, not necessarily per all WFS implementations). Expected structure is gml:Polygon/gml:exterior/gml:LinearRing/gml:posList.</documentation>
+                        </annotation>
+                    </element>
+                    <element maxOccurs="1" minOccurs="0" name="centerOf" type="gml:PointPropertyType">
+                        <annotation>
+                            <documentation>Acquisition center coordinates.  Expected structure is gml:Point/gml:pos.</documentation>
+                        </annotation>
+                    </element>
+                    <element maxOccurs="1" minOccurs="0" name="orientation" type="eop:PolygonOrientationValueType">
+                        <annotation>
+                            <documentation>Determines the orientation of the polygon coordinates for the exterior boundary. Possible values are CW (clockwise) or CCW (counter-clockwise) or OTHER (unspecified). Default value is counter clockwise. Element is only to be provided for products that do not follow the OGC simple features convention.</documentation>
+                        </annotation>
+                    </element>
+                </sequence>
+            </extension>
+        </complexContent>
+    </complexType>
+    <complexType name="FootprintPropertyType">
+        <sequence minOccurs="0">
+            <element ref="eop:Footprint" />
+        </sequence>
+        <attributeGroup ref="gml:AssociationAttributeGroup" />
+        <attributeGroup ref="gml:OwnershipAttributeGroup" />
+    </complexType>
+    <element name="WavelengthInformation" substitutionGroup="gml:AbstractObject" type="eop:WavelengthInformationType">
+        <annotation>
+            <documentation>Spectral band present in the product</documentation>
+        </annotation>
+    </element>
+    <complexType name="WavelengthInformationType">
+        <sequence>
+            <element maxOccurs="1" minOccurs="0" name="discreteWavelengths" type="gml:MeasureListType">
+                <annotation>
+                    <documentation>Individual wavelengths measured. Note this is optional.</documentation>
+                </annotation>
+            </element>
+            <element maxOccurs="1" minOccurs="0" name="endWavelength" type="gml:MeasureType">
+                <annotation>
+                    <documentation>End of the observed wavelength range</documentation>
+                </annotation>
+            </element>
+            <element maxOccurs="1" minOccurs="0" name="spectralRange" type="eop:SpectralRangeValueType">
+                <annotation>
+                    <documentation>The observed spectral range.</documentation>
+                </annotation>
+            </element>
+            <element maxOccurs="1" minOccurs="0" name="startWavelength" type="gml:MeasureType">
+                <annotation>
+                    <documentation>Start of the observed wavelength range</documentation>
+                </annotation>
+            </element>
+            <element maxOccurs="1" minOccurs="0" name="wavelengthResolution" type="gml:MeasureType">
+                <annotation>
+                    <documentation>Spacing between consecutive wavelengths. Note this is optional.</documentation>
+                </annotation>
+            </element>
+        </sequence>
+    </complexType>
+    <complexType name="WavelengthInformationPropertyType">
+        <sequence>
+            <element ref="eop:WavelengthInformation" />
+        </sequence>
+        <attributeGroup ref="gml:OwnershipAttributeGroup" />
+    </complexType>
+    <element name="ProcessingInformation" substitutionGroup="gml:AbstractObject" type="eop:ProcessingInformationType">
+        <annotation>
+            <documentation>Information about the processing date, methods and processing centre.</documentation>
+        </annotation>
+    </element>
+    <complexType name="ProcessingInformationType">
+        <sequence>
+            <element maxOccurs="1" minOccurs="0" name="processingCenter" type="gml:CodeListType">
+                <annotation>
+                    <documentation>Processing centre code. Possible values are mission specific and should be retrieved using codespace.</documentation>
+                </annotation>
+            </element>
+            <element maxOccurs="1" minOccurs="0" name="processingDate" type="duration">
+                <annotation>
+                    <documentation>Processing date time</documentation>
+                </annotation>
+            </element>
+            <element maxOccurs="1" minOccurs="0" name="compositeType" type="duration">
+                <annotation>
+                    <documentation>Composite type of product, if available</documentation>
+                </annotation>
+            </element>
+            <element maxOccurs="1" minOccurs="0" name="method" type="string">
+                <annotation>
+                    <documentation>Method used to compute datalayer. (e.g. Kalman filtering, ROSE)</documentation>
+                </annotation>
+            </element>
+            <element maxOccurs="1" minOccurs="0" name="methodVersion" type="string">
+                <annotation>
+                    <documentation>Method version (e.g. 1.0)</documentation>
+                </annotation>
+            </element>
+            <element maxOccurs="1" minOccurs="0" name="processorName" type="string">
+                <annotation>
+                    <documentation>Processor sofware name (e.g. FastROSE)</documentation>
+                </annotation>
+            </element>
+            <element maxOccurs="1" minOccurs="0" name="processorVersion" type="string">
+                <annotation>
+                    <documentation>Processor software version (e.g. 1.0)</documentation>
+                </annotation>
+            </element>
+            <element maxOccurs="1" minOccurs="0" name="processingLevel" type="eop:ProcessingLevelValueType">
+                <annotation>
+                    <documentation>Processing level applied to the product</documentation>
+                </annotation>
+            </element>
+            <element maxOccurs="1" minOccurs="0" name="nativeProductFormat" type="string">
+                <annotation>
+                    <documentation>Native product format</documentation>
+                </annotation>
+            </element>
+            <element maxOccurs="unbounded" minOccurs="0" name="auxiliaryDataSetFileName" type="string" />
+            <element maxOccurs="1" minOccurs="0" name="processingMode" type="eop:ProcessingModeValueType">
+                <annotation>
+                    <documentation>Processing mode. Often referred to as Real Time, Near Real Time etc. Should be a value from ProcessingModeValue. As the precise definitions of these terms vary, this enumeration uses more generic terms.</documentation>
+                </annotation>
+            </element>
+        </sequence>
+    </complexType>
+    <complexType name="ProcessingInformationPropertyType">
+        <sequence>
+            <element ref="eop:ProcessingInformation" />
+        </sequence>
+        <attributeGroup ref="gml:OwnershipAttributeGroup" />
+    </complexType>
+    <element name="Sensor" substitutionGroup="gml:AbstractObject" type="eop:SensorType">
+        <annotation>
+            <documentation>Information about the Sensor</documentation>
+        </annotation>
+    </element>
+    <complexType name="SensorType">
+        <sequence>
+            <element maxOccurs="1" minOccurs="0" name="sensorType" type="eop:SensorTypeValueType">
+                <annotation>
+                    <documentation>Type of sensor, must be from codelist SensorTypeValue</documentation>
+                </annotation>
+            </element>
+            <element maxOccurs="1" minOccurs="0" name="operationalMode" type="gml:CodeListType">
+                <annotation>
+                    <documentation>Sensor mode. Possible values are mission specific and should be retrieved using codespace. (eg. PHR : PA, XS or PX).</documentation>
+                </annotation>
+            </element>
+            <element maxOccurs="1" minOccurs="0" name="resolution" type="gml:MeasureType">
+                <annotation>
+                    <documentation>Image resolution.</documentation>
+                </annotation>
+            </element>
+            <element maxOccurs="1" minOccurs="0" name="swathIdentifier" type="gml:CodeListType">
+                <annotation>
+                    <documentation>Swath identifier (e.g. Envisat ASAR has 7 distinct swaths (I1,I2,I3...I7) that correspond to precise incidence angles for the sensor). Value list can be retrieved with codeSpace.</documentation>
+                </annotation>
+            </element>
+            <element maxOccurs="unbounded" minOccurs="0" name="wavelengthInformation" type="eop:WavelengthInformationPropertyType">
+                <annotation>
+                    <documentation>Information about the observed spectral bands</documentation>
+                </annotation>
+            </element>
+        </sequence>
+    </complexType>
+    <complexType name="SensorPropertyType">
+        <sequence>
+            <element ref="eop:Sensor" />
+        </sequence>
+        <attributeGroup ref="gml:OwnershipAttributeGroup" />
+    </complexType>
+    <element name="Acquisition" substitutionGroup="gml:AbstractObject" type="eop:AcquisitionType">
+        <annotation>
+            <documentation>Information about the data acquisition.</documentation>
+        </annotation>
+    </element>
+    <complexType name="AcquisitionType">
+        <sequence>
+            <element maxOccurs="1" minOccurs="0" name="orbitNumber" type="integer">
+                <annotation>
+                    <documentation>Orbit Number</documentation>
+                </annotation>
+            </element>
+            <element maxOccurs="1" minOccurs="0" name="lastOrbitNumber" type="integer">
+                <annotation>
+                    <documentation>Last orbit number</documentation>
+                </annotation>
+            </element>
+            <element maxOccurs="1" minOccurs="0" name="orbitDirection" type="eop:OrbitDirectionValueType">
+                <annotation>
+                    <documentation>Orbit direction</documentation>
+                </annotation>
+            </element>
+            <element maxOccurs="1" minOccurs="0" name="wrsLongitudeGrid" type="gml:CodeWithAuthorityType">
+                <annotation>
+                    <documentation>Neutral wrsLongitudeGrid to replace track in track/frame,  K in K/J, etc. The optional attribute "eop:codeSpace" is used to point the reference grid.</documentation>
+                </annotation>
+            </element>
+            <element maxOccurs="1" minOccurs="0" name="wrsLatitudeGrid" type="gml:CodeWithAuthorityType">
+                <annotation>
+                    <documentation>Neutral wrsLatitudeGrid to replace frame in track/frame,  J in K/J, etc. The optional attribute "codeSpace" is used to point the reference grid.
+</documentation>
+                </annotation>
+            </element>
+            <element maxOccurs="1" minOccurs="0" name="ascendingNodeDate" type="dateTime">
+                <annotation>
+                    <documentation>UTC date and time at ascending node of orbit</documentation>
+                </annotation>
+            </element>
+            <element maxOccurs="1" minOccurs="0" name="ascendingNodeLongitude" type="gml:MeasureType">
+                <annotation>
+                    <documentation>Longitude at ascending node of orbit. should be expressed in degrees.
+</documentation>
+                </annotation>
+            </element>
+            <element maxOccurs="1" minOccurs="0" name="startTimeFromAscendingNode" type="gml:MeasureType">
+                <annotation>
+                    <documentation>Start time of acquisition in milliseconds from Ascending node date.</documentation>
+                </annotation>
+            </element>
+            <element maxOccurs="1" minOccurs="0" name="completionTimeFromAscendingNode" type="gml:MeasureType">
+                <annotation>
+                    <documentation>Completion time of acquisition in milliseconds from Ascending node date.</documentation>
+                </annotation>
+            </element>
+            <element maxOccurs="1" minOccurs="0" name="orbitDuration" type="gml:MeasureType">
+                <annotation>
+                    <documentation>Actual orbit duration in milliseconds.</documentation>
+                </annotation>
+            </element>
+            <element maxOccurs="1" minOccurs="0" name="illuminationAzimuthAngle" type="gml:AngleType">
+                <annotation>
+                    <documentation>Mean illumination/solar azimuth angle given in degrees.</documentation>
+                </annotation>
+            </element>
+            <element maxOccurs="1" minOccurs="0" name="illuminationZenithAngle" type="gml:AngleType">
+                <annotation>
+                    <documentation>Mean illumination/solar zenith angle given in degrees.</documentation>
+                </annotation>
+            </element>
+            <element maxOccurs="1" minOccurs="0" name="illuminationElevationAngle" type="gml:AngleType">
+                <annotation>
+                    <documentation>Minimum illumination/solar elevation angle given in degrees.</documentation>
+                </annotation>
+            </element>
+            <element maxOccurs="1" minOccurs="0" name="instrumentAzimuthAngle" type="gml:AngleType">
+                <annotation>
+                    <documentation>Mean instrument azimuth angle given in degrees.</documentation>
+                </annotation>
+            </element>
+            <element maxOccurs="1" minOccurs="0" name="instrumentZenithAngle" type="gml:AngleType">
+                <annotation>
+                    <documentation>Mean instrument zenith angle given in degrees.</documentation>
+                </annotation>
+            </element>
+            <element maxOccurs="1" minOccurs="0" name="instrumentElevationAngle" type="gml:AngleType">
+                <annotation>
+                    <documentation>Mean instrument elevation angle given in degrees.</documentation>
+                </annotation>
+            </element>
+            <element maxOccurs="1" minOccurs="0" name="incidenceAngle" type="gml:AngleType">
+                <annotation>
+                    <documentation>Global Incidence angle given in degrees</documentation>
+                </annotation>
+            </element>
+            <element maxOccurs="1" minOccurs="0" name="acrossTrackIncidenceAngle" type="gml:AngleType">
+                <annotation>
+                    <documentation>Instrument across track Incidence angle given in degrees.</documentation>
+                </annotation>
+            </element>
+            <element maxOccurs="1" minOccurs="0" name="alongTrackIncidenceAngle" type="gml:AngleType">
+                <annotation>
+                    <documentation>Instrument along  track incidence angle given in degrees.</documentation>
+                </annotation>
+            </element>
+            <element maxOccurs="1" minOccurs="0" name="pitch" type="gml:AngleType">
+                <annotation>
+                    <documentation>Pitch angle given in degrees.</documentation>
+                </annotation>
+            </element>
+            <element maxOccurs="1" minOccurs="0" name="roll" type="gml:AngleType">
+                <annotation>
+                    <documentation>Roll angle given in degrees.</documentation>
+                </annotation>
+            </element>
+            <element maxOccurs="1" minOccurs="0" name="yaw" type="gml:AngleType">
+                <annotation>
+                    <documentation>Yaw angle given in degrees.</documentation>
+                </annotation>
+            </element>
+        </sequence>
+    </complexType>
+    <complexType name="AcquisitionPropertyType">
+        <sequence>
+            <element ref="eop:Acquisition" />
+        </sequence>
+        <attributeGroup ref="gml:OwnershipAttributeGroup" />
+    </complexType>
+    <element name="ArchivingInformation" substitutionGroup="gml:AbstractObject" type="eop:ArchivingInformationType">
+        <annotation>
+            <documentation>Information about the data archival</documentation>
+        </annotation>
+    </element>
+    <complexType name="ArchivingInformationType">
+        <sequence>
+            <element name="archivingCenter" type="gml:CodeListType">
+                <annotation>
+                    <documentation>Archiving centre code. Possible values are mission specific and should be retrieved using codespace.</documentation>
+                </annotation>
+            </element>
+            <element name="archivingDate" type="dateTime">
+                <annotation>
+                    <documentation>Archiving date time</documentation>
+                </annotation>
+            </element>
+            <element maxOccurs="1" minOccurs="0" name="archivingIdentifier" type="gml:CodeType">
+                <annotation>
+                    <documentation>Local archiving id as created by the mission ground segment that may required to allow subsequent order processing.</documentation>
+                </annotation>
+            </element>
+        </sequence>
+    </complexType>
+    <complexType name="ArchivingInformationPropertyType">
+        <sequence>
+            <element ref="eop:ArchivingInformation" />
+        </sequence>
+        <attributeGroup ref="gml:OwnershipAttributeGroup" />
+    </complexType>
+    <element name="Instrument" substitutionGroup="gml:AbstractObject" type="eop:InstrumentType">
+        <annotation>
+            <documentation>Information about the instrument</documentation>
+        </annotation>
+    </element>
+    <complexType name="InstrumentType">
+        <sequence>
+            <element maxOccurs="1" minOccurs="0" name="shortName" type="string">
+                <annotation>
+                    <documentation>Instrument short name
+</documentation>
+                </annotation>
+            </element>
+            <element maxOccurs="1" minOccurs="0" name="description" type="string">
+                <annotation>
+                    <documentation>Instrument description</documentation>
+                </annotation>
+            </element>
+            <element maxOccurs="1" minOccurs="0" name="instrumentType" type="string">
+                <annotation>
+                    <documentation>Instrument type</documentation>
+                </annotation>
+            </element>
+        </sequence>
+    </complexType>
+    <complexType name="InstrumentPropertyType">
+        <sequence>
+            <element ref="eop:Instrument" />
+        </sequence>
+        <attributeGroup ref="gml:OwnershipAttributeGroup" />
+    </complexType>
+    <element name="BrowseInformation" substitutionGroup="gml:AbstractObject" type="eop:BrowseInformationType">
+        <annotation>
+            <documentation>Information about the data browse resource (may be a WMS or WCS for example).</documentation>
+        </annotation>
+    </element>
+    <complexType name="BrowseInformationType">
+        <sequence>
+            <element name="type" type="eop:BrowseTypeValueType">
+                <annotation>
+                    <documentation>Browse type. Possible values are : THUMBNAIL, QUICKLOOK and ALBUM.</documentation>
+                </annotation>
+            </element>
+            <element maxOccurs="1" minOccurs="0" name="subType" type="gml:CodeListType">
+                <annotation>
+                    <documentation>Value is mission specific. Value list can be retrieved with codeSpace. Not used by PHR. For MODIS : OPTICAL, THERMAL
+</documentation>
+                </annotation>
+            </element>
+            <element name="referenceSystemIdentifier" type="gml:CodeWithAuthorityType">
+                <annotation>
+                    <documentation>Indicates if browse is geo-referenced, and thus can be assumed to be displayed directly on a map (in which case should point to a code space for the CRS), when not supplied it is assumed that the browse is provided in "raw" satellite frame of reference.
+</documentation>
+                </annotation>
+            </element>
+            <element name="fileName">
+                <annotation>
+                    <documentation>
+An OWS ServiceReference containing links to the service delivering a browse image.
+This service could be any kind of URL  -  e.g. direct link to the image or WMS/WCS interface, it is assumed that if a client is prepared to "manage" a product delivered by such a service.  The ServiceReference will also contain any XML message required for XML SOAP or POST access if applicable.</documentation>
+                </annotation>
+            <complexType><sequence><element ref="ows:ServiceReference" /></sequence></complexType></element>
+        </sequence>
+    </complexType>
+    <complexType name="BrowseInformationPropertyType">
+        <sequence>
+            <element ref="eop:BrowseInformation" />
+        </sequence>
+        <attributeGroup ref="gml:OwnershipAttributeGroup" />
+    </complexType>
+    <element name="Histogram" substitutionGroup="gml:AbstractObject" type="eop:HistogramType">
+        <annotation>
+            <documentation>Histogram data type</documentation>
+        </annotation>
+    </element>
+    <complexType name="HistogramType">
+        <sequence>
+            <element maxOccurs="1" minOccurs="0" name="bandId" type="string">
+                <annotation>
+                    <documentation>Histrogram specific : identifier of the spectral band used to compute histogram values</documentation>
+                </annotation>
+            </element>
+            <element name="min" type="integer">
+                <annotation>
+                    <documentation>Histogram specific : minimum value</documentation>
+                </annotation>
+            </element>
+            <element name="max" type="integer">
+                <annotation>
+                    <documentation>Histogram specific : maximum value</documentation>
+                </annotation>
+            </element>
+            <element maxOccurs="1" minOccurs="0" name="mean" type="decimal">
+                <annotation>
+                    <documentation>Histogram specific : mean value</documentation>
+                </annotation>
+            </element>
+            <element maxOccurs="1" minOccurs="0" name="stdDeviation" type="decimal">
+                <annotation>
+                    <documentation>Histogram specific : standard deviation value</documentation>
+                </annotation>
+            </element>
+        </sequence>
+    </complexType>
+    <complexType name="HistogramPropertyType">
+        <sequence>
+            <element ref="eop:Histogram" />
+        </sequence>
+        <attributeGroup ref="gml:OwnershipAttributeGroup" />
+    </complexType>
+    <element name="SpecificInformation" substitutionGroup="gml:AbstractObject" type="eop:SpecificInformationType">
+        <annotation>
+            <documentation>Vendor specific information</documentation>
+        </annotation>
+    </element>
+    <complexType name="SpecificInformationType">
+        <sequence>
+            <element name="localAttribute" type="string">
+                <annotation>
+                    <documentation>Container for ad-hoc metadata that does not merit a mission specific schema or extension, the localAttribute describes the name of the attribute
+</documentation>
+                </annotation>
+            </element>
+            <element name="localValue" type="string">
+                <annotation>
+                    <documentation>Container for ad-hoc metadata that does not merit a mission specific schema or extension, the localAttribute describes the value of the attribute
+</documentation>
+                </annotation>
+            </element>
+        </sequence>
+    </complexType>
+    <complexType name="SpecificInformationPropertyType">
+        <sequence>
+            <element ref="eop:SpecificInformation" />
+        </sequence>
+        <attributeGroup ref="gml:OwnershipAttributeGroup" />
+    </complexType>
+    <element name="Platform" substitutionGroup="gml:AbstractObject" type="eop:PlatformType">
+        <annotation>
+            <documentation>Information about the platform</documentation>
+        </annotation>
+    </element>
+    <complexType name="PlatformType">
+        <sequence>
+            <element name="shortName" type="string">
+                <annotation>
+                    <documentation>Platform short name (eg. PHR).
+</documentation>
+                </annotation>
+            </element>
+            <element maxOccurs="1" minOccurs="0" name="serialIdentifier" type="string">
+                <annotation>
+                    <documentation>Platform serial identifier (eg. for PHR : 1A)</documentation>
+                </annotation>
+            </element>
+            <element maxOccurs="1" minOccurs="0" name="orbitType" type="eop:OrbitTypeValueType">
+                <annotation>
+                    <documentation>High level characterisation of main mission types (GEO/LEO).
+</documentation>
+                </annotation>
+            </element>
+        </sequence>
+    </complexType>
+    <complexType name="PlatformPropertyType">
+        <sequence>
+            <element ref="eop:Platform" />
+        </sequence>
+        <attributeGroup ref="gml:OwnershipAttributeGroup" />
+    </complexType>
+    <element name="MaskInformation" substitutionGroup="gml:AbstractObject" type="eop:MaskInformationType">
+        <annotation>
+            <documentation>Information about the data mask (if present)</documentation>
+        </annotation>
+    </element>
+    <complexType name="MaskInformationType">
+        <sequence>
+            <element name="type" type="eop:MaskTypeValueType">
+                <annotation>
+                    <documentation>Mask type. Possible values are : SNOW, CLOUD and QUALITY.
+</documentation>
+                </annotation>
+            </element>
+            <element name="format" type="eop:FormatValueType">
+                <annotation>
+                    <documentation>Mask format. Possible values are : RASTER or VECTOR.
+</documentation>
+                </annotation>
+            </element>
+            <element maxOccurs="1" minOccurs="0" name="referenceSystemIdentifier" type="gml:CodeWithAuthorityType">
+                <annotation>
+                    <documentation>Indicates if mask is geo-referenced, and thus can be assumed to be displayed directly on a map (in which case should point to a code space for the CRS), when not supplied it is assumed that the mask is provided in "raw" satellite frame of reference.
+</documentation>
+                </annotation>
+            </element>
+            <element name="fileName">
+                <annotation>
+                    <documentation>An OWS ServiceReference containing links to the service delivering the mask. In the case of a RASTER mask this may contain a direct link to the image or a WMS/WCS interface; in the case of a VECTOR mask the Service Reference may contain a direct link to the file or WFS interface. The ServiceReference will also contain any XML message required for XML SOAP or POST access if applicable.
+</documentation>
+                </annotation>
+            <complexType><sequence><element ref="ows:ServiceReference" /></sequence></complexType></element>
+        </sequence>
+    </complexType>
+    <complexType name="MaskInformationPropertyType">
+        <sequence>
+            <element ref="eop:MaskInformation" />
+        </sequence>
+        <attributeGroup ref="gml:OwnershipAttributeGroup" />
+    </complexType>
+    <element name="ProductInformation" substitutionGroup="gml:AbstractObject" type="eop:ProductInformationType">
+        <annotation>
+            <documentation>Product metadata, about the data file.</documentation>
+        </annotation>
+    </element>
+    <complexType name="ProductInformationType">
+        <sequence>
+            <element maxOccurs="1" minOccurs="0" name="referenceSystemIdentifier" type="gml:CodeWithAuthorityType">
+                <annotation>
+                    <documentation>Indicates if product is geo-referenced, (in which case should point to a code space for the CRS), when not supplied it is assumed that the browse is provided in "raw" satellite frame of reference.
+</documentation>
+                </annotation>
+            </element>
+            <element name="fileName">
+                <annotation>
+                    <documentation>An OWS ServiceReference containing links to the service delivering the product data.
+This service could be any kind of URL  -  e.g. direct link to the image or WMS/WCS interface, it is assumed that if a client is prepared to "manage" a product delivered by such a service.  The ServiceReference will also contain any XML message required for XML SOAP or POST access if applicable.
+</documentation>
+                </annotation>
+            <complexType><sequence><element ref="ows:ServiceReference" /></sequence></complexType></element>
+            <element maxOccurs="1" minOccurs="0" name="version" type="string">
+                <annotation>
+                    <documentation>Product version.
+</documentation>
+                </annotation>
+            </element>
+            <element maxOccurs="1" minOccurs="0" name="size" type="gml:MeasureListType">
+                <annotation>
+                    <documentation>Product size (bytes) allowing the user to realise how long a download is likely to take.
+</documentation>
+                </annotation>
+            </element>
+        </sequence>
+    </complexType>
+    <complexType name="ProductInformationPropertyType">
+        <sequence>
+            <element ref="eop:ProductInformation" />
+        </sequence>
+        <attributeGroup ref="gml:OwnershipAttributeGroup" />
+    </complexType>
+    <element name="DownlinkInformation" substitutionGroup="gml:AbstractObject" type="eop:DownlinkInformationType">
+        <annotation>
+            <documentation>Information about the the downlinking (to earth) of the data.</documentation>
+        </annotation>
+    </element>
+    <complexType name="DownlinkInformationType">
+        <sequence>
+            <element name="acquisitionStation" type="gml:CodeListType">
+                <annotation>
+                    <documentation>Acquisition / receiving station code. Possible values are mission specific and should be retrieved using codespace.</documentation>
+                </annotation>
+            </element>
+            <element maxOccurs="1" minOccurs="0" name="acquisitionDate" type="dateTime">
+                <annotation>
+                    <documentation>Acquisition date time.</documentation>
+                </annotation>
+            </element>
+        </sequence>
+    </complexType>
+    <complexType name="DownlinkInformationPropertyType">
+        <sequence>
+            <element ref="eop:DownlinkInformation" />
+        </sequence>
+        <attributeGroup ref="gml:OwnershipAttributeGroup" />
+    </complexType>
+    <element name="EarthObservationMetaData" substitutionGroup="gml:AbstractObject" type="eop:EarthObservationMetaDataType">
+        <annotation>
+            <documentation>Additional external metadata about the data acquisition.</documentation>
+        </annotation>
+    </element>
+    <complexType name="EarthObservationMetaDataType">
+        <sequence>
+            <element name="identifier" type="string">
+                <annotation>
+                    <documentation>Identifier for metadata item, includes ground segment namespace to guarantee uniqueness within EOP.
+</documentation>
+                </annotation>
+            </element>
+            <element maxOccurs="1" minOccurs="0" name="doi" type="string">
+                <annotation>
+                    <documentation>Digital Object Identifier identifying the product (see http://www.doi.org).
+</documentation>
+                </annotation>
+            </element>
+            <element maxOccurs="1" minOccurs="0" name="parentIdentifier" type="string">
+                <annotation>
+                    <documentation>Collection Identifier.
+
+</documentation>
+                </annotation>
+            </element>
+            <element name="acquisitionType" type="eop:AcquisitionTypeValueType">
+                <annotation>
+                    <documentation>Used to distinguish at a high level the appropriateness of the acquisition for "general" use, whether the product is a nominal acquisition, special calibration product or other.
+Values:
+      - NOMINAL
+      - CALIBRATION
+      - OTHER
+</documentation>
+                </annotation>
+            </element>
+            <element maxOccurs="1" minOccurs="0" name="acquisitionSubType" type="gml:CodeListType">
+                <annotation>
+                    <documentation>The broad value is however too restrictive, so mission specific type definition should refer to mission/ground segment dedicated codeSpace.
+</documentation>
+                </annotation>
+            </element>
+            <element maxOccurs="1" minOccurs="0" name="productType" type="string">
+                <annotation>
+                    <documentation>Describes product type in case that mixed types are available within a single collection, this is ground segment specific definition.
+</documentation>
+                </annotation>
+            </element>
+            <element name="status" type="eop:StatusValueType">
+                <annotation>
+                    <documentation>Refers to product status.
+Values :
+      - ARCHIVED
+      - ACQUIRED
+      - CANCELLED
+      - FAILED 
+      - PLANNED
+      - POTENTIAL
+      - REJECTED
+</documentation>
+                </annotation>
+            </element>
+            <element maxOccurs="1" minOccurs="0" name="statusDetail" type="string">
+                <annotation>
+                    <documentation>This field refers to the eop:status value. It should be used to motivate the reason of a failure deletion or rejection
+</documentation>
+                </annotation>
+            </element>
+            <element maxOccurs="unbounded" minOccurs="0" name="downlinkedTo" type="eop:DownlinkInformationPropertyType" />
+            <element maxOccurs="unbounded" minOccurs="0" name="archivedIn" type="eop:ArchivingInformationPropertyType">
+                <annotation>
+                    <documentation>Archive centre</documentation>
+                </annotation>
+            </element>
+            <element maxOccurs="1" minOccurs="0" name="imageQualityDegradation" type="gml:MeasureType">
+                <annotation>
+                    <documentation>Quality degradation percentage (i.e. uom='%').
+
+</documentation>
+                </annotation>
+            </element>
+            <element maxOccurs="1" minOccurs="0" name="imageQualityDegradationQuotationMode" type="eop:DegradationQuotationModeValueType">
+                <annotation>
+                    <documentation>Indicator to know how the quality degradation percentage has been calculated.
+
+Value : AUTOMATIC, MANUAL
+</documentation>
+                </annotation>
+            </element>
+            <element maxOccurs="unbounded" minOccurs="0" name="histograms" type="eop:HistogramPropertyType" />
+            <element maxOccurs="unbounded" minOccurs="0" name="composedOf" type="eop:EarthObservationPropertyType">
+                <annotation>
+                    <documentation>Link to an EO product that is part of this EO product (e.g. a phr:DataStrip is composed of one or more phr:Scene)</documentation>
+                </annotation>
+            </element>
+            <element maxOccurs="unbounded" minOccurs="0" name="subsetOf" type="eop:EarthObservationPropertyType">
+                <annotation>
+                    <documentation>Link to the "father" EO product (e.g. a phr:Scene is a subset of a phr:DataStrip).
+</documentation>
+                </annotation>
+            </element>
+            <element maxOccurs="unbounded" minOccurs="0" name="linkedWith" type="eop:EarthObservationPropertyType">
+                <annotation>
+                    <documentation>Specify a link to another EO product (e.g. ERS1 and ERS2 interferometric pair).
+</documentation>
+                </annotation>
+            </element>
+            <element maxOccurs="unbounded" minOccurs="0" name="processing" type="eop:ProcessingInformationPropertyType" />
+            <element maxOccurs="unbounded" minOccurs="0" name="vendorSpecific" type="eop:SpecificInformationPropertyType">
+                <annotation>
+                    <documentation>Vendor specific information</documentation>
+                </annotation>
+            </element>
+            <element maxOccurs="1" minOccurs="0" name="creationDate" type="dateTime" />
+        </sequence>
+    </complexType>
+    <complexType name="EarthObservationMetaDataPropertyType">
+        <sequence>
+            <element ref="eop:EarthObservationMetaData" />
+        </sequence>
+        <attributeGroup ref="gml:OwnershipAttributeGroup" />
+    </complexType>
+    <element name="ParameterInformation" substitutionGroup="gml:AbstractObject" type="eop:ParameterInformationType">
+        <annotation>
+            <documentation>Information about any observed parameters. e.g. Sea Surface Height.</documentation>
+        </annotation>
+    </element>
+    <complexType name="ParameterInformationType">
+        <sequence>
+            <element maxOccurs="unbounded" minOccurs="0" name="unitOfMeasure" type="gml:UnitOfMeasureType">
+                <annotation>
+                    <documentation>Units of measure for the observed phenomenon.
+Note that for a multi-faceted Constrained or Composite Phenomenon multiple unitOfMeasure attributes must be present and  the unitOfMeasure element order must correspond to the order of the phenomenon descriptions. </documentation>
+                </annotation>
+            </element>
+            <element maxOccurs="1" minOccurs="0" name="phenomenon" type="swe:PhenomenonPropertyType">
+                <annotation>
+                    <documentation>A SWE 1.0 Phenomenon. Could be a single SWE Phenomenon (such as Sea Surface Height) or a SWE ConstrainedPhenomenon, such as a list of particular radiance bands, or a SWECompositePhenomeon which groups several discrete phenomena.</documentation>
+                </annotation>
+            </element>
+        </sequence>
+    </complexType>
+    <complexType name="ParameterInformationPropertyType">
+        <sequence>
+            <element ref="eop:ParameterInformation" />
+        </sequence>
+        <attributeGroup ref="gml:OwnershipAttributeGroup" />
+    </complexType>
+    <simpleType name="OrbitDirectionValueType">
+        <restriction base="string">
+            <enumeration value="ASCENDING" />
+            <enumeration value="DESCENDING" />
+        </restriction>
+    </simpleType>
+    <simpleType name="CompositeTypeValueType">
+        <restriction base="string">
+            <enumeration value="MONTHLY">
+                <annotation>
+                    <documentation>Monthly Composite</documentation>
+                </annotation>
+            </enumeration>
+            <enumeration value="DAILY">
+                <annotation>
+                    <documentation>Daily composite</documentation>
+                </annotation>
+            </enumeration>
+            <enumeration value="WEEKLY">
+                <annotation>
+                    <documentation>Weekly Composite</documentation>
+                </annotation>
+            </enumeration>
+        </restriction>
+    </simpleType>
+    <simpleType name="ProcessingModeValueType">
+        <restriction base="string">
+            <enumeration value="DATA_DRIVEN_PER_ACQUISITION">
+                <annotation>
+                    <documentation>Processed each pass or acquisition</documentation>
+                </annotation>
+            </enumeration>
+            <enumeration value="DATA_DRIVEN_DAILY">
+                <annotation>
+                    <documentation>Processed daily</documentation>
+                </annotation>
+            </enumeration>
+            <enumeration value="OFFLINE">
+                <annotation>
+                    <documentation>Processed offline</documentation>
+                </annotation>
+            </enumeration>
+            <enumeration value="OTHER">
+                <annotation>
+                    <documentation>Other type of processing mode</documentation>
+                </annotation>
+            </enumeration>
+            <enumeration value="MULTI_MISSION">
+                <annotation>
+                    <documentation>Composite data from multiple missions</documentation>
+                </annotation>
+            </enumeration>
+        </restriction>
+    </simpleType>
+    <simpleType name="OrbitTypeValueType">
+        <restriction base="string">
+            <enumeration value="LEO">
+                <annotation>
+                    <documentation>Low Earth Orbit</documentation>
+                </annotation>
+            </enumeration>
+            <enumeration value="GEO">
+                <annotation>
+                    <documentation>Geosynchronous Earth Orbit
+</documentation>
+                </annotation>
+            </enumeration>
+        </restriction>
+    </simpleType>
+    <simpleType name="AcquisitionTypeValueType">
+        <restriction base="string">
+            <enumeration value="OTHER">
+                <annotation>
+                    <documentation>Indicates some other type of acquisition</documentation>
+                </annotation>
+            </enumeration>
+            <enumeration value="CALIBRATION">
+                <annotation>
+                    <documentation>Indicates the acquisition is a calibration product</documentation>
+                </annotation>
+            </enumeration>
+            <enumeration value="NOMINAL">
+                <annotation>
+                    <documentation>Indicates the acquisition is a nominal acquisition</documentation>
+                </annotation>
+            </enumeration>
+        </restriction>
+    </simpleType>
+    <simpleType name="PolygonOrientationValueType">
+        <restriction base="string">
+            <enumeration value="OTHER">
+                <annotation>
+                    <documentation>Other, or unspecified orientation.</documentation>
+                </annotation>
+            </enumeration>
+            <enumeration value="CW">
+                <annotation>
+                    <documentation>Clockwise</documentation>
+                </annotation>
+            </enumeration>
+            <enumeration value="CCW">
+                <annotation>
+                    <documentation>CounterClockwise</documentation>
+                </annotation>
+            </enumeration>
+        </restriction>
+    </simpleType>
+    <simpleType name="SensorTypeValueType">
+        <union memberTypes="eop:SensorTypeValueEnumerationType eop:SensorTypeValueOtherType" />
+    </simpleType>
+    <simpleType name="SensorTypeValueEnumerationType">
+        <restriction base="string">
+            <enumeration value="LIMB">
+                <annotation>
+                    <documentation>Limb Looking/Sounding Sensor</documentation>
+                </annotation>
+            </enumeration>
+            <enumeration value="RADAR">
+                <annotation>
+                    <documentation>Radar Sensor</documentation>
+                </annotation>
+            </enumeration>
+            <enumeration value="OPTICAL">
+                <annotation>
+                    <documentation>Optical Sensor</documentation>
+                </annotation>
+            </enumeration>
+            <enumeration value="ALTIMETRIC">
+                <annotation>
+                    <documentation>Altimetric Sensor</documentation>
+                </annotation>
+            </enumeration>
+            <enumeration value="ATMOSPHERIC">
+                <annotation>
+                    <documentation>Atmospheric Sensor</documentation>
+                </annotation>
+            </enumeration>
+        </restriction>
+    </simpleType>
+    <simpleType name="SensorTypeValueOtherType">
+        <restriction base="string">
+            <pattern value="other: \w{2,}" />
+        </restriction>
+    </simpleType>
+    <simpleType name="SpectralRangeValueType">
+        <union memberTypes="eop:SpectralRangeValueEnumerationType eop:SpectralRangeValueOtherType" />
+    </simpleType>
+    <simpleType name="SpectralRangeValueEnumerationType">
+        <restriction base="string">
+            <enumeration value="OTHER">
+                <annotation>
+                    <documentation>Other spectral range</documentation>
+                </annotation>
+            </enumeration>
+            <enumeration value="VISIBLE">
+                <annotation>
+                    <documentation>Visible Range</documentation>
+                </annotation>
+            </enumeration>
+            <enumeration value="UV">
+                <annotation>
+                    <documentation>Ultra Violet Range</documentation>
+                </annotation>
+            </enumeration>
+            <enumeration value="INFRARED">
+                <annotation>
+                    <documentation>Infrared range</documentation>
+                </annotation>
+            </enumeration>
+            <enumeration value="NEAR-INFRARED">
+                <annotation>
+                    <documentation>Near infrared Range</documentation>
+                </annotation>
+            </enumeration>
+        </restriction>
+    </simpleType>
+    <simpleType name="SpectralRangeValueOtherType">
+        <restriction base="string">
+            <pattern value="other: \w{2,}" />
+        </restriction>
+    </simpleType>
+    <simpleType name="DegradationQuotationModeValueType">
+        <union memberTypes="eop:DegradationQuotationModeValueEnumerationType eop:DegradationQuotationModeValueOtherType" />
+    </simpleType>
+    <simpleType name="DegradationQuotationModeValueEnumerationType">
+        <restriction base="string">
+            <enumeration value="AUTOMATIC">
+                <annotation>
+                    <documentation>Indicatesthe quality degradation percentage has been calculated automatically.
+
+</documentation>
+                </annotation>
+            </enumeration>
+            <enumeration value="MANUAL">
+                <annotation>
+                    <documentation>Indicatesthe quality degradation percentage has been calculated manually.</documentation>
+                </annotation>
+            </enumeration>
+        </restriction>
+    </simpleType>
+    <simpleType name="DegradationQuotationModeValueOtherType">
+        <restriction base="string">
+            <pattern value="other: \w{2,}" />
+        </restriction>
+    </simpleType>
+    <simpleType name="MaskTypeValueType">
+        <union memberTypes="eop:MaskTypeValueEnumerationType eop:MaskTypeValueOtherType" />
+    </simpleType>
+    <simpleType name="MaskTypeValueEnumerationType">
+        <restriction base="string">
+            <enumeration value="QUALITY" />
+            <enumeration value="CLOUD" />
+            <enumeration value="SNOW" />
+        </restriction>
+    </simpleType>
+    <simpleType name="MaskTypeValueOtherType">
+        <restriction base="string">
+            <pattern value="other: \w{2,}" />
+        </restriction>
+    </simpleType>
+    <simpleType name="ProcessingLevelValueType">
+        <union memberTypes="eop:ProcessingLevelValueEnumerationType eop:ProcessingLevelValueOtherType" />
+    </simpleType>
+    <simpleType name="ProcessingLevelValueEnumerationType">
+        <restriction base="string">
+            <enumeration value="3" />
+            <enumeration value="2" />
+            <enumeration value="1A" />
+            <enumeration value="1B" />
+        </restriction>
+    </simpleType>
+    <simpleType name="ProcessingLevelValueOtherType">
+        <restriction base="string">
+            <pattern value="other: \w{2,}" />
+        </restriction>
+    </simpleType>
+    <simpleType name="BrowseTypeValueType">
+        <union memberTypes="eop:BrowseTypeValueEnumerationType eop:BrowseTypeValueOtherType" />
+    </simpleType>
+    <simpleType name="BrowseTypeValueEnumerationType">
+        <restriction base="string">
+            <enumeration value="ALBUM">
+                <annotation>
+                    <documentation>A multi-image view of the data</documentation>
+                </annotation>
+            </enumeration>
+            <enumeration value="QUICKLOOK">
+                <annotation>
+                    <documentation>A quicklook view of the data</documentation>
+                </annotation>
+            </enumeration>
+            <enumeration value="THUMBNAIL">
+                <annotation>
+                    <documentation>A small thumbnail image of the data.</documentation>
+                </annotation>
+            </enumeration>
+        </restriction>
+    </simpleType>
+    <simpleType name="BrowseTypeValueOtherType">
+        <restriction base="string">
+            <pattern value="other: \w{2,}" />
+        </restriction>
+    </simpleType>
+    <simpleType name="FormatValueType">
+        <union memberTypes="eop:FormatValueEnumerationType eop:FormatValueOtherType" />
+    </simpleType>
+    <simpleType name="FormatValueEnumerationType">
+        <restriction base="string">
+            <enumeration value="RASTER" />
+            <enumeration value="VECTOR" />
+        </restriction>
+    </simpleType>
+    <simpleType name="FormatValueOtherType">
+        <restriction base="string">
+            <pattern value="other: \w{2,}" />
+        </restriction>
+    </simpleType>
+    <simpleType name="StatusValueType">
+        <union memberTypes="eop:StatusValueEnumerationType eop:StatusValueOtherType" />
+    </simpleType>
+    <simpleType name="StatusValueEnumerationType">
+        <restriction base="string">
+            <enumeration value="REJECTED">
+                <annotation>
+                    <documentation>Data acquisition has been rejected for whatever reason</documentation>
+                </annotation>
+            </enumeration>
+            <enumeration value="QUALITYDEGRADED">
+                <annotation>
+                    <documentation>Data acquisition with known quality problems</documentation>
+                </annotation>
+            </enumeration>
+            <enumeration value="POTENTIAL">
+                <annotation>
+                    <documentation>Potential data acquisition</documentation>
+                </annotation>
+            </enumeration>
+            <enumeration value="PLANNED">
+                <annotation>
+                    <documentation>Data acquisition planned</documentation>
+                </annotation>
+            </enumeration>
+            <enumeration value="FAILED">
+                <annotation>
+                    <documentation>Data acquisition failed</documentation>
+                </annotation>
+            </enumeration>
+            <enumeration value="CANCELLED">
+                <annotation>
+                    <documentation>Data acquisition cancelled</documentation>
+                </annotation>
+            </enumeration>
+            <enumeration value="ACQUIRED">
+                <annotation>
+                    <documentation>Data acquired</documentation>
+                </annotation>
+            </enumeration>
+            <enumeration value="ARCHIVED">
+                <annotation>
+                    <documentation>Data acquisition archived</documentation>
+                </annotation>
+            </enumeration>
+        </restriction>
+    </simpleType>
+    <simpleType name="StatusValueOtherType">
+        <restriction base="string">
+            <pattern value="other: \w{2,}" />
+        </restriction>
+    </simpleType>
+<attribute name="type" type="QName" /></schema>

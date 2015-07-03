@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -953,15 +954,14 @@ public class JDBCCatalogFacade implements CatalogFacade {
             final Filter filter, @Nullable final Integer offset, @Nullable final Integer count,
             @Nullable final SortBy... sortBy) {
 
-        Preconditions.checkArgument(null == sortBy || sortBy.length < 2, 
-            "Sort order may only specify a single value");
-
-        SortBy sortOrder = sortBy != null ? sortBy[0] : null;
-        Preconditions.checkArgument(
-                null == sortOrder || canSort(of, sortOrder.getPropertyName().getPropertyName()),
-                "Can't sort objects of type %s by %s", of, sortOrder);
-
-        return db.query(of, filter, offset, count, sortOrder);
+        if(sortBy!=null) {
+            for(SortBy sortOrder: sortBy){
+                Preconditions.checkArgument(
+                        null == sortOrder || canSort(of, sortOrder.getPropertyName().getPropertyName()),
+                        "Can't sort objects of type %s by %s", of, sortOrder);
+            }
+        }
+        return db.query(of, filter, offset, count, sortBy);
 
     }
 

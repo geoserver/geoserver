@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -37,6 +38,7 @@ import org.geotools.util.DateRange;
  * @author Cedric Briancon
  * @author Martin Desruisseaux
  * @author Simone Giannecchini, GeoSolutions SAS
+ * @author Jonathan Meyer, Applied Information Sciences, jon@gisjedi.com
  * @version $Id$
  */
 public class TimeKvpParser extends KvpParser {    
@@ -77,6 +79,11 @@ public class TimeKvpParser extends KvpParser {
      */
     static final TimeZone UTC_TZ = TimeZone.getTimeZone("UTC");
 
+    /**
+     * pattern used to match back parameter
+     */
+	private static final Pattern pattern = Pattern.compile("(back)(\\d+)([hdw])");
+    
     /**
      * Amount of milliseconds in a day.
      */
@@ -183,16 +190,22 @@ public class TimeKvpParser extends KvpParser {
             } else {
                 // period
                 String[] period = date.split("/");
+
                 //
-                // Period like : yyyy-MM-ddTHH:mm:ssZ/yyyy-MM-ddTHH:mm:ssZ/P1D
+                // Period like one of the following: 
+                // yyyy-MM-ddTHH:mm:ssZ/yyyy-MM-ddTHH:mm:ssZ/P1D
+                // May be one of the following possible ISO 8601 Time Interval formats with trailing period for 
+                // breaking the interval by given period:
+                // TIME/TIME/PERIOD
+                // DURATION/TIME/PERIOD
+                // TIME/DURATION/PERIOD
                 //
                 if (period.length == 3) {
-                    final Date begin = beginning(getFuzzyDate(period[0]));
-                    final Date end = end(getFuzzyDate(period[1]));
+                    Date[] range = parseTimeDuration(period);
                     
                     final long millisIncrement = parsePeriod(period[2]);
-                    final long startTime = begin.getTime();
-                    final long endTime = end.getTime();
+                    final long startTime = range[0].getTime();
+                    final long endTime = range[1].getTime();
                     long time;
                     int j = 0;
                     while ((time = j * millisIncrement + startTime) <= endTime) {
@@ -208,12 +221,16 @@ public class TimeKvpParser extends KvpParser {
                             break;                  
                         }
                     }
-                } else if (period.length == 2) {
-                        // Period like : yyyy-MM-ddTHH:mm:ssZ/yyyy-MM-ddTHH:mm:ssZ, it is an extension 
-                        // of WMS that works with continuos period [Tb, Te].
-                        final Date begin = beginning(getFuzzyDate(period[0]));
-                        final Date end   = end(getFuzzyDate(period[1]));
-                        addPeriod(result, new DateRange(begin, end));
+                } 
+                // Period like : yyyy-MM-ddTHH:mm:ssZ/yyyy-MM-ddTHH:mm:ssZ, it is an extension 
+                // of WMS that works with continuos period [Tb, Te].
+                // May be one of the following possible ISO 8601 Time Interval formats, as in ECQL Time Period:
+                // TIME/DURATION
+                // DURATION/TIME
+                // TIME/TIME
+                else if (period.length == 2) {
+                        Date[] range = parseTimeDuration(period);
+                        addPeriod(result, new DateRange(range[0], range[1]));
                 } else {
                     throw new ParseException("Invalid time period: " + Arrays.toString(period), 0);
                 }
@@ -222,7 +239,68 @@ public class TimeKvpParser extends KvpParser {
         
         return new ArrayList(result);
     }
-    
+
+    private static Date[] parseTimeDuration(final String[] period) throws ParseException {
+        Date[] range = null;
+
+        if (period.length == 2 || period.length == 3) {
+            Date begin = null;
+            Date end = null;
+
+            // Check first to see if we have any duration value within TIME parameter
+            if (period[0].toUpperCase().startsWith("P") || period[1].toUpperCase().startsWith("P")) {
+                long durationOffset = Long.MIN_VALUE;
+
+                // Attempt to parse a time or duration from the first portion of the
+                if (period[0].toUpperCase().startsWith("P")) {
+                    durationOffset = parsePeriod(period[0]);
+                } else {
+                    begin = beginning(getFuzzyDate(period[0]));
+                }
+
+                if (period[1].toUpperCase().startsWith("P")
+                        && !period[1].toUpperCase().startsWith("PRESENT")) {
+                    // Invalid time period of the format:
+                    // DURATION/DURATION[/PERIOD]
+                    if (durationOffset != Long.MIN_VALUE) {
+                        throw new ParseException(
+                                "Invalid time period containing duration with no paired time value: "
+                                        + Arrays.toString(period), 0);
+                    }
+                    // Time period of the format:
+                    // DURATION/TIME[/PERIOD]
+                    else {
+                        durationOffset = parsePeriod(period[1]);
+                        final Calendar calendar = new GregorianCalendar();
+                        calendar.setTimeInMillis(begin.getTime() + durationOffset);
+                        end = calendar.getTime();
+                    }
+                }
+                // Time period of the format:
+                // TIME/DURATION[/PERIOD]
+                else {
+                    end = end(getFuzzyDate(period[1]));
+                    final Calendar calendar = new GregorianCalendar();
+                    calendar.setTimeInMillis(end.getTime() - durationOffset);
+                    begin = calendar.getTime();
+                }
+            }
+            // Time period of the format:
+            // TIME/TIME[/PERIOD]
+            else {
+                begin = beginning(getFuzzyDate(period[0]));
+                end = end(getFuzzyDate(period[1]));
+            }
+
+            range = new Date[2];
+            range[0] = begin;
+            range[1] = end;
+
+        }
+
+        return range;
+    }
+
     private static Date beginning(Object dateOrDateRange) {
         if (dateOrDateRange instanceof DateRange) {
             return ((DateRange) dateOrDateRange).getMinValue();
@@ -279,25 +357,33 @@ public class TimeKvpParser extends KvpParser {
     }
 
     /**
-     * Parses date given in parameter according the ISO-8601 standard. This parameter
-     * should follow a syntax defined in the {@link #PATTERNS} array to be validated.
+     * Parses date given in parameter according the ISO-8601 standard. This parameter should follow 
+     * a syntax defined in the {@link #PATTERNS} array to be validated.
      *
      * @param value The date to parse.
      * @return A date found in the request.
      * @throws ParseException if the string can not be parsed.
      */
     static Object getFuzzyDate(final String value) throws ParseException {
+        String computedValue = value;
 
         // special handling for current keyword (we accept both wms and wcs ways)
-        if(value.equalsIgnoreCase("current") || value.equalsIgnoreCase("now")) {
+        if (computedValue.equalsIgnoreCase("current") || computedValue.equalsIgnoreCase("now")) {
             return null;
+        }
+
+        // Accept new "present" keyword, which actually fills in present time as now should have
+        if (computedValue.equalsIgnoreCase("present")) {
+            Calendar now = Calendar.getInstance();
+            now.set(Calendar.MILLISECOND, 0);
+            computedValue = FormatAndPrecision.MILLISECOND.getFormat().format(now.getTime());
         }
 
         for (FormatAndPrecision f : FormatAndPrecision.values()) {
             ParsePosition pos = new ParsePosition(0);
-            Date time = f.getFormat().parse(value, pos);
-            if (pos.getIndex() == value.length()) {
-                DateRange range  = f.expand(time);
+            Date time = f.getFormat().parse(computedValue, pos);
+            if (pos.getIndex() == computedValue.length()) {
+                DateRange range = f.expand(time);
                 if (range.getMinValue().equals(range.getMaxValue())) {
                     return range.getMinValue();
                 } else {
@@ -308,7 +394,7 @@ public class TimeKvpParser extends KvpParser {
 
         throw new ParseException("Invalid date: " + value, 0);
     }
-    
+
     /**
      * Parses the increment part of a period and returns it in milliseconds.
      *

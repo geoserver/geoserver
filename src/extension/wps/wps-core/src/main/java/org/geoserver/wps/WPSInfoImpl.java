@@ -1,4 +1,4 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -6,14 +6,11 @@
 package org.geoserver.wps;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.config.impl.ServiceInfoImpl;
-import org.geotools.process.ProcessFactory;
-import org.geotools.process.Processors;
+import org.geoserver.security.CatalogMode;
 
 /**
  * WPS information implementation
@@ -38,11 +35,6 @@ public class WPSInfoImpl extends ServiceInfoImpl implements WPSInfo {
     static final String KEY_MAX_ASYNCH = "maxAsynchronousProcesses";
     
     static final int DEFAULT_MAX_ASYNCH = Runtime.getRuntime().availableProcessors();
-    
-    @Override
-    public String getTitle() {
-        return "Prototype GeoServer WPS";
-    }
     
     /** 
      * Connection timeout in seconds. 
@@ -70,6 +62,38 @@ public class WPSInfoImpl extends ServiceInfoImpl implements WPSInfo {
      * List of process groups/factories.
      */
     List<ProcessGroupInfo> processGroups = new ArrayList<ProcessGroupInfo>();
+    
+    /**
+     * Where to store the WPS artifacts (inputs, outputs, and so on)
+     */
+    String storageDirectory;
+
+    /**
+     * How to handle requests for processes that have been secured, and should not be reached
+     * without the proper authentication
+     */
+    CatalogMode catalogMode;
+    
+    /**
+     * The global maximum size of a complex input, in MB. Per process configuration can override it
+     */
+    int maxComplexInputSize;
+
+    /**
+     * How many seconds a process can run in synchronous mode (with the user waiting on the HTTP
+     * connection) before it gets killed by the WPS container
+     */
+    int maxSynchronousExecutionTime;
+
+    /**
+     * How many seconds a process can run in synchronous mode (with the user polling for its status)
+     * before it gets killed by the WPS container
+     */
+    int maxAsynchronousExecutionTime;
+
+    public WPSInfoImpl() {
+        title = "Prototype GeoServer WPS";
+    }
 
     /**
      * Returns the connection timeout (in seconds). It represents the timeout to be used 
@@ -172,4 +196,135 @@ public class WPSInfoImpl extends ServiceInfoImpl implements WPSInfo {
     public void setProcessGroups(List<ProcessGroupInfo> processGroups) {
         this.processGroups = processGroups;
     }
+
+    @Override
+    public String getStorageDirectory() {
+        return storageDirectory;
+    }
+
+    @Override
+    public void setStorageDirectory(String storageDirectory) {
+        this.storageDirectory = storageDirectory;
+
+    }
+    
+    @Override
+    public CatalogMode getCatalogMode() {
+        if(catalogMode==null){
+            catalogMode = CatalogMode.HIDE;
+        }
+        return catalogMode;
+    }
+
+    @Override
+    public void setCatalogMode(CatalogMode catalogMode) {
+        this.catalogMode = catalogMode;
+    }
+
+    public int getMaxComplexInputSize() {
+        return maxComplexInputSize;
+    }
+
+    public void setMaxComplexInputSize(int maxComplexInputSize) {
+        this.maxComplexInputSize = maxComplexInputSize;
+    }
+
+    /**
+     * How many seconds a process can run in synchronous mode (with the user waiting on the HTTP
+     * connection) before it gets killed by the WPS container
+     */
+    @Override
+    public int getMaxSynchronousExecutionTime() {
+        return maxSynchronousExecutionTime;
+    }
+
+    @Override
+    public void setMaxSynchronousExecutionTime(int maxSynchronousExecutionTime) {
+        this.maxSynchronousExecutionTime = maxSynchronousExecutionTime;
+    }
+
+    /**
+     * How many seconds a process can run in synchronous mode (with the user polling for its status)
+     * before it gets killed by the WPS container
+     */
+    @Override
+    public int getMaxAsynchronousExecutionTime() {
+        return maxAsynchronousExecutionTime;
+    }
+
+    @Override
+    public void setMaxAsynchronousExecutionTime(int maxAsynchrornousExecutionTime) {
+        this.maxAsynchronousExecutionTime = maxAsynchrornousExecutionTime;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = super.hashCode();
+        result = prime * result + ((catalogMode == null) ? 0 : catalogMode.hashCode());
+        result = prime * result + ((connectionTimeout == null) ? 0 : connectionTimeout.hashCode());
+        result = prime * result
+                + ((maxAsynchronousProcesses == null) ? 0 : maxAsynchronousProcesses.hashCode());
+        result = prime * result + maxAsynchronousExecutionTime;
+        result = prime * result + maxComplexInputSize;
+        result = prime * result + maxSynchronousExecutionTime;
+        result = prime * result
+                + ((maxSynchronousProcesses == null) ? 0 : maxSynchronousProcesses.hashCode());
+        result = prime * result + ((processGroups == null) ? 0 : processGroups.hashCode());
+        result = prime * result
+                + ((resourceExpirationTimeout == null) ? 0 : resourceExpirationTimeout.hashCode());
+        result = prime * result + ((storageDirectory == null) ? 0 : storageDirectory.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (!super.equals(obj))
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        WPSInfoImpl other = (WPSInfoImpl) obj;
+        if (catalogMode != other.catalogMode)
+            return false;
+        if (connectionTimeout == null) {
+            if (other.connectionTimeout != null)
+                return false;
+        } else if (!connectionTimeout.equals(other.connectionTimeout))
+            return false;
+        if (maxAsynchronousProcesses == null) {
+            if (other.maxAsynchronousProcesses != null)
+                return false;
+        } else if (!maxAsynchronousProcesses.equals(other.maxAsynchronousProcesses))
+            return false;
+        if (maxAsynchronousExecutionTime != other.maxAsynchronousExecutionTime)
+            return false;
+        if (maxComplexInputSize != other.maxComplexInputSize)
+            return false;
+        if (maxSynchronousExecutionTime != other.maxSynchronousExecutionTime)
+            return false;
+        if (maxSynchronousProcesses == null) {
+            if (other.maxSynchronousProcesses != null)
+                return false;
+        } else if (!maxSynchronousProcesses.equals(other.maxSynchronousProcesses))
+            return false;
+        if (processGroups == null) {
+            if (other.processGroups != null)
+                return false;
+        } else if (!processGroups.equals(other.processGroups))
+            return false;
+        if (resourceExpirationTimeout == null) {
+            if (other.resourceExpirationTimeout != null)
+                return false;
+        } else if (!resourceExpirationTimeout.equals(other.resourceExpirationTimeout))
+            return false;
+        if (storageDirectory == null) {
+            if (other.storageDirectory != null)
+                return false;
+        } else if (!storageDirectory.equals(other.storageDirectory))
+            return false;
+        return true;
+    }
+    
 }

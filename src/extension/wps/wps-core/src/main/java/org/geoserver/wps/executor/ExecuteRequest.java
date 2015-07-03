@@ -1,27 +1,38 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wps.executor;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import net.opengis.wps10.DocumentOutputDefinitionType;
 import net.opengis.wps10.ExecuteType;
 import net.opengis.wps10.InputType;
+import net.opengis.wps10.OutputDefinitionType;
+import net.opengis.wps10.ResponseDocumentType;
+import net.opengis.wps10.ResponseFormType;
 
 import org.eclipse.emf.common.util.EList;
 import org.geoserver.ows.Ows11Util;
 import org.geoserver.wps.WPSException;
 import org.geoserver.wps.ppio.ProcessParameterIO;
+import org.geoserver.wps.process.AbstractRawData;
 import org.geoserver.wps.process.GeoServerProcessors;
+import org.geoserver.wps.validator.MultiplicityValidator;
+import org.geoserver.wps.validator.ProcessLimitsFilter;
+import org.geoserver.wps.validator.Validators;
 import org.geotools.data.Parameter;
 import org.geotools.process.ProcessFactory;
 import org.opengis.feature.type.Name;
+import org.springframework.validation.Validator;
 
 /**
  * Centralizes some common request parsing activities
@@ -32,6 +43,8 @@ import org.opengis.feature.type.Name;
 public class ExecuteRequest {
 
     ExecuteType request;
+
+    LazyInputMap inputs;
 
     public ExecuteRequest(ExecuteType request) {
         this.request = request;
@@ -80,19 +93,42 @@ public class ExecuteRequest {
      * 
      * @param request
      * @return
+     * @throws Exception
      */
     public LazyInputMap getProcessInputs(WPSExecutionManager manager) {
+        if (inputs == null) {
+            return getInputsInternal(manager);
+        }
+        return inputs;
+    }
+
+    LazyInputMap getInputsInternal(WPSExecutionManager manager) {
         // get the input descriptors
         Name processName = Ows11Util.name(request.getIdentifier());
-        ProcessFactory pf = GeoServerProcessors.createProcessFactory(processName);
+        ProcessFactory pf = GeoServerProcessors.createProcessFactory(processName, true);
         if(pf == null) {
             throw new WPSException("Unknown process " + processName);
         }
         
         final Map<String, Parameter<?>> parameters = pf.getParameterInfo(processName);
+        Map<String, InputProvider> providers = new LinkedHashMap<String, InputProvider>();
+
+        // see what output raw data we have that need the user chosen mime type to be
+        // sent back to the process as an input
+        Map<String, String> outputMimeParameters = AbstractRawData.getOutputMimeParameters(
+                processName, pf);
+        if (!outputMimeParameters.isEmpty()) {
+            Map<String, String> requestedRawDataMimeTypes = getRequestedRawDataMimeTypes(outputMimeParameters.keySet(), processName, pf);
+            for (Map.Entry<String, String> param : outputMimeParameters.entrySet()) {
+                String outputName = param.getKey();
+                String inputParameter = param.getValue();
+                String mime = requestedRawDataMimeTypes.get(outputName);
+                StringInputProvider provider = new StringInputProvider(mime, inputParameter);
+                providers.put(inputParameter, provider);
+            }
+        }
 
         // turn them into a map of input providers
-        Map<String, InputProvider> providers = new HashMap<String, InputProvider>();
         for (Iterator i = request.getDataInputs().getInput().iterator(); i.hasNext();) {
             InputType input = (InputType) i.next();
             String inputId = input.getIdentifier().getValue();
@@ -115,25 +151,77 @@ public class ExecuteRequest {
                 throw new WPSException("Unable to decode input: " + inputId);
             }
 
-            // build the provider
-            InputProvider provider = new SimpleInputProvider(input, ppio, manager,
-                    manager.applicationContext);
+            // get the validators
+            Collection<Validator> validators = (Collection<Validator>) p.metadata
+                    .get(ProcessLimitsFilter.VALIDATORS_KEY);
+            // we handle multiplicity validation here, before the parsing even starts
+            List<Validator> filteredValidators = Validators.filterOutClasses(validators,
+                    MultiplicityValidator.class);
 
-            // store the input
-            if (p.maxOccurs > 1) {
-                ListInputProvider lp = (ListInputProvider) providers.get(p.key);
-                if (lp == null) {
-                    lp = new ListInputProvider(provider);
-                    providers.put(p.key, lp);
+            // build the provider
+            try {
+                InputProvider provider = AbstractInputProvider.getInputProvider(input, ppio,
+                        manager, manager.applicationContext, validators);
+
+                // store the input
+                if (p.maxOccurs > 1) {
+                    ListInputProvider lp = (ListInputProvider) providers.get(p.key);
+                    if (lp == null) {
+                        lp = new ListInputProvider(provider, p.getMaxOccurs());
+                        providers.put(p.key, lp);
+                    } else {
+                        lp.add(provider);
+                    }
                 } else {
-                    lp.add(provider);
+                    providers.put(p.key, provider);
                 }
-            } else {
-                providers.put(p.key, provider);
+            } catch (Exception e) {
+                throw new WPSException("Failed to parse process inputs", e);
             }
         }
 
         return new LazyInputMap(providers);
+    }
+
+    private Map<String, String> getRequestedRawDataMimeTypes(Collection<String> rawResults, Name name,
+            ProcessFactory pf) {
+        Map<String, String> result = new HashMap<String, String>();
+        ResponseFormType form = request.getResponseForm();
+        OutputDefinitionType raw = form.getRawDataOutput();
+        ResponseDocumentType document = form.getResponseDocument();
+		if (form == null || (raw == null && document == null)) {
+            // all outputs using their default mime
+        	for (String rawResult : rawResults) {
+        		String mime = AbstractRawData.getDefaultMime(name, pf, rawResult);
+        		result.put(rawResult, mime);
+			}
+        } else if (raw != null) {
+            // just one output type
+            String output = raw.getIdentifier().getValue();
+            String mime;
+            if (raw.getMimeType() != null) {
+                mime = raw.getMimeType();
+            } else {
+                mime = AbstractRawData.getDefaultMime(name, pf, output);
+            }
+            result.put(output, mime);
+        } else {
+            // the response document form
+        	for (Iterator it = document.getOutput().iterator(); it.hasNext();) {
+				OutputDefinitionType out = (OutputDefinitionType) it.next();
+				String outputName = out.getIdentifier().getValue();
+				if(rawResults.contains(outputName)) {
+					// was the output mime specified?
+					String mime = out.getMimeType();
+					if(mime == null || mime.trim().isEmpty()) {
+						mime = AbstractRawData.getDefaultMime(name, pf, outputName);
+					}
+					result.put(outputName, mime);
+				}
+			}
+        }
+        
+        return result;
     }
 
     public boolean isLineageRequested() {

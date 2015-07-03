@@ -22,11 +22,13 @@ Installing the SQL Server extension
 GeoServer files
 ```````````````
 
-#. Download the SQL Server extension from the `GeoServer download page <http://geoserver.org/display/GEOS/Download>`_.
+#. Download the SQL Server extension from the `GeoServer download page <http://geoserver.org/download>`_.
 
    .. warning:: Make sure to match the version of the extension to the version of the GeoServer instance!
 
 #. Extract the contents of the archive into the ``WEB-INF/lib`` directory of the GeoServer installation.
+
+#. Restart the GeoServer to load the extension.
 
 Microsoft files
 ```````````````
@@ -38,7 +40,7 @@ Microsoft files
 #. If you are running Java 6 or above, copy the file ``sqljdbc4.jar`` to the ``WEB-INF/lib`` directory of the GeoServer installation.
    If you are running Java 5 instead (supported up to GeoServer 2.1.x) copy the file ``sqljdbc.jar`` to the ``WEB-INF/lib`` directory
 
-#. For GeoServer installed on Windows, copy ``\x86\sqljdbc_auth.dll`` and ``\x86\sqljdbc_xa.dll`` to ``C:\Windows\System32``
+#. For GeoServer installed on Windows, copy ``auth\x86\sqljdbc_auth.dll`` and ``xa\x86\sqljdbc_xa.dll`` to ``C:\Windows\System32``
 
 Adding a SQL Server database
 ----------------------------
@@ -88,3 +90,29 @@ You can determine the port in use by connecting to your SQL server instance usin
 
     C:\>netstat -a | find "sql1"
     TCP   DPI908194:1918   maittestsql1.dpi.nsw.gov.au:2646   ESTABLISHED
+
+
+Using the geometry metadata table
+`````````````````````````````````
+
+The SQL server data store can determine the geometry type and native SRID of a particular column only by data inspection,
+by looking at the first row in the table. Of course this is error prone, and works only if there is data in the table.
+The administrator can address the above issue by manually creating a geometry metadata table describing each geometry column.
+Its presence is indicated via the SQL Server datastore connection parameter named *Geometry metadata table*
+(which may be a simple table name or a schema-qualified one).
+The table has the following structure (the table name is flexible, just specify the one chosen in the data store connection parameter)::
+
+	CREATE TABLE GEOMETRY_COLUMNS(
+	   F_TABLE_SCHEMA VARCHAR(30) NOT NULL, 
+	   F_TABLE_NAME VARCHAR(30) NOT NULL, 
+	   F_GEOMETRY_COLUMN VARCHAR(30) NOT NULL, 
+	   COORD_DIMENSION INTEGER, 
+	   SRID INTEGER NOT NULL, 
+	   TYPE VARCHAR(30) NOT NULL,
+	   UNIQUE(F_TABLE_SCHEMA, F_TABLE_NAME, F_GEOMETRY_COLUMN),
+	   CHECK(TYPE IN ('POINT','LINE', 'POLYGON', 'COLLECTION', 'MULTIPOINT', 'MULTILINE', 'MULTIPOLYGON', 'GEOMETRY') ));
+	   
+When the table is present the store first searches it for information about each geometry column
+to be classified, and falls back on data inspection only if the table does not contain any information.
+
+

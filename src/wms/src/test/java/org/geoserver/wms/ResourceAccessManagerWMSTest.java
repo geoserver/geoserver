@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -11,13 +12,10 @@ import static org.junit.Assert.assertTrue;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -139,34 +137,6 @@ public class ResourceAccessManagerWMSTest extends WMSTestSupport {
         
         prepare();
     }
-//    /**
-//     * Add the users
-//     */
-//    @Override
-//    protected void populateDataDirectory(MockData dataDirectory) throws Exception {
-//        super.populateDataDirectory(dataDirectory);
-//        
-//        // add a mosaic as well
-//        URL style = MockData.class.getResource("raster.sld");
-//        dataDirectory.addStyle("raster", style);
-//        dataDirectory.addCoverageFromZip(new QName(MockData.SF_URI, "mosaic", MockData.SF_PREFIX), 
-//                MockData.class.getResource("raster-filter-test.zip"), null, "raster");
-//
-//        
-//        File security = new File(dataDirectory.getDataDirectoryRoot(), "security");
-//        security.mkdir();
-//
-//        File users = new File(security, "users.properties");
-//        Properties props = new Properties();
-//        props.put("admin", "geoserver,ROLE_ADMINISTRATOR");
-//        props.put("cite", "cite,ROLE_DUMMY");
-//        props.put("cite_nostates", "cite,ROLE_DUMMY");
-//        props.put("cite_noinfo", "cite,ROLE_DUMMY");
-//        props.put("cite_texas", "cite,ROLE_DUMMY");
-//        props.put("cite_mosaic1", "cite,ROLE_DUMMY");
-//        props.put("cite_mosaic2", "cite,ROLE_DUMMY");
-//        props.store(new FileOutputStream(users), "");
-//    }
 
     
     public void prepare() throws Exception {
@@ -238,13 +208,13 @@ public class ResourceAccessManagerWMSTest extends WMSTestSupport {
         // a Texas one
         int[] pixel = new int[4];
         image.getData().getPixel(368, 227, pixel);
-        assertEquals(77, pixel[0]);
-        assertEquals(77, pixel[1]);
+        assertEquals(130, pixel[0]);
+        assertEquals(130, pixel[1]);
         assertEquals(255, pixel[2]);
         // a California one
         image.getData().getPixel(191, 178, pixel);
-        assertEquals(77, pixel[0]);
-        assertEquals(77, pixel[1]);
+        assertEquals(130, pixel[0]);
+        assertEquals(130, pixel[1]);
         assertEquals(255, pixel[2]);
     }
 
@@ -282,8 +252,8 @@ public class ResourceAccessManagerWMSTest extends WMSTestSupport {
         // a Texas one
         int[] pixel = new int[4];
         image.getData().getPixel(368, 227, pixel);
-        assertEquals(77, pixel[0]);
-        assertEquals(77, pixel[1]);
+        assertEquals(130, pixel[0]);
+        assertEquals(130, pixel[1]);
         assertEquals(255, pixel[2]);
         // a California one, this one should be white
         image.getData().getPixel(191, 178, pixel);

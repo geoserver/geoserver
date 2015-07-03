@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014-2015 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -136,9 +137,21 @@ public class ImportProcess implements GSProcess {
         		storeInfo = catalog.getCoverageStoreByName(ws.getName(), store);
         	}
             if (storeInfo == null) {
-                throw new ProcessException("Could not find store " + store + " in workspace "
-                        + workspace);
-                // TODO: support store creation
+                // mirroring "features != null" below
+                if (features != null) {
+                    storeInfo = catalog.getDefaultDataStore(ws);
+                    if (storeInfo == null) {
+                        throw new ProcessException("Could not find a default store in workspace "
+                                + ws.getName());
+                    }
+                }
+                else if (coverage != null) {
+                    // since the store doesn't exist, create it
+                    // mirroring "create a new coverage store" below
+                    storeInfo = cb.buildCoverageStore((store));
+                    add = true;
+                    LOGGER.info("Creating store " + store + " since it did not exist");
+                }
             }
         } else if (features != null) {
             storeInfo = catalog.getDefaultDataStore(ws);
@@ -439,7 +452,7 @@ public class ImportProcess implements GSProcess {
 
                     boolean valid = true;
                     try {
-                        if (!catalog.validate(layerInfo, true).isEmpty()) {
+                        if (!catalog.validate(layerInfo, true).isValid()) {
                             valid = false;
                         }
                     } catch (Exception e) {

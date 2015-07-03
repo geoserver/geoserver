@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -37,183 +38,160 @@ public abstract class AbstractRoleServiceTest extends AbstractSecurityServiceTes
     }
 
     @Test
-    public void testIsModified() {
-        try {
-            
-            assertFalse(store.isModified());
-            
-            insertValues(store);
-            assertTrue(store.isModified());
-            
-            store.load();
-            assertFalse(store.isModified());
-            
-            insertValues(store);
-            store.store();
-            assertFalse(store.isModified());
-            
-            GeoServerRole role = 
-                store.createRoleObject("ROLE_DUMMY");
-            GeoServerRole role_parent = 
-                store.createRoleObject("ROLE_PARENT");        
+    public void testIsModified() throws Exception {
+        assertFalse(store.isModified());
+        
+        insertValues(store);
+        assertTrue(store.isModified());
+        
+        store.load();
+        assertFalse(store.isModified());
+        
+        insertValues(store);
+        store.store();
+        assertFalse(store.isModified());
+        
+        GeoServerRole role = 
+            store.createRoleObject("ROLE_DUMMY");
+        GeoServerRole role_parent = 
+            store.createRoleObject("ROLE_PARENT");        
 
-            
-            assertFalse(store.isModified());
-            
-            // add,remove,update
-            store.addRole(role);
-            store.addRole(role_parent);
-            assertTrue(store.isModified());
-            store.store();
-            
-            assertFalse(store.isModified());
-            store.updateRole(role);
-            assertTrue(store.isModified());
-            store.load();
-            
-            assertFalse(store.isModified());
-            store.removeRole(role);
-            assertTrue(store.isModified());
-            store.load();
-            
-            assertFalse(store.isModified());
-            store.associateRoleToGroup(role, "agroup");
-            assertTrue(store.isModified());
-            store.store();
+        
+        assertFalse(store.isModified());
+        
+        // add,remove,update
+        store.addRole(role);
+        store.addRole(role_parent);
+        assertTrue(store.isModified());
+        store.store();
+        
+        assertFalse(store.isModified());
+        store.updateRole(role);
+        assertTrue(store.isModified());
+        store.load();
+        
+        assertFalse(store.isModified());
+        store.removeRole(role);
+        assertTrue(store.isModified());
+        store.load();
+        
+        assertFalse(store.isModified());
+        store.associateRoleToGroup(role, "agroup");
+        assertTrue(store.isModified());
+        store.store();
 
-            assertFalse(store.isModified());
-            store.disAssociateRoleFromGroup(role, "agroup");
-            assertTrue(store.isModified());
-            store.load();
-            
-            assertFalse(store.isModified());
-            store.associateRoleToUser(role, "auser");
-            assertTrue(store.isModified());
-            store.store();
-            
-            assertFalse(store.isModified());
-            store.disAssociateRoleFromUser(role, "auser");
-            assertTrue(store.isModified());
-            store.load();
-            
-            assertFalse(store.isModified());
-            store.setParentRole(role,role_parent);
-            assertTrue(store.isModified());
-            store.store();
-            
-            assertFalse(store.isModified());
-            store.setParentRole(role,null);
-            assertTrue(store.isModified());
-            store.store();
+        assertFalse(store.isModified());
+        store.disAssociateRoleFromGroup(role, "agroup");
+        assertTrue(store.isModified());
+        store.load();
+        
+        assertFalse(store.isModified());
+        store.associateRoleToUser(role, "auser");
+        assertTrue(store.isModified());
+        store.store();
+        
+        assertFalse(store.isModified());
+        store.disAssociateRoleFromUser(role, "auser");
+        assertTrue(store.isModified());
+        store.load();
+        
+        assertFalse(store.isModified());
+        store.setParentRole(role,role_parent);
+        assertTrue(store.isModified());
+        store.store();
+        
+        assertFalse(store.isModified());
+        store.setParentRole(role,null);
+        assertTrue(store.isModified());
+        store.store();
 
 
-            assertFalse(store.isModified());
-            store.clear();
-            assertTrue(store.isModified());
-            store.load();
+        assertFalse(store.isModified());
+        store.clear();
+        assertTrue(store.isModified());
+        store.load();
 
             
-        } catch ( IOException ex) {
-            Assert.fail(ex.getMessage());
-        }        
     }            
 
     
     @Test
-    public void testInsert() {
-        try {
-            
-
-            // all is empty
+    public void testInsert() throws Exception{
+        // all is empty
+        checkEmpty(service);
+        checkEmpty(store);
+    
+        // transaction has values ?
+        insertValues(store);
+        if (!isJDBCTest())
             checkEmpty(service);
-            checkEmpty(store);
+        checkValuesInserted(store);
         
-            // transaction has values ?
-            insertValues(store);
-            if (!isJDBCTest())
-                checkEmpty(service);
-            checkValuesInserted(store);
-            
-            // rollback
-            store.load();
-            checkEmpty(store);
-            checkEmpty(service);
+        // rollback
+        store.load();
+        checkEmpty(store);
+        checkEmpty(service);
 
-            // commit
-            insertValues(store);
-            store.store();
-            checkValuesInserted(store);
-            checkValuesInserted(service);
+        // commit
+        insertValues(store);
+        store.store();
+        checkValuesInserted(store);
+        checkValuesInserted(service);
             
             
-        } catch ( IOException ex) {
-            Assert.fail(ex.getMessage());
-        }        
     }
 
     @Test
-    public void testModify() {
-        try {
-            
-            checkEmpty(service);
-            checkEmpty(store);
+    public void testModify() throws Exception {
+        checkEmpty(service);
+        checkEmpty(store);
+    
+        insertValues(store);
+        store.store();
+        checkValuesInserted(store);
+        checkValuesInserted(service);
         
-            insertValues(store);
-            store.store();
-            checkValuesInserted(store);
+        modifyValues(store);
+        if (!isJDBCTest())
             checkValuesInserted(service);
-            
-            modifyValues(store);
-            if (!isJDBCTest())
-                checkValuesInserted(service);
-            checkValuesModified(store);
-            
-            store.load();
-            checkValuesInserted(store);
-            checkValuesInserted(service);
-            
-            modifyValues(store);
-            store.store();
-            checkValuesModified(store);
-            checkValuesModified(service);
-            
-                        
-        } catch ( IOException ex) {
-            ex.printStackTrace();
-            Assert.fail(ex.getMessage());
-        }        
+        checkValuesModified(store);
+        
+        store.load();
+        checkValuesInserted(store);
+        checkValuesInserted(service);
+        
+        modifyValues(store);
+        store.store();
+        checkValuesModified(store);
+        checkValuesModified(service);
+                                    
     }
 
     @Test
-    public void testRemove() {
-        try {
-            
-            // all is empty
-            checkEmpty(service);
-            checkEmpty(store);
+    public void testRemove() throws Exception {
+        // all is empty
+        checkEmpty(service);
+        checkEmpty(store);
+    
+        insertValues(store);
+        store.store();
+        checkValuesInserted(store);
+        checkValuesInserted(service);
         
-            insertValues(store);
-            store.store();
-            checkValuesInserted(store);
+        removeValues(store);
+        if (!isJDBCTest())
             checkValuesInserted(service);
-            
-            removeValues(store);
-            if (!isJDBCTest())
-                checkValuesInserted(service);
-            checkValuesRemoved(store);
-            
-            store.load();
-            checkValuesInserted(store);
-            checkValuesInserted(service);
-            
-            removeValues(store);
-            store.store();
-            checkValuesRemoved(store);
-            checkValuesRemoved(service);
+        checkValuesRemoved(store);
+        
+        store.load();
+        checkValuesInserted(store);
+        checkValuesInserted(service);
+        
+        removeValues(store);
+        store.store();
+        checkValuesRemoved(store);
+        checkValuesRemoved(service);
                         
-        } catch ( IOException ex) {
-            Assert.fail(ex.getMessage());
-        }        
     }
 
 }

@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -23,6 +24,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -37,10 +39,10 @@ import javax.servlet.http.HttpServletResponse;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.Keyword;
 import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.LayerInfo.Type;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.impl.DataStoreInfoImpl;
 import org.geoserver.catalog.impl.FeatureTypeInfoImpl;
 import org.geoserver.catalog.impl.LayerGroupInfoImpl;
@@ -65,6 +67,7 @@ import org.geowebcache.grid.BoundingBox;
 import org.geowebcache.grid.GridSetBroker;
 import org.geowebcache.grid.OutsideCoverageException;
 import org.geowebcache.io.Resource;
+import org.geowebcache.layer.ExpirationRule;
 import org.geowebcache.layer.meta.LayerMetaInformation;
 import org.geowebcache.locks.MemoryLockProvider;
 import org.geowebcache.mime.MimeType;
@@ -142,7 +145,7 @@ public class GeoServerTileLayerTest {
         layerInfo.setResource(resource);
         layerInfo.setEnabled(true);
         layerInfo.setName("MockLayerInfoName");
-        layerInfo.setType(Type.VECTOR);
+        layerInfo.setType(PublishedType.VECTOR);
         StyleInfo defaultStyle = new StyleInfoImpl(null);
         defaultStyle.setName("default_style");
 
@@ -160,6 +163,8 @@ public class GeoServerTileLayerTest {
         final String layerGroupId = "mock-layergroup-id";
         layerGroup.setId(layerGroupId);
         layerGroup.setName("MockLayerGroup");
+        layerGroup.setTitle("Group title");
+        layerGroup.setAbstract("Group abstract");
         layerGroup.setLayers(Collections.singletonList((PublishedInfo) layerInfo));
 
         defaults = GWCConfig.getOldDefaults();
@@ -253,8 +258,8 @@ public class GeoServerTileLayerTest {
         List<ParameterFilter> parameterFilters = layerInfoTileLayer.getParameterFilters();
         assertNotNull(parameterFilters);
         assertEquals(1, parameterFilters.size());
-        assertTrue(parameterFilters.get(0) instanceof StringParameterFilter);
-        StringParameterFilter styleFilter = (StringParameterFilter) parameterFilters.get(0);
+        assertTrue(parameterFilters.get(0) instanceof StyleParameterFilter);
+        StyleParameterFilter styleFilter = (StyleParameterFilter) parameterFilters.get(0);
         assertEquals("STYLES", styleFilter.getKey());
         assertEquals("default_style", styleFilter.getDefaultValue());
         assertEquals(new HashSet<String>(Arrays.asList("alternateStyle-1", "alternateStyle-2")),
@@ -336,8 +341,9 @@ public class GeoServerTileLayerTest {
         description = metaInformation.getDescription();
         keywords = metaInformation.getKeywords();
         // these properties are missing from LayerGroupInfo interface
-        assertEquals(GWC.tileLayerName(layerGroup), title);
-        assertEquals("", description);
+        assertEquals("Group title", title);
+        assertEquals("Group abstract", description);
+        
         assertEquals(0, keywords.size());
     }
 
@@ -556,5 +562,58 @@ public class GeoServerTileLayerTest {
         assertEquals(1, mimeTypes.size());
         assertEquals(MimeType.createFromFormat("image/gif"), mimeTypes.get(0));
     }
+    
+    @Test
+    public void testTileExpirationList() {
+        layerInfoTileLayer = new GeoServerTileLayer(layerInfo, defaults, gridSetBroker);
+        
+        List<ExpirationRule> list = new ArrayList<ExpirationRule>();
+        list.add(new ExpirationRule(0, 10));
+        list.add(new ExpirationRule(10,20));
+        
+        layerInfoTileLayer.getInfo().setExpireCacheList(list);
+        
+     
+        assertEquals(10, layerInfoTileLayer.getExpireCache(0));
+        assertEquals(10, layerInfoTileLayer.getExpireCache(9));
+        assertEquals(20, layerInfoTileLayer.getExpireCache(10));
+        assertEquals(20, layerInfoTileLayer.getExpireCache(15));
+        
+        assertEquals(0, layerInfoTileLayer.getExpireCache(-1));
+    }
+    
+    @Test
+    public void testCacheExpiration() {
+        layerInfoTileLayer = new GeoServerTileLayer(layerInfo, defaults, gridSetBroker);
+        assertEquals(0, layerInfoTileLayer.getInfo().getExpireCache());
+        layerInfoTileLayer.getInfo().setExpireCache(40);
+        assertEquals(40, layerInfoTileLayer.getInfo().getExpireCache());
+    }
 
+    @Test
+    public void testAdvertised() {
+        // Testing the advertised parameter
+        layerInfoTileLayer = new GeoServerTileLayer(layerInfo, defaults, gridSetBroker);
+        assertTrue(layerInfoTileLayer.isAdvertised());
+    }
+
+    @Test
+    public void testTransient() {
+        // Testing the transient parameter
+        layerInfoTileLayer = new GeoServerTileLayer(layerInfo, defaults, gridSetBroker);
+        assertFalse(layerInfoTileLayer.isTransientLayer());
+    }
+
+    @Test
+    public void testGetPublishedInfo() {
+        // Checking that the getLayerInfo and getLayerGroupInfo methods
+        // returns a not null object
+        layerInfoTileLayer = new GeoServerTileLayer(layerInfo, defaults, gridSetBroker);
+        assertNotNull(layerInfoTileLayer.getLayerInfo());
+        assertNull(layerInfoTileLayer.getLayerGroupInfo());
+        
+        layerGroupInfoTileLayer = new GeoServerTileLayer(layerGroup, defaults, gridSetBroker);
+        assertNull(layerGroupInfoTileLayer.getLayerInfo());
+        assertNotNull(layerGroupInfoTileLayer.getLayerGroupInfo());
+    }
 }

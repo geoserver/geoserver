@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+ Copyright (C) 2014 - Open Source Geospatial Foundation. All rights reserved.
+ This code is licensed under the GPL 2.0 license, available at the root
+ application directory.
+ -->
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+
+    <bean id="mbtilesGetMapOutputFormat" class="org.geoserver.mbtiles.MBTilesGetMapOutputFormat">
+      <constructor-arg ref="webMapService" />
+      <constructor-arg ref="wms" />
+      <constructor-arg ref="gwcFacade" />
+    </bean>
+    
+   <bean id="mbtilesProcess" class="org.geoserver.mbtiles.gs.wps.MBTilesProcess">
+	  <constructor-arg index="0" ref="catalog"/>
+      <constructor-arg index="1" ref="mbtilesGetMapOutputFormat" />
+      <constructor-arg index="2" ref="wpsResourceManager"/>
+    </bean>
+
+</beans>

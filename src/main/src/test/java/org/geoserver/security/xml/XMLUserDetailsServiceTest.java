@@ -1,33 +1,27 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 
 package org.geoserver.security.xml;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
-import java.util.logging.Logger;
 
-import junit.framework.Assert;
-
-import org.geoserver.data.test.LiveData;
 import org.geoserver.data.test.LiveSystemTestData;
 import org.geoserver.data.test.SystemTestData;
-import org.geoserver.data.test.TestData;
-import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.GeoServerRoleService;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.GeoServerUserGroupService;
 import org.geoserver.security.impl.AbstractUserDetailsServiceTest;
-import org.geoserver.security.impl.DataAccessRuleDAO;
 import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.security.impl.GeoServerUser;
-import org.geoserver.security.impl.RESTAccessRuleDAO;
-import org.geoserver.security.impl.ServiceAccessRuleDAO;
 import org.geoserver.security.password.GeoServerMultiplexingPasswordEncoder;
 import org.geoserver.security.password.PasswordValidator;
 import org.geoserver.test.SystemTest;
@@ -40,6 +34,11 @@ public class XMLUserDetailsServiceTest extends AbstractUserDetailsServiceTest {
     @Override
     protected SystemTestData createTestData() throws Exception {
         return new LiveSystemTestData(new File("./src/test/resources/data_dir/legacy"));
+    }
+
+    @Override
+    protected void setUpTestData(SystemTestData testData) throws Exception {
+        // do nothing here, we want the live test data info and run its migration
     }
 
     @Override
@@ -92,8 +91,8 @@ public class XMLUserDetailsServiceTest extends AbstractUserDetailsServiceTest {
         GeoServerUserGroupService userService = getSecurityManager().loadUserGroupService(XMLUserGroupService.DEFAULT_NAME);
         GeoServerRoleService roleService =getSecurityManager().loadRoleService(XMLRoleService.DEFAULT_NAME);
         
-        assertEquals(3,userService.getUsers().size());
-        assertEquals(3,userService.getUserCount());
+        assertEquals(3, userService.getUsers().size());
+        assertEquals(3, userService.getUserCount());
         assertEquals(0,userService.getUserGroups().size());
         assertEquals(0,userService.getGroupCount());
         

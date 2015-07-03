@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -20,6 +21,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 
+import javax.media.jai.Interpolation;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.collections.EnumerationUtils;
@@ -28,6 +30,7 @@ import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.SLDHandler;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.Styles;
 import org.geoserver.catalog.WMSLayerInfo;
@@ -36,7 +39,6 @@ import org.geoserver.ows.HttpServletRequestAware;
 import org.geoserver.ows.KvpRequestReader;
 import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.platform.ServiceException;
-import org.geoserver.util.EntityResolverProvider;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.WMS;
@@ -65,7 +67,7 @@ import org.geotools.styling.StyleFactory;
 import org.geotools.styling.StyledLayer;
 import org.geotools.styling.StyledLayerDescriptor;
 import org.geotools.styling.UserLayer;
-import org.geotools.util.Version;
+import org.geoserver.util.EntityResolverProvider;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.FeatureType;
@@ -76,6 +78,7 @@ import org.opengis.filter.identity.FeatureId;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.vfny.geoserver.util.Requests;
 import org.vfny.geoserver.util.SLDValidator;
+import org.xml.sax.EntityResolver;
 
 public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServletRequestAware {
 
@@ -84,6 +87,15 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
      */
     private HttpServletRequest httpRequest;
 
+    private static Map<String, Integer> interpolationMethods;
+    
+    static {
+        interpolationMethods = new HashMap<String, Integer>();
+        interpolationMethods.put("NEAREST NEIGHBOR", Interpolation.INTERP_NEAREST);
+        interpolationMethods.put("BILINEAR", Interpolation.INTERP_BILINEAR);
+        interpolationMethods.put("BICUBIC", Interpolation.INTERP_BICUBIC);
+    }
+    
     /**
      * style factory
      */
@@ -240,6 +252,17 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
             styleNameList.addAll(KvpUtils.readFlat(stylesParam));
         }
 
+        // raw interpolations parameter
+        String interpolationParam = (String) kvp.get("INTERPOLATIONS");
+        List<String> interpolationList = new ArrayList<String>();
+        if (interpolationParam != null) {
+            interpolationList.addAll(KvpUtils.readFlat(interpolationParam));
+        }
+        
+        if(interpolationList.size() > 0) {
+            getMap.setInterpolations(parseInterpolations(requestedLayerInfos, interpolationList));
+        }
+        
         // pre parse filters
         List<Filter> filters = parseFilters(getMap);
 
@@ -253,7 +276,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
             if (getMap.getValidateSchema().booleanValue()) {
                 ByteArrayInputStream stream = new ByteArrayInputStream(getMap.getSldBody()
                         .getBytes());
-                List errors = validateSld(stream, getMap);
+                List errors = validateStyle(stream, getMap);
 
                 if (errors.size() != 0) {
                     throw new ServiceException(SLDValidator.getErrorMessage(
@@ -262,7 +285,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
             }
 
             InputStream input = new ByteArrayInputStream(getMap.getSldBody().getBytes());
-            StyledLayerDescriptor sld = parseSld(getMap, input);
+            StyledLayerDescriptor sld = parseStyle(getMap, input);
             processSld(getMap, requestedLayerInfos, sld, styleNameList);
 
             // set filter in, we'll check consistency later
@@ -272,20 +295,20 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
                 LOGGER.fine("Getting layers and styles from reomte SLD");
             }
 
-            URL sldUrl = getMap.getSld();
+            URL styleUrl = getMap.getStyleUrl();
 
             if (getMap.getValidateSchema().booleanValue()) {
-                InputStream input = Requests.getInputStream(sldUrl);
+                InputStream input = Requests.getInputStream(styleUrl);
                 List errors = null;
 
                 try {
-                    errors = validateSld(input, getMap);
+                    errors = validateStyle(input, getMap);
                 } finally {
                     input.close();
                 }
 
                 if ((errors != null) && (errors.size() != 0)) {
-                    input = Requests.getInputStream(sldUrl);
+                    input = Requests.getInputStream(styleUrl);
 
                     try {
                         throw new ServiceException(SLDValidator.getErrorMessage(input, errors));
@@ -297,10 +320,10 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
 
             // JD: GEOS-420, Wrap the sldUrl in getINputStream method in order
             // to do compression
-            InputStream input = Requests.getInputStream(sldUrl);
+            InputStream input = Requests.getInputStream(styleUrl);
 
             try {
-                StyledLayerDescriptor sld = parseSld(getMap, input);
+                StyledLayerDescriptor sld = parseStyle(getMap, input);
                 processSld(getMap, requestedLayerInfos, sld, styleNameList);
             } finally {
                 input.close();
@@ -483,6 +506,41 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
         return getMap;
     }
 
+    private List<Interpolation> parseInterpolations(List<Object> requestedLayers,
+            List<String> interpolationList) {
+        List<Interpolation> interpolations = new ArrayList<Interpolation>();
+        for (int i = 0; i < requestedLayers.size(); i++) {
+            // null interpolation means:
+            // use the default WMS one
+            Interpolation interpolation = null;
+            if(i < interpolationList.size()) {
+                String interpolationName = interpolationList.get(i);
+                if(!interpolationName.trim().equals("")) {
+                    interpolation = getInterpolationObject(interpolationName);
+                }
+            }
+            Object o = requestedLayers.get(i);
+            if (o instanceof LayerInfo) {
+                interpolations.add(interpolation);
+            } else if (o instanceof LayerGroupInfo) {
+                List<LayerInfo> subLayers = ((LayerGroupInfo) o).layers();
+                for (LayerInfo layer : subLayers) {
+                    interpolations.add(interpolation);
+                }
+            } else {
+                throw new IllegalArgumentException("Unknown layer info type: " + o);
+            }
+        }
+        
+        return interpolations;
+    }
+
+    private Interpolation getInterpolationObject(String interpolation) {
+        return Interpolation.getInstance(interpolationMethods.get(interpolation
+                .toUpperCase()));
+    }
+
+
     private Style getDefaultStyle (LayerInfo layer) throws IOException{
         if (layer.getResource() instanceof WMSLayerInfo) {
             // NamedStyle is a subclass of Style -> we use it as a way to convey
@@ -555,17 +613,15 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
     }   
     
     /**
-     * validates an sld document.
+     * validates an style document.
      * 
      */
-    private List validateSld(InputStream stream, GetMapRequest getMap) {
+    private List validateStyle(InputStream stream, GetMapRequest getMap) {
         try {
-            if (getMap.getSldVersion() != null) {
-                return Styles.validate(stream, entityResolverProvider.getEntityResolver(), new Version(getMap.getSldVersion()));
-            }
-            else {
-                return Styles.validate(stream, entityResolverProvider.getEntityResolver());
-            }
+            String language = getStyleFormat(getMap);
+            EntityResolver entityResolver = entityResolverProvider.getEntityResolver();
+
+            return Styles.handler(language).validate(stream, getMap.styleVersion(), entityResolver);
         } 
         catch (IOException e) {
             throw new ServiceException("Error validating style", e);
@@ -573,23 +629,25 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
     }
     
     /**
-     * Parses an sld document.
+     * Parses an style document.
      */
-    private StyledLayerDescriptor parseSld(GetMapRequest getMap, InputStream stream) {
-        StyledLayerDescriptor sld;
+    private StyledLayerDescriptor parseStyle(GetMapRequest getMap, InputStream stream) {
         try {
-            if (getMap.getSldVersion() != null) {
-                sld = Styles.parse(stream, entityResolverProvider.getEntityResolver(), new Version(getMap.getSldVersion()));
-            }
-            else {
-                sld = Styles.parse(stream, entityResolverProvider.getEntityResolver());
-            }
+            String format = getStyleFormat(getMap);
+            EntityResolver entityResolver = entityResolverProvider.getEntityResolver();
+
+            return Styles.handler(format).parse(stream, getMap.styleVersion(), null, entityResolver);
         }
         catch(IOException e) {
             throw new ServiceException("Error parsing style", e);
         }
-       
-        return sld;
+    }
+
+    /*
+     * Get style language from request, falling back on SLD as default. 
+     */
+    private String getStyleFormat(GetMapRequest request) {
+        return request.getStyleFormat() != null ? request.getStyleFormat() : SLDHandler.FORMAT;
     }
 
     private void processSld(final GetMapRequest request, final List<?> requestedLayers,

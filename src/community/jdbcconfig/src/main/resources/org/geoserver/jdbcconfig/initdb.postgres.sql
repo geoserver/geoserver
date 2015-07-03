@@ -2,7 +2,7 @@
 CREATE TABLE object ( 
   oid serial NOT NULL, 
   type_id int4 NOT NULL, 
-  id varchar(255) NOT NULL, 
+  id text NOT NULL, 
   blob text NOT NULL, 
   PRIMARY KEY (oid)
 );
@@ -10,17 +10,17 @@ CREATE TABLE object (
 CREATE TABLE object_property (
   oid int4 NOT NULL, 
   property_type int4 NOT NULL, 
-  id varchar(255) NOT NULL, 
+  id text NOT NULL, 
   related_oid int4, 
   related_property_type int4, 
   colindex int4 NOT NULL, 
-  value varchar(255), 
+  value text, 
   PRIMARY KEY (oid, property_type, colindex)
 );
 
 CREATE TABLE type (
   oid serial NOT NULL,
-  typename varchar(255) NOT NULL, 
+  typename text NOT NULL, 
   PRIMARY KEY (OID)
 );
 
@@ -28,15 +28,15 @@ CREATE TABLE property_type (
   oid  serial NOT NULL, 
   target_property int4, 
   type_id int4 NOT NULL, 
-  name varchar(255) NOT NULL, 
+  name text NOT NULL, 
   collection bool NOT NULL, 
   text bool NOT NULL, 
   PRIMARY KEY (oid)
 );
 
 CREATE TABLE default_object (
-  def_key varchar(255) NOT NULL, 
-  id varchar(255) NOT NULL
+  def_key text NOT NULL, 
+  id text NOT NULL
 
 );
 

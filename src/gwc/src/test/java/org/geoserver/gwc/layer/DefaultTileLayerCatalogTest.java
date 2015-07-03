@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -14,9 +15,11 @@ import org.apache.commons.io.FileUtils;
 import org.geoserver.catalog.impl.ModificationProxy;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geowebcache.config.XMLConfiguration;
+import org.geowebcache.config.ContextualConfigurationProvider.Context;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.web.context.WebApplicationContext;
 
 import com.google.common.collect.ImmutableSet;
 import com.thoughtworks.xstream.XStream;
@@ -34,8 +37,8 @@ public class DefaultTileLayerCatalogTest {
         baseDirectory.mkdirs();
         GeoServerResourceLoader resourceLoader = new GeoServerResourceLoader(baseDirectory);
 
-        XStream xStream = XMLConfiguration.getConfiguredXStream(new XStream(), null);
-        xStream = new GWCGeoServerConfigurationProvider().getConfiguredXStream(xStream);
+        XStream xStream = XMLConfiguration.getConfiguredXStreamWithContext(new XStream(), 
+                (WebApplicationContext) null, Context.PERSIST);
 
         catalog = new DefaultTileLayerCatalog(resourceLoader, xStream);
     }

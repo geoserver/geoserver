@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -54,16 +55,6 @@ public class RenderingBufferTest extends WMSTestSupport {
         catalog.save(layer);        
     }
     
-//    @Override
-//    protected void populateDataDirectory(MockData dataDirectory) throws Exception {
-//        super.populateDataDirectory(dataDirectory);
-//
-//        dataDirectory.addStyle(LINE_WIDTH_STYLE, getClass().getResource("linewidth.sld"));
-//        dataDirectory.addPropertiesType(LINE_WIDTH_LAYER, getClass().getResource(
-//                "LineWidth.properties"), Collections.singletonMap(MockData.KEY_STYLE,
-//                LINE_WIDTH_STYLE));
-//    }
-
     @Test
     public void testGetMapNoBuffer() throws Exception {
         String request = "cite/wms?request=getmap&service=wms" + "&layers="
@@ -99,7 +90,8 @@ public class RenderingBufferTest extends WMSTestSupport {
         
         BufferedImage image = ImageIO.read(getBinaryInputStream(response));
         showImage("testGetMap", image);
-        assertTrue(countNonBlankPixels("testGetMap", image, BG_COLOR) > 0);
+        int nonBlankPixels = countNonBlankPixels("testGetMap", image, BG_COLOR);
+        assertTrue(nonBlankPixels > 0);
     }
     
     @Test 
@@ -110,7 +102,7 @@ public class RenderingBufferTest extends WMSTestSupport {
                 + "&width=50&height=50&format=image/png" + "&srs=epsg:4326&bbox=-6,0,-1,5&x=49&y=49&query_layers=" 
                 + layerName + "&info_format=application/vnd.ogc.gml&buffer=30";
         Document dom = getAsDOM(request);
-        //print(dom);
+        print(dom);
         assertXpathEvaluatesTo("1", "count(//gml:featureMember)", dom);
     }
     

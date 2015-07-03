@@ -1,0 +1,31 @@
+<assembly>
+  <id>netcdf-plugin</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <fileSets>
+    <fileSet>
+      <directory>release/target/dependency</directory>
+      <outputDirectory></outputDirectory>
+      <includes>
+        <include>cdm*.jar</include>
+        <include>*netcdf*.jar</include>
+        <include>udunits*.jar</include>
+        <include>httpservices*.jar</include>
+        <include>joda-time*.jar</include>
+        <include>jcip-annotations*.jar</include>
+        <include>ehcache-core*.jar</include>
+        <include>gt-jdbc-h2*.jar</include>
+        <include>gt-netcdf*.jar</include>
+        <include>gt-coverage-api*.jar</include>
+        <include>gt-unidata*.jar</include>
+        <include>hatbox*.jar</include>
+        <include>geodb*.jar</include>
+      </includes>
+      <excludes>
+        <exclude>gs-netcdf-out*.jar</exclude>
+      </excludes>
+    </fileSet>
+  </fileSets>
+</assembly>

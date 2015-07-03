@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -80,7 +81,6 @@ public class DataStoreResource extends AbstractCatalogResource {
         
         //if no namespace parameter set, set it
         //TODO: we should really move this sort of thing to be something central
-        Map params = ds.getConnectionParameters();
         if (!ds.getConnectionParameters().containsKey("namespace")) {
             WorkspaceInfo ws = ds.getWorkspace();
             NamespaceInfo ns = catalog.getNamespaceByPrefix(ws.getName());
@@ -105,6 +105,7 @@ public class DataStoreResource extends AbstractCatalogResource {
             }
         }
         
+        catalog.validate((DataStoreInfo)object, false).throwIfInvalid();
         catalog.add( (DataStoreInfo) object );
         
         LOGGER.info( "POST data store " + ds.getName() );
@@ -134,6 +135,7 @@ public class DataStoreResource extends AbstractCatalogResource {
         
         new CatalogBuilder( catalog ).updateDataStore( original, ds );
         
+        catalog.validate(original, false).throwIfInvalid();
         catalog.save( original );
         
         clear(original);

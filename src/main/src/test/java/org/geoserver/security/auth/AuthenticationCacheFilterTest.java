@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -21,8 +22,9 @@ import org.geoserver.security.GeoServerSecurityFilterChain;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.config.BasicAuthenticationFilterConfig;
 import org.geoserver.security.config.DigestAuthenticationFilterConfig;
+import org.geoserver.security.config.J2eeAuthenticationBaseFilterConfig.J2EERoleSource;
 import org.geoserver.security.config.J2eeAuthenticationFilterConfig;
-import org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig.RoleSource;
+import org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig.PreAuthenticatedUserNameRoleSource;
 import org.geoserver.security.config.RequestHeaderAuthenticationFilterConfig;
 import org.geoserver.security.config.X509CertificateAuthenticationFilterConfig;
 import org.geoserver.security.filter.GeoServerBasicAuthenticationFilter;
@@ -257,6 +259,7 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
         J2eeAuthenticationFilterConfig config = new J2eeAuthenticationFilterConfig();        
         config.setClassName(GeoServerJ2eeAuthenticationFilter.class.getName());        
         config.setName(testFilterName3);
+        config.setRoleSource(J2EERoleSource.J2EE);
         config.setRoleServiceName("rs1");        
         getSecurityManager().saveFilter(config);
         
@@ -365,7 +368,7 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
         config.setName(testFilterName4);
         config.setRoleServiceName("rs1");
         config.setPrincipalHeaderAttribute("principal");
-        config.setRoleSource(RoleSource.RoleService);
+        config.setRoleSource(PreAuthenticatedUserNameRoleSource.RoleService);
         config.setUserGroupServiceName("ug1");
         config.setPrincipalHeaderAttribute("principal");
         config.setRolesHeaderAttribute("roles");;
@@ -387,7 +390,7 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
         assertNull(SecurityContextHolder.getContext().getAuthentication());
         
         
-        for (RoleSource rs : RoleSource.values()) {            
+        for (PreAuthenticatedUserNameRoleSource rs : PreAuthenticatedUserNameRoleSource.values()) {            
             getCache().removeAll();
             
             config.setRoleSource(rs);
@@ -396,13 +399,13 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
             response= new MockHttpServletResponse();
             chain = new MockFilterChain();            
             request.setHeader("principal", testUserName);
-            if (rs==RoleSource.Header) {
+            if (rs.equals(PreAuthenticatedUserNameRoleSource.Header)) {
                 request.setHeader("roles", derivedRole+";"+rootRole);
             }
             getProxy().doFilter(request, response, chain);            
             assertEquals(HttpServletResponse.SC_OK, response.getErrorCode());
             Authentication auth = getAuth(testFilterName4, testUserName,null,null);
-            if (rs==RoleSource.Header) {
+            if (rs.equals(PreAuthenticatedUserNameRoleSource.Header)) {
                 continue; // no cache
             }
             assertNotNull(auth);
@@ -414,7 +417,7 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
         }
 
         // unknown user
-        for (RoleSource rs : RoleSource.values()) {
+        for (PreAuthenticatedUserNameRoleSource rs : PreAuthenticatedUserNameRoleSource.values()) {
             getCache().removeAll();            
             config.setRoleSource(rs);
             getSecurityManager().saveFilter(config);
@@ -426,7 +429,7 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
             request.setHeader("principal", "unknown");
             getProxy().doFilter(request, response, chain);            
             assertEquals(HttpServletResponse.SC_OK, response.getErrorCode());
-            if (rs==RoleSource.Header) {
+            if (rs.equals(PreAuthenticatedUserNameRoleSource.Header)) {
                 continue; // no cache
             }
             Authentication auth = getAuth(testFilterName4, "unknown",null,null);
@@ -438,7 +441,7 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
 
         // test disabled user, should not work since cache is active 
         
-        config.setRoleSource(RoleSource.UserGroupService);
+        config.setRoleSource(PreAuthenticatedUserNameRoleSource.UserGroupService);
         // saving a filter empties the cache
         getSecurityManager().saveFilter(config);
         updateUser("ug1", testUserName, false);
@@ -754,7 +757,7 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
         config.setClassName(GeoServerX509CertificateAuthenticationFilter.class.getName());        
         config.setName(testFilterName8);
         config.setRoleServiceName("rs1");
-        config.setRoleSource(org.geoserver.security.config.X509CertificateAuthenticationFilterConfig.RoleSource.RoleService);
+        config.setRoleSource(PreAuthenticatedUserNameRoleSource.RoleService);
         config.setUserGroupServiceName("ug1");
         config.setRolesHeaderAttribute("roles");
         getSecurityManager().saveFilter(config);
@@ -775,22 +778,22 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
         assertNull(SecurityContextHolder.getContext().getAuthentication());
         
         
-        for (org.geoserver.security.config.X509CertificateAuthenticationFilterConfig.RoleSource rs : 
-            org.geoserver.security.config.X509CertificateAuthenticationFilterConfig.RoleSource.values()) {
+        for (PreAuthenticatedUserNameRoleSource rs : 
+            PreAuthenticatedUserNameRoleSource.values()) {
             getCache().removeAll();
             config.setRoleSource(rs);
             getSecurityManager().saveFilter(config);
             request= createRequest("/foo/bar");
             response= new MockHttpServletResponse();
             chain = new MockFilterChain();
-            if (rs==RoleSource.Header) {
+            if (rs.equals(PreAuthenticatedUserNameRoleSource.Header)) {
                 request.setHeader("roles", derivedRole+";"+rootRole);
             }
             setCertifacteForUser(testUserName, request);                        
             getProxy().doFilter(request, response, chain);            
             assertEquals(HttpServletResponse.SC_OK, response.getErrorCode());
             
-            if (rs==RoleSource.Header) {
+            if (rs.equals(PreAuthenticatedUserNameRoleSource.Header)) {
                 continue; // no cache
             }
             Authentication auth = getAuth(testFilterName8, testUserName,null,null);
@@ -803,8 +806,8 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
         }
 
         // unknown user
-        for (org.geoserver.security.config.X509CertificateAuthenticationFilterConfig.RoleSource rs : 
-            org.geoserver.security.config.X509CertificateAuthenticationFilterConfig.RoleSource.values()) {
+        for (PreAuthenticatedUserNameRoleSource rs : 
+            PreAuthenticatedUserNameRoleSource.values()) {
             getCache().removeAll();
             config.setRoleSource(rs);
             getSecurityManager().saveFilter(config);
@@ -817,7 +820,7 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
             setCertifacteForUser("unknown", request);
             getProxy().doFilter(request, response, chain);            
             assertEquals(HttpServletResponse.SC_OK, response.getErrorCode());
-            if (rs==RoleSource.Header) {
+            if (rs.equals(PreAuthenticatedUserNameRoleSource.Header)) {
                 continue; // no cache
             }
             Authentication auth = getAuth(testFilterName8, "unknown",null,null);
@@ -829,7 +832,7 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
 
         // test disabled user, should not work because of active cache
         updateUser("ug1", testUserName, false);
-        config.setRoleSource(org.geoserver.security.config.X509CertificateAuthenticationFilterConfig.RoleSource.UserGroupService);
+        config.setRoleSource(PreAuthenticatedUserNameRoleSource.UserGroupService);
         // saving the filter clears the cache
         getSecurityManager().saveFilter(config);
                 

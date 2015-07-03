@@ -1,4 +1,5 @@
-/* Copyright (c) 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -13,7 +14,8 @@ import org.geoserver.kml.utils.ScaleStyleVisitor;
 import org.geoserver.kml.utils.SymbolizerCollector;
 import org.geoserver.wms.WMSMapContent;
 import org.geotools.data.simple.SimpleFeatureCollection;
-import org.geotools.data.simple.SimpleFeatureIterator;
+import org.geotools.feature.FeatureIterator;
+import org.geotools.filter.function.EnvFunction;
 import org.geotools.map.FeatureLayer;
 import org.geotools.map.Layer;
 import org.geotools.styling.Style;
@@ -30,6 +32,10 @@ import de.micromata.opengis.kml.v_2_2_0.Placemark;
  * @author Andrea Aime - GeoSolutions
  */
 public class FeatureSequenceFactory implements SequenceFactory<Feature> {
+    
+    static final String OUTPUT_MODE = "kmlOutputMode";
+    
+    static final String VECTOR_MODE = "vector";
 
     private SimpleFeatureCollection features;
 
@@ -68,15 +74,19 @@ public class FeatureSequenceFactory implements SequenceFactory<Feature> {
 
     @Override
     public Sequence<Feature> newSequence() {
-        return new FeatureGenerator(simplified != null ? features.features() : null);
+        return new FeatureGenerator(simplified != null ? context.openIterator(features) : null);
     }
 
     public class FeatureGenerator implements Sequence<Feature> {
 
-        private SimpleFeatureIterator fi;
+        private FeatureIterator fi;
 
-        public FeatureGenerator(SimpleFeatureIterator fi) {
-            this.fi = fi;
+        public FeatureGenerator(FeatureIterator fi) {
+            if(fi != null) {
+                // until we are scrolling this generator we are in vector mode
+                EnvFunction.setLocalValue(OUTPUT_MODE, VECTOR_MODE);
+                this.fi = fi;
+            }
         }
 
         @Override
@@ -119,15 +129,17 @@ public class FeatureSequenceFactory implements SequenceFactory<Feature> {
                 } finally {
                     if (!featureRetrieved) {
                         // an exception has occurred, release the feature iterator
-                        fi.close();
-                        fi = null;
+                        context.closeIterator(fi);
+                        EnvFunction.setLocalValue(OUTPUT_MODE, null);
                     }
                 }
             }
 
             // did we reach the end just now?
             if (!fi.hasNext()) {
-                fi.close();
+                // clean up the output mode, the next layer might be encoded as a raster overlay
+                EnvFunction.setLocalValue(OUTPUT_MODE, null);
+                context.closeIterator(fi);
             }
             return null;
         }

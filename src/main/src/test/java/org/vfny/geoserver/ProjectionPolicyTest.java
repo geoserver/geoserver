@@ -1,10 +1,13 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.vfny.geoserver;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -57,6 +60,7 @@ public class ProjectionPolicyTest extends GeoServerSystemTestSupport {
         
         testData.setUpDefaultRasterLayers();
         testData.setUpWcs10RasterLayers();
+        testData.setUpSecurity();
     }
     
     @Test

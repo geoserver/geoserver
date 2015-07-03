@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -26,12 +27,29 @@ import com.vividsolutions.jts.geom.Envelope;
  * <p>
  * Instances of this interface are registered in a spring context to handle additional types of
  * </p>
- * 
+ *
  * @author Lucas Reed, Refractions Research Inc
  * @author Justin Deoliveira, OpenGEO
- * 
+ *
  */
 public abstract class ProcessParameterIO {
+
+    /**
+     * PPIO possible direction:
+     * <ul>
+     * <li>encoding : PPIO suitable only for outputs</li>
+     * <li>decoding : PPIO suitable only for inputs</li>
+     * <li>both : PPIO suitable both for inputs and outputs</li>
+     * </ul>
+     */
+    public enum PPIODirection {
+        /** Only encoding supported, PPIO suitable only for outputs */
+        ENCODING,
+        /** Only decoding supported, PPIO suitable only for inputs */
+        DECODING,
+        /** Both encoding and decoding supported */
+        BOTH
+    };
 
     /**
      * list of default ppios supported out of the box
@@ -72,13 +90,14 @@ public abstract class ProcessParameterIO {
         defaults.add(new GMLPPIO.GML3.Geometry());
         defaults.add(new GMLPPIO.GML2.Geometry());
         defaults.add(new WKTPPIO());
+        defaults.add(new GeoJSONPPIO.Geometries());
         defaults.add(new GMLPPIO.GML3.GeometryAlternate());
         defaults.add(new GMLPPIO.GML2.GeometryAlternate());
 
         // features
         defaults.add(new WFSPPIO.WFS10());
         defaults.add(new WFSPPIO.WFS11());
-        defaults.add(new GeoJSONPPIO());
+        defaults.add(new GeoJSONPPIO.FeatureCollections());
         defaults.add(new WFSPPIO.WFS10Alternate());
         defaults.add(new WFSPPIO.WFS11Alternate());
 
@@ -88,7 +107,7 @@ public abstract class ProcessParameterIO {
         // grids
         defaults.add(new GeoTiffPPIO());
         defaults.add(new ArcGridPPIO());
-        
+
         defaults.add(new ImagePPIO.PNGPPIO());
         defaults.add(new ImagePPIO.JPEGPPIO());
 
@@ -96,7 +115,7 @@ public abstract class ProcessParameterIO {
         defaults.add(new BoundingBoxPPIO(Envelope.class));
         defaults.add(new BoundingBoxPPIO(ReferencedEnvelope.class));
         defaults.add(new BoundingBoxPPIO(org.opengis.geometry.Envelope.class));
-        
+
         // filters
         defaults.add(new FilterPPIO.Filter10());
         defaults.add(new FilterPPIO.Filter11());
@@ -164,6 +183,13 @@ public abstract class ProcessParameterIO {
             l.addAll(GeoServerExtensions.extensions(ProcessParameterIO.class));
         }
 
+        // load by factory
+        List<PPIOFactory> ppioFactories = GeoServerExtensions
+                .extensions(PPIOFactory.class, context);
+        for (PPIOFactory factory : ppioFactories) {
+            l.addAll(factory.getProcessParameterIO());
+        }
+
         // find parameters that match
         List<ProcessParameterIO> matches = new ArrayList<ProcessParameterIO>();
 
@@ -185,6 +211,51 @@ public abstract class ProcessParameterIO {
         }
 
         return matches;
+    }
+
+    /*
+     * Look for PPIO matching the parameter type and suitable for direction handling
+     */
+    private static List<ProcessParameterIO> findByDirection(Parameter<?> p,
+            ApplicationContext context, PPIODirection direction) {
+        List<ProcessParameterIO> ppios = new ArrayList<ProcessParameterIO>();
+        List<ProcessParameterIO> matches = findAll(p, context);
+        for (ProcessParameterIO ppio : matches) {
+            if (ppio.getDirection() == PPIODirection.BOTH || ppio.getDirection() == direction) {
+                ppios.add(ppio);
+            }
+        }
+        return ppios;
+    }
+
+    /*
+     * Look for PPIO matching the parameter type and suitable for output handling
+     */
+    public static List<ProcessParameterIO> findEncoder(Parameter<?> p, ApplicationContext context) {
+        return findByDirection(p, context, PPIODirection.ENCODING);
+    }
+
+    /*
+     * Look for PPIO matching the parameter type and suitable for input handling
+     */
+    public static List<ProcessParameterIO> findDecoder(Parameter<?> p, ApplicationContext context) {
+        return findByDirection(p, context, PPIODirection.DECODING);
+    }
+
+    /**
+     * Returns true if the specified parameter is a complex one
+     *
+     * @param param
+     * @param applicationContext
+     * @return
+     */
+    public static boolean isComplex(Parameter<?> param, ApplicationContext applicationContext) {
+        List<ProcessParameterIO> ppios = findAll(param, applicationContext);
+        if (ppios.isEmpty()) {
+            return false;
+        } else {
+            return ppios.get(0) instanceof ComplexPPIO;
+        }
     }
 
     /**
@@ -238,4 +309,13 @@ public abstract class ProcessParameterIO {
     public final String getIdentifer() {
         return identifer;
     }
+
+    /**
+     * Used to advertise if the PPIO can support encoding, decoding, or both. By default BOTH is returned, subclass can override with their specific
+     * abilities
+     */
+    public PPIODirection getDirection() {
+        return PPIODirection.BOTH;
+    }
+
 }

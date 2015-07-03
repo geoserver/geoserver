@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -8,6 +9,7 @@ import static org.vfny.geoserver.wcs.WcsException.WcsExceptionCode.InvalidParame
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.PublishedType;
 import org.geoserver.ows.kvp.CodeTypeKvpParser;
 import org.vfny.geoserver.wcs.WcsException;
 
@@ -23,7 +25,7 @@ public class IdentifierKvpParser extends CodeTypeKvpParser {
     @Override
     public Object parse(String value) throws Exception {
         LayerInfo layer = catalog.getLayerByName(value);
-        if (layer == null || layer.getType() != LayerInfo.Type.RASTER)
+        if (layer == null || layer.getType() != PublishedType.RASTER)
             throw new WcsException("Could not find coverage '" + value + "'",
                     InvalidParameterValue, "identifier");
         return super.parse(value);

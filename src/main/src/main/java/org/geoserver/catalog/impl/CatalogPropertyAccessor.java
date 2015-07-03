@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -17,6 +18,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.geoserver.catalog.Info;
 import org.geoserver.catalog.Predicates;
@@ -24,6 +27,7 @@ import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.ows.util.OwsUtils;
 import org.geotools.filter.expression.PropertyAccessor;
 import org.geotools.util.Converters;
+import org.geotools.util.logging.Logging;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
@@ -44,6 +48,8 @@ import com.google.common.io.Closeables;
  */
 public class CatalogPropertyAccessor implements PropertyAccessor {
 
+    private static final Logger LOGGER = Logging.getLogger(CatalogPropertyAccessor.class);
+    
     @Override
     public boolean canHandle(Object object, String xpath, Class<?> target) {
         return object instanceof Info;
@@ -59,7 +65,7 @@ public class CatalogPropertyAccessor implements PropertyAccessor {
     @SuppressWarnings("unchecked")
     @Override
     public <T> T get(Object object, String xpath, Class<T> target) throws IllegalArgumentException {
-        Object value = getProperty((Info) object, xpath);
+        Object value = getProperty(object, xpath);
         T result;
         if (null != target && null != value) {
             result = Converters.convert(value, target);
@@ -161,6 +167,13 @@ public class CatalogPropertyAccessor implements PropertyAccessor {
             }
         }
 
+        // if our nested access stumbles onto a null, we return a null value to allow
+        // for full text searches to work (e.g., workspace.name, but workspace can be null
+        // in both layer groups and styles
+        if (value == null) {
+            return null;
+        }
+
         return getProperty(value, propertyNames, offset + 1);
     }
 
@@ -260,7 +273,12 @@ public class CatalogPropertyAccessor implements PropertyAccessor {
         } catch (IOException e) {
             throw Throwables.propagate(e);
         } finally {
-            Closeables.closeQuietly(stream);
+            try {
+                Closeables.close(stream, false);
+            } catch (IOException e) {
+                LOGGER.log(Level.FINE, "Ignoring exception thrown while closing " + resource
+                        + " in CatalogPropertyAccessor", e);
+            }
         }
         Map<String, String> map = Maps.fromProperties(properties);
         for (Map.Entry<String, String> e : map.entrySet()) {

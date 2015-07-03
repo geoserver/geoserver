@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -9,8 +10,11 @@ import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resource.Type;
 import org.geotools.util.logging.Logging;
-import org.vfny.geoserver.global.GeoserverDataDirectory;
 
 /**
  * Cleans up the contents of ${GEOSERVER_DATA_DIR}/temp/wcs, by removing all files that
@@ -27,21 +31,27 @@ public class WCSStorageCleaner extends TimerTask {
     public void run() {
         try {
             // first check that temp/wcs is really there in the data dir
-            File temp = GeoserverDataDirectory.findConfigDir(GeoserverDataDirectory
-                    .getGeoserverDataDirectory(), "temp");
-            if (temp == null || !temp.exists())
-                return;
-
-            File wcsTemp = new File(temp, "wcs");
-            if (!wcsTemp.exists())
-                return;
-
-            // ok, now scan for existing files there and clean up those 
-            // that are too old
+            GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
+            Resource wcs = loader.get("temp/wcs");
+            
+//            File temp = GeoserverDataDirectory.findConfigDir(GeoserverDataDirectory.getGeoserverDataDirectory(), "temp");
+//            if (temp == null || !temp.exists())return;
+//
+//            File wcsTemp = new File(temp, "wcs");
+//            if (!wcsTemp.exists())
+//                return;
+            
+            if( wcs.getType() != Type.DIRECTORY ){
+                return; // nothing to cleanup
+            }
+            
+            File wcsTemp = wcs.dir();
+            // ok, now scan for existing files there and clean up those that are too old
             long now = System.currentTimeMillis();
             for(File f : wcsTemp.listFiles()) {
-                if(now - f.lastModified() > (expirationDelay * 1000))
+                if(now - f.lastModified() > (expirationDelay * 1000)){
                     f.delete();
+                }
             }
         } catch (Exception e) {
             LOGGER.log(Level.WARNING, "Error occurred while trying to clean up "

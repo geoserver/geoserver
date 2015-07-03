@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -8,16 +9,8 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertSame;
 import static org.geoserver.gwc.GWC.tileLayerName;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.argThat;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Matchers.same;
-import static org.mockito.Mockito.atMost;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -77,6 +70,9 @@ public class CatalogLayerEventListenerTest {
     private LayerGroupInfo mockLayerGroupInfo;
 
     private CatalogLayerEventListener listener;
+    
+    private StyleInfo mockDefaultStyle;
+    private Set<StyleInfo> mockStyles;
 
     /**
      * @see junit.framework.TestCase#setUp()
@@ -101,6 +97,9 @@ public class CatalogLayerEventListenerTest {
 
         mockResourceInfo = mock(FeatureTypeInfo.class);
         mockNamespaceInfo = mock(NamespaceInfo.class);
+        
+        mockDefaultStyle = mock(StyleInfo.class);
+        when(mockDefaultStyle.prefixedName()).thenReturn("defaultStyle");
 
         when(mockLayerGroupInfo.getName()).thenReturn(LAYER_GROUP_NAME);
         when(mockLayerGroupInfo.prefixedName()).thenReturn(LAYER_GROUP_NAME);
@@ -111,9 +110,10 @@ public class CatalogLayerEventListenerTest {
         when(mockResourceInfo.getNamespace()).thenReturn(mockNamespaceInfo);
         when(mockNamespaceInfo.getPrefix()).thenReturn(NAMESPACE_PREFIX);
         when(mockLayerInfo.getResource()).thenReturn(mockResourceInfo);
-        
+
         Catalog mockCatalog = mock(Catalog.class);
         when(mockCatalog.getLayerGroups()).thenReturn(Arrays.asList(mockLayerGroupInfo));
+        when(mockLayerInfo.getDefaultStyle()).thenReturn(mockDefaultStyle);
 
         listener = new CatalogLayerEventListener(mockMediator, mockCatalog);
     }
@@ -414,9 +414,9 @@ public class CatalogLayerEventListenerTest {
         final String newName = "newStyle";
 
         StyleInfo oldStyle = mock(StyleInfo.class);
-        when(oldStyle.getName()).thenReturn(oldName);
+        when(oldStyle.prefixedName()).thenReturn(oldName);
         StyleInfo newStyle = mock(StyleInfo.class);
-        when(newStyle.getName()).thenReturn(newName);
+        when(newStyle.prefixedName()).thenReturn(newName);
 
         when(mockLayerInfo.getDefaultStyle()).thenReturn(newStyle);
 
@@ -463,17 +463,17 @@ public class CatalogLayerEventListenerTest {
     @Test public void testLayerInfoAlternateStylesChanged() throws Exception {
 
         StyleInfo removedStyle = mock(StyleInfo.class);
-        when(removedStyle.getName()).thenReturn("removedStyleName");
+        when(removedStyle.prefixedName()).thenReturn("removedStyleName");
 
         StyleInfo remainingStyle = mock(StyleInfo.class);
-        when(remainingStyle.getName()).thenReturn("remainingStyle");
+        when(remainingStyle.prefixedName()).thenReturn("remainingStyle");
 
         final Set<StyleInfo> oldStyles = new HashSet<StyleInfo>(Arrays.asList(remainingStyle,
                 removedStyle));
         when(mockLayerInfo.getStyles()).thenReturn(oldStyles);
 
         StyleInfo addedStyle = mock(StyleInfo.class);
-        when(addedStyle.getName()).thenReturn("addedStyleName");
+        when(addedStyle.prefixedName()).thenReturn("addedStyleName");
         final Set<StyleInfo> newStyles = new HashSet<StyleInfo>(Arrays.asList(addedStyle,
                 remainingStyle));
 

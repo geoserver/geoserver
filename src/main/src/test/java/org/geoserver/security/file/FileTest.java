@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -10,8 +11,11 @@ import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
+import org.geoserver.platform.resource.FileSystemWatcher;
+import org.geoserver.platform.resource.Files;
 import org.geoserver.security.GeoServerRoleService;
 import org.geoserver.security.GeoServerUserGroupService;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
@@ -64,22 +68,21 @@ public  class FileTest {
     };
 
     @Test
-    public void testFileWatcher() {
+    public void testFileWatcher() throws Exception {
+        Files.schedule(100,TimeUnit.MILLISECONDS);
         try {
             File ugFile = File.createTempFile("users", ".xml");
             ugFile.deleteOnExit();
             File gaFile = File.createTempFile("roles", ".xml");
             gaFile.deleteOnExit();
             
-            RoleFileWatcher gaWatcher = new
-                RoleFileWatcher(gaFile.getCanonicalPath(),gaService);
+            RoleFileWatcher gaWatcher = new RoleFileWatcher(gaFile,gaService);
             assertEquals(1, gaCounter);
-            
+                    
             gaWatcher.setDelay(10); // 10 millisecs
             gaWatcher.start();
             
-            UserGroupFileWatcher ugWatcher = new           
-                UserGroupFileWatcher(ugFile.getCanonicalPath(),ugService);
+            UserGroupFileWatcher ugWatcher = new UserGroupFileWatcher(ugFile,ugService);
             assertEquals(1, ugCounter);
             ugWatcher.setDelay(10);
             ugWatcher.start();
@@ -91,7 +94,7 @@ public  class FileTest {
             ugFile.setLastModified(ugFile.lastModified()+1000);
             gaFile.setLastModified(gaFile.lastModified()+1000);
            
-            // Try for one second
+            // Try for two seconds
             int maxTries=10;
             boolean failed = true;
             for (int i=0; i <maxTries;i++) {
@@ -108,10 +111,11 @@ public  class FileTest {
             gaWatcher.setTerminate(true);
             ugFile.delete();
             gaFile.delete();
-            
-        } catch (Exception ex) {
-            Assert.fail(ex.getMessage());
-        }        
+        }
+        finally {
+            Files.schedule(10, TimeUnit.SECONDS);
+        }
+     
     }
     
     

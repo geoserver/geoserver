@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+ Copyright (C) 2014 - Open Source Geospatial Foundation. All rights reserved.
+ This code is licensed under the GPL 2.0 license, available at the root
+ application directory.
+ -->
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+
+    <bean id="geopkgGetMapOutputFormat" class="org.geoserver.geopkg.GeoPackageGetMapOutputFormat">
+      <constructor-arg ref="webMapService" />
+      <constructor-arg ref="wms" />
+      <constructor-arg ref="gwcFacade" />
+    </bean>
+    
+    <bean id="geopkgGetFeatureOutputFormat" class="org.geoserver.geopkg.GeoPackageGetFeatureOutputFormat">
+      <constructor-arg ref="geoServer" />
+    </bean>
+    
+    <bean id="geopkgProcess" class="org.geoserver.geopkg.wps.GeoPackageProcess">
+	  <constructor-arg index="0" ref="geoServer"/>
+      <constructor-arg index="1" ref="geopkgGetMapOutputFormat" />
+      <constructor-arg index="2" ref="wpsResourceManager"/>
+      <constructor-arg index="3" ref="filterFactory"/>
+    </bean>
+    
+    <bean id="geopkgProcessRequestPPIO" class="org.geoserver.geopkg.wps.GeoPackageProcessRequestPPIO" >
+      <constructor-arg ref="entityResolverProvider"/>
+    </bean>
+    <bean id="geopkgDataStoreFactoryInitializer" class="org.geoserver.geopkg.GeoPkgDataStoreFactoryInitializer">
+        <property name="resourceLoader" ref="resourceLoader"/>
+    </bean>
+</beans>

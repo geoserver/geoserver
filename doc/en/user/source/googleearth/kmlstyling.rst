@@ -30,16 +30,20 @@ Contents
 
 .. _kml-styling-basic:
 
-Basic SLD Creation Wizard
--------------------------
+SLD Generation from CSS
+-----------------------
 
-Basic SLD styling can be accomplished with the coming `GeoExt Styler <http://geoserver.org/display/GEOS/GeoExt+Styler>`_.  It provides a GUI to create new styles.  These styles will work seamlessly with KML output from GeoServer.
+The CSS extension provides the facility to generate SLD files using a lightweight "Cascading Style Sheet" syntax. The CSS GUI provides a live map preview as you are editing your style in addition to an attribute reference for the current layer.
+
+The generated styles will work seamlessly with KML output from GeoServer.
+
 
 .. _kml-styling-sld-hand:
 
 Creating SLD by hand
 --------------------
-One can edit the SLD files directly instead of using the Styler GUI.  For the most complete exploration of editing SLDs see the :ref:`styling` section.  The examples below show how some of the basic styles show up in Google Earth.
+
+One can edit the SLD files directly instead of using the CSS extension.  For the most complete exploration of editing SLDs see the :ref:`styling` section.  The examples below show how some of the basic styles show up in Google Earth.
 
 
 .. _kml-styling-sld-structure:

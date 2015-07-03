@@ -1,8 +1,11 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014-2015 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.catalog;
+
+import it.geosolutions.imageio.maskband.DatasetLayout;
 
 import java.io.IOException;
 import java.util.List;
@@ -13,6 +16,7 @@ import javax.media.jai.ImageLayout;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.OverviewPolicy;
+import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
 import org.geotools.geometry.GeneralEnvelope;
 import org.opengis.coverage.grid.Format;
 import org.opengis.coverage.grid.GridEnvelope;
@@ -27,9 +31,17 @@ import org.opengis.referencing.operation.MathTransform;
  */
 public class SingleGridCoverage2DReader implements GridCoverage2DReader {
 
-    GridCoverage2DReader delegate;
+    protected GridCoverage2DReader delegate;
 
-    String coverageName;
+    protected String coverageName;
+    
+    public static SingleGridCoverage2DReader wrap(GridCoverage2DReader delegate, String coverageName) {
+        if(delegate instanceof StructuredGridCoverage2DReader) {
+            return new StructuredSingleGridCoverage2DReader((StructuredGridCoverage2DReader) delegate, coverageName);
+        } else {
+            return new SingleGridCoverage2DReader((GridCoverage2DReader) delegate, coverageName);
+        }
+    }
 
     public SingleGridCoverage2DReader(GridCoverage2DReader delegate, String coverageName) {
         if(delegate == null) {
@@ -42,7 +54,11 @@ public class SingleGridCoverage2DReader implements GridCoverage2DReader {
         this.coverageName = coverageName;
     }
 
-    private void checkCoverageName(String coverageName) {
+    /**
+     * Checks the specified name is the one we are expecting
+     * @param coverageName
+     */
+    protected void checkCoverageName(String coverageName) {
         if (!this.coverageName.equals(coverageName)) {
             throw new IllegalArgumentException("Unkonwn coverage named " + coverageName
                     + ", the only valid value is: " + this.coverageName);
@@ -164,7 +180,7 @@ public class SingleGridCoverage2DReader implements GridCoverage2DReader {
     }
 
     public String[] getGridCoverageNames() throws IOException {
-        return delegate.getGridCoverageNames();
+        return new String[]{coverageName}; //Being a singleGridCoverage reader, I can return the only coverage
     }
 
     public int getGridCoverageCount() throws IOException {
@@ -196,6 +212,16 @@ public class SingleGridCoverage2DReader implements GridCoverage2DReader {
     public double[][] getResolutionLevels(String coverageName) throws IOException {
         checkCoverageName(coverageName);
         return delegate.getResolutionLevels(coverageName);
+    }
+
+    @Override
+    public DatasetLayout getDatasetLayout() {
+        return delegate.getDatasetLayout();
+    }
+
+    @Override
+    public DatasetLayout getDatasetLayout(String coverageName) {
+        return delegate.getDatasetLayout(coverageName);
     }
 
 }

@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -9,7 +10,6 @@ import java.io.OutputStream;
 
 import net.opengis.wfs.FeatureCollectionType;
 
-import org.geoserver.config.GeoServer;
 import org.geoserver.wfs.json.GeoJSONGetFeatureResponse;
 import org.geoserver.wms.GetFeatureInfoRequest;
 import org.geoserver.wms.WMS;
@@ -48,4 +48,8 @@ public class GeoJSONFeatureInfoResponse extends GetFeatureInfoOutputFormat {
         format.write(features, out, null);
     }
 
+    @Override
+    public String getCharset(){ 
+        return wms.getGeoServer().getSettings().getCharset();
+    }
 }

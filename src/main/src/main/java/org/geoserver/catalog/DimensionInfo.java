@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -72,7 +73,7 @@ public interface DimensionInfo extends Serializable {
     public void setResolution(BigDecimal resolution);
     
     /**
-     * The units attribute for the elevation dimension. This method has to affect
+     * The units attribute for the elevation dimension. This method has no affect
      * on the time dimension.
      * 
      * @return the value for units
@@ -82,7 +83,7 @@ public interface DimensionInfo extends Serializable {
     public void setUnits(String units);
     
     /**
-     * The unitSymbol attribute for the elevation dimension. This method has to affect
+     * The unitSymbol attribute for the elevation dimension. This method has no affect
      * on the time dimension.
      * 
      * @return the value for unitSymbol
@@ -91,4 +92,12 @@ public interface DimensionInfo extends Serializable {
     
     public void setUnitSymbol(String unitSymbol);
     
+    /**
+     * The setting for selecting the default value for this dimension.
+     * 
+     * @return the current default value setting
+     */
+    public DimensionDefaultValueSetting getDefaultValue();
+    
+    public void setDefaultValue(DimensionDefaultValueSetting defaultValue);
 }

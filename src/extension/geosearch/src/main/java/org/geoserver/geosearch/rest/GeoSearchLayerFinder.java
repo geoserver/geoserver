@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -11,6 +12,7 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
+import org.geoserver.kml.KMLEncoder;
 import org.geoserver.rest.RestletException;
 import org.geoserver.rest.util.RESTUtils;
 import org.restlet.Context;
@@ -28,13 +30,15 @@ import org.restlet.resource.Resource;
 public class GeoSearchLayerFinder extends Finder {
 
     private final GeoServer geoserver;
+    private KMLEncoder encoder;
 
     /**
      * @param geoserver
      *            access to {@link Catalog} and {@link GeoServerInfo}
      */
-    private GeoSearchLayerFinder(GeoServer geoserver) {
+    private GeoSearchLayerFinder(GeoServer geoserver, KMLEncoder encoder) {
         this.geoserver = geoserver;
+        this.encoder = encoder;
     }
 
     /**
@@ -73,6 +77,6 @@ public class GeoSearchLayerFinder extends Finder {
                     Status.CLIENT_ERROR_NOT_FOUND);
         }
         final Context context = getContext();
-        return new GeoSearchLayer(context, request, response, layer, geoserver);
+        return new GeoSearchLayer(context, request, response, layer, geoserver, encoder);
     }
 }

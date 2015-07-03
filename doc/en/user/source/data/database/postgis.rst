@@ -3,7 +3,7 @@
 PostGIS
 =======
 
-`PostGIS <http://postgis.org>`_ is an open source spatial database based on `PostgreSQL <http://postgresql.com/>`_, and is currently one of the most popular open source spatial databases today.
+`PostGIS <http://postgis.net>`_ is an open source spatial database based on `PostgreSQL <http://postgresql.com/>`_, and is currently one of the most popular open source spatial databases today.
 
 Adding a PostGIS database
 -------------------------
@@ -152,4 +152,16 @@ Common problems
 Primary keys
 ````````````
 
-In order to enable transactional extensions on a table (for transactional WFS), the table must have a primary key.  A table without a primary key is considered read only to GeoServer.
+In order to enable transactional extensions on a table (for transactional WFS), the table must have a primary key.  A table without a primary key is considered read-only to GeoServer.
+
+GeoServer has an option to expose primary key values (to make filters easier). Please keep in mind that these values are only exposed for your convenience - any attempted to modify these values using WFS-T update will be silently ignored. This restriction is in place as the primary key value is used to define the FeatureId. If you must change the FeatureId you can use WFS-T delete and add in a single Transaction request to define a replacement feature. 
+
+Multi-line
+``````````
+
+To insert multi-line text (for use with labeling) remember to use escaped text::
+   
+   INSERT INTO place VALUES (ST_GeomFromText('POINT(-71.060316 48.432044)', 4326), E'Westfield\nTower');
+
+   
+   

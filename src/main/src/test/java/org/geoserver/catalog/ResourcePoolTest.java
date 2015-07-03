@@ -1,18 +1,14 @@
-/*
- * Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014-2015 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 
 package org.geoserver.catalog;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
+import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
@@ -21,6 +17,8 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.util.List;
 
+import javax.media.jai.PlanarImage;
+import javax.xml.namespace.QName;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
@@ -35,16 +33,21 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.test.RunTestSetup;
 import org.geoserver.test.SystemTest;
+import org.geotools.coverage.grid.GridCoverage2D;
+import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
 import org.geotools.data.DataAccess;
 import org.geotools.data.DataUtilities;
 import org.geotools.factory.GeoTools;
 import org.geotools.feature.NameImpl;
+import org.geotools.resources.coverage.CoverageUtilities;
+import org.geotools.resources.image.ImageUtilities;
 import org.geotools.styling.PolygonSymbolizer;
 import org.geotools.styling.Style;
 import org.geotools.util.SoftValueHashMap;
 import org.geotools.util.Version;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.opengis.coverage.grid.GridCoverageReader;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.style.ExternalGraphic;
@@ -60,11 +63,15 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
     
     private static File rockFillSymbolFile;
     
+    protected static QName TIMERANGES = new QName(MockData.SF_URI, "timeranges", MockData.SF_PREFIX);
+    
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
         
         testData.addStyle("relative", "se_relativepath.sld", ResourcePoolTest.class, getCatalog());
+        testData.addStyle("relative_protocol", "se_relativepath_protocol.sld",
+                ResourcePoolTest.class, getCatalog());
         StyleInfo style = getCatalog().getStyleByName("relative");
         style.setSLDVersion(new Version("1.1.0"));
         getCatalog().save(style);
@@ -74,6 +81,14 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
         assertTrue(image.exists());
         FileUtils.copyFileToDirectory(image, images);
         rockFillSymbolFile = new File(images, image.getName()).getCanonicalFile();
+        
+        testData.addRasterLayer(TIMERANGES, "timeranges.zip", null, null, SystemTestData.class, getCatalog());
+    }
+
+    @Override
+    protected void setUpTestData(SystemTestData testData) throws Exception {
+        super.setUpTestData(testData);
+        testData.setUpWcs11RasterLayers();
     }
 
     /**
@@ -285,5 +300,64 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
         assertNotNull(uri);
         File actual = DataUtilities.urlToFile(uri.toURL()).getCanonicalFile();
         assertEquals(rockFillSymbolFile, actual);
+    }
+    
+    @Test
+    public void testSEStyleWithRelativePathProtocol() throws IOException {
+        StyleInfo si = getCatalog().getStyleByName("relative_protocol");
+
+        assertNotNull(si);
+        Style style = si.getStyle();
+        PolygonSymbolizer ps = (PolygonSymbolizer) style.featureTypeStyles().get(0).rules().get(0)
+                .symbolizers().get(0);
+        ExternalGraphic eg = (ExternalGraphic) ps.getFill().getGraphicFill().graphicalSymbols()
+                .get(0);
+        URI uri = eg.getOnlineResource().getLinkage();
+        assertNotNull(uri);
+        File actual = DataUtilities.urlToFile(uri.toURL()).getCanonicalFile();
+        assertEquals(rockFillSymbolFile, actual);
+    }
+
+    @Test
+    public void testPreserveStructuredReader() throws IOException {
+        // we have to make sure time ranges native name is set to trigger the bug in question
+        CoverageInfo ci = getCatalog().getCoverageByName(getLayerId(TIMERANGES));
+        assertTrue(ci.getGridCoverageReader(null, null) instanceof StructuredGridCoverage2DReader);
+        String name = ci.getGridCoverageReader(null, null).getGridCoverageNames()[0];
+        ci.setNativeCoverageName(name);
+        getCatalog().save(ci);
+        
+        ci = getCatalog().getCoverageByName(getLayerId(TIMERANGES));
+        assertTrue(ci.getGridCoverageReader(null, null) instanceof StructuredGridCoverage2DReader);
+    }
+
+    @Test
+    public void testMissingNullValuesInCoverageDimensions() throws IOException {
+        CoverageInfo ci = getCatalog().getCoverageByName(getLayerId(MockData.TASMANIA_DEM));
+        List<CoverageDimensionInfo> dimensions = ci.getDimensions();
+        // legacy layers have no null value list
+        dimensions.get(0).getNullValues().clear();
+        getCatalog().save(ci);
+
+        // and now go back and ask for the reader
+        ci = getCatalog().getCoverageByName(getLayerId(MockData.TASMANIA_DEM));
+        GridCoverageReader reader = ci.getGridCoverageReader(null, null);
+        GridCoverage2D gc = null;
+        try {
+            // check that we maintain the native info if we don't have any
+            gc = (GridCoverage2D) reader.read(null);
+            assertEquals(-9999d, CoverageUtilities.getNoDataProperty(gc).getAsSingleValue(), 0d);
+        } finally {
+            if (gc != null) {
+                RenderedImage ri = gc.getRenderedImage();
+                if (gc instanceof GridCoverage2D) {
+                    gc.dispose(true);
+                }
+                if (ri instanceof PlanarImage) {
+                    ImageUtilities.disposePlanarImageChain((PlanarImage) ri);
+                }
+            }
+        }
+
     }
 }

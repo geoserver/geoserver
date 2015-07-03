@@ -1,0 +1,357 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+
+     #%L
+     geoserver-sync-core
+     $Id:$
+     $HeadURL:$
+     %%
+     Copyright (C) 2013 Moebius Solutions Inc.
+     %%
+     This program is free software: you can redistribute it and/or modify
+     it under the terms of the GNU General Public License as
+     published by the Free Software Foundation, either version 2 of the
+     License, or (at your option) any later version.
+
+     This program is distributed in the hope that it will be useful,
+     but WITHOUT ANY WARRANTY; without even the implied warranty of
+     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+     GNU General Public License for more details.
+
+     You should have received a copy of the GNU General Public
+     License along with this program.  If not, see
+     <http://www.gnu.org/licenses/gpl-2.0.html>.
+     #L%
+
+
+-->
+<!--
+
+    Testing testing 1 2 3
+
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0  http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    
+    <parent>
+        <groupId>org.geoserver</groupId>
+        <artifactId>community</artifactId>
+        <version>2.8-SNAPSHOT</version>
+    </parent>
+    <groupId>org.geoserver.community</groupId>
+    <artifactId>geoserver-sync</artifactId>
+    <packaging>pom</packaging>
+    <name>Geoserver Synchronization</name>
+	
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.organization.name>Moebius Solutions Inc.</project.organization.name>
+		<project.inceptionYear>2013</project.inceptionYear>
+		<project.projectName>geoserver-sync</project.projectName>
+		<license.licenseName>gpl_v2</license.licenseName>
+	</properties>
+
+    <repositories>
+        <repository>
+            <id>codehaus</id>
+            <name>codehaus</name>
+            <url>http://snapshots.repository.codehaus.org/</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+			<id>osgeo</id>
+			<name>Open Source Geospatial Foundation Repository</name>
+			<url>http://download.osgeo.org/webdav/geotools/</url>
+		</repository>
+		<repository>
+            <id>opengeo</id>
+            <name>opengeo</name>
+            <url>http://repo.opengeo.org/</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+		<repository>
+			<releases />
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			<id>mygrid-repository</id>
+			<name>myGrid Repository</name>
+			<url>http://www.mygrid.org.uk/maven/repository</url>
+		</repository>
+
+    </repositories>
+
+    <modules>
+		<module>geoserver-sync-core</module>
+		<module>geoserver-sync-server</module>
+		<module>geotools-sync-client</module>
+		<module>sync-test-client</module>
+    </modules>
+
+    <dependencyManagement>
+        <dependencies>
+			<dependency>
+				<groupId>junit</groupId>
+				<artifactId>junit</artifactId>
+				<!--<version>4.8.1</version>-->
+				<version>4.9</version>
+				
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.mockito</groupId>
+				<artifactId>mockito-all</artifactId>
+				<version>1.9.0</version>
+				<scope>test</scope>
+			</dependency>
+            <dependency>
+                <groupId>com.google.code.gson</groupId>
+                <artifactId>gson</artifactId>
+                <version>1.7.1</version>
+            </dependency>
+            <dependency>
+                <groupId>com.mockrunner</groupId>
+                <artifactId>mockrunner</artifactId>
+                <version>0.3.1</version>
+            </dependency>
+            <dependency>
+                <groupId>xmlunit</groupId>
+                <artifactId>xmlunit</artifactId>
+                <version>1.1</version>
+            </dependency>
+		</dependencies>
+    </dependencyManagement>
+            
+    <dependencies>
+        <!-- Exclude gt-app-schema's version of commons-io; it's not the version that actually ends up in the WAR -->
+        <dependency>
+            <groupId>org.geotools</groupId>
+            <artifactId>gt-app-schema</artifactId>
+            <version>${gt.version}</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>commons-io</artifactId>
+                    <groupId>commons-io</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+		<dependency>	
+			<groupId>com.mycila</groupId>
+			<artifactId>license-maven-plugin</artifactId>
+			<version>2.3</version>
+			<type>maven-plugin</type>
+		</dependency>
+			<dependency>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<version>1.1.1</version>
+			</dependency>
+		<dependency>
+			<groupId>net.java.dev.jai-imageio</groupId>
+			<artifactId>jai-imageio-core-standalone</artifactId>
+			<version>1.2-pre-dr-b04-2011-07-04</version>
+		</dependency>
+	</dependencies>
+    
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <configuration>
+                        <source>1.6</source>
+                        <target>1.6</target>
+                        <debug>true</debug>
+                        <encoding>UTF-8</encoding>
+                    </configuration>
+                </plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-surefire-plugin</artifactId>
+					<!--<version>2.12.4</version>-->
+					<version>2.4.2</version>
+					<configuration>
+						<!--<parallel>methods</parallel>
+						<threadCount>10</threadCount>-->
+						<excludes>
+							<exclude>**/*IntegrationTest.java</exclude>
+						</excludes>
+					</configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>2.2</version>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>test-jar</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+	                <groupId>org.apache.maven.plugins</groupId>
+	                <artifactId>maven-source-plugin</artifactId>
+	                <version>2.2.1</version>
+                </plugin>
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>build-helper-maven-plugin</artifactId>
+					<version>1.5</version>
+				</plugin>
+				<plugin>
+					<groupId>org.codehause.mojo</groupId>
+					<artifactId>exec-maven-plugin</artifactId>
+					<version>1.1.1</version>
+				</plugin>
+				<!--<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>license-maven-plugin</artifactId>
+					<version>1.5</version>
+					<configuration>
+						<verbose>false</verbose>
+						<addSvnKeyWords>true</addSvnKeyWords>
+
+
+					</configuration>
+					<executions>
+						<execution>
+							<id>first</id>
+							<goals>
+								<goal>update-file-header</goal>
+							</goals>
+							<phase>process-sources</phase>
+							<configuration>
+								<licenseName>gpl_v2</licenseName>
+								<roots>
+									<root>${basedir}/geoserver-sync-core/</root>
+									<root>${basedir}/geoserver-sync-server/</root>
+									<root>${basedir}/geotools-sync-client/</root>
+									<root>${basedir}/sync-test-client/</root>
+								</roots>
+							</configuration>
+						</execution>
+					</executions>
+				
+				
+				</plugin>-->
+
+			
+			
+			</plugins>
+
+        </pluginManagement>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.7</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>aggregate</goal>
+                        </goals>
+                        <phase>site</phase>
+                        <configuration>
+                            <aggregate>true</aggregate>
+                            <doclet>gr.spinellis.umlgraph.doclet.UmlGraphDoc</doclet>
+                            <docletArtifact>
+                                <groupId>gr.spinellis</groupId>
+                                <artifactId>UmlGraph</artifactId>
+                                <version>4.4</version>
+                            </docletArtifact>
+                            <additionalparam>
+                                -inferrel -inferdep -quiet
+                                -hide java.*
+                                -hide org.oasis_open.*
+                                -collpackages
+                                java.util.*
+                                -qualify -postfixpackage -nodefontsize 9
+                                -nodefontpackagesize 7 -views
+                                </additionalparam>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+				<!--<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>license-maven-plugin</artifactId>
+					<version>1.5</version>
+					<configuration>
+						<verbose>false</verbose>
+						<addSvnKeyWords>true</addSvnKeyWords>
+
+
+					</configuration>
+					<executions>
+						<execution>
+							<id>first</id>
+							<goals>
+								<goal>update-file-header</goal>
+							</goals>
+							<phase>process-sources</phase>
+							<configuration>
+								<licenseName>gpl_v2</licenseName>
+								<roots>
+									<root>${basedir}/geoserver-sync-core/</root>
+									<root>${basedir}/geoserver-sync-server/</root>
+									<root>${basedir}/geotools-sync-client/</root>
+									<root>${basedir}/sync-test-client/</root>
+								</roots>
+							</configuration>
+						</execution>
+					</executions>
+				
+				
+				</plugin>-->
+
+<plugin>
+    <inherited>false</inherited>
+	<groupId>com.mycila</groupId>
+    <artifactId>license-maven-plugin</artifactId>
+    <version>2.4</version>
+    <configuration>
+        
+		<header>${basedir}/src/main/resources/license/header.txt</header>
+        <aggregate>true</aggregate>
+		<properties>
+            <owner>Mycila</owner>
+            <year>${project.inceptionYear}</year>
+            <email>mathieu.carbou@gmail.com</email>
+        </properties>
+        <excludes>
+            <exclude>**/README</exclude>
+            <exclude>src/test/resources/**</exclude>
+            <exclude>src/main/resources/**</exclude>
+        </excludes>
+    </configuration>
+    <executions>
+        <execution>
+            <goals>
+                <goal>check</goal>
+            </goals>
+			<phase>verify</phase>
+        </execution>
+    </executions>
+</plugin>
+		</plugins>
+    </build>
+</project>

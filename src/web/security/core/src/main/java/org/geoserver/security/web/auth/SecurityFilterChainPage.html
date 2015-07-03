@@ -1,0 +1,103 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:wicket="http://wicket.apache.org/">
+<wicket:head>
+</wicket:head>
+<body>
+<wicket:extend>
+  <form id="form" wicket:id="form">
+  <ul>
+    <li>
+      <fieldset>
+        <legend>
+          <span><wicket:message key="chainConfig"></wicket:message></span>
+          <a href="#" wicket:id="chainConfigHelp" class="help-link"></a>
+        </legend>
+        <ul>
+          <li>
+            <span wicket:id="message"></span>
+          </li>
+          <li>
+            <label for="name"><wicket:message key="name"></wicket:message></label>
+            <input type="text" wicket:id="name" class="text"/>
+          </li>
+          <li>
+            <label for="patternString"><wicket:message key="patternString"></wicket:message></label>
+            <input type="text" wicket:id="patternString" class="text"/>
+          </li>
+
+          <li>
+            <input id="disabled" wicket:id="disabled" type="checkbox" class="field checkbox"/>
+            <label class="choice"><wicket:message key="disabled"></wicket:message></label>
+          </li>
+          <li>
+            <input id="allowSessionCreation" wicket:id="allowSessionCreation" type="checkbox" class="field checkbox"/>
+            <label class="choice"><wicket:message key="allowSessionCreation"></wicket:message></label>
+          </li>
+          <li>
+            <input id="requireSSL" wicket:id="requireSSL" type="checkbox" class="field checkbox"/>
+            <label for="requireSSL" class="choice"><wicket:message key="requireSSL"></wicket:message></label>
+          </li>
+          <li>
+             <label for="roleFilterName"><wicket:message key="roleFilterName"></wicket:message></label>
+             <select wicket:id="roleFilterName"></select>
+          </li>
+         </ul>
+       </fieldset>
+       <fieldset>
+         <legend>
+          <span><wicket:message key="chainConfigMethod"></wicket:message></span>
+          <a href="#" wicket:id="chainConfigMethodHelp" class="help-link"></a>
+         </legend>
+         <ul>
+          <li>
+            <p>
+            <input id="matchHTTPMethod" wicket:id="matchHTTPMethod" type="checkbox" class="field checkbox"/>
+            <label for="matchHTTPMethod" class="choice"><wicket:message key="matchHTTPMethod"></wicket:message></label>
+            </p>
+          </li>
+          <li>
+	         <input id="GET" wicket:id="GET" type="checkbox" class="field checkbox"/>
+	         <label class="choice">GET</label>
+         </li>
+         <li>
+	         <input id="POST" wicket:id="POST" type="checkbox" class="field checkbox"/>
+	         <label class="choice">POST</label>
+         </li>
+         <li>
+             <input id="PUT" wicket:id="PUT" type="checkbox" class="field checkbox"/>
+             <label class="choice">PUT</label>
+         </li>
+         <li>
+             <input id="DELETE" wicket:id="DELETE" type="checkbox" class="field checkbox"/>
+             <label class="choice">DELETE</label>
+         </li>
+         <li>
+             <input id="OPTIONS" wicket:id="OPTIONS" type="checkbox" class="field checkbox"/>
+             <label class="choice">OPTIONS</label>
+         </li>
+         <li>
+            <input id="HEAD" wicket:id="HEAD" type="checkbox" class="field checkbox"/>
+            <label class="choice">HEAD</label>
+         </li>
+         <li>
+            <input id="TRACE" wicket:id="TRACE" type="checkbox" class="field checkbox"/>
+            <label class="choice">TRACE</label>
+         </li>
+         </ul>
+      </fieldset>
+      <wicket:child/>
+    </li>
+  </ul>
+
+  <div class="button-group selfclear">
+      <a href="#" wicket:id="close"><wicket:message key="close">Save</wicket:message></a>
+      <a href="#" wicket:id="cancel"><wicket:message key="cancel">Cancel</wicket:message></a>
+  </div>
+  <div wicket:id="dialog"></div>
+  </form>
+</wicket:extend>
+</body>
+</html>
+

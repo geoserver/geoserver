@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -164,7 +165,7 @@ public interface Catalog extends CatalogInfo {
      * 
      * @returns List<RuntimeException> non-empty if validation fails
      */
-    List<RuntimeException> validate(StoreInfo store, boolean isNew);
+    ValidationResult validate(StoreInfo store, boolean isNew);
 
     /**
      * Removes an existing store.
@@ -630,7 +631,7 @@ public interface Catalog extends CatalogInfo {
      * 
      * @returns List<RuntimeException> non-empty if validation fails
      */
-    List<RuntimeException> validate(ResourceInfo resource, boolean isNew);
+    ValidationResult validate(ResourceInfo resource, boolean isNew);
 
     /**
      * Removes an existing resource.
@@ -1068,7 +1069,7 @@ public interface Catalog extends CatalogInfo {
      * 
      * @returns List<RuntimeException> non-empty if validation fails
      */
-    List<RuntimeException> validate(LayerInfo layer, boolean isNew);
+    ValidationResult validate(LayerInfo layer, boolean isNew);
 
     /**
      * Removes an existing layer.
@@ -1208,7 +1209,7 @@ public interface Catalog extends CatalogInfo {
      * 
      * @returns List<RuntimeException> non-empty if validation fails
      */
-    List<RuntimeException> validate(LayerGroupInfo layerGroup, boolean isNew);
+    ValidationResult validate(LayerGroupInfo layerGroup, boolean isNew);
     
     /**
      * Removes a layer group from the catalog.
@@ -1308,7 +1309,7 @@ public interface Catalog extends CatalogInfo {
      * 
      * @returns List<RuntimeException> non-empty if validation fails
      */
-    List<RuntimeException> validate(StyleInfo style, boolean isNew);
+    ValidationResult validate(StyleInfo style, boolean isNew);
 
     /**
      * Removes a style.
@@ -1407,7 +1408,7 @@ public interface Catalog extends CatalogInfo {
      * 
      * @returns List<RuntimeException> non-empty if validation fails
      */
-    List<RuntimeException> validate(NamespaceInfo namespace, boolean isNew);
+    ValidationResult validate(NamespaceInfo namespace, boolean isNew);
 
     /**
      * Removes an existing namespace.
@@ -1492,7 +1493,7 @@ public interface Catalog extends CatalogInfo {
      * 
      * @returns List<RuntimeException> non-empty if validation fails
      */
-    List<RuntimeException> validate(WorkspaceInfo workspace, boolean isNew);
+    ValidationResult validate(WorkspaceInfo workspace, boolean isNew);
 
     /**
      * Removes an existing workspace.

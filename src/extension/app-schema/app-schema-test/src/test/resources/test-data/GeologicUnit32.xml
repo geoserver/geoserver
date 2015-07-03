@@ -67,6 +67,7 @@
             <sourceDataStore>GeologicUnit</sourceDataStore>
             <sourceType>GeologicUnit</sourceType>
             <targetElement>gsml:GeologicUnit</targetElement>
+            <isDenormalised>true</isDenormalised>
             <attributeMappings>
                 <AttributeMapping>
                     <targetAttribute>gsml:GeologicUnit</targetAttribute>

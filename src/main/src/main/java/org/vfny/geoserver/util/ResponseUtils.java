@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -29,6 +30,7 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
+import org.geoserver.catalog.DataLinkInfo;
 
 import org.geoserver.catalog.MetadataLinkInfo;
 import org.geoserver.ows.URLMangler.URLType;
@@ -60,14 +62,10 @@ public final class ResponseUtils {
         org.geoserver.ows.util.ResponseUtils.writeEscapedString(writer, string);
     }
 
-    /**
-     * Profixies a metadata link url interpreting a localhost url as a back reference to the server.
-     * <p>
-     * If <tt>link</tt> is not a localhost url it is left untouched.
-     * </p>
-     */
-    public static String proxifyMetadataLink(MetadataLinkInfo link, String baseURL) {
-        String content = link.getContent();
+    /*
+    Profixies a link url interpreting a localhost url as a back reference to the server.
+    */
+    private static String proxifyLink(String content, String baseURL) {
         try {
             URI uri = new URI(content);
             try {
@@ -86,11 +84,34 @@ public final class ResponseUtils {
                 }
             } catch (Exception e) {
                 LOGGER.log(Level.WARNING,
-                        "Unable to create proper back referece for metadata url: "
+                        "Unable to create proper back reference for url: "
                                 + content, e);
             }
         } catch (URISyntaxException e) {
         }
+        return content;        
+    }
+    /**
+     * Profixies a metadata link url interpreting a localhost url as a back reference to the server.
+     * <p>
+     * If <tt>link</tt> is not a localhost url it is left untouched.
+     * </p>
+     */
+    public static String proxifyMetadataLink(MetadataLinkInfo link, String baseURL) {
+        String content = link.getContent();
+        content = proxifyLink(content, baseURL);
+        return content;
+    }
+
+    /**
+     * Profixies a data link url interpreting a localhost url as a back reference to the server.
+     * <p>
+     * If <tt>link</tt> is not a localhost url it is left untouched.
+     * </p>
+     */
+    public static String proxifyDataLink(DataLinkInfo link, String baseURL) {
+        String content = link.getContent();
+        content = proxifyLink(content, baseURL);
         return content;
     }
 

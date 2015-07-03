@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -15,6 +16,7 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptException;
 
 import org.geoserver.platform.FileWatcher;
+import org.geoserver.platform.resource.Resource;
 
 /**
  * Special watcher that watches an underlying script and when changed creates a new 
@@ -28,6 +30,11 @@ public class ScriptFileWatcher extends FileWatcher<ScriptEngine> {
     ScriptManager scriptMgr;
     ScriptEngine engine;
 
+    public ScriptFileWatcher(Resource resource, ScriptManager scriptMgr) {
+        super(resource);
+        this.scriptMgr = scriptMgr;
+    }
+    @Deprecated
     public ScriptFileWatcher(File file, ScriptManager scriptMgr) {
         super(file);
         this.scriptMgr = scriptMgr;

@@ -1,10 +1,12 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wfs.v1_1;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
@@ -91,5 +93,27 @@ public class CapabilitiesTransformerTest extends WFSTestSupport {
         xpathExpr = "//wfs:WFS_Capabilities/ows:OperationsMetadata/ows:Operation[@name='Transaction']"
                 + "/ows:Parameter[@name='inputFormat']/ows:Value";
         assertXpathEvaluatesTo(expected, xpathExpr, dom);
+    }
+
+    @Test
+    public void testContactInfo() throws Exception {
+        GetCapabilitiesType request = request();
+        CapabilitiesTransformer tx = new CapabilitiesTransformer.WFS1_1(getWFS(), request.getBaseUrl(), getCatalog(), Collections.<WFSExtendedCapabilitiesProvider>emptyList());
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        tx.transform(request, output);
+
+        Document dom = super.dom(new ByteArrayInputStream(output.toByteArray()));
+
+        String xpathExpr = "//wfs:WFS_Capabilities/ows:ServiceProvider/ows:ServiceContact/ows:IndividualName";
+        assertXpathExists(xpathExpr, dom);
+        assertXpathEvaluatesTo("Andrea Aime", xpathExpr, dom);
+
+        xpathExpr = "//wfs:WFS_Capabilities/ows:ServiceProvider/ows:ServiceContact/ows:ContactInfo/ows:Address/ows:DeliveryPoint";
+        assertXpathExists(xpathExpr, dom);
+        assertXpathEvaluatesTo("1600 Pennsylvania Ave NW, Washington DC 20500, United States", xpathExpr, dom);
+
+        xpathExpr = "//wfs:WFS_Capabilities/ows:ServiceProvider/ows:ServiceContact/ows:ContactInfo/ows:Address/ows:ElectronicMailAddress";
+        assertXpathExists(xpathExpr, dom);
+        assertXpathEvaluatesTo("andrea@geoserver.org", xpathExpr, dom);
     }
 }

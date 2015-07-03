@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -6,6 +7,7 @@ package org.vfny.geoserver.global;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import org.geoserver.feature.RetypingFeatureCollection;
 import org.geotools.data.DataUtilities;
@@ -46,15 +48,10 @@ public class GeoServerFeatureStore extends GeoServerFeatureSource implements Sim
      * Creates a new DEFQueryFeatureLocking object.
      *
      * @param store GeoTools2 FeatureSource
-     * @param schema FeatureType served by source
-     * @param definitionQuery Filter that constrains source
-     * @param declaredCRS Geometries will be forced to this CRS (or null, if no forcing is needed)
-     * @param srsHandling
+     * @param settings Settings for this store
      */
-    GeoServerFeatureStore(FeatureStore<SimpleFeatureType, SimpleFeature> store,
-            SimpleFeatureType schema, Filter definitionQuery,
-            CoordinateReferenceSystem declaredCRS, int srsHandling) {
-        super(store, schema, definitionQuery, declaredCRS, srsHandling);
+    GeoServerFeatureStore(FeatureStore<SimpleFeatureType, SimpleFeature> store, Settings settings) {
+        super(store, settings);
     }
 
     /**

@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -21,6 +22,7 @@ import java.util.List;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.PublishedType;
 import org.geoserver.config.GeoServer;
 import org.geoserver.gwc.layer.GeoServerTileLayerInfo;
 import org.geoserver.gwc.layer.GeoServerTileLayerInfoImpl;
@@ -70,7 +72,7 @@ public class GWCInitializerTest {
         when(geoServer.getService(eq(WMSInfo.class))).thenReturn(null);
 
         // let the catalog have something to initialize
-        LayerInfo layer = mockLayer("testLayer", new String[]{}, LayerInfo.Type.RASTER);
+        LayerInfo layer = mockLayer("testLayer", new String[]{}, PublishedType.RASTER);
         LayerGroupInfo group = mockGroup("testGroup", layer);
         when(rawCatalog.getLayers()).thenReturn(Lists.newArrayList(layer));
         when(rawCatalog.getLayerGroups()).thenReturn(Lists.newArrayList(group));
@@ -128,7 +130,7 @@ public class GWCInitializerTest {
         when(configPersister.getConfig()).thenReturn(defaults);
 
         // let the catalog have something to initialize
-        LayerInfo layer = mockLayer("testLayer", new String[]{}, LayerInfo.Type.RASTER);
+        LayerInfo layer = mockLayer("testLayer", new String[]{}, PublishedType.RASTER);
         LayerGroupInfo group = mockGroup("testGroup", layer);
         when(rawCatalog.getLayers()).thenReturn(Lists.newArrayList(layer));
         when(rawCatalog.getLayerGroups()).thenReturn(Lists.newArrayList(group));

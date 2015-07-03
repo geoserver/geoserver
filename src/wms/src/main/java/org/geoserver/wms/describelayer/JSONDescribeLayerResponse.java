@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -19,6 +20,7 @@ import net.sf.json.util.JSONBuilder;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
+import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.json.JSONType;
 import org.geoserver.wms.DescribeLayerRequest;
@@ -98,7 +100,7 @@ public class JSONDescribeLayerResponse extends DescribeLayerResponse {
             IOUtils.closeQuietly(osw);
         }
     }
-
+    
     private void writeJSON(Writer outWriter, DescribeLayerModel description) throws IOException {
 
         try {
@@ -136,4 +138,8 @@ public class JSONDescribeLayerResponse extends DescribeLayerResponse {
         }
     }
 
+    @Override
+    public String getCharset(Operation operation){
+        return wms.getGeoServer().getSettings().getCharset();
+    }
 }

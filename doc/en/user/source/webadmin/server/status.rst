@@ -1,4 +1,4 @@
-.. _status:
+.. _webadmin_server_status:
 
 Status
 ======

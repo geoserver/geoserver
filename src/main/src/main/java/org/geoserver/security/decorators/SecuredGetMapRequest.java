@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -41,6 +42,9 @@ public class SecuredGetMapRequest implements GetMapRequest {
     List<Layer> layers = new ArrayList<Layer>();
     List<String> styles = new ArrayList<String>();
     
+    // we should add layers to the delegate only once, also if
+    // getFinalURL is called many times
+    boolean layersAddedToDelegate = false; 
 
     public SecuredGetMapRequest(GetMapRequest delegate) {
         this.delegate = delegate;
@@ -124,8 +128,10 @@ public class SecuredGetMapRequest implements GetMapRequest {
                     }
                 }
                 
-                // add into the request
-                delegate.addLayer(layer, styles.get(i));
+                if (!layersAddedToDelegate) {
+                    // add into the request
+                    delegate.addLayer(layer, styles.get(i));
+                }
             }
         }
         
@@ -144,6 +150,9 @@ public class SecuredGetMapRequest implements GetMapRequest {
             sb.setLength(sb.length() - 1);
             encodedFilter = ResponseUtils.urlEncode(sb.toString());
         }
+        
+        layersAddedToDelegate = true;
+        
         return encodedFilter;
     }
 

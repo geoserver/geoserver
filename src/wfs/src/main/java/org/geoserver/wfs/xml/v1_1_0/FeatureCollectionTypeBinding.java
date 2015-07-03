@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -14,13 +15,16 @@ import net.opengis.wfs.WfsFactory;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.feature.CompositeFeatureCollection;
+import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.gml3.GML;
 import org.geotools.gml3.GMLConfiguration;
+import org.geotools.gml3.simple.GML3FeatureCollectionEncoderDelegate;
 import org.geotools.xml.AbstractComplexEMFBinding;
 import org.geotools.xml.Configuration;
 import org.geotools.xml.ElementInstance;
+import org.geotools.xml.Encoder;
 import org.geotools.xml.Node;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
@@ -94,9 +98,18 @@ public class FeatureCollectionTypeBinding extends AbstractComplexEMFBinding {
      */
     boolean encodeFeatureMember;
 
-    public FeatureCollectionTypeBinding(WfsFactory wfsfactory, Catalog catalog, Configuration configuration) {
+    private Encoder encoder;
+
+    public FeatureCollectionTypeBinding(WfsFactory wfsfactory, Catalog catalog,
+            Configuration configuration) {
+        this(wfsfactory, catalog, configuration, null);
+    }
+
+    public FeatureCollectionTypeBinding(WfsFactory wfsfactory, Catalog catalog,
+            Configuration configuration, Encoder encoder) {
         this.wfsfactory = wfsfactory;
         this.catalog = catalog;
+        this.encoder = encoder;
         this.generateBounds = !configuration.getProperties().contains(GMLConfiguration.NO_FEATURE_BOUNDS);
         this.encodeFeatureMember = configuration.getProperties().contains(GMLConfiguration.ENCODE_FEATURE_MEMBER);
     }
@@ -145,14 +158,9 @@ public class FeatureCollectionTypeBinding extends AbstractComplexEMFBinding {
             FeatureCollectionType featureCollection = (FeatureCollectionType) object;
 
             if (!featureCollection.getFeature().isEmpty()) {
-                if (featureCollection.getFeature().size() > 1) {
-                    // wrap in a single
-                    return new CompositeFeatureCollection(featureCollection.getFeature());
-                }
-
-                // just return the single
-                return featureCollection.getFeature().iterator().next();
+                return handleFeatureCollection(featureCollection);
             }
+
         } else if (GML.featureMember.equals(name)) {
             // check the WFS configuration, if encode featureMembers is selected on WFS
             // configuration page, return null;
@@ -162,13 +170,7 @@ public class FeatureCollectionTypeBinding extends AbstractComplexEMFBinding {
             FeatureCollectionType featureCollection = (FeatureCollectionType) object;
 
             if (!featureCollection.getFeature().isEmpty()) {
-                if (featureCollection.getFeature().size() > 1) {
-                    // wrap in a single
-                    return new CompositeFeatureCollection(featureCollection.getFeature());
-                }
-
-                // just return the single
-                return featureCollection.getFeature().iterator().next();
+                return handleFeatureCollection(featureCollection);
             }
         } else if (GML.boundedBy.equals(name) && generateBounds) {
             FeatureCollectionType featureCollection = (FeatureCollectionType) object;
@@ -208,5 +210,42 @@ public class FeatureCollectionTypeBinding extends AbstractComplexEMFBinding {
 
         //delegate to parent lookup
         return super.getProperty(object, name);
+    }
+
+    private Object handleFeatureCollection(FeatureCollectionType featureCollection) {
+        FeatureCollection result = null;
+        if (featureCollection.getFeature().size() > 1) {
+            // wrap in a single
+            result = new CompositeFeatureCollection(featureCollection.getFeature());
+        } else {
+            // just return the single
+            result = (FeatureCollection) featureCollection.getFeature().iterator().next();
+        }
+
+        if (isSimpleFeatureCollection(result)
+                && encoder.getConfiguration().hasProperty(
+                        GMLConfiguration.OPTIMIZED_ENCODING)) {
+            return new GML3FeatureCollectionEncoderDelegate(
+                    (SimpleFeatureCollection) result, encoder);
+        } else {
+            return result;
+        }
+    }
+
+    private boolean isSimpleFeatureCollection(FeatureCollection result) {
+        // CompositeFeatureCollection is a simple one, but that's a lie, it might
+        // contain complex sub-collections
+        if (result instanceof CompositeFeatureCollection) {
+            CompositeFeatureCollection composite = (CompositeFeatureCollection) result;
+            for (FeatureCollection collection : composite.getCollections()) {
+                if (!(collection instanceof SimpleFeatureCollection)) {
+                    return false;
+                }
+            }
+            return true;
+        } else {
+            return result instanceof SimpleFeatureCollection;
+        }
+
     }
 }

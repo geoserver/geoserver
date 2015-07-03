@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
- Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ Copyright (C) 2014 - Open Source Geospatial Foundation. All rights reserved.
  This code is licensed under the GPL 2.0 license, available at the root
  application directory.
  -->
@@ -23,4 +23,8 @@
     </bean>
     
     <bean id="restEnviromentInjectionCallback" class="org.geoserver.rest.EnviromentInjectionCallback"/>
+    
+    <bean id="DefaultRUPathMapper" class="org.geoserver.rest.util.RESTUploadExternalPathMapper">
+      <constructor-arg ref="catalog"/>
+    </bean>
 </beans>

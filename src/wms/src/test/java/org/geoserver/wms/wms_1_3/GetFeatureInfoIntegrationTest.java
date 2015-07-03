@@ -1,14 +1,11 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2014 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wms.wms_1_3;
 
-import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
-import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.io.File;
 import java.util.Collections;
@@ -23,6 +20,7 @@ import javax.xml.namespace.QName;
 import org.apache.commons.io.FileUtils;
 import org.custommonkey.xmlunit.NamespaceContext;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
+import org.custommonkey.xmlunit.XMLAssert;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerInfo;
@@ -32,7 +30,7 @@ import org.geoserver.data.test.SystemTestData.LayerProperty;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSTestSupport;
-import org.geoserver.wms.featureinfo.GetFeatureInfoKvpReader;
+import org.geoserver.wms.featureinfo.*;
 import org.geoserver.wms.wms_1_1_1.CapabilitiesTest;
 import org.geotools.util.logging.Logging;
 import org.junit.Test;
@@ -172,7 +170,7 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
                     + layer + "&query_layers=" + layer + "&width=20&height=20&i=10&j=10";
             Document doc = dom(get(request), true);
 
-            assertXpathEvaluatesTo("LayerNotQueryable",
+            XMLAssert.assertXpathEvaluatesTo("LayerNotQueryable",
                     "/ogc:ServiceExceptionReport/ogc:ServiceException/@code", doc);
         } finally {
             // restore the original wms
@@ -194,7 +192,7 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
                 + layer + "&query_layers=" + layer + "&width=20&height=20";
         Document doc = dom(get(request), true);
         // print(doc);
-        assertXpathEvaluatesTo("InvalidPoint",
+        XMLAssert.assertXpathEvaluatesTo("InvalidPoint",
                 "/ogc:ServiceExceptionReport/ogc:ServiceException/@code", doc);
 
         // invalid I,J parameters
@@ -202,7 +200,7 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
                 + layer + "&query_layers=" + layer + "&width=20&height=20&i=A&j=";
         doc = dom(get(request), true);
         // print(doc);
-        assertXpathEvaluatesTo("InvalidPoint",
+        XMLAssert.assertXpathEvaluatesTo("InvalidPoint",
                 "/ogc:ServiceExceptionReport/ogc:ServiceException/@code", doc);
     }
 
@@ -223,6 +221,49 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
     }
     
     @Test
+    public void testAllowedMimeTypes() throws Exception {
+        
+        WMSInfo wms = getWMS().getServiceInfo();
+        GetFeatureInfoOutputFormat format = new TextFeatureInfoOutputFormat(getWMS());        
+        wms.getGetFeatureInfoMimeTypes().add(format.getContentType());
+        wms.setGetFeatureInfoMimeTypeCheckingEnabled(true);
+        getGeoServer().save(wms);
+
+        // check mime type allowed
+        String layer = getLayerId(MockData.FORESTS);
+        String request = "wms?version=1.3.0&bbox=-0.002,-0.002,0.002,0.002&styles=&format=jpeg&info_format=text/plain&request=GetFeatureInfo&layers="
+                + layer + "&query_layers=" + layer + "&width=20&height=20&i=10&j=10";
+        String result = getAsString(request);
+        // System.out.println(result);
+        assertNotNull(result);
+        assertTrue(result.indexOf("Green Forest") > 0);
+        
+        // check mime type not allowed        
+        request = "wms?version=1.3.0&bbox=-0.002,-0.002,0.002,0.002&styles=&format=jpeg&info_format="+GML3FeatureInfoOutputFormat.FORMAT+"&request=GetFeatureInfo&layers="
+                + layer + "&query_layers=" + layer + "&width=20&height=20&i=10&j=10";
+        result = getAsString(request);
+        assertTrue(result.indexOf("ForbiddenFormat") > 0);        
+        
+        wms.getGetFeatureInfoMimeTypes().clear();
+        wms.setGetFeatureInfoMimeTypeCheckingEnabled(false);
+        getGeoServer().save(wms);
+        
+        request = "wms?version=1.3.0&bbox=-0.002,-0.002,0.002,0.002&styles=&format=jpeg&info_format="+GML3FeatureInfoOutputFormat.FORMAT+"&request=GetFeatureInfo&layers="
+                + layer + "&query_layers=" + layer + "&width=20&height=20&i=10&j=10";
+        result = getAsString(request);
+        assertTrue(result.indexOf("Green Forest") > 0);
+
+        // GML 3.1.1 as text/xml; subtype=gml/3.1.1
+        request = "wms?version=1.3.0&bbox=-0.002,-0.002,0.002,0.002&styles=&format=jpeg&info_format=" +
+                XML311FeatureInfoOutputFormat.FORMAT + "&request=GetFeatureInfo&layers=" + layer +
+                "&query_layers=" + layer + "&width=20&height=20&i=10&j=10";
+        result = getAsString(request);
+        assertTrue(result.indexOf("Green Forest") > 0);
+    }
+
+    
+    
+    @Test
     public void testCustomTemplateManyRules() throws Exception {
         // setup custom template
         File root = getTestData().getDataDirectoryRoot();
@@ -239,7 +280,7 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
             Document dom = getAsDOM(request);
             // print(dom);
 
-            assertXpathExists("/html/body/ul/li/b[text() = 'Type: Forests']", dom);
+            XMLAssert.assertXpathExists("/html/body/ul/li/b[text() = 'Type: Forests']", dom);
 
             // request with a style having 21 rules, used to fail, see GEOS-5534
             request = "wms?version=1.3.0&bbox=-0.002,-0.002,0.002,0.002&styles=forestsManyRules&format=jpeg&info_format=text/html&request=GetFeatureInfo&layers="
@@ -247,7 +288,7 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
             dom = getAsDOM(request);
             // print(dom);
 
-            assertXpathExists("/html/body/ul/li/b[text() = 'Type: Forests']", dom);
+            XMLAssert.assertXpathExists("/html/body/ul/li/b[text() = 'Type: Forests']", dom);
         } finally {
             FileUtils.deleteQuietly(target);
         }
@@ -266,7 +307,8 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
         Document dom = getAsDOM(request);
         // print(dom);
         // count lines that do contain a forest reference
-        assertXpathEvaluatesTo("1", "count(/html/body/table/tr/td[starts-with(.,'Forests.')])", dom);
+        XMLAssert.assertXpathEvaluatesTo("1",
+                "count(/html/body/table/tr/td[starts-with(.,'Forests.')])", dom);
     }
     
     /**
@@ -285,22 +327,22 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
                 + layer + "&query_layers=" + layer + "&width=300&height=300";
         Document dom = getAsDOM(base + "&i=85&j=230");
         // make sure the document is empty, as we chose an area with no features inside
-        assertXpathEvaluatesTo("0", "count(/html/body/table/tr)", dom);
+        XMLAssert.assertXpathEvaluatesTo("0", "count(/html/body/table/tr)", dom);
 
         // another request that will catch one feature due to the extended buffer, make sure it's in
         dom = getAsDOM(base + "&i=85&j=230&buffer=40");
-        assertXpathEvaluatesTo("1",
+        XMLAssert.assertXpathEvaluatesTo("1",
                 "count(/html/body/table/tr/td[starts-with(.,'BasicPolygons.')])", dom);
-        assertXpathEvaluatesTo("1",
+        XMLAssert.assertXpathEvaluatesTo("1",
                 "count(/html/body/table/tr/td[. = 'BasicPolygons.1107531493630'])", dom);
 
         // this one would end up catching everything (3 features) if it wasn't that we say the max
         // buffer at 50
         // in the WMS configuration
         dom = getAsDOM(base + "&i=85&j=230&buffer=300");
-        assertXpathEvaluatesTo("1",
+        XMLAssert.assertXpathEvaluatesTo("1",
                 "count(/html/body/table/tr/td[starts-with(.,'BasicPolygons.')])", dom);
-        assertXpathEvaluatesTo("1",
+        XMLAssert.assertXpathEvaluatesTo("1",
                 "count(/html/body/table/tr/td[. = 'BasicPolygons.1107531493630'])", dom);
     }
 
@@ -314,17 +356,17 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
     public void testAutoBuffer() throws Exception {
         String layer = getLayerId(MockData.BASIC_POLYGONS);
         String base = "wms?version=1.3.0&bbox=-4.5,-2.,4.5,7&format=jpeg&info_format=text/html&request=GetFeatureInfo&layers="
-                + layer + "&query_layers=" + layer + "&width=300&height=300&i=114&j=229";
+                + layer + "&query_layers=" + layer + "&width=300&height=300&i=111&j=229";
         Document dom = getAsDOM(base + "&styles=");
         // make sure the document is empty, the style we chose has thin lines
-        assertXpathEvaluatesTo("0", "count(/html/body/table/tr)", dom);
+        XMLAssert.assertXpathEvaluatesTo("0", "count(/html/body/table/tr)", dom);
 
         // another request that will catch one feature due to the style with a thick stroke, make
         // sure it's in
         dom = getAsDOM(base + "&styles=thickStroke");
-        assertXpathEvaluatesTo("1",
+        XMLAssert.assertXpathEvaluatesTo("1",
                 "count(/html/body/table/tr/td[starts-with(.,'BasicPolygons.')])", dom);
-        assertXpathEvaluatesTo("1",
+        XMLAssert.assertXpathEvaluatesTo("1",
                 "count(/html/body/table/tr/td[. = 'BasicPolygons.1107531493630'])", dom);
     }
 
@@ -341,30 +383,40 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
                 + layer
                 + "&query_layers="
                 + layer
-                + "&styles=squares&bbox=0,0,10000,10000&feature_count=10";
+                + "&styles=squares&bbox=0,0,10000,10000&feature_count=10&srs=EPSG:32632";
 
         // first request, should provide no result, scale is 1:100
         int w = (int) (100.0 / 0.28 * 1000); // dpi compensation
-        Document dom = getAsDOM(base + "&width=" + w + "&height=" + w + "&i=20&j=" + (w - 20));
+        Document dom = getAsDOM(featureInfoRequest(base, w));
         // print(dom);
         // make sure the document is empty, the style we chose has thin lines
-        assertXpathEvaluatesTo("0", "count(/html/body/table/tr)", dom);
+        XMLAssert.assertXpathEvaluatesTo("0", "count(/html/body/table/tr)", dom);
 
         // second request, should provide oe result, scale is 1:50
         w = (int) (200.0 / 0.28 * 1000); // dpi compensation
-        dom = getAsDOM(base + "&width=" + w + "&height=" + w + "&i=20&j=" + (w - 20));
+        dom = getAsDOM(featureInfoRequest(base, w));
         // print(dom);
-        assertXpathEvaluatesTo("1", "count(/html/body/table/tr/td[starts-with(.,'squares.')])", dom);
-        assertXpathEvaluatesTo("1", "count(/html/body/table/tr/td[. = 'squares.1'])", dom);
+        XMLAssert.assertXpathEvaluatesTo("1",
+                "count(/html/body/table/tr/td[starts-with(.,'squares.')])", dom);
+        XMLAssert
+                .assertXpathEvaluatesTo("1", "count(/html/body/table/tr/td[. = 'squares.1'])", dom);
 
         // third request, should provide two result, scale is 1:10
         w = (int) (1000.0 / 0.28 * 1000); // dpi compensation
-        dom = getAsDOM(base + "&width=" + w + "&height=" + w + "&i=20&j=" + (w - 20));
+        dom = getAsDOM(featureInfoRequest(base, w));
         // print(dom);
-        assertXpathEvaluatesTo("2", "count(/html/body/table/tr/td[starts-with(.,'squares.')])", dom);
-        assertXpathEvaluatesTo("1", "count(/html/body/table/tr/td[. = 'squares.1'])", dom);
-        assertXpathEvaluatesTo("1", "count(/html/body/table/tr/td[. = 'squares.2'])", dom);
+        XMLAssert.assertXpathEvaluatesTo("2",
+                "count(/html/body/table/tr/td[starts-with(.,'squares.')])", dom);
+        XMLAssert
+                .assertXpathEvaluatesTo("1", "count(/html/body/table/tr/td[. = 'squares.1'])", dom);
+        XMLAssert
+                .assertXpathEvaluatesTo("1", "count(/html/body/table/tr/td[. = 'squares.2'])", dom);
 
+    }
+
+    private String featureInfoRequest(String base, int w) {
+        String request = base + "&width=" + w + "&height=" + w + "&i=20&j=" + (w - 20);
+        return request;
     }
 
     /**
@@ -399,10 +451,11 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
                 + layer + "&query_layers=" + layer + "&width=20&height=20&i=10&j=10";
         Document doc = dom(get(request), true);
         // print(doc);
-        assertXpathEvaluatesTo("1", "count(//ogc:ServiceExceptionReport/ogc:ServiceException)", doc);
-        assertXpathEvaluatesTo("InvalidFormat",
+        XMLAssert.assertXpathEvaluatesTo("1",
+                "count(//ogc:ServiceExceptionReport/ogc:ServiceException)", doc);
+        XMLAssert.assertXpathEvaluatesTo("InvalidFormat",
                 "/ogc:ServiceExceptionReport/ogc:ServiceException/@code", doc);
-        assertXpathEvaluatesTo("info_format",
+        XMLAssert.assertXpathEvaluatesTo("info_format",
                 "/ogc:ServiceExceptionReport/ogc:ServiceException/@locator", doc);
     }
 
@@ -416,9 +469,11 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
         Document dom = getAsDOM(request);
         print(dom);
         // we also have the charset which may be platf. dep.
-        assertXpathEvaluatesTo("1", "count(/html/body/table/tr/th[. = 'RED_BAND'])", dom);
-        assertXpathEvaluatesTo("1", "count(/html/body/table/tr/th[. = 'GREEN_BAND'])", dom);
-        assertXpathEvaluatesTo("1", "count(/html/body/table/tr/th[. = 'BLUE_BAND'])", dom);
+        XMLAssert.assertXpathEvaluatesTo("1", "count(/html/body/table/tr/th[. = 'RED_BAND'])", dom);
+        XMLAssert.assertXpathEvaluatesTo("1", "count(/html/body/table/tr/th[. = 'GREEN_BAND'])",
+                dom);
+        XMLAssert
+                .assertXpathEvaluatesTo("1", "count(/html/body/table/tr/th[. = 'BLUE_BAND'])", dom);
     }
 
     @Test
@@ -432,12 +487,31 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
         Document dom = getAsDOM(request);
         // print(dom);
 
-        assertXpathEvaluatesTo("26.0",
+        XMLAssert.assertXpathEvaluatesTo("26.0",
                 "//wfs:FeatureCollection/gml:featureMember/wcs:BlueMarble/wcs:RED_BAND", dom);
-        assertXpathEvaluatesTo("70.0",
+        XMLAssert.assertXpathEvaluatesTo("70.0",
                 "//wfs:FeatureCollection/gml:featureMember/wcs:BlueMarble/wcs:GREEN_BAND", dom);
-        assertXpathEvaluatesTo("126.0",
+        XMLAssert.assertXpathEvaluatesTo("126.0",
                 "//wfs:FeatureCollection/gml:featureMember/wcs:BlueMarble/wcs:BLUE_BAND", dom);
+    }
+    
+    @Test
+    public void testCoverageGML31() throws Exception {
+        // http://jira.codehaus.org/browse/GEOS-3996
+        String layer = getLayerId(TASMANIA_BM);
+        String request = "wms?version=1.3.0&service=wms&request=GetFeatureInfo" + "&layers="
+                + layer + "&styles=&bbox=-44.5,146.5,-43,148&width=600&height=600"
+                + "&info_format=" + GML3FeatureInfoOutputFormat.FORMAT + "&query_layers=" + layer
+                + "&i=300&j=300&srs=EPSG:4326";
+        Document dom = getAsDOM(request);
+        print(dom);
+
+        XMLAssert.assertXpathEvaluatesTo("26.0",
+                "//wfs:FeatureCollection/gml:featureMembers/wcs:BlueMarble/wcs:RED_BAND", dom);
+        XMLAssert.assertXpathEvaluatesTo("70.0",
+                "//wfs:FeatureCollection/gml:featureMembers/wcs:BlueMarble/wcs:GREEN_BAND", dom);
+        XMLAssert.assertXpathEvaluatesTo("126.0",
+                "//wfs:FeatureCollection/gml:featureMembers/wcs:BlueMarble/wcs:BLUE_BAND", dom);
     }
 
     @Test
@@ -449,14 +523,16 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
 
         // this one should be blank
         Document dom = getAsDOM(request + "&width=300&height=300");
-        assertXpathEvaluatesTo("0", "count(/html/body/table/tr/th)", dom);
+        XMLAssert.assertXpathEvaluatesTo("0", "count(/html/body/table/tr/th)", dom);
 
         // this one should draw the coverage
         dom = getAsDOM(request + "&width=600&height=600");
         // we also have the charset which may be platf. dep.
-        assertXpathEvaluatesTo("1", "count(/html/body/table/tr/th[. = 'RED_BAND'])", dom);
-        assertXpathEvaluatesTo("1", "count(/html/body/table/tr/th[. = 'GREEN_BAND'])", dom);
-        assertXpathEvaluatesTo("1", "count(/html/body/table/tr/th[. = 'BLUE_BAND'])", dom);
+        XMLAssert.assertXpathEvaluatesTo("1", "count(/html/body/table/tr/th[. = 'RED_BAND'])", dom);
+        XMLAssert.assertXpathEvaluatesTo("1", "count(/html/body/table/tr/th[. = 'GREEN_BAND'])",
+                dom);
+        XMLAssert
+                .assertXpathEvaluatesTo("1", "count(/html/body/table/tr/th[. = 'BLUE_BAND'])", dom);
     }
 
     @Test
@@ -470,8 +546,8 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
 
         // this one should be blank, but not be a service exception
         Document dom = getAsDOM(request + "");
-        assertXpathEvaluatesTo("1", "count(/html)", dom);
-        assertXpathEvaluatesTo("0", "count(/html/body/table/tr/th)", dom);
+        XMLAssert.assertXpathEvaluatesTo("1", "count(/html)", dom);
+        XMLAssert.assertXpathEvaluatesTo("0", "count(/html/body/table/tr/th)", dom);
     }
 
     /**
@@ -487,7 +563,7 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
                 + layers1 + "&query_layers=" + layers2 + "&width=20&height=20&i=10&j=10&info";
 
         Document dom = getAsDOM(request + "");
-        assertXpathEvaluatesTo("1", "count(/ogc:ServiceExceptionReport)", dom);
+        XMLAssert.assertXpathEvaluatesTo("1", "count(/ogc:ServiceExceptionReport)", dom);
     }
 
     @Test
@@ -535,8 +611,10 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
         Document invalidResult1 = getAsDOM(invalidRequest1);
         Document invalidResult2 = getAsDOM(invalidRequest2);
         print(invalidResult1);
-        assertXpathEvaluatesTo("1", "count(//ogc:ServiceExceptionReport/ogc:ServiceException)", invalidResult1);
-        assertXpathEvaluatesTo("1", "count(//ogc:ServiceExceptionReport/ogc:ServiceException)", invalidResult2);
+        XMLAssert.assertXpathEvaluatesTo("1",
+                "count(//ogc:ServiceExceptionReport/ogc:ServiceException)", invalidResult1);
+        XMLAssert.assertXpathEvaluatesTo("1",
+                "count(//ogc:ServiceExceptionReport/ogc:ServiceException)", invalidResult2);
     }
 
     @Test 
@@ -589,6 +667,7 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
         
         String request = url + "&VERSION=1.1.1&BBOX=499699.999705,499502.050472,501800.000326,501597.949528";
         String result = getAsString(request);
+        System.out.println(result);
         assertTrue(result.indexOf("polygonProperty =") > 0);
         
         request = url + "&VERSION=1.3.0&BBOX=499699.999705,499502.050472,501800.000326,501597.949528";

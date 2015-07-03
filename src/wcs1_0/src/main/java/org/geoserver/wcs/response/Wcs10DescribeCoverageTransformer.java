@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -33,6 +34,7 @@ import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataLinkInfo;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.util.ReaderDimensionsAccessor;
 import org.geoserver.config.ResourceErrorHandling;
 import org.geoserver.ows.URLMangler.URLType;
@@ -183,7 +185,7 @@ public class Wcs10DescribeCoverageTransformer extends TransformerBase {
                     String coverageId = (String) it.next();
                     // check the coverage is known
                     LayerInfo layer = catalog.getLayerByName(coverageId);
-                    if (layer == null || layer.getType() != LayerInfo.Type.RASTER) {
+                    if (layer == null || layer.getType() != PublishedType.RASTER) {
                         throw new WcsException("Could not find the specified coverage: " + coverageId,
                                 WcsExceptionCode.InvalidParameterValue, "coverage");
                     }
@@ -285,8 +287,8 @@ public class Wcs10DescribeCoverageTransformer extends TransformerBase {
 
                 final String minCP = referencedEnvelope.getMinX() + " " + referencedEnvelope.getMinY();
                 final String maxCP = referencedEnvelope.getMaxX() + " " + referencedEnvelope.getMaxY();
-                element("gml:pos", minCP.toString());
-                element("gml:pos", maxCP.toString());
+                element("gml:pos", minCP);
+                element("gml:pos", maxCP);
                 
                 // are we going to report time?
                 DimensionInfo timeInfo = ci.getMetadata().get(ResourceInfo.TIME, DimensionInfo.class);

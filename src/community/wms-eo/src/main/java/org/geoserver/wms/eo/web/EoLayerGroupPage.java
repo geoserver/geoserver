@@ -1,4 +1,5 @@
-/* Copyright (c) 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -42,8 +43,7 @@ public class EoLayerGroupPage extends GeoServerSecuredPage {
         Fragment header = new Fragment(HEADER_PANEL, "header", this);
         
         // the add button
-        // header.add(new BookmarkablePageLink("addNew", EoLayerGroupNewPage.class));
-        header.add(new BookmarkablePageLink("addNew", CreateEoGroupPage.class));
+        header.add(new BookmarkablePageLink("addNew", EoLayerGroupNewPage.class));
                 
         // the removal button
         removalLink = new DeleteEoGroupLink("removeSelected", table, dialog);        

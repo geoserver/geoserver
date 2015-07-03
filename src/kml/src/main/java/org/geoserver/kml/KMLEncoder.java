@@ -1,4 +1,5 @@
-/* Copyright (c) 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -29,11 +30,15 @@ public class KMLEncoder {
         context = JAXBContext.newInstance((Kml.class));
     }
 
-    public void encode(Kml kml, OutputStream output) {
+    public void encode(Kml kml, OutputStream output, KmlEncodingContext context) {
         try {
             createMarshaller().marshal(kml, output);
         } catch (JAXBException e) {
             throw new ServiceException(e);
+        } finally {
+            if(context != null) {
+                context.closeIterators();
+            }
         }
     }
 

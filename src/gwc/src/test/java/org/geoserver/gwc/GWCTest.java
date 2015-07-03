@@ -1,20 +1,25 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.gwc;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
-import static junit.framework.Assert.assertTrue;
-import static junit.framework.Assert.fail;
+import static com.google.common.collect.Iterators.forEnumeration;
+import static com.google.common.collect.Lists.newArrayList;
+import static com.google.common.collect.Sets.union;
 import static org.geoserver.gwc.GWC.tileLayerName;
 import static org.geoserver.gwc.GWCTestHelpers.mockGroup;
 import static org.geoserver.gwc.GWCTestHelpers.mockLayer;
 import static org.geoserver.gwc.layer.TileLayerInfoUtil.updateAcceptAllFloatParameterFilter;
 import static org.geoserver.gwc.layer.TileLayerInfoUtil.updateStringParameterFilter;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
@@ -32,6 +37,7 @@ import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -42,6 +48,7 @@ import java.util.Set;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.event.CatalogListener;
 import org.geoserver.gwc.config.GWCConfig;
 import org.geoserver.gwc.config.GWCConfigPersister;
@@ -52,8 +59,6 @@ import org.geoserver.gwc.layer.GeoServerTileLayerInfo;
 import org.geoserver.gwc.layer.TileLayerInfoUtil;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.util.CaseInsensitiveMap;
-import org.geoserver.security.GeoServerSecurityManager;
-import org.geoserver.security.config.SecurityManagerConfig;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.kvp.PaletteManager;
 import org.geotools.filter.identity.FeatureIdImpl;
@@ -89,7 +94,9 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+import org.opengis.filter.Filter;
 
+import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
@@ -128,6 +135,8 @@ public class GWCTest {
     private QuotaStore quotaStore;
 
     private DiskQuotaMonitor diskQuotaMonitor;
+    
+    private ConfigurableQuotaStoreProvider diskQuotaStoreProvider;
 
     private Dispatcher owsDispatcher;
 
@@ -152,7 +161,7 @@ public class GWCTest {
     @Before
     public void setUp() throws Exception {
         catalog = mock(Catalog.class);
-        layer = mockLayer("testLayer", new String[]{"style1", "style2"}, LayerInfo.Type.RASTER);
+        layer = mockLayer("testLayer", new String[]{"style1", "style2"}, PublishedType.RASTER);
         layerGroup = mockGroup("testGroup", layer);
         mockCatalog();
 
@@ -179,6 +188,8 @@ public class GWCTest {
         diskQuotaMonitor = mock(DiskQuotaMonitor.class);
         when(diskQuotaMonitor.getQuotaStore()).thenReturn(quotaStore);
         owsDispatcher = mock(Dispatcher.class);
+        diskQuotaStoreProvider = mock(ConfigurableQuotaStoreProvider.class);
+        when(diskQuotaMonitor.getQuotaStoreProvider()).thenReturn(diskQuotaStoreProvider);
         
         storageFinder = mock(DefaultStorageFinder.class);
         jdbcStorage = mock(JDBCConfigurationStorage.class);
@@ -502,7 +513,7 @@ public class GWCTest {
             assertTrue(true);
         }
 
-        LayerInfo layer2 = mockLayer("layer2", new String[]{}, LayerInfo.Type.RASTER);
+        LayerInfo layer2 = mockLayer("layer2", new String[]{}, PublishedType.RASTER);
         LayerGroupInfo group2 = mockGroup("group2", layer, layer2);
 
         when(catalog.getLayerByName(eq(tileLayerName(layer2)))).thenReturn(layer2);
@@ -596,7 +607,7 @@ public class GWCTest {
         mediator.truncateByLayerAndStyle(layerName, styleName);
         verify(tileBreeder, never()).dispatchTasks(any(GWCTask[].class));
 
-        styleName = layer.getDefaultStyle().getName();
+        styleName = layer.getDefaultStyle().prefixedName();
         mediator.truncateByLayerAndStyle(layerName, styleName);
 
         int expected = tileLayer.getGridSubsets().size() * tileLayer.getMimeTypes().size();
@@ -702,12 +713,14 @@ public class GWCTest {
     public void testReload() throws Exception {
         mediator.reload();
         verify(tld, times(1)).reInit();
-        doThrow(new RuntimeException("fake")).when(tld).reInit();
+        verify(diskQuotaStoreProvider, times(1)).reloadQuotaStore();
+        RuntimeException expected = new RuntimeException("expected");
+        doThrow(expected).when(tld).reInit();
         try {
             mediator.reload();
             fail("Expected RTE");
         } catch (RuntimeException e) {
-            assertTrue(true);
+            assertSame(expected, e);
         }
     }
 
@@ -933,6 +946,49 @@ public class GWCTest {
         assertEquals(0, target.length());
     }
 
+    /**
+     * Since GeoServer sets a new FILTER parameter equal to an input CQL_FILTER parameter (if present) for each WMS requests (using direct WMS
+     * integration), this may result in a caching error. This test ensures that no error is thrown and caching is allowed.
+     */
+    @Test
+    public void testCQLFILTERParameters() throws Exception {
+        // Define a CQL_FILTER
+        TileLayerInfoUtil.updateAcceptAllRegExParameterFilter(tileLayerInfo, "CQL_FILTER", true);
+        tileLayer = new GeoServerTileLayer(layer, gridSetBroker, tileLayerInfo);
+        // Create the new GetMapRequest
+        GetMapRequest request = new GetMapRequest();
+        @SuppressWarnings("unchecked")
+        Map<String, String> rawKvp = new CaseInsensitiveMap(new HashMap<String, String>());
+        rawKvp.put("CQL_FILTER", "include");
+        request.setRawKvp(rawKvp);
+        StringBuilder target = new StringBuilder();
+
+        // Setting CQL FILTER
+        List<Filter> cqlFilters = Arrays.asList(CQL.toFilter("include"));
+        request.setCQLFilter(cqlFilters);
+        // Checking if caching is possible
+        assertTrue(mediator.isCachingPossible(tileLayer, request, target));
+        // Ensure No error is logged
+        assertEquals(0, target.length());
+
+        // Setting FILTER parameter equal to CQL FILTER (GeoServer does it internally)
+        request.setFilter(cqlFilters);
+        // Checking if caching is possible
+        assertTrue(mediator.isCachingPossible(tileLayer, request, target));
+        // Ensure No error is logged
+        assertEquals(0, target.length());
+
+        // Ensure that if another filter is set an error is thrown
+        List filters = new ArrayList(cqlFilters);
+        filters.add(Filter.INCLUDE);
+        request.setFilter(filters);
+
+        // Ensuring caching is not possible
+        assertFalse(mediator.isCachingPossible(tileLayer, request, target));
+        // Ensure No error is logged
+        assertFalse(0 == target.length());
+    }
+
     private void assertDispatchMismatch(GetMapRequest request, String expectedReason) {
 
         StringBuilder target = new StringBuilder();
@@ -1109,5 +1165,56 @@ public class GWCTest {
         Map<String, String> fullParameters = tileRequest.getFullParameters();
         assertEquals(fullParameters.toString(), rawKvpParamValue,
                 fullParameters.get(rawKvpParamName.toUpperCase()));
+    }
+    
+    @Test
+    public void testGetDefaultAdvertisedCachedFormats() {
+        // from src/main/resources/org/geoserver/gwc/advertised_formats.properties
+        Set<String> defaultFormats = ImmutableSet.of("image/png", "image/png8", "image/jpeg",
+                "image/gif");
+
+        assertEquals(defaultFormats, GWC.getAdvertisedCachedFormats(PublishedType.VECTOR));
+        assertEquals(defaultFormats, GWC.getAdvertisedCachedFormats(PublishedType.REMOTE));
+
+        assertEquals(defaultFormats, GWC.getAdvertisedCachedFormats(PublishedType.RASTER));
+        assertEquals(defaultFormats, GWC.getAdvertisedCachedFormats(PublishedType.WMS));
+
+        assertEquals(defaultFormats, GWC.getAdvertisedCachedFormats(PublishedType.GROUP));
+    }
+
+    @Test
+    public void testGetPluggabledAdvertisedCachedFormats() throws IOException {
+        List<URL> urls;
+        try {
+            // load the default and test resources separately so they are named differently and we
+            // don't get the ones for testing listed in the UI when running from eclipse
+            String defaultResource = "org/geoserver/gwc/advertised_formats.properties";
+            String testResource = "org/geoserver/gwc/advertised_formats_unittesting.properties";
+            ClassLoader classLoader = GWC.class.getClassLoader();
+            urls = newArrayList(forEnumeration(classLoader.getResources(defaultResource)));
+            urls.addAll(newArrayList(forEnumeration(classLoader.getResources(testResource))));
+        } catch (IOException e) {
+            throw Throwables.propagate(e);
+        }
+
+        // from src/main/resources/org/geoserver/gwc/advertised_formats.properties
+        Set<String> defaultFormats = ImmutableSet.of("image/png", "image/png8", "image/jpeg",
+                "image/gif");
+
+        // see src/test/resources/org/geoserver/gwc/advertised_formats.properties
+        Set<String> expectedVector = union(defaultFormats,
+                ImmutableSet.of("test/vector1", "test/vector2"));
+        Set<String> expectedRaster = union(defaultFormats,
+                ImmutableSet.of("test/raster1", "test/raster2;type=test"));
+        Set<String> expectedGroup = union(defaultFormats,
+                ImmutableSet.of("test/group1", "test/group2"));
+
+        assertEquals(expectedVector, GWC.getAdvertisedCachedFormats(PublishedType.VECTOR, urls));
+        assertEquals(expectedVector, GWC.getAdvertisedCachedFormats(PublishedType.REMOTE, urls));
+
+        assertEquals(expectedRaster, GWC.getAdvertisedCachedFormats(PublishedType.RASTER, urls));
+        assertEquals(expectedRaster, GWC.getAdvertisedCachedFormats(PublishedType.WMS, urls));
+
+        assertEquals(expectedGroup, GWC.getAdvertisedCachedFormats(PublishedType.GROUP, urls));
     }
 }

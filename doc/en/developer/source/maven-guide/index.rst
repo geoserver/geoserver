@@ -34,7 +34,7 @@ The most commonly maven command used with GeoServer is the install command::
 
   mvn clean install
 
-While the ``clean`` command is not necessary, it is recommented. Running this
+While the ``clean`` command is not necessary, it is recommended. Running this
 command does the following:
 
  * compiles source code
@@ -60,7 +60,7 @@ Maven downloads updates each time it performs the first build of the day.
 GeoServer depends on SNAPSHOT versions of the GeoTools library.  
 The automatic download can result in lengthy build time
 while Maven downloads updated GeoTools modules. 
-If GeoTools was built locally, these downloads are unecessary.
+If GeoTools was built locally, these downloads are not necessary.
 
 Also, if GeoTools is being modified locally, then the local versions 
 rather than SNAPSHOT versions of modules should be used.
@@ -100,7 +100,7 @@ Recover Build
 
 * Recover from a 301 Redirect
   
-  A long standing bug in Maven from 2.0.10 handling of 301 errors when a artifact has been moved.
+  A long standing bug in Maven from 2.0.10 handling of 301 errors when an artifact has been moved.
   The work around is to run Maven with the option::
      
      mvn install -Dmaven.wagon.provider.http=httpclient
@@ -137,7 +137,7 @@ To build the release module as part of your build::
 
    -Drelease
    
-To include the legacy moduled::
+To include the legacy modules::
 
    -Plegacy
    
@@ -220,14 +220,14 @@ Installing the Oracle module
 
 To configure GeoServer to include the Oracle datastore extension module, do the following:
 
-Obtain the appropriate Oracle JDBC driver (possibly by downloading from Oracle).
+Obtain the appropriate Oracle JDBC driver (possibly by downloading from Oracle or from the Geoserver ORACLE-extension on http://geoserver.org/release/stable/).
 Install it in the Maven repository using the command::
 	
-  mvn install:install-file -Dfile=ojdbc14.jar -DgroupId=com.oracle -DartifactId=ojdbc14 -Dversion=10.2.0.3.0 -Dpackaging=jar -DgeneratePom=true
+  mvn install:install-file -Dfile=ojdbc7.jar -DgroupId=com.oracle -DartifactId=ojdbc7 -Dversion=12.1.0.2 -Dpackaging=jar -DgeneratePom=true
   
 Configure the Eclipse project using::
 
-  mvn -o -P oracle,oracleDriver eclipse:eclipse
+  mvn -P oracle,oracleDriver eclipse:eclipse
 
 (The ``oracle`` profile includes the GeoServer Oracle module, 
 while the ``oracleDriver`` profile includes the proprietary Oracle JDBC driver.

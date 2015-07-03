@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -12,6 +12,8 @@ import java.util.logging.Logger;
 import net.sf.json.JSONException;
 import net.sf.json.util.JSONBuilder;
 
+import org.geotools.geometry.jts.coordinatesequence.CoordinateSequences;
+import org.geotools.referencing.CRS;
 import org.geotools.util.Converters;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -40,6 +42,8 @@ public class GeoJSONBuilder extends JSONBuilder {
     private final Logger LOGGER = org.geotools.util.logging.Logging
     .getLogger(this.getClass());
     
+    private CRS.AxisOrder axisOrder = CRS.AxisOrder.EAST_NORTH;
+
     public GeoJSONBuilder(Writer w) {
         super(w);
     }
@@ -63,8 +67,9 @@ public class GeoJSONBuilder extends JSONBuilder {
 
             switch (geometryType) {
             case POINT:
-                Point point = (Point)geometry;
-                writeCoordinate(point.getX(), point.getY());
+                Point point = (Point) geometry;
+                Coordinate c = point.getCoordinate();
+                writeCoordinate(c.x, c.y, c.z);
                 break;
             case LINESTRING:
                 writeCoordinates(((LineString)geometry).getCoordinateSequence());
@@ -131,22 +136,44 @@ public class GeoJSONBuilder extends JSONBuilder {
     private JSONBuilder writeCoordinates(CoordinateSequence coords)
         throws JSONException {
         this.array();
+        
+        // guess the dimension of the coordinate sequence
+        int dim = CoordinateSequences.coordinateDimension(coords);
 
         final int coordCount = coords.size();
         for (int i = 0; i < coordCount; i++) {
-            writeCoordinate(coords.getX(i), coords.getY(i));
+            if(dim > 2) {
+                writeCoordinate(coords.getX(i), coords.getY(i), coords.getOrdinate(i, 2));
+            } else {
+                writeCoordinate(coords.getX(i), coords.getY(i));
+            }
         }
 
         return this.endArray();
     }
 
     private JSONBuilder writeCoordinate(double x, double y) {
+        return writeCoordinate(x, y, Double.NaN);
+    }
+    
+    private JSONBuilder writeCoordinate(double x, double y, double z) {
         this.array();
-        this.value(x);
-        this.value(y);
+        if(axisOrder==CRS.AxisOrder.NORTH_EAST){
+            this.value(y);
+            this.value(x);
+        } else {
+            this.value(x);
+            this.value(y);
+        }
+        if(!Double.isNaN(z)) {
+            this.value(z);
+        }
 
         return this.endArray();
     }
+
+    
+    
     /**
      * Turns an envelope into an array [minX,minY,maxX,maxY]
      * @param env envelope representing bounding box
@@ -155,10 +182,17 @@ public class GeoJSONBuilder extends JSONBuilder {
     protected JSONBuilder writeBoundingBox(Envelope env) {
         this.key("bbox");
         this.array();
-        this.value(env.getMinX());
-        this.value(env.getMinY());
-        this.value(env.getMaxX());
-        this.value(env.getMaxY());
+        if(axisOrder==CRS.AxisOrder.NORTH_EAST) {
+            this.value(env.getMinY());
+            this.value(env.getMinX());
+            this.value(env.getMaxY());
+            this.value(env.getMaxX());
+        } else {
+            this.value(env.getMinX());
+            this.value(env.getMinY());
+            this.value(env.getMaxX());
+            this.value(env.getMaxY());
+        }
         return this.endArray();
     }
 
@@ -266,5 +300,14 @@ public class GeoJSONBuilder extends JSONBuilder {
         }
         super.value(value);
         return this;
+    }
+    
+    /**
+     * Set the axis order to assume all input will be provided in. Has no effect on geometries 
+     * that have already been written.
+     * @param axisOrder
+     */
+    public void setAxisOrder(CRS.AxisOrder axisOrder) {
+        this.axisOrder = axisOrder;
     }
 }

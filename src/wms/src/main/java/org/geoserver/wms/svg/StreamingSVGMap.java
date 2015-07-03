@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -15,14 +16,13 @@ import org.geotools.data.DataUtilities;
 import org.geotools.data.Query;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.data.simple.SimpleFeatureSource;
-import org.geotools.filter.Expression;
-import org.geotools.filter.FilterFactory;
-import org.geotools.filter.FilterFactoryFinder;
-import org.geotools.filter.FilterType;
-import org.geotools.filter.GeometryFilter;
+import org.geotools.factory.CommonFactoryFinder;
+import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.Layer;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.GeometryDescriptor;
+import org.opengis.filter.FilterFactory2;
+import org.opengis.filter.spatial.BBOX;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.MultiPoint;
@@ -121,7 +121,7 @@ public class StreamingSVGMap extends WebMap {
         // FeatureTypeInfo layerInfo = null;
         int defMaxDecimals = writer.getMaximunFractionDigits();
 
-        FilterFactory fFac = FilterFactoryFinder.createFilterFactory();
+        FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2();
 
         for (int i = 0; i < nLayers; i++) {
             Layer layer = layers.get(i);
@@ -131,13 +131,9 @@ public class StreamingSVGMap extends WebMap {
             SimpleFeatureType schema = fSource.getSchema();
 
             try {
-                Expression bboxExpression = fFac.createBBoxExpression(mapContent
-                        .getRenderingArea());
-                GeometryFilter bboxFilter = fFac
-                        .createGeometryFilter(FilterType.GEOMETRY_INTERSECTS);
-                bboxFilter.addLeftGeometry(fFac.createAttributeExpression(schema, schema
-                        .getGeometryDescriptor().getName().getLocalPart()));
-                bboxFilter.addRightGeometry(bboxExpression);
+                String defaultGeometry = schema.getGeometryDescriptor().getName().getLocalPart();
+                ReferencedEnvelope renderingArea = mapContent.getRenderingArea();
+                BBOX bboxFilter = ff.bbox(ff.property(defaultGeometry), renderingArea);
 
                 Query bboxQuery = new Query(schema.getTypeName(), bboxFilter);
                 Query definitionQuery = layer.getQuery();

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+ Copyright (C) 2014 - Open Source Geospatial Foundation. All rights reserved.
+ This code is licensed under the GPL 2.0 license, available at the root
+ application directory.
+ -->
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+	<bean id="extensions" class="org.geoserver.platform.GeoServerExtensions"/>
+	
+	<bean id="dispatcher" class="org.geoserver.ows.Dispatcher"/>
+
+	<bean id="messageXmlReader" 
+		class="org.geoserver.ows.MessageXmlParser"/>
+	
+	<bean id="messageResponse"
+		class="org.geoserver.ows.MessageResponse"/>
+		
+	<bean id="hello" class="org.geoserver.ows.Hello"/>
+	
+	<bean id="helloWorld"
+		class="org.geoserver.ows.HelloWorld"/>
+		
+	<bean id="helloWorldService"
+		class="org.geoserver.platform.Service">
+		<constructor-arg index="0" value="hello"/>
+		<constructor-arg index="1" ref="helloWorld"/>
+		<constructor-arg index="2">
+			<bean class="org.geotools.util.Version">
+				<constructor-arg value="1.0.0"/>
+			</bean>
+		</constructor-arg>
+		<constructor-arg index="3">
+		   <list>
+		     <value>hello</value>
+		     <value>httpErrorCodeException</value>
+		   </list>
+		</constructor-arg>
+	</bean>
+	
+</beans>

@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -37,7 +38,6 @@ import org.vfny.geoserver.util.requests.readers.KvpRequestReader;
  *
  * @task TODO: rework to work too for WMS servlets, and to get the servlets
  *       from ServletContext instead of having them hardcoded
- * @task TODO: move the post dispatcher work from WfsDispatcher up here.
  */
 
 //JD: kill this class
@@ -87,7 +87,7 @@ public class Dispatcher extends HttpServlet {
     public static final int ERROR = -2;
     protected ServletConfig servletConfig;
 
-    //HACK! This is just to fix instances where the first request is a 
+    //HACK! This is just to fix instances where the first request is a
     //dispatcher, and the strategy hasn't been inited yet.  This can be
     //fixed in two ways, one by having Dispatcher extend Abstract ServiceConfig,
     //which it should do, and two by having the configuration of the strategy

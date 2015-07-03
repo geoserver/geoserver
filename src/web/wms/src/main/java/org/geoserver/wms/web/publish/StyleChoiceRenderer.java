@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -11,7 +12,7 @@ import org.geoserver.catalog.StyleInfo;
 public class StyleChoiceRenderer implements IChoiceRenderer {
 
     public Object getDisplayValue(Object object) {
-        return ((StyleInfo) object).getName();
+        return ((StyleInfo) object).prefixedName();
     }
 
     public String getIdValue(Object object, int index) {

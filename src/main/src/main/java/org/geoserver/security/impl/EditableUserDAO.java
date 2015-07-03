@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -25,9 +26,10 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.memory.UserAttribute;
 import org.springframework.security.core.userdetails.memory.UserAttributeEditor;
 import org.geoserver.config.GeoServer;
+import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Resource;
 import org.geoserver.security.PropertyFileWatcher;
 import org.vfny.geoserver.global.ConfigurationException;
-import org.vfny.geoserver.global.GeoserverDataDirectory;
 
 /**
  * The EditableUserDAO class provides a UserDetailsService implementation that 
@@ -65,16 +67,15 @@ public class EditableUserDAO implements UserDetailsService {
    * @throws ConfigurationException if the user configuration file does not exist and cannot be created
    * @throws IOException if an error occurs while opening the user configuration file
    */
-  private File getUserFile() throws ConfigurationException, IOException{
-    File securityDir = GeoserverDataDirectory.findCreateConfigDir("security");
-    File userFile = new File(securityDir, "users.properties");
-    if (!userFile.exists()  && !userFile.createNewFile()){
-      // System.out.println("Couldn't create file: " + userFile.getAbsolutePath());
-      throw new ConfigurationException("Couldn't create users.properties");
-    } else {
-      return userFile;
+    private File getUserFile() throws ConfigurationException, IOException {
+        GeoServerResourceLoader loader = geoServer.getCatalog().getResourceLoader();
+        Resource user = loader.get("security/users.properties");
+        File userFile = user.file(); // find or create
+        if( userFile == null ){
+            throw new ConfigurationException("Couldn't create users.properties");
+        }
+        return userFile;
     }
-  }
 
   /**
    * Create an EditableUserDAO object.  This currently entails: 

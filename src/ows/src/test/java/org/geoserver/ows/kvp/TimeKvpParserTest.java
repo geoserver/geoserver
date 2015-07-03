@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -25,6 +26,7 @@ import org.geotools.util.DateRange;
  * 
  * @author Cedric Briancon
  * @author Simone Giannecchini, GeoSolutions SAS
+ * @author Jonathan Meyer, Applied Information Sciences, jon@gisjedi.com
  */
 public class TimeKvpParserTest extends TestCase {
     /**
@@ -33,6 +35,14 @@ public class TimeKvpParserTest extends TestCase {
     private final static String PERIOD = "2007-01-01T12Z/2007-01-31T12Z/P1DT12H";
     
     private final static String CONTINUOUS_PERIOD = "2007-01-01T12Z/2007-01-31T12Z";
+    
+    private final static String CONTINUOUS_PERIOD_TIME_DURATION = "2007-01-01T12Z/P1DT1H";
+    
+    private final static String CONTINUOUS_PERIOD_INVALID_DURATION = "P1D/P1DT1H";
+    
+    private final static String CONTINUOUS_RELATIVE_PERIOD_H = "PT2H/PRESENT";
+    private final static String CONTINUOUS_RELATIVE_PERIOD_D = "P10D/PRESENT";
+    private final static String CONTINUOUS_RELATIVE_PERIOD_W = "P2W/PRESENT";
     
     /**
      * Format of dates.
@@ -187,19 +197,89 @@ public class TimeKvpParserTest extends TestCase {
         assertInstant(format.parse("2007-01-01T12Z"), l.get(0));
     }
     
-	public void testContinuousInterval() throws ParseException {
+    public void testContinuousInterval() throws ParseException {
+
         TimeKvpParser timeKvpParser = new TimeKvpParser("TIME");
-        List l = new ArrayList((Collection)  timeKvpParser.parse(CONTINUOUS_PERIOD));
+        List l = new ArrayList((Collection) timeKvpParser.parse(CONTINUOUS_PERIOD));
         // Verify that the list contains at least one element.
         assertFalse(l.isEmpty());
         assertTrue(l.get(0) instanceof DateRange);
-        final DateRange range=(DateRange) l.get(0);
+        final DateRange range = (DateRange) l.get(0);
         assertEquals(format.parse("2007-01-01T12Z"), range.getMinValue());
         Date end = format.parse("2007-01-31T13Z");
         end.setTime(end.getTime() - 1);
         assertEquals(end, range.getMaxValue());
     }
-    
+
+    public void testContinuousIntervalDuration() throws ParseException {
+        TimeKvpParser timeKvpParser = new TimeKvpParser("TIME");
+        List l = new ArrayList((Collection) timeKvpParser.parse(CONTINUOUS_PERIOD_TIME_DURATION));
+        // Verify that the list contains at least one element.
+        assertFalse(l.isEmpty());
+        assertTrue(l.get(0) instanceof DateRange);
+        final DateRange range = (DateRange) l.get(0);
+        assertEquals(format.parse("2007-01-01T12Z"), range.getMinValue());
+        Date end = format.parse("2007-01-02T13Z");
+        assertEquals(end, range.getMaxValue());
+    }
+
+    public void testInvalidDualDuration() throws ParseException {
+        TimeKvpParser timeKvpParser = new TimeKvpParser("TIME");
+
+        boolean exception = false;
+        try {
+            timeKvpParser.parse(CONTINUOUS_PERIOD_INVALID_DURATION);
+            // Verify that an exception was encountered for the invalid duration
+            fail("No exception thrown for invalid duration");
+        } catch (ParseException ex) {
+            assertTrue(ex.getMessage().startsWith("Invalid time period"));
+        }
+    }
+
+    public void testContinuousRelativeInterval() throws ParseException {
+        final int millisInDay = (int) TimeKvpParser.MILLIS_IN_DAY;
+        TimeKvpParser timeKvpParser = new TimeKvpParser("TIME");
+        Calendar back = Calendar.getInstance();
+        Calendar now = (Calendar) back.clone();
+
+        List l = new ArrayList((Collection) timeKvpParser.parse(CONTINUOUS_RELATIVE_PERIOD_H));
+        // Verify that the list contains at least one element.
+        now.set(Calendar.MILLISECOND, 0);
+        back.set(Calendar.MILLISECOND, 0);
+        back.add(Calendar.HOUR, -2);
+        assertFalse(l.isEmpty());
+        assertTrue(l.get(0) instanceof DateRange);
+        DateRange range = (DateRange) l.get(0);
+        assertEquals(back.getTime(), range.getMinValue());
+        assertEquals(now.getTime(), range.getMaxValue());
+
+        back = Calendar.getInstance();
+        now = (Calendar) back.clone();
+        l = new ArrayList((Collection) timeKvpParser.parse(CONTINUOUS_RELATIVE_PERIOD_D));
+        // Verify that the list contains at least one element.
+        now.set(Calendar.MILLISECOND, 0);
+        back.set(Calendar.MILLISECOND, 0);
+        back.add(Calendar.MILLISECOND, millisInDay * -10);
+        assertFalse(l.isEmpty());
+        assertTrue(l.get(0) instanceof DateRange);
+        range = (DateRange) l.get(0);
+        assertEquals(back.getTime(), range.getMinValue());
+        assertEquals(now.getTime(), range.getMaxValue());
+
+        back = Calendar.getInstance();
+        now = (Calendar) back.clone();
+        l = new ArrayList((Collection) timeKvpParser.parse(CONTINUOUS_RELATIVE_PERIOD_W));
+        // Verify that the list contains at least one element.
+        now.set(Calendar.MILLISECOND, 0);
+        back.set(Calendar.MILLISECOND, 0);
+        back.add(Calendar.MILLISECOND, millisInDay * -2 * 7);
+        assertFalse(l.isEmpty());
+        assertTrue(l.get(0) instanceof DateRange);
+        range = (DateRange) l.get(0);
+        assertEquals(back.getTime(), range.getMinValue());
+        assertEquals(now.getTime(), range.getMaxValue());
+    }
+
     public void testMixedValues() throws ParseException {
         TimeKvpParser timeKvpParser = new TimeKvpParser("TIME");
         List l = new ArrayList((Collection)  timeKvpParser.parse(CONTINUOUS_PERIOD+",2007-02-01T12Z"));
@@ -310,4 +390,3 @@ public class TimeKvpParserTest extends TestCase {
     	assertEquals("Range " + range + " should have end", expectedEnd, range.getMaxValue());
     }
 }
-

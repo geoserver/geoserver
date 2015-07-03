@@ -1,4 +1,4 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -7,8 +7,8 @@ package org.geoserver.wps;
 
 import java.util.List;
 
-import org.geoserver.catalog.MetadataMap;
 import org.geoserver.config.ServiceInfo;
+import org.geoserver.security.CatalogMode;
 
 /**
  * Configuration related
@@ -75,12 +75,76 @@ public interface WPSInfo extends ServiceInfo {
      * @param maxAsynchronousProcesses
      */
     public void setMaxAsynchronousProcesses(int maxAsynchronousProcesses);
-    
+
     /**
      * Retrieves the process groups configurations
      * 
      * @return
      */
     public List<ProcessGroupInfo> getProcessGroups();
+
+    /**
+     * Gets the current output storage directory
+     * 
+     * @return
+     */
+    public String getStorageDirectory();
+
+    /**
+     * Sets the output storage directory, that is, the directory used to store the request, status
+     * and final response of asynch requests, as well as any output that is meant to be referred to
+     * by URL instead of being included inline in Execute the response.
+     * 
+     * @param storageDirectory
+     */
+    public void setStorageDirectory(String storageDirectory);
+
+    /**
+     * Controls how the server allows access to secured processes, in a similar way to how the
+     * catalog controls access to secured layers
+     */
+    public CatalogMode getCatalogMode();
+
+    /**
+     * Sets the policy to control access to secured processes
+     */
+    public void setCatalogMode(CatalogMode catalogMode);
+
+    /**
+     * Returns the global maximum size of a complex input, in MB. Per process configuration can
+     * override it. Zero or a negative number means no limit.
+     */
+    public int getMaxComplexInputSize();
+
+    /**
+     * Sets the global maximum size of a complex input, in MB. Per process configuration can
+     * override it. Zero or a negative number means no limit.
+     */
+    public void setMaxComplexInputSize(int maxInputSizeMB);
+
+    /**
+     * How many seconds a process can run in asynchronous mode (with the user polling for its
+     * status) before it gets killed by the WPS container (0 or a negative value means no limit)
+     */
+    public abstract int getMaxAsynchronousExecutionTime();
+
+    /**
+     * Sets how many seconds a process can run in asynchronous mode (with the user polling for its
+     * status) before it gets killed by the WPS container (0 or a negative value means no limit)
+     */
+    public abstract void setMaxAsynchronousExecutionTime(int maxAsynchrornousExecutionTime);
+
+    /**
+     * How many seconds a process can run in asynchronous mode (with the user waiting on the HTTP
+     * connection) before it gets killed by the WPS container (0 or a negative value means no limit)
+     */
+    public abstract int getMaxSynchronousExecutionTime();
+
+    /**
+     * Sets how many seconds a process can run in asynchronous mode (with the user waiting on the
+     * HTTP connection) before it gets killed by the WPS container (0 or a negative value means no
+     * limit)
+     */
+    public abstract void setMaxSynchronousExecutionTime(int maxSynchronousExecutionTime);
 
 }

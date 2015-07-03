@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -27,6 +28,7 @@ import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MapInfo;
 import org.geoserver.catalog.NamespaceInfo;
+import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.StyleInfo;
@@ -1147,17 +1149,21 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
 
         T t = null;
         if (NamespaceInfo.class.isAssignableFrom(of)) {
-            all = (List<T>) getNamespaces();
+            all = getNamespaces();
         } else if (WorkspaceInfo.class.isAssignableFrom(of)) {
             all = (List<T>) getWorkspaces();
         } else if (StoreInfo.class.isAssignableFrom(of)) {
-            all = (List<T>) getStores(of);
+            all = getStores(of);
         } else if (ResourceInfo.class.isAssignableFrom(of)) {
-            all = (List<T>) getResources(of);
+            all = getResources(of);
         } else if (LayerInfo.class.isAssignableFrom(of)) {
             all = (List<T>) getLayers();
         } else if (LayerGroupInfo.class.isAssignableFrom(of)) {
             all = (List<T>) getLayerGroups();
+        } else if (PublishedInfo.class.isAssignableFrom(of)) {
+            all = new ArrayList<>();
+            all.addAll((List<T>) getLayers());
+            all.addAll((List<T>) getLayerGroups());
         } else if (StyleInfo.class.isAssignableFrom(of)) {
             all = (List<T>) getStyles();
         } else if (MapInfo.class.isAssignableFrom(of)) {

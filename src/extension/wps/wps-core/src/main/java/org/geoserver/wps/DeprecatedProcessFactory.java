@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -30,7 +31,6 @@ import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.context.event.ContextRefreshedEvent;
-import org.springframework.context.event.ContextStartedEvent;
 
 /**
  * Process factory that maintains backward compatibility for deprecated process names.
@@ -156,7 +156,7 @@ public class DeprecatedProcessFactory implements ProcessFactory, DisposableBean,
         Map<Name,Name> map = getProcessMappings();
         if (map.containsKey(oldName)) {
             Name newName = map.get(oldName);
-            ProcessFactory pf = GeoServerProcessors.createProcessFactory(newName);
+            ProcessFactory pf = GeoServerProcessors.createProcessFactory(newName, false);
             if (pf != null) {
                 return a.perform(pf, oldName, newName, args);
             }

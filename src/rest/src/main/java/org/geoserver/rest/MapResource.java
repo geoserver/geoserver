@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 -2015 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -64,7 +65,7 @@ public abstract class MapResource extends AbstractResource {
             map = getMap();
         } 
         catch (Exception e) {
-            throw new RestletException( "", Status.SERVER_ERROR_INTERNAL, e );
+            throw createRestletException(e);
         }
         DataFormat format = getFormatGet();
         getResponse().setEntity(format.toRepresentation(map));
@@ -95,7 +96,7 @@ public abstract class MapResource extends AbstractResource {
             postMap(map);
         } 
         catch (Exception e) {
-            throw new RestletException( "", Status.SERVER_ERROR_INTERNAL, e );
+            throw createRestletException(e);
         }
     }
     
@@ -125,7 +126,7 @@ public abstract class MapResource extends AbstractResource {
             putMap(map);
         } 
         catch (Exception e) {
-            throw new RestletException( "", Status.SERVER_ERROR_INTERNAL, e );
+            throw createRestletException(e);
         }
     }
 
@@ -139,4 +140,25 @@ public abstract class MapResource extends AbstractResource {
      */
     protected void putMap(Map map) throws Exception {
     }
+    
+    /**
+     * Creates a default {@link RestletException} with 
+     * return code 500 (internal server error). 
+     * 
+     * If the parameter ex is already a {@link RestletException}, return
+     * the parameter as result. 
+     * 
+     * This avoids wrapping a meaningful restlet exception into a generic one.
+     * 
+     * @param ex
+     * @return
+     */
+    protected RestletException createRestletException (Exception ex) {
+        if (ex instanceof RestletException) {
+            return (RestletException)ex; // do nothing
+        } else {
+            return new RestletException( "", Status.SERVER_ERROR_INTERNAL, ex );
+        }
+    }
+    
 }

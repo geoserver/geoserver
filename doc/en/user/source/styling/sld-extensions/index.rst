@@ -4,7 +4,7 @@ SLD Extensions in GeoServer
 ===========================
 
 GeoServer provides a number of vendor-specific extensions to SLD 1.0.
-Although not portable, the extensions make styling more powerful and concise and generate better-looking maps.
+Although not portable to other applications, these extensions make styling more powerful and concise and allow for the generation of better-looking maps.
 
 .. toctree::
    :maxdepth: 2
@@ -16,3 +16,5 @@ Although not portable, the extensions make styling more powerful and concise and
    uom
    label-obstacles
    margins
+   randomized
+   composite-blend/index

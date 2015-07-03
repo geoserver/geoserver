@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights 
+  reserved. This code is licensed under the GPL 2.0 license, available at the 
+  root application directory. -->
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+  <bean id="wcsEoCoverageResourceCodec" class="org.geoserver.wcs2_0.eo.EOCoverageResourceCodec">
+    <constructor-arg index="0" ref="catalog" />
+  </bean>
+  
+  <bean id="wcsEoGetCoverageCallback" class="org.geoserver.wcs2_0.eo.GetCoverageEOCallback">
+    <constructor-arg index="0" ref="wcsEoCoverageResourceCodec"/>
+  </bean>
+
+  <bean id="wcsEoExtendedCapsProvider"
+    class="org.geoserver.wcs2_0.eo.response.WCSEOExtendedCapabilitiesProvider">
+    <constructor-arg index="0" ref="geoServer" />
+    <constructor-arg index="1" ref="wcsEoCoverageResourceCodec" />
+  </bean>
+
+  <bean id="wcsEoCoverageMetadataProvider"
+    class="org.geoserver.wcs2_0.eo.response.WCSEOCoverageMetadataProvider">
+    <constructor-arg index="0" ref="geoServer" />
+  </bean>
+
+
+  <bean id="wcs20ServiceInterceptor-describeEOCoverageSet"
+    class="org.geoserver.wcs2_0.eo.DescribeEOCoverageSetInterceptor">
+    <constructor-arg ref="geoServer" />
+    <constructor-arg ref="coverageResponseDelegateFactory" />
+    <constructor-arg ref="envelopeDimensionsMapper" />
+    <constructor-arg ref="MIMETYPEMapper" />
+    <constructor-arg ref="wcsEoCoverageResourceCodec" />
+  </bean>
+
+  <!-- DescribeEOCoverageSet -->
+  <bean id="wcs20describeEOCoverageSetIdKvpParser" class="org.geoserver.ows.FlatKvpParser">
+    <constructor-arg index="0" value="eoId" />
+    <constructor-arg index="1" value="java.lang.String" />
+    <property name="service" value="WCS" />
+    <property name="request" value="DescribeEOCoverageSet" />
+  </bean>
+  <bean id="wcs20describeEOCoverageSetCountKvpParser" class="org.geoserver.ows.kvp.IntegerKvpParser">
+    <constructor-arg index="0" value="count" />
+    <property name="service" value="WCS" />
+    <property name="request" value="DescribeEOCoverageSet" />
+  </bean>
+  <bean id="wcs20DescribeEOCoverageSetKvpReader"
+    class="org.geoserver.wcs2_0.eo.kvp.WCS20DescribeEOCoverageSetRequestReader" />
+
+  <bean id="wcs201DescribeEOCoverageSetRequestReader" class="org.geoserver.wcs2_0.eo.xml.WcsEOXmlReader">
+    <constructor-arg value="DescribeEOCoverageSet" />
+    <constructor-arg value="2.0.1" />
+    <constructor-arg ref="entityResolverProvider" />
+  </bean>
+
+  <bean id="wcs20DescribeEOCoverageSetResponse"
+    class="org.geoserver.wcs2_0.eo.response.WCS20DescribeEOCoverageSetResponse"/>
+
+  <bean id="wcs20GranuleCoverageExtension"
+    class="org.geoserver.wcs2_0.eo.response.GranuleCoverageExtension">
+    <constructor-arg index="0" ref="geoServer"/>
+    <constructor-arg index="1" ref="wcsEoCoverageResourceCodec" />
+  </bean>  
+
+</beans>

@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -9,9 +10,13 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.logging.Level;
 
+import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resource.Type;
+import org.geotools.data.DataUtilities;
 import org.geotools.factory.Hints;
 import org.geotools.referencing.factory.epsg.FactoryUsingWKT;
-import org.vfny.geoserver.global.GeoserverDataDirectory;
 
 
 /**
@@ -37,20 +42,27 @@ public class GeoserverOverridingWKTFactory extends FactoryUsingWKT {
      */
     protected URL getDefinitionsURL() {
         String cust_proj_file = System.getProperty(SYSTEM_DEFAULT_USER_PROJ_FILE);
-
         if (cust_proj_file == null) {
-            cust_proj_file = new File(GeoserverDataDirectory.getGeoserverDataDirectory(),
-                    "user_projections/epsg_overrides.properties").getAbsolutePath();
+            GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
+            if( loader !=null ){ // Not available for SystemTestData 
+                Resource custom_proj = loader.get("user_projections/epsg_overrides.properties");
+                if( custom_proj.getType() == Type.RESOURCE ){
+                    cust_proj_file = custom_proj.file().getAbsolutePath();
+                }
+            }
         }
-
         // Attempt to load user-defined projections
-        File proj_file = new File(cust_proj_file);
-
-        if (proj_file.exists()) {
-            try {
-                return proj_file.toURL();
-            } catch (MalformedURLException e) {
-                LOGGER.log(Level.SEVERE, "Had troubles converting file name to URL", e);
+        if( cust_proj_file != null ){
+            File proj_file = new File(cust_proj_file);
+    
+            if (proj_file.exists()) {
+                URL url = DataUtilities.fileToURL( proj_file );
+                if( url != null ){
+                    return url;
+                }
+                else {
+                    LOGGER.log(Level.SEVERE, "Had troubles converting "+cust_proj_file+" to URL");
+                }
             }
         }
 

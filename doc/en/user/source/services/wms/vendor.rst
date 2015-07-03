@@ -48,7 +48,7 @@ Automatic buffer sizing cannot be computed if:
 In this event, the following defaults are used:
 
 * 0 pixels for :ref:`wms_getmap` requests
-* 2 pixels for :ref:`wms_getfeatureinfo` requests
+* 5 pixels for :ref:`wms_getfeatureinfo` requests (a different min value can be set via the ``org.geoserver.wms.featureinfo.minBuffer`` system variable, e.g., add ``-Dorg.geoserver.wms.featureinfo.minBuffer=10`` to make the min buffer be 10 pixels)
   
 If these are not sufficiently large, the explicit parameter can be used.
 
@@ -102,6 +102,8 @@ An example of an OGC filter encoded in a GET request is::
 
    filter=%3CFilter%20xmlns:gml=%22http://www.opengis.net/gml%22%3E%3CIntersects%3E%3CPropertyName%3Ethe_geom%3C/PropertyName%3E%3Cgml:Point%20srsName=%224326%22%3E%3Cgml:coordinates%3E-74.817265,40.5296504%3C/gml:coordinates%3E%3C/gml:Point%3E%3C/Intersects%3E%3C/Filter%3E
    
+.. _format_options:
+
 format_options
 --------------
 
@@ -121,10 +123,13 @@ The supported format options are:
   For example, to print  a 100x100 image at 300 DPI request a 333x333 image with the DPI value set to 300: ``&width=333&height=333&format_options=dpi:300`` 
 * ``layout``: specifies a layout name to use.  Layouts are used to add decorators such as compasses and legends.  This capability is discussed further in the :ref:`wms_decorations` section.
 * ``quantizer`` ((values = ``octree``, ``mediancut``): controls the color quantizer used to produce PNG8 images. GeoServer 2.2.0 provides two quantizers, a fast RGB quantizer called ``octree`` that does not handle translucency and a slower but more accurate RGBA quantizer called ``mediancut``. By default the first is used on opaque images, whilst the second is enabled if the client asks for a transparent image (``transparent=true``). This vendor parameter can be used to manually force the usage of a particular quantizer.
+* ``timeout``: Apply a timeout value for a getMap request. If the timeout is reached, the getMap request is cancelled and an error is returned. The value used for the timeout will be the minimum of this format option and the global WMS timeout defined in the :ref:`wms_configuration`. A value of zero means no timeout.
 * ``kmattr`` ((values = ``true``,``false``)): determines whether the KML returned by GeoServer should include clickable attributes or not. This parameter primarily affects Google Earth rendering.  
 * ``legend`` ((values = ``true``,``false``)): KML may add the legend.
 * ``kmscore`` ((values = between ``0`` to force raster output and ``100`` to force vector output)): parameter sets whether GeoServer should render KML data as vector or raster. This parameter primarily affects Google Earth rendering.  
 * ``kmltitle``: parameter sets the KML title.
+* ``kmlrefresh`` ((values = greater than ``0`` or ``expires``): Force Network Link reload in refresh mode on interval of seconds.  When expires is specified client will refresh whenever the time has elapsed specified in cache expiration headers.  The caching time may be set in the Layer configuration under Publishing tab setting  HTTP Cache Time. This parameter primarily affects Google Earth rendering and is dependent on being respected by the client.  Using a second interval is a more reliable choice.  
+* ``kmlvisible`` ((values = ``true``,``false``)): Indicates whether layers selected will default to enabled or not. Default behavior is enabled. This parameter primarily affects Google Earth rendering.
 
 maxFeatures and startIndex
 --------------------------
@@ -203,9 +208,9 @@ and the ``tiled`` and ``tilesorigin`` parameters must be specified.
 The ``tiled`` parameter controls whether meta-tiling is used. 
 The syntax is::
 
-   tiled=[yes|no]
+   tiled=[true|false]
 
-To invoke meta-tiling use ``tiled=yes``.
+To invoke meta-tiling use ``tiled=true``.
 
 tilesorigin
 -----------
@@ -246,8 +251,43 @@ The following code shows how to specify the meta-tiling parameters:
             layers: 'layerName',
             format: 'image/png',
             tiled: true,
-            tilesorigin: [map.maxExtent.left, map.maxExtent.bottom]  
+            tilesorigin: map.maxExtent.left + ',' + map.maxExtent.bottom
         },
         {buffer: 0} 
     );
+
+scaleMethod
+-----------
+
+The ``scaleMethod`` parameter controls how the scale denominator is computed by GeoServer
+The two possible values are:
+
+  * ``OGC`` (default): the scale denominator is computed according to the OGC SLD specification, which
+                       imposes simplified formulas for the sake of interoperability
+  * ``Accurate``: use the full expressions for computing the scale denominator against geographic
+                   data, taking into account the ellipsoidal shape of Earth
+                   
+The two methods tend to return values rather close to each other near the equator, but they
+do diverge to larger differences as the latitude approaches the poles.
+
+interpolations
+--------------
+
+The ``interpolations`` parameter allows choosing a specific resampling (interpolation) method. 
+It can be used in the ``GetMap`` operation. 
+
+If more than one layer is specified in the ``layers`` parameter, then a separate interpolation method can be specified for each layer, separated by commas.
+The syntax is::
+
+   interpolations=method1,method2,... 
+
+method<n> values can be one of the following: 
+
+ * **nearest neighbor**
+ * **bilinear**
+ * **bicubic**
+
+or empty if the default method has to be used for the related layer. 
+
+The parameter allows to override the global WMS Raster Rendering Options setting (see :ref:`WMS Settings<webadmin_wms>` for more info), on a layer by layer basis. 
 

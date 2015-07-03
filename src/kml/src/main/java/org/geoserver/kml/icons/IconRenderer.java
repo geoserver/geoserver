@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -79,11 +80,11 @@ public final class IconRenderer {
      * @return
      */
     public static BufferedImage renderIcon(Style style) {
-        int size = findIconSize(style)+1; // size is an int because icons are always square
+        int size = findIconSize(style)+2; // size is an int because icons are always square
         MapContent mapContent = new MapContent();
         mapContent.addLayer(new FeatureLayer(sampleData, style));
-        BufferedImage image = new BufferedImage(size * Icons.RENDER_SCALE_FACTOR + 1, 
-                size * Icons.RENDER_SCALE_FACTOR + 1, BufferedImage.TYPE_INT_ARGB);
+        BufferedImage image = new BufferedImage(size * Icons.RENDER_SCALE_FACTOR, 
+                size * Icons.RENDER_SCALE_FACTOR, BufferedImage.TYPE_INT_ARGB);
         Graphics2D graphics = image.createGraphics();
         graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         graphics.scale(Icons.RENDER_SCALE_FACTOR, Icons.RENDER_SCALE_FACTOR);

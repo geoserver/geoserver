@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -60,11 +61,12 @@ class WFSReprojectionUtil {
      * @return
      */
     public static CoordinateReferenceSystem getDeclaredCrs(FeatureType schema, String wfsVersion) {
+        if (schema == null)
+            return null;
+
         CoordinateReferenceSystem crs = (schema.getGeometryDescriptor() != null) ? schema
                 .getGeometryDescriptor().getCoordinateReferenceSystem() : null;
 
-        if (schema == null)
-            return null;
         return getDeclaredCrs(crs, wfsVersion);
     }
 

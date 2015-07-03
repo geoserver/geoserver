@@ -42,6 +42,7 @@
 
   <bean id="JDBCGeoServerFacade" class="org.geoserver.jdbcconfig.config.JDBCGeoServerFacade">
     <constructor-arg ref="JDBCConfigDB" />
+    <property name="resourceLoader" ref="resourceLoader" />
   </bean>
 
   <bean id="JDBCGeoServerLoader" class="org.geoserver.jdbcconfig.JDBCGeoServerLoader">
@@ -53,5 +54,11 @@
     <property name="catalogFacade" ref="JDBCCatalogFacade" />
     <property name="geoServerFacade" ref="JDBCGeoServerFacade" />
   </bean>
+  
+  <bean id="JDBCConfigStatusProvider" class="org.geoserver.jdbcconfig.web.JDBCConfigStatusProvider">
+    <constructor-arg ref="jdbcConfigProperties" />
+  </bean>
+  
+    <bean id="JDBCCacheProvider" class="org.geoserver.jdbcconfig.internal.JDBCCacheProvider"/>
 
 </beans>

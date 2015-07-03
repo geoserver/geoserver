@@ -1,10 +1,14 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.catalog.util;
 
-import static org.geotools.coverage.grid.io.AbstractGridCoverage2DReader.*;
+import static org.geotools.coverage.grid.io.GridCoverage2DReader.ELEVATION_DOMAIN;
+import static org.geotools.coverage.grid.io.GridCoverage2DReader.HAS_ELEVATION_DOMAIN;
+import static org.geotools.coverage.grid.io.GridCoverage2DReader.HAS_TIME_DOMAIN;
+import static org.geotools.coverage.grid.io.GridCoverage2DReader.TIME_DOMAIN;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -23,9 +27,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
+import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.util.DateRange;
 import org.geotools.util.NumberRange;
-import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.util.Utilities;
 import org.geotools.util.logging.Logging;
 
@@ -327,6 +331,16 @@ public class ReaderDimensionsAccessor {
     }
 
     /**
+     * Return the domain datatype (if available)
+     * @param domainName
+     * @return
+     * @throws IOException 
+     */
+    public String getDomainDatatype(final String domainName) throws IOException {
+        return reader.getMetadataValue(domainName.toUpperCase() + "_DOMAIN_DATATYPE");
+    }
+    
+    /**
      * True if the reader has a dimension with the given name
      * @throws IOException 
      */
@@ -339,9 +353,9 @@ public class ReaderDimensionsAccessor {
      * Returns the full set of values for the given dimension
      * @throws IOException 
      */
-    public TreeSet<String> getDomain(String name) throws IOException {
+    public List<String> getDomain(String name) throws IOException {
         String[] values = reader.getMetadataValue(name.toUpperCase() + "_DOMAIN").split(",");
-        TreeSet<String> valueSet = new TreeSet<String>();
+        List<String> valueSet = new ArrayList<String>();
         for (String val : values) {
             valueSet.add(val);
         }
@@ -363,11 +377,11 @@ public class ReaderDimensionsAccessor {
         }
 
         // ok, get the full domain then
-        TreeSet<String> domain = getDomain(name);
+        List<String> domain = getDomain(name);
         if (domain.isEmpty()) {
             return null;
         } else {
-            return domain.first();
+            return domain.get(0);
         }
     }
 

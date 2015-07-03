@@ -1,26 +1,14 @@
-/*
- *  Copyright (C) 2007-2008-2009 GeoSolutions S.A.S.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * Copyright (C) 2007-2008-2009 GeoSolutions S.A.S.
  *  http://www.geo-solutions.it
- *
- *  GPLv3 + Classpath exception
- *
- *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
  */
 package org.geoserver.sldservice.utils.classifier.impl;
 
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.geoserver.sldservice.utils.classifier.ColorRamp;
@@ -50,7 +38,7 @@ public class CustomColorRamp implements ColorRamp {
 	}
 
 	public void revert() {
-
+        Collections.reverse(colors);
 	}
 
 	public void setNumClasses(int numClass) {
@@ -78,7 +66,6 @@ public class CustomColorRamp implements ColorRamp {
 		int red, green, blue;
 		double sRed, sGreen, sBlue;
 		int mid;
-		colors.add(new Color(0, 0, 0));
 		if (startColor == null || endColor == null)
 			throw new Exception(
 					"Start or end color not setted unable to build color ramp");
@@ -90,7 +77,7 @@ public class CustomColorRamp implements ColorRamp {
 					/ (double) (classNum - 1);
 			sBlue = ((double) endColor.getBlue() - startColor.getBlue())
 					/ (double) (classNum - 1);
-			for (int i = 0; i < classNum; i++) {
+			for (int i = 0; i < classNum -1; i++) {
 				red = (int) (sRed * i + startColor.getRed());
 				green = (int) (sGreen * i + startColor.getGreen());
 				blue = (int) (sBlue * i + startColor.getBlue());

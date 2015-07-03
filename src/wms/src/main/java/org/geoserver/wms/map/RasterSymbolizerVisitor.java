@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -8,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.feature.FeatureTypes;
 import org.geotools.styling.AnchorPoint;
 import org.geotools.styling.ChannelSelection;
@@ -43,6 +45,10 @@ import org.geotools.styling.Symbolizer;
 import org.geotools.styling.TextSymbolizer;
 import org.geotools.styling.UserLayer;
 import org.opengis.feature.type.FeatureType;
+import org.opengis.filter.capability.FunctionName;
+import org.opengis.filter.expression.Expression;
+import org.opengis.filter.expression.Function;
+import org.opengis.parameter.Parameter;
 
 /**
  * Extracts the active raster symbolizers, as long as there are some, and only raster symbolizers 
@@ -64,7 +70,9 @@ public class RasterSymbolizerVisitor implements StyleVisitor {
     
     boolean otherSymbolizers = false;
     
-    boolean renderingTransformations = false;
+    Expression rasterTransformation = null;
+    
+    boolean otherRenderingTransformations = false;
 
     public RasterSymbolizerVisitor(double scaleDenominator, FeatureType featureType) {
         this.scaleDenominator = scaleDenominator;
@@ -74,14 +82,19 @@ public class RasterSymbolizerVisitor implements StyleVisitor {
     public void reset() {
         symbolizers.clear();
         otherSymbolizers = false;
-        renderingTransformations = false;
+        rasterTransformation = null;
+        otherRenderingTransformations = false;
     }
     
     public List<RasterSymbolizer> getRasterSymbolizers() {
-        if(otherSymbolizers || renderingTransformations)
+        if(otherSymbolizers || otherRenderingTransformations)
             return Collections.emptyList();
         else
             return symbolizers;
+    }
+    
+    public Expression getRasterRenderingTransformation() {
+        return rasterTransformation;
     }
 
     public void visit(StyledLayerDescriptor sld) {
@@ -110,9 +123,6 @@ public class RasterSymbolizerVisitor implements StyleVisitor {
 
     public void visit(Style style) {
         for (FeatureTypeStyle fts : style.featureTypeStyles()) {
-            if(fts.getTransformation() != null) {
-                renderingTransformations = true;
-            }
             fts.accept(this);
         }
     }
@@ -127,11 +137,30 @@ public class RasterSymbolizerVisitor implements StyleVisitor {
 
     public void visit(FeatureTypeStyle fts) {
         // use the same logic as streaming renderer to decide if a fts is active
-        if((featureType.getName().getLocalPart() != null)
+        if(featureType == null || (featureType.getName().getLocalPart() != null)
                 && (featureType.getName().getLocalPart().equalsIgnoreCase(fts.getFeatureTypeName()) || 
                         FeatureTypes.isDecendedFrom(featureType, null, fts.getFeatureTypeName()))) {
-            for (Rule r : fts.rules())
+            Expression tx = fts.getTransformation();
+            if(tx != null) {
+                boolean rasterTransformation = false;
+                if(tx instanceof Function) {
+                    Function f = (Function) tx;
+                    FunctionName name = f.getFunctionName();
+                    if(name != null) {
+                        Parameter<?> result = name.getReturn();
+                        if(result != null) {
+                            if(GridCoverage2D.class.isAssignableFrom(result.getType())) {
+                                rasterTransformation = true;
+                                this.rasterTransformation = tx;
+                            }
+                        } 
+                    }
+                } 
+                otherRenderingTransformations |= !rasterTransformation;
+            }
+            for (Rule r : fts.rules()) {
                 r.accept(this);
+            }
         }
     }
 

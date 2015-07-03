@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
- Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ Copyright (C) 2014 - Open Source Geospatial Foundation. All rights reserved.
  This code is licensed under the GPL 2.0 license, available at the root
  application directory.
  -->
@@ -10,9 +10,8 @@
   <import resource="geowebcache-geoserver-context.xml" />
   <import resource="geowebcache-servlet.xml" />
 
-  <bean id="GWCLifeCycleHandler" class="org.geoserver.gwc.config.GWCLifeCycleHandler">
+  <bean id="GWCLifeCycleHandler" class="org.geoserver.gwc.config.GWCLifeCycleHandler" depends-on="gwcFacade">
     <description>Reloads the GWC config when GeoServer is called for a reload</description>
-    <constructor-arg ref="gwcFacade" />
   </bean>
   
   <bean id="gwcJdbcConfigurationStorage" class="org.geoserver.gwc.JDBCConfigurationStorage">
@@ -20,7 +19,7 @@
     <constructor-arg index="1" ref="geoServerSecurityManager"/>
   </bean>
   
-  <bean id="gwcFacade" class="org.geoserver.gwc.GWC" depends-on="geoWebCacheExtensions">
+  <bean id="gwcFacade" class="org.geoserver.gwc.GWC" depends-on="geoWebCacheExtensions" lazy-init="false">
     <constructor-arg ref="gwcGeoServervConfigPersister" />
     <constructor-arg ref="gwcStorageBroker" />
     <constructor-arg ref="gwcTLDispatcher" />
@@ -54,6 +53,7 @@
     <constructor-arg ref="gwcGeoServervConfigPersister" />
     <constructor-arg ref="rawCatalog" />
     <constructor-arg ref="GeoSeverTileLayerCatalog" />
+    <property name="blobStore" ref="gwcConfigBlobStore" />
   </bean>
 
   <bean id="cachingWebMapService" class="org.geoserver.gwc.wms.CachingWebMapService">

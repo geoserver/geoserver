@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -6,11 +7,15 @@ package org.geoserver.wms.wms_1_3;
 
 import java.net.URL;
 
+import org.custommonkey.xmlunit.XMLUnit;
+import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.test.http.MockHttpResponse;
 import org.geoserver.wms.WMSCascadeTestSupport;
 import org.geoserver.wms.WMSTestSupport;
+import org.junit.Before;
 import org.junit.Test;
+import org.w3c.dom.Document;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
@@ -28,9 +33,8 @@ public class WMSCascadeTest extends WMSCascadeTestSupport {
                 + "&styles&bbox=-110.0,-200.0,110.0,200.0&crs=EPSG:4326&bgcolor=0xFFFFFF&transparent=FALSE&format=image/png&width=190&height=100"), new MockHttpResponse(pngImage, "image/png"));
         wms11Client.expectGet(new URL(wms11BaseURL + "?service=WMS&version=1.1.1&request=GetMap&layers=world4326" 
                 + "&styles&bbox=-200.0,-110.0,200.0,110.0&srs=EPSG:4326&bgcolor=0xFFFFFF&transparent=FALSE&format=image/png&width=190&height=100"), new MockHttpResponse(pngImage, "image/png"));
-
     }
-
+    
     @Test
     public void testCascadeGetMapOnto13() throws Exception {
         MockHttpServletResponse response = getAsServletResponse("wms?bbox=-90,-180,90,180" +
@@ -47,6 +51,14 @@ public class WMSCascadeTest extends WMSCascadeTestSupport {
                 + "&width=180&height=90&crs=EPSG:4326");
         // we'll get a service exception if the requests are not the ones expected
         checkImage(response, "image/png", 180, 90);
+    }
+    
+    @Test
+    public void testCascadeCapabilitiesClientNoGetFeatureInfo() throws Exception {
+        Document dom = getAsDOM("wms?request=GetCapabilities&version=1.3.0&service=wms");
+        //print(dom);
+        
+        xpath.evaluate("//wms:Layer[name='" + WORLD4326_110_NFI + "']", dom);
     }
     
    

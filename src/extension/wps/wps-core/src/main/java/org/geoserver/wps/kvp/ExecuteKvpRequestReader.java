@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -55,7 +56,7 @@ public class ExecuteKvpRequestReader extends EMFKvpRequestReader implements Appl
         
         // grab the process, we need it to parse the data inputs
         Name processName = Ows11Util.name(execute.getIdentifier());
-        ProcessFactory pf = GeoServerProcessors.createProcessFactory(processName);
+        ProcessFactory pf = GeoServerProcessors.createProcessFactory(processName, false);
         if (pf == null) {
             throw new WPSException("No such process: " + processName);
         }

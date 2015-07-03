@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -14,13 +15,18 @@ import java.util.Set;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.config.GeoServer;
+import org.geoserver.config.SettingsInfo;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
 import org.geoserver.wfs.request.GetFeatureRequest;
 import org.geoserver.wfs.response.WFSResponse;
-
+import org.geotools.feature.FeatureCollection;
+import org.opengis.feature.type.FeatureType;
 
 /**
  * Base class for a response to a WFS GetFeature operation.
@@ -106,13 +112,11 @@ public abstract class WFSGetFeatureOutputFormat extends WFSResponse {
     }
     
     /**
-     * capabilities output format string.  Something that's a valid XML element name.
+     * Capabilities output format string.  Something that's a valid XML element name.
      * This should be overriden in each outputformat subclass, and if it's not a warning will be
      * issued.
      */
-    public /*abstract*/ String getCapabilitiesElementName() {
-        LOGGER.severe("ERROR IN " + this.getClass() + " IMPLEMENTATION.  getCapabilitiesElementName() should return a" + 
-                "valid XML element name string for use in the WFS 1.0.0 capabilities document.");
+    public String getCapabilitiesElementName() {
         String of = getOutputFormat();
         if(of == null) {
             return null;
@@ -122,6 +126,8 @@ public abstract class WFSGetFeatureOutputFormat extends WFSResponse {
         if (XML_ELEMENT.matcher(of).matches()) {
             return of;
         } else {
+            LOGGER.severe("ERROR IN " + this.getClass() + " IMPLEMENTATION.  getCapabilitiesElementName() should return a" + 
+                    "valid XML element name string for use in the WFS 1.0.0 capabilities document.");
             String name = this.getClass().getName();
             if ( name.indexOf('.') != -1 ) {
                 name = name.substring(name.lastIndexOf('.') + 1);
@@ -193,6 +199,36 @@ public abstract class WFSGetFeatureOutputFormat extends WFSResponse {
             write(FeatureCollectionResponse.adapt(value), output, operation);
         }
         
+    }
+
+    protected int getNumDecimals(List featureCollections, GeoServer geoServer, Catalog catalog) {
+        int numDecimals = -1;
+        for (int i = 0; i < featureCollections.size(); i++) {
+            FeatureCollection features = (FeatureCollection) featureCollections.get(i);
+            FeatureType featureType = features.getSchema();
+
+            ResourceInfo meta = catalog
+                    .getResourceByName(featureType.getName(), ResourceInfo.class);
+
+            // track num decimals, in cases where the query has multiple types we choose the max
+            // of all the values (same deal as above, might not be a vector due to GetFeatureInfo
+            // reusing this)
+            if (meta instanceof FeatureTypeInfo) {
+                int ftiDecimals = ((FeatureTypeInfo) meta).getNumDecimals();
+                if (ftiDecimals > 0) {
+                    numDecimals = numDecimals == -1 ? ftiDecimals : Math.max(numDecimals,
+                            ftiDecimals);
+                }
+            }
+        }
+
+        SettingsInfo settings = geoServer.getSettings();
+
+        if (numDecimals == -1) {
+            numDecimals = settings.getNumDecimals();
+        }
+
+        return numDecimals;
     }
 
     /**

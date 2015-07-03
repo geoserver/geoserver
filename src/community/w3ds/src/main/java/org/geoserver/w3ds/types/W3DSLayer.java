@@ -1,6 +1,9 @@
-/* This code is licensed under the GPL 2.0 license, available at the root
- * application directory.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2012 - 2013 OpenPlans
  * 
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ *
  * @author Jorge Gustavo Rocha / Universidade do Minho
  * @author Nuno Carvalho Oliveira / Universidade do Minho 
  */
@@ -16,6 +19,7 @@ import org.geoserver.catalog.StyleInfo;
 import org.geoserver.w3ds.styles.Styles3D;
 import org.geoserver.w3ds.utilities.X3DInfoExtract;
 import org.geotools.feature.FeatureCollection;
+import org.opengis.filter.Filter;
 import org.geotools.styling.Style;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
@@ -29,6 +33,7 @@ public class W3DSLayer {
 	private String objectID;
 	private Boolean hasObjectID;
 	private Boolean hasObjectClass;
+	private Boolean haveLODs;
 	private List<Style> styles;
 
 	public W3DSLayer(W3DSLayerInfo layerInfo,
@@ -37,6 +42,9 @@ public class W3DSLayer {
 		this.features = features;
 		X3DInfoExtract x3dInfoExtract = new X3DInfoExtract();
 		x3dInfoExtract.setLayerInfo(layerInfo.getLayerInfo());
+		
+		this.haveLODs = x3dInfoExtract.haveLODS();
+		
 		if(x3dInfoExtract.haveObjectID()) {
 			this.hasObjectID = true;
 			this.objectID = x3dInfoExtract.getObjectID();
@@ -73,10 +81,18 @@ public class W3DSLayer {
 	public void setLayerInfo(W3DSLayerInfo layerInfo) {
 		this.layerInfo = layerInfo;
 	}
+	
+	public boolean haveLODs() {
+	    return haveLODs;
+	}
 
 	public FeatureCollection<? extends FeatureType, ? extends Feature> getFeatures() {
 		return features;
 	}
+	
+	public FeatureCollection<? extends FeatureType, ? extends Feature> getFeatures(Filter filter) {
+            return features.subCollection(filter);
+    }
 
 	public void setFeatures(
 			FeatureCollection<? extends FeatureType, ? extends Feature> features) {

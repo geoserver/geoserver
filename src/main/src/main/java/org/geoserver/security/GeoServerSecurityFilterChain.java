@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -87,6 +88,7 @@ public class GeoServerSecurityFilterChain implements Serializable {
     static {
         WEB_LOGIN.setName(WEB_LOGIN_CHAIN_NAME);
         WEB_LOGIN.setFilterNames(FORM_LOGIN_FILTER);
+        WEB_LOGIN.setAllowSessionCreation(true);
     }
 
     private static LogoutFilterChain WEB_LOGOUT = new LogoutFilterChain(FORM_LOGOUT_CHAIN);

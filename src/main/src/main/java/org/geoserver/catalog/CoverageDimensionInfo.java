@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -8,6 +9,7 @@ import java.io.Serializable;
 import java.util.List;
 
 import org.geotools.util.NumberRange;
+import org.opengis.coverage.SampleDimensionType;
 
 /**
  * A coverage dimension.
@@ -69,4 +71,25 @@ public interface CoverageDimensionInfo extends Serializable {
      * @uml.property name="nullValues"
      */
     List<Double> getNullValues();
+    
+    /**
+     * Returns the unit name for this dimension, or null if unknown
+     * @return
+     */
+    String getUnit();
+    
+    /**
+     * Sets the dimenions unit name
+     * @param unit
+     */
+    void setUnit(String unit);
+
+    /**
+     * 
+     * @return
+     */
+    SampleDimensionType getDimensionType();
+
+    void setDimensionType(SampleDimensionType dimensionType);
+
 }

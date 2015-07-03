@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -1206,15 +1206,13 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaTestSupport {
                 + "            <ogc:PropertyIsEqualTo>"
                 + "                <ogc:Literal>significant</ogc:Literal>"
                 + "                <ogc:PropertyName>gsml:specification/gsml:GeologicUnit/gsml:composition/gsml:CompositionPart/gsml:proportion/gsml:CGI_TermValue/gsml:value</ogc:PropertyName>"
-                + "            </ogc:PropertyIsEqualTo>"
-                + "                <ogc:Not>"
-                + "                    <ogc:PropertyIsEqualTo>"
-                + "                        <ogc:Literal>Yaugher Volcanic Group 1</ogc:Literal>"
-                + "                        <ogc:PropertyName>gsml:specification/gsml:GeologicUnit/gml:name</ogc:PropertyName>"
-                + "                    </ogc:PropertyIsEqualTo>"
-                + "                </ogc:Not>"
-                + "            </ogc:And>"
-                + "        </ogc:Filter>"
+                + "            </ogc:PropertyIsEqualTo>"                
+                + "            <ogc:PropertyIsEqualTo>"
+                + "                 <ogc:Literal>New Group</ogc:Literal>"
+                + "                 <ogc:PropertyName>gsml:specification/gsml:GeologicUnit/gml:name</ogc:PropertyName>"
+                + "            </ogc:PropertyIsEqualTo>"                
+                + "        </ogc:And>"
+                + "    </ogc:Filter>"
                 + "</wfs:Query> "
                 + "</wfs:GetFeature>";
         validate(xml);

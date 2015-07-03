@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -8,7 +9,6 @@ import java.util.List;
 
 import org.geoserver.kml.KmlEncodingContext;
 import org.geoserver.kml.decorator.KmlDecoratorFactory.KmlDecorator;
-import org.geoserver.kml.sequence.CompositeList;
 import org.geoserver.kml.sequence.PlainFolderSequenceFactory;
 import org.geoserver.kml.sequence.SequenceFactory;
 import org.geoserver.kml.sequence.SequenceList;
@@ -51,33 +51,11 @@ public class StreamingKMLBuilder {
         // create a generator that will generate a folder and feature dumps/ground overlays for each
         // layer
         SequenceFactory<Feature> generatorFactory = new PlainFolderSequenceFactory(context);
-//        if (context.isSuperOverlayEnabled()) {
-//            generatorFactory = new SuperOverlaySequenceFactory(context);
-//        } else if (context.isNetworkLinksFormat()) {
-//            generatorFactory = new NetworkLinkSequenceFactory(context);
-//        } else {
-//            generatorFactory = 
-//        }
         SequenceList<Feature> folders = new SequenceList<Feature>(generatorFactory);
-        addFeatures(document, folders);
+        context.addFeatures(document, folders);
 
         return kml;
     }
 
-    /**
-     * Adds features to the document own list
-     * 
-     * @param folder
-     * @param features
-     */
-    void addFeatures(Document document, List<Feature> features) {
-        List<Feature> originalFeatures = document.getFeature();
-        if (originalFeatures == null || originalFeatures.size() == 0) {
-            document.setFeature(features);
-        } else {
-            // in this case, compose the already existing features with the
-            // dynamically generated ones
-            document.setFeature(new CompositeList<Feature>(originalFeatures, features));
-        }
-    }
+    
 }

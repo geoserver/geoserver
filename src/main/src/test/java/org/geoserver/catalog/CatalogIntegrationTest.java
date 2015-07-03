@@ -1,30 +1,41 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.catalog;
 
-import static junit.framework.Assert.*;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertSame;
+import static org.junit.Assert.assertNull;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.ObjectInput;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.List;
 
+import org.geoserver.catalog.CascadeRemovalReporter.ModificationType;
 import org.geoserver.catalog.event.CatalogListener;
 import org.geoserver.catalog.impl.ModificationProxy;
 import org.geoserver.config.GeoServerPersister;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.test.SystemTest;
 import org.geoserver.test.TestSetup;
 import org.geoserver.test.TestSetupFrequency;
+import org.geotools.referencing.CRS;
+import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.NoSuchAuthorityCodeException;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 @Category(SystemTest.class)
 @TestSetup(run=TestSetupFrequency.REPEAT)
@@ -34,6 +45,11 @@ public class CatalogIntegrationTest extends GeoServerSystemTestSupport {
     protected void setUpTestData(SystemTestData testData) throws Exception {
         super.setUpTestData(testData);
         testData.setUpDefaultRasterLayers();
+        
+        GeoServerExtensions extension = GeoServerExtensions.bean(GeoServerExtensions.class);
+        if( extension == null ){
+            GeoServerExtensionsHelper.init( this.applicationContext );
+        }
     }
     
     @Test
@@ -140,14 +156,15 @@ public class CatalogIntegrationTest extends GeoServerSystemTestSupport {
         assertSame(ModificationProxy.unwrap(ci.getStore()), ModificationProxy.unwrap(ci.getStore()));
         
         // style
-        StyleInfo si = catalog.getStyleByName("default");
-        StyleInfo si2 = serialize(si);
-        assertSame(ModificationProxy.unwrap(si), ModificationProxy.unwrap(si2));
+        StyleInfo streamsStyle = catalog.getStyleByName("Streams");
+        StyleInfo si2 = serialize(streamsStyle);
+        assertSame(ModificationProxy.unwrap(streamsStyle), ModificationProxy.unwrap(si2));
 
         // layer and related objects
         LayerInfo li = catalog.getLayerByName(getLayerId(MockData.BRIDGES));
         // ... let's add an extra style
-        li.getStyles().add(catalog.getStyleByName("default"));
+        
+        li.getStyles().add(streamsStyle);
         catalog.save(li);
         LayerInfo li2 = serialize(li);
         assertSame(ModificationProxy.unwrap(li), ModificationProxy.unwrap(li2));
@@ -173,8 +190,8 @@ public class CatalogIntegrationTest extends GeoServerSystemTestSupport {
         // now check a half modified proxy
         LayerInfo lim = catalog.getLayerByName(getLayerId(MockData.BRIDGES));
         // ... let's add an extra style
-        lim.setDefaultStyle(catalog.getStyleByName("default"));
-        lim.getStyles().add(catalog.getStyleByName("default"));
+        lim.setDefaultStyle(streamsStyle);
+        lim.getStyles().add(streamsStyle);
         // clone and check
         LayerInfo lim2 = serialize(lim);
         assertSame(ModificationProxy.unwrap(lim.getDefaultStyle()), ModificationProxy.unwrap(lim2.getDefaultStyle()));
@@ -206,5 +223,72 @@ public class CatalogIntegrationTest extends GeoServerSystemTestSupport {
         ObjectInputStream ois = new ObjectInputStream(bis);
         return (T) ois.readObject();
         
+    }
+
+    @Test
+    public void testCascadeDeleteWorkspaceSpecific() throws Exception {
+        Catalog catalog = getCatalog();
+        WorkspaceInfo ws = catalog.getWorkspaceByName(MockData.ROAD_SEGMENTS.getPrefix());
+
+        // create a workspace specific group
+        CatalogBuilder cb = new CatalogBuilder(catalog);
+        LayerGroupInfo lg = catalog.getFactory().createLayerGroup();
+        lg.getLayers().add(catalog.getLayerByName(getLayerId(MockData.ROAD_SEGMENTS)));
+        lg.getLayers().add(catalog.getLayerByName(getLayerId(MockData.STREAMS)));
+        cb.calculateLayerGroupBounds(lg);
+        lg.setName("test-lg");
+        lg.setWorkspace(ws);
+        catalog.add(lg);
+
+        // make a style a workspace specific
+        StyleInfo style = catalog.getStyleByName(MockData.ROAD_SEGMENTS.getLocalPart());
+        style.setWorkspace(ws);
+        catalog.save(style);
+
+        // check we are getting the groups and styles reported properly
+        CascadeRemovalReporter reporter = new CascadeRemovalReporter(catalog);
+        ws.accept(reporter);
+        List<StyleInfo> styles = reporter.getObjects(StyleInfo.class, ModificationType.DELETE);
+        assertEquals(1, styles.size());
+        assertEquals(style, styles.get(0));
+
+        List<LayerGroupInfo> groups = reporter.getObjects(LayerGroupInfo.class,
+                ModificationType.DELETE);
+        assertEquals(1, groups.size());
+        assertEquals(lg, groups.get(0));
+
+        // now remove for real
+        CascadeDeleteVisitor remover = new CascadeDeleteVisitor(catalog);
+        ws.accept(remover);
+        assertNull(catalog.getWorkspaceByName(ws.getName()));
+        assertNull(catalog.getStyleByName(style.getName()));
+        assertNull(catalog.getLayerGroupByName(lg.getName()));
+    }
+    
+    @Test
+    public void testReprojectLayerGroup() 
+            throws NoSuchAuthorityCodeException, FactoryException, Exception {
+        
+        Catalog catalog = getCatalog();
+        
+        CatalogBuilder cb = new CatalogBuilder(catalog);
+        LayerGroupInfo lg = catalog.getFactory().createLayerGroup();
+        LayerInfo l = catalog.getLayerByName(getLayerId(MockData.ROAD_SEGMENTS));
+        lg.getLayers().add(l);
+        lg.setName("test-reproject");
+        
+        //Give our layer a CRS without the EPSG code defined
+        CoordinateReferenceSystem lCrs = DefaultGeographicCRS.WGS84;
+        ((FeatureTypeInfo)l.getResource()).setSRS(null);
+        ((FeatureTypeInfo)l.getResource()).setNativeCRS(lCrs);
+        assertNull(CRS.lookupEpsgCode(lCrs, false));
+        
+        //EPSG:4326 should have an EPSG code
+        CoordinateReferenceSystem lgCrs = CRS.decode("EPSG:4326");
+        assertNotNull(CRS.lookupEpsgCode(lgCrs, false));
+        
+        //Reproject our layer group to EPSG:4326. We expect it to have an EPSG code.
+        cb.calculateLayerGroupBounds(lg, lgCrs);
+        assertNotNull(CRS.lookupEpsgCode(lg.getBounds().getCoordinateReferenceSystem(), false));
     }
 }

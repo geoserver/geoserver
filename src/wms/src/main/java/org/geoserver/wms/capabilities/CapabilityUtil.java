@@ -1,4 +1,5 @@
-/* Copyright (c) 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -15,6 +16,7 @@ import org.geoserver.catalog.StyleInfo;
 import org.geotools.styling.FeatureTypeStyle;
 import org.geotools.styling.Rule;
 import org.geotools.styling.Style;
+import org.geotools.util.NumberRange;
 
 /**
  * Provides utility methods required to build the capabilities document.
@@ -44,10 +46,7 @@ final class CapabilityUtil {
 	 * @return Max and Min denominator
 	 * @throws IOException 
 	 */
-	public static Map<String,Double> searchMinMaxScaleDenominator(
-			final String minScaleDenominator, 
-			final String maxScaleDenominator, 
-			final LayerInfo layer) 
+	public static NumberRange<Double> searchMinMaxScaleDenominator(final LayerInfo layer) 
 		throws IOException{
 
 		Set<StyleInfo> stylesCopy;
@@ -60,10 +59,9 @@ final class CapabilityUtil {
 			stylesCopy.add(defaultStyle);
 		}
 		
-		// searches the max and min denominator in the style's rules that are contained in the style set. 
-		Map<String,Double> scaleDenominator = new HashMap<String,Double>(2);
-		scaleDenominator.put(minScaleDenominator, Double.POSITIVE_INFINITY);
-		scaleDenominator.put(maxScaleDenominator, Double.NEGATIVE_INFINITY);
+		// searches the maximum and minimum denominator in the style's rules that are contained in the style set. 
+		double minScaleDenominator =  Double.POSITIVE_INFINITY;
+		double maxScaleDenominator = Double.NEGATIVE_INFINITY;
 
 		for (StyleInfo styleInfo : stylesCopy) {
 
@@ -71,25 +69,42 @@ final class CapabilityUtil {
 		    for (FeatureTypeStyle fts : style.featureTypeStyles()) {
 		    	
 		        for ( Rule rule : fts.rules() ) {
-		            if ( rule.getMinScaleDenominator() < scaleDenominator.get(minScaleDenominator) ) {
-		            	scaleDenominator.put(minScaleDenominator,  rule.getMinScaleDenominator());
+		       
+		            if ( rule.getMinScaleDenominator() < minScaleDenominator ) {
+		            	minScaleDenominator = rule.getMinScaleDenominator();
 		            }
-		            if ( rule.getMaxScaleDenominator() > scaleDenominator.get(maxScaleDenominator) ) {
-		            	scaleDenominator.put(maxScaleDenominator,  rule.getMaxScaleDenominator());
+		            if ( rule.getMaxScaleDenominator() > maxScaleDenominator ) {
+		            	maxScaleDenominator = rule.getMaxScaleDenominator();
 		            }
 		        }
 		    }
 		}
 		// If the initial values weren't changed by any rule in the previous step, 
 		// then the default values, Min=0.0 and Max=infinity, are set. 
-		if(scaleDenominator.get(minScaleDenominator) ==  Double.POSITIVE_INFINITY){
-			scaleDenominator.put(minScaleDenominator,  0.0);
+		if(minScaleDenominator ==  Double.POSITIVE_INFINITY) {
+			minScaleDenominator = 0.0;
 		}
-		if( scaleDenominator.get(maxScaleDenominator) == Double.NEGATIVE_INFINITY){
-			scaleDenominator.put(maxScaleDenominator,  Double.POSITIVE_INFINITY);
+		if( maxScaleDenominator == Double.NEGATIVE_INFINITY) {
+			maxScaleDenominator = Double.POSITIVE_INFINITY;
 		}
-		assert scaleDenominator.get(minScaleDenominator) <= scaleDenominator.get(maxScaleDenominator) : "Min <= Max scale is expected";
+		assert minScaleDenominator <= maxScaleDenominator : "Min <= Max scale is expected";
 
-	    return scaleDenominator;
+	    return new NumberRange<Double>(Double.class, minScaleDenominator, maxScaleDenominator);
+	}
+
+	/**
+	 * Computes the rendering scale taking into account the standard pixel size and the real world scale denominator.
+	 * 
+	 * @param scaleDenominator
+	 * @return the rendering scale.
+	 */
+	public static Double computeScaleHint(final Double scaleDenominator) {
+		
+		// According to OGC SLD 1.0 specification: The "standardized rendering pixel size" is defined to be 0.28mm × 0.28mm (millimeters).
+		final Double sizeStandardRenderPixel = 0.00028;//(meters) 
+		
+		Double scaleHint = Math.sqrt(Math.pow((scaleDenominator * sizeStandardRenderPixel), 2) * 2);
+		
+		return scaleHint;
 	}
 }

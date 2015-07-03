@@ -14,7 +14,7 @@ CREATE TABLE OBJECT_PROPERTY (
   related_oid int, 
   related_property_type int, 
   colindex int NOT NULL, 
-  value varchar(255), 
+  value varchar(1023), 
   PRIMARY KEY (oid, property_type, colindex)
 );
 

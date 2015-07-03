@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+ Copyright (C) 2014 - Open Source Geospatial Foundation. All rights reserved.
+ This code is licensed under the GPL 2.0 license, available at the root
+ application directory.
+ -->
+<beans default-lazy-init="true" xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:p="http://www.springframework.org/schema/p"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
+    <context:annotation-config></context:annotation-config>
+
+  <bean id="printingWrapper" class="org.geoserver.printing.PrintingServletWrappingController">
+    <property name="servletClass">
+      <value>org.mapfish.print.servlet.MapPrinterServlet</value>
+    </property>
+    <property name="servletName">
+      <value>mapfish.print</value>
+    </property>
+    <property name="initParameters">
+      <props>
+        <!--This filename is appended to $GEOSERVER_DATA_DIR/printing/ in 
+        PrintingServletWrappingController-->
+        <prop key="config">config.yaml</prop>
+      </props>
+    </property>
+  </bean>
+
+  <bean id="printingDispatcherMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+    <property name="alwaysUseFullPath" value="true"/>
+    <property name="mappings">
+      <props>
+        <prop key="/pdf">printingWrapper</prop>
+        <prop key="/pdf/**">printingWrapper</prop>
+      </props>
+    </property>
+  </bean>
+
+  <bean id="printDemo" class="org.geoserver.web.DemoLinkInfo">
+    <property name="id" value="printDemo"/>
+    <property name="titleKey" value="printing.title"/>
+    <property name="descriptionKey" value="printing.description"/>
+    <property name="componentClass" value="org.geoserver.printing.PrintDemoPage"/>
+  </bean>
+  
+  <!-- Original MapFish print lib beans -->
+    
+    <bean id="mapPrinter" class="org.mapfish.print.MapPrinter" scope="prototype"></bean>
+    <bean id="configFactory" class="org.mapfish.print.config.ConfigFactory"></bean>
+	<bean id="threadResources" class="org.mapfish.print.ThreadResources">
+        <property name="connectionTimeout" value="30000"/>
+        <property name="socketTimeout" value="30000" />
+        <property name="globalParallelFetches" value="200"/>
+        <property name="perHostParallelFetches" value="30" />
+	</bean>
+
+    <!-- Define MapReaderFactories -->
+    <bean id="mapReaderFactoryFinder" class="org.mapfish.print.map.readers.MapReaderFactoryFinder"/>
+    <bean id="wms-MapReaderFactory" class="org.mapfish.print.map.readers.WMSMapReader$Factory"/>
+    <bean id="mapServer-MapReaderFactory" class="org.mapfish.print.map.readers.MapServerMapReader$Factory"/>
+    <bean id="tileCache-MapReaderFactory" class="org.mapfish.print.map.readers.TileCacheMapReader$Factory"/>
+    <bean id="osm-MapReaderFactory" class="org.mapfish.print.map.readers.OsmMapReader$Factory"/>
+    <bean id="xyz-MapReaderFactory" class="org.mapfish.print.map.readers.XyzMapReader$Factory"/>
+    <bean id="tms-MapReaderFactory" class="org.mapfish.print.map.readers.TmsMapReader$Factory"/>
+    <bean id="vector-MapReaderFactory" class="org.mapfish.print.map.readers.VectorMapReader$Factory"/>
+    <bean id="image-MapReaderFactory" class="org.mapfish.print.map.readers.ImageMapReader$Factory"/>
+    <bean id="tiledGoogle-MapReaderFactory" class="org.mapfish.print.map.readers.google.GoogleMapTileReader$Factory"/>
+    <bean id="google-MapReaderFactory" class="org.mapfish.print.map.readers.google.GoogleMapReader$Factory"/>
+    <bean id="kaMapCache-ReaderFactory" class="org.mapfish.print.map.readers.KaMapCacheMapReader$Factory"/>
+    <bean id="kaMap-ReaderFactory" class="org.mapfish.print.map.readers.KaMapMapReader$Factory"/>
+    <bean id="wmts-ReaderFactory" class="org.mapfish.print.map.readers.WMTSMapReader$Factory"/>
+    
+    <!-- Define output factories -->
+    <bean id="outputFactory" class="org.mapfish.print.output.OutputFactory">
+        <property name="formatFactories">
+            <list>
+                <!-- Uncomment to use image magick for image output -->
+                <!-- <ref bean="imageMagickOutput" />  -->
+                <ref bean="fileCachingJaiMosaicOutputFactory" />
+                <ref bean="inMemoryJaiMosaicOutputFactory" />
+                <ref bean="pdfOutputFactory" />
+            </list>
+        </property>
+    </bean>
+    <bean id="imageMagickOutput" class="org.mapfish.print.output.NativeProcessOutputFactory">
+        <!-- the path and command of the process to use for converting the pdf to another format.
+             The normal configuration is for imagemagick  -->
+        <property name="cmd">
+            <value>/usr/local/convert</value>
+        </property>
+        <!-- The arguments to use when running an imagemagick process -->
+        <property name="cmdArgs">
+            <list>
+                <value>-density</value>
+                <value>@@dpi@@</value>
+                <value>-append</value>
+                <value>@@sourceFile@@</value>
+                <value>@@targetFile@@</value>
+            </list>
+        </property>
+        <!-- Formats supported by the converter -->
+        <property name="formats">
+            <list>
+                <value>jpg</value>
+                <value>png</value>
+                <value>tif</value>
+                <value>tiff</value>
+                <value>gif</value>
+                <value>bmp</value>
+            </list>
+        </property>
+        <!-- The number of concurrent processes to run.  Extra processes will wait their turn  -->
+        <constructor-arg>
+            <value>10</value>
+        </constructor-arg>
+        <!-- the length of time to wait for a process to be available before giving up -->
+        <property name="timeoutSeconds">
+            <value>30</value>
+        </property>
+    </bean>
+    <bean id="fileCachingJaiMosaicOutputFactory" class="org.mapfish.print.output.FileCachingJaiMosaicOutputFactory"/>
+    <bean id="inMemoryJaiMosaicOutputFactory" class="org.mapfish.print.output.InMemoryJaiMosaicOutputFactory"/>
+    <bean id="pdfOutputFactory" class="org.mapfish.print.output.PdfOutputFactory"/>
+
+
+    <bean id="metricRegistry" class="com.codahale.metrics.MetricRegistry" lazy-init="false"/>
+    <bean id="healthCheckRegistry" class="com.codahale.metrics.health.HealthCheckRegistry" lazy-init="false"/>
+    <bean id="loggingMetricsConfigurator" class="org.mapfish.print.metrics.LoggingMetricsConfigurator"  lazy-init="false"/>
+    <bean id="jvmMetricsConfigurator" class="org.mapfish.print.metrics.JvmMetricsConfigurator" lazy-init="false"/>
+    <bean id="jmlMetricsReporter" class="org.mapfish.print.metrics.JmxMetricsReporter" lazy-init="false"/>
+
+</beans>

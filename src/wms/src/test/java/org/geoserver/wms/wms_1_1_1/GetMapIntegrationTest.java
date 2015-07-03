@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2014 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -19,9 +20,11 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -33,17 +36,30 @@ import org.apache.commons.io.FileUtils;
 import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.spi.LoggingEvent;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.CoverageInfo;
+import org.geoserver.catalog.CoverageStoreInfo;
+import org.geoserver.catalog.CoverageView;
+import org.geoserver.catalog.CoverageView.CompositionType;
+import org.geoserver.catalog.CoverageView.CoverageBand;
+import org.geoserver.catalog.CoverageView.InputCoverageBand;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.catalog.LayerInfo;
+import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.SystemTestData.LayerProperty;
 import org.geoserver.test.RemoteOWSTestSupport;
 import org.geoserver.wms.GetMap;
+import org.geoserver.wms.GetMapOutputFormat;
+import org.geoserver.wms.GetMapTest;
 import org.geoserver.wms.WMS;
+import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSTestSupport;
+import org.geoserver.wms.map.OpenLayersMapOutputFormat;
+import org.geoserver.wms.map.RenderedImageMapOutputFormat;
 import org.geotools.gce.imagemosaic.ImageMosaicFormat;
 import org.junit.Test;
 import org.w3c.dom.Document;
@@ -52,7 +68,16 @@ import org.w3c.dom.Element;
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
 public class GetMapIntegrationTest extends WMSTestSupport {
-    
+
+    private static final QName ONE_BIT = new QName(MockData.SF_URI, "onebit", MockData.SF_PREFIX);
+
+    private static final QName MOSAIC_HOLES = new QName(MockData.SF_URI, "mosaic_holes", MockData.SF_PREFIX);
+
+    private static final QName MOSAIC = new QName(MockData.SF_URI, "mosaic", MockData.SF_PREFIX);
+
+    public static QName GIANT_POLYGON = new QName(MockData.CITE_URI, "giantPolygon",
+            MockData.CITE_PREFIX);
+
     String bbox = "-130,24,-66,50";
 
     String styles = "states";
@@ -149,10 +174,54 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         
         Map properties = new HashMap();
         properties.put(LayerProperty.STYLE,"raster");
-        testData.addRasterLayer(new QName(MockData.SF_URI, "mosaic_holes", MockData.SF_PREFIX),
+        testData.addRasterLayer(MOSAIC_HOLES,
                 "mosaic_holes.zip", null, properties,GetMapIntegrationTest.class,catalog);
+        
+        testData.addRasterLayer(ONE_BIT,
+                "onebit.zip", null, properties,GetMapIntegrationTest.class,catalog);
+
+        testData.addRasterLayer(MOSAIC,
+                "mosaic.zip", null, properties,GetMapIntegrationTest.class,catalog);
+
+        testData.addVectorLayer(GIANT_POLYGON, Collections.EMPTY_MAP, "giantPolygon.properties",
+                GetMapTest.class, getCatalog());
+
+        addCoverageViewLayer();
     }
-    
+
+    private void addCoverageViewLayer() throws Exception {
+        final InputCoverageBand ib0 = new InputCoverageBand("mosaic", "2");
+        final CoverageBand b0 = new CoverageBand(Collections.singletonList(ib0), "mosaic@2",
+                0, CompositionType.BAND_SELECT);
+
+        final InputCoverageBand ib1 = new InputCoverageBand("mosaic", "1");
+        final CoverageBand b1 = new CoverageBand(Collections.singletonList(ib1), "mosaic@1",
+                1, CompositionType.BAND_SELECT);
+
+        final InputCoverageBand ib2 = new InputCoverageBand("mosaic", "0");
+        final CoverageBand b2 = new CoverageBand(Collections.singletonList(ib2), "mosaic@0",
+                2, CompositionType.BAND_SELECT);
+
+        final List<CoverageBand> coverageBands = new ArrayList<CoverageBand>(3);
+        coverageBands.add(b0);
+        coverageBands.add(b1);
+        coverageBands.add(b2);
+        CoverageView coverageView = new CoverageView("mosaic_shuffle", coverageBands);
+        Catalog cat = getCatalog();
+        final CoverageStoreInfo storeInfo = cat.getCoverageStoreByName("mosaic");
+
+        final CatalogBuilder builder = new CatalogBuilder(cat);
+        builder.setStore(storeInfo);
+
+        // Reordered bands coverage
+        final CoverageInfo coverageInfoView = coverageView.createCoverageInfo("mosaic_shuffle",
+                storeInfo, builder);
+        coverageInfoView.getParameters().put("USE_JAI_IMAGEREAD", "false");
+        cat.add(coverageInfoView);
+        final LayerInfo layerInfoView = builder.buildLayer(coverageInfoView);
+        cat.add(layerInfoView);
+    }
+
     // protected String getDefaultLogConfiguration() {
     // return "/DEFAULT_LOGGING.properties";
     // }
@@ -164,6 +233,45 @@ public class GetMapIntegrationTest extends WMSTestSupport {
                 + "&width=550" + "&height=250" + "&srs=EPSG:4326");
         checkImage(response);
     }
+    
+    @Test
+    public void testAllowedMimeTypes() throws Exception {
+        
+        WMSInfo wms = getWMS().getServiceInfo();
+        GetMapOutputFormat format = new RenderedImageMapOutputFormat(getWMS());        
+        wms.getGetMapMimeTypes().add(format.getMimeType());
+        wms.setGetMapMimeTypeCheckingEnabled(true);
+        
+
+        getGeoServer().save(wms);
+
+     // check mime type allowed
+        MockHttpServletResponse response = getAsServletResponse("wms?bbox=" + bbox
+                + "&styles=&layers=" + layers + "&Format=image/png" + "&request=GetMap"
+                + "&width=550" + "&height=250" + "&srs=EPSG:4326");
+        checkImage(response);
+        
+        
+     // check mime type not allowed                
+        String result = getAsString("wms?bbox=" + bbox
+                + "&styles=&layers=" + layers + "&Format="+OpenLayersMapOutputFormat.MIME_TYPE+ "&request=GetMap"
+                + "&width=550" + "&height=250" + "&srs=EPSG:4326");
+        assertTrue(result.indexOf("ForbiddenFormat") > 0);        
+                      
+        wms.setGetMapMimeTypeCheckingEnabled(false);
+        wms.getGetMapMimeTypes().clear();
+        getGeoServer().save(wms);
+        
+        result = getAsString("wms?bbox=" + bbox
+                + "&styles=&layers=" + layers + "&Format="+OpenLayersMapOutputFormat.MIME_TYPE+ "&request=GetMap"
+                + "&width=550" + "&height=250" + "&srs=EPSG:4326");
+
+        assertTrue(result.indexOf("OpenLayers") > 0);
+ 
+    }
+
+    
+    
     
     @Test
     public void testLayoutLegendNPE() throws Exception {
@@ -229,7 +337,9 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         
         // check the pixels that should be in the scale bar
         assertPixel(image, 56, 211, Color.WHITE);
-        assertPixel(image, 52, 221, Color.BLACK);
+        // see GEOS-6482
+        assertTrue(getPixelColor(image, 52, 221).equals(Color.BLACK)
+                || getPixelColor(image, 52, 222).equals(Color.BLACK));
     }
     
     @Test
@@ -379,6 +489,15 @@ public class GetMapIntegrationTest extends WMSTestSupport {
                 + STATES_SLD.replaceAll("=", "%3D"));
         checkImage(response);
     }
+
+    @Test
+    public void testStyleBody() throws Exception {
+        MockHttpServletResponse response = getAsServletResponse("wms?bbox=" + bbox + "&styles="
+                + "&layers=" + layers + "&Format=image/png" + "&request=GetMap" + "&width=550"
+                + "&height=250" + "&srs=EPSG:4326" + "&STYLE_BODY="
+                + STATES_SLD.replaceAll("=", "%3D"));
+        checkImage(response);
+    }
     
     @Test 
     public void testSldBody11() throws Exception {
@@ -388,12 +507,30 @@ public class GetMapIntegrationTest extends WMSTestSupport {
                 + STATES_SLD11.replaceAll("=", "%3D"));
         checkImage(response);
     }
-    
+
+    @Test
+    public void testStyleBody11() throws Exception {
+        MockHttpServletResponse response = getAsServletResponse("wms?bbox=" + bbox + "&styles="
+                + "&layers=" + layers + "&Format=image/png" + "&request=GetMap" + "&width=550"
+                + "&height=250" + "&srs=EPSG:4326" + "&STYLE_BODY="
+                + STATES_SLD11.replaceAll("=", "%3D"));
+        checkImage(response);
+    }
+
     @Test
     public void testSldBodyNoVersion() throws Exception {
         MockHttpServletResponse response = getAsServletResponse("wms?bbox=" + bbox + "&styles="
                 + "&layers=" + layers + "&Format=image/png" + "&request=GetMap" + "&width=550"
                 + "&height=250" + "&srs=EPSG:4326" + "&SLD_BODY="
+                + STATES_SLD.replace(" version=\"1.1.0\"", "").replaceAll("=", "%3D"));
+        checkImage(response);
+    }
+
+    @Test
+    public void testStyleBodyNoVersion() throws Exception {
+        MockHttpServletResponse response = getAsServletResponse("wms?bbox=" + bbox + "&styles="
+                + "&layers=" + layers + "&Format=image/png" + "&request=GetMap" + "&width=550"
+                + "&height=250" + "&srs=EPSG:4326" + "&STYLE_BODY="
                 + STATES_SLD.replace(" version=\"1.1.0\"", "").replaceAll("=", "%3D"));
         checkImage(response);
     }
@@ -406,7 +543,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
 
         checkImage(response);
     }
-    
+
     @Test
     public void testSldBodyPost11() throws Exception {
         MockHttpServletResponse response = postAsServletResponse("wms?bbox=" + bbox
@@ -589,6 +726,39 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         assertEquals(255, color[1]);
         assertEquals(0, color[2]);
     }
+
+    @Test
+    public void testCoverageViewMap() throws Exception {
+        String url = "wms?LAYERS=mosaic&"
+                + "&FORMAT=image%2Fpng&SERVICE=WMS&VERSION=1.1.1"
+                + "&REQUEST=GetMap&SRS=EPSG%3A4326"
+                + "&BBOX=7,37,11,41&WIDTH=100&HEIGHT=200&bgcolor=0xFF0000";
+        BufferedImage bi = getAsImage(url, "image/png");
+        int[] pixel = new int[3];
+        bi.getRaster().getPixel(50, 100, pixel);
+
+        final int R_PIXEL = 45;
+        final int G_PIXEL = 46;
+        final int B_PIXEL = 69;
+
+        assertEquals(R_PIXEL, pixel[0]);
+        assertEquals(G_PIXEL, pixel[1]);
+        assertEquals(B_PIXEL, pixel[2]);
+
+        // The shuffled view revert RGB bands to BGR
+        url = "wms?LAYERS=mosaic_shuffle&"
+                + "&FORMAT=image%2Fpng&SERVICE=WMS&VERSION=1.1.1"
+                + "&REQUEST=GetMap&SRS=EPSG%3A4326"
+                + "&BBOX=7,37,11,41&WIDTH=100&HEIGHT=200&bgcolor=0xFF0000";
+
+        bi = getAsImage(url, "image/png");
+        bi.getRaster().getPixel(50, 100, pixel);
+
+        assertEquals(B_PIXEL, pixel[0]);
+        assertEquals(G_PIXEL, pixel[1]);
+        assertEquals(R_PIXEL, pixel[2]);
+
+    }
     
     @Test
     public void testTransparentPaletteTransparentOutput() throws Exception {
@@ -760,7 +930,16 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         } finally {
             catalog.remove(group);
         }
-    }   
+    }
+    
+    @Test
+    public void testOneBit() throws Exception {
+        String url = "wms?LAYERS=" + getLayerId(ONE_BIT)
+                + "&STYLES=&FORMAT=image%2Fpng"
+                + "&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&SRS=EPSG%3A4326&WIDTH=10&HEIGHT=10&BBOX=0,0,10,10";
+        // used to crash, should give us back a empty image instead
+        getAsImage(url, "image/png");
+    }
 
     
     @Test
@@ -791,7 +970,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
             // if entities evaluation is disabled
             // the parser will throw a MalformedURLException when it finds an entity
             response = getAsString(url);
-            assertTrue(response.indexOf("java.net.MalformedURLException") > -1);
+            assertTrue(response.indexOf("Entity resolution disallowed") > -1);
 
             // try default value: disabled entities
             geoserverInfo.setXmlExternalEntitiesEnabled(null);
@@ -800,11 +979,70 @@ public class GetMapIntegrationTest extends WMSTestSupport {
             // if entities evaluation is disabled
             // the parser will throw a MalformedURLException when it finds an entity
             response = getAsString(url);
-            assertTrue(response.indexOf("java.net.MalformedURLException") > -1);            
+            assertTrue(response.indexOf("Entity resolution disallowed") > -1);
         } finally {
             // default
             geoserverInfo.setXmlExternalEntitiesEnabled(null);
             getGeoServer().save(geoserverInfo);     
         }
-    }     
+    }
+    
+    public void testRssMime() throws Exception {
+        MockHttpServletResponse response = getAsServletResponse("wms?request=reflect&layers=" + getLayerId(MockData.BASIC_POLYGONS) + "&format=rss");
+        assertEquals("application/rss+xml", response.getContentType());
+    }
+
+    /**
+     * Basic sanity tests on a polar stereographic projection (EPSG:5041) WMS response.
+     */
+    @Test
+    public void testPolarStereographic() throws Exception {
+        MockHttpServletResponse response = getAsServletResponse("wms?" + "service=WMS"
+                + "&version=1.1.1" + "&request=GetMap" + "&layers=sf:states"
+                + "&bbox=-10700000,-10700000,14700000,14700000,EPSG:5041" + "&width=200"
+                + "&height=200" + "&srs=EPSG:5041" + "&format=image%2Fpng");
+        checkImage(response, "image/png", 200, 200);
+        String testName = "testPolarStereographic";
+        BufferedImage image = ImageIO.read(getBinaryInputStream(response));
+        assertNotBlank(testName, image);
+        // top-left quadrant should not be blank
+        assertNotBlank(testName, image.getSubimage(0, 0, 100, 100));
+        // top 25% should be blank
+        assertEquals(0, countNonBlankPixels(testName, image.getSubimage(0, 0, 200, 50), BG_COLOR));
+        // right-hand side should be blank
+        assertEquals(0, countNonBlankPixels(testName, image.getSubimage(100, 0, 100, 200), BG_COLOR));
+        // bottom 35% should be blank
+        assertEquals(0, countNonBlankPixels(testName, image.getSubimage(0, 130, 200, 70), BG_COLOR));
+    }
+
+    @Test
+    public void testMapWrapping() throws Exception {
+        GeoServer gs = getGeoServer();
+        WMSInfo wms = gs.getService(WMSInfo.class);
+        Boolean original = wms.getMetadata().get(WMS.MAP_WRAPPING_KEY, Boolean.class);
+        try {
+            wms.getMetadata().put(WMS.MAP_WRAPPING_KEY, Boolean.TRUE);
+            gs.save(wms);
+
+            String layer = getLayerId(GIANT_POLYGON);
+            String request = "wms?version=1.1.1&bbox=170,-10,190,10&format=image/png"
+                    + "&request=GetMap&layers=" + layer + "&styles=polygon"
+                    + "&width=100&height=100&srs=EPSG:4326";
+
+            BufferedImage image = getAsImage(request, "image/png");
+            // with wrapping enabled we should get a gray pixel
+            assertPixel(image, 75, 0, new Color(170, 170, 170));
+
+            wms.getMetadata().put(WMS.MAP_WRAPPING_KEY, Boolean.FALSE);
+            gs.save(wms);
+            image = getAsImage(request, "image/png");
+            // with wrapping disabled we should get a white one (nothing)
+            assertPixel(image, 75, 0, Color.WHITE);
+        } finally {
+            wms.getMetadata().put(WMS.MAP_WRAPPING_KEY, original);
+            gs.save(wms);
+        }
+
+    }
+
 }

@@ -38,3 +38,45 @@ When logged on, additional options will be presented.
    *Additional options when logged in*
 
 Geoserver Web Coverage Service (WCS), Web Feature Service (WFS), and Web Map Service (WMS) configuration specifications can be accessed from this welcome page as well. For further information, please see the section on :ref:`services`.
+
+.. _webadmin_lists:
+
+List Pages
+----------
+
+Some web admin pages show list views of configuration data type items available in the GeoServer instance.
+The page displays links to the items, and where applicable their parent items as well.
+To facilitate working with large sets of items, list views allow sorting and searching across all items in the data type.
+
+In the example below, the :ref:`webadmin_layers` page displays a list of layers along with links to their parent :ref:`webadmin_stores` and :ref:`webadmin_workspaces`. 
+
+.. figure:: images/data_layers.png
+   :align: center
+
+   *Layers list page*
+
+Sorting
+^^^^^^^
+
+To sort a column alphabetically, click the column header. 
+
+.. figure:: images/data_sort.png
+   :align: center
+
+   *Unsorted (left) and sorted (right) columns*
+
+Searching
+^^^^^^^^^
+
+Searching can be used to filter the number of items displayed.  This is useful for working with data types that contain a large number of items.
+
+To search data type items, enter the search string in the search box and click Enter. GeoServer will search the data type for items that match your query, and display a list view showing the search results.
+
+
+.. figure:: images/data_search_results.png
+   :align: center
+   
+   *Search results for the query "top" on the Workspace page*
+
+
+

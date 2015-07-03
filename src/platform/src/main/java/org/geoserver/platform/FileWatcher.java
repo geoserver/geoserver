@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -8,6 +9,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+
+import org.geoserver.platform.resource.Files;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resource.Type;
 
 /**
  * Watches a files last modified date to determine when a file has been changed.
@@ -21,18 +26,25 @@ import java.io.InputStream;
  *
  */
 public class FileWatcher<T> {
-
-    File file;
+    protected Resource resource;
     private long lastModified = Long.MIN_VALUE;
     private long lastCheck;
     private boolean stale;
 
+    public FileWatcher(Resource resource) {
+        this.resource = resource;
+    }
+    
     public FileWatcher(File file) {
-        this.file = file;
+        this.resource = Files.asResource(file);
     }
     
     public File getFile() {
-        return file;
+        return resource.file();
+    }
+    
+    public Resource getResource() {
+        return resource;
     }
     
     /**
@@ -45,14 +57,14 @@ public class FileWatcher<T> {
     public T read() throws IOException {
         T result = null;
         
-        if (file.exists()) {
+        if( resource.getType() == Type.RESOURCE ){
             InputStream is = null;
 
             try {
-                is = new FileInputStream(file);
+                is = resource.in();
                 result = parseFileContents(is);
                 
-                lastModified = file.lastModified();
+                lastModified = resource.lastmodified();
                 lastCheck = System.currentTimeMillis();
                 stale = false;
             } finally {
@@ -82,7 +94,7 @@ public class FileWatcher<T> {
         long now = System.currentTimeMillis();
         if((now - lastCheck) > 1000) {
             lastCheck = now;
-            stale = file.exists() && (file.lastModified() != lastModified);
+            stale = (resource.getType() != Type.UNDEFINED) && (resource.lastmodified() != lastModified);
         }
         return stale;
     }

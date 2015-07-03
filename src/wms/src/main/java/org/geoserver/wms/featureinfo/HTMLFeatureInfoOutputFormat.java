@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -10,18 +11,16 @@ import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
 import java.util.List;
 
-
 import net.opengis.wfs.FeatureCollectionType;
+
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.ows.Dispatcher;
-import org.geoserver.ows.Request;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.template.DirectTemplateFeatureCollectionFactory;
 import org.geoserver.template.FeatureWrapper;
 import org.geoserver.template.GeoServerTemplateLoader;
 import org.geoserver.wms.GetFeatureInfoRequest;
 import org.geoserver.wms.WMS;
-import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.feature.FeatureCollection;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.Name;
@@ -65,7 +64,8 @@ public class HTMLFeatureInfoOutputFormat extends GetFeatureInfoOutputFormat {
             public TemplateModel wrap(Object object) throws TemplateModelException {
                 if (object instanceof FeatureCollection) {
                     SimpleHash map = (SimpleHash) super.wrap(object);                    
-                    map.put("request", Dispatcher.REQUEST.get().getKvp());    
+                    map.put("request", Dispatcher.REQUEST.get().getKvp());
+                    map.put("environment", new EnvironmentVariablesTemplateModel());
                     return map;
                 }
                 return super.wrap(object);
@@ -202,5 +202,10 @@ public class HTMLFeatureInfoOutputFormat extends GetFeatureInfoOutputFormat {
             t.setEncoding(charset.name());
             return t;
         }
+    }
+    
+    @Override
+    public String getCharset(){ 
+        return wms.getGeoServer().getSettings().getCharset();
     }
 }

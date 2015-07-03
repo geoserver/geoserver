@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -7,7 +8,9 @@ package org.geoserver.ows.util;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Provides lookup information about java bean properties in a class.
@@ -18,6 +21,9 @@ import java.util.List;
  */
 public class ClassProperties {
     private static final List<Method> EMPTY = new ArrayList<Method>(0);
+
+    private static final Set<String> COMMON_DERIVED_PROPERTIES = new HashSet<>(
+            Arrays.asList("prefixedName"));
     List<Method> methods;
     List<Method> getters;
     List<Method> setters;
@@ -29,7 +35,8 @@ public class ClassProperties {
         for (Method method : methods) {
             final String name = method.getName();
             final Class<?>[] params = method.getParameterTypes();
-            if((name.startsWith("get") || name.startsWith("is")) && params.length == 0) {
+            if ((name.startsWith("get") || name.startsWith("is") || COMMON_DERIVED_PROPERTIES
+                    .contains(name)) && params.length == 0) {
                 getters.add(method);
             } else if(name.startsWith("set") && params.length == 1) {
                 setters.add(method);
@@ -190,6 +197,10 @@ public class ClassProperties {
      * Returns the name of the property corresponding to the getter method.
      */
     String gp( Method getter ) {
-        return getter.getName().substring( getter.getName().startsWith("get") ? 3 : 2 );
+        String name = getter.getName();
+        if (COMMON_DERIVED_PROPERTIES.contains(name)) {
+            return name;
+        }
+        return name.substring(name.startsWith("get") ? 3 : 2);
     }
 }

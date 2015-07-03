@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -13,6 +14,9 @@ import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Resource;
 import org.geoserver.proxy.ProxyConfig;
 import org.geoserver.proxy.ProxyConfig.Mode;
 import org.geoserver.rest.RestletException;
@@ -65,7 +69,10 @@ public class ProxyRestlet extends Restlet {
     private void init()
     {
         try{
-            configWatcher = new PropertyFileWatcher(ProxyConfig.getConfigFile());
+            GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
+            Resource configFile = loader.get( "proxy/proxy.xml" );
+            
+            configWatcher = new PropertyFileWatcher(configFile);
             watcherWorks = true;
             LOGGER.log(Level.INFO, "Proxy init'd pretty much ok.");
         }

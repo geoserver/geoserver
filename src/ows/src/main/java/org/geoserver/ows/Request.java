@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -7,10 +8,12 @@ package org.geoserver.ows;
 import java.io.BufferedReader;
 import java.util.Date;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.geoserver.platform.Operation;
 import org.geoserver.platform.Service;
 
 /**
@@ -100,8 +103,47 @@ public class Request {
      */
     protected Date timestamp;
     
+    /**
+     * The Operation used to call the service code. Available only after dispatching is done, it
+     * will give access to the current service object, and the parsed request
+     */
+    protected Operation operation;
+
+    /**
+     * Uniquely identifies this request
+     */
+    protected UUID identifier;
+
     public Request() {
         timestamp = new Date(); 
+        identifier = UUID.randomUUID();
+    }
+    
+    /**
+     * Copy constructor
+     * @param other
+     */
+    public Request(Request other) {
+        super();
+        this.httpRequest = other.httpRequest;
+        this.httpResponse = other.httpResponse;
+        this.get = other.get;
+        this.soap = other.soap;
+        this.kvp = other.kvp;
+        this.rawKvp = other.rawKvp;
+        this.input = other.input;
+        this.service = other.service;
+        this.request = other.request;
+        this.version = other.version;
+        this.namespace = other.namespace;
+        this.serviceDescriptor = other.serviceDescriptor;
+        this.context = other.context;
+        this.path = other.path;
+        this.outputFormat = other.outputFormat;
+        this.error = other.error;
+        this.timestamp = other.timestamp;
+        this.operation = other.operation;
+        this.identifier = other.identifier;
     }
 
     /**
@@ -204,6 +246,16 @@ public class Request {
     }
 
     /**
+     * The Operation used to call the service code. Available only after dispatching is done, it
+     * provides access to the current service object, and the parsed request
+     * 
+     * @return
+     */
+    public Operation getOperation() {
+        return operation;
+    }
+
+    /**
      * The eventual error thrown during request parsing, execution or output writing
      * @return
      */
@@ -248,10 +300,28 @@ public class Request {
 
     /**
      * Allows callbacks to change the parsed KVP map
-     * @param kvp
+     * <p>
+     * Clients should consider calling {@link #setOrAppendKvp(java.util.Map)} to retain the
+     * existing kvp map.
+     * </p>
+     * @param kvp Parsed kvp values.
      */
     public void setKvp(Map kvp) {
         this.kvp = kvp;
+    }
+
+    /**
+     * Sets the parsed kvp map, appending/overwriting to any previously set values.
+     *
+     * @param kvp Parsed kvp values.
+     */
+    public void setOrAppendKvp(Map kvp) {
+        if (this.kvp == null) {
+            setKvp(kvp);
+        }
+        else {
+            this.kvp.putAll(kvp);
+        }
     }
 
     /**
@@ -315,6 +385,15 @@ public class Request {
      */
     public void setOutputFormat(String outputFormat) {
         this.outputFormat = outputFormat;
+    }
+
+    /**
+     * Sets the operation in use
+     * 
+     * @param service
+     */
+    public void setOperation(Operation operation) {
+        this.operation = operation;
     }
 
     /**
@@ -386,5 +465,30 @@ public class Request {
      */
     public void setTimestamp(Date timestamp) {
         this.timestamp = timestamp;
+    }
+    
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((identifier == null) ? 0 : identifier.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Request other = (Request) obj;
+        if (identifier == null) {
+            if (other.identifier != null)
+                return false;
+        } else if (!identifier.equals(other.identifier))
+            return false;
+        return true;
     }
 }

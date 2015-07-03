@@ -51,7 +51,7 @@ The following outlines the steps to be taken in order to add a new community mod
 
 #. **Get version control access**
 
-   The next step is to create the community module in the subversion 
+   The next step is to create the community module in the git 
    repository. To do this it is necessary to be granted commit status. The 
    process for signing up for version control access is defined in the 
    :ref:`comitting` section.
@@ -61,13 +61,14 @@ The following outlines the steps to be taken in order to add a new community mod
    Once commit access is obtained the module can be added. All community 
    modules live under the directory ``community``, directly under the root of
    the source tree. The community modules on trunk can be found 
-   `here <http://svn.codehaus.org/geoserver/trunk/src/community>`_.
+   `here <https://github.com/geoserver/geoserver/tree/master/src/community>`_.
 
    For example, from the root of the GeoServer source tree::
 
-     [geoserver]% cd community
-     [geoserver/community]% svn mkdir myCommunityModule
-     [geoserver/community]% svn commit -m "adding my community module" myCommunityModule
+     [geoserver]% cd src/community
+     [geoserver/src/community]% mkdir myCommunityModule
+     [geoserver/src/community]% git add myCommunityModule
+     [geoserver/src/community]% git commit -m "adding my community module"
 
 #. **Add a Maven POM** 
   
@@ -82,7 +83,7 @@ The following outlines the steps to be taken in order to add a new community mod
           <parent>
             <groupId>org.geoserver</groupId>
             <artifactId>geoserver</artifactId>
-            <version>1.7.0-SNAPSHOT</version> <!-- change this to the proper GeoServer version -->
+            <version>2.8-SNAPSHOT</version> <!-- change this to the proper GeoServer version -->
           </parent>
 
           <groupId>org.geoserver</groupId>
@@ -112,7 +113,7 @@ The following outlines the steps to be taken in order to add a new community mod
            <profiles>
              ...
              <profile>
-               <id>myComunityModule</id>
+               <id>myCommunityModule</id>
                <modules>
                  <module>myCommunityModule</module>
                </modules>
@@ -131,7 +132,7 @@ The following outlines the steps to be taken in order to add a new community mod
                <dependencies>
                  <dependency>
                     <groupId>org.geoserver</groupId>
-                    <artifactId>myCommuityModule</artifactId>
+                    <artifactId>myCommunityModule</artifactId>
                     <version>1.0-SNAPSHOT</version>
                   </dependency>
                </dependencies>
@@ -153,7 +154,7 @@ Promoting a community module
 
 Once a community modules becomes "stable", it may be promoted to a core or 
 extension module. Which depends on the nature of the community module. If the 
-module is plug-in based (ie. it provides functionality that some users may want,
+module is plug-in based (i.e. it provides functionality that some users may want,
 but others may not) then it should become an extension. Otherwise it should 
 become a core module.
 
@@ -199,10 +200,10 @@ The following properties must hold true in order to promote a community module:
 
 #. **The maintainer has signed the GeoServer Contributor Agreement**
 
-   The Open Planning Project (TOPP) retains all copyright on code released as
+   OSGeo retains all copyright on code released as
    part of GeoServer. Since core and extension modules are released along with
    the rest of GeoServer, the maintainer of said modules must agree to assign
-   copyright of code to TOPP.
+   copyright of code to OSGeo.
 
 Process
 ^^^^^^^
@@ -216,23 +217,27 @@ Process
 #. **Move the module**
 
    Once the proposal is accepted, the next step is to move the module out of 
-   the community space. Where the module ends up depends on wether it is being
+   the community space. Where the module ends up depends on whether it is being
    promoted to a core module, or an extension.
 
    *Core modules*
 
    Core modules live under the root of the source tree::
 
-     [geoserver]% svn move community/myCommunityModule .
-     [geoserver]% svn commit -m "promoting my community module to a core module" myCommunityModule community/
+     [geoserver]% mv src/community/myCommunityModule src/
+     [geoserver]% git add src/myCommunityModule
+     [geoserver]% git add --all src/community/myCommunityModule
+     [geoserver]% git commit -m "promoting my community module to a core module"
 
    *Extensions*
 
    Extension modules live under the extension directory, under the root of the
    source tree::
 
-     [geoserver]% svn move community/myCommunityModule extension
-     [geoserver]% svn commit -m "promoting my community module to an extension" extension community
+     [geoserver]% mv src/community/myCommunityModule src/extension
+     [geoserver]% git add src/extension/myCommunityModule
+     [geoserver]% git add --all src/community/myCommunityModule
+     [geoserver]% git commit -m "promoting my community module to an extension"
 
 #. **Update the build**
 
@@ -243,21 +248,21 @@ Process
    #. Edit ``community/pom.xml`` and remove the profile for the community 
       module
    #. Edit ``pom.xml`` under the root of the source tree and add a module 
-      enty::
+      entry::
 
             <modules>
               ...
               <module>myCommunityModule</module>
             </modules>
 
-     #. Edit ``web/app/pom.xml`` and move the dependency on the community module 
+   #. Edit ``web/app/pom.xml`` and move the dependency on the community module 
         into the main dependencies section of the pom. Then remove the profile
 
    *Extensions*
 
-     #. Copy the profile for the community module from ``community/pom.xml`` 
-        to ``extension/pom.xml``
-     #. Remove the profile from ``community/pom.xml``
+   #. Copy the profile for the community module from ``community/pom.xml`` 
+      to ``extension/pom.xml``
+   #. Remove the profile from ``community/pom.xml``
 
 #. **Update the release process**
 
@@ -350,7 +355,7 @@ Process
              </dependencies>
 
    #. Add an entry for the release descriptor to the root ``pom.xml`` of
-      the source tree (ie. one step up from the release directory)::
+      the source tree (i.e. one step up from the release directory)::
 
              <!-- artifact assembly -->
              <plugin>
@@ -375,12 +380,12 @@ Process
 
        .. todo:: 
  
-          Finish this by linking somwhere...
+          Finish this by linking somewhere...
 
     #. Download the contributor agreement 
 
        The final step in the process is to download and fill out the 
-       `contributor agreement form <http://geoserver.org/download/attachments/819262/assignment_agreement.pdf?version=1>`_. Follow the instructions
+       `contributor agreement form <http://www.osgeo.org/sites/osgeo.org/files/Page/individual_contributor.txt>`_. Follow the instructions
        on the form to submit it.
      
 Demoting a community module

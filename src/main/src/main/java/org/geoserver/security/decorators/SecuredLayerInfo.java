@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -19,6 +20,10 @@ public class SecuredLayerInfo extends DecoratingLayerInfo {
     public SecuredLayerInfo(LayerInfo delegate, WrapperPolicy  policy) {
         super(delegate);
         this.policy = policy;
+    }
+    
+    public WrapperPolicy getWrapperPolicy() {
+        return policy;
     }
 
     @Override

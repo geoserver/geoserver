@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!-- 
- Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ Copyright (C) 2014 - Open Source Geospatial Foundation. All rights reserved.
  This code is licensed under the GPL 2.0 license, available at the root
  application directory.
  -->
@@ -8,23 +8,23 @@
  <modelVersion>4.0.0</modelVersion>
  <parent>
   <groupId>org.geoserver.community</groupId>
-  <artifactId>script</artifactId>
-  <version>2.4-SNAPSHOT</version>
+  <artifactId>gs-script</artifactId>
+  <version>2.8-SNAPSHOT</version>
  </parent>
  <groupId>org.geoserver.script</groupId>
- <artifactId>script-groovy</artifactId>
+ <artifactId>gs-script-groovy</artifactId>
  <packaging>jar</packaging>
  <name>Groovy Scripting Extension</name>
  <dependencies>
   <dependency>
    <groupId>org.geoserver.script</groupId>
-   <artifactId>script-core</artifactId>
+   <artifactId>gs-script-core</artifactId>
    <version>${project.version}</version>
   </dependency>
   <dependency>
    <groupId>org.geoscript</groupId>
    <artifactId>geoscript-groovy</artifactId>
-   <version>1.1-SNAPSHOT</version>
+   <version>1.2-SNAPSHOT</version>
   </dependency>
   <dependency>
    <groupId>net.sf.json-lib</groupId>
@@ -33,7 +33,7 @@
   </dependency>
   <dependency>
    <groupId>org.geoserver.script</groupId>
-   <artifactId>script-core</artifactId>
+   <artifactId>gs-script-core</artifactId>
    <version>${project.version}</version>
    <classifier>tests</classifier>
    <scope>test</scope>
@@ -42,35 +42,34 @@
  <build>
    <plugins>
         <plugin>
-            <groupId>org.codehaus.gmaven</groupId>
-            <artifactId>gmaven-plugin</artifactId>
-            <version>1.4</version>
-            <configuration>
-                <providerSelection>1.8</providerSelection>
-            </configuration>
-            <dependencies>
-                <dependency>
-                    <groupId>org.codehaus.gmaven.runtime</groupId>
-                    <artifactId>gmaven-runtime-1.8</artifactId>
-                    <version>1.4</version>
-                </dependency>
-                <dependency>
-                    <groupId>org.codehaus.groovy</groupId>
-                    <artifactId>groovy-all</artifactId>
-                    <version>1.8.8</version>
-                </dependency>
-            </dependencies>
-            <executions>
-                <execution>
-                    <goals>
-                    	<goal>generateStubs</goal>
-                        <goal>compile</goal>
-                        <goal>generateTestStubs</goal>
-                        <goal>testCompile</goal>
-                    </goals>
-                </execution>
-            </executions>
+            <groupId>org.codehaus.groovy</groupId>
+            <artifactId>groovy-eclipse-compiler</artifactId>
+            <version>2.9.0-01-SNAPSHOT</version>
+            <extensions>true</extensions>
         </plugin>
+		<plugin>
+			<artifactId>maven-compiler-plugin</artifactId>
+            <version>3.1</version>
+			<configuration>
+				<compilerId>groovy-eclipse-compiler</compilerId>
+                <debug>true</debug>
+                <source>1.6</source>
+                <target>1.6</target>
+                <encoding>UTF-8</encoding>
+			</configuration>
+			<dependencies>
+				<dependency>
+					<groupId>org.codehaus.groovy</groupId>
+					<artifactId>groovy-eclipse-compiler</artifactId>
+					<version>2.9.0-01-SNAPSHOT</version>
+				</dependency>
+				<dependency>
+					<groupId>org.codehaus.groovy</groupId>
+					<artifactId>groovy-eclipse-batch</artifactId>
+					<version>2.1.5-03</version>
+				</dependency>
+			</dependencies>
+		</plugin>
         <plugin>
             <artifactId>maven-antrun-plugin</artifactId>
             <executions>
@@ -94,4 +93,14 @@
         </plugin>
    </plugins>
  </build>
+ <pluginRepositories>
+      <!-- Required for groovy-eclipse-compiler snapshot --> 
+      <pluginRepository>
+          <id>nexus</id>
+          <url>http://nexus.codehaus.org/snapshots/</url>
+          <snapshots>
+            <enabled>true</enabled>
+          </snapshots>
+      </pluginRepository>
+ </pluginRepositories>
 </project>

@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -73,12 +74,18 @@ public class GeoServerProcessors implements ApplicationContextAware {
      * Look up a Factory by name of a process it supports.
      * 
      * @param name Name of the Process you wish to work with
+     * @param applyFilters Whether to apply the available {@link ProcessFilter} to the returned
+     *        factory, or not (if the code needs to check the original process factory by class name
+     *        for example, better not to apply the filters, which often wrap the factories to add
+     *        extra functionality)
      * @return ProcessFactory capable of creating an instanceof the named process
      */
-    public static ProcessFactory createProcessFactory(Name name) {
+    public static ProcessFactory createProcessFactory(Name name, boolean applyFilters) {
         ProcessFactory pf = Processors.createProcessFactory(name);
-        pf = applyFilters(pf);
-        //JD: also check the names, this could be a filtered process factory with only a subset 
+        if (applyFilters) {
+            pf = applyFilters(pf);
+        }
+        // JD: also check the names, this could be a filtered process factory with only a subset
         // disabled
         if (pf != null && !pf.getNames().contains(name)) {
             pf = null;
@@ -92,7 +99,7 @@ public class GeoServerProcessors implements ApplicationContextAware {
      * @return created process or null if not found
      */
     public static Process createProcess(Name name){
-        ProcessFactory factory = createProcessFactory( name );
+        ProcessFactory factory = createProcessFactory( name, false );
         if( factory == null ) return null;
         
         return factory.create(name);

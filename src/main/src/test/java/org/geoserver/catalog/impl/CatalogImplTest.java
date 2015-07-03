@@ -1,23 +1,13 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.catalog.impl;
 
 import static com.google.common.collect.Sets.newHashSet;
-import static org.geoserver.catalog.Predicates.acceptAll;
-import static org.geoserver.catalog.Predicates.asc;
-import static org.geoserver.catalog.Predicates.contains;
-import static org.geoserver.catalog.Predicates.desc;
-import static org.geoserver.catalog.Predicates.equal;
-import static org.geoserver.catalog.Predicates.or;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.geoserver.catalog.Predicates.*;
+import static org.junit.Assert.*;
 
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;
@@ -34,6 +24,7 @@ import org.geoserver.catalog.CatalogFactory;
 import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
+import org.geoserver.catalog.DataLinkInfo;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.Keyword;
@@ -54,24 +45,35 @@ import org.geoserver.catalog.event.CatalogModifyEvent;
 import org.geoserver.catalog.event.CatalogPostModifyEvent;
 import org.geoserver.catalog.event.CatalogRemoveEvent;
 import org.geoserver.catalog.util.CloseableIterator;
+import org.geotools.factory.CommonFactoryFinder;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.opengis.filter.Filter;
+import org.opengis.filter.FilterFactory;
 import org.opengis.filter.MultiValuedFilter.MatchAction;
 import org.opengis.filter.sort.SortBy;
 
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 public class CatalogImplTest {
 
     protected Catalog catalog;
+
     protected WorkspaceInfo ws;
+    protected WorkspaceInfo wsA;
+    protected WorkspaceInfo wsB;
+
     protected NamespaceInfo ns;
+    protected NamespaceInfo nsA;
+    protected NamespaceInfo nsB;
+
     protected DataStoreInfo ds;
+    protected DataStoreInfo dsA;
+    protected DataStoreInfo dsB;
+
     protected CoverageStoreInfo cs;
     protected WMSStoreInfo wms;
     protected FeatureTypeInfo ft;
@@ -92,15 +94,45 @@ public class CatalogImplTest {
         //ns.setPrefix( "nsPrefix" );
         ns.setPrefix( "wsName" );
         ns.setURI( "nsURI" );
+
+        nsA = factory.createNamespace();
+        //ns prefix has to match workspace name, until we break that relationship
+        //nsA.setPrefix( "nsPrefix" );
+        nsA.setPrefix( "aaa" );
+        nsA.setURI( "nsURIaaa" );
+
+        nsB = factory.createNamespace();
+        //ns prefix has to match workspace name, until we break that relationship
+        //nsB.setPrefix( "nsPrefix" );
+        nsB.setPrefix( "bbb" );
+        nsB.setURI( "nsURIbbb" );
         
         ws = factory.createWorkspace();
         ws.setName( "wsName");
+        
+        wsA = factory.createWorkspace();
+        wsA.setName( "aaa");
+        
+        wsB = factory.createWorkspace();
+        wsB.setName( "bbb");
         
         ds = factory.createDataStore();
         ds.setEnabled(true);
         ds.setName( "dsName");
         ds.setDescription("dsDescription");
         ds.setWorkspace( ws );
+        
+        dsA = factory.createDataStore();
+        dsA.setEnabled(true);
+        dsA.setName( "dsNameA");
+        dsA.setDescription("dsDescription");
+        dsA.setWorkspace( wsA );
+        
+        dsB = factory.createDataStore();
+        dsB.setEnabled(true);
+        dsB.setName( "dsNameB");
+        dsB.setDescription("dsDescription");
+        dsB.setWorkspace( wsB );
         
         ft = factory.createFeatureType();
         ft.setEnabled(true);
@@ -1001,6 +1033,35 @@ public class CatalogImplTest {
         assertEquals("application/json", ml5.getType());
     }
     
+    @Test
+    public void testModifyDataLinks() {
+        addFeatureType();
+        
+        FeatureTypeInfo ft2 = catalog.getFeatureTypeByName(ft.getName());
+        DataLinkInfo ml = catalog.getFactory().createDataLink();
+        ml.setContent("http://www.geoserver.org/meta");
+        ml.setType("text/plain");
+        ft2.getDataLinks().clear();
+        ft2.getDataLinks().add(ml);
+        catalog.save(ft2);
+        
+        FeatureTypeInfo ft3 = catalog.getFeatureTypeByName(ft.getName());
+        DataLinkInfo ml3 = ft3.getDataLinks().get(0);
+        ml3.setType("application/json");
+        
+        // do not save and grab another, the metadata link must not have been modified
+        FeatureTypeInfo ft4 = catalog.getFeatureTypeByName(ft.getName());
+        DataLinkInfo ml4 = ft4.getDataLinks().get(0);
+        assertEquals("text/plain", ml4.getType());
+        
+        
+        // now save and grab yet another, the modification must have happened
+        catalog.save(ft3);
+        FeatureTypeInfo ft5 = catalog.getFeatureTypeByName(ft.getName());
+        DataLinkInfo ml5 = ft5.getDataLinks().get(0);
+        assertEquals("application/json", ml5.getType());
+    }
+    
     
     @Test
     public void testFeatureTypeEvents() {
@@ -1127,6 +1188,96 @@ public class CatalogImplTest {
         assertNotNull(l2);
         assertNotSame(l,l2);
         assertEquals( l, l2 );
+    }
+
+    @Test
+    public void testGetLayerByNameWithoutColon() {
+        // create two workspaces
+        catalog.add(nsA);
+        catalog.add(nsB);
+        
+        catalog.add(wsA);
+        catalog.add(wsB);
+        
+        catalog.setDefaultNamespace( nsB );
+        catalog.setDefaultWorkspace( wsB );
+        
+        catalog.add(dsA);
+        catalog.add(dsB); 
+        
+        // create three resources, aaa:bar, bbb:bar, aaa:bar2
+        FeatureTypeInfo ftA = catalog.getFactory().createFeatureType();
+        ftA.setEnabled(true);
+        ftA.setName( "bar" );
+        ftA.setAbstract( "ftAbstract" );
+        ftA.setDescription( "ftDescription" );
+        ftA.setStore( dsA );
+        ftA.setNamespace( nsA );
+        
+        FeatureTypeInfo ftB = catalog.getFactory().createFeatureType();
+        ftB.setName( "bar" );
+        ftB.setAbstract( "ftAbstract" );
+        ftB.setDescription( "ftDescription" );
+        ftB.setStore( dsB );
+        ftB.setNamespace( nsB );
+
+        FeatureTypeInfo ftC = catalog.getFactory().createFeatureType();
+        ftC.setName( "bar2" );
+        ftC.setAbstract( "ftAbstract" );
+        ftC.setDescription( "ftDescription" );
+        ftC.setStore( dsA );
+        ftC.setNamespace( nsA );
+        ftC.setEnabled(true);
+        ftB.setEnabled(true);
+
+        catalog.add(ftA);
+        catalog.add(ftB);
+        catalog.add(ftC);
+
+        addStyle();
+        
+        LayerInfo lA = catalog.getFactory().createLayer();
+        lA.setResource(ftA);
+        lA.setDefaultStyle( s );
+        lA.setEnabled(true);
+        
+        LayerInfo lB = catalog.getFactory().createLayer();
+        lB.setResource(ftB);
+        lB.setDefaultStyle( s );
+        lB.setEnabled(true);
+        
+        LayerInfo lC = catalog.getFactory().createLayer();
+        lC.setResource(ftC);
+        lC.setDefaultStyle( s );
+        lC.setEnabled(true);
+        
+        catalog.add(lA);
+        catalog.add(lB);
+        catalog.add(lC);
+
+        // this search should give us back the bar in the default worksapce
+        LayerInfo searchedResult = catalog.getLayerByName( "bar" );
+        assertNotNull( searchedResult );
+        assertEquals( lB, searchedResult );
+        
+        // this search should give us back the bar in the other workspace
+        searchedResult = catalog.getLayerByName( "aaa:bar" );
+        assertNotNull( searchedResult );
+        assertEquals( lA, searchedResult );
+        
+        // unqualified, it should give us the only bar2 available
+        searchedResult = catalog.getLayerByName( "bar2" );
+        assertNotNull( searchedResult );
+        assertEquals( lC, searchedResult );
+        
+        // qualified should work the same
+        searchedResult = catalog.getLayerByName( "aaa:bar2" );
+        assertNotNull( searchedResult );
+        assertEquals( lC, searchedResult );
+        
+        // with the wrong workspace, should give us nothing
+        searchedResult = catalog.getLayerByName( "bbb:bar2" );
+        assertNull( searchedResult );
     }
 
     @Test
@@ -1947,6 +2098,26 @@ public class CatalogImplTest {
     }
     
     @Test
+    public void testLayerGroupNullLayerReferences() {
+        addLayer();
+        LayerGroupInfo lg = catalog.getFactory().createLayerGroup();
+        lg.setWorkspace(null);
+        lg.setName("layerGroup2");
+        lg.getLayers().add(null);
+        lg.getStyles().add(null);        
+        lg.getLayers().add(l);
+        lg.getStyles().add(s);
+        lg.getLayers().add(null);
+        lg.getStyles().add(null);
+        
+        catalog.add(lg);
+        LayerGroupInfo resolved = catalog.getLayerGroupByName("layerGroup2");
+        assertEquals(1, resolved.layers().size());
+        assertEquals(1, resolved.styles().size());
+        assertEquals(s, resolved.styles().get(0));
+    }
+    
+    @Test
     public void testLayerGroupRenderingLayers() {
         addDataStore();
         addNamespace();
@@ -2259,6 +2430,160 @@ public class CatalogImplTest {
         assertEquals(naturalOrder.subList(1, 2),
                 Lists.newArrayList(catalog.list(LayerInfo.class, filter, offset, limit, null)));
     }
+        
+    /**
+     * This tests more advanced filters: multi-valued filters, opposite equations, field equations
+     */
+    @Test
+    public void testListPredicateExtended() {
+        addDataStore();
+        addNamespace();
+        
+        final FilterFactory factory = CommonFactoryFinder.getFilterFactory();
+
+        FeatureTypeInfo ft1, ft2, ft3;
+
+        catalog.add(ft1 = newFeatureType("ft1", ds));
+        catalog.add(ft2 = newFeatureType("ft2", ds));
+        catalog.add(ft3 = newFeatureType("ft3", ds));
+        ft1 = catalog.getFeatureType(ft1.getId());
+        ft2 = catalog.getFeatureType(ft2.getId());
+        ft3 = catalog.getFeatureType(ft3.getId());
+        ft1.getKeywords().add(new Keyword("keyword1"));
+        ft1.getKeywords().add(new Keyword("keyword2"));
+        ft1.getKeywords().add(new Keyword("ft1"));
+        ft1.setDescription("ft1 description");
+        catalog.save(ft1);
+        ft2.getKeywords().add(new Keyword("keyword1"));
+        ft2.getKeywords().add(new Keyword("keyword1"));
+        ft2.setDescription("ft2");
+        catalog.save(ft2);
+        ft3.getKeywords().add(new Keyword("ft3"));
+        ft3.getKeywords().add(new Keyword("ft3"));
+        ft3.setDescription("FT3");
+        catalog.save(ft3);
+
+        Filter filter = acceptAll();
+        Set<? extends CatalogInfo> expected;
+        Set<? extends CatalogInfo> actual;
+        
+        // opposite equality
+        filter = factory.equal(factory.literal(ft1.getId()), factory.property("id"), true);
+        expected = Sets.newHashSet(ft1);
+        actual = Sets.newHashSet(catalog.list(ResourceInfo.class, filter));
+        assertEquals(expected, actual);
+        
+        // match case
+        filter = factory.equal(factory.literal("FT1"), factory.property("name"), false);
+        expected = Sets.newHashSet(ft1);
+        actual = Sets.newHashSet(catalog.list(ResourceInfo.class, filter));
+        assertEquals(expected, actual);
+        
+        // equality of fields
+        filter = factory.equal(factory.property("name"), factory.property("description"), true);
+        expected = Sets.newHashSet(ft2);
+        actual = Sets.newHashSet(catalog.list(ResourceInfo.class, filter));
+        assertEquals(expected, actual);
+        
+        // match case
+        filter = factory.equal(factory.property("name"), factory.property("description"), false);
+        expected = Sets.newHashSet(ft2, ft3);
+        actual = Sets.newHashSet(catalog.list(ResourceInfo.class, filter));
+        assertEquals(expected, actual);
+        
+        //match action
+        filter = factory.equal(factory.literal(new Keyword("keyword1")), factory.property("keywords"), true, MatchAction.ANY);
+        expected = Sets.newHashSet(ft1, ft2);
+        actual = Sets.newHashSet(catalog.list(FeatureTypeInfo.class, filter));
+        assertEquals(expected, actual);
+        
+        filter = factory.equal(factory.literal(new Keyword("keyword1")), factory.property("keywords"), true, MatchAction.ALL);
+        expected = Sets.newHashSet(ft2);
+        actual = Sets.newHashSet(catalog.list(FeatureTypeInfo.class, filter));
+        assertEquals(expected, actual);
+        
+        filter = factory.equal(factory.literal(new Keyword("keyword1")), factory.property("keywords"), true, MatchAction.ONE);
+        expected = Sets.newHashSet(ft1);
+        actual = Sets.newHashSet(catalog.list(FeatureTypeInfo.class, filter));
+        assertEquals(expected, actual);
+        
+        //match action - like
+        filter = factory.like(factory.property("keywords"), "key*d1", "*","?","\\", true, MatchAction.ANY);
+        expected = Sets.newHashSet(ft1, ft2);
+        actual = Sets.newHashSet(catalog.list(FeatureTypeInfo.class, filter));
+        assertEquals(expected, actual);
+        
+        filter = factory.like(factory.property("keywords"), "key*d1", "*","?","\\", true, MatchAction.ALL);
+        expected = Sets.newHashSet(ft2);
+        actual = Sets.newHashSet(catalog.list(FeatureTypeInfo.class, filter));
+        assertEquals(expected, actual);
+        
+        filter = factory.like(factory.property("keywords"), "key*d1", "*","?","\\", true, MatchAction.ONE);
+        expected = Sets.newHashSet(ft1);
+        actual = Sets.newHashSet(catalog.list(FeatureTypeInfo.class, filter));
+        assertEquals(expected, actual);
+        
+        //multivalued literals
+        List values = new ArrayList<String>();
+        values.add("ft1");
+        values.add("ft2");
+        filter = factory.equal(factory.literal(values), factory.property("name"), true, MatchAction.ANY);
+        expected = Sets.newHashSet(ft1, ft2);
+        actual = Sets.newHashSet(catalog.list(FeatureTypeInfo.class, filter));
+        assertEquals(expected, actual);
+        
+        values = new ArrayList<String>();
+        values.add("ft1");
+        values.add("ft1");
+        filter = factory.equal(factory.literal(values), factory.property("name"), true, MatchAction.ALL);
+        expected = Sets.newHashSet(ft1);
+        actual = Sets.newHashSet(catalog.list(FeatureTypeInfo.class, filter));
+        assertEquals(expected, actual);
+        
+        values = new ArrayList<String>();
+        values.add("ft1");
+        values.add("ft2");
+        filter = factory.equal(factory.literal(values), factory.property("name"), true, MatchAction.ALL);
+        expected = Sets.newHashSet();
+        actual = Sets.newHashSet(catalog.list(FeatureTypeInfo.class, filter));
+        assertEquals(expected, actual);
+        
+        values = new ArrayList<String>();
+        values.add("ft1");
+        values.add("ft1");
+        values.add("ft2");
+        filter = factory.equal(factory.literal(values), factory.property("name"), true, MatchAction.ONE);
+        expected = Sets.newHashSet(ft2);
+        actual = Sets.newHashSet(catalog.list(FeatureTypeInfo.class, filter));
+        assertEquals(expected, actual); 
+        
+        //multivalued literals with multivalued fields
+        
+        values = new ArrayList<Keyword>();
+        values.add(new Keyword("keyword1"));
+        values.add(new Keyword("keyword2"));  
+        filter = factory.equal(factory.literal(values), factory.property("keywords"), true, MatchAction.ANY);
+        expected = Sets.newHashSet(ft1, ft2);
+        actual = Sets.newHashSet(catalog.list(FeatureTypeInfo.class, filter));
+        assertEquals(expected, actual);
+        
+        values = new ArrayList<Keyword>();
+        values.add(new Keyword("keyword1"));
+        values.add(new Keyword("keyword1"));  
+        filter = factory.equal(factory.literal(values), factory.property("keywords"), true, MatchAction.ALL);
+        expected = Sets.newHashSet(ft2);
+        actual = Sets.newHashSet(catalog.list(FeatureTypeInfo.class, filter));
+        assertEquals(expected, actual);
+        
+        values = new ArrayList<Keyword>();
+        values.add(new Keyword("keyword1"));
+        values.add(new Keyword("blah"));
+        filter = factory.equal(factory.literal(values), factory.property("keywords"), true, MatchAction.ONE);
+        expected = Sets.newHashSet(ft1);
+        actual = Sets.newHashSet(catalog.list(FeatureTypeInfo.class, filter));
+        assertEquals(expected, actual);
+
+    }
 
     @Test
     public void testOrderBy() {
@@ -2358,6 +2683,10 @@ public class CatalogImplTest {
 
     @Test 
     public void testFullTextSearch() {
+        // test layer title search
+        ft.setTitle("Global .5 deg Air Temperature [C]");
+        cv.setTitle("Global .5 deg Dewpoint Depression [C]");
+
         ft.setDescription("FeatureType description");
         ft.setAbstract("GeoServer OpenSource GIS");
         cv.setDescription("Coverage description");
@@ -2384,6 +2713,104 @@ public class CatalogImplTest {
 
         filter = Predicates.fullTextSearch("geotools");
         assertEquals(newHashSet(l2), asSet(catalog.list(LayerInfo.class, filter)));
+
+
+        filter = Predicates.fullTextSearch("Global");
+        assertEquals(newHashSet(l, l2), asSet(catalog.list(LayerInfo.class, filter)));
+
+        filter = Predicates.fullTextSearch("Temperature");
+        assertEquals(newHashSet(l), asSet(catalog.list(LayerInfo.class, filter)));
+
+        filter = Predicates.fullTextSearch("Depression");
+        assertEquals(newHashSet(l2), asSet(catalog.list(LayerInfo.class, filter)));
+    }
+    
+    @Test 
+    public void testFullTextSearchLayerGroupTitle() {
+        addLayer();
+        // geos-6882
+        lg.setTitle("LayerGroup title");
+        catalog.add(lg);
+        
+        // test layer group title and abstract search
+        Filter filter = Predicates.fullTextSearch("title");
+        assertEquals(newHashSet(lg), asSet(catalog.list(LayerGroupInfo.class, filter)));
+    }
+    
+    @Test 
+    public void testFullTextSearchLayerGroupName() {
+        addLayer();
+        // geos-6882
+        catalog.add(lg);
+        Filter filter = Predicates.fullTextSearch("Group");
+        assertEquals(newHashSet(lg), asSet(catalog.list(LayerGroupInfo.class, filter)));
+    }
+    
+    @Test 
+    public void testFullTextSearchLayerGroupAbstract() {
+        addLayer();
+        lg.setAbstract("GeoServer OpenSource GIS");
+        catalog.add(lg);
+        Filter filter = Predicates.fullTextSearch("geoserver");
+        assertEquals(newHashSet(lg), asSet(catalog.list(LayerGroupInfo.class, filter)));
+    }
+
+    @Test
+    public void testFullTextSearchKeywords() {
+        ft.getKeywords().add(new Keyword("air_temp"));
+        ft.getKeywords().add(new Keyword("temperatureAir"));
+        cv.getKeywords().add(new Keyword("dwpt_dprs"));
+        cv.getKeywords().add(new Keyword("temperatureDewpointDepression"));
+        
+        l.setResource(ft);
+        addLayer();
+        catalog.add(cs);
+        catalog.add(cv);
+        LayerInfo l2 = newLayer(cv, s);
+        catalog.add(l2);
+
+        Filter filter = Predicates.fullTextSearch("temperature");
+        assertEquals(newHashSet(l, l2), asSet(catalog.list(LayerInfo.class, filter)));
+        assertEquals(newHashSet(ft, cv), asSet(catalog.list(ResourceInfo.class, filter)));
+        assertEquals(newHashSet(ft), asSet(catalog.list(FeatureTypeInfo.class, filter)));
+        assertEquals(newHashSet(cv), asSet(catalog.list(CoverageInfo.class, filter)));
+
+        filter = Predicates.fullTextSearch("air");
+        assertEquals(newHashSet(l), asSet(catalog.list(LayerInfo.class, filter)));
+        assertEquals(newHashSet(ft), asSet(catalog.list(ResourceInfo.class, filter)));
+        assertEquals(newHashSet(ft), asSet(catalog.list(FeatureTypeInfo.class, filter)));
+        assertEquals(newHashSet(), asSet(catalog.list(CoverageInfo.class, filter)));
+
+        filter = Predicates.fullTextSearch("dewpoint");
+        assertEquals(newHashSet(l2), asSet(catalog.list(LayerInfo.class, filter)));
+        assertEquals(newHashSet(cv), asSet(catalog.list(ResourceInfo.class, filter)));
+        assertEquals(newHashSet(), asSet(catalog.list(FeatureTypeInfo.class, filter)));
+        assertEquals(newHashSet(cv), asSet(catalog.list(CoverageInfo.class, filter)));
+
+        filter = Predicates.fullTextSearch("pressure");
+        assertEquals(newHashSet(), asSet(catalog.list(LayerInfo.class, filter)));
+        assertEquals(newHashSet(), asSet(catalog.list(ResourceInfo.class, filter)));
+        assertEquals(newHashSet(), asSet(catalog.list(FeatureTypeInfo.class, filter)));
+        assertEquals(newHashSet(), asSet(catalog.list(CoverageInfo.class, filter)));
+    }
+    
+    @Test
+    public void testFullTextSearchAddedKeyword() {
+        ft.getKeywords().add(new Keyword("air_temp"));
+        ft.getKeywords().add(new Keyword("temperatureAir"));
+        
+        l.setResource(ft);
+        addLayer();
+        
+        LayerInfo lproxy = catalog.getLayer(l.getId());
+        FeatureTypeInfo ftproxy = (FeatureTypeInfo)lproxy.getResource();
+        
+        ftproxy.getKeywords().add(new Keyword("newKeyword"));
+        catalog.save(ftproxy);
+
+        Filter filter = Predicates.fullTextSearch("newKeyword");
+        assertEquals(newHashSet(ft), asSet(catalog.list(FeatureTypeInfo.class, filter)));
+        assertEquals(newHashSet(l), asSet(catalog.list(LayerInfo.class, filter)));
     }
 
     private <T> Set<T> asSet(CloseableIterator<T> list) {

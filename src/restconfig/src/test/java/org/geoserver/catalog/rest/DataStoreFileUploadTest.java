@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014-2015 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -15,29 +16,69 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.net.URL;
+import java.nio.charset.Charset;
+import java.util.Collections;
+import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
+import javax.servlet.Filter;
+
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
+import org.geoserver.catalog.NamespaceInfo;
+import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.catalog.impl.NamespaceInfoImpl;
+import org.geoserver.catalog.impl.WorkspaceInfoImpl;
 import org.geoserver.data.test.MockData;
+import org.geoserver.data.test.SystemTestData;
+import org.geoserver.filters.LoggingFilter;
+import org.geoserver.platform.GeoServerResourceLoader;
 import org.geotools.data.DataUtilities;
 import org.h2.tools.DeleteDbFiles;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
 public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
 
+    @Override
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        super.onSetUp(testData);
+
+        NamespaceInfo gsmlNamespace = new NamespaceInfoImpl();
+        gsmlNamespace.setPrefix("gsml");
+        gsmlNamespace.setURI("http://www.cgi-iugs.org/xml/GeoSciML/2");
+
+        WorkspaceInfo gsmlWorkspace = new WorkspaceInfoImpl();
+        gsmlWorkspace.setName("gsml");
+
+        getCatalog().add(gsmlNamespace);
+        getCatalog().add(gsmlWorkspace);
+    }
+
+    @Override
+    protected List<Filter> getFilters() {
+        LoggingFilter filter = new LoggingFilter();
+        filter.setEnabled(true);
+        filter.setLogBodies(true);
+        return Collections.singletonList((Filter) filter);
+    }
+
     @Before
     public void removePdsDataStore() {
         removeStore("gs", "pds");
+        removeStore("gs", "store with spaces");
     }
 
     @After
@@ -160,19 +201,25 @@ public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
         
         File target = new File("target");
         File f = File.createTempFile("rest", "dir", target);
-        f.delete();
-        f.mkdir();
-        
-        File zip = new File(f, "pds.zip");
-        IOUtils.copy(getClass().getResourceAsStream( "test-data/pds.zip" ), new FileOutputStream(zip));
-        org.geoserver.rest.util.IOUtils.inflate(new ZipFile(zip), f, null);
-        
-        MockHttpServletResponse resp = putAsServletResponse("/rest/workspaces/gs/datastores/pds/external.shp", 
-            new File(f, "pds.shp").toURL().toString(), "text/plain");
-        assertEquals(201, resp.getStatusCode());
-        
-        dom = getAsDOM( "wfs?request=getfeature&typename=gs:pds" );
-        assertFeatures(dom);
+        try {
+            f.delete();
+            f.mkdir();
+
+            File zip = new File(f, "pds.zip");
+            IOUtils.copy(getClass().getResourceAsStream("test-data/pds.zip"), new FileOutputStream(
+                    zip));
+            org.geoserver.rest.util.IOUtils.inflate(new ZipFile(zip), f, null);
+
+            MockHttpServletResponse resp = putAsServletResponse(
+                    "/rest/workspaces/gs/datastores/pds/external.shp", new File(f, "pds.shp")
+                            .toURL().toString(), "text/plain");
+            assertEquals(201, resp.getStatusCode());
+
+            dom = getAsDOM("wfs?request=getfeature&typename=gs:pds");
+            assertFeatures(dom);
+        } finally {
+            FileUtils.deleteQuietly(f);
+        }
     }
     
     @Test
@@ -188,7 +235,7 @@ public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
                 body, "text/plain");
         assertEquals(400, response.getStatusCode());
     }
-
+    
     @Test
     public void testShapeFileUploadIntoExisting() throws Exception {
         Catalog cat = getCatalog();
@@ -236,6 +283,21 @@ public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
         Document dom = getAsDOM( "wfs?request=getfeature&typename=gs:pds" );
         assertFeatures( dom );
     }
+    
+    @Test
+    @Ignore
+    // fixing https://jira.codehaus.org/browse/GEOS-6845, re-enable when a proper fix for spaces in
+    // name has been made
+    public void testShapeFileUploadWithSpaces() throws Exception {
+        Catalog cat = getCatalog();
+        assertNull(cat.getDataStoreByName("gs", "store with spaces"));
+        
+        byte[] bytes = shpZipAsBytes();
+        put( "/rest/workspaces/gs/datastores/store%20with%20spaces/file.shp", bytes, "application/zip");
+        
+        DataStoreInfo ds = cat.getDataStoreByName("gs", "store with spaces"); 
+        assertNull(ds);
+    }
  
     @Test
     public void testShapefileUploadMultiple() throws Exception {
@@ -269,4 +331,154 @@ public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
         assertNotNull( entry );
         assertEquals( "pds.properties", entry.getName() );
     }
+
+    @Test
+    public void testAppSchemaMappingFileUpload() throws Exception {
+        byte[] bytes = appSchemaMappingAsBytes();
+        if (bytes == null) {
+            // skip test
+            LOGGER.warning("app-schema test data not available: skipping test");
+            return;
+        }
+
+        // copy necessary .properties files from classpath
+        loadAppSchemaTestData();
+
+        // upload mapping file (datastore is created implicitly)
+        put( "/rest/workspaces/gsml/datastores/mappedPolygons/file.appschema", bytes, "text/xml");
+        Document dom = getAsDOM( "wfs?request=getfeature&typename=gsml:MappedFeature" );
+
+        // print(dom);
+
+        assertEquals( "wfs:FeatureCollection", dom.getDocumentElement().getNodeName() );
+        NodeList mappedFeatureNodes = dom.getDocumentElement().getElementsByTagNameNS(
+                "http://www.cgi-iugs.org/xml/GeoSciML/2", "MappedFeature");
+        assertNotNull(mappedFeatureNodes);
+        assertEquals(2, mappedFeatureNodes.getLength());
+
+        int namesCount = countNameAttributes(mappedFeatureNodes.item(0));
+        assertEquals(2, namesCount);
+
+        // upload alternative mapping file
+        bytes = appSchemaAlternativeMappingAsBytes();
+        put("/rest/workspaces/gsml/datastores/mappedPolygons/file.appschema?configure=none",
+                bytes, "text/xml");
+        dom = getAsDOM( "wfs?request=getfeature&typename=gsml:MappedFeature" );
+
+        // print(dom);
+
+        assertEquals( "wfs:FeatureCollection", dom.getDocumentElement().getNodeName() );
+        mappedFeatureNodes = dom.getDocumentElement().getElementsByTagNameNS(
+                "http://www.cgi-iugs.org/xml/GeoSciML/2", "MappedFeature");
+        assertNotNull(mappedFeatureNodes);
+        assertEquals(2, mappedFeatureNodes.getLength());
+
+        namesCount = countNameAttributes(mappedFeatureNodes.item(0));
+        // just one name should be found
+        assertEquals(1, namesCount);
+    }
+
+    private int countNameAttributes(Node mappedFeatureNode) {
+        NodeList attrNodes = mappedFeatureNode.getChildNodes();
+        int namesCount = 0;
+        for (int i=0; i<attrNodes.getLength(); i++) {
+            Node attribute = attrNodes.item(i);
+            if ("name".equals(attribute.getLocalName())) {
+                namesCount++;
+            }
+        }
+
+        return namesCount;
+    }
+
+    private void loadAppSchemaTestData() throws IOException {
+        GeoServerResourceLoader loader = new GeoServerResourceLoader(getTestData()
+                .getDataDirectoryRoot());
+        loader.copyFromClassPath("test-data/mappedPolygons.properties",
+                "data/gsml/mappedPolygons.properties");
+        loader.copyFromClassPath("test-data/mappedPolygons.oasis.xml",
+                "data/gsml/mappedPolygons.oasis.xml");
+        loader.copyFromClassPath(
+                "test-data/commonSchemas_new/GeoSciML/CGI_basicTypes.xsd",
+                "data/gsml/commonSchemas_new/GeoSciML/CGI_basicTypes.xsd");
+        loader.copyFromClassPath(
+                "test-data/commonSchemas_new/GeoSciML/CGI_Value.xsd",
+                "data/gsml/commonSchemas_new/GeoSciML/CGI_Value.xsd");
+        loader.copyFromClassPath(
+                "test-data/commonSchemas_new/GeoSciML/earthMaterial.xsd",
+                "data/gsml/commonSchemas_new/GeoSciML/earthMaterial.xsd");
+        loader.copyFromClassPath(
+                "test-data/commonSchemas_new/GeoSciML/fossil.xsd",
+                "data/gsml/commonSchemas_new/GeoSciML/fossil.xsd");
+        loader.copyFromClassPath(
+                "test-data/commonSchemas_new/GeoSciML/geologicStructure.xsd",
+                "data/gsml/commonSchemas_new/GeoSciML/geologicStructure.xsd");
+        loader.copyFromClassPath(
+                "test-data/commonSchemas_new/GeoSciML/geologicUnit.xsd",
+                "data/gsml/commonSchemas_new/GeoSciML/geologicUnit.xsd");
+        loader.copyFromClassPath(
+                "test-data/commonSchemas_new/GeoSciML/geosciml.xsd",
+                "data/gsml/commonSchemas_new/GeoSciML/geosciml.xsd");
+        loader.copyFromClassPath(
+                "test-data/commonSchemas_new/GeoSciML/Gsml.xsd",
+                "data/gsml/commonSchemas_new/GeoSciML/Gsml.xsd");
+        loader.copyFromClassPath(
+                "test-data/commonSchemas_new/GeoSciML/metadata.xsd",
+                "data/gsml/commonSchemas_new/GeoSciML/metadata.xsd");
+        loader.copyFromClassPath(
+                "test-data/commonSchemas_new/GeoSciML/ObsAndMeas.xsd",
+                "data/gsml/commonSchemas_new/GeoSciML/ObsAndMeas.xsd");
+        loader.copyFromClassPath(
+                "test-data/commonSchemas_new/GeoSciML/vocabulary.xsd",
+                "data/gsml/commonSchemas_new/GeoSciML/vocabulary.xsd");
+    }
+
+    private byte[] appSchemaMappingAsBytes() throws IOException {
+        InputStream in = getClass().getResourceAsStream( "/test-data/mappedPolygons.xml" );
+        if (in != null) {
+            byte[] original = toBytes(in);
+            byte[] modified = null;
+
+            String originalAsString = new String(original, Charset.forName("UTF-8"));
+            // modify paths in the original mapping file
+            String modifiedAsString = originalAsString.replace("file:./", "file:../")
+                    .replace("commonSchemas_new/", "../commonSchemas_new/")
+                    .replace("mappedPolygons.oasis", "../mappedPolygons.oasis");
+
+            modified = modifiedAsString.getBytes(Charset.forName("UTF-8"));
+
+            return modified;
+        } else {
+            return null;
+        }
+    }
+
+    private byte[] appSchemaAlternativeMappingAsBytes() throws Exception {
+        byte[] mapping = appSchemaMappingAsBytes();
+        if (mapping != null) {
+            Document mappingDom = dom(new ByteArrayInputStream(mapping));
+
+            // remove mapping for MappedFeature/gml:name[2] attribute
+            NodeList attrMappingNodes = mappingDom.getDocumentElement()
+                    .getElementsByTagName("AttributeMapping");
+            for (int i=0; i<attrMappingNodes.getLength(); i++) {
+                Node attrMapping = attrMappingNodes.item(i);
+                NodeList children = attrMapping.getChildNodes();
+                for (int j=0; j<children.getLength(); j++) {
+                    if ("MappedFeature/gml:name[2]".equals(children.item(j).getTextContent())) {
+                        attrMapping.getParentNode().removeChild(attrMapping);
+                        break;
+                    }
+                }
+            }
+
+            ByteArrayOutputStream output = new ByteArrayOutputStream();
+            print(mappingDom, output);
+
+            return output.toByteArray();
+        } else {
+            return null;
+        }
+    }
+
 }

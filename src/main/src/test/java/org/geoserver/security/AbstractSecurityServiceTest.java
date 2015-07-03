@@ -1,25 +1,22 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 
 package org.geoserver.security;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
 import org.apache.commons.io.FileUtils;
-
-import org.geoserver.data.test.LiveData;
 import org.geoserver.data.test.SystemTestData;
-import org.geoserver.data.test.TestData;
-import org.geoserver.security.GeoServerRoleService;
-import org.geoserver.security.GeoServerRoleStore;
-import org.geoserver.security.GeoServerUserGroupService;
-import org.geoserver.security.GeoServerUserGroupStore;
 import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.security.impl.GeoServerUser;
 import org.geoserver.security.impl.GeoServerUserGroup;
@@ -28,8 +25,6 @@ import org.geoserver.security.password.GeoServerEmptyPasswordEncoder;
 import org.geoserver.security.password.GeoServerMultiplexingPasswordEncoder;
 import org.geoserver.security.password.GeoServerPBEPasswordEncoder;
 import org.geoserver.security.password.GeoServerPlainTextPasswordEncoder;
-import org.geoserver.test.GeoServerAbstractTestSupport;
-import org.geoserver.test.GeoServerBaseTestSupport;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geotools.data.DataUtilities;
 
@@ -44,7 +39,7 @@ public abstract class AbstractSecurityServiceTest extends GeoServerSystemTestSup
 
     @Override
     protected void setUpTestData(SystemTestData testData) throws Exception {
-        //explictily do nothing, we want no layers
+        testData.setUpSecurity();
     }
 
     public GeoServerUserGroupService createUserGroupService(String name) throws Exception {
@@ -303,11 +298,11 @@ public abstract class AbstractSecurityServiceTest extends GeoServerSystemTestSup
         assertEquals(5, userGroupService.getUsers().size());
         assertEquals(5, userGroupService.getUserCount());
         
-        GeoServerUser admin = (GeoServerUser) userGroupService.getUserByUsername(GeoServerUser.ADMIN_USERNAME);
-        GeoServerUser user1 = (GeoServerUser) userGroupService.getUserByUsername("user1");
-        GeoServerUser user2 = (GeoServerUser) userGroupService.getUserByUsername("user2");
-        GeoServerUser disableduser = (GeoServerUser) userGroupService.getUserByUsername("disableduser");
-        GeoServerUser groupAdminUser = (GeoServerUser) userGroupService.getUserByUsername("groupAdminUser");
+        GeoServerUser admin = userGroupService.getUserByUsername(GeoServerUser.ADMIN_USERNAME);
+        GeoServerUser user1 = userGroupService.getUserByUsername("user1");
+        GeoServerUser user2 = userGroupService.getUserByUsername("user2");
+        GeoServerUser disableduser = userGroupService.getUserByUsername("disableduser");
+        GeoServerUser groupAdminUser = userGroupService.getUserByUsername("groupAdminUser");
         
         assertNull(userGroupService.getUserByUsername("xxx"));
     
@@ -480,9 +475,9 @@ public abstract class AbstractSecurityServiceTest extends GeoServerSystemTestSup
     protected void checkValuesRemoved(GeoServerUserGroupService userGroupService) throws IOException {
         
         GeoServerUser admin = GeoServerUser.createDefaultAdmin();
-        GeoServerUser user1 = (GeoServerUser) userGroupService.getUserByUsername("user1");
-        GeoServerUser disableduser = (GeoServerUser) userGroupService.getUserByUsername("disableduser");
-        GeoServerUser groupAdminUser = (GeoServerUser) userGroupService.getUserByUsername("groupAdminUser");
+        GeoServerUser user1 = userGroupService.getUserByUsername("user1");
+        GeoServerUser disableduser = userGroupService.getUserByUsername("disableduser");
+        GeoServerUser groupAdminUser = userGroupService.getUserByUsername("groupAdminUser");
     
         assertEquals(4, userGroupService.getUsers().size());
         assertEquals(4, userGroupService.getUserCount());

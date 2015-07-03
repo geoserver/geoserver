@@ -1,16 +1,17 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wms.wms_1_1_1;
 
-import static junit.framework.Assert.*;
-import static org.custommonkey.xmlunit.XMLAssert.*;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertTrue;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBuffer;
-import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,13 +29,11 @@ import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.SystemTestData.LayerProperty;
-import org.geoserver.data.util.CoverageUtils;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSTestSupport;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.junit.After;
 import org.junit.Test;
-import org.opengis.parameter.ParameterValueGroup;
 import org.w3c.dom.Document;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;

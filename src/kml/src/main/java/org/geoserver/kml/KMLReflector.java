@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -47,15 +48,18 @@ public class KMLReflector {
 
         options = new HashMap<String, Object>();
         options.put("superoverlay", true);
+        options.put("mode", "superoverlay");
         temp.put("superoverlay", options);
-
+        
         options = new HashMap<String, Object>();
         options.put("superoverlay", false);
         options.put("kmscore", 100); // download -> really download vectors
+        options.put("mode", "download");
         temp.put("download", options);
 
         options = new HashMap<String, Object>();
         options.put("superoverlay", false);
+        options.put("mode", "refresh");
         temp.put("refresh", options);
 
         MODES = temp;
@@ -145,13 +149,16 @@ public class KMLReflector {
         }
 
         // first set up some of the normal wms defaults
+        Map fo = request.getFormatOptions();
         boolean refreshMode = mode.equals("refresh");
         if (request.getWidth() < 1) {
             request.setWidth(refreshMode || containsRasterData ? DEFAULT_OVERLAY_SIZE : 256);
+            fo.put("autofit", "true");
         }
 
         if (request.getHeight() < 1) {
             request.setHeight(refreshMode || containsRasterData ? DEFAULT_OVERLAY_SIZE : 256);
+            fo.put("autofit", "true");
         }
 
         // Force srs to lat/lon for KML output.
@@ -161,7 +168,6 @@ public class KMLReflector {
         request = DefaultWebMapService.autoSetMissingProperties(request);
 
         // grab the format options
-        Map fo = request.getFormatOptions();
         // merge the direct params that people can add in the kml reflector call
         organizeFormatOptionsParams(request.getRawKvp(), fo);
         // fill in the blanks with some defaults based on the current mode
@@ -218,6 +224,8 @@ public class KMLReflector {
         WMSRequests.mergeEntry(kvp, formatOptions, "kmscore");
         WMSRequests.mergeEntry(kvp, formatOptions, "kmattr");
         WMSRequests.mergeEntry(kvp, formatOptions, "kmltitle");
+        WMSRequests.mergeEntry(kvp, formatOptions, "kmlrefresh");
+        WMSRequests.mergeEntry(kvp, formatOptions, "kmlvisible");
         WMSRequests.mergeEntry(kvp, formatOptions, "extendeddata");
         WMSRequests.mergeEntry(kvp, formatOptions, "extrude");
         WMSRequests.mergeEntry(kvp, formatOptions, "kmplacemark");

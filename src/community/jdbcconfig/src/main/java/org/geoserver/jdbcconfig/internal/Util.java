@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -46,6 +47,9 @@ public class Util {
             }
             buf.append(sql).append(" ");
             if (sql.endsWith(";")) {
+                // oracle hates semi-colons here, just use as a separator
+                // for knowing when to execute a stmt, but don't include
+                buf.setLength(buf.length() - 2);
                 String stmt = buf.toString();
                 boolean skipError = stmt.startsWith("?");
                 if (skipError) {
@@ -58,6 +62,9 @@ public class Util {
                     jdbc.update(stmt);
                 }
                 catch(DataAccessException e) {
+                    if (logger != null) {
+                        logger.warning(e.getMessage());
+                    }
                     if (!skipError) {
                         throw e;
                     }

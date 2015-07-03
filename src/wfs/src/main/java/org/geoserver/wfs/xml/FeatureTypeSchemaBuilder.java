@@ -1,11 +1,11 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wfs.xml;
 
-import static org.geoserver.ows.util.ResponseUtils.buildURL;
-import static org.geoserver.ows.util.ResponseUtils.params;
+import static org.geoserver.ows.util.ResponseUtils.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,6 +22,7 @@ import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.google.common.collect.Lists;
 import org.eclipse.xsd.XSDComplexTypeDefinition;
 import org.eclipse.xsd.XSDCompositor;
 import org.eclipse.xsd.XSDDerivationMethod;
@@ -55,6 +56,7 @@ import org.geotools.wfs.v2_0.WFS;
 import org.geotools.xml.Configuration;
 import org.geotools.xml.Schemas;
 import org.geotools.xs.XS;
+import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.feature.type.AttributeType;
 import org.opengis.feature.type.ComplexType;
@@ -192,13 +194,27 @@ public abstract class FeatureTypeSchemaBuilder {
             String targetNamespace = catalog.getNamespaceByPrefix(targetPrefix).getURI();
             schema.setTargetNamespace(targetNamespace);
             schema.getQNamePrefixToNamespaceMap().put(targetPrefix, targetNamespace);
-            // add secondary namespaces from catalog
-            for (NamespaceInfo nameSpaceinfo : catalog.getNamespaces()) {
-                if (!schema.getQNamePrefixToNamespaceMap().containsKey(nameSpaceinfo.getPrefix())) {
-                    schema.getQNamePrefixToNamespaceMap().put(nameSpaceinfo.getPrefix(),
-                            nameSpaceinfo.getURI());
+
+            boolean simple = true;
+            for (int i = 0; i < featureTypeInfos.length && simple; i++) {
+                try {
+                    simple = featureTypeInfos[i].getFeatureType() instanceof SimpleFeatureType;
+                }
+                catch(IOException e) {
+                    // ignore so that broken feature types don't prevent others from continuing to work
                 }
             }
+
+            if (!simple) {
+                // add secondary namespaces from catalog
+                for (NamespaceInfo nameSpaceinfo : catalog.getNamespaces()) {
+                    if (!schema.getQNamePrefixToNamespaceMap().containsKey(nameSpaceinfo.getPrefix())) {
+                        schema.getQNamePrefixToNamespaceMap().put(nameSpaceinfo.getPrefix(),
+                                nameSpaceinfo.getURI());
+                    }
+                }
+            }
+
             // would result in some xsd:include or xsd:import if schema location is specified
             try {
                 FeatureType featureType = featureTypeInfos[0].getFeatureType();
@@ -455,7 +471,7 @@ public abstract class FeatureTypeSchemaBuilder {
             String schemaLocation) {
         XSDImport xsdImport = factory.createXSDImport();
         xsdImport.setNamespace(namespace);
-        xsdImport.setSchemaLocation((String) schemaLocation);
+        xsdImport.setSchemaLocation(schemaLocation);
         schema.getContents().add(xsdImport);
     }
 
@@ -501,7 +517,7 @@ public abstract class FeatureTypeSchemaBuilder {
             }
             
             // add secondary namespaces from catalog
-            for (Map.Entry<String, String> entry : (Set<Map.Entry<String, String>>) schema.getQNamePrefixToNamespaceMap()
+            for (Map.Entry<String, String> entry : schema.getQNamePrefixToNamespaceMap()
                     .entrySet()) {
                 if (!wfsSchema.getQNamePrefixToNamespaceMap().containsKey(entry.getKey())) {
                     wfsSchema.getQNamePrefixToNamespaceMap().put(entry.getKey(), entry.getValue());
@@ -668,8 +684,11 @@ public abstract class FeatureTypeSchemaBuilder {
             throws IOException {
         if (!findTypeInSchema(featureTypeMeta, schema, factory)) {
             // build the type manually
-            XSDComplexTypeDefinition xsdComplexType = buildComplexSchemaContent(featureTypeMeta
-                    .getFeatureType(), schema, factory);
+            FeatureType featureType = featureTypeMeta.getFeatureType();
+            if(featureTypeMeta.isCircularArcPresent() && this.getClass().equals(GML3.class)) {
+                featureType = new CurveTypeWrapper(featureType);
+            }
+			XSDComplexTypeDefinition xsdComplexType = buildComplexSchemaContent(featureType, schema, factory);
 
             XSDElementDeclaration element = factory.createXSDElementDeclaration();
             element.setName(featureTypeMeta.getName());
@@ -686,7 +705,8 @@ public abstract class FeatureTypeSchemaBuilder {
         }
     }
 
-    /**
+
+	/**
      * Construct an XSD type definition for a ComplexType. 
      * 
      * <p>
@@ -778,7 +798,7 @@ public abstract class FeatureTypeSchemaBuilder {
 
     XSDTypeDefinition resolveTypeInSchema(XSDSchema schema, Name typeName) {
         XSDTypeDefinition type = null;
-        for (XSDTypeDefinition td : ((List<XSDTypeDefinition>)schema.getTypeDefinitions())) {
+        for (XSDTypeDefinition td : (schema.getTypeDefinitions())) {
             if (typeName.getNamespaceURI().equals(td.getTargetNamespace()) 
                 && typeName.getLocalPart().equals(td.getName())) {
                 type = td;

@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -22,9 +23,9 @@ import java.util.logging.Logger;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.LayerInfo.Type;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.PublishedType;
 import org.geoserver.ows.KvpRequestReader;
 import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.platform.ServiceException;
@@ -233,10 +234,10 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
      */
     private FeatureType getLayerFeatureType(LayerInfo layerInfo) throws IOException, FactoryRegistryException, TransformException, SchemaException {
         MapLayerInfo mli=new MapLayerInfo(layerInfo);
-        if (layerInfo.getType() == Type.VECTOR) {
+        if (layerInfo.getType() == PublishedType.VECTOR) {
             FeatureType featureType = mli.getFeature().getFeatureType();
             return featureType;
-        } else if (layerInfo.getType() == Type.RASTER) {
+        } else if (layerInfo.getType() == PublishedType.RASTER) {
             CoverageInfo coverageInfo = mli.getCoverage();
             // it much safer to wrap a reader rather than a coverage in most cases, OOM can
             // occur otherwise

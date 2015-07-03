@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014-2015 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -29,17 +30,22 @@ import javax.media.jai.JAI;
 import javax.media.jai.OperationRegistry;
 import javax.media.jai.RegistryElementDescriptor;
 import javax.media.jai.RegistryMode;
+import javax.media.jai.remote.SerializableRenderedImage;
+import javax.media.jai.util.ImagingListener;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.LogManager;
 import org.geoserver.config.impl.CoverageAccessInfoImpl;
+import org.geoserver.jai.ConcurrentOperationRegistry;
 import org.geoserver.logging.LoggingUtils;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geotools.coverage.CoverageFactoryFinder;
 import org.geotools.data.DataAccessFinder;
 import org.geotools.data.DataStoreFinder;
 import org.geotools.factory.CommonFactoryFinder;
+import org.geotools.factory.GeoTools;
 import org.geotools.factory.Hints;
 import org.geotools.image.io.ImageIOExt;
 import org.geotools.referencing.CRS;
@@ -64,10 +70,55 @@ public class GeoserverInitStartupListener implements ServletContextListener {
 
     private Iterator<Class<?>> products;
 
+    private final static String COMPARISON_TOLERANCE_PROPERTY = "COMPARISON_TOLERANCE";
+
+    private final static double DEFAULT_COMPARISON_TOLERANCE = 1e-9;
+
     public void contextInitialized(ServletContextEvent sce) {
         // start up tctool - remove it before committing!!!!
         // new tilecachetool.TCTool().setVisible(true);
         
+        // Register logging, and bridge to JAI logging
+        GeoTools.init( (Hints) null );
+        
+        // Custom GeoTools ImagingListener used to ignore common warnings 
+        JAI.getDefaultInstance().setImagingListener(new ImagingListener() {
+            final Logger LOGGER = Logging.getLogger("javax.media.jai");
+            @Override
+            public boolean errorOccurred(String message, Throwable thrown, Object where,
+                    boolean isRetryable) throws RuntimeException {
+                if (isSerializableRenderedImageFinalization(where, thrown)) {
+                    LOGGER.log(Level.FINEST, message, thrown);
+                } else if (message.contains("Continuing in pure Java mode")) {
+                    LOGGER.log(Level.FINE, message, thrown);
+                } else {
+                    LOGGER.log(Level.INFO, message, thrown);
+                }
+                return false; // we are not trying to recover
+            }
+
+            private boolean isSerializableRenderedImageFinalization(Object where, Throwable t) {
+                if (!(where instanceof SerializableRenderedImage)) {
+                    return false;
+                }
+
+                // check if it's the finalizer
+                StackTraceElement[] elements = t.getStackTrace();
+                for (StackTraceElement element : elements) {
+                    if (element.getMethodName().equals("finalize")
+                            && element.getClassName().endsWith("SerializableRenderedImage"))
+                        return true;
+                }
+
+                return false;
+            }
+        });
+                        
+        // setup concurrent operation registry
+        JAI jaiDef = JAI.getDefaultInstance();
+        if(!(jaiDef.getOperationRegistry() instanceof ConcurrentOperationRegistry)) {
+            jaiDef.setOperationRegistry(ConcurrentOperationRegistry.initializeRegistry());
+        }
         
         // make sure we remember if GeoServer controls logging or not
         String strValue = GeoServerExtensions.getProperty(LoggingUtils.RELINQUISH_LOG4J_CONTROL, 
@@ -87,11 +138,29 @@ public class GeoserverInitStartupListener implements ServletContextListener {
             Hints.putSystemDefault(Hints.FORCE_AXIS_ORDER_HONORING, "http");
         }
         Hints.putSystemDefault(Hints.LENIENT_DATUM_SHIFT, true);
-        
+
         // setup the referencing tolerance to make it more tolerant to tiny differences
         // between projections (increases the chance of matching a random prj file content
         // to an actual EPSG code
-        Hints.putSystemDefault(Hints.COMPARISON_TOLERANCE, 1e-9);
+        String comparisonToleranceProperty = GeoServerExtensions.getProperty(COMPARISON_TOLERANCE_PROPERTY);
+        double comparisonTolerance = DEFAULT_COMPARISON_TOLERANCE;
+        if (comparisonToleranceProperty != null) {
+            try {
+                comparisonTolerance = Double.parseDouble(comparisonToleranceProperty);
+            } catch (NumberFormatException nfe) {
+                if (LOGGER.isLoggable(Level.WARNING)) {
+                    LOGGER.warning("Unable to parse the specified COMPARISON_TOLERANCE "
+                            + "system property: " + comparisonToleranceProperty + 
+                            " which should be a number. Using Default: " + DEFAULT_COMPARISON_TOLERANCE);
+                }
+            }
+        }
+        Hints.putSystemDefault(Hints.COMPARISON_TOLERANCE, comparisonTolerance);
+
+        final Hints defHints = GeoTools.getDefaultHints();
+
+        // Initialize GridCoverageFactory so that we don't make a lookup every time a factory is needed
+        Hints.putSystemDefault(Hints.GRID_COVERAGE_FACTORY,CoverageFactoryFinder.getGridCoverageFactory(defHints));
         
         // don't allow the connection to the EPSG database to time out. This is a server app,
         // we can afford keeping the EPSG db always on
@@ -106,24 +175,13 @@ public class GeoserverInitStartupListener implements ServletContextListener {
         // IIORegistry leading to imageio plugins not being properly initialized
         ImageIO.scanForPlugins();
 
-        // HACK: under JDK 1.4.2 the native java image i/o stuff is failing
-        // in all containers besides Tomcat. If running under jdk 1.4.2 we
-        // disable the native codecs, unless the user forced the setting already
-        if (System.getProperty("java.version").startsWith("1.4")
-                && (System.getProperty("com.sun.media.imageio.disableCodecLib") == null)) {
-            LOGGER.warning("Disabling mediaLib acceleration since this is a "
-                    + "java 1.4 VM.\n If you want to force its enabling, " //
-                    + "set -Dcom.sun.media.imageio.disableCodecLib=true "
-                    + "in your virtual machine");
-            System.setProperty("com.sun.media.imageio.disableCodecLib", "true");
-        } else {
-            // in any case, the native png reader is worse than the pure java ones, so
-            // let's disable it (the native png writer is on the other side faster)...
-            ImageIOExt.allowNativeCodec("png", ImageReaderSpi.class, false);
-            ImageIOExt.allowNativeCodec("png", ImageWriterSpi.class, true);
-        }
-
-        // initialize geotools factories so that we don't make a spi lookup every time a factory is needed
+        
+        // in any case, the native png reader is worse than the pure java ones, so
+        // let's disable it (the native png writer is on the other side faster)...
+        ImageIOExt.allowNativeCodec("png", ImageReaderSpi.class, false);
+        ImageIOExt.allowNativeCodec("png", ImageWriterSpi.class, true);
+        
+        // initialize GeoTools factories so that we don't make a SPI lookup every time a factory is needed
         Hints.putSystemDefault(Hints.FILTER_FACTORY, CommonFactoryFinder.getFilterFactory2(null));
         Hints.putSystemDefault(Hints.STYLE_FACTORY, CommonFactoryFinder.getStyleFactory(null));
         Hints.putSystemDefault(Hints.FEATURE_FACTORY, CommonFactoryFinder.getFeatureFactory(null));

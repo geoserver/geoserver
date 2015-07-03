@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -160,7 +161,7 @@ public class LiveCasData extends LiveSystemTestData {
         }
                 
         // check connection
-        try {            
+        try {
             HttpURLConnection huc =  (HttpURLConnection)  loginURL.openConnection(); 
             huc.setRequestMethod("GET"); 
             huc.connect(); 
@@ -170,9 +171,9 @@ public class LiveCasData extends LiveSystemTestData {
             }
         } catch (Exception ex) {
             disableTest("problem with cas connection: "+ex.getMessage());
-            return null;            
+            return null;
         }
-                
+
         keyStoreFile = new File(base,"keystore.jks");
         if (keyStoreFile.exists()==false) {
             disableTest("Keystore not found: "+ keyStoreFile.getAbsolutePath());

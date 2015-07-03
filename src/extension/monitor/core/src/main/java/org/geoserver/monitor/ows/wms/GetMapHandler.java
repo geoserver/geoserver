@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -48,9 +49,12 @@ public class GetMapHandler extends RequestObjectHandler {
     protected BoundingBox getBBox(Object request) {
         CoordinateReferenceSystem crs = (CoordinateReferenceSystem) OwsUtils.get(request, "crs");
         Envelope env = (Envelope) OwsUtils.get(request, "bbox");
+        if(env == null) {
+            return null;
+        }
         BoundingBox bbox = new ReferencedEnvelope(env, crs);
         
-        try{
+        try {
             return bbox.toBounds(monitorConfig.getBboxCrs());
         } catch (TransformException e) {
             LOGGER.log(Level.WARNING, "Could not transform bounding box to logging CRS", e);

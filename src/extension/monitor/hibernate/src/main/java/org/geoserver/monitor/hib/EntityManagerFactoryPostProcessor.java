@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -48,8 +49,9 @@ public class EntityManagerFactoryPostProcessor implements BeanPostProcessor {
                 props.putAll(factory.getJpaVendorAdapter().getJpaPropertyMap());
                 props.putAll(factory.getJpaPropertyMap());
                 
-                FileOutputStream fout = new FileOutputStream(
-                    data.findOrCreateDataDir("monitoring", "hibernate.properties"));
+                File monitoring = data.findOrCreateDataDir("monitoring");
+                File file = new File( monitoring, "hibernate.properties" );
+                FileOutputStream fout = new FileOutputStream(file);
                 
                 props.store(fout, "hibernate configuration");
                 fout.flush();

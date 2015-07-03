@@ -1,14 +1,11 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wfs.response;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -20,14 +17,17 @@ import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+
 import javax.xml.namespace.QName;
+
 import net.opengis.wfs.GetFeatureType;
 import net.opengis.wfs.WfsFactory;
+
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.MetadataMap;
@@ -37,8 +37,6 @@ import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.Operation;
-import org.geoserver.test.TestSetup;
-import org.geoserver.test.TestSetupFrequency;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.WFSTestSupport;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
@@ -55,6 +53,7 @@ import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.filter.Filter;
+
 import com.mockrunner.mock.web.MockHttpServletResponse;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.MultiPolygon;
@@ -548,7 +547,8 @@ public class ShapeZipTest extends WFSTestSupport {
             }
         } finally {
             iter.close();
-            tempFolder.delete();
+            ds.dispose();
+            FileUtils.deleteQuietly(tempFolder);
         }
 
         return schema;

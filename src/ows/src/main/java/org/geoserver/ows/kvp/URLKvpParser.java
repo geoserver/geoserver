@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -37,7 +38,7 @@ public class URLKvpParser extends KvpParser {
      * @param url
      * @return
      */
-    String fixURL(String url) {
+    public static String fixURL(String url) {
         StringBuffer sb = new StringBuffer();
 
         for (int i = 0; i < url.length(); i++) {

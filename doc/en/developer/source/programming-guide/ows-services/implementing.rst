@@ -26,9 +26,9 @@ The first step in creating our plug-in is setting up a maven project for it. The
   
     <!-- set parent pom to community pom -->
     <parent>
-      <groupId>org.geoserver</groupId>
-      <artifactId>community</artifactId>
-      <version>2.2.0</version>
+        <groupId>org.geoserver</groupId>
+        <artifactId>community</artifactId>
+        <version>2.8-SNAPSHOT</version> <!-- change this to the proper GeoServer version -->
     </parent>  
   
     <groupId>org.geoserver</groupId>
@@ -39,19 +39,22 @@ The first step in creating our plug-in is setting up a maven project for it. The
   
     <!-- declare depenency on geoserver main -->
     <dependencies>
-      <dependency>
-        <groupId>org.geoserver</groupId>
-        <artifactId>main</artifactId>
-        <version>2.2.0</version>
-      </dependency>
+        <dependency>
+            <groupId>org.geoserver</groupId>
+            <artifactId>gs-main</artifactId>
+            <version>2.8-SNAPSHOT</version> <!-- change this to the proper GeoServer version -->
+        </dependency>
     </dependencies>
 
     <repositories>
-      <repository>
-         <id>opengeo</id>
-         <name>opengeo</name>
-         <url>http://repo.opengeo.org</url>
-      </repository>
+        <repository>
+            <id>boundless</id>
+            <name>Boundless Maven Repository</name>
+            <url>http://repo.boundlessgeo.com/main</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
     </repositories>
 
   </project>
@@ -216,7 +219,7 @@ Bundling with Web Module
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
 An alternative to plugging into an existing installation is to build a complete
-GeoServer war that includes the custom hello plugin. To acheive this a new 
+GeoServer war that includes the custom hello plugin. To achieve this a new 
 dependency is declared from the core **web/app** module on the new plugin 
 project. This requires building GeoServer from sources.
 
@@ -289,5 +292,5 @@ it directly from sources.
 .. note::
 
    Ensure that the ``web-app`` module in eclipse depends on the newly imported
-   ``hello`` module. This can be done by inspeceting the ``web-app`` module 
-   properties and ensuring the ``hello`` module is a projcet dependency.
+   ``hello`` module. This can be done by inspecting the ``web-app`` module 
+   properties and ensuring the ``hello`` module is a project dependency.

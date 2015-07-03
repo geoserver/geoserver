@@ -1,18 +1,28 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.catalog.rest;
 
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.StyleHandler;
+import org.geoserver.catalog.Styles;
+import org.geoserver.platform.ContextLoadedEvent;
 import org.geoserver.rest.RestletException;
+import org.geoserver.rest.format.MediaTypes;
+import org.geotools.util.Version;
+import org.restlet.data.Form;
+import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.resource.Resource;
+import org.springframework.context.ApplicationEvent;
+import org.springframework.context.ApplicationListener;
 
-public class StyleFinder extends AbstractCatalogFinder {
+public class StyleFinder extends AbstractCatalogFinder implements ApplicationListener {
 
     public StyleFinder(Catalog catalog) {
         super(catalog);
@@ -30,11 +40,22 @@ public class StyleFinder extends AbstractCatalogFinder {
         }
         //check style exists if specified
         if ( style != null) {
+            // Check if the quietOnNotFound parameter is set
+            boolean quietOnNotFound=quietOnNotFoundEnabled(request);            
+            //ensure it exists
             if (workspace != null && catalog.getStyleByName( workspace, style ) == null) {
+                // If true, no exception is returned
+                if(quietOnNotFound){
+                    return null;
+                }
                 throw new RestletException(String.format("No such style %s in workspace %s", 
                     style, workspace), Status.CLIENT_ERROR_NOT_FOUND );
             }
             if (workspace == null && catalog.getStyleByName( style ) == null) {
+                // If true, no exception is returned
+                if(quietOnNotFound){
+                    return null;
+                }
                 throw new RestletException( "No such style: " + style, Status.CLIENT_ERROR_NOT_FOUND );
             }
         }
@@ -73,4 +94,14 @@ public class StyleFinder extends AbstractCatalogFinder {
         return new StyleResource(getContext(),request,response,catalog);
     }
 
+    @Override
+    public void onApplicationEvent(ApplicationEvent event) {
+        if (event instanceof ContextLoadedEvent) {
+            // register style format mime types
+            for (StyleHandler sh : Styles.handlers()) {
+                Version ver = sh.getVersions().iterator().next();
+                MediaTypes.registerExtension(sh.getFileExtension(), new MediaType(sh.mimeType(ver)));
+            }
+        }
+    }
 }

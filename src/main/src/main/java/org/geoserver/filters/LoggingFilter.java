@@ -1,11 +1,13 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.filters;
 
-import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.logging.Logger;
 
 import javax.servlet.Filter;
@@ -15,6 +17,8 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.io.IOUtils;
 
 /**
  * Filter to log requests for debugging or statistics-gathering purposes.
@@ -52,15 +56,22 @@ public class LoggingFilter implements Filter {
                 if (logBodies && (hreq.getMethod().equals("PUT") || hreq.getMethod().equals("POST"))){
                     message += " request-size: " + hreq.getContentLength();
                     message += " body: ";
-                    StringBuffer buff = new StringBuffer();
-                    BufferedReader reader = hreq.getReader();
-                    char[] readIn = new char[256];
-                    int amountRead = 0;
-                    while ((amountRead = reader.read(readIn, 0 , 256)) != -1){
-                        buff.append(readIn, 0, amountRead);
+
+                    String encoding = hreq.getCharacterEncoding();
+                    if (encoding == null) {
+                        // the default encoding for HTTP 1.1
+                        encoding = "ISO-8859-1";
                     }
-                    body = buff.toString();
-                    req = new BufferedRequestWrapper(hreq, buff.toString());
+                    ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                    byte[] bytes;
+                    try (InputStream is = hreq.getInputStream()) {
+                        IOUtils.copy(is, bos);
+                        bytes = bos.toByteArray();
+
+                        body = new String(bytes, encoding);
+                    }
+
+                    req = new BufferedRequestWrapper(hreq, encoding, bytes);
                 }
             } else {
                 message = "" + req.getRemoteHost() + " made a non-HTTP request";
@@ -97,5 +108,33 @@ public class LoggingFilter implements Filter {
     }
 
     public void destroy() {
+    }
+
+    /**
+     * @return the enabled
+     */
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    /**
+     * @param enabled the enabled to set
+     */
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    /**
+     * @return the logBodies
+     */
+    public boolean isLogBodies() {
+        return logBodies;
+    }
+
+    /**
+     * @param logBodies the logBodies to set
+     */
+    public void setLogBodies(boolean logBodies) {
+        this.logBodies = logBodies;
     }
 }

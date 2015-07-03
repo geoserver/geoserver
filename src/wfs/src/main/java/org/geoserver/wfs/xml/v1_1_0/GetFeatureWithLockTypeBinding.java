@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -143,7 +144,7 @@ public class GetFeatureWithLockTypeBinding extends AbstractComplexBinding {
 
         //&lt;xsd:attribute default="5" name="expiry" type="xsd:positiveInteger" use="optional"&gt;
         if (node.hasAttribute("expiry")) {
-            getFeatureWithLock.setExpiry((BigInteger) node.getChildValue("expiry"));
+            getFeatureWithLock.setExpiry((BigInteger) node.getAttributeValue("expiry"));
         }
 
         //&lt;xsd:attribute default="results" name="resultType" type="wfs:ResultTypeType" use="optional"&gt;

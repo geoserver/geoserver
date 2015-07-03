@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -15,6 +16,8 @@ import org.geoserver.data.test.MockData;
 import org.geoserver.wfs.json.JSONType;
 import org.geoserver.wms.WMSTestSupport;
 import org.junit.Test;
+
+import com.mockrunner.mock.web.MockHttpServletResponse;
 
 /**
  * Unit test suite for {@link JSONDescribeLayerResponse}
@@ -128,14 +131,27 @@ public class DescribeLayerJsonTest extends WMSTestSupport {
         JSONObject layerDesc = layerDescs.getJSONObject(0);
         assertEquals(layerDesc.get("layerName"),
                 MockData.LAKES.getPrefix() + ":" + MockData.LAKES.getLocalPart());
-        assertTrue(layerDesc.get("owsURL").toString().endsWith("geoserver/wfs/WfsDispatcher?"));
+        assertTrue(layerDesc.get("owsURL").toString().endsWith("geoserver/wfs?"));
         assertEquals(layerDesc.get("owsType"), "WFS");
 
         layerDesc = layerDescs.getJSONObject(1);
         assertEquals(layerDesc.get("layerName"), MockData.FORESTS.getPrefix() + ":"
                 + MockData.FORESTS.getLocalPart());
-        assertTrue(layerDesc.get("owsURL").toString().endsWith("geoserver/wfs/WfsDispatcher?"));
+        assertTrue(layerDesc.get("owsURL").toString().endsWith("geoserver/wfs?"));
         assertEquals(layerDesc.get("owsType"), "WFS");
 
     }
+    
+    @Test
+    public void testJSONDescribeLayerCharset() throws Exception {
+        String layer = MockData.FORESTS.getPrefix() + ":" + MockData.FORESTS.getLocalPart();
+        String request = "wms?version=1.1.1" + "&request=DescribeLayer" + "&layers=" + layer
+                + "&query_layers=" + layer + "&width=20&height=20" + "&outputFormat="
+                + JSONType.json;
+
+        MockHttpServletResponse result = getAsServletResponse(request,"");
+        assertTrue("UTF-8".equals(result.getCharacterEncoding()));
+
+    }
+    
 }

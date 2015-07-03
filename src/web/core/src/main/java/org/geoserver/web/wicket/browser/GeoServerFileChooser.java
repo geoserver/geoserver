@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -12,6 +13,7 @@ import java.util.Collections;
 
 import javax.swing.filechooser.FileSystemView;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.markup.html.form.DropDownChoice;
@@ -20,8 +22,8 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.web.wicket.ParamResourceModel;
-import org.vfny.geoserver.global.GeoserverDataDirectory;
 
 @SuppressWarnings("serial")
 public class GeoServerFileChooser extends Panel {
@@ -78,8 +80,10 @@ public class GeoServerFileChooser extends Panel {
         Collections.sort(roots);
         
         // TODO: find a better way to deal with the data dir
-        File dataDirectory = GeoserverDataDirectory.getGeoserverDataDirectory();
-        roots.add(0, dataDirectory);
+        GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
+        File dataDirectory = loader.getBaseDirectory();
+        
+        roots.add(0, dataDirectory );
         
         // add the home directory as well if it was possible to determine it at all
         if(!hideFileSystem && USER_HOME != null) {
@@ -91,7 +95,7 @@ public class GeoServerFileChooser extends Panel {
         
         // first check if the file is a relative reference into the data dir
         if(selection != null) {
-            File relativeToDataDir = GeoserverDataDirectory.findDataFile(selection.getPath()); 
+            File relativeToDataDir = loader.url(selection.getPath());
             if(relativeToDataDir != null) {
                 selection = relativeToDataDir;
             }
@@ -258,17 +262,25 @@ public class GeoServerFileChooser extends Panel {
 			
 			if(f == USER_HOME) {
 			    return new ParamResourceModel("userHome", GeoServerFileChooser.this).getString();
-			} else if(f.equals(GeoserverDataDirectory.getGeoserverDataDirectory())) {
-			    return new ParamResourceModel("dataDirectory", GeoServerFileChooser.this).getString();
+			} else {
+			    GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
+			    
+			    if(f.equals(loader.getBaseDirectory())) {
+			        return new ParamResourceModel("dataDirectory", GeoServerFileChooser.this).getString();
+			    }
 			}
 			
 			try {
-			    return FileSystemView.getFileSystemView().getSystemDisplayName(f);
+			    final String displayName= FileSystemView.getFileSystemView().getSystemDisplayName(f);
+			    if(displayName!=null&& displayName.length()>0){
+			        return displayName;
+			    }
+			    return FilenameUtils.getPrefix(f.getAbsolutePath());
 			} catch(Exception e) {
 			    // on windows we can get the occasional NPE due to 
 			    // http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6973685
-			    return f.getName();
 			}
+                        return f.getName();
 		}
 
 		public String getIdValue(Object o, int count) {

@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2015 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2015 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -29,6 +30,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
@@ -39,7 +41,10 @@ import java.util.zip.ZipFile;
 import javax.xml.transform.stream.StreamSource;
 
 import org.apache.commons.io.FilenameUtils;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geotools.data.DataUtilities;
+import org.restlet.data.Method;
+import org.restlet.data.Request;
 
 /**
  * Assorted IO related utilities
@@ -397,6 +402,54 @@ public class IOUtils extends org.apache.commons.io.IOUtils {
 			throws IOException {
 		copyFile(sourceFile, destinationFile, DEFAULT_SIZE);
 	}
+
+    /**
+     * Copies the content of the source channel onto the destination file.
+     *
+     * @param bufferSize size of the temp buffer to use for this copy.
+     * @param source the source {@link ReadableByteChannel}.
+     * @param destinationFile the {@link File} to copy to.
+     * @param initialWritePosition position of destination file to start appends source bytes.
+     * @return total bytes written
+     * @throws IOException in case something bad happens.
+     */
+    public static Long copyToFileChannel(int bufferSize, ReadableByteChannel source,
+            FileChannel destination, Long initialWritePosition) throws IOException {
+        Long writedByte = 0L;
+        inputNotNull(source, destination);
+        if (!source.isOpen() || !destination.isOpen())
+            throw new IllegalStateException("Source and destination channels must be open.");
+
+        final java.nio.ByteBuffer buffer = java.nio.ByteBuffer.allocateDirect(bufferSize);
+        FileLock lock = null;
+        try {
+            lock = destination.lock();
+
+            // Move destination to position
+            destination.position(initialWritePosition);
+
+            while (source.read(buffer) != -1) {
+                // prepare the buffer for draining
+                buffer.flip();
+                // write to destination
+                while (buffer.hasRemaining())
+                    writedByte = writedByte + destination.write(buffer);
+                // clear
+                buffer.clear();
+            }
+        } finally {
+            if (lock != null) {
+                try {
+                    lock.release();
+                } catch (Throwable t) {
+                    if (LOGGER.isLoggable(Level.INFO))
+                        LOGGER.log(Level.INFO, t.getLocalizedMessage(), t);
+                }
+            }
+        }
+        return writedByte;
+    }
+
 	
 	/**
 	 * Copy the input file onto the output file using the specified buffer size.
@@ -528,23 +581,6 @@ public class IOUtils extends org.apache.commons.io.IOUtils {
 			}
 		}
 		return channel;
-	}
-
-	/**
-	 * Get an output <code>FileChannel</code> for the provided
-	 * <code>File</code>
-	 * 
-	 * @param file
-	 *            <code>File</code> for which we need to get an output
-	 *            <code>FileChannel</code>
-	 * @return a <code>FileChannel</code>
-	 * @throws IOException in case something bad happens.
-	 */
-	public static FileChannel getOuputChannel(File file)
-			throws IOException {
-		inputNotNull(file);
-		return new RandomAccessFile(file, "rw").getChannel();
-	
 	}
 
 	/**
@@ -718,17 +754,38 @@ public class IOUtils extends org.apache.commons.io.IOUtils {
 	    }
 	}
 
+	
+	       /**
+         * Inflate the provided {@link ZipFile} in the provided output directory.
+         * 
+         * @param archive the {@link ZipFile} to inflate.
+         * @param outputDirectory the directory where to inflate the archive.
+         * @throws IOException in case something bad happens.
+         * @throws FileNotFoundException in case something bad happens.
+         */
+        public static void inflate(ZipFile archive, File outputDirectory, String fileName) throws IOException,
+                        FileNotFoundException {
+            inflate(archive, outputDirectory, fileName, null, null, null, null, false);
+        }
+
 	/**
 	 * Inflate the provided {@link ZipFile} in the provided output directory.
 	 * 
 	 * @param archive the {@link ZipFile} to inflate.
 	 * @param outputDirectory the directory where to inflate the archive.
+	 * @param fileName name of the file if present.
+	 * @param request HTTP request sent.
+	 * @param external 
+	 * @param files empty list of the extracted files.
 	 * @throws IOException in case something bad happens.
 	 * @throws FileNotFoundException in case something bad happens.
 	 */
-	public static void inflate(ZipFile archive, File outputDirectory, String fileName) throws IOException,
-			FileNotFoundException {
+	public static void inflate(ZipFile archive, File outputDirectory, String fileName,
+	        String workspace, String store, Request request, List<File> files, boolean external) throws IOException, FileNotFoundException {
 
+	        // Boolean checking if the request is a POST and if the files must be saved into a List
+	        boolean saveFile = files != null && request!=null && request.getMethod().equals(Method.POST);
+	    
 		final Enumeration<? extends ZipEntry> entries = archive.entries();
 		try {
 			while (entries.hasMoreElements()) {
@@ -738,11 +795,25 @@ public class IOUtils extends org.apache.commons.io.IOUtils {
 		        	final String name = entry.getName();
 		        	final String ext = FilenameUtils.getExtension(name);
 		        	final InputStream in = new BufferedInputStream(archive.getInputStream(entry));
-		        	final File outFile = new File(outputDirectory, fileName!=null?new StringBuilder(fileName).append(".").append(ext).toString():name);
+		        	// Builder associated to the path for the item
+		        	StringBuilder itemPath = fileName!=null?new StringBuilder(fileName).append(".").append(ext):new StringBuilder(name);
+		        	// String associated to the filename
+		        	String initialFileName = fileName!=null? fileName + "." + ext: FilenameUtils.getName(name);
+		        	//If the RESTUploadPathMapper are present then the output file position is changed
+		        	if(!external){
+		        	    Map<String, String> storeParams = new HashMap<String, String>();
+		        	    RESTUtils.remapping(workspace, store, itemPath, initialFileName, storeParams);
+		        	}
+		        	
+		        	final File outFile = new File(outputDirectory, itemPath.toString());
+		        	outFile.getParentFile().mkdirs();
 		        	final OutputStream out = new BufferedOutputStream(new FileOutputStream(outFile));
 		
 		            IOUtils.copyStream(in, out, true, true);
-	
+		            // If the file must be listed, then the file is added to the list
+		            if(saveFile){
+		                files.add(outFile);
+		            }
 		        }
 		        else {
 		            //if the entry is a directory attempt to make it

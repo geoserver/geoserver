@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -24,6 +25,7 @@ import net.opengis.gml.VectorType;
 import net.opengis.wcs10.AxisSubsetType;
 import net.opengis.wcs10.DomainSubsetType;
 import net.opengis.wcs10.GetCoverageType;
+import net.opengis.wcs10.InterpolationMethodType;
 import net.opengis.wcs10.IntervalType;
 import net.opengis.wcs10.OutputType;
 import net.opengis.wcs10.RangeSubsetType;
@@ -101,6 +103,11 @@ public class Wcs10GetCoverageRequestReader extends EMFKvpRequestReader {
                     WcsExceptionCode.InvalidParameterValue, "version");
         }
         getCoverage.setVersion(Wcs10GetCoverageRequestReader.VERSION);
+
+        // build interpolation
+        if (!getCoverage.isSetInterpolationMethod()) {
+            getCoverage.setInterpolationMethod(parseInterpolation(kvp));
+        }
 
         // build the domain subset
         getCoverage.setDomainSubset(parseDomainSubset(kvp));
@@ -489,4 +496,16 @@ public class Wcs10GetCoverageRequestReader extends EMFKvpRequestReader {
 
     }
 
+    /**
+     * Parses the interpolation parameter from the kvp. If nothing is present the default nearest neighbor is set.
+     * 
+     * @param kvp
+     * @return
+     */
+    private InterpolationMethodType parseInterpolation(Map kvp) {
+        if (kvp.containsKey("interpolation")) {
+            return (InterpolationMethodType) kvp.get("interpolation");
+        }
+        return InterpolationMethodType.NEAREST_NEIGHBOR_LITERAL;
+    }
 }

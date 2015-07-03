@@ -17,6 +17,7 @@ import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.WFSGetFeatureOutputFormat;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
+import org.geoserver.wfs.request.GetFeatureRequest;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.store.ReprojectingFeatureCollection;
 import org.geotools.feature.FeatureCollection;
@@ -35,7 +36,9 @@ public class WFSKMLOutputFormat extends WFSGetFeatureOutputFormat {
     private KMLEncoder encoder;
 
     public WFSKMLOutputFormat(KMLEncoder encoder, GeoServer gs) {
-        super(gs, new HashSet(Arrays.asList(new String[] { "KML", KMLMapOutputFormat.MIME_TYPE})));
+        super(gs, new HashSet(Arrays.asList(new String[] { "KML", KMLMapOutputFormat.MIME_TYPE,
+                // added this one to allow people copying and pasting the format name
+                KMLMapOutputFormat.MIME_TYPE.replace('+', ' ')})));
         this.encoder = encoder;
     }
     
@@ -93,7 +96,7 @@ public class WFSKMLOutputFormat extends WFSGetFeatureOutputFormat {
         }
         
         // write out the output
-        encoder.encode(kml, output);
+        encoder.encode(kml, output, context);
     }
 
     private List<SimpleFeatureCollection> getFeatureCollections(FeatureCollectionResponse featureCollection) {
@@ -116,6 +119,18 @@ public class WFSKMLOutputFormat extends WFSGetFeatureOutputFormat {
         }
         
         return result; 
+    }
+    
+    @Override
+    public String getAttachmentFileName(Object value, Operation operation) {
+        GetFeatureRequest request = GetFeatureRequest.adapt(operation.getParameters()[0]);
+        String outputFileName = request.getQueries().get(0).getTypeNames().get(0).getLocalPart();
+        return outputFileName + ".kml";
+    }
+    
+    @Override
+    public String getCapabilitiesElementName() {
+        return "KML";
     }
 
     /**

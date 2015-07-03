@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE web-app PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN" "http://java.sun.com/dtd/web-app_2_3.dtd">
+<web-app>
+    <display-name>GeoServer</display-name>
+  
+      <context-param>
+    <param-name>serviceStrategy</param-name>
+    <!-- Meaning of the different values :
+         
+         PARTIAL-BUFFER2
+         - Partially buffers the first xKb to disk. Once that has buffered, the the 
+           result is streamed to the user. This will allow for most errors to be caught
+           early. 
+           
+         BUFFER
+         - stores the entire response in memory first, before sending it off to
+           the user (may run out of memory)
+
+         SPEED
+         - outputs directly to the response (and cannot recover in the case of an
+           error)
+
+         FILE
+         - outputs to the local filesystem first, before sending it off to the user
+      -->
+    <param-value>PARTIAL-BUFFER2</param-value>
+  </context-param>
+  
+  <!-- If true, enable versioning datastore as well -->
+  <context-param>
+    <param-name>enableVersioning</param-name>
+    <param-value>true</param-value>
+  </context-param>
+  
+  <context-param>
+    <!-- see comments on the PARTIAL-BUFFER strategy -->
+    <!-- this sets the size of the buffer.  default is "50" = 50kb -->
+
+    <param-name>PARTIAL_BUFFER_STRATEGY_SIZE</param-name>
+    <param-value>50</param-value>
+  </context-param>
+  
+    <!-- 
+    <context-param>
+      <param-name>PROXY_BASE_URL</param-name>
+      <param-value>http://82.58.146.45/geoserver</param-value>
+    </context-param>
+     -->
+   
+     <!--
+    <context-param>
+       <param-name>GEOSERVER_DATA_DIR</param-name>
+        <param-value>C:\eclipse\workspace\geoserver_trunk\cite\confCiteWFSPostGIS</param-value>
+    </context-param> 
+   -->
+    
+    <!-- pick up all spring application contexts -->
+    <context-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>classpath*:/applicationContext.xml classpath*:/applicationSecurityContext.xml</param-value>
+    </context-param>
+    
+    <!-- This needs to be the first filter -->
+    <filter>
+        <filter-name>hazelcast</filter-name>
+        <filter-class>org.geoserver.cluster.hazelcast.web.HzSessionShareFilter</filter-class>
+    </filter>
+
+    <filter>
+     <filter-name>SessionDebugger</filter-name>
+     <filter-class>org.geoserver.filters.SessionDebugFilter</filter-class>
+    </filter>
+
+    <filter>
+    <filter-name>filterChainProxy</filter-name>     
+     <filter-class> org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+     
+<!-- <filter-name>Spring Security Filter Chain Proxy</filter-name> 
+    <init-param>
+       <param-name>targetClass</param-name>
+       <param-value>org.springframework.security.util.FilterChainProxy</param-value>
+     </init-param>
+-->
+    </filter>
+    
+   <filter>
+    <filter-name>Set Character Encoding</filter-name>
+    <filter-class>org.vfny.geoserver.filters.SetCharacterEncodingFilter</filter-class>
+    <init-param>
+      <param-name>encoding</param-name>
+      <param-value>UTF-8</param-value>
+    </init-param>
+  </filter>
+
+   <filter>
+     <filter-name>GZIP Compression Filter</filter-name>
+     <filter-class>org.geoserver.filters.GZIPFilter</filter-class>
+     <init-param>
+         <!-- The compressed-types parameter is a comma-separated list of regular expressions.
+              If a mime type matches any of the regular expressions then it will be compressed.
+              -->
+         <param-name>compressed-types</param-name>
+         <param-value>text/.*,.*xml.*,application/json,application/x-javascript</param-value>
+     </init-param>
+   </filter>
+
+   <filter>
+     <filter-name>Request Logging Filter</filter-name>
+     <filter-class>org.geoserver.filters.LoggingFilter</filter-class>
+     <init-param>
+         <!-- The 'enabled' parameter is a boolean value, "true" (case-insensitive) for true or
+              any other value for false.  If enabled, then the logging will be performed;
+              otherwise the logging filter will have no effect.  If not specified, this 
+              parameter defaults to false.
+              -->
+         <param-name>enabled</param-name>
+         <param-value>false</param-value>
+     </init-param>
+     <init-param>
+     <!-- The 'log-request-bodies' parameter is a boolean value, "true" (case-insensitive) for
+          true or any other value for false.  If enabled, then the logging will include the body
+          of POST and PUT requests.  If not specified, this parameter defaults to false.
+          Note that this may noticeably degrade responsiveness of your geoserver since it will
+          not begin to process requests until the entire request body has been received by the 
+          server.
+          -->
+     <param-name>log-request-bodies</param-name>
+     <param-value>false</param-value>
+     </init-param>
+   </filter>
+   
+   <filter>
+     <filter-name>Advanced Dispatch Filter</filter-name>
+     <filter-class>org.geoserver.platform.AdvancedDispatchFilter</filter-class>
+     <!-- 
+     This filter allows for a single mapping to the spring dispatcher. However using /* as a mapping
+     in a servlet mapping causes the servlet path to be "/" of the request. This causes problems with
+     library like wicket and restlet. So this filter fakes the servlet path by assuming the first 
+     component of the path is the mapped path. 
+     -->
+   </filter>
+   
+   <filter>
+    <filter-name>Spring Delegating Filter</filter-name>
+    <filter-class>org.geoserver.filters.SpringDelegatingFilter</filter-class>
+    <!--
+    This filter allows for filters to be loaded via spring rather than 
+    registered here in web.xml.  One thing to note is that for such filters 
+    init() is not called. INstead any initialization is performed via spring 
+    ioc.
+    -->
+   </filter>
+   
+   <filter>
+     <filter-name>Thread locals cleanup filter</filter-name>
+     <filter-class>org.geoserver.filters.ThreadLocalsCleanupFilter</filter-class>
+     <!-- 
+     This filter cleans up thread locals Geotools is setting up for concurrency and performance
+     reasons 
+     -->
+   </filter>
+
+    <filter-mapping>
+      <filter-name>hazelcast</filter-name>
+      <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <filter-mapping>
+      <filter-name>SessionDebugger</filter-name>
+      <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <filter-mapping>
+      <filter-name>GZIP Compression Filter</filter-name>
+      <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    
+    <filter-mapping>
+      <filter-name>Request Logging Filter</filter-name>
+      <url-pattern>/*</url-pattern>
+    </filter-mapping>
+   
+    <!-- 
+      If you want to use your security system comment out this one too
+    -->
+    <filter-mapping>
+      <filter-name>filterChainProxy</filter-name>
+      <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    
+      <filter-mapping>
+      <filter-name>Set Character Encoding</filter-name>
+      <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    
+    <filter-mapping>
+      <filter-name>Advanced Dispatch Filter</filter-name>
+      <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <filter-mapping>
+      <filter-name>Spring Delegating Filter</filter-name>
+      <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    
+    <filter-mapping>
+      <filter-name>Thread locals cleanup filter</filter-name>
+      <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <!-- hazelcast session listener -->
+    <listener>
+      <listener-class>org.geoserver.cluster.hazelcast.web.HzSessionShareListener</listener-class>
+    </listener>
+    
+    <!-- general initializer, should be first thing to execute -->
+    <listener>
+      <listener-class>org.geoserver.GeoserverInitStartupListener</listener-class>
+    </listener>
+    
+    <!-- logging initializer, should execute before spring context startup -->
+    <listener>
+      <listener-class>org.geoserver.logging.LoggingStartupContextListener</listener-class>
+    </listener>
+  
+    <!--  spring context loader -->
+    <listener>
+      <listener-class>org.geoserver.platform.GeoServerContextLoaderListener</listener-class>
+    </listener>
+    
+    <!--  http session listener proxy -->
+    <listener>
+      <listener-class>org.geoserver.platform.GeoServerHttpSessionListenerProxy</listener-class>
+    </listener>
+    
+    <!-- spring dispatcher servlet, dispatches all incoming requests -->
+    <servlet>
+      <servlet-name>dispatcher</servlet-name>
+      <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+    </servlet>
+    
+    <!-- single mapping to spring, this only works properly if the advanced dispatch filter is 
+         active -->
+    <servlet-mapping>
+        <servlet-name>dispatcher</servlet-name>
+        <url-pattern>/*</url-pattern>
+    </servlet-mapping>
+    
+    <mime-mapping>
+      <extension>xsl</extension>
+      <mime-type>text/xml</mime-type>
+    </mime-mapping>
+    <mime-mapping>
+      <extension>sld</extension>
+      <mime-type>text/xml</mime-type>
+    </mime-mapping>
+  
+    <welcome-file-list>
+        <welcome-file>index.html</welcome-file>
+    </welcome-file-list>
+    
+</web-app>

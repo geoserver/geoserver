@@ -1,11 +1,16 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.web;
 
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +24,7 @@ import org.apache.wicket.Page;
 import org.apache.wicket.RequestCycle;
 import org.apache.wicket.ResourceReference;
 import org.apache.wicket.ajax.IAjaxIndicatorAware;
+import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.behavior.HeaderContributor;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.WebPage;
@@ -29,12 +35,16 @@ import org.apache.wicket.markup.html.link.ExternalLink;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
-import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.protocol.http.WebResponse;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.config.GeoServer;
+import org.geoserver.ows.util.CaseInsensitiveMap;
+import org.geoserver.ows.util.KvpUtils;
+import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.web.spring.security.GeoServerSession;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geotools.util.logging.Logging;
@@ -61,7 +71,9 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
     protected static final String HEADER_PANEL = "headerPanel";
 
     protected static final Logger LOGGER = Logging.getLogger(GeoServerBasePage.class);
-
+    
+    protected static volatile GeoServerNodeInfo NODE_INFO;
+    
     /**
      * feedback panel for subclasses to report errors and information.
      */
@@ -213,9 +225,35 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
                 return getDescription();
             }
         }));
+
+        // node id handling
+        WebMarkupContainer container = new WebMarkupContainer("nodeIdContainer");
+        add(container);
+        String id = getNodeInfo().getId();
+        Label label = new Label("nodeId", id);
+        container.add(label);
+        NODE_INFO.customize(container);     
+        if(id == null) {
+            container.setVisible(false);
+        }
     }
-	
-	protected String getTitle() {
+
+    private GeoServerNodeInfo getNodeInfo() {
+        // we don't synch on this one, worst it can happen, we create
+        // two instances of DefaultGeoServerNodeInfo, and one wil be gc-ed soon
+        if (NODE_INFO == null) {
+            // see if someone plugged a custom node info bean, otherwise use the default one
+            GeoServerNodeInfo info = GeoServerExtensions.bean(GeoServerNodeInfo.class);
+            if (info == null) {
+                info = new DefaultGeoServerNodeInfo();
+            }
+            NODE_INFO = info;
+        }
+
+        return NODE_INFO;
+    }
+
+    protected String getTitle() {
         return new ParamResourceModel("title", this).getString();
     }
 	

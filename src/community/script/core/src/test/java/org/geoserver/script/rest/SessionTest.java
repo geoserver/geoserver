@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -7,11 +8,12 @@ package org.geoserver.script.rest;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
+import org.geoserver.script.ScriptIntTestSupport;
 import org.geoserver.test.GeoServerTestSupport;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
-public class SessionTest extends GeoServerTestSupport {
+public class SessionTest extends ScriptIntTestSupport {
 
     public void testPost() throws Exception {
         MockHttpServletResponse response = postAsServletResponse("/script/sessions/js", "");

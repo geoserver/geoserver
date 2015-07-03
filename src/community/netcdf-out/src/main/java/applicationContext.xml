@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+ Copyright (C) 2014 - Open Source Geospatial Foundation. All rights reserved.
+ This code is licensed under the GPL 2.0 license, available at the root
+ application directory.
+ -->
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+    <bean id="netcdfCoverageResponseDelegate" class="org.geoserver.wcs.responses.NetCDFCoverageResponseDelegate">
+        <constructor-arg ref="geoServer"/>
+    </bean>
+    <bean id="netcdfSettingsPanel" class="org.geoserver.web.data.settings.SettingsPluginPanelInfo">
+        <description>This bean adds the necessary form fields to NetCDF Output Settings</description>
+        <property name="id" value="netcdfSettingsPanel"/>
+        <property name="titleKey" value="netcdfOutSettings"/>
+        <property name="componentClass" value="org.geoserver.web.netcdf.NetCDFOutSettingsPanel"/>
+        <property name="priority" value="100"/>
+    </bean>
+
+    <bean id="netcdfOutInitializer" class="org.geoserver.wcs.responses.NetCDFOutInitializer"/>
+
+    <bean id="netcdfOutXStreamInitializer" class="org.geoserver.web.netcdf.NetCDFContainerXStreamInitializer" />
+
+    <bean id="globalAttributeXStreamInitializer" class="org.geoserver.web.netcdf.GlobalAttributeXStreamInitializer" />
+    
+    <bean id="netcdfParser" class="org.geoserver.web.netcdf.layer.NetCDFParserBean" />
+    
+    <bean id="netcdfOutEditTabPanelInfo" class="org.geoserver.web.netcdf.layer.NetCDFOutEditTabPanelInfo">
+        <property name="id" value="netcdfOutEditTabPanelInfo"/>
+        <property name="titleKey" value="NetCDFOutTabPanel.title"/>
+        <property name="descriptionKey" value="NetCDFOutTabPanel.shortDescription"/>
+        <property name="componentClass" value="org.geoserver.web.netcdf.layer.NetCDFOutTabPanel"/>
+        <property name="order" value="400"/>
+    </bean>
+</beans>

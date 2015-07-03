@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -19,5 +20,32 @@ public class GeoServerBasePageTest extends GeoServerWicketTestSupport {
     public void testLogoutFormShowsWhenLoggedIn() throws Exception {
         login();
         tester.startPage(GeoServerHomePage.class);
+    }
+    
+    @Test
+    public void testDefaultNodeInfoLoggedOut() throws Exception {
+        logout();
+        System.setProperty(DefaultGeoServerNodeInfo.GEOSERVER_NODE_OPTS, "id=test");
+        DefaultGeoServerNodeInfo.initializeFromEnviroment();
+
+        tester.startPage(GeoServerHomePage.class);
+        tester.assertInvisible("nodeIdContainer");
+    }
+
+    @Test
+    public void testDefaultNodeInfoLoggedIn() throws Exception {
+        login();
+        System.setProperty(DefaultGeoServerNodeInfo.GEOSERVER_NODE_OPTS,
+                "id:test;background:red;color:black");
+        DefaultGeoServerNodeInfo.initializeFromEnviroment();
+
+        tester.startPage(GeoServerHomePage.class);
+        tester.assertVisible("nodeIdContainer");
+        tester.assertModelValue("nodeIdContainer:nodeId", "test");
+        // this does not work, damn wicket tester...
+        // TagTester tags = tester.getTagByWicketId("nodeIdContainer");
+        // String style = tags.getAttribute("style");
+        // assertTrue(style.contains("background:red;"));
+        // assertTrue(style.contains("color:black;"));
     }
 }

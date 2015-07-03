@@ -1,9 +1,11 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.web.data.store;
 
+import java.util.List;
 import java.util.logging.Level;
 
 import javax.management.RuntimeErrorException;
@@ -57,6 +59,7 @@ public class CoverageStoreNewPage extends AbstractCoverageStorePage {
         // of a failure!... strange, why a save can't fail?
         // Still, be cautious and wrap it in a try/catch block so the page does not blow up
         try {
+            catalog.validate(savedStore, false).throwIfInvalid();
             catalog.save(savedStore);
         } catch (RuntimeException e) {
             LOGGER.log(Level.INFO, "Adding the store for " + info.getURL(), e);
@@ -64,6 +67,11 @@ public class CoverageStoreNewPage extends AbstractCoverageStorePage {
                     "The coverage store could not be saved. Failure message: " + e.getMessage());
         }
 
+        onSuccessfulSave(info, catalog, savedStore);
+    }
+
+    protected void onSuccessfulSave(final CoverageStoreInfo info, final Catalog catalog,
+            CoverageStoreInfo savedStore) {
         // the StoreInfo save succeeded... try to present the list of coverages (well, _the_
         // coverage while the getotools coverage api does not allow for more than one
         NewLayerPage layerChooserPage;

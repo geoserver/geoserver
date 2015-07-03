@@ -1,16 +1,18 @@
 Home
 ====
 
-This guide discusses the GeoServer documentation.  It can be thought of as "meta-documentation" for creating and maintaining the User Manual and Developer Manual.  If you are interested in writing documentation for GeoServer, this guide is for you.
+This guide covers creating and maintaining the User Manual and Developer Manual.  If you are interested in writing documentation for GeoServer, this guide is for you.
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
-   background/
-   contributing/
-   install/
-   workflow/
-   sphinx/
-   style/
-   tutorial/   
+   background
+   quickfix
+   contributing
+   install
+   workflow
+   sphinx
+   style
+   tutorial
 
+.. note:: GeoServer documentation is distributed under `CCbyA 3.0 <http://creativecommons.org/licenses/by/3.0/>`_ by the Open Source Geospatial Foundation (OSGeo). To provide documentation changes to the GeoServer team need some OSGeo paperwork filled in (see `CONTRIBUTING.md <https://github.com/geoserver/geoserver/blob/master/CONTRIBUTING.md>`__ for details.)

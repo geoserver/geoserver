@@ -1,16 +1,15 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.web.wicket;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import junit.framework.TestCase;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.basic.Label;
@@ -145,7 +144,7 @@ public class GeoServerTablePanelTest {
         }
         
         @Override
-        IModel getPropertyTitle(Property<Integer> property) {
+        protected IModel getPropertyTitle(Property<Integer> property) {
             return new Model(property.getName());
         }
         

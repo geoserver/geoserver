@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -38,6 +39,16 @@ public class WMSWorkspaceQualifier extends WorkspaceQualifyingCallback {
             if (layer != null) {
                 request.getRawKvp().put("LAYER", qualifyName(layer, ws));
             }
+
+            String styles = (String) request.getRawKvp().get("STYLES");
+            if (styles != null && !styles.trim().isEmpty()) {
+                request.getRawKvp().put("STYLES", qualifyStyleNamesKVP(styles, ws));
+            }
+
+            String style = (String) request.getRawKvp().get("STYLE");
+            if (style != null && !style.trim().isEmpty()) {
+                request.getRawKvp().put("STYLE", qualifyStyleName(style, ws));
+            }
         }
     }
 
@@ -52,30 +63,58 @@ public class WMSWorkspaceQualifier extends WorkspaceQualifyingCallback {
 
     String qualifyLayerNamesKVP(String layers, WorkspaceInfo ws) {
         List<String> list = KvpUtils.readFlat(layers);
-        qualifyNames(list, ws);
+        qualifyLayerNames(list, ws);
 
+        return toCommaSeparatedList(list);
+    }
+    
+    /**
+     * Overriding the base class behavior as we want to avoid qualifying global layer group names
+     */
+    protected void qualifyLayerNames(List<String> names, WorkspaceInfo ws) {
+        for (int i = 0; i < names.size(); i++) {
+            String baseName = names.get(i);
+            String qualified = qualifyName(baseName, ws);
+            // only qualify if it's not a layer group (and prefer local layers to groups in case of
+            // name clash), but also check for workspace specific layer groups
+            if (catalog.getLayerByName(qualified) != null
+                    || catalog.getLayerGroupByName(baseName) == null) {
+                names.set(i, qualified);
+            } else if (catalog.getLayerGroupByName(qualified) != null) {
+                names.set(i, qualified);
+            }
+        }
+    }
+
+    String qualifyStyleNamesKVP(String styles, WorkspaceInfo ws) {
+        List<String> list = KvpUtils.readFlat(styles);
+        for (int i = 0; i < list.size(); i++) {
+            String name = list.get(i);
+            name = qualifyStyleName(name, ws);
+            list.set(i, name);
+        }
+
+        return toCommaSeparatedList(list);
+    }
+
+    private String qualifyStyleName(String name, WorkspaceInfo ws) {
+        String qualified = qualifyName(name, ws);
+        // does the qualified name exist?
+        if (catalog.getStyleByName(qualified) != null) {
+            return qualified;
+        } else {
+            // use the original name instead
+            return name;
+        }
+    }
+
+    private String toCommaSeparatedList(List<String> list) {
         StringBuffer sb = new StringBuffer();
         for (String s : list) {
             sb.append(s).append(",");
         }
         sb.setLength(sb.length() - 1);
         return sb.toString();
-    }
-    
-    /**
-     * Overriding the base class behavior as we want to avoid qualifying global layer group names
-     */
-    protected void qualifyNames(List<String> names, WorkspaceInfo ws) {
-        for (int i = 0; i < names.size(); i++) {
-            String baseName = names.get(i);
-            String qualified = qualifyName(baseName, ws);
-            // only qualify if it's not a layer group (and prefer local layers to groups in case of
-            // name clash)
-            if (catalog.getLayerByName(qualified) != null
-                    || catalog.getLayerGroupByName(baseName) == null) {
-                names.set(i, qualified);
-            }
-        }
     }
 
 }

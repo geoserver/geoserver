@@ -1,10 +1,12 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.web.data.store;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.logging.Level;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -105,6 +107,7 @@ public class DataAccessNewPage extends AbstractDataAccessPage {
         DataStoreInfo savedStore = catalog.getFactory().createDataStore();
         clone(info, savedStore);
         try {
+            catalog.validate(savedStore, true).throwIfInvalid();
             catalog.add(savedStore);
         } catch (Exception e) {
             LOGGER.log(Level.WARNING, "Error adding data store to catalog", e);

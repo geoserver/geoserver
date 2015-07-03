@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -19,7 +20,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.geoserver.wms.WMSMapContent;
-import org.geotools.renderer.lite.RendererUtilities;
+
+import static org.geoserver.wms.decoration.ScaleLineDecoration.MeasurementSystem.*;
 
 public class ScaleLineDecoration implements MapDecoration {
     /** A logger for this class. */
@@ -52,6 +54,21 @@ public class ScaleLineDecoration implements MapDecoration {
     
     private Boolean transparent = Boolean.FALSE;
     
+	private MeasurementSystem measurementSystem = BOTH;
+
+	static enum MeasurementSystem {
+		METRIC, IMPERIAL, BOTH;
+
+		static MeasurementSystem mapToEnum(String type) throws Exception {
+			switch(type){
+				case "metric": return METRIC;
+				case "imperial": return IMPERIAL;
+				case "both": return BOTH;
+				default: throw new Exception("Wrong input parameter");
+			}
+		}
+	}
+
     public void loadOptions(Map<String, String> options) {
     	if (options.get("fontsize") != null) {
     		try {
@@ -91,12 +108,21 @@ public class ScaleLineDecoration implements MapDecoration {
     			this.LOGGER.log(Level.WARNING, "'transparent' must be a boolean.", e);
     		}
     	}
+
+		if(options.get("measurement-system") != null){
+			try {
+				LOGGER.log(Level.INFO,options.get("measurement-system"));
+				this.measurementSystem = MeasurementSystem.mapToEnum(options.get("measurement-system"));
+			} catch (Exception e) {
+				this.LOGGER.log(Level.WARNING, "'measurement-system' must be one of 'metric', 'imperial' or 'both'.", e);
+        }
+		}
     }
 
     public Dimension findOptimalSize(Graphics2D g2d, WMSMapContent mapContent){
     	FontMetrics metrics = g2d.getFontMetrics(g2d.getFont());
     	return new Dimension(
-            suggestedWidth, 8 + (int)((metrics.getHeight() + metrics.getDescent()) * 2)
+            suggestedWidth, 8 + (metrics.getHeight() + metrics.getDescent()) * 2
         );
     }
     
@@ -129,7 +155,7 @@ public class ScaleLineDecoration implements MapDecoration {
     	// Set the font size.
     	g2d.setFont(oldFont.deriveFont(this.fontSize));
     	
-    	double scaleDenominator = mapContent.getScaleDenominator();
+        double scaleDenominator = mapContent.getScaleDenominator(true);
     	
     	String curMapUnits = "m";
     	
@@ -176,8 +202,9 @@ public class ScaleLineDecoration implements MapDecoration {
     	int leftX = (int)paintArea.getMinX() + ((int)paintArea.getWidth() - Math.max(topPx, bottomPx)) / 2;
     	
     	FontMetrics metrics = g2d.getFontMetrics(g2d.getFont());
-    	int prongHeight = (int)metrics.getHeight() + metrics.getDescent();
+    	int prongHeight = metrics.getHeight() + metrics.getDescent();
     	
+		//Do not antialias scaleline lines
     	g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
 
     	// Creates a rectangle only if is defined, if not is "transparent" like Google Maps
@@ -203,31 +230,53 @@ public class ScaleLineDecoration implements MapDecoration {
 
     	g2d.setStroke(new BasicStroke(2));
     	
-    	// Draw scale lines
-    	g2d.drawLine(leftX, centerY, leftX + topPx, centerY);
-    	g2d.drawLine(leftX, centerY, leftX + bottomPx, centerY);
+		if(measurementSystem == METRIC || measurementSystem == BOTH) {
     	
-    	// Draw prongs
-    	g2d.drawLine(leftX, centerY + prongHeight, leftX, centerY - prongHeight);
-    	g2d.drawLine(leftX + topPx, centerY, leftX + topPx, centerY - prongHeight);
-    	g2d.drawLine(leftX + bottomPx, centerY, leftX + bottomPx, centerY + prongHeight);
-    	
-    	// Draw text
-    	String topText = topRounded + " " + topUnits;
-    	String bottomText = bottomRounded + " " + bottomUnits;
+			// Left vertical top bar
+			g2d.drawLine(leftX, centerY, leftX, centerY - prongHeight);
 
-    	g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, oldAntialias);
+			// Right vertical top bar
+			g2d.drawLine(leftX + topPx, centerY, leftX + topPx, centerY - prongHeight);
 
-        g2d.drawString(topText, 
-            leftX + (int)((topPx - metrics.stringWidth(topText)) / 2), 
-            centerY - prongHeight + metrics.getAscent()
-        );
+			// Draw horizontal line for metric
+			g2d.drawLine(leftX, centerY, leftX + topPx, centerY);
+
+			//Antialias text if enabled
+			g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, oldAntialias);
+			
+			// Draw text metric
+			String topText = topRounded + " " + topUnits;
+			g2d.drawString(topText,
+					leftX + (int)((topPx - metrics.stringWidth(topText)) / 2),
+					centerY - prongHeight + metrics.getAscent()
+			);
+		}
     	
-        g2d.drawString(bottomText, 
-            leftX + (int)((bottomPx - metrics.stringWidth(bottomText)) / 2), 
-            centerY + metrics.getHeight()
-        );
-        
+		if(measurementSystem == IMPERIAL || measurementSystem == BOTH){
+
+			//Do not antialias scaleline lines
+			g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+			
+			//Left vertical bottom bar
+			g2d.drawLine(leftX, centerY + prongHeight, leftX, centerY);
+
+			// Right vertical bottom bar
+			g2d.drawLine(leftX + bottomPx, centerY, leftX + bottomPx, centerY + prongHeight);
+
+			// Draw horizontal for imperial
+			g2d.drawLine(leftX, centerY, leftX + bottomPx, centerY);
+
+			//Antialias text if enabled
+			g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, oldAntialias);
+			
+			// Draw text imperial
+			String bottomText = bottomRounded + " " + bottomUnits;
+			g2d.drawString(bottomText,
+					leftX + (int) ((bottomPx - metrics.stringWidth(bottomText)) / 2),
+					centerY + metrics.getHeight()
+			);
+		}
+		
     	g2d.setColor(oldColor);	
     	g2d.setStroke(oldStroke);
     	g2d.setFont(oldFont);

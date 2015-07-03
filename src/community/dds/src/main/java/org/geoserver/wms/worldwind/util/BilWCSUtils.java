@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014-2015 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -12,11 +13,7 @@ import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.coverage.processing.CoverageProcessor;
 import org.geotools.coverage.processing.operation.Crop;
-import org.geotools.coverage.processing.operation.FilteredSubsample;
-import org.geotools.coverage.processing.operation.Interpolate;
 import org.geotools.coverage.processing.operation.Resample;
-import org.geotools.coverage.processing.operation.Scale;
-import org.geotools.coverage.processing.operation.SelectSampleDimension;
 import org.geotools.factory.Hints;
 import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.referencing.CRS;
@@ -40,34 +37,13 @@ public class BilWCSUtils extends WCSUtils {
     
     public final static Hints LENIENT_HINT = new Hints(Hints.LENIENT_DATUM_SHIFT, Boolean.TRUE);
 
-    private final static SelectSampleDimension bandSelectFactory = new SelectSampleDimension();
-    private final static Crop cropFactory = new Crop();
-    private final static Interpolate interpolateFactory = new Interpolate();
-    private final static Scale scaleFactory = new Scale();
-    private final static FilteredSubsample filteredSubsampleFactory = new FilteredSubsample();
-    private final static Resample resampleFactory = new Resample();
+    // ///////////////////////////////////////////////////////////////////
+    //
+    // Static Processors
+    //
+    // ///////////////////////////////////////////////////////////////////
+    private static final CoverageProcessor processor = CoverageProcessor.getInstance();
 
-    static {
-        // ///////////////////////////////////////////////////////////////////
-        //
-        // Static Processors
-        //
-        // ///////////////////////////////////////////////////////////////////
-        final CoverageProcessor processor = new CoverageProcessor();
-        bandSelectParams = processor.getOperation("SelectSampleDimension").getParameters();
-        cropParams = processor.getOperation("CoverageCrop").getParameters();
-        interpolateParams = processor.getOperation("Interpolate").getParameters();
-        scaleParams = processor.getOperation("Scale").getParameters();
-        resampleParams = processor.getOperation("Resample").getParameters();
-        filteredSubsampleParams = processor.getOperation("FilteredSubsample").getParameters();
-    }
-
-    private final static ParameterValueGroup bandSelectParams;
-    private final static ParameterValueGroup cropParams;
-    private final static ParameterValueGroup interpolateParams;
-    private final static ParameterValueGroup resampleParams;
-    private final static ParameterValueGroup scaleParams;
-    private final static ParameterValueGroup filteredSubsampleParams;
     private final static Hints hints = new Hints(new HashMap(5));
 
     static {
@@ -105,13 +81,13 @@ public class BilWCSUtils extends WCSUtils {
              * Operations.DEFAULT.resample( coverage, targetCRS, null,
              * Interpolation.getInstance(Interpolation.INTERP_NEAREST))
              */
-            final ParameterValueGroup param = (ParameterValueGroup) resampleParams.clone();
+            final ParameterValueGroup param = (ParameterValueGroup) processor.getOperation("Resample").getParameters();
             param.parameter("Source").setValue(coverage);
             param.parameter("CoordinateReferenceSystem").setValue(targetCRS);
             param.parameter("GridGeometry").setValue(null);
             param.parameter("InterpolationType").setValue(interpolation);
 
-            coverage = (GridCoverage2D) resampleFactory.doOperation(param, hints);
+            coverage = (GridCoverage2D) ((Resample)processor.getOperation("Resample")).doOperation(param, hints);
         }
 
         return coverage;
@@ -153,14 +129,14 @@ public class BilWCSUtils extends WCSUtils {
          * Operations.DEFAULT.resample( coverage, sourceCRS, scaledGridGeometry,
          * Interpolation.getInstance(Interpolation.INTERP_NEAREST));
          */
-        final ParameterValueGroup param = (ParameterValueGroup) resampleParams.clone();
+        final ParameterValueGroup param = (ParameterValueGroup) processor.getOperation("Resample").getParameters();
         param.parameter("Source").setValue(coverage);
         param.parameter("CoordinateReferenceSystem").setValue(sourceCRS);
         param.parameter("GridGeometry").setValue(scaledGridGeometry);
         param.parameter("InterpolationType")
              .setValue(Interpolation.getInstance(Interpolation.INTERP_NEAREST));
 
-        final GridCoverage2D scaledGridCoverage = (GridCoverage2D) resampleFactory.doOperation(param,
+        final GridCoverage2D scaledGridCoverage = (GridCoverage2D) ((Resample)processor.getOperation("Resample")).doOperation(param,
                 hints);
 
         return scaledGridCoverage;
@@ -210,12 +186,12 @@ public class BilWCSUtils extends WCSUtils {
             // intersectionEnvelope, gridCoverage);
 
             /* Operations.DEFAULT.crop(coverage, intersectionEnvelope) */
-            final ParameterValueGroup param = (ParameterValueGroup) cropParams.clone();
+            final ParameterValueGroup param = (ParameterValueGroup) processor.getOperation("CoverageCrop").getParameters();
             param.parameter("Source").setValue(coverage);
             param.parameter("Envelope").setValue(intersectionEnvelope);
             //param.parameter("ConserveEnvelope").setValue(conserveEnvelope);
 
-            croppedGridCoverage = (GridCoverage2D) cropFactory.doOperation(param, hints);
+            croppedGridCoverage = (GridCoverage2D) ((Crop)processor.getOperation("CoverageCrop")).doOperation(param, hints);
         } else {
             croppedGridCoverage = (GridCoverage2D) coverage;
         }

@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014-2015 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -9,9 +10,8 @@ import java.io.Serializable;
 import javax.media.jai.JAI;
 import javax.media.jai.TileCache;
 
+import org.geoserver.config.JAIEXTInfo;
 import org.geoserver.config.JAIInfo;
-
-import com.sun.media.jai.util.SunTileCache;
 
 public class JAIInfoImpl implements Serializable, JAIInfo {
 
@@ -47,6 +47,13 @@ public class JAIInfoImpl implements Serializable, JAIInfo {
     
     public static final boolean DEFAULT_MosaicNative = false;
     boolean allowNativeMosaic = DEFAULT_MosaicNative;
+    
+    public static final boolean DEFAULT_WarpNative = false;
+    boolean allowNativeWarp = DEFAULT_WarpNative;
+    
+    PngEncoderType pngEncoderType = PngEncoderType.PNGJ;
+    
+    JAIEXTInfo jaiext = new JAIEXTInfoImpl();
 
     /**
      * @uml.property name="allowInterpolation"
@@ -186,12 +193,21 @@ public class JAIInfoImpl implements Serializable, JAIInfo {
         this.allowNativeMosaic = allowNativeMosaic;
     }
     
+    public boolean isAllowNativeWarp() {
+        return allowNativeWarp;
+    }
+
+    public void setAllowNativeWarp(boolean allowNativeWarp) {
+        this.allowNativeWarp = allowNativeWarp;
+    }
+    
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
         result = prime * result + (allowInterpolation ? 1231 : 1237);
         result = prime * result + (allowNativeMosaic ? 1231 : 1237);
+        result = prime * result + (allowNativeWarp ? 1231 : 1237);
         result = prime * result + (imageIOCache ? 1231 : 1237);
         result = prime * result + (jpegAcceleration ? 1231 : 1237);
         long temp;
@@ -203,6 +219,8 @@ public class JAIInfoImpl implements Serializable, JAIInfo {
         result = prime * result + (recycling ? 1231 : 1237);
         result = prime * result + tilePriority;
         result = prime * result + tileThreads;
+        result = prime * result + getPngEncoderType().hashCode();
+        result = prime * result + getPngEncoderType().hashCode();
         return result;
     }
 
@@ -218,6 +236,8 @@ public class JAIInfoImpl implements Serializable, JAIInfo {
         if (allowInterpolation != other.allowInterpolation)
             return false;
         if (allowNativeMosaic != other.allowNativeMosaic)
+            return false;
+        if (allowNativeWarp != other.allowNativeWarp)
             return false;
         if (imageIOCache != other.imageIOCache)
             return false;
@@ -237,6 +257,8 @@ public class JAIInfoImpl implements Serializable, JAIInfo {
             return false;
         if (tileThreads != other.tileThreads)
             return false;
+        if (getPngEncoderType() != other.getPngEncoderType())
+            return false;
         return true;
     }
     
@@ -246,5 +268,28 @@ public class JAIInfoImpl implements Serializable, JAIInfo {
         } catch (CloneNotSupportedException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public PngEncoderType getPngEncoderType() {
+        if(pngEncoderType == null) {
+            return PngEncoderType.PNGJ;
+        } else {
+            return pngEncoderType;
+        }
+    }
+
+    public void setPngEncoderType(PngEncoderType pngEncoderType) {
+        this.pngEncoderType = pngEncoderType;
+    }
+
+    public JAIEXTInfo getJAIEXTInfo() {
+        if(jaiext == null){
+            jaiext = new JAIEXTInfoImpl();
+        }
+        return jaiext;
+    }
+
+    public void setJAIEXTInfo(JAIEXTInfo jaiext) {
+        this.jaiext = jaiext;
     }
 }

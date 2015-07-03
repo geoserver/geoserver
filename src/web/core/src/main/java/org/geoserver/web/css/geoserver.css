@@ -392,6 +392,10 @@ padding: 0.44em 0 0.5em;
 width: 90%;
 }
 
+ul.choiceList>li>label, ul.choiceList>li>input[type=checkbox] {
+display:inline;
+}
+
 textarea.small {
 height: 3em;
 }
@@ -917,7 +921,7 @@ list-style-type: none;
 display: inline;
 }
 
-.date li:nth-child(3):
+.date li:nth-child(3){ 
 padding-right: 10px;
 }
 
@@ -958,7 +962,7 @@ width:50%;
 
 div.progress-bar span.bar {
 background-image: url(../img/status-bar-bg.png);
-background-repeat:repeat.x;
+background-repeat:repeat-x;
 display:block;
 height:16px;
 overflow:hidden;

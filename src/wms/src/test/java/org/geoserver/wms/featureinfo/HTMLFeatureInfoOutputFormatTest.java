@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -6,6 +7,7 @@
 package org.geoserver.wms.featureinfo;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayOutputStream;
@@ -19,11 +21,14 @@ import java.util.Map;
 
 import net.opengis.wfs.FeatureCollectionType;
 import net.opengis.wfs.WfsFactory;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.impl.FeatureTypeInfoImpl;
 import org.geoserver.catalog.impl.LayerInfoImpl;
 import org.geoserver.catalog.impl.NamespaceInfoImpl;
@@ -31,11 +36,15 @@ import org.geoserver.data.test.MockData;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
 import org.geoserver.template.GeoServerTemplateLoader;
+import org.geoserver.wfs.json.JSONType;
 import org.geoserver.wms.GetFeatureInfoRequest;
 import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.WMSTestSupport;
 import org.junit.Before;
 import org.junit.Test;
+
+import com.mockrunner.mock.web.MockHttpServletResponse;
+import com.mockrunner.mock.web.MockServletContext;
 
 public class HTMLFeatureInfoOutputFormatTest extends WMSTestSupport {
     private HTMLFeatureInfoOutputFormat outputFormat;
@@ -48,10 +57,13 @@ public class HTMLFeatureInfoOutputFormatTest extends WMSTestSupport {
     
     private static final String templateFolder = "/org/geoserver/wms/featureinfo/";
     
+    private String currentTemplate;
+    
     @Before
     public void setUp() throws URISyntaxException, IOException {
         outputFormat = new HTMLFeatureInfoOutputFormat(getWMS());
         
+        currentTemplate = "test_content.ftl";
         // configure template loader
         GeoServerTemplateLoader templateLoader = new GeoServerTemplateLoader(
                 this.getClass(), getDataDirectory()) {
@@ -60,7 +72,7 @@ public class HTMLFeatureInfoOutputFormatTest extends WMSTestSupport {
             public Object findTemplateSource(String path) throws IOException {
                 String templatePath;
                 if (path.toLowerCase().contains("content")) {
-                    templatePath = "test_content.ftl";
+                    templatePath = currentTemplate;
     
                 } else {
                     templatePath = "empty.ftl";
@@ -98,7 +110,7 @@ public class HTMLFeatureInfoOutputFormatTest extends WMSTestSupport {
         // fake layer list
         List<MapLayerInfo> queryLayers = new ArrayList<MapLayerInfo>();               
         LayerInfo layerInfo = new LayerInfoImpl();
-        layerInfo.setType(LayerInfo.Type.VECTOR);
+        layerInfo.setType(PublishedType.VECTOR);
         ResourceInfo resourceInfo = new FeatureTypeInfoImpl(null);
         NamespaceInfo nameSpace = new NamespaceInfoImpl();
         nameSpace.setPrefix("topp");
@@ -127,6 +139,24 @@ public class HTMLFeatureInfoOutputFormatTest extends WMSTestSupport {
         assertEquals("VALUE1,VALUE2,testLayer" , result);    
     }
     
+    
+    @Test
+    public void testEnvironmentVariablesAreEvaluatedInTemplate() throws IOException {
+        currentTemplate = "test_env_content.ftl";
+        System.setProperty("TEST_PROPERTY", "MYVALUE");
+        MockServletContext servletContext = (MockServletContext)applicationContext.getServletContext();
+        servletContext.setInitParameter("TEST_INIT_PARAM", "MYPARAM");
+        try {
+            ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+            outputFormat.write(fcType, getFeatureInfoRequest, outStream);
+            String result = new String(outStream.toByteArray());
+             
+            assertEquals("MYVALUE,MYPARAM" , result);
+        } finally {
+            System.clearProperty("TEST_PROPERTY");
+        }
+    }
+    
     /**
      * Test that if template asks a request parameter that is not present in request
      * an exception is thrown.
@@ -145,5 +175,21 @@ public class HTMLFeatureInfoOutputFormatTest extends WMSTestSupport {
             error = true;
         }
         assertTrue(error); 
+    }
+    
+    @Test
+    public void testHTMLGetFeatureInfoCharset() throws Exception {
+        String layer = getLayerId(MockData.FORESTS);
+        String request = "wms?version=1.1.1&bbox=-0.002,-0.002,0.002,0.002&styles=&format=jpeg"
+                + "&request=GetFeatureInfo&layers=" + layer + "&query_layers=" + layer
+                + "&width=20&height=20&x=10&y=10" + "&info_format=text/html";
+
+        MockHttpServletResponse response = getAsServletResponse(request,"");
+
+        // MimeType
+        assertEquals("text/html", response.getContentType());
+
+        // Check if the character encoding is the one expected
+        assertTrue("UTF-8".equals(response.getCharacterEncoding()));
     }
 }

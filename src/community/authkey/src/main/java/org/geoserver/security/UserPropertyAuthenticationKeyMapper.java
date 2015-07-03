@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -68,7 +69,7 @@ public class UserPropertyAuthenticationKeyMapper extends AbstractAuthenticationK
                     ", but this user is disabled");
             return null;
         }
-        return user;
+        return (GeoServerUser) getUserGroupService().loadUserByUsername(user.getUsername());
     }
 
 

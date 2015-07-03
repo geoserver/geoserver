@@ -62,12 +62,15 @@ Formats in which WMS can report exceptions. The supported values for exceptions 
    * - XML
      - ``EXCEPTIONS=application/vnd.ogc.se_xml``
      - Xml output. (The default format)
-   * - PNG
+   * - INIMAGE
      - ``EXCEPTIONS=application/vnd.ogc.se_inimage``
      - Generates an image
-   * - Blank
+   * - BLANK
      - ``EXCEPTIONS=application/vnd.ogc.se_blank``
      - Generates a blank image
+   * - PARTIALMAP
+     - ``EXCEPTIONS=application/vnd.gs.wms_partial``
+     - This is a GeoServer vendor parameter and only applicable for getMap requests. Returns everything that was rendered at the time the rendering process threw an exception. Can be used with the :ref:`WMS Configuration Limits <wms_configuration_limits>` to return a partial image even if the request is terminated for exceeding one of these limits. It also works with the ``timeout`` :ref:`vendor parameter <wms_vendor_parameters>`.
    * - JSON
      - ``EXCEPTIONS=application/json``
      - Simple Json representation.
@@ -240,11 +243,7 @@ The standard parameters for the GetMap operation are:
 GeoServer provides a number of useful vendor-specific parameters for the GetMap operation.  
 These are documented in the :ref:`wms_vendor_parameters` section.
 
-Although the standard specifies many of the parameters as being mandatory,
-GeoServer provides the :ref:`tutorials_wmsreflector` to allow many of them to be optionally specified.
-Experimenting with this feature is a good way to get to know the GetMap parameters.  
-
-An example request for the ``topp:states`` layer to be output as a PNG map image in SRS EPGS:4326 and using default styling is:
+Example WMS request for ``topp:states`` layer to be output as a PNG map image in SRS EPGS:4326 and using default styling is:
 
 .. code-block:: xml
 
@@ -253,12 +252,41 @@ An example request for the ``topp:states`` layer to be output as a PNG map image
    &service=WMS
    &version=1.1.1
    &layers=topp%3Astates
-   &styles=
+   &styles=population
    &srs=EPSG%3A4326
    &bbox=-145.15104058007,21.731919794922,-57.154894212888,58.961058642578&
    &width=780
    &height=330
    &format=image%2Fpng
+
+The standard specifies many of the parameters as being mandatory,
+GeoServer provides the :ref:`tutorials_wmsreflector` to allow many of them to be optionally specified.
+
+Experimenting with this feature is a good way to get to know the GetMap parameters.  
+
+Example WMS request using a GetMap XML document is:
+
+.. code-block:: xml
+
+   <?xml version="1.0" encoding="UTF-8"?>
+   <ogc:GetMap xmlns:ogc="http://www.opengis.net/ows"
+               xmlns:gml="http://www.opengis.net/gml"
+      version="1.1.1" service="WMS">
+      <StyledLayerDescriptor version="1.0.0">
+         <NamedLayer>
+           <Name>topp:states</Name>
+           <NamedStyle><Name>population</Name></NamedStyle> 
+         </NamedLayer> 
+      </StyledLayerDescriptor>
+      <BoundingBox srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">
+         <gml:coord><gml:X>-130</gml:X><gml:Y>24</gml:Y></gml:coord>
+         <gml:coord><gml:X>-55</gml:X><gml:Y>50</gml:Y></gml:coord>
+      </BoundingBox>
+      <Output>
+         <Format>image/png</Format>
+         <Size><Width>550</Width><Height>250</Height></Size>
+      </Output>
+   </ogc:GetMap>
 
 Time
 ....

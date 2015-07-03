@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -9,6 +10,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
 import java.util.logging.Level;
@@ -17,16 +19,19 @@ import java.util.logging.Logger;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
+import org.geoserver.catalog.DimensionDefaultValueSetting;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.DimensionDefaultValueSetting.Strategy;
 import org.geoserver.catalog.util.ReaderDimensionsAccessor;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.util.ISO8601Formatter;
 import org.geoserver.wms.WMS;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
+import org.geotools.feature.type.DateUtil;
 import org.geotools.temporal.object.DefaultPeriodDuration;
 import org.geotools.util.Converters;
 import org.geotools.util.DateRange;
@@ -67,6 +72,8 @@ abstract class DimensionHelper {
     protected abstract void element(String element, String content, Attributes atts);
 
     void handleVectorLayerDimensions(LayerInfo layer) {
+        //TODO: custom dimension handling
+        
         // do we have time and elevation?
         FeatureTypeInfo typeInfo = (FeatureTypeInfo) layer.getResource();
         DimensionInfo timeInfo = typeInfo.getMetadata().get(ResourceInfo.TIME,
@@ -194,44 +201,51 @@ abstract class DimensionHelper {
 
         // timeDimension
         if (hasTime && dimensions.hasTime()) {
-            handleTimeDimensionRaster(timeInfo, dimensions);
+            handleTimeDimensionRaster(cvInfo, timeInfo, dimensions);
         }
 
         // elevationDomain
         if (hasElevation && dimensions.hasElevation()) {
-            handleElevationDimensionRaster(elevInfo, dimensions);
+            handleElevationDimensionRaster(cvInfo, elevInfo, dimensions);
         }
         
         // custom dimensions
         if (hasCustomDimensions) {
             for (String key : customDimensions.keySet()) {
                 DimensionInfo dimensionInfo = customDimensions.get(key);
-                handleCustomDimensionRaster(key, dimensionInfo, dimensions);
+                handleCustomDimensionRaster(cvInfo, key, dimensionInfo, dimensions);
             }
         }
     }
 
-    private void handleElevationDimensionRaster(DimensionInfo elevInfo, ReaderDimensionsAccessor dimensions) throws IOException {
+    private void handleElevationDimensionRaster(CoverageInfo cvInfo, DimensionInfo elevInfo, ReaderDimensionsAccessor dimensions) throws IOException {
         TreeSet<Object> elevations = dimensions.getElevationDomain();
         String elevationMetadata = getZDomainRepresentation(elevInfo, elevations);
-
+        Double defaultValue = wms.getDefaultElevation(cvInfo);
+        if (defaultValue == null){
+            defaultValue = Double.valueOf(0d);
+        }
         writeElevationDimension(elevations, elevationMetadata, 
-                elevInfo.getUnits(), elevInfo.getUnitSymbol());
+                elevInfo.getUnits(), elevInfo.getUnitSymbol(), defaultValue.doubleValue());
     }
 
-    private void handleTimeDimensionRaster(DimensionInfo timeInfo, ReaderDimensionsAccessor dimension) throws IOException {
+    private void handleTimeDimensionRaster(CoverageInfo cvInfo, DimensionInfo timeInfo, ReaderDimensionsAccessor dimension) throws IOException {
         TreeSet<Object> temporalDomain = dimension.getTimeDomain();
         String timeMetadata = getTemporalDomainRepresentation(timeInfo, temporalDomain);
-
-        writeTimeDimension(timeMetadata);
+        Date defaultValue = null;
+        DimensionDefaultValueSetting defaultSetting = timeInfo.getDefaultValue();
+        if ((defaultSetting != null) && !((defaultSetting.getStrategyType() == Strategy.NEAREST) && defaultSetting.getReferenceValue().equalsIgnoreCase(DimensionDefaultValueSetting.TIME_CURRENT))){
+            defaultValue = wms.getDefaultTime(cvInfo);
+        }
+        writeTimeDimension(timeMetadata, defaultValue);
     }
     
-    private void handleCustomDimensionRaster(String dimName, DimensionInfo dimension,
+    private void handleCustomDimensionRaster(CoverageInfo cvInfo, String dimName, DimensionInfo dimension,
             ReaderDimensionsAccessor dimAccessor) throws IOException {
-        final TreeSet<String> values = dimAccessor.getDomain(dimName);
+        final List<String> values = dimAccessor.getDomain(dimName);
         String metadata = getCustomDomainRepresentation(dimension, values);
-
-        writeCustomDimension(dimName, metadata, values.first(), dimension.getUnits(), dimension.getUnitSymbol());
+        String defaultValue = wms.getDefaultCustomDimensionValue(dimName, cvInfo, String.class);
+        writeCustomDimension(dimName, metadata, defaultValue, dimension.getUnits(), dimension.getUnitSymbol());
     }
 
     /**
@@ -284,7 +298,7 @@ abstract class DimensionHelper {
                 }
                 buff.append(",");
             }
-            elevationMetadata = buff.substring(0, buff.length() - 1).toString().replaceAll("\\[",
+            elevationMetadata = buff.substring(0, buff.length() - 1).replaceAll("\\[",
                     "").replaceAll("\\]", "").replaceAll(" ", "");
         } else if (DimensionPresentation.CONTINUOUS_INTERVAL == dimension.getPresentation()) {
             NumberRange<Double> range = getMinMaxZInterval(values);
@@ -344,7 +358,7 @@ abstract class DimensionHelper {
                 buff.append(df.format(date));
                 buff.append(",");
             }
-            timeMetadata = buff.substring(0, buff.length() - 1).toString().replaceAll("\\[", "")
+            timeMetadata = buff.substring(0, buff.length() - 1).replaceAll("\\[", "")
                     .replaceAll("\\]", "").replaceAll(" ", "");
         } else if (DimensionPresentation.CONTINUOUS_INTERVAL == dimension.getPresentation()) {
             DateRange interval = getMinMaxTimeInterval(values);
@@ -473,23 +487,23 @@ abstract class DimensionHelper {
      * @param values
      * @return
      */
-    String getCustomDomainRepresentation(DimensionInfo dimension, TreeSet<String> values) {
-        String timeMetadata = null;
+    String getCustomDomainRepresentation(DimensionInfo dimension, List<String> values) {
+        String metadata = null;
 
         final StringBuilder buff = new StringBuilder();
 
         if (DimensionPresentation.LIST == dimension.getPresentation()) {
             for (String value : values) {
-                buff.append(value);
+                buff.append(value.trim());
                 buff.append(",");
             }
-            timeMetadata = buff.substring(0, buff.length() - 1).toString().replaceAll("\\[", "")
-                    .replaceAll("\\]", "").replaceAll(" ", "");
+            metadata = buff.substring(0, buff.length() - 1);
+
         } else if (DimensionPresentation.DISCRETE_INTERVAL == dimension.getPresentation()) {
-            buff.append(values.first());
+            buff.append(values.get(0));
             buff.append("/");
 
-            buff.append(values.last());
+            buff.append(values.get(0));
             buff.append("/");
 
             final BigDecimal resolution = dimension.getResolution();
@@ -497,10 +511,10 @@ abstract class DimensionHelper {
                 buff.append(resolution);
             }
 
-            timeMetadata = buff.toString();
+            metadata = buff.toString();
         }
 
-        return timeMetadata;
+        return metadata;
     }
 
     /**
@@ -513,14 +527,19 @@ abstract class DimensionHelper {
         // build the time dim representation
         TreeSet<Date> values = wms.getFeatureTypeTimes(typeInfo);
         String timeMetadata;
+        Date defaultValue = null;
         if (values != null && !values.isEmpty()) {
             DimensionInfo timeInfo = typeInfo.getMetadata().get(ResourceInfo.TIME,
                 DimensionInfo.class);
             timeMetadata = getTemporalDomainRepresentation(timeInfo, values);
+            DimensionDefaultValueSetting defaultSetting = timeInfo.getDefaultValue();
+            if ((defaultSetting != null) && !((defaultSetting.getStrategyType() == Strategy.NEAREST) && defaultSetting.getReferenceValue().equalsIgnoreCase(DimensionDefaultValueSetting.TIME_CURRENT))){
+                defaultValue = wms.getDefaultTime(typeInfo);                
+            }
         } else {
             timeMetadata = "";
         }
-        writeTimeDimension(timeMetadata);
+        writeTimeDimension(timeMetadata, defaultValue);
     }
     
     private void handleElevationDimensionVector(FeatureTypeInfo typeInfo) throws IOException {
@@ -535,37 +554,33 @@ abstract class DimensionHelper {
         } else {
             elevationMetadata = "";
         }
-
-        writeElevationDimension(elevations, elevationMetadata, units, unitSymbol);
+        Double defaultValue = wms.getDefaultElevation(typeInfo);
+        if (defaultValue == null){
+            defaultValue = Double.valueOf(0d);
+        }
+        writeElevationDimension(elevations, elevationMetadata, units, unitSymbol, defaultValue.doubleValue());
     }
 
-    private void writeTimeDimension(String timeMetadata) {
+    private void writeTimeDimension(String timeMetadata, Date defaultValue) {
         AttributesImpl timeDim = new AttributesImpl();
+        String defaultTimeStr = DimensionDefaultValueSetting.TIME_CURRENT;
+        if (defaultValue != null){
+            defaultTimeStr = DateUtil.serializeDateTime(defaultValue.getTime(), true);            
+        }
         if (mode == Mode.WMS11) {
             timeDim.addAttribute("", "name", "name", "", "time");
-            timeDim.addAttribute("", "default", "default", "", "current");
+            timeDim.addAttribute("", "default", "default", "", defaultTimeStr);
             element("Extent", timeMetadata, timeDim);
         } else {
             timeDim.addAttribute("", "name", "name", "", "time");
-            timeDim.addAttribute("", "default", "default", "", "current");
+            timeDim.addAttribute("", "default", "default", "", defaultTimeStr);
             timeDim.addAttribute("", "units", "units", "", DimensionInfo.TIME_UNITS);
             element("Dimension", timeMetadata, timeDim);
         }
     }
 
     private void writeElevationDimension(TreeSet<? extends Object> elevations, final String elevationMetadata, 
-            final String units, final String unitSymbol) {
-        double defaultValue;
-        if(elevations == null || elevations.isEmpty()) {
-            defaultValue = 0;
-        } else {
-            Object first = elevations.first();
-            if(first instanceof Double) {
-                defaultValue = (Double) first;
-            } else {
-                defaultValue = ((NumberRange<Double>) first).getMinimum();
-            }
-        }
+            final String units, final String unitSymbol, double defaultValue) {      
         if (mode == Mode.WMS11) {
             AttributesImpl elevDim = new AttributesImpl();
             elevDim.addAttribute("", "name", "name", "", "elevation");

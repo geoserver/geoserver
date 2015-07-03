@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -17,7 +18,7 @@ import javax.xml.namespace.QName;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.log4j.Level;
+import org.apache.commons.lang.SystemUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.CoverageInfo;
@@ -28,18 +29,18 @@ import org.geoserver.catalog.Keyword;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.ProjectionPolicy;
+import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.CatalogImpl;
 import org.geoserver.config.GeoServer;
+import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.GeoServerPersister;
 import org.geoserver.config.LoggingInfo;
 import org.geoserver.config.ServiceInfo;
-import org.geoserver.config.ServiceLoader;
 import org.geoserver.config.SettingsInfo;
 import org.geoserver.config.impl.GeoServerImpl;
-import org.geoserver.config.impl.ServiceInfoImpl;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.config.util.XStreamServiceLoader;
@@ -48,9 +49,10 @@ import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.test.GeoServerSystemTestSupport;
-import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
+import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.GridFormatFinder;
+import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.property.PropertyDataStore;
 import org.geotools.data.property.PropertyDataStoreFactory;
@@ -59,7 +61,6 @@ import org.geotools.gce.imagemosaic.ImageMosaicFormat;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.util.logging.Logging;
-import org.springframework.context.ApplicationContext;
 
 /**
  * Test setup uses for GeoServer system tests.
@@ -82,6 +83,8 @@ public class SystemTestData extends CiteTestData {
     private static final QName MULTIBAND = new QName(WCS_URI, "multiband", WCS_PREFIX);
     
     static final Logger LOGGER = Logging.getLogger(SystemTestData.class);
+    
+    static final Boolean WINDOWS_LENIENCY = Boolean.valueOf(System.getProperty("windows.leniency", "true"));
 
     /**
      * Keys for overriding default layer properties
@@ -275,6 +278,12 @@ public class SystemTestData extends CiteTestData {
     public void setUpSecurity() throws IOException {
         File secDir = new File(getDataDirectoryRoot(), "security");
         IOUtils.decompress(SystemTestData.class.getResourceAsStream("security.zip"), secDir);
+        String javaVendor = System.getProperty("java.vendor");
+        if (javaVendor.contains("IBM")) {
+            IOUtils.copy(new File(secDir,"geoserver.jceks.ibm"), new File(secDir,"geoserver.jceks"));
+        } else {
+            IOUtils.copy(new File(secDir,"geoserver.jceks.default"), new File(secDir,"geoserver.jceks"));
+        }
     }
 
     protected void createCatalog() throws IOException {
@@ -391,15 +400,25 @@ public class SystemTestData extends CiteTestData {
      * To set up the style a file named <tt>filename</tt> is copied from the classpath relative
      * to the <tt>scope</tt> parameter.
      * </p>
-     * @param ws The workspace to include the style in.
+     * Example: "../temperature.sld" is copied to "styles/temperature.sld".
+     * 
+     * @param ws The workspace to include the style in
      * @param name The name of the style.
      * @param filename The filename to copy from classpath.
      * @param scope Class from which to load sld resource from.
      */
     public void addStyle(WorkspaceInfo ws, String name, String filename, Class scope, Catalog catalog) throws IOException {
-        File styles = catalog.getResourceLoader().findOrCreateDirectory(data, "styles");
-
-        catalog.getResourceLoader().copyFromClassPath(filename, new File(styles, filename), scope);
+        GeoServerDataDirectory dd = new GeoServerDataDirectory(catalog.getResourceLoader());
+        File styles;
+        if(ws==null) {
+            styles=dd.findOrCreateStyleDir();
+        } else {
+            styles = new File(dd.findOrCreateWorkspaceDir(ws), "styles");
+            styles.mkdir();
+        }
+        String target = new File( filename ).getName();
+        
+        catalog.getResourceLoader().copyFromClassPath(filename, new File(styles, target ), scope);
 
         StyleInfo style = catalog.getStyleByName(ws, name);
         if (style == null) {
@@ -407,7 +426,7 @@ public class SystemTestData extends CiteTestData {
             style.setName(name);
             style.setWorkspace(ws);
         }
-        style.setFilename(filename);
+        style.setFilename(target);
         if (style.getId() == null) {
             catalog.add(style);
         }
@@ -584,7 +603,7 @@ public class SystemTestData extends CiteTestData {
 
         layer.getStyles().clear();
         layer.setDefaultStyle(defaultStyle);
-        layer.setType(LayerInfo.Type.VECTOR);
+        layer.setType(PublishedType.VECTOR);
         layer.setEnabled(true);
 
         if (layer.getId() == null) {
@@ -725,13 +744,13 @@ public class SystemTestData extends CiteTestData {
         }
 
         //load the format/reader
-        AbstractGridFormat format = (AbstractGridFormat) GridFormatFinder.findFormat(file);
+        AbstractGridFormat format = GridFormatFinder.findFormat(file);
         if (format == null) {
             throw new RuntimeException("No format for " + file.getCanonicalPath());
         }
         GridCoverage2DReader reader = null;
         try {
-            reader = (GridCoverage2DReader) format.getReader(file);
+            reader = format.getReader(file);
             if (reader == null) {
                 throw new RuntimeException("No reader for " + file.getCanonicalPath() + " with format " + format.getName());
             }
@@ -763,20 +782,32 @@ public class SystemTestData extends CiteTestData {
             CatalogBuilder builder = new CatalogBuilder(catalog);
             builder.setStore(store);
     
-            CoverageInfo coverage = null;
-            
-            try {
-
-                coverage = builder.buildCoverage(reader,null );
-                // coverage read params
-                if (format instanceof ImageMosaicFormat) {
-                    //  make sure we work in immediate mode
-                    coverage.getParameters().put(AbstractGridFormat.USE_JAI_IMAGEREAD.getName().getCode(), Boolean.FALSE);
-                } 
-            } catch (Exception e) {
-                throw new IOException(e);
+            final String coverageNames[] = reader.getGridCoverageNames();
+            if (reader instanceof StructuredGridCoverage2DReader && coverageNames != null && coverageNames.length > 1) {
+                for (String coverageName: coverageNames) {
+                    addCoverage(store, builder, reader, catalog, format, coverageName, qName, props, coverageName);
+                }
+            } else {
+                addCoverage(store, builder, reader, catalog, format, name, qName, props, null);
             }
-    
+        } finally {
+            if(reader != null) {
+                reader.dispose();
+            }
+        }
+    }
+
+    private void addCoverage(CoverageStoreInfo store, CatalogBuilder builder, GridCoverage2DReader reader, Catalog catalog,
+            AbstractGridFormat format, String name, QName qName, Map<LayerProperty, Object> props, String coverageName) throws IOException{
+        CoverageInfo coverage = null;
+        try { 
+            coverage = builder.buildCoverage(reader, coverageName, null);
+            // coverage read params
+            if (format instanceof ImageMosaicFormat) {
+                //  make sure we work in immediate mode
+                coverage.getParameters().put(AbstractGridFormat.USE_JAI_IMAGEREAD.getName().getCode(), Boolean.FALSE);
+            } 
+            
             coverage.setName(name);
             coverage.setTitle(name);
             coverage.setDescription(name);
@@ -801,7 +832,7 @@ public class SystemTestData extends CiteTestData {
             
             layer.setDefaultStyle(
                 catalog.getStyleByName(LayerProperty.STYLE.get(props, DEFAULT_RASTER_STYLE)));
-            layer.setType(LayerInfo.Type.RASTER);
+            layer.setType(PublishedType.RASTER);
             layer.setEnabled(true);
     
             if (layer.getId() == null) {
@@ -810,10 +841,8 @@ public class SystemTestData extends CiteTestData {
             else {
                 catalog.save(layer);
             }
-        } finally {
-            if(reader != null) {
-                reader.dispose();
-            }
+        } catch (Exception e) {
+            throw new IOException(e);
         }
     }
 
@@ -883,6 +912,8 @@ public class SystemTestData extends CiteTestData {
         }
         settings.setWorkspace(ws);
         settings.getContact().setContactPerson("Andrea Aime");
+        settings.getContact().setAddressElectronicMailAddress("andrea@geoserver.org");
+        settings.getContact().setAddressDeliveryPoint("1600 Pennsylvania Ave NW, Washington DC 20500, United States");
         settings.setNumDecimals(8);
         settings.setOnlineResource("http://geoserver.org");
         settings.setVerbose(false);
@@ -922,7 +953,25 @@ public class SystemTestData extends CiteTestData {
     
     @Override
     public void tearDown() throws Exception {
-        FileUtils.deleteDirectory(data);        
+        if(SystemUtils.IS_OS_WINDOWS && WINDOWS_LENIENCY) {
+            int MAX_ATTEMPTS = 100;
+            for (int i = 0; i < MAX_ATTEMPTS; i++) {
+                try {
+                    FileUtils.deleteDirectory(data);  
+                } catch(IOException e) {
+                    if(i >= MAX_ATTEMPTS) {
+                        throw new IOException("Failed to clean up test data dir after " + MAX_ATTEMPTS  + " attempts", e);
+                    }
+                    System.err.println("Error occurred while removing files, assuming "
+                                    + "it's a transient lock, sleeping 100ms and re-trying. Error message: "
+                                    + e.getMessage());
+                    System.gc();
+                    Thread.sleep(100);
+                }
+            }
+        } else {
+            FileUtils.deleteDirectory(data);  
+        }
     }
     
     @Override

@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -337,8 +338,8 @@ public class CatalogStressTester extends GeoServerSecuredPage {
 
         final Class<? extends CatalogInfo> clazz = interfaceOf(original);
 
-        Stopwatch globalTime = new Stopwatch();
-        Stopwatch sw = new Stopwatch();
+        Stopwatch globalTime = Stopwatch.createUnstarted();
+        Stopwatch sw = Stopwatch.createUnstarted();
         sw.start();
         final int padLength = (int) Math.ceil(Math.log10(numCopies));
         for (int curr = 0; curr < numCopies; curr++) {

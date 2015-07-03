@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -11,12 +12,8 @@ import java.util.List;
 
 import javax.xml.transform.TransformerException;
 
-import net.opengis.wfs.GetCapabilitiesType;
-
 import org.geoserver.ows.Response;
-import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.platform.Operation;
-import org.geoserver.wfs.GetCapabilities;
 import org.geoserver.wfs.request.GetCapabilitiesRequest;
 import org.geotools.xml.transform.TransformerBase;
 

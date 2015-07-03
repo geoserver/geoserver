@@ -1,4 +1,5 @@
-/* Copyright (c) 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -37,20 +38,6 @@ public class EoStyleCatalogListener implements CatalogListener, EoStyles {
     private final GeoServerResourceLoader resourceLoader;
     private static final Logger LOGGER = Logging.getLogger(EoStyleCatalogListener.class);    
 
-    private static final String[] EO_STYLE_FILES = new String[] {
-        "black.sld",
-        "blue.sld",
-        "brown.sld",
-        "cyan.sld",
-        "green.sld",
-        "magenta.sld",
-        "orange.sld",
-        "red.sld",
-        "white.sld",
-        "yellow.sld"
-    };
-    
-    
     /**
      * Create WMS-EO styles if they are not present in the Catalog and start listening to Catalog events.
      * 
@@ -72,8 +59,9 @@ public class EoStyleCatalogListener implements CatalogListener, EoStyles {
      */
     private void initializeStyles() throws IOException {
         for (int i = 0; i < EO_STYLE_NAMES.length; i++) {
-            if (catalog.getStyleByName(EO_STYLE_NAMES[i]) == null) {
-                initializeStyle(EO_STYLE_NAMES[i], EO_STYLE_FILES[i]);
+            String name = EO_STYLE_NAMES[i];
+            if (catalog.getStyleByName(name) == null) {
+                initializeStyle(name, name + ".sld");
             }
         }
     }

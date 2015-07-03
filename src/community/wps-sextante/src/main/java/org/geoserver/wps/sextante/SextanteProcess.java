@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -29,7 +30,11 @@ import es.unex.sextante.exceptions.WrongParameterIDException;
 import es.unex.sextante.outputs.Output;
 import es.unex.sextante.outputs.OutputRasterLayer;
 import es.unex.sextante.parameters.Parameter;
-import es.unex.sextante.rasterWrappers.GridExtent;
+import es.unex.sextante.core.AnalysisExtent;
+
+import org.geoserver.wps.sextante.GTOutputFactory;
+import org.geoserver.wps.sextante.GTRasterLayer;
+import org.geoserver.wps.sextante.GTVectorLayer;
 
 public class SextanteProcess implements Process{
 
@@ -135,7 +140,9 @@ public class SextanteProcess implements Process{
 			Object paramValue = input.get(sKey);
 			Parameter param = paramSet.getParameter(sKey);
 			if(paramValue instanceof FeatureCollection) {
-				param.setParameterValue(GTVectorLayer.createLayer(DataUtilities.source((FeatureCollection) paramValue), Query.ALL));
+                GTVectorLayer layer = new GTVectorLayer();
+                layer.create(DataUtilities.source((FeatureCollection) paramValue));				
+				param.setParameterValue(layer);
 			} else if(paramValue instanceof GridCoverage2D) {
 			    GTRasterLayer layer = new GTRasterLayer();
 			    gridExtendRequired = true;
@@ -183,7 +190,7 @@ public class SextanteProcess implements Process{
     		    for(String sKey : input.keySet()) {
                     Object value = paramSet.getParameter(sKey).getParameterValueAsObject();
                     if(value instanceof GTRasterLayer) {
-                        GridExtent ge = ((GTRasterLayer) value).getLayerGridExtent();
+                        AnalysisExtent ge = ((GTRasterLayer) value).getLayerGridExtent();
                         Envelope genv = new Envelope(ge.getXMin(), ge.getXMax(), ge.getYMin(), ge.getYMax());
                         if(envelope == null) {
                             envelope = genv;
@@ -202,12 +209,11 @@ public class SextanteProcess implements Process{
     		}
     		
     		// build and set the grid extends
-    		GridExtent extent = new GridExtent();
-    		extent.setXRange(envelope.getMinX(), envelope.getMaxX());
-    		extent.setYRange(envelope.getMinY(), envelope.getMaxY());
-    		extent.setCellSize(cellSize);
-    		m_Algorithm.setGridExtent(extent);
-		}
-	}
-
+    		AnalysisExtent extent = new AnalysisExtent();
+            extent.setXRange(envelope.getMinX(), envelope.getMaxX(), false);
+            extent.setYRange(envelope.getMinY(), envelope.getMaxY(), false);
+            extent.setCellSize(cellSize);
+            m_Algorithm.setAnalysisExtent(extent);
+        }
+    }	
 }

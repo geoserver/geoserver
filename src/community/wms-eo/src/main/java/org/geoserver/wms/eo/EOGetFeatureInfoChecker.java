@@ -1,18 +1,7 @@
-/*
- *    GeoTools - The Open Source Java GIS Toolkit
- *    http://geotools.org
- *
- *    (C) 2002-2011, Open Source Geospatial Foundation (OSGeo)
- *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the GNU Lesser General Public
- *    License as published by the Free Software Foundation;
- *    version 2.1 of the License.
- *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- *    Lesser General Public License for more details.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2013 OpenPlans
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
  */
 package org.geoserver.wms.eo;
 
@@ -71,7 +60,7 @@ public class EOGetFeatureInfoChecker extends AbstractDispatcherCallback implemen
             return super.operationDispatched(request, operation);
         }
         
-        // === k, this is a getfeatureinfo request let's check if it is 13.0
+        // === k, this is a getfeatureinfo request let's check if it is 1.3.0
         org.geoserver.wms.GetFeatureInfoRequest featureinfoReq = (GetFeatureInfoRequest) o;
         if(!featureinfoReq.getVersion().equalsIgnoreCase("1.3.0")){
             return super.operationDispatched(request, operation);

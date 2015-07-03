@@ -1,4 +1,5 @@
-/* Copyright (c) 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -7,16 +8,13 @@ package org.geoserver.kml;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Map.Entry;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import javax.imageio.ImageIO;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
 
 import org.geoserver.kml.icons.IconRenderer;
 import org.geoserver.platform.Operation;
@@ -64,7 +62,7 @@ public class KMLMapResponse extends AbstractMapResponse {
             if (context != null && context.isKmz()) {
                 encodeAsKmz(kml, context, operation, output);
             } else {
-                encoder.encode(kml, output);
+                encoder.encode(kml, output, context);
             }
         } finally {
             kmlMap.dispose();
@@ -79,7 +77,7 @@ public class KMLMapResponse extends AbstractMapResponse {
         // first create an entry for the kml
         ZipEntry entry = new ZipEntry("wms.kml");
         zip.putNextEntry(entry);
-        encoder.encode(kml, zip);
+        encoder.encode(kml, zip, context);
 
         // prepare for the ground overlays
         final RenderedImageMapOutputFormat pngProducer = new RenderedImageMapOutputFormat(

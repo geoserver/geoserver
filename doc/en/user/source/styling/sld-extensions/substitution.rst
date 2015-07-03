@@ -66,6 +66,9 @@ The predefined variables are:
    * - ``wms_scale_denominator``
      - ``Integer``
      - the denominator of the output map scale
+   * - ``kmlOutputMode``
+     - Either ``vector`` or empty
+     - this variable gets set to ``vector`` when the kml generator is writing out vector features as placemarks, as opposed to ground overlays
 
      
 
@@ -118,4 +121,4 @@ the result is instead:
 
 .. figure:: images/triangles.png
 
-   *Rendering with varialbes supplied* 
+   *Rendering with variables supplied* 

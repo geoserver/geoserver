@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -57,5 +58,9 @@ public abstract class DecoratingDataAccess<T extends FeatureType, F extends Feat
 
     public void updateSchema(Name typeName, T featureType) throws IOException {
         delegate.updateSchema(typeName, featureType);
+    }
+
+    public void removeSchema(Name typeName) throws IOException {
+        delegate.removeSchema(typeName);
     }
 }

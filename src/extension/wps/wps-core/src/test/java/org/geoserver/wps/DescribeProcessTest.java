@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -36,7 +37,12 @@ public class DescribeProcessTest extends WPSTestSupport {
     @Test
     public void testGetBufferFeatureCollection() throws Exception { // Standard Test A.4.3.1
         Document d = getAsDOM( root() + "service=wps&request=describeprocess&identifier=gs:BufferFeatureCollection");
-        // print(d);
+        print(d);
+
+        // check that we advertise the base64 encoding for application/zip
+        String base = "/wps:ProcessDescriptions/ProcessDescription/DataInputs";
+        assertXpathExists(base + "/Input[1]/ComplexData/Supported/Format[MimeType='application/zip']", d);
+        assertXpathEvaluatesTo("base64", base + "/Input[1]/ComplexData/Supported/Format[MimeType='application/zip']/Encoding", d);
     }
     
     private void testBufferDescription(Document d) throws Exception { // Standard Test A.4.3.3
@@ -48,9 +54,6 @@ public class DescribeProcessTest extends WPSTestSupport {
         assertXpathEvaluatesTo("true", "//ProcessDescription/@statusSupported", d);
         
         String base = "/wps:ProcessDescriptions/ProcessDescription/DataInputs";
-        
-        // check store and status
-        
         
         //first parameter
         assertXpathExists( base + "/Input[1]" , d );
@@ -91,43 +94,36 @@ public class DescribeProcessTest extends WPSTestSupport {
         assertXpathEvaluatesTo("EPSG:4326", "//Output[ows:Identifier='bounds']/BoundingBoxOutput/Supported/CRS", d);
     }
     
-    /* TODO Language Negotiation tests
-    public void testGetLanguageGood() throws Exception { // Standard Test A.4.3.4
-        Document d = getAsDOM( root() + "service=wps&request=describeprocess&identifier=gt:buffer&language=en-US" );
-        print(d);
-        testBufferDescription(d);
-    }
-    
-    public void testGetLanguageBad() throws Exception { // Standard Test A.4.3.4
-        Document d = getAsDOM( root() + "service=wps&request=describeprocess&identifier=gt:buffer&language=zz-ZZ" );
-        print(d);
-        testBufferDescription(d);
-    }
-
-    public void testPostLanguageGod() throws Exception { // Standard Test A.4.3.4
-        String request = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" + 
-    		"<DescribeProcess xmlns=\"http://www.opengis.net/wps/1.0.0\" " +
-    		"xmlns:ows=\"http://www.opengis.net/ows/1.1\" " +
-    		"xmlns:xlink=\"http://www.w3.org/1999/xlink\" " +
-    		"xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" " +
-    		"language=\"en-US\">\r\n" + 
-    		"    <ows:Identifier>gt:buffer</ows:Identifier>\r\n" + 
-    		"</DescribeProcess>";
-        Document d = postAsDOM(root(), request);
-        testBufferDescription(d);
+    @Test
+    public void testDefaultValues() throws Exception {
+        Document d = getAsDOM(root()
+                + "service=wps&request=describeprocess&identifier=gs:GeorectifyCoverage");
+        // print(d);
+        checkValidationErrors(d);
+        assertXpathEvaluatesTo("true",
+                "//Input[ows:Identifier='transparent']/LiteralData/DefaultValue", d);
+        assertXpathEvaluatesTo("false", "//Input[ows:Identifier='store']/LiteralData/DefaultValue",
+                d);
     }
 
-    public void testPostLanguageBad() throws Exception { // Standard Test A.4.3.4
-        String request = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" + 
-			"<DescribeProcess xmlns=\"http://www.opengis.net/wps/1.0.0\" " +
-			"xmlns:ows=\"http://www.opengis.net/ows/1.1\" " +
-			"xmlns:xlink=\"http://www.w3.org/1999/xlink\" " +
-			"xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" " +
-			"language=\"zz-ZZ\">\r\n" + 
-			"    <ows:Identifier>gt:buffer</ows:Identifier>\r\n" + 
-			"</DescribeProcess>";
-        Document d = postAsDOM(root(), request);
-        testBufferDescription(d);
+    @Test
+    public void testMultiRaw() throws Exception {
+        Document d = getAsDOM(root() + "service=wps&request=describeprocess&identifier=gs:MultiRaw");
+        // print(d);
+        checkValidationErrors(d);
+        // only one input (we have two, but one is the chosen mime type for the outputs
+        assertXpathEvaluatesTo("1", "count(//Input)", d);
+        assertXpathEvaluatesTo("1", "count(//Input[ows:Identifier='id']/LiteralData)", d);
+
+        // three outputs, two complex, one literal
+        assertXpathEvaluatesTo("3", "count(//Output)", d);
+        assertXpathEvaluatesTo("text/plain",
+                "//Output[ows:Identifier='text']/ComplexOutput/Supported/Format/MimeType", d);
+        assertXpathEvaluatesTo("application/zip",
+                "//Output[ows:Identifier='binary']/ComplexOutput/Supported/Format[1]/MimeType", d);
+        assertXpathEvaluatesTo("image/png",
+                "//Output[ows:Identifier='binary']/ComplexOutput/Supported/Format[2]/MimeType", d);
+        assertXpathEvaluatesTo("1", "count(//Output[ows:Identifier='literal']/LiteralOutput)", d);
     }
-    */
+
 }

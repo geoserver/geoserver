@@ -6,7 +6,7 @@ Python Scripting Hooks
 app
 ---
 
-The `app` hook provides a way to add scripts that are invoked via http. Scripts
+The `app` hook provides a way to add scripts that are invoked via HTTP. Scripts
 are provided with a WSGI environment for execution. A simple hello world 
 example looks like this:: 
 
@@ -37,7 +37,7 @@ filter. These filters appear in WFS queries, and in SLD styling rules.
 
 A simple filter function looks like this::
 
-  from geosever.filter import function
+  from geoserver.filter import function
   from geoscript.geom import Polygon
 
   @function
@@ -50,9 +50,9 @@ is greater than a certain threshold.
 format
 ------
 
-The `format` hook provides output format implementations for various ows service
-operations. Examples include png for WMS GetMap, geojson and gml for WFS 
-GetFeature, html and plain text for WMS GetFeatureInfo.
+The `format` hook provides output format implementations for various OWS service
+operations. Examples include PNG for WMS GetMap, GeoJSON and GML for WFS
+GetFeature, HTML and plain text for WMS GetFeatureInfo.
 
 Currently formats fall into two categories. The first are formats that can 
 encode vector data (features). A simple example looks like::

@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -28,6 +29,8 @@ import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.validation.IValidatable;
 import org.apache.wicket.validation.IValidator;
 import org.apache.wicket.validation.ValidationError;
+import org.geoserver.catalog.PublishedType;
+import org.geoserver.gwc.GWC;
 import org.geoserver.gwc.config.GWCConfig;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.wicket.LocalizedChoiceRenderer;
@@ -89,7 +92,7 @@ public class CachingOptionsPanel extends Panel {
         configs.add(cacheNonDefaultStyles);
 
         List<Integer> metaTilingChoices = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13,
-                14, 16, 16, 17, 18, 19, 20);
+                14, 15, 16, 17, 18, 19, 20);
         IModel<Integer> metaTilingXModel = new PropertyModel<Integer>(gwcConfigModel, "metaTilingX");
         DropDownChoice<Integer> metaTilingX = new DropDownChoice<Integer>("metaTilingX",
                 metaTilingXModel, metaTilingChoices);
@@ -109,10 +112,9 @@ public class CachingOptionsPanel extends Panel {
                 gutterChoices);
         configs.add(gutterChoice);
 
-        final List<String> formats = Arrays.asList("image/png", "image/png8", "image/jpeg",
-                "image/gif");
-
         {
+            List<String> formats;
+            formats = new ArrayList<>(GWC.getAdvertisedCachedFormats(PublishedType.VECTOR));
             IModel<List<String>> vectorFormatsModel = new PropertyModel<List<String>>(
                     gwcConfigModel, "defaultVectorCacheFormats");
             vectorFormatsGroup = new CheckGroup<String>("vectorFormatsGroup", vectorFormatsModel);
@@ -131,6 +133,8 @@ public class CachingOptionsPanel extends Panel {
         }
 
         {
+            List<String> formats;
+            formats = new ArrayList<>(GWC.getAdvertisedCachedFormats(PublishedType.RASTER));
             IModel<List<String>> rasterFormatsModel = new PropertyModel<List<String>>(
                     gwcConfigModel, "defaultCoverageCacheFormats");
             rasterFormatsGroup = new CheckGroup<String>("rasterFormatsGroup", rasterFormatsModel);
@@ -148,6 +152,8 @@ public class CachingOptionsPanel extends Panel {
             rasterFormatsGroup.add(formatsList);
         }
         {
+            List<String> formats;
+            formats = new ArrayList<>(GWC.getAdvertisedCachedFormats(PublishedType.GROUP));
             IModel<List<String>> otherFormatsModel = new PropertyModel<List<String>>(
                     gwcConfigModel, "defaultOtherCacheFormats");
             otherFormatsGroup = new CheckGroup<String>("otherFormatsGroup", otherFormatsModel);
@@ -165,6 +171,10 @@ public class CachingOptionsPanel extends Panel {
             otherFormatsGroup.add(formatsList);
         }
 
+        // Add a new Panel for configuring In Memory caching
+        BlobStorePanel storePanel = new BlobStorePanel("blobstores", gwcConfigModel);
+        configs.add(storePanel.setOutputMarkupId(true));
+        
         IModel<Set<String>> cachedGridsetsModel = new PropertyModel<Set<String>>(gwcConfigModel,
                 "defaultCachingGridSetIds");
         DefaultGridsetsEditor cachedGridsets = new DefaultGridsetsEditor("cachedGridsets",

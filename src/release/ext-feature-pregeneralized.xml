@@ -16,7 +16,7 @@
       <directory>release/target/dependency</directory>
       <outputDirectory></outputDirectory>
       <includes>
-        <include>feature-pregeneralized-*.jar</include>
+        <include>gs-feature-pregeneralized-*.jar</include>
         <include>gt-feature-pregeneralized-*.jar</include>
       </includes>
       <excludes>

@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -54,24 +55,23 @@ import org.geoserver.wcs.responses.CoverageResponseDelegateFinder;
 import org.geotools.coverage.grid.GeneralGridGeometry;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridGeometry2D;
-import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
+import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.gml2.bindings.GML2EncodingUtils;
 import org.geotools.parameter.DefaultParameterDescriptor;
 import org.geotools.referencing.CRS;
-import org.geotools.referencing.operation.builder.GridToEnvelopeMapper;
 import org.geotools.referencing.operation.matrix.XAffineTransform;
 import org.geotools.referencing.operation.transform.AffineTransform2D;
 import org.geotools.referencing.operation.transform.IdentityTransform;
 import org.geotools.util.logging.Logging;
 import org.opengis.coverage.grid.GridCoverage;
-import org.opengis.coverage.grid.GridCoverageReader;
 import org.opengis.coverage.grid.GridEnvelope;
 import org.opengis.filter.Filter;
 import org.opengis.geometry.Envelope;
 import org.opengis.parameter.GeneralParameterDescriptor;
 import org.opengis.parameter.GeneralParameterValue;
+import org.opengis.parameter.ParameterDescriptor;
 import org.opengis.parameter.ParameterValue;
 import org.opengis.parameter.ParameterValueGroup;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -91,16 +91,17 @@ public class DefaultWebCoverageService111 implements WebCoverageService111 {
 
     private Catalog catalog;
 
-	private GeoServer geoServer;
+    private GeoServer geoServer;
 
     private CoverageResponseDelegateFinder responseFactory;
 
-    public DefaultWebCoverageService111(GeoServer geoServer, CoverageResponseDelegateFinder responseFactory) {
+    public DefaultWebCoverageService111(GeoServer geoServer,
+            CoverageResponseDelegateFinder responseFactory) {
         this.geoServer = geoServer;
         this.catalog = geoServer.getCatalog();
         this.responseFactory = responseFactory;
     }
-    
+
     public WCSInfo getServiceInfo() {
         return geoServer.getService(WCSInfo.class);
     }
@@ -120,7 +121,8 @@ public class DefaultWebCoverageService111 implements WebCoverageService111 {
 
         if ("1.1.0".equals(version) || "1.1.1".equals(version)) {
             WCSCapsTransformer capsTransformer = new WCSCapsTransformer(geoServer);
-            capsTransformer.setEncoding(Charset.forName((getServiceInfo().getGeoServer().getSettings().getCharset())));
+            capsTransformer.setEncoding(Charset.forName((getServiceInfo().getGeoServer()
+                    .getSettings().getCharset())));
             return capsTransformer;
         }
 
@@ -131,8 +133,10 @@ public class DefaultWebCoverageService111 implements WebCoverageService111 {
         final String version = request.getVersion();
         if ("1.1.0".equals(version) || "1.1.1".equals(version)) {
             WCSInfo wcs = getServiceInfo();
-            DescribeCoverageTransformer describeTransformer = new DescribeCoverageTransformer(wcs, catalog, responseFactory);
-            describeTransformer.setEncoding(Charset.forName(wcs.getGeoServer().getSettings().getCharset()));
+            DescribeCoverageTransformer describeTransformer = new DescribeCoverageTransformer(wcs,
+                    catalog, responseFactory);
+            describeTransformer.setEncoding(Charset.forName(wcs.getGeoServer().getSettings()
+                    .getCharset()));
             return describeTransformer;
         }
 
@@ -140,36 +144,40 @@ public class DefaultWebCoverageService111 implements WebCoverageService111 {
     }
 
     @SuppressWarnings({ "deprecation", "unchecked" })
-	public GridCoverage[] getCoverage(GetCoverageType request) {
+    public GridCoverage[] getCoverage(GetCoverageType request) {
         if (LOGGER.isLoggable(Level.FINEST)) {
-            LOGGER.finest(new StringBuffer("execute CoverageRequest response. Called request is: ").append(request).toString());
+            LOGGER.finest(new StringBuffer("execute CoverageRequest response. Called request is: ")
+                    .append(request).toString());
         }
-        
+
         WCSInfo wcs = getServiceInfo();
-        
+
         CoverageInfo meta = null;
         GridCoverage2D coverage = null;
         try {
             CodeType identifier = request.getIdentifier();
             if (identifier == null)
-                throw new WcsException("Internal error, the coverage identifier must not be null", InvalidParameterValue, "identifier");
+                throw new WcsException("Internal error, the coverage identifier must not be null",
+                        InvalidParameterValue, "identifier");
             meta = catalog.getCoverageByName(identifier.getValue());
             if (meta == null) {
                 throw new WcsException("No such coverage: " + request.getIdentifier().getValue());
             }
-            
+
             // first let's run some sanity checks on the inputs
             checkDomainSubset(meta, request.getDomainSubset(), wcs);
             checkRangeSubset(meta, request.getRangeSubset());
             checkOutput(meta, request.getOutput());
 
             // grab the format, the reader using the default params
-            final GridCoverage2DReader reader = (GridCoverage2DReader) meta.getGridCoverageReader(null, WCSUtils.getReaderHints(wcs));
+            final GridCoverage2DReader reader = (GridCoverage2DReader) meta.getGridCoverageReader(
+                    null, WCSUtils.getReaderHints(wcs));
 
             // handle spatial domain subset, if needed
             final GeneralEnvelope originalEnvelope = reader.getOriginalEnvelope();
             final BoundingBoxType bbox = request.getDomainSubset().getBoundingBox();
-            final CoordinateReferenceSystem nativeCRS = originalEnvelope.getCoordinateReferenceSystem();
+            final CoordinateReferenceSystem nativeCRS = originalEnvelope
+                    .getCoordinateReferenceSystem();
             final GeneralEnvelope requestedEnvelopeInNativeCRS;
             final GeneralEnvelope requestedEnvelope;
             if (bbox != null) {
@@ -190,19 +198,19 @@ public class DefaultWebCoverageService111 implements WebCoverageService111 {
                     // otherwise we need to transform
                     final CoordinateReferenceSystem bboxCRS = CRS.decode(bbox.getCrs());
                     requestedEnvelope.setCoordinateReferenceSystem(bboxCRS);
-                    if(!CRS.equalsIgnoreMetadata(bboxCRS, nativeCRS)) {
+                    if (!CRS.equalsIgnoreMetadata(bboxCRS, nativeCRS)) {
                         CoordinateOperationFactory of = CRS.getCoordinateOperationFactory(true);
                         CoordinateOperation co = of.createOperation(bboxCRS, nativeCRS);
                         requestedEnvelopeInNativeCRS = CRS.transform(co, requestedEnvelope);
-                    } else { 
-                    	requestedEnvelopeInNativeCRS= new GeneralEnvelope(requestedEnvelope);
+                    } else {
+                        requestedEnvelopeInNativeCRS = new GeneralEnvelope(requestedEnvelope);
                     }
                 }
             } else {
                 requestedEnvelopeInNativeCRS = reader.getOriginalEnvelope();
                 requestedEnvelope = requestedEnvelopeInNativeCRS;
             }
-            
+
             final GridCrsType gridCRS = request.getOutput().getGridCRS();
 
             // Compute the crs that the final coverage will be served into
@@ -216,31 +224,31 @@ public class DefaultWebCoverageService111 implements WebCoverageService111 {
             //
             // Raster destination size
             //
-            int elevationLevels=0;
+            int elevationLevels = 0;
             double[] elevations = null;
-            
+
             // grab the grid to world transformation
             MathTransform gridToCRS = reader.getOriginalGridToWorld(PixelInCell.CELL_CENTER);
-            
+
             //
-            //   TIME Values
+            // TIME Values
             //
             final List<Date> timeValues = new LinkedList<Date>();
 
             TimeSequenceType temporalSubset = request.getDomainSubset().getTemporalSubset();
-            
-            if (temporalSubset != null && temporalSubset.getTimePosition() != null 
+
+            if (temporalSubset != null && temporalSubset.getTimePosition() != null
                     && temporalSubset.getTimePosition().size() > 0) {
-                for (Iterator it = temporalSubset.getTimePosition().iterator(); it.hasNext(); ) {
+                for (Iterator it = temporalSubset.getTimePosition().iterator(); it.hasNext();) {
                     Date tp = (Date) it.next();
                     timeValues.add(tp);
                 }
-            } else if (temporalSubset != null &&  temporalSubset.getTimePeriod() != null 
+            } else if (temporalSubset != null && temporalSubset.getTimePeriod() != null
                     && temporalSubset.getTimePeriod().size() > 0) {
-                for (Iterator it = temporalSubset.getTimePeriod().iterator(); it.hasNext(); ) {
+                for (Iterator it = temporalSubset.getTimePeriod().iterator(); it.hasNext();) {
                     TimePeriodType tp = (TimePeriodType) it.next();
-                    Date beginning = (Date)tp.getBeginPosition();
-                    Date ending = (Date)tp.getEndPosition();
+                    Date beginning = (Date) tp.getBeginPosition();
+                    Date ending = (Date) tp.getEndPosition();
 
                     timeValues.add(beginning);
                     timeValues.add(ending);
@@ -249,88 +257,101 @@ public class DefaultWebCoverageService111 implements WebCoverageService111 {
 
             // now we have enough info to read the coverage, grab the parameters
             // and add the grid geometry info
-            final GeneralEnvelope intersectionEnvelopeInSourceCRS = new GeneralEnvelope(requestedEnvelopeInNativeCRS);
+            final GeneralEnvelope intersectionEnvelopeInSourceCRS = new GeneralEnvelope(
+                    requestedEnvelopeInNativeCRS);
             intersectionEnvelopeInSourceCRS.intersect(originalEnvelope);
-            
-            
-            final GridGeometry2D requestedGridGeometry = new GridGeometry2D(PixelInCell.CELL_CENTER, gridToCRS, intersectionEnvelopeInSourceCRS, null);
 
-            final ParameterValueGroup readParametersDescriptor = reader.getFormat().getReadParameters();
-            GeneralParameterValue[] readParameters = CoverageUtils.getParameters(readParametersDescriptor, meta.getParameters());
-                                    readParameters = (readParameters != null ? readParameters : new GeneralParameterValue[0]);
-            
+            final GridGeometry2D requestedGridGeometry = new GridGeometry2D(
+                    PixelInCell.CELL_CENTER, gridToCRS, intersectionEnvelopeInSourceCRS, null);
+
+            final ParameterValueGroup readParametersDescriptor = reader.getFormat()
+                    .getReadParameters();
+            GeneralParameterValue[] readParameters = CoverageUtils.getParameters(
+                    readParametersDescriptor, meta.getParameters());
+            readParameters = (readParameters != null ? readParameters
+                    : new GeneralParameterValue[0]);
+
             //
             // Setting coverage reading params.
             //
-            final ParameterValue requestedGridGeometryParam = new DefaultParameterDescriptor(AbstractGridFormat.READ_GRIDGEOMETRY2D.getName().toString(), GeneralGridGeometry.class, null, requestedGridGeometry).createValue();
+            final ParameterValue requestedGridGeometryParam = new DefaultParameterDescriptor(
+                    AbstractGridFormat.READ_GRIDGEOMETRY2D.getName().toString(),
+                    GeneralGridGeometry.class, null, requestedGridGeometry).createValue();
 
             /*
-             * Test if the parameter "TIME" is present in the WMS
-             * request, and by the way in the reading parameters. If
-             * it is the case, one can adds it to the request. If an
-             * exception is thrown, we have nothing to do.
+             * Test if the parameter "TIME" is present in the WMS request, and by the way in the reading parameters. If it is the case, one can adds
+             * it to the request. If an exception is thrown, we have nothing to do.
              */
-            final List<GeneralParameterDescriptor> parameterDescriptors = readParametersDescriptor.getDescriptor().descriptors();
-            ParameterValue time=null;
-            boolean hasTime=timeValues.size()>0;
-            ParameterValue elevation=null;
-            boolean hasElevation=elevations != null && !Double.isNaN(elevations[0]);
-            
-            if(hasElevation||hasTime){
-                for(GeneralParameterDescriptor pd:parameterDescriptors){
+            final List<GeneralParameterDescriptor> parameterDescriptors = readParametersDescriptor
+                    .getDescriptor().descriptors();
+            ParameterValue time = null;
+            boolean hasTime = timeValues.size() > 0;
+            ParameterValue elevation = null;
+            boolean hasElevation = elevations != null && !Double.isNaN(elevations[0]);
 
-                        final String code=pd.getName().getCode();
-                        
-                        //
-                        // TIME
-                        //
-                        if(code.equalsIgnoreCase("TIME")){
-                            time=(ParameterValue) pd.createValue();
-                            time.setValue(timeValues);                }
-                        
-                        //
-                        // ELEVATION
-                        //
-                        if(code.equalsIgnoreCase("ELEVATION")){
-                            elevation=(ParameterValue) pd.createValue();
-                            elevation.setValue(elevations[0]);
-                        }
-                        
-                        
-                        // leave?
-                        if((hasElevation&&elevation!=null&&hasTime&&time!=null)||
-                                        !hasElevation&&hasTime&&time!=null||
-                                        hasElevation&&elevation!=null&&!hasTime)
-                                break;
+            if (hasElevation || hasTime) {
+                for (GeneralParameterDescriptor pd : parameterDescriptors) {
+
+                    final String code = pd.getName().getCode();
+
+                    //
+                    // TIME
+                    //
+                    if (code.equalsIgnoreCase("TIME")) {
+                        time = (ParameterValue) pd.createValue();
+                        time.setValue(timeValues);
                     }
+
+                    //
+                    // ELEVATION
+                    //
+                    if (code.equalsIgnoreCase("ELEVATION")) {
+                        elevation = (ParameterValue) pd.createValue();
+                        elevation.setValue(elevations[0]);
+                    }
+
+                    // leave?
+                    if ((hasElevation && elevation != null && hasTime && time != null)
+                            || !hasElevation && hasTime && time != null || hasElevation
+                            && elevation != null && !hasTime)
+                        break;
+                }
             }
             //
             // add read parameters
             //
-            int addedParams=1+(hasTime?1:0)+(hasElevation?1:0);
+            int addedParams = 1 + (hasTime ? 1 : 0) + (hasElevation ? 1 : 0);
             // add to the list
-            GeneralParameterValue[] readParametersClone = new GeneralParameterValue[readParameters.length+addedParams--];
-            System.arraycopy(readParameters, 0,readParametersClone , 0, readParameters.length);
-            readParametersClone[readParameters.length+addedParams--]=requestedGridGeometryParam;
-            if(hasTime)
-                readParametersClone[readParameters.length+addedParams--]=time;
-            if(hasElevation)
-                readParametersClone[readParameters.length+addedParams--]=elevation;            
-            readParameters=readParametersClone;
-            
+            GeneralParameterValue[] readParametersClone = new GeneralParameterValue[readParameters.length
+                    + addedParams--];
+            System.arraycopy(readParameters, 0, readParametersClone, 0, readParameters.length);
+            readParametersClone[readParameters.length + addedParams--] = requestedGridGeometryParam;
+            if (hasTime)
+                readParametersClone[readParameters.length + addedParams--] = time;
+            if (hasElevation)
+                readParametersClone[readParameters.length + addedParams--] = elevation;
+            readParameters = readParametersClone;
+
             // Check we're not being requested to read too much data from input (first check,
             // guesses the grid size using the information contained in CoverageInfo)
             WCSUtils.checkInputLimits(wcs, meta, reader, requestedGridGeometry);
-            
-            // 
+
+            //
             // Check if we have a filter among the params
             //
             Filter filter = WCSUtils.getRequestFilter();
-            if(filter != null) {
-                readParameters = CoverageUtils.mergeParameter(parameterDescriptors, 
-                        readParameters, filter, "FILTER", "Filter");
+            if (filter != null) {
+                readParameters = CoverageUtils.mergeParameter(parameterDescriptors, readParameters,
+                        filter, "FILTER", "Filter");
             }
-            
+
+            //
+            // make sure we work in streaming mode
+            //
+            // work in streaming fashion when JAI is involved
+            readParameters = WCSUtils.replaceParameter(readParameters, Boolean.FALSE,
+                    AbstractGridFormat.USE_JAI_IMAGEREAD);
+
             //
             // perform Read ...
             //
@@ -338,12 +359,12 @@ public class DefaultWebCoverageService111 implements WebCoverageService111 {
             if ((coverage == null) || !(coverage instanceof GridCoverage2D)) {
                 throw new IOException("The requested coverage could not be found.");
             }
-            
+
             // now that we have read the coverage double check the input size
             WCSUtils.checkInputLimits(wcs, coverage);
-            
+
             // some raster sources do not really read less data (arcgrid for example), we may need to crop
-            if(!intersectionEnvelopeInSourceCRS.contains(coverage.getEnvelope2D(), true)) {
+            if (!intersectionEnvelopeInSourceCRS.contains(coverage.getEnvelope2D(), true)) {
                 coverage = WCSUtils.crop(coverage, intersectionEnvelopeInSourceCRS);
             }
 
@@ -357,7 +378,8 @@ public class DefaultWebCoverageService111 implements WebCoverageService111 {
                     throw new WcsException("Multi field coverages are not supported yet");
                 }
 
-                FieldSubsetType field = (FieldSubsetType) request.getRangeSubset().getFieldSubset().get(0);
+                FieldSubsetType field = (FieldSubsetType) request.getRangeSubset().getFieldSubset()
+                        .get(0);
                 interpolationType = field.getInterpolationType();
 
                 // handle axis subset
@@ -398,32 +420,32 @@ public class DefaultWebCoverageService111 implements WebCoverageService111 {
                     }
                 }
             }
-            
+
             /**
              * Checking for supported Interpolation Methods
              */
             Interpolation interpolation = Interpolation.getInstance(Interpolation.INTERP_NEAREST);
             if (interpolationType != null) {
-                if (interpolationType.equalsIgnoreCase("bilinear")) {
+                if (interpolationType.equalsIgnoreCase("linear") || interpolationType.equalsIgnoreCase("bilinear")) {
                     interpolation = Interpolation.getInstance(Interpolation.INTERP_BILINEAR);
-                } else if (interpolationType.equalsIgnoreCase("bicubic")) {
+                } else if (interpolationType.equalsIgnoreCase("cubic") || interpolationType.equalsIgnoreCase("bicubic")) {
                     interpolation = Interpolation.getInstance(Interpolation.INTERP_BICUBIC);
                 } else if (interpolationType.equalsIgnoreCase("nearest")) {
                     interpolation = Interpolation.getInstance(Interpolation.INTERP_NEAREST);
                 }
             }
-            
+
             // adjust the grid geometry to use the final bbox and crs
             final GeneralEnvelope intersectionEnvelope;
             boolean reprojectionNeeded = !CRS.equalsIgnoreMetadata(nativeCRS, targetCRS);
-            if(reprojectionNeeded) {
+            if (reprojectionNeeded) {
                 CoordinateOperationFactory of = CRS.getCoordinateOperationFactory(true);
                 CoordinateOperation co = of.createOperation(nativeCRS, targetCRS);
                 intersectionEnvelope = CRS.transform(co, intersectionEnvelopeInSourceCRS);
             } else {
                 intersectionEnvelope = intersectionEnvelopeInSourceCRS;
             }
-            
+
             // compute the output resolution
             double pixelSizeX;
             double pixelSizeY;
@@ -439,53 +461,46 @@ public class DefaultWebCoverageService111 implements WebCoverageService111 {
 
                 // if no offsets has been specified we try to default on the
                 // native ones
-				if (offsets == null) {
-                    offsets = estimateOffsets(reader, gridCRS, gridToCRS,
-							intersectionEnvelope, reprojectionNeeded);
+                if (offsets == null) {
+                    offsets = estimateOffsets(reader, gridCRS, gridToCRS, intersectionEnvelope,
+                            reprojectionNeeded);
                 }
 
                 // building the actual transform for the resulting grid geometry
                 AffineTransform tx;
                 if (gridCRS.getGridType().equals(GridType.GT2dSimpleGrid.getXmlConstant())) {
-                    tx = new AffineTransform(
-                            offsets[0], 0, 
-                            0, offsets[1], 
-                            origin[0], origin[1]
-                    );
-                } else if(gridCRS.getGridType().equals(GridType.GT2dGridIn2dCrs.getXmlConstant())) {
-                    tx = new AffineTransform(
-                            offsets[0], offsets[1], 
-                            offsets[2], offsets[3], 
-                            origin[0], origin[1]
-                    );
+                    tx = new AffineTransform(offsets[0], 0, 0, offsets[1], origin[0], origin[1]);
+                } else if (gridCRS.getGridType().equals(GridType.GT2dGridIn2dCrs.getXmlConstant())) {
+                    tx = new AffineTransform(offsets[0], offsets[1], offsets[2], offsets[3],
+                            origin[0], origin[1]);
                 } else {
-                    tx = new AffineTransform(
-                            offsets[0], offsets[4], 
-                            offsets[1], offsets[3], 
-                            origin[0], origin[1]
-                    );
-                    
+                    tx = new AffineTransform(offsets[0], offsets[4], offsets[1], offsets[3],
+                            origin[0], origin[1]);
+
                     if (origin.length != 3 || offsets.length != 6)
                         throw new WcsException("", InvalidParameterValue, "GridCRS");
-              
+
                     //
-                    //  ELEVATIONS
+                    // ELEVATIONS
                     //
-                    
+
                     // TODO: draft code ... it needs more study!
-                    elevationLevels = (int) Math.round(requestedEnvelope.getUpperCorner().getOrdinate(2) - requestedEnvelope.getLowerCorner().getOrdinate(2));
+                    elevationLevels = (int) Math.round(requestedEnvelope.getUpperCorner()
+                            .getOrdinate(2) - requestedEnvelope.getLowerCorner().getOrdinate(2));
 
                     // compute the elevation levels, we have elevationLevels values
                     if (elevationLevels > 0) {
-                        elevations=new double[elevationLevels];
+                        elevations = new double[elevationLevels];
 
-                        elevations[0]=requestedEnvelope.getLowerCorner().getOrdinate(2); // TODO put the extrema
-                        elevations[elevationLevels-1]=requestedEnvelope.getUpperCorner().getOrdinate(2);
-                        if(elevationLevels>2){
-                            final int adjustedLevelsNum=elevationLevels-1;
-                            double step = (elevations[elevationLevels-1]-elevations[0])/adjustedLevelsNum;
-                            for(int i=1;i<adjustedLevelsNum;i++)
-                                elevations[i]=elevations[i-1]+step;
+                        elevations[0] = requestedEnvelope.getLowerCorner().getOrdinate(2); // TODO put the extrema
+                        elevations[elevationLevels - 1] = requestedEnvelope.getUpperCorner()
+                                .getOrdinate(2);
+                        if (elevationLevels > 2) {
+                            final int adjustedLevelsNum = elevationLevels - 1;
+                            double step = (elevations[elevationLevels - 1] - elevations[0])
+                                    / adjustedLevelsNum;
+                            for (int i = 1; i < adjustedLevelsNum; i++)
+                                elevations[i] = elevations[i - 1] + step;
                         }
                     }
                 }
@@ -493,18 +508,16 @@ public class DefaultWebCoverageService111 implements WebCoverageService111 {
                 pixelSizeY = Math.abs(tx.getScaleY());
                 gridToCRS = new AffineTransform2D(tx);
             } else {
-                Double[] offsets = estimateOffsets(reader, gridCRS, gridToCRS, intersectionEnvelope, reprojectionNeeded);
-                if(offsets.length == 2) {
+                Double[] offsets = estimateOffsets(reader, gridCRS, gridToCRS,
+                        intersectionEnvelope, reprojectionNeeded);
+                if (offsets.length == 2) {
                     pixelSizeX = Math.abs(offsets[0]);
                     pixelSizeY = Math.abs(offsets[1]);
-                    AffineTransform tx = new AffineTransform(offsets[0], 0, 
-                            0, offsets[1], 
-                            0, 0);
+                    AffineTransform tx = new AffineTransform(offsets[0], 0, 0, offsets[1], 0, 0);
                     gridToCRS = new AffineTransform2D(tx);
                 } else {
-                    AffineTransform tx = new AffineTransform(offsets[0], offsets[1], 
-                            offsets[3], offsets[4], 
-                            0, 0);
+                    AffineTransform tx = new AffineTransform(offsets[0], offsets[1], offsets[3],
+                            offsets[4], 0, 0);
                     pixelSizeX = Math.abs(XAffineTransform.getScaleX0(tx));
                     pixelSizeY = Math.abs(XAffineTransform.getScaleY0(tx));
                     gridToCRS = new AffineTransform2D(tx);
@@ -515,34 +528,37 @@ public class DefaultWebCoverageService111 implements WebCoverageService111 {
              * Reproject
              */
             // adjust to have at least one pixel in the output
-            if(intersectionEnvelope.getSpan(0) < Math.abs(pixelSizeX)) {
+            if (intersectionEnvelope.getSpan(0) < Math.abs(pixelSizeX)) {
                 double minX = intersectionEnvelope.getMinimum(0);
                 intersectionEnvelope.setRange(0, minX, minX + pixelSizeX);
             }
-            if(intersectionEnvelope.getSpan(1) < Math.abs(pixelSizeY)) {
+            if (intersectionEnvelope.getSpan(1) < Math.abs(pixelSizeY)) {
                 double minY = intersectionEnvelope.getMinimum(1);
                 intersectionEnvelope.setRange(1, minY, minY + pixelSizeY);
             }
 
-            final GridGeometry2D destinationGridGeometry = new GridGeometry2D(PixelInCell.CELL_CENTER, gridToCRS, intersectionEnvelope, null);
-            
+            final GridGeometry2D destinationGridGeometry = new GridGeometry2D(
+                    PixelInCell.CELL_CENTER, gridToCRS, intersectionEnvelope, null);
+
             // before extracting the output make sure it's not too big
-            WCSUtils.checkOutputLimits(wcs, destinationGridGeometry.getGridRange2D(), 
+            WCSUtils.checkOutputLimits(wcs, destinationGridGeometry.getGridRange2D(),
                     bandSelectedCoverage.getRenderedImage().getSampleModel());
-            
+
             // reproject if necessary
-            boolean sameGridGeometry = bandSelectedCoverage.getGridGeometry().equals(destinationGridGeometry);
-            if(reprojectionNeeded || !sameGridGeometry) {
-                final GridCoverage2D reprojectedCoverage = WCSUtils.resample(
-                		bandSelectedCoverage,
-                        nativeCRS, targetCRS, destinationGridGeometry,interpolation);
-                
+            boolean sameGridGeometry = bandSelectedCoverage.getGridGeometry().equals(
+                    destinationGridGeometry);
+            if (reprojectionNeeded || !sameGridGeometry) {
+                final GridCoverage2D reprojectedCoverage = WCSUtils.resample(bandSelectedCoverage,
+                        nativeCRS, targetCRS, destinationGridGeometry, interpolation);
+
                 return new GridCoverage[] { reprojectedCoverage };
             } else {
                 return new GridCoverage[] { bandSelectedCoverage };
             }
         } catch (Throwable e) {
-        	CoverageCleanerCallback.addCoverages(coverage);
+            if (coverage != null) {
+                CoverageCleanerCallback.addCoverages(coverage);
+            }
             if (e instanceof WcsException) {
                 throw (WcsException) e;
             } else {
@@ -552,9 +568,9 @@ public class DefaultWebCoverageService111 implements WebCoverageService111 {
 
     }
 
-    private Double[] estimateOffsets(final GridCoverage2DReader reader,
-            final GridCrsType gridCRS, MathTransform gridToCRS,
-            final GeneralEnvelope intersectionEnvelope, boolean reprojectionNeeded) {
+    private Double[] estimateOffsets(final GridCoverage2DReader reader, final GridCrsType gridCRS,
+            MathTransform gridToCRS, final GeneralEnvelope intersectionEnvelope,
+            boolean reprojectionNeeded) {
         Double[] offsets;
         if (!(gridToCRS instanceof AffineTransform2D) && !(gridToCRS instanceof IdentityTransform))
             throw new WcsException(
@@ -581,7 +597,8 @@ public class DefaultWebCoverageService111 implements WebCoverageService111 {
                 }
             } else {
                 AffineTransform2D at = (AffineTransform2D) gridToCRS;
-                offsets = new Double[] { at.getScaleX(), at.getShearX(), 0d, at.getShearY(), at.getScaleY(), 0d};
+                offsets = new Double[] { at.getScaleX(), at.getShearX(), 0d, at.getShearY(),
+                        at.getScaleY(), 0d };
             }
         } else {
             // the input resolution is going to be completed unrelated to the output one
@@ -597,7 +614,8 @@ public class DefaultWebCoverageService111 implements WebCoverageService111 {
             double scaleX = teWidth / targetRasterWidth;
             double scaleY = -teHeight / targetRasterHeight;
 
-            if (gridCRS == null ||  gridCRS.getGridType().equals(GridType.GT2dSimpleGrid.getXmlConstant())
+            if (gridCRS == null
+                    || gridCRS.getGridType().equals(GridType.GT2dSimpleGrid.getXmlConstant())
                     || gridCRS.getGridType().equals(GridType.GT2dGridIn2dCrs.getXmlConstant())) {
                 offsets = new Double[] { scaleX, scaleY };
             } else {
@@ -610,28 +628,29 @@ public class DefaultWebCoverageService111 implements WebCoverageService111 {
     private void checkDomainSubset(CoverageInfo meta, DomainSubsetType domainSubset, WCSInfo wcs)
             throws Exception {
         BoundingBoxType bbox = domainSubset.getBoundingBox();
-        
-        // domain subset should actually be always specified, but we try to be more lenient 
+
+        // domain subset should actually be always specified, but we try to be more lenient
         // (we should probably have a "strict cite" behavior
-        if(bbox == null) {
+        if (bbox == null) {
             return;
         }
-        
+
         // workaround for http://jira.codehaus.org/browse/GEOT-1710
-        if("urn:ogc:def:crs:OGC:1.3:CRS84".equals(bbox.getCrs())) {
+        if ("urn:ogc:def:crs:OGC:1.3:CRS84".equals(bbox.getCrs())) {
             bbox.setCrs("EPSG:4326");
         }
-        
+
         CoordinateReferenceSystem bboxCRs = CRS.decode(bbox.getCrs());
-        GridCoverage2DReader reader = (GridCoverage2DReader) meta.getGridCoverageReader(null, WCSUtils.getReaderHints(wcs));
+        GridCoverage2DReader reader = (GridCoverage2DReader) meta.getGridCoverageReader(null,
+                WCSUtils.getReaderHints(wcs));
         Envelope gridEnvelope = reader.getOriginalEnvelope();
         GeneralEnvelope gridEnvelopeBboxCRS = null;
         if (bboxCRs instanceof GeographicCRS) {
             try {
                 CoordinateOperationFactory cof = CRS.getCoordinateOperationFactory(true);
 
-                final CoordinateOperation operation = cof.createOperation(gridEnvelope
-                        .getCoordinateReferenceSystem(), bboxCRs);
+                final CoordinateOperation operation = cof.createOperation(
+                        gridEnvelope.getCoordinateReferenceSystem(), bboxCRs);
                 gridEnvelopeBboxCRS = CRS.transform(operation, gridEnvelope);
             } catch (Exception e) {
                 // this may happen, there is nothing we can do about it, we just
@@ -656,13 +675,18 @@ public class DefaultWebCoverageService111 implements WebCoverageService111 {
                         // try to guess which one needs to be fixed
                         final double envMax = gridEnvelopeBboxCRS.getMaximum(i);
                         if (envMax >= lower.get(i))
-                            upper.set(i, upper.get(i) + (axis.getMaximumValue() - axis.getMinimumValue()));
+                            upper.set(i,
+                                    upper.get(i)
+                                            + (axis.getMaximumValue() - axis.getMinimumValue()));
                         else
-                            lower.set(i, lower.get(i) - (axis.getMaximumValue() - axis.getMinimumValue()));
-                            
+                            lower.set(i,
+                                    lower.get(i)
+                                            - (axis.getMaximumValue() - axis.getMinimumValue()));
+
                     } else {
                         // just fix the upper and hope...
-                        upper.set(i, upper.get(i) + (axis.getMaximumValue() - axis.getMinimumValue()));
+                        upper.set(i,
+                                upper.get(i) + (axis.getMaximumValue() - axis.getMinimumValue()));
                     }
                 }
 
@@ -678,9 +702,8 @@ public class DefaultWebCoverageService111 implements WebCoverageService111 {
     }
 
     /**
-     * Checks that the elements of the Output part of the request do make sense
-     * by comparing them to the coverage metadata
-     * 
+     * Checks that the elements of the Output part of the request do make sense by comparing them to the coverage metadata
+     *
      * @param info
      * @param rangeSubset
      */
@@ -797,8 +820,7 @@ public class DefaultWebCoverageService111 implements WebCoverageService111 {
     }
 
     /**
-     * Extracts only the final part of an EPSG code allowing for a specification
-     * independent comparison (that is, it removes the EPSG:, urn:xxx:,
+     * Extracts only the final part of an EPSG code allowing for a specification independent comparison (that is, it removes the EPSG:, urn:xxx:,
      * http://... prefixes)
      * 
      * @param srsName
@@ -816,9 +838,8 @@ public class DefaultWebCoverageService111 implements WebCoverageService111 {
     }
 
     /**
-     * Checks if the supported format string list contains the specified format,
-     * doing a case insensitive search. If found the declared output format name
-     * is returned, otherwise null is returned.
+     * Checks if the supported format string list contains the specified format, doing a case insensitive search. If found the declared output format
+     * name is returned, otherwise null is returned.
      * 
      * @param supportedFormats
      * @param format
@@ -842,8 +863,7 @@ public class DefaultWebCoverageService111 implements WebCoverageService111 {
     }
 
     /**
-     * Checks that the elements of the RangeSubset part of the request do make
-     * sense by comparing them to the coverage metadata
+     * Checks that the elements of the RangeSubset part of the request do make sense by comparing them to the coverage metadata
      * 
      * @param info
      * @param rangeSubset
@@ -870,12 +890,17 @@ public class DefaultWebCoverageService111 implements WebCoverageService111 {
             boolean interpolationSupported = false;
 
             if (interpolation.equalsIgnoreCase("nearest")) {
-                interpolation = "nearest neighbor";
+                interpolation = "nearest";
+            } else if (interpolation.equalsIgnoreCase("cubic") || interpolation.equalsIgnoreCase("bicubic")) {
+                interpolation = "bicubic";
+            } else if (interpolation.equalsIgnoreCase("linear") || interpolation.equalsIgnoreCase("bilinear")) {
+                interpolation = "bilinear";
             }
-            for (Iterator it = info.getInterpolationMethods().iterator(); it.hasNext();) {
-                String method = (String) it.next();
-                if (interpolation.equalsIgnoreCase(method)) {
+
+            for (String method : info.getInterpolationMethods()) {
+                if (method.toLowerCase().startsWith(interpolation)) {
                     interpolationSupported = true;
+                    break;
                 }
             }
 
@@ -929,31 +954,28 @@ public class DefaultWebCoverageService111 implements WebCoverageService111 {
                 keys.set(j, parsedKey);
         }
     }
-    
+
     /**
      * 
      * @param date
      * @return
      */
-    private static Date cvtToGmt( Date date )
-    {
-       TimeZone tz = TimeZone.getDefault();
-       Date ret = new Date( date.getTime() - tz.getRawOffset() );
+    private static Date cvtToGmt(Date date) {
+        TimeZone tz = TimeZone.getDefault();
+        Date ret = new Date(date.getTime() - tz.getRawOffset());
 
-       // if we are now in DST, back off by the delta.  Note that we are checking the GMT date, this is the KEY.
-       if ( tz.inDaylightTime( ret ))
-       {
-          Date dstDate = new Date( ret.getTime() - tz.getDSTSavings() );
+        // if we are now in DST, back off by the delta. Note that we are checking the GMT date, this is the KEY.
+        if (tz.inDaylightTime(ret)) {
+            Date dstDate = new Date(ret.getTime() - tz.getDSTSavings());
 
-          // check to make sure we have not crossed back into standard time
-          // this happens when we are on the cusp of DST (7pm the day before the change for PDT)
-          if ( tz.inDaylightTime( dstDate ))
-          {
-             ret = dstDate;
-          }
-       }
+            // check to make sure we have not crossed back into standard time
+            // this happens when we are on the cusp of DST (7pm the day before the change for PDT)
+            if (tz.inDaylightTime(dstDate)) {
+                ret = dstDate;
+            }
+        }
 
-       return ret;
+        return ret;
     }
 
 }

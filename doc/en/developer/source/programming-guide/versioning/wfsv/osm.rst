@@ -26,7 +26,7 @@ Geometry concept
 
 Geometries are not simple features, they are topologies:
 
-    * Node is the basic concept, it's a point. A node cab be shared by various segments (as start or end point).
+    * Node is the basic concept, it's a point. A node can be shared by various segments (as start or end point).
     * Segment is a straight line between two nodes used to build ways and areas. Segments can be shared between various ways and areas;
     * Way is a set of segments.
     * Area is a set of segments as well. Apparently holes are not supported, not sure about multipolygons.
@@ -56,7 +56,7 @@ A few considerations here:
 
 * all calls are authenticated using basic authentication, in order to provide attribution;
 * there's no transaction concept, in order to add a new way you have perform three different requests, to separately add nodes, segments and areas. This seems to be quite fragile data consistency wise.
-* there is no commit message support, neither dirty area support, so it's hard to tell what was done in each commit... this is consistent with the lack of transaction thought.
+* there is no commit message support, neither dirty area support, so it's hard to tell what was done in each commit... this is consistent with the lack of transaction throughout.
 * there's no explicit rollback operation, thought data structures are in place to support it?
 * even if version number are handled internally, they are not shown in the xml format.
 

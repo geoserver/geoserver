@@ -1,21 +1,8 @@
-/*
- *  Copyright (C) 2007-2008-2009 GeoSolutions S.A.S.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * Copyright (C) 2007-2008-2009 GeoSolutions S.A.S.
  *  http://www.geo-solutions.it
- *
- *  GPLv3 + Classpath exception
- *
- *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
  */
 package org.geoserver.sldservice.rest.resource;
 
@@ -52,6 +39,8 @@ import org.geoserver.sldservice.utils.classifier.impl.BlueColorRamp;
 import org.geoserver.sldservice.utils.classifier.impl.CustomColorRamp;
 import org.geoserver.sldservice.utils.classifier.impl.RandomColorRamp;
 import org.geoserver.sldservice.utils.classifier.impl.RedColorRamp;
+import org.geoserver.sldservice.utils.classifier.impl.JetColorRamp;
+import org.geoserver.sldservice.utils.classifier.impl.GrayColorRamp;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.styling.Rule;
 import org.geotools.styling.SLDTransformer;
@@ -104,9 +93,9 @@ public class ClassifierResource extends AbstractCatalogResource {
 		if (layer == null) {
 			return new ArrayList();
 		}
-
+		try {
 		final LayerInfo layerInfo = catalog.getLayerByName(layer);
-		if (layerInfo != null) {
+		if (layerInfo != null && layerInfo.getResource() instanceof FeatureTypeInfo) {
 			final List<Rule> rules = this.generateClassifiedSLD(attributes, parameters);
 			RulesList jsonRules = null;
 
@@ -121,6 +110,9 @@ public class ClassifierResource extends AbstractCatalogResource {
 		}
 		
 		return new ArrayList();
+		} catch(IllegalArgumentException e) {
+			return e.getMessage();
+		}
 	}
 
 	@Override
@@ -265,8 +257,11 @@ public class ClassifierResource extends AbstractCatalogResource {
 			final String property = form.getFirstValue("attribute");
 			final String method = form.getFirstValue("method", "equalInterval");
 			final String intervals = form.getFirstValue("intervals", "2");
+			final String intervalsForUnique = form.getFirstValue("intervals", "-1");
 			final String open = form.getFirstValue("open", "false");
-			final String colorRamp = form.getFirstValue("ramp");
+			final String colorRamp = form.getFirstValue("ramp", "red");
+            final boolean reverse = Boolean.parseBoolean(form.getFirstValue("reverse"));
+            final boolean normalize = Boolean.parseBoolean(form.getFirstValue("normalize"));
 
 			if (property != null && property.length() > 0) {
 				/* First try to find as a FeatureType */
@@ -279,13 +274,15 @@ public class ClassifierResource extends AbstractCatalogResource {
 							final FeatureType ftType = ((FeatureTypeInfo) obj).getFeatureType();
 							final FeatureCollection ftCollection = ((FeatureTypeInfo) obj).getFeatureSource(new NullProgressListener(), null).getFeatures();
 							List<Rule> rules = null;
-
+							Class<?> propertyType = ftType.getDescriptor(property).getType().getBinding();
 							if ("equalInterval".equals(method)) {
-								rules = builder.equalIntervalClassification(ftCollection, property, Integer.parseInt(intervals), Boolean.parseBoolean(open));
+								rules = builder.equalIntervalClassification(ftCollection, property, propertyType, Integer.parseInt(intervals), Boolean.parseBoolean(open), normalize);
 							} else if ("uniqueInterval".equals(method)) {
-								rules = builder.uniqueIntervalClassification(ftCollection, property);
+								rules = builder.uniqueIntervalClassification(ftCollection, property, propertyType, Integer.parseInt(intervalsForUnique), normalize);
 							} else if ("quantile".equals(method)) {
-								rules = builder.quantileClassification(ftCollection, property, Integer.parseInt(intervals), Boolean.parseBoolean(open));
+								rules = builder.quantileClassification(ftCollection, property, propertyType, Integer.parseInt(intervals), Boolean.parseBoolean(open), normalize);
+							} else if ("jenks".equals(method)) {
+                                                                rules = builder.jenksClassification(ftCollection, property, propertyType, Integer.parseInt(intervals), Boolean.parseBoolean(open), normalize);
 							}
 
 							if (colorRamp != null && colorRamp.length() > 0) {
@@ -296,6 +293,10 @@ public class ClassifierResource extends AbstractCatalogResource {
 									ramp = (ColorRamp) new RedColorRamp();
 								else if (colorRamp.equalsIgnoreCase("blue"))
 									ramp = (ColorRamp) new BlueColorRamp();
+                                else if (colorRamp.equalsIgnoreCase("jet"))
+                                    ramp = (ColorRamp) new JetColorRamp();
+                                else if (colorRamp.equalsIgnoreCase("gray"))
+                                    ramp = (ColorRamp) new GrayColorRamp();
 								else if (colorRamp.equalsIgnoreCase("custom")) {
 									Color startColor = Color.decode(form.getFirst("startColor").getValue());
 									Color endColor = Color.decode(form.getFirst("endColor").getValue());
@@ -316,17 +317,22 @@ public class ClassifierResource extends AbstractCatalogResource {
 								 * Line Symbolizer
 								 */
 								if (geomT == LineString.class || geomT == MultiLineString.class) {
-									builder.lineStyle(rules, ramp);
+									builder.lineStyle(rules, ramp, reverse);
+								} 
+								
+								/*
+								 * Point Symbolizer
+								 */
+								else if(geomT == Point.class || geomT == MultiPoint.class) {
+									builder.pointStyle(rules, ramp, reverse);
 								}
 
 								/*
 								 * Polygon Symbolyzer
 								 */
 								else if (geomT == MultiPolygon.class
-										|| geomT == Polygon.class
-										|| geomT == Point.class
-										|| geomT == MultiPoint.class) {
-									builder.polygonStyle(rules, ramp);
+										|| geomT == Polygon.class) {
+									builder.polygonStyle(rules, ramp, reverse);
 								}
 							}
 
@@ -436,20 +442,12 @@ public class ClassifierResource extends AbstractCatalogResource {
 							final JSONObject child = (JSONObject) ((JSONArray) obj).get(i);
 							writer.startNode((String) key);
 							for (Object cKey : child.keySet()) {
-								if (!((String) cKey).startsWith("@")) {
-									writer.startNode((String) cKey);
-									writeChild(writer, child.get(cKey));
-									writer.endNode();
-								} else {
-									writer.addAttribute(((String) cKey).substring(1), (String) child.get(cKey));
-								}
+								writeKey(writer, child, (String) cKey);
 							}
 							writer.endNode();
 						}
 					} else {
-						writer.startNode((String) key);
-						writeChild(writer, obj);
-						writer.endNode();
+						writeKey(writer, (JSONObject)object, (String)key);
 					}
 				}
 			} else if (object instanceof JSONArray) {
@@ -469,6 +467,19 @@ public class ClassifierResource extends AbstractCatalogResource {
 				}
 			} else {
 				writer.setValue(object.toString());
+			}
+		}
+
+		private void writeKey(HierarchicalStreamWriter writer,
+				final JSONObject child, String key) {
+			if (key.startsWith("@")) {
+				writer.addAttribute(((String) key).substring(1), (String) child.get(key));				
+			} else if(key.startsWith("#")) {
+				writer.setValue((String) child.get(key));
+			} else {
+				writer.startNode(key);
+				writeChild(writer, child.get(key));
+				writer.endNode();
 			}
 		}
 

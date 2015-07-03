@@ -1,5 +1,5 @@
-/* 
- * Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -20,6 +20,7 @@ import freemarker.template.TemplateCollectionModel;
 import freemarker.template.TemplateModel;
 import freemarker.template.TemplateModelException;
 import freemarker.template.TemplateModelIterator;
+import freemarker.template.TemplateSequenceModel;
 
 /**
  * 
@@ -30,7 +31,7 @@ import freemarker.template.TemplateModelIterator;
  * @author Niels Charlier, Curtin University of Technology
  * 
  */
-public class DirectTemplateFeatureCollectionFactory implements FeatureWrapper.TemplateFeatureCollectionFactory {
+public class DirectTemplateFeatureCollectionFactory implements FeatureWrapper.TemplateFeatureCollectionFactory<DirectTemplateFeatureCollectionFactory.TemplateFeatureCollection> {
 
     static Logger LOGGER = Logging.getLogger(DirectTemplateFeatureCollectionFactory.class);
 
@@ -55,16 +56,25 @@ public class DirectTemplateFeatureCollectionFactory implements FeatureWrapper.Te
             ITERATORS.remove();
         }
     }
+    
+    public DirectTemplateFeatureCollectionFactory() {
+    }
 
     public TemplateCollectionModel createTemplateFeatureCollection(FeatureCollection collection,
             BeansWrapper wrapper) {
         return new TemplateFeatureCollection(collection, wrapper);
     }
-
-    protected class TemplateFeatureCollection implements TemplateCollectionModel {
+    
+    protected class TemplateFeatureCollection implements TemplateCollectionModel, TemplateSequenceModel {
         protected BeansWrapper wrapper;
 
         protected FeatureCollection collection;
+        
+        protected TemplateFeatureIterator indexIterator = null;
+        
+        protected int currentIndex = -1;
+        
+        protected TemplateModel currentItem = null;
 
         public TemplateFeatureCollection(FeatureCollection collection, BeansWrapper wrapper) {
             this.collection = collection;
@@ -80,6 +90,39 @@ public class DirectTemplateFeatureCollectionFactory implements FeatureWrapper.Te
             }
             open.add(it);
             return it;
+        }
+
+        @Override
+        public TemplateModel get(int index) throws TemplateModelException {
+            if (currentIndex > index ) {
+                //we have gone backwards, close iterator and clean up as we will need to start over
+                if (indexIterator != null) {
+                    ITERATORS.get().remove(indexIterator);
+                    try {
+                        indexIterator.close();
+                    }
+                    catch(Throwable t) {
+                        LOGGER.log(Level.WARNING, "Error closing iterator", t);
+                    }
+                    indexIterator = null;
+                }
+                currentIndex = -1;
+                currentItem = null;
+            }
+            if (indexIterator == null) {
+                indexIterator = (TemplateFeatureIterator) iterator();
+            }
+            while (currentIndex < index && indexIterator.hasNext()) {
+                //forward to correct index
+                currentItem = indexIterator.next();
+                currentIndex++;
+            }
+            return index == currentIndex ? currentItem : null;
+        }
+
+        @Override
+        public int size() throws TemplateModelException {
+            return collection.size();
         }
 
     }

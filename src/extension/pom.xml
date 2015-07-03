@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!-- 
- Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ Copyright (C) 2014 - Open Source Geospatial Foundation. All rights reserved.
  This code is licensed under the GPL 2.0 license, available at the root
  application directory.
  -->
@@ -11,7 +11,7 @@
   <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>geoserver</artifactId>
-    <version>2.4-SNAPSHOT</version>
+    <version>2.8-SNAPSHOT</version>
   </parent>
 
   <groupId>org.geoserver</groupId>
@@ -22,7 +22,7 @@
   <dependencies>
     <dependency>
       <groupId>org.geoserver</groupId>
-      <artifactId>platform</artifactId>
+      <artifactId>gs-platform</artifactId>
     </dependency>
   </dependencies>
 
@@ -163,13 +163,6 @@
     </profile>
 
     <profile>
-      <id>validation</id>
-      <modules>
-        <module>validation</module>
-      </modules>
-    </profile>
-
-    <profile>
       <id>charts</id>
       <modules>
         <module>charts</module>
@@ -250,6 +243,48 @@
         <module>css</module>
       </modules>
     </profile>
+    
+    <profile>      
+      <id>csw</id>
+      <modules>
+        <module>csw</module>
+      </modules>
+    </profile>
+    
+    <profile>
+      <id>dxf</id>
+      <modules>
+        <module>dxf</module>
+      </modules>
+    </profile>
+    
+    <profile>
+      <id>printing</id>
+      <modules>
+        <module>printing</module>
+      </modules>
+    </profile>
+
+    <profile>
+      <id>wcs2_0-eo</id>
+      <modules>
+        <module>wcs2_0-eo</module>
+      </modules>
+    </profile>
+
+    <profile>
+      <id>libjpeg-turbo</id>
+      <modules>
+        <module>libjpeg-turbo</module>
+      </modules>
+    </profile>
+
+    <profile>
+      <id>importer</id>
+      <modules>
+        <module>importer</module>
+      </modules>
+    </profile>
 
     <!-- allExtensions profile, includes all modules -->
     <profile>
@@ -268,7 +303,6 @@
         <module>jp2k</module>
         <module>ogr</module>
         <module>excel</module>
-        <module>validation</module>
         <module>charts</module>
         <module>feature-pregeneralized</module>
         <module>imagemosaic-jdbc</module>
@@ -280,7 +314,13 @@
         <module>security</module>
         <module>xslt</module>
         <module>inspire</module>
-        <module>css</module>
+        <module>css</module>	
+        <module>csw</module>
+        <module>dxf</module>
+        <module>printing</module>
+        <module>wcs2_0-eo</module>
+        <module>libjpeg-turbo</module>
+        <module>importer</module>
       </modules>
     </profile>
 
@@ -301,7 +341,6 @@
         <module>jp2k</module>
         <module>ogr</module>
         <module>excel</module>
-        <module>validation</module>
         <module>charts</module>
         <module>feature-pregeneralized</module>
         <module>imagemosaic-jdbc</module>
@@ -314,6 +353,12 @@
         <module>xslt</module>
         <module>inspire</module>
         <module>css</module>
+        <module>csw</module>
+        <module>dxf</module>
+        <module>printing</module>
+        <module>wcs2_0-eo</module>
+        <module>libjpeg-turbo</module>
+        <module>importer</module>
       </modules>
     </profile>
 

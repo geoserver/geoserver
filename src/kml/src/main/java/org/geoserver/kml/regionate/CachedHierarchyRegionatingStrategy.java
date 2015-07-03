@@ -1,9 +1,11 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.kml.regionate;
 
+import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -21,7 +23,10 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.HttpErrorCodeException;
+import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.ServiceException;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.wms.WMSMapContent;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.jdbc.JDBCUtils;
@@ -42,7 +47,6 @@ import org.opengis.filter.identity.FeatureId;
 import org.opengis.geometry.BoundingBox;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
-import org.vfny.geoserver.global.GeoserverDataDirectory;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
@@ -184,11 +188,16 @@ public abstract class CachedHierarchyRegionatingStrategy implements
 
     public void clearCache(FeatureTypeInfo cfg){
         try{
-            DeleteDbFiles.execute(
-                GeoserverDataDirectory.findCreateConfigDir("geosearch").getCanonicalPath(),
-                "h2cache_" + getDatabaseName(cfg),
-                true
-                );
+            GeoServerResourceLoader loader = gs.getCatalog().getResourceLoader();
+            Resource geosearch = loader.get("geosearch");
+            if( geosearch.getType() == Type.DIRECTORY ){
+                File directory = geosearch.dir();
+                DeleteDbFiles.execute(
+                        directory.getCanonicalPath(),
+                    "h2cache_" + getDatabaseName(cfg),
+                    true
+                    );
+            }
         } catch (Exception ioe) {
             LOGGER.severe("Couldn't clear out config dir due to: " + ioe);
         }

@@ -1,5 +1,5 @@
-/* 
- * Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -13,9 +13,14 @@ import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -26,6 +31,7 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.util.KvpMap;
 import org.geoserver.ows.util.KvpUtils;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.Service;
 import org.geoserver.wfs.DescribeFeatureType;
@@ -35,6 +41,7 @@ import org.geoserver.wfs.kvp.DescribeFeatureTypeKvpRequestReader;
 import org.geoserver.wfs.request.DescribeFeatureTypeRequest;
 import org.geoserver.wfs.xml.v1_1_0.XmlSchemaEncoder;
 import org.geotools.util.logging.Logging;
+import org.geotools.xml.Parser;
 
 /**
  * URI handler that handles reflective references back to the server to avoid processing them in 
@@ -51,32 +58,95 @@ public class WFSURIHandler extends URIHandlerImpl {
     }
 
     static final List<InetAddress> ADDRESSES = new ArrayList<InetAddress>();
-    static {
-        if (!DISABLED) {
-            // in order to determine if a request is reflective we need to know what all the 
-            // addresses and hostnames that we are addressable on. Since hostnames are expensive we 
-            // do it once and cache the results
+    
+    static final Set<String> ADDITIONAL_HOSTNAMES = new HashSet<String>();
+    
+    public static void addToParser(GeoServer geoServer, Parser parser) {
+        parser.getURIHandlers().add(0, new WFSURIHandler(geoServer));
+    }
+    
+    // Allows for unit testing.
+    static class InitStrategy {
+        public Collection<NetworkInterface> getNetworkInterfaces(){
             Enumeration<NetworkInterface> e = null;
             try {
                 e = NetworkInterface.getNetworkInterfaces();
             } catch (SocketException ex) {
                 LOGGER.log(Level.WARNING, "Unable to determine network interface info", ex);
             } 
-            while(e != null && e.hasMoreElements()) {
-                NetworkInterface ni = e.nextElement();
-                Enumeration<InetAddress> f = ni.getInetAddresses();
-                while(f.hasMoreElements()) {
-                    InetAddress add = f.nextElement();
+            
+            return Collections.list(e);
+        }
+        
+    }
     
-                    //do the hostname lookup, these are cached after the first call so we only pay the
-                    // price now
-                    add.getHostName();
-                    ADDRESSES.add(add);
-                }
-            }
+    static {
+        init(new InitStrategy());
+    }
+
+    static void init(InitStrategy strategy) {
+        if (!DISABLED) {
+            initAddresses(strategy);
+            initAliases();
+            initLog();
         }
     }
 
+    private static void initLog() {
+        // Log hostnames being treated as reflexive
+        if(LOGGER.isLoggable(Level.INFO)){
+            StringBuilder builder = new StringBuilder("Identified addresses and hostnames for local interfaces: ");
+            boolean first = true;
+            for(InetAddress add: ADDRESSES) {
+                if(!first){
+                    builder.append(", ");
+                }
+                first = false;
+                builder.append(add.getHostAddress());
+                builder.append(" ");
+                builder.append(add.getHostName());
+            }
+            LOGGER.log(Level.INFO, builder.toString());
+            
+            builder = new StringBuilder("Additional aliases for local host: ");
+            for(String alias: ADDITIONAL_HOSTNAMES) {
+                builder.append(alias);
+                builder.append(" ");
+            }
+            LOGGER.log(Level.INFO, builder.toString());
+        }
+    }
+
+    private static void initAliases() {
+        assert ADDITIONAL_HOSTNAMES.isEmpty();
+        // User configurable hostnames
+        String additional = GeoServerExtensions.getProperty(WFSURIHandler.class.getName()+".additionalHostnames");
+        if(additional==null){
+            additional="localhost";
+        }
+        ADDITIONAL_HOSTNAMES.addAll(Arrays.asList(additional.split("\\s*,\\s*|\\s+")));
+    }
+
+    private static void initAddresses(InitStrategy strategy) {
+        assert ADDRESSES.isEmpty();
+        // in order to determine if a request is reflective we need to know what all the 
+        // addresses and hostnames that we are addressable on. Since hostnames are expensive we 
+        // do it once and cache the results
+        
+        ADDRESSES.clear();
+        for(NetworkInterface ni: strategy.getNetworkInterfaces()) {
+            for(InetAddress add: Collections.list(ni.getInetAddresses())) {
+                
+                //do the hostname lookup, these are cached after the first call so we only pay the
+                // price now
+                add.getHostName();
+                
+                ADDRESSES.add(add);
+            }
+        }
+    }
+    
+    
     GeoServer geoServer;
    
     public WFSURIHandler(GeoServer geoServer) {
@@ -125,13 +195,18 @@ public class WFSURIHandler extends URIHandlerImpl {
                 LOGGER.fine("Unable to parse proxy base url to a uri: " + proxyBaseUrl);
             }
         }
-        
+        if (ADDITIONAL_HOSTNAMES.contains(uri.host())) {
+            LOGGER.log(Level.FINE, "Hostname {0} is in known aliases for self", new Object[]{uri.host()});
+            return true;
+        }
         //check the network interfaces to see if the host matches
         for (InetAddress add : ADDRESSES) {
             if (uri.host().equals(add.getHostAddress()) || uri.host().equals(add.getHostName())) {
+                LOGGER.log(Level.FINE, "Hostname {0} identifies local network interface {1} {2}", new Object[]{uri.host(), add.getHostAddress(), add.getHostName()});
                 return true;
             }
         }
+        LOGGER.log(Level.FINE, "Assuming hostname {0} does not refer to self.  If this is wrong may lead to deadlock.", new Object[]{uri.host()});
         return false;
     }
 

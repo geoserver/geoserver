@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -36,7 +37,7 @@ public class SLDStylePPIO extends XMLPPIO {
 
     @Override
     public Object decode(InputStream input) throws Exception {
-        Parser p = new Parser(sldConfiguration);
+        Parser p = getParser(sldConfiguration);
 
         // extract the first style in the first sld
         StyledLayerDescriptor sld = (StyledLayerDescriptor) p.parse(input);
@@ -59,7 +60,7 @@ public class SLDStylePPIO extends XMLPPIO {
     
     @Override
     public Object decode(Object input) throws Exception {
-        Parser p = new Parser(sldConfiguration);
+        Parser p = getParser(sldConfiguration);
 
         // extract the first style in the first sld
         StyledLayerDescriptor sld = (StyledLayerDescriptor) p.parse(new StringReader((String) input));

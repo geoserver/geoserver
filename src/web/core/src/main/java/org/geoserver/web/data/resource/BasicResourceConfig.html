@@ -13,19 +13,19 @@
           <ul>
             <li>
               <label for="name"><wicket:message key="name">Name</wicket:message></label>
-              <input id="name" class="text" type="text" wicket:id="name"></input>
+              <input id="name" class="text" type="text" wicket:id="name"/>
             </li>
             <li>
-              <input id="basic-enabled" class="field checkbox" wicket:id="enabled" type="checkbox"></input>
-              <label for="basic-enabled" class="choice"><wicket:message key="enabled">Enabled</wicket:message></label>
+              <input id="basic-enabled" class="field checkbox" wicket:id="enabled" type="checkbox"/>
+              <label class="choice"><wicket:message key="enabled">Enabled</wicket:message></label>
             </li>
 	        <li>
-	          <input id="basic-advertised" class="field checkbox" wicket:id="advertised" type="checkbox"></input>
-	          <label for="basic-advertised" class="choice"><wicket:message key="advertised">Advertised</wicket:message></label>
+	          <input id="basic-advertised" class="field checkbox" wicket:id="advertised" type="checkbox"/>
+	          <label class="choice"><wicket:message key="advertised">Advertised</wicket:message></label>
 	        </li>
             <li>
               <label for="title"><wicket:message key="titleMsg">Title</wicket:message></label>
-              <input id="title" class="text" type="text" wicket:id="title"></input>
+              <input id="title" class="text" type="text" wicket:id="title"/>
             </li>
             <li>
               <label for="abstract"><wicket:message key="abstract">Abstract</wicket:message></label>
@@ -46,7 +46,17 @@
           <ul>
             <li>
               <div wicket:id="metadataLinks"></div>
-            </li>   
+            </li>
+          </ul>
+        </fieldset>
+      </li>
+      <li>
+        <fieldset>
+          <legend><span><wicket:message key="dataLinks">Data links</wicket:message></span></legend>
+          <ul>
+            <li>
+              <div wicket:id="dataLinks"></div>
+            </li>
           </ul>
         </fieldset>
       </li>
@@ -66,7 +76,7 @@
             <li>
               <label for="srsHandling"><wicket:message key="srsHandling">SRS handling</wicket:message></label>
               <select id="srsHandling" wicket:id="srsHandling"></select>
-            </li>            
+            </li>
           </ul>
         </fieldset>
       </li>
@@ -92,8 +102,8 @@
     </wicket:panel>
     <ul>
       <li class="button-group selfclear">
-        <input class="btnTxt" wicket:id="submit" type="submit"><wicket:message key="submit"/></input>
-        <input class="btnTxt" wicket:id="cancel" type="submit"><wicket:message key="cancel"/></input> 
+        <input class="btnTxt" wicket:id="submit" type="submit"/><wicket:message key="submit"/>
+        <input class="btnTxt" wicket:id="cancel" type="submit"/><wicket:message key="cancel"/>
       </li>
     </ul>
   </form>

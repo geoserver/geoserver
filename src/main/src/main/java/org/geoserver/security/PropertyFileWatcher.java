@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -10,12 +11,12 @@ import java.io.InputStream;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
 import org.geoserver.platform.FileWatcher;
+import org.geoserver.platform.resource.Resource;
 
 
 /**
@@ -23,14 +24,21 @@ import org.geoserver.platform.FileWatcher;
  * date on the specified file, and allows to read a Properties out of it.
  *
  * @author Andrea Aime
- *
  */
 public class PropertyFileWatcher extends FileWatcher<Properties> {
-    
+    public PropertyFileWatcher(Resource resource) {
+        super(resource);
+    }
+    @Deprecated
     public PropertyFileWatcher(File file) {
         super(file);
     }
-
+    /**
+     * Read properties from file.
+     * 
+     * @return properties from file, or null if file does not exist yet
+     * @throws IOException
+     */
     public Properties getProperties() throws IOException {
         return read();
     }
@@ -61,6 +69,7 @@ public class PropertyFileWatcher extends FileWatcher<Properties> {
         
         public LinkedProperties(Properties defaults) {
             super(defaults);
+            this.linkMap.putAll(defaults);
         }
         
         @Override
@@ -131,6 +140,16 @@ public class PropertyFileWatcher extends FileWatcher<Properties> {
         @Override
         public synchronized boolean containsKey(Object key) {
             return linkMap.containsKey(key);
+        }
+
+        @Override
+        public synchronized int size() {
+            return linkMap.size();
+        }
+
+        @Override
+        public synchronized String toString() {
+            return linkMap.toString();
         }
 
     }

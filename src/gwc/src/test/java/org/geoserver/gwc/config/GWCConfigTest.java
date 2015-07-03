@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -12,6 +13,7 @@ import static junit.framework.Assert.assertTrue;
 
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.test.GeoServerSystemTestSupport;
+import org.geowebcache.storage.blobstore.memory.guava.GuavaCacheProvider;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -78,6 +80,8 @@ public class GWCConfigTest extends GeoServerSystemTestSupport {
                 clone.getDefaultCoverageCacheFormats());
         assertNotSame(config.getDefaultOtherCacheFormats(), clone.getDefaultOtherCacheFormats());
         assertNotSame(config.getDefaultVectorCacheFormats(), clone.getDefaultVectorCacheFormats());
+        assertNotSame(config.getCacheConfigurations(), clone.getCacheConfigurations());
+        assertTrue(clone.getCacheConfigurations().containsKey(GuavaCacheProvider.class.toString()));
     }
 
     @Test

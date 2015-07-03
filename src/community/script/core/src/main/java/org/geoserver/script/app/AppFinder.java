@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -12,7 +13,7 @@ import java.io.IOException;
 import org.apache.commons.io.FilenameUtils;
 import org.geoserver.rest.RestletException;
 import org.geoserver.script.ScriptManager;
-import org.restlet.Finder;
+import org.geoserver.script.rest.FinderSupport;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
@@ -26,16 +27,14 @@ import org.restlet.resource.Resource;
  * @author Justin Deoliveira, OpenGeo
  *
  */
-public class AppFinder extends Finder {
+public class AppFinder extends FinderSupport {
 
-    ScriptManager scriptMgr;
-    
     public AppFinder(ScriptManager scriptMgr) {
-        this.scriptMgr = scriptMgr;
+        super(scriptMgr);
     }
    
     @Override
-    public Resource findTarget(Request request, Response response) {
+    protected Resource doFindTarget(Request request, Response response) {
         String app = (String) request.getAttributes().get("app");
 
         if (app == null) {
@@ -55,13 +54,7 @@ public class AppFinder extends Finder {
         }
 
         //look for main script
-        File main = null;
-        for (File f : appDir.listFiles()) {
-            if ("main".equals(FilenameUtils.getBaseName(f.getName()))) {
-                main = f;
-                break;
-            }
-        }
+        File main = scriptMgr.findAppMainScript(appDir);
         if (main == null) {
             throw new RestletException(format("No main file for app %s", app), Status.CLIENT_ERROR_NOT_FOUND);
         }

@@ -1,10 +1,10 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.script.js.engine;
 
-import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 
@@ -57,9 +57,13 @@ public class CommonJSEngine extends AbstractScriptEngine implements Invocable {
             filename = "<Unknown Source>";
         }
         Object result;
-        EngineScope scope = getRuntimeScope(context);
+        EngineScope scope = new EngineScope(context);
+        Global global = getGlobal();
+        scope.setParentScope(global);
+        scope.setPrototype(global);
         Context cx = enterContext();
         try {
+            scope.put("exports", scope, cx.newObject(global));
             result = cx.evaluateReader(scope, reader, filename, 1, null);
         } catch (EcmaError e) {
             throw new ScriptException(e.getMessage(), e.sourceName(), e.lineNumber(), e.columnNumber());
@@ -78,20 +82,6 @@ public class CommonJSEngine extends AbstractScriptEngine implements Invocable {
     
     private Global getGlobal() {
         return factory.getGlobal();
-    }
-
-    private EngineScope getRuntimeScope(ScriptContext context) {
-        EngineScope scope = new EngineScope(context);
-        Global global = getGlobal();
-        scope.setParentScope(global);
-        scope.setPrototype(global);
-        Context cx = enterContext();
-        try {
-            scope.put("exports", scope, cx.newObject(global));
-        } finally {
-            Context.exit();
-        }
-        return scope;
     }
 
     @Override
@@ -116,9 +106,8 @@ public class CommonJSEngine extends AbstractScriptEngine implements Invocable {
         if (name == null) {
             throw new NullPointerException("Method name is null");
         }
-        EngineScope engineScope = getRuntimeScope(context);
         if (thisObj == null) {
-            thisObj = engineScope;
+            thisObj = getGlobal();
         } else {
             if (!(thisObj instanceof Scriptable)) {
                 thisObj = Context.toObject(thisObj, getGlobal());
@@ -131,7 +120,7 @@ public class CommonJSEngine extends AbstractScriptEngine implements Invocable {
         Function method = (Function) methodObj;
         Scriptable scope = method.getParentScope();
         if (scope == null) {
-            scope = engineScope;
+            scope = getGlobal();
         }
         Context cx = enterContext();
         Object result;

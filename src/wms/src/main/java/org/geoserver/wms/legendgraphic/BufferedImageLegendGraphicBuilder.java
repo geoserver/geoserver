@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -65,6 +66,7 @@ import org.opengis.feature.type.Name;
 import org.opengis.filter.FilterFactory;
 import org.opengis.filter.expression.Expression;
 import org.opengis.filter.expression.Literal;
+import org.opengis.style.GraphicLegend;
 import org.opengis.util.InternationalString;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -290,7 +292,8 @@ public class BufferedImageLegendGraphicBuilder {
             } else {
                 
                 final Feature sampleFeature;
-                if (layer == null) {
+                if (layer == null || hasVectorTransformation) {
+
                     sampleFeature = createSampleFeature();
                 } else {                    
                     sampleFeature = createSampleFeature(layer);
@@ -355,35 +358,53 @@ public class BufferedImageLegendGraphicBuilder {
                     
                     FilterFactory ff = CommonFactoryFinder.getFilterFactory();
                     final Symbolizer[] symbolizers = applicableRules[i].getSymbolizers();
+                    final GraphicLegend legend = applicableRules[i].getLegend();
                     
-                    for (int sIdx = 0; sIdx < symbolizers.length; sIdx++) {
-                        Symbolizer symbolizer = symbolizers[sIdx];
-                        
-                        if (symbolizer instanceof RasterSymbolizer) {
-                            throw new IllegalStateException(
-                                    "It is not legal to have a RasterSymbolizer here");
-                        } else {
-                            // rescale symbols if needed
-                            if (symbolScale > 1.0
-                                    && symbolizer instanceof PointSymbolizer) {
-                                PointSymbolizer pointSymbolizer = cloneSymbolizer(symbolizer);
-                                if (pointSymbolizer.getGraphic() != null) {
-                                    double size = getPointSymbolizerSize(sample,
-                                            pointSymbolizer, Math.min(w, h) - 4);
-                                    pointSymbolizer.getGraphic().setSize(
-                                            ff.literal(size / symbolScale
-                                                    + minimumSymbolSize));
-    
-                                    symbolizer = pointSymbolizer;
-                                }
+                    // If this rule has a legend graphic defined in the SLD, use it
+                    if (legend != null) {
+                        if (this.samplePoint == null) {
+                            Coordinate coord = new Coordinate(w / 2, h / 2);
+
+                            try {
+                                this.samplePoint = new LiteShape2(geomFac.createPoint(coord), null, null, false);
+                            } catch (Exception e) {
+                                this.samplePoint = null;
                             }
-                            Style2D style2d = styleFactory.createStyle(sample,
-                                    symbolizer, scaleRange);
-                            LiteShape2 shape = getSampleShape(symbolizer, w, h);
-    
-                            if (style2d != null) {
-                                shapePainter.paint(graphics, shape, style2d,
-                                        scaleDenominator);
+                        }
+                        shapePainter.paint(graphics, this.samplePoint, legend, scaleDenominator, false);
+
+                    } else {
+
+                    
+                        for (int sIdx = 0; sIdx < symbolizers.length; sIdx++) {
+                            Symbolizer symbolizer = symbolizers[sIdx];
+                            
+                            if (symbolizer instanceof RasterSymbolizer) {
+                                // skip it
+                            } else {
+                                // rescale symbols if needed
+                                if (symbolScale > 1.0
+                                        && symbolizer instanceof PointSymbolizer) {
+                                    PointSymbolizer pointSymbolizer = cloneSymbolizer(symbolizer);
+                                    if (pointSymbolizer.getGraphic() != null) {
+                                        double size = getPointSymbolizerSize(sample,
+                                                pointSymbolizer, Math.min(w, h) - 4);
+                                        pointSymbolizer.getGraphic().setSize(
+                                                ff.literal(size / symbolScale
+                                                        + minimumSymbolSize));
+        
+                                        symbolizer = pointSymbolizer;
+                                    }
+                                }
+                                
+                                Style2D style2d = styleFactory.createStyle(sample,
+                                        symbolizer, scaleRange);
+                                LiteShape2 shape = getSampleShape(symbolizer, w, h);
+        
+                                if (style2d != null) {
+                                    shapePainter.paint(graphics, shape, style2d,
+                                            scaleDenominator);
+                                }
                             }
                         }
                     }

@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -30,7 +31,7 @@ import org.geoserver.security.LogoutFilterChain;
 import org.geoserver.security.ServiceLoginFilterChain;
 import org.geoserver.security.auth.AbstractAuthenticationProviderTest;
 import org.geoserver.security.auth.TestingAuthenticationCache;
-import org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig.RoleSource;
+import org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig.PreAuthenticatedUserNameRoleSource;
 import org.geoserver.security.filter.GeoServerLogoutFilter;
 import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.security.impl.GeoServerUser;
@@ -250,7 +251,7 @@ public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
         
         config.setCasServerUrlPrefix(casServerURLPrefix.toString());
         config.setName(casFilterName);
-        config.setRoleSource(RoleSource.UserGroupService);
+        config.setRoleSource(PreAuthenticatedUserNameRoleSource.UserGroupService);
         config.setUserGroupServiceName("ug1");
         config.setSingleSignOut(true);
 
@@ -469,7 +470,7 @@ public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
         config.setClassName(GeoServerCasAuthenticationFilter.class.getName());
         config.setCasServerUrlPrefix(casServerURLPrefix.toString());
         config.setName(casFilterName);
-        config.setRoleSource(RoleSource.UserGroupService);
+        config.setRoleSource(PreAuthenticatedUserNameRoleSource.UserGroupService);
         config.setUserGroupServiceName("ug1");
         config.setSingleSignOut(true);
         getSecurityManager().saveFilter(config);                
@@ -600,7 +601,7 @@ public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
         pconfig1.setClassName(GeoServerCasAuthenticationFilter.class.getName());
         pconfig1.setName(casProxyFilterName);
         pconfig1.setCasServerUrlPrefix(casServerURLPrefix.toString());
-        pconfig1.setRoleSource(RoleSource.UserGroupService);
+        pconfig1.setRoleSource(PreAuthenticatedUserNameRoleSource.UserGroupService);
         pconfig1.setUserGroupServiceName("ug1");
         pconfig1.setSingleSignOut(true);
         getSecurityManager().saveFilter(pconfig1);
@@ -770,7 +771,7 @@ public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
         pconfig1.setClassName(GeoServerCasAuthenticationFilter.class.getName());
         pconfig1.setName(casProxyFilterName);
         pconfig1.setCasServerUrlPrefix(casServerURLPrefix.toString());
-        pconfig1.setRoleSource(RoleSource.UserGroupService);
+        pconfig1.setRoleSource(PreAuthenticatedUserNameRoleSource.UserGroupService);
         pconfig1.setUserGroupServiceName("ug1");
         getSecurityManager().saveFilter(pconfig1);
 

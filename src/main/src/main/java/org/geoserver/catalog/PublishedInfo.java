@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -22,6 +23,12 @@ public interface PublishedInfo extends CatalogInfo {
      * Sets the name.
      */    
     void setName(String name);
+
+    /**
+     * @see prefixedName
+     */
+    @Deprecated
+    public String getPrefixedName();
 
     /**
      * The derived prefixed name.
@@ -70,4 +77,9 @@ public interface PublishedInfo extends CatalogInfo {
      */
     List<LayerIdentifierInfo> getIdentifiers();
     
+    /**
+     * The type of the layer.
+     */
+    PublishedType getType();
+
 }

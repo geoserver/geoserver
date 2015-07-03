@@ -1,13 +1,24 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wfs;
 
+import static org.junit.Assert.assertTrue;
+
+import java.io.File;
+
 import junit.framework.Assert;
 
+import org.apache.commons.io.FileUtils;
+import org.custommonkey.xmlunit.XMLUnit;
+import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.config.GeoServerInfo;
+import org.geoserver.data.test.MockData;
+import org.geoserver.util.NoExternalEntityResolver;
 import org.junit.Test;
+import org.w3c.dom.Document;
 
 
 public class ExternalEntitiesTest extends WFSTestSupport {
@@ -18,14 +29,14 @@ public class ExternalEntitiesTest extends WFSTestSupport {
     		"]>\r\n" + 
     		"<wfs:GetFeature service=\"WFS\" version=\"1.0.0\" \r\n" + 
     		"  outputFormat=\"GML2\"\r\n" + 
-    		"  xmlns:topp=\"http://www.openplans.org/topp\"\r\n" + 
+    		"  xmlns:cdf=\"http://www.opengis.net/cite/data\"\r\n" + 
     		"  xmlns:wfs=\"http://www.opengis.net/wfs\"\r\n" + 
     		"  xmlns:ogc=\"http://www.opengis.net/ogc\"\r\n" + 
     		"  xmlns:gml=\"http://www.opengis.net/gml\"\r\n" + 
     		"  xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\r\n" + 
     		"  xsi:schemaLocation=\"http://www.opengis.net/wfs\r\n" + 
     		"                      http://schemas.opengis.net/wfs/1.0.0/WFS-basic.xsd\">\r\n" + 
-    		"  <wfs:Query typeName=\"topp:states\" handle=\"test\">\r\n" + 
+    		"  <wfs:Query typeName=\"cdf:Fifteen\" handle=\"test\">\r\n" + 
     		"        <ogc:Literal>&c;</ogc:Literal>\r\n" + 
     		"    <ogc:Filter>\r\n" + 
     		"      <ogc:BBOX>\r\n" + 
@@ -46,7 +57,7 @@ public class ExternalEntitiesTest extends WFSTestSupport {
     		"        xmlns:wfs CDATA #FIXED \"http://www.opengis.net/wfs\"\r\n" + 
     		"                xmlns:ogc CDATA #FIXED \"http://www.opengis.net/ogc\">\r\n" + 
     		"<!ELEMENT wfs:Query (wfs:PropertyName*,ogc:Filter?)>\r\n" + 
-    		"<!ATTLIST wfs:Query typeName CDATA #FIXED \"topp:states\">\r\n" + 
+    		"<!ATTLIST wfs:Query typeName CDATA #FIXED \"cdf:Fifteen\">\r\n" + 
     		"<!ELEMENT wfs:PropertyName (#PCDATA) >\r\n" + 
     		"<!ELEMENT ogc:Filter (ogc:FeatureId*)>\r\n" + 
     		"<!ELEMENT ogc:FeatureId EMPTY>\r\n" + 
@@ -56,7 +67,7 @@ public class ExternalEntitiesTest extends WFSTestSupport {
     		"<wfs:GetFeature service=\"WFS\" version=\"1.1.0\" \r\n" + 
     		"  xmlns:wfs=\"http://www.opengis.net/wfs\"\r\n" + 
     		"  xmlns:ogc=\"http://www.opengis.net/ogc\">\r\n" + 
-    		"  <wfs:Query typeName=\"topp:states\">\r\n" + 
+    		"  <wfs:Query typeName=\"cdf:Fifteen\">\r\n" + 
     		"    <wfs:PropertyName>&passwd;</wfs:PropertyName>\r\n" + 
     		"        <ogc:Filter>\r\n" + 
     		"       <ogc:FeatureId fid=\"states.3\"/>\r\n" + 
@@ -75,7 +86,7 @@ public class ExternalEntitiesTest extends WFSTestSupport {
     		"                xmlns:ogc CDATA #FIXED \"http://www.opengis.net/ogc\"\r\n" + 
     		"                xmlns:fes CDATA #FIXED \"http://www.opengis.net/fes/2.0\">\r\n" + 
     		"<!ELEMENT wfs:Query (wfs:PropertyName*,ogc:Filter?)>\r\n" + 
-    		"<!ATTLIST wfs:Query typeName CDATA #FIXED \"topp:states\">\r\n" + 
+    		"<!ATTLIST wfs:Query typeName CDATA #FIXED \"cdf:Fifteen\">\r\n" + 
     		"<!ELEMENT wfs:PropertyName (#PCDATA) >\r\n" + 
     		"<!ELEMENT ogc:Filter (fes:ResourceId*)>\r\n" + 
     		"<!ELEMENT fes:ResourceId EMPTY>\r\n" + 
@@ -86,7 +97,7 @@ public class ExternalEntitiesTest extends WFSTestSupport {
     		"<wfs:GetFeature service=\"WFS\" version=\"2.0.0\" outputFormat=\"application/gml+xml; version=3.2\"\r\n" + 
     		"        xmlns:wfs=\"http://www.opengis.net/wfs/2.0\"\r\n" + 
     		"        xmlns:fes=\"http://www.opengis.net/fes/2.0\">\r\n" + 
-    		"        <wfs:Query typeName=\"topp:states\">\r\n" + 
+    		"        <wfs:Query typeName=\"cdf:Fifteen\">\r\n" + 
     		"                <wfs:PropertyName>&passwd;</wfs:PropertyName>\r\n" + 
     		"                <fes:Filter>\r\n" + 
     		"                        <fes:ResourceId rid=\"states.3\"/>\r\n" + 
@@ -111,14 +122,14 @@ public class ExternalEntitiesTest extends WFSTestSupport {
             getGeoServer().save(cfg);
 
             output = string(post("wfs", WFS_1_0_0_REQUEST));
-            Assert.assertTrue(output.indexOf("java.net.MalformedURLException") > -1);
+            Assert.assertTrue(output.indexOf("Entity resolution disallowed") > -1);
             
             // set default (entity parsing disabled);
             cfg.setXmlExternalEntitiesEnabled(null);            
             getGeoServer().save(cfg);
             
             output = string(post("wfs", WFS_1_0_0_REQUEST));
-            Assert.assertTrue(output.indexOf("java.net.MalformedURLException") > -1);
+            Assert.assertTrue(output.indexOf("Entity resolution disallowed") > -1);
         } finally {
             cfg.setXmlExternalEntitiesEnabled(null);            
             getGeoServer().save(cfg);
@@ -142,14 +153,14 @@ public class ExternalEntitiesTest extends WFSTestSupport {
             getGeoServer().save(cfg);
 
             output = string(post("wfs", WFS_1_1_0_REQUEST));
-            Assert.assertTrue(output.indexOf("java.net.MalformedURLException") > -1);
+            Assert.assertTrue(output.indexOf("Entity resolution disallowed") > -1);
             
             // set default (entity parsing disabled);
             cfg.setXmlExternalEntitiesEnabled(null);            
             getGeoServer().save(cfg);
             
             output = string(post("wfs", WFS_1_1_0_REQUEST));
-            Assert.assertTrue(output.indexOf("java.net.MalformedURLException") > -1);
+            Assert.assertTrue(output.indexOf("Entity resolution disallowed") > -1);
         } finally {
             cfg.setXmlExternalEntitiesEnabled(null);            
             getGeoServer().save(cfg);
@@ -175,7 +186,8 @@ public class ExternalEntitiesTest extends WFSTestSupport {
             output = string(post("wfs", WFS_2_0_0_REQUEST));
             System.out.println(output);
             Assert.assertTrue(output.indexOf("Request parsing failed") > -1);
-            Assert.assertTrue(output.indexOf("thisfiledoesnotexist") == -1);
+            Assert.assertTrue(output
+                    .indexOf(NoExternalEntityResolver.ERROR_MESSAGE_BASE) > -1);
             
             // set default (entity parsing disabled);
             cfg.setXmlExternalEntitiesEnabled(null);            
@@ -183,10 +195,31 @@ public class ExternalEntitiesTest extends WFSTestSupport {
             
             output = string(post("wfs", WFS_2_0_0_REQUEST));
             Assert.assertTrue(output.indexOf("Request parsing failed") > -1);
-            Assert.assertTrue(output.indexOf("thisfiledoesnotexist") == -1);
+            Assert.assertTrue(output
+                    .indexOf(NoExternalEntityResolver.ERROR_MESSAGE_BASE) > -1);
         } finally {
             cfg.setXmlExternalEntitiesEnabled(null);            
             getGeoServer().save(cfg);
         }
-    }        
+    }
+
+    @Test
+    public void testKvpEntityExpansion() throws Exception {
+        // prepare the file to be expanded
+        File messageFile = new File("./target/message.txt");
+        FileUtils.writeStringToFile(messageFile, "broken!");
+        String filePath = messageFile.getCanonicalPath().replace('\\', '/');
+
+        // filter with entity expansion to a ./message.txt file
+        String filter = "%3C%3Fxml%20version%3D%221.0%22%20encoding%3D%22ISO-8859-1%22%3F%3E%20%3C!DOCTYPE%20foo%20%5B%20%3C!ENTITY%20xxe%20SYSTEM%20%22file%3A%2F%2F"
+                + filePath.replace("/", "%2F")
+                + "%22%20%3E%5D%3E%3CFilter%20%3E%3E%3CPropertyIsEqualTo%3E%3CPropertyName%3E%26xxe%3B%3C%2FPropertyName%3E%3CLiteral%3EUtrecht%3C%2FLiteral%3E%3C%2FPropertyIsEqualTo%3E%3C%2FFilter%3E";
+        String request = "wfs?request=GetFeature&SERVICE=WFS&VERSION=1.0.0&TYPENAME="
+                + getLayerId(MockData.FIFTEEN) + "&FILTER=" + filter;
+        Document doc = getAsDOM(request);
+        XpathEngine xp = XMLUnit.newXpathEngine();
+        String errorMessage = xp.evaluate("//ogc:ServiceException", doc);
+        // print(doc);
+        assertTrue(errorMessage.contains(NoExternalEntityResolver.ERROR_MESSAGE_BASE));
+    }
 }

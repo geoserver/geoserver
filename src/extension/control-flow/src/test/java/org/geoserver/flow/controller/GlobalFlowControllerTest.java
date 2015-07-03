@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -11,8 +12,6 @@ import org.geoserver.ows.Request;
 import org.junit.Test;
 
 public class GlobalFlowControllerTest extends AbstractFlowControllerTest {
-    private static final long MAX_WAIT = 1000;
-    
     @Test
     public void testPriority() {
         GlobalFlowController controller = new GlobalFlowController(1);
@@ -51,7 +50,7 @@ public class GlobalFlowControllerTest extends AbstractFlowControllerTest {
             waitTerminated(t1, MAX_WAIT);
 
             assertEquals(ThreadState.COMPLETE, t1.state);
-            assertEquals(ThreadState.PROCESSING, t2.state);
+            waitState(ThreadState.PROCESSING, t2, MAX_WAIT);
             assertEquals(ThreadState.STARTED, t3.state);
 
             // let t2 go and wait until its termination. This should allow t3 to go
@@ -60,7 +59,7 @@ public class GlobalFlowControllerTest extends AbstractFlowControllerTest {
 
             assertEquals(ThreadState.COMPLETE, t1.state);
             assertEquals(ThreadState.COMPLETE, t2.state);
-            assertEquals(ThreadState.PROCESSING, t3.state);
+            waitState(ThreadState.PROCESSING, t3, MAX_WAIT);
 
             // unlock t3 as well
             t3.interrupt();

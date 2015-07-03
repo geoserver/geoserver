@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -155,9 +156,9 @@ public class LayerGroupHelper {
         }        
         
         LayerInfo l = layers.get(0);
-        ReferencedEnvelope bounds = transform(l.getResource().getLatLonBoundingBox(), crs);
-
-        for (int i = 1; i < layers.size(); i++) {
+        ReferencedEnvelope bounds = new ReferencedEnvelope(crs);
+        
+        for (int i = 0; i < layers.size(); i++) {
             l = layers.get(i);
             bounds.expandToInclude(transform(l.getResource().getLatLonBoundingBox(), crs));
         }

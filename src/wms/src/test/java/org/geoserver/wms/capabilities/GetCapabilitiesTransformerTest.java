@@ -1,11 +1,12 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wms.capabilities;
 
-import static junit.framework.Assert.*;
-import static org.custommonkey.xmlunit.XMLAssert.*;
+import static junit.framework.Assert.assertEquals;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -20,6 +21,7 @@ import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.Keyword;
+import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.impl.CatalogImpl;
 import org.geoserver.config.ContactInfo;
 import org.geoserver.config.GeoServer;
@@ -34,6 +36,7 @@ import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSInfoImpl;
 import org.geoserver.wms.WMSTestSupport;
 import org.geotools.referencing.CRS;
+import org.geotools.util.NumberRange;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -281,6 +284,18 @@ public class GetCapabilitiesTransformerTest {
                 tx.end("TestElement");
             }
 
+            @Override
+            public void customizeRootCrsList(Set<String> srs) {
+                srs.clear();
+                srs.add("EPSG:4326");
+                
+            }
+
+            @Override
+            public NumberRange<Double> overrideScaleDenominators(LayerInfo layer,
+                    NumberRange<Double> scaleDenominators) {
+                return new NumberRange<Double>(Double.class, 0d, 1000d);
+            }
         };
 
         GetCapabilitiesTransformer tr;
@@ -288,6 +303,9 @@ public class GetCapabilitiesTransformerTest {
                 Collections.singletonList(vendorCapsProvider));
         tr.setIndentation(2);
         Document dom = WMSTestSupport.transform(req, tr);
+        assertXpathEvaluatesTo("1", "count(/WMT_MS_Capabilities/Capability/Layer/SRS)", dom);
+        assertXpathEvaluatesTo("1", "count(/WMT_MS_Capabilities/Capability/Layer[SRS='EPSG:4326'])", dom);
+
         NodeList list = XPATH.getMatchingNodes(
                 "/WMT_MS_Capabilities/Capability/VendorSpecificCapabilities/TestElement", dom);
         assertEquals(1, list.getLength());

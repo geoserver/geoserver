@@ -1,10 +1,12 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2014 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wms;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import org.geoserver.catalog.AuthorityURLInfo;
@@ -70,7 +72,13 @@ public class WMSXStreamLoader extends XStreamServiceLoader<WMSInfo> {
         }
         if (service.getSRS() == null) {
             ((WMSInfoImpl) service).setSRS(new ArrayList<String>());
+        }        
+        if (service.getGetFeatureInfoMimeTypes() == null) {
+            ((WMSInfoImpl) service).setGetFeatureInfoMimeTypes(new HashSet<String>());
         }
+        if (service.getGetMapMimeTypes() == null) {
+            ((WMSInfoImpl) service).setGetMapMimeTypes(new HashSet<String>());
+        }        
         if (service.getInterpolation() == null) {
             service.setInterpolation(WMSInterpolation.Nearest);
         }

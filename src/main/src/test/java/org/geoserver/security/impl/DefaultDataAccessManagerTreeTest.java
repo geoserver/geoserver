@@ -1,30 +1,24 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.security.impl;
 
-import static org.easymock.EasyMock.anyObject;
-import static org.easymock.EasyMock.createNiceMock;
-import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.*;
 import static org.junit.Assert.*;
 
 import java.util.Arrays;
 import java.util.Properties;
 import java.util.Set;
 
-import junit.framework.TestCase;
-
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.security.AccessMode;
-import org.geoserver.security.impl.DefaultDataAccessManager;
-import org.geoserver.security.impl.SecureTreeNode;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.security.authentication.TestingAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
 
 /**
  * Tests parsing of the property file into a security tree, and the
@@ -65,7 +59,7 @@ public class DefaultDataAccessManagerTreeTest {
     private SecureTreeNode buildTree(String propertyFile) throws Exception {
         Properties props = new Properties();
         props.load(getClass().getResourceAsStream(propertyFile));
-        return new DefaultDataAccessManager(new MemoryDataAccessRuleDAO(catalog, props)).root;
+        return new DefaultResourceAccessManager(new MemoryDataAccessRuleDAO(catalog, props)).root;
     }
 
     @Test

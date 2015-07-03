@@ -1,4 +1,5 @@
-/* Copyright (c) 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -9,7 +10,7 @@ import java.util.List;
 import org.geoserver.kml.KmlEncodingContext;
 import org.geoserver.kml.decorator.KmlDecoratorFactory.KmlDecorator;
 import org.geotools.data.simple.SimpleFeatureCollection;
-import org.geotools.data.simple.SimpleFeatureIterator;
+import org.geotools.feature.FeatureIterator;
 import org.opengis.feature.simple.SimpleFeature;
 
 import de.micromata.opengis.kml.v_2_2_0.Feature;
@@ -39,14 +40,14 @@ public class WFSFeatureSequenceFactory implements SequenceFactory<Feature> {
 
     @Override
     public Sequence<Feature> newSequence() {
-        return new FeatureGenerator(features.features());
+        return new FeatureGenerator(context.openIterator(features));
     }
 
     public class FeatureGenerator implements Sequence<Feature> {
 
-        private SimpleFeatureIterator fi;
+        private FeatureIterator fi;
 
-        public FeatureGenerator(SimpleFeatureIterator fi) {
+        public FeatureGenerator(FeatureIterator fi) {
             this.fi = fi;
         }
 
@@ -83,15 +84,14 @@ public class WFSFeatureSequenceFactory implements SequenceFactory<Feature> {
                 } finally {
                     if (!featureRetrieved) {
                         // an exception has occurred, release the feature iterator
-                        fi.close();
-                        fi = null;
+                        context.closeIterator(fi);
                     }
                 }
             }
 
             // did we reach the end just now?
             if (!fi.hasNext()) {
-                fi.close();
+                context.closeIterator(fi);
             }
             return null;
         }

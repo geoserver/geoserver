@@ -1,10 +1,15 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wms;
 
 import java.util.List;
+import java.util.Set;
+
+import org.geoserver.catalog.LayerInfo;
+import org.geotools.util.NumberRange;
 
 /**
  * Extension point that allows plugins to dynamically contribute extended properties
@@ -35,12 +40,30 @@ public interface ExtendedCapabilitiesProvider extends org.geoserver.ExtendedCapa
      * Returns the list of internal DTD element declarations contributed to WMS 1.1.1 DOCTYPE
      * GetCapabilities document.
      * <p>
-     * Example DTD element declaration that could be a memeber of the returned list: "
+     * Example DTD element declaration that could be a member of the returned list: "
      * {@code <!ELEMENT Resolutions (#PCDATA) >}"
      * </p>
      * 
      * @return the list of GetCapabilities internal DTD elements declarations, may be empty.
      */
     List<String> getVendorSpecificCapabilitiesChildDecls(GetCapabilitiesRequest request);
+
+    /**
+     * Allows the provider to customize the srs list. For example, it can be used to provide
+     * a user specific srs list
+     * @param srs
+     */
+    void customizeRootCrsList(Set<String> srs);
+
+    /**
+     * Allows the provider to customize the layer scale range, this can be used to advertise limited
+     * visibility of the layer on a user by users basis.
+     * 
+     * @param layer
+     * @param scaleDenominators
+     * @return
+     */
+    NumberRange<Double> overrideScaleDenominators(LayerInfo layer,
+            NumberRange<Double> scaleDenominators);
     
 }

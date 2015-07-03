@@ -1,10 +1,15 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014-2015 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.jai;
 
+import it.geosolutions.jaiext.JAIExt;
+
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import javax.media.jai.JAI;
 
@@ -12,7 +17,9 @@ import org.geoserver.config.ConfigurationListenerAdapter;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.GeoServerInitializer;
+import org.geoserver.config.JAIEXTInfo;
 import org.geoserver.config.JAIInfo;
+import org.geotools.coverage.processing.CoverageProcessor;
 import org.geotools.image.jai.Registry;
 
 import com.sun.media.jai.util.SunTileCache;
@@ -21,10 +28,6 @@ import com.sun.media.jai.util.SunTileCache;
  * Initializes JAI functionality from configuration.
  * 
  * @author Justin Deoliveira, The Open Planning Project
- * 
- * TODO: we should figure out if we want JAI to be core to the model or a plugin
- * ... right now it is both
- *
  */
 public class JAIInitializer implements GeoServerInitializer {
 
@@ -51,10 +54,39 @@ public class JAIInitializer implements GeoServerInitializer {
         JAI jaiDef = JAI.getDefaultInstance();
         jai.setJAI( jaiDef );
         
-        // setup concurrent operation registry
-        if(!(jaiDef.getOperationRegistry() instanceof ConcurrentOperationRegistry)) {
-            jaiDef.setOperationRegistry(ConcurrentOperationRegistry.initializeRegistry());
+        // JAIEXT initialization
+        JAIExt.initJAIEXT();
+        if(jai.getJAIEXTInfo() != null){
+            JAIEXTInfo jaiext = jai.getJAIEXTInfo();
+            Set<String> jaiOperations = jaiext.getJAIOperations();
+            Set<String> jaiExtOperations = jaiext.getJAIEXTOperations();
+            if(jaiOperations != null && !jaiOperations.isEmpty()){
+                JAIExt.registerOperations(jaiOperations, false);
+                for(String opName : jaiOperations){
+                    // Remove operations with old descriptors
+                    CoverageProcessor.removeOperationFromProcessors(opName);
+                    JAIExt.setJAIAcceleration(opName, true);
+                }
+            }
+            if(jaiExtOperations != null && !jaiExtOperations.isEmpty()){
+                Set<String> newJai = new TreeSet<String>(jaiExtOperations);
+                if(jaiOperations != null && !jaiOperations.isEmpty()){
+                    newJai.removeAll(jaiOperations);
+                }
+                for(String opName : newJai){
+                    if(!JAIExt.isJAIExtOperation(opName)){
+                        // Remove operations with old descriptors
+                        CoverageProcessor.removeOperationFromProcessors(opName);
+                    }
+                }
+                JAIExt.registerOperations(newJai, true);
+            }
+            // Update all the CoverageProcessor instances
+            CoverageProcessor.updateProcessors();
         }
+        
+        //
+        
         
         // setting JAI wide hints
         jaiDef.setRenderingHint(JAI.KEY_CACHED_TILE_RECYCLING_ENABLED, jai.isRecycling());
@@ -89,5 +121,7 @@ public class JAIInitializer implements GeoServerInitializer {
         
         // Workaround for native mosaic BUG
         Registry.setNativeAccelerationAllowed("Mosaic", jai.isAllowNativeMosaic(), jaiDef);
+        // Workaround for native Warp BUG
+        Registry.setNativeAccelerationAllowed("Warp", jai.isAllowNativeWarp(), jaiDef);
     }
 }

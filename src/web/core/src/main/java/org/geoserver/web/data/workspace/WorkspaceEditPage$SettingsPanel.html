@@ -4,7 +4,7 @@
    <ul>
      <li>
        <label for="enabled"><wicket:message key="enabled">Enabled</wicket:message></label>
-       <input name="enabled" type="checkbox" wicket:id="enabled"></input>
+       <input name="enabled" type="checkbox" wicket:id="enabled"/>
      </li>
      <div wicket:id="settingsContainer">
          <li>
@@ -13,15 +13,15 @@
          <div wicket:id="otherSettings">
              <li>
               <input id="verbose" class="field checkbox" type="checkbox" wicket:id="verbose" />
-              <label for="verbose" class="choice"><wicket:message key="verboseMessaging">Enable Verbose Messaging</wicket:message></label>
+              <label class="choice"><wicket:message key="verboseMessaging">Enable Verbose Messaging</wicket:message></label>
             </li>
             <li>
               <input id="verboseExceptions" class="field checkbox" type="checkbox" wicket:id="verboseExceptions" />
-              <label for="verboseExceptions" class="choice"><wicket:message key="verboseExceptions">Enable Verbose Exceptions</wicket:message></label>
+              <label class="choice"><wicket:message key="verboseExceptions">Enable Verbose Exceptions</wicket:message></label>
             </li>
 		    <li>
 		      <input id="localWorkspaceIncludesPrefix" class="field checkbox" type="checkbox" wicket:id="localWorkspaceIncludesPrefix" />
-		      <label for="localWorkspaceIncludesPrefix" class="choice"><wicket:message key="localWorkspaceIncludesPrefix">Remove Layer Prefix from Local Workspace Capabilities</wicket:message></label>
+		      <label class="choice"><wicket:message key="localWorkspaceIncludesPrefix">Remove Layer Prefix from Local Workspace Capabilities</wicket:message></label>
 		    </li>
             <li>
               <label for="numDecimals"><wicket:message key="numDecimals">Number of Decimals</wicket:message></label>
@@ -35,6 +35,11 @@
               <label for="proxyBaseUrl"><wicket:message key="proxyBaseUrl">Proxy Base URL</wicket:message></label>
               <input id="proxyBaseUrl" class="field text" type="text" wicket:id="proxyBaseUrl" />
             </li>
+            <li>
+                <div wicket:id="extensions">
+     			 <div wicket:id="content"></div>
+    			</div>
+    		</li>
           </div>
       </div>
    </ul>

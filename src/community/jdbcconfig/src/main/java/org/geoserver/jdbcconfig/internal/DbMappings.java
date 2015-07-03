@@ -1,14 +1,12 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.jdbcconfig.internal;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Preconditions.checkState;
-import static org.geoserver.jdbcconfig.internal.DbUtils.logStatement;
-import static org.geoserver.jdbcconfig.internal.DbUtils.params;
+import static com.google.common.base.Preconditions.*;
+import static org.geoserver.jdbcconfig.internal.DbUtils.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -39,6 +37,7 @@ import org.geoserver.catalog.Info;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.Predicates;
+import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.impl.ClassMappings;
 import org.geoserver.ows.util.ClassProperties;
 import org.geotools.factory.CommonFactoryFinder;
@@ -70,6 +69,8 @@ public class DbMappings {
 
     private static final Logger LOGGER = Logging.getLogger(DbMappings.class);
 
+    private final Dialect dialect;
+
     private BiMap<Integer, Class<?>> types;
 
     private BiMap<Class<?>, Integer> typeIds;
@@ -94,6 +95,10 @@ public class DbMappings {
             Float.class, //
             Double.class //
             );
+
+    public DbMappings(Dialect dialect) {
+        this.dialect = dialect;
+    }
 
     public Integer getTypeId(Class<?> type) {
         Integer typeId = typeIds.get(type);
@@ -222,7 +227,7 @@ public class DbMappings {
                     targetPropertyName = targetClassPropName.substring(1 + classNameSeparatorIndex);
                 }
                 String colType = propTarget.length > 1 ? propTarget[1] : null;
-                String textType = propTarget.length > 1 ? (propTarget.length > 2 ? propTarget[1]
+                String textType = propTarget.length > 1 ? (propTarget.length > 2 ? propTarget[2]
                         : propTarget[1]) : null;
 
                 collectionProperty = "list".equalsIgnoreCase(colType)
@@ -252,7 +257,7 @@ public class DbMappings {
             try {
                 properties.load(in);
             } finally {
-                Closeables.closeQuietly(in);
+                Closeables.close(in, true);
             }
         } catch (IOException e) {
             throw Throwables.propagate(e);
@@ -280,13 +285,17 @@ public class DbMappings {
             @Override
             public PropertyType mapRow(ResultSet rs, int rowNum) throws SQLException {
                 Integer oid = rs.getInt(1);
-                Integer targetPropertyOid = (Integer) rs.getObject(2);
+                // cannot use getInteger and we might get BigDecimal or Integer
+                Number targetPropertyOid = (Number) rs.getObject(2);
                 Integer objectTypeOid = rs.getInt(3);
                 String propertyName = rs.getString(4);
                 Boolean collectionProperty = rs.getBoolean(5);
                 Boolean textProperty = rs.getBoolean(6);
 
-                PropertyType pt = new PropertyType(oid, targetPropertyOid, objectTypeOid,
+                if (targetPropertyOid != null) {
+                    targetPropertyOid = targetPropertyOid.intValue();
+                }
+                PropertyType pt = new PropertyType(oid, (Integer) targetPropertyOid, objectTypeOid,
                         propertyName, collectionProperty, textProperty);
 
                 return pt;
@@ -335,7 +344,8 @@ public class DbMappings {
     private void createType(Class<? extends Info> clazz, NamedParameterJdbcOperations template) {
 
         final String typeName = clazz.getName();
-        String sql = "insert into type (typename) values (:typeName)";
+        String sql = String.format("insert into type (typename, oid) values (:typeName, %s)",
+                dialect.nextVal("seq_TYPE"));
         int update = template.update(sql, params("typeName", typeName));
         if (1 == update) {
             log("created type " + typeName);
@@ -468,21 +478,21 @@ public class DbMappings {
 
             Integer targetPropertyOid = targetProperty == null ? null : targetProperty.getOid();
 
-            String insert = "insert into property_type (target_property, type_id, name, collection, text) "
-                    + "values (:target, :type, :name, :collection, :isText)";
+            String insert = String.format("insert into property_type (oid, target_property, type_id, name, collection, text) "
+                    + "values (%s, :target, :type, :name, :collection, :isText)",
+                    dialect.nextVal("seq_PROPERTY_TYPE"));
 
             params = params("target", targetPropertyOid, "type", typeId, "name", propertyName,
                     "collection", isCollection, "isText", isText);
             logStatement(insert, params);
             KeyHolder keyHolder = new GeneratedKeyHolder();
-            template.update(insert, new MapSqlParameterSource(params), keyHolder);
+            template.update(insert, new MapSqlParameterSource(params), keyHolder, new String[] {"oid"});
 
             // looks like some db's return the pk different than others, so lets try both ways
             Number pTypeKey = (Number) keyHolder.getKeys().get("oid");
             if (pTypeKey == null) {
                 pTypeKey = keyHolder.getKey();
             }
-
             pType = new PropertyType(pTypeKey.intValue(), targetPropertyOid, typeId, propertyName,
                     isCollection, isText);
         } else {
@@ -633,6 +643,14 @@ public class DbMappings {
                 // HACK for derived property, ModificationProxy evaluates it to old value. Remove
                 // when layer name is decoupled from resource name
                 value = ((LayerInfo) object).getResource().getName();
+            } else if (object instanceof LayerInfo && "title".equalsIgnoreCase(propertyName)) {
+                // HACK for derived property, ModificationProxy evaluates it to old value. Remove
+                // when layer name is decoupled from resource name
+                value = ((LayerInfo) object).getResource().getTitle();
+            } else if (object instanceof PublishedInfo
+                    && "prefixedName".equalsIgnoreCase(propertyName)) {
+                // HACK for derived property, it is not a regular javabean property
+                value = ((PublishedInfo) object).prefixedName();
             } else {
                 // proceed as it should
                 value = ff.property(propertyName).evaluate(object);

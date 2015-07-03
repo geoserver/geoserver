@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+ Copyright (C) 2015 - Open Source Geospatial Foundation. All rights reserved.
+ This code is licensed under the GPL 2.0 license, available at the root
+ application directory.
+ -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:web="http://java.sun.com/xml/ns/j2ee"       
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+    xsi:schemaLocation="
+   			http://www.springframework.org/schema/beans     http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+            http://www.springframework.org/schema/context   http://www.springframework.org/schema/context/spring-context-3.0.xsd 
+            http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.1.xsd"
+               
+ default-autowire="byName">
+
+    <context:annotation-config />
+          
+    <!-- ================================================================ -->
+    <!-- =============== Property override ============================== -->
+    <!-- ================================================================ -->	
+    
+    <bean id="geofence-server-configurer" class="org.geoserver.geofence.config.GeoFencePropertyPlaceholderConfigurer">
+       <property name="order" value="4"/>
+        
+        <constructor-arg ref="dataDirectory"/>
+
+        <property name="ignoreResourceNotFound" value="true" />
+	    <property name="ignoreUnresolvablePlaceholders" value="true" />
+            
+        <!-- This location is relative to the datadir -->
+        <property name="location" value="file:geofence/geofence-server.properties"/>
+      
+        <!-- default properties -->
+        <property name="properties">
+            <props>
+                <!-- The backend will be injected in the cached reader. -->
+                <!-- use the server rule reader service directly -->
+                <prop key="ruleReaderBackend">ruleReaderService</prop>
+
+                <!-- The frontend will be injected in the access manager. -->
+                <!-- You may replace the cachedRuleReader ref with ruleReaderService in order to disable the caching -->
+                <!--<prop key="ruleReaderFrontend">ruleReaderService</prop>-->
+                
+                <!-- the default user/group service name -->
+                <prop key="defaultUserGroupServiceName">default</prop>
+            </props>
+        </property>
+	</bean>
+       
+    <bean class="org.geoserver.config.GeoServerPropertyOverrideConfigurer" >
+        <constructor-arg ref="dataDirectory"/>
+        <property name="ignoreResourceNotFound" value="true"/>
+        <property name="locations">
+            <list>
+                <value>classpath*:geofence-datasource-ovr.properties</value>
+                <value>${GEOSERVER_DATA_DIR}/geofence/geofence-datasource-ovr.properties</value> <!-- optional -->
+                <value>${geofence-ovr}</value> <!-- optional -->
+            </list>
+        </property>
+        <property name="properties"> 
+            <props>
+            	<prop key="geofenceConfigurationManager.configuration.servicesUrl">internal:/</prop>
+              <!--  db inside data directory -->
+	            <prop key="geofenceDataSource.url">jdbc:h2:${GEOSERVER_DATA_DIR}/geofence/geofence_db/geofence</prop>
+            </props>
+        </property>
+    </bean>    
+    
+    <!-- ================================================================ -->
+    <!-- === Geofence Remote Service ==================================== -->
+    <!-- ================================================================ -->
+	
+	<!-- The following code publishes the rulereader as a URL.
+    Is normally not necessary for internal rulereader, leaving the code here in case it can be useful for testing.
+   -->
+    <!-- <bean name="geofenceRuleReader" class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter">
+        <property name="service" ref="ruleReaderService"/>
+        <property name="serviceInterface" value="org.geoserver.geofence.services.RuleReaderService"/>
+    </bean>
+    
+	<bean id="geofenceURLMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+		<property name="alwaysUseFullPath" value="true"/>
+		<property name="mappings">
+			<props>
+				<prop key="/geofence/RuleReader">geofenceRuleReader</prop>
+			</props>
+		</property>
+	</bean>  -->
+		
+    <!-- use the internal user resolver so geofence uses geoserver users and roles rather than its own -->
+    <bean id="internalUserResolver" class="org.geoserver.geofence.internal.InternalUserResolver" >
+	   <constructor-arg index="0" ref="geoServerSecurityManager"/>
+	</bean>
+	
+	<alias name="internalUserResolver" alias="defaultUserResolver" />
+    
+    <!-- web admin page -->
+    <bean id="geofenceServerPage" class="org.geoserver.web.MenuPageInfo">
+       <property name="id" value="geofenceServerPage"/>
+       <property name="titleKey" value="GeofenceServerPage.page.title"/>
+       <property name="descriptionKey" value="GeofenceServerPage.page.description"/>
+       <property name="componentClass" value="org.geoserver.geofence.web.GeofenceServerPage"/>
+       <property name="category" ref="securityCategory" />
+       <property name="order" value="1001" />
+       <property name="icon" value="img/icons/geofence.png" />
+    </bean>
+    
+    <!-- geofence rest API --> 
+
+	<bean id="rulesRestController" class="org.geoserver.geofence.rest.RulesRestController">
+      <constructor-arg index="0" ref="ruleAdminService"/>
+	</bean>
+	
+	<bean id="usersRestController" class="org.geoserver.geofence.rest.UsersRestController">
+      <constructor-arg index="0" ref="geoServerSecurityManager"/>
+      <property name="defaultServiceName" value="${defaultUserGroupServiceName}" />
+	</bean>
+	
+	<bean id="rolesRestController" class="org.geoserver.geofence.rest.RolesRestController">
+      <constructor-arg index="0" ref="geoServerSecurityManager"/>
+	</bean>  
+          	
+	<bean id="geofenceRestURLMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+		<property name="alwaysUseFullPath" value="true"/>
+		<property name="mappings">
+			<props>
+				<prop key="/geofence/rest/rules**">rulesRestController</prop>
+				<prop key="/geofence/rest/usergroup**">usersRestController</prop>
+				<prop key="/geofence/rest/roles**">rolesRestController</prop>
+			</props>
+		</property>
+	</bean>
+    
+    <mvc:interceptors>
+       <bean class="org.geoserver.geofence.rest.GeofenceSecurityInterceptor"/>    
+    </mvc:interceptors>      
+  
+	<bean id="geofenceViewResolver" class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">
+	     <property name="order" value="1" />  
+        <property name="mediaTypes">
+            <map>
+                <entry key="xml" value="application/xml" />
+                <entry key="json" value="application/json" />
+            </map>
+        </property>
+        <property name="defaultViews">
+            <list>
+                <!-- XML view using a JAXB marshaller -->
+                <bean id="jaxbView" class="org.springframework.web.servlet.view.xml.MarshallingView">
+                    <constructor-arg>
+                        <bean id="jaxb2Marshaller" class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
+                            <property name="classesToBeBound">
+                                <list>
+                                    <value>org.geoserver.geofence.rest.xml.JaxbRule</value>
+                                    <value>org.geoserver.geofence.rest.xml.JaxbRuleList</value>
+                                    <value>org.geoserver.geofence.rest.xml.JaxbRoleList</value>
+                                    <value>org.geoserver.geofence.rest.xml.JaxbUser</value>
+                                    <value>org.geoserver.geofence.rest.xml.JaxbUserList</value>
+                                </list>
+                            </property>
+                        </bean>
+                    </constructor-arg>
+                </bean>
+                <bean class="org.springframework.web.servlet.view.json.MappingJackson2JsonView" />
+            </list>
+        </property>
+    </bean>
+    
+    <!-- Resolve views based on string names -->
+    <bean class="org.springframework.web.servlet.view.BeanNameViewResolver"/>
+    
+    <mvc:annotation-driven />    
+
+</beans>

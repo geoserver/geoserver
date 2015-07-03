@@ -1,16 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
- Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ Copyright (C) 2014 - Open Source Geospatial Foundation. All rights reserved.
  This code is licensed under the GPL 2.0 license, available at the root
  application directory.
- -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+ --><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>geoserver</artifactId>
-    <version>2.4-SNAPSHOT</version>
+    <version>2.8-SNAPSHOT</version>
   </parent>
 
   <groupId>org.geoserver</groupId>
@@ -21,7 +20,7 @@
   <dependencies>
     <dependency>
       <groupId>org.geoserver</groupId>
-      <artifactId>platform</artifactId>
+      <artifactId>gs-platform</artifactId>
     </dependency>
   </dependencies>
 
@@ -33,20 +32,37 @@
       <configuration>
         <descriptors>
           <descriptor>release/ext-authkey.xml</descriptor>
-          <descriptor>release/ext-csw.xml</descriptor>
           <descriptor>release/ext-ftp.xml</descriptor>
-          <descriptor>release/ext-printing.xml</descriptor>
           <descriptor>release/ext-python.xml</descriptor>
           <descriptor>release/ext-groovy.xml</descriptor>
           <descriptor>release/ext-javascript.xml</descriptor>
           <descriptor>release/ext-spatialite.xml</descriptor>
           <descriptor>release/ext-jdbcconfig.xml</descriptor>
           <descriptor>release/ext-sfs.xml</descriptor>
-       	  <descriptor>release/ext-dds.xml</descriptor>
+          <descriptor>release/ext-dds.xml</descriptor>
           <descriptor>release/ext-aggregate.xml</descriptor>
-          <descriptor>release/ext-wcs2_0.xml</descriptor>
           <descriptor>release/ext-wms-eo.xml</descriptor>
-          <descriptor>release/ext-libjpeg-turbo.xml</descriptor>
+          <descriptor>release/ext-netcdf.xml</descriptor>
+          <descriptor>release/ext-netcdf-out.xml</descriptor>
+          <descriptor>release/ext-colormap.xml</descriptor>
+          <descriptor>release/ext-mbtiles.xml</descriptor>
+          <descriptor>release/ext-geopkg.xml</descriptor>
+          <descriptor>release/ext-grib.xml</descriptor>
+          <descriptor>release/ext-pgraster.xml</descriptor>
+          <descriptor>release/ext-dyndimension.xml</descriptor>
+          <descriptor>release/ext-rest-ext.xml</descriptor>
+          <descriptor>release/ext-kmlppio.xml</descriptor>
+          <descriptor>release/ext-gpx.xml</descriptor>
+          <descriptor>release/ext-wps-download.xml</descriptor>
+          <descriptor>release/ext-jms-cluster.xml</descriptor>
+          <descriptor>release/ext-hz-cluster.xml</descriptor>
+          <descriptor>release/ext-activeMQ.xml</descriptor>	
+          <descriptor>release/ext-solr.xml</descriptor>		  
+          <descriptor>release/ext-geofence.xml</descriptor>
+          <descriptor>release/ext-sldservice.xml</descriptor>
+          <descriptor>release/ext-rest-upload.xml</descriptor>
+          <descriptor>release/ext-gwc-distributed.xml</descriptor>  
+          <descriptor>release/ext-geofence-server.xml</descriptor>	
         </descriptors>
       </configuration>
      </plugin>
@@ -89,6 +105,12 @@
       </modules>
     </profile>
     <profile>
+      <id>colormap</id>
+      <modules> 
+        <module>colormap</module>
+      </modules>
+    </profile>
+     <profile>
       <id>rest</id>
       <modules> 
         <module>rest</module>
@@ -107,15 +129,9 @@
       </modules>
     </profile>
     <profile>
-      <id>printing</id>
+      <id>gpx</id>
       <modules>
-        <module>printing</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>dxf</id>
-      <modules>
-        <module>dxf</module>
+        <module>gpxppio</module>
       </modules>
     </profile>
     <profile>
@@ -146,19 +162,35 @@
       <id>communityRelease</id>
       <modules>
         <module>authkey</module>
-        <module>csw</module>
-	<module>dds</module>
-        <module>printing</module>
-        <module>release</module>
+        <module>dds</module>
         <module>ftp</module>
         <module>spatialite</module>
         <module>jdbcconfig</module>
         <module>sfs</module>
         <module>feature-aggregate</module>
         <module>script</module>
-        <module>wcs2_0</module>
         <module>wms-eo</module>
-        <module>libjpeg-turbo</module>
+        <module>colormap</module>
+        <module>netcdf</module>
+        <module>netcdf-out</module>
+        <module>mbtiles</module>
+        <module>geopkg</module>
+        <module>grib</module>
+        <module>pgraster</module>
+        <module>dyndimension</module>
+        <module>rest-ext</module>
+        <module>gpxppio</module>
+        <module>kmlppio</module>
+        <module>wps-download</module>
+        <module>jms-cluster</module>
+        <module>hz-cluster</module>
+        <module>solr</module>
+	<module>rest-upload</module>
+        <module>geofence</module>
+        <module>geofence-server</module>
+        <module>sldService</module>
+        <module>release</module>
+	<module>gwc-distributed</module>
       </modules>
     </profile>
     <profile>
@@ -203,12 +235,6 @@
         <module>authkey</module>
       </modules>
     </profile>
-    <profile>      
-      <id>csw</id>
-      <modules>
-        <module>csw</module>
-      </modules>
-    </profile>
     <profile>
       <id>jdbcconfig</id>
       <modules>
@@ -225,12 +251,30 @@
       </modules>
     </profile>
     <profile>
-      <id>wcs20</id>
+      <id>netcdf-out</id>
       <activation>
-        <property><name>wcs20</name></property>
+        <property><name>netcdf-out</name></property>
       </activation> 
       <modules>
-        <module>wcs2_0</module>
+        <module>netcdf-out</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>netcdf</id>
+      <activation>
+        <property><name>netcdf</name></property>
+      </activation> 
+      <modules>
+        <module>netcdf</module>
+      </modules>
+    </profile>
+        <profile>
+      <id>pgraster</id>
+      <activation>
+        <property><name>pgraster</name></property>
+      </activation>
+      <modules>
+        <module>pgraster</module>
       </modules>
     </profile>
     <profile>
@@ -257,17 +301,148 @@
         <module>kml-old</module>
       </modules>
     </profile>
-		<profile>
-			<id>libjpeg-turbo</id>
-			<activation>
-				<property>
-					<name>all</name>
-					<value>true</value>
-				</property>
-			</activation>
-			<modules>
-				<module>libjpeg-turbo</module>
-			</modules>
-		</profile>    
+    <profile>
+      <id>geopkg</id>
+      <modules>
+        <module>mbtiles</module>
+        <module>geopkg</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>mbtiles</id>
+      <modules>
+        <module>mbtiles</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>wfs-notification</id>
+      <modules>
+        <module>wfs-notification</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>geoserver-sync</id>
+      <modules>
+        <module>geoserver-sync</module>
+      </modules>
+    </profile>
+	<profile>
+      <id>grib</id>
+	  <activation>
+        <property><name>grib</name></property>
+      </activation>
+      <modules>
+        <module>grib</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>dyndimension</id>
+	  <activation>
+        <property><name>dyndimension</name></property>
+      </activation>
+      <modules>
+        <module>dyndimension</module>
+	  </modules>
+    </profile>
+	<profile>
+      <id>rest-ext</id>
+	  <activation>
+        <property><name>rest-ext</name></property>
+      </activation>
+      <modules>
+        <module>rest-ext</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>validation</id>
+      <modules>
+        <module>validation</module>
+      </modules>
+    </profile>
+    <profile>      
+      <id>kmlppio</id>
+      <modules>
+        <module>kmlppio</module>
+      </modules>
+    </profile>
+    <profile>      
+      <id>wps-download</id>
+      <modules>
+        <module>wps-download</module>
+      </modules>
+    </profile>	
+    <profile>
+      <id>solr</id>
+      <modules>
+        <module>solr</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>rest-upload</id>
+      <modules>
+        <module>rest-upload</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>jms-cluster</id>
+      <modules>
+        <module>jms-cluster</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>activemq</id>
+      <modules>
+        <module>jms-cluster</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>geofence</id>
+        <activation>
+          <property><name>geofence</name></property>
+        </activation>
+        <modules>
+          <module>geofence</module>
+        </modules>
+    </profile>
+    <profile>
+      <id>geofence-server</id>
+        <activation>
+          <property><name>geofence</name></property>
+        </activation>
+        <modules>
+          <module>geofence</module>
+	  <module>geofence-server</module>
+        </modules>
+    </profile>
+    <profile>
+      <id>hz-cluster</id>
+        <modules>
+          <module>hz-cluster</module>
+        </modules>
+    </profile>
+    <profile>
+      <id>geomesa</id>
+        <modules>
+          <module>geomesa</module>
+        </modules>
+    </profile>    
+    <profile>
+      <id>gwc-distributed</id>
+      <activation>
+        <property>
+          <name>all</name>
+          <value>true</value>
+        </property>
+      </activation>
+      <modules>
+        <module>gwc-distributed</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>vectortiles</id>
+        <modules>
+          <module>vectortiles</module>
+        </modules>
+    </profile>    
   </profiles>
 </project>

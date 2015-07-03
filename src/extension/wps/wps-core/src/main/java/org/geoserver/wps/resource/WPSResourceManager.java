@@ -1,31 +1,57 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wps.resource;
 
-import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.xml.parsers.ParserConfigurationException;
+
+import net.opengis.wps10.ExecuteType;
+
+import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.DispatcherCallback;
 import org.geoserver.ows.Request;
 import org.geoserver.ows.Response;
+import org.geoserver.ows.URLMangler.URLType;
+import org.geoserver.ows.util.ResponseUtils;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.Service;
 import org.geoserver.platform.ServiceException;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resource.Type;
+import org.geoserver.wps.ProcessEvent;
+import org.geoserver.wps.ProcessListenerAdapter;
 import org.geoserver.wps.WPSException;
+import org.geoserver.wps.executor.ExecutionStatus;
+import org.geoserver.wps.executor.ProcessStatusTracker;
+import org.geoserver.wps.resource.ProcessArtifactsStore.ArtifactType;
+import org.geoserver.wps.xml.WPSConfiguration;
 import org.geotools.util.logging.Logging;
+import org.geotools.wps.WPS;
+import org.geotools.xml.Encoder;
+import org.geotools.xml.Parser;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.context.event.ContextStoppedEvent;
-import org.vfny.geoserver.global.GeoserverDataDirectory;
-import org.vfny.geoserver.wcs.WcsException;
+import org.xml.sax.SAXException;
 
 /**
  * A WPS process has to deal with various temporary resources during the execution, be streamed and
@@ -39,27 +65,24 @@ import org.vfny.geoserver.wcs.WcsException;
  * 
  * @author Andrea Aime - GeoSolutions
  * 
- * TODO: add methods to support process locking and all the deferred cleanup required for asynch processes 
+ *         TODO: we need to have the process statuses to avoid deleting stuff that is being worked
+ *         on by another machine
  */
-public class WPSResourceManager implements DispatcherCallback,
-        ApplicationListener<ApplicationEvent> {
+public class WPSResourceManager extends ProcessListenerAdapter implements DispatcherCallback,
+        ApplicationListener<ApplicationEvent>, ApplicationContextAware {
     private static final Logger LOGGER = Logging.getLogger(WPSResourceManager.class);
 
     ConcurrentHashMap<String, ExecutionResources> resourceCache = new ConcurrentHashMap<String, ExecutionResources>();
 
     ThreadLocal<String> executionId = new InheritableThreadLocal<String>();
 
+    private ProcessArtifactsStore artifactsStore;
+
     static final class ExecutionResources {
         /**
          * Temporary resources used to parse inputs or during the process execution
          */
         List<WPSResource> temporary;
-
-        /**
-         * Resources representing process outputs, should be kept around for some time for asynch
-         * processes
-         */
-        List<WPSResource> outputs;
 
         /** Whether the execution is synchronous or asynch */
         boolean synchronouos;
@@ -73,8 +96,15 @@ public class WPSResourceManager implements DispatcherCallback,
         public ExecutionResources(boolean synchronouos) {
             this.synchronouos = synchronouos;
             this.temporary = new ArrayList<WPSResource>();
-            this.outputs = new ArrayList<WPSResource>();
         }
+    }
+
+    private String getExecutionId(String executionId) {
+        if (executionId == null) {
+            executionId = getExecutionId((Boolean) null);
+        }
+
+        return executionId;
     }
 
     /**
@@ -103,7 +133,7 @@ public class WPSResourceManager implements DispatcherCallback,
      * 
      * @param executionId
      */
-    public void setCurrentExecutionId(String executionId) {
+    void setCurrentExecutionId(String executionId) {
         ExecutionResources resources = resourceCache.get(executionId);
         if (resources == null) {
             throw new IllegalStateException("Execution id " + executionId + " is not known");
@@ -111,8 +141,25 @@ public class WPSResourceManager implements DispatcherCallback,
         this.executionId.set(executionId);
     }
 
+    /**
+     * Returns the executionId bound to this thread, if any
+     * 
+     * @param executionId
+     * @return
+     */
+    String getCurrentExecutionId() {
+        return this.executionId.get();
+    }
+
+    /**
+     * Clears the current execution id thread local
+     */
+    void clearExecutionId() {
+        this.executionId.set(null);
+    }
+
     public void addResource(WPSResource resource) {
-        String processId = getExecutionId(null);
+        String processId = getExecutionId((Boolean) null);
         ExecutionResources resources = resourceCache.get(processId);
         if (resources == null) {
             throw new IllegalStateException("The executionId was not set for the current thread!");
@@ -122,48 +169,136 @@ public class WPSResourceManager implements DispatcherCallback,
     }
     
     /**
-     * Returns a file that will be used to store a process output as a "reference" 
+     * Returns a resource that will be used to store a process output as a "reference"
+     * 
+     * @param executionId - can be null
+     * @param fileName
+     * @return
+     */
+    public Resource getOutputResource(String executionId, String fileName) {
+        executionId = getExecutionId(executionId);
+        Resource resource = artifactsStore.getArtifact(executionId, ArtifactType.Output, fileName);
+        // no need to track this one, it will be cleaned up when
+        return resource;
+    }
+    
+    /**
+     * Returns the url to fetch a output resource using the GetExecutionResult call
+     * 
+     * @param name The file name
+     * @param mimeType the
+     * @return
+     */
+    public String getOutputResourceUrl(String name, String mimeType) {
+        return getOutputResourceUrl(null, name, null, mimeType);
+    }
+
+    /**
+     * Returns the url to fetch a output resource using the GetExecutionResult call
+     * 
+     * @param executionId - optional, if you don't have it the resource manager will use its thread
+     *        local version
+     * @param name
+     * @param baseUrl - optional, if you don't have it the resource manager will pick one from
+     *        Dispatcher.REQUEST
+     * @param mimeType
+     * @return
+     */
+    public String getOutputResourceUrl(String executionId, String name, String baseUrl,
+            String mimeType) {
+        // create the link
+        Map<String, String> kvp = new LinkedHashMap<String, String>();
+        kvp.put("service", "WPS");
+        kvp.put("version", "1.0.0");
+        kvp.put("request", "GetExecutionResult");
+        kvp.put("executionId", getExecutionId(executionId));
+        kvp.put("outputId", name);
+        kvp.put("mimetype", mimeType);
+        if(baseUrl == null) {
+            Operation op = Dispatcher.REQUEST.get().getOperation();
+            ExecuteType execute = (ExecuteType) op.getParameters()[0];
+            baseUrl = execute.getBaseUrl();
+        }
+        String url = ResponseUtils.buildURL(baseUrl, "ows", kvp, URLType.SERVICE);
+
+        return url;
+    }
+
+    /**
+     * Returns a resource that will be used to store some temporary file for processing sake, and
+     * will mark it for deletion when the process ends
      * 
      * @param executionId
      * @param fileName
      * @return
+     * @throws IOException
      */
-    public File getOutputFile(String executionId, String fileName) {
-        File outputDirectory = new File(getWpsOutputStorage(), executionId);
-        if(!outputDirectory.exists()) {
-            mkdir(outputDirectory);
-        }
-        return new File(outputDirectory, fileName);
+    public Resource getTemporaryResource(String extension) throws IOException {
+
+        String executionId = getExecutionId((Boolean) null);
+        Resource resource = artifactsStore.getArtifact(executionId, ArtifactType.Temporary, UUID
+                .randomUUID()
+                .toString() + extension);
+        addResource(new WPSResourceResource(resource));
+        return resource;
     }
-    
-    private void mkdir(File file) {
-        if(!file.mkdir()) {
-            throw new WPSException("Failed to create the specified directory " + file);
-        }
-    }
-    
+
     /**
      * Gets the stored response file for the specified execution id
      * @param executionId
      * @return
      */
-    public File getStoredResponseFile(String executionId) {
-        File file = new File(getWpsOutputStorage(), executionId + ".xml");
-        return file;
+    public Resource getStoredResponse(String executionId) {
+        return artifactsStore.getArtifact(executionId, ArtifactType.Response, null);
     }
     
-    File getWpsOutputStorage() {
-        File wpsStore = null;
-        try {
-            File temp = GeoserverDataDirectory.findCreateConfigDir("temp");
-            wpsStore = new File(temp, "wps");
-            if(!wpsStore.exists()) {
-                mkdir(wpsStore);
+    /**
+     * Gets the stored request file for the specified execution id. It will be available only if the
+     * process is executing asynchronously
+     * 
+     * @param executionId
+     * @return
+     */
+    public Resource getStoredRequest(String executionId) {
+        return artifactsStore.getArtifact(executionId, ArtifactType.Request, null);
+    }
+
+    /**
+     * Gets the stored request as a parsed object
+     * 
+     * @param executionId
+     * @return
+     * @throws IOException
+     */
+    public ExecuteType getStoredRequestObject(String executionId) throws IOException {
+        Resource resource = getStoredRequest(executionId);
+        if (resource == null || resource.getType() == Type.UNDEFINED) {
+            return null;
+        } else {
+            try (InputStream in = resource.in()) {
+                WPSConfiguration config = new WPSConfiguration();
+                Parser parser = new Parser(config);
+                return (ExecuteType) parser.parse(in);
+            } catch (SAXException | ParserConfigurationException e) {
+                throw new WPSException("Could not parse the stored WPS request", e);
             }
-        } catch(Exception e) {
-            throw new WcsException("Could not create the temporary storage directory for WPS");
         }
-        return wpsStore;
+    }
+
+    /**
+     * Stores the request in a binary resource for efficient later retrieval
+     * 
+     * @param executionId
+     * @return
+     * @throws IOException
+     */
+    public void storeRequestObject(ExecuteType execute, String executionId) throws IOException {
+        Resource resource = getStoredRequest(executionId);
+        try (OutputStream out = resource.out()) {
+            WPSConfiguration config = new WPSConfiguration();
+            Encoder encoder = new Encoder(config);
+            encoder.encode(execute, WPS.Execute, out);
+        }
     }
 
     // -----------------------------------------------------------------
@@ -176,13 +311,13 @@ public class WPSResourceManager implements DispatcherCallback,
             return;
         }
 
-        // grab the id and unbind the thread local
+        // grab the id and un-bind the thread local
         String id = executionId.get();
         executionId.remove();
 
         // cleanup automatically if the process is synchronous
         if (resourceCache.get(id).synchronouos) {
-            cleanProcess(id);
+            cleanProcess(id, false);
             resourceCache.remove(id);
         }
     }
@@ -192,7 +327,7 @@ public class WPSResourceManager implements DispatcherCallback,
         this.executionId.remove();
 
         // cleanup the temporary resources
-        cleanProcess(executionId);
+        cleanProcess(executionId, false);
        
         // mark the process as complete
         resourceCache.get(executionId).completionTime = System.currentTimeMillis();
@@ -205,7 +340,7 @@ public class WPSResourceManager implements DispatcherCallback,
      * 
      * @param id
      */
-    void cleanProcess(String id) {
+    public void cleanProcess(String id, boolean cancelled) {
         // delete all resources associated with the process
         ExecutionResources executionResources = resourceCache.get(id);
         for (WPSResource resource : executionResources.temporary) {
@@ -214,6 +349,15 @@ public class WPSResourceManager implements DispatcherCallback,
             } catch (Throwable t) {
                 LOGGER.log(Level.WARNING,
                         "Failed to clean up the WPS resource " + resource.getName(), t);
+            }
+        }
+
+        // in case of cancellation, remove also the results
+        if (cancelled) {
+            try {
+                artifactsStore.clearArtifacts(id);
+            } catch (IOException e) {
+                throw new WPSException("Failed to clear the process artifacts");
             }
         }
     }
@@ -247,9 +391,55 @@ public class WPSResourceManager implements DispatcherCallback,
         if (event instanceof ContextClosedEvent || event instanceof ContextStoppedEvent) {
             // we are shutting down, remove all temp resources!
             for (String id : resourceCache.keySet()) {
-                cleanProcess(id);
+                cleanProcess(id, false);
             }
             resourceCache.clear();
         }
     }
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        // see if we have an artifacts store in the app context, otherwise use the default one
+        ProcessArtifactsStore store = GeoServerExtensions.bean(ProcessArtifactsStore.class);
+        if (store == null) {
+            store = new DefaultProcessArtifactsStore();
+        }
+        this.artifactsStore = store;
+    }
+
+    public ProcessArtifactsStore getArtifactsStore() {
+        return artifactsStore;
+    }
+
+    public void cleanExpiredResources(long expirationThreshold, ProcessStatusTracker tracker) {
+        for (Resource r : artifactsStore.listExecutionResourcess()) {
+            ExecutionStatus status = tracker.getStatus(r.name());
+            // remove only the things that are not running
+            if (status == null || status.getPhase().isExecutionCompleted()) {
+                cleanupResource(r, expirationThreshold);
+            }
+        }
+    }
+
+    private boolean cleanupResource(Resource resource, long expirationThreshold) {
+        boolean result = true;
+        Type resourceType = resource.getType();
+        if (resourceType == Type.RESOURCE && resource.lastmodified() < expirationThreshold) {
+            result = resource.delete();
+        } else if (resourceType == Type.DIRECTORY) {
+            for (Resource child : resource.list()) {
+                result &= cleanupResource(child, expirationThreshold);
+            }
+        }
+
+        return result;
+    }
+
+    @Override
+    public void dismissed(ProcessEvent event) throws WPSException {
+        String executionId = event.getStatus().getExecutionId();
+        cleanProcess(executionId, true);
+    }
+
+
 }

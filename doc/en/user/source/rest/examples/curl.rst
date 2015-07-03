@@ -3,7 +3,9 @@
 cURL
 ====
 
-The examples in this section use `cURL <http://curl.haxx.se/>`_, a command line tool for executing HTTP requests and transferring files, to generate requests to GeoServer’s REST interface. Although the examples are based on cURL, they could be adapted for any HTTP-capable tool or library.
+The examples in this section use `cURL <http://curl.haxx.se/>`_, a command line tool for executing HTTP requests and transferring files, to generate requests to GeoServer's REST interface. Although the examples are based on cURL, they could be adapted for any HTTP-capable tool or library.
+Please be aware, that cURL acts not entirely the same as a web-browser. In contrast to Mozilla Firefox or Google Chrome cURL will not escape special characters in your request-string automatically. To make sure, that your requests can be processed correctly, make sure, that characters like paranthesis, commas and the like are escaped before sending them via cURL.
+If you use libcurl in PHP 5.5 or newer you can prepare the url-string using the function curl_escape. In older versions of PHP hmlspecialchars should do the job also.
 
 .. todo::
 
@@ -330,6 +332,61 @@ And finally apply that style to the layer. Note the use of the ``<workspace>`` t
 .. todo:: The WMS request above results in an "Internal error featureType: acme:roads does not have a properly configured datastore"  Tested on 2.2.2.
 
 
+Creating a layer style (SLD package)
+------------------------------------
+
+This example will create a new style on the server and populate it the contents of a local SLD file and related images provided in a SLD package. A SLD package is a zip file containing the SLD style and related image files used in the SLD.
+
+The following creates a new style named ``roads_style``.
+
+.. note:: Each code block below contains a single command that may be extended over multiple lines.
+
+.. code-block:: console
+
+   curl -u admin:geoserver -XPOST -H "Content-type: application/zip" 
+     --data-binary @roads_style.zip 
+     http://localhost:8080/geoserver/rest/styles 
+ 
+If executed correctly, the response should contain the following::
+
+  < HTTP/1.1 201 Created
+
+The SLD itself can be downloaded through a a GET request:
+
+.. code-block:: console
+
+   curl -v -u admin:geoserver -XGET
+     http://localhost:8080/geoserver/rest/styles/roads_style.sld
+
+
+Changing a layer style (SLD package)
+------------------------------------
+
+This example will alter a layer style using a SLD package. A SLD package is a zip file containing the SLD style and related image files used in the SLD.
+
+In the previous example, we created a new style ``roads_style``, we can update the SLD package styling and apply the new changes to the style.
+
+.. note:: Each code block below contains a single command that may be extended over multiple lines.
+
+.. code-block:: console
+
+    curl -u admin:geoserver -XPUT -H "Content-type: application/zip" 
+      --data-binary @roads_style.zip 
+      http://localhost:8080/geoserver/rest/workspaces/w1/styles/roads_style.zip
+
+
+If executed correctly, the response should contain the following::
+
+  < HTTP/1.1 200 OK
+
+
+The SLD itself can be downloaded through a a GET request:
+
+.. code-block:: console
+
+   curl -v -u admin:geoserver -XGET
+     http://localhost:8080/geoserver/rest/styles/roads_style.sld
+     
 Adding a PostGIS database
 -------------------------
 
@@ -655,3 +712,337 @@ It is also possible to filter against both property and value. To retrieve only 
    curl -u admin:geoserver -XGET -H "Accept: text/xml"
      http://localhost:8080/geoserver/rest/about/manifest.xml?key=GeoServerModule&value=extension
 
+Uploading and modifying a image mosaic
+--------------------------------------
+
+The following command uploads a zip file containing the definition of a mosaic (along with at least one granule of the mosaic to initialize the resolutions, overviews and the like) and will configure all the coverages in it as new layers.
+
+
+.. note:: The code blocks below contain a single command that is extended over multiple lines.
+
+.. code-block:: console
+
+   curl -u admin:geoserver -XPUT -H "Content-type:application/zip" --data-binary @polyphemus.zip
+      http://localhost:8080/geoserver/rest/workspaces/topp/coveragestores/polyphemus/file.imagemosaic
+
+The following instead instructs the mosaic to harvest (or re-harvest) a single file into the mosaic, collecting its properties and updating the mosaic index:
+
+.. code-block:: console
+
+   curl -v -u admin:geoserver -XPOST -H "Content-type: text/plain" -d "file:///path/to/the/file/polyphemus_20130302.nc" 
+      "http://localhost:8080/geoserver/rest/workspaces/topp/coveragestores/poly-incremental/external.imagemosaic"
+
+Harvesting can also be directed towards a whole directory, as follows:
+
+.. code-block:: console
+
+   curl -v -u admin:geoserver -XPOST -H "Content-type: text/plain" -d "file:///path/to/the/mosaic/folder" 
+       "http://localhost:8080/geoserver/rest/workspaces/topp/coveragestores/poly-incremental/external.imagemosaic"
+
+The image mosaic index structure can be retrieved using something like:
+
+.. code-block:: console
+
+   curl -v -u admin:geoserver -XGET "http://localhost:8080/geoserver/rest/workspaces/topp/coveragestores/polyphemus-v1/coverages/NO2/index.xml"
+
+which will result in the following:
+
+.. code-block:: json
+
+       <Schema>
+      <attributes>
+        <Attribute>
+          <name>the_geom</name>
+          <minOccurs>0</minOccurs>
+          <maxOccurs>1</maxOccurs>
+          <nillable>true</nillable>
+          <binding>com.vividsolutions.jts.geom.Polygon</binding>
+        </Attribute>
+        <Attribute>
+          <name>location</name>
+          <minOccurs>0</minOccurs>
+          <maxOccurs>1</maxOccurs>
+          <nillable>true</nillable>
+          <binding>java.lang.String</binding>
+        </Attribute>
+        <Attribute>
+          <name>imageindex</name>
+          <minOccurs>0</minOccurs>
+          <maxOccurs>1</maxOccurs>
+          <nillable>true</nillable>
+          <binding>java.lang.Integer</binding>
+        </Attribute>
+        <Attribute>
+          <name>time</name>
+          <minOccurs>0</minOccurs>
+          <maxOccurs>1</maxOccurs>
+          <nillable>true</nillable>
+          <binding>java.sql.Timestamp</binding>
+        </Attribute>
+        <Attribute>
+          <name>elevation</name>
+          <minOccurs>0</minOccurs>
+          <maxOccurs>1</maxOccurs>
+          <nillable>true</nillable>
+          <binding>java.lang.Double</binding>
+        </Attribute>
+        <Attribute>
+          <name>fileDate</name>
+          <minOccurs>0</minOccurs>
+          <maxOccurs>1</maxOccurs>
+          <nillable>true</nillable>
+          <binding>java.sql.Timestamp</binding>
+        </Attribute>
+        <Attribute>
+          <name>updated</name>
+          <minOccurs>0</minOccurs>
+          <maxOccurs>1</maxOccurs>
+          <nillable>true</nillable>
+          <binding>java.sql.Timestamp</binding>
+        </Attribute>
+      </attributes>
+      <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/workspaces/topp/coveragestores/polyphemus-v1/coverages/NO2/index/granules.xml" type="application/xml"/>
+    </Schema>
+
+
+Listing the existing granules can be performed as follows:
+
+.. code-block:: console
+
+   curl -v -u admin:geoserver -XGET "http://localhost:8080/geoserver/rest/workspaces/topp/coveragestores/polyphemus-v1/coverages/NO2/index/granules.xml?limit=2"
+
+This will result in a GML description of the granules, as follows:
+
+.. code-block:: xml
+
+    <?xml version="1.0" encoding="UTF-8"?>
+    <wfs:FeatureCollection xmlns:gf="http://www.geoserver.org/rest/granules" xmlns:ogc="http://www.opengis.net/ogc" xmlns:wfs="http://www.opengis.net/wfs" xmlns:gml="http://www.opengis.net/gml">
+      <gml:boundedBy>
+        <gml:Box srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">
+          <gml:coord>
+            <gml:X>5.0</gml:X>
+            <gml:Y>45.0</gml:Y>
+          </gml:coord>
+          <gml:coord>
+            <gml:X>14.875</gml:X>
+            <gml:Y>50.9375</gml:Y>
+          </gml:coord>
+        </gml:Box>
+      </gml:boundedBy>
+      <gml:featureMember>
+        <gf:NO2 fid="NO2.1">
+          <gf:the_geom>
+            <gml:Polygon>
+              <gml:outerBoundaryIs>
+                <gml:LinearRing>
+                  <gml:coordinates>5.0,45.0 5.0,50.9375 14.875,50.9375 14.875,45.0 5.0,45.0</gml:coordinates>
+                </gml:LinearRing>
+              </gml:outerBoundaryIs>
+            </gml:Polygon>
+          </gf:the_geom>
+          <gf:location>polyphemus_20130301.nc</gf:location>
+          <gf:imageindex>336</gf:imageindex>
+          <gf:time>2013-03-01T00:00:00Z</gf:time>
+          <gf:elevation>10.0</gf:elevation>
+          <gf:fileDate>2013-03-01T00:00:00Z</gf:fileDate>
+          <gf:updated>2013-04-11T10:54:31Z</gf:updated>
+        </gf:NO2>
+      </gml:featureMember>
+      <gml:featureMember>
+        <gf:NO2 fid="NO2.2">
+          <gf:the_geom>
+            <gml:Polygon>
+              <gml:outerBoundaryIs>
+                <gml:LinearRing>
+                  <gml:coordinates>5.0,45.0 5.0,50.9375 14.875,50.9375 14.875,45.0 5.0,45.0</gml:coordinates>
+                </gml:LinearRing>
+              </gml:outerBoundaryIs>
+            </gml:Polygon>
+          </gf:the_geom>
+          <gf:location>polyphemus_20130301.nc</gf:location>
+          <gf:imageindex>337</gf:imageindex>
+          <gf:time>2013-03-01T00:00:00Z</gf:time>
+          <gf:elevation>35.0</gf:elevation>
+          <gf:fileDate>2013-03-01T00:00:00Z</gf:fileDate>
+          <gf:updated>2013-04-11T10:54:31Z</gf:updated>
+        </gf:NO2>
+      </gml:featureMember>
+    </wfs:FeatureCollection>
+
+   
+Removing all the granules originating from a particular file (a NetCDF file can contain many) can be done as follows:
+
+.. code-block:: console
+   
+   curl -v -u admin:geoserver -XDELETE "http://localhost:8080/geoserver/rest/workspaces/topp/coveragestores/polyphemus-v1/coverages/NO2/index/granules.xml?filter=location='polyphemus_20130301.nc'"
+   
+Creating an empty mosaic and harvest granules
+---------------------------------------------
+
+The next command uploads an :download:`empty.zip` file. 
+This archive contains the definition of an empty mosaic (no granules in this case) through the following files::
+
+      datastore.properties (the postgis datastore connection params)
+      indexer.xml (The mosaic Indexer, note the CanBeEmpty=true parameter)
+      polyphemus-test.xml (The auxiliary file used by the NetCDF reader to parse schemas and tables)
+
+.. note:: **Make sure to update the datastore.properties file** with your connection params and refresh the zip when done, before uploading it. 
+.. note:: The code blocks below contain a single command that is extended over multiple lines.
+.. note:: The configure=none parameter allows for future configuration after harvesting
+
+.. code-block:: console
+
+   curl -u admin:geoserver -XPUT -H "Content-type:application/zip" --data-binary @empty.zip
+      http://localhost:8080/geoserver/rest/workspaces/topp/coveragestores/empty/file.imagemosaic?configure=none
+
+The following instead instructs the mosaic to harvest a single :download:`polyphemus_20120401.nc` file into the mosaic, collecting its properties and updating the mosaic index:
+
+.. code-block:: console
+
+   curl -v -u admin:geoserver -XPOST -H "Content-type: text/plain" -d "file:///path/to/the/file/polyphemus_20120401.nc" 
+      "http://localhost:8080/geoserver/rest/workspaces/topp/coveragestores/empty/external.imagemosaic"
+
+Once done you can get the list of coverages/granules available on that store.
+
+.. code-block:: console
+
+   curl -v -u admin:geoserver -XGET 
+       "http://localhost:8080/geoserver/rest/workspaces/topp/coveragestores/empty/coverages.xml?list=all"
+
+which will result in the following:
+
+.. code-block:: json
+
+      <list>
+        <coverageName>NO2</coverageName>
+        <coverageName>O3</coverageName>
+      </list>
+
+Next step is configuring ONCE for coverage (as an instance NO2), an available coverage. 
+
+.. code-block:: console
+
+   curl -v -u admin:geoserver -XPOST -H "Content-type: text/xm" -d @"/path/to/coverageconfig.xml" "http://localhost:8080/geoserver/rest/workspaces/topp/coveragestores/empty/coverages"
+
+Where coverageconfig.xml may look like this
+
+.. code-block:: json
+
+    <coverage>
+      <name>NO2</name>
+    </coverage>
+
+.. note:: When specifying only the coverage name, the coverage will be automatically configured
+
+
+Master Password Change
+----------------------
+
+The master password can be fetched wit a GET request.
+
+.. code-block:: console
+
+   curl -v -u admin:geoserver -XGET   http://localhost:8080/geoserver/rest/security/masterpw.xml
+
+A generated master password may be **-"}3a^Kh**. Next step is creating an XML file.
+
+File changes.xml
+
+.. code-block:: xml
+
+   <masterPassword>
+      <oldMasterPassword>-"}3a^Kh</oldMasterPassword>
+      <newMasterPassword>geoserver1</newMasterPassword>
+   </masterPassword>
+
+Changing the master password using the file:
+
+.. code-block:: console
+
+   curl -v -u admin:geoserver -XPUT -H "Content-type: text/xml" -d @change.xml http://localhost:8080/geoserver/rest/security/masterpw.xml
+   
+Changing the catalog mode
+-------------------------
+
+Fetch the current catalog mode wit a GET request
+
+.. code-block:: console
+
+   curl -v -u admin:geoserver -XGET   http://localhost:8080/geoserver/rest/security/acl/catalog.xml
+   
+.. code-block:: xml
+
+    <?xml version="1.0" encoding="UTF-8"?>
+    <catalog>
+        <mode>HIDE</mode>
+    </catalog>
+
+Create a file newMode.xml
+
+.. code-block:: xml
+
+    <?xml version="1.0" encoding="UTF-8"?>
+    <catalog>
+        <mode>MIXED</mode>
+    </catalog>
+   
+Change the catalog mode using the file (check with the GET request after modifying)
+
+.. code-block:: console
+
+   curl -v -u admin:geoserver -XPUT -H "Content-type: text/xml" -d @newMode.xml http://localhost:8080/geoserver/rest/security/acl/catalog.xml
+
+Working with access control rules
+---------------------------------
+   
+Fetch the all current rules for layers
+
+.. code-block:: console
+
+   curl -v -u admin:geoserver -XGET   http://localhost:8080/geoserver/rest/security/acl/layers.xml
+   
+.. code-block:: xml
+
+   <?xml version="1.0" encoding="UTF-8"?>
+   <rules />
+   
+No rules specified. Create a file rules.xml
+
+.. code-block:: xml
+
+   <?xml version="1.0" encoding="UTF-8"?>
+   <rules>
+      <rule resource="topp.*.r">*</rule>
+      <rule resource="topp.mylayer.w">*</rule>      
+   </rules>
+   
+Add the rules (check with the GET request after adding).
+
+.. code-block:: console
+
+   curl -v -u admin:geoserver -XPOST -H "Content-type: text/xml" -d @rules.xml http://localhost:8080/geoserver/rest/security/acl/layers.xml 
+   
+Modify the files rules.xml:
+
+.. code-block:: xml
+
+   <?xml version="1.0" encoding="UTF-8"?>
+   <rules>
+      <rule resource="topp.*.r">ROLE_AUTHORIZED</rule>
+      <rule resource="topp.mylayer.w">ROLE_1,ROLE_2</rule>      
+   </rules>
+   
+Modify the rules (check with the GET request after modifying).
+
+.. code-block:: console
+
+   curl -v -u admin:geoserver -XPUT -H "Content-type: text/xml" -d @rules.xml http://localhost:8080/geoserver/rest/security/acl/layers.xml 
+
+Delete the rules individually (check with the GET request after deleting)
+
+.. code-block:: console
+
+   curl -v -u admin:geoserver -XDELETE  http://localhost:8080/geoserver/rest/security/acl/layers/topp.*.r
+   curl -v -u admin:geoserver -XDELETE  http://localhost:8080/geoserver/rest/security/acl/layers/topp.mylayer.w
+
+   

@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -8,25 +9,18 @@ import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.io.Reader;
 import java.io.StringReader;
-import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.net.URL;
-import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
-import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -55,8 +49,6 @@ import net.sf.json.JSON;
 import net.sf.json.JSONSerializer;
 
 import org.apache.commons.codec.binary.Base64;
-import org.eclipse.xsd.XSDSchema;
-import org.eclipse.xsd.XSDSchemaDirective;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.NamespaceInfo;
@@ -64,17 +56,16 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.config.GeoServerLoader;
 import org.geoserver.config.GeoServerLoaderProxy;
-import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.TestData;
 import org.geoserver.logging.LoggingUtils;
 import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.ContextLoadedEvent;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geotools.data.DataUtilities;
-import org.geotools.data.FeatureSource;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.factory.Hints;
 import org.geotools.referencing.CRS;
@@ -84,7 +75,6 @@ import org.geotools.xml.XSD;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.HandlerInterceptor;
-import org.vfny.geoserver.global.GeoserverDataDirectory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -127,6 +117,8 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
 
     protected static TestData testData;
     
+    private boolean validating = false;
+    
     String username;
     
     String password;
@@ -162,6 +154,14 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
         password = null;
     }
     
+    public boolean isValidating() {
+        return validating;
+    }
+
+    public void setValidating(boolean validating) {
+        this.validating = validating;
+    }
+
     /**
      * If subclasses override they *must* call super.setUp() first.
      */
@@ -213,6 +213,7 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
             
             applicationContext = new GeoServerTestApplicationContext(getSpringContextLocations(),
                     servletContext);
+            applicationContext.setValidating(validating);
             applicationContext.setUseLegacyGeoServerLoader(useLegacyDataDirectory());
             applicationContext.refresh();
             applicationContext.publishEvent(new ContextLoadedEvent(applicationContext));
@@ -295,7 +296,7 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
                 applicationContext.destroy();
                 
                 // kill static caches
-                new GeoServerExtensions().setApplicationContext(null);
+                GeoServerExtensionsHelper.init(null);
         
                 // some tests do need a kick on the GC to fully clean up
                 if(isMemoryCleanRequired()) {
@@ -304,9 +305,6 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
                 }
                 
                 if(getTestData() != null) {
-                    // this cleans up the data directory static loader, if we don't the next test
-                    // will keep on running on the current data dir
-                    GeoserverDataDirectory.destroy();
                     getTestData().tearDown();
                 }
             } finally {
@@ -401,7 +399,7 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
             throws IOException {
         // TODO: expand test support to DataAccess FeatureSource
         FeatureTypeInfo ft = getFeatureTypeInfo(typeName);
-        return DataUtilities.simple((FeatureSource) ft.getFeatureSource(null, null));
+        return DataUtilities.simple(ft.getFeatureSource(null, null));
     }
 
     /**

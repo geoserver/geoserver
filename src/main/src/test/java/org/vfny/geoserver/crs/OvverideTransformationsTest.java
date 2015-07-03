@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -10,6 +11,8 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.test.SystemTest;
 import org.geotools.referencing.CRS;
@@ -34,6 +37,9 @@ public class OvverideTransformationsTest extends GeoServerSystemTestSupport {
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
     
+        GeoServerResourceLoader loader1 =  getResourceLoader();
+        GeoServerResourceLoader loader2 = GeoServerExtensions.bean(GeoServerResourceLoader.class);
+        
         // setup the grid file, the definitions and the tx overrides
         new File(testData.getDataDirectoryRoot(), "user_projections").mkdir();
         testData.copyTo(OvverideTransformationsTest.class.getResourceAsStream("test_epsg.properties"), "user_projections/epsg.properties");
@@ -88,7 +94,7 @@ public class OvverideTransformationsTest extends GeoServerSystemTestSupport {
     @Test
     public void testFallbackOnEPSGDatabaseStd() throws Exception {
         // Test CRSs
-        CoordinateReferenceSystem source = CRS.decode("EPSG:3003");
+        CoordinateReferenceSystem source = CRS.decode("EPSG:3002");
         CoordinateReferenceSystem target = CRS.decode("EPSG:4326");
         CoordinateOperation co = CRS.getCoordinateOperationFactory(true).createOperation(source, target);
         ConcatenatedOperation cco = (ConcatenatedOperation) co;

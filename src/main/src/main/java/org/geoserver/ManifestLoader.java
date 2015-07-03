@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -30,6 +31,10 @@ import org.apache.commons.io.IOUtils;
 import org.geoserver.ManifestLoader.AboutModel.ManifestModel;
 import org.geoserver.config.GeoServer;
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Paths;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resource.Type;
+import org.geoserver.platform.resource.Resources;
 import org.geotools.factory.GeoTools;
 import org.geotools.util.logging.Logging;
 
@@ -86,9 +91,9 @@ public class ManifestLoader {
         // override settings from datadir
         try {
             // datadir search
-            File properties = loader.find(PROPERTIES_FILE);
-            if (properties != null) {
-                is = new FileInputStream(properties);
+            Resource resource = loader.get( PROPERTIES_FILE );
+            if (resource.getType() == Type.RESOURCE) {
+                is = resource.in();
                 props.load(is);
             }
         } catch (IOException e2) {

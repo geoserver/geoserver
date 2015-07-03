@@ -1,16 +1,20 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.gwc.layer;
 
-import static com.google.common.base.Preconditions.*;
-import static org.geoserver.gwc.GWC.*;
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkState;
+import static org.geoserver.gwc.GWC.tileLayerName;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.httpclient.util.LangUtils;
@@ -24,20 +28,24 @@ import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.NamespaceInfo;
+import org.geoserver.catalog.Predicates;
+import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WMSLayerInfo;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.event.CatalogAddEvent;
 import org.geoserver.catalog.event.CatalogListener;
 import org.geoserver.catalog.event.CatalogModifyEvent;
 import org.geoserver.catalog.event.CatalogPostModifyEvent;
 import org.geoserver.catalog.event.CatalogRemoveEvent;
+import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.gwc.GWC;
 import org.geoserver.gwc.config.GWCConfig;
 import org.geotools.util.logging.Logging;
 import org.geowebcache.filter.parameters.StringParameterFilter;
 import org.geowebcache.grid.GridSetBroker;
-import org.geowebcache.locks.LockProvider;
+import org.geowebcache.layer.TileLayer;
 import org.geowebcache.storage.StorageBroker;
 
 import com.google.common.base.Objects;
@@ -61,6 +69,9 @@ import com.google.common.collect.Sets;
  * <li><b>Layer renamed</b>: a {@link LayerInfo} or {@link LayerGroupInfo} has been renamed. GWC is
  * {@link StorageBroker#rename instructed to rename} the corresponding tile layer preserving the
  * cache and any other information (usage statistics, disk quota usage, etc).</li>
+ * <li><b>Workspace renamed</b>: a {@link WorkspaceInfo} as been renamed. GWC is
+ * {@link StorageBroker#rename instructed to rename} all the corresponding tile layer associated to 
+ * the workspace, preserving the cache and any other information (usage statistics, disk quota usage, etc).</li>
  * <li><b>Namespace changed</b>: a {@link ResourceInfo} has been assigned to a different
  * {@link NamespaceInfo namespace}. As the GWC tile layers are named after the resource's
  * {@link ResourceInfo#prefixedName() prefixed name} and not only after the
@@ -179,7 +190,7 @@ public class CatalogLayerEventListener implements CatalogListener {
         CatalogInfo source = event.getSource();
         if (source instanceof LayerInfo || source instanceof LayerGroupInfo
                 || source instanceof FeatureTypeInfo || source instanceof CoverageInfo
-                || source instanceof WMSLayerInfo) {
+                || source instanceof WMSLayerInfo || source instanceof WorkspaceInfo) {
             PRE_MODIFY_EVENT.set(event);
 
             if (mediator.hasTileLayer(source)) {
@@ -208,7 +219,8 @@ public class CatalogLayerEventListener implements CatalogListener {
     public void handlePostModifyEvent(final CatalogPostModifyEvent event) throws CatalogException {
         final CatalogInfo source = event.getSource();
         if (!(source instanceof LayerInfo || source instanceof LayerGroupInfo
-                || source instanceof FeatureTypeInfo || source instanceof CoverageInfo || source instanceof WMSLayerInfo)) {
+                || source instanceof FeatureTypeInfo || source instanceof CoverageInfo 
+                || source instanceof WMSLayerInfo || source instanceof WorkspaceInfo)) {
             return;
         }
 
@@ -218,7 +230,7 @@ public class CatalogLayerEventListener implements CatalogListener {
         final CatalogModifyEvent preModifyEvent = PRE_MODIFY_EVENT.get();
         PRE_MODIFY_EVENT.remove();
 
-        if (tileLayerInfo == null) {
+        if (tileLayerInfo == null && !(source instanceof WorkspaceInfo)) {
             return;// no tile layer assiociated, no need to continue
         }
         if (preModifyEvent == null) {
@@ -241,6 +253,10 @@ public class CatalogLayerEventListener implements CatalogListener {
             if (changedProperties.contains("name") || changedProperties.contains("namespace")
                     || changedProperties.contains("workspace")) {
                 handleRename(tileLayerInfo, source, changedProperties, oldValues, newValues);
+            }
+        } else if(source instanceof WorkspaceInfo) {
+            if (changedProperties.contains("name")) {
+                handleWorkspaceRename(source, changedProperties, oldValues, newValues);
             }
         }
 
@@ -323,8 +339,8 @@ public class CatalogLayerEventListener implements CatalogListener {
             final StyleInfo oldStyle = (StyleInfo) oldValues.get(propIndex);
             final StyleInfo newStyle = (StyleInfo) newValues.get(propIndex);
 
-            final String oldStyleName = oldStyle.getName();
-            defaultStyle = newStyle.getName();
+            final String oldStyleName = oldStyle.prefixedName();
+            defaultStyle = newStyle.prefixedName();
             if (!Objects.equal(oldStyleName, defaultStyle)) {
                 save = true;
                 defaultStyleChanged = true;
@@ -334,13 +350,13 @@ public class CatalogLayerEventListener implements CatalogListener {
             }
         } else {
             StyleInfo styleInfo = li.getDefaultStyle();
-            defaultStyle = styleInfo == null ? null : styleInfo.getName();
+            defaultStyle = styleInfo == null ? null : styleInfo.prefixedName();
         }
 
         if (tileLayerInfo.isAutoCacheStyles()) {
             Set<String> styles = new HashSet<String>();
             for (StyleInfo s : li.getStyles()) {
-                styles.add(s.getName());
+                styles.add(s.prefixedName());
             }
             ImmutableSet<String> cachedStyles = tileLayerInfo.cachedStyles();
             if (!styles.equals(cachedStyles)) {
@@ -408,6 +424,103 @@ public class CatalogLayerEventListener implements CatalogListener {
             
         }
     }
+    
+    private void handleWorkspaceRename(final CatalogInfo source,
+            final List<String> changedProperties, final List<Object> oldValues,
+            final List<Object> newValues) {
+        final int nameIndex = changedProperties.indexOf("name");
+        final String oldWorkspaceName = (String) oldValues.get(nameIndex);
+        final String newWorkspaceName = (String) newValues.get(nameIndex);
+        
+        // handle layers rename
+        CloseableIterator<LayerInfo> layers = catalog.list(LayerInfo.class, Predicates.equal("resource.store.workspace.name", newWorkspaceName));
+        try {
+            while(layers.hasNext()) {
+                LayerInfo layer = layers.next();
+                String oldName = oldWorkspaceName + ":" + layer.getName();
+                String newName = newWorkspaceName + ":" + layer.getName();
+                
+                // see if the tile layer existed and it is one that we can rename (admin
+                // could have overwritten it with a direct layer in geowebcache.xml)
+                TileLayer tl;
+                try {
+                    tl = mediator.getTileLayerByName(oldName);
+                    if(!(tl instanceof GeoServerTileLayer)) {
+                        continue;
+                    }
+                } catch(IllegalArgumentException e) {
+                    // this happens if the layer is not there, move on
+                    continue;
+                }
+                
+                try {
+                    if(layer.getType() == PublishedType.VECTOR && 
+                            ((FeatureTypeInfo) layer.getResource()).getFeatureType().getGeometryDescriptor() == null) {
+                        // skip geometryless layers
+                        continue;
+                    }
+                } catch(IOException e) {
+                    // this should not happen...
+                    log.log(Level.FINE, "Failed to determine if layer" 
+                            + layer + " is geometryless while renaming tile layers for workspace name change " 
+                            + oldName + " -> " + newName, e);
+                }
+                    
+                try {
+                    if(tl instanceof GeoServerTileLayer) {
+                        GeoServerTileLayer gstl = (GeoServerTileLayer) tl;
+                        renameTileLayer(gstl.getInfo(), oldName, newName);
+                    }
+                } catch(Exception e) {
+                    // this should not happen, but we don't want to 
+                    log.log(Level.WARNING, "Failed to rename tile layer for geoserver layer " 
+                            + layer + " while renaming tile layers for workspace name change " 
+                            + oldName + " -> " + newName, e);
+                }
+            }
+        } finally {
+            layers.close();
+        }
+
+        // handle layer group renames
+        CloseableIterator<LayerGroupInfo> groups = catalog.list(LayerGroupInfo.class,
+                Predicates.equal("workspace.name", newWorkspaceName));
+        try {
+            while (groups.hasNext()) {
+                LayerGroupInfo group = groups.next();
+                String oldName = oldWorkspaceName + ":" + group.getName();
+                String newName = newWorkspaceName + ":" + group.getName();
+
+                // see if the tile layer existed and it is one that we can rename (admin
+                // could have overwritten it with a direct layer in geowebcache.xml)
+                TileLayer tl;
+                try {
+                    tl = mediator.getTileLayerByName(oldName);
+                    if (!(tl instanceof GeoServerTileLayer)) {
+                        continue;
+                    }
+                } catch (IllegalArgumentException e) {
+                    // this happens if the layer is not there, move on
+                    continue;
+                }
+
+                try {
+                    if (tl instanceof GeoServerTileLayer) {
+                        GeoServerTileLayer gstl = (GeoServerTileLayer) tl;
+                        renameTileLayer(gstl.getInfo(), oldName, newName);
+                    }
+                } catch (Exception e) {
+                    // this should not happen, but we don't want to
+                    log.log(Level.WARNING, "Failed to rename tile layer for geoserver group "
+                            + group + " while renaming tile layers for workspace name change "
+                            + oldName + " -> " + newName, e);
+                }
+            }
+        } finally {
+            groups.close();
+        }
+            
+    }
 
     private void handleRename(final GeoServerTileLayerInfo tileLayerInfo, final CatalogInfo source,
             final List<String> changedProperties, final List<Object> oldValues,
@@ -444,30 +557,34 @@ public class CatalogLayerEventListener implements CatalogListener {
         }
 
         if (!oldLayerName.equals(newLayerName)) {
-            tileLayerInfo.setName(newLayerName);
-
-            // notify the mediator of the rename so it changes the name of the layer in GWC without
-            // affecting its caches
-            GridSetBroker gridSetBroker = mediator.getGridSetBroker();
-            LockProvider lockProvider = mediator.getLockProvider();
-
-            final GeoServerTileLayer oldTileLayer = (GeoServerTileLayer) mediator
-                    .getTileLayerByName(oldLayerName);
-
-            checkState(null != oldTileLayer, "hanldeRename: old tile layer not found: '"
-                    + oldLayerName + "'. New name: '" + newLayerName + "'");
-
-            final GeoServerTileLayer modifiedTileLayer;
-
-            if (oldTileLayer.getLayerInfo() != null) {
-                LayerInfo layerInfo = oldTileLayer.getLayerInfo();
-                modifiedTileLayer = new GeoServerTileLayer(layerInfo, gridSetBroker, tileLayerInfo);
-            } else {
-                LayerGroupInfo layerGroup = oldTileLayer.getLayerGroupInfo();
-                modifiedTileLayer = new GeoServerTileLayer(layerGroup, gridSetBroker, tileLayerInfo);
-            }
-            mediator.save(modifiedTileLayer);
+            renameTileLayer(tileLayerInfo, oldLayerName, newLayerName);
         }
+    }
+
+    private void renameTileLayer(final GeoServerTileLayerInfo tileLayerInfo, String oldLayerName,
+            String newLayerName) {
+        tileLayerInfo.setName(newLayerName);
+
+        // notify the mediator of the rename so it changes the name of the layer in GWC without
+        // affecting its caches
+        GridSetBroker gridSetBroker = mediator.getGridSetBroker();
+
+        final GeoServerTileLayer oldTileLayer = (GeoServerTileLayer) mediator
+                .getTileLayerByName(oldLayerName);
+
+        checkState(null != oldTileLayer, "handleRename: old tile layer not found: '"
+                + oldLayerName + "'. New name: '" + newLayerName + "'");
+
+        final GeoServerTileLayer modifiedTileLayer;
+
+        if (oldTileLayer.getLayerInfo() != null) {
+            LayerInfo layerInfo = oldTileLayer.getLayerInfo();
+            modifiedTileLayer = new GeoServerTileLayer(layerInfo, gridSetBroker, tileLayerInfo);
+        } else {
+            LayerGroupInfo layerGroup = oldTileLayer.getLayerGroupInfo();
+            modifiedTileLayer = new GeoServerTileLayer(layerGroup, gridSetBroker, tileLayerInfo);
+        }
+        mediator.save(modifiedTileLayer);
     }
 
     /**

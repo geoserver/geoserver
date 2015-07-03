@@ -1,12 +1,14 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wps;
 
+import static org.geoserver.wps.WPSInitializer.lookupNewProcessGroups;
+
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.impl.GeoServerLifecycleHandler;
-import static org.geoserver.wps.WPSInitializer.lookupNewProcessGroups;
 
 /**
  * Life cycle listener for WPS. 
@@ -30,6 +32,10 @@ public class WPSLifecycleHandler implements GeoServerLifecycleHandler {
         lookupNewProcessGroups(getWPS(), geoServer);
     }
     
+    public void beforeReload() {
+        // nothing to do
+    }
+
     @Override
     public void onDispose() {
     }

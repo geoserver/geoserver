@@ -1,11 +1,10 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 
 package org.geoserver.wps;
-
-import java.io.File;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -16,6 +15,8 @@ import net.opengis.wps10.ExecuteType;
 import net.opengis.wps10.GetCapabilitiesType;
 import net.opengis.wps10.ProcessDescriptionsType;
 import net.opengis.wps10.WPSCapabilitiesType;
+
+import org.geoserver.platform.resource.Resource;
 
 /**
  * @author Lucas Reed, Refractions Research Inc
@@ -57,11 +58,26 @@ public interface WebProcessingService {
     void getSchema(HttpServletRequest request, HttpServletResponse response) throws WPSException;
 
     /**
-     * Returns a file stored as a reference in the specified execution 
+     * Returns a output stored as a reference in the specified execution
      * 
      * @param request
      * @return
      * @throws WPSException
      */
-    File getExecutionResult(GetExecutionResultType request) throws WPSException;
+    Resource getExecutionResult(GetExecutionResultType request) throws WPSException;
+
+    /**
+     * Dismisses the execution of a currently running process
+     * 
+     * @param request
+     * @return
+     * @throws WPSException
+     */
+    ExecuteResponseType dismiss(DismissType request) throws WPSException;
+
+    /**
+     * WPS service configuration.
+     */
+    WPSInfo getServiceInfo();
+
 }

@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -55,6 +56,19 @@ public class RawMap extends WebMap {
             IOUtils.copy(stream, out);
         } else {
             throw new IllegalStateException();
+        }
+    }
+    
+    @Override
+    public void disposeInternal() {
+        buffer = null;
+        mapContents = null;
+        if (stream != null) {
+            try {
+                stream.close();
+            } catch (Exception ignore) {
+                //
+            }
         }
     }
 

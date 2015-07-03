@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -21,6 +22,7 @@ import org.geoserver.wcs.kvp.GetCoverageRequestReader;
 import org.geoserver.wcs.test.WCSTestSupport;
 import org.geoserver.wcs.xml.v1_1_1.WCSConfiguration;
 import org.geoserver.wcs.xml.v1_1_1.WcsXmlReader;
+import org.geoserver.util.EntityResolverProvider;
 import org.junit.After;
 import org.junit.Before;
 import org.opengis.coverage.grid.GridCoverage;
@@ -45,7 +47,8 @@ public abstract class AbstractGetCoverageTest extends WCSTestSupport {
                 .getBean("wcs111GetCoverageRequestReader");
         service = (WebCoverageService111) applicationContext.getBean("wcs111ServiceTarget");
         configuration = new WCSConfiguration();
-        xmlReader = new WcsXmlReader("GetCoverage", "1.1.1", configuration);
+        xmlReader = new WcsXmlReader("GetCoverage", "1.1.1", configuration,
+                EntityResolverProvider.RESOLVE_DISABLED_PROVIDER);
     }
     
     @After

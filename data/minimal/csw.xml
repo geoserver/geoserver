@@ -1,0 +1,26 @@
+<csw>
+  <id>csw</id>
+  <enabled>true</enabled>
+  <name>My GeoServer CSW</name>
+  <title>My GeoServer CSW</title>
+  <maintainer>http://jira.codehaus.org/secure/BrowseProject.jspa?id=10311</maintainer>
+  <abstrct>
+This is a description of your Catalog Services For The Web.
+   </abstrct>
+  <accessConstraints>NONE</accessConstraints>
+  <fees>NONE</fees>
+  <versions>
+    <org.geotools.util.Version>
+      <version>2.0.2</version>
+    </org.geotools.util.Version>
+  </versions>
+  <keywords>
+    <string>CSW</string>
+    <string>Catalog Services For The Web</string>
+    <string>GEOSERVER</string>
+  </keywords>
+  <citeCompliant>false</citeCompliant>
+  <onlineResource>http://geoserver.org</onlineResource>
+  <schemaBaseURL>http://schemas.opengis.net</schemaBaseURL>
+  <verbose>false</verbose>  
+</csw>

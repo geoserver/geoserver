@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -82,8 +83,10 @@ public class TransformRepository {
         
         @Override
         protected Templates loadItem(File file) throws IOException {
-            try {
-                Source xslSource = new StreamSource(file);
+            // do not trust StreamSource to do the file closing, reports on the net
+            // suggest it might not
+            try (FileInputStream fis = new FileInputStream(file)) {
+                Source xslSource = new StreamSource(fis);
                 
                 TransformerFactory tf = TransformerFactory.newInstance( );
                 final List<TransformerException> errors = new ArrayList<TransformerException>();

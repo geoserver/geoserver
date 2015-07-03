@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -19,7 +20,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.geotools.util.logging.Logging;
 
-class FakeHttpServletResponse implements HttpServletResponse {
+/**
+ * A HTTP response used when calling back into the GeoServer dispatcher
+ */
+public class FakeHttpServletResponse implements HttpServletResponse {
 
     private static Logger log = Logging.getLogger(HttpServletResponse.class.toString());
 

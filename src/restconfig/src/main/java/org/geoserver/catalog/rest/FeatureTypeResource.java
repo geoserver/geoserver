@@ -1,12 +1,15 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.catalog.rest;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 
 import org.geoserver.catalog.AttributeTypeInfo;
@@ -14,8 +17,8 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
-import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.rest.RestletException;
@@ -180,6 +183,7 @@ public class FeatureTypeResource extends AbstractCatalogResource {
         }
         
         featureType.setEnabled(true);
+        catalog.validate(featureType, true).throwIfInvalid();
         catalog.add( featureType );
         
         //create a layer for the feature type
@@ -229,20 +233,34 @@ public class FeatureTypeResource extends AbstractCatalogResource {
 
     @Override
     protected void handleObjectPut(Object object) throws Exception {
-        FeatureTypeInfo ft = (FeatureTypeInfo) object;
+        FeatureTypeInfo featureTypeUpdate = (FeatureTypeInfo) object;
         
         String workspace = getAttribute("workspace");
         String datastore = getAttribute("datastore");
         String featuretype = getAttribute("featuretype");
         
         DataStoreInfo ds = catalog.getDataStoreByName(workspace, datastore);
-        FeatureTypeInfo original = catalog.getFeatureTypeByDataStore( ds,  featuretype );
-        new CatalogBuilder(catalog).updateFeatureType(original,ft);
-        calculateOptionalFields(ft, original);
-        catalog.save( original );
+        FeatureTypeInfo featureTypeInfo = catalog.getFeatureTypeByDataStore( ds,  featuretype );
+        Map<String, Serializable> parametersCheck = featureTypeInfo.getStore().getConnectionParameters();
         
-        clear(original);
-        LOGGER.info( "PUT feature type" + datastore + "," + featuretype );
+        CatalogBuilder helper = new CatalogBuilder(catalog);
+        helper.updateFeatureType(featureTypeInfo,featureTypeUpdate);
+        calculateOptionalFields(featureTypeUpdate, featureTypeInfo);
+        catalog.validate(featureTypeInfo, false).throwIfInvalid();
+        catalog.save( featureTypeInfo );
+        catalog.getResourcePool().clear(featureTypeInfo);
+        
+        Map<String, Serializable> parameters = featureTypeInfo.getStore().getConnectionParameters();
+        MetadataMap mdm = featureTypeInfo.getMetadata();
+        boolean virtual = mdm != null && mdm.containsKey(FeatureTypeInfo.JDBC_VIRTUAL_TABLE);
+        
+        if( !virtual && parameters.equals(parametersCheck)){
+            LOGGER.info( "PUT FeatureType" + datastore + "," + featuretype + " updated metadata only");
+        }
+        else {
+            LOGGER.info( "PUT featureType" + datastore + "," + featuretype + " updated metadata and data access" );
+            catalog.getResourcePool().clear(featureTypeInfo.getStore());
+        }
     }
     
     @Override
@@ -275,14 +293,8 @@ public class FeatureTypeResource extends AbstractCatalogResource {
         }
         
         catalog.remove( ft );
-        clear(ft);
         
         LOGGER.info( "DELETE feature type" + datastore + "," + featuretype );
-    }
-    
-    void clear(FeatureTypeInfo info) {
-        catalog.getResourcePool().clear(info);
-        catalog.getResourcePool().clear(info.getStore());
     }
 
     @Override

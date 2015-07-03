@@ -9,28 +9,13 @@ function check_rc() {
   fi
 }
 
-APP=GeoServer.app
+# build the app
+ant
+check_rc $? "build app"
+
+APP_NAME=GeoServer.app
+APP=target/$APP_NAME
 VER=$( cat ${APP}/Contents/Info.plist | grep -A 1 CFBundleVersion | tail -n 1 | sed 's/.*<string>//g' | sed 's/<\/string>//g' )
-BIN=../../../target/release/geoserver-$VER-bin.zip
-if [ ! -e $BIN ]; then
-  echo "$BIN does not exist"
-  exit 1
-fi
-
-# unpack the bin archive
-RES=${APP}/Contents/Resources/Java
-rm -rf $RES/*
-unzip $BIN -d $RES
-mv $RES/geoserver-$VER/* $RES
-rmdir $RES/geoserver-$VER
-check_rc $? "unpack bin archive"
-
-# build the console app
-pushd console > /dev/null
-mvn clean install
-check_rc $? "console build"
-cp target/console*.jar ../$RES/console.jar
-popd > /dev/null
 
 VOL=geoserver-$VER
 
@@ -91,7 +76,7 @@ echo '
            set arrangement of theViewOptions to not arranged
            set icon size of theViewOptions to 104
            set background picture of theViewOptions to file ".background:'${DMG_BACK}'"
-           set position of item "'${APP}'" of container window to {120, 180}
+           set position of item "'${APP_NAME}'" of container window to {120, 180}
            set position of item "'Applications'" of container window to {400, 180}
            close
            open

@@ -39,4 +39,4 @@ Configuring a GeoTIFF data store
    * - ``URL``
      - Location of the GeoTIFF file. This can be an absolute path (such as :file:`file:C:\\Data\\landbase.tif`) or a path relative to GeoServer's data directory (such as :file:`file:data/landbase.tif`).
      
-     
+.. note:: Notice that the GeoTiff plugin is able to handle internal/external overviews and internal/external masks.

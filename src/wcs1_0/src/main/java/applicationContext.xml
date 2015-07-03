@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
- Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ Copyright (C) 2014 - Open Source Geospatial Foundation. All rights reserved.
  This code is licensed under the GPL 2.0 license, available at the root
  application directory.
  -->
@@ -23,6 +23,7 @@
     <property name="interceptorNames">
       <list>
         <value>wcsLogger</value>
+        <value>wcs100ServiceInterceptor*</value>
         <value>wcs100ServiceTarget</value>
       </list>
     </property>
@@ -60,7 +61,10 @@
 
   <bean id="wcs100BBoxKvpParser" class="org.geoserver.wcs.kvp.BBoxKvpParser" />
   
-  <bean id="wcs100InterpolationKvpParser" class="org.geoserver.wcs.kvp.InterpolationMethodKvpParser" />
+  <bean id="wcs100InterpolationKvpParser" class="org.geoserver.wcs.kvp.InterpolationMethodKvpParser" >
+      <property name="service" value="WCS" />
+      <property name="version" value="1.0.0" />
+   </bean>
 
 
 
@@ -130,6 +134,7 @@
     <constructor-arg value="1.0.0" />
 
     <constructor-arg ref="wcs-1.0.0-configuration" />
+    <constructor-arg ref="entityResolverProvider" />
 
   </bean>
 
@@ -144,6 +149,7 @@
     <constructor-arg value="1.0.0" />
 
     <constructor-arg ref="wcs-1.0.0-configuration" />
+    <constructor-arg ref="entityResolverProvider" />
 
   </bean>
 
@@ -156,6 +162,7 @@
     <constructor-arg value="1.0.0" />
 
     <constructor-arg ref="wcs-1.0.0-configuration" />
+    <constructor-arg ref="entityResolverProvider" />
 
   </bean>
 

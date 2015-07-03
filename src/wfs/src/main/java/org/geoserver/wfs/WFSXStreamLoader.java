@@ -1,9 +1,11 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wfs;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.geoserver.config.GeoServer;
@@ -11,7 +13,6 @@ import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamServiceLoader;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.wfs.GMLInfo.SrsNameStyle;
-import org.geotools.util.Version;
 
 /**
  * Loads and persist the {@link WFSInfo} object to and from xstream 
@@ -85,6 +86,9 @@ public class WFSXStreamLoader extends XStreamServiceLoader<WFSInfo> {
         gml = service.getGML().get(WFSInfo.Version.V_20);
         if (gml == null) {
             addGml(service, WFSInfo.Version.V_20, SrsNameStyle.URN2, false);
+        }
+        if (service.getSRS() == null) {
+            ((WFSInfoImpl) service).setSRS(new ArrayList<String>());
         }
         return service;
     }

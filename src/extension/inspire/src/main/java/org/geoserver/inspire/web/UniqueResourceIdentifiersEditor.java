@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -42,11 +43,10 @@ public class UniqueResourceIdentifiersEditor extends FormComponentPanel<UniqueRe
 
     private GeoServerTablePanel<UniqueResourceIdentifier> identifiers;
     private AjaxButton button;
-    private IFormValidator validator;
 
     /**
      * @param id
-     * @param model Must return a {@link ResourceInfo}
+     * @param identifiersModel Must return a {@link ResourceInfo}
      */
     public UniqueResourceIdentifiersEditor(String id,
             final IModel<UniqueResourceIdentifiers> identifiersModel) {

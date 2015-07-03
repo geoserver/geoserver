@@ -3,14 +3,16 @@
 Stores
 ======
 
-A store connects to a data source that contains raster or vector data. A data source can be a file or group of files, a table in a database, a single raster file, or a directory, for example a Vector Product Format library. Using the store construct means that connection parameters are defined once, rather than for each piece of data in a source. As such, it is necessary to register a store before loading any data.
+A store connects to a data source that contains raster or vector data. A data source can be a file or group of files, a table in a database, a single raster file, or a directory (for example, a Vector Product Format library). The store construct allows connection parameters to be defined once, rather than for each dataset in a source. As such, it is necessary to register a store before configuring datasets within it.
 
 .. figure:: ../images/data_stores.png
    :align: center
    
    *Stores View*
 
-While there are many potential formats for data source, there are only four types of stores. For raster data, a store can be a file. For vector data, a store can be a file, database, or server. 
+Store types
+-----------
+While there are many potential formats for data sources, there are only four kinds of stores. For raster data, a store can be a file. For vector data, a store can be a file, database, or server. 
 
 .. list-table::
    :widths: 15 85 
@@ -27,58 +29,70 @@ While there are many potential formats for data source, there are only four type
      - vector server (web feature server)
      
 
-Editing a Store
----------------
+Edit a Store
+------------
 
-To view and edit a store, click a store name. The exact contents of this page depend on the specific format chosen. (See the sections :ref:`data_vector`, :ref:`data_raster`, and :ref:`data_database` for information about specific data formats.) In the example lists the contents of the ``nurc:ArcGridSample`` store.
+To view or edit a store, click the store name. A store configuration page will be displayed.  The exact contents of this page depend on the specific format of the store. See the sections :ref:`data_vector`, :ref:`data_raster`, and :ref:`data_database` for information about specific data formats. The example shows the configuration for the ``nurc:ArcGridSample`` store.
 
 .. figure:: ../images/data_stores_edit.png
    :align: center
    
    *Editing a raster data store*
 
-While connection parameters will vary depending on data format, some of the basic information is common across formats. The Workspace menu lists all registered workspaces. The store is assigned to the selected workspace (``nurc``). :guilabel:`Data Source Name` is the store name as listed on the view page. The :guilabel:`Description` is optional and only displays in the administration interface. :guilabel:`Enabled` enables or disables access to the store, along with all data defined in it. 
+Basic Store Info
+^^^^^^^^^^^^^^^^
+The basic information is common for all formats. 
 
-Adding a Store
---------------
+* **Workspace** - the store is assigned to the selected workspace
+* **Data Source Name** - the store name as listed on the view page
+* **Description** - (optional) a description that displays in the administration interface
+* **Enabled** - enables or disables access to the store, along with all datasets defined for it
 
-The buttons for adding and removing a workspace can be found at the top of the Stores page. 
+Connection Parameters
+^^^^^^^^^^^^^^^^^^^^^
+The connection parameters vary depending on data format.
+
+Add a Store
+-----------
+
+The buttons for adding and removing a store can be found at the top of the Stores page. 
 
 .. figure:: ../images/data_stores_add_remove.png
    :align: center
    
-   *Buttons to add and remove stores*
+   *Buttons to add and remove a Store*
 
-To add a workspace, select the :guilabel:`Add new Store` button. You will be prompted to choose a data source. GeoServer natively supports many formats (with more available via extensions). Click the appropriate data source to continue. 
+To add a store, select the :guilabel:`Add new Store` button. You will be prompted to choose a data source. GeoServer natively supports many formats (with more available via extensions). Click the appropriate data source to continue. 
 
 .. figure:: ../images/data_stores_chooser.png
    :align: center
    
    *Choosing the data source for a new store*
 
-The next page will configure the store. (The example below shows the ArcGrid raster configuration page.)  However, since connection parameters differ across data sources, the exact contents of this page depend on the store's specific format. See the sections :ref:`data_vector`, :ref:`data_raster`, and :ref:`data_database` for information on specific data formats.
+The next page configures the store. Since connection parameters differ across data sources, the exact contents of this page depend on the store's specific format. See the sections :ref:`data_vector`, :ref:`data_raster`, and :ref:`data_database` for information on specific data formats.
+The example below shows the ArcGrid raster configuration page.
 
 .. figure:: ../images/data_stores_add.png
    :align: center
    
    *Configuration page for an ArcGrid raster data source*
 
-Removing a Store
-----------------
+Remove a Store
+--------------
    
-To remove a store, click the store's corresponding check box. Multiple stores can be selected for batch removal.
+To remove a store, click the checkbox next to the store. Multiple stores can be selected, or all can be selected by clicking the checkbox in the header.  
 
 .. figure:: ../images/data_stores_delete.png
    :align: center
    
-   *Stores selected for deletion*
+   *Stores selected for removal*
 
-Click the :guilabel:`Remove selected Stores` button. You will be asked to confirm the deletion of the the data within each store. Selecting :guilabel:`OK` removes the store(s), and will redirect to the main Stores page.
+Click the :guilabel:`Remove selected Stores` button. You will be asked to confirm the removal of the configuration for the store(s) and all resources defined under them. Clicking :guilabel:`OK` removes the selected store(s), and returns to the Stores page.
 
 .. figure:: ../images/data_stores_delete_confirm.png
    :align: center   
 
-   *Confirm deletion of stores*
+   *Confirm removal of stores*
 
 
 

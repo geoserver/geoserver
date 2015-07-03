@@ -1,0 +1,45 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+  <head>
+    <title>
+      <wicket:message key="page.title">CSS Styles</wicket:message>
+    </title>
+  </head>
+  <body>
+    <wicket:extend>
+    <div wicket:id="dialog"></div>
+    <div wicket:id="main-content"></div>
+        <wicket:fragment wicket:id="normal">
+          <div wicket:id="popup"></div>
+        <ul class="selfclear" style="list-style-type: none; margin: 0">
+        <li class="leftwise" style="width: 70%; margin: 0">
+          <div wicket:id="style.editing"></div>
+        </li>
+        <li class="leftwise" style="width: 25%">
+          <ul style="list-style-type: disc; margin-left: 2em">
+            <li>Editing style:<a wicket:id="change.style" href="#">Edit a different style.</a></li>
+            <li>Previewing on layer: <a wicket:id="change.layer" href="#"></a></li>
+            <li><a wicket:id="create.style" href="#">Create new CSS style</a></li>
+          </ul>
+          <br/>
+          <ul style="list-style-type: disc; margin-left: 2em">
+            <li><span wicket:id="associate.default.style"></span></li>
+            <li><a wicket:id="associate.styles" href="#">Change layer associations</a> for this style.</li>
+          </ul>
+        </li>
+      </ul>
+      <div wicket:id="context"></div>
+    </wicket:fragment>
+    <wicket:fragment wicket:id="loading-failure">
+    <wicket:message key="CssDemoPage.loadingFailure">The CSS Demo page
+    failed to load.  Please make sure you have at least one vector
+    layer and at least one style configured.
+    </wicket:message>
+    </wicket:fragment>
+    <wicket:fragment wicket:id="style.chooser">
+    <ul wicket:id="styles">
+      <li wicket:id="style"></li>
+    </ul>
+    </wicket:fragment>
+    </wicket:extend>
+  </body>
+</html>

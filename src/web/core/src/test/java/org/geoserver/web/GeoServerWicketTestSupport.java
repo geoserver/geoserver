@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -17,10 +18,16 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.security.GeoServerSecurityTestSupport;
 import org.geoserver.web.wicket.WicketHierarchyPrinter;
 import org.junit.After;
-import org.junit.Before;
+import org.junit.BeforeClass;
 
 public abstract class GeoServerWicketTestSupport extends GeoServerSecurityTestSupport {
     public static WicketTester tester;
+
+    @BeforeClass
+    public static void disableBrowserDetection() {
+        // disable browser detection, makes testing harder for nothing
+        GeoServerApplication.DETECT_BROWSER = false;
+    }
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
@@ -32,7 +39,8 @@ public abstract class GeoServerWicketTestSupport extends GeoServerSecurityTestSu
         Locale.setDefault(Locale.ENGLISH);
         
         GeoServerApplication app = 
-            (GeoServerApplication) applicationContext.getBean("webApplication");
+ (GeoServerApplication) applicationContext
+                .getBean("webApplication");
         tester = new WicketTester(
                 (GeoServerApplication) applicationContext.getBean("webApplication"));
         app.init();

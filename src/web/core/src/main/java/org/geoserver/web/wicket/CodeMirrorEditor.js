@@ -1,52 +1,53 @@
 var textarea = document.getElementById('$componentId');
-var editor = CodeMirror.fromTextArea("$componentId", { 
-    height: "450px",
-    content: textarea.value,
-    tabMode: "shift",
-    parserfile: "$syntax",
-    lineNumbers: true, 
-    textWrapping: false,
-    disableSpellcheck: true,
-    stylesheet: "$stylesheet",
-    path: "./resources/org.geoserver.web.wicket.CodeMirrorEditor/js/codemirror/js/",
-    initCallback: function(ed) {
-       ed.win.document.body.style.fontSize = 12;
-    }
+var editor = CodeMirror.fromTextArea(textarea, { 
+    mode: '$mode',
+    theme: 'default',
+    lineWrapping: true,
+    lineNumbers: true
 });
+editor.getWrapperElement().style.fontSize = "12px"; 
+editor.refresh();
 if(!document.gsEditors) {
-	document.gsEditors = {};
+    document.gsEditors = {};
 }
 document.gsEditors.$componentId = editor;
 document.getElementById('cm_undo').onclick = function() {
-	editor.undo();
+    editor.execCommand('undo');
 };
 document.getElementById('cm_redo').onclick = function() {
-	editor.redo();
+    editor.execCommand('redo')
 };
 document.getElementById('cm_goto').onclick = function() {
-    var line = Number(prompt("Jump to line:", ""));
-    var lastLine = editor.lineNumber(editor.lastLine());
+    var line = Number(prompt("Jump to line:", "")) - 1;
+    var lastLine = editor.lineCount() - 1;
     if (line && !isNaN(line)) {
       if(line > lastLine) {
-    	  editor.jumpToLine(lastLine)
-      } else if(line < 1) {
-    	  editor.jumpToLine(1)
+          editor.setCursor({line: lastLine, ch: 0})
+      } else if(line < 0) {
+          editor.setCursor({line: 0, ch: 0});
       } else {
-    	  editor.jumpToLine(line);
+          editor.setCursor({line: line, ch: 0});
       }
     }
+    editor.focus();
 };
 document.getElementById('cm_font_size').onchange = function() {
-	var fontSize = document.getElementById('cm_font_size').value;
-	editor.lineNumbers.childNodes[0].style.fontSize = fontSize + "px";
-	editor.win.document.body.style.fontSize = fontSize;
+    var fontSize = document.getElementById('cm_font_size').value;
+    editor.getWrapperElement().style.fontSize = fontSize+"px"; 
+    editor.refresh();
 }
 document.getElementById('cm_reformat').onclick = function() {
-	if(editor.selection()) {
-		editor.reindentSelection();
-	} else {
-		editor.reindent();
-	}	
+    var start, end, i;
+    if (editor.getSelection()) {
+        start = editor.getCursor(true).line;
+        end = editor.getCursor(false).line;
+    } else {
+        start = 0;
+        end = editor.lineCount();
+    }
+    for(i = start; i<end; i++) {
+        editor.indentLine(i);
+    }
 }
 // This comes from http://thereisamoduleforthat.com/content/making-div-fullscreen-and-restoring-it-its-original-position
 // Does not work so commented out

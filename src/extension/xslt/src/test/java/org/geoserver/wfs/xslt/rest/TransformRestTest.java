@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -21,17 +22,16 @@ import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.data.test.SystemTestData;
-import org.geoserver.test.GeoServerSystemTestSupport;
+import org.geoserver.wfs.xslt.XSLTTestSupport;
 import org.geoserver.wfs.xslt.config.TransformInfo;
 import org.geoserver.wfs.xslt.config.TransformRepository;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
-public class TransformRestTest extends GeoServerSystemTestSupport {
+public class TransformRestTest extends XSLTTestSupport {
 
     private XpathEngine xpath;
     private TransformRepository repository; 
@@ -44,9 +44,7 @@ public class TransformRestTest extends GeoServerSystemTestSupport {
         File dd = testData.getDataDirectoryRoot();
         File wfs = new File(dd, "wfs");
         File transform = new File(wfs, "transform");
-        if (transform.exists()) {
-            FileUtils.deleteDirectory(transform);
-        }
+        deleteDirectory(transform);
         assertTrue(transform.mkdirs());
         FileUtils.copyDirectory(new File("src/test/resources/org/geoserver/wfs/xslt"), transform);
     }

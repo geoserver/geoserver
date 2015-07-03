@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -25,6 +26,7 @@ import java.util.logging.Logger;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
+import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.KeywordInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -34,6 +36,7 @@ import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.gwc.GWC;
 import org.geoserver.gwc.config.GWCConfig;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WebMap;
@@ -55,12 +58,15 @@ import org.geowebcache.grid.GridSubset;
 import org.geowebcache.grid.OutsideCoverageException;
 import org.geowebcache.grid.SRS;
 import org.geowebcache.io.Resource;
+import org.geowebcache.layer.ExpirationRule;
 import org.geowebcache.layer.LayerListenerList;
 import org.geowebcache.layer.MetaTile;
+import org.geowebcache.layer.ProxyLayer;
 import org.geowebcache.layer.TileLayer;
 import org.geowebcache.layer.TileLayerListener;
 import org.geowebcache.layer.meta.ContactInformation;
 import org.geowebcache.layer.meta.LayerMetaInformation;
+import org.geowebcache.layer.meta.MetadataURL;
 import org.geowebcache.layer.updatesource.UpdateSourceDefinition;
 import org.geowebcache.locks.LockProvider.Lock;
 import org.geowebcache.mime.FormatModifier;
@@ -70,10 +76,11 @@ import org.geowebcache.util.GWCVars;
 import org.geowebcache.util.ServletUtils;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
+import com.google.common.base.Throwables;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 
-public class GeoServerTileLayer extends TileLayer {
+public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
 
     private static final Logger LOGGER = Logging.getLogger(GeoServerTileLayer.class);
 
@@ -83,10 +90,6 @@ public class GeoServerTileLayer extends TileLayer {
 
     public static final ThreadLocal<WebMap> WEB_MAP = new ThreadLocal<WebMap>();
 
-    private final LayerInfo layerInfo;
-
-    private final LayerGroupInfo layerGroupInfo;
-
     private String configErrorMessage;
 
     private Map<String, GridSubset> subSets;
@@ -95,60 +98,71 @@ public class GeoServerTileLayer extends TileLayer {
 
     private final GridSetBroker gridSetBroker;
     
-    public GeoServerTileLayer(final LayerGroupInfo layerGroup, final GWCConfig configDefaults,
+    private Catalog catalog;
+
+    private String publishedId;
+
+    volatile private PublishedInfo publishedInfo;
+
+    public GeoServerTileLayer(final PublishedInfo publishedInfo, final GWCConfig configDefaults,
             final GridSetBroker gridsets) {
-        checkNotNull(layerGroup, "layerGroup");
+        checkNotNull(publishedInfo, "publishedInfo");
         checkNotNull(gridsets, "gridsets");
         checkNotNull(configDefaults, "configDefaults");
 
         this.gridSetBroker = gridsets;
-        this.layerInfo = null;
-        this.layerGroupInfo = layerGroup;
-        this.info = TileLayerInfoUtil.loadOrCreate(layerGroup, configDefaults);
+        this.publishedInfo = publishedInfo;
+        this.info = TileLayerInfoUtil.loadOrCreate(getPublishedInfo(), configDefaults);
     }
 
-    public GeoServerTileLayer(final LayerInfo layerInfo, final GWCConfig configDefaults,
-            final GridSetBroker gridsets) {
-        checkNotNull(layerInfo, "layerInfo");
+    public GeoServerTileLayer(final PublishedInfo publishedInfo, final GridSetBroker gridsets,
+            final GeoServerTileLayerInfo state) {
+        checkNotNull(publishedInfo, "publishedInfo");
+        checkNotNull(gridsets, "gridsets");
+        checkNotNull(state, "state");
+
+        this.gridSetBroker = gridsets;
+        this.publishedInfo = publishedInfo;
+        this.info = state;
+        TileLayerInfoUtil.checkAutomaticStyles(publishedInfo, state);
+    }
+
+    public GeoServerTileLayer(final Catalog catalog, final String publishedId,
+            final GWCConfig configDefaults, final GridSetBroker gridsets) {
+        checkNotNull(catalog, "catalog");
+        checkNotNull(publishedId, "publishedId");
         checkNotNull(gridsets, "gridsets");
         checkNotNull(configDefaults, "configDefaults");
 
         this.gridSetBroker = gridsets;
-        this.layerInfo = layerInfo;
-        this.layerGroupInfo = null;
-        this.info = TileLayerInfoUtil.loadOrCreate(layerInfo, configDefaults);
+        this.catalog = catalog;
+        this.publishedId = publishedId;
+        this.info = TileLayerInfoUtil.loadOrCreate(getPublishedInfo(), configDefaults);
     }
 
-    public GeoServerTileLayer(final LayerGroupInfo layerGroup, final GridSetBroker gridsets,
-            final GeoServerTileLayerInfo state) {
-        checkNotNull(layerGroup, "layerGroup");
+    public GeoServerTileLayer(final Catalog catalog, final String publishedId,
+            final GridSetBroker gridsets, final GeoServerTileLayerInfo state) {
+        checkNotNull(catalog, "catalog");
+        checkNotNull(publishedId, "publishedId");
         checkNotNull(gridsets, "gridsets");
         checkNotNull(state, "state");
 
         this.gridSetBroker = gridsets;
-        this.layerInfo = null;
-        this.layerGroupInfo = layerGroup;
+        this.catalog = catalog;
+        this.publishedId = publishedId;
         this.info = state;
     }
 
-    public GeoServerTileLayer(final LayerInfo layerInfo, final GridSetBroker gridsets,
-            final GeoServerTileLayerInfo state) {
-        checkNotNull(layerInfo, "layerInfo");
-        checkNotNull(gridsets, "gridsets");
-        checkNotNull(state, "state");
-
-        this.gridSetBroker = gridsets;
-        this.layerInfo = layerInfo;
-        this.layerGroupInfo = null;
-        this.info = state;
-        TileLayerInfoUtil.checkAutomaticStyles(layerInfo, state);
-    }
-    
     @Override
     public String getId() {
         return info.getId();
     }
 
+    @Override
+    public String getBlobStoreId(){
+        return info.getBlobStoreId();
+    }
+    
     @Override
     public String getName() {
         return info.getName();
@@ -271,17 +285,60 @@ public class GeoServerTileLayer extends TileLayer {
     /**
      * @return the {@link LayerInfo} for this layer, or {@code null} if it's backed by a
      *         {@link LayerGroupInfo} instead
+     *         
+     * @deprecated use getPublishedInfo instead
      */
+    @Deprecated
     public LayerInfo getLayerInfo() {
-        return layerInfo;
+        PublishedInfo info = getPublishedInfo();
+        if (info instanceof LayerInfo) {
+            return (LayerInfo) info;
+        }
+
+        return null;
+    }
+
+    private PublishedInfo getPublishedInfo() {
+        if (publishedInfo == null) {
+            synchronized (this) {
+                if(publishedInfo == null) {
+                    // see if it's a layer or a layer group
+                    PublishedInfo work = catalog.getLayer(publishedId);
+                    if (work == null) {
+                        work = catalog.getLayerGroup(publishedId);
+                    }
+
+                    if (work != null) {
+                        TileLayerInfoUtil.checkAutomaticStyles(work, info);
+                    } else {
+                        throw new IllegalStateException(
+                                "Could not locate a layer or layer group with id "
+                                        + publishedId
+                                        + " within GeoServer configuration, the GWC configuration seems to be out of synch");
+                    }
+                    this.publishedInfo = work;
+                }
+            }
+        }
+
+        return publishedInfo;
+            
     }
 
     /**
      * @return the {@link LayerGroupInfo} for this layer, or {@code null} if it's backed by a
      *         {@link LayerInfo} instead
+     *
+     * @deprecated use getPublishedInfo instead
      */
+    @Deprecated
     public LayerGroupInfo getLayerGroupInfo() {
-        return layerGroupInfo;
+        PublishedInfo info = getPublishedInfo();
+        if (info instanceof LayerGroupInfo) {
+            return (LayerGroupInfo) info;
+        }
+
+        return null;
     }
 
     private ResourceInfo getResourceInfo() {
@@ -311,6 +368,18 @@ public class GeoServerTileLayer extends TileLayer {
             for (KeywordInfo kw : resourceInfo.getKeywords()) {
                 keywords.add(kw.getValue());
             }
+        } else {
+            LayerGroupInfo lg = getLayerGroupInfo();
+            if(lg != null) {
+                if (lg != null) {
+                    if(lg.getTitle() != null) {
+                        title = lg.getTitle();
+                    }
+                    if(lg.getAbstract() != null) {
+                        description = lg.getAbstract();
+                    }
+                }
+            }
         }
         meta = new LayerMetaInformation(title, description, keywords, contacts);
         return meta;
@@ -331,16 +400,18 @@ public class GeoServerTileLayer extends TileLayer {
      */
     @Override
     public String getStyles() {
+        LayerGroupInfo layerGroupInfo = getLayerGroupInfo();
         if (layerGroupInfo != null) {
             // there's no such thing as default style for a layer group
             return null;
         }
+        LayerInfo layerInfo = getLayerInfo();
         StyleInfo defaultStyle = layerInfo.getDefaultStyle();
         if (defaultStyle == null) {
             setConfigErrorMessage("Underlying GeoSever Layer has no default style");
             return null;
         }
-        return defaultStyle.getName();
+        return defaultStyle.prefixedName();
     }
 
     /**
@@ -492,7 +563,7 @@ public class GeoServerTileLayer extends TileLayer {
                 LOGGER.finer("--> " + Thread.currentThread().getName()
                         + " submitting getMap request for meta grid location "
                         + Arrays.toString(metaTile.getMetaGridPos()) + " on " + metaTile);
-                RenderedImageMap map;
+                WebMap map;
                 try {
                     long requestTime = System.currentTimeMillis();
                     map = dispatchGetMap(tile, metaTile);
@@ -500,6 +571,7 @@ public class GeoServerTileLayer extends TileLayer {
                     metaTile.setWebMap(map);
                     saveTiles(metaTile, tile, requestTime);
                 } catch (Exception e) {
+                    Throwables.propagateIfInstanceOf(e, GeoWebCacheException.class);
                     throw new GeoWebCacheException("Problem communicating with GeoServer", e);
                 } 
             }
@@ -541,7 +613,7 @@ public class GeoServerTileLayer extends TileLayer {
         return metaKey.toString();
     }
 
-    private RenderedImageMap dispatchGetMap(final ConveyorTile tile, final MetaTile metaTile)
+    private WebMap dispatchGetMap(final ConveyorTile tile, final MetaTile metaTile)
             throws Exception {
 
         Map<String, String> params = buildGetMap(tile, metaTile);
@@ -552,14 +624,14 @@ public class GeoServerTileLayer extends TileLayer {
 
             GWC.get().dispatchOwsRequest(params, cookies);
             map = WEB_MAP.get();
-            if (!(map instanceof RenderedImageMap)) {
+            if (!(map instanceof WebMap)) {
                 throw new IllegalStateException("Expected: RenderedImageMap, got " + map);
             }
         } finally {
             WEB_MAP.remove();
         }
 
-        return (RenderedImageMap) map;
+        return map;
     }
 
     private GeoServerMetaTile createMetaTile(ConveyorTile tile, final int metaX, final int metaY) {
@@ -570,7 +642,7 @@ public class GeoServerTileLayer extends TileLayer {
         MimeType responseFormat = tile.getMimeType();
         FormatModifier formatModifier = null;
         long[] tileGridPosition = tile.getTileIndex();
-        int gutter = info.getGutter();
+        int gutter = responseFormat.isVector() ? 0 : info.getGutter();
         metaTile = new GeoServerMetaTile(gridSubset, responseFormat, formatModifier,
                 tileGridPosition, metaX, metaY, gutter);
 
@@ -965,9 +1037,16 @@ public class GeoServerTileLayer extends TileLayer {
      */
     @Override
     public int getExpireClients(int zoomLevel) {
+    	if (info.getExpireClients()>0) {
+    		return info.getExpireClients();
+    	}
+    	
+        LayerInfo layerInfo = getLayerInfo();
         if(layerInfo != null) {
             return getLayerMaxAge(layerInfo);
-        } else if(layerGroupInfo != null) {
+        }
+        LayerGroupInfo layerGroupInfo = getLayerGroupInfo();
+        if (layerGroupInfo != null) {
             return getGroupMaxAge(layerGroupInfo);
         } else {
             if(LOGGER.isLoggable(Level.FINE)) {
@@ -1029,8 +1108,21 @@ public class GeoServerTileLayer extends TileLayer {
      */
     @Override
     public int getExpireCache(int zoomLevel) {
-        // TODO: make configurable
-        return 0;
+    	if (info.getExpireCacheList() != null) {
+            ExpirationRule matchedRule = null;
+            for (ExpirationRule rule : info.getExpireCacheList()) {
+                if (zoomLevel >= rule.getMinZoom()) {
+                    matchedRule = rule;
+               } else {
+                    //ExpirationRules should be zoomlevel ascending
+                    break;
+                }
+            }
+            if (matchedRule!=null) {
+                return matchedRule.getExpiration();
+            }
+        }
+        return info.getExpireCache();
     }
 
     /**
@@ -1056,5 +1148,62 @@ public class GeoServerTileLayer extends TileLayer {
     public String toString() {
         return new StringBuilder(getClass().getSimpleName()).append("[").append(info).append("]")
                 .toString();
+    }
+
+    @Override
+    public List<MimeType> getInfoMimeTypes() {
+        // Get the formats WMS supports for GetFeatureInfo
+        List<String> typeStrings = ((WMS) GeoServerExtensions.bean("wms")).getAvailableFeatureInfoFormats();
+        List<MimeType> types = new ArrayList<MimeType>(typeStrings.size());
+        for(String typeString: typeStrings) {
+            try {
+                types.add(MimeType.createFromFormat(typeString));
+            } catch (MimeException e) {
+                if (LOGGER.isLoggable(Level.WARNING)){
+                    LOGGER.log(Level.WARNING, e.getMessage(), e);
+                }
+            }
+        }
+        return types;
+    }
+
+    @Override
+    public void proxyRequest(ConveyorTile tile) throws GeoWebCacheException {
+        try {
+            GWC.get().proxyOwsRequest(tile);
+        } catch (Exception e) {
+            throw new GeoWebCacheException("Failed to cascade request", e);
+        }
+    }
+
+    @Override
+    public List<MetadataURL> getMetadataURLs() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public boolean isAdvertised() {
+        return true;
+    }
+
+    @Override
+    public void setAdvertised(boolean advertised) {
+        return;
+    }
+
+    @Override
+    public boolean isTransientLayer(){
+        return false;
+    }
+
+    @Override
+    public void setTransientLayer(boolean transientLayer){
+        return;
+    }
+
+    @Override
+    public void setBlobStoreId(String blobStoreId) {
+        info.setBlobStoreId(blobStoreId);
     }
 }

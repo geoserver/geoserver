@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -8,7 +9,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
+import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.gwc.GWC;
 import org.geoserver.ows.LocalWorkspace;
@@ -16,6 +19,7 @@ import org.geoserver.wms.ExtendedCapabilitiesProvider;
 import org.geoserver.wms.GetCapabilitiesRequest;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSInfo;
+import org.geotools.util.NumberRange;
 import org.geotools.util.Version;
 import org.geowebcache.grid.BoundingBox;
 import org.geowebcache.grid.GridSubset;
@@ -198,5 +202,16 @@ public class CachingExtendedCapabilitiesProvider implements ExtendedCapabilities
         String[] bs = { Double.toString(bbox.getMinX()), Double.toString(bbox.getMinY()),
                 Double.toString(bbox.getMaxX()), Double.toString(bbox.getMaxY()) };
         return bs;
+    }
+
+    @Override
+    public void customizeRootCrsList(Set<String> srs) {
+        // nothing to do
+    }
+
+    @Override
+    public NumberRange<Double> overrideScaleDenominators(LayerInfo layer,
+            NumberRange<Double> scaleDenominators) {
+        return scaleDenominators;
     }
 }

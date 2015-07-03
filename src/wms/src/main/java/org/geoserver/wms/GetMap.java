@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2014 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -13,7 +14,6 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
@@ -40,15 +40,12 @@ import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.factory.GeoTools;
 import org.geotools.factory.Hints;
 import org.geotools.filter.Filters;
-import org.geotools.filter.function.EnvFunction;
 import org.geotools.filter.visitor.SimplifyingFilterVisitor;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.FeatureLayer;
 import org.geotools.map.WMSLayer;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.renderer.lite.MetaBufferEstimator;
-import org.geotools.renderer.lite.RendererUtilities;
-import org.geotools.renderer.lite.StreamingRenderer;
 import org.geotools.styling.FeatureTypeConstraint;
 import org.geotools.styling.FeatureTypeStyle;
 import org.geotools.styling.Rule;
@@ -56,10 +53,8 @@ import org.geotools.styling.Style;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
-import org.opengis.filter.And;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory;
-import org.opengis.filter.Or;
 import org.opengis.parameter.GeneralParameterValue;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
@@ -389,7 +384,7 @@ public class GetMap {
                 
                 // mix the dimension related filter with the layer filter
                 Filter dimensionFilter = wms.getTimeElevationToFilter(times, elevations, mapLayerInfo.getFeature());
-                Filter filter = Filters.and(ff, layerFilter, dimensionFilter); 
+                Filter filter = SimplifyingFilterVisitor.simplify(Filters.and(ff, layerFilter, dimensionFilter)); 
 
                 final Query definitionQuery = new Query(source.getSchema().getName().getLocalPart());
                 definitionQuery.setVersion(featureVersion);
@@ -492,19 +487,7 @@ public class GetMap {
             }
         }
 
-        // setup some SLD variable substitution environment used by rendering transformations
-        EnvFunction.setLocalValue("wms_bbox", mapContent.getRenderingArea());
-        EnvFunction.setLocalValue("wms_crs", mapContent.getRenderingArea().getCoordinateReferenceSystem());
-        EnvFunction.setLocalValue("wms_srs", mapContent.getRequest().getSRS());
-        EnvFunction.setLocalValue("wms_width", mapContent.getMapWidth());
-        EnvFunction.setLocalValue("wms_height", mapContent.getMapHeight());
-        try {
-            double scaleDenominator = RendererUtilities.calculateOGCScale(mapContent.getRenderingArea(),
-                    mapContent.getMapWidth(), null);
-            EnvFunction.setLocalValue("wms_scale_denominator", scaleDenominator);
-        } catch(Exception e) {
-            LOGGER.log(Level.SEVERE, "Failed to compute the scale denominator, wms_scale_denominator env variable is unset", e);
-        }
+        RenderingVariables.setupEnvironmentVariables(mapContent);
         
         // set the buffer value if the admin has set a specific value for some layers
         // in this map
@@ -562,7 +545,7 @@ public class GetMap {
         }
 
         if (computeBuffer) {
-            final double scaleDenominator = getRequestScale(map);
+            final double scaleDenominator = map.getScaleDenominator(true);
             int buffer = 0;
 
             // either use the preset buffer, or if missing, compute one on the fly based
@@ -602,22 +585,6 @@ public class GetMap {
 
         // we get any estimate, it's better than nothing...
         return estimator.getBuffer();
-    }
-
-    /**
-     * Returns the rendering scale taking into account rotation and dpi
-     * 
-     * @param map
-     * @return
-     */
-    static double getRequestScale(WMSMapContent map) {
-        java.util.Map hints = new HashMap();
-        if (map.getRequest().getFormatOptions().get("dpi") != null) {
-            hints.put(StreamingRenderer.DPI_KEY, ((Integer) map.getRequest().getFormatOptions()
-                    .get("dpi")));
-        }
-        return RendererUtilities.calculateOGCScaleAffine(map.getCoordinateReferenceSystem(),
-                map.getRenderingTransform(), hints);
     }
 
     /**
@@ -737,7 +704,8 @@ public class GetMap {
      * 
      * @throws ServiceException
      *             if no specialization is configured for the output format specified in
-     *             <code>request</code> or if it can't be instantiated
+     *             <code>request</code> or if it can't be instantiated or the format is not
+     *             allowed
      */
     private GetMapOutputFormat getDelegate(final String outputFormat) throws ServiceException {
 
@@ -747,6 +715,9 @@ public class GetMap {
                     + outputFormat + " format", "InvalidFormat");
             e.setCode("InvalidFormat");
             throw e;
+        }
+        if (wms.isAllowedGetMapFormat(producer)==false) {
+            throw wms.unallowedGetMapFormatException(outputFormat);
         }
         return producer;
     }

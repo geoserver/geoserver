@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -36,7 +37,9 @@ public class GlobalContactTest extends CatalogRESTTestSupport {
         contactInfo.setAddressPostalCode("20001");
         contactInfo.setAddressCountry("United States");
         contactInfo.setAddressState("DC");
-        
+        contactInfo.setAddressDeliveryPoint("The White House");
+        contactInfo.setAddressElectronicMailAddress("info@whitehouse.gov");
+
         GeoServerInfo geoServerInfo = geoServer.getGlobal();
         SettingsInfo settingsInfo = geoServerInfo.getSettings();
         settingsInfo.setContact(contactInfo);
@@ -55,6 +58,8 @@ public class GlobalContactTest extends CatalogRESTTestSupport {
         assertEquals("Washington", contactInfo.get("addressCity"));
         assertEquals("DC", contactInfo.get("addressState"));
         assertEquals("20001", contactInfo.get("addressPostalCode").toString());
+        assertEquals("The White House", contactInfo.get("addressDeliveryPoint").toString());
+        assertEquals("info@whitehouse.gov", contactInfo.get("addressElectronicMailAddress").toString());
     }
 
     @Test
@@ -66,14 +71,21 @@ public class GlobalContactTest extends CatalogRESTTestSupport {
         assertXpathEvaluatesTo("1600 Pennsylvania Avenue", "/contact/address", dom);
         assertXpathEvaluatesTo("DC", "/contact/addressState", dom);
         assertXpathEvaluatesTo("20001", "/contact/addressPostalCode", dom);
+        assertXpathEvaluatesTo("The White House", "/contact/addressDeliveryPoint", dom);
+        assertXpathEvaluatesTo("info@whitehouse.gov", "/contact/addressElectronicMailAddress", dom);
     }
 
     @Test
     public void testPutAsJSON() throws Exception {
-        String inputJson = "{'contact':" + "{'id': 'contact',"
-                + "'address': '500 Market Street'," + "'addressCity': 'Philadelphia',"
-                + "'addressCountry': 'United States'," + "'addressPostalCode': '19106',"
-                + "'addressState': 'PA'" + "}" + "}";
+        String inputJson = "{'contact':{" +
+                "    'id':'contact'," +
+                "    'address':'500 Market Street'," +
+                "    'addressCity':'Philadelphia'," +
+                "    'addressCountry':'United States'," +
+                "    'addressPostalCode':'19106'," +
+                "    'addressState':'PA'," +
+                "    'addressDeliveryPoint':'The White House'," +
+                "    'addressElectronicMailAddress':'info@whitehouse.gov'}}";
         MockHttpServletResponse response = putAsServletResponse("/rest/settings/contact",
                 inputJson, "text/json");
         assertEquals(200, response.getStatusCode());
@@ -86,19 +98,23 @@ public class GlobalContactTest extends CatalogRESTTestSupport {
         assertEquals("Philadelphia", contactInfo.get("addressCity"));
         assertEquals("PA", contactInfo.get("addressState"));
         assertEquals("19106", contactInfo.get("addressPostalCode").toString());
+        assertEquals("The White House", contactInfo.get("addressDeliveryPoint").toString());
+        assertEquals("info@whitehouse.gov", contactInfo.get("addressElectronicMailAddress").toString());
     }
 
     @Test
     public void testPutAsXML() throws Exception {
-        String xml = "<contact>" + "<address>1600 Pennsylvania Avenue</address>"
+        String xml = "<contact> <address>1600 Pennsylvania Avenue</address>"
                 + "<addressCity>Washington</addressCity>"
                 + "<addressCountry>United States</addressCountry>"
                 + "<addressPostalCode>20001</addressPostalCode>"
+                + "<addressDeliveryPoint>The White House</addressDeliveryPoint>"
+                + "<addressElectronicMailAddress>info@whitehouse.gov</addressElectronicMailAddress>"
                 + "<addressState>DC</addressState>" + "<addressType>Avenue</addressType>"
                 + "<contactEmail>chief.geographer@mail.com</contactEmail>"
                 + "<contactOrganization>GeoServer</contactOrganization>"
                 + "<contactPerson>ContactPerson</contactPerson>"
-                + "<contactPosition>Chief Geographer</contactPosition>" + "</contact>";
+                + "<contactPosition>Chief Geographer</contactPosition> </contact>";
         MockHttpServletResponse response = putAsServletResponse("/rest/settings/contact", xml,
                 "text/xml");
         assertEquals(200, response.getStatusCode());
@@ -113,6 +129,8 @@ public class GlobalContactTest extends CatalogRESTTestSupport {
         assertEquals("20001", contactInfo.get("addressPostalCode").toString());
         assertEquals("Chief Geographer", contactInfo.get("contactPosition").toString());
         assertEquals("ContactPerson", contactInfo.get("contactPerson").toString());
+        assertEquals("The White House", contactInfo.get("addressDeliveryPoint").toString());
+        assertEquals("info@whitehouse.gov", contactInfo.get("addressElectronicMailAddress").toString());
     }
 
 }

@@ -1,10 +1,13 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wcs.xml;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 import java.io.StringReader;
 
@@ -18,6 +21,7 @@ import org.geoserver.wcs.test.WCSTestSupport;
 import org.geoserver.wcs.xml.v1_0_0.WcsXmlReader;
 import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.referencing.CRS;
+import org.geoserver.util.EntityResolverProvider;
 import org.geotools.wcs.WCSConfiguration;
 import org.junit.Before;
 import org.junit.Test;
@@ -33,7 +37,8 @@ public class GetCoverageXmlParserTest extends WCSTestSupport {
     @Before
     public void setUp() {
         configuration = new WCSConfiguration();
-        reader = new WcsXmlReader("GetCoverage", "1.0.0", configuration);
+        reader = new WcsXmlReader("GetCoverage", "1.0.0", configuration,
+                EntityResolverProvider.RESOLVE_DISABLED_PROVIDER);
     }
 
     @Test

@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- 
+ Copyright (C) 2014 - Open Source Geospatial Foundation. All rights reserved.
+ This code is licensed under the GPL 2.0 license, available at the root
+ application directory.
+ -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+ <modelVersion>4.0.0</modelVersion>
+ 
+ <parent>
+  <groupId>org.geoserver</groupId>
+  <artifactId>community</artifactId>
+  <version>2.8-SNAPSHOT</version>
+ </parent>
+ 
+ <groupId>org.geoserver.community</groupId>
+ <artifactId>gs-netcdf-out</artifactId>
+ <packaging>jar</packaging>
+ <name>WCS NetCDF output Module</name>
+ 
+ <dependencies>
+  <dependency>
+    <groupId>org.geoserver</groupId>
+    <artifactId>gs-main</artifactId>
+  </dependency>
+  <dependency>
+    <groupId>org.geoserver.web</groupId>
+    <artifactId>gs-web-core</artifactId>
+  </dependency>
+  <dependency>
+    <groupId>org.geoserver</groupId>
+    <artifactId>gs-main</artifactId>
+    <classifier>tests</classifier>
+    <scope>test</scope>
+  </dependency>
+  <dependency>
+    <groupId>org.geoserver</groupId>
+    <artifactId>gs-wcs</artifactId>
+  </dependency>
+  <dependency>
+    <groupId>org.geoserver</groupId>
+    <artifactId>gs-ows</artifactId>
+    <scope>test</scope>
+  </dependency>
+  <dependency>
+    <groupId>org.geoserver.web</groupId>
+    <artifactId>gs-web-core</artifactId>
+    <classifier>tests</classifier>
+    <scope>test</scope>
+    <version>${project.version}</version>
+  </dependency>
+  <dependency>
+    <groupId>org.geoserver</groupId>
+    <artifactId>gs-wcs1_1</artifactId>
+    <scope>test</scope>
+  </dependency>
+  <dependency>
+    <groupId>org.geotools.ogc</groupId>
+    <artifactId>net.opengis.wcs</artifactId>
+  </dependency>
+  <dependency>
+    <groupId>org.geotools.xsd</groupId>
+    <artifactId>gt-xsd-wcs</artifactId>
+  </dependency>
+   <dependency>
+    <groupId>org.geoserver</groupId>
+    <artifactId>gs-wcs2_0</artifactId>
+  </dependency>
+  <dependency>
+    <groupId>org.geoserver.community</groupId>
+    <artifactId>gs-netcdf</artifactId>
+	<version>${project.version}</version>
+  </dependency>
+  <dependency>
+    <groupId>org.geoserver</groupId>
+    <artifactId>gs-wcs2_0</artifactId>
+    <classifier>tests</classifier>
+    <scope>test</scope>
+  </dependency>
+  <dependency>
+    <groupId>org.geotools</groupId>
+    <artifactId>gt-imagemosaic</artifactId>
+    <scope>test</scope>
+  </dependency>
+
+  <!--  NetCDF logging dependencies -->
+  <dependency>
+    <groupId>org.slf4j</groupId>
+    <artifactId>slf4j-log4j12</artifactId>
+    <version>1.6.4</version>
+    <scope>runtime</scope>
+  </dependency>
+  <dependency>
+    <groupId>org.slf4j</groupId>
+    <artifactId>log4j-over-slf4j</artifactId>
+    <version>1.6.4</version>
+  </dependency>
+
+  <!-- TODO: relax this dependency: just need to depends on NetCDF java library from Unidata -->
+  <dependency>
+    <groupId>org.geotools</groupId>
+    <artifactId>gt-netcdf</artifactId>
+    <version>${gt.version}</version>
+    <exclusions>
+      <exclusion>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+      </exclusion>
+      <exclusion>
+        <groupId>org.slf4j</groupId>
+        <artifactId>jcl-over-slf4j</artifactId>
+      </exclusion>
+    </exclusions>
+  </dependency>
+  <dependency>
+   <groupId>com.mockrunner</groupId>
+   <artifactId>mockrunner</artifactId>
+   <scope>test</scope>
+  </dependency>
+  <dependency>
+   <groupId>xmlunit</groupId>
+   <artifactId>xmlunit</artifactId>
+   <scope>test</scope>
+  </dependency>
+  <dependency>
+  	<groupId>org.geotools</groupId>
+  	<artifactId>gt-jts-wrapper</artifactId>
+  	<version>${gt.version}</version>
+  	<scope>test</scope>
+  </dependency>
+ </dependencies>
+</project>

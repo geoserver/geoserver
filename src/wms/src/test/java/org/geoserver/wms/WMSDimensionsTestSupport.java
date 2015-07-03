@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -71,6 +72,7 @@ public abstract class WMSDimensionsTestSupport extends WMSTestSupport {
         namespaces.put("wms", "http://www.opengis.net/wms");
         namespaces.put("kml", "http://www.opengis.net/kml/2.2");
         namespaces.put("ows", "http://www.opengis.net/kml/2.2");
+        namespaces.put("sf", "http://cite.opengeospatial.org/gmlsf");
         getTestData().registerNamespaces(namespaces);
         XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));
     }
@@ -99,7 +101,7 @@ public abstract class WMSDimensionsTestSupport extends WMSTestSupport {
                 WMSDimensionsTestSupport.class,catalog);        
         
         
-        testData.addStyle("temperature","./temperature.sld",WMSDimensionsTestSupport.class,catalog);
+        testData.addStyle("temperature", "temperature.sld", WMSDimensionsTestSupport.class, catalog);
         Map propertyMap = new HashMap();
         propertyMap.put(LayerProperty.STYLE,"temperature");
         // a raster layer with time and elevation

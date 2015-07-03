@@ -1,4 +1,5 @@
-/* Copyright (c) 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -147,37 +148,34 @@ public class PlacemarkGeometryDecoratorFactory implements KmlDecoratorFactory {
         }
 
         private de.micromata.opengis.kml.v_2_2_0.Geometry encodeGeometry(Geometry geometry, KmlEncodingContext context, double height) {
-            if (geometry instanceof Point || (geometry instanceof MultiPoint)
-                    && ((MultiPoint) geometry).getNumPoints() == 1) {
-                Coordinate c = geometry.getCoordinate();
-                return toKmlPoint(c);
-            } else {
-                de.micromata.opengis.kml.v_2_2_0.Geometry kmlGeometry = toKmlGeometry(geometry);
-                if(context.isDescriptionEnabled()) {
-                    MultiGeometry mg = new MultiGeometry();
+            de.micromata.opengis.kml.v_2_2_0.Geometry kmlGeometry = toKmlGeometry(geometry);
+			boolean isSinglePoint = geometry instanceof Point
+					|| (geometry instanceof MultiPoint)
+					&& ((MultiPoint) geometry).getNumPoints() == 1;
 
-                    // centroid + full geometry
-                    Coordinate c = CENTROIDS.geometryCentroid(geometry);
-                    if(!Double.isNaN(height)) {
-                        c.setOrdinate(2, height);
-                    }
-                    de.micromata.opengis.kml.v_2_2_0.Point kmlPoint = toKmlPoint(c);
-                    if(hasHeightTemplate) {
-                        applyExtrusion(kmlGeometry);
-                    }
-                    mg.addToGeometry(kmlPoint);
+            // if is not a single point and is description enabled, we
+            // add and extrude a centroid together with the geometry
+            if (!isSinglePoint && context.isDescriptionEnabled()) {
+                MultiGeometry mg = new MultiGeometry();
 
-                    // encode the full geometry
-                    mg.addToGeometry(kmlGeometry);
-
-                    kmlGeometry = mg;
-                } 
-                
-                if(hasHeightTemplate) {
-                    applyExtrusion(kmlGeometry);
+                // centroid + full geometry
+                Coordinate c = CENTROIDS.geometryCentroid(geometry);
+                if(!Double.isNaN(height)) {
+                    c.setOrdinate(2, height);
                 }
-                return kmlGeometry;
+                de.micromata.opengis.kml.v_2_2_0.Point kmlPoint = toKmlPoint(c);
+                mg.addToGeometry(kmlPoint);
+
+                // encode the full geometry
+                mg.addToGeometry(kmlGeometry);
+
+                kmlGeometry = mg;
             }
+
+            if(hasHeightTemplate) {
+                applyExtrusion(kmlGeometry);
+            }
+            return kmlGeometry;
         }
 
         private de.micromata.opengis.kml.v_2_2_0.Point toKmlPoint(Coordinate c) {

@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -14,6 +15,7 @@ import org.geoserver.catalog.CatalogVisitor;
 import org.geoserver.catalog.CoverageDimensionInfo;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
+import org.geoserver.catalog.DataLinkInfo;
 import org.geoserver.catalog.KeywordInfo;
 import org.geoserver.catalog.MetadataLinkInfo;
 import org.geoserver.catalog.MetadataMap;
@@ -132,6 +134,11 @@ public class DecoratingCoverageInfo extends AbstractDecorator<CoverageInfo>
 
     public List<MetadataLinkInfo> getMetadataLinks() {
         return delegate.getMetadataLinks();
+    }
+
+    @Override
+    public List<DataLinkInfo> getDataLinks() {
+        return delegate.getDataLinks();
     }
 
     public String getName() {

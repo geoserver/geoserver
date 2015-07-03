@@ -5,7 +5,7 @@ Community
 
 This section is devoted to GeoServer community modules. Community modules are considered "pending" in that they are not
 officially part of the GeoServer releases. They are however built along with the
-`nightly builds <http://gridlock.opengeo.org/geoserver/>`_, so you can download and play with them.
+`nightly builds <http://ares.boundlessgeo.com/geoserver/>`_, so you can download and play with them.
 
 .. warning::
 
@@ -13,13 +13,28 @@ officially part of the GeoServer releases. They are however built along with the
 
 
 .. toctree::
-   :maxdepth: 1 
+   :maxdepth: 1
 
    authkey/index
-   dxf/index
    dds/index
-   printing/index
+   netcdf/netcdf
    python/index
    scripting/index
    spatialite/index
-   libjpeg-turbo/index
+   netcdf-out/index
+   colormap/index
+   jdbcconfig/index
+   mbtiles/index
+   geopkg/index
+   grib/grib
+   rest/index
+   pgraster/pgraster
+   wps-download/index
+   jms-cluster/index
+   solr/index
+   sldservice/index
+   rest-upload/index
+   geomesa/index
+   gwc-distributed/index
+   geofence-server/index
+

@@ -1,27 +1,15 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.gwc.layer;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
-import static junit.framework.Assert.assertTrue;
-import static junit.framework.Assert.fail;
-import static org.geoserver.gwc.GWC.tileLayerName;
-import static org.geoserver.gwc.GWCTestHelpers.mockGroup;
-import static org.geoserver.gwc.GWCTestHelpers.mockLayer;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Matchers.same;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static junit.framework.Assert.*;
+import static org.geoserver.gwc.GWC.*;
+import static org.geoserver.gwc.GWCTestHelpers.*;
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
 
 import java.util.HashSet;
 import java.util.List;
@@ -30,6 +18,7 @@ import java.util.Set;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.PublishedType;
 import org.geoserver.gwc.GWC;
 import org.geoserver.gwc.config.GWCConfig;
 import org.geowebcache.grid.GridSetBroker;
@@ -77,9 +66,9 @@ public class CatalogConfigurationTest {
         defaults.setCacheLayersByDefault(false);
         defaults.setCacheNonDefaultStyles(true);
 
-        layer1 = mockLayer("layer1", new String[]{}, LayerInfo.Type.RASTER);
-        layer2 = mockLayer("layer2", new String[]{}, LayerInfo.Type.RASTER);
-        layerWithNoTileLayer = mockLayer("layerWithNoTileLayer", new String[]{}, LayerInfo.Type.RASTER);
+        layer1 = mockLayer("layer1", new String[]{}, PublishedType.RASTER);
+        layer2 = mockLayer("layer2", new String[]{}, PublishedType.RASTER);
+        layerWithNoTileLayer = mockLayer("layerWithNoTileLayer", new String[]{}, PublishedType.RASTER);
 
 
         group1 = mockGroup("group1", layer1, layer2);
@@ -161,6 +150,7 @@ public class CatalogConfigurationTest {
         mockMediator = mock(GWC.class);
         GWC.set(mockMediator);
         when(mockMediator.getConfig()).thenReturn(defaults);
+        when(mockMediator.getCatalog()).thenReturn(catalog);
     }
 
     @After
@@ -386,18 +376,26 @@ public class CatalogConfigurationTest {
         verify(mockMediator, times(1)).layerAdded(eq(addedState2.getName()));
     }
 
+    @Test public void testCanSave() {
+        // Create mock layer not transient and ensure that the Layer cannot be saved
+        GeoServerTileLayer l = mock(GeoServerTileLayer.class);
+        when(l.isTransientLayer()).thenReturn(true);
+        assertFalse(config.canSave(l));
+    }
+
     @Test  public void testNoGeometry() throws Exception {
         org.opengis.feature.type.FeatureType featureTypeWithNoGeometry = mock(org.opengis.feature.type.FeatureType.class);
         when(featureTypeWithNoGeometry.getGeometryDescriptor()).thenReturn(null);
         org.geoserver.catalog.FeatureTypeInfo resourceWithNoGeometry = mock(org.geoserver.catalog.FeatureTypeInfo.class);
         when(resourceWithNoGeometry.getFeatureType()).thenReturn(featureTypeWithNoGeometry);
-        LayerInfo layerWithNoGeometry = mockLayer("layerWithNoGeometry", new String[]{}, LayerInfo.Type.VECTOR);
+        LayerInfo layerWithNoGeometry = mockLayer("layerWithNoGeometry", new String[]{}, PublishedType.VECTOR);
         layerWithNoGeometry.setResource(resourceWithNoGeometry);
         GeoServerTileLayer tl = mock(GeoServerTileLayer.class);
         GeoServerTileLayerInfo info = new GeoServerTileLayerInfoImpl();
         info.setId("layerWithNoGeometry");
         info.setName("layerWithNoGeometry");
         when(tl.getId()).thenReturn("layerWithNoGeometry");
+        when(tl.isTransientLayer()).thenReturn(false);
         when(tl.getInfo()).thenReturn(info);
         when(tl.getLayerInfo()).thenReturn(layerWithNoGeometry);
         when(catalog.getLayer(layerWithNoGeometry.getId())).thenReturn(layerWithNoGeometry);

@@ -1,13 +1,16 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wps.sextante;
 
+import static junit.framework.Assert.assertEquals;
+
 import org.geoserver.wps.WPSTestSupport;
+import org.junit.Test;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
-
 
 public class SextanteIntegrationTest extends WPSTestSupport {
 
@@ -15,6 +18,7 @@ public class SextanteIntegrationTest extends WPSTestSupport {
      * Tests raster input and output as arcgrid
      * @throws Exception
      */
+	@Test
     public void testArcGridInOut() throws Exception {
         // the baby that we want to parse
         String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
@@ -55,6 +59,8 @@ public class SextanteIntegrationTest extends WPSTestSupport {
         		"  </wps:ResponseForm>\n" + 
         		"</wps:Execute>";
         
+        MockHttpServletResponse sr = postAsServletResponse(root(), xml);
+        
         String expected = "NCOLS 2\n" + 
         		"NROWS 2\n" + 
         		"XLLCORNER 0.0\n" + 
@@ -63,8 +69,10 @@ public class SextanteIntegrationTest extends WPSTestSupport {
         		"NODATA_VALUE -9999\n" + 
         		"0.5 1.0\n" + 
         		"0.75 1.0\n";
-        
-        MockHttpServletResponse sr = postAsServletResponse(root(), xml);
-        assertEquals(expected, sr.getOutputStreamContent());
+
+        String actual = sr.getOutputStreamContent();
+        actual = actual.replace("\r", "");
+
+        assertEquals(expected, actual);
     }
 }

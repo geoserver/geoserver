@@ -1,12 +1,11 @@
-/* Copyright (c) 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.kml.decorator;
 
 import java.awt.Color;
-import java.io.File;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -15,26 +14,19 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.geoserver.catalog.WorkspaceInfo;
-import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.kml.KmlEncodingContext;
 import org.geoserver.kml.icons.IconProperties;
 import org.geoserver.kml.icons.IconPropertyExtractor;
 import org.geoserver.kml.icons.IconPropertyInjector;
-import org.geoserver.ows.URLMangler.URLType;
-import org.geoserver.ows.util.ResponseUtils;
-import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.wms.WMSInfo;
-import org.geotools.data.DataUtilities;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.renderer.style.ExpressionExtractor;
 import org.geotools.styling.ExternalGraphic;
 import org.geotools.styling.Fill;
 import org.geotools.styling.Font;
 import org.geotools.styling.LineSymbolizer;
-import org.geotools.styling.Mark;
 import org.geotools.styling.PointSymbolizer;
 import org.geotools.styling.PolygonSymbolizer;
-import org.geotools.styling.SLD;
 import org.geotools.styling.Stroke;
 import org.geotools.styling.Symbolizer;
 import org.geotools.styling.TextSymbolizer;
@@ -49,7 +41,6 @@ import com.vividsolutions.jts.geom.MultiLineString;
 import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Polygon;
 
-import de.micromata.opengis.kml.v_2_2_0.ColorMode;
 import de.micromata.opengis.kml.v_2_2_0.Feature;
 import de.micromata.opengis.kml.v_2_2_0.Icon;
 import de.micromata.opengis.kml.v_2_2_0.IconStyle;

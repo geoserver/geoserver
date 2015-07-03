@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -13,7 +14,7 @@ import org.apache.wicket.ResourceReference;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.LayerInfo.Type;
+import org.geoserver.catalog.PublishedType;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.web.CatalogIconFactory;
@@ -57,7 +58,7 @@ public class PreviewLayer {
         if (layerInfo != null) {
             return layerInfo.getResource().prefixedName();
         } else {
-            return groupInfo.getName();
+            return groupInfo.prefixedName();
         }
     }
     
@@ -85,31 +86,38 @@ public class PreviewLayer {
     }
     
     public String getTitle() {
-        if(layerInfo != null)
+        if(layerInfo != null) {
             return layerInfo.getResource().getTitle();
-        else
+        } else if(groupInfo != null) {
+            return groupInfo.getTitle();
+        } else {
             return "";
+        }
     }
     
     public String getAbstract() {
-        if(layerInfo != null)
+        if(layerInfo != null) {
             return layerInfo.getResource().getAbstract();
-        else
+        } else if(groupInfo != null) {
+            return groupInfo.getAbstract();
+        } else {
             return "";
+        }
     }
     
     public String getKeywords() {
-        if(layerInfo != null)
+        if(layerInfo != null) {
             return layerInfo.getResource().getKeywords().toString();
-        else
+        } else {
             return "";
+        }
     }
 
     public PreviewLayer.PreviewLayerType getType() {
         if (layerInfo != null) {
-            if (layerInfo.getType() == Type.RASTER)
+            if (layerInfo.getType() == PublishedType.RASTER)
                 return PreviewLayerType.Raster;
-            else if (layerInfo.getType() == Type.VECTOR)
+            else if (layerInfo.getType() == PublishedType.VECTOR)
                 return PreviewLayerType.Vector;
             else
                 return PreviewLayerType.Remote;

@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -10,6 +11,7 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.gwc.GWC;
+import org.geowebcache.config.ContextualConfigurationProvider;
 import org.geowebcache.config.XMLConfigurationProvider;
 import org.geowebcache.grid.GridSetBroker;
 import org.geowebcache.layer.TileLayer;
@@ -33,7 +35,7 @@ import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
  * ).
  * 
  */
-public class GWCGeoServerRESTConfigurationProvider implements XMLConfigurationProvider {
+public class GWCGeoServerRESTConfigurationProvider implements ContextualConfigurationProvider {
 
     private final Catalog catalog;
 
@@ -44,7 +46,21 @@ public class GWCGeoServerRESTConfigurationProvider implements XMLConfigurationPr
     @Override
     public XStream getConfiguredXStream(XStream xs) {
         xs.alias("GeoServerLayer", GeoServerTileLayer.class);
+        xs.processAnnotations(GeoServerTileLayerInfoImpl.class);
+        xs.processAnnotations(StyleParameterFilter.class);
         xs.registerConverter(new RESTConverterHelper());
+        xs.addDefaultImplementation(GeoServerTileLayerInfoImpl.class, GeoServerTileLayerInfo.class);
+        
+        // Omit the values cached from the backing layer.  They are only needed for the
+        // persisted config file.
+        xs.omitField(StyleParameterFilter.class, "availableStyles");
+        xs.omitField(StyleParameterFilter.class, "defaultStyle");
+        
+        // Omit autoCacheStyles as it is no longer needed.  
+        // It'd be better to read it but not write it, but blocking it from REST is good enough and
+        // a lot easier to get XStream to do.
+        // TODO Remove this
+        // xs.omitField(GeoServerTileLayerInfoImpl.class, "autoCacheStyles");
         return xs;
     }
 
@@ -130,5 +146,10 @@ public class GWCGeoServerRESTConfigurationProvider implements XMLConfigurationPr
             GeoServerTileLayerInfo info = tileLayer.getInfo();
             context.convertAnother(info);
         }
+    }
+
+    @Override
+    public boolean appliesTo(Context ctxt) {
+        return Context.REST==ctxt;
     }
 }

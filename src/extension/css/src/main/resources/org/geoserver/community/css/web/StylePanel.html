@@ -1,0 +1,17 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+  <body>
+    <wicket:panel>
+    <form wicket:id="style-editor" id="style-editor" style="width: 100%;">
+      <div wicket:id="editor"></div>
+      <br/>
+      <div wicket:id="feedback-low"></div>
+      <div class="button-group selfclear">
+          <a href="#" wicket:id="submit" onclick="document.forms['mainForm'].submit();">
+             <wicket:message key="submit">Submit</wicket:message>
+           </a>
+      </div>
+    </form>
+    </wicket:panel>
+  </body>
+</html>
+

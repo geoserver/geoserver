@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -14,7 +14,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -36,10 +35,7 @@ import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
@@ -315,7 +311,7 @@ public class Dispatcher extends AbstractController {
 
         //figure out method
         request.setGet("GET".equalsIgnoreCase(httpRequest.getMethod())
-            || "application/x-www-form-urlencoded".equals(httpRequest.getContentType()));
+                || isForm(httpRequest.getContentType()));
 
         //create the kvp map
         parseKVP(request);
@@ -384,6 +380,14 @@ public class Dispatcher extends AbstractController {
         request.setPath(path);
         
         return fireInitCallback(request);
+    }
+
+    private boolean isForm(String contentType) {
+        if (contentType == null) {
+            return false;
+        } else {
+            return contentType.startsWith("application/x-www-form-urlencoded");
+        }
     }
 
     Request fireInitCallback(Request req) {

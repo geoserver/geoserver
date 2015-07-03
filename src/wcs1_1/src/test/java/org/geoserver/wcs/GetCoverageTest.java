@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -468,7 +468,7 @@ public class GetCoverageTest extends AbstractGetCoverageTest {
                 + "            xmlns:ows CDATA #FIXED \"http://www.opengis.net/ows/1.1\"\n"
                 + "            xmlns:wcs CDATA #FIXED \"http://www.opengis.net/wcs/1.1.1\">\n"
                 + "  <!ELEMENT ows:Identifier (#PCDATA) >\n"
-                + "  <!ENTITY xxe SYSTEM \"file:///file/not/there\" >]>\n"
+                + "  <!ENTITY xxe SYSTEM \"file:///file/not/there?.xsd\" >]>\n"
                 + "  <wcs:GetCoverage service=\"WCS\" version=\"1.1.1\" "
                 + "                   xmlns:ows=\"http://www.opengis.net/ows/1.1\"\n"
                 + "                   xmlns:wcs=\"http://www.opengis.net/wcs/1.1.1\">\n"

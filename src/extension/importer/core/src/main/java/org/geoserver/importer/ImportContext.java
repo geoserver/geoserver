@@ -13,11 +13,19 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Logger;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.importer.job.ProgressMonitor;
+import org.geoserver.importer.transform.ImportTransform;
+import org.geoserver.importer.transform.RasterTransform;
+import org.geoserver.importer.transform.RasterTransformChain;
+import org.geoserver.importer.transform.TransformChain;
+import org.geoserver.importer.transform.VectorTransform;
+import org.geoserver.importer.transform.VectorTransformChain;
+import org.geotools.util.logging.Logging;
 
 /**
  * Maintains state about an import.
@@ -29,6 +37,8 @@ public class ImportContext implements Serializable {
 
     /** serialVersionUID */
     private static final long serialVersionUID = 8790675013874051197L;
+
+    static final Logger LOGGER = Logging.getLogger(ImportContext.class);
 
     public static enum State {
         /**
@@ -79,6 +89,11 @@ public class ImportContext implements Serializable {
      * import tasks
      */
     List<ImportTask> tasks = new ArrayList<ImportTask>();
+
+    /**
+     * The default transformations that will be applied on task creation
+     */
+    List<ImportTransform> defaultTransforms = new ArrayList<>();
 
     /** 
      * id generator for task 
@@ -197,6 +212,16 @@ public class ImportContext implements Serializable {
         task.setId(taskid++);
         task.setContext(this);
         this.tasks.add(task);
+
+        // apply the default transformations
+        TransformChain chain = task.getTransform();
+        for (ImportTransform tx : defaultTransforms) {
+            if (chain instanceof RasterTransformChain && tx instanceof RasterTransform) {
+                chain.add(tx);
+            } else if (chain instanceof VectorTransformChain && tx instanceof VectorTransform) {
+                chain.add(tx);
+            }
+        }
     }
 
     public void removeTask(ImportTask task) {
@@ -210,6 +235,16 @@ public class ImportContext implements Serializable {
             }
         }
         return null;
+    }
+
+    /**
+     * Returns a live list with the default transform, can be modified directly to add/remove the
+     * default transforms
+     * 
+     * @return
+     */
+    public List<ImportTransform> getDefaultTransforms() {
+        return defaultTransforms;
     }
 
     private void updateState() {
@@ -309,7 +344,10 @@ public class ImportContext implements Serializable {
 
     private Object readResolve() {
         if (tasks == null) {
-            tasks = new ArrayList();
+            tasks = new ArrayList<>();
+        }
+        if (defaultTransforms == null) {
+            defaultTransforms = new ArrayList<>();
         }
         return this;
     }

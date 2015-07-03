@@ -72,7 +72,7 @@ All the imports
      - 201 with Location header
      - n/a
      - :ref:`Imports <import>`
-     - async=false/true
+     - async=false/true,execute=false/true
      
 Retrieving the list of all imports
 """"""""""""""""""""""""""""""""""
@@ -192,6 +192,43 @@ In this case the import will be created in INIT state and will remain in such st
 the data transfer and task creation operations are completed. In case of failure to fetch data
 the import will immediately stop, the state will switch to the ``INIT_ERROR`` state,
 and a error message will appear in the import context "message" field.
+
+Adding the "execute=true" parameter to the context creation will also make the import start immediately,
+assuming tasks can be created during the init phase. Combining both execute and async, "?async=true&execute=true"
+will make the importer start an asynchronous initialization and execution.
+
+The import can also have a list of default transformations, that will be applied to tasks
+as they get created, either out of the initial data, or by upload. Here is an example of a
+import context creation with a default transformation::
+
+    {
+      "import": {
+        "targetWorkspace": {
+          "workspace": {
+            "name": "topp"
+          }
+        },
+        "data": {
+          "type": "file",
+          "file": "/tmp/locations.csv"
+        },
+        "targetStore": {
+          "dataStore": {
+            "name": "h2"
+          }
+        },
+        "transforms": [
+          {
+            "type": "AttributesToPointGeometryTransform",
+            "latField": "LAT",
+            "lngField": "LON"
+          }
+        ]
+      }
+    }
+
+To get more information about transformations see the :ref:`transformations`.
+
 
 Import object
 ^^^^^^^^^^^^^
@@ -851,6 +888,8 @@ The response will be::
 	  "source": null, 
 	  "target": "EPSG:3005"
 	}
+	
+.. _transformations:	
 	
 Transformation reference
 ^^^^^^^^^^^^^^^^^^^^^^^^

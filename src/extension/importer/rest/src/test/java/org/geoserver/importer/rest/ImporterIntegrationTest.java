@@ -64,7 +64,7 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
                 "      },\n" + 
                 "      \"data\": {\n" + 
                 "        \"type\": \"file\",\n" + 
-                "        \"file\": \"" + locations.getCanonicalPath() + "\"\n" + 
+                "        \"file\": \"" + jsonSafePath(locations) + "\"\n" + 
                 "      },\n" + 
                 "      targetStore: {\n" + 
                 "        dataStore: {\n" + 
@@ -208,7 +208,7 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
                 "      },\n" + 
                 "      \"data\": {\n" + 
                 "        \"type\": \"file\",\n" + 
-                "        \"file\": \"" + gmlFile.getCanonicalPath() +  "\"\n" + 
+                "        \"file\": \"" + jsonSafePath(gmlFile) +  "\"\n" + 
                 "      }," +
                 "      targetStore: {\n" + 
                 "        dataStore: {\n" + 
@@ -239,6 +239,10 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
         }
         assertEquals("COMPLETE", state);
         checkPoiImport();
+    }
+
+    private String jsonSafePath(File gmlFile) throws IOException {
+        return gmlFile.getCanonicalPath().replace('\\', '/');
     }
 
     private void checkPoiImport() throws Exception {

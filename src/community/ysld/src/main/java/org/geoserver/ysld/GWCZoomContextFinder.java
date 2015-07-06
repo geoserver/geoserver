@@ -71,6 +71,10 @@ public class GWCZoomContextFinder implements ZoomContextFinder {
             
             //return Math.sqrt(getScaleDenominator(level)*getScaleDenominator(level+1)); // Geometric, like other implementations
         }
-    
+        
+        @Override
+        public boolean isInRange(int level) {
+            return level>=0 && level < gridset.getNumLevels();
+        }
     }
 }

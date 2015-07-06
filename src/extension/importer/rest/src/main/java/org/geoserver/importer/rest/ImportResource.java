@@ -138,7 +138,7 @@ public class ImportResource extends BaseResource {
         try {
             Form query = getRequest().getResourceRef().getQueryAsForm();
             boolean async = query.getNames().contains("async");
-            boolean execute = query.getNames().contains("execute");
+            boolean execute = query.getNames().contains("exec");
 
             if (async) {
                 context = importer.registerContext(id);

@@ -47,6 +47,19 @@ If you have a problem when working with GeoServer, then please let us know throu
 
 Everyone is encouraged to submit patches and, if possible, fix issues as well. We welcome patches through JIRA, or pull requests to GitHub.
 
+Responsible Disclosure
+
+.. warning::
+   
+   If you encounter a security vulnerability in GeoServer please take care to report the issue in a responsible fashion:
+   
+   * Keep exploit details out of issue report (send to developer/PSC privately – just like you would do for sensitive sample data)
+   * Mark the issue as a vunerability.
+   * Be prepared to work with Project Steering Committee (PSC) members on a solution
+   
+   Keep in mind PSC members are volunteers and an extensive fix may require fundraising / resources
+If you are not in position to communicate in public please consider commercial support, contacting a PSC member, or reaching us via the Open Source Geospatial Foundation at info@osgeo.org.
+
 Translation
 -----------
 

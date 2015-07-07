@@ -238,6 +238,19 @@ public class DataStoreFormat extends VectorFormat {
                 return db.getParameters();
             }
         }
+        
+        //try non-jdbc db
+        Database db = null;
+        if (data instanceof Database) {
+            db = (Database) data;
+        }
+        if (data instanceof Table) {
+            db = ((Table) data).getDatabase();
+        }
+        if (db != null) {
+            return db.getParameters();
+        }
+        
         return null;
     }
 

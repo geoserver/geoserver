@@ -330,7 +330,7 @@ public class GetCoverageTest extends WCSTestSupport {
                 + "            version CDATA #FIXED \"1.0.0\"\n" 
                 + "            xmlns CDATA #FIXED \"http://www.opengis.net/wcs\">\n"
                 + "  <!ELEMENT sourceCoverage (#PCDATA) >\n"
-                + "  <!ENTITY xxe SYSTEM \"file:///file/not/there?.xsd\" >]>\n"
+                + "  <!ENTITY xxe SYSTEM \"FILE:///file/not/there?.XSD\" >]>\n"
                 + "<GetCoverage version=\"1.0.0\" service=\"WCS\""
                 + " xmlns=\"http://www.opengis.net/wcs\" >\n"
                 + "  <sourceCoverage>&xxe;</sourceCoverage>\n" 

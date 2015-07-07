@@ -102,7 +102,7 @@ public class ExecuteTest extends WPSTestSupport {
         String xml =  
           "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>" +
           "<!DOCTYPE foo [<!ELEMENT foo ANY >\n" + 
-          "  <!ENTITY xxe SYSTEM \"file:///file/not/there?.xsd\" >]>\n" +
+          "  <!ENTITY xxe SYSTEM \"FILE:///file/not/there?.XSD\" >]>\n" +
           "<wps:Execute service='WPS' version='1.0.0' xmlns:wps='http://www.opengis.net/wps/1.0.0' " + 
               "xmlns:ows='http://www.opengis.net/ows/1.1'>" + 
             "<ows:Identifier>JTS:buffer</ows:Identifier>" + 

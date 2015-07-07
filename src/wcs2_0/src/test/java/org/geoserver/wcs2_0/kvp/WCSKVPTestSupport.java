@@ -27,9 +27,9 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.wcs.WCSInfo;
 import org.geoserver.wcs.kvp.GetCoverageRequestReader;
-import org.geoserver.wcs.xml.v1_1_1.WCSConfiguration;
 import org.geoserver.wcs2_0.WCSTestSupport;
 import org.geoserver.wcs2_0.WebCoverageService20;
+import org.geotools.wcs.v1_1.WCSConfiguration;
 import org.junit.Before;
 import org.opengis.coverage.grid.GridCoverage;
 

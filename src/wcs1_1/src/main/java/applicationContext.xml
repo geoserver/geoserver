@@ -126,7 +126,7 @@
   </bean>
 
   <!-- the xml configuration -->
-  <bean id="wcs-1.1.1-configuration" class="org.geoserver.wcs.xml.v1_1_1.WCSConfiguration" />
+  <bean id="wcs-1.1.1-configuration" class="org.geotools.wcs.v1_1.WCSConfiguration" />
 
   <!--  xml request readers -->
   <bean id="wcs111CapabilitiesRequestReader" class="org.geoserver.wcs.xml.v1_1_1.WcsXmlReader">

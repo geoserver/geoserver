@@ -159,6 +159,12 @@
       </modules>
     </profile>
     <profile>
+      <id>programming-guide</id>
+      <modules>
+        <module>programming-guide</module>
+      </modules>
+    </profile>
+    <profile>
       <id>communityRelease</id>
       <modules>
         <module>authkey</module>

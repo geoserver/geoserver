@@ -478,7 +478,7 @@ public class GetCoverageTest extends AbstractGetCoverageTest {
                 + "            xmlns:ows CDATA #FIXED \"http://www.opengis.net/ows/1.1\"\n"
                 + "            xmlns:wcs CDATA #FIXED \"http://www.opengis.net/wcs/1.1.1\">\n"
                 + "  <!ELEMENT ows:Identifier (#PCDATA) >\n"
-                + "  <!ENTITY xxe SYSTEM \"file:///file/not/there?.xsd\" >]>\n"
+                + "  <!ENTITY xxe SYSTEM \"FILE:///file/not/there?.XSD\" >]>\n"
                 + "  <wcs:GetCoverage service=\"WCS\" version=\"1.1.1\" "
                 + "                   xmlns:ows=\"http://www.opengis.net/ows/1.1\"\n"
                 + "                   xmlns:wcs=\"http://www.opengis.net/wcs/1.1.1\">\n"

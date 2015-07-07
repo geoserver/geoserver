@@ -62,6 +62,7 @@ public class DataStoreFileResource extends StoreFileResource {
         formatToDataStoreFactory.put( "h2", "org.geotools.data.h2.H2DataStoreFactory");
         formatToDataStoreFactory.put( "spatialite", "org.geotools.data.spatialite.SpatiaLiteDataStoreFactory");
         formatToDataStoreFactory.put( "appschema", "org.geotools.data.complex.AppSchemaDataAccessFactory");
+        formatToDataStoreFactory.put( "gpkg", "org.geotools.geopkg.GeoPkgDataStoreFactory");
     }
     
     protected static final HashMap<String,Map> dataStoreFactoryToDefaultParams = new HashMap();

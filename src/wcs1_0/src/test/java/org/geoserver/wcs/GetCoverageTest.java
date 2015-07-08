@@ -339,6 +339,23 @@ public class GetCoverageTest extends WCSTestSupport {
         Document dom = postAsDOM("wcs", xml);
         String error = xpath.evaluate("//ServiceException", dom);
         assertTrue(error.contains(NoExternalEntityResolver.ERROR_MESSAGE_BASE));
+        
+        xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+                + "<!DOCTYPE GetCoverage [<!ELEMENT GetCoverage (sourceCoverage) >\n"
+                + "  <!ATTLIST GetCoverage\n" 
+                + "            service CDATA #FIXED \"WCS\"\n" 
+                + "            version CDATA #FIXED \"1.0.0\"\n" 
+                + "            xmlns CDATA #FIXED \"http://www.opengis.net/wcs\">\n"
+                + "  <!ELEMENT sourceCoverage (#PCDATA) >\n"
+                + "  <!ENTITY xxe SYSTEM \"jar:file:///file/not/there?.XSD\" >]>\n"
+                + "<GetCoverage version=\"1.0.0\" service=\"WCS\""
+                + " xmlns=\"http://www.opengis.net/wcs\" >\n"
+                + "  <sourceCoverage>&xxe;</sourceCoverage>\n" 
+                + "</GetCoverage>";
+
+        dom = postAsDOM("wcs", xml);
+        error = xpath.evaluate("//ServiceException", dom);
+        assertTrue(error.contains(NoExternalEntityResolver.ERROR_MESSAGE_BASE));
     }
 
     @Test

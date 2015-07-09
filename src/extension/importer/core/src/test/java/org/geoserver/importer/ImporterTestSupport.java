@@ -80,7 +80,7 @@ public abstract class ImporterTestSupport extends GeoServerSystemTestSupport {
     @After
     public void cleanCatalog() throws IOException {
         for (StoreInfo s : getCatalog().getStores(StoreInfo.class)) {
-            removeStore(null, s.getName());
+            removeStore(s.getWorkspace().getName(), s.getName());
         }
         for (StyleInfo s : getCatalog().getStyles()) {
             String styleName = s.getName();

@@ -2,6 +2,7 @@ package org.geoserver.csw.store.internal;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathNotExists;
 
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.data.test.SystemTestData;
@@ -225,6 +226,37 @@ public class GetRecordsTest extends CSWInternalTestSupport {
         Document d = getAsDOM(request);
         print(d);
         checkOws10Exception(d, ServiceException.INVALID_PARAMETER_VALUE, "outputFormat");
+    }
+    
+    @Test
+    public void testUnadvertised() throws Exception {
+        //unadvertise layer
+        ResourceInfo forests = getCatalog().getResourceByName("Forests", ResourceInfo.class);
+        forests.setAdvertised(false);
+        getCatalog().save(forests); 
+        
+        
+        String request = "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record"
+                + "&resultType=results&elementSetName=full&maxRecords=100";
+        Document d = getAsDOM(request);
+        // print(d);
+        checkValidationErrors(d, new CSWConfiguration());
+
+        // we have the right kind of document
+        assertXpathEvaluatesTo("1", "count(/csw:GetRecordsResponse)", d);
+
+        // check we have the expected results
+        assertXpathEvaluatesTo("28", "//csw:SearchResults/@numberOfRecordsMatched", d);
+        assertXpathEvaluatesTo("28", "//csw:SearchResults/@numberOfRecordsReturned", d);
+        assertXpathEvaluatesTo("0", "//csw:SearchResults/@nextRecord", d);
+        assertXpathEvaluatesTo("28", "count(//csw:SearchResults/*)", d);
+
+        // check contents Forests record
+        assertXpathNotExists("//csw:Record[dc:title='Forests']", d);
+        
+        //restore catalog
+        forests.setAdvertised(true);
+        getCatalog().save(forests); 
     }
 
 }

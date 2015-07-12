@@ -8,6 +8,7 @@ package org.geoserver.wfs;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.ByteArrayInputStream;
@@ -16,14 +17,19 @@ import java.util.Collections;
 
 import javax.xml.namespace.QName;
 
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+
 import org.custommonkey.xmlunit.XMLAssert;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.wfs.json.JSONType;
 import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
@@ -366,6 +372,31 @@ public class GetFeatureTest extends WFSTestSupport {
         XMLAssert.assertXpathEvaluatesTo("InvalidParameterValue", "//ogc:ServiceException/@code",
                 doc);
         XMLAssert.assertXpathEvaluatesTo("typeName", "//ogc:ServiceException/@locator", doc);
+    }
+    
+    /**
+     * Tests CQL filter
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testCQLFilter() throws Exception {
+        String layer = getLayerId(MockData.FORESTS);
+
+        String request = "wfs?request=GetFeature&typename=" + layer + "&version=1.0.0&service=wfs";
+        Document doc = getAsDOM(request);
+        NodeList featureMembers = doc.getElementsByTagName("gml:featureMember");
+        assertTrue(featureMembers.getLength() > 0);
+
+        // Add CQL filter
+        FeatureTypeInfo info = getCatalog().getFeatureTypeByName(layer);
+        info.setCqlFilter("NAME LIKE 'Red%'");
+        getCatalog().save(info);
+
+        doc = getAsDOM(request);
+        featureMembers = doc.getElementsByTagName("gml:featureMember");
+        assertTrue(featureMembers.getLength() == 0);
+
     }
 
 }

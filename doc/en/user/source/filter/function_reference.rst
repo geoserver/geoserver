@@ -65,6 +65,9 @@ Comparison functions
      - ``candidate``:Object, ``v1``:Object, ..., ``v9``:Object
      - Returns true if ``candidate`` is equal to one of the ``v1``, ..., ``v9`` values. 
        Use the function name matching the number of arguments specified.
+   * - in
+     - ``candidate``:Object, ``v1``:Object, ``v2``:Object, ...
+     - Works exactly the same as the in2, ..., in10 functions described above, but takes any number of values as input.
    * - isLike
      - ``string``:String, ``pattern``:String
      - Returns true if the string matches the specified pattern. For the full syntax of the pattern specification see the `Java Pattern class javadocs <http://java.sun.com/javase/6/docs/api/java/util/regex/Pattern.html>`_

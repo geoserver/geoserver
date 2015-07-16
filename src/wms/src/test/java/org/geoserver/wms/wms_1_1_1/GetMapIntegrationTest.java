@@ -953,7 +953,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
             // if the file is found, its content will be used to replace the entity
             // if the file is not found the parser will throw a FileNotFoundException
             String response = getAsString(url);            
-            assertTrue(response.indexOf("java.io.FileNotFoundException") > -1);
+            assertTrue(response.indexOf("Error while getting SLD.") > -1);
             
             // disable entities
             geoserverInfo.setXmlExternalEntitiesEnabled(false);

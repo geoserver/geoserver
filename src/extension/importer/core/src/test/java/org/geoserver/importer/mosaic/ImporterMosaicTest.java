@@ -42,6 +42,7 @@ import org.geotools.data.Query;
 import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.referencing.factory.gridshift.DataUtilities;
 import org.junit.Test;
+import org.opengis.filter.Filter;
 import org.w3c.dom.Document;
 
 
@@ -153,6 +154,9 @@ public class ImporterMosaicTest extends ImporterTestSupport {
         getTestData().addRasterLayer(WATTEMP, "watertemp.zip", null, null, TestData.class,
                 catalog);
 
+        // check how many layers we have
+        int initialLayerCount = catalog.count(LayerInfo.class, Filter.INCLUDE);
+
         // grab the original count
         CoverageStoreInfo store = catalog.getCoverageStoreByName(WATTEMP.getLocalPart());
         StructuredGridCoverage2DReader reader = (StructuredGridCoverage2DReader) store
@@ -185,6 +189,10 @@ public class ImporterMosaicTest extends ImporterTestSupport {
                 gs.getCount(new Query(null, ECQL.toFilter("location = '" + fileName1 + "'"))));
         assertEquals(1,
                 gs.getCount(new Query(null, ECQL.toFilter("location = '" + fileName2 + "'"))));
+
+        // make sure we did not create a new layer
+        int layerCount = catalog.count(LayerInfo.class, Filter.INCLUDE);
+        assertEquals(initialLayerCount, layerCount);
     }
 
     @Test

@@ -6,7 +6,11 @@
 package org.geoserver.wms.wms_1_3;
 
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
+import org.custommonkey.xmlunit.NamespaceContext;
+import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.data.test.SystemTestData;
@@ -56,7 +60,15 @@ public class WMSCascadeTest extends WMSCascadeTestSupport {
     @Test
     public void testCascadeCapabilitiesClientNoGetFeatureInfo() throws Exception {
         Document dom = getAsDOM("wms?request=GetCapabilities&version=1.3.0&service=wms");
-        //print(dom);
+        print(dom);
+        
+        Map<String, String> namespaces = new HashMap<>();
+        namespaces.put("wms", "http://www.opengis.net/wms");
+        namespaces.put("link", "http://www.w3.org/1999/xlink");
+        namespaces.put("xsi", "http://www.w3.org/2001/XMLSchema-instance");
+        NamespaceContext newNsCtxt = new SimpleNamespaceContext(namespaces);
+        
+        xpath.setNamespaceContext(newNsCtxt);
         
         xpath.evaluate("//wms:Layer[name='" + WORLD4326_110_NFI + "']", dom);
     }

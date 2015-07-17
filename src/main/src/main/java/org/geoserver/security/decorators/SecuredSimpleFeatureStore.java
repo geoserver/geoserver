@@ -5,7 +5,7 @@
  */
 package org.geoserver.security.decorators;
 
-import static org.geoserver.security.SecurityUtils.*;
+import static org.geoserver.security.SecurityUtils.getWriteQuery;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -63,6 +63,7 @@ public class SecuredSimpleFeatureStore extends SecuredFeatureStore<SimpleFeature
         Query writeQuery = getWriteQuery(policy);
         if (writeQuery == Query.ALL) {
             ((SimpleFeatureStore) storeDelegate).modifyFeatures(names, values, filter);
+            return;
         } else if (writeQuery.getFilter() == Filter.EXCLUDE
                 || writeQuery.getPropertyNames() == Query.NO_NAMES) {
             throw unsupportedOperation();

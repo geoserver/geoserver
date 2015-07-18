@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2014 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -212,6 +212,7 @@ public class LegendSampleImpl implements CatalogListener, LegendSample,
         GetLegendGraphicRequest legendGraphicRequest = new GetLegendGraphicRequest();
         File sampleLegendFolder = getSamplesFolder(); 
         
+        legendGraphicRequest.setStrict(false);
         legendGraphicRequest.setLayers(Arrays.asList((FeatureType) null));
         legendGraphicRequest.setStyles(Arrays.asList(style.getStyle()));
         legendGraphicRequest.setFormat(pngOutputFormat.getContentType());

@@ -488,6 +488,25 @@ public class GetCoverageTest extends AbstractGetCoverageTest {
         // print(dom);
         String error = xpath.evaluate("//ows:ExceptionText", dom);
         assertTrue(error.contains(NoExternalEntityResolver.ERROR_MESSAGE_BASE));
+        
+        request = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+                + "<!DOCTYPE wcs:GetCoverage [<!ELEMENT wcs:GetCoverage (ows:Identifier) >\n"
+                + "  <!ATTLIST wcs:GetCoverage\n"
+                + "    service CDATA #FIXED \"WCS\"\n"
+                + "            version CDATA #FIXED \"1.1.1\"\n"
+                + "            xmlns:ows CDATA #FIXED \"http://www.opengis.net/ows/1.1\"\n"
+                + "            xmlns:wcs CDATA #FIXED \"http://www.opengis.net/wcs/1.1.1\">\n"
+                + "  <!ELEMENT ows:Identifier (#PCDATA) >\n"
+                + "  <!ENTITY xxe SYSTEM \"jar:file:///file/not/there?.xsd\" >]>\n"
+                + "  <wcs:GetCoverage service=\"WCS\" version=\"1.1.1\" "
+                + "                   xmlns:ows=\"http://www.opengis.net/ows/1.1\"\n"
+                + "                   xmlns:wcs=\"http://www.opengis.net/wcs/1.1.1\">\n"
+                + "   <ows:Identifier>&xxe;</ows:Identifier>\n" + "  </wcs:GetCoverage>";
+
+        dom = postAsDOM("wcs", request);
+        // print(dom);
+        error = xpath.evaluate("//ows:ExceptionText", dom);
+        assertTrue(error.contains(NoExternalEntityResolver.ERROR_MESSAGE_BASE));
     }
 
     /**

@@ -9,6 +9,8 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathNotExists;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -306,6 +308,15 @@ public class GetRecordsTest extends CSWSimpleTestSupport {
         assertXpathEvaluatesTo("0", "//csw:SearchResults/@numberOfRecordsMatched", d);
         assertXpathEvaluatesTo("0", "//csw:SearchResults/@numberOfRecordsReturned", d);
         assertXpathEvaluatesTo("0", "//csw:SearchResults/@nextRecord", d);
+    }
+    
+    @Test 
+    public void testNoXmlPrefix() throws Exception {
+        String request = "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record";
+        
+        String response = getAsString(request);
+        assertTrue(response.indexOf("xmlns:csw=") >= 0);
+        assertTrue(response.indexOf("xmlns:xml=") < 0);
     }
 
     

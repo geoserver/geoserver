@@ -7,12 +7,12 @@
   <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>gs-jms-cluster-container</artifactId>
-    <version>2.7-SNAPSHOT</version>
+    <version>2.7.2</version>
   </parent>
 
   <groupId>org.geoserver</groupId>
   <artifactId>gs-jms-geoserver</artifactId>
-  <version>2.7-SNAPSHOT</version>
+  <version>2.7.2</version>
   <packaging>jar</packaging>
   <name>GeoServer JMS clustering module</name>
 

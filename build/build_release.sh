@@ -345,20 +345,6 @@ zip -r $htmldoc user developer
 unlink user
 unlink developer
 
-# clean up source artifact
-if [ -e tmp ]; then
-  rm -rf tmp
-fi
-mkdir tmp
-src=geoserver-$tag-src.zip
-unzip -d tmp $src
-pushd tmp > /dev/null
-
-set +e && find . -type d -name target -exec rm -rf {} \; && set -e
-rm ../$src
-zip -r ../$src *
-
-popd > /dev/null
 popd > /dev/null
 
 echo "copying artifacts to $dist"

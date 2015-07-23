@@ -166,8 +166,7 @@ public abstract class SolrConfigurationPage extends Panel {
             if (!geomSet) {
                 error(new ParamResourceModel("geomEmptyFailure", SolrConfigurationPage.this)
                         .getString());
-            }
-            if (!sridSet) {
+            } else if (!sridSet) {
                 error(new ParamResourceModel("sridEmptyFailure", SolrConfigurationPage.this)
                         .getString());
             }

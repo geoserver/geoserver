@@ -8,7 +8,9 @@ This code is licensed under the GPL 2.0 license, available at the root applicati
 
 	<bean id="solrXStreamInitializer" class="org.geoserver.solr.SolrXStreamInitializer" />
 	
-	<bean id="solrFeatureTypeCallback" class="org.geoserver.solr.SolrFeatureTypeCallback" />
+	<bean id="solrFeatureTypeCallback" class="org.geoserver.solr.SolrFeatureTypeCallback" >
+      <constructor-arg index="0" ref="catalog" />
+    </bean>
 
 	<bean id="solrConfigPanel" class="org.geoserver.solr.SolrConfigurationPanelInfo">
 		<property name="id" value="solr" />

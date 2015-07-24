@@ -118,6 +118,7 @@ import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.security.impl.GeoServerUser;
 import org.geoserver.security.impl.GeoServerUserGroup;
 import org.geoserver.security.impl.GroupAdminProperty;
+import org.geoserver.security.impl.RESTAccessRuleDAO;
 import org.geoserver.security.impl.ServiceAccessRuleDAO;
 import org.geoserver.security.impl.Util;
 import org.geoserver.security.password.ConfigurationPasswordEncryptionHelper;
@@ -707,6 +708,11 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
     public ServiceAccessRuleDAO getServiceAccessRuleDAO() {
         return ServiceAccessRuleDAO.get();
     }
+    
+    public RESTAccessRuleDAO getRESTAccessRuleDAO() {
+        return RESTAccessRuleDAO.get();
+    }
+
 
     /**
      * Determines if the security manager has been initialized yet. 

@@ -9,6 +9,16 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
  <modelVersion>4.0.0</modelVersion>
  
+ <properties>
+    <netcdf.version>4.6.2</netcdf.version>
+  </properties>
+  <repositories>
+    <repository>
+      <id>unidata</id>
+      <name>Unidata UCAR Libraries repository</name>
+      <url>https://artifacts.unidata.ucar.edu/content/repositories/unidata/</url>
+    </repository>
+   </repositories>
  <parent>
   <groupId>org.geoserver</groupId>
   <artifactId>community</artifactId>
@@ -99,6 +109,11 @@
   </dependency>
 
   <!-- TODO: relax this dependency: just need to depends on NetCDF java library from Unidata -->
+  <dependency>
+    <groupId>edu.ucar</groupId>
+    <artifactId>udunits</artifactId>
+    <version>${netcdf.version}</version>
+  </dependency>
   <dependency>
     <groupId>org.geotools</groupId>
     <artifactId>gt-netcdf</artifactId>

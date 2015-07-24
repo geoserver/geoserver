@@ -29,7 +29,8 @@ import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.validation.IValidatable;
 import org.apache.wicket.validation.IValidator;
 import org.apache.wicket.validation.ValidationError;
-import org.geoserver.gwc.ConfigurableBlobStore;
+import org.geoserver.catalog.PublishedType;
+import org.geoserver.gwc.GWC;
 import org.geoserver.gwc.config.GWCConfig;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.wicket.LocalizedChoiceRenderer;
@@ -111,10 +112,9 @@ public class CachingOptionsPanel extends Panel {
                 gutterChoices);
         configs.add(gutterChoice);
 
-        final List<String> formats = Arrays.asList("image/png", "image/png8", "image/jpeg",
-                "image/gif");
-
         {
+            List<String> formats;
+            formats = new ArrayList<>(GWC.getAdvertisedCachedFormats(PublishedType.VECTOR));
             IModel<List<String>> vectorFormatsModel = new PropertyModel<List<String>>(
                     gwcConfigModel, "defaultVectorCacheFormats");
             vectorFormatsGroup = new CheckGroup<String>("vectorFormatsGroup", vectorFormatsModel);
@@ -133,6 +133,8 @@ public class CachingOptionsPanel extends Panel {
         }
 
         {
+            List<String> formats;
+            formats = new ArrayList<>(GWC.getAdvertisedCachedFormats(PublishedType.RASTER));
             IModel<List<String>> rasterFormatsModel = new PropertyModel<List<String>>(
                     gwcConfigModel, "defaultCoverageCacheFormats");
             rasterFormatsGroup = new CheckGroup<String>("rasterFormatsGroup", rasterFormatsModel);
@@ -150,6 +152,8 @@ public class CachingOptionsPanel extends Panel {
             rasterFormatsGroup.add(formatsList);
         }
         {
+            List<String> formats;
+            formats = new ArrayList<>(GWC.getAdvertisedCachedFormats(PublishedType.GROUP));
             IModel<List<String>> otherFormatsModel = new PropertyModel<List<String>>(
                     gwcConfigModel, "defaultOtherCacheFormats");
             otherFormatsGroup = new CheckGroup<String>("otherFormatsGroup", otherFormatsModel);

@@ -108,6 +108,9 @@ public class ImportJSONReader {
             if (json.has("data")) {
                 context.setData(data(json.getJSONObject("data")));
             }
+            if (json.has("transforms")) {
+                context.getDefaultTransforms().addAll(transforms(json.getJSONArray("transforms")));
+            }
         }
         return context;
     }
@@ -250,6 +253,14 @@ public class ImportJSONReader {
             chain.add(transform(transforms.getJSONObject(i)));
         }
         return chain;
+    }
+
+    List<ImportTransform> transforms(JSONArray transforms) throws IOException {
+        List<ImportTransform> result = new ArrayList<>();
+        for (int i = 0; i < transforms.size(); i++) {
+            result.add(transform(transforms.getJSONObject(i)));
+        }
+        return result;
     }
 
     public ImportTransform transform() throws IOException {

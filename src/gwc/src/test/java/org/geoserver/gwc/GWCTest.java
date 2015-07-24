@@ -5,6 +5,9 @@
  */
 package org.geoserver.gwc;
 
+import static com.google.common.collect.Iterators.forEnumeration;
+import static com.google.common.collect.Lists.newArrayList;
+import static com.google.common.collect.Sets.union;
 import static org.geoserver.gwc.GWC.tileLayerName;
 import static org.geoserver.gwc.GWCTestHelpers.mockGroup;
 import static org.geoserver.gwc.GWCTestHelpers.mockLayer;
@@ -99,6 +102,7 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.opengis.filter.Filter;
 
+import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
@@ -1171,6 +1175,57 @@ public class GWCTest {
                 fullParameters.get(rawKvpParamName.toUpperCase()));
     }
 
+    @Test
+    public void testGetDefaultAdvertisedCachedFormats() {
+        // from src/main/resources/org/geoserver/gwc/advertised_formats.properties
+        Set<String> defaultFormats = ImmutableSet.of("image/png", "image/png8", "image/jpeg",
+                "image/gif");
+
+        assertEquals(defaultFormats, GWC.getAdvertisedCachedFormats(PublishedType.VECTOR));
+        assertEquals(defaultFormats, GWC.getAdvertisedCachedFormats(PublishedType.REMOTE));
+
+        assertEquals(defaultFormats, GWC.getAdvertisedCachedFormats(PublishedType.RASTER));
+        assertEquals(defaultFormats, GWC.getAdvertisedCachedFormats(PublishedType.WMS));
+
+        assertEquals(defaultFormats, GWC.getAdvertisedCachedFormats(PublishedType.GROUP));
+    }
+
+    @Test
+    public void testGetPluggabledAdvertisedCachedFormats() throws IOException {
+        List<URL> urls;
+        try {
+            // load the default and test resources separately so they are named differently and we
+            // don't get the ones for testing listed in the UI when running from eclipse
+            String defaultResource = "org/geoserver/gwc/advertised_formats.properties";
+            String testResource = "org/geoserver/gwc/advertised_formats_unittesting.properties";
+            ClassLoader classLoader = GWC.class.getClassLoader();
+            urls = newArrayList(forEnumeration(classLoader.getResources(defaultResource)));
+            urls.addAll(newArrayList(forEnumeration(classLoader.getResources(testResource))));
+        } catch (IOException e) {
+            throw Throwables.propagate(e);
+        }
+
+        // from src/main/resources/org/geoserver/gwc/advertised_formats.properties
+        Set<String> defaultFormats = ImmutableSet.of("image/png", "image/png8", "image/jpeg",
+                "image/gif");
+
+        // see src/test/resources/org/geoserver/gwc/advertised_formats.properties
+        Set<String> expectedVector = union(defaultFormats,
+                ImmutableSet.of("test/vector1", "test/vector2"));
+        Set<String> expectedRaster = union(defaultFormats,
+                ImmutableSet.of("test/raster1", "test/raster2;type=test"));
+        Set<String> expectedGroup = union(defaultFormats,
+                ImmutableSet.of("test/group1", "test/group2"));
+
+        assertEquals(expectedVector, GWC.getAdvertisedCachedFormats(PublishedType.VECTOR, urls));
+        assertEquals(expectedVector, GWC.getAdvertisedCachedFormats(PublishedType.REMOTE, urls));
+
+        assertEquals(expectedRaster, GWC.getAdvertisedCachedFormats(PublishedType.RASTER, urls));
+        assertEquals(expectedRaster, GWC.getAdvertisedCachedFormats(PublishedType.WMS, urls));
+
+        assertEquals(expectedGroup, GWC.getAdvertisedCachedFormats(PublishedType.GROUP, urls));
+    }
+    
     @Test
     public void testSetBlobStoresNull() throws ConfigurationException{
         expected.expect(NullPointerException.class);

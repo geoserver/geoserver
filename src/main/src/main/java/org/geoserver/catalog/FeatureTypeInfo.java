@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -58,17 +58,7 @@ public interface FeatureTypeInfo extends ResourceInfo {
      * @return A filter, or <code>null</code> if one not set.
      * @uml.property name="filter"
      */
-    Filter getFilter();
-
-    /**
-     * Sets a filter which should be applied to all queries of the dataset
-     * represented by the feature type.
-     * 
-     * @param filter
-     *                A filter, can be <code>null</code>
-     * @uml.property name="filter"
-     */
-    void setFilter(Filter filter);
+    Filter filter();
 
     /**
      * A cap on the number of features that a query against this type can return.
@@ -168,6 +158,18 @@ public interface FeatureTypeInfo extends ResourceInfo {
     FeatureType getFeatureType() throws IOException;
     
     /**
+     * Return the ECQL string used as default feature type filter
+     *
+     */
+    String getCqlFilter();
+
+    /**
+     * Set the ECQL string used as default featue type filter
+     *
+     */
+    void setCqlFilter(String cqlFilterString);
+    
+    /**
      * Returns the underlying feature source instance.
      * <p>
      * This method does I/O and is potentially blocking. The <tt>listener</tt>
@@ -191,9 +193,4 @@ public interface FeatureTypeInfo extends ResourceInfo {
 	
 	void setCircularArcPresent(boolean arcsPresent);
 
-    /**
-     * The live feature resource, an instance of of {@link FeatureResource}.
-     */
-    //FeatureResource getResource(ProgressListener listener)
-    //        throws IOException;
 }

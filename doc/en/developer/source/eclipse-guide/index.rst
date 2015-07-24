@@ -34,9 +34,6 @@ If unset, GeoServer will default to the ``minimal`` directory inside of the
 
     .. image:: dd2.jpg
 
-.. note:: If you have checked out with *git svn* you may wish to use a
-   symbolic in web/app correctly reference ''minimal''
-
 Changing the default port for Jetty
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 

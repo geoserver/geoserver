@@ -15,6 +15,7 @@
         <include>gt-unidata*.jar</include>
         <include>gt-coverage-api*.jar</include>
         <include>netcdf*.jar</include>
+        <include>cdm*.jar</include>
         <include>udunits*.jar</include>
         <include>grib*.jar</include>
         <include>joda-time*.jar</include>

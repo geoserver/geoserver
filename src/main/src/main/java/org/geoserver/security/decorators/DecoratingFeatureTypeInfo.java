@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -97,8 +97,8 @@ public abstract class DecoratingFeatureTypeInfo extends AbstractDecorator<Featur
         return delegate.getFeatureType();
     }
 
-    public Filter getFilter() {
-        return delegate.getFilter();
+    public Filter filter() {
+        return delegate.filter();
     }
 
     public String getId() {
@@ -212,10 +212,6 @@ public abstract class DecoratingFeatureTypeInfo extends AbstractDecorator<Featur
         delegate.setEnabled(enabled);
     }
 
-    public void setFilter(Filter filter) {
-        delegate.setFilter(filter);
-    }
-
     public void setLatLonBoundingBox(ReferencedEnvelope box) {
         delegate.setLatLonBoundingBox(box);
     }
@@ -322,4 +318,15 @@ public abstract class DecoratingFeatureTypeInfo extends AbstractDecorator<Featur
     public void setCircularArcPresent(boolean enabled) {
     	delegate.setCircularArcPresent(enabled);
     }
+    
+    @Override
+    public String getCqlFilter() {
+        return delegate.getCqlFilter();
+    }
+
+    @Override
+    public void setCqlFilter(String cqlFilter) {
+        delegate.setCqlFilter(cqlFilter);
+    }
+
 }

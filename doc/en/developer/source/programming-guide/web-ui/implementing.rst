@@ -47,18 +47,6 @@ Create a new module
           </dependency>
         </dependencies>
 
-        <build>
-          <plugins>
-            <plugin>
-              <artifactId>maven-compiler-plugin</artifactId>
-              <configuration>
-                <source>1.5</source>
-                <target>1.5</target>
-              </configuration>
-           </plugin>
-         </plugins>
-        </build>
-
       </project>
 
 #. Create the directory ``src/main/java`` under the root of the new module::
@@ -204,6 +192,20 @@ At this point, the ``hello_web`` module should look like the following::
 
      [hello_web]% cp target/hello-1.0-SNAPSHOT.jar /home/bob/geoserver-2.0/webapps/geoserver/WEB-INF/lib
 
+   .. note::
+      
+      If running GeoServer from eclipse you can edit the :file:`web-app/pom.xml` with the following dependency:
+      
+      .. code-block:: xml
+      
+         <dependency>
+            <groupId>org.geoserver</groupId>
+            <artifactId>hello_web</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+      
+      You will need to run `mvn eclipse:eclipse` after editing :file:`web-app/pom.xml` and then you can refresh the :file:`gs-web-app` project in eclipse so it notices the new jar.
+      
 #. Start or restart GeoServer
 
 #. Navigate to http://localhost:8080/geoserver/web

@@ -25,7 +25,7 @@ public class ExternalEntitiesTest extends WFSTestSupport {
 
     private static final String WFS_1_0_0_REQUEST = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" + 
     		"<!DOCTYPE wfs:GetFeature [\r\n" + 
-    		"<!ENTITY c SYSTEM \"file:///this/file/does/not/exist\">\r\n" + 
+    		"<!ENTITY c SYSTEM \"FILE:///this/file/does/not/exist?.XSD\">\r\n" + 
     		"]>\r\n" + 
     		"<wfs:GetFeature service=\"WFS\" version=\"1.0.0\" \r\n" + 
     		"  outputFormat=\"GML2\"\r\n" + 
@@ -63,7 +63,7 @@ public class ExternalEntitiesTest extends WFSTestSupport {
     		"<!ELEMENT ogc:FeatureId EMPTY>\r\n" + 
     		"<!ATTLIST ogc:FeatureId fid CDATA #FIXED \"states.3\">\r\n" + 
     		"\r\n" + 
-    		"<!ENTITY passwd  SYSTEM \"file:///this/file/does/not/exist\">]>\r\n" + 
+    		"<!ENTITY passwd  SYSTEM \"FILE:///this/file/does/not/exist?.XSD\">]>\r\n" + 
     		"<wfs:GetFeature service=\"WFS\" version=\"1.1.0\" \r\n" + 
     		"  xmlns:wfs=\"http://www.opengis.net/wfs\"\r\n" + 
     		"  xmlns:ogc=\"http://www.opengis.net/ogc\">\r\n" + 
@@ -92,7 +92,7 @@ public class ExternalEntitiesTest extends WFSTestSupport {
     		"<!ELEMENT fes:ResourceId EMPTY>\r\n" + 
     		"<!ATTLIST fes:ResourceId rid CDATA #FIXED \"states.3\">\r\n" + 
     		"\r\n" + 
-    		"<!ENTITY passwd  SYSTEM \"file:///thisfiledoesnotexist\">\r\n" + 
+    		"<!ENTITY passwd  SYSTEM \"FILE:///thisfiledoesnotexist?.XSD\">\r\n" + 
     		"]>\r\n" + 
     		"<wfs:GetFeature service=\"WFS\" version=\"2.0.0\" outputFormat=\"application/gml+xml; version=3.2\"\r\n" + 
     		"        xmlns:wfs=\"http://www.opengis.net/wfs/2.0\"\r\n" + 

@@ -35,6 +35,7 @@ import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.Predicates;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMSStoreInfo;
@@ -712,6 +713,41 @@ public class CatalogImplTest {
         assertNotNull(ds5);
         assertFalse( ds == ds5 );
         assertEquals( ds, ds5 );
+    }
+    
+    @Test
+    public void testGetStoreByName() {
+        addDataStore();
+        
+        StoreInfo ds2 = catalog.getStoreByName(ds.getName(), StoreInfo.class);
+        assertNotNull(ds2);
+        assertFalse( ds == ds2 );
+        assertEquals( ds, ds2 );
+        
+        StoreInfo ds3 = catalog.getStoreByName(ws, null, StoreInfo.class);
+        assertNotNull(ds3);
+        assertFalse( ds == ds3 );
+        assertEquals( ds, ds3 );
+        
+        StoreInfo ds4 = catalog.getStoreByName(ws, Catalog.DEFAULT, StoreInfo.class);
+        assertNotNull(ds4);
+        assertFalse( ds == ds4 );
+        assertEquals( ds, ds4 );
+        
+        StoreInfo ds5 = catalog.getStoreByName(Catalog.DEFAULT, Catalog.DEFAULT, StoreInfo.class);
+        assertNotNull(ds5);
+        assertFalse( ds == ds5 );
+        assertEquals( ds, ds5 );
+        
+        StoreInfo ds6 = catalog.getStoreByName((String)null, null, StoreInfo.class);
+        assertNotNull(ds6);
+        assertFalse( ds == ds6 );
+        assertEquals( ds, ds3 );
+        
+        StoreInfo ds7 = catalog.getStoreByName(Catalog.DEFAULT, Catalog.DEFAULT, StoreInfo.class);
+        assertNotNull(ds7);
+        assertFalse( ds == ds7 );
+        assertEquals( ds6, ds7 );
     }
     
     @Test
@@ -2792,6 +2828,25 @@ public class CatalogImplTest {
         assertEquals(newHashSet(), asSet(catalog.list(ResourceInfo.class, filter)));
         assertEquals(newHashSet(), asSet(catalog.list(FeatureTypeInfo.class, filter)));
         assertEquals(newHashSet(), asSet(catalog.list(CoverageInfo.class, filter)));
+    }
+    
+    @Test
+    public void testFullTextSearchAddedKeyword() {
+        ft.getKeywords().add(new Keyword("air_temp"));
+        ft.getKeywords().add(new Keyword("temperatureAir"));
+        
+        l.setResource(ft);
+        addLayer();
+        
+        LayerInfo lproxy = catalog.getLayer(l.getId());
+        FeatureTypeInfo ftproxy = (FeatureTypeInfo)lproxy.getResource();
+        
+        ftproxy.getKeywords().add(new Keyword("newKeyword"));
+        catalog.save(ftproxy);
+
+        Filter filter = Predicates.fullTextSearch("newKeyword");
+        assertEquals(newHashSet(ft), asSet(catalog.list(FeatureTypeInfo.class, filter)));
+        assertEquals(newHashSet(l), asSet(catalog.list(LayerInfo.class, filter)));
     }
 
     private <T> Set<T> asSet(CloseableIterator<T> list) {

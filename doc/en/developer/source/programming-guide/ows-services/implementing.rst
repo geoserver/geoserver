@@ -188,6 +188,20 @@ Trying it Out
   [INFO] -----------------------------------------------------------------------
 
 #. Copy :file:`target/hello-1.0.jar` into the :file:`WEB-INF/lib` directory of your GeoServer install
+   
+   .. note::
+      
+      If running GeoServer from eclipse you can edit the :file:`web-app/pom.xml` with the following dependency:
+      
+      .. code-block:: xml
+      
+         <dependency>
+            <groupId>org.geoserver</groupId>
+            <artifactId>hello</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+      
+      You will need to run `mvn eclipse:eclipse` after editing :file:`web-app/pom.xml` for the change to be reflected in the eclipse configuration.
 
 #. Restart GeoServer
 

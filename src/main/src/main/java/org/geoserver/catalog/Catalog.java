@@ -1547,7 +1547,7 @@ public interface Catalog extends CatalogInfo {
     /**
      * Returns a workspace by name, or <code>null</code> if no such workspace
      * exists.
-     * @param The name of the store, or null or {@link #DEFAULT} to get the default workspace
+     * @param The name of the store, or {@code null} or {@link #DEFAULT} to get the default workspace
      */
     WorkspaceInfo getWorkspaceByName( String name );
 

@@ -79,6 +79,7 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.vfny.geoserver.util.Requests;
 import org.vfny.geoserver.util.SLDValidator;
 import org.xml.sax.EntityResolver;
+import org.xml.sax.SAXException;
 
 public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServletRequestAware {
 
@@ -320,13 +321,27 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
 
             // JD: GEOS-420, Wrap the sldUrl in getINputStream method in order
             // to do compression
-            InputStream input = Requests.getInputStream(styleUrl);
-
-            try {
+            try(InputStream input = Requests.getInputStream(styleUrl);){
                 StyledLayerDescriptor sld = parseStyle(getMap, input);
                 processSld(getMap, requestedLayerInfos, sld, styleNameList);
-            } finally {
-                input.close();
+            } catch (Exception ex) {
+                final Level l = Level.WARNING;
+                // KMS: Kludge here to allow through certain exceptions without being hidden.
+                if(ex.getCause() instanceof SAXException) {
+                    if(ex.getCause().getMessage().contains("Entity resolution disallowed")) {
+                        throw ex;
+                    }
+                }
+                LOGGER.log(l, "Exception while getting SLD.", ex);
+                // KMS: Replace with a generic exception so it can't be used to port scan the local 
+                // network.
+                if(LOGGER.isLoggable(l)){
+                    throw new ServiceException("Error while getting SLD.  See the log for details.");
+                }
+                else
+                {
+                    throw new ServiceException("Error while getting SLD.");
+                }
             }
 
             // set filter in, we'll check consistency later

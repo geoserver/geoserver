@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -31,13 +31,9 @@ import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
-import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
-import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
-import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.ParamResourceModel;
@@ -82,7 +78,8 @@ public abstract class SolrConfigurationPage extends Panel {
      * @see {@link SolrAttribute}
      * 
      */
-    public SolrConfigurationPage(String panelId, final IModel model) {
+    public SolrConfigurationPage(String panelId,
+            final IModel model) {
         super(panelId, model);
 
         ResourceInfo ri = (ResourceInfo) model.getObject();
@@ -130,7 +127,7 @@ public abstract class SolrConfigurationPage extends Panel {
      * Do nothing
      */
     protected void onCancel(AjaxRequestTarget target) {
-        done(target, null, null);
+        done(target, null);
     }
 
     /**
@@ -169,8 +166,7 @@ public abstract class SolrConfigurationPage extends Panel {
             if (!geomSet) {
                 error(new ParamResourceModel("geomEmptyFailure", SolrConfigurationPage.this)
                         .getString());
-            }
-            if (!sridSet) {
+            } else if (!sridSet) {
                 error(new ParamResourceModel("sridEmptyFailure", SolrConfigurationPage.this)
                         .getString());
             }
@@ -178,29 +174,9 @@ public abstract class SolrConfigurationPage extends Panel {
                 target.addComponent(feedbackPanel);
                 return;
             }
-
-            Catalog catalog = ((GeoServerApplication) this.getPage().getApplication()).getCatalog();
-            LayerInfo layerInfo = catalog.getLayerByName(ri.getQualifiedName());
-            FeatureTypeInfo typeInfo;
-            Boolean isNew = true;
-            if (layerInfo == null) {
-                // New
-                DataStoreInfo dsInfo = catalog.getStore(ri.getStore().getId(), DataStoreInfo.class);
-                SolrDataStore ds = (SolrDataStore) dsInfo.getDataStore(null);
-                CatalogBuilder builder = new CatalogBuilder(catalog);
-                builder.setStore(dsInfo);
-                ds.setSolrConfigurations(layerConfiguration);
-                typeInfo = builder.buildFeatureType(ds.getFeatureSource(ri.getQualifiedName()));
-                typeInfo.getMetadata().put(SolrLayerConfiguration.KEY, layerConfiguration);
-                layerInfo = builder.buildLayer(typeInfo);
-            } else {
-                // Update
-                isNew = false;
-                ResourceInfo resourceInfo = layerInfo.getResource();
-                FeatureTypeInfo featureTypeInfo = (FeatureTypeInfo) resourceInfo;
-                featureTypeInfo.getMetadata().put(SolrLayerConfiguration.KEY, layerConfiguration);
-            }
-            done(target, layerInfo, isNew);
+            ri.getMetadata().put(SolrLayerConfiguration.KEY, layerConfiguration);
+            
+            done(target, ri);
 
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, e.getMessage(), e);
@@ -354,6 +330,6 @@ public abstract class SolrConfigurationPage extends Panel {
      * @see {@link #onCancel}
      * 
      */
-    abstract void done(AjaxRequestTarget target, LayerInfo layerInfo, Boolean isNew);
+    abstract void done(AjaxRequestTarget target, ResourceInfo layerInfo);
 
 }

@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.SortedSet;
 
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.PublishedType;
@@ -52,6 +53,7 @@ public class GeoServerTileLayerInfoPersistenceTest {
 
         XStream xstream = XMLConfiguration.getConfiguredXStream(new XStream(), (WebApplicationContext) null);
         xstream = new GWCGeoServerConfigurationProvider().getConfiguredXStream(xstream);
+        xstream.allowTypes(new Class[] { GeoServerTileLayerInfo.class, SortedSet.class });
 
         String marshalled = xstream.toXML(info);
         GeoServerTileLayerInfo unmarshalled = (GeoServerTileLayerInfo) xstream

@@ -43,6 +43,7 @@ import org.geoserver.importer.job.JobQueue;
 import org.geoserver.importer.job.ProgressMonitor;
 import org.geoserver.importer.job.Task;
 import org.geoserver.importer.mosaic.Mosaic;
+import org.geoserver.importer.transform.ImportTransform;
 import org.geoserver.importer.transform.RasterTransformChain;
 import org.geoserver.importer.transform.ReprojectTransform;
 import org.geoserver.importer.transform.TransformChain;
@@ -1527,6 +1528,13 @@ public class Importer implements DisposableBean, ApplicationListener {
         xs.registerLocalConverter(RemoteData.class, "password", new EncryptedFieldConverter(
                 securityManager));
         
+        // security
+        xs.allowTypes(new Class[] { ImportContext.class, ImportTask.class, File.class });
+        xs.allowTypeHierarchy(TransformChain.class);
+        xs.allowTypeHierarchy(DataFormat.class);
+        xs.allowTypeHierarchy(ImportData.class);
+        xs.allowTypeHierarchy(ImportTransform.class);
+
         return xp;
     }
 

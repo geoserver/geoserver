@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * Copyright (C) 2007-2008-2009 GeoSolutions S.A.S.
  *  http://www.geo-solutions.it
  * This code is licensed under the GPL 2.0 license, available at the root
@@ -19,15 +19,12 @@ import java.util.logging.Logger;
 
 import javax.xml.transform.TransformerException;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-import net.sf.json.xml.XMLSerializer;
-
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.rest.AbstractCatalogResource;
+import org.geoserver.config.util.SecureXStream;
 import org.geoserver.rest.RestletException;
 import org.geoserver.rest.format.DataFormat;
 import org.geoserver.rest.format.ReflectiveHTMLFormat;
@@ -37,14 +34,15 @@ import org.geoserver.sldservice.utils.classifier.ColorRamp;
 import org.geoserver.sldservice.utils.classifier.RulesBuilder;
 import org.geoserver.sldservice.utils.classifier.impl.BlueColorRamp;
 import org.geoserver.sldservice.utils.classifier.impl.CustomColorRamp;
+import org.geoserver.sldservice.utils.classifier.impl.GrayColorRamp;
+import org.geoserver.sldservice.utils.classifier.impl.JetColorRamp;
 import org.geoserver.sldservice.utils.classifier.impl.RandomColorRamp;
 import org.geoserver.sldservice.utils.classifier.impl.RedColorRamp;
-import org.geoserver.sldservice.utils.classifier.impl.JetColorRamp;
-import org.geoserver.sldservice.utils.classifier.impl.GrayColorRamp;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.styling.Rule;
 import org.geotools.styling.SLDTransformer;
 import org.geotools.util.NullProgressListener;
+import org.h2.bnf.RuleList;
 import org.opengis.feature.type.FeatureType;
 import org.restlet.Context;
 import org.restlet.data.Form;
@@ -69,6 +67,9 @@ import com.vividsolutions.jts.geom.Polygon;
 import freemarker.ext.beans.CollectionModel;
 import freemarker.template.Configuration;
 import freemarker.template.SimpleHash;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+import net.sf.json.xml.XMLSerializer;
 
 /**
  * @author Alessio Fabiani, GeoSolutions SAS
@@ -149,7 +150,7 @@ public class ClassifierResource extends AbstractCatalogResource {
 			@Override
 			protected void write(Object data, OutputStream output)
 					throws IOException {
-				XStream xstream = new XStream();
+                XStream xstream = new SecureXStream();
 				xstream.setMode(XStream.NO_REFERENCES);
 
 				// Aliases
@@ -157,6 +158,8 @@ public class ClassifierResource extends AbstractCatalogResource {
 
 				// Converters
 				xstream.registerConverter(new RulesListConverter());
+
+                xstream.allowTypes(new Class[] { RuleList.class });
 
 				// Marshalling
 				xstream.toXML(data, output);
@@ -181,7 +184,7 @@ public class ClassifierResource extends AbstractCatalogResource {
 			@Override
 			protected void write(Object data, OutputStream output)
 					throws IOException {
-				XStream xstream = new XStream(new JettisonMappedXmlDriver());
+                XStream xstream = new SecureXStream(new JettisonMappedXmlDriver());
 				xstream.setMode(XStream.NO_REFERENCES);
 
 				// Aliases
@@ -189,6 +192,8 @@ public class ClassifierResource extends AbstractCatalogResource {
 
 				// Converters
 				xstream.registerConverter(new RulesListConverter());
+
+                xstream.allowTypes(new Class[] { RuleList.class });
 
 				// Marshalling
 				xstream.toXML(data, new OutputStreamWriter(output, "UTF-8"));
@@ -288,15 +293,15 @@ public class ClassifierResource extends AbstractCatalogResource {
 							if (colorRamp != null && colorRamp.length() > 0) {
 								ColorRamp ramp = null;
 								if (colorRamp.equalsIgnoreCase("random"))
-									ramp = (ColorRamp) new RandomColorRamp();
+									ramp = new RandomColorRamp();
 								else if (colorRamp.equalsIgnoreCase("red"))
-									ramp = (ColorRamp) new RedColorRamp();
+									ramp = new RedColorRamp();
 								else if (colorRamp.equalsIgnoreCase("blue"))
-									ramp = (ColorRamp) new BlueColorRamp();
+									ramp = new BlueColorRamp();
                                 else if (colorRamp.equalsIgnoreCase("jet"))
-                                    ramp = (ColorRamp) new JetColorRamp();
+                                    ramp = new JetColorRamp();
                                 else if (colorRamp.equalsIgnoreCase("gray"))
-                                    ramp = (ColorRamp) new GrayColorRamp();
+                                    ramp = new GrayColorRamp();
 								else if (colorRamp.equalsIgnoreCase("custom")) {
 									Color startColor = Color.decode(form.getFirst("startColor").getValue());
 									Color endColor = Color.decode(form.getFirst("endColor").getValue());
@@ -307,7 +312,7 @@ public class ClassifierResource extends AbstractCatalogResource {
 										tramp.setEndColor(endColor);
 										if (midColor != null)
 											tramp.setMid(midColor);
-										ramp = (ColorRamp) tramp;
+										ramp = tramp;
 									}
 								}
 
@@ -473,7 +478,7 @@ public class ClassifierResource extends AbstractCatalogResource {
 		private void writeKey(HierarchicalStreamWriter writer,
 				final JSONObject child, String key) {
 			if (key.startsWith("@")) {
-				writer.addAttribute(((String) key).substring(1), (String) child.get(key));				
+				writer.addAttribute(key.substring(1), (String) child.get(key));				
 			} else if(key.startsWith("#")) {
 				writer.setValue((String) child.get(key));
 			} else {

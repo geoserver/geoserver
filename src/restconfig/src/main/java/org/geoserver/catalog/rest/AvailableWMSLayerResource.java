@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -14,6 +14,7 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMSStoreInfo;
+import org.geoserver.config.util.SecureXStream;
 import org.geoserver.rest.RestletException;
 import org.geoserver.rest.format.ReflectiveXMLFormat;
 import org.geotools.data.ows.Layer;
@@ -44,7 +45,7 @@ public class AvailableWMSLayerResource extends AbstractCatalogResource {
         //list of available feature types
         List<String> available = new ArrayList<String>();
         try {
-            WebMapServer ds = (WebMapServer) info.getWebMapServer(null);
+            WebMapServer ds = info.getWebMapServer(null);
             
             for ( Layer layer : ds.getCapabilities().getLayerList() ) {
                 if(layer.getName() == null || "".equals(layer.getName())) {
@@ -73,7 +74,7 @@ public class AvailableWMSLayerResource extends AbstractCatalogResource {
             @Override
             protected void write(Object data, OutputStream output)
                     throws IOException {
-                XStream xstream = new XStream();
+                XStream xstream = new SecureXStream();
                 xstream.alias( "wmsLayerName", String.class);
                 xstream.toXML( data, output );
             }

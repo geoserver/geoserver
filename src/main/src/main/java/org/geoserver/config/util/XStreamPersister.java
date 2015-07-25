@@ -38,6 +38,7 @@ import org.geoserver.catalog.CoverageView.InputCoverageBand;
 import org.geoserver.catalog.DataLinkInfo;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.Info;
 import org.geoserver.catalog.Keyword;
 import org.geoserver.catalog.KeywordInfo;
 import org.geoserver.catalog.LayerGroupInfo;
@@ -273,10 +274,10 @@ public class XStreamPersister {
         ReflectionProvider reflectionProvider = new CustomReflectionProvider( new FieldDictionary( sorter ) ); 
             //new Sun14ReflectionProvider( new FieldDictionary( sorter  ) ); 
         if ( streamDriver != null ) {
-            xs = new XStream( reflectionProvider, streamDriver );
+            xs = new SecureXStream(reflectionProvider, streamDriver);
         }
         else {
-            xs = new XStream( reflectionProvider );    
+            xs = new SecureXStream(reflectionProvider);
         }
         xs.setMode(XStream.NO_REFERENCES);
         
@@ -458,6 +459,13 @@ public class XStreamPersister {
         registerBreifMapComplexType("dimensionInfo", DimensionInfoImpl.class);
 
         callback = new Callback();
+
+        // setup white list of accepted classes
+        xs.allowTypeHierarchy(Info.class);
+        xs.allowTypeHierarchy(Multimap.class);
+        xs.allowTypeHierarchy(JAIInfo.class);
+        xs.allowTypesByWildcard(new String[] { "org.geoserver.catalog.**" });
+        xs.allowTypesByWildcard(new String[] { "org.geoserver.security.**" });
     }
     
     /**
@@ -470,6 +478,7 @@ public class XStreamPersister {
     public void registerBreifMapComplexType(String typeId, Class clazz) {
         forwardBreifMap.put(typeId, clazz);
         backwardBreifMap.put(clazz, typeId);
+        xs.allowTypes(new Class[] { clazz });
     }
 
     public XStream getXStream() {

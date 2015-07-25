@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -13,6 +13,7 @@ import java.util.List;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
+import org.geoserver.config.util.SecureXStream;
 import org.geoserver.rest.format.DataFormat;
 import org.geoserver.rest.format.ReflectiveXMLFormat;
 import org.opengis.coverage.grid.GridCoverageReader;
@@ -66,7 +67,7 @@ public class HarvestedCoveragesResource extends AbstractCatalogResource {
             @Override
             protected void write(Object data, OutputStream output)
                     throws IOException {
-                XStream xstream = new XStream();
+                XStream xstream = new SecureXStream();
                 xstream.alias( "coverageName", String.class);
                 xstream.toXML( data, output );
             }

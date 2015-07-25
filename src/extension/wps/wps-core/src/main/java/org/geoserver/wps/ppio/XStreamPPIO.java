@@ -9,6 +9,7 @@ import java.io.InputStream;
 
 import javax.xml.namespace.QName;
 
+import org.geoserver.config.util.SecureXStream;
 import org.xml.sax.ContentHandler;
 
 import com.thoughtworks.xstream.XStream;
@@ -47,8 +48,8 @@ public class XStreamPPIO extends XMLPPIO {
      * 
      * @param xstream
      */
-    protected XStream buildXStream() {
-        XStream stream = new XStream() {
+    protected SecureXStream buildXStream() {
+        SecureXStream stream = new SecureXStream() {
             protected MapperWrapper wrapMapper(MapperWrapper next) {
                 return new UppercaseTagMapper(new PackageStrippingMapper(next));
             };

@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -1381,6 +1381,13 @@ public class Importer implements DisposableBean, ApplicationListener {
         xs.registerLocalConverter( ReferencedEnvelope.class, "crs", new CRSConverter() );
         xs.registerLocalConverter( GeneralEnvelope.class, "crs", new CRSConverter() );
         
+        // security
+        xs.allowTypes(new Class[] { ImportContext.class, ImportTask.class, File.class });
+        xs.allowTypeHierarchy(TransformChain.class);
+        xs.allowTypeHierarchy(DataFormat.class);
+        xs.allowTypeHierarchy(ImportData.class);
+        xs.allowTypeHierarchy(ImportTransform.class);
+
         return xp;
     }
 

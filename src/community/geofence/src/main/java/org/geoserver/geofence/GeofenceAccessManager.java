@@ -268,7 +268,7 @@ public class GeofenceAccessManager implements ResourceAccessManager, DispatcherC
                 LOGGER.log(Level.FINE, "Admin level access, returning " +
                     "full rights for layer {0}", resource.getPrefixedName());
 
-                return buildAccessLimits(resource, AccessInfo.ALLOW_ALL);
++                return null;
             }
 
             username = user.getName();

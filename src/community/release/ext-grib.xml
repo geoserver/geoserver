@@ -27,12 +27,20 @@
         <include>geodb*.jar</include>
         <include>log4j-over-slf4j*.jar</include>
         <include>bufr*.jar</include>
-        <include>je*.jar</include>
         <include>protobuf-java*.jar</include>
         <include>c3p0*.jar</include>
         <include>quartz*.jar</include>
         <include>jna*.jar</include>
+        <include>jdom2*.jar</include>
+        <include>jj2000*.jar</include>
+        <include>jcommander*.jar</include>
+        <include>opendap*.jar</include>
+        <include>http*.jar</include>
       </includes>
+      <excludes>
+        <exclude>gs-netcdf-out*.jar</exclude>
+        <exclude>jettison*.jar</exclude>
+      </excludes>
     </fileSet>
   </fileSets>
 </assembly>

@@ -22,6 +22,7 @@ import org.geotools.util.NumberRange;
 import org.geotools.util.SimpleInternationalString;
 import org.geotools.util.Version;
 import org.opengis.feature.type.Name;
+import org.opengis.filter.Filter;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import com.thoughtworks.xstream.XStream;
@@ -89,16 +90,19 @@ public class SecureXStream extends XStream {
         // by default, convert nothing
         addPermission(NoTypePermission.NONE);
 
+        // the placeholder for null values
+        allowTypes(new Class[] { Mapper.Null.class });
         // allow primitives
         addPermission(new PrimitiveTypePermission());
         // and common non primitives
         allowTypes(new Class[] { String.class, Date.class, java.sql.Date.class, Timestamp.class,
                 Time.class });
         // allow common GeoTools types too
+        allowTypeHierarchy(Filter.class);
         allowTypeHierarchy(NumberRange.class);
+        allowTypeHierarchy(CoordinateReferenceSystem.class);
         allowTypeHierarchy(Name.class);
         allowTypes(new Class[] { Version.class, SimpleInternationalString.class });
-        allowTypeHierarchy(CoordinateReferenceSystem.class);
         // common collection types
         allowTypes(new Class[] { TreeSet.class, SortedSet.class, Set.class, HashSet.class,
                 List.class, ArrayList.class, CopyOnWriteArrayList.class, Map.class, HashMap.class,

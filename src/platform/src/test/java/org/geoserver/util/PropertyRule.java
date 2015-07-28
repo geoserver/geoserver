@@ -4,7 +4,7 @@
  * application directory.
  */
 
-package org.geoserver.wfs.xml;
+package org.geoserver.util;
 
 import java.util.Properties;
 
@@ -14,7 +14,7 @@ import java.util.Properties;
  * @author Kevin Smith, Boundless
  *
  */
-class PropertyRule extends org.junit.rules.ExternalResource {
+public class PropertyRule extends org.junit.rules.ExternalResource {
     final Properties props;
     final String name;
     String oldValue;

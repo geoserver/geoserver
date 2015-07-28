@@ -90,6 +90,13 @@
      <artifactId>hamcrest-library</artifactId>
      <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>gs-platform</artifactId>
+      <version>${project.version}</version>
+      <classifier>tests</classifier>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
 </project>

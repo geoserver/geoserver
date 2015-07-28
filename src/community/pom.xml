@@ -62,7 +62,9 @@
           <descriptor>release/ext-sldservice.xml</descriptor>
           <descriptor>release/ext-rest-upload.xml</descriptor>
           <descriptor>release/ext-gwc-distributed.xml</descriptor>  
-          <descriptor>release/ext-geofence-server.xml</descriptor>	
+          <descriptor>release/ext-geofence-server.xml</descriptor>
+	  <descriptor>release/ext-gdal-wcs.xml</descriptor>
+	  <descriptor>release/ext-gdal-wps.xml</descriptor>
         </descriptors>
       </configuration>
      </plugin>
@@ -197,6 +199,7 @@
         <module>sldService</module>
         <module>release</module>
 	<module>gwc-distributed</module>
+	<module>gdal</module>
       </modules>
     </profile>
     <profile>
@@ -449,6 +452,12 @@
         <modules>
           <module>vectortiles</module>
         </modules>
-    </profile>    
+    </profile>
+    <profile>
+      <id>gdal-translate</id>
+        <modules>
+          <module>gdal</module>
+        </modules>
+    </profile>
   </profiles>
 </project>

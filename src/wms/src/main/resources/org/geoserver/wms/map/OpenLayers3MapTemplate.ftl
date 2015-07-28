@@ -306,7 +306,7 @@
         }
         document.getElementById('scale').innerHTML = "Scale = 1 : " + scale;
       });
-      map.getView().fitExtent(bounds, map.getSize());
+      map.getView().fit(bounds, map.getSize());
       map.on('singleclick', function(evt) {
         document.getElementById('nodelist').innerHTML = "Loading... please wait...";
         var view = map.getView();

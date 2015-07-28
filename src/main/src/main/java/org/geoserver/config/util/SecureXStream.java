@@ -18,6 +18,7 @@ import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import org.geoserver.platform.GeoServerExtensions;
 import org.geotools.util.NumberRange;
 import org.geotools.util.SimpleInternationalString;
 import org.geotools.util.Version;
@@ -107,6 +108,13 @@ public class SecureXStream extends XStream {
         allowTypes(new Class[] { TreeSet.class, SortedSet.class, Set.class, HashSet.class,
                 List.class, ArrayList.class, CopyOnWriteArrayList.class, Map.class, HashMap.class,
                 ConcurrentHashMap.class, });
+        
+        // Allow classes from user defined whitelist
+        String whitelistProp = GeoServerExtensions.getProperty("GEOSERVER_XSTREAM_WHITELIST");
+        if(whitelistProp != null) {
+            String[] wildcards = whitelistProp.split("\\s+|(\\s*;\\s*)");
+            this.allowTypesByWildcard(wildcards);
+        }
     }
 
 

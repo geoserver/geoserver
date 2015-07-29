@@ -161,6 +161,23 @@ Vector layers have a list of the :guilabel:`Feature Type Details`. These include
 
 The :guilabel:`Nillable` option refers to whether the property requires a value or may be flagged as being null. Meanwhile :guilabel:`Min/Max Occurrences` refers to how many values a field is allowed to have. Currently both :guilabel:`Nillable` and :guilabel:`Min/Max Occurrences` are set to ``true`` and ``0/1`` but may be extended with future work on complex features.
 
+Restricting features showing up in the layer
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+By default GeoServer will publish all the features available in the layer. It is possible
+to restrict the features to a subset by specyfing a CQL filter in the configuration: 
+
+.. figure:: ../images/data_layers_cql.png
+
+   *Restrict the features on layer by CQL filter*
+
+.. note::
+
+     It is recommended to use this setting for layers that are not meant to be edited. The filter  
+     is only applied to reads, if a WFS-T insert adds a feature not matching the filter, it will 
+     be added to the store anyways, but won't show up in any of the outputs. 
+
+
 Edit Layer: Publishing 
 ----------------------
 

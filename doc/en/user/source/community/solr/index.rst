@@ -29,24 +29,13 @@ On the other side, GeoServer organizes data in fixed structure feature types, an
 data in separate layers. This leaves the question of how documents in the index
 should be organized into layers.
 
-Referred to as "layer mapping", at this time there are two options.
+By default the store exposes a single layer, normally named after the SOLR collection the store is connected
+to, by publishing it one can decide which fields to include, and eventually add a filter 
+to select which attributes it will contain.
 
-Using a field to group documents
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+This single layer can be published multiple times, giving each published layer a different name,
+set of selected attributes, and a different filter to select the documents contained in the layer.
 
-The first option is to use a field to classify documents in the index. The unique
-set of values of the field in the index becomes the list of layers. This field is
-chosen by the administrator when configuring the data store.
-
-This mapping strategy is referred to as "FIELD" in the configuration UI. 
-
-
-Mapping the index as a single layer
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-The second option is to map the entire SOLR index as a single layer. This mapping
-mode requires no further configuration. It is refereed to as "SINGLE" in the 
-configuration UI. 
 
 Installing the SOLR extension
 -----------------------------------
@@ -87,25 +76,15 @@ Configuring a SOLR data store
 
    * - ``solr_url``
      - Provide a link to the SORL server that provides the documents
-   * - ``layer_mapper``
-     - Layer mapping strategy to use as described above. Must be one of "FIELD" or "SINGLE".
-   * - ``layer_name_field``
-     - Name of the field to use with the "FIELD" mapping strategy. The unique values of this
-       field become the layers published by the data store.
      
 Once the parameters are entered and confirmed, GeoServer will contact the SORL server and 
-fetch a list of layer names and fill the layer chooser page accordingly:
+suggest to publish the "index" layer. Click on "publish" or "publish again" to create a layer
+off the server.
 
-.. figure:: images/solr_layerlist.png
-   :align: center
-   
-   *List of layers available in the SOLR server*
+Configuring a new SOLR based layer
+----------------------------------
 
-Configuring a new SOLR base layer
----------------------------------
-
-Once the layer name is chosen, the usual layer configuration panel will appear, with a pop-up showing
-in a table the fields available:
+After publishing the collection layer, the usual configuration panel will appear, with a pop-up showing in a table the fields available:
 
 .. figure:: images/solr_fieldlist.png
    :align: center

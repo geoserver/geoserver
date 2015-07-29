@@ -543,6 +543,11 @@ public class ResourcePool {
                             throw new IOException("Failed to find the datastore factory for " + info.getName() 
                                     + ", did you forget to install the store extension jar?");
                         }
+                        if (factory == null) {
+                            throw new IOException("Failed to find the datastore factory for "
+                                    + info.getName()
+                                    + ", did you forget to install the store extension jar?");
+                        }
                         Param[] params = factory.getParametersInfo();
                         
                         //ensure that the namespace parameter is set for the datastore

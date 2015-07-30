@@ -23,7 +23,8 @@ The GeoServer SOLR extension has been tested with SORL version 4.8, 4.9, and 4.1
 Supported geometry types
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-The extension supports all WKT geometry types, plus "bounding box" (available starting SOLR 4.10).
+The extension supports all WKT geometry types (all linear types, point, lines and polygons, SQL/MMcurves are not supported), 
+plus "bounding box" (available starting SOLR 4.10).
 It does not support the ``solr.LatLonType`` type yet.
 
 More information

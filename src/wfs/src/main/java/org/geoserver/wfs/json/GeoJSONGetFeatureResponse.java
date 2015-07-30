@@ -424,13 +424,10 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat {
             if (filter == null) {
                 filter = Filter.INCLUDE;
             }
-            else if (filter instanceof org.geotools.filter.spatial.AbstractPreparedGeometryFilter){
+            else {
                 //reproject spatial filter to the native crs
-                CoordinateReferenceSystem crs = source.getSchema().getCoordinateReferenceSystem();
-                if(crs != null) {
-                    ReprojectingFilterVisitor reprojector = new ReprojectingFilterVisitor(FF, source.getSchema());
-                    filter = (Filter) filter.accept(reprojector, null);
-                }
+                ReprojectingFilterVisitor reprojector = new ReprojectingFilterVisitor(FF, source.getSchema());
+                filter = (Filter) filter.accept(reprojector, null);
             }
             
             Query countQuery = new Query(typeName.getLocalPart(), filter);

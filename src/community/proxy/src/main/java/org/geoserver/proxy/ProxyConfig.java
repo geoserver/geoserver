@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -13,6 +13,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.logging.Logger;
 
+import org.geoserver.config.util.SecureXStream;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Resource;
@@ -96,7 +97,8 @@ public class ProxyConfig implements java.io.Serializable{
             lock = configFile.lock();
             
             InputStream proxyConfStream = configFile.in();
-            XStream xs = new XStream();
+            XStream xs = new SecureXStream();
+            xs.allowTypes(new Class[] { ProxyConfig.class, ProxyConfig.Mode.class });
             //Take the read lock, then read the file
             retval = (ProxyConfig) (xs.fromXML(proxyConfStream));
         } catch (Exception e) {

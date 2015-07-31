@@ -24,6 +24,7 @@ import org.easymock.classextension.EasyMock;
 import org.eclipse.emf.common.util.URI;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
+import org.geoserver.util.PropertyRule;
 import org.geoserver.wfs.xml.WFSURIHandler.InitStrategy;
 import org.junit.After;
 import org.junit.Before;

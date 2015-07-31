@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -6,7 +6,6 @@
 package org.geoserver.wfs.xslt.rest;
 
 import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
@@ -185,6 +184,9 @@ public class TransformResource extends CatalogResourceBase {
         xs.registerLocalConverter(TransformInfo.class, "featureType",
                 new FeatureTypeLinkConverter());
         xs.addDefaultImplementation(FeatureTypeInfoImpl.class, FeatureTypeInfo.class);
+
+        // setup security
+        xs.allowTypes(new Class[] { TransformInfo.class });
     }
 
     private class TransformConverter extends ReflectionConverter {
@@ -205,7 +207,7 @@ public class TransformResource extends CatalogResourceBase {
             TransformInfo resolved = new TransformInfo(original);
             FeatureTypeInfo ft = resolved.getFeatureType();
             if (ft != null) {
-                resolved.setFeatureType((FeatureTypeInfo) ModificationProxy.unwrap(ft));
+                resolved.setFeatureType(ModificationProxy.unwrap(ft));
             }
             super.marshal(resolved, writer, context);
         }

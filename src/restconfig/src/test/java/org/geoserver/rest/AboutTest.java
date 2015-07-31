@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -19,15 +19,15 @@ import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.junit.Assert;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 /**
  * @author Carlo Cancellieri - GeoSolutions SAS
@@ -80,6 +80,7 @@ public class AboutTest extends GeoServerSystemTestSupport {
     public void testGetAsVersionsJSON() throws Exception {
         // make the request, parsing the result into a json object
         JSONObject json = (JSONObject) getAsJSON("/rest/about/version.json");
+        print(json);
 
         checkJSONModel(json);
     }

@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -18,6 +18,7 @@ import java.util.Map;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.geoserver.config.util.SecureXStream;
 import org.geoserver.platform.GeoServerResourceLoader;
 
 import com.thoughtworks.xstream.XStream;
@@ -95,8 +96,9 @@ class FTPConfigLoader {
                         + " Useful when the server is behind a NAT firewall and the client sees a different address than the server is using.");
 
         HierarchicalStreamDriver streamDriver = new CommentingStaxWriter(comments);
-        XStream xStream = new XStream(streamDriver);
+        XStream xStream = new SecureXStream(streamDriver);
         xStream.alias("ftp", FTPConfig.class);
+        xStream.allowTypes(new Class[] { FTPConfig.class });
         return xStream;
     }
 

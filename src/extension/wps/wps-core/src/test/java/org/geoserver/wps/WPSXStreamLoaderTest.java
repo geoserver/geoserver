@@ -18,6 +18,8 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.apache.commons.io.FileUtils;
 import org.custommonkey.xmlunit.XMLAssert;
 import org.geoserver.config.GeoServer;
+import org.geoserver.config.util.XStreamPersister;
+import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
@@ -153,6 +155,18 @@ public class WPSXStreamLoaderTest extends WPSTestSupport {
         try (InputStream is = new ByteArrayInputStream(xml.getBytes())) {
             return DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(is);
         }
+    }
+    
+    @Test
+    public void testLoadFromXML() throws Exception {
+        XStreamPersisterFactory factory = GeoServerExtensions.bean(XStreamPersisterFactory.class);
+        XStreamPersister xp = factory.createXMLPersister();
+        WPSXStreamLoader loader = GeoServerExtensions.bean(WPSXStreamLoader.class);
+        loader.initXStreamPersister(xp, getGeoServer());
+        try (InputStream is = getClass().getResourceAsStream("wps-test.xml")) {
+            xp.load(is, WPSInfo.class);
+        }
+
     }
 
 }

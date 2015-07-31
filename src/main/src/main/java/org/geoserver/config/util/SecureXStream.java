@@ -17,11 +17,14 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.geoserver.platform.GeoServerExtensions;
 import org.geotools.util.NumberRange;
 import org.geotools.util.SimpleInternationalString;
 import org.geotools.util.Version;
+import org.geotools.util.logging.Logging;
 import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -33,6 +36,8 @@ import com.thoughtworks.xstream.converters.reflection.ReflectionProvider;
 import com.thoughtworks.xstream.core.ClassLoaderReference;
 import com.thoughtworks.xstream.io.HierarchicalStreamDriver;
 import com.thoughtworks.xstream.mapper.Mapper;
+import com.thoughtworks.xstream.mapper.MapperWrapper;
+import com.thoughtworks.xstream.security.ForbiddenClassException;
 import com.thoughtworks.xstream.security.NoTypePermission;
 import com.thoughtworks.xstream.security.PrimitiveTypePermission;
 
@@ -45,6 +50,9 @@ import com.thoughtworks.xstream.security.PrimitiveTypePermission;
  *
  */
 public class SecureXStream extends XStream {
+    private static final String WHITELIST_KEY = "GEOSERVER_XSTREAM_WHITELIST";
+
+    static final Logger LOGGER = Logging.getLogger(SecureXStream.class);
 
     public SecureXStream() {
         super();
@@ -108,15 +116,77 @@ public class SecureXStream extends XStream {
         allowTypes(new Class[] { TreeSet.class, SortedSet.class, Set.class, HashSet.class,
                 List.class, ArrayList.class, CopyOnWriteArrayList.class, Map.class, HashMap.class,
                 ConcurrentHashMap.class, });
-        
+
         // Allow classes from user defined whitelist
-        String whitelistProp = GeoServerExtensions.getProperty("GEOSERVER_XSTREAM_WHITELIST");
-        if(whitelistProp != null) {
+        String whitelistProp = GeoServerExtensions.getProperty(WHITELIST_KEY);
+        if (whitelistProp != null) {
             String[] wildcards = whitelistProp.split("\\s+|(\\s*;\\s*)");
             this.allowTypesByWildcard(wildcards);
         }
     }
 
+    @Override
+    protected MapperWrapper wrapMapper(MapperWrapper next) {
+        return new DetailedSecurityExceptionWrapper(next);
+    }
 
+    /**
+     * A wrapper that adds instructions on what to do when a class was not part of the whitelist
+     * 
+     * @author Andrea Aime - GeoSolutions
+     */
+    static class DetailedSecurityExceptionWrapper extends MapperWrapper {
+
+        public DetailedSecurityExceptionWrapper(Mapper wrapped) {
+            super(wrapped);
+        }
+
+        @Override
+        public Class realClass(String elementName) {
+            try {
+                return super.realClass(elementName);
+            } catch (ForbiddenClassException e) {
+                StringBuilder sb = new StringBuilder();
+                sb.append("Class {0} is not whitelisted for XML parsing. \n");
+                sb.append(
+                        "This is done to prevent Remote Code Execution attacks, but it might be \n")
+                        .append("you need this class to be authorized for GeoServer to actually work\n");
+                sb.append("If you are a user, you can set a variable named ").append(WHITELIST_KEY)
+                        .append("\n")
+                        .append("  with a semicolon separated list of fully qualified names, or patterns\n")
+                        .append("  to match several classes.The variable can be set as a system variable\n")
+                        .append("  a enviromment variable, or a servlet context variable, just like \n")
+                        .append("  GEOSERVER_DATA_DIR.\n")
+                        .append("  For example, in order to authorize the org.geoserver.Foo class, \n")
+                        .append("  plus any class in the org.geoserver.custom package, one could set\n")
+                        .append("  a system variable: \n").append("  -D").append(WHITELIST_KEY)
+                        .append("=org.geoserver.Foo;org.geoserver.custom.**\n");
+                sb.append(
+                        "If instead you are a developer, you can call allowTypes/allowTypeHierarchy against \n")
+                        .append("  the XStream used for serialization by rolling a custom \n")
+                        .append("  XStreamPersisterInitializer or customizing your XStreamServiceLoader.");
+                LOGGER.log(Level.SEVERE, sb.toString(), e.getMessage());
+
+                throw new ForbiddenClassExceptionEx(
+                        "Unauthorized class found, see logs for more details on how to handle it: "
+                                + e.getMessage(),
+                        e);
+            }
+        }
+    }
+
+    /**
+     * Just to have a recognizable class for tests
+     * 
+     * @author Andrea Aime - GeoSolutions
+     *
+     */
+    static class ForbiddenClassExceptionEx extends RuntimeException {
+
+        public ForbiddenClassExceptionEx(String message, Throwable cause) {
+            super(message, cause);
+        }
+
+    }
 
 }

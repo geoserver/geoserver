@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -26,7 +26,6 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.PublishedInfo;
-import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.event.CatalogModifyEvent;
@@ -63,7 +62,7 @@ public class CatalogLayerEventListenerTest {
 
     private LayerInfo mockLayerInfo;
 
-    private ResourceInfo mockResourceInfo;
+    private FeatureTypeInfo mockResourceInfo;
 
     private NamespaceInfo mockNamespaceInfo;
 
@@ -202,6 +201,41 @@ public class CatalogLayerEventListenerTest {
         GeoServerTileLayerInfo savedInfo = saved.getInfo();
         assertSame(info, savedInfo);
         assertEquals(renamedPrefixedResouceName, savedInfo.getName());
+    }
+
+    @Test
+    public void testCqlFilterChanged() throws Exception {
+        // change the cql filter
+        String cqlFilter = "name LIKE 'Foo%'";
+        when(mockResourceInfo.getCqlFilter()).thenReturn(cqlFilter);
+
+        CatalogModifyEvent modifyEvent = mock(CatalogModifyEvent.class);
+        when(modifyEvent.getSource()).thenReturn(mockResourceInfo);
+        when(modifyEvent.getPropertyNames()).thenReturn(Arrays.asList("cqlFilter"));
+        when(modifyEvent.getOldValues()).thenReturn(Arrays.asList((Object) null));
+        when(modifyEvent.getNewValues()).thenReturn(Arrays.asList((Object) cqlFilter));
+
+        GeoServerTileLayerInfo info = TileLayerInfoUtil.loadOrCreate(mockLayerInfo,
+                GWCConfig.getOldDefaults());
+        GeoServerTileLayer tileLayer = mock(GeoServerTileLayer.class);
+        when(mockMediator.hasTileLayer(same(mockResourceInfo))).thenReturn(true);
+        when(tileLayer.getInfo()).thenReturn(info);
+        when(tileLayer.getLayerInfo()).thenReturn(mockLayerInfo);
+
+        when(mockMediator.getTileLayer(same(mockResourceInfo))).thenReturn(tileLayer);
+        String resourceName = mockResourceInfo.prefixedName();
+        when(mockMediator.getTileLayerByName(eq(resourceName))).thenReturn(tileLayer);
+
+        listener.handleModifyEvent(modifyEvent);
+
+        verify(mockMediator, times(1)).hasTileLayer(same(mockResourceInfo));
+
+        CatalogPostModifyEvent postModifyEvent = mock(CatalogPostModifyEvent.class);
+        when(postModifyEvent.getSource()).thenReturn(mockResourceInfo);
+
+        listener.handlePostModifyEvent(postModifyEvent);
+
+        verify(mockMediator).truncate(eq(resourceName));
     }
 
     @Test public void testLayerGroupInfoRenamed() throws Exception {

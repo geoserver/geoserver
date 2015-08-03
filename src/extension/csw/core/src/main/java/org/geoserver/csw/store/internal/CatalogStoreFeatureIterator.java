@@ -28,7 +28,9 @@ import org.geoserver.csw.records.GenericRecordBuilder;
 import org.geoserver.csw.records.RecordBuilder;
 import org.geoserver.csw.records.RecordDescriptor;
 import org.opengis.filter.Filter;
+import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.sort.SortBy;
+import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.Feature;
@@ -39,6 +41,8 @@ import org.opengis.feature.Feature;
  * @author Niels Charlier
  */
 class CatalogStoreFeatureIterator implements Iterator<Feature> {
+    
+    protected static final FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2();
 
     static final Logger LOGGER = Logging.getLogger(CatalogStoreFeatureIterator.class);
     
@@ -79,7 +83,9 @@ class CatalogStoreFeatureIterator implements Iterator<Feature> {
         catalogFacade = catalog.getFacade();        
         this.mapping = mapping;
         
-        layerIt = catalogFacade.list(ResourceInfo.class, filter, null, null, sortOrder);
+        Filter advertised = ff.equals(ff.property("advertised"), ff.literal(true));
+        
+        layerIt = catalogFacade.list(ResourceInfo.class, ff.and(filter, advertised), null, null, sortOrder);
         nextLayer();
         layerGroupIt = catalogFacade.list(LayerGroupInfo.class, filter, null, null, sortOrder);
         nextLayerGroup();
@@ -90,7 +96,7 @@ class CatalogStoreFeatureIterator implements Iterator<Feature> {
         	nextInternal();
         }
         
-        builder = new GenericRecordBuilder(recordDescriptor);        
+        builder = new GenericRecordBuilder(recordDescriptor);
     }
     
     @Override

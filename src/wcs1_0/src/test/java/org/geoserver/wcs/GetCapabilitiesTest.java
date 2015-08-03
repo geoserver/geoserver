@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -20,6 +20,7 @@ import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.ResourceErrorHandling;
 import org.geoserver.data.test.MockData;
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wcs.test.WCSTestSupport;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,6 +30,13 @@ import org.w3c.dom.Node;
 
 public class GetCapabilitiesTest extends WCSTestSupport {
 
+    @Override
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        super.onSetUp(testData);
+        GeoServerInfo global = getGeoServer().getGlobal();
+        global.getSettings().setProxyBaseUrl("src/test/resources/geoserver");
+        getGeoServer().save(global);
+    }
 
     // @Override
     // protected String getDefaultLogConfiguration() {
@@ -214,6 +222,27 @@ public class GetCapabilitiesTest extends WCSTestSupport {
         assertXpathEvaluatesTo("FGDC", xpathBase + "/@metadataType", dom);
         assertXpathEvaluatesTo("simple", xpathBase + "/@xlink:type", dom);
         assertXpathEvaluatesTo("http://www.geoserver.org/tasmania/dem.xml", xpathBase + "/@xlink:href", dom);
+    }
+
+    @Test
+    public void testMetadataLinksTransormToProxyBaseURL() throws Exception {
+        Catalog catalog = getCatalog();
+        CoverageInfo ci = catalog.getCoverageByName(getLayerId(TASMANIA_DEM));
+        MetadataLinkInfo ml = catalog.getFactory().createMetadataLink();
+        ml.setContent("/metadata?key=value");
+        ml.setMetadataType("FGDC");
+        ml.setAbout("http://www.geoserver.org");
+        ci.getMetadataLinks().add(ml);
+        catalog.save(ci);
+
+        String proxyBaseUrl = getGeoServer().getGlobal().getSettings().getProxyBaseUrl();
+        Document dom = getAsDOM(BASEPATH + "?request=GetCapabilities&service=WCS&version=1.0.0");
+        checkValidationErrors(dom, WCS10_GETCAPABILITIES_SCHEMA);
+        String xpathBase = "//wcs:CoverageOfferingBrief[wcs:name = '" + getLayerId(TASMANIA_DEM) + "']/wcs:metadataLink";
+        assertXpathEvaluatesTo("http://www.geoserver.org", xpathBase + "/@about", dom);
+        assertXpathEvaluatesTo("FGDC", xpathBase + "/@metadataType", dom);
+        assertXpathEvaluatesTo("simple", xpathBase + "/@xlink:type", dom);
+        assertXpathEvaluatesTo(proxyBaseUrl + "/metadata?key=value", xpathBase + "/@xlink:href", dom);
     }
     
     @Test

@@ -159,6 +159,12 @@
       </modules>
     </profile>
     <profile>
+      <id>programming-guide</id>
+      <modules>
+        <module>programming-guide</module>
+      </modules>
+    </profile>
+    <profile>
       <id>communityRelease</id>
       <modules>
         <module>authkey</module>
@@ -438,5 +444,11 @@
         <module>gwc-distributed</module>
       </modules>
     </profile>
+    <profile>
+      <id>vectortiles</id>
+        <modules>
+          <module>vectortiles</module>
+        </modules>
+    </profile>    
   </profiles>
 </project>

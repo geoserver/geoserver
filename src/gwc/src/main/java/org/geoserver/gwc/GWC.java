@@ -9,11 +9,14 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Throwables.getRootCause;
 import static com.google.common.base.Throwables.propagate;
+import static com.google.common.collect.Iterators.forEnumeration;
+import static com.google.common.collect.Lists.newArrayList;
 import static org.geowebcache.grid.GridUtil.findBestMatchingGrid;
 import static org.geowebcache.seed.GWCTask.TYPE.TRUNCATE;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -22,6 +25,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.logging.Level;
@@ -39,6 +43,7 @@ import org.geoserver.catalog.LayerGroupHelper;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.NamespaceInfo;
+import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.gwc.config.GWCConfig;
@@ -121,6 +126,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
 import com.google.common.base.Predicate;
+import com.google.common.base.Splitter;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
@@ -2055,4 +2061,68 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         this.applicationContext = applicationContext;
     }
 
+    /**
+     * Returns the list of {@link MimeType#getFormat() MIME Type formats} advertised as valid for
+     * caching for the given type of published kind of layer.
+     * <p>
+     * Handles the case where some tile formats may be appropriate for vector layers but not for
+     * raster layers, or vice-versa.
+     * <p>
+     * Loads all resources in the classpath named
+     * {@code /org/geoserver/gwc/advertised_formats.properties} so other modules can contribute
+     * advertised formats without introducing unneeded dependencies.
+     * <p>
+     * {@code /org/geoserver/gwc/advertised_formats.properties} has entries for the following keys,
+     * whose values are a comma separated list of GWC MIME format names: {@code formats.vector},
+     * {@code formats.raster}, and {@code formats.group}
+     * 
+     * @param type the kind of geoserver published resource the tile layer is tied to.
+     * @return the set of advertised mime types for the given kind of tile layer origin
+     */
+    public static Set<String> getAdvertisedCachedFormats(final PublishedType type) {
+
+        final String resourceName = "org/geoserver/gwc/advertised_formats.properties";
+
+        try {
+            ClassLoader classLoader = GWC.class.getClassLoader();
+            List<URL> urls = newArrayList(forEnumeration(classLoader.getResources(resourceName)));
+            return GWC.getAdvertisedCachedFormats(type, urls);
+        } catch (IOException e) {
+            throw Throwables.propagate(e);
+        }
+    }
+    
+    //visible for testing purposes only
+    static Set<String> getAdvertisedCachedFormats(final PublishedType type, final Iterable<URL> urls) throws IOException{
+        final String formatsKey;
+
+        switch (type) {
+        case VECTOR: // local vector layer
+        case REMOTE: // remote WFS
+            formatsKey = "formats.vector";
+            break;
+        case RASTER: // local raster layer
+        case WMS: // remote WMS raster
+            formatsKey = "formats.raster";
+            break;
+        case GROUP:
+            formatsKey = "formats.layergroup";
+            break;
+        default:
+            throw new IllegalArgumentException("Unknown published type: " + type);
+        }
+        Set<String> formats = new TreeSet<String>();
+
+        for (URL url : urls) {
+            Properties props = new Properties();
+            props.load(url.openStream());
+            String commaSeparatedFormats = props.getProperty(formatsKey);
+            if (commaSeparatedFormats != null) {
+                List<String> splitToList = Splitter.on(",").omitEmptyStrings().trimResults()
+                        .splitToList(commaSeparatedFormats);
+                formats.addAll(splitToList);
+            }
+        }
+        return formats;
+    }
 }

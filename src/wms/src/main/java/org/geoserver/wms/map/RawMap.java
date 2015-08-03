@@ -58,5 +58,18 @@ public class RawMap extends WebMap {
             throw new IllegalStateException();
         }
     }
+    
+    @Override
+    public void disposeInternal() {
+        buffer = null;
+        mapContents = null;
+        if (stream != null) {
+            try {
+                stream.close();
+            } catch (Exception ignore) {
+                //
+            }
+        }
+    }
 
 }

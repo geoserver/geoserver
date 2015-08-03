@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -1629,9 +1629,11 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                             + VALID_LINKS_METADATATYPES);
                     return;
                 }
-                
+                if ((link.getContent() == null) || link.getContent().isEmpty()) {
+                    return;
+                }
                 AttributesImpl mtAtts = attributes("type", metadataType, "format", format);
-                element("MetadataURL", link.getContent(), mtAtts);
+                element("MetadataURL", ResponseUtils.proxifyMetadataLink(link, request.getBaseUrl()), mtAtts);
             }
             
             /**
@@ -1965,7 +1967,10 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                         protected void metadataLink(MetadataLinkInfo link) {
                             // WFS 2.0 metadata url is different than the v1.1 one, indeed it just
                             // has an href
-                            AttributesImpl mtAtts = attributes("xlink:href", link.getContent());
+                            if ((link.getContent() == null) || link.getContent().isEmpty()) {
+                                return;
+                            }
+                            AttributesImpl mtAtts = attributes("xlink:href", ResponseUtils.proxifyMetadataLink(link, request.getBaseUrl()));
                             start("MetadataURL", mtAtts);
                             end("MetadataURL");
                         }

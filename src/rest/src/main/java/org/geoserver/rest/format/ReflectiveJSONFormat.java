@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import org.geoserver.config.util.SecureXStream;
 import org.restlet.data.MediaType;
 
 import com.thoughtworks.xstream.XStream;
@@ -32,7 +33,7 @@ public class ReflectiveJSONFormat extends StreamDataFormat {
     
     public ReflectiveJSONFormat() {
         super(MediaType.APPLICATION_JSON);
-        this.xstream = new XStream(new JettisonMappedXmlDriver());
+        this.xstream = new SecureXStream(new JettisonMappedXmlDriver());
     }
 
     /**

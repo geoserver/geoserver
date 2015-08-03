@@ -254,6 +254,10 @@
       <extension>sld</extension>
       <mime-type>text/xml</mime-type>
     </mime-mapping>
+    <mime-mapping>
+      <extension>json</extension>
+      <mime-type>application/json</mime-type>
+    </mime-mapping>
   
     <welcome-file-list>
         <welcome-file>index.html</welcome-file>

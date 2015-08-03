@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -19,17 +19,16 @@ import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geotools.util.logging.Logging;
-import org.geowebcache.config.XMLConfiguration;
 import org.geowebcache.config.ContextualConfigurationProvider.Context;
-import org.geowebcache.storage.blobstore.file.FilePathGenerator;
+import org.geowebcache.config.XMLConfiguration;
 import org.geowebcache.storage.blobstore.file.FilePathUtils;
-import org.geowebcache.util.FileUtils;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.BiMap;
@@ -61,7 +60,9 @@ public class DefaultTileLayerCatalog implements TileLayerCatalog {
 
     public DefaultTileLayerCatalog(GeoServerResourceLoader resourceLoader,
             XMLConfiguration xmlPersisterFactory) throws IOException {
-        this(resourceLoader, xmlPersisterFactory.getConfiguredXStreamWithContext(new XStream(), 
+        this(resourceLoader,
+                // this configures security back in GWC, no point in using SecureXStream here
+                xmlPersisterFactory.getConfiguredXStreamWithContext(new XStream(),
                 Context.PERSIST));
     }
 
@@ -69,13 +70,18 @@ public class DefaultTileLayerCatalog implements TileLayerCatalog {
             throws IOException {
 
         this.resourceLoader = resourceLoader;
-        this.serializer = configuredXstream;
         this.baseDirectory = LAYERINFO_DIRECTORY;
 
         BiMap<String, String> baseBiMap = HashBiMap.create();
         this.layersById = Maps.synchronizedBiMap(baseBiMap);
         this.layersByName = layersById.inverse();
         this.initialized = false;
+
+        // setup xstream security for local classes
+        this.serializer = configuredXstream;
+        this.serializer.allowTypeHierarchy(GeoServerTileLayerInfo.class);
+        this.serializer.allowTypeHierarchy(SortedSet.class);
+
     }
 
     @Override

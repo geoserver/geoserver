@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -541,6 +541,11 @@ public class ResourcePool {
                             factory = getDataStoreFactory(info);
                         } catch(IOException e) {
                             throw new IOException("Failed to find the datastore factory for " + info.getName() 
+                                    + ", did you forget to install the store extension jar?");
+                        }
+                        if (factory == null) {
+                            throw new IOException("Failed to find the datastore factory for "
+                                    + info.getName()
                                     + ", did you forget to install the store extension jar?");
                         }
                         Param[] params = factory.getParametersInfo();
@@ -1233,7 +1238,7 @@ public class ResourcePool {
                     try {
                     Method m = GS_VERSIONING_FS.getMethod( "create", VERSIONING_FS, 
                         SimpleFeatureType.class, Filter.class, CoordinateReferenceSystem.class, int.class );
-                    return (FeatureSource) m.invoke(null, fs, schema, info.getFilter(), 
+                        return (FeatureSource) m.invoke(null, fs, schema, info.filter(),
                         resultCRS, info.getProjectionPolicy().getCode());
                     }
                     catch( Exception e ) {
@@ -1260,7 +1265,7 @@ public class ResourcePool {
             }
 
             //return a normal 
-            return GeoServerFeatureLocking.create(fs, schema, info.getFilter(), resultCRS, info
+            return GeoServerFeatureLocking.create(fs, schema, info.filter(), resultCRS, info
                     .getProjectionPolicy().getCode(), getTolerance(info), info.getMetadata());
         }
     }

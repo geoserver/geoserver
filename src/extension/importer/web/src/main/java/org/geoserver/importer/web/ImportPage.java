@@ -169,7 +169,7 @@ public class ImportPage extends GeoServerSecuredPage {
                 running.set(true);
                 target.addComponent(cancelLink(this));
 
-                final Long jobid = importer().runAsync(imp, filter);
+                final Long jobid = importer().runAsync(imp, filter, false);
                 setDefaultModelObject(jobid);
     
                 final AjaxLink self = this;

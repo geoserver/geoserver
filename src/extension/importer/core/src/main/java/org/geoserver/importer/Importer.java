@@ -43,6 +43,7 @@ import org.geoserver.importer.job.JobQueue;
 import org.geoserver.importer.job.ProgressMonitor;
 import org.geoserver.importer.job.Task;
 import org.geoserver.importer.mosaic.Mosaic;
+import org.geoserver.importer.transform.ImportTransform;
 import org.geoserver.importer.transform.RasterTransformChain;
 import org.geoserver.importer.transform.ReprojectTransform;
 import org.geoserver.importer.transform.TransformChain;
@@ -331,7 +332,7 @@ public class Importer implements DisposableBean, ApplicationListener {
      * @param prepData
      * @return
      */
-    public Long initAsynch(final ImportContext context, final boolean prepData) {
+    public Long initAsync(final ImportContext context, final boolean prepData) {
         return jobs.submit(new Job<ImportContext>() {
             @Override
             protected ImportContext call(ProgressMonitor monitor) throws Exception {
@@ -572,10 +573,13 @@ public class Importer implements DisposableBean, ApplicationListener {
 
                 // in case of indirect import against a coverage store with no published
                 // layers, do not use the granule name, but the store name
-                if (!direct && targetStore instanceof CoverageStoreInfo
-                        && catalog.getCoveragesByStore((CoverageStoreInfo) targetStore).isEmpty()) {
+                if (!direct && targetStore instanceof CoverageStoreInfo) {
                     t.getLayer().setName(targetStore.getName());
                     t.getLayer().getResource().setName(targetStore.getName());
+                    
+                    if (!catalog.getCoveragesByStore((CoverageStoreInfo) targetStore).isEmpty()) {
+                        t.setUpdateMode(UpdateMode.APPEND);
+                    }
                 }
 
                 prep(t);
@@ -832,10 +836,13 @@ public class Importer implements DisposableBean, ApplicationListener {
         changed(task.getContext());
     }
 
-    public Long runAsync(final ImportContext context, final ImportFilter filter) {
+    public Long runAsync(final ImportContext context, final ImportFilter filter, final boolean init) {
         return jobs.submit(new Job<ImportContext>() {
             @Override
             protected ImportContext call(ProgressMonitor monitor) throws Exception {
+                if (init) {
+                    init(context, true);
+                }
                 run(context, filter, monitor);
                 return context;
             }
@@ -1003,8 +1010,10 @@ public class Importer implements DisposableBean, ApplicationListener {
             harvestImportData(sr, data);
 
             // check we have a target resource, if not, create it
-            if (task.getLayer().getId() == null) {
-                addToCatalog(task);
+            if (task.getUpdateMode() == UpdateMode.CREATE) {
+                if (task.getLayer().getId() == null) {
+                    addToCatalog(task);
+                }
             }
         }
 
@@ -1515,6 +1524,13 @@ public class Importer implements DisposableBean, ApplicationListener {
         xs.registerLocalConverter(RemoteData.class, "password", new EncryptedFieldConverter(
                 securityManager));
         
+        // security
+        xs.allowTypes(new Class[] { ImportContext.class, ImportTask.class, File.class });
+        xs.allowTypeHierarchy(TransformChain.class);
+        xs.allowTypeHierarchy(DataFormat.class);
+        xs.allowTypeHierarchy(ImportData.class);
+        xs.allowTypeHierarchy(ImportTransform.class);
+
         return xp;
     }
 

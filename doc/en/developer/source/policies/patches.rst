@@ -9,6 +9,25 @@ is a great way to give back to the project.
 
 This document is a guide designed to help users through the process of successfully submitting a patch.
 
+.. note:: 
+
+   We would like to see all fixes applied to master first, and then back ported to the stable and maintenance branches. 
+   
+   We require the following for fixes submitted via pull requests or patch:
+
+   1. Required: Prepare your fix for the master branch
+   2. Required: Check the following (and comment in your pull request, or jira issue):
+      
+      * Investigate if the issue impact all the active branches (master / stable / maintenance)
+      * Investigate the your fix can be backported to all the active branches (master / stable / maintenance)
+      
+   3. Recommended: Actual backport to stable and maintenance is optional but highly recommended.
+
+   We require the following for new features submitted via pull request or patch:
+   
+   1. Required: Prepare your feature for the master branch.
+   2. Optional: If the new feature is suitable for backport you may ask on the developer list after a 1 month.
+
 Source code
 -----------
 

@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -299,7 +299,7 @@ public class WFS extends XSD {
      * Returns the location of 'wfs.xsd'
      */
     public String getSchemaLocation() {
-        return getClass().getResource( "wfs.xsd" ).toString();
+        return org.geotools.wfs.v1_1.WFS.class.getResource( "wfs.xsd" ).toString();
     }
     
     /**

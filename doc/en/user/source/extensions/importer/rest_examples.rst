@@ -567,3 +567,59 @@ a lot of shapefiles to process, also the import run will be done in asynchronous
     
 The response will return immediately in this case as well, and the progress can be followed as the
 tasks in the import switch state.
+
+
+Importing and optimizing a large image with a single request
+------------------------------------------------------------
+
+A large image appears every now and then on a mounted disk share, the image needs to be
+optimized and imported into GeoServer as a new layer.
+Since the source is large and we need to copy it on the local disk where the data dir resides,
+a "remote" data is the right tool for the job, an asynchronous execution is also recommended
+to avoid waiting on a possibly large command.
+In this case the request will also contains the "exec=true" parameter to force the importer
+an immediate execution of the command.
+
+The request will then look as follows::
+
+    curl -u admin:geoserver -XPOST -H "Content-type: application/json" -d @import.json "http://localhost:8080/geoserver/rest/imports?async=true&exec=true"
+
+Where import.json is::
+
+    {
+      "import": {
+        "targetWorkspace": {
+          "workspace": {
+            "name": "topp"
+          }
+        },
+        "data": {
+          "type": "remote",
+          "location": "\/mnt\/remoteDisk\/bluemarble.tiff"
+        },
+        "transforms": [
+          {
+            "type": "GdalTranslateTransform",
+            "options": [
+              "-co", "TILED=YES",
+              "-co", "COMPRESS=JPEG",
+              "-co", "JPEG_QUALITY=85",
+              "-co", "PHOTOMETRIC=YCBCR"
+            ]
+          },
+          {
+            "type": "GdalAddoTransform",
+            "options": [
+              "-r",
+              "average",
+              "--config", "COMPRESS_OVERVIEW", "JPEG",
+              "--config", "PHOTOMETRIC_OVERVIEW", "YCBCR"
+            ],
+            "levels": [ 2, 4, 8, 16, 32, 64 ]
+          }
+        ]
+      }
+    }
+    
+Given the request is asynchronous, the client will have to poll the server in order to check
+if the initialization and execution have succeded.

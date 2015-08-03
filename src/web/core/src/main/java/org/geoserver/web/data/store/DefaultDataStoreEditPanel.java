@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -101,10 +101,9 @@ public class DefaultDataStoreEditPanel extends StoreEditPanel {
             for (Param p : dsParams) {
                 ParamInfo paramInfo = new ParamInfo(p);
                 // hide the repository params, the resource pool will inject it transparently
-                if(!Repository.class.equals(paramInfo.getBinding())) {
+                if (!Repository.class.equals(paramInfo.getBinding())) {
                     paramsMetadata.put(p.key, paramInfo);
-                    if (isNew) {
-                        // set default value
+                    if (isNew && !p.isDeprecated()) {
                         applyParamDefault(paramInfo, info);
                     }
                 }
@@ -152,6 +151,7 @@ public class DefaultDataStoreEditPanel extends StoreEditPanel {
         final String paramName = paramMetadata.getName();
         final String paramLabel = paramMetadata.getName();
         final boolean required = paramMetadata.isRequired();
+        final boolean deprecated = paramMetadata.isDeprecated();
         final Class<?> binding = paramMetadata.getBinding();
         final List<Serializable> options = paramMetadata.getOptions();
 
@@ -215,10 +215,26 @@ public class DefaultDataStoreEditPanel extends StoreEditPanel {
             }
             parameterPanel = tp;
         }
+        
+        Object parameterValue = parameterPanel.getDefaultModelObject();
+        boolean visible = !(deprecated && isEmpty(parameterValue));
+        parameterPanel.setVisible(visible);
+        parameterPanel.setVisibilityAllowed(visible);
+        
         return parameterPanel;
     }   
 
     
+
+    private boolean isEmpty(Object value) {
+        if (value == null) {
+            return true;
+        } else if (value instanceof String) {
+            return ((String) value).isEmpty();
+        } else {
+            return false;
+        }
+    }
 
     /**
      * Makes sure the file path for shapefiles do start with file:// otherwise

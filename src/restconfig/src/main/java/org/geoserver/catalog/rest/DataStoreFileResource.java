@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014-2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.util.HashMap;
@@ -22,7 +21,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
@@ -33,19 +31,20 @@ import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.rest.RestletException;
 import org.geoserver.rest.format.StreamDataFormat;
 import org.geoserver.rest.util.RESTUtils;
+import org.geotools.data.DataAccess;
 import org.geotools.data.DataAccessFactory;
+import org.geotools.data.DataAccessFactory.Param;
 import org.geotools.data.DataStore;
-import org.geotools.data.DataStoreFactorySpi;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.DefaultTransaction;
 import org.geotools.data.FeatureSource;
-import org.geotools.data.DataAccessFactory.Param;
 import org.geotools.data.FeatureStore;
 import org.geotools.data.FileDataStoreFactorySpi;
 import org.geotools.data.Transaction;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.opengis.feature.simple.SimpleFeatureType;
+import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
@@ -62,6 +61,8 @@ public class DataStoreFileResource extends StoreFileResource {
         formatToDataStoreFactory.put( "properties", "org.geotools.data.property.PropertyDataStoreFactory");
         formatToDataStoreFactory.put( "h2", "org.geotools.data.h2.H2DataStoreFactory");
         formatToDataStoreFactory.put( "spatialite", "org.geotools.data.spatialite.SpatiaLiteDataStoreFactory");
+        formatToDataStoreFactory.put( "appschema", "org.geotools.data.complex.AppSchemaDataAccessFactory");
+        formatToDataStoreFactory.put( "gpkg", "org.geotools.geopkg.GeoPkgDataStoreFactory");
     }
     
     protected static final HashMap<String,Map> dataStoreFactoryToDefaultParams = new HashMap();
@@ -79,13 +80,13 @@ public class DataStoreFileResource extends StoreFileResource {
         dataStoreFactoryToDefaultParams.put("org.geotools.data.spatialite.SpatiaLiteDataStoreFactory", map);
     }
     
-    public static DataStoreFactorySpi lookupDataStoreFactory(String format) {
+    public static DataAccessFactory lookupDataStoreFactory(String format) {
         // first try and see if we know about this format directly
         String factoryClassName = formatToDataStoreFactory.get(format);
         if (factoryClassName != null) {
             try {
                 Class factoryClass = Class.forName(factoryClassName);
-                DataStoreFactorySpi factory = (DataStoreFactorySpi) factoryClass.newInstance();
+                DataAccessFactory factory = (DataAccessFactory) factoryClass.newInstance();
                 return factory;
             } catch (Exception e) {
                 throw new RestletException("Datastore format unavailable: " + factoryClassName,
@@ -111,11 +112,11 @@ public class DataStoreFileResource extends StoreFileResource {
     
     public static String lookupDataStoreFactoryFormat(String type) {
         for (DataAccessFactory factory : DataStoreUtils.getAvailableDataStoreFactories()) {
-            if (!(factory instanceof DataStoreFactorySpi)) {
+            if (!(factory instanceof DataAccessFactory)) {
                 continue;
             }
             
-            if (factory.getDisplayName().equals(type)) {
+            if (factory.getDisplayName() != null && factory.getDisplayName().equals(type)) {
                 for(Map.Entry e: formatToDataStoreFactory.entrySet()) {
                     if (e.getValue().equals(factory.getClass().getCanonicalName())) {
                         return (String) e.getKey();
@@ -130,8 +131,8 @@ public class DataStoreFileResource extends StoreFileResource {
     }
     
     String dataStoreFormat;
-    DataStoreFactorySpi factory;
-    
+    DataAccessFactory factory;
+
     public DataStoreFileResource( Request request, Response response, String dataStoreFormat, Catalog catalog ) {
         super( request, response, catalog );
         this.dataStoreFormat = dataStoreFormat;
@@ -254,7 +255,7 @@ public class DataStoreFileResource extends StoreFileResource {
             if (charset != null && charset.length() > 0) {
                 info.getConnectionParameters().put("charset", charset);
             }
-            DataStoreFactorySpi targetFactory = factory;
+            DataAccessFactory targetFactory = factory;
             if (!targetDataStoreFormat.equals(sourceDataStoreFormat)) {
                 //target is different, we need to create it
                 targetFactory = lookupDataStoreFactory(targetDataStoreFormat);
@@ -302,86 +303,95 @@ public class DataStoreFileResource extends StoreFileResource {
                 catalog.save( info );
             }
         }
-        
-        //create an instanceof the source datastore
-        HashMap params = new HashMap();
-        if (charset != null && charset.length() > 0) {
-            params.put("charset",charset);	
-        }
-        updateParameters(params, factory, uploadedFile);
-        DataStore source;
+
+        boolean createNewSource = false;
+        DataAccess<?, ?> source = null;
         try {
-            source = factory.createDataStore(params);
+            HashMap params = new HashMap();
+            if (charset != null && charset.length() > 0) {
+                params.put("charset", charset);
+            }
+            params.put( "namespace", namespace.getURI() );
+            updateParameters(params, factory, uploadedFile);
+
+            createNewSource = !sameTypeAndUrl(params, info.getConnectionParameters());
+            // this is a bit hacky, but makes sure that a datastore is not created
+            // twice with the same "dbtype" and "url" connection parameters, which
+            // would result in a "duplicated mapping" exception for an app-schema
+            // datastore.
+            source = (createNewSource) ? factory.createDataStore(params) : info.getDataStore(null);
         } catch (IOException e) {
             throw new RuntimeException("Unable to create source data store", e);
         }
-        
+
         try {
-            DataStore ds = (DataStore) info.getDataStore(null);
+            DataAccess ds = info.getDataStore(null);
             //synchronized(ds) {
             //if it is the case that the source does not match the target we need to 
             // copy the data into the target
-            if (!targetDataStoreFormat.equals(sourceDataStoreFormat)) {
-                //copy over the feature types
-                for (String featureTypeName : source.getTypeNames()) {
+            if (!targetDataStoreFormat.equals(sourceDataStoreFormat)
+                    && (source instanceof DataStore && ds instanceof DataStore)) {
+                // copy over the feature types
+                DataStore sourceDataStore = (DataStore) source;
+                DataStore targetDataStore = (DataStore) ds;
+                for (String featureTypeName : sourceDataStore.getTypeNames()) {
                     SimpleFeatureType featureType = null;
-                    
-                    //does the feature type already exist in the target?
+
+                    // does the feature type already exist in the target?
                     try {
-                        featureType = ds.getSchema(featureTypeName); 
+                        featureType = targetDataStore.getSchema(featureTypeName);
+                    } catch (Exception e) {
+                        LOGGER.info(featureTypeName
+                                + " does not exist in data store " + datastore
+                                + ". Attempting to create it");
+
+                        // schema does not exist, create it by first creating an instance
+                        // of the source datastore and copying over its schema
+                        targetDataStore.createSchema(sourceDataStore.getSchema(featureTypeName));
+                        featureType = sourceDataStore.getSchema(featureTypeName);
                     }
-                    catch(Exception e) {
-                        LOGGER.info(featureTypeName + " does not exist in data store " + datastore +
-                            ". Attempting to create it");
-                        
-                        //schema does not exist, create it by first creating an instance of 
-                        // the source datastore and copying over its schema
-                        ds.createSchema(source.getSchema(featureTypeName));
-                        featureType = source.getSchema(featureTypeName);
-                    }
-    
-                    FeatureSource featureSource = ds.getFeatureSource(featureTypeName);
+
+                    FeatureSource featureSource = targetDataStore.getFeatureSource(featureTypeName);
                     if (!(featureSource instanceof FeatureStore)) {
                         LOGGER.warning(featureTypeName + " is not writable, skipping");
                         continue;
                     }
-                    
+
                     Transaction tx = new DefaultTransaction();
                     FeatureStore featureStore = (FeatureStore) featureSource;
                     featureStore.setTransaction(tx);
-                    
+
                     try {
-                        //figure out update mode, whether we should kill existing data or append
+                        // figure out update mode, whether we should kill existing data or append
                         String update = form.getFirstValue("update");
                         if ("overwrite".equalsIgnoreCase(update)) {
                             LOGGER.fine("Removing existing features from " + featureTypeName);
-                            //kill all features
+                            // kill all features
                             featureStore.removeFeatures(Filter.INCLUDE);
                         }
-                        
+
                         LOGGER.fine("Adding features to " + featureTypeName);
-                        FeatureCollection features = source.getFeatureSource(featureTypeName).getFeatures();
+                        FeatureCollection features = sourceDataStore
+                                .getFeatureSource(featureTypeName).getFeatures();
                         featureStore.addFeatures(features);
-                        
+
                         tx.commit();
-                    }
-                    catch(Exception e) {
+                    } catch (Exception e) {
                         tx.rollback();
-                    }
-                    finally {
+                    } finally {
                         tx.close();
                     }
                 }
             }
 
-            //check configure parameter, if set to none to not try to configure
+            //check configure parameter, if set to none do not try to configure
             // data feature types
             String configure = form.getFirstValue( "configure" );
             if ( "none".equalsIgnoreCase( configure ) ) {
                 getResponse().setStatus( Status.SUCCESS_CREATED );
                 return;
             }
-            
+
             //load the target datastore
             //DataStore ds = (DataStore) info.getDataStore(null);
             Map<String, FeatureTypeInfo> featureTypesByNativeName =
@@ -389,18 +399,18 @@ public class DataStoreFileResource extends StoreFileResource {
             for (FeatureTypeInfo ftInfo : catalog.getFeatureTypesByDataStore(info)) {
                 featureTypesByNativeName.put(ftInfo.getNativeName(), ftInfo);
             }
-            
-            String[] featureTypeNames = source.getTypeNames();
-            for ( int i = 0; i < featureTypeNames.length; i++ ) {
+
+            List<Name> featureTypeNames = source.getNames();
+            for ( int i = 0; i < featureTypeNames.size(); i++ ) {
                 
                 //unless configure specified "all", only configure the first feature type
                 if ( !"all".equalsIgnoreCase( configure ) && i > 0 ) {
                     break;
                 }
-                
-                FeatureSource fs = ds.getFeatureSource(featureTypeNames[i]); 
-                FeatureTypeInfo ftinfo = featureTypesByNativeName.get(featureTypeNames[i]);
-                
+
+                FeatureSource fs = ds.getFeatureSource(featureTypeNames.get(i));
+                FeatureTypeInfo ftinfo = featureTypesByNativeName.get(featureTypeNames.get(i).getLocalPart());
+
                 if ( ftinfo == null) {
                     //auto configure the feature type as well
                     ftinfo = builder.buildFeatureType(fs);
@@ -424,10 +434,10 @@ public class DataStoreFileResource extends StoreFileResource {
                         int x = 1;
                         String originalName = ftinfo.getName();
                         do {
-                            ftinfo.setName(originalName + i);
-                            i++;
+                            ftinfo.setName(originalName + x);
+                            x++;
                         }
-                        while(i < 10 && catalog.getFeatureTypeByName(namespace, ftinfo.getName()) != null);
+                        while(x < 10 && catalog.getFeatureTypeByName(namespace, ftinfo.getName()) != null);
                     }
                     catalog.validate(ftinfo, true).throwIfInvalid();
                     catalog.add( ftinfo );
@@ -464,8 +474,10 @@ public class DataStoreFileResource extends StoreFileResource {
             //TODO: report a proper error code
             throw new RuntimeException ( e );
         } finally {
-            //dispose the datastore
-            source.dispose();
+            //dispose the source datastore, if needed
+            if (createNewSource) {
+                source.dispose();
+            }
             
             //clean up the files if we can
             if (isInlineUpload(method) && canRemoveFiles) {
@@ -479,7 +491,7 @@ public class DataStoreFileResource extends StoreFileResource {
         				LOGGER.log(Level.FINE, "", ie);
         			}
         		}
-            }        	
+            }
         }
     }
 
@@ -496,7 +508,7 @@ public class DataStoreFileResource extends StoreFileResource {
         }
     }
     
-    void updateParameters(DataStoreInfo info, NamespaceInfo namespace, DataStoreFactorySpi factory, File uploadedFile) {
+    void updateParameters(DataStoreInfo info, NamespaceInfo namespace, DataAccessFactory factory, File uploadedFile) {
         Map connectionParameters = info.getConnectionParameters();
         updateParameters(connectionParameters, factory, uploadedFile);
 
@@ -508,7 +520,7 @@ public class DataStoreFileResource extends StoreFileResource {
         }
     }
     
-    void updateParameters(Map connectionParameters, DataStoreFactorySpi factory, File uploadedFile) {
+    void updateParameters(Map connectionParameters, DataAccessFactory factory, File uploadedFile) {
 
         for ( Param p : factory.getParametersInfo() ) {
             //the nasty url / file hack
@@ -552,7 +564,7 @@ public class DataStoreFileResource extends StoreFileResource {
         }
     }
     
-    void autoCreateParameters(DataStoreInfo info, NamespaceInfo namespace, DataStoreFactorySpi factory) {
+    void autoCreateParameters(DataStoreInfo info, NamespaceInfo namespace, DataAccessFactory factory) {
         Map defaultParams = dataStoreFactoryToDefaultParams.get(factory.getClass().getCanonicalName());
         if (defaultParams == null) {
             throw new RuntimeException("Unable to auto create parameters for " + factory.getDisplayName());
@@ -575,5 +587,16 @@ public class DataStoreFileResource extends StoreFileResource {
         params.put("namespace", namespace.getURI());
         info.getConnectionParameters().putAll(params);
         
+    }
+
+    private boolean sameTypeAndUrl(Map sourceParams, Map targetParams) {
+        boolean sameType = sourceParams.get("dbtype") != null
+                && targetParams.get("dbtype") != null
+                && sourceParams.get("dbtype").equals(targetParams.get("dbtype"));
+        boolean sameUrl = sourceParams.get("url") != null
+                && targetParams.get("url") != null
+                && sourceParams.get("url").equals(targetParams.get("url"));
+
+        return sameType && sameUrl;
     }
 }

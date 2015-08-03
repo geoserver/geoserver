@@ -1,31 +1,25 @@
-.. _community_solr_configure:
+.. _community_solr_load:
 
 Loading spatial data into SOLR
 ------------------------------
 
 This section provides a simple example on how to convert and load a shapefile into a SOLR instance.
-For more advanced needs and details about spatial support in SOLR consult the SORL documentation,
+For more advanced needs and details about spatial support in SOLR consult the SOLR documentation,
 making sure to read the one associated to the version at hand (spatial support is still rapidly
 evolving).
 
 The current example has been developed and tested using GDAL 1.11 and SOLR 4.8, different versions
 of the tools and server might require a different syntax for upload.
 
-The SOLR instance is supposed to already have the following type definitions in its schema:
+The SOLR instance is supposed to already have the following fields and type definitions in its schema:
 
 .. code-block:: xml 
 
-      <fieldType name="location_rpt" class="solr.SpatialRecursivePrefixTreeFieldType"
-         geo="true" distErrPct="0.025" maxDistErr="0.000009" units="degrees" />
-      <fieldType name="bbox" class="solr.BBoxField"
-         geo="true" units="degrees" numberType="_bbox_coord" />
-        
       <field name="geo" type="location_rpt" indexed="true" stored="true" multiValued="true" />  
       <dynamicField name="*_i"  type="int"    indexed="true"  stored="true"/>
       <dynamicField name="*_s"  type="string"  indexed="true"  stored="true" />
       
-The above defines "geo" and "box" as explicit fields, leaving the other types to dynamic field
-interpretation.
+The above defines "geo" as explicit fields, leaving the other types to dynamic field interpretation.
 
 The SpatialRecursivePrefixTreeFieldType accepts geometries as WKT, so as a preparation for the 
 import we are going to turn a shapefile into a CSV file with WKT syntax for the geometry.

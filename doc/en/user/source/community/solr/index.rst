@@ -3,7 +3,7 @@
 SOLR data store
 ===============
 
-`SORL <http://lucene.apache.org/solr/>`_ is a popular search platform based on Apache Lucene project. 
+`SOLR <http://lucene.apache.org/solr/>`_ is a popular search platform based on Apache Lucene project. 
 Its major features include powerful full-text search, hit highlighting, faceted search, near real-time indexing, 
 dynamic clustering, database integration, rich document (e.g., Word, PDF) handling, and most
 importantly for the GeoServer integration, geospatial search.
@@ -16,7 +16,7 @@ as WKT and index them with a spatial index.
 SOLR version
 ^^^^^^^^^^^^
 
-The GeoServer SOLR extension has been tested with SORL version 4.8, 4.9, and 4.10.
+The GeoServer SOLR extension has been tested with SOLR version 4.8, 4.9, and 4.10.
 
  .. _solr_install:
 

@@ -37,3 +37,4 @@ The following pages shows how to use the SOLR data store:
 
    configure
    load
+   optimize

@@ -34,8 +34,11 @@ public class NoExternalEntityResolver implements EntityResolver {
             LOGGER.finest("resolveEntity request: publicId=" + publicId + ", systemId=" + systemId);
         }
         
-        // allow schema parsing for validation (jar or external only)
-        if (systemId != null && systemId.matches("(?i)(jar:file|http)[^?#;]*\\.xsd")) {
+        // allow schema parsing for validation.
+        // http(s) - external schema reference
+        // jar - internal schema reference
+        // vfs - internal schema reference (JBOSS)
+        if (systemId != null && systemId.matches("(?i)(jar:file|http|vfs)[^?#;]*\\.xsd")) {
             return null;
         }
         

@@ -310,11 +310,6 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
         // @formatter:off 
         String contextDefinition = "{\n" + 
                 "   \"import\": {\n" +
-                "      \"targetWorkspace\": {\n" + 
-                "         \"workspace\": {\n" + 
-                "            \"name\": \"" + ws.getName() + "\"\n" + 
-                "         }\n" + 
-                "      },\n" + 
                 "      \"data\": {\n" + 
                 "        \"type\": \"file\",\n" + 
                 "        \"file\": \"" + jsonSafePath(granule.getAbsoluteFile()) +  "\"\n" + 

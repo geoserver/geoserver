@@ -293,10 +293,12 @@ public class ImportContext implements Serializable {
             data.reattach();
         }
 
-        targetWorkspace = resolve(targetWorkspace, catalog, lookupByName);
+        if (targetWorkspace != null) {
+            targetWorkspace = resolve(targetWorkspace, catalog, lookupByName);
 
-        if (targetStore != null) {
-            targetStore.setWorkspace(targetWorkspace);
+            if (targetStore != null) {
+                targetStore.setWorkspace(targetWorkspace);
+            }
         }
         targetStore = resolve(targetStore, catalog, lookupByName);
 

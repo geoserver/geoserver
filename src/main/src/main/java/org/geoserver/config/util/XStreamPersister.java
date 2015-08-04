@@ -1960,22 +1960,25 @@ public class XStreamPersister {
             }
         }
 
-        public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {
-            String name = readValue("name", String.class, reader);
-            String sql = readValue("sql", String.class, reader);
-                
-            VirtualTable vt = new VirtualTable(name, sql, false);
+        public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {        	
+            String name =null; //readValue("name", String.class, reader);
+            String sql = null; //readValue("sql", String.class, reader);
+            
+            String geomName =null;
+            Class type = null;
+            int srid=-1;
             List<String> primaryKeys = new ArrayList<String>();
+            List<VirtualTableParameter> params =new ArrayList<VirtualTableParameter>();
+            Boolean escapeSql=false;
             while(reader.hasMoreChildren()) {
                 reader.moveDown();
                 if(reader.getNodeName().equals("keyColumn")) {
                     primaryKeys.add(reader.getValue());
                 } else if(reader.getNodeName().equals("geometry")) {
-                    String geomName = readValue("name", String.class, reader);
+                    geomName = readValue("name", String.class, reader);
                     Geometries geomType = Geometries.getForName(readValue("type", String.class, reader));
-                    Class type = geomType == null ? Geometry.class : geomType.getBinding();
-                    int srid = readValue("srid", Integer.class, reader);
-                    vt.addGeometryMetadatata(geomName, type, srid);
+                    type = geomType == null ? Geometry.class : geomType.getBinding();
+                    srid = readValue("srid", Integer.class, reader);
                 } else if(reader.getNodeName().equals("parameter")) {
                     String pname = readValue("name", String.class, reader);
                     String defaultValue = null;
@@ -1988,14 +1991,24 @@ public class XStreamPersister {
                             validator = new RegexpValidator(reader.getValue());
                         }
                         reader.moveUp();
-                    }
-                    
-                    vt.addParameter(new VirtualTableParameter(pname, defaultValue, validator));
+                    }                    
+                    params.add(new VirtualTableParameter(pname, defaultValue, validator));
                 } else if(reader.getNodeName().equals("escapeSql")) {
-            		vt.setEscapeSql(Boolean.valueOf(reader.getValue()));
+            		escapeSql=Boolean.valueOf(reader.getValue());
+                } else if(reader.getNodeName().equals("name")) {
+            		name=reader.getValue();
+                } else if(reader.getNodeName().equals("sql")) {
+            		sql=reader.getValue();
                 }
                 reader.moveUp();
             }
+            VirtualTable vt = new VirtualTable(name, sql, false);
+            
+            if(geomName!=null && type!=null)
+            	vt.addGeometryMetadatata(geomName, type, srid);
+            for(VirtualTableParameter p:params)
+            	vt.addParameter(p);
+            vt.setEscapeSql(escapeSql);
             vt.setPrimaryKeyColumns(primaryKeys);
             
             return vt;

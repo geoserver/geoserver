@@ -2002,6 +2002,11 @@ public class XStreamPersister {
                 }
                 reader.moveUp();
             }
+            if (name == null)
+            	throw new IllegalArgumentException("Expect name but could not find it");
+            if (sql == null)
+            	throw new IllegalArgumentException("Expect sql but could not find it");
+            
             VirtualTable vt = new VirtualTable(name, sql, false);
             
             if(geomName!=null && type!=null)

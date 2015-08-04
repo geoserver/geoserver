@@ -11,7 +11,7 @@ evolving).
 The current example has been developed and tested using GDAL 1.11 and SOLR 4.8, different versions
 of the tools and server might require a different syntax for upload.
 
-The SOLR instance is supposed to already have the following fields and type definitions in its schema:
+The SOLR instance is supposed to have the following definitions in its schema:
 
 .. code-block:: xml 
 

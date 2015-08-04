@@ -1899,8 +1899,7 @@ public class XStreamPersister {
 
     class VirtualTableConverter implements Converter {
 
-        public void marshal(Object source, HierarchicalStreamWriter writer,
-                MarshallingContext context) {
+        public void marshal(Object source, HierarchicalStreamWriter writer,MarshallingContext context) {
             VirtualTable vt = (VirtualTable) source;
             writer.startNode("name");
             writer.setValue(vt.getName());
@@ -1961,9 +1960,8 @@ public class XStreamPersister {
         }
 
         public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {        	
-            String name =null; //readValue("name", String.class, reader);
-            String sql = null; //readValue("sql", String.class, reader);
-            
+            String name =null; 
+            String sql = null;  
             String geomName =null;
             Class type = null;
             int srid=-1;
@@ -1975,24 +1973,36 @@ public class XStreamPersister {
                 if(reader.getNodeName().equals("keyColumn")) {
                     primaryKeys.add(reader.getValue());
                 } else if(reader.getNodeName().equals("geometry")) {
-                    geomName = readValue("name", String.class, reader);
-                    Geometries geomType = Geometries.getForName(readValue("type", String.class, reader));
-                    type = geomType == null ? Geometry.class : geomType.getBinding();
-                    srid = readValue("srid", Integer.class, reader);
+                	while(reader.hasMoreChildren()) {
+                		reader.moveDown();
+                		if (reader.getNodeName().equals("name"))
+                			geomName=reader.getValue();
+                		else if (reader.getNodeName().equals("type")){
+                            Geometries geomType = Geometries.getForName(reader.getValue());
+                            type = geomType == null ? Geometry.class : geomType.getBinding();                			
+                		}
+                		else if (reader.getNodeName().equals("srid"))
+                			srid = Converters.convert(reader.getValue(),Integer.class);	
+                		reader.moveUp();
+                	}
                 } else if(reader.getNodeName().equals("parameter")) {
-                    String pname = readValue("name", String.class, reader);
+                    String pname = null;
                     String defaultValue = null;
                     Validator validator = null;
                     while(reader.hasMoreChildren()) {
                         reader.moveDown();
-                        if(reader.getNodeName().equals("defaultValue")) {
+                        if(reader.getNodeName().equals("name")) {
+                        	pname = reader.getValue();
+                        } else if(reader.getNodeName().equals("defaultValue")) {
                             defaultValue = reader.getValue();
                         } else if(reader.getNodeName().equals("regexpValidator")) {
                             validator = new RegexpValidator(reader.getValue());
                         }
                         reader.moveUp();
-                    }                    
-                    params.add(new VirtualTableParameter(pname, defaultValue, validator));
+                    }          
+                    if (pname==null)
+                    	throw new IllegalArgumentException("Expect name but could not find it in property tag");                    
+                	params.add(new VirtualTableParameter(pname, defaultValue, validator));
                 } else if(reader.getNodeName().equals("escapeSql")) {
             		escapeSql=Boolean.valueOf(reader.getValue());
                 } else if(reader.getNodeName().equals("name")) {
@@ -2019,23 +2029,6 @@ public class XStreamPersister {
             return vt;
         }
         
-        <T> T readValue(String name, Class<T> type, HierarchicalStreamReader reader) {
-           if(!reader.hasMoreChildren()) {
-                throw new IllegalArgumentException("Expected element " + name + " but could not find it");
-           }
-           reader.moveDown();
-           try {
-               if(!name.equals(reader.getNodeName())) {
-                   throw new IllegalArgumentException("Expected element " + name + " but found " + reader.getNodeName() + " instead");
-               }
-               String value = reader.getValue();
-               return Converters.convert(value, type);
-           } finally {
-               reader.moveUp();
-           }
-           
-        }
-
         public boolean canConvert(Class type) {
             return VirtualTable.class.isAssignableFrom(type);
         }

@@ -14,6 +14,9 @@ that it retains open development practices:
 * **Transparency** 
   Project decisions are made in an open and transparent way. Key decisions are presented *GeoServer Improvement Proposals* (:ref:`GSIP <gsip>`), discussed in public. When a decision is made it is clear as to why it was made.
 
+* **Open**
+  Proposals are presented on the `GeoServer wiki <https://github.com/geoserver/geoserver/wiki>`__ - and anyone can write a proposal (no commit access required).
+  
 * **Balance**
   Every member of the community is welcome to participate. Project decisions
   are discussed in public by the community as a whole. Decisions are made by a project steering committee and not subject to the whims of any single developer or organizations.
@@ -51,19 +54,54 @@ The community maintains three active branches:
 * stable: bug fixes and back-port of new functionality that do not affect the GeoServer API or significantly affect stability.
 * maintenance: bug fixes
 
-GeoServer uses a six month development cycle on the master branch:
+For each GeoServer release we spend six month "prerelease" in a development cycle on the master branch, followed by six months as the stable release, followed by six months as the maintenance release.
 
-  * month 1-5 master is open for development
-  * month 5 a beta release is made on a feature freeze
-  * Month 6 a release candidate is made, and a new master is created ending the feature freeze
+**Prerelease**
 
-Followed by a year of production support with six months of stable releases and six months of maintenance releases:
- 
-  * Month 1 initial stable release 
-  * Month 3 stable release
-  * Month 5 stable release
-  * Month 7 maintenance release
-  * Month 9 maintenance release
-  * month 11 maintenance release
+  * Month -6: master open for development
+  * Month -1: month:  beta release is made  (starting a feature freeze)
+  * Month 1: (start of month): release candidate is made on new branch (ending the feature freeze)
 
-We alternate between releasing the stable and maintenance branches so a release goes out each month.
+**Release**
+   
+  * Month 1: initial stable release (aim for two weeks after the release candidate)
+  * Month 3: stable release
+  * Month 5: stable release
+  * Month 7: maintenance release
+  * Month 9: maintenance release
+  * Month 11: maintenance release
+
+We alternate between releasing the stable and maintenance branches. A release goes out each month forming a yearly release cycle.
+
+.. figure:: release-cycle.png
+   
+   GeoServer 2.8 Release Cycle
+
+Here is what that looks like:
+
+  * Month 1: Release N.0 stable 
+  * Month 2: (previous branch N-1 issues a maintenance release)
+  * Month 3: Release N.1 stable
+  * Month 4: (previous branch N-1 issues a maintenance release)
+  * Month 5: Release N.2 stable
+  * Month 6: (next branch N+1 issues a stable release)
+  * Month 7: Release N.3 maintenance
+  * Month 8: (next branch N+1 issues a stable release)
+  * Month 9: Release N.4 maintenance
+  * Month 10: (next branch N+1 issues a stable release)
+  * Month 11: Release N.5 maintenance
+
+For more information, or to volunteer, please check the `release schedule <https://github.com/geoserver/geoserver/wiki/Release-Schedule>`__ in the wiki.
+
+
+
+**Unscheduled Releases**
+
+Additional releases may be requested by downstream projects at any point, or may be produced by a volunteer to quickly disseminate a security fix.
+
+* Additional stable (or maintenance releases) will use the next available version number. This does not disrupt the release schedule above. We expect volunteers to use common sense and collaborate rather than issue two releases during the same week.
+* Patch releases are formed by branching from a previous release tag, applying a fix, and issuing a release. Patch releases are versioned appropriately.
+  
+  As an example GeoServer 2.5.5.1 is a patch release started by branching the GeoServer 2.5.5.
+
+

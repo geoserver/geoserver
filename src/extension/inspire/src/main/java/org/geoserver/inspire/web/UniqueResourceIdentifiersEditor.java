@@ -152,24 +152,6 @@ public class UniqueResourceIdentifiersEditor extends FormComponentPanel<UniqueRe
         };
         add(button);
         
-        // grab a seat... the way I'm adding this validator in onBeforeRender will be hard
-        // to stomach... however, could not find other way to add a validation to an editabl table, grrr
-        add(new IValidator<UniqueResourceIdentifiers>() {
-
-            @Override
-            public void validate(IValidatable<UniqueResourceIdentifiers> validatable) {
-                UniqueResourceIdentifiers identifiers = identifiersModel.getObject();
-                if(identifiers.size() == 0) {
-                  ValidationError error = new ValidationError();
-                  String message = new ParamResourceModel(
-                          "noSpatialDatasetIdentifiers", UniqueResourceIdentifiersEditor.this).getString();
-                  error.setMessage(message);
-                  validatable.error(error);
-                }
-                
-            }
-            
-        });
     }
     
     

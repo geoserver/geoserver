@@ -5,6 +5,7 @@
  */
 package org.geoserver.inspire.web;
 
+import static org.geoserver.inspire.InspireMetadata.CREATE_EXTENDED_CAPABILITIES;
 import static org.geoserver.inspire.InspireMetadata.LANGUAGE;
 import static org.geoserver.inspire.InspireMetadata.SERVICE_METADATA_TYPE;
 import static org.geoserver.inspire.InspireMetadata.SERVICE_METADATA_URL;
@@ -16,10 +17,14 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.wicket.AttributeModifier;
+import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.markup.html.WebMarkupContainer;
+import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.apache.wicket.markup.html.form.TextField;
+import org.apache.wicket.markup.html.form.validation.FormComponentFeedbackBorder;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
@@ -32,24 +37,76 @@ import org.geoserver.web.util.MetadataMapModel;
 import org.geoserver.wfs.WFSInfo;
 
 /**
- * Panel for the service admin page to set the service INSPIRE extension preferences.
+ * Panel for the service admin page to set the service INSPIRE extension
+ * preferences.
  */
 public class InspireAdminPanel extends AdminPagePanel {
 
     private static final long serialVersionUID = -7670555379263411393L;
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public InspireAdminPanel(final String id, final IModel<ServiceInfo> model) {
         super(id, model);
 
+        MetadataMap serviceMetadata = model.getObject().getMetadata();
+
+        String metadataURL = (String) serviceMetadata.get(SERVICE_METADATA_URL.key);
+        String mediaType = (String) serviceMetadata.get(SERVICE_METADATA_TYPE.key);
+        String language = (String) serviceMetadata.get(LANGUAGE.key);
+        boolean isWfs = model.getObject() instanceof WFSInfo;
+        UniqueResourceIdentifiers ids = null;
+        if (isWfs) {
+            ids = (UniqueResourceIdentifiers) serviceMetadata.get(SPATIAL_DATASET_IDENTIFIER_TYPE.key, UniqueResourceIdentifiers.class);
+        }
+        if (!serviceMetadata.containsKey(CREATE_EXTENDED_CAPABILITIES.key)) {
+            if (metadataURL == null
+                    || isWfs
+                    && (ids == null || ids.isEmpty())) {
+                serviceMetadata.put(CREATE_EXTENDED_CAPABILITIES.key, false);
+            } else {
+                serviceMetadata.put(CREATE_EXTENDED_CAPABILITIES.key, true);
+            }
+        }
+
         PropertyModel<MetadataMap> metadata = new PropertyModel<MetadataMap>(model, "metadata");
 
-        add(new LanguageDropDownChoice("language", new MapModel(metadata, LANGUAGE.key)));
+        final CheckBox createInspireExtendedCapabilities
+                = new CheckBox("createExtendedCapabilities",
+                        new MetadataMapModel(metadata, CREATE_EXTENDED_CAPABILITIES.key, Boolean.class));
+        add(createInspireExtendedCapabilities);
 
-        TextField textField = new TextField("metadataURL", new MapModel(metadata,
+        final WebMarkupContainer container = new WebMarkupContainer("container");
+        container.setOutputMarkupId(true);
+        add(container);
+
+        final WebMarkupContainer configs = new WebMarkupContainer("configs");
+        configs.setOutputMarkupId(true);
+        configs.setVisible(createInspireExtendedCapabilities.getModelObject());
+        container.add(configs);
+
+        createInspireExtendedCapabilities.add(new OnChangeAjaxBehavior() {
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                configs.setVisible(createInspireExtendedCapabilities.getModelObject());
+                target.addComponent(container);
+            }
+        });
+
+        if (!model.getObject().getMetadata().containsKey(LANGUAGE.key)) {
+            model.getObject().getMetadata().put(LANGUAGE.key, "eng");
+        }
+        configs.add(new LanguageDropDownChoice("language", new MapModel(metadata, LANGUAGE.key)));
+
+        TextField metadataUrlField = new TextField("metadataURL", new MapModel(metadata,
                 SERVICE_METADATA_URL.key));
-        add(textField);
-        textField.add(new AttributeModifier("title", true, new ResourceModel(
+        metadataUrlField.setRequired(true);
+        FormComponentFeedbackBorder metadataURLBorder = new FormComponentFeedbackBorder(
+                "border");
+        metadataURLBorder.add(metadataUrlField);
+        configs.add(metadataURLBorder);
+        metadataUrlField.add(new AttributeModifier("title", true, new ResourceModel(
                 "InspireAdminPanel.metadataURL.title")));
 
         final Map<String, String> mdUrlTypes = new HashMap<String, String>();
@@ -65,7 +122,7 @@ public class InspireAdminPanel extends AdminPagePanel {
             @Override
             public Object getDisplayValue(final String key) {
                 final String resourceKey = "InspireAdminPanel.metadataURLType." + key;// as found in
-                                                                                      // GeoServerApplication.properties
+                // GeoServerApplication.properties
                 final String defaultValue = key;
                 final String displayValue = new ResourceModel(resourceKey, defaultValue)
                         .getObject();
@@ -80,15 +137,15 @@ public class InspireAdminPanel extends AdminPagePanel {
         List<String> urlTypeChoices = new ArrayList<String>(mdUrlTypes.keySet());
         DropDownChoice<String> serviceMetadataRecordType = new DropDownChoice<String>(
                 "metadataURLType", urlTypeModel, urlTypeChoices, urlTypeChoiceRenderer);
+        serviceMetadataRecordType.setNullValid(true);
 
-        add(serviceMetadataRecordType);
-        
+        configs.add(serviceMetadataRecordType);
+
         // this is WFS specific, will appear only if the service is WFS
         WebMarkupContainer identifiersContainer = new WebMarkupContainer(
                 "datasetIdentifiersContainer");
-        boolean isWfs = model.getObject() instanceof WFSInfo;
         identifiersContainer.setVisible(isWfs);
-        add(identifiersContainer);
+        configs.add(identifiersContainer);
         IModel<UniqueResourceIdentifiers> sdiModel = new MetadataMapModel(metadata, SPATIAL_DATASET_IDENTIFIER_TYPE.key, UniqueResourceIdentifiers.class);
         UniqueResourceIdentifiersEditor identifiersEditor = new UniqueResourceIdentifiersEditor(
                 "spatialDatasetIdentifiers", sdiModel);

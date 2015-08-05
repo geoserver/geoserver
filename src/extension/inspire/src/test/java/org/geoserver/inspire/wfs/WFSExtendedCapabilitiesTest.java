@@ -5,24 +5,31 @@
  */
 package org.geoserver.inspire.wfs;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import org.junit.Before;
-import org.junit.Test;
-import org.custommonkey.xmlunit.NamespaceContext;
-import org.custommonkey.xmlunit.SimpleNamespaceContext;
-import org.custommonkey.xmlunit.XMLUnit;
-import org.custommonkey.xmlunit.XpathEngine;
-import org.custommonkey.xmlunit.exceptions.XpathException;
-import org.geoserver.test.GeoServerSystemTestSupport;
+import org.geoserver.catalog.MetadataMap;
+import org.geoserver.config.ServiceInfo;
+import static org.geoserver.inspire.InspireMetadata.CREATE_EXTENDED_CAPABILITIES;
+import static org.geoserver.inspire.InspireMetadata.LANGUAGE;
+import static org.geoserver.inspire.InspireMetadata.SERVICE_METADATA_TYPE;
+import static org.geoserver.inspire.InspireMetadata.SERVICE_METADATA_URL;
+import static org.geoserver.inspire.InspireMetadata.SPATIAL_DATASET_IDENTIFIER_TYPE;
 import static org.geoserver.inspire.InspireSchema.COMMON_NAMESPACE;
 import static org.geoserver.inspire.InspireSchema.DLS_NAMESPACE;
 import static org.geoserver.inspire.InspireSchema.DLS_SCHEMA;
-import org.geoserver.inspire.InspireMetadata;
+import static org.geoserver.inspire.InspireTestSupport.assertInspireCommonScenario1Response;
+import static org.geoserver.inspire.InspireTestSupport.assertInspireDownloadSpatialDataSetIdentifierResponse;
+import static org.geoserver.inspire.InspireTestSupport.assertInspireMetadataUrlResponse;
+import static org.geoserver.inspire.InspireTestSupport.assertSchemaLocationContains;
+import static org.geoserver.inspire.InspireTestSupport.clearInspireMetadata;
+import org.geoserver.inspire.UniqueResourceIdentifier;
+import org.geoserver.inspire.UniqueResourceIdentifiers;
+import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.wfs.WFSInfo;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import org.junit.Test;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
-import java.util.HashMap;
 
 public class WFSExtendedCapabilitiesTest extends GeoServerSystemTestSupport {
     
@@ -30,68 +37,117 @@ public class WFSExtendedCapabilitiesTest extends GeoServerSystemTestSupport {
     private static final String WFS_1_1_0_GETCAPREQUEST = "wfs?request=GetCapabilities&service=WFS&version=1.1.0";
     private static final String WFS_2_0_0_GETCAPREQUEST = "wfs?request=GetCapabilities&service=WFS&acceptVersions=2.0.0";
 
-    @Before
-    public void clearMetadata() {
-        WFSInfo wfs = getGeoServer().getService(WFSInfo.class);
-        wfs.getMetadata().clear();
-        getGeoServer().save(wfs);
-    }
-
     @Test
-    public void testNoInspireElementWhenNoMetadata() throws Exception {
+    public void testNoInspireSettings() throws Exception {
+        final ServiceInfo serviceInfo = getGeoServer().getService(WFSInfo.class);
+        final MetadataMap metadata = serviceInfo.getMetadata();
+        clearInspireMetadata(metadata);
+        getGeoServer().save(serviceInfo);
+        
         final Document dom = getAsDOM(WFS_2_0_0_GETCAPREQUEST);
 
         final NodeList nodeList = dom.getElementsByTagNameNS(DLS_NAMESPACE, "ExtendedCapabilities");
-        assertEquals(0, nodeList.getLength());
+        assertEquals("Number of INSPIRE ExtendedCapabilities elements", 0, nodeList.getLength());
     }
 
     @Test
-    public void testNoInspireElementWhenNoMetadataUrl() throws Exception {
-        WFSInfo wfs = getGeoServer().getService(WFSInfo.class);
-        wfs.getMetadata().put(InspireMetadata.LANGUAGE.key, "fre");
-        wfs.getMetadata().put(InspireMetadata.SPATIAL_DATASET_IDENTIFIER_TYPE.key, "one,http://www.geoserver.org/inspire/one");
-        getGeoServer().save(wfs);
-
+    public void testCreateExtCapsOff() throws Exception {
+        final ServiceInfo serviceInfo = getGeoServer().getService(WFSInfo.class);
+        final MetadataMap metadata = serviceInfo.getMetadata();
+        clearInspireMetadata(metadata);
+        metadata.put(CREATE_EXTENDED_CAPABILITIES.key, false);
+        metadata.put(SERVICE_METADATA_URL.key, "http://foo.com?bar=baz");
+        metadata.put(SERVICE_METADATA_TYPE.key, "application/vnd.iso.19139+xml");
+        metadata.put(LANGUAGE.key, "fre");
+        metadata.put(SPATIAL_DATASET_IDENTIFIER_TYPE.key,
+                "one,http://www.geoserver.org/one");
+        getGeoServer().save(serviceInfo);
         final Document dom = getAsDOM(WFS_2_0_0_GETCAPREQUEST);
 
         final NodeList nodeList = dom.getElementsByTagNameNS(DLS_NAMESPACE, "ExtendedCapabilities");
-        assertEquals(0, nodeList.getLength());
+        assertEquals("Number of INSPIRE ExtendedCapabilities elements", 0, nodeList.getLength());
     }
 
     @Test
-    public void testNoInspireElementWhenNoSpatialDataset() throws Exception {
-        WFSInfo wfs = getGeoServer().getService(WFSInfo.class);
-        wfs.getMetadata().put(InspireMetadata.LANGUAGE.key, "fre");
-        wfs.getMetadata().put(InspireMetadata.SERVICE_METADATA_URL.key, "http://foo.com?bar=baz");
-        getGeoServer().save(wfs);
+    public void testExtendedCaps110WithFullSettings() throws Exception {
+        final ServiceInfo serviceInfo = getGeoServer().getService(WFSInfo.class);
+        final MetadataMap metadata = serviceInfo.getMetadata();
+        clearInspireMetadata(metadata);
+        metadata.put(CREATE_EXTENDED_CAPABILITIES.key, true);
+        metadata.put(SERVICE_METADATA_URL.key, "http://foo.com?bar=baz");
+        metadata.put(SERVICE_METADATA_TYPE.key, "application/vnd.iso.19139+xml");
+        metadata.put(LANGUAGE.key, "fre");
+        metadata.put(SPATIAL_DATASET_IDENTIFIER_TYPE.key,
+                "one,http://www.geoserver.org/one;two,http://www.geoserver.org/two,http://metadata.geoserver.org/id?two");
+        getGeoServer().save(serviceInfo);
+
+        final Document dom = getAsDOM(WFS_1_1_0_GETCAPREQUEST);
+
+        NodeList nodeList = dom.getElementsByTagNameNS(DLS_NAMESPACE, "ExtendedCapabilities");
+        assertEquals("Number of INSPIRE ExtendedCapabilities elements", 1, nodeList.getLength());
+        
+        String schemaLocation = dom.getDocumentElement().getAttribute("xsi:schemaLocation"); 
+        assertSchemaLocationContains(schemaLocation, DLS_NAMESPACE, DLS_SCHEMA);
+
+        final Element extendedCaps = (Element) nodeList.item(0);
+        
+        assertInspireCommonScenario1Response(extendedCaps, 
+                "http://foo.com?bar=baz", "application/vnd.iso.19139+xml", "fre");
+
+        final UniqueResourceIdentifiers ids = new UniqueResourceIdentifiers();
+        ids.add(new UniqueResourceIdentifier("one", "http://www.geoserver.org/one"));
+        ids.add(new UniqueResourceIdentifier("two", "http://www.geoserver.org/two", "http://metadata.geoserver.org/id?two"));
+        
+        assertInspireDownloadSpatialDataSetIdentifierResponse(extendedCaps, ids);
+    }
+    
+    @Test
+    public void testExtendedCaps200WithFullSettings() throws Exception {
+        final ServiceInfo serviceInfo = getGeoServer().getService(WFSInfo.class);
+        final MetadataMap metadata = serviceInfo.getMetadata();
+        clearInspireMetadata(metadata);
+        metadata.put(CREATE_EXTENDED_CAPABILITIES.key, true);
+        metadata.put(SERVICE_METADATA_URL.key, "http://foo.com?bar=baz");
+        metadata.put(SERVICE_METADATA_TYPE.key, "application/vnd.iso.19139+xml");
+        metadata.put(LANGUAGE.key, "fre");
+        metadata.put(SPATIAL_DATASET_IDENTIFIER_TYPE.key,
+                "one,http://www.geoserver.org/one;two,http://www.geoserver.org/two,http://metadata.geoserver.org/id?two");
+        getGeoServer().save(serviceInfo);
 
         final Document dom = getAsDOM(WFS_2_0_0_GETCAPREQUEST);
 
-        final NodeList nodeList = dom.getElementsByTagNameNS(DLS_NAMESPACE, "ExtendedCapabilities");
-        assertEquals(0, nodeList.getLength());
+        NodeList nodeList = dom.getElementsByTagNameNS(DLS_NAMESPACE, "ExtendedCapabilities");
+        assertEquals("Number of INSPIRE ExtendedCapabilities elements", 1, nodeList.getLength());
+
+        String schemaLocation = dom.getDocumentElement().getAttribute("xsi:schemaLocation"); 
+        assertSchemaLocationContains(schemaLocation, DLS_NAMESPACE, DLS_SCHEMA);
+
+        final Element extendedCaps = (Element) nodeList.item(0);
+        
+        assertInspireCommonScenario1Response(extendedCaps, 
+                "http://foo.com?bar=baz", "application/vnd.iso.19139+xml", "fre");
+
+        final UniqueResourceIdentifiers ids = new UniqueResourceIdentifiers();
+        ids.add(new UniqueResourceIdentifier("one", "http://www.geoserver.org/one"));
+        ids.add(new UniqueResourceIdentifier("two", "http://www.geoserver.org/two", "http://metadata.geoserver.org/id?two"));
+        
+        assertInspireDownloadSpatialDataSetIdentifierResponse(extendedCaps, ids);
+        
     }
 
+    // No INSPIRE ExtendedCapabilities should be returned in a WFS 1.0.0 response
     @Test
-    public void testNoInspireElementWhenNoSpatialDatasetCode() throws Exception {
-        WFSInfo wfs = getGeoServer().getService(WFSInfo.class);
-        wfs.getMetadata().put(InspireMetadata.LANGUAGE.key, "fre");
-        wfs.getMetadata().put(InspireMetadata.SERVICE_METADATA_URL.key, "http://foo.com?bar=baz");
-        wfs.getMetadata().put(InspireMetadata.SPATIAL_DATASET_IDENTIFIER_TYPE.key, ",http://www.geoserver.org/inspire/one");
-        getGeoServer().save(wfs);
-
-        final Document dom = getAsDOM(WFS_2_0_0_GETCAPREQUEST);
-
-        final NodeList nodeList = dom.getElementsByTagNameNS(DLS_NAMESPACE, "ExtendedCapabilities");
-        assertEquals(0, nodeList.getLength());
-    }
-
-    @Test
-    public void testNoInspireElement100() throws Exception {
-        WFSInfo wfs = getGeoServer().getService(WFSInfo.class);
-        wfs.getMetadata().put(InspireMetadata.LANGUAGE.key, "fre");
-        wfs.getMetadata().put(InspireMetadata.SERVICE_METADATA_URL.key, "http://foo.com?bar=baz");
-        wfs.getMetadata().put(InspireMetadata.SPATIAL_DATASET_IDENTIFIER_TYPE.key, "one,http://www.geoserver.org/inspire/one");
-        getGeoServer().save(wfs);
+    public void testExtCaps100WithFullSettings() throws Exception {
+        final ServiceInfo serviceInfo = getGeoServer().getService(WFSInfo.class);
+        final MetadataMap metadata = serviceInfo.getMetadata();
+        clearInspireMetadata(metadata);
+        metadata.put(CREATE_EXTENDED_CAPABILITIES.key, true);
+        metadata.put(SERVICE_METADATA_URL.key, "http://foo.com?bar=baz");
+        metadata.put(SERVICE_METADATA_TYPE.key, "application/vnd.iso.19139+xml");
+        metadata.put(LANGUAGE.key, "fre");
+        metadata.put(SPATIAL_DATASET_IDENTIFIER_TYPE.key,
+                "one,http://www.geoserver.org/one;two,http://www.geoserver.org/two,http://metadata.geoserver.org/id?two");
+        getGeoServer().save(serviceInfo);
 
         final Document dom = getAsDOM(WFS_1_0_0_GETCAPREQUEST);
 
@@ -99,221 +155,188 @@ public class WFSExtendedCapabilitiesTest extends GeoServerSystemTestSupport {
         assertTrue(nodeList.getLength() == 0);
     }
 
+    // Test ExtendedCapabilities is not produced if required settings missing
+    
     @Test
-    public void testNoMediaTypeElement() throws Exception {
-        WFSInfo wfs = getGeoServer().getService(WFSInfo.class);
-        wfs.getMetadata().put(InspireMetadata.LANGUAGE.key, "fre");
-        wfs.getMetadata().put(InspireMetadata.SERVICE_METADATA_URL.key, "http://foo.com?bar=baz");
-        wfs.getMetadata().put(InspireMetadata.SPATIAL_DATASET_IDENTIFIER_TYPE.key, "one,http://www.geoserver.org/inspire/one,http://metadata.geoserver.org/id?one");
-        getGeoServer().save(wfs);
+    public void testNoMetadataUrl() throws Exception {
+        final ServiceInfo serviceInfo = getGeoServer().getService(WFSInfo.class);
+        final MetadataMap metadata = serviceInfo.getMetadata();
+        clearInspireMetadata(metadata);
+        metadata.put(CREATE_EXTENDED_CAPABILITIES.key, true);
+        metadata.put(SERVICE_METADATA_TYPE.key, "application/vnd.iso.19139+xml");
+        metadata.put(LANGUAGE.key, "fre");
+        metadata.put(SPATIAL_DATASET_IDENTIFIER_TYPE.key,
+                "one,http://www.geoserver.org/one;two,http://www.geoserver.org/two,http://metadata.geoserver.org/id?two");
+        getGeoServer().save(serviceInfo);
 
         final Document dom = getAsDOM(WFS_2_0_0_GETCAPREQUEST);
 
-        final NodeList nodeList = dom.getElementsByTagNameNS(COMMON_NAMESPACE, "MediaType");
-        assertEquals(0, nodeList.getLength());
+        final NodeList nodeList = dom.getElementsByTagNameNS(DLS_NAMESPACE, "ExtendedCapabilities");
+        assertEquals("Number of INSPIRE ExtendedCapabilities elements", 0, nodeList.getLength());
     }
 
     @Test
-    public void testExtendedCaps110() throws Exception {
-        WFSInfo wfs = getGeoServer().getService(WFSInfo.class);
-        wfs.getMetadata().put(InspireMetadata.LANGUAGE.key, "fre");
-        wfs.getMetadata().put(InspireMetadata.SERVICE_METADATA_URL.key, "http://foo.com?bar=baz");
-        wfs.getMetadata().put(InspireMetadata.SERVICE_METADATA_TYPE.key, "application/vnd.iso.19139+xml");
-        wfs.getMetadata().put(InspireMetadata.SPATIAL_DATASET_IDENTIFIER_TYPE.key, "one,http://www.geoserver.org/inspire/one,http://metadata.geoserver.org/id?one");
-        getGeoServer().save(wfs);
+    public void testNoSpatialDataset() throws Exception {
+        final ServiceInfo serviceInfo = getGeoServer().getService(WFSInfo.class);
+        final MetadataMap metadata = serviceInfo.getMetadata();
+        clearInspireMetadata(metadata);
+        metadata.put(CREATE_EXTENDED_CAPABILITIES.key, true);
+        metadata.put(SERVICE_METADATA_URL.key, "http://foo.com?bar=baz");
+        metadata.put(SERVICE_METADATA_TYPE.key, "application/vnd.iso.19139+xml");
+        metadata.put(LANGUAGE.key, "fre");
+        getGeoServer().save(serviceInfo);
 
-        final Document dom = getAsDOM(WFS_1_1_0_GETCAPREQUEST);
+        final Document dom = getAsDOM(WFS_2_0_0_GETCAPREQUEST);
 
-        XpathEngine xpath = getXpathEngine();
+        final NodeList nodeList = dom.getElementsByTagNameNS(DLS_NAMESPACE, "ExtendedCapabilities");
+        assertEquals("Number of INSPIRE ExtendedCapabilities elements", 0, nodeList.getLength());
+    }
 
-        assertEquals("Existence of ExtendedCapabilities element", "1",
-                xpath.evaluate("count(//inspire_dls:ExtendedCapabilities)", dom));
+    @Test
+    public void testNoSpatialDatasetCode() throws Exception {
+        final ServiceInfo serviceInfo = getGeoServer().getService(WFSInfo.class);
+        final MetadataMap metadata = serviceInfo.getMetadata();
+        clearInspireMetadata(metadata);
+        metadata.put(CREATE_EXTENDED_CAPABILITIES.key, true);
+        metadata.put(SERVICE_METADATA_URL.key, "http://foo.com?bar=baz");
+        metadata.put(SERVICE_METADATA_TYPE.key, "application/vnd.iso.19139+xml");
+        metadata.put(LANGUAGE.key, "fre");
+        metadata.put(SPATIAL_DATASET_IDENTIFIER_TYPE.key,
+                ",http://www.geoserver.org/one;,http://www.geoserver.org/two,http://metadata.geoserver.org/id?two");
+        getGeoServer().save(serviceInfo);
 
-        String schemaLocation = dom.getDocumentElement().getAttribute("xsi:schemaLocation"); 
-        assertTrue(schemaLocation.contains(DLS_NAMESPACE));
+        final Document dom = getAsDOM(WFS_2_0_0_GETCAPREQUEST);
+
+        final NodeList nodeList = dom.getElementsByTagNameNS(DLS_NAMESPACE, "ExtendedCapabilities");
+        assertEquals("Number of INSPIRE ExtendedCapabilities elements", 0, nodeList.getLength());
+    }
+
+    // Test ExtendedCapabilities response when optional settings missing
+
+    @Test
+    public void testNoMediaType() throws Exception {
+        final ServiceInfo serviceInfo = getGeoServer().getService(WFSInfo.class);
+        final MetadataMap metadata = serviceInfo.getMetadata();
+        clearInspireMetadata(metadata);
+        metadata.put(CREATE_EXTENDED_CAPABILITIES.key, true);
+        metadata.put(SERVICE_METADATA_URL.key, "http://foo.com?bar=baz");
+        metadata.put(LANGUAGE.key, "fre");
+        metadata.put(SPATIAL_DATASET_IDENTIFIER_TYPE.key,
+                "one,http://www.geoserver.org/one;two,http://www.geoserver.org/two,http://metadata.geoserver.org/id?two");
+        getGeoServer().save(serviceInfo);
+
+        final Document dom = getAsDOM(WFS_2_0_0_GETCAPREQUEST);
+
+        NodeList nodeList = dom.getElementsByTagNameNS(DLS_NAMESPACE, "ExtendedCapabilities");
+        assertEquals("Number of INSPIRE ExtendedCapabilities elements", 1, nodeList.getLength());
+
+        nodeList = dom.getElementsByTagNameNS(COMMON_NAMESPACE, "MediaType");
+        assertEquals("Number of MediaType elements", 0, nodeList.getLength());
+    }
+
+    // If settings were created with older version of INSPIRE extension before
+    // the on/off check box setting existed we create the extended capabilities
+    // if the other required settings exist and don't if they don't
+    
+    @Test
+    public void testCreateExtCapMissingWithRequiredSettings() throws Exception {
+        final ServiceInfo serviceInfo = getGeoServer().getService(WFSInfo.class);
+        final MetadataMap metadata = serviceInfo.getMetadata();
+        clearInspireMetadata(metadata);
+        metadata.put(SERVICE_METADATA_URL.key, "http://foo.com?bar=baz");
+        metadata.put(SERVICE_METADATA_TYPE.key, "application/vnd.iso.19139+xml");
+        metadata.put(LANGUAGE.key, "fre");
+        metadata.put(SPATIAL_DATASET_IDENTIFIER_TYPE.key,
+                "one,http://www.geoserver.org/one");
+        getGeoServer().save(serviceInfo);
         
-        String[] schemaLocationParts = schemaLocation.split("\\s+");
-        for (int i = 0; i < schemaLocationParts .length; i++) {
-            if (schemaLocationParts[i].equals(DLS_NAMESPACE)) {
-                assertTrue(schemaLocationParts[i+1].equals(DLS_SCHEMA));
-            }
-        }
+        final Document dom = getAsDOM(WFS_2_0_0_GETCAPREQUEST);
 
-        assertEquals("Expected MetadataURL URL",
-                "http://foo.com?bar=baz",
-                xpath.evaluate("//inspire_dls:ExtendedCapabilities/inspire_common:MetadataUrl/inspire_common:URL", dom));
-
-        assertEquals("Expected MetadataURL MediaType",
-                "application/vnd.iso.19139+xml",
-                xpath.evaluate("//inspire_dls:ExtendedCapabilities/inspire_common:MetadataUrl/inspire_common:MediaType", dom));
-
-        assertEquals("Expected default language",
-                "fre",
-                xpath.evaluate("//inspire_dls:ExtendedCapabilities/inspire_common:SupportedLanguages/inspire_common:DefaultLanguage/inspire_common:Language", dom));
-
-        // Can decide to repeat default language in list of supported languages
-        // but it isn't required by INSPIRE so won't test for it
-        assertEquals("Expected response language",
-                "fre",
-                xpath.evaluate("//inspire_dls:ExtendedCapabilities/inspire_common:ResponseLanguage/inspire_common:Language", dom));
-
-        assertEquals("Expected response spatial dataset identifier code",
-                "one",
-                xpath.evaluate("//inspire_dls:ExtendedCapabilities/inspire_dls:SpatialDataSetIdentifier/inspire_common:Code", dom));
-
-        assertEquals("Expected spatial dataset identifier namespace",
-                "http://www.geoserver.org/inspire/one",
-                xpath.evaluate("//inspire_dls:ExtendedCapabilities/inspire_dls:SpatialDataSetIdentifier/inspire_common:Namespace", dom));
-
-        assertEquals("Expected spatial dataset identifier metadata URL attribute",
-                "http://metadata.geoserver.org/id?one",
-                xpath.evaluate("//inspire_dls:ExtendedCapabilities/inspire_dls:SpatialDataSetIdentifier/@metadataURL", dom));
+        NodeList nodeList = dom.getElementsByTagNameNS(DLS_NAMESPACE, "ExtendedCapabilities");
+        assertEquals("Number of INSPIRE ExtendedCapabilities elements", 1, nodeList.getLength());
     }
     
     @Test
-    public void testExtendedCaps200() throws Exception {
-        WFSInfo wfs = getGeoServer().getService(WFSInfo.class);
-        wfs.getMetadata().put(InspireMetadata.LANGUAGE.key, "fre");
-        wfs.getMetadata().put(InspireMetadata.SERVICE_METADATA_URL.key, "http://foo.com?bar=baz");
-        wfs.getMetadata().put(InspireMetadata.SERVICE_METADATA_TYPE.key, "application/vnd.iso.19139+xml");
-        wfs.getMetadata().put(InspireMetadata.SPATIAL_DATASET_IDENTIFIER_TYPE.key, "one,http://www.geoserver.org/inspire/one,http://metadata.geoserver.org/id?one");
-        getGeoServer().save(wfs);
+    public void testCreateExtCapMissingWithoutRequiredSettings() throws Exception {
+        final ServiceInfo serviceInfo = getGeoServer().getService(WFSInfo.class);
+        final MetadataMap metadata = serviceInfo.getMetadata();
+        clearInspireMetadata(metadata);
+        metadata.put(SERVICE_METADATA_URL.key, "http://foo.com?bar=baz");
+        metadata.put(SERVICE_METADATA_TYPE.key, "application/vnd.iso.19139+xml");
+        metadata.put(LANGUAGE.key, "fre");
+        getGeoServer().save(serviceInfo);
 
         final Document dom = getAsDOM(WFS_2_0_0_GETCAPREQUEST);
 
-        XpathEngine xpath = getXpathEngine();
-
-        assertEquals("Existence of ExtendedCapabilities element", "1",
-                xpath.evaluate("count(//inspire_dls:ExtendedCapabilities)", dom));
-
-        String schemaLocation = dom.getDocumentElement().getAttribute("xsi:schemaLocation"); 
-        assertTrue(schemaLocation.contains(DLS_NAMESPACE));
-        
-        String[] schemaLocationParts = schemaLocation.split("\\s+");
-        for (int i = 0; i < schemaLocationParts .length; i++) {
-            if (schemaLocationParts[i].equals(DLS_NAMESPACE)) {
-                assertTrue(schemaLocationParts[i+1].equals(DLS_SCHEMA));
-            }
-        }
-
-        assertEquals("Expected MetadataURL URL",
-                "http://foo.com?bar=baz",
-                xpath.evaluate("//inspire_dls:ExtendedCapabilities/inspire_common:MetadataUrl/inspire_common:URL", dom));
-
-        assertEquals("Expected MetadataURL MediaType",
-                "application/vnd.iso.19139+xml",
-                xpath.evaluate("//inspire_dls:ExtendedCapabilities/inspire_common:MetadataUrl/inspire_common:MediaType", dom));
-
-        assertEquals("Expected default language",
-                "fre",
-                xpath.evaluate("//inspire_dls:ExtendedCapabilities/inspire_common:SupportedLanguages/inspire_common:DefaultLanguage/inspire_common:Language", dom));
-
-        // Can decide to repeat default language in list of supported languages
-        // but it isn't required by INSPIRE so won't test for it
-        assertEquals("Expected response language",
-                "fre",
-                xpath.evaluate("//inspire_dls:ExtendedCapabilities/inspire_common:ResponseLanguage/inspire_common:Language", dom));
-
-        assertEquals("Expected response spatial dataset identifier code",
-                "one",
-                xpath.evaluate("//inspire_dls:ExtendedCapabilities/inspire_dls:SpatialDataSetIdentifier/inspire_common:Code", dom));
-
-        assertEquals("Expected spatial dataset identifier namespace",
-                "http://www.geoserver.org/inspire/one",
-                xpath.evaluate("//inspire_dls:ExtendedCapabilities/inspire_dls:SpatialDataSetIdentifier/inspire_common:Namespace", dom));
-
-        assertEquals("Expected spatial dataset identifier metadata URL attribute",
-                "http://metadata.geoserver.org/id?one",
-                xpath.evaluate("//inspire_dls:ExtendedCapabilities/inspire_dls:SpatialDataSetIdentifier/@metadataURL", dom));
+        final NodeList nodeList = dom.getElementsByTagNameNS(DLS_NAMESPACE, "ExtendedCapabilities");
+        assertEquals("Number of INSPIRE ExtendedCapabilities elements", 0, nodeList.getLength());
     }
-
+    
     @Test
     public void testChangeMediaType() throws Exception {
-        WFSInfo wfs = getGeoServer().getService(WFSInfo.class);
-        wfs.getMetadata().put(InspireMetadata.LANGUAGE.key, "fre");
-        wfs.getMetadata().put(InspireMetadata.SERVICE_METADATA_URL.key, "http://foo.com?bar=baz");
-        wfs.getMetadata().put(InspireMetadata.SERVICE_METADATA_TYPE.key, "application/vnd.ogc.csw.GetRecordByIdResponse_xml");
-        wfs.getMetadata().put(InspireMetadata.SPATIAL_DATASET_IDENTIFIER_TYPE.key, "one,http://www.geoserver.org/inspire/one");
-        getGeoServer().save(wfs);
+        final ServiceInfo serviceInfo = getGeoServer().getService(WFSInfo.class);
+        final MetadataMap metadata = serviceInfo.getMetadata();
+        clearInspireMetadata(metadata);
+        metadata.put(CREATE_EXTENDED_CAPABILITIES.key, true);
+        metadata.put(SERVICE_METADATA_URL.key, "http://foo.com?bar=baz");
+        metadata.put(SERVICE_METADATA_TYPE.key, "application/vnd.iso.19139+xml");
+        metadata.put(LANGUAGE.key, "fre");
+        metadata.put(SPATIAL_DATASET_IDENTIFIER_TYPE.key,
+                "one,http://www.geoserver.org/one");
+        getGeoServer().save(serviceInfo);
 
         Document dom = getAsDOM(WFS_2_0_0_GETCAPREQUEST);
 
-        assertMetadataUrlAndMediaType(dom, "http://foo.com?bar=baz", "application/vnd.ogc.csw.GetRecordByIdResponse_xml");
+        NodeList nodeList = dom.getElementsByTagNameNS(COMMON_NAMESPACE, "MetadataUrl");
+        assertEquals("Number of MediaType elements", 1, nodeList.getLength());
+        Element mdUrl = (Element) nodeList.item(0);
+        assertInspireMetadataUrlResponse(mdUrl, "http://foo.com?bar=baz", "application/vnd.iso.19139+xml");
 
-        wfs.getMetadata().put(InspireMetadata.SERVICE_METADATA_TYPE.key, "application/xml");
-        getGeoServer().save(wfs);
+        serviceInfo.getMetadata().put(SERVICE_METADATA_TYPE.key, "application/vnd.ogc.csw.GetRecordByIdResponse_xml");
+        getGeoServer().save(serviceInfo);
 
         dom = getAsDOM(WFS_2_0_0_GETCAPREQUEST);
 
-        assertMetadataUrlAndMediaType(dom, "http://foo.com?bar=baz", "application/xml");
+        nodeList = dom.getElementsByTagNameNS(COMMON_NAMESPACE, "MetadataUrl");
+        assertEquals("Number of MediaType elements", 1, nodeList.getLength());
+        mdUrl = (Element) nodeList.item(0);
+        assertInspireMetadataUrlResponse(mdUrl, "http://foo.com?bar=baz", "application/vnd.ogc.csw.GetRecordByIdResponse_xml");
     }
 
     @Test
     public void testAddSpatialDatasetIdentifier() throws Exception {
-        WFSInfo wfs = getGeoServer().getService(WFSInfo.class);
-        wfs.getMetadata().put(InspireMetadata.LANGUAGE.key, "fre");
-        wfs.getMetadata().put(InspireMetadata.SERVICE_METADATA_URL.key, "http://foo.com?bar=baz");
-        wfs.getMetadata().put(InspireMetadata.SERVICE_METADATA_TYPE.key, "application/vnd.ogc.csw.GetRecordByIdResponse_xml");
-        wfs.getMetadata().put(InspireMetadata.SPATIAL_DATASET_IDENTIFIER_TYPE.key, "one,http://www.geoserver.org/inspire/one,http://metadata.geoserver.org/id?one");
-        getGeoServer().save(wfs);
+        final ServiceInfo serviceInfo = getGeoServer().getService(WFSInfo.class);
+        final MetadataMap metadata = serviceInfo.getMetadata();
+        clearInspireMetadata(metadata);
+        metadata.put(CREATE_EXTENDED_CAPABILITIES.key, true);
+        metadata.put(SERVICE_METADATA_URL.key, "http://foo.com?bar=baz");
+        metadata.put(SERVICE_METADATA_TYPE.key, "application/vnd.iso.19139+xml");
+        metadata.put(LANGUAGE.key, "fre");
+        metadata.put(SPATIAL_DATASET_IDENTIFIER_TYPE.key,
+                "one,http://www.geoserver.org/one");
+        getGeoServer().save(serviceInfo);
 
         Document dom = getAsDOM(WFS_2_0_0_GETCAPREQUEST);
-
-        XpathEngine xpath = getXpathEngine();
 
         NodeList nodeList = dom.getElementsByTagNameNS(DLS_NAMESPACE, "SpatialDataSetIdentifier");
         assertEquals(1, nodeList.getLength());
 
-        wfs.getMetadata().put(InspireMetadata.SPATIAL_DATASET_IDENTIFIER_TYPE.key,
-                "one,http://www.geoserver.org/inspire/one,"
+        serviceInfo.getMetadata().put(SPATIAL_DATASET_IDENTIFIER_TYPE.key,
+                metadata.get(SPATIAL_DATASET_IDENTIFIER_TYPE.key)
                 + ";two,,http://metadata.geoserver.org/id?two");
-        getGeoServer().save(wfs);
+        getGeoServer().save(serviceInfo);
 
         dom = getAsDOM(WFS_2_0_0_GETCAPREQUEST);
 
         nodeList = dom.getElementsByTagNameNS(DLS_NAMESPACE, "SpatialDataSetIdentifier");
         assertEquals(2, nodeList.getLength());
 
-        assertEquals("Expected first spatial dataset identifier namespace",
-                "http://www.geoserver.org/inspire/one",
-                xpath.evaluate("//inspire_dls:SpatialDataSetIdentifier[inspire_common:Code = 'one']/inspire_common:Namespace", dom));
-
-        assertEquals("Expected first spatial dataset identifier no metadataURL",
-                "0",
-                xpath.evaluate("count(//inspire_dls:SpatialDataSetIdentifier[inspire_common:Code = 'one']/@metadataURL)", dom));
-
-        assertEquals("Expected second spatial dataset identifier metadataURL",
-                "http://metadata.geoserver.org/id?two",
-                xpath.evaluate("//inspire_dls:SpatialDataSetIdentifier[inspire_common:Code = 'two']/@metadataURL", dom));
-
-        assertEquals("Expected second spatial dataset identifier no namespace",
-                "0",
-                xpath.evaluate("count(//inspire_dls:SpatialDataSetIdentifier[inspire_common:Code = 'two']/inspire_common:Namespace)", dom));
-    }
-
-    private void assertMetadataUrlAndMediaType(Document dom, String metadataUrl, String metadataMediaType) throws XpathException {
-        XpathEngine xpath = getXpathEngine();
-
-        assertEquals("Existence of ExtendedCapabilities element", "1",
-                xpath.evaluate("count(//inspire_dls:ExtendedCapabilities)", dom));
-
-        assertEquals("Expected MetadataURL URL",
-                metadataUrl,
-                xpath.evaluate("//inspire_dls:ExtendedCapabilities/inspire_common:MetadataUrl/inspire_common:URL", dom));
-
-        assertEquals("Expected MetadataURL MediaType",
-                metadataMediaType,
-                xpath.evaluate("//inspire_dls:ExtendedCapabilities/inspire_common:MetadataUrl/inspire_common:MediaType", dom));
-
-    }
-
-    private XpathEngine getXpathEngine() {
-        HashMap namespaces = new HashMap();
-        namespaces.put("inspire_common", COMMON_NAMESPACE);
-        namespaces.put("inspire_dls", DLS_NAMESPACE);
-        NamespaceContext nsCtx = new SimpleNamespaceContext(namespaces);
-        XpathEngine xpath = XMLUnit.newXpathEngine();
-        xpath.setNamespaceContext(nsCtx);
-        return xpath;
+        final UniqueResourceIdentifiers ids = new UniqueResourceIdentifiers();
+        ids.add(new UniqueResourceIdentifier("one", "http://www.geoserver.org/one"));
+        ids.add(new UniqueResourceIdentifier("two", null, "http://metadata.geoserver.org/id?two"));
+        
+        nodeList = dom.getElementsByTagNameNS(DLS_NAMESPACE, "ExtendedCapabilities");
+        final Element extendedCaps = (Element) nodeList.item(0);
+        assertInspireDownloadSpatialDataSetIdentifierResponse(extendedCaps, ids);
     }
 }

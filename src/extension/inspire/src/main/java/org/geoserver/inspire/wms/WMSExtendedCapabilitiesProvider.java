@@ -5,9 +5,10 @@
  */
 package org.geoserver.inspire.wms;
 
-import static org.geoserver.inspire.InspireMetadata.LANGUAGE;
+import static org.geoserver.inspire.InspireMetadata.CREATE_EXTENDED_CAPABILITIES;
 import static org.geoserver.inspire.InspireMetadata.SERVICE_METADATA_TYPE;
 import static org.geoserver.inspire.InspireMetadata.SERVICE_METADATA_URL;
+import static org.geoserver.inspire.InspireMetadata.LANGUAGE;
 import static org.geoserver.inspire.InspireSchema.COMMON_NAMESPACE;
 import static org.geoserver.inspire.InspireSchema.VS_NAMESPACE;
 import static org.geoserver.inspire.InspireSchema.VS_SCHEMA;
@@ -18,6 +19,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.MetadataMap;
 import org.geoserver.wms.ExtendedCapabilitiesProvider;
 import org.geoserver.wms.GetCapabilitiesRequest;
 import org.geoserver.wms.WMS;
@@ -70,13 +72,18 @@ public class WMSExtendedCapabilitiesProvider implements ExtendedCapabilitiesProv
         if (!WMS.VERSION_1_3_0.equals(requestVersion)) {
             return;
         }
-        String metadataURL = (String) wms.getMetadata().get(SERVICE_METADATA_URL.key);
-        String mediaType = (String) wms.getMetadata().get(SERVICE_METADATA_TYPE.key);
-        String language = (String) wms.getMetadata().get(LANGUAGE.key);
+        MetadataMap serviceMetadata = wms.getMetadata();
+        Boolean createExtendedCapabilities = (Boolean) serviceMetadata.get(CREATE_EXTENDED_CAPABILITIES.key);
+        String metadataURL = (String) serviceMetadata.get(SERVICE_METADATA_URL.key);
         //Don't create extended capabilities element if mandatory content not present
-        if (metadataURL == null) {
+        //or turned off
+        if (metadataURL == null
+                || createExtendedCapabilities != null
+                && !createExtendedCapabilities) {
             return;
         }
+        String mediaType = (String) serviceMetadata.get(SERVICE_METADATA_TYPE.key);
+        String language = (String) serviceMetadata.get(LANGUAGE.key);
 
         // IGN : INSPIRE SCENARIO 1
         tx.start("inspire_vs:ExtendedCapabilities");

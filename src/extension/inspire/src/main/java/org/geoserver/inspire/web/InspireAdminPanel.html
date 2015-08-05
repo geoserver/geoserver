@@ -1,28 +1,41 @@
 <html xmlns:wicket="http://wicket.apache.org/">
 <head></head>
 <body>
-
   <wicket:panel>
     <ul>
     <li>  
       <fieldset>
         <legend><span><wicket:message key="inspire">INSPIRE</wicket:message></span></legend>
         <ul>
-          <li>
-            <label for="language"><wicket:message key="language">Language</wicket:message></label> 
-            <select wicket:id="language"></select>
-          </li>
-          <li>
-            <label for="metadataURL"><wicket:message key="metadataURL">Metadata URL</wicket:message></label> 
-            <input type="text" wicket:id="metadataURL" size="50 "></input>
-          </li>
-          <li>
-            <label for="metadataURLType"><wicket:message key="metadataURLType">metadataURLType</wicket:message></label> 
-            <select wicket:id="metadataURLType"></select>
-          </li>
-          <li wicket:id="datasetIdentifiersContainer">
-            <label for="spatialDatasetIdentifiers"><wicket:message key="spatialDatasetIdentifiers">spatialDatasetIdentifiers</wicket:message></label> 
-            <div wicket:id="spatialDatasetIdentifiers"></div>
+        <li>
+          <input id="createExtendedCapabilities" class="field checkbox" type="checkbox" wicket:id="createExtendedCapabilities" />
+          <label class="choice">
+            <wicket:message key="createExtendedCapabilities">Create INSPIRE ExtendedCapabilities element</wicket:message>
+          </label>
+        </li>
+          <li wicket:id="container">
+            <div wicket:id="configs">
+              <ul>
+                <li>
+                  <label for="language"><wicket:message key="language">Language</wicket:message></label> 
+                  <select wicket:id="language"></select>
+                </li>
+                <li>
+                  <span wicket:id="border">
+                  <label for="metadataURL"><wicket:message key="metadataURL">Metadata URL</wicket:message></label> 
+                  <input type="text" wicket:id="metadataURL" size="50 "></input>
+                  </span>
+                </li>
+                <li>
+                  <label for="metadataURLType"><wicket:message key="metadataURLType">metadataURLType</wicket:message></label> 
+                  <select wicket:id="metadataURLType"></select>
+                </li>
+                <li wicket:id="datasetIdentifiersContainer">
+                  <label for="spatialDatasetIdentifiers"><wicket:message key="spatialDatasetIdentifiers">spatialDatasetIdentifiers</wicket:message></label> 
+                  <div wicket:id="spatialDatasetIdentifiers"></div>
+                </li>
+              </ul>
+            </div>
           </li>
         </ul>
       </fieldset>

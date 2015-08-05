@@ -4,12 +4,8 @@
  */
 package org.geoserver.inspire.web;
 
-import static org.junit.Assert.*;
-import static org.junit.Assert.assertNull;
-
 import java.io.Serializable;
 import java.util.List;
-
 import org.apache.wicket.Component;
 import org.apache.wicket.feedback.FeedbackMessage;
 import org.apache.wicket.markup.html.form.Form;
@@ -22,6 +18,9 @@ import org.geoserver.web.FormTestPage;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geotools.util.Converters;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 

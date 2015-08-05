@@ -34,7 +34,9 @@ import org.w3c.dom.NodeList;
 public class DescribeCoverageTest extends WCSTestSupport {
 
     public static QName NO_RANGE = new QName(MockData.WCS_URI, "NoRange", MockData.WCS_PREFIX);
-
+    private static final QName SF_RAIN = new QName(MockData.SF_URI, "rain", MockData.SF_PREFIX);
+    private static final QName GS_RAIN = new QName(MockData.DEFAULT_URI, "rain", MockData.DEFAULT_PREFIX);
+    
     // @Override
     // protected String getDefaultLogConfiguration() {
     // return "/DEFAULT_LOGGING.properties";
@@ -49,6 +51,8 @@ public class DescribeCoverageTest extends WCSTestSupport {
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
 
+        testData.addRasterLayer(SF_RAIN, "rain.zip", "asc", getCatalog());
+        testData.addRasterLayer(GS_RAIN, "rain.zip", "asc", getCatalog());
         testData.addRasterLayer(NO_RANGE, "norange.tiff", null, null, DescribeCoverageTest.class,
                 getCatalog());
         // the GUI builds the dimension without range, let's do the same here
@@ -66,6 +70,27 @@ public class DescribeCoverageTest extends WCSTestSupport {
         Element element = (Element) dom.getElementsByTagName("ows:Exception").item(0);
         assertEquals("MissingParameterValue", element.getAttribute("exceptionCode"));
         assertEquals("identifiers", element.getAttribute("locator"));
+    }
+    
+    @Test
+    public void testDescribeByIdentifiers() throws Exception {
+        String queryString = "&request=getcoverage&service=wcs&version=1.1.1&&format=image/geotiff"
+                + "&BoundingBox=-45,146,-42,149,urn:ogc:def:crs:EPSG:6.6:4326";
+        //Get identifiers from getCapabilities
+        Document dom = getAsDOM("wcs?request=GetCapabilities&service=WCS");
+        NodeList nodes = xpath.getMatchingNodes("//wcs:CoverageSummary/wcs:Identifier[text()[contains(.,'rain')]]", dom);
+        assertTrue(nodes.getLength() >= 2);
+        
+        for (int i = 0; i < nodes.getLength(); i++) {
+            String identifier = nodes.item(i).getTextContent();
+            dom = getAsDOM("wcs?request=DescribeCoverage&service=WCS&version=1.1.1&identifiers="
+                    + identifier);
+            //Response should be a valid document consisting of 1 coverage with a matching identifier
+            print(dom);
+            assertEquals("wcs:CoverageDescriptions", dom.getDocumentElement().getNodeName());
+            assertEquals(1, dom.getElementsByTagName("wcs:CoverageDescription").getLength());
+            assertEquals(identifier, dom.getElementsByTagName("wcs:Identifier").item(0).getTextContent());
+        }
     }
 
     @Test

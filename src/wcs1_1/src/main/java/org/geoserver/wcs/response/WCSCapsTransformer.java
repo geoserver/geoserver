@@ -451,7 +451,7 @@ public class WCSCapsTransformer extends TransformerBase {
             handleKeywords(cv.getKeywords());
             handleMetadataLinks(cv.getMetadataLinks(), "simple");
             handleEnvelope(cv.getLatLonBoundingBox());
-            element("wcs:Identifier", cv.getName());
+            element("wcs:Identifier", cv.prefixedName());
 
             end("wcs:CoverageSummary");
         }

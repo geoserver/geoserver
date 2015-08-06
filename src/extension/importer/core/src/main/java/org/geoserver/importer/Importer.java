@@ -1048,7 +1048,7 @@ public class Importer implements DisposableBean, ApplicationListener {
             throws IOException {
         if (data instanceof SpatialFile) {
             SpatialFile sf = (SpatialFile) data;
-            List<HarvestedSource> harvests = sr.harvest(sr.getGridCoverageNames()[0], sf.getFile(),
+            List<HarvestedSource> harvests = sr.harvest(null, sf.getFile(),
                     null);
             checkSingleHarvest(harvests);
         } else if (data instanceof Directory) {

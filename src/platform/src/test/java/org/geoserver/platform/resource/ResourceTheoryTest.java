@@ -486,4 +486,27 @@ public abstract class ResourceTheoryTest {
         assertThat(resultContent, anyOf(equalTo(thread1Content), equalTo(thread2Content)));
         
     }
+    
+    @Theory
+    public void theoryDoubleClose(String path) throws Exception {
+        final Resource res = getResource(path);
+        assumeThat(res, is(resource()));
+        
+        OutputStream os = res.out();
+        os.close();
+        os.close();
+    }
+    
+    @Theory
+    public void theoryRecursiveDelete(String path) throws Exception {
+        final Resource res = getResource(path);
+        assumeThat(res, is(directory()));
+        assumeThat(res, is(directory()));
+        
+        Collection<Resource> result = res.list();        
+        assumeThat(result.size(), greaterThan(0));
+        
+        assertTrue(res.delete());
+        
+    }
 }

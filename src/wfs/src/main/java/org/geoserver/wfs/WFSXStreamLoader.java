@@ -36,7 +36,7 @@ public class WFSXStreamLoader extends XStreamServiceLoader<WFSInfo> {
         xs.alias( "wfs", WFSInfo.class, WFSInfoImpl.class );
         xs.alias( "version", WFSInfo.Version.class);
         xs.alias( "gml", GMLInfo.class, GMLInfoImpl.class );
-        xs.allowTypes(new Class[] { WFSInfo.Version.class, GMLInfo.class });
+        xs.allowTypes(new Class[] { WFSInfo.Version.class, GMLInfo.class, GMLInfoImpl.class });
     }
     
     protected WFSInfo createServiceFromScratch(GeoServer gs) {

@@ -17,6 +17,7 @@ import org.apache.wicket.model.ResourceModel;
 import org.geoserver.web.data.store.StoreEditPanel;
 import org.geoserver.web.data.store.panel.CharsetPanel;
 import org.geoserver.web.data.store.panel.CheckBoxParamPanel;
+import org.geoserver.web.data.store.panel.DropDownChoiceParamPanel;
 import org.geoserver.web.data.store.panel.FileParamPanel;
 import org.geoserver.web.util.MapModel;
 import org.geoserver.web.wicket.FileExistsValidator;
@@ -56,6 +57,9 @@ public class ShapefileStoreEditPanel extends StoreEditPanel {
 
         add(new CheckBoxParamPanel("spatialIndex", new MapModel(paramsModel,
                 CREATE_SPATIAL_INDEX.key), new ParamResourceModel("spatialIndex", this)));
+        
+        add(new DropDownChoiceParamPanel("recnoIndex", new MapModel(paramsModel, 
+                RECNO_INDEX_MODE.key), new ParamResourceModel("recnoIndex", this), java.util.Arrays.asList(RecnoIndexType.values()), false));
     }
 
     protected FileParamPanel buildFileParamPanel(final IModel paramsModel) {
@@ -65,5 +69,4 @@ public class ShapefileStoreEditPanel extends StoreEditPanel {
         file.getFormComponent().add(new FileExistsValidator());
         return file;
     }
-
 }

@@ -228,13 +228,16 @@ public class FileSystemResourceStore implements ResourceStore {
                     @Override
                     public void close() throws IOException {
                         delegate.close();
-                        Lock lock = lock();
-                        try {
-                            // no errors, overwrite the original file
-                            Files.move(temp, actualFile);
-                        }
-                        finally {
-                            lock.release();
+                        //if already closed, there should be no exception (see spec Closeable)
+                        if (temp.exists()) {
+                            Lock lock = lock();
+                            try {
+                                // no errors, overwrite the original file
+                                Files.move(temp, actualFile);
+                            }
+                            finally {
+                                lock.release();
+                            }
                         }
                     }
                 
@@ -429,7 +432,7 @@ public class FileSystemResourceStore implements ResourceStore {
 
         @Override
         public boolean delete() {
-            return file.delete();
+            return file.exists() && Files.delete(file);
         }
 
         @Override

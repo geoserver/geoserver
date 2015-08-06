@@ -281,15 +281,20 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
         File root = getTestData().getDataDirectoryRoot();
         String mosaicName = "emptyMosaic";
         File mosaicRoot = new File(root, mosaicName);
-        if (mosaicRoot.exists()) {
-            FileUtils.deleteDirectory(mosaicRoot);
-        }
-        mosaicRoot.mkdirs();
+        ensureClean(mosaicRoot);
+        File granulesRoot = new File(root, mosaicName + "_granules");
+        ensureClean(granulesRoot);
         Properties props = new Properties();
         props.put("SPI", "org.geotools.data.h2.H2DataStoreFactory");
         props.put("database", "empty");
         try (FileOutputStream fos = new FileOutputStream(
                 new File(mosaicRoot, "datastore.properties"))) {
+            props.store(fos, null);
+        }
+        props.clear();
+        props.put("CanBeEmpty", "true");
+        try (FileOutputStream fos = new FileOutputStream(
+                new File(mosaicRoot, "indexer.properties"))) {
             props.store(fos, null);
         }
         CatalogBuilder cb = new CatalogBuilder(catalog);
@@ -302,8 +307,8 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
         catalog.save(store);
 
         // put a granule in the mosaic
-        unpack("geotiff/EmissiveCampania.tif.bz2", mosaicRoot);
-        File granule = new File(mosaicRoot, "EmissiveCampania.tif");
+        unpack("geotiff/EmissiveCampania.tif.bz2", granulesRoot);
+        File granule = new File(granulesRoot, "EmissiveCampania.tif");
 
         store = catalog.getCoverageStoreByName(mosaicName);
 
@@ -326,19 +331,26 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
         // sync execution
         JSONObject json = (JSONObject) json(postAsServletResponse("/rest/imports?exec=true",
                 contextDefinition, "application/json"));
-        print(json);
+        // print(json);
         String state = json.getJSONObject("import").getString("state");
         assertEquals("COMPLETE", state);
 
         // check the import produced a granule
         StructuredGridCoverage2DReader reader = (StructuredGridCoverage2DReader) store
                 .getGridCoverageReader(null, null);
-        GranuleSource granules = reader.getGranules(mosaicName, true);
+        GranuleSource granules = reader.getGranules(reader.getGridCoverageNames()[0], true);
         assertEquals(1, granules.getCount(Query.ALL));
 
         // check we now also have a layer
         LayerInfo layer = catalog.getLayerByName(mosaicName);
         assertNotNull(layer);
+    }
+
+    private void ensureClean(File mosaicRoot) throws IOException {
+        if (mosaicRoot.exists()) {
+            FileUtils.deleteDirectory(mosaicRoot);
+        }
+        mosaicRoot.mkdirs();
     }
 
 }

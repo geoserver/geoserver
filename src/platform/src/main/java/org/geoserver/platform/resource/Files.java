@@ -105,7 +105,10 @@ public final class Files {
                     @Override
                     public void close() throws IOException {
                         delegate.close();
-                        Files.move(temp, file);
+                        //if already closed, there should be no exception (see spec Closeable)
+                        if (temp.exists()) {
+                            Files.move(temp, file);
+                        }
                     }
                 
                     @Override

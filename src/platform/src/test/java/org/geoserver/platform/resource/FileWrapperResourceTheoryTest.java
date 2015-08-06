@@ -111,6 +111,12 @@ public class FileWrapperResourceTheoryTest extends ResourceTheoryTest {
             throws Exception {
         
     }
+
+    @Override @Ignore
+    public void theoryRecursiveDelete(String path)
+            throws Exception {
+        
+    }
     
     // paths for file wrapper are special so ignore this test
     @Override @Ignore

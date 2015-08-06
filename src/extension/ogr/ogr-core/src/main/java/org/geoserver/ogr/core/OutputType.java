@@ -3,13 +3,12 @@
  * application directory.
  */
 
-package org.geoserver.wfs.response;
+package org.geoserver.ogr.core;
 
 /**
- * Enumeration to mapping possible OGR types
+ * Enumeration to mapping possible output types
  *
  */
-
-public enum OgrType {
+public enum OutputType {
     BINARY, TEXT, XML;
 }

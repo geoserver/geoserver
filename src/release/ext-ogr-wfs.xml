@@ -10,6 +10,7 @@
       <outputDirectory></outputDirectory>
       <includes>
         <include>gs-ogr-wfs-*.jar</include>
+	<include>gs-ogr-core-*.jar</include>
       </includes>
     </fileSet>
     <fileSet>

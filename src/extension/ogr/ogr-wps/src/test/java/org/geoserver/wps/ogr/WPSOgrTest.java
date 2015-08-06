@@ -22,6 +22,7 @@ import java.util.zip.ZipInputStream;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
+import org.geoserver.ogr.core.Format;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.wfs.response.Ogr2OgrConfigurator;
@@ -73,8 +74,8 @@ public class WPSOgrTest extends WPSTestSupport {
                     .getBean(Ogr2OgrConfigurator.class);
             configurator.loadConfiguration();
             List<String> formatNames = new ArrayList<>();
-            for (OgrFormat f : configurator.of.getFormats()) {
-                formatNames.add(f.formatName);
+            for (Format f : configurator.of.getFormats()) {
+                formatNames.add(f.getGeoserverFormat());
             }
             assertTrue(formatNames.contains("OGR-TAB"));
             assertTrue(formatNames.contains("OGR-MIF"));
@@ -98,10 +99,10 @@ public class WPSOgrTest extends WPSTestSupport {
         Document d = getAsDOM(root()
                 + "service=wps&request=describeprocess&identifier=gs:BufferFeatureCollection");
         String base = "/wps:ProcessDescriptions/ProcessDescription/ProcessOutputs";
-        for (OgrFormat f : OgrConfiguration.DEFAULT.formats) {
-            if (f.mimeType != null) {
+        for (Format f : OgrConfiguration.DEFAULT.getFormats()) {
+            if (f.getMimeType() != null) {
                 assertXpathExists(base + "/Output[1]/ComplexOutput/Supported/Format[MimeType='"
-                        + f.mimeType + "; subtype=" + f.formatName + "']", d);
+                        + f.getMimeType() + "; subtype=" + f.getGeoserverFormat() + "']", d);
             }
         }
     }

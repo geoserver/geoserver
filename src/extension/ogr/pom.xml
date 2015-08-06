@@ -20,6 +20,7 @@
   <name>OGR parent</name>
 
   <modules>
+    <module>ogr-core</module> 
     <module>ogr-wfs</module> 
     <module>ogr-wps</module>
   </modules>

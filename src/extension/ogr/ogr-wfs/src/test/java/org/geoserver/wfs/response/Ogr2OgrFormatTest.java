@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -16,6 +16,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.zip.ZipEntry;
@@ -69,15 +70,15 @@ public class Ogr2OgrFormatTest {
         dataStore = new PropertyDataStore(new File("./src/test/java/org/geoserver/wfs/response"));
 
         // the output format (and let's add a few output formats to play with
-        ogr = new Ogr2OgrOutputFormat(new GeoServerImpl());
+        ogr = new Ogr2OgrOutputFormat(new GeoServerImpl(), new OGRWrapperFactory());
         ogr.addFormat(new OgrFormat("KML", "OGR-KML", ".kml", true, "application/vnd.google-earth.kml"));
         ogr.addFormat(new OgrFormat("KML", "OGR-KML-ZIP", ".kml", false, "application/vnd.google-earth.kml"));
         ogr.addFormat(new OgrFormat("CSV", "OGR-CSV", ".csv", true, "text/csv"));
         ogr.addFormat(new OgrFormat("SHP", "OGR-SHP", ".shp", false, null));
         ogr.addFormat(new OgrFormat("MapInfo File", "OGR-MIF", ".mif", false, null, "-dsco", "FORMAT=MIF"));
         
-        ogr.setOgrExecutable(Ogr2OgrTestUtil.getOgr2Ogr());
-        ogr.setGdalData(Ogr2OgrTestUtil.getGdalData());
+        ogr.setExecutable(Ogr2OgrTestUtil.getOgr2Ogr());
+        ogr.setEnvironment(Collections.singletonMap("GDAL_DATA", Ogr2OgrTestUtil.getGdalData()));
 
         // the EMF objects used to talk with the output format
         gft = WfsFactory.eINSTANCE.createGetFeatureType();

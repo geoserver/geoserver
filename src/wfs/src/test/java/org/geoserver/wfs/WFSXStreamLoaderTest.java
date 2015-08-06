@@ -43,6 +43,16 @@ public class WFSXStreamLoaderTest extends WFSTestSupport {
         try (InputStream is = getClass().getResourceAsStream("wfs-test.xml")) {
             xp.load(is, WFSInfo.class);
         }
+    }
 
+    @Test
+    public void testLoadMinimalConfig() throws Exception {
+        XStreamPersisterFactory factory = GeoServerExtensions.bean(XStreamPersisterFactory.class);
+        XStreamPersister xp = factory.createXMLPersister();
+        WFSXStreamLoader loader = GeoServerExtensions.bean(WFSXStreamLoader.class);
+        loader.initXStreamPersister(xp, getGeoServer());
+        try (InputStream is = getClass().getResourceAsStream("wfs-minimal.xml")) {
+            xp.load(is, WFSInfo.class);
+        }
     }
 }

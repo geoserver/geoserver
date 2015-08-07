@@ -10,10 +10,12 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
+import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -114,7 +116,8 @@ public class SecureXStream extends XStream {
         allowTypes(new Class[] { Version.class, SimpleInternationalString.class });
         // common collection types
         allowTypes(new Class[] { TreeSet.class, SortedSet.class, Set.class, HashSet.class,
-                List.class, ArrayList.class, CopyOnWriteArrayList.class, Map.class, HashMap.class,
+                LinkedHashSet.class, List.class, ArrayList.class, CopyOnWriteArrayList.class,
+                Map.class, HashMap.class, TreeMap.class,
                 ConcurrentHashMap.class, });
 
         // Allow classes from user defined whitelist

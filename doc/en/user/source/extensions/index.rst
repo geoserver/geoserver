@@ -15,20 +15,19 @@ see the :ref:`data_vector`, :ref:`data_raster`, and :ref:`data_database` section
 
    controlflow/index
    css/index
+   csw/index
    dxf/index   
    excel
    geosearch
    imagemap
    importer/index
    inspire/index
+   jp2k/index
+   libjpeg-turbo/index
    monitoring/index
    ogr
+   printing/index
    querylayer/index
-   styler
    wps/index
    xslt/index
-   csw/index
    wcs20eo/index
-   libjpeg-turbo/index
-   jp2k
-   printing/index

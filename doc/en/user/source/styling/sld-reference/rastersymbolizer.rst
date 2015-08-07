@@ -303,6 +303,31 @@ This example increases the brightness of the image by a factor of two.
 	</ContrastEnhancement>
 
 
+Starting from version 2.8.0 is it possible to customize Normalize ContrastEnhancement.
+3 new VendorOptions are supported:
+
+* <VendorOption name="algorithm">ALGORITHM_NAME</VendorOption>
+* <VendorOption name="minValue">MIN_VALUE</VendorOption>
+* <VendorOption name="maxValue">MAX_VALUE</VendorOption>
+
+Supported algorithms are:
+
+* StretchToMinimumMaximum: this will result into linearly stretching the specified [MIN_VALUE, MAX_VALUE] range to [0,255]. This will also automatically result into a clip of the values outside the specified range.
+* ClipToMinimumMaximum: this will result into a clamp operation. Values smaller than MIN_VALUE will be forced to MIN_VALUE. Values greater than MAX_VALUE will be forced to MAX_VALUE. Values in the [MIN_VALUE, MAX_VALUE] range will passthrough unchanged.
+* ClipToZero: is similar to ClipToMinimumMaximum. However, values outside the [MIN_VALUE, MAX_VALUE] range will be forced to be 0.
+
+.. code-block:: xml
+
+    <ContrastEnhancement>
+      <Normalize>
+       <VendorOption name="algorithm">StretchToMinimumMaximum</VendorOption>
+       <VendorOption name="minValue">50</VendorOption>
+       <VendorOption name="maxValue">100</VendorOption>
+      </Normalize>
+    </ContrastEnhancement>
+
+This example will apply a Normalized ContrastEnhancement by linearly stretch from pixel values [50, 100] to [0, 255]
+	
 ShadedRelief
 ^^^^^^^^^^^^
 

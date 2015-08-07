@@ -307,7 +307,11 @@ public class Dispatcher extends AbstractController {
 
     void fireFinishedCallback(Request req) {
         for ( DispatcherCallback cb : callbacks ) {
-            cb.finished( req );
+            try {
+                cb.finished( req );
+            } catch (Exception e) {
+                logger.log(Level.WARNING, "Error firing finished callback for "+cb.getClass(), e);
+            }
         }
     }
     

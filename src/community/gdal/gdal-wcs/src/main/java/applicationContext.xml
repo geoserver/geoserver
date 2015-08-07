@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright (C) 2015 Open Source Geospatial Foundation. All rights
+    reserved. This code is licensed under the GPL 2.0 license, available at the
+    root application directory. -->
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+    <bean id="gdalWrapperFactory" class="org.geoserver.wcs.response.GdalWrapperFactory" />
+    <bean id="gdalCoverageResponseDelegate" class="org.geoserver.wcs.response.GdalCoverageResponseDelegate">
+        <constructor-arg ref="geoServer" />
+        <constructor-arg ref="gdalWrapperFactory" />
+    </bean>
+    <bean id="gdalConfigurator" class="org.geoserver.wcs.response.GdalConfigurator">
+        <constructor-arg>
+            <ref local="gdalCoverageResponseDelegate" />
+        </constructor-arg>
+        <constructor-arg ref="gdalWrapperFactory" />
+    </bean>
+
+</beans>

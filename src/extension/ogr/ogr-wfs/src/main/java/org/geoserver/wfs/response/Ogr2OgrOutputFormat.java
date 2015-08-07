@@ -11,6 +11,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -22,6 +23,10 @@ import java.util.zip.ZipOutputStream;
 
 import org.geoserver.config.GeoServer;
 import org.geoserver.data.util.IOUtils;
+import org.geoserver.ogr.core.Format;
+import org.geoserver.ogr.core.FormatConverter;
+import org.geoserver.ogr.core.ToolWrapper;
+import org.geoserver.ogr.core.ToolWrapperFactory;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.WFSException;
@@ -50,7 +55,7 @@ import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 
-public class Ogr2OgrOutputFormat extends WFSGetFeatureOutputFormat {
+public class Ogr2OgrOutputFormat extends WFSGetFeatureOutputFormat implements FormatConverter {
     
     /**
      * The types of geometries a shapefile can handle
@@ -66,7 +71,12 @@ public class Ogr2OgrOutputFormat extends WFSGetFeatureOutputFormat {
             add(MultiPolygon.class);
         }
     };
-    
+
+    /**
+     * Factory to create the ogr2ogr wrapper.
+     */
+    ToolWrapperFactory ogrWrapperFactory;
+
     /**
      * The fs path to ogr2ogr. If null, we'll assume ogr2ogr is in the PATH and
      * that we can execute it just by running ogr2ogr
@@ -79,20 +89,22 @@ public class Ogr2OgrOutputFormat extends WFSGetFeatureOutputFormat {
     String ogrExecutable = "ogr2ogr";
     
     /**
-     * The GDAL_DATA folder
+     * The environment variables to set before invoking ogr2ogr
      */
-    String gdalData = null;
+    Map<String, String> environment = null;
 
     /**
      * The output formats we can generate using ogr2ogr. Using a concurrent
      * one so that it can be reconfigured while the output format is working
      */
-    static Map<String, OgrFormat> formats = new ConcurrentHashMap<String, OgrFormat>();
+    static Map<String, Format> formats = new ConcurrentHashMap<String, Format>();
 
-    public Ogr2OgrOutputFormat(GeoServer gs) {
+    public Ogr2OgrOutputFormat(GeoServer gs, ToolWrapperFactory wrapperFactory) {
         // initialize with the key set of formats, so that it will change as
         // we register new formats
         super(gs, formats.keySet());
+        this.ogrWrapperFactory = wrapperFactory;
+        this.environment = new HashMap<String, String>();
     }
 
     /**
@@ -100,7 +112,8 @@ public class Ogr2OgrOutputFormat extends WFSGetFeatureOutputFormat {
      * 
      * @return
      */
-    public String getOgrExecutable() {
+    @Override
+    public String getExecutable() {
         return ogrExecutable;
     }
 
@@ -110,24 +123,33 @@ public class Ogr2OgrOutputFormat extends WFSGetFeatureOutputFormat {
      * 
      * @param ogrExecutable
      */
-    public void setOgrExecutable(String ogrExecutable) {
+    @Override
+    public void setExecutable(String ogrExecutable) {
         this.ogrExecutable = ogrExecutable;
-    }
-    
-    /**
-     * Returns the location of the gdal data folder (required to set the output srs)
-     * @return
-     */
-    public String getGdalData() {
-        return gdalData;
     }
 
     /**
-     * Sets the location of the gdal data folder (requierd to set the output srs)
-     * @param gdalData
+     * Returns the environment variables that are set prior to invoking ogr2ogr
+     * 
+     * @return
      */
-    public void setGdalData(String gdalData) {
-        this.gdalData = gdalData;
+    @Override
+    public Map<String, String> getEnvironment() {
+        return environment;
+    }
+
+    /**
+     * Provides the environment variables that are set prior to invoking ogr2ogr (notably the GDAL_DATA variable, specifying the location of
+     * GDAL's data directory).
+     * 
+     * @param environment
+     */
+    @Override
+    public void setEnvironment(Map<String, String> environment) {
+        if (environment != null) {
+            this.environment.clear();
+            this.environment.putAll(environment);
+        }
     }
 
     /**
@@ -137,12 +159,12 @@ public class Ogr2OgrOutputFormat extends WFSGetFeatureOutputFormat {
         GetFeatureRequest request = GetFeatureRequest.adapt(operation.getParameters()[0]);
         String outputFormat = request.getOutputFormat();
         String mimeType = "";
-        OgrFormat format = formats.get(outputFormat);
+        Format format = formats.get(outputFormat);
         if (format == null) {
             throw new WFSException("Unknown output format " + outputFormat);
-        } else if (format.singleFile && request.getQueries().size() <= 1) {
-            if (format.mimeType != null) {
-                mimeType = format.mimeType;
+        } else if (format.isSingleFile() && request.getQueries().size() <= 1) {
+            if (format.getMimeType() != null) {
+                mimeType = format.getMimeType();
             } else {
                 // use a default binary blob
                 mimeType = "application/octet-stream";
@@ -173,11 +195,11 @@ public class Ogr2OgrOutputFormat extends WFSGetFeatureOutputFormat {
         GetFeatureRequest request = GetFeatureRequest.adapt(operation.getParameters()[0]);
         String outputFormat = request.getOutputFormat();
         
-        OgrFormat format = formats.get(outputFormat);
+        Format format = formats.get(outputFormat);
         List<Query> queries = request.getQueries();
         if (format == null) {
             throw new WFSException("Unknown output format " + outputFormat);
-        } else if (!format.singleFile || queries.size() > 1) {
+        } else if (!format.isSingleFile() || queries.size() > 1) {
             String outputFileName = queries.get(0).getTypeNames().get(0).getLocalPart();
             return outputFileName + ".zip";
         } else {
@@ -190,26 +212,32 @@ public class Ogr2OgrOutputFormat extends WFSGetFeatureOutputFormat {
      * 
      * @param parameters
      */
-    public void addFormat(OgrFormat parameters) {
-        formats.put(parameters.formatName, parameters);
+    @Override
+    public void addFormat(Format parameters) {
+        formats.put(parameters.getGeoserverFormat(), parameters);
     }
 
     /**
-     * Get a list of supported ogr format
+     * Get a list of supported ogr formats
      *
      * @return
      */
-    public List<OgrFormat> getFormats() {
-        return new ArrayList<OgrFormat>(formats.values());
+    @Override
+    public List<Format> getFormats() {
+        return new ArrayList<Format>(formats.values());
     }
 
-    /**
-     * Programmatically removes all formats
-     * 
-     * @param parameters
-     */
+    @Override
     public void clearFormats() {
         formats.clear();
+    }
+
+    @Override
+    public void replaceFormats(List<Format> newFormats) {
+        clearFormats();
+        for (Format newFormat: newFormats) {
+            addFormat(newFormat);
+        }
     }
 
     /**
@@ -225,7 +253,7 @@ public class Ogr2OgrOutputFormat extends WFSGetFeatureOutputFormat {
         GetFeatureRequest request = GetFeatureRequest.adapt(getFeature.getParameters()[0]);
         String outputFormat = request.getOutputFormat();
 
-        OgrFormat format = formats.get(outputFormat);
+        Format format = formats.get(outputFormat);
         if (format == null)
             throw new WFSException("Unknown output format " + outputFormat);
 
@@ -235,7 +263,7 @@ public class Ogr2OgrOutputFormat extends WFSGetFeatureOutputFormat {
         File tempOGR = org.geoserver.data.util.IOUtils.createTempDirectory("ogrtmpout");
 
         // build the ogr wrapper used to run the ogr2ogr commands
-        OGRWrapper wrapper = new OGRWrapper(ogrExecutable, gdalData);
+        ToolWrapper wrapper = new OGRWrapper(ogrExecutable, environment);
 
         // actually export each feature collection
         try {
@@ -260,7 +288,7 @@ public class Ogr2OgrOutputFormat extends WFSGetFeatureOutputFormat {
             }
             
             // was is a single file output?
-            if(format.singleFile && featureCollection.getFeature().size() == 1) {
+            if(format.isSingleFile() && featureCollection.getFeature().size() == 1) {
                 FileInputStream fis = null;
                 try {
                     fis = new FileInputStream(outputFile);

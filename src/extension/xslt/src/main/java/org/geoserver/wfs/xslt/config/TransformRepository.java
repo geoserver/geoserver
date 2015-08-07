@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -31,6 +31,7 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.impl.FeatureTypeInfoImpl;
 import org.geoserver.config.GeoServerDataDirectory;
+import org.geoserver.config.util.SecureXStream;
 import org.geoserver.wfs.WFSException;
 import org.geotools.util.logging.Logging;
 
@@ -138,7 +139,8 @@ public class TransformRepository {
      * @param catalog
      */
     private void initXStream(Catalog catalog) {
-        xs = new XStream();
+        xs = new SecureXStream();
+        xs.allowTypes(new Class[] { TransformInfo.class });
         xs.omitField(TransformInfo.class, "name");
         xs.alias("transform", TransformInfo.class);
         xs.registerLocalConverter(TransformInfo.class, "featureType", new ReferenceConverter(

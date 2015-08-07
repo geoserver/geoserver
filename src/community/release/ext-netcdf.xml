@@ -12,7 +12,7 @@
         <include>cdm*.jar</include>
         <include>*netcdf*.jar</include>
         <include>udunits*.jar</include>
-        <include>httpservices*.jar</include>
+        <include>http*.jar</include>
         <include>joda-time*.jar</include>
         <include>jcip-annotations*.jar</include>
         <include>ehcache-core*.jar</include>
@@ -22,9 +22,13 @@
         <include>gt-unidata*.jar</include>
         <include>hatbox*.jar</include>
         <include>geodb*.jar</include>
+        <include>jdom2*.jar</include>
+        <include>jcommander*.jar</include>
+        <include>opendap*.jar</include>
       </includes>
       <excludes>
         <exclude>gs-netcdf-out*.jar</exclude>
+        <exclude>jettison*.jar</exclude>
       </excludes>
     </fileSet>
   </fileSets>

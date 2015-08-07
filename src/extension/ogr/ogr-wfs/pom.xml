@@ -21,6 +21,11 @@
 
   <dependencies>
     <dependency>
+      <groupId>org.geoserver.extension</groupId>
+      <artifactId>gs-ogr-core</artifactId>
+      <version>${gs.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.geoserver</groupId>
       <artifactId>gs-wfs</artifactId>
     </dependency>

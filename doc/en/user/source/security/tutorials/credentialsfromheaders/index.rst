@@ -77,6 +77,7 @@ Test a login
 ------------------
 
 #. Execute the following curl command (with a wrong password)::
+
       curl -v -H "X-Credentials: private-user=admin&private-pw=wrong" "http://localhost:8080/geoserver/wms?service=WMS&version=1.1.1&request=GetCapabilities"
    
    The result should be a 403 response signaling that access is denied. The output 

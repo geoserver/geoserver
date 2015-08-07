@@ -18,6 +18,10 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.apache.commons.io.FileUtils;
 import org.custommonkey.xmlunit.XMLAssert;
 import org.geoserver.config.GeoServer;
+import org.geoserver.config.util.XStreamPersister;
+import org.geoserver.config.util.XStreamPersisterFactory;
+import org.geoserver.data.test.SystemTestData;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.wps.validator.MaxSizeValidator;
 import org.geoserver.wps.validator.MultiplicityValidator;
@@ -31,11 +35,16 @@ import org.junit.Test;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
-public class WPSXStreamLoaderTest {
+public class WPSXStreamLoaderTest extends WPSTestSupport {
+
+    @Override
+    protected void setUpTestData(SystemTestData testData) throws Exception {
+        // no data needed for this test
+    }
 
     @Test
     public void testCreateFromScratch() throws Exception {
-        WPSXStreamLoader loader = new WPSXStreamLoader(new GeoServerResourceLoader());
+        WPSXStreamLoader loader = GeoServerExtensions.bean(WPSXStreamLoader.class);
         WPSInfo wps = loader.createServiceFromScratch(null);
         assertNotNull(wps);
         assertEquals("WPS", wps.getName());
@@ -43,7 +52,7 @@ public class WPSXStreamLoaderTest {
 
     @Test
     public void testInit() throws Exception {
-        WPSXStreamLoader loader = new WPSXStreamLoader(new GeoServerResourceLoader());
+        WPSXStreamLoader loader = GeoServerExtensions.bean(WPSXStreamLoader.class);
         WPSInfo wps = new WPSInfoImpl();
         loader.initializeService(wps);
         assertEquals("WPS", wps.getName());
@@ -146,6 +155,18 @@ public class WPSXStreamLoaderTest {
         try (InputStream is = new ByteArrayInputStream(xml.getBytes())) {
             return DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(is);
         }
+    }
+    
+    @Test
+    public void testLoadFromXML() throws Exception {
+        XStreamPersisterFactory factory = GeoServerExtensions.bean(XStreamPersisterFactory.class);
+        XStreamPersister xp = factory.createXMLPersister();
+        WPSXStreamLoader loader = GeoServerExtensions.bean(WPSXStreamLoader.class);
+        loader.initXStreamPersister(xp, getGeoServer());
+        try (InputStream is = getClass().getResourceAsStream("wps-test.xml")) {
+            xp.load(is, WPSInfo.class);
+        }
+
     }
 
 }

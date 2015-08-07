@@ -53,6 +53,7 @@ Java applications such as GeoServer can load resources from the Java classpath. 
 
 The ability to load schemas from the classpath is intended to support testing, but may be useful to users whose communities supply JAR files containing their application schemas.
 
+.. _app-schema-cache:
 
 Cache
 -----

@@ -7,70 +7,54 @@ package org.geoserver.wfs.response;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
+
+import org.geoserver.ogr.core.Format;
+import org.geoserver.ogr.core.OutputType;
 
 /**
  * Parameters defining an output format generated using ogr2ogr from either a GML or a shapefile
  * dump
  *
  * @author Andrea Aime - OpenGeo
+ * @author Stefano Costa - GeoSolutions
  *
  */
-public class OgrFormat {
+public class OgrFormat extends Format {
+    
+    public OgrFormat(String ogrFormat, String formatName, String fileExtension, boolean singleFile,
+            String mimeType, OutputType type, String... options) {
+        this.ogrFormat = ogrFormat;
+        this.formatName = formatName;
+        setFileExtension(fileExtension);
+        setSingleFile(singleFile);
+        setMimeType(mimeType);
+        setType(type);
+        if (options != null) {
+            setOptions(new ArrayList<String>(Arrays.asList(options)));
+        }
+        if (type == null) {
+            setType(OutputType.BINARY);
+        }
+    }
+
+    public OgrFormat(String toolFormat, String formatName, String fileExtension, boolean singleFile,
+            String mimeType, String... options) {
+        this(toolFormat, formatName, fileExtension, singleFile, mimeType, OutputType.BINARY, options);
+    }
+
     /**
      * The -f parameter
      */
-    public String ogrFormat;
+    private String ogrFormat;
+    private String formatName;
 
-    /**
-     * The GeoServer output format name
-     */
-    public String formatName;
-
-    /**
-     * The extension of the generated file, if any (shall include a dot, example, ".tab")
-     */
-    public String fileExtension;
-
-    /**
-     * The options that will be added to the command line
-     */
-    public List<String> options;
-
-    /**
-     * The type of format, used to instantiate the correct converter
-     */
-    public OgrType type;
-
-    /**
-     * If the output is a single file that can be streamed back. In that case we also need to know the mime type
-     */
-    public boolean singleFile;
-
-    /**
-     * The mime type of the single file output
-     */
-    public String mimeType;
-
-    public OgrFormat(String ogrFormat, String formatName, String fileExtension, boolean singleFile,
-            String mimeType, OgrType type, String... options) {
-        this.ogrFormat = ogrFormat;
-        this.formatName = formatName;
-        this.fileExtension = fileExtension;
-        this.singleFile = singleFile;
-        this.mimeType = mimeType;
-        this.type = type;
-        if (options != null) {
-            this.options = new ArrayList<String>(Arrays.asList(options));
-        }
-        if (type == null) {
-            this.type = OgrType.BINARY;
-        }
+    @Override
+    public String getToolFormat() {
+        return ogrFormat;
     }
 
-    public OgrFormat(String ogrFormat, String formatName, String fileExtension, boolean singleFile,
-            String mimeType, String... options) {
-        this(ogrFormat, formatName, fileExtension, singleFile, mimeType, OgrType.BINARY, options);
+    @Override
+    public String getGeoserverFormat() {
+        return formatName;
     }
-
 }

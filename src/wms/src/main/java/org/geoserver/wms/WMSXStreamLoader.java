@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2014 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -53,8 +53,11 @@ public class WMSXStreamLoader extends XStreamServiceLoader<WMSInfo> {
     @Override
     protected void initXStreamPersister(XStreamPersister xp, GeoServer gs) {
         super.initXStreamPersister(xp, gs);
-        xp.getXStream().alias("wms", WMSInfo.class, WMSInfoImpl.class);
-        xp.getXStream().registerConverter(new WMSInfoConverter(xp.getXStream()));
+        XStream xs = xp.getXStream();
+        xs.alias("wms", WMSInfo.class, WMSInfoImpl.class);
+        xs.registerConverter(new WMSInfoConverter(xs));
+        xs.addDefaultImplementation(WatermarkInfoImpl.class, WatermarkInfo.class);
+        xs.allowTypes(new Class[] { WatermarkInfo.class, WatermarkInfoImpl.class });
     }
 
     @Override

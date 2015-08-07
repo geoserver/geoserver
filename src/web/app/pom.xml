@@ -1290,14 +1290,34 @@
       </dependencies>      
    </profile>
    <profile>
+      <id>gdal-translate</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-gdal-wcs</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+   </profile>
+   <profile>
+      <id>gdal-translate-wps</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-gdal-wps</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+   </profile>
+    <profile>
       <id>gwc-s3</id>
       <dependencies>
         <dependency>
           <groupId>org.geoserver.community</groupId>
           <artifactId>gs-gwc-s3</artifactId>
           <version>${project.version}</version>
-        </dependency>              
-      </dependencies>      
+        </dependency>
+      </dependencies>
    </profile>
  </profiles>
 </project>

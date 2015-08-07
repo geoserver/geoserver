@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -26,6 +26,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import junit.framework.TestCase;
 
+import org.geoserver.ows.TestDispatcherCallback.Status;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.Service;
 import org.geoserver.test.CodeExpectingHttpServletResponse;
@@ -471,6 +472,246 @@ public class DispatcherTest extends TestCase {
         response = new MockHttpServletResponse();
         dispatcher.handleRequest(request, response);
         assertEquals("Hello world!:V2", response.getOutputStreamContent());
+    }
+    
+    public MockHttpServletRequest setupRequest() {
+        MockHttpServletRequest request = new MockHttpServletRequest() {
+            String encoding;
+
+            public int getServerPort() {
+                return 8080;
+            }
+
+            public String getCharacterEncoding() {
+                return encoding;
+            }
+
+            public void setCharacterEncoding(String encoding) {
+                this.encoding = encoding;
+            }
+        };
+
+        request.setScheme("http");
+        request.setServerName("localhost");
+    
+        request.setContextPath("/geoserver");
+        request.setMethod("GET");
+        
+        request.setupAddParameter("service", "hello");
+        request.setupAddParameter("request", "Hello");
+        request.setupAddParameter("version", "1.0.0");
+        request.setupAddParameter("message", "Hello world!");
+    
+        request.setRequestURI(
+            "http://localhost/geoserver/ows?service=hello&request=hello&message=HelloWorld");
+        request.setQueryString("service=hello&request=hello&message=HelloWorld");
+        
+        return request;
+    }
+    public void testDispatcherCallback() throws Exception {
+        URL url = getClass().getResource("applicationContext.xml");
+
+        FileSystemXmlApplicationContext context = new FileSystemXmlApplicationContext(url.toString());
+
+        Dispatcher dispatcher = (Dispatcher) context.getBean("dispatcher");
+        TestDispatcherCallback callback = new TestDispatcherCallback();
+        
+        MockHttpServletRequest request = setupRequest();
+        MockHttpServletResponse response = new MockHttpServletResponse();
+
+        dispatcher.callbacks.add(callback);
+
+        dispatcher.handleRequest(request, response);
+        assertEquals("Hello world!", response.getOutputStreamContent());
+        assertEquals(TestDispatcherCallback.Status.FINISHED, callback.dispatcherStatus.get());
+    }
+    
+    public void testDispatcherCallbackFailInit() throws Exception {
+        URL url = getClass().getResource("applicationContext.xml");
+
+        FileSystemXmlApplicationContext context = new FileSystemXmlApplicationContext(url.toString());
+
+        Dispatcher dispatcher = (Dispatcher) context.getBean("dispatcher");
+        
+        final TestDispatcherCallback callback1 = new TestDispatcherCallback();
+        final TestDispatcherCallback callback2 = new TestDispatcherCallback();;
+        TestDispatcherCallback callbackFail = new TestDispatcherCallback() {
+            @Override
+            public Request init(Request request) {
+                dispatcherStatus.set(Status.INIT);
+                throw new RuntimeException("TestDispatcherCallbackFailInit");
+            }
+        };
+        
+        MockHttpServletRequest request = setupRequest();
+        MockHttpServletResponse response = new MockHttpServletResponse();
+
+        dispatcher.callbacks.add(callback1);
+        dispatcher.callbacks.add(callbackFail);
+        dispatcher.callbacks.add(callback2);
+        
+        dispatcher.handleRequest(request, response);
+        
+        assertTrue(response.getOutputStreamContent().contains("ows:ExceptionReport"));
+        assertEquals(TestDispatcherCallback.Status.FINISHED, callback1.dispatcherStatus.get());
+        assertEquals(TestDispatcherCallback.Status.FINISHED, callback2.dispatcherStatus.get());
+    }
+    
+    public void testDispatcherCallbackFailServiceDispatched() throws Exception {
+        URL url = getClass().getResource("applicationContext.xml");
+
+        FileSystemXmlApplicationContext context = new FileSystemXmlApplicationContext(url.toString());
+
+        Dispatcher dispatcher = (Dispatcher) context.getBean("dispatcher");
+        final TestDispatcherCallback callback1 = new TestDispatcherCallback();
+        final TestDispatcherCallback callback2 = new TestDispatcherCallback();
+        TestDispatcherCallback callbackFail = new TestDispatcherCallback() {
+            @Override
+            public Service serviceDispatched(Request request, Service service) {
+                dispatcherStatus.set(Status.SERVICE_DISPATCHED);
+                throw new RuntimeException("TestDispatcherCallbackFailServiceDispatched");
+            }
+        };
+        
+        MockHttpServletRequest request = setupRequest();
+        MockHttpServletResponse response = new MockHttpServletResponse();
+
+        dispatcher.callbacks.add(callback1);
+        dispatcher.callbacks.add(callbackFail);
+        dispatcher.callbacks.add(callback2);
+        
+        dispatcher.handleRequest(request, response);
+        
+        assertTrue(response.getOutputStreamContent().contains("ows:ExceptionReport"));
+        assertEquals(TestDispatcherCallback.Status.FINISHED, callback1.dispatcherStatus.get());
+        assertEquals(TestDispatcherCallback.Status.FINISHED, callback2.dispatcherStatus.get());
+    }
+    
+    public void testDispatcherCallbackFailOperationDispatched() throws Exception {
+        URL url = getClass().getResource("applicationContext.xml");
+
+        FileSystemXmlApplicationContext context = new FileSystemXmlApplicationContext(url.toString());
+
+        Dispatcher dispatcher = (Dispatcher) context.getBean("dispatcher");
+        final TestDispatcherCallback callback1 = new TestDispatcherCallback();
+        final TestDispatcherCallback callback2 = new TestDispatcherCallback();
+        TestDispatcherCallback callbackFail = new TestDispatcherCallback() {
+            @Override
+            public Operation operationDispatched(Request request, Operation operation) {
+                dispatcherStatus.set(Status.OPERATION_DISPATCHED);
+                throw new RuntimeException("TestDispatcherCallbackFailOperationDispatched");
+            }
+        };
+        
+        MockHttpServletRequest request = setupRequest();
+        MockHttpServletResponse response = new MockHttpServletResponse();
+
+        dispatcher.callbacks.add(callback1);
+        dispatcher.callbacks.add(callbackFail);
+        dispatcher.callbacks.add(callback2);
+        
+        dispatcher.handleRequest(request, response);
+        
+        assertTrue(response.getOutputStreamContent().contains("ows:ExceptionReport"));
+        assertEquals(TestDispatcherCallback.Status.FINISHED, callback1.dispatcherStatus.get());
+        assertEquals(TestDispatcherCallback.Status.FINISHED, callback2.dispatcherStatus.get());
+    }
+    
+    public void testDispatcherCallbackFailOperationExecuted() throws Exception {
+        URL url = getClass().getResource("applicationContext.xml");
+
+        FileSystemXmlApplicationContext context = new FileSystemXmlApplicationContext(url.toString());
+
+        Dispatcher dispatcher = (Dispatcher) context.getBean("dispatcher");
+        final TestDispatcherCallback callback1 = new TestDispatcherCallback();
+        final TestDispatcherCallback callback2 = new TestDispatcherCallback();
+        TestDispatcherCallback callbackFail = new TestDispatcherCallback() {
+            @Override
+            public Object operationExecuted(Request request, Operation operation, Object result) {
+                dispatcherStatus.set(Status.OPERATION_EXECUTED);
+                throw new RuntimeException("TestDispatcherCallbackFailOperationExecuted");
+            }
+        };
+        
+        MockHttpServletRequest request = setupRequest();
+        MockHttpServletResponse response = new MockHttpServletResponse();
+
+        dispatcher.callbacks.add(callback1);
+        dispatcher.callbacks.add(callbackFail);
+        dispatcher.callbacks.add(callback2);
+        
+        dispatcher.handleRequest(request, response);
+        
+        assertTrue(response.getOutputStreamContent().contains("ows:ExceptionReport"));
+        assertEquals(TestDispatcherCallback.Status.FINISHED, callback1.dispatcherStatus.get());
+        assertEquals(TestDispatcherCallback.Status.FINISHED, callback2.dispatcherStatus.get());
+    }
+    
+    public void testDispatcherCallbackFailResponseDispatched() throws Exception {
+        URL url = getClass().getResource("applicationContext.xml");
+
+        FileSystemXmlApplicationContext context = new FileSystemXmlApplicationContext(url.toString());
+
+        Dispatcher dispatcher = (Dispatcher) context.getBean("dispatcher");
+        final TestDispatcherCallback callback1 = new TestDispatcherCallback();
+        final TestDispatcherCallback callback2 = new TestDispatcherCallback();
+        TestDispatcherCallback callbackFail = new TestDispatcherCallback() {
+            @Override
+            public Response responseDispatched(Request request, Operation operation, Object result, Response response) {
+                dispatcherStatus.set(Status.RESPONSE_DISPATCHED);
+                throw new RuntimeException("TestDispatcherCallbackFailResponseDispatched");
+            }
+        };
+        
+        MockHttpServletRequest request = setupRequest();
+        MockHttpServletResponse response = new MockHttpServletResponse();
+
+        dispatcher.callbacks.add(callback1);
+        dispatcher.callbacks.add(callbackFail);
+        dispatcher.callbacks.add(callback2);
+        
+        dispatcher.handleRequest(request, response);
+        
+        assertTrue(response.getOutputStreamContent().contains("ows:ExceptionReport"));
+        assertEquals(TestDispatcherCallback.Status.FINISHED, callback1.dispatcherStatus.get());
+        assertEquals(TestDispatcherCallback.Status.FINISHED, callback2.dispatcherStatus.get());
+    }
+    
+    public void testDispatcherCallbackFailFinished() throws Exception {
+        URL url = getClass().getResource("applicationContext.xml");
+
+        FileSystemXmlApplicationContext context = new FileSystemXmlApplicationContext(url.toString());
+
+        Dispatcher dispatcher = (Dispatcher) context.getBean("dispatcher");
+        final AtomicBoolean firedCallback = new AtomicBoolean(false);
+        TestDispatcherCallback callback1 = new TestDispatcherCallback();
+        TestDispatcherCallback callback2 = new TestDispatcherCallback() {
+            @Override
+            public void finished(Request request) {
+                firedCallback.set(true);
+                super.finished(request);
+            }
+        };
+        TestDispatcherCallback callbackFail = new TestDispatcherCallback() {
+            @Override
+            public void finished(Request request) {
+                dispatcherStatus.set(Status.FINISHED);
+                throw new RuntimeException("TestDispatcherCallbackFailFinished");
+            }
+        };
+        
+        MockHttpServletRequest request = setupRequest();
+        MockHttpServletResponse response = new MockHttpServletResponse();
+
+        dispatcher.callbacks.add(callback1);
+        dispatcher.callbacks.add(callbackFail);
+        dispatcher.callbacks.add(callback2);
+        
+        dispatcher.handleRequest(request, response);
+        assertEquals("Hello world!", response.getOutputStreamContent());
+        assertTrue(firedCallback.get());
+        assertEquals(TestDispatcherCallback.Status.FINISHED, callback1.dispatcherStatus.get());
+        assertEquals(TestDispatcherCallback.Status.FINISHED, callback2.dispatcherStatus.get());
     }
 
     public void testErrorSavedOnRequestOnGenericException() throws Exception {

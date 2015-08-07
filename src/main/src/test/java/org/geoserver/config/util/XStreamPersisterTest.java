@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -27,6 +27,7 @@ import javax.xml.transform.stream.StreamSource;
 import org.custommonkey.xmlunit.XMLAssert;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogFactory;
+import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -509,6 +510,50 @@ public class XStreamPersisterTest {
     }
     
     @Test
+    public void testCoverage() throws Exception {
+        Catalog catalog = new CatalogImpl();
+        CatalogFactory cFactory = catalog.getFactory();
+
+        WorkspaceInfo ws = cFactory.createWorkspace();
+        ws.setName("foo");
+        catalog.add(ws);
+
+        NamespaceInfo ns = cFactory.createNamespace();
+        ns.setPrefix("acme");
+        ns.setURI("http://acme.org");
+        catalog.add(ns);
+
+        CoverageStoreInfo cs = cFactory.createCoverageStore();
+        cs.setWorkspace(ws);
+        cs.setName("foo");
+        catalog.add(cs);
+
+        CoverageInfo cv = cFactory.createCoverage();
+        cv.setStore(cs);
+        cv.setNamespace(ns);
+        cv.setName("cv");
+        cv.setAbstract("abstract");
+        cv.setSRS("EPSG:4326");
+        cv.setNativeCRS(CRS.decode("EPSG:4326"));
+        cv.getParameters().put("foo", null);
+
+        ByteArrayOutputStream out = out();
+        persister.save(cv, out);
+
+        persister.setCatalog(catalog);
+        cv = persister.load(in(out), CoverageInfo.class);
+        assertNotNull(cv);
+
+        assertEquals("cv", cv.getName());
+        assertEquals(cs, cv.getStore());
+        assertEquals(ns, cv.getNamespace());
+        assertEquals("EPSG:4326", cv.getSRS());
+        assertTrue(cv.getParameters().containsKey("foo"));
+        assertNull(cv.getParameters().get("foo"));
+        assertTrue(CRS.equalsIgnoreMetadata(CRS.decode("EPSG:4326"), cv.getNativeCRS()));
+    }
+
+    @Test
     public void testWMSLayer() throws Exception {
         Catalog catalog = new CatalogImpl();
         CatalogFactory cFactory = catalog.getFactory();
@@ -593,6 +638,7 @@ public class XStreamPersisterTest {
         // l.setName( "layer" );
         l.setResource( ft );
         l.setDefaultStyle( s );
+        l.getStyles().add(s);
         catalog.add( l );
         
         ByteArrayOutputStream out = out();
@@ -604,8 +650,9 @@ public class XStreamPersisterTest {
         assertEquals( l.getResource().getName(), l.getName() );
         assertEquals( ft, l.getResource() );
         assertEquals( s, l.getDefaultStyle() );
-        //assertNotNull( l.getStyles() );
-        
+        assertNotNull(l.getStyles());
+        assertEquals(1, l.getStyles().size());
+        assertTrue(l.getStyles().contains(s));
     }
     
     @Test

@@ -5,17 +5,21 @@
  */
 package org.geoserver.catalog;
 
+import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import javax.xml.transform.TransformerException;
 
+import org.apache.commons.io.IOUtils;
 import org.geoserver.ows.util.RequestUtils;
 import org.geotools.data.DataUtilities;
 import org.geotools.sld.v1_1.SLD;
@@ -62,6 +66,24 @@ public class SLDHandler extends StyleHandler {
 
     public static final String MIMETYPE_10 = "application/vnd.ogc.sld+xml";
     public static final String MIMETYPE_11 = "application/vnd.ogc.se+xml";
+    
+    static final Map<StyleType, String> TEMPLATES = new HashMap<StyleType, String>();
+    static {
+        try {
+            TEMPLATES.put(StyleType.POINT, IOUtils.toString(SLDHandler.class
+                    .getResourceAsStream("template_point.sld")));
+            TEMPLATES.put(StyleType.POLYGON, IOUtils.toString(SLDHandler.class
+                    .getResourceAsStream("template_polygon.sld")));
+            TEMPLATES.put(StyleType.LINE, IOUtils.toString(SLDHandler.class
+                    .getResourceAsStream("template_line.sld")));
+            TEMPLATES.put(StyleType.RASTER, IOUtils.toString(SLDHandler.class
+                    .getResourceAsStream("template_raster.sld")));
+            TEMPLATES.put(StyleType.GENERIC, IOUtils.toString(SLDHandler.class
+                    .getResourceAsStream("template_generic.sld")));
+        } catch (IOException e) {
+            throw new RuntimeException("Error loading up the style templates", e);
+        }
+    }
 
     public SLDHandler() {
         super("SLD", FORMAT);
@@ -75,6 +97,16 @@ public class SLDHandler extends StyleHandler {
     @Override
     public String getCodeMirrorEditMode() {
         return "xml";
+    }
+
+    @Override
+    public String getStyle(StyleType type, Color color, String colorName, String layerName) {
+        String template = TEMPLATES.get(type);
+        String colorCode = Integer.toHexString(color.getRGB());
+        colorCode = colorCode.substring(2, colorCode.length());
+        return template.replace("${colorName}", colorName).replace(
+                "${colorCode}", "#" + colorCode).replace("${layerName}", layerName);
+        
     }
 
     @Override

@@ -48,6 +48,16 @@
       <artifactId>mockrunner</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+     <groupId>org.easymock</groupId>
+     <artifactId>easymock</artifactId>
+     <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.easymock</groupId>
+      <artifactId>easymockclassextension</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
   <properties>
     <maven.test.search.classdir>true</maven.test.search.classdir>

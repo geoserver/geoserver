@@ -3,23 +3,16 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.importer;
+package org.geoserver.catalog;
 
 import java.awt.Color;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.io.IOUtils;
-import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.CoverageInfo;
-import org.geoserver.catalog.FeatureTypeInfo;
-import org.geoserver.catalog.ResourceInfo;
-import org.geoserver.catalog.StyleInfo;
-import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.catalog.StyleGenerator.ColorRamp.Entry;
+import org.geotools.styling.StyledLayerDescriptor;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.GeometryDescriptor;
 
@@ -37,28 +30,6 @@ import com.vividsolutions.jts.geom.Polygon;
  * 
  */
 public class StyleGenerator {
-
-    static enum StyleType {
-        POINT, LINE, POLYGON, RASTER, GENERIC
-    };
-
-    static final Map<StyleType, String> TEMPLATES = new HashMap<StyleType, String>();
-    static {
-        try {
-            TEMPLATES.put(StyleType.POINT, IOUtils.toString(StyleGenerator.class
-                    .getResourceAsStream("template_point.sld")));
-            TEMPLATES.put(StyleType.POLYGON, IOUtils.toString(StyleGenerator.class
-                    .getResourceAsStream("template_polygon.sld")));
-            TEMPLATES.put(StyleType.LINE, IOUtils.toString(StyleGenerator.class
-                    .getResourceAsStream("template_line.sld")));
-            TEMPLATES.put(StyleType.RASTER, IOUtils.toString(StyleGenerator.class
-                    .getResourceAsStream("template_raster.sld")));
-            TEMPLATES.put(StyleType.GENERIC, IOUtils.toString(StyleGenerator.class
-                    .getResourceAsStream("template_generic.sld")));
-        } catch (IOException e) {
-            throw new RuntimeException("Error loading up the style templates", e);
-        }
-    }
 
     private ColorRamp ramp;
 
@@ -101,15 +72,39 @@ public class StyleGenerator {
         this.catalog = catalog;
     }
 
+    /**
+     * Set the workspace to generate styles in.
+     * @param workspace
+     */
     public void setWorkspace(WorkspaceInfo workspace) {
         this.workspace = workspace;
     }
 
-    public StyleInfo createStyle(FeatureTypeInfo featureType) throws IOException {
-        return createStyle(featureType, featureType.getFeatureType());
+    /**
+     * Generate a style for a resource in the catalog, and add the created style to the catalog.
+     * 
+     * @param handler: The StyleHandler used to generate the style. Determines the style format.
+     * @param featureType: The FeatureType to generate the style for. Determines the style type and 
+     * style name
+     * @return The StyleInfo referencing the generated style
+     * @throws IOException
+     */
+    public StyleInfo createStyle(StyleHandler handler, FeatureTypeInfo featureType) throws IOException {
+        return createStyle(handler, featureType, featureType.getFeatureType());
     }
     
-    public StyleInfo createStyle(FeatureTypeInfo featureType, FeatureType nativeFeatureType) 
+    /**
+     * Generate a style for a resource in the catalog, and add the created style to the catalog.
+     * 
+     * @param handler: The StyleHandler used to generate the style. Determines the style format.
+     * @param featureType: The FeatureType to generate the style for. Determines the style type and 
+     * style name
+     * @param nativeFeatureType: The geotools feature type, required in cases where featureType is 
+     * missing content
+     * @return The StyleInfo referencing the generated style
+     * @throws IOException
+     */
+    public StyleInfo createStyle(StyleHandler handler, FeatureTypeInfo featureType, FeatureType nativeFeatureType) 
         throws IOException {
 
         // geometryless, style it randomly
@@ -131,30 +126,64 @@ public class StyleGenerator {
             st = StyleType.GENERIC;
         }
 
-        return doCreateStyle(st, featureType);
+        return doCreateStyle(handler, st, featureType);
     }
 
-    public StyleInfo createStyle(CoverageInfo coverage) throws IOException {
-        return doCreateStyle(StyleType.RASTER, coverage);
+    /**
+     * Generate a style for a resource in the catalog, and add the created style to the catalog.
+     * 
+     * @param handler: The StyleHandler used to generate the style. Determines the style format.
+     * @param coverage: The CoverageInfo to generate the style for. Determines the style type and 
+     * style name
+     * @return The StyleInfo referencing the generated style
+     * @throws IOException
+     */
+    public StyleInfo createStyle(StyleHandler handler, CoverageInfo coverage) throws IOException {
+        return doCreateStyle(handler, StyleType.RASTER, coverage);
+    }
+    
+    /**
+     * Generate a style of the give style type. 
+     * 
+     * @param handler: The StyleHandler used to generate the style. Determines the style format.
+     * @param styleType: The type of template, see {@link org.geoserver.catalog.StyleType}.
+     * @param layerName: The name of the style/layer; used in comments.
+     * @return The generated style, as a String.
+     * @throws IOException
+     */
+    public String generateStyle(StyleHandler handler, StyleType styleType, String layerName) throws IOException {
+        Entry color = ramp.next();
+        try {
+            return handler.getStyle(styleType, color.color, color.name, layerName);
+        } catch (UnsupportedOperationException e) {
+            //Handler does not support loading from template; load SLD template and convert
+            SLDHandler sldHandler = new SLDHandler();
+            String sldTemplate =  handler.getStyle(styleType, color.color, color.name, layerName);
+            
+            StyledLayerDescriptor sld = sldHandler.parse(sldTemplate, null, null, null);
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            handler.encode(sld, null, true, out);
+            return out.toString();
+        }
     }
 
-    StyleInfo doCreateStyle(StyleType styleType, ResourceInfo resource) throws IOException {
+    StyleInfo doCreateStyle(StyleHandler handler, StyleType styleType, ResourceInfo resource) throws IOException {
         // find a new style name
         String styleName = workspace != null ?
             findUniqueStyleName(resource, workspace) : findUniqueStyleName(resource);
 
         // variable replacement
-        String sld = loadSLDFromTemplate(styleType, ramp.next(), resource);
+        String styleData = generateStyle(handler, styleType, styleName);
 
         // let's store it
         StyleInfo style = catalog.getFactory().createStyle();
         style.setName(styleName);
-        style.setFilename(styleName + ".sld");
+        style.setFilename(styleName + "." + handler.getFileExtension());
         if (workspace != null) {
             style.setWorkspace(workspace);
         }
 
-        catalog.getResourcePool().writeStyle(style, new ByteArrayInputStream(sld.getBytes()));
+        catalog.getResourcePool().writeStyle(style, new ByteArrayInputStream(styleData.getBytes()));
         
         return style;
     }
@@ -183,17 +212,10 @@ public class StyleGenerator {
         return styleName;
     }
 
-    String loadSLDFromTemplate(StyleType type, ColorRamp.Entry entry, ResourceInfo resource) {
-        String colorCode = Integer.toHexString(entry.color.getRGB());
-        colorCode = colorCode.substring(2, colorCode.length());
-        return TEMPLATES.get(type).replace("${colorName}", entry.name).replace(
-                "${colorCode}", "#" + colorCode).replace("${layerName}", resource.getName());
-
-    }
     /**
      * A rolling color ramp with color names
      */
-    static class ColorRamp {
+    public static class ColorRamp {
         static class Entry {
             String name;
             Color color;

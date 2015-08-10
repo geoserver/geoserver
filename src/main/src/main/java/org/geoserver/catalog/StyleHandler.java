@@ -5,6 +5,7 @@
  */
 package org.geoserver.catalog;
 
+import java.awt.Color;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -15,7 +16,6 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.util.Arrays;
 import java.util.List;
-
 import org.geoserver.platform.resource.Resource;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.styling.ResourceLocator;
@@ -84,6 +84,20 @@ public abstract class StyleHandler {
     public String getCodeMirrorEditMode() {
         return getFormat();
     }
+    
+    /**
+     * Generates a style from a template using the provided substitutions.
+     *
+     * @param type: the template type, see {@link org.geoserver.catalog.StyleType}.
+     * @param color: java.aw.Color to use during substitution
+     * @param colorName: Human readable color name, for use generating comments
+     * @param layerName: Layer name, for use generating comments
+     * 
+     * @return The text content of the style template after performing substitutions
+     */
+    public String getStyle(StyleType type, Color color, String colorName, String layerName) {
+        throw new UnsupportedOperationException();
+    }
 
     /**
      * Parses a style resource.
@@ -101,12 +115,12 @@ public abstract class StyleHandler {
     /**
      * Encodes a style.
      * <p>
-     * Handlers that don't support encoding should through {@link java.lang.UnsupportedOperationException}.
+     * Handlers that don't support encoding should throw {@link java.lang.UnsupportedOperationException}.
      * </p>
      * @param sld The style to encode.
      * @param version The version of the format to use to encode the style, may be <code>null</code>.
-     * @param pretty Flag controlling whether or not the style shold be encoded in pretty form.
-     * @param output The stream to write teh encoded style to.
+     * @param pretty Flag controlling whether or not the style should be encoded in pretty form.
+     * @param output The stream to write the encoded style to.
      */
     public abstract void encode(StyledLayerDescriptor sld, Version version, boolean pretty, OutputStream output)
         throws IOException;

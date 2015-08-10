@@ -31,7 +31,10 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.ProjectionPolicy;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.SLDHandler;
 import org.geoserver.catalog.StoreInfo;
+import org.geoserver.catalog.StyleGenerator;
+import org.geoserver.catalog.StyleHandler;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.util.XStreamPersister;
@@ -101,6 +104,9 @@ public class Importer implements DisposableBean, ApplicationListener {
 
     /** style generator */
     StyleGenerator styleGen;
+    
+    /** style handler */
+    StyleHandler styleHandler = new SLDHandler();
 
     /** job queue */
     JobQueue jobs = new JobQueue();
@@ -117,6 +123,14 @@ public class Importer implements DisposableBean, ApplicationListener {
      */
     public StyleGenerator getStyleGenerator() {
         return styleGen;
+    }
+    
+    public StyleHandler getStyleHandler() {
+        return styleHandler;
+    }
+    
+    public void setStyleHandler(StyleHandler handler) {
+        styleHandler = handler;
     }
 
     ImportStore createContextStore() {
@@ -657,14 +671,14 @@ public class Importer implements DisposableBean, ApplicationListener {
                     FeatureType featureType =
                         (FeatureType) task.getMetadata().get(FeatureType.class);
                     if (featureType != null) {
-                        style = styleGen.createStyle((FeatureTypeInfo) r, featureType);
+                        style = styleGen.createStyle(styleHandler, (FeatureTypeInfo) r, featureType);
                     } else {
                         throw new RuntimeException("Unable to compute style");
                     }
 
                 }
                 else if (r instanceof CoverageInfo) {
-                    style = styleGen.createStyle((CoverageInfo) r);
+                    style = styleGen.createStyle(styleHandler, (CoverageInfo) r);
                 }
                 else {
                     throw new RuntimeException("Unknown resource type :"

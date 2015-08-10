@@ -10,8 +10,11 @@ import java.util.Locale;
 import org.apache.wicket.Component;
 import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.Session;
+import org.apache.wicket.ajax.AjaxEventBehavior;
+import org.apache.wicket.behavior.IBehavior;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponent;
+import org.apache.wicket.protocol.http.WebRequestCycle;
 import org.apache.wicket.util.tester.FormTester;
 import org.apache.wicket.util.tester.WicketTester;
 import org.geoserver.data.test.SystemTestData;
@@ -161,5 +164,41 @@ public abstract class GeoServerWicketTestSupport extends GeoServerSecurityTestSu
     public static void initResourceSettings(WicketTester tester) {
         tester.getApplication().getResourceSettings().setResourceStreamLocator(new GeoServerResourceStreamLocator());
         tester.getApplication().getResourceSettings().addStringResourceLoader(0, new GeoServerStringResourceLoader());
+    }
+    
+    /**
+     * Get Ajax Event Behavior attached to a component. 
+     * 
+     * @param path path to component
+     * @param event the name of the event
+     * @return
+     */
+    protected AjaxEventBehavior getAjaxBehavior(String path, String event) {
+        for (IBehavior b : tester.getComponentFromLastRenderedPage(path).getBehaviors()) {
+            if (b instanceof AjaxEventBehavior && ((AjaxEventBehavior) b).getEvent().equals(event)) {
+                return (AjaxEventBehavior) b;            
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Execute Ajax Event Behavior with attached value.
+     * Particularly useful to execute an onchange in a DropDownChoice (not supported by tester
+     * or formtester in wicket 1.4). 
+     * 
+     * @param path
+     * @param event
+     * @param value
+     */
+    protected void executeAjaxEventBehavior(String path, String event, String value) {        
+        AjaxEventBehavior behavior = getAjaxBehavior(path, event);
+        CharSequence url = behavior.getCallbackUrl(false);
+        WebRequestCycle cycle = tester.setupRequestAndResponse(true);
+        tester.getServletRequest().setRequestToRedirectString(url.toString());
+        String[] ids = path.split(":");
+        String id = ids[ids.length-1];
+        tester.getServletRequest().setParameter(id, value);
+        tester.processRequestCycle(cycle);
     }
 }

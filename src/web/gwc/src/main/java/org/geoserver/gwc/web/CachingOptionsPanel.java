@@ -172,7 +172,7 @@ public class CachingOptionsPanel extends Panel {
         }
 
         // Add a new Panel for configuring In Memory caching
-        BlobStorePanel storePanel = new BlobStorePanel("blobstores", gwcConfigModel);
+        InMemoryBlobStorePanel storePanel = new InMemoryBlobStorePanel("blobstores", gwcConfigModel);
         configs.add(storePanel.setOutputMarkupId(true));
         
         IModel<Set<String>> cachedGridsetsModel = new PropertyModel<Set<String>>(gwcConfigModel,

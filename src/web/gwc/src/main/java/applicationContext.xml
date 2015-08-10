@@ -26,7 +26,7 @@
     <property name="icon" value="../tilelayer.png"/>
     <property name="order" value="1"/>
   </bean>
-  
+    
   <bean id="gwcSettingsMenuPage" class="org.geoserver.web.MenuPageInfo">
     <property name="id" value="gwc.settings"/>
     <property name="titleKey" value="GWCSettingsPage.menuTitle"/>
@@ -56,6 +56,16 @@
     <property name="icon" value="../diskquota.png"/>
     <property name="order" value="4"/>
   </bean>
+    
+  <bean id="blobStoresMenuPage" class="org.geoserver.web.MenuPageInfo">
+    <property name="id" value="gwc.blobStores"/>
+    <property name="titleKey" value="BlobStoresPage.title"/>
+    <property name="descriptionKey" value="BlobStoresPage.description"/>
+    <property name="componentClass" value="org.geoserver.gwc.web.blob.BlobStoresPage"/>
+    <property name="category" ref="gwcCategory"/>
+    <property name="icon" value="../blobstores.png"/>
+    <property name="order" value="5"/>
+  </bean>
   
   <bean id="layerCacheEditTabPanelInfo" class="org.geoserver.gwc.web.layer.LayerEditCacheOptionsTabPanelInfo">
     <property name="id" value="layerCacheEditTabPanelInfo"/>
@@ -73,4 +83,6 @@
   </bean>
   
   <bean id="diskQuotaWarningProvider" class="org.geoserver.gwc.web.diskquota.DiskQuotaWarningProvider"/>
+  
+  <bean class="org.geoserver.gwc.web.blob.FileBlobStoreType" /> 
 </beans>

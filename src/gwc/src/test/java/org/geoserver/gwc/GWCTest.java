@@ -67,7 +67,10 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geowebcache.GeoWebCacheException;
+import org.geowebcache.config.BlobStoreConfig;
 import org.geowebcache.config.Configuration;
+import org.geowebcache.config.ConfigurationException;
+import org.geowebcache.config.FileBlobStoreConfig;
 import org.geowebcache.config.XMLConfiguration;
 import org.geowebcache.config.XMLGridSet;
 import org.geowebcache.config.XMLGridSubset;
@@ -85,12 +88,15 @@ import org.geowebcache.mime.MimeType;
 import org.geowebcache.seed.GWCTask;
 import org.geowebcache.seed.TileBreeder;
 import org.geowebcache.service.Service;
+import org.geowebcache.storage.CompositeBlobStore;
 import org.geowebcache.storage.DefaultStorageFinder;
 import org.geowebcache.storage.StorageBroker;
 import org.geowebcache.storage.StorageException;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.mockito.ArgumentCaptor;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -101,6 +107,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.LinkedHashMultimap;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
@@ -122,6 +129,8 @@ public class GWCTest {
 
     private GWCConfigPersister gwcConfigPersister;
 
+    private XMLConfiguration xmlConfig;
+    
     private StorageBroker storageBroker;
 
     private GridSetBroker gridSetBroker;
@@ -157,6 +166,9 @@ public class GWCTest {
     private DefaultStorageFinder storageFinder;
 
     private JDBCConfigurationStorage jdbcStorage;
+    
+    @Rule
+    public ExpectedException expected = ExpectedException.none();
 
     @Before
     public void setUp() throws Exception {
@@ -196,6 +208,10 @@ public class GWCTest {
 
         mediator = new GWC(gwcConfigPersister, storageBroker, tld, gridSetBroker, tileBreeder,
                 diskQuotaMonitor, owsDispatcher, catalog, storageFinder, jdbcStorage);
+
+        xmlConfig = mock(XMLConfiguration.class);
+        mediator = spy(mediator);
+        when(mediator.getXmlConfiguration()).thenReturn(xmlConfig);
 
         GWC.set(mediator);
     }
@@ -354,10 +370,6 @@ public class GWCTest {
             newGridset = xmlGridSet.makeGridSet();
         }
 
-        XMLConfiguration xmlConfig = mock(XMLConfiguration.class);
-        mediator = spy(mediator);
-        when(mediator.getXmlConfiguration()).thenReturn(xmlConfig);
-
         assertNotNull(tileLayer.getGridSubset(oldName));
         assertNotNull(tileLayerGroup.getGridSubset(oldName));
 
@@ -396,9 +408,6 @@ public class GWCTest {
             newGridset = xmlGridSet.makeGridSet();
         }
 
-        XMLConfiguration xmlConfig = mock(XMLConfiguration.class);
-        mediator = spy(mediator);
-        when(mediator.getXmlConfiguration()).thenReturn(xmlConfig);
         when(tld.getConfiguration(same(tileLayer))).thenReturn(config);
         when(tld.getConfiguration(same(tileLayerGroup))).thenReturn(config);
 
@@ -744,7 +753,6 @@ public class GWCTest {
 
         ArgumentCaptor<String> argCaptor = ArgumentCaptor.forClass(String.class);
 
-        mediator = spy(mediator);
         doReturn(true).when(mediator).layerRemoved(argCaptor.capture());
 
         mediator.reload();
@@ -1166,7 +1174,7 @@ public class GWCTest {
         assertEquals(fullParameters.toString(), rawKvpParamValue,
                 fullParameters.get(rawKvpParamName.toUpperCase()));
     }
-    
+
     @Test
     public void testGetDefaultAdvertisedCachedFormats() {
         // from src/main/resources/org/geoserver/gwc/advertised_formats.properties
@@ -1216,5 +1224,69 @@ public class GWCTest {
         assertEquals(expectedRaster, GWC.getAdvertisedCachedFormats(PublishedType.WMS, urls));
 
         assertEquals(expectedGroup, GWC.getAdvertisedCachedFormats(PublishedType.GROUP, urls));
+    }
+    
+    @Test
+    public void testSetBlobStoresNull() throws ConfigurationException{
+        expected.expect(NullPointerException.class);
+        expected.expectMessage("stores is null");
+        mediator.setBlobStores(null);
+    }
+
+    @Test
+    public void testSetBlobStoresWrapsStorageException() throws Exception{
+        when(xmlConfig.getBlobStores()).thenReturn(ImmutableList.<BlobStoreConfig>of());
+        CompositeBlobStore composite = mock(CompositeBlobStore.class);
+        doReturn(composite).when(mediator).getCompositeBlobStore();
+        
+        StorageException se = new StorageException("expected");
+        doThrow(se).when(composite).setBlobStores(any(Iterable.class));
+        
+        expected.expect(ConfigurationException.class);
+        expected.expectMessage("Error connecting to BlobStore");
+        mediator.setBlobStores(ImmutableList.<BlobStoreConfig>of());
+    }
+
+    @Test
+    public void testSetBlobStoresSavesConfig() throws Exception{
+        when(xmlConfig.getBlobStores()).thenReturn(ImmutableList.<BlobStoreConfig>of());
+        CompositeBlobStore composite = mock(CompositeBlobStore.class);
+        doReturn(composite).when(mediator).getCompositeBlobStore();
+
+        List<BlobStoreConfig> configList = Lists.newArrayList(mock(BlobStoreConfig.class), mock(BlobStoreConfig.class));
+        when(xmlConfig.getBlobStores()).thenReturn(configList);
+        
+        BlobStoreConfig config = new FileBlobStoreConfig();
+        List<BlobStoreConfig> newStores = ImmutableList.<BlobStoreConfig>of(config);
+        mediator.setBlobStores(newStores);
+        
+        verify(composite, times(1)).setBlobStores(same(newStores));
+        verify(xmlConfig, times(1)).save();
+        assertEquals(newStores, configList);
+    }
+
+    @Test
+    public void testSetBlobStoresRestoresRuntimeStoresOnSaveFailure() throws Exception{
+        when(xmlConfig.getBlobStores()).thenReturn(ImmutableList.<BlobStoreConfig>of());
+        CompositeBlobStore composite = mock(CompositeBlobStore.class);
+        doReturn(composite).when(mediator).getCompositeBlobStore();
+
+        doThrow(new IOException("expected")).when(xmlConfig).save();
+        
+        List<BlobStoreConfig> oldStores = Lists.newArrayList(mock(BlobStoreConfig.class), mock(BlobStoreConfig.class));
+        when(xmlConfig.getBlobStores()).thenReturn(oldStores);
+        
+        BlobStoreConfig config = new FileBlobStoreConfig();
+        List<BlobStoreConfig> newStores = ImmutableList.<BlobStoreConfig>of(config);
+        try {
+            mediator.setBlobStores(newStores);
+            fail("Expected ConfigurationException");
+        } catch (ConfigurationException e) {
+            assertTrue(e.getMessage().contains("Error saving config"));
+        }
+        
+        verify(xmlConfig, times(1)).save();
+        verify(composite, times(1)).setBlobStores(same(newStores));
+        verify(composite, times(1)).setBlobStores(eq(oldStores));
     }
 }

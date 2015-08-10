@@ -77,6 +77,7 @@ import org.geotools.referencing.CRS.AxisOrder;
 import org.geotools.util.logging.Logging;
 import org.geowebcache.GeoWebCacheException;
 import org.geowebcache.GeoWebCacheExtensions;
+import org.geowebcache.config.BlobStoreConfig;
 import org.geowebcache.config.Configuration;
 import org.geowebcache.config.ConfigurationException;
 import org.geowebcache.config.XMLConfiguration;
@@ -111,6 +112,8 @@ import org.geowebcache.seed.GWCTask.TYPE;
 import org.geowebcache.seed.SeedRequest;
 import org.geowebcache.seed.TileBreeder;
 import org.geowebcache.service.Service;
+import org.geowebcache.storage.BlobStore;
+import org.geowebcache.storage.CompositeBlobStore;
 import org.geowebcache.storage.DefaultStorageFinder;
 import org.geowebcache.storage.StorageBroker;
 import org.geowebcache.storage.StorageException;
@@ -125,10 +128,15 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
+import com.google.common.base.Function;
+import com.google.common.base.Preconditions;
 import com.google.common.base.Predicate;
+import com.google.common.base.Predicates;
 import com.google.common.base.Splitter;
 import com.google.common.base.Throwables;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.common.collect.Sets.SetView;
 import com.vividsolutions.jts.densify.Densifier;
@@ -1545,7 +1553,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         return filtered;
     }
 
-    public void save(final GeoServerTileLayer layer) {
+    public void save(final TileLayer layer) {
         checkNotNull(layer);
         log.info("Saving GeoSeverTileLayer " + layer.getName());
 
@@ -2060,7 +2068,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
     }
-
+    
     /**
      * Returns the list of {@link MimeType#getFormat() MIME Type formats} advertised as valid for
      * caching for the given type of published kind of layer.
@@ -2125,4 +2133,151 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         }
         return formats;
     }
+    
+    /**
+     * @return the list of configured blobstores
+     */
+    public List<BlobStoreConfig> getBlobStores() {
+        XMLConfiguration xmlConfig = getXmlConfiguration();
+
+        return new ArrayList<BlobStoreConfig>(xmlConfig.getBlobStores());
+    }
+
+    /**
+     * @return the {@link BlobStoreConfig#isDefault() default} blobstore, or {@code null} if there's
+     *         no default
+     */
+    public BlobStoreConfig getDefaultBlobStore() {
+        XMLConfiguration xmlConfig = getXmlConfiguration();
+
+        for (BlobStoreConfig config : xmlConfig.getBlobStores()) {
+            if (config.isDefault()) {
+                return config;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Convenience method to add a new blob store, calling {@link #setBlobStores} the extra
+     * {@code config}
+     */
+    public void addBlobStore(BlobStoreConfig config) throws ConfigurationException {
+        checkNotNull(config);
+
+        List<BlobStoreConfig> stores = new ArrayList<>(getXmlConfiguration().getBlobStores());
+        if (config.isDefault()) {
+            for (BlobStoreConfig c : stores) {
+                c.setDefault(false);
+            }
+        }
+        stores.add(config);
+
+        setBlobStores(stores);
+    }
+
+    /**
+     * Convenience method to modify a blobstore; calling {@link #setBlobStores(List)} with the
+     * config identified by {@code oldId} repplaced by {@code config}
+     */
+    public void modifyBlobStore(String oldId, BlobStoreConfig config) throws ConfigurationException {
+        checkNotNull(oldId);
+        checkNotNull(config);
+
+        List<BlobStoreConfig> stores = new ArrayList<>(getXmlConfiguration().getBlobStores());
+        int index = -1;
+        for (int i = 0; i < stores.size(); i++) {
+            BlobStoreConfig c = stores.get(i);
+            if (oldId.equals(c.getId())) {
+                index = i;
+                break;
+            }
+        }
+        if (index > -1) {
+            stores.set(index, config);
+            setBlobStores(stores);
+        }
+    }
+    
+    /**
+     * Convenience method to remove blobstres by id; a filtered view of the blobstores configuration
+     * objects is passed to {@link #setBlobStores(List)}
+     * 
+     * @param blobStoreIds the unique identifiers for the blobstores that will be removed from the
+     *        runtime {@link CompositeBlobStore} state and the xml configuration.
+     * @throws ConfigurationException
+     * @see {@link #setBlobStores}
+     */
+    public void removeBlobStores(Iterable<String> blobStoreIds) throws ConfigurationException {
+        checkNotNull(blobStoreIds);
+
+        Map<String, BlobStoreConfig> stores = Maps.uniqueIndex(new ArrayList<>(
+                getXmlConfiguration().getBlobStores()), new Function<BlobStoreConfig, String>() {
+            @Override
+            public String apply(BlobStoreConfig c) {
+                return c.getId();
+            }
+        });
+        Map<String, BlobStoreConfig> filtered = Maps.filterKeys(stores,
+                Predicates.not(Predicates.in(ImmutableList.copyOf(blobStoreIds))));
+
+        if (!filtered.equals(stores)) {
+            setBlobStores(new ArrayList<>(filtered.values()));
+        }
+    }
+
+    /**
+     * Replaces the configured {@link BlobStore}s by the provided {@code stores} and saves the
+     * configuration.
+     * <p>
+     * {@link CompositeBlobStore#setBlobStores} is called to replace the blob stores running. If it
+     * succeeds, then the configuration is saved. If either replacing the runtime stores or saving
+     * the config fails, the original blob stores are re-applied to the runtime configuration and a
+     * {@link ConfigurationException} is thrown.
+     * 
+     * @param stores the new set of blob stores
+     * @throws ConfigurationException if the running blobstores can't be replaced by the provided
+     *         ones or the configuration can't be saved
+     * @see {@link CompositeBlobStore#setBlobStores}
+     */
+    void setBlobStores(List<BlobStoreConfig> stores) throws ConfigurationException {
+        Preconditions.checkNotNull(stores, "stores is null");
+        
+        XMLConfiguration xmlConfig = getXmlConfiguration();
+
+        CompositeBlobStore compositeBlobStore = getCompositeBlobStore();
+        
+        List<BlobStoreConfig> oldStores = new ArrayList<BlobStoreConfig>(xmlConfig.getBlobStores());
+
+        try {
+            compositeBlobStore.setBlobStores(stores);
+        } catch (ConfigurationException ce) {
+            throw ce;
+        } catch (StorageException se) {
+            throw new ConfigurationException("Error connecting to BlobStore: " + se.getMessage(),
+                    se);
+        }
+        xmlConfig.getBlobStores().clear();
+        xmlConfig.getBlobStores().addAll(stores);
+        try {
+            xmlConfig.save();
+        } catch (IOException e) {
+            //undo changes
+            xmlConfig.getBlobStores().clear();
+            xmlConfig.getBlobStores().addAll(oldStores);
+            try {
+                compositeBlobStore.setBlobStores(oldStores);
+            } catch (StorageException e1) {}
+            
+            throw new ConfigurationException("Error saving configuration", e);
+        }
+    }
+
+    CompositeBlobStore getCompositeBlobStore() {
+        CompositeBlobStore compositeBlobStore = GeoWebCacheExtensions
+                .bean(CompositeBlobStore.class);
+        checkNotNull(compositeBlobStore);
+        return compositeBlobStore;
+    }
+    
 }

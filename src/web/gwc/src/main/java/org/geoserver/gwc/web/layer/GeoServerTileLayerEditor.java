@@ -9,6 +9,7 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static org.geoserver.gwc.GWC.tileLayerName;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -28,6 +29,7 @@ import org.apache.wicket.markup.html.form.CheckGroup;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
+import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
@@ -35,6 +37,8 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
+import org.apache.wicket.validation.IValidatable;
+import org.apache.wicket.validation.IValidator;
 import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -52,6 +56,7 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geotools.util.logging.Logging;
+import org.geowebcache.config.BlobStoreConfig;
 import org.geowebcache.config.XMLGridSubset;
 import org.geowebcache.diskquota.storage.Quota;
 import org.geowebcache.filter.parameters.ParameterFilter;
@@ -105,6 +110,11 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
      * Whether the cached layer is enabled (like in {@link TileLayer#isEnabled()}
      */
     private final FormComponent<Boolean> enabled;
+    
+    /**
+     * The blobstoreId
+     */
+    private final DropDownChoice<String> blobStoreId;
 
     /**
      * Container for {@link #configs}
@@ -221,7 +231,45 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
         add(enabled = new CheckBox("enabled", new PropertyModel<Boolean>(getModel(), "enabled")));
         enabled.add(new AttributeModifier("title", true, new ResourceModel("enabled.title")));
         configs.add(enabled);
+        
+        IChoiceRenderer<String> blobStoreRenderer = new IChoiceRenderer<String>() {
+            private static final long serialVersionUID = 1L;
 
+            final String defaultStore = getDefaultBlobStoreId();
+            
+            @Override
+            public String getIdValue(String object, int index) {
+                return object;
+            }
+            
+            @Override
+            public Object getDisplayValue(String object) {
+                String value = object;
+                if(object.equals(defaultStore)){
+                    value += " (*)";
+                }
+                return value;
+            }
+        };
+        PropertyModel<String> blobStoreModel = new PropertyModel<String>(getModel(), "blobStoreId");
+        List<String> blobStoreChoices = getBlobStoreIds();
+        configs.add(blobStoreId = new DropDownChoice<String>("blobStoreId", blobStoreModel,
+                blobStoreChoices, blobStoreRenderer));
+        blobStoreId.setNullValid(true);
+        blobStoreId
+                .add(new AttributeModifier("title", true, new ResourceModel("blobStoreId.title")));
+
+        add(new IValidator<GeoServerTileLayerInfo>() {
+            private static final long serialVersionUID = 5240602030478856537L;
+
+            @Override
+            public void validate(IValidatable<GeoServerTileLayerInfo> validatable) {
+                if (enabled.getConvertedInput() && !isBlobStoreEnabled(blobStoreId.getConvertedInput())) {
+                    error(new ParamResourceModel("enabledError", GeoServerTileLayerEditor.this).getString());
+                }
+            }
+        });
+                
         // CheckBox for enabling/disabling inner caching for the layer
         enableInMemoryCaching = new CheckBox("inMemoryCached", new PropertyModel<Boolean>(getModel(), "inMemoryCached"));
         ConfigurableBlobStore store = GeoServerExtensions.bean(ConfigurableBlobStore.class);
@@ -312,9 +360,34 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
         });
     }
 
+    private List<String> getBlobStoreIds() {
+        List<String> blobStoreIds = new ArrayList<String>();
+        for (BlobStoreConfig blobStore : GWC.get().getBlobStores()) {
+            blobStoreIds.add(blobStore.getId());
+        }
+        return blobStoreIds;
+    }
+    
+    private boolean isBlobStoreEnabled(String blobStoreId) {
+        if (blobStoreId == null) {
+            return true;
+        }
+        for (BlobStoreConfig blobStore : GWC.get().getBlobStores()) {
+            if(blobStore.getId().equals(blobStoreId)) {
+                return blobStore.isEnabled();
+            }
+        }
+        return false;
+    }
+
     private boolean isNew() {
         GeoServerTileLayerInfoModel model = (GeoServerTileLayerInfoModel) super.getModel();
         return model.isNew();
+    }
+    
+    private String getDefaultBlobStoreId(){
+        BlobStoreConfig defaultBlobStore = GWC.get().getDefaultBlobStore();
+        return defaultBlobStore == null? null : defaultBlobStore.getId();
     }
 
     public void save() {
@@ -482,6 +555,7 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
     @Override
     protected void onBeforeRender() {
         super.onBeforeRender();
+        
     }
 
 }

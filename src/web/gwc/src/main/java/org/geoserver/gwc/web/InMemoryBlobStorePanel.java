@@ -45,7 +45,7 @@ import org.geowebcache.storage.blobstore.memory.CacheStatistics;
  * 
  * @author Nicola Lagomarsini Geosolutions
  */
-public class BlobStorePanel extends Panel {
+public class InMemoryBlobStorePanel extends Panel {
 
     /** Key for the miss rate */
     public static final String KEY_MISS_RATE = "missRate";
@@ -74,7 +74,7 @@ public class BlobStorePanel extends Panel {
     /** HashMap containing the values for all the statistics values */
     private HashMap<String, String> values;
 
-    public BlobStorePanel(String id, final IModel<GWCConfig> gwcConfigModel) {
+    public InMemoryBlobStorePanel(String id, final IModel<GWCConfig> gwcConfigModel) {
 
         super(id, gwcConfigModel);
         // Initialize the map

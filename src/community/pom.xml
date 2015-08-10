@@ -63,6 +63,7 @@
           <descriptor>release/ext-rest-upload.xml</descriptor>
           <descriptor>release/ext-gwc-distributed.xml</descriptor>  
           <descriptor>release/ext-geofence-server.xml</descriptor>
+          <descriptor>release/ext-gwc-s3.xml</descriptor>	
 	  <descriptor>release/ext-gdal-wcs.xml</descriptor>
 	  <descriptor>release/ext-gdal-wps.xml</descriptor>
         </descriptors>
@@ -200,6 +201,7 @@
         <module>release</module>
 	<module>gwc-distributed</module>
 	<module>gdal</module>
+	<module>gwc-s3</module>
       </modules>
     </profile>
     <profile>
@@ -459,5 +461,11 @@
           <module>gdal</module>
         </modules>
     </profile>
-  </profiles>
+    <profile>
+      <id>gwc-s3</id>
+      <modules>
+        <module>gwc-s3</module>
+      </modules>
+    </profile>
+  </profiles>   
 </project>

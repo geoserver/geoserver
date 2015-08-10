@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -7,7 +7,9 @@ package org.geoserver.security.impl;
 
 import static org.easymock.EasyMock.createNiceMock;
 import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.expectLastCall;
 import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.verify;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
@@ -490,6 +492,36 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
 
         assertEquals(1, sc.getLayers().size());
         assertEquals(statesLayer.getName(), sc.getLayers().get(0).getName());
+    }
+
+    @Test
+    public void testCatalogCloseWrappedIterator() throws Exception {
+        // create a mock CloseableIterator that expects to be closed
+        final CloseableIterator<?> mockIterator = createNiceMock(CloseableIterator.class);
+        mockIterator.close();
+        expectLastCall().once();
+        replay(mockIterator);
+
+        // make a catalog that uses the mock CloseableIterator
+        Catalog withLayers = new AbstractCatalogDecorator(catalog) {
+
+            @SuppressWarnings("unchecked")
+            @Override
+            public <T extends CatalogInfo> CloseableIterator<T> list(Class<T> of, Filter filter, Integer offset, Integer count, SortBy sortBy) {
+                return (CloseableIterator<T>) mockIterator;
+            }
+        };
+        this.catalog = withLayers;
+        GeoServerExtensionsHelper.singleton("catalog", catalog, Catalog.class);
+        buildManager("publicRead.properties");
+
+        // get the CloseableIterator from SecureCatalogImpl and close it
+        CloseableIterator<LayerInfo> iterator;
+        iterator = sc.list(LayerInfo.class, Predicates.acceptAll());
+        iterator.close();
+
+        // verify that the mock CloseableIterator was closed
+        verify(mockIterator);
     }
 
     @Test

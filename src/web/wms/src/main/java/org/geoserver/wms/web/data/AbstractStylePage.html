@@ -19,6 +19,11 @@
             </div>
         </li>
         <li>
+            <label for="name"><wicket:message key="generateNew">GenerateNew</wicket:message></label>
+            <select wicket:id="templates"></select>
+            <a href="#" wicket:id="generate"><wicket:message key="generate">Generate</wicket:message></a>
+        </li>
+        <li>
             <label for="name"><wicket:message key="copyFrom">CopyFrom</wicket:message></label>
             <select wicket:id="existingStyles"></select>
             <a href="#" wicket:id="copy"><wicket:message key="copy">Copy</wicket:message></a>

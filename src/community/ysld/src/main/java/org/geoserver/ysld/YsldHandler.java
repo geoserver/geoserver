@@ -1,6 +1,9 @@
 package org.geoserver.ysld;
 
+import org.apache.commons.io.IOUtils;
+import org.geoserver.catalog.SLDHandler;
 import org.geoserver.catalog.StyleHandler;
+import org.geoserver.catalog.StyleType;
 import org.geotools.data.DataUtilities;
 import org.geotools.styling.DefaultResourceLocator;
 import org.geotools.styling.ResourceLocator;
@@ -12,11 +15,14 @@ import org.geotools.ysld.parse.WellKnownZoomContextFinder;
 import org.xml.sax.EntityResolver;
 import org.geotools.ysld.parse.ZoomContextFinder;
 
+import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Nullable;
 
@@ -24,6 +30,24 @@ public class YsldHandler extends StyleHandler {
 
     public static final String FORMAT = "ysld";
     public static final String MIMETYPE = "application/vnd.geoserver.ysld+yaml";
+    
+    static final Map<StyleType, String> TEMPLATES = new HashMap<StyleType, String>();
+    static {
+        try {
+            TEMPLATES.put(StyleType.POINT, IOUtils.toString(YsldHandler.class
+                    .getResourceAsStream("template_point.ysld")));
+            TEMPLATES.put(StyleType.POLYGON, IOUtils.toString(YsldHandler.class
+                    .getResourceAsStream("template_polygon.ysld")));
+            TEMPLATES.put(StyleType.LINE, IOUtils.toString(YsldHandler.class
+                    .getResourceAsStream("template_line.ysld")));
+            TEMPLATES.put(StyleType.RASTER, IOUtils.toString(YsldHandler.class
+                    .getResourceAsStream("template_raster.ysld")));
+            TEMPLATES.put(StyleType.GENERIC, IOUtils.toString(YsldHandler.class
+                    .getResourceAsStream("template_generic.ysld")));
+        } catch (IOException e) {
+            throw new RuntimeException("Error loading up the style templates", e);
+        }
+    }
 
     /**
      * Creates a new handler with an explicit zoom finder.
@@ -52,6 +76,15 @@ public class YsldHandler extends StyleHandler {
     @Override
     public String getCodeMirrorEditMode() {
         return "yaml";
+    }
+    
+    @Override
+    public String getStyle(StyleType type, Color color, String colorName, String layerName) {
+        String template = TEMPLATES.get(type);
+        String colorCode = Integer.toHexString(color.getRGB());
+        colorCode = colorCode.substring(2, colorCode.length());
+        return template.replace("${colorName}", colorName).replace(
+                "${colorCode}", "#" + colorCode).replace("${layerName}", layerName);
     }
     
     ZoomContextFinder zoomFinder;

@@ -1,0 +1,6 @@
+title: ${colorName} polygon
+symbolizers:
+- polygon:
+    stroke-width: 0.5
+    stroke-color: '#000000'
+    fill-color: '${colorCode}'

@@ -465,6 +465,12 @@ Shared
         provides a geometry for all types of symbology, but can be overridden
         by the symbol-specific geometry properties. 
       * yes
+    - * ``sort-by``
+      * string, a comma separated list of sorting directives,
+        "att1 A|D, att2 A|D, ..." where ``att?`` are attribute names,
+        and ``A`` or ``D`` are an optional direction specification, ``A`` is ascending, ``D`` is descending 
+      * Determines the loading, and thus painting, order of the features 
+      * false
 
 Symbol properties
 -----------------

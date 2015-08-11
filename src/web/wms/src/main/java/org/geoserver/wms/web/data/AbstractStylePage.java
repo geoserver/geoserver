@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.io.StringReader;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -47,9 +48,12 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.util.lang.Bytes;
+import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.ResourcePool;
+import org.geoserver.catalog.StyleGenerator;
 import org.geoserver.catalog.StyleHandler;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.StyleType;
 import org.geoserver.catalog.Styles;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.StyleInfoImpl;
@@ -67,6 +71,8 @@ import org.geoserver.web.wicket.ParamResourceModel;
 import org.geoserver.wms.GetLegendGraphicRequest;
 import org.geoserver.wms.legendgraphic.BufferedImageLegendGraphicBuilder;
 import org.geoserver.wms.web.publish.StyleChoiceRenderer;
+import org.geoserver.wms.web.publish.StyleTypeChoiceRenderer;
+import org.geoserver.wms.web.publish.StyleTypeModel;
 import org.geoserver.wms.web.publish.StylesModel;
 import org.geotools.styling.NamedLayer;
 import org.geotools.styling.Style;
@@ -87,11 +93,17 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
 
     protected FileUploadField fileUploadField;
 
+    protected DropDownChoice templates;
+
+    protected AjaxSubmitLink generateLink;
+
     protected DropDownChoice styles;
 
     protected AjaxSubmitLink copyLink;
 
     protected Form uploadForm;
+
+    protected Form generateForm;
 
     protected Form styleForm;
 
@@ -188,6 +200,23 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
                 Session.get().error(new ParamResourceModel("styleNotFound", this, style.getFilename()).getString());
             }
         }
+        
+        // style generation functionality
+        templates = new DropDownChoice("templates", new Model(), new StyleTypeModel(), new StyleTypeChoiceRenderer());
+        templates.setOutputMarkupId(true);
+        templates.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                templates.validate();
+                generateLink.setEnabled(templates.getConvertedInput() != null);
+                target.addComponent(generateLink);
+            }
+        });
+        styleForm.add(templates);
+        generateLink = generateLink();
+        generateLink.setEnabled(false);
+        styleForm.add(generateLink);
 
         // style copy functionality
         styles = new DropDownChoice("existingStyles", new Model(), new StylesModel(), new StyleChoiceRenderer());
@@ -400,6 +429,57 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
         } catch( Exception e ) {
             return Arrays.asList( e );
         }
+    }
+
+    AjaxSubmitLink generateLink() {
+        return new AjaxSubmitLink("generate") {
+
+            @Override
+            protected void onSubmit(AjaxRequestTarget target, Form form) {
+                // we need to force validation or the value won't be converted
+                templates.processInput();
+                StyleType template = (StyleType) templates.getConvertedInput();
+                StyleGenerator styleGen = new StyleGenerator(getCatalog());
+                styleGen.setWorkspace(wsChoice.getModel().getObject());
+
+                if (template != null) {
+                    try {
+                        // same here, force validation or the field won't be updated
+                        editor.reset();
+                        setRawStyle(new StringReader(styleGen.generateStyle(styleHandler(), template, nameTextField.getInput())));
+                        target.appendJavascript(String
+                                .format("if (document.gsEditors) { document.gsEditors.editor.setOption('mode', '%s'); }", styleHandler().getCodeMirrorEditMode()));
+
+                    } catch (Exception e) {
+                        error("Errors occurred generating the style");
+                    }
+                    target.addComponent(styleForm);
+                }
+            }
+
+            @Override
+            protected IAjaxCallDecorator getAjaxCallDecorator() {
+                return new AjaxPreprocessingCallDecorator(super.getAjaxCallDecorator()) {
+
+                    @Override
+                    public CharSequence preDecorateScript(CharSequence script) {
+                        return "var val = event.view.document.gsEditors ? "
+                                + "event.view.document.gsEditors." + editor.getTextAreaMarkupId() + ".getValue() : "
+                                + "event.view.document.getElementById(\"" + editor.getTextAreaMarkupId() + "\").value; "
+                                + "if(val != '' &&"
+                                + "!confirm('"
+                                + new ParamResourceModel("confirmOverwrite", AbstractStylePage.this)
+                                        .getString() + "')) return false;" + script;
+                    }
+                };
+            }
+
+            @Override
+            public boolean getDefaultFormProcessing() {
+                return false;
+            }
+
+        };
     }
 
     AjaxSubmitLink copyLink() {

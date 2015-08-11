@@ -185,8 +185,12 @@ public interface Resource {
     
     /**
      * Delete the resource.
+     * <p>
+     * Type.DIRECTORY resources must be empty before being removed. Use {@link Resources#delete(Resource)} for
+     * recursive delete.</p>
+     * 
      * @see File#delete()
-     * @return
+     * @return <code>true</code> if and only if the file is deleted
      */
     boolean delete();
     

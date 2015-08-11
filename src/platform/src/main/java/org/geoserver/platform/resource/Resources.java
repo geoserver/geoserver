@@ -282,23 +282,27 @@ public class Resources {
     }
 
     /**
-     * Deletes a resource, if the resource is a directory, the method will recurse down
+     * Deletes a resource, if the resource is a directory, the method will recurse down.
      * 
      * @param resource
-     * @throws IOException
+     * @return true if resource(s) were deleted
      */
-    public static void delete(Resource resource) throws IOException {
+    public static boolean delete(Resource resource) throws IOException {
+        boolean deleted;
         switch (resource.getType()) {
         case DIRECTORY:
             for (Resource child : resource.list()) {
-                delete(child);
+                deleted = delete(child);
+                if (!deleted) {
+                    return false; // failed to delete child
+                }
             }
-            // fall in the single resource case and delete the directory
+            // fall in the single resource case and delete the containing directory
 
         case RESOURCE:
-            boolean deleted = resource.delete();
+            deleted = resource.delete();
             if (!deleted) {
-                throw new IOException("Failed to delete resource: " + resource);
+                return false; // failed to delete resource
             }
             break;
 
@@ -306,5 +310,6 @@ public class Resources {
             // nothing to do
             break;
         }
+        return true;
     }
 }

@@ -76,11 +76,12 @@ public class UniqueResourceIdentifiersEditorTest extends GeoServerWicketTestSupp
         
         // print(tester.getLastRenderedPage(), true, true);
         
-        // now trigger the validation, we cannot be without spatial data identifiers
+        // we cannot be without spatial data identifiers but allow form submission
+        // in case user wants to edit some other parameters without having configured
+        // INSPIRE extension parameters fully.
         tester.submitForm("form");
         
-        String error = new ParamResourceModel("UniqueResourceIdentifiersEditor.noSpatialDatasetIdentifiers", null).getString();
-        tester.assertErrorMessages(new String[] {error});
+        tester.assertNoErrorMessage();
     }
     
     @Test

@@ -17,6 +17,7 @@ This section describes the GeoServer REST configuration API.
    coveragestores
    coverages
    styles
+   stylegenerator
    layers
    layergroups
    fonts

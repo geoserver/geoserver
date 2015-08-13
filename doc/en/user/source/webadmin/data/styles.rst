@@ -15,19 +15,14 @@ On the Styles page, you can add a new style, view or edit an existing style, or 
 Edit a Style
 ------------
 
-To view or edit a style, click the style name. A :guilabel:`Style Editor` page will be diplayed.  The page presents options for configuring a style's name and code. Style names are specified at the top in the name field. Typing or pasting of SLD code can be done in one of two modes. The first mode is an embedded `EditArea <http://www.cdolivet.com/index.php?page=editArea>`_ a rich editor. The second mode is an unformatted text editor. Check the :guilabel:`Toggle Editor` to switch between modes.
+To view or edit a style, click the style name. A :guilabel:`Style Editor` page will be diplayed.  The page presents options for configuring a style's name, code, and other attributes. Style names are specified at the top in the name field. The style's workspace can be chosen using workspace selector. Styles are edited using a plain text editor with some basic utilities.
 
 .. figure:: ../images/data_style_editor.png
    :align: center
    
-   *Rich text editor*
-
-.. figure:: ../images/data_style_editor_text.png
-   :align: center
+   *Style editor*
    
-   *Plain text editor*
-   
-The rich editor is designed for text formatting, search and replace, line numbering, and real-time syntax highlighting. You can also switch view to full-screen mode for a larger editing area. 
+The style editor supports line numbering, automatic indentation, and real-time syntax highlighting. You can also increase or decrease the font size of the editor.
 
 .. list-table::
    :widths: 25 75 
@@ -35,23 +30,16 @@ The rich editor is designed for text formatting, search and replace, line number
    * - **Button**
      - **Description**
 
-   * - .. image:: ../images/data_style_editor1.png
-     - search
-   * - .. image:: ../images/data_style_editor2.png
-     - go to line   
-   * - .. image:: ../images/data_style_editor3.png
-     - fullscreen mode
-   * - .. image:: ../images/data_style_editor4.png
-     - undo     
-   * - .. image:: ../images/data_style_editor5.png
+   * - .. image:: ../images/data_style_editor_undo.png
+     - undo
+   * - .. image:: ../images/data_style_editor_redo.png
      - redo
-   * - .. image:: ../images/data_style_editor6.png
-     - toggle syntax highlight on/off
-   * - .. image:: ../images/data_style_editor7.png
-     - reset highlight (if desynchronized from text)
-   * - .. image:: ../images/data_style_editor8.png
-     - about
-     
+   * - .. image:: ../images/data_style_editor_goto.png
+     - go to line
+   * - .. image:: ../images/data_style_editor_reformat.png
+     - auto-format the editor contents
+   * - .. image:: ../images/data_style_editor_fontsize.png
+     - change the font size of the editor
 
 To confirm that the SLD code is fully compliant with the SLD schema, click the :guilabel:`Validate` button. A message box will confirm whether the style contains validation errors.
 
@@ -67,6 +55,8 @@ To confirm that the SLD code is fully compliant with the SLD schema, click the :
    
    *Validation error message* 
 
+To view the :ref:`generated legend entry <decoration_types>` for the style, click the :guilabel:`Preview Legend` button.
+
 Add a Style
 -----------
 
@@ -77,7 +67,22 @@ The buttons for adding and removing a style can be found at the top of the :guil
 
    *Adding or removing a style*
    
-To add a new style, select the :guilabel:`Add a new style` button. You will be redirected to an editor page. Enter a name for the style. The editor page provides two options for submitting an SLD. You can paste the SLD directly into the editor, or you can select and upload a local file that contains the SLD.
+To add a new style, select the :guilabel:`Add a new style` button. You will be redirected to an editor page. Enter a name for the style. You can also select the style format. In a default GeoServer installation only SLD is supported, but other extensions (such as :ref:`css <extensions_css>`) add support for 
+additional formats. The editor page provides several options for submitting a new style. You can paste the style directly into the editor contents. You can generate a new default style based on an internal template:
+
+.. figure:: ../images/data_style_editor_generate.png
+   :align: center
+
+   *Generating a new default style.*
+
+You can copy the contents of an existing style into the editor:
+
+.. figure:: ../images/data_style_editor_copy.png
+   :align: center
+
+   *Copying an existing Style from GeoServer*
+
+You can select and upload a local file that contains the SLD:
 
 .. figure:: ../images/data_style_upload.png
    :align: center

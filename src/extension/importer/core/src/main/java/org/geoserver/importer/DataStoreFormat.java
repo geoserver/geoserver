@@ -89,6 +89,10 @@ public class DataStoreFormat extends VectorFormat {
         CatalogBuilder cb = new CatalogBuilder(catalog);
         cb.setWorkspace(workspace);
         DataStoreInfo store  = cb.buildDataStore(data.getName());
+        DataStoreFactorySpi factory = factory();
+        if (store.getName() == null) {
+            store.setName(factory.getDisplayName());
+        }
         store.setType(factory().getDisplayName());
         store.getConnectionParameters().putAll(params);
         return store;

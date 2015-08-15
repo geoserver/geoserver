@@ -709,6 +709,7 @@ public class SystemTestData extends CiteTestData {
 
         //setup the data
         File dir = new File(data, name);
+        FileUtils.deleteQuietly(dir);
         dir.mkdirs();
 
         File file = new File(dir, filename);

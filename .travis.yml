@@ -19,3 +19,9 @@ notifications:
 branches:
   only:
     - master
+os:
+  - linux
+  - osx
+matrix:
+  allow_failures:
+    - os: osx

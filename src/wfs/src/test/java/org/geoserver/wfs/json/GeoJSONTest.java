@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -19,10 +19,6 @@ import java.util.regex.Pattern;
 
 import javax.xml.namespace.QName;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONNull;
-import net.sf.json.JSONObject;
-
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.ProjectionPolicy;
@@ -40,6 +36,10 @@ import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
+
+import net.sf.json.JSONArray;
+import net.sf.json.JSONNull;
+import net.sf.json.JSONObject;
 
 /**
  * 
@@ -338,6 +338,31 @@ public class GeoJSONTest extends WFSTestSupport {
         JSONObject rootObject4 = JSONObject.fromObject( out4 );
         assertEquals(rootObject4.get("totalFeatures"),3);
         
+        //post with spatial-filter in another projection than layer-projection
+        String xml = "<wfs:GetFeature " + "service=\"WFS\" " + "outputFormat=\""+JSONType.json+"\" "
+                + "version=\"1.1.0\" "
+                + "xmlns:cdf=\"http://www.opengis.net/cite/data\" "
+                + "xmlns:ogc=\"http://www.opengis.net/ogc\" "
+                + "xmlns:wfs=\"http://www.opengis.net/wfs\" " + "> "
+                + "<wfs:Query typeName=\"sf:AggregateGeoFeature\" srsName=\"EPSG:900913\"> "
+                + "<ogc:Filter xmlns:ogc=\"http://www.opengis.net/ogc\"> "
+                + "<ogc:Intersects> "
+                + "<ogc:PropertyName></ogc:PropertyName> "
+                + "<gml:Polygon xmlns:gml=\"http://www.opengis.net/gml\" srsName=\"EPSG:900913\"> "
+                + "<gml:exterior> "
+                + "<gml:LinearRing> "
+                + "<gml:posList>7666573.330932751 3485566.812628661 8010550.557483965 3485566.812628661 8010550.557483965 3788277.001334882 7666573.330932751 3788277.001334882 7666573.330932751 3485566.812628661</gml:posList> "
+                + "</gml:LinearRing> "
+                + "</gml:exterior> "
+                + "</gml:Polygon> "
+                + "</ogc:Intersects> "
+                + "</ogc:Filter> "
+                + "</wfs:Query> " + "</wfs:GetFeature>";
+
+        String out5 = postAsServletResponse( "wfs", xml ).getOutputStreamContent();
+        
+        JSONObject rootObject5 = JSONObject.fromObject( out5 );
+        assertEquals(rootObject5.get("totalFeatures"),1);
     }
 
     @Test

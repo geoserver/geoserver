@@ -39,12 +39,13 @@ import org.geoserver.wfs.request.FeatureCollectionResponse;
 import org.geoserver.wfs.request.GetFeatureRequest;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.Query;
+import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.factory.Hints;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
+import org.geotools.filter.spatial.ReprojectingFilterVisitor;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.gml2.SrsSyntax;
-import org.geotools.gml2.bindings.GML2EncodingUtils;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.NamedIdentifier;
 import org.opengis.feature.Feature;
@@ -54,6 +55,7 @@ import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.GeometryDescriptor;
 import org.opengis.filter.Filter;
+import org.opengis.filter.FilterFactory2;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.ReferenceIdentifier;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -403,6 +405,7 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat {
     @SuppressWarnings("unchecked")
     private int getFeatureCountFromWFS11Request(Operation operation, WFSInfo wfs)
             throws IOException {
+        final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2(null);
         int totalCount = 0;
         Catalog catalog = wfs.getGeoServer().getCatalog();
         
@@ -417,9 +420,16 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat {
             FeatureSource<? extends FeatureType, ? extends Feature> source = meta.getFeatureSource(
                     null, null);
             Filter filter = query.getFilter();
+            
             if (filter == null) {
                 filter = Filter.INCLUDE;
             }
+            else {
+                //reproject spatial filter to the native crs
+                ReprojectingFilterVisitor reprojector = new ReprojectingFilterVisitor(FF, source.getSchema());
+                filter = (Filter) filter.accept(reprojector, null);
+            }
+            
             Query countQuery = new Query(typeName.getLocalPart(), filter);
             Map<String, String> viewParam = viewParams != null && viewParams.size() > idx ? viewParams
                     .get(idx) : null;

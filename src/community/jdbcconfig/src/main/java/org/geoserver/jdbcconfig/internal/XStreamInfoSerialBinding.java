@@ -28,7 +28,9 @@ public class XStreamInfoSerialBinding {
         this.xstreamPersister.setLoggingLevel(Level.WARNING);
         this.xstreamPersister.getXStream().allowTypes(new String[] {
                 "org.geoserver.wfs.WFSInfo.Version",
-                "org.geoserver.wms.WatermarkInfoImpl"
+                "org.geoserver.wfs.WFSInfo$Version",
+                "org.geoserver.wms.WatermarkInfoImpl",
+                "org.geoserver.wfs.GMLInfoImpl"
             });
     }
 

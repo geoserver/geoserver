@@ -60,5 +60,6 @@
   </bean>
   
     <bean id="JDBCCacheProvider" class="org.geoserver.jdbcconfig.internal.JDBCCacheProvider"/>
+    <bean id="JDBCConfigXStreamPersisterInitializer" class="org.geoserver.jdbcconfig.internal.JDBCConfigXStreamPersisterInitializer"/>
 
 </beans>

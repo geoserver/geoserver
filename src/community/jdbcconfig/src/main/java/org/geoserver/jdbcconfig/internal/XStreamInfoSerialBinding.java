@@ -26,12 +26,7 @@ public class XStreamInfoSerialBinding {
     public XStreamInfoSerialBinding(final XStreamPersisterFactory xspf) {
         this.xstreamPersister = xspf.createXMLPersister();
         this.xstreamPersister.setLoggingLevel(Level.WARNING);
-        this.xstreamPersister.getXStream().allowTypes(new String[] {
-                "org.geoserver.wfs.WFSInfo.Version",
-                "org.geoserver.wfs.WFSInfo$Version",
-                "org.geoserver.wms.WatermarkInfoImpl",
-                "org.geoserver.wfs.GMLInfoImpl"
-            });
+        //new JDBCConfigXStreamPersisterInitializer().init(this.xstreamPersister);
     }
 
     public <T extends Info> T entryToObject(InputStream in, Class<T> target) {

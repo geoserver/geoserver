@@ -16,17 +16,19 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
-
 import java.util.logging.Logger;
+
 import javax.servlet.ServletContext;
 import javax.sql.DataSource;
 
 import org.apache.commons.dbcp.BasicDataSource;
 import org.geoserver.catalog.impl.CatalogImpl;
 import org.geoserver.config.util.XStreamPersisterFactory;
+import org.geoserver.config.util.XStreamPersisterInitializer;
 import org.geoserver.jdbcconfig.internal.ConfigDatabase;
 import org.geoserver.jdbcconfig.internal.DbMappings;
 import org.geoserver.jdbcconfig.internal.Dialect;
+import org.geoserver.jdbcconfig.internal.JDBCConfigXStreamPersisterInitializer;
 import org.geoserver.jdbcconfig.internal.Util;
 import org.geoserver.jdbcconfig.internal.XStreamInfoSerialBinding;
 import org.geoserver.platform.GeoServerExtensionsHelper;
@@ -211,11 +213,13 @@ public class JDBCConfigTestSupport {
         // just to avoid hundreds of warnings in the logs about extension lookups with no app
         // context set
         appContext = createNiceMock(WebApplicationContext.class);
-        GeoServerExtensionsHelper.init(appContext);
-
         configureAppContext(appContext);
+
         replay(appContext);
 
+        GeoServerExtensionsHelper.init(appContext);
+        GeoServerExtensionsHelper.singleton("JDBCConfigXStreamPersisterInitializer", new JDBCConfigXStreamPersisterInitializer(), XStreamPersisterInitializer.class);
+        
 //        final File testDbDir = new File("target", "jdbcconfig");
 //        FileUtils.deleteDirectory(testDbDir);
 //        testDbDir.mkdirs();
@@ -238,10 +242,13 @@ public class JDBCConfigTestSupport {
     }
 
     protected void configureAppContext(WebApplicationContext appContext) {
+        expect(appContext.containsBean("JDBCConfigXStreamPersisterInitializer")).andStubReturn(true);
+
         expect(appContext.getBeansOfType((Class) anyObject()))
             .andReturn(Collections.EMPTY_MAP).anyTimes();
         expect(appContext.getBeanNamesForType((Class) anyObject()))
             .andReturn(new String[] {}).anyTimes();
+        
 
         ServletContext servletContext = createNiceMock(ServletContext.class);
         replay(servletContext);
@@ -259,6 +266,7 @@ public class JDBCConfigTestSupport {
                 dataSource.close();
             }
         }
+        GeoServerExtensionsHelper.clear();
     }
 
     public GeoServerResourceLoader getResourceLoader() {

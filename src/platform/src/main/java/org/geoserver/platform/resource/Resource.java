@@ -169,7 +169,8 @@ public interface Resource {
      * The listed files exist (and may be DIRECTORY or RESOURCE items).
      * 
      * @see File#listFiles()
-     * @return List of directory contents, or null if this resource is not a directory
+     * @return List of directory contents, an empty list if the directory does not exist
+     * @throws IllegalStateException if resource is a RESOURCE item
      */
     List<Resource> list();
 
@@ -184,12 +185,8 @@ public interface Resource {
     Type getType();
     
     /**
-     * Delete the resource.
-     * <p>
-     * Type.DIRECTORY resources must be empty before being removed. Use {@link Resources#delete(Resource)} for
-     * recursive delete.</p>
+     * Deletes a resource, if the resource is a directory contents will be recursively deleted.
      * 
-     * @see File#delete()
      * @return <code>true</code> if and only if the file is deleted
      */
     boolean delete();

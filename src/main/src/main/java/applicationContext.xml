@@ -17,9 +17,12 @@
     <bean id="lockProviderInitializer" class="org.geoserver.config.LockProviderInitializer"/>
     
 	<!-- resources -->
-    <bean id="resourceStore" class="org.geoserver.platform.resource.DataDirectoryResourceStore">
-      <property name="lockProvider" ref="lockProvider"/>
-    </bean>
+    <bean id="dataDirectoryResourceStore" class="org.geoserver.platform.resource.DataDirectoryResourceStore">
+        <property name="lockProvider" ref="lockProvider"/>
+    </bean>  
+    <bean id="resourceStore" class="org.geoserver.platform.resource.ResourceStoreProxy">
+        <property name="delegate" ref="dataDirectoryResourceStore"/>
+    </bean>    
     <bean id="resourceLoader" class="org.geoserver.platform.GeoServerResourceLoader">
 	    <constructor-arg ref="resourceStore"/>
     </bean>

@@ -506,7 +506,7 @@ public abstract class ResourceTheoryTest {
         Collection<Resource> result = res.list();        
         assumeThat(result.size(), greaterThan(0));
         
-        assertTrue(Resources.delete(res));
+        assertTrue(res.delete());
         
     }
 }

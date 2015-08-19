@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014-2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -165,6 +165,11 @@ public class WPSExecutionManager implements ApplicationContextAware,
      */
     public ExecuteResponseType submit(final ExecuteRequest request, boolean synchronous)
             throws ProcessException {
+
+        WPSInfo wps = geoServer.getService(WPSInfo.class);
+        if(synchronous && wps.getSynchronousDisabled()) {
+            throw new WPSException("Synchronous WPS requests are disabled");
+        }
 
         Name processName = request.getProcessName();
         ProcessManager processManager = getProcessManager(processName);

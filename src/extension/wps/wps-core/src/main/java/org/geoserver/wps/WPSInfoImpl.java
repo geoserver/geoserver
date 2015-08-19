@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014-2015 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -35,6 +35,12 @@ public class WPSInfoImpl extends ServiceInfoImpl implements WPSInfo {
     static final String KEY_MAX_ASYNCH = "maxAsynchronousProcesses";
     
     static final int DEFAULT_MAX_ASYNCH = Runtime.getRuntime().availableProcessors();
+
+    static final String KEY_SYNCHRONOUS_DISABLED = "synchronousDisabled";
+
+    static final boolean DEFAULT_SYNCHRONOUS_DISABLED = false;
+
+
     
     /** 
      * Connection timeout in seconds. 
@@ -90,6 +96,12 @@ public class WPSInfoImpl extends ServiceInfoImpl implements WPSInfo {
      * before it gets killed by the WPS container
      */
     int maxAsynchronousExecutionTime;
+
+    /**
+     * If synchronous mode is disabled
+     */
+    Boolean synchronousDisabled;
+
 
     public WPSInfoImpl() {
         title = "Prototype GeoServer WPS";
@@ -189,6 +201,30 @@ public class WPSInfoImpl extends ServiceInfoImpl implements WPSInfo {
     }
 
     @Override
+    public boolean getSynchronousDisabled() {
+
+        if(synchronousDisabled == null) {
+            // check the metadata map for backwards compatibility with 2.1.x series
+            MetadataMap md = getMetadata();
+            if(md == null) {
+                return DEFAULT_SYNCHRONOUS_DISABLED;
+            }
+            Boolean disabled = md.get(KEY_SYNCHRONOUS_DISABLED, Boolean.class);
+            if(disabled == null) {
+                return DEFAULT_SYNCHRONOUS_DISABLED;
+            }
+            synchronousDisabled = disabled;
+        }
+
+        return synchronousDisabled;
+    }
+
+    @Override
+    public void setSynchronousDisabled(boolean synchronousDisabled) {
+        this.synchronousDisabled = synchronousDisabled;
+    }
+
+    @Override
     public List<ProcessGroupInfo> getProcessGroups() {
         return processGroups;
     }
@@ -268,6 +304,7 @@ public class WPSInfoImpl extends ServiceInfoImpl implements WPSInfo {
         result = prime * result + maxAsynchronousExecutionTime;
         result = prime * result + maxComplexInputSize;
         result = prime * result + maxSynchronousExecutionTime;
+        result = prime * result + ((synchronousDisabled == null) ? 0 : synchronousDisabled.hashCode());
         result = prime * result
                 + ((maxSynchronousProcesses == null) ? 0 : maxSynchronousProcesses.hashCode());
         result = prime * result + ((processGroups == null) ? 0 : processGroups.hashCode());
@@ -303,6 +340,8 @@ public class WPSInfoImpl extends ServiceInfoImpl implements WPSInfo {
         if (maxComplexInputSize != other.maxComplexInputSize)
             return false;
         if (maxSynchronousExecutionTime != other.maxSynchronousExecutionTime)
+            return false;
+        if(synchronousDisabled != other.synchronousDisabled)
             return false;
         if (maxSynchronousProcesses == null) {
             if (other.maxSynchronousProcesses != null)

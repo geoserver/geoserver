@@ -184,7 +184,7 @@ public final class Files {
 
         @Override
         public boolean delete() {
-            return file.delete();
+            return Files.delete(file);
         }
 
         @Override
@@ -441,9 +441,6 @@ public final class Files {
      * @returns true if any file present is removed
      */
     public static boolean delete(File file) {
-        if( file == null || !file.exists() ){
-            return true; // already done
-        }
         if( file.isDirectory()){
             emptyDirectory(file);    
         }

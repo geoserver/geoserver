@@ -436,7 +436,12 @@ public class FileSystemResourceStore implements ResourceStore {
 
         @Override
         public boolean delete() {
-            return Files.delete(file);
+            Lock lock = lock();
+            try {
+                return Files.delete(file);
+            } finally {
+                lock.release();
+            }
         }
 
         @Override

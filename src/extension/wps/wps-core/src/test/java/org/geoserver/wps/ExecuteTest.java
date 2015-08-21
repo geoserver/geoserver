@@ -28,8 +28,6 @@ import java.util.zip.ZipInputStream;
 
 import javax.xml.namespace.QName;
 
-import net.opengis.ows11.BoundingBoxType;
-
 import org.apache.commons.codec.binary.Base64;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
@@ -70,6 +68,8 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.io.WKTReader;
+
+import net.opengis.ows11.BoundingBoxType;
 
 public class ExecuteTest extends WPSTestSupport {
 
@@ -1057,7 +1057,7 @@ public class ExecuteTest extends WPSTestSupport {
         // print(dom);
         assertXpathExists("//wps:ProcessStarted", dom);
         assertXpathEvaluatesTo("26", "//wps:ProcessStarted/@percentCompleted", dom);
-        assertXpathEvaluatesTo("Currently at 50.0", "//wps:ProcessStarted", dom);
+        assertXpathEvaluatesTo("Currently at 10.0", "//wps:ProcessStarted", dom);
 
         
         // now schedule the exit and wait for it to exit

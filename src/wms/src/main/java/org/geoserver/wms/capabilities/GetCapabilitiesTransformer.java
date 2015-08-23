@@ -74,6 +74,7 @@ import org.opengis.feature.type.Name;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.TransformException;
+import org.opengis.util.InternationalString;
 import org.springframework.util.Assert;
 import org.vfny.geoserver.util.ResponseUtils;
 import org.xml.sax.Attributes;
@@ -956,9 +957,11 @@ public class GetCapabilitiesTransformer extends TransformerBase {
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
-                element("Name", defaultStyle.getName());
-                element("Title", ftStyle.getTitle());
-                element("Abstract", ftStyle.getAbstract());
+                element("Name", defaultStyle.prefixedName());
+                if (ftStyle.getDescription() != null) {
+                    element("Title", ftStyle.getDescription().getTitle());
+                    element("Abstract", ftStyle.getDescription().getAbstract());
+                }
                 handleLegendURL(layer, layer.getLegend(), null ,layer.getDefaultStyle());
                 end("Style");
 
@@ -971,9 +974,11 @@ public class GetCapabilitiesTransformer extends TransformerBase {
                         throw new RuntimeException(e);
                     }
                     start("Style");
-                    element("Name", styleInfo.getName());
-                    element("Title", ftStyle.getTitle());
-                    element("Abstract", ftStyle.getAbstract());
+                    element("Name", styleInfo.prefixedName());
+                    if (ftStyle.getDescription() != null) {
+                        element("Title", ftStyle.getDescription().getTitle());
+                        element("Abstract", ftStyle.getDescription().getAbstract());
+                    }
                     handleLegendURL(layer, null, styleInfo, styleInfo);
                     end("Style");
                 }
@@ -985,6 +990,12 @@ public class GetCapabilitiesTransformer extends TransformerBase {
         
 
         
+        private void element(String element, InternationalString is) {
+            if (is != null) {
+                element(element, is.toString());
+            }
+        }
+
         /**
          * Inserts the ScaleHint element in the layer information. 
          * <p>

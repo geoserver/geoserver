@@ -28,6 +28,7 @@ import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.ContactInfo;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.MockData;
@@ -50,8 +51,7 @@ public class CapabilitiesTest extends WMSTestSupport {
         super.setUpTestData(testData);
         testData.setUpDefaultRasterLayers();        
     }
-    
-    
+
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
@@ -65,8 +65,14 @@ public class CapabilitiesTest extends WMSTestSupport {
         global.getSettings().setProxyBaseUrl("src/test/resources/geoserver");
         getGeoServer().save(global);
         
+        // add a workspace qualified style
+        WorkspaceInfo ws = catalog.getWorkspaceByName(MockData.CITE_PREFIX);
+        testData.addStyle(ws, "Lakes", "Lakes.sld", SystemTestData.class, catalog);
+        StyleInfo lakesStyle = catalog.getStyleByName(ws, "Lakes");
+        LayerInfo lakesLayer = catalog.getLayerByName(MockData.LAKES.getLocalPart());
+        lakesLayer.setDefaultStyle(lakesStyle);
+        catalog.save(lakesLayer);
     }
-
 
 
     @Test
@@ -452,4 +458,12 @@ public class CapabilitiesTest extends WMSTestSupport {
         
     }
     
+    @Test
+    public void testStyleWorkspaceQualified() throws Exception {
+        Document doc = getAsDOM("wms?service=WMS&request=getCapabilities&version=1.1.1", true);
+
+        // check the style name got prefixed too
+        assertXpathEvaluatesTo("cite:Lakes", "//Layer[Name='cite:Lakes']/Style[1]/Name", doc);
+    }
+
 }

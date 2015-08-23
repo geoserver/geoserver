@@ -30,6 +30,7 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataLinkInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.ContactInfo;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.MockData;
@@ -78,6 +79,13 @@ public class CapabilitiesIntegrationTest extends WMSTestSupport {
         global.getSettings().setProxyBaseUrl("src/test/resources/geoserver");
         getGeoServer().save(global);
         
+        // add a workspace qualified style
+        WorkspaceInfo ws = catalog.getWorkspaceByName(MockData.CITE_PREFIX);
+        testData.addStyle(ws, "Lakes", "Lakes.sld", SystemTestData.class, catalog);
+        StyleInfo lakesStyle = catalog.getStyleByName(ws, "Lakes");
+        LayerInfo lakesLayer = catalog.getLayerByName(MockData.LAKES.getLocalPart());
+        lakesLayer.setDefaultStyle(lakesStyle);
+        catalog.save(lakesLayer);
     }
     
     
@@ -339,7 +347,7 @@ public class CapabilitiesIntegrationTest extends WMSTestSupport {
         getGeoServer().save(service);
 
         Document doc = getAsDOM("wms?service=WMS&request=getCapabilities&version=1.3.0", true);
-        print(doc);
+        // print(doc);
 
         String base = "wms:WMS_Capabilities/wms:Service/";
         assertXpathEvaluatesTo("WMS", base + "wms:Name", doc);
@@ -525,4 +533,14 @@ public class CapabilitiesIntegrationTest extends WMSTestSupport {
         Document doc = getAsDOM("wms?service=WMS&request=getCapabilities&version=1.3.0", true);
         assertXpathEvaluatesTo("1", "count(//wms:GetMap[wms:Format = '" + OpenLayersMapOutputFormat.MIME_TYPE + "'])", doc);
     }
+
+    @Test
+    public void testStyleWorkspaceQualified() throws Exception {
+        Document doc = getAsDOM("wms?service=WMS&request=getCapabilities&version=1.3.0", true);
+
+        // check the style name got prefixed too
+        assertXpathEvaluatesTo("cite:Lakes",
+                "//wms:Layer[wms:Name='cite:Lakes']/wms:Style[1]/wms:Name", doc);
+    }
+
 }

@@ -68,7 +68,7 @@ public class DefaultProcessArtifactsStore implements ProcessArtifactsStore {
     @Override
     public void clearArtifacts(String executionId) throws IOException {
         Resource resource = store.get(executionId);
-        Resources.delete(resource);
+        resource.delete();
     }
 
 }

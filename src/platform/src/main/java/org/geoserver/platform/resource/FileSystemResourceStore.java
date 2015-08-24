@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -374,9 +375,12 @@ public class FileSystemResourceStore implements ResourceStore {
 
         @Override
         public List<Resource> list() {
+            if (file.isFile()) {
+                throw new IllegalStateException("File (not a directory) at " + path);
+            }
             String array[] = file.list();
             if (array == null) {
-                return null; // not a directory
+                return Collections.EMPTY_LIST;
             }
             List<Resource> list = new ArrayList<Resource>(array.length);
             for (String filename : array) {
@@ -432,7 +436,12 @@ public class FileSystemResourceStore implements ResourceStore {
 
         @Override
         public boolean delete() {
-            return file.exists() && file.delete();
+            Lock lock = lock();
+            try {
+                return Files.delete(file);
+            } finally {
+                lock.release();
+            }
         }
 
         @Override

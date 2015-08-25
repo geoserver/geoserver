@@ -169,8 +169,7 @@ public interface Resource {
      * The listed files exist (and may be DIRECTORY or RESOURCE items).
      * 
      * @see File#listFiles()
-     * @return List of directory contents, an empty list if the directory does not exist
-     * @throws IllegalStateException if resource is a RESOURCE item
+     * @return List of directory contents, or an empty list for UNDEFINED or RESOURCE 
      */
     List<Resource> list();
 

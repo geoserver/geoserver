@@ -8,6 +8,7 @@ package org.geoserver.platform.resource;
 import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -84,7 +85,7 @@ final class NullResourceStore implements ResourceStore {
 
             @Override
             public List<Resource> list() {
-                return null;
+                return Collections.emptyList();
             }
 
             @Override

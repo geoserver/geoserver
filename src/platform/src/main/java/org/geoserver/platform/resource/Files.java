@@ -169,7 +169,7 @@ public final class Files {
 
         @Override
         public List<Resource> list() {
-            return null;
+            return Collections.emptyList();
         }
 
         @Override

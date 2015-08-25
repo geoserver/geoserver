@@ -194,23 +194,23 @@ public abstract class ResourceTheoryTest {
     }
     
     @Theory
-    public void theoryLeavesHaveNoListOfChildren(String path) throws Exception {
+    public void theoryLeavesHaveEmptyListOfChildren(String path) throws Exception {
         Resource res = getResource(path);
         assumeThat(res, is(resource()));
         
         Collection<Resource> result = res.list();
         
-        assertThat(result, nullValue());
+        assertThat(result, empty());
     }
     
     @Theory
-    public void theoryUndefinedHaveNullListOfChildren(String path) throws Exception {
+    public void theoryUndefinedHaveEmptyListOfChildren(String path) throws Exception {
         Resource res = getResource(path);
         assumeThat(res, is(undefined()));
         
         Collection<Resource> result = res.list();
         
-        assertThat(result, nullValue());
+        assertThat(result, empty());
     }
     
     @Theory

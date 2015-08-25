@@ -353,6 +353,26 @@ public class FileSystemResourceStore implements ResourceStore {
         }
 
         @Override
+        public List<Resource> list() {
+            if (!file.exists()) {
+                return Collections.emptyList();
+            }
+            if (file.isFile()) {
+                return Collections.emptyList();
+            }
+            String array[] = file.list();
+            if (array == null) {
+                return Collections.emptyList();
+            }
+            List<Resource> list = new ArrayList<Resource>(array.length);
+            for (String filename : array) {
+                Resource resource = FileSystemResourceStore.this.get(Paths.path(path, filename));
+                list.add(resource);
+            }
+            return list;
+        }
+
+        @Override
         public Resource parent() {
             int split = path.lastIndexOf('/');
             if (split == -1) {
@@ -371,23 +391,6 @@ public class FileSystemResourceStore implements ResourceStore {
                 return this;
             }
             return FileSystemResourceStore.this.get(Paths.path(path, resourcePath));
-        }
-
-        @Override
-        public List<Resource> list() {
-            if (file.isFile()) {
-                throw new IllegalStateException("File (not a directory) at " + path);
-            }
-            String array[] = file.list();
-            if (array == null) {
-                return Collections.EMPTY_LIST;
-            }
-            List<Resource> list = new ArrayList<Resource>(array.length);
-            for (String filename : array) {
-                Resource resource = FileSystemResourceStore.this.get(Paths.path(path, filename));
-                list.add(resource);
-            }
-            return list;
         }
 
         @Override

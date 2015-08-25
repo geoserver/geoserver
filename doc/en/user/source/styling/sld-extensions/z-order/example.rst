@@ -45,8 +45,8 @@ For reference, this is the dataset schema:
 The dataset contains several different values for z_order, in particular:
 -10, -7, -5, -3, -1,  0,  3,  4,  5,  7,  9, 10, 13, 14, 15, 17, 19.
 
-Here is a sample CSS style not using z-ordering, but not groups, to perform the display. 
-Road casing is achieved by multilple FeatureTypeStyle, or ``z-index`` values in CSS:
+Here is a sample CSS style using z-ordering, but not groups, to perform the display. 
+Road casing is achieved by multiple FeatureTypeStyle, or ``z-index`` values in CSS:
 
 .. code-block:: css
 

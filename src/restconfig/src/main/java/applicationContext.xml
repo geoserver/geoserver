@@ -277,6 +277,22 @@
           <value>styleFinder2</value>
         </entry>
         <entry>
+          <key><value>/stylegenerator.{format}</value></key>
+          <value>styleGeneratorFinder</value>
+        </entry>
+        <entry>
+          <key><value>/stylegenerator</value></key>
+          <value>styleGeneratorFinder</value>
+        </entry>
+        <entry>
+          <key><value>/stylegenerator/{template}.{format}</value></key>
+          <value>styleGeneratorFinder</value>
+        </entry>
+        <entry>
+          <key><value>/stylegenerator/{template}</value></key>
+          <value>styleGeneratorFinder</value>
+        </entry>
+        <entry>
           <key><value>/layers/{layer}.{format}</value></key>
           <value>layerFinder2</value>
         </entry>
@@ -532,6 +548,7 @@
   <bean id="coverageFinder" class="org.geoserver.catalog.rest.CoverageFinder" parent="abstractCatalogFinder"/>
   <bean id="wmsLayerFinder" class="org.geoserver.catalog.rest.WMSLayerFinder" parent="abstractCatalogFinder"/>
   <bean id="styleFinder2" class="org.geoserver.catalog.rest.StyleFinder" parent="abstractCatalogFinder"/>
+  <bean id="styleGeneratorFinder" class="org.geoserver.catalog.rest.StyleGeneratorFinder" parent="abstractCatalogFinder"/>
   <bean id="layerFinder2" class="org.geoserver.catalog.rest.LayerFinder" parent="abstractCatalogFinder"/>
   <bean id="layerGroupFinder2" class="org.geoserver.catalog.rest.LayerGroupFinder" parent="abstractCatalogFinder"/>
   <bean id="freemarkerTemplateFinder" class="org.geoserver.catalog.rest.FreemarkerTemplateFinder" parent="abstractCatalogFinder"/>

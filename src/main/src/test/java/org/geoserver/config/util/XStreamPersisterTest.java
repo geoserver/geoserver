@@ -12,7 +12,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import javax.measure.unit.SI;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -29,16 +32,24 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogFactory;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
+import org.geoserver.catalog.CoverageView;
+import org.geoserver.catalog.CoverageView.CompositionType;
+import org.geoserver.catalog.CoverageView.CoverageBand;
+import org.geoserver.catalog.CoverageView.InputCoverageBand;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.Keyword;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.CatalogImpl;
+import org.geoserver.catalog.impl.CoverageDimensionImpl;
+import org.geoserver.catalog.impl.MetadataLinkInfoImpl;
 import org.geoserver.catalog.impl.WMSStoreInfoImpl;
 import org.geoserver.config.ContactInfo;
 import org.geoserver.config.GeoServerFactory;
@@ -928,6 +939,49 @@ public class XStreamPersisterTest {
         // print(in(out));
         XMLAssert.assertXpathEvaluatesTo("Musa acuminata",
                 "/workspace/metadata/entry[@key='banana']/sweetBanana/@name", dom);
+    }
+
+    @Test
+    public void testCoverageView() throws Exception {
+        Catalog catalog = new CatalogImpl();
+        CatalogFactory cFactory = catalog.getFactory();
+        CoverageInfo coverage = cFactory.createCoverage();
+        MetadataMap metadata = coverage.getMetadata();
+        coverage.setName("test");
+        coverage.setEnabled(true);
+        coverage.getAlias().add("alias");
+        coverage.getKeywords().add(new Keyword("key"));
+        MetadataLinkInfoImpl metadataLink = new MetadataLinkInfoImpl();
+        metadataLink.setAbout("about");
+        coverage.getMetadataLinks().add(metadataLink);
+        CoverageDimensionImpl coverageDimension = new CoverageDimensionImpl("time");
+        coverageDimension.setNullValues(Collections.singletonList(new Double(0)));
+        coverage.getDimensions().add(coverageDimension);
+        coverage.getInterpolationMethods().add("Bilinear");
+        coverage.getParameters().put("ParameterKey", "ParameterValue");
+        coverage.getSupportedFormats().add("GEOTIFF");
+        coverage.getRequestSRS().add("EPSG:4326");
+        coverage.getResponseSRS().add("EPSG:4326");
+
+        final InputCoverageBand band_u = new InputCoverageBand("u-component_of_current_surface", "0");
+        final CoverageBand outputBand_u = new CoverageBand(Collections.singletonList(band_u),
+                "u-component_of_current_surface@0", 0, CompositionType.BAND_SELECT);
+
+        final InputCoverageBand band_v = new InputCoverageBand("v-component_of_current_surface", "0");
+        final CoverageBand outputBand_v = new CoverageBand(Collections.singletonList(band_v),
+                "v-component_of_current_surface@0", 1, CompositionType.BAND_SELECT);
+        final List<CoverageBand> coverageBands = new ArrayList<CoverageBand>(2);
+        coverageBands.add(outputBand_u);
+        coverageBands.add(outputBand_v);
+        CoverageView coverageView = new CoverageView("regional_currents", coverageBands);
+        metadata.put("COVERAGE_VIEW", coverageView);
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        persister.save(coverage, out);
+
+        CoverageInfo coverage2 = persister.load(in(out), CoverageInfo.class);
+        assertEquals(coverage, coverage2);
+
     }
 
     ByteArrayOutputStream out() {

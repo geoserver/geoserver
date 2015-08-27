@@ -10,6 +10,7 @@ import static org.geoserver.ows.util.ResponseUtils.buildSchemaURL;
 import static org.geoserver.ows.util.ResponseUtils.buildURL;
 import static org.geoserver.ows.util.ResponseUtils.params;
 
+import java.awt.Dimension;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -951,7 +952,7 @@ public class GetCapabilitiesTransformer extends TransformerBase {
                     element("Title", ftStyle.getDescription().getTitle());
                     element("Abstract", ftStyle.getDescription().getAbstract());
                 }
-                handleLegendURL(layer.getName(), defaultStyle.getLegend(), null);
+                handleLegendURL(layer, defaultStyle.getLegend(), null, defaultStyle);
                 end("Style");
 
                 Set<StyleInfo> styles = layer.getStyles();
@@ -968,7 +969,7 @@ public class GetCapabilitiesTransformer extends TransformerBase {
                         element("Title", ftStyle.getDescription().getTitle());
                         element("Abstract", ftStyle.getDescription().getAbstract());
                     }
-                    handleLegendURL(layer.getName(), styleInfo.getLegend(), styleInfo);
+                    handleLegendURL(layer, styleInfo.getLegend(), styleInfo, styleInfo);
                     end("Style");
                 }
             }

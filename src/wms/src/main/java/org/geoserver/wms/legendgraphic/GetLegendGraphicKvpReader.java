@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -26,9 +26,9 @@ import java.util.logging.Logger;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.LayerInfo.Type;
 import org.geoserver.catalog.LegendInfo;
 import org.geoserver.catalog.PublishedInfo;
+import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.impl.LegendInfoImpl;
 import org.geoserver.ows.KvpRequestReader;

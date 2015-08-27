@@ -438,7 +438,11 @@ public class GetLegendGraphicRequest extends WMSRequest {
      */
     public void setLayer(FeatureType layer) {
         this.legends.clear();
-    	this.legends.add(new LegendRequest(layer));
+        if(layer==null) {
+            this.legends.add(new LegendRequest());
+        } else {
+            this.legends.add(new LegendRequest(layer));
+        }
     }
     
     /**

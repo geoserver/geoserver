@@ -112,7 +112,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
 
     String rawStyle;
 
-    private Image legend;
+    private Image legendImg;
 
     String lastStyle;
 
@@ -197,8 +197,8 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
         styleForm.add(editor);
 
         // add the Legend fields        
-        ExternalGraphicPanel legend = new ExternalGraphicPanel("legend", styleModel, styleForm);
-        styleForm.add(legend);
+        ExternalGraphicPanel legendPanel = new ExternalGraphicPanel("legendPanel", styleModel, styleForm);
+        styleForm.add(legendPanel);
 
         if (style != null) {
             try {
@@ -266,11 +266,11 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
         legendContainer = new WebMarkupContainer("legendContainer");
         legendContainer.setOutputMarkupId(true);
         add(legendContainer);
-        legend = new Image("legend");
-        legendContainer.add(legend);
-        legend.setVisible(false);
-        legend.setOutputMarkupId(true);
-        legend.setImageResource(new DynamicWebResource() {
+        this.legendImg = new Image("legendImg");
+        legendContainer.add(this.legendImg);
+        this.legendImg.setVisible(false);
+        this.legendImg.setOutputMarkupId(true);
+        this.legendImg.setImageResource(new DynamicWebResource() {
 
             @Override
             protected ResourceState getResourceState() {
@@ -300,8 +300,8 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
                                 }
 
                                 GetLegendGraphicRequest request = new GetLegendGraphicRequest();
-                                request.setStyle(style);
                                 request.setLayer(null);
+                                request.setStyle(style);
                                 request.setStrict(false);
                                 Map<String, String> legendOptions = new HashMap<String, String>();
                                 legendOptions.put("forceLabels", "on");
@@ -404,7 +404,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
                 wsChoice.processInput();
                 lastStyle = editor.getInput();
 
-                legend.setVisible(true);
+                legendImg.setVisible(true);
                 target.addComponent(legendContainer);
             }
 

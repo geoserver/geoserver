@@ -6,7 +6,7 @@
 package org.geoserver.wms.map;
 
 import static org.geoserver.data.test.CiteTestData.STREAMS;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -15,7 +15,6 @@ import java.awt.Color;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
-import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -24,7 +23,6 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.imageio.ImageIO;
 import javax.media.jai.Interpolation;
 import javax.media.jai.RenderedOp;
 import javax.xml.namespace.QName;
@@ -36,7 +34,6 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
-import org.geoserver.data.test.TestData;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.security.decorators.DecoratingFeatureSource;
 import org.geoserver.wms.GetMapRequest;
@@ -342,9 +339,10 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
         imageMap.dispose();
         assertNotBlank("testInterpolationsBicubic", imageBicubic);
         // test some sample pixels to check rendering is different using different interpolations
-        assertFalse(getPixelColor(imageNearest, 200, 200).getRGB() == getPixelColor(imageBicubic, 200, 200).getRGB());
-        assertFalse(getPixelColor(imageNearest, 100, 100).getRGB() == getPixelColor(imageBicubic, 100, 100).getRGB());
-        assertFalse(getPixelColor(imageNearest, 300, 300).getRGB() == getPixelColor(imageBicubic, 300, 300).getRGB());
+        assertNotEquals(getPixelColor(imageNearest, 200, 200).getRGB(),
+                getPixelColor(imageBicubic, 200, 200).getRGB());
+        assertNotEquals(getPixelColor(imageNearest, 300, 300).getRGB(),
+                getPixelColor(imageBicubic, 300, 300).getRGB());
     }
 
     private void addRasterToMap(final WMSMapContent map, final QName typeName) throws IOException, FactoryRegistryException, TransformException, SchemaException {

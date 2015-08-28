@@ -42,7 +42,8 @@ public class LegendCapabilitiesTest extends WMSTestSupport {
     private static final int LEGEND_HEIGHT = 22;
     private static final String LEGEND_FORMAT = "image/jpeg";
     private static final String IMAGE_URL = "styles/legend.png";
-    private static final String BASE = "http://locationhost:8080/geoserver";
+    private static final String BASE = "src/test/resources/geoserver";
+    
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
@@ -66,6 +67,7 @@ public class LegendCapabilitiesTest extends WMSTestSupport {
                 SystemTestData.class, getCatalog());
         
         GeoServerInfo global = getGeoServer().getGlobal();
+        
         global.getSettings().setProxyBaseUrl(BASE);
         getGeoServer().save(global);
         
@@ -104,6 +106,6 @@ public class LegendCapabilitiesTest extends WMSTestSupport {
         assertXpathEvaluatesTo(String.valueOf(LEGEND_WIDTH), legendUrlPath + "/@width", dom);
         assertXpathEvaluatesTo(String.valueOf(LEGEND_HEIGHT), legendUrlPath + "/@height", dom);
         assertXpathEvaluatesTo(LEGEND_FORMAT, legendUrlPath + "/Format", dom);
-        assertXpathEvaluatesTo(BASE+"/"+IMAGE_URL, legendUrlPath + "/wms:OnlineResource/@xlink:href", dom);
+        assertXpathEvaluatesTo(BASE+"/"+IMAGE_URL, legendUrlPath + "/OnlineResource/@xlink:href", dom);
     }
 }

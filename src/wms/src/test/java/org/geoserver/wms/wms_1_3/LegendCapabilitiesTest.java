@@ -42,7 +42,7 @@ public class LegendCapabilitiesTest extends WMSTestSupport {
     private static final int LEGEND_HEIGHT = 22;
     private static final String LEGEND_FORMAT = "image/jpeg";
     private static final String IMAGE_URL = "styles/legend.png";
-    private static final String BASE = "http://locationhost:8080/geoserver";
+    private static final String BASE = "src/test/resources/geoserver";
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);

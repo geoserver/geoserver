@@ -1273,7 +1273,7 @@ public class GetCapabilitiesTransformer extends TransformerBase {
                 attrs.addAttribute("", "xmlns:xlink", "xmlns:xlink", "", XLINK_NS);
                 attrs.addAttribute(XLINK_NS, "type", "xlink:type", "", "simple");
                 
-                String legendUrl = buildURL(request.getBaseUrl(), "styles/"+legend.getOnlineResource(), null, URLType.RESOURCE);
+                String legendUrl = buildURL(request.getBaseUrl(), legend.getOnlineResource(), null, URLType.RESOURCE);
                 attrs.addAttribute(XLINK_NS, "href", "xlink:href", "", legendUrl);
 
                 element("OnlineResource", null, attrs);

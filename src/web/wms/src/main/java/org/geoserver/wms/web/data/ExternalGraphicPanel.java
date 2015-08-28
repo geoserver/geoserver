@@ -59,9 +59,9 @@ import org.h2.util.Resources;
 public class ExternalGraphicPanel extends Panel {
 
     private TextField<String> onlineResource;
-    private TextField format;
-    private TextField width;
-    private TextField height;
+    private TextField<String> format;
+    private TextField<String> width;
+    private TextField<String> height;
     private Label noLegend;
     private WebMarkupContainer table;
     private GeoServerAjaxFormLink autoFill;

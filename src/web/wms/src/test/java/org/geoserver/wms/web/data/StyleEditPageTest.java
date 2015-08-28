@@ -58,10 +58,10 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
         tester.assertComponent("form:name", TextField.class);
         tester.assertComponent("form:styleEditor:editorContainer:editorParent:editor", TextArea.class);
         
-        tester.assertComponent("form:onlineResource", TextField.class);
-        tester.assertComponent("form:width", TextField.class);
-        tester.assertComponent("form:height", TextField.class);
-        tester.assertComponent("form:verifyImage", GeoServerAjaxFormLink.class);
+//        tester.assertComponent("form:legendPanel:container:list:onlineResource", TextField.class);
+//        tester.assertComponent("form:legendPanel:container:list:width", TextField.class);
+//        tester.assertComponent("form:legendPanel:container:list:height", TextField.class);
+//        tester.assertComponent("form:legendPanel:container:list:verifyImage", GeoServerAjaxFormLink.class);
         
         tester.assertModelValue("form:name", "Buildings");
         

@@ -25,6 +25,7 @@ import org.geoserver.config.JAIEXTInfo;
 import org.geoserver.config.JAIInfo;
 import org.geoserver.config.JAIInfo.PngEncoderType;
 import org.geoserver.web.wicket.ParamResourceModel;
+import org.geotools.image.ImageWorker;
 
 import com.sun.media.imageioimpl.common.PackageUtil;
 
@@ -67,15 +68,22 @@ public class JAIPage extends ServerAdminPage {
         CheckBox checkBoxMosaic = new CheckBox("allowNativeMosaic");
         CheckBox checkBoxWarp = new CheckBox("allowNativeWarp");
         JAIInfo info = (JAIInfo)jaiModel.getObject();
-        JAIEXTInfo je = info.getJAIEXTInfo();
+        JAIEXTInfo je = null;
+        boolean isJAIExtEnabled = ImageWorker.isJaiExtEnabled(); 
+        if (isJAIExtEnabled) {
+            je = info.getJAIEXTInfo();
+        }
         boolean mosaicEnabled = je != null && !je.getJAIEXTOperations().contains("Mosaic");
         boolean warpEnabled = je != null && !je.getJAIEXTOperations().contains("Warp");
         checkBoxMosaic.setEnabled(mosaicEnabled);
         checkBoxWarp.setEnabled(warpEnabled);
         form.add(checkBoxMosaic);
         form.add(checkBoxWarp);
-        
-        form.add(new JAIEXTPanel("jaiext", jaiModel));
+        JAIEXTPanel jaiExtPanel = new JAIEXTPanel("jaiext", jaiModel);
+        if (!isJAIExtEnabled) {
+            jaiExtPanel.setVisible(false);
+        }
+        form.add(jaiExtPanel);
 
         Button submit = new Button("submit", new StringResourceModel("submit", this, null)) {
             @Override

@@ -42,9 +42,37 @@ When supporting large images it is efficient to work on image subsets without lo
 
 *It is quite important to remember that faster encoders are not necessarily going to visibly improve performance, if data loading and processing/rendering are dominating the response time, choosing a better encoder will likely not provide the expected benefits.*
 
-**JAI/JAI-EXT Setup**-This panel can be used for choosing which operations may be registered as *JAI* or *JAI-EXT* ones. Users have to select the operations to move and then, when clicking on *Save*, GeoServer internally will replace the *JAI/JAI-EXT* operations and the associated *GeoTools* ones. The main difference between *JAI* and *JAI-EXT* operations is the support for external **ROIs** and image **NoData**.
+JAI-EXT  
+-------
 
-.. note:: More information about **JAI-EXT** may be found at the `JAI-EXT Project page <https://github.com/geosolutions-it/jai-ext>`_.
+Quoting from `JAI-EXT Project page <https://github.com/geosolutions-it/jai-ext>`_, *JAI-EXT is an open-source project which aims to replace in the long term the JAI project*. 
+
+The main difference between *JAI* and *JAI-EXT* operations is the support for external **ROIs** and image **NoData** in *JAI-EXT*.
+
+By default, **JAI-EXT** operations are disabled. Add the following java option to GeoServer startup script and restart GeoServer to have them enabled.
+
+    .. code-block:: xml
+	
+	-Dorg.geotools.coverage.jaiext.enabled=true
+   
+Once done, the following panel will be available at the bottom of the JAI Settings page.
+
+.. figure:: ../images/server_JAIEXT.png
+   :align: center
+   
+   *JAI/JAIEXT Setup panel*
+
+This panel can be used to chose which operations should be registered as *JAI* or *JAI-EXT* ones. Users can select the operations and move them from JAI-EXT to JAI list or viceversa. 
+
+
+.. figure:: ../images/server_JAIEXTops.png
+   :align: center
+   
+   *JAI/JAIEXT Operations selection*
+
+
+
+When clicking on *Save*, GeoServer internally will replace the *JAI/JAI-EXT* operations and the associated *GeoTools* ones. 
 
 .. warning:: Users should take care that *JAI* native libraries are not supported by *JAI-EXT*, since *JAI-EXT* is a pure Java API.
 

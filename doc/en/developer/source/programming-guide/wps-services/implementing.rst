@@ -11,6 +11,8 @@ and test it.
 The example process used is a simple "Hello World" process 
 which accepts a single input parameter and returns a single text output.
 
+.. note:: See also GeoTools `process tutorial <http://docs.geotools.org/latest/userguide/tutorial/process.html>`_
+
 Prerequisites
 -------------
 

@@ -207,8 +207,6 @@ public class BufferedImageLegendGraphicBuilder {
         }
         
         for(LegendRequest legend : layers ){
-        //for (int pos = 0; pos < layers.size(); pos++) {
-            // current layer
             FeatureType layer=legend.getFeatureType();
             
             // style and rule to use for the current layer            

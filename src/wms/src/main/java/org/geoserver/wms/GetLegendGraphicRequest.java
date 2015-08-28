@@ -125,7 +125,7 @@ public class GetLegendGraphicRequest extends WMSRequest {
          */
         public LegendRequest(FeatureType featureType ){
             if( featureType == null ){
-                throw new NullPointerException("Layer required");
+                throw new NullPointerException("FeatureType required for LegendRequest");
             }
             this.featureType = featureType;
             this.layerName = featureType.getName();
@@ -184,7 +184,7 @@ public class GetLegendGraphicRequest extends WMSRequest {
          * We choose a title with the following priority:
          * <ul>
          * <li>Layer Title</li>
-         * <li>Layer Name - often obtained from resource name</li>
+         * <li>Layer Name - often obtained from native resource name</li>
          * </ul>
          * @return layer title if provided, or layer name as a default
          */
@@ -423,6 +423,12 @@ public class GetLegendGraphicRequest extends WMSRequest {
         return getLegend(featureTypeName).getTitle();
     }
     
+    /**
+     * Lookup LegendRequest by native FeatureType name. 
+     * 
+     * @param featureTypeName
+     * @return Matching LegendRequest
+     */
     public LegendRequest getLegend(Name featureTypeName) {
         for( LegendRequest legend : legends ){
             if( featureTypeName.equals( legend.getLayerName() ) ){
@@ -433,7 +439,7 @@ public class GetLegendGraphicRequest extends WMSRequest {
     }
     
     /**
-     * Used to clear {@link #legends} and configure with a single layer.
+     * Used to clear {@link #legends} and configure with a feature type.
      * @param layer
      */
     public void setLayer(FeatureType layer) {

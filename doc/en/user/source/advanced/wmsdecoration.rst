@@ -88,6 +88,8 @@ The **scaleline** decoration (``type="scaleline"``) overlays a graphic showing t
      - if set to true, the background and border won't be painted (false by default)
    * - ``measurement-system"``
      - can be set to "metric" to only show metric units, "imperial" to only show imperial units, or "both" to show both of them (default)
+   * - ``scalewidthpercent"``
+     - the width of the scaleline in percent, default is 100
 
 
 The **legend** decoration (``type="legend"``) overlays a graphic containing legends for the layers in the map.

@@ -422,8 +422,8 @@ public class GetCapabilitiesTest extends WCSTestSupport {
         String proxyBaseUrl = getGeoServer().getGlobal().getSettings().getProxyBaseUrl();
         Document dom = getAsDOM("wcs?request=GetCapabilities");
         checkValidationErrors(dom, WCS11_SCHEMA);
-        String xpathBase = "//wcs:CoverageSummary[wcs:Identifier = '" + TASMANIA_DEM.getLocalPart()
-                + "']/ows:Metadata";
+        String xpathBase = "//wcs:CoverageSummary[wcs:Identifier = '" + TASMANIA_DEM.getPrefix() 
+                + ":" + TASMANIA_DEM.getLocalPart() + "']/ows:Metadata";
         assertXpathEvaluatesTo("http://www.geoserver.org", xpathBase + "/@about", dom);
         assertXpathEvaluatesTo("simple", xpathBase + "/@xlink:type", dom);
         assertXpathEvaluatesTo(proxyBaseUrl + "/metadata?key=value", xpathBase + "/@xlink:href", dom);

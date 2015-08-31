@@ -399,11 +399,11 @@ font-size: 100%;
 /* For a "choiceList" create padding down leading side to act as a "hanging indent" then move the checkbox/radio into that padding. This allows the label to remain inline so it doesn't produce clickable whitespace. */
 ul.choiceList>li {
 position: relative;
-padding-left: 2 em; 
+padding-left: 2em; 
 }
 ul.choiceList>li:dir(rtl){
 padding-left: 0;
-padding-right: 2 em;
+padding-right: 2em;
 }
 ul.choiceList>li>label {
 display: inline;

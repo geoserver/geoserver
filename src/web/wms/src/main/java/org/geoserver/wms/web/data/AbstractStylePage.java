@@ -47,7 +47,6 @@ import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.util.lang.Bytes;
-import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.ResourcePool;
 import org.geoserver.catalog.StyleGenerator;
 import org.geoserver.catalog.StyleHandler;
@@ -198,6 +197,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
 
         // add the Legend fields        
         ExternalGraphicPanel legendPanel = new ExternalGraphicPanel("legendPanel", styleModel, styleForm);
+        legendPanel.setOutputMarkupId(true);
         styleForm.add(legendPanel);
 
         if (style != null) {

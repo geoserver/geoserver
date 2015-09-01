@@ -56,7 +56,7 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
         tester.assertComponent("form:styleEditor:editorContainer:editorParent:editor", TextArea.class);
         
         //Load the legend
-        tester.clickLink("form:legendPanel:container:show");
+        tester.executeAjaxEvent("form:legendPanel:container:showhide:show", "onclick");
         
         tester.assertComponent("form:legendPanel", ExternalGraphicPanel.class);
         

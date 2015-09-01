@@ -40,7 +40,7 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
         tester.assertComponent("uploadForm:filename", FileUploadField.class);
         
         //Load the legend
-        tester.clickLink("form:legendPanel:container:show");
+        tester.executeAjaxEvent("form:legendPanel:container:showhide:show", "onclick");
         
         tester.assertComponent("form:legendPanel", ExternalGraphicPanel.class);
         
@@ -83,7 +83,7 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
     
     @Test
     public void testLegend() throws Exception {
-        tester.clickLink("form:legendPanel:container:show");
+        tester.executeAjaxEvent("form:legendPanel:container:showhide:show", "onclick");
         //Make sure the fields we are editing actually exist
         tester.assertComponent("form:legendPanel:container:list:onlineResource", TextField.class);
         tester.assertComponent("form:legendPanel:container:list:width", TextField.class);
@@ -113,7 +113,7 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
     
     @Test
     public void testLegendWrongValues() throws Exception{
-        tester.clickLink("form:legendPanel:container:show");
+        tester.executeAjaxEvent("form:legendPanel:container:showhide:show", "onclick");
         //Make sure the fields we are editing actually exist
         tester.assertComponent("form:legendPanel:container:list:onlineResource", TextField.class);
         tester.assertComponent("form:legendPanel:container:list:width", TextField.class);

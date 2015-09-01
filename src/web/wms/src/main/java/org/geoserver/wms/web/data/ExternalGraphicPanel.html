@@ -13,9 +13,11 @@
       <li><input wicket:id="height" type="text" class="text"></input></li>
       <li><label for="format"><wicket:message key="format">format</wicket:message></label></li>
       <li><input wicket:id="format" type="text" class="text"></input></li>      
-    </ul>  
-    <a href="#" wicket:id="show"><wicket:message key="show">Show</wicket:message></a>
-    <a href="#" wicket:id="hide"><wicket:message key="hide">Hide</wicket:message></a>       
+    </ul>
+    <form wicket:id="showhide" id="showhideForm">
+        <button wicket:id="show"><wicket:message key="show">Show</wicket:message></button>
+        <button wicket:id="hide"><wicket:message key="hide">Hide</wicket:message></button>
+    </form>
   </div>  
 </wicket:panel>
 </body>

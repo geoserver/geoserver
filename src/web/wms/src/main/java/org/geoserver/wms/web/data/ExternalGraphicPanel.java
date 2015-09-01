@@ -21,15 +21,17 @@ import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
-import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.protocol.http.WebRequest;
 import org.apache.wicket.validation.IValidatable;
 import org.apache.wicket.validation.ValidationError;
@@ -51,6 +53,7 @@ import org.geoserver.web.wicket.GeoServerAjaxFormLink;
  */
 @SuppressWarnings("serial")
 public class ExternalGraphicPanel extends Panel {
+    private static final long serialVersionUID = 5098470683723890874L;
 
     private TextField<String> onlineResource;
     private TextField<String> format;
@@ -59,15 +62,19 @@ public class ExternalGraphicPanel extends Panel {
     private Label noLegend;
     private WebMarkupContainer table;
     private GeoServerAjaxFormLink autoFill;
-    private Link show;
-    private Link hide;
+    
+    private Form showhideForm;
+    
+    private AjaxButton show;
+    private AjaxButton hide;
    
+    private Model<String> showhideStyleModel = new Model<String>("");
 
     /**
      * @param id
      * @param model Must return a {@link ResourceInfo}
      */
-    public ExternalGraphicPanel(String id,  final CompoundPropertyModel<StyleInfo> styleModel, Form styleForm) {
+    public ExternalGraphicPanel(String id,  final CompoundPropertyModel<StyleInfo> styleModel, final Form styleForm) {
         super(id, styleModel);
         
         // container for ajax updates
@@ -213,28 +220,49 @@ public class ExternalGraphicPanel extends Panel {
         height.setOutputMarkupId(true);
         table.add(height);
         
+        table.add(new AttributeModifier("style", true, showhideStyleModel));
+        
         container.add(table);
         
-        show = new Link("show") {
+        showhideForm = new Form("showhide") {
             @Override
-            public void onClick() {
+            protected void onSubmit() {
+                super.onSubmit();
+            }
+        };
+        showhideForm.setMarkupId("showhideForm");
+        container.add(showhideForm);
+        
+        
+        
+        show = new AjaxButton("show") {
+            private static final long serialVersionUID = 1L;
+            
+            @Override
+            protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
                 updateVisibility(true);
+                target.addComponent(ExternalGraphicPanel.this);
             }
         };
         container.add(show);
+        showhideForm.add(show);
         
-        hide = new Link("hide") {
+        hide = new AjaxButton("hide") {
+            private static final long serialVersionUID = 1L;
+            
             @Override
-            public void onClick() {
+            protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
                 onlineResource.setModelObject("");
-                onlineResource.processInput();
                 format.setModelObject("");
                 width.setModelObject("0");
                 height.setModelObject("0");
+                
                 updateVisibility(false);
+                target.addComponent(ExternalGraphicPanel.this);
             }
         };
         container.add(hide);
+        showhideForm.add(hide);
         
         String url = styleModel.getObject().getLegend().getOnlineResource();
         boolean visible = url != null && !url.isEmpty();
@@ -263,8 +291,14 @@ public class ExternalGraphicPanel extends Panel {
         return baseUrl;
     }
 
-    private void updateVisibility(boolean b) {        
-        table.setVisible(b); 
+    
+    private void updateVisibility(boolean b) {
+        if (b) {
+            showhideStyleModel.setObject("");
+        } else {
+            showhideStyleModel.setObject("display:none");
+        }
+        //table.setVisible(b); 
         autoFill.setVisible(b);
         hide.setVisible(b);
         show.setVisible(!b);

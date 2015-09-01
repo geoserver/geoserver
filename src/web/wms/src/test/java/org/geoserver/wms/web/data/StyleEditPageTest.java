@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -9,8 +9,6 @@ import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.apache.wicket.markup.html.form.TextArea;
@@ -23,7 +21,6 @@ import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.web.GeoServerWicketTestSupport;
-import org.geoserver.web.wicket.GeoServerAjaxFormLink;
 import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
@@ -58,10 +55,15 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
         tester.assertComponent("form:name", TextField.class);
         tester.assertComponent("form:styleEditor:editorContainer:editorParent:editor", TextArea.class);
         
-//        tester.assertComponent("form:legendPanel:container:list:onlineResource", TextField.class);
-//        tester.assertComponent("form:legendPanel:container:list:width", TextField.class);
-//        tester.assertComponent("form:legendPanel:container:list:height", TextField.class);
-//        tester.assertComponent("form:legendPanel:container:list:verifyImage", GeoServerAjaxFormLink.class);
+        //Load the legend
+        tester.clickLink("form:legendPanel:container:show");
+        
+        tester.assertComponent("form:legendPanel", ExternalGraphicPanel.class);
+        
+        tester.assertComponent("form:legendPanel:container:list:onlineResource", TextField.class);
+        tester.assertComponent("form:legendPanel:container:list:width", TextField.class);
+        tester.assertComponent("form:legendPanel:container:list:height", TextField.class);
+        tester.assertComponent("form:legendPanel:container:list:format", TextField.class);
         
         tester.assertModelValue("form:name", "Buildings");
         
@@ -82,6 +84,11 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
             .getBytes()));
 
         assertXMLEqual(d1, d2);
+    }
+    
+    @Test
+    public void testLoadLegend() {
+        
     }
     
     @Test

@@ -38,11 +38,16 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
         tester.assertComponent("form:name", TextField.class);
         tester.assertComponent("form:styleEditor:editorContainer:editorParent:editor", TextArea.class);
         tester.assertComponent("uploadForm:filename", FileUploadField.class);
-       
-//        tester.assertComponent("form:onlineResource", TextField.class);
-//        tester.assertComponent("form:width", TextField.class);
-//        tester.assertComponent("form:height", TextField.class);
-//        tester.assertComponent("form:verifyImage", GeoServerAjaxFormLink.class);
+        
+        //Load the legend
+        tester.clickLink("form:legendPanel:container:show");
+        
+        tester.assertComponent("form:legendPanel", ExternalGraphicPanel.class);
+        
+        tester.assertComponent("form:legendPanel:container:list:onlineResource", TextField.class);
+        tester.assertComponent("form:legendPanel:container:list:width", TextField.class);
+        tester.assertComponent("form:legendPanel:container:list:height", TextField.class);
+        tester.assertComponent("form:legendPanel:container:list:format", TextField.class);
         
         tester.assertModelValue("form:name", null);
     }
@@ -79,9 +84,7 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
     @Test
     public void testLegend() throws Exception {
         tester.clickLink("form:legendPanel:container:show");
-        
-        tester.assertComponent("form:legendPanel", ExternalGraphicPanel.class);
-        
+        //Make sure the fields we are editing actually exist
         tester.assertComponent("form:legendPanel:container:list:onlineResource", TextField.class);
         tester.assertComponent("form:legendPanel:container:list:width", TextField.class);
         tester.assertComponent("form:legendPanel:container:list:height", TextField.class);
@@ -110,6 +113,13 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
     
     @Test
     public void testLegendWrongValues() throws Exception{
+        tester.clickLink("form:legendPanel:container:show");
+        //Make sure the fields we are editing actually exist
+        tester.assertComponent("form:legendPanel:container:list:onlineResource", TextField.class);
+        tester.assertComponent("form:legendPanel:container:list:width", TextField.class);
+        tester.assertComponent("form:legendPanel:container:list:height", TextField.class);
+        tester.assertComponent("form:legendPanel:container:list:format", TextField.class);
+        
         FormTester form = tester.newFormTester("form");
         File styleFile = new File(new java.io.File(getClass().getResource("default_point.sld").toURI()));
         String sld = IOUtils.toString(new FileReader(styleFile)).replaceAll("\r\n", "\n").replaceAll("\r", "\n");
@@ -120,9 +130,9 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
         form.setValue("legendPanel:container:list:height", "-1");
         form.setValue("legendPanel:container:list:format", "image/png");        
         form.submit();
-//        tester.assertErrorMessages(new String[] {"'thisisnotavalidurl' is not a valid URL.",
-//                                                "'-1' is smaller than the minimum of 0.", 
-//                                                "'-1' is smaller than the minimum of 0."});       
+        tester.assertErrorMessages(new String[] {"Graphic resource must be a png, gif or jpeg",
+                                                "'-1' is smaller than the minimum of 0.", 
+                                                "'-1' is smaller than the minimum of 0."});       
         
     }
     

@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -25,30 +26,23 @@ import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
+import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.protocol.http.WebRequest;
 import org.apache.wicket.validation.IValidatable;
-import org.apache.wicket.validation.IValidationError;
 import org.apache.wicket.validation.ValidationError;
 import org.apache.wicket.validation.validator.NumberValidator;
 import org.apache.wicket.validation.validator.StringValidator;
-import org.apache.wicket.validation.validator.UrlValidator;
-import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
-import org.geoserver.catalog.impl.CatalogImpl;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
-import org.geoserver.platform.resource.Paths;
-import org.geoserver.platform.resource.Resource;
-import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.wicket.GeoServerAjaxFormLink;
-import org.h2.util.Resources;
 
 /**
  * Allows setting the data for using an ExternalImage
@@ -65,8 +59,8 @@ public class ExternalGraphicPanel extends Panel {
     private Label noLegend;
     private WebMarkupContainer table;
     private GeoServerAjaxFormLink autoFill;
-    private GeoServerAjaxFormLink show;
-    private GeoServerAjaxFormLink hide;
+    private Link show;
+    private Link hide;
    
 
     /**
@@ -221,36 +215,29 @@ public class ExternalGraphicPanel extends Panel {
         
         container.add(table);
         
-        show = new GeoServerAjaxFormLink("show", styleForm) {
+        show = new Link("show") {
             @Override
-            public void onClick(AjaxRequestTarget target, Form form) {
-                updateVisibility(true);    
-                target.addComponent(container);
+            public void onClick() {
+                updateVisibility(true);
             }
         };
-        container.add(show);            
+        container.add(show);
         
-        hide = new GeoServerAjaxFormLink("hide", styleForm) {
-            @SuppressWarnings("deprecation")
+        hide = new Link("hide") {
             @Override
-            public void onClick(AjaxRequestTarget target, Form form) {
+            public void onClick() {
                 onlineResource.setModelObject("");
                 onlineResource.processInput();
-                format.setModelObject("");                
+                format.setModelObject("");
                 width.setModelObject("0");
                 height.setModelObject("0");
-                target.addComponent(onlineResource);
-                target.addComponent(format);
-                target.addComponent(width);
-                target.addComponent(height);                  
-                target.addComponent(container);
-                updateVisibility(false);  
+                updateVisibility(false);
             }
         };
         container.add(hide);
-                
+        
         String url = styleModel.getObject().getLegend().getOnlineResource();
-        boolean visible = url != null && !url.isEmpty();           
+        boolean visible = url != null && !url.isEmpty();
         updateVisibility(visible);
         
     }

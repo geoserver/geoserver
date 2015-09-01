@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -18,7 +18,6 @@ import org.apache.wicket.util.file.File;
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.web.GeoServerWicketTestSupport;
-import org.geoserver.web.wicket.GeoServerAjaxFormLink;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -79,12 +78,25 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
     
     @Test
     public void testLegend() throws Exception {
+        tester.clickLink("form:legendPanel:container:show");
+        
+        tester.assertComponent("form:legendPanel", ExternalGraphicPanel.class);
+        
+        tester.assertComponent("form:legendPanel:container:list:onlineResource", TextField.class);
+        tester.assertComponent("form:legendPanel:container:list:width", TextField.class);
+        tester.assertComponent("form:legendPanel:container:list:height", TextField.class);
+        tester.assertComponent("form:legendPanel:container:list:format", TextField.class);
+        
+        //Publish the legend.png so we can see it
+        java.io.File file = getResourceLoader().createFile("styles","legend.png");
+        getResourceLoader().copyFromClassPath( "legend.png", file,  getClass());
+        
         FormTester form = tester.newFormTester("form");
         File styleFile = new File(new java.io.File(getClass().getResource("default_point.sld").toURI()));
         String sld = IOUtils.toString(new FileReader(styleFile)).replaceAll("\r\n", "\n").replaceAll("\r", "\n");
         form.setValue("styleEditor:editorContainer:editorParent:editor", sld);
         form.setValue("name", "legendtest");
-        form.setValue("legendPanel:container:list:onlineResource", "http://myurl.com/legend.png");
+        form.setValue("legendPanel:container:list:onlineResource", "legend.png");
         form.setValue("legendPanel:container:list:width", "100");
         form.setValue("legendPanel:container:list:height", "100");
         form.setValue("legendPanel:container:list:format", "image/png");

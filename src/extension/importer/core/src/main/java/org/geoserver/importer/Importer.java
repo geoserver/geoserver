@@ -10,6 +10,7 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Iterators;
 import com.thoughtworks.xstream.XStream;
 import com.vividsolutions.jts.geom.Geometry;
+
 import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
@@ -66,13 +67,13 @@ import org.geoserver.importer.job.JobQueue;
 import org.geoserver.importer.job.ProgressMonitor;
 import org.geoserver.importer.job.Task;
 import org.geoserver.importer.mosaic.Mosaic;
+import org.geoserver.importer.transform.ImportTransform;
 import org.geoserver.importer.transform.RasterTransformChain;
 import org.geoserver.importer.transform.ReprojectTransform;
 import org.geoserver.importer.transform.TransformChain;
 import org.geoserver.importer.transform.VectorTransformChain;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
-
 import org.opengis.feature.type.FeatureType;
 import org.opengis.filter.Filter;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;

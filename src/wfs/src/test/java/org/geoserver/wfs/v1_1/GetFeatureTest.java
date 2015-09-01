@@ -245,7 +245,7 @@ public class GetFeatureTest extends WFSTestSupport {
         Document doc = postAsDOM("wfs", xml);
         assertEquals("wfs:FeatureCollection", doc.getDocumentElement().getNodeName());
         NodeList features = doc.getElementsByTagName("sf:PrimitiveGeoFeature");
-        assertEquals(1, features.getLength());
+        assertEquals("Expected exactly 1 sf:PrimitiveGeoFeature", 1, features.getLength());
     }
 
     @Test

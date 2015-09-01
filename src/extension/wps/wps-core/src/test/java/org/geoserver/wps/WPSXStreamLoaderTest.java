@@ -2,8 +2,8 @@ package org.geoserver.wps;
 
 import static org.junit.Assert.*;
 
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.GeoServerExtensions;
-import org.geoserver.platform.GeoServerResourceLoader;
 import org.junit.Test;
 
 public class WPSXStreamLoaderTest extends WPSTestSupport {

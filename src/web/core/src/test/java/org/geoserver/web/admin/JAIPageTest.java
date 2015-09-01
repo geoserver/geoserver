@@ -22,6 +22,7 @@ import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.JAIEXTInfo;
 import org.geoserver.config.JAIInfo;
 import org.geoserver.web.GeoServerWicketTestSupport;
+import org.geotools.image.ImageWorker;
 import org.geotools.resources.image.ImageUtilities;
 import org.junit.Assert;
 import org.junit.Test;
@@ -75,15 +76,23 @@ public class JAIPageTest extends GeoServerWicketTestSupport {
         tester.startPage(JAIPage.class);
         tester.assertRenderedPage(JAIPage.class);
 
-        // Ensure the JAI Page is present
-        tester.assertComponent("form:jaiext", JAIEXTPanel.class);
-        tester.assertComponent("form:jaiext:jaiextOps", Palette.class);
-        Palette p = (Palette) tester.getComponentFromLastRenderedPage("form:jaiext:jaiextOps");
-        Collection jaiext = p.getChoices();
-        assertNotNull(jaiext);
-        // JAI choices
-        assertTrue(!jaiext.contains("Warp"));
+        // Ensure the JAI Page is present if enabled
+        Palette p;
+        Collection jaiext;
+        Object factory;
+        boolean isJAIExtEnabled = ImageWorker.isJaiExtEnabled();
         
+        if (isJAIExtEnabled) {
+            tester.assertComponent("form:jaiext", JAIEXTPanel.class);
+            tester.assertComponent("form:jaiext:jaiextOps", Palette.class);
+            p = (Palette) tester.getComponentFromLastRenderedPage("form:jaiext:jaiextOps");
+            jaiext = p.getChoices();
+            assertNotNull(jaiext);
+            // JAI choices
+            assertTrue(!jaiext.contains("Warp"));
+        } else {
+            tester.assertInvisible("form:jaiext");
+        }
         // Set Native Warp enabled
         FormTester form = tester.newFormTester("form");
         form.setValue("allowNativeWarp", true);
@@ -95,11 +104,16 @@ public class JAIPageTest extends GeoServerWicketTestSupport {
         info = (JAIInfo) global.getJAI();
         
         // Check that Warp is enabled
-        Assert.assertTrue(info.isAllowNativeWarp());
-        
-        // Ensure the factory is correctly registered
-        Object factory = info.getJAI().getOperationRegistry().getFactory(RenderedRegistryMode.MODE_NAME, "Warp");
-        Assert.assertTrue(factory instanceof MlibWarpRIF);
+        if (isJAIExtEnabled) {
+            Assert.assertTrue(info.isAllowNativeWarp());
+            // Ensure the factory is correctly registered
+            factory = info.getJAI().getOperationRegistry().getFactory(RenderedRegistryMode.MODE_NAME, "Warp");
+            Assert.assertTrue(factory instanceof MlibWarpRIF);
+        } else {
+            Assert.assertFalse(info.isAllowNativeWarp());
+            factory = info.getJAI().getOperationRegistry().getFactory(RenderedRegistryMode.MODE_NAME, "Warp");
+            Assert.assertTrue(factory instanceof WarpRIF);
+        }
         
         // Unset Native Warp enabled
         
@@ -107,14 +121,15 @@ public class JAIPageTest extends GeoServerWicketTestSupport {
         tester.startPage(JAIPage.class);
         tester.assertRenderedPage(JAIPage.class);
         
-        tester.assertComponent("form:jaiext", JAIEXTPanel.class);
-        tester.assertComponent("form:jaiext:jaiextOps", Palette.class);
-        p = (Palette) tester.getComponentFromLastRenderedPage("form:jaiext:jaiextOps");
-        jaiext = p.getChoices();
-        assertNotNull(jaiext);
-        // JAI choices
-        assertTrue(!jaiext.contains("Warp"));
-        
+        if (isJAIExtEnabled) {
+            tester.assertComponent("form:jaiext", JAIEXTPanel.class);
+            tester.assertComponent("form:jaiext:jaiextOps", Palette.class);
+            p = (Palette) tester.getComponentFromLastRenderedPage("form:jaiext:jaiextOps");
+            jaiext = p.getChoices();
+            assertNotNull(jaiext);
+            // JAI choices
+            assertTrue(!jaiext.contains("Warp"));
+        }
         form = tester.newFormTester("form");
         form.setValue("allowNativeWarp", false);
         form.submit("submit");
@@ -124,7 +139,7 @@ public class JAIPageTest extends GeoServerWicketTestSupport {
         
         info = (JAIInfo) global.getJAI();
         
-        // Check that Warp is enabled
+        // Check that Warp is disabled
         Assert.assertFalse(info.isAllowNativeWarp());
         
         // Ensure the factory is correctly registered

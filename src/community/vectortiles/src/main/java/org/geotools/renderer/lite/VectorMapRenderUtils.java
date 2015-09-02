@@ -2,7 +2,7 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.wms.vector;
+package org.geotools.renderer.lite;
 
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
@@ -25,8 +25,6 @@ import org.geotools.map.Layer;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.referencing.operation.transform.ConcatenatedTransform;
-import org.geotools.renderer.lite.LiteFeatureTypeStyle;
-import org.geotools.renderer.lite.RendererUtilities;
 import org.geotools.styling.FeatureTypeStyle;
 import org.geotools.styling.Rule;
 import org.geotools.styling.Style;
@@ -74,8 +72,8 @@ public class VectorMapRenderUtils {
 
         Style style = layer.getStyle();
         List<FeatureTypeStyle> featureStyles = style.featureTypeStyles();
-        List<LiteFeatureTypeStyle> styleList = createLiteFeatureTypeStyles(featureStyles, schema,
-                mapScale, screenSize);
+        List<LiteFeatureTypeStyle> styleList = createLiteFeatureTypeStyles(layer, featureStyles,
+                schema, mapScale, screenSize);
         Query styleQuery;
         try {
             styleQuery = VectorMapRenderUtils.getStyleQuery(featureSource, styleList,
@@ -262,7 +260,7 @@ public class VectorMapRenderUtils {
         }
     }
 
-    private static ArrayList<LiteFeatureTypeStyle> createLiteFeatureTypeStyles(
+    private static ArrayList<LiteFeatureTypeStyle> createLiteFeatureTypeStyles(Layer layer,
             List<FeatureTypeStyle> featureStyles, FeatureType ftype, double scaleDenominator,
             Rectangle screenSize) throws IOException {
 
@@ -286,7 +284,7 @@ public class VectorMapRenderUtils {
                 // we can optimize this one and draw directly on the graphics, assuming
                 // there is no composition
                 Graphics2D graphics = null;
-                lfts = new LiteFeatureTypeStyle(graphics, ruleList, elseRuleList,
+                lfts = new LiteFeatureTypeStyle(layer, graphics, ruleList, elseRuleList,
                         fts.getTransformation());
 
                 result.add(lfts);

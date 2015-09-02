@@ -4,7 +4,7 @@
  */
 package org.geoserver.wms.vector;
 
-import static org.geoserver.wms.vector.VectorMapRenderUtils.buildTransform;
+import static org.geotools.renderer.lite.VectorMapRenderUtils.buildTransform;
 
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;

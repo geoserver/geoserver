@@ -6,7 +6,7 @@ package org.geoserver.wms.vector;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
-import static org.geoserver.wms.vector.VectorMapRenderUtils.getStyleQuery;
+import static org.geotools.renderer.lite.VectorMapRenderUtils.getStyleQuery;
 
 import java.awt.Rectangle;
 import java.io.IOException;

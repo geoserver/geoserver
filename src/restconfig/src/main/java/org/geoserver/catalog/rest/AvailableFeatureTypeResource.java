@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -14,6 +14,7 @@ import java.util.logging.Level;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.config.util.SecureXStream;
 import org.geoserver.rest.RestletException;
 import org.geoserver.rest.format.ReflectiveXMLFormat;
 import org.geotools.data.DataStore;
@@ -88,7 +89,7 @@ public class AvailableFeatureTypeResource extends AbstractCatalogResource {
             @Override
             protected void write(Object data, OutputStream output)
                     throws IOException {
-                XStream xstream = new XStream();
+                XStream xstream = new SecureXStream();
                 xstream.alias( "featureTypeName", String.class);
                 xstream.toXML( data, output );
             }

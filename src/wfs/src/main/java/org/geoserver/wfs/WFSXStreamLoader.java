@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -13,6 +13,8 @@ import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamServiceLoader;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.wfs.GMLInfo.SrsNameStyle;
+
+import com.thoughtworks.xstream.XStream;
 
 /**
  * Loads and persist the {@link WFSInfo} object to and from xstream 
@@ -30,9 +32,11 @@ public class WFSXStreamLoader extends XStreamServiceLoader<WFSInfo> {
     @Override
     protected void initXStreamPersister(XStreamPersister xp, GeoServer gs) {
         super.initXStreamPersister(xp, gs);
-        xp.getXStream().alias( "wfs", WFSInfo.class, WFSInfoImpl.class );
-        xp.getXStream().alias( "version", WFSInfo.Version.class);
-        xp.getXStream().alias( "gml", GMLInfo.class, GMLInfoImpl.class );
+        XStream xs = xp.getXStream();
+        xs.alias( "wfs", WFSInfo.class, WFSInfoImpl.class );
+        xs.alias( "version", WFSInfo.Version.class);
+        xs.alias( "gml", GMLInfo.class, GMLInfoImpl.class );
+        xs.allowTypes(new Class[] { WFSInfo.Version.class, GMLInfo.class, GMLInfoImpl.class });
     }
     
     protected WFSInfo createServiceFromScratch(GeoServer gs) {

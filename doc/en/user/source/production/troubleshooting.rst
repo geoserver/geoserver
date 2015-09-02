@@ -265,3 +265,12 @@ In case of memory leaks a developer will probably ask for a **full heap dump** t
 
 The dump files are generally as big as the memory used so it's advisable to compress the resulting file before sending it to a developer.
   
+
+XStream
+-------
+
+GeoServer and GeoWebCache use XStream to read and write XML for configuration and for their REST APIs.  In order to do this securely, it needs a list of Java classes that are safe to convert between objects and XML.  If a class not on that list is given to XStream, it will generate the error ``com.thoughtworks.xstream.security.ForbiddenClassException``.  The specific class that was a problem should aslo be included.  This may be a result of the lists of allowed classes missing a class, which should be reported as a bug, or it may be caused by an extension/plugin not adding its classes to the list (finally, it could be someone trying to perform a "Remote Execution" attack, which is what the whitelist is designed to prevent).
+
+This can be worked around by setting the system properties ``GEOSERVER_XSTREAM_WHITELIST`` for GeoServer or ``GEOWEBCACHE_XSTREAM_WHITELIST`` for GeoWebCache to a semicolon separated list of qualified class names.  The class names may include wildcards ``?`` for a single character, ``*`` for any number of characters not including the separater ``.``, and ``**`` for any number of characters including separators.  For instance, ``org.example.blah.SomeClass; com.demonstration.*; ca.test.**`` will allow, the specific class ``org.example.blah.SomeClass``, any class immediately within the package ``com.demonstration``, and any class within the package ``ca.test`` or any of its descendant packages.
+
+``GEOSERVER_XSTREAM_WHITELIST`` and ``GEOWEBCACHE_XSTREAM_WHITELIST`` should only be used as a workarround until GeoServer, GWC, or the extension causing the problem has been updated, so please report to the users list the missing classes as soon as possible.

@@ -50,7 +50,7 @@ system the extension will not functionand remain disabled.
 .. note::
 
    Pre-compiled libraries are available for the following platforms and can be 
-   found `here <http://docs.geotools.org/latest/userguide/library/jdbc/spatiallite.html#native-libraries>`_.
+   found `here <http://docs.geotools.org/latest/userguide/library/jdbc/spatialite.html#native-libraries>`_.
 
 In general if the libraries are installed in a "default" location then they 
 should be picked up by java with no problem. However some systems will require

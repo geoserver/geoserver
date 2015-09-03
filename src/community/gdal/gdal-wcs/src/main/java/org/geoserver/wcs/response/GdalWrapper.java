@@ -4,7 +4,6 @@
  */
 package org.geoserver.wcs.response;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -18,9 +17,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.geoserver.ogr.core.AbstractToolWrapper;
-import org.geoserver.ogr.core.Format;
 import org.geotools.util.logging.Logging;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
  * Helper used to invoke gdal_translate.
@@ -31,8 +28,6 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 public class GdalWrapper extends AbstractToolWrapper {
 
     private static final Logger LOGGER = Logging.getLogger(GdalWrapper.class);
-
-    private File crsFile;
 
     public GdalWrapper(String executable, Map<String, String> environment) {
         super(executable, environment);
@@ -108,25 +103,6 @@ public class GdalWrapper extends AbstractToolWrapper {
     @Override
     public String getToolFormatParameter() {
         return "-of";
-    }
-
-    @Override
-    protected void onBeforeRun(List<String> cmd, File inputData, File outputDirectory,
-            String typeName, Format format, CoordinateReferenceSystem crs) throws IOException {
-        crsFile = dumpCrs(inputData.getParentFile(), crs);
-
-        if (crsFile != null) {
-            cmd.add("-a_srs");
-            cmd.add(crsFile.getAbsolutePath());
-        }
-    }
-
-    @Override
-    protected void onAfterRun(int exitCode) throws IOException {
-        if (crsFile != null) {
-            crsFile.delete();
-            crsFile = null;
-        }
     }
 
 }

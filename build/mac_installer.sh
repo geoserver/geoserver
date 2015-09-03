@@ -38,11 +38,11 @@ cp files/geoserver-$tag-bin.zip tmp/geoserver-$tag-mac/
 
 pushd tmp/geoserver-$tag-mac/ > /dev/null
 ./build.sh
-popd
+#popd
 
 # upload dmg to final location
 upload_installer $tag geoserver-$tag.dmg
 
-#popd > /dev/null
+popd > /dev/null
 exit 0
 

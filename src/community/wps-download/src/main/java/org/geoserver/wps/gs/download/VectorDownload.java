@@ -34,6 +34,7 @@ import org.opengis.filter.spatial.Intersects;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
 import org.opengis.util.ProgressListener;
+import org.springframework.context.ApplicationContext;
 
 import com.vividsolutions.jts.geom.Geometry;
 
@@ -54,15 +55,19 @@ class VectorDownload {
     /** The resource manager for handling the used resources. */
     private WPSResourceManager resourceManager;
 
+    private ApplicationContext context;
+
     /**
      * Constructor, takes a {@link DownloadServiceConfiguration} and a {@link WPSResourceManager}.
      * 
      * @param limits the {@link DownloadServiceConfiguration} to check for not exceeding the download limits.
      * @param resourceManager the {@link WPSResourceManager} to handle generated resources
      */
-    public VectorDownload(DownloadServiceConfiguration limits, WPSResourceManager resourceManager) {
+    public VectorDownload(DownloadServiceConfiguration limits, WPSResourceManager resourceManager,
+            ApplicationContext context) {
         this.limits = limits;
         this.resourceManager = resourceManager;
+        this.context = context;
     }
 
     /**
@@ -220,7 +225,8 @@ class VectorDownload {
         }
         // Search a proper PPIO
         ProcessParameterIO ppio_ = DownloadUtilities.find(new Parameter<SimpleFeatureCollection>(
-                "fakeParam", SimpleFeatureCollection.class), null, mimeType, false);
+"fakeParam", SimpleFeatureCollection.class),
+                context, mimeType, false);
         if (ppio_ == null) {
             throw new ProcessException("Don't know how to encode in mime type " + mimeType);
         } else if (!(ppio_ instanceof ComplexPPIO)) {

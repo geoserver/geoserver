@@ -32,6 +32,9 @@ import org.geotools.util.logging.Logging;
 import org.opengis.filter.Filter;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.util.ProgressListener;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 
 import com.vividsolutions.jts.geom.Geometry;
 
@@ -47,7 +50,7 @@ import com.vividsolutions.jts.geom.Geometry;
  */
 @SuppressWarnings("deprecation")
 @DescribeProcess(title = "Enterprise Download Process", description = "Downloads Layer Stream and provides a ZIP.")
-public class DownloadProcess implements GSProcess {
+public class DownloadProcess implements GSProcess, ApplicationContextAware {
 
     /** The LOGGER. */
     private static final Logger LOGGER = Logging.getLogger(DownloadProcess.class);
@@ -59,6 +62,8 @@ public class DownloadProcess implements GSProcess {
     private final Catalog catalog;
 
     private WPSResourceManager resourceManager;
+
+    private ApplicationContext context;
 
     /**
      * Instantiates a new download process.
@@ -183,7 +188,7 @@ public class DownloadProcess implements GSProcess {
                 // VECTOR
                 //
                 // perform the actual download of vectorial data accordingly to the request inputs
-                internalOutput = new VectorDownload(limits, resourceManager).execute(
+                internalOutput = new VectorDownload(limits, resourceManager, context).execute(
                         (FeatureTypeInfo) resourceInfo, mimeType, roi, clip, filter, targetCRS,
                         progressListener);
 
@@ -196,7 +201,8 @@ public class DownloadProcess implements GSProcess {
                 //
                 CoverageInfo cInfo = (CoverageInfo) resourceInfo;
                 // convert/reproject/crop if needed the coverage
-                internalOutput = new RasterDownload(limits, resourceManager).execute(mimeType,
+                internalOutput = new RasterDownload(limits, resourceManager, context)
+                        .execute(mimeType,
                         progressListener, cInfo, roi, targetCRS, clip, filter);
             } else {
 
@@ -291,5 +297,11 @@ public class DownloadProcess implements GSProcess {
             }
             throw processException;
         }
+    }
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.context = applicationContext;
+
     }
 }

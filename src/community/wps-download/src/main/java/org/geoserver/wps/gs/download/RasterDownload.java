@@ -5,9 +5,6 @@
  */
 package org.geoserver.wps.gs.download;
 
-import it.geosolutions.imageio.stream.output.FileImageOutputStreamExtImpl;
-import it.geosolutions.io.output.adapter.OutputStreamAdapter;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -42,8 +39,12 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.datum.PixelInCell;
 import org.opengis.referencing.operation.MathTransform;
 import org.opengis.util.ProgressListener;
+import org.springframework.context.ApplicationContext;
 
 import com.vividsolutions.jts.geom.Geometry;
+
+import it.geosolutions.imageio.stream.output.FileImageOutputStreamExtImpl;
+import it.geosolutions.io.output.adapter.OutputStreamAdapter;
 
 /**
  * Implements the download services for raster data. If limits are configured this class will use {@link LimitedImageOutputStream}, which raises an
@@ -63,14 +64,23 @@ class RasterDownload {
     private WPSResourceManager resourceManager;
 
     /**
+     * The application context used to look-up PPIO factories
+     */
+    private ApplicationContext context;
+
+    /**
      * Constructor, takes a {@link DownloadEstimatorProcess}.
      * 
-     * @param limits the {@link DownloadEstimatorProcess} to check for not exceeding the download limits.
+     * @param limits the {@link DownloadEstimatorProcess} to check for not exceeding the download
+     *        limits.
      * @param resourceManager the {@link WPSResourceManager} to handl generated resources
+     * @param context
      */
-    public RasterDownload(DownloadServiceConfiguration limits, WPSResourceManager resourceManager) {
+    public RasterDownload(DownloadServiceConfiguration limits, WPSResourceManager resourceManager,
+            ApplicationContext context) {
         this.limits = limits;
         this.resourceManager = resourceManager;
+        this.context = context;
     }
 
     /**
@@ -285,8 +295,10 @@ class RasterDownload {
         }
 
         // Search a proper PPIO
-        ProcessParameterIO ppio_ = DownloadUtilities.find(new Parameter<GridCoverage2D>(
-                "fakeParam", GridCoverage2D.class), null, mimeType, false);
+        Parameter<GridCoverage2D> gridParam = new Parameter<GridCoverage2D>("fakeParam",
+                GridCoverage2D.class);
+        ProcessParameterIO ppio_ = DownloadUtilities.find(gridParam, context, mimeType,
+                false);
         if (ppio_ == null) {
             throw new ProcessException("Don't know how to encode in mime type " + mimeType);
         } else if (!(ppio_ instanceof ComplexPPIO)) {

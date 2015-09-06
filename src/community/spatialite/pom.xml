@@ -20,24 +20,6 @@
   <name>SpatiaLite Extension</name>
 
 
-<repositories>
-   <repository>
-     <id>codehaus</id>
-     <name>codehaus</name>
-     <url>http://snapshots.repository.codehaus.org/</url>
-     <snapshots>
-      <enabled>true</enabled>
-     </snapshots>
-    </repository>
-    <repository>
-      <id>opengeo</id>
-      <name>opengeo</name>
-      <url>http://repo.opengeo.org/</url>
-       <snapshots>
-        <enabled>true</enabled>
-       </snapshots>
-    </repository>
-  </repositories>
 
  <dependencies>
   <dependency>

@@ -12,16 +12,6 @@
   <packaging>jar</packaging>
   <name>Chart external graphics support</name>
 
-  <repositories>
-    <repository>
-      <id>codehaus</id>
-      <name>codehaus</name>
-      <url>http://snapshots.repository.codehaus.org/</url>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
-  </repositories>
 
   <dependencies>
     <dependency>

@@ -120,7 +120,7 @@ public class DescribeFeatureTypeTest extends WFSTestSupport {
     }
 
     /**
-     * See http://jira.codehaus.org/browse/GEOS-3306
+     * See https://osgeo-org.atlassian.net/browse/GEOS-3306
      * 
      * @throws Exception
      */
@@ -136,7 +136,7 @@ public class DescribeFeatureTypeTest extends WFSTestSupport {
     }
 
     /**
-     * See http://jira.codehaus.org/browse/GEOS-3306
+     * See https://osgeo-org.atlassian.net/browse/GEOS-3306
      * 
      * @throws Exception
      */
@@ -213,7 +213,7 @@ public class DescribeFeatureTypeTest extends WFSTestSupport {
     }
     
     /**
-     * See http://jira.codehaus.org/browse/GEOS-3306
+     * See https://osgeo-org.atlassian.net/browse/GEOS-3306
      * 
      * @throws Exception
      */

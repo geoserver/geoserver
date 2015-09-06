@@ -200,9 +200,9 @@ public class FeatureCollectionTypeBinding extends AbstractComplexEMFBinding {
                 
                 if ( env != null ) {
                     //JD: here we don't return the envelope if it is null or empty, this is to work 
-                    // around and issue with validation in the cite engine. I have opened a jira task 
+                    // around an issue with validation in the cite engine. I have opened a jira task
                     // to track this, and hopefully eventually fix the cite engine
-                    //    http://jira.codehaus.org/browse/GEOS-2700
+                    //    https://osgeo-org.atlassian.net/browse/GEOS-2700
                     return !( env.isNull() || env.isEmpty() ) ? env : null; 
                 }
             }

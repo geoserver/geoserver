@@ -38,7 +38,7 @@ public class WMSServiceExceptionTest extends WMSTestSupport {
     
     /**
      * Ask for png8 image and error in image, check that the content type of the response png,
-     * see http://jira.codehaus.org/browse/GEOS-3018
+     * see https://osgeo-org.atlassian.net/browse/GEOS-3018
      * @throws Exception
      */
     @Test
@@ -52,7 +52,7 @@ public class WMSServiceExceptionTest extends WMSTestSupport {
     
     /**
      * Ask for png8 image and error in image, check that the content type of the response png,
-     * see http://jira.codehaus.org/browse/GEOS-3018
+     * see https://osgeo-org.atlassian.net/browse/GEOS-3018
      * @throws Exception
      */
     @Test

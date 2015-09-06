@@ -36,12 +36,6 @@ import freemarker.template.TemplateModelException;
  * Produces a FeatureInfo response in HTML. Relies on {@link AbstractFeatureInfoResponse} and the
  * feature delegate to do most of the work, just implements an HTML based writeTo method.
  * 
- * <p>
- * In the future James suggested that we allow some sort of template system, so that one can control
- * the formatting of the html output, since now we just hard code some minimal header stuff. See
- * http://jira.codehaus.org/browse/GEOS-196
- * </p>
- * 
  * @author James Macgill, PSU
  * @author Andrea Aime, TOPP
  * @version $Id$

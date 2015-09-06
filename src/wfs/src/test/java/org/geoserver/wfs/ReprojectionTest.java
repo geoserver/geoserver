@@ -140,7 +140,7 @@ public class ReprojectionTest extends WFSTestSupport {
     
     @Test
     public void testReprojectNullGeometries() throws Exception {
-        // see http://jira.codehaus.org/browse/GEOS-1612
+        // see https://osgeo-org.atlassian.net/browse/GEOS-1612
         String xml = "<wfs:GetFeature " + "service=\"WFS\" "
         + "version=\"1.0.0\" "
         + "xmlns:cdf=\"http://www.opengis.net/cite/data\" "

@@ -64,7 +64,7 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
     
     @Test
     @Ignore
-    // fixing https://jira.codehaus.org/browse/GEOS-6845, re-enable when a proper fix for spaces in
+    // fixing https://osgeo-org.atlassian.net/browse/GEOS-6845, re-enable when a proper fix for spaces in
     // name has been made
     public void testUploadWithSpaces() throws Exception {
         URL zip = getClass().getResource( "test-data/usa.zip" );

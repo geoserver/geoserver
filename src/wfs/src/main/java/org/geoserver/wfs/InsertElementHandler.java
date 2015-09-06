@@ -151,7 +151,7 @@ public class InsertElementHandler extends AbstractTransactionElementHandler {
                     // Need to use the namespace here for the
                     // lookup, due to our weird
                     // prefixed internal typenames. see
-                    // http://jira.codehaus.org/secure/ViewIssue.jspa?key=GEOS-143
+                    // https://osgeo-org.atlassian.net/browse/GEOS-143
 
                     // Once we get our datastores making features
                     // with the correct namespaces

@@ -114,7 +114,7 @@ public class KMLTransformerTest extends WMSTestSupport {
     }
 
     /**
-     * See http://jira.codehaus.org/browse/GEOS-1947
+     * See https://osgeo-org.atlassian.net/browse/GEOS-1947
      * 
      * @throws Exception
      */
@@ -147,7 +147,7 @@ public class KMLTransformerTest extends WMSTestSupport {
     }
 
     /**
-     * See http://jira.codehaus.org/browse/GEOS-3994
+     * See https://osgeo-org.atlassian.net/browse/GEOS-3994
      * 
      * @throws Exception
      */
@@ -178,7 +178,7 @@ public class KMLTransformerTest extends WMSTestSupport {
     }
 
     /**
-     * See http://jira.codehaus.org/browse/GEOS-3965
+     * See https://osgeo-org.atlassian.net/browse/GEOS-3965
      * 
      * @throws Exception
      */
@@ -469,7 +469,7 @@ public class KMLTransformerTest extends WMSTestSupport {
     }
 
     /**
-     * See http://jira.codehaus.org/browse/GEOS-2670
+     * See https://osgeo-org.atlassian.net/browse/GEOS-2670
      */
     @Test
     public void testDynamicSymbolizer() throws Exception {

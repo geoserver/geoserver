@@ -229,7 +229,7 @@ public abstract class GeoXACMLFunctionBase extends FunctionBase {
             return CRS.decode(srsName, true);
         } catch (NoSuchAuthorityCodeException e) {
             // HACK HACK HACK!: remove when
-            // http://jira.codehaus.org/browse/GEOT-1659 is fixed
+            // https://osgeo-org.atlassian.net/browse/GEOT-1659 is fixed
 
             if (srsName.toUpperCase().startsWith("URN")) {
                 String code = srsName.substring(srsName.lastIndexOf(":") + 1);

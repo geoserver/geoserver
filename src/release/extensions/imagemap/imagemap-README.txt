@@ -21,7 +21,7 @@ Currently this is anything in 2.7.x.
 For more information see on needed libraries and parameters, see:
 http://docs.geoserver.org/latest/en/user/extensions/imagemap.html
 
-Please report any bugs with jira (http://jira.codehaus.org/browse/GEOS). 
+Please report any bugs with jira (https://osgeo-org.atlassian.net/projects/GEOS).
 
 Any other issues can be discussed on the geoserver-users mailing list
 (http://lists.sourceforge.net/lists/listinfo/geoserver-users).

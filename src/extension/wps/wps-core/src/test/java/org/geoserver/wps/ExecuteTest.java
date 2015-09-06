@@ -1068,7 +1068,7 @@ public class ExecuteTest extends WPSTestSupport {
     }
     
     /**
-     * http://jira.codehaus.org/browse/GEOS-5208
+     * https://osgeo-org.atlassian.net/browse/GEOS-5208
      * @throws Exception
      */
     @Test
@@ -1135,7 +1135,7 @@ public class ExecuteTest extends WPSTestSupport {
     }
     
     /**
-     * http://jira.codehaus.org/browse/GEOS-5208
+     * https://osgeo-org.atlassian.net/browse/GEOS-5208
      * @throws Exception
      */
     @Test

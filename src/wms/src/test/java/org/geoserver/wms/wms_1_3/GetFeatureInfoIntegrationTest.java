@@ -440,7 +440,7 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
 
     /**
      * Check GetFeatureInfo returns an error if the format is not known, instead of returning the
-     * text format as in http://jira.codehaus.org/browse/GEOS-1924
+     * text format as in https://osgeo-org.atlassian.net/browse/GEOS-1924
      * 
      * @throws Exception
      */
@@ -461,7 +461,7 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
 
     @Test
     public void testCoverage() throws Exception {
-        // http://jira.codehaus.org/browse/GEOS-2574
+        // https://osgeo-org.atlassian.net/browse/GEOS-2574
         String layer = getLayerId(TASMANIA_BM);
         String request = "wms?version=1.3.0&service=wms&request=GetFeatureInfo" + "&layers="
                 + layer + "&styles=&bbox=-44.5,146.5,-43,148&width=600&height=600"
@@ -478,7 +478,7 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
 
     @Test
     public void testCoverageGML() throws Exception {
-        // http://jira.codehaus.org/browse/GEOS-3996
+        // https://osgeo-org.atlassian.net/browse/GEOS-3996
         String layer = getLayerId(TASMANIA_BM);
         String request = "wms?version=1.3.0&service=wms&request=GetFeatureInfo" + "&layers="
                 + layer + "&styles=&bbox=-44.5,146.5,-43,148&width=600&height=600"
@@ -497,7 +497,7 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
     
     @Test
     public void testCoverageGML31() throws Exception {
-        // http://jira.codehaus.org/browse/GEOS-3996
+        // https://osgeo-org.atlassian.net/browse/GEOS-3996
         String layer = getLayerId(TASMANIA_BM);
         String request = "wms?version=1.3.0&service=wms&request=GetFeatureInfo" + "&layers="
                 + layer + "&styles=&bbox=-44.5,146.5,-43,148&width=600&height=600"

@@ -48,7 +48,7 @@ public class GeoServerErrorPage extends GeoServerBasePage {
         wmc.setVisible(trace);
         wmc.add(new ExternalLink(
                     "jiraLink", 
-                    new Model("http://jira.codehaus.org/browse/GEOS/"),
+                    new Model("https://osgeo-org.atlassian.net/projects/GEOS"),
                     new ResourceModel("GeoServerErrorPage.jiraName")
                     ).setVisible(trace)
        );

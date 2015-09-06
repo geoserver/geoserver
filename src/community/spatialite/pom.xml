@@ -21,13 +21,13 @@
 
 
 <repositories>
-   <repository>
-     <id>codehaus</id>
-     <name>codehaus</name>
-     <url>http://snapshots.repository.codehaus.org/</url>
-     <snapshots>
-      <enabled>true</enabled>
-     </snapshots>
+    <repository>
+        <id>boundless</id>
+        <name>Boundless Maven Repository</name>
+        <url>http://repo.boundlessgeo.com/main</url>
+        <snapshots>
+            <enabled>true</enabled>
+        </snapshots>
     </repository>
     <repository>
       <id>opengeo</id>

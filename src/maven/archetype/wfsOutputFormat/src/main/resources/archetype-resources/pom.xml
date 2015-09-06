@@ -7,14 +7,6 @@
  <name>My Output Format</name>
 
   <repositories>
-   <repository>
-     <id>codehaus</id>
-     <name>codehaus</name>
-     <url>http://snapshots.repository.codehaus.org/</url>
-     <snapshots>
-      <enabled>true</enabled>
-     </snapshots>
-    </repository>
     <repository>
       <id>opengeo</id>
       <name>opengeo</name>
@@ -22,6 +14,14 @@
        <snapshots>
         <enabled>true</enabled>
        </snapshots>
+    </repository>
+    <repository>
+      <id>osgeo</id>
+      <name>Open Source Geospatial Foundation Repository</name>
+      <url>http://download.osgeo.org/webdav/geotools/</url>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
     </repository>
   </repositories>
 

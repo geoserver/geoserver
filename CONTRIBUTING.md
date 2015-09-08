@@ -1,6 +1,6 @@
 # Contributing
 
-Contributors are asked to provide a [Contributor License Agreement](http://wiki.osgeo.org/wiki/Contributor_Agreement) for working on the project:
+Contributors are asked to provide a [Contributor Agreement](http://wiki.osgeo.org/wiki/Contributor_Agreement) for working on the project:
 
 * [Corporate Contributor License Agreement (CCLA)](http://wiki.osgeo.org/wiki/Corporate_Contributor_License_Agreement_(CCLA))
 * [Individual Contributor License Agreement (CLA)](http://wiki.osgeo.org/wiki/Individual_Contributor_License_Agreement_(CLA))

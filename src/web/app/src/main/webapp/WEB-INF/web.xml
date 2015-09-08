@@ -114,7 +114,7 @@
               parameter defaults to false.
               -->
          <param-name>enabled</param-name>
-         <param-value>true</param-value>
+         <param-value>false</param-value>
      </init-param>
      <init-param>
      <!-- The 'log-request-bodies' parameter is a boolean value, "true" (case-insensitive) for
@@ -125,7 +125,7 @@
           server.
           -->
      <param-name>log-request-bodies</param-name>
-     <param-value>true</param-value>
+     <param-value>false</param-value>
      </init-param>
    </filter>
    

@@ -6,11 +6,10 @@ Committing
 Getting commit access
 ---------------------
 
-All contributors are asked to provide an assignment agreement for working on the project:
+All contributors are asked to provide a `Contributor Agreement <http://wiki.osgeo.org/wiki/Contributor_Agreement>`__ for working on the project:
 
-* `corporate_contributor.txt <http://www.osgeo.org/sites/osgeo.org/files/Page/corporate_contributor.txt>`__
-* `individual_contributor.txt <http://www.osgeo.org/sites/osgeo.org/files/Page/individual_contributor.txt>`__
-
+* `Corporate Contributor License Agreement (CCLA) <http://wiki.osgeo.org/wiki/Corporate_Contributor_License_Agreement_(CCLA)>`__
+* `Individual Contributor License Agreement (CLA) <http://wiki.osgeo.org/wiki/Individual_Contributor_License_Agreement_(CLA)>`__
 
 This agreement can be printed, signed, scanned and emailed to `info@osgeo.org <mailto:info@osgeo.org>`_ at Open Source Geospatial Foundation (OSGeo). `OSGeo <http://www.osgeo.org/content/foundation/about.html>`_
 is the  non-profit which holds the GeoServer codebase for the community.

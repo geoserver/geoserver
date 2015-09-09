@@ -6,6 +6,7 @@
 package org.geoserver.wfs.response;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.geotools.data.simple.SimpleFeatureCollection;
@@ -17,6 +18,7 @@ import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.feature.type.GeometryDescriptor;
+import org.opengis.filter.Filter;
 /**
  * FeatureCollection that remaps attribute names using a given map.
  * 
@@ -62,8 +64,13 @@ public class RemappingFeatureCollection extends DecoratingSimpleFeatureCollectio
             if(attDesc instanceof GeometryDescriptor) {
                 GeometryDescriptor geoDesc=(GeometryDescriptor)attDesc;
                 builder.add(attributesMapping.get(attDesc.getLocalName()),attDesc.getType().getBinding(),geoDesc.getCoordinateReferenceSystem());            
-            } else
+            } else {
+                List<Filter> filters = attDesc.getType().getRestrictions();
+                if (filters != null && !filters.isEmpty()) {
+                    builder.restrictions(filters);
+                }
                 builder.add(attributesMapping.get(attDesc.getLocalName()),attDesc.getType().getBinding());
+            }
         }
         return builder.buildFeatureType();
     }

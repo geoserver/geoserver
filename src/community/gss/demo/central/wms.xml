@@ -2,7 +2,7 @@
   <id>wms</id>
   <name>WMS</name>
   <title>GeoServer Web Map Service</title>
-  <maintainer>http://jira.codehaus.org/secure/BrowseProject.jspa?id=10311</maintainer>
+  <maintainer>http://geoserver.org/comm</maintainer>
   <abstrct>A compliant implementation of WMS 1.1.1 plus most of the SLD 1.0 extension (dynamic styling). Can also generate PDF, SVG, KML, GeoRSS</abstrct>
   <accessConstraints>NONE</accessConstraints>
   <fees>NONE</fees>

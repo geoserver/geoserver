@@ -69,7 +69,7 @@ public class WFSSettingsTest extends CatalogRESTTestSupport {
                 + "<id>wfs</id>"
                 + "<enabled>disabled</enabled>"
                 + "<name>WFS</name><title>GeoServer Web Feature Service</title>"
-                + "<maintainer>http://jira.codehaus.org/secure/BrowseProject.jspa?id=10311</maintainer>"
+                + "<maintainer>http://geoserver.org/comm</maintainer>"
                 + "</wfs>";
         MockHttpServletResponse response = putAsServletResponse("/rest/services/wfs/settings", xml,
                 "text/xml");

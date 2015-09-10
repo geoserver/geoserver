@@ -1,9 +1,9 @@
 # Contributing
 
-Contributors are asked to provide a Contributor License Agreement for working on the project:
+Contributors are asked to provide a [Contributor Agreement](http://wiki.osgeo.org/wiki/Contributor_Agreement) for working on the project:
 
-* [corporate_contributor.txt](http://www.osgeo.org/sites/osgeo.org/files/Page/corporate_contributor.txt)
-* [individual_contributor.txt](http://www.osgeo.org/sites/osgeo.org/files/Page/individual_contributor.txt)
+* [Corporate Contributor License Agreement (CCLA)](http://wiki.osgeo.org/wiki/Corporate_Contributor_License_Agreement_(CCLA))
+* [Individual Contributor License Agreement (CLA)](http://wiki.osgeo.org/wiki/Individual_Contributor_License_Agreement_(CLA))
 
 This agreement can be printed, signed, scanned, and emailed to [info@osgeo.org](mailto:info@osgeo.org) at the Open Source Geospatial Foundation (OSGeo). [OSGeo](http://www.osgeo.org/content/foundation/about.html)
 is the non-profit which holds the GeoServer codebase for the community.

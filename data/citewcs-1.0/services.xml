@@ -83,7 +83,7 @@ NONE
 <fees>NONE</fees>
 <accessConstraints>NONE</accessConstraints>
 <srsXmlStyle value = "false" />
-<maintainer>http://jira.codehaus.org/secure/BrowseProject.jspa?id=10311</maintainer>
+<maintainer>http://geoserver.org/comm</maintainer>
 </service>
 <service type = "WFS" enabled = "true" >
 <!--

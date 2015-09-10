@@ -55,7 +55,7 @@ http://docs.geoserver.org/latest/en/user/data/database/arcsde.html
 For more Geotools related information: 
 http://docs.geotools.org/latest/userguide/library/data/arcsde.html
 
-Please report any bugs with jira (http://jira.codehaus.org/browse/GEOS). 
+Please report any bugs with jira (https://osgeo-org.atlassian.net/projects/GEOS).
 
 Any other issues can be discussed on the geoserver-users mailing list
 (http://lists.sourceforge.net/lists/listinfo/geoserver-users).

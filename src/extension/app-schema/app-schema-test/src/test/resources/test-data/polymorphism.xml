@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-    <!--  This is to test polymorphism in app-schema (http://jira.codehaus.org/browse/GEOT-2674) -->
+    <!--  This is to test polymorphism in app-schema (https://osgeo-org.atlassian.net/browse/GEOT-2674) -->
 <as:AppSchemaDataAccess xmlns:as="http://www.geotools.org/app-schema"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.geotools.org/app-schema AppSchemaDataAccess.xsd">
     <namespaces>

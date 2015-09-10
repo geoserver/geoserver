@@ -635,7 +635,7 @@ public class DefaultWebCoverageService111 implements WebCoverageService111 {
             return;
         }
 
-        // workaround for http://jira.codehaus.org/browse/GEOT-1710
+        // workaround for https://osgeo-org.atlassian.net/projects/GEOT/issues/GEOT-1710
         if ("urn:ogc:def:crs:OGC:1.3:CRS84".equals(bbox.getCrs())) {
             bbox.setCrs("EPSG:4326");
         }

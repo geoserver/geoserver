@@ -56,5 +56,5 @@ object.  In this case, we use the StringRepresentation which simply wraps a
 string and associates a MediaType with it.
 
 .. note:: This, and all the other scripts discussed in this documentation, are
-    stored in GeoServer SVN at
-    http://svn.codehaus.org/geoserver/trunk/src/community/scriptlet/src/examples/
+    stored in the GeoServer code repository at
+    https://github.com/geoserver/geoserver/tree/master/src/community/scriptlet/src/examples

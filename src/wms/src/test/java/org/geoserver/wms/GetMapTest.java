@@ -29,9 +29,6 @@ import com.vividsolutions.jts.geom.Point;
  * @author Gabriel Roldan (TOPP)
  * @version $Id$
  * @since 2.5.x
- * @source $URL:
- *         https://svn.codehaus.org/geoserver/branches/1.7.x/geoserver/wms/src/test/java/org/vfny
- *         /geoserver/wms/responses/GetMapResponseTest.java $
  */
 public class GetMapTest {
 

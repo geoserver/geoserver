@@ -26,7 +26,7 @@ import org.geotools.util.logging.Logging;
  * GIF Animated reflecting service request filter.
  * <p>
  * Modifies requests against the WMS animate reflector service endpoints
- * in order to address <a href="http://jira.codehaus.org/browse/GEOS-6006">GEOS-6006</a>
+ * in order to address <a href="https://osgeo-org.atlassian.net/browse/GEOS-6006">GEOS-6006</a>
  * </p>
  * 
  * @author Tom Kunicki, Boundless

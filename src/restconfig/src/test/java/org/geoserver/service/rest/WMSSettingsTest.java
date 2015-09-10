@@ -72,7 +72,7 @@ public class WMSSettingsTest extends CatalogRESTTestSupport {
                 + "<id>wms</id>"
                 + "<enabled>false</enabled>"
                 + "<name>WMS</name><title>GeoServer Web Map Service</title>"
-                + "<maintainer>http://jira.codehaus.org/secure/BrowseProject.jspa?id=10311</maintainer>"
+                + "<maintainer>http://geoserver.org/comm</maintainer>"
                 + "</wms>";
         MockHttpServletResponse response = putAsServletResponse("/rest/services/wms/settings", xml,
                 "text/xml");

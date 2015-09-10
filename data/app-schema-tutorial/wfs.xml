@@ -3,7 +3,7 @@
   <enabled>true</enabled>
   <name>My GeoServer WFS</name>
   <title>My GeoServer WFS</title>
-  <maintainer>http://jira.codehaus.org/secure/BrowseProject.jspa?id=10311</maintainer>
+  <maintainer>http://geoserver.org/comm</maintainer>
   <abstrct>This is a description of your Web Feature Server.&#xd;
 &#xd;
 The GeoServer is a full transactional Web Feature Server, you may wish to limit&#xd;

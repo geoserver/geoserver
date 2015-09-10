@@ -105,7 +105,7 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
             request.setLocale(new Locale(language));
         }
 
-        // Fix for http://jira.codehaus.org/browse/GEOS-710
+        // Fix for https://osgeo-org.atlassian.net/browse/GEOS-710
         // Since at the moment none of the other request do check the version
         // numbers, we
         // disable this check for the moment, and wait for a proper fix once the

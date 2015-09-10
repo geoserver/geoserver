@@ -26,7 +26,7 @@ public class MeasureTypeBindingTest extends AbstractAppSchemaTestSupport {
     /**
      * This is to test MeasureTypeBinding without 'uom' in app-schema.
      * GeoServer should encode output without error
-     * (http://jira.codehaus.org/browse/GEOT-1272)
+     * (https://osgeo-org.atlassian.net/browse/GEOT-1272)
      */
     @Test
     public void testMeasureTypeBindingWithoutUOM() {

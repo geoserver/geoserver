@@ -5,7 +5,7 @@ distributed as a separate plug-in.  This plug-in is still experimental,
 if you have feedback please let us know.  See 
 http://docs.geoserver.org/latest/en/user/data/database/sqlserver.html for more info
 
-Please report any bugs with jira (http://jira.codehaus.org/browse/GEOS). 
+Please report any bugs with jira (https://osgeo-org.atlassian.net/projects/GEOS).
 
 Any other issues can be discussed on the mailing list (http://lists.sourceforge.net/lists/listinfo/geoserver-users).
 

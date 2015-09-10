@@ -66,7 +66,7 @@ public class WCSSettingsTest extends CatalogRESTTestSupport {
                 + "<id>wcs</id>"
                 + "<enabled>false</enabled>"
                 + "<name>WCS</name><title>GeoServer Web Coverage Service</title>"
-                + "<maintainer>http://jira.codehaus.org/secure/BrowseProject.jspa?id=10311</maintainer>"
+                + "<maintainer>http://geoserver.org/comm</maintainer>"
                 + "</wcs>";
         MockHttpServletResponse response = putAsServletResponse("/rest/services/wcs/settings", xml,
                 "text/xml");

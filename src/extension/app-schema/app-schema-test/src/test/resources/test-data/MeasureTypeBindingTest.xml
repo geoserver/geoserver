@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 	<!--
 		This is to test MeasureTypeBinding without 'uom' in app-schema
-		(http://jira.codehaus.org/browse/GEOT-1272)
+		(https://osgeo-org.atlassian.net/browse/GEOT-1272)
 	-->
 <as:AppSchemaDataAccess xmlns:as="http://www.geotools.org/app-schema"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"

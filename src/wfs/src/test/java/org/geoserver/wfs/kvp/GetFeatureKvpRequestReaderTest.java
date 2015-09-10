@@ -37,7 +37,7 @@ public class GetFeatureKvpRequestReaderTest extends GeoServerSystemTestSupport {
     }
 
     /**
-     * http://jira.codehaus.org/browse/GEOS-1875
+     * https://osgeo-org.atlassian.net/browse/GEOS-1875
      */
     @Test
     @SuppressWarnings("unchecked")
@@ -89,7 +89,7 @@ public class GetFeatureKvpRequestReaderTest extends GeoServerSystemTestSupport {
     }
 
     /**
-     * See http://jira.codehaus.org/browse/GEOS-1875
+     * See https://osgeo-org.atlassian.net/browse/GEOS-1875
      * 
      * @throws Exception
      */
@@ -120,7 +120,7 @@ public class GetFeatureKvpRequestReaderTest extends GeoServerSystemTestSupport {
     }
 
     /**
-     * See http://jira.codehaus.org/browse/GEOS-1875
+     * See https://osgeo-org.atlassian.net/browse/GEOS-1875
      * 
      * @throws Exception
      */

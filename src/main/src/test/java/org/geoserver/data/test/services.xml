@@ -88,7 +88,7 @@ This is a description of your Web Coverage Server.
       <fees>NONE</fees>
       <accessConstraints>NONE</accessConstraints>
       <srsXmlStyle value = "false" />
-      <maintainer>http://jira.codehaus.org/secure/BrowseProject.jspa?id=10311</maintainer>
+      <maintainer>http://geoserver.org/comm</maintainer>
     </service>
     <service type = "WFS" enabled = "true" >
       <!--
@@ -116,7 +116,7 @@ data.
       <srsXmlStyle value = "true" />
       <serviceLevel value = "31" />
       <citeConformanceHacks>false</citeConformanceHacks>
-      <maintainer>http://jira.codehaus.org/secure/BrowseProject.jspa?id=10311</maintainer>
+      <maintainer>http://geoserver.org/comm</maintainer>
     </service>
     <service type = "WMS" enabled = "true" >
       <!--
@@ -138,7 +138,7 @@ This is a description of your Web Map Server.
       <fees>NONE</fees>
       <accessConstraints>NONE</accessConstraints>
       <srsXmlStyle value = "false" />
-      <maintainer>http://jira.codehaus.org/secure/BrowseProject.jspa?id=10311</maintainer>
+      <maintainer>http://geoserver.org/comm</maintainer>
       <svgAntiAlias>true</svgAntiAlias>
       <allowInterpolation>Nearest</allowInterpolation>
     </service>

@@ -443,10 +443,10 @@ public class GeoServerExtensions implements ApplicationContextAware, Application
      * @return The property value, or null if not found
      */
     public static String getProperty(String propertyName, ServletContext context) {
-        // TODO: this code comes from the data directory lookup and it's useful as 
-        // long as we don't provide a way for the user to manually inspect the three contexts
-        // (when trying to debug why the variable they thing they've set, and so on, see also
-        // http://jira.codehaus.org/browse/GEOS-2343
+        // TODO: this code comes from the data directory lookup and it's useful
+        // until we provide a way for the user to manually inspect the three contexts
+        // (when trying to debug why the variable they think they've set, and so on, see also
+        // https://osgeo-org.atlassian.net/browse/GEOS-2343
         // Once that is fixed, we can remove the logging code that makes this method more complex
         // than strictly necessary
 

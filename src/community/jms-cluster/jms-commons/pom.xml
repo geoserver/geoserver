@@ -23,7 +23,7 @@
 
   <dependencies>
 
-    <!-- http://jira.codehaus.org/browse/XSTR-571 -->
+    <!-- http://x-stream.github.io/jira/571/ -->
     <dependency>
       <groupId>com.thoughtworks.xstream</groupId>
       <artifactId>xstream</artifactId>

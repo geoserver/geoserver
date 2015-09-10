@@ -1319,5 +1319,16 @@
         </dependency>
       </dependencies>
    </profile>
+   <profile>
+      <id>wps-jdbc</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-wps-jdbc</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+   </profile>
+
  </profiles>
 </project>

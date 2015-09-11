@@ -62,6 +62,9 @@ In the following table the whole set of GetLegendGraphic parameters that can be 
    * - *EXCEPTIONS*
      - Optional
      - This gives the MIME type of the format in which to return exceptions. Allowed values are the same as for the EXCEPTIONS= parameter of the WMS GetMap request.
+   * - *LANGUAGE*
+     - Optional
+     - Allows setting labels language for style titles and rules titles; needs a correctly localized SLD to work properly; if labels are not available in the requested language, the default text will be used; look at :ref:`sld_language` for further details.
      
 Controlling legend appearance with LEGEND_OPTIONS
 -------------------------------------------------

@@ -14,3 +14,4 @@ This section discusses the styling of geospatial data served through GeoServer.
    sld-reference/index
    sld-extensions/index
    sld-tipstricks/index
+   sld-language

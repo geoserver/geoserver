@@ -8,7 +8,7 @@ This section describes how to specify metadata (titles and abstracts) in differe
 Metadata in different languages
 -------------------------------
 
-GeoServer extends Title and Abstract sections, so that a text in different languages can be included.
+GeoServer extends Title and Abstract sections, so that text in different languages can be included.
 
 This is an example of the syntax to use:
 

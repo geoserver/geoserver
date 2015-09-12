@@ -177,17 +177,17 @@ public class LoggingUtils {
         }
         
         // reconfiguring log4j logger levels by resetting and loading a new set of configuration properties
-        InputStream loggingConfigStream = resource.in();
-        if (loggingConfigStream == null) {
-            LoggingInitializer.LOGGER.warning("Couldn't open Log4J configuration file '" + resource);
-            return;
-        } else {
-            LoggingInitializer.LOGGER.fine("GeoServer logging profile '" + resource.name() + "' enabled.");
-        }
-    
-        configureGeoServerLogging(resourceLoader, loggingConfigStream, suppressStdOutLogging, false, 
-                                logFileName);
+        try(InputStream loggingConfigStream = resource.in()){
+            if (loggingConfigStream == null) {
+                LoggingInitializer.LOGGER.warning("Couldn't open Log4J configuration file '" + resource);
+                return;
+            } else {
+                LoggingInitializer.LOGGER.fine("GeoServer logging profile '" + resource.name() + "' enabled.");
+            }
         
+            configureGeoServerLogging(resourceLoader, loggingConfigStream, suppressStdOutLogging, false, 
+                                    logFileName);
+        }
         
     }
 

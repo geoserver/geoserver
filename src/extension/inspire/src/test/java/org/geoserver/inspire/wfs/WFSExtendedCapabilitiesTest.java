@@ -135,6 +135,25 @@ public class WFSExtendedCapabilitiesTest extends GeoServerSystemTestSupport {
         
     }
 
+    @Test
+    public void testReloadSettings() throws Exception {
+        final ServiceInfo serviceInfo = getGeoServer().getService(WFSInfo.class);
+        final MetadataMap metadata = serviceInfo.getMetadata();
+        clearInspireMetadata(metadata);
+        metadata.put(CREATE_EXTENDED_CAPABILITIES.key, true);
+        metadata.put(SERVICE_METADATA_URL.key, "http://foo.com?bar=baz");
+        metadata.put(SERVICE_METADATA_TYPE.key, "application/vnd.iso.19139+xml");
+        metadata.put(LANGUAGE.key, "fre");
+        metadata.put(SPATIAL_DATASET_IDENTIFIER_TYPE.key,
+                "one,http://www.geoserver.org/one;two,http://www.geoserver.org/two,http://metadata.geoserver.org/id?two");
+        getGeoServer().save(serviceInfo);
+        getGeoServer().reload();
+        final Document dom = getAsDOM(WFS_2_0_0_GETCAPREQUEST);
+
+        NodeList nodeList = dom.getElementsByTagNameNS(DLS_NAMESPACE, "ExtendedCapabilities");
+        assertEquals("Number of INSPIRE ExtendedCapabilities elements after settings reload", 1, nodeList.getLength());
+    }
+
     // No INSPIRE ExtendedCapabilities should be returned in a WFS 1.0.0 response
     @Test
     public void testExtCaps100WithFullSettings() throws Exception {

@@ -36,6 +36,18 @@
       <artifactId>prettytime</artifactId>
       <version>1.0.8.Final</version>
     </dependency>
+    <dependency>
+      <groupId>org.hamcrest</groupId>
+      <artifactId>hamcrest-library</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver.web</groupId>
+      <artifactId>gs-web-core</artifactId>
+      <scope>test</scope>
+      <classifier>tests</classifier>
+      <version>${project.version}</version>
+    </dependency>
   </dependencies>
   
 </project>

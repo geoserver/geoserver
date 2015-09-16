@@ -185,4 +185,6 @@
         <property name="descriptionKey" value="GeoFenceAuthProviderPanel.description"/>
     </bean>
 
+    <bean id="geoFenceXStreamInitializer" class="org.geoserver.geoserver.authentication.GeoFenceXStreamPersisterInitializer"  lazy-init="false">
+    </bean>
 </beans>

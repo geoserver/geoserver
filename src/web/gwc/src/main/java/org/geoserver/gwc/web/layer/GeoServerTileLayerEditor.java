@@ -264,7 +264,11 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
 
             @Override
             public void validate(IValidatable<GeoServerTileLayerInfo> validatable) {
-                if (enabled.getConvertedInput() && !isBlobStoreEnabled(blobStoreId.getConvertedInput())) {
+                final Boolean createVal = createLayer.getConvertedInput();
+                final Boolean enabledVal = enabled.getConvertedInput();
+                final String blobStoreIdVal = blobStoreId.getConvertedInput();
+                
+                if (createVal && enabledVal && !isBlobStoreEnabled(blobStoreIdVal)) {
                     error(new ParamResourceModel("enabledError", GeoServerTileLayerEditor.this).getString());
                 }
             }

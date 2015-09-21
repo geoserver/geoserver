@@ -63,6 +63,8 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
     static final List<String> KML_SUPEROVERLAY_MODES = Arrays.asList(new String[] {WMS.KML_SUPEROVERLAY_MODE_AUTO, 
             WMS.KML_SUPEROVERLAY_MODE_RASTER, WMS.KML_SUPEROVERLAY_MODE_OVERVIEW, WMS.KML_SUPEROVERLAY_MODE_HYBRID, WMS.KML_SUPEROVERLAY_MODE_CACHED});
     
+    static final List<String> DISPOSAL_METHODS = new ArrayList<String>(Arrays.asList(WMS.DISPOSAL_METHODS));
+    
     ModalWindow modal;
     MimeTypesFormComponent getMapMimeTypesComponent,getFeatureInfoMimeTypesComponent;
     TreeSet<String> getMapAvailable;
@@ -173,6 +175,9 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
         TextField<Integer> framesDelayField = new TextField<Integer>("anim.framesdelay", framesDelay, Integer.class);
         framesDelayField.add(new RangeValidator<Integer>(0, Integer.MAX_VALUE));
         form.add(framesDelayField);
+        // DISPOSAL_METHOD
+        MapModel disposalMethod = defaultedModel(metadataModel, WMS.DISPOSAL_METHOD, WMS.DISPOSAL_METHOD_DEFAULT);
+        form.add(new DropDownChoice("anim.disposalmethod", disposalMethod, DISPOSAL_METHODS));
         // LOOP_CONTINUOUSLY
         MapModel loopContinuously = defaultedModel(metadataModel, WMS.LOOP_CONTINUOUSLY, WMS.LOOP_CONTINUOUSLY_DEFAULT);
         CheckBox loopContinuouslyField = new CheckBox("anim.loopcontinuously", loopContinuously);

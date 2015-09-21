@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -58,6 +58,8 @@ public final class GIFMapResponse extends RenderedImageMapResponse {
     private static final String GIF_LOOP_CONTINUOSLY = "gif_loop_continuosly";
 
     private static final String GIF_LOOP_CONTINUOUSLY = "gif_loop_continuously";
+    
+    private static final String GIF_DISPOSAL_METHOD = "gif_disposal"; 
 
     private final static Logger LOGGER = Logging.getLogger(GIFMapResponse.class);
 
@@ -193,7 +195,23 @@ public final class GIFMapResponse extends RenderedImageMapResponse {
             Object frameDelayString = request.getFormatOptions().get(GIF_FRAMES_DELAY);
             final Integer delay = (frameDelayString != null ? 
                     Integer.valueOf((String) frameDelayString) : wms.getFramesDelay());
-
+            final String requestedDisposalMethod = 
+                    (String) request.getFormatOptions().get(GIF_DISPOSAL_METHOD);
+            String disposalMethod = wms.getDisposalMethod();
+            if (requestedDisposalMethod != null) {
+                for (String method : WMS.DISPOSAL_METHODS) {
+                    if (method.equalsIgnoreCase(requestedDisposalMethod.trim())) {
+                        disposalMethod = method;
+                    }
+                }
+            }
+            // assign the proper well-known value for disposal method option
+            if(disposalMethod == "backgroundColor") {
+                disposalMethod = "restoreToBackgroundColor";
+            } else if(disposalMethod == "previous") {
+                disposalMethod = "restoreToPrevious";
+            }
+            
             // check value
             if (delay <= 0)
                 throw new ServiceException("Animate GIF delay invalid: " + delay);
@@ -212,7 +230,7 @@ public final class GIFMapResponse extends RenderedImageMapResponse {
                     // prepare metadata and write param
                     final IIOMetadata imageMetadata = gifWriter.getDefaultImageMetadata(
                     	new ImageTypeSpecifier(ri), param);
-                    prepareMetadata(ri, imageMetadata, loopContinuosly, delay);
+                    prepareMetadata(ri, imageMetadata, loopContinuosly, delay, disposalMethod);
 
                     // write
                     gifWriter.writeToSequence(new IIOImage(ri, null, imageMetadata), param);
@@ -273,16 +291,17 @@ public final class GIFMapResponse extends RenderedImageMapResponse {
      * @param loopContinuously <code>yes</code> in case we want to loop continuosly,
      *        <code>false</code> otherwise.
      * @param timeBetweenFramesMS the delay in ms between two frames when looping.
+     * @param disposalMethod the disposal method for this image.
      * @throws IOException in case an error occurs.
      */
     private static void prepareMetadata(RenderedImage ri, IIOMetadata imageMetadata, boolean loopContinuously,
-            int timeBetweenFramesMS) throws IOException {
+            int timeBetweenFramesMS, String disposalMethod) throws IOException {
 
         String metaFormatName = imageMetadata.getNativeMetadataFormatName();
 
         IIOMetadataNode root = (IIOMetadataNode) imageMetadata.getAsTree(metaFormatName);
         IIOMetadataNode graphicsControlExtensionNode = getNode(root, "GraphicControlExtension");
-        graphicsControlExtensionNode.setAttribute("disposalMethod", "none");
+        graphicsControlExtensionNode.setAttribute("disposalMethod", disposalMethod);
         graphicsControlExtensionNode.setAttribute("userInputFlag", "FALSE");
         graphicsControlExtensionNode.setAttribute("delayTime", Integer.toString(timeBetweenFramesMS / 10));
         

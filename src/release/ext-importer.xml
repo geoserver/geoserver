@@ -16,6 +16,7 @@
         <include>*javacsv*</include>
         <include>*prettytime*</include>
         <include>*fileupload*</include>
+        <include>*commons-vfs2*</include>
       </includes>
     </fileSet>
   </fileSets>

@@ -302,7 +302,7 @@ Uploading a CSV file to PostGIS while transforming it
 A remote sensing tool is generating CSV files with some locations and measurements, that we want to upload
 into PostGIS as a new spatial table. The CSV file looks as follows::
 
-	#AssetID, SampleTime, Lat, Lon, Value
+	AssetID, SampleTime, Lat, Lon, Value
 	1, 2015-01-01T10:00:00, 10.00, 62.00, 15.2
 	1, 2015-01-01T11:00:00, 10.10, 62.11, 30.25
 	1, 2015-01-01T12:00:00, 10.20, 62.22, 41.2
@@ -430,7 +430,7 @@ Then, we are going to POST the GeoTiff file to the tasks list, in order to creat
 
     curl -u admin:geoserver -F name=test -F filedata=@box_gcp_fixed.tif "http://localhost:8080/geoserver/rest/imports/0/tasks"
     
-We are then going to append the transformations to rectify (gdalwarp), retile (gdal_translate) and add overviews (gdaladdo) to it:
+We are then going to append the transformations to rectify (gdalwarp), retile (gdal_translate) and add overviews (gdaladdo) to it::
 
    curl -u admin:geoserver -XPOST -H "Content-type: application/json" -d @warp.json "http://localhost:8080/geoserver/rest/imports/0/tasks/0/transforms"
    curl -u admin:geoserver -XPOST -H "Content-type: application/json" -d @gtx.json "http://localhost:8080/geoserver/rest/imports/0/tasks/0/transforms"
@@ -445,7 +445,7 @@ We are then going to append the transformations to rectify (gdalwarp), retile (g
     }
 
 
-``gtx.json`` is:
+``gtx.json`` is::
 
     {
       "type": "GdalTranslateTransform",
@@ -502,12 +502,12 @@ Where import.json is::
        }
     }
 
-We are then going to append the transformations to harmonize the file with the rest of the mosaic:
+We are then going to append the transformations to harmonize the file with the rest of the mosaic::
 
    curl -u admin:geoserver -XPOST -H "Content-type: application/json" -d @gtx.json "http://localhost:8080/geoserver/rest/imports/0/tasks/0/transforms"
    curl -u admin:geoserver -XPOST -H "Content-type: application/json" -d @gad.json "http://localhost:8080/geoserver/rest/imports/0/tasks/0/transforms"
    
-``gtx.json`` is:
+``gtx.json`` is::
 
     {
       "type": "GdalTranslateTransform",
@@ -516,7 +516,7 @@ We are then going to append the transformations to harmonize the file with the r
 
 ``gad.json`` is::
 
-{
+    {
       "type": "GdalAddoTransform",
       "options": [ "-r", "average"],
       "levels" : [2, 4, 8, 16, 32, 64, 128]

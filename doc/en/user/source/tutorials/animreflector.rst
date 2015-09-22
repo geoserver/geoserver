@@ -134,6 +134,10 @@ The available options are:
    * - ``gif_frames_delay``
      - Specifies the frame delay in milliseconds.  
        The default is 1000 ms.
+   * - ``gif_disposal_method``
+     - Specifies what to do with the previous GIF frame once a new frame is displayed. 
+       Valid values are ``none``, ``doNotDispose``, ``restoreToBackgroundColor`` and ``restoreToPrevious``. 
+       The default is ``none``.
 
 
 Example 1
@@ -235,5 +239,5 @@ The first three options set server limits on the animation output.
 It is possible to set the **maximum number of frames** an animation can contain, the **maximum rendering time** to produce an animation and the **maximum size** of the whole animation.
 
 The default animation 
-**frame delay** (expressed in ms) and **looping behaviour** can be set as well.
+**frame delay** (expressed in ms) **looping behaviour** and **disposal method** can be set as well.
 These values can be overridden by using the ``format_options`` parameter as described above.

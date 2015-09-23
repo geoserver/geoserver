@@ -13,6 +13,7 @@
         <include>gs-importer-web-*.jar</include>
         <include>gs-importer-rest-*.jar</include>
         <include>gt-xsd-kml-*.jar</include>
+        <include>gt-csv-*.jar</include>
         <include>*javacsv*</include>
         <include>*prettytime*</include>
         <include>*fileupload*</include>

@@ -1,5 +1,3 @@
-[![Build Status](https://travis-ci.org/geoserver/geoserver.svg)](https://travis-ci.org/geoserver/geoserver)
-
 # GeoServer
 
 [GeoServer](http://geoserver.org) is an open source software server written in Java that 

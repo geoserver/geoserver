@@ -27,18 +27,6 @@ import javax.media.jai.InterpolationNearest;
 import javax.media.jai.JAI;
 import javax.media.jai.WarpAffine;
 
-import net.opengis.wcs20.ExtensionItemType;
-import net.opengis.wcs20.ExtensionType;
-import net.opengis.wcs20.GetCoverageType;
-import net.opengis.wcs20.InterpolationAxesType;
-import net.opengis.wcs20.InterpolationAxisType;
-import net.opengis.wcs20.InterpolationMethodType;
-import net.opengis.wcs20.InterpolationType;
-import net.opengis.wcs20.RangeIntervalType;
-import net.opengis.wcs20.RangeItemType;
-import net.opengis.wcs20.RangeSubsetType;
-import net.opengis.wcs20.ScalingType;
-
 import org.eclipse.emf.common.util.EList;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageDimensionCustomizerReader.GridCoverageWrapper;
@@ -110,6 +98,18 @@ import org.opengis.referencing.operation.NoninvertibleTransformException;
 import org.opengis.referencing.operation.TransformException;
 import org.vfny.geoserver.util.WCSUtils;
 import org.vfny.geoserver.wcs.WcsException;
+
+import net.opengis.wcs20.ExtensionItemType;
+import net.opengis.wcs20.ExtensionType;
+import net.opengis.wcs20.GetCoverageType;
+import net.opengis.wcs20.InterpolationAxesType;
+import net.opengis.wcs20.InterpolationAxisType;
+import net.opengis.wcs20.InterpolationMethodType;
+import net.opengis.wcs20.InterpolationType;
+import net.opengis.wcs20.RangeIntervalType;
+import net.opengis.wcs20.RangeItemType;
+import net.opengis.wcs20.RangeSubsetType;
+import net.opengis.wcs20.ScalingType;
 
 /**
  * Implementation of the WCS 2.0.1 GetCoverage request
@@ -756,6 +756,9 @@ public class GetCoverage {
             if (cov == null) {
                 cov = readCoverage(cinfo, request, reader, hints, incrementalInputSize,
                         spatialInterpolation, coverageCRS, readEnvelope, requestedEnvelope, scaling, preAppliedScale);
+                if (cov == null) {
+                    continue;
+                }
                 readCoverages.add(cov);
             }
             Envelope2D covEnvelope = cov.getEnvelope2D();

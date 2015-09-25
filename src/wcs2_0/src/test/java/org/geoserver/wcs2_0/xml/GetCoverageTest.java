@@ -1,8 +1,7 @@
 package org.geoserver.wcs2_0.xml;
 
-import static junit.framework.TestCase.*;
-
-import it.geosolutions.rendered.viewer.RenderedImageBrowser;
+import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.assertTrue;
 
 import java.awt.image.Raster;
 import java.awt.image.RenderedImage;
@@ -59,6 +58,8 @@ public class GetCoverageTest extends WCSTestSupport {
     
     private static final QName RAIN = new QName(MockData.SF_URI, "rain", MockData.SF_PREFIX);
 
+    private static final QName BORDERS = new QName(MockData.SF_URI, "borders", MockData.SF_PREFIX);
+
     @Before
     public void clearDimensions() {
         clearDimensions(getLayerId(WATTEMP));
@@ -84,7 +85,9 @@ public class GetCoverageTest extends WCSTestSupport {
         }
         
         testData.addRasterLayer(RAIN, "rain.zip", "asc", getCatalog());
+        testData.addRasterLayer(BORDERS, "/borders.zip", null, getCatalog());
         testData.addRasterLayer(TIMERANGES, "timeranges.zip", null, null, SystemTestData.class, getCatalog());
+
         sortByElevation(TIMERANGES);
     }
 
@@ -238,6 +241,29 @@ public class GetCoverageTest extends WCSTestSupport {
         }
     }
     
+    @Test
+    public void testCoverageTrimmingBorders() throws Exception {
+        final File xml = new File(
+                "./src/test/resources/trimming/requestGetCoverageTrimmingBorders.xml");
+        final String request = FileUtils.readFileToString(xml);
+        MockHttpServletResponse response = postAsServletResponse("wcs", request);
+
+        // make sure we are not getting a service exception
+        assertEquals("image/tiff", response.getContentType());
+    }
+
+    @Test
+    public void testCoverageTrimmingOutsideBorders() throws Exception {
+        final File xml = new File(
+                "./src/test/resources/trimming/requestGetCoverageTrimmingOutsideBorders.xml");
+        final String request = FileUtils.readFileToString(xml);
+        MockHttpServletResponse response = postAsServletResponse("wcs", request);
+
+        // make sure we are not getting a service exception
+        checkOws20Exception(response, 404, "InvalidSubsetting", null);
+    }
+
+
     @Test
     public void testGetFullCoverageXML() throws Exception {
         final File xml= new File("./src/test/resources/requestGetFullCoverage.xml");
@@ -535,6 +561,7 @@ public class GetCoverageTest extends WCSTestSupport {
         checkWaterTempValue(request, 14.89799975766800344);
     }
     
+
     @Test
     public void testCoverageTimeSlicingTimeClosest() throws Exception {
         setupRasterDimension(getLayerId(WATTEMP), ResourceInfo.TIME, DimensionPresentation.LIST, null);

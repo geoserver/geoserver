@@ -78,7 +78,7 @@ public class LoggingUtils {
             // configuring the log4j file logger
             if(!suppressFileLogging) {
                     Appender gslf = org.apache.log4j.Logger.getRootLogger().getAppender("geoserverlogfile");
-                    if (gslf instanceof org.apache.log4j.RollingFileAppender) {
+                    if (gslf instanceof org.apache.log4j.FileAppender) {
                         if (logFileName == null ) {
                             logFileName = new File(loader.findOrCreateDirectory("logs"),  "geoserver.log").getAbsolutePath();
                         } else { 
@@ -91,7 +91,7 @@ public class LoggingUtils {
                         PropertyConfigurator.configure(lprops);
                         LoggingInitializer.LOGGER.fine("Logging output to file '" + logFileName + "'");
                     } else if (gslf != null) {
-                        LoggingInitializer.LOGGER.warning("'log4j.appender.geoserverlogfile' appender is defined, but isn't a RollingFileAppender.  GeoServer won't control the file-based logging.");
+                        LoggingInitializer.LOGGER.warning("'log4j.appender.geoserverlogfile' appender is defined, but isn't a FileAppender.  GeoServer won't control the file-based logging.");
                     } else {
                         LoggingInitializer.LOGGER.warning("'log4j.appender.geoserverlogfile' appender isn't defined.  GeoServer won't control the file-based logging.");
                     }

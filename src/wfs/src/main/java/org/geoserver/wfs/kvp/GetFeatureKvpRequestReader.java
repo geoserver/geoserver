@@ -185,6 +185,11 @@ public class GetFeatureKvpRequestReader extends WFSKvpRequestReader {
                         typeNames.add(parsed);
                     }
                 }
+                
+                //remove duplicate typeNames from the list
+                HashSet hTypeNames = new HashSet(typeNames);
+                typeNames.clear();
+                typeNames.addAll(hTypeNames);
 
                 querySet(eObject, "typeName", typeNames);
             } else {

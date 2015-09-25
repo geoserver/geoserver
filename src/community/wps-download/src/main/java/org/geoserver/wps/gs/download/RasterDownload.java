@@ -1,9 +1,12 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wps.gs.download;
+
+import it.geosolutions.imageio.stream.output.FileImageOutputStreamExtImpl;
+import it.geosolutions.io.output.adapter.OutputStreamAdapter;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,6 +15,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.imageio.stream.ImageOutputStream;
+import javax.media.jai.Interpolation;
 
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.data.util.CoverageUtils;
@@ -25,26 +29,26 @@ import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.processing.Operations;
 import org.geotools.data.Parameter;
-import org.geotools.factory.GeoTools;
+import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.process.ProcessException;
 import org.geotools.process.raster.CropCoverage;
 import org.geotools.referencing.CRS;
+import org.geotools.resources.coverage.FeatureUtilities;
 import org.geotools.util.logging.Logging;
 import org.opengis.filter.Filter;
 import org.opengis.parameter.GeneralParameterDescriptor;
 import org.opengis.parameter.GeneralParameterValue;
 import org.opengis.parameter.ParameterValueGroup;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.datum.PixelInCell;
 import org.opengis.referencing.operation.MathTransform;
 import org.opengis.util.ProgressListener;
 import org.springframework.context.ApplicationContext;
 
 import com.vividsolutions.jts.geom.Geometry;
-
-import it.geosolutions.imageio.stream.output.FileImageOutputStreamExtImpl;
-import it.geosolutions.io.output.adapter.OutputStreamAdapter;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.Polygon;
+import com.vividsolutions.jts.geom.PrecisionModel;
 
 /**
  * Implements the download services for raster data. If limits are configured this class will use {@link LimitedImageOutputStream}, which raises an
@@ -88,6 +92,7 @@ class RasterDownload {
      * <ul>
      * <li>Reprojection of the coverage (if needed)</li>
      * <li>Clips the coverage (if needed)</li>
+     * <li>Scales the coverage to match the target size (if needed)</li>
      * <li>Writes the result</li>
      * <li>Cleanup the generated coverages</li>
      * </ul>
@@ -98,15 +103,19 @@ class RasterDownload {
      * @param roi input ROI object
      * @param targetCRS CRS of the file to write
      * @param clip indicates if the clipping geometry must be exactly that of the ROI or simply its envelope
+     * @param interpolation interpolation method to use when reprojecting / scaling
+     * @param targetSizeX the size of the target image along the X axis
+     * @param targetSizeY the size of the target image along the Y axis
      * @param filter the {@link Filter} to load the data
      * @return
      * @throws Exception
      */
     public File execute(String mimeType, final ProgressListener progressListener,
             CoverageInfo coverageInfo, Geometry roi, CoordinateReferenceSystem targetCRS,
-            boolean clip, Filter filter) throws Exception {
+            boolean clip, Filter filter, Interpolation interpolation, Integer targetSizeX,
+            Integer targetSizeY) throws Exception {
 
-        GridCoverage2D clippedGridCoverage = null, reprojectedGridCoverage = null, originalGridCoverage = null;
+        GridCoverage2D scaledGridCoverage = null, clippedGridCoverage = null, reprojectedGridCoverage = null, originalGridCoverage = null;
         try {
 
             //
@@ -180,7 +189,8 @@ class RasterDownload {
                 readParameters = CoverageUtils.mergeParameter(parameterDescriptors, readParameters,
                         filter, "FILTER", "Filter");
             }
-            // read GridGeometry preparation
+            // read GridGeometry preparation and scaling setup
+            ScaleToTarget scaling = null;
             if (roi != null) {
                 // set crs in roi manager
                 roiManager.useNativeCRS(reader.getCoordinateReferenceSystem());
@@ -193,12 +203,26 @@ class RasterDownload {
                 final ReferencedEnvelope roiEnvelope = new ReferencedEnvelope(roiManager
                         .getSafeRoiInNativeCRS().getEnvelopeInternal(), // safe envelope
                         nativeCRS);
-                GridGeometry2D gg2D = new GridGeometry2D(PixelInCell.CELL_CENTER,
-                        reader.getOriginalGridToWorld(PixelInCell.CELL_CENTER), roiEnvelope,
-                        GeoTools.getDefaultHints());
+                final Polygon originalEnvelopeAsPolygon = FeatureUtilities.getPolygon(reader.getOriginalEnvelope(),
+                        new GeometryFactory(new PrecisionModel(PrecisionModel.FLOATING)));
+                originalEnvelopeAsPolygon.setUserData(nativeCRS);
+                final ReferencedEnvelope originalEnvelope = JTS.toEnvelope(originalEnvelopeAsPolygon);
+                // calculate intersection between original envelope and ROI, as blindly trusting
+                // the ROI may give issues with scaling, if target size is not specified for
+                // both X and Y dimensions
+                final ReferencedEnvelope intersection = originalEnvelope.intersection(roiEnvelope);
+                // take scaling into account
+                scaling = new ScaleToTarget(reader, intersection);
+                scaling.setTargetSize(targetSizeX, targetSizeY);
+                GridGeometry2D gg2D = scaling.getGridGeometry();
+
                 // TODO make sure the GridRange is not empty, depending on the resolution it might happen
                 readParameters = CoverageUtils.mergeParameter(parameterDescriptors, readParameters,
                         gg2D, AbstractGridFormat.READ_GRIDGEOMETRY2D.getName().getCode());
+            } else {
+                // we are reading the full coverage
+                scaling = new ScaleToTarget(reader);
+                scaling.setTargetSize(targetSizeX, targetSizeY);
             }
             // make sure we work in streaming fashion
             readParameters = CoverageUtils.mergeParameter(parameterDescriptors, readParameters,
@@ -216,7 +240,7 @@ class RasterDownload {
                 }
                 // avoid doing the transform if this is the identity
                 reprojectedGridCoverage = (GridCoverage2D) Operations.DEFAULT.resample(
-                        originalGridCoverage, targetCRS);
+                        originalGridCoverage, targetCRS, null, interpolation);
 
             } else {
                 reprojectedGridCoverage = originalGridCoverage;
@@ -239,8 +263,6 @@ class RasterDownload {
                 } else {
                     // use envelope of the ROI to simply crop and not clip the raster. This is important since when
                     // reprojecting we might read a bit more than needed!
-                    final Geometry polygon = roiManager.getSafeRoiInTargetCRS();
-                    polygon.setUserData(targetCRS);
                     clippedGridCoverage = cropCoverage.execute(reprojectedGridCoverage,
                             roiManager.getSafeRoiInTargetCRS(), progressListener);
                 }
@@ -250,9 +272,21 @@ class RasterDownload {
             }
 
             //
-            // STEP 3 - Writing
+            // STEP 3 - scale to target size, if needed
             //
-            return writeRaster(mimeType, coverageInfo, clippedGridCoverage);
+            if (interpolation != null) {
+                scaling.setInterpolation(interpolation);
+            }
+            if (LOGGER.isLoggable(Level.FINE)) {
+                LOGGER.log(Level.FINE, "Scaling the layer");
+            }
+            // scaling and/or interpolation
+            scaledGridCoverage = scaling.scale(clippedGridCoverage);
+
+            //
+            // STEP 4 - Writing
+            //
+            return writeRaster(mimeType, coverageInfo, scaledGridCoverage);
         } finally {
             if (originalGridCoverage != null) {
                 resourceManager.addResource(new GridCoverageResource(originalGridCoverage));
@@ -262,6 +296,9 @@ class RasterDownload {
             }
             if (clippedGridCoverage != null) {
                 resourceManager.addResource(new GridCoverageResource(clippedGridCoverage));
+            }
+            if (scaledGridCoverage != null) {
+                resourceManager.addResource(new GridCoverageResource(scaledGridCoverage));
             }
         }
     }

@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -11,6 +11,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.media.jai.Interpolation;
+import javax.media.jai.JAI;
 
 import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.Catalog;
@@ -27,6 +30,7 @@ import org.geotools.process.factory.DescribeParameter;
 import org.geotools.process.factory.DescribeProcess;
 import org.geotools.process.factory.DescribeResult;
 import org.geotools.process.gs.GSProcess;
+import org.geotools.resources.image.ImageUtilities;
 import org.geotools.util.Utilities;
 import org.geotools.util.logging.Logging;
 import org.opengis.filter.Filter;
@@ -92,6 +96,9 @@ public class DownloadProcess implements GSProcess, ApplicationContextAware {
      * @param roiCRS the roi crs
      * @param roi the roi
      * @param clip the crop to geometry
+     * @param interpolation interpolation method to use when reprojecting / scaling
+     * @param targetSizeX the size of the target image along the X axis
+     * @param targetSizeY the size of the target image along the Y axis
      * @param progressListener the progress listener
      * @return the file
      * @throws ProcessException the process exception
@@ -105,6 +112,9 @@ public class DownloadProcess implements GSProcess, ApplicationContextAware {
             @DescribeParameter(name = "RoiCRS", min = 0, description = "Optional Region Of Interest CRS") CoordinateReferenceSystem roiCRS,
             @DescribeParameter(name = "ROI", min = 0, description = "Optional Region Of Interest (Polygon)") Geometry roi,
             @DescribeParameter(name = "cropToROI", min = 0, description = "Crop to ROI") Boolean clip,
+            @DescribeParameter(name = "interpolation", description = "Interpolation function to use when reprojecting / scaling raster data.  Values are NEAREST (default), BILINEAR, BICUBIC2, BICUBIC", min = 0) Interpolation interpolation,
+            @DescribeParameter(name = "targetSizeX", min = 0, minValue = 1, description = "X Size of the Target Image (applies to raster data only)") Integer targetSizeX,
+            @DescribeParameter(name = "targetSizeY", min = 0, minValue = 1, description = "Y Size of the Target Image (applies to raster data only)") Integer targetSizeY,
             final ProgressListener progressListener) throws ProcessException {
 
         try {
@@ -138,14 +148,24 @@ public class DownloadProcess implements GSProcess, ApplicationContextAware {
                 roi.setUserData(roiCRS);
             }
 
+            // set default interpolation value
+            if (interpolation == null) {
+                if (LOGGER.isLoggable(Level.FINE)) {
+                    LOGGER.log(Level.FINE,
+                            "Interpolation parameter not specified, using default (Nearest Neighbor)");
+                }
+                interpolation = (Interpolation) ImageUtilities.NN_INTERPOLATION_HINT
+                        .get(JAI.KEY_INTERPOLATION);
+            }
+
             //
             // do we respect limits?
             //
             if (LOGGER.isLoggable(Level.FINE)) {
                 LOGGER.log(Level.FINE, "Running the estimator");
             }
-            if (!estimator.execute(layerName, filter, targetCRS, roiCRS, roi, clip,
-                    progressListener)) {
+            if (!estimator.execute(layerName, filter, targetCRS, roiCRS, roi, clip, targetSizeX,
+                    targetSizeY, progressListener)) {
                 throw new IllegalArgumentException("Download Limits Exceeded. Unable to proceed!");
             }
 
@@ -201,9 +221,9 @@ public class DownloadProcess implements GSProcess, ApplicationContextAware {
                 //
                 CoverageInfo cInfo = (CoverageInfo) resourceInfo;
                 // convert/reproject/crop if needed the coverage
-                internalOutput = new RasterDownload(limits, resourceManager, context)
-                        .execute(mimeType,
-                        progressListener, cInfo, roi, targetCRS, clip, filter);
+                internalOutput = new RasterDownload(limits, resourceManager, context).execute(
+                        mimeType, progressListener, cInfo, roi, targetCRS, clip, filter,
+                        interpolation, targetSizeX, targetSizeY);
             } else {
 
                 // wrong type

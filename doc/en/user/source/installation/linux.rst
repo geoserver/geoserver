@@ -26,14 +26,14 @@ Installation
 
     .. code-block:: bash
     
-       echo "export GEOSERVER_HOME=/usr/local/geoserver" >> ~/.profile
+       echo "export GEOSERVER_HOME=/usr/share/geoserver" >> ~/.profile
        . ~/.profile
 
 #. Make yourself the owner of the ``geoserver`` folder.  Type the following command in the terminal window, replacing ``USER_NAME`` with your own username :
 
     .. code-block:: bash
 
-       sudo chown -R USER_NAME /usr/local/geoserver/
+       sudo chown -R USER_NAME /usr/share/geoserver/
 
 #. Start GeoServer by changing into the directory ``geoserver/bin`` and executing the ``startup.sh`` script:
 

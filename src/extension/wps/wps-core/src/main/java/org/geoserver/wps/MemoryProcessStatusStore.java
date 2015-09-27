@@ -149,4 +149,15 @@ public class MemoryProcessStatusStore implements ProcessStatusStore {
         return statuses.remove(executionId);
     }
 
+    @Override
+    public boolean supportsPredicate() {
+        // 
+        return true;
+    }
+
+    @Override
+    public boolean supportsPaging() {
+        return false;
+    }
+
 }

@@ -83,7 +83,7 @@ public class WPSInitializer implements GeoServerInitializer {
 
         // handle the resource expiration timeout
         int expirationTimeout = info.getResourceExpirationTimeout() * 1000;
-        if (expirationTimeout <= 0) {
+        if (expirationTimeout < 0) {
             // use the default of five minutes
             expirationTimeout = 5 * 60 * 1000;
         }

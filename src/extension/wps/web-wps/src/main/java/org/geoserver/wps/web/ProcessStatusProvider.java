@@ -4,14 +4,34 @@
  */
 package org.geoserver.wps.web;
 
-import java.util.Arrays;
-import java.util.List;
+import static org.geoserver.catalog.Predicates.acceptAll;
+import static org.geoserver.catalog.Predicates.or;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+import java.util.logging.Logger;
+
+import org.apache.wicket.extensions.markup.html.repeater.util.SortParam;
+import org.geoserver.catalog.Predicates;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.wicket.GeoServerDataProvider;
+import org.geoserver.web.wicket.GeoServerDataProvider.Property;
+import org.geoserver.wps.ProcessStatusStore;
 import org.geoserver.wps.executor.ExecutionStatus;
 import org.geoserver.wps.executor.ProcessStatusTracker;
 import org.geotools.data.Query;
+import org.geotools.factory.CommonFactoryFinder;
+import org.geotools.filter.SortByImpl;
+import org.geotools.util.logging.Logging;
+import org.opengis.filter.Filter;
+import org.opengis.filter.FilterFactory2;
+import org.opengis.filter.expression.ExpressionVisitor;
+import org.opengis.filter.expression.PropertyName;
+import org.opengis.filter.sort.SortBy;
+import org.opengis.filter.sort.SortOrder;
+import org.xml.sax.helpers.NamespaceSupport;
 
 /**
  * Provides a filtered, sorted view over the running/recently completed processes
@@ -20,14 +40,22 @@ import org.geotools.data.Query;
  */
 @SuppressWarnings("serial")
 public class ProcessStatusProvider extends GeoServerDataProvider<ExecutionStatus> {
+    static private Logger LOGGER = Logging.getLogger(ProcessStatusProvider.class);
+    static private final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
     static final Property<ExecutionStatus> TYPE = new AbstractProperty<ExecutionStatus>("type") {
-
         @Override
         public Object getPropertyValue(ExecutionStatus item) {
             // we might want to have a "C" state for the chained processes
             return item.isAsynchronous() ? "A" : "S";
         }
 
+        @Override
+        public boolean isSearchable() {
+            // we really it isn't sortable
+            return false;
+        }
+        
+        
     };
 
     static final Property<ExecutionStatus> NODE = new BeanProperty<ExecutionStatus>("node",
@@ -52,6 +80,9 @@ public class ProcessStatusProvider extends GeoServerDataProvider<ExecutionStatus
 
     static final List<Property<ExecutionStatus>> PROPERTIES = Arrays.asList(TYPE, NODE, USER,
             PROCESS, CREATED, PHASE, PROGRESS, TASK);
+    private int first;
+    
+    private int count;
 
     @Override
     protected List<ExecutionStatus> getItems() {
@@ -65,4 +96,139 @@ public class ProcessStatusProvider extends GeoServerDataProvider<ExecutionStatus
         return PROPERTIES;
     }
 
+    
+
+    @Override
+    protected Filter getFilter() {
+        final String[] keywords = getKeywords();
+        Filter filter = acceptAll();
+        if (null != keywords) {
+            for (String keyword : keywords) {
+                Filter propContains = getFullSearch(keywords);
+                // chain the filters together
+                if (Filter.INCLUDE == filter) {
+                    filter = propContains;
+                } else {
+                    filter = or(filter, propContains);
+                }
+            }
+        }
+
+        return filter;
+    }
+
+    private Filter getFullSearch(String[] keywords) {
+        ProcessStatusTracker tracker = GeoServerApplication.get().getBeanOfType(
+                ProcessStatusTracker.class);
+        ProcessStatusStore store = tracker.getStore();
+        Filter ret = Filter.INCLUDE;
+        if(store.supportsPredicate()) {
+            for (String keyword : keywords) {
+                Filter propContains = Predicates.fullTextSearch(keyword);
+                // chain the filters together
+                if (Filter.INCLUDE == ret) {
+                    ret = propContains;
+                } else {
+                    ret = or(ret, propContains);
+                }
+            }
+        }else {
+            if(keywords.length>0) {
+                List<Filter> likes = new ArrayList<Filter>();
+                for(String word:keywords) {
+                    for(Property<?> prop:getProperties()) {
+                        if(prop.isSearchable()) {
+                            if(prop.equals(NODE)||
+                               prop.equals(PHASE)||
+                               prop.equals(TASK)||
+                               prop.equals(USER)) {
+                                likes.add(FF.like(FF.property(prop.getName()), "*"+word+"*"));
+                            }
+                            //TODO: support other properties
+                                
+                        }
+                    }
+                }
+                ret = FF.or(likes);
+            }
+        }
+        return ret;
+    }
+
+    @Override
+    protected List<ExecutionStatus> getFilteredItems() {
+        ProcessStatusTracker tracker = GeoServerApplication.get().getBeanOfType(
+                ProcessStatusTracker.class);
+        ProcessStatusStore store = tracker.getStore();
+        Query query = new Query("status", getFilter());
+        if(count>0) {
+            query.setStartIndex(first);
+            query.setMaxFeatures(count);
+        }
+        SortParam sort = getSort();
+        if(sort!=null) {
+            SortByImpl[] sortBys = new SortByImpl[1];
+            final Property<?> property = getProperty(sort);
+            if(property.isSearchable()) {//we really need another flag
+
+                //hard to believe there isn't an implementing class!
+                sortBys[0] = new SortByImpl(new PropertyName() {
+
+                    @Override
+                    public <T> T evaluate(Object object, Class<T> context) {
+                        // TODO Auto-generated method stub
+                        return null;
+                    }
+
+                    @Override
+                    public Object evaluate(Object object) {
+                        // TODO Auto-generated method stub
+                        return null;
+                    }
+
+                    @Override
+                    public Object accept(ExpressionVisitor visitor, Object extraData) {
+                        // TODO Auto-generated method stub
+                        return null;
+                    }
+
+                    @Override
+                    public String getPropertyName() {
+                        // TODO Auto-generated method stub
+                        return property.getName();
+                    }
+
+                    @Override
+                    public NamespaceSupport getNamespaceContext() {
+                        // TODO Auto-generated method stub
+                        return null;
+                    }
+                }, SortOrder.ASCENDING);
+
+                if(sort.isAscending()) {
+                    sortBys[0].setSortOrder(SortOrder.ASCENDING);
+                }else {
+                    sortBys[0].setSortOrder(SortOrder.DESCENDING);
+                }
+                query.setSortBy(sortBys);
+
+            }
+        }
+        LOGGER.info("built query "+query+" to filter statuses");
+        return store.list(query);
+    }
+
+    @Override
+    public Iterator<ExecutionStatus> iterator(int first, int count) {
+        this.first = first;
+        this.count = count;
+        Iterator<ExecutionStatus> it = super.iterator(first, count);
+        this.first = 0;
+        this.count = -1;
+        return it;
+    }
+
+   
+    
+    
 }

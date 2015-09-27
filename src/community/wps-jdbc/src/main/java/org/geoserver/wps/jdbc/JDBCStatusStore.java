@@ -76,11 +76,11 @@ public class JDBCStatusStore implements ProcessStatusStore {
 
     static final String ASYNC = "async";
 
-    static final String USER_NAME = "userName";
+    static final String USER_NAME = "user";
 
     static final String TASK = "task";
 
-    static final String SIMPLE_PROCESS_NAME = "simpleProcessName";
+    static final String SIMPLE_PROCESS_NAME = "processName";
 
     static final String PROPERTIES = "properties";
 
@@ -88,17 +88,17 @@ public class JDBCStatusStore implements ProcessStatusStore {
 
     static final String PROCESS_NAME_URI = "processNameURI";
 
-    static final String PROCESS_NAME = "processName";
+    static final String PROCESS_NAME = "processNameImpl";
 
     static final String PHASE = "phase";
 
-    static final String NODE_ID = "nodeId";
+    static final String NODE_ID = "node";
 
-    static final String COMPLETION = "completion";
+    static final String COMPLETION = "completionTime";
 
-    static final String LASTUPDATE = "lastupdate";
+    static final String LASTUPDATE = "lastUpdated";
 
-    static final String CREATION = "creation";
+    static final String CREATION = "creationTime";
 
     static final String PROCESS_ID = "processId";
 
@@ -112,6 +112,10 @@ public class JDBCStatusStore implements ProcessStatusStore {
 
     static SimpleFeatureType schema;
 
+    public JDBCStatusStore(JDBCStatusStoreLoader loader) {
+        this(loader.getStore());
+    }
+
     public JDBCStatusStore(DataStore store) {
         if (store == null) {
             throw new RuntimeException(
@@ -121,9 +125,11 @@ public class JDBCStatusStore implements ProcessStatusStore {
         try {
             boolean statusSchema = statuses.getNames().contains(new NameImpl(STATUS));
             if (statusSchema) {
+                LOGGER.info("using exisiting status store DB " + STATUS);
                 SimpleFeatureSource source = statuses.getFeatureSource(STATUS);
                 schema = source.getSchema();
             } else {
+                LOGGER.info("creating new DB table for statuses");
                 try {
                   //@formatter:off
                     schema = DataUtilities.createType(STATUS,
@@ -161,8 +167,6 @@ public class JDBCStatusStore implements ProcessStatusStore {
 
     @Override
     public void save(ExecutionStatus status) {
-        // TODO check semantics of this?
-        remove(status.getExecutionId());
         DefaultTransaction transaction = new DefaultTransaction("create");
         try {
             SimpleFeatureSource source = statuses.getFeatureSource(STATUS);
@@ -172,6 +176,8 @@ public class JDBCStatusStore implements ProcessStatusStore {
                 SimpleFeature feature = statusToFeature(status);
                 FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection = DataUtilities
                         .collection(feature);
+                // if the feature exists delete it
+                store.removeFeatures(filter);
                 store.addFeatures(featureCollection);
                 transaction.commit();
             }
@@ -191,6 +197,7 @@ public class JDBCStatusStore implements ProcessStatusStore {
 
     @Override
     public ExecutionStatus get(String executionId) {
+        LOGGER.info("getting status " + executionId);
         try {
             SimpleFeatureSource source = statuses.getFeatureSource(STATUS);
 
@@ -208,6 +215,7 @@ public class JDBCStatusStore implements ProcessStatusStore {
 
     @Override
     public ExecutionStatus remove(String executionId) {
+        LOGGER.info("removing status " + executionId);
         try {
             SimpleFeatureSource source = statuses.getFeatureSource(STATUS);
 
@@ -245,6 +253,7 @@ public class JDBCStatusStore implements ProcessStatusStore {
 
     @Override
     public int remove(Filter filter) {
+        LOGGER.info("removing statuses matching " + filter);
         int ret = 0;
         DefaultTransaction transaction = new DefaultTransaction("create");
         try {
@@ -280,6 +289,7 @@ public class JDBCStatusStore implements ProcessStatusStore {
 
     @Override
     public List<ExecutionStatus> list(Query query) {
+        LOGGER.info("listing statuses matching " + query);
         SimpleFeatureSource source;
         try {
             ArrayList<ExecutionStatus> ret = new ArrayList<>();
@@ -464,4 +474,15 @@ public class JDBCStatusStore implements ProcessStatusStore {
         exc.setStackTrace(trace.toArray(new StackTraceElement[] {}));
         return exc;
     }
+
+    @Override
+    public boolean supportsPredicate() {
+        return false;
+    }
+
+    @Override
+    public boolean supportsPaging() {
+        return true;
+    }
+
 }

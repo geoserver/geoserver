@@ -42,5 +42,17 @@ public interface ProcessStatusStore {
      */
     List<ExecutionStatus> list(Query query);
 
+    /** 
+     * Does the underlying store support the use of Predicates like FullText
+     * @return true if FULLTEXT searches are supported.
+     */
+    boolean supportsPredicate();
+
+    /** 
+     * Does the underlying store support Paging
+     * @return true if Paging in searches is supported.
+     */
+    boolean supportsPaging();
+
 
 }

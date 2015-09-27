@@ -1146,33 +1146,6 @@
         <artifactId>cobertura-maven-plugin</artifactId>
         <version>2.6</version>
       </plugin>
-      <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
-      <plugin>
-      	<groupId>org.eclipse.m2e</groupId>
-      	<artifactId>lifecycle-mapping</artifactId>
-      	<version>1.0.0</version>
-      	<configuration>
-      		<lifecycleMappingMetadata>
-      			<pluginExecutions>
-      				<pluginExecution>
-      					<pluginExecutionFilter>
-      						<groupId>pl.project13.maven</groupId>
-      						<artifactId>
-      							git-commit-id-plugin
-      						</artifactId>
-      						<versionRange>[2.0.4,)</versionRange>
-      						<goals>
-      							<goal>revision</goal>
-      						</goals>
-      					</pluginExecutionFilter>
-      					<action>
-      						<ignore></ignore>
-      					</action>
-      				</pluginExecution>
-      			</pluginExecutions>
-      		</lifecycleMappingMetadata>
-      	</configuration>
-      </plugin>
     </plugins>
   </pluginManagement>
  

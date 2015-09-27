@@ -177,6 +177,8 @@ public class JDBCStatusStore implements ProcessStatusStore {
                 FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection = DataUtilities
                         .collection(feature);
                 // if the feature exists delete it
+                Filter filter = ECQL.toFilter(
+                        PROCESS_ID + " = '" + status.getExecutionId() + "'");
                 store.removeFeatures(filter);
                 store.addFeatures(featureCollection);
                 transaction.commit();
@@ -189,6 +191,9 @@ public class JDBCStatusStore implements ProcessStatusStore {
             } catch (IOException e1) {
 
             }
+        } catch (CQLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         } finally {
             transaction.close();
         }

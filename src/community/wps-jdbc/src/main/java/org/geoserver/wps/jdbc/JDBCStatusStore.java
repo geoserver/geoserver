@@ -15,6 +15,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -125,11 +126,11 @@ public class JDBCStatusStore implements ProcessStatusStore {
         try {
             boolean statusSchema = statuses.getNames().contains(new NameImpl(STATUS));
             if (statusSchema) {
-                LOGGER.info("using exisiting status store DB " + STATUS);
+                LOGGER.fine("using exisiting status store DB " + STATUS);
                 SimpleFeatureSource source = statuses.getFeatureSource(STATUS);
                 schema = source.getSchema();
             } else {
-                LOGGER.info("creating new DB table for statuses");
+                LOGGER.fine("creating new DB table for statuses");
                 try {
                   //@formatter:off
                     schema = DataUtilities.createType(STATUS,
@@ -152,15 +153,14 @@ public class JDBCStatusStore implements ProcessStatusStore {
                             + EXCEPTION_MESSAGE+":String," 
                             + STACK_TRACE+":String");
                 } catch (SchemaException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+                   LOGGER.fine(e.getLocalizedMessage());
                 }
               //@formatter:on
                 statuses.createSchema(schema);
             }
         } catch (IOException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
+            LOGGER.info("failed to create WPS status store");
+            LOGGER.fine(e1.getMessage());
         }
 
     }
@@ -177,23 +177,23 @@ public class JDBCStatusStore implements ProcessStatusStore {
                 FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection = DataUtilities
                         .collection(feature);
                 // if the feature exists delete it
-                Filter filter = ECQL.toFilter(
-                        PROCESS_ID + " = '" + status.getExecutionId() + "'");
+                Filter filter = ECQL.toFilter(PROCESS_ID + " = '" + status.getExecutionId() + "'");
                 store.removeFeatures(filter);
                 store.addFeatures(featureCollection);
                 transaction.commit();
             }
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOGGER.info("failed to save WPS Status " + status.getExecutionId());
+            LOGGER.fine(e.getMessage());
+
             try {
                 transaction.rollback();
             } catch (IOException e1) {
-
+                // everything has gone wrong?
+                LOGGER.fine("failed to rollback failed save");
             }
         } catch (CQLException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            // should really never be thrown
         } finally {
             transaction.close();
         }
@@ -202,7 +202,7 @@ public class JDBCStatusStore implements ProcessStatusStore {
 
     @Override
     public ExecutionStatus get(String executionId) {
-        LOGGER.info("getting status " + executionId);
+        LOGGER.fine("getting status " + executionId);
         try {
             SimpleFeatureSource source = statuses.getFeatureSource(STATUS);
 
@@ -212,15 +212,15 @@ public class JDBCStatusStore implements ProcessStatusStore {
             ExecutionStatus stat = featureToStatus(f);
             return stat;
         } catch (IOException | CQLException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOGGER.info("failed to fetch WPS Status " + executionId);
+            LOGGER.fine(e.getMessage());
         }
         return null;
     }
 
     @Override
     public ExecutionStatus remove(String executionId) {
-        LOGGER.info("removing status " + executionId);
+        LOGGER.fine("removing status " + executionId);
         try {
             SimpleFeatureSource source = statuses.getFeatureSource(STATUS);
 
@@ -230,7 +230,6 @@ public class JDBCStatusStore implements ProcessStatusStore {
             ExecutionStatus stat = featureToStatus(f);
             DefaultTransaction transaction = new DefaultTransaction("create");
             try {
-
                 if (source instanceof SimpleFeatureStore) {
                     SimpleFeatureStore store = (SimpleFeatureStore) source;
                     store.setTransaction(transaction);
@@ -238,8 +237,8 @@ public class JDBCStatusStore implements ProcessStatusStore {
                     transaction.commit();
                 }
             } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                LOGGER.info("failed to remove WPS Status " + executionId);
+                LOGGER.fine(e.getMessage());
                 try {
                     transaction.rollback();
                 } catch (IOException e1) {
@@ -250,15 +249,16 @@ public class JDBCStatusStore implements ProcessStatusStore {
             }
             return stat;
         } catch (IOException | CQLException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOGGER.info("failed to remove WPS Status " + executionId);
+            LOGGER.fine(e.getMessage());
+
         }
         return null;
     }
 
     @Override
     public int remove(Filter filter) {
-        LOGGER.info("removing statuses matching " + filter);
+        LOGGER.fine("removing statuses matching " + filter);
         int ret = 0;
         DefaultTransaction transaction = new DefaultTransaction("create");
         try {
@@ -276,10 +276,12 @@ public class JDBCStatusStore implements ProcessStatusStore {
                 store.setTransaction(transaction);
                 store.removeFeatures(filter);
                 transaction.commit();
+            } else {
+                LOGGER.info("Readonly status store found, probably not what you wanted");
             }
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOGGER.info("failed to remove WPS Status matching " + filter);
+            LOGGER.fine(e.getMessage());
             try {
                 transaction.rollback();
             } catch (IOException e1) {
@@ -294,7 +296,7 @@ public class JDBCStatusStore implements ProcessStatusStore {
 
     @Override
     public List<ExecutionStatus> list(Query query) {
-        LOGGER.info("listing statuses matching " + query);
+        LOGGER.fine("listing statuses matching " + query);
         SimpleFeatureSource source;
         try {
             ArrayList<ExecutionStatus> ret = new ArrayList<>();
@@ -309,7 +311,9 @@ public class JDBCStatusStore implements ProcessStatusStore {
             try {
                 while (itr.hasNext()) {
                     SimpleFeature f = itr.next();
-                    LOGGER.fine("adding " + f);
+                    if (LOGGER.isLoggable(Level.FINE)) {
+                        LOGGER.fine("adding " + f);
+                    }
                     ret.add(featureToStatus(f));
                 }
                 return ret;
@@ -317,8 +321,8 @@ public class JDBCStatusStore implements ProcessStatusStore {
                 itr.close();
             }
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOGGER.info("failed to fetch any WPS statuses");
+            LOGGER.fine(e.getMessage());
         }
         return Collections.emptyList();
     }
@@ -373,10 +377,8 @@ public class JDBCStatusStore implements ProcessStatusStore {
             e.encode(request, WPS.Execute, out);
             ret = out.toString();
         } catch (IOException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
+            LOGGER.info("Problem encountered encoding WPS Request");
         }
-        System.out.println(ret);
 
         return ret;
 
@@ -434,8 +436,8 @@ public class JDBCStatusStore implements ProcessStatusStore {
         try {
             request = (ExecuteType) parser.parse(reader);
         } catch (IOException | SAXException | ParserConfigurationException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOGGER.info("Problem building WPS request for status");
+            LOGGER.fine(e.getMessage());
         }
 
         return request;
@@ -450,16 +452,11 @@ public class JDBCStatusStore implements ProcessStatusStore {
                     .loadClass((String) attrs.get(EXCEPTION_CLASS)).getConstructor(String.class);
             exc = (Exception) con.newInstance(message);
 
-        } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
+        } catch (InstantiationException | IllegalAccessException | ClassNotFoundException
+                | NoSuchMethodException | SecurityException | IllegalArgumentException
+                | InvocationTargetException e) {
             // too bad, I don't care
-        } catch (NoSuchMethodException e) {
-            // too bad, I don't care
-        } catch (SecurityException e) {
-            // too bad, I don't care
-        } catch (IllegalArgumentException e) {
-            // too bad, I don't care
-        } catch (InvocationTargetException e) {
-            // too bad, I don't care
+            LOGGER.log(Level.FINE,"COuldn't reinstaniate Exception for WPS status",e);
         }
 
         String r = (String) attrs.get(STACK_TRACE);

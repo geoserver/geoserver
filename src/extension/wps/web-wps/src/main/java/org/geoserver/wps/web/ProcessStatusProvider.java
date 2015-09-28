@@ -141,10 +141,11 @@ public class ProcessStatusProvider extends GeoServerDataProvider<ExecutionStatus
                             if(prop.equals(NODE)||
                                prop.equals(PHASE)||
                                prop.equals(TASK)||
-                               prop.equals(USER)) {
+                               prop.equals(USER)||
+                               prop.equals(PROCESS)) {
                                 likes.add(FF.like(FF.property(prop.getName()), "*"+word+"*"));
                             }
-                            //TODO: support other properties
+                            //TODO: support temporal properties if I can work out what searching means
                                 
                         }
                     }
@@ -172,7 +173,8 @@ public class ProcessStatusProvider extends GeoServerDataProvider<ExecutionStatus
             if(property.isSearchable()) {//we really need another flag
 
                 //hard to believe there isn't an implementing class!
-                sortBys[0] = new SortByImpl(new PropertyName() {
+                sortBys[0] = new SortByImpl(
+                        new PropertyName() {
 
                     @Override
                     public <T> T evaluate(Object object, Class<T> context) {
@@ -214,7 +216,7 @@ public class ProcessStatusProvider extends GeoServerDataProvider<ExecutionStatus
 
             }
         }
-        LOGGER.info("built query "+query+" to filter statuses");
+        LOGGER.fine("built query "+query+" to filter statuses");
         return store.list(query);
     }
 

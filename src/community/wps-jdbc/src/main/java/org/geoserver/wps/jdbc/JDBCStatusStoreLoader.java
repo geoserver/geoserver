@@ -9,6 +9,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Date;
 import java.util.Properties;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.io.IOUtils;
@@ -47,8 +48,8 @@ public class JDBCStatusStoreLoader implements DisposableBean {
             store = DataStoreFinder.getDataStore(params);
 
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOGGER.info("can't find or create JDBC Status store configuration file");
+            LOGGER.log(Level.FINE, "no config file?", e);
         }
 
     }

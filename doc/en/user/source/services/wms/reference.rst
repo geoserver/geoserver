@@ -367,6 +367,8 @@ The standard parameters for the GetFeatureInfo operation are:
      - Format in which to report exceptions.
        The default value is ``application/vnd.ogc.se_xml``.
 
+**Note:**  If you are sending a GetFeatureInfo request against a layergroup, all the layers in that layergroup must be set as "Queryable" to get a result (See :ref:`WMS Settings on Layers page<webadmin_layers>`)
+       
 Geoserver supports a number of output formats for the ``GetFeatureInfo`` response.
 Server-styled HTML is the most commonly-used format. 
 For maximum control and customisation the client should use GML3 and style the raw data itself.

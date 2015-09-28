@@ -37,29 +37,16 @@
   </dependency>
   <dependency>
    <groupId>org.geotools</groupId>
-   <artifactId>gt-wps</artifactId>
+   <artifactId>gt-sample-data</artifactId>
+   <scope>test</scope>
    <version>${gt.version}</version>
   </dependency>
   <dependency>
-   <groupId>xmlunit</groupId>
-   <artifactId>xmlunit</artifactId>
-   <scope>test</scope>
+   <groupId>org.geotools</groupId>
+   <artifactId>gt-wps</artifactId>
+   <version>${gt.version}</version>
   </dependency>
-  <dependency>
-   <groupId>com.mockrunner</groupId>
-   <artifactId>mockrunner</artifactId>
-   <scope>test</scope>
-  </dependency>
-  <dependency>
-   <groupId>org.easymock</groupId>
-   <artifactId>easymock</artifactId>
-   <scope>test</scope>
-  </dependency>
-  <dependency>
-   <groupId>org.easymock</groupId>
-   <artifactId>easymockclassextension</artifactId>
-   <scope>test</scope>
-  </dependency>
+  
  </dependencies>
  
 </project>

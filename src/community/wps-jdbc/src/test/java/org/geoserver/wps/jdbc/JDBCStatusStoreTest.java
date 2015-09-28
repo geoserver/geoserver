@@ -2,9 +2,6 @@ package org.geoserver.wps.jdbc;
 
 import static org.junit.Assert.assertEquals;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Properties;
@@ -17,6 +14,8 @@ import org.geotools.data.DataStoreFinder;
 import org.geotools.data.postgis.PostgisNGDataStoreFactory;
 import org.geotools.feature.NameImpl;
 import org.junit.After;
+import org.junit.Assume;
+import org.junit.Before;
 import org.junit.Test;
 import org.opengis.filter.Filter;
 
@@ -36,35 +35,20 @@ import net.opengis.wps10.Wps10Factory;
  */
 public class JDBCStatusStoreTest extends AbstractProcessStoreTest {
 
+    private static final String fixtureID = "wpstest";
+
     private DataStore datastore;
 
     JDBCStatusStore statusStore;
-
+    @Before
+    public void checkOnLine() {
+        Assume.assumeNotNull(GSFixtureUtilitiesDelegate.loadFixture(fixtureID));
+    }
     @Override
     protected ProcessStatusStore buildStore() {
-        Properties props = new Properties();
-        String home = System.getenv("HOME");
-        File f = new File(home, ".geotools/postgis.properties");
-        FileInputStream is = null;
-        try {
-            is = new FileInputStream(f);
-            props.load(is);
-        } catch (FileNotFoundException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } finally {
-            try {
-                if (is != null)
-                    is.close();
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-        }
-
+        
+        Properties props = GSFixtureUtilitiesDelegate.loadFixture(fixtureID);
+        
         Map<Object, Object> params = props;
         // work round PostFilter issue?
         params.put(PostgisNGDataStoreFactory.ENCODE_FUNCTIONS.key, true);
@@ -76,14 +60,20 @@ public class JDBCStatusStoreTest extends AbstractProcessStoreTest {
             e.printStackTrace();
         }
         statusStore = new JDBCStatusStore(datastore);
+        if(statusStore == null) {
+            throw new RuntimeException("failed to create StatusStore with \n"+props);
+        }
         return statusStore;
     }
 
+    
     @After
     public void shutdown() {
         // clean up the DB
-        statusStore.remove(Filter.INCLUDE);
-        datastore.dispose();
+        if(statusStore!=null)
+            statusStore.remove(Filter.INCLUDE);
+        if(datastore != null)
+            datastore.dispose();
     }
 
     @Test

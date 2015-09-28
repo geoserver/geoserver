@@ -171,45 +171,8 @@ public class ProcessStatusProvider extends GeoServerDataProvider<ExecutionStatus
             SortByImpl[] sortBys = new SortByImpl[1];
             final Property<?> property = getProperty(sort);
             if(property.isSearchable()) {//we really need another flag
-
-                //hard to believe there isn't an implementing class!
-                sortBys[0] = new SortByImpl(
-                        new PropertyName() {
-
-                    @Override
-                    public <T> T evaluate(Object object, Class<T> context) {
-                        // TODO Auto-generated method stub
-                        return null;
-                    }
-
-                    @Override
-                    public Object evaluate(Object object) {
-                        // TODO Auto-generated method stub
-                        return null;
-                    }
-
-                    @Override
-                    public Object accept(ExpressionVisitor visitor, Object extraData) {
-                        // TODO Auto-generated method stub
-                        return null;
-                    }
-
-                    @Override
-                    public String getPropertyName() {
-                        // TODO Auto-generated method stub
-                        return property.getName();
-                    }
-
-                    @Override
-                    public NamespaceSupport getNamespaceContext() {
-                        // TODO Auto-generated method stub
-                        return null;
-                    }
-                }, SortOrder.ASCENDING);
-
-                if(sort.isAscending()) {
-                    sortBys[0].setSortOrder(SortOrder.ASCENDING);
-                }else {
+                FF.sort(property.getName(), SortOrder.ASCENDING);
+                if(!sort.isAscending()) {
                     sortBys[0].setSortOrder(SortOrder.DESCENDING);
                 }
                 query.setSortBy(sortBys);

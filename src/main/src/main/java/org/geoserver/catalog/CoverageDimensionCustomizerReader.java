@@ -32,8 +32,8 @@ import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.HarvestedSource;
 import org.geotools.coverage.grid.io.OverviewPolicy;
 import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
-import org.geotools.data.ResourceInfo
-import org.geotools.data.ServiceInfo
+import org.geotools.data.ResourceInfo;
+import org.geotools.data.ServiceInfo;
 import org.geotools.factory.Hints;
 import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.resources.Classes;
@@ -745,8 +745,4 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
         return delegate.getDatasetLayout();
     }
 
-    @Override
-    public DatasetLayout getDatasetLayout(String coverageName) {
-        return delegate.getDatasetLayout(coverageName);
-    }
 }

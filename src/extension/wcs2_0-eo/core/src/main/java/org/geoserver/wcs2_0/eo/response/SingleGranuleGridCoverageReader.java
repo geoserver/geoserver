@@ -301,7 +301,7 @@ public class SingleGranuleGridCoverageReader implements StructuredGridCoverage2D
 
     @Override
     public ServiceInfo getInfo() {
-        return delegate.getInfo();
+        return reader.getInfo();
     }
 
     @Override

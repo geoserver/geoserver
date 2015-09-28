@@ -16,6 +16,14 @@
     <property name="category" ref="servicesCategory"/>
     <property name="serviceClass" value="org.geoserver.csw.CSWInfo"/>
   </bean>
-    
-
+  <bean id="cswLayerConfig" class="org.geoserver.web.publish.LayerConfigurationPanelInfo">
+    <property name="id" value="cswConfig"/>
+    <property name="titleKey" value="DirectDownloadTabPanel.title"/>
+    <property name="componentClass" value="org.geoserver.csw.web.CSWLayerConfig"/>
+    <property name="supportedTypes">
+      <list>  
+        <value>org.geoserver.catalog.CoverageInfo</value>
+      </list>
+    </property>
+  </bean>
 </beans>

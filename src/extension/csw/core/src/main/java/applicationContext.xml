@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
- Copyright (C) 2014 - Open Source Geospatial Foundation. All rights reserved.
+ Copyright (C) 2014 - 2015 - Open Source Geospatial Foundation. All rights reserved.
  This code is licensed under the GPL 2.0 license, available at the root
  application directory.
  -->
@@ -45,6 +45,7 @@
             <value>GetRepositoryItem</value>
             <value>Harvest</value>
             <value>Transaction</value>
+            <value>DirectDownload</value>
 		  </list>
 		</constructor-arg>
     </bean>
@@ -97,7 +98,7 @@
     <bean id="cswGetRepositoryItemKvpRequestReader" class="org.geoserver.csw.kvp.GetRepositoryItemKvpRequestReader">
     	<constructor-arg ref="cswService-2.0.2" />
     </bean>
-    
+
     <!-- XML Configuration -->
     <bean id="cswXmlConfiguration-2.0.2"
         class="org.geoserver.csw.xml.CSWConfiguration" >
@@ -223,4 +224,26 @@
       
     <!--  factory extension  -->  
 	<bean id="cswFactoryExtension" class="org.geoserver.csw.CSWFactoryExtension"/>
-</beans>
+
+
+    <!--  DirectDownload extensions -->
+    <bean id="DownloadLinkHandler" class="org.geoserver.csw.DownloadLinkHandler" />
+
+    <bean id="FeatureCustomizerMetadata" class="org.geoserver.csw.store.internal.MetadataCustomizer" >
+        <property name="downloadLinkHandler">
+            <ref bean="DownloadLinkHandler" />
+        </property>
+    </bean>
+
+    <bean id="FeatureCustomizerRecord" class="org.geoserver.csw.store.internal.RecordCustomizer">
+        <property name="downloadLinkHandler">
+            <ref bean="DownloadLinkHandler" />
+        </property>
+    </bean>
+
+    <bean id="cswDirectDownloadKvpRequestReader" class="org.geoserver.csw.kvp.DirectDownloadKvpRequestReader" />
+
+    <bean id="zipResponse" class="org.geoserver.csw.response.ZipOutputFormat" />
+    
+    <bean id="DirectDownloadXStreamInitializer" class="org.geoserver.csw.DirectDownloadSettingsXStreamInitializer" />
+ </beans>

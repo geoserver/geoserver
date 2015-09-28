@@ -144,12 +144,10 @@ public class SecuredGridCoverage2DReader extends DecoratingGridCoverage2DReader 
                 return null;
             }
         }
-            
-
         return grid;
     }
 
-     @Override
+    @Override
     public ServiceInfo getInfo() {
         ServiceInfo info = delegate.getInfo();
         if (info == null) {

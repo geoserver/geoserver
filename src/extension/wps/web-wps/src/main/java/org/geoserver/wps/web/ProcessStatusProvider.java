@@ -51,7 +51,7 @@ public class ProcessStatusProvider extends GeoServerDataProvider<ExecutionStatus
 
         @Override
         public boolean isSearchable() {
-            // we really it isn't sortable
+            // when really it isn't sortable or searchable
             return false;
         }
         

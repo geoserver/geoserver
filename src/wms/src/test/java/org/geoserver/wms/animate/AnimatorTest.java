@@ -133,11 +133,11 @@ public class AnimatorTest extends WMSTestSupport {
         checkAnimatedGif(requestURL + "&format_options=gif_loop_continuously:true", true);
         checkAnimatedGif(requestURL + "&format_options=gif_loop_continuosly:true", true);
         // check all valid disposal methods
-        checkAnimatedGif(requestURL + "&gif_disposal_method:restoreToBackgroundColor:none", false);
-        checkAnimatedGif(requestURL + "&gif_disposal_method:restoreToBackgroundColor:doNotDispose", false);
-        checkAnimatedGif(requestURL + "&gif_disposal_method:restoreToBackgroundColor:restoreToBackgroundColor", false);
-        checkAnimatedGif(requestURL + "&gif_disposal_method:restoreToBackgroundColor:restoreToPrevious", false);
-}
+        checkAnimatedGif(requestURL + "&format_options=gif_disposal:none", false);
+        checkAnimatedGif(requestURL + "&format_options=gif_disposal:doNotDispose", false);
+        checkAnimatedGif(requestURL + "&format_options=gif_disposal:backgroundColor", false);
+        checkAnimatedGif(requestURL + "&format_options=gif_disposal:previous", false);
+    }
 
     private void checkAnimatedGif(String requestURL, boolean loopContinously) throws Exception,
             IOException {

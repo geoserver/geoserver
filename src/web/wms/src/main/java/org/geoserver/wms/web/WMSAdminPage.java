@@ -177,7 +177,7 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
         form.add(framesDelayField);
         // DISPOSAL_METHOD
         MapModel disposalMethod = defaultedModel(metadataModel, WMS.DISPOSAL_METHOD, WMS.DISPOSAL_METHOD_DEFAULT);
-        form.add(new DropDownChoice("anim.disposalMethod", disposalMethod, DISPOSAL_METHODS));
+        form.add(new DropDownChoice("anim.disposalmethod", disposalMethod, DISPOSAL_METHODS));
         // LOOP_CONTINUOUSLY
         MapModel loopContinuously = defaultedModel(metadataModel, WMS.LOOP_CONTINUOUSLY, WMS.LOOP_CONTINUOUSLY_DEFAULT);
         CheckBox loopContinuouslyField = new CheckBox("anim.loopcontinuously", loopContinuously);

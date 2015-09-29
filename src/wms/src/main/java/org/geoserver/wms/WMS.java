@@ -208,9 +208,9 @@ public class WMS implements ApplicationContextAware {
 
     public static final String DISPOSAL_METHOD_NOT_DISPOSE = "doNotDispose";
 
-    public static final String DISPOSAL_METHOD_BACKGROUND = "restoreToBackgroundColor";
+    public static final String DISPOSAL_METHOD_BACKGROUND = "backgroundColor";
 
-    public static final String DISPOSAL_METHOD_PREVIOUS = "restoreToPrevious";
+    public static final String DISPOSAL_METHOD_PREVIOUS = "previous";
 
     public static final String DISPOSAL_METHOD_DEFAULT = DISPOSAL_METHOD_NONE;
 

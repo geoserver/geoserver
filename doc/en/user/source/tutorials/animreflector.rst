@@ -134,9 +134,9 @@ The available options are:
    * - ``gif_frames_delay``
      - Specifies the frame delay in milliseconds.  
        The default is 1000 ms.
-   * - ``gif_disposal_method``
+   * - ``gif_disposal``
      - Specifies what to do with the previous GIF frame once a new frame is displayed. 
-       Valid values are ``none``, ``doNotDispose``, ``restoreToBackgroundColor`` and ``restoreToPrevious``. 
+       Valid values are ``none``, ``doNotDispose``, ``backgroundColor`` and ``previous``. 
        The default is ``none``.
 
 

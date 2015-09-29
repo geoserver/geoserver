@@ -59,7 +59,7 @@ public final class GIFMapResponse extends RenderedImageMapResponse {
 
     private static final String GIF_LOOP_CONTINUOUSLY = "gif_loop_continuously";
     
-    private static final String GIF_DISPOSAL_METHOD = "gif_disposal_method"; 
+    private static final String GIF_DISPOSAL_METHOD = "gif_disposal"; 
 
     private final static Logger LOGGER = Logging.getLogger(GIFMapResponse.class);
 
@@ -198,12 +198,18 @@ public final class GIFMapResponse extends RenderedImageMapResponse {
             final String requestedDisposalMethod = 
                     (String) request.getFormatOptions().get(GIF_DISPOSAL_METHOD);
             String disposalMethod = wms.getDisposalMethod();
-            if (requestedDisposalMethod != null){
-                for (String method : WMS.DISPOSAL_METHODS){
-                    if (method.equalsIgnoreCase(requestedDisposalMethod.trim())){
+            if (requestedDisposalMethod != null) {
+                for (String method : WMS.DISPOSAL_METHODS) {
+                    if (method.equalsIgnoreCase(requestedDisposalMethod.trim())) {
                         disposalMethod = method;
                     }
                 }
+            }
+            // assign the proper well-known value for disposal method option
+            if(disposalMethod == "backgroundColor") {
+                disposalMethod = "restoreToBackgroundColor";
+            } else if(disposalMethod == "previous") {
+                disposalMethod = "restoreToPrevious";
             }
             
             // check value

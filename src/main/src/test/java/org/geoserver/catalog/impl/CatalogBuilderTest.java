@@ -79,8 +79,8 @@ public class CatalogBuilderTest extends GeoServerMockTestSupport {
         cb.setStore(cat.getDataStoreByName(MockData.BRIDGES.getPrefix()));
         FeatureTypeInfo fti = cb.buildFeatureType(toName(MockData.BRIDGES));
 
-        // perform basic checks, this has no srs so no lat/lon bbox computation possible
-        assertNull(fti.getSRS());
+        // perform basic checks, this has no srs, so default one will be set
+        assertEquals(CatalogBuilder.DEFAULT_SRS, fti.getSRS());
         assertNull(fti.getNativeCRS());
         assertNull(fti.getNativeBoundingBox());
         assertNull(fti.getLatLonBoundingBox());
@@ -89,7 +89,7 @@ public class CatalogBuilderTest extends GeoServerMockTestSupport {
         cb.setupBounds(fti);
         assertNotNull(fti.getNativeBoundingBox());
         assertNull(fti.getNativeBoundingBox().getCoordinateReferenceSystem());
-        assertNull(fti.getLatLonBoundingBox());
+        assertNotNull(fti.getLatLonBoundingBox());
     }
 
     
@@ -141,10 +141,11 @@ public class CatalogBuilderTest extends GeoServerMockTestSupport {
         cb.setupBounds(fti);
 
         // perform basic checks
-        assertNull(fti.getCRS());
-        // ... not so sure about this one, null would seem more natural
+        assertEquals(CatalogBuilder.DEFAULT_SRS, fti.getSRS());
+        assertNotNull(fti.getNativeBoundingBox());
         assertTrue(fti.getNativeBoundingBox().isEmpty());
-        assertNull(fti.getLatLonBoundingBox());
+        assertNotNull(fti.getLatLonBoundingBox());
+        assertFalse(fti.getLatLonBoundingBox().isEmpty());
         assertNull(layer.getDefaultStyle());
     }
 

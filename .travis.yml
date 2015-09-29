@@ -15,6 +15,7 @@ notifications:
 branches:
   only:
     - master
+    - 2.8.x
 os:
   - linux
   - osx

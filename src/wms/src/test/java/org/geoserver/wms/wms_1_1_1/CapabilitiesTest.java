@@ -68,9 +68,12 @@ public class CapabilitiesTest extends WMSTestSupport {
         // add a workspace qualified style
         WorkspaceInfo ws = catalog.getWorkspaceByName(MockData.CITE_PREFIX);
         testData.addStyle(ws, "Lakes", "Lakes.sld", SystemTestData.class, catalog);
+        testData.addStyle(ws, "tiger_roads", "tiger_roads.sld", SystemTestData.class, catalog);
         StyleInfo lakesStyle = catalog.getStyleByName(ws, "Lakes");
         LayerInfo lakesLayer = catalog.getLayerByName(MockData.LAKES.getLocalPart());
         lakesLayer.setDefaultStyle(lakesStyle);
+        StyleInfo tigerRoadsStyle = catalog.getStyleByName(ws, "tiger_roads");
+        lakesLayer.getStyles().add(tigerRoadsStyle);
         catalog.save(lakesLayer);
     }
 
@@ -464,6 +467,20 @@ public class CapabilitiesTest extends WMSTestSupport {
 
         // check the style name got prefixed too
         assertXpathEvaluatesTo("cite:Lakes", "//Layer[Name='cite:Lakes']/Style[1]/Name", doc);
+        assertXpathEvaluatesTo("cite:tiger_roads", "//Layer[Name='cite:Lakes']/Style[2]/Name", doc);
     }
 
+    // GEOS-7217: Make sure Styles are valid to DTD
+    @Test
+    public void testStyleElementsValidity() throws Exception {
+        Document doc = getAsDOM("wms?service=WMS&request=getCapabilities&version=1.1.1", true);
+
+        assertXpathExists("//Layer[Name='cite:Lakes']/Style[1]/Name", doc);
+        assertXpathExists("//Layer[Name='cite:Lakes']/Style[1]/Title", doc);
+        assertXpathExists("//Layer[Name='cite:Lakes']/Style[1]/LegendURL", doc);
+        
+        assertXpathExists("//Layer[Name='cite:Lakes']/Style[2]/Name", doc);
+        assertXpathExists("//Layer[Name='cite:Lakes']/Style[2]/Title", doc);
+        assertXpathExists("//Layer[Name='cite:Lakes']/Style[2]/LegendURL", doc);
+    }
 }

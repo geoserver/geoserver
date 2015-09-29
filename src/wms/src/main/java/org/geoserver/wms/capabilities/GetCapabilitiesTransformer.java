@@ -939,34 +939,13 @@ public class GetCapabilitiesTransformer extends TransformerBase {
                     throw new NullPointerException("Layer " + layer.getName()
                             + " has no default style");
                 }
-                Style ftStyle;
-                try {
-                    ftStyle = defaultStyle.getStyle();
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-                element("Name", defaultStyle.prefixedName());
-                if (ftStyle.getDescription() != null) {
-                    element("Title", ftStyle.getDescription().getTitle());
-                    element("Abstract", ftStyle.getDescription().getAbstract());
-                }
-                handleLegendURL(layer, layer.getLegend(), null ,layer.getDefaultStyle());
+                handleCommonStyleElements(defaultStyle);
+                handleLegendURL(layer, layer.getLegend(), null , defaultStyle);
                 end("Style");
 
-                Set<StyleInfo> styles = layer.getStyles();
-
-                for (StyleInfo styleInfo : styles) {
-                    try {
-                        ftStyle = styleInfo.getStyle();
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
+                for (StyleInfo styleInfo : layer.getStyles()) {
                     start("Style");
-                    element("Name", styleInfo.prefixedName());
-                    if (ftStyle.getDescription() != null) {
-                        element("Title", ftStyle.getDescription().getTitle());
-                        element("Abstract", ftStyle.getDescription().getAbstract());
-                    }
+                    handleCommonStyleElements(styleInfo);
                     handleLegendURL(layer, null, styleInfo, styleInfo);
                     end("Style");
                 }
@@ -975,9 +954,28 @@ public class GetCapabilitiesTransformer extends TransformerBase {
 
             end("Layer");
         }
-        
 
-        
+        private void handleCommonStyleElements(StyleInfo styleInfo) {
+            Style ftStyle;
+            try {
+                ftStyle = styleInfo.getStyle();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+            element("Name", styleInfo.prefixedName());
+            if (ftStyle.getDescription() != null) {
+                if (ftStyle.getDescription().getTitle() != null) {
+                    element("Title", ftStyle.getDescription().getTitle());
+                } else {
+                    // Title is not required by the SLD spec, but it is required
+                    // by the WMS 1.1 DTD so we have to provide something.
+                    element("Title", styleInfo.prefixedName());
+                }
+                element("Abstract", ftStyle.getDescription().getAbstract());
+            }
+        }
+
         private void element(String element, InternationalString is) {
             if (is != null) {
                 element(element, is.toString());

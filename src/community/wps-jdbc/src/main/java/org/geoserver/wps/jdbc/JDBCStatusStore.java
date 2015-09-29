@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.sql.Clob;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -36,8 +37,11 @@ import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.NameImpl;
 import org.geotools.feature.SchemaException;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
+import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.filter.text.ecql.ECQL;
+import org.geotools.jdbc.JDBCDataStore;
+import org.geotools.jdbc.SQLDialect;
 import org.geotools.util.logging.Logging;
 import org.geotools.wps.WPS;
 import org.geotools.xml.Encoder;
@@ -77,7 +81,7 @@ public class JDBCStatusStore implements ProcessStatusStore {
 
     static final String ASYNC = "async";
 
-    static final String USER_NAME = "user";
+    static final String USER_NAME = "username";
 
     static final String TASK = "task";
 
@@ -103,13 +107,15 @@ public class JDBCStatusStore implements ProcessStatusStore {
 
     static final String PROCESS_ID = "processId";
 
-    static final String STATUS = "status";
+    static final String STATUS = "statuses";
 
     static final String EXECUTION_ID = "exceptionId";
 
     private static final String REQUEST = "request";
 
     DataStore statuses;
+
+    private SQLDialect dialect = null;
 
     static SimpleFeatureType schema;
 
@@ -123,53 +129,82 @@ public class JDBCStatusStore implements ProcessStatusStore {
                     "Attempted to create a JDBCStatusStore with a null datastore");
         }
         statuses = store;
+        if(store instanceof JDBCDataStore) {
+            dialect  = ((JDBCDataStore)store).getSQLDialect();
+        }
         try {
-            boolean statusSchema = statuses.getNames().contains(new NameImpl(STATUS));
+            boolean statusSchema = statuses.getNames().contains(new NameImpl(fixTableName(STATUS)));
             if (statusSchema) {
                 LOGGER.fine("using exisiting status store DB " + STATUS);
-                SimpleFeatureSource source = statuses.getFeatureSource(STATUS);
+                SimpleFeatureSource source = statuses.getFeatureSource(fixTableName(STATUS));
                 schema = source.getSchema();
             } else {
                 LOGGER.fine("creating new DB table for statuses");
-                try {
-                  //@formatter:off
-                    schema = DataUtilities.createType(STATUS,
-                              PROCESS_ID+":String," 
-                            + CREATION+":Date," 
-                            + LASTUPDATE+":Date,"
-                            + COMPLETION+":Date," 
-                            + NODE_ID+":String," 
-                            + PHASE+":String,"
-                            + PROCESS_NAME+":String," 
-                            + PROCESS_NAME_URI+":String,"
-                            + PROGRESS+":Float," 
-                            + REQUEST+":String," 
-                            + PROPERTIES+":String," 
-                            + SIMPLE_PROCESS_NAME+":String,"
-                            + TASK+":String," 
-                            + USER_NAME+":String," 
-                            + ASYNC+":Boolean,"
-                            + EXCEPTION_CLASS+":String,"
-                            + EXCEPTION_MESSAGE+":String," 
-                            + STACK_TRACE+":String");
-                } catch (SchemaException e) {
-                   LOGGER.fine(e.getLocalizedMessage());
-                }
-              //@formatter:on
+                
+                
+                    SimpleFeatureTypeBuilder sftb = new SimpleFeatureTypeBuilder();
+                    
+                
+                    
+                    sftb.add(fixColumnName(PROCESS_ID),String.class);
+                    sftb.add(fixColumnName(CREATION),Date.class);
+                    sftb.add(fixColumnName(LASTUPDATE),Date.class);
+                    sftb.add(fixColumnName(COMPLETION),Date.class);
+                    sftb.add(fixColumnName(NODE_ID),String.class);
+                    sftb.add(fixColumnName(PHASE),String.class);
+                    sftb.add(fixColumnName(PROCESS_NAME),String.class);
+                    sftb.add(fixColumnName(PROCESS_NAME_URI),String.class);
+                    sftb.add(fixColumnName(PROGRESS),Float.class);
+                    
+                    sftb.add(fixColumnName(REQUEST),String.class); 
+                    sftb.add(fixColumnName(PROPERTIES),String.class);
+                    sftb.add(fixColumnName(SIMPLE_PROCESS_NAME),String.class);
+                    sftb.add(fixColumnName(TASK),String.class);
+                    sftb.add(fixColumnName(USER_NAME),String.class);
+                    sftb.add(fixColumnName(ASYNC),String.class); 
+                    sftb.add(fixColumnName(EXCEPTION_CLASS),String.class);
+                    sftb.add(fixColumnName(EXCEPTION_MESSAGE),String.class);
+                    sftb.add(fixColumnName(STACK_TRACE),String.class);
+                    sftb.setName(STATUS);
+                    schema = sftb.buildFeatureType();
+                
+              
                 statuses.createSchema(schema);
             }
         } catch (IOException e1) {
             LOGGER.info("failed to create WPS status store");
-            LOGGER.fine(e1.getMessage());
+            LOGGER.log(Level.FINE,"Can not create Database table",e1);
         }
 
+    }
+
+    private String fixColumnName(String processId) {
+        String ret = processId;
+    
+       if(dialect!=null) {
+           StringBuffer sql = new StringBuffer();
+           dialect.encodeColumnName(null,processId, sql);
+           ret = sql.toString();
+       }
+       return ret;
+    }
+
+    private String fixTableName(String status2) {
+        String ret = status2;
+        
+       if(dialect!=null) {
+           StringBuffer sql = new StringBuffer();
+           dialect.encodeTableName(status2, sql);
+           ret = sql.toString();
+       }
+       return ret;
     }
 
     @Override
     public void save(ExecutionStatus status) {
         DefaultTransaction transaction = new DefaultTransaction("create");
         try {
-            SimpleFeatureSource source = statuses.getFeatureSource(STATUS);
+            SimpleFeatureSource source = statuses.getFeatureSource(fixTableName(STATUS));
             if (source instanceof SimpleFeatureStore) {
                 SimpleFeatureStore store = (SimpleFeatureStore) source;
                 store.setTransaction(transaction);
@@ -177,14 +212,15 @@ public class JDBCStatusStore implements ProcessStatusStore {
                 FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection = DataUtilities
                         .collection(feature);
                 // if the feature exists delete it
-                Filter filter = ECQL.toFilter(PROCESS_ID + " = '" + status.getExecutionId() + "'");
-                store.removeFeatures(filter);
+                Filter filter = ECQL.toFilter(fixColumnName(PROCESS_ID) + " = '" + status.getExecutionId() + "'");
+                Filter fixedFilter = fixFilter(filter);
+                store.removeFeatures(fixedFilter);
                 store.addFeatures(featureCollection);
                 transaction.commit();
             }
         } catch (IOException e) {
             LOGGER.info("failed to save WPS Status " + status.getExecutionId());
-            LOGGER.fine(e.getMessage());
+            LOGGER.log(Level.FINE,"Can not save to table",e);
 
             try {
                 transaction.rollback();
@@ -204,10 +240,11 @@ public class JDBCStatusStore implements ProcessStatusStore {
     public ExecutionStatus get(String executionId) {
         LOGGER.fine("getting status " + executionId);
         try {
-            SimpleFeatureSource source = statuses.getFeatureSource(STATUS);
+            SimpleFeatureSource source = statuses.getFeatureSource(fixTableName(STATUS));
 
-            Filter filter = ECQL.toFilter(PROCESS_ID + " = '" + executionId + "'");
-            SimpleFeatureCollection features = source.getFeatures(filter);
+            Filter filter = ECQL.toFilter(fixColumnName(PROCESS_ID) + " = '" + executionId + "'");
+            Filter fixedFilter = fixFilter(filter);
+            SimpleFeatureCollection features = source.getFeatures(fixedFilter);
             SimpleFeature f = DataUtilities.first(features);
             ExecutionStatus stat = featureToStatus(f);
             return stat;
@@ -222,10 +259,11 @@ public class JDBCStatusStore implements ProcessStatusStore {
     public ExecutionStatus remove(String executionId) {
         LOGGER.fine("removing status " + executionId);
         try {
-            SimpleFeatureSource source = statuses.getFeatureSource(STATUS);
+            SimpleFeatureSource source = statuses.getFeatureSource(fixTableName(STATUS));
 
             Filter filter = ECQL.toFilter(PROCESS_ID + " = '" + executionId + "'");
-            SimpleFeatureCollection features = source.getFeatures(filter);
+            Filter fixedFilter = fixFilter(filter);
+            SimpleFeatureCollection features = source.getFeatures(fixedFilter);
             SimpleFeature f = DataUtilities.first(features);
             ExecutionStatus stat = featureToStatus(f);
             DefaultTransaction transaction = new DefaultTransaction("create");
@@ -233,12 +271,12 @@ public class JDBCStatusStore implements ProcessStatusStore {
                 if (source instanceof SimpleFeatureStore) {
                     SimpleFeatureStore store = (SimpleFeatureStore) source;
                     store.setTransaction(transaction);
-                    store.removeFeatures(filter);
+                    store.removeFeatures(fixedFilter);
                     transaction.commit();
                 }
             } catch (IOException e) {
                 LOGGER.info("failed to remove WPS Status " + executionId);
-                LOGGER.fine(e.getMessage());
+                LOGGER.log(Level.FINE,"failed to remove WPS Status "+executionId,e);
                 try {
                     transaction.rollback();
                 } catch (IOException e1) {
@@ -250,7 +288,7 @@ public class JDBCStatusStore implements ProcessStatusStore {
             return stat;
         } catch (IOException | CQLException e) {
             LOGGER.info("failed to remove WPS Status " + executionId);
-            LOGGER.fine(e.getMessage());
+            LOGGER.log(Level.FINE,"failed to remove WPS Status "+executionId,e);
 
         }
         return null;
@@ -262,26 +300,26 @@ public class JDBCStatusStore implements ProcessStatusStore {
         int ret = 0;
         DefaultTransaction transaction = new DefaultTransaction("create");
         try {
-            SimpleFeatureSource source = statuses.getFeatureSource(STATUS);
-            SimpleFeatureCollection features = source.getFeatures(filter);
+            SimpleFeatureSource source = statuses.getFeatureSource(fixTableName(STATUS));
+            
+            Filter fixedFilter = fixFilter(filter);
+            SimpleFeatureCollection features = source.getFeatures(fixedFilter);
             ret = features.size();
             if (ret == 0) {
                 return ret;
             }
-            SimpleFeatureIterator itr = features.features();
-
-            itr.close();
+            
             if (source instanceof SimpleFeatureStore) {
                 SimpleFeatureStore store = (SimpleFeatureStore) source;
                 store.setTransaction(transaction);
-                store.removeFeatures(filter);
+                store.removeFeatures(fixedFilter);
                 transaction.commit();
             } else {
                 LOGGER.info("Readonly status store found, probably not what you wanted");
             }
         } catch (IOException e) {
             LOGGER.info("failed to remove WPS Status matching " + filter);
-            LOGGER.fine(e.getMessage());
+            LOGGER.log(Level.FINE,"failed to remove WPS Status matching " + filter,e);
             try {
                 transaction.rollback();
             } catch (IOException e1) {
@@ -294,13 +332,20 @@ public class JDBCStatusStore implements ProcessStatusStore {
         return ret;
     }
 
+    private Filter fixFilter(Filter filter) {
+        PropertyNameFixingVisitor visitor = new PropertyNameFixingVisitor(dialect);
+        filter = (Filter) filter.accept(visitor, null);
+        return filter;
+    }
+
     @Override
     public List<ExecutionStatus> list(Query query) {
         LOGGER.fine("listing statuses matching " + query);
         SimpleFeatureSource source;
         try {
             ArrayList<ExecutionStatus> ret = new ArrayList<>();
-            source = statuses.getFeatureSource(STATUS);
+            source = statuses.getFeatureSource(fixTableName(STATUS));
+            query.setFilter(fixFilter(query.getFilter()));
             LOGGER.fine("requesting " + query);
 
             SimpleFeatureCollection features = source.getFeatures(query);
@@ -329,29 +374,34 @@ public class JDBCStatusStore implements ProcessStatusStore {
 
     protected SimpleFeature statusToFeature(ExecutionStatus status) {
         SimpleFeatureBuilder builder = new SimpleFeatureBuilder(schema);
-        builder.set(PROCESS_ID, status.getExecutionId());
-        builder.set(CREATION, status.getCreationTime());
-        builder.set(LASTUPDATE, status.getLastUpdated());
-        builder.set(COMPLETION, status.getCompletionTime());
-        builder.set(NODE_ID, status.getNodeId());
-        builder.set(PHASE, status.getPhase());
+        builder.set(fixColumnName(PROCESS_ID), status.getExecutionId());
+        builder.set(fixColumnName(CREATION), status.getCreationTime());
+        builder.set(fixColumnName(LASTUPDATE), status.getLastUpdated());
+        builder.set(fixColumnName(COMPLETION), status.getCompletionTime());
+        builder.set(fixColumnName(NODE_ID), status.getNodeId());
+        builder.set(fixColumnName(PHASE), status.getPhase());
         Name processName = status.getProcessName();
-        builder.set(PROCESS_NAME, processName.getLocalPart());
-        builder.set(PROCESS_NAME_URI, processName.getNamespaceURI());
+        builder.set(fixColumnName(PROCESS_NAME), processName.getLocalPart());
+        builder.set(fixColumnName(PROCESS_NAME_URI), processName.getNamespaceURI());
 
-        builder.set(PROGRESS, status.getProgress());
+        builder.set(fixColumnName(PROGRESS), status.getProgress());
         ExecuteType request = status.getRequest();
         if (request != null) {
-            builder.set(REQUEST, serializeRequest(request));
+            builder.set(fixColumnName(REQUEST), serializeRequest(request));
         }
-        builder.set(SIMPLE_PROCESS_NAME, status.getSimpleProcessName());
-        builder.set(TASK, status.getTask());
-        builder.set(USER_NAME, status.getUserName());
-        builder.set(ASYNC, status.isAsynchronous());
+        builder.set(fixColumnName(SIMPLE_PROCESS_NAME), status.getSimpleProcessName());
+        builder.set(fixColumnName(TASK), status.getTask());
+        builder.set(fixColumnName(USER_NAME), status.getUserName());
+        if(status.isAsynchronous()) {
+            //Stupid Oracle
+            builder.set(fixColumnName(ASYNC), "yes");
+        }else {
+            builder.set(fixColumnName(ASYNC), "no");
+        }
         Throwable exception = status.getException();
         if (exception != null) {
-            builder.set(EXCEPTION_CLASS, exception.getClass().getName());
-            builder.set(EXCEPTION_MESSAGE, exception.getMessage());
+            builder.set(fixColumnName(EXCEPTION_CLASS), exception.getClass().getName());
+            builder.set(fixColumnName(EXCEPTION_MESSAGE), exception.getMessage());
             StackTraceElement[] stackTrace = exception.getStackTrace();
             StringBuffer buf = new StringBuffer();
             for (StackTraceElement el : stackTrace) {
@@ -362,7 +412,7 @@ public class JDBCStatusStore implements ProcessStatusStore {
                 buf.append("\n");
             }
 
-            builder.set(STACK_TRACE, buf.toString());
+           // builder.set(fixColumnName(STACK_TRACE), buf.toString());
         }
         SimpleFeature feature = builder.buildFeature(null);
         return feature;
@@ -370,16 +420,17 @@ public class JDBCStatusStore implements ProcessStatusStore {
 
     private String serializeRequest(ExecuteType request) {
         String ret = "";
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        /*ByteArrayOutputStream out = new ByteArrayOutputStream();
         Encoder e = new Encoder(new WPSConfiguration());
-        e.setIndenting(true);
+        e.setIndenting(false);
+        e.setLineWidth(0);
         try {
             e.encode(request, WPS.Execute, out);
             ret = out.toString();
         } catch (IOException e1) {
             LOGGER.info("Problem encountered encoding WPS Request");
-        }
-
+        }*/
+        
         return ret;
 
     }
@@ -395,61 +446,66 @@ public class JDBCStatusStore implements ProcessStatusStore {
                 attrs.put(p.getName().toString(), p.getValue());
             }
         }
-        Name processName = new NameImpl((String) attrs.get(PROCESS_NAME));
-        String executionId = (String) attrs.get(PROCESS_ID);
-        boolean asynchronous = (boolean) attrs.get(ASYNC);
+        Name processName = new NameImpl((String) attrs.get(fixColumnName(PROCESS_NAME)));
+        String executionId = (String) attrs.get(fixColumnName(PROCESS_ID));
+        String async = (String) attrs.get(fixColumnName(ASYNC));
+        boolean asynchronous = false;
+        if(async.equalsIgnoreCase("yes")) {
+            asynchronous =true;
+        }
 
         ExecutionStatus status = new ExecutionStatus(processName, executionId, asynchronous);
-        if (attrs.containsKey(REQUEST)) {
+        if (attrs.containsKey(fixColumnName(REQUEST))) {
             ExecuteType request = buildRequest(attrs);
 
             status.setRequest(request);
         }
-        String phase = (String) attrs.get(PHASE);
+        String phase = (String) attrs.get(fixColumnName(PHASE));
         ProcessState state = ProcessState.valueOf(phase);
         status.setPhase(state);
 
-        status.setProgress((float) attrs.get(PROGRESS));
-        status.setTask((String) attrs.get(TASK));
-        status.setUserName((String) attrs.get(USER_NAME));
-        if (attrs.containsKey(EXCEPTION_MESSAGE)) {
+        Double prog = (Double) attrs.get(fixColumnName(PROGRESS));
+        status.setProgress( prog.floatValue());
+        status.setTask((String) attrs.get(fixColumnName(TASK)));
+        status.setUserName((String) attrs.get(fixColumnName(USER_NAME)));
+        if (attrs.containsKey(fixColumnName(EXCEPTION_MESSAGE))) {
             status.setException(buildException(attrs, status));
         }
         // set the time stamps last as other items may set them for us but
         // we know best here!
-        status.setCreationTime((Date) attrs.get(CREATION));
-        if (attrs.containsKey(COMPLETION)) {
-            status.setCompletionTime((Date) attrs.get(COMPLETION));
+        status.setCreationTime((Date) attrs.get(fixColumnName(CREATION)));
+        if (attrs.containsKey(fixColumnName(COMPLETION))) {
+            status.setCompletionTime((Date) attrs.get(fixColumnName(COMPLETION)));
         }
-        if (attrs.containsKey(LASTUPDATE)) {
-            status.setLastUpdated((Date) attrs.get(LASTUPDATE));
+        if (attrs.containsKey(fixColumnName(LASTUPDATE))) {
+            status.setLastUpdated((Date) attrs.get(fixColumnName(LASTUPDATE)));
         }
 
         return status;
     }
 
     private ExecuteType buildRequest(HashMap<String, Object> attrs) {
-        String req = (String) attrs.get(REQUEST);
+        String req = (String) attrs.get(fixColumnName(REQUEST));
         BufferedReader reader = new BufferedReader(new StringReader(req));
         org.geotools.xml.Parser parser = new Parser(new WPSConfiguration());
         ExecuteType request = null;
-        try {
+        /*try {
             request = (ExecuteType) parser.parse(reader);
         } catch (IOException | SAXException | ParserConfigurationException e) {
             LOGGER.info("Problem building WPS request for status");
             LOGGER.fine(e.getMessage());
-        }
+        }*/
 
         return request;
     }
 
     private Exception buildException(HashMap<String, Object> attrs, ExecutionStatus status) {
-        String message = (String) attrs.get(EXCEPTION_MESSAGE);
+        String message = (String) attrs.get(fixColumnName(EXCEPTION_MESSAGE));
         Exception exc = new Exception(message);
         // see if we can rebuild the exception
         try {
             Constructor<?> con = this.getClass().getClassLoader()
-                    .loadClass((String) attrs.get(EXCEPTION_CLASS)).getConstructor(String.class);
+                    .loadClass((String) attrs.get(fixColumnName(EXCEPTION_CLASS))).getConstructor(String.class);
             exc = (Exception) con.newInstance(message);
 
         } catch (InstantiationException | IllegalAccessException | ClassNotFoundException
@@ -459,7 +515,7 @@ public class JDBCStatusStore implements ProcessStatusStore {
             LOGGER.log(Level.FINE,"COuldn't reinstaniate Exception for WPS status",e);
         }
 
-        String r = (String) attrs.get(STACK_TRACE);
+        /*String r = (String) attrs.get(fixColumnName(STACK_TRACE));
         ArrayList<StackTraceElement> trace = new ArrayList<>();
 
         for (String line : r.split("\n")) {
@@ -474,7 +530,7 @@ public class JDBCStatusStore implements ProcessStatusStore {
             trace.add(t);
         }
         exc.setStackTrace(trace.toArray(new StackTraceElement[] {}));
-        return exc;
+*/        return exc;
     }
 
     @Override

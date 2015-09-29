@@ -46,7 +46,18 @@
    <artifactId>gt-wps</artifactId>
    <version>${gt.version}</version>
   </dependency>
-  
+  <dependency>
+   <groupId>org.geotools.jdbc</groupId>
+   <artifactId>gt-jdbc-oracle</artifactId>
+   <version>${gt.version}</version>
+   <scope>test</scope>
+  </dependency>
+  <dependency>
+   <groupId>com.oracle</groupId>
+   <artifactId>ojdbc14</artifactId>
+   <version>10.2.0.3.0</version>
+   <scope>test</scope>
+  </dependency>
  </dependencies>
  
 </project>

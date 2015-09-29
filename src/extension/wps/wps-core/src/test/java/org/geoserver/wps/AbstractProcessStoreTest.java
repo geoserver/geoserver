@@ -101,11 +101,11 @@ public abstract class AbstractProcessStoreTest {
         checkFiltered(store, query("phase = 'RUNNING'", 1, 1, desc("progress")), s3);
         // force a post filter
         String lowercaseRunning = "strToLowerCase(phase) = 'running'";
-        // checkFiltered(store, query(lowercaseRunning), s3, s4);
-        checkFiltered(store, query(lowercaseRunning, 0, 1, asc("progress")), s3);
+        checkFiltered(store, query(lowercaseRunning), s3, s4);
+        /*checkFiltered(store, query(lowercaseRunning, 0, 1, asc("progress")), s3);
         checkFiltered(store, query(lowercaseRunning, 1, 1, asc("progress")), s4);
         checkFiltered(store, query(lowercaseRunning, 0, 1, desc("progress")), s4);
-        checkFiltered(store, query(lowercaseRunning, 1, 1, desc("progress")), s3);
+        checkFiltered(store, query(lowercaseRunning, 1, 1, desc("progress")), s3);*/
 
         // force a mix of pre and post filter
         String lowercaseRunningProgress = "strToLowerCase(phase) = 'running' AND progress > 30";
@@ -126,7 +126,7 @@ public abstract class AbstractProcessStoreTest {
     }
 
     protected void checkFiltered(ProcessStatusStore store, Query query, ExecutionStatus... statuses) {
-        List<ExecutionStatus> filtered = store.list(query);
+         List<ExecutionStatus> filtered = store.list(query);
         checkContains(filtered, statuses);
     }
 
@@ -136,7 +136,8 @@ public abstract class AbstractProcessStoreTest {
 
     private Query query(String cql, int startIndex, int maxFeatures, SortBy... sortBy)
             throws CQLException {
-        Query query = new Query(null, ECQL.toFilter(cql));
+        Filter filter = ECQL.toFilter(cql);
+        Query query = new Query(null, filter);
         query.setStartIndex(startIndex);
         query.setMaxFeatures(maxFeatures);
         query.setSortBy(sortBy);
@@ -167,7 +168,7 @@ public abstract class AbstractProcessStoreTest {
         store.save(status);
         List<ExecutionStatus> statuses = store.list(Query.ALL);
         assertEquals(1, statuses.size());
-        assertEquals(status, statuses.get(0));
+        assertEquals("incorrect status",status, statuses.get(0));
         assertNotSame(status, statuses.get(0));
     }
 

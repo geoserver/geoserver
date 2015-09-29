@@ -69,7 +69,7 @@ public class WPSAdminPage extends BaseServiceAdminPage<WPSInfo> {
         form.add(maxAsynchExecutionTime);
 
         TextField resourceExpirationTimeout = new TextField("resourceExpirationTimeout", Integer.class);
-        resourceExpirationTimeout.add(new MinimumValidator<Integer>(1));
+        resourceExpirationTimeout.add(new MinimumValidator<Integer>(0));
         form.add(resourceExpirationTimeout);
         
         // GeoServerFileChooser chooser = new GeoServerFileChooser("storageDirectory",

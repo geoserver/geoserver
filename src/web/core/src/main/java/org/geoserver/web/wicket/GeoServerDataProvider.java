@@ -197,7 +197,10 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider {
         if (comparator != null) {
             Collections.sort(items, comparator);
         }
-
+        if( items.size()<=count) {
+            //the list has been paged for us.
+            return items.iterator();
+        }
         // in memory paging
         int last = first + count;
         if (last > items.size())

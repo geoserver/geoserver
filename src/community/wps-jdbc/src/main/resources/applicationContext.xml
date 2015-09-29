@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+ (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ This code is licensed under the GPL 2.0 license, available at the root
+ application directory.
+ -->
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+
+	<bean id="jdbcDataStoreLoader" class="org.geoserver.wps.jdbc.JDBCStatusStoreLoader">
+       <constructor-arg ref="dataDirectory"/>
+      
+    </bean>
+    
+    <bean id="processStatusStore" class="org.geoserver.wps.jdbc.JDBCStatusStore">
+       <constructor-arg ref="jdbcDataStoreLoader"/>
+    </bean>
+
+<!-- <bean class="org.geoserver.web.MenuPageInfo" id="wps.jdbc">
+    An internal identifier for the link component
+    <property name="id" value="wps"/>
+    The i18n key for the link title
+    <property name="titleKey" value="org.geoserver.wps.jdbc.web.WPSJDBCStatusPage.page.title"/>
+    The i18n key for a longer description of the page
+    <property name="descriptionKey" value="org.geoserver.wps.jdbc.web.WPSJDBCStatusPage.page.description"/>
+    The fully qualified name of the page class
+    <property name="componentClass" value="org.geoserver.wps.jdbc.web.WPSJDBCStatusPage"/>
+    Optional, an icon to display alongside the link.
+    <property name="icon" value="imgs/some-image.png"/>
+    Optional, the category in which the link should be grouped.
+    <property name="category" ref="settingsCategory"/>
+    Optional, a key used to order the links in the menu.
+    <property name="order" value="100"/>
+</bean> -->
+</beans>

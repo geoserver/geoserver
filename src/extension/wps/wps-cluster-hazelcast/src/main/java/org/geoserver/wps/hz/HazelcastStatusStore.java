@@ -376,4 +376,16 @@ public class HazelcastStatusStore implements ProcessStatusStore {
 
     }
 
+    @Override
+    public boolean supportsPredicate() {
+        // 
+        return true;
+    }
+
+    @Override
+    public boolean supportsPaging() {
+        
+        return true;
+    }
+
 }

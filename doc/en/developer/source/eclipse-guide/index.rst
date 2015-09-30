@@ -18,6 +18,15 @@ Running and debugging
 Run or debug the class ``org.geoserver.web.Start`` in the ``web-app`` 
 module. The steps to do so are detailed in the :ref:`quickstart`.
 
+Running GeoServer with Extensions
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+By default, GeoServer will run without any extensions enabled. In order to run GeoServer with extensions, the ``web-app`` module declares a number of profiles used to enable specific extensions when running ``Start``. To enable an extension, re-generate the root eclipse profile with the appropriate maven profile(s) enabled::
+
+  % mvn eclipse:eclipse -P wps
+
+The full list of supported profiles can be found in ``src/web/app/pom.xml``.
+
 Setting the data directory
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 

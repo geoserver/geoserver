@@ -119,7 +119,11 @@ public class DataStoreFormat extends VectorFormat {
                     featureType.setNamespace(null);
     
                     SimpleFeatureSource featureSource = dataStore.getFeatureSource(typeName); 
-                    cb.setupBounds(featureType, featureSource);
+                    
+                    //Defer bounds calculation
+                    featureType.setNativeBoundingBox(EMPTY_BOUNDS);
+                    featureType.setLatLonBoundingBox(EMPTY_BOUNDS);
+                    featureType.getMetadata().put("recalculate-bounds", Boolean.TRUE);
     
                     //add attributes
                     CatalogFactory factory = catalog.getFactory();

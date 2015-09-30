@@ -1,9 +1,10 @@
-package org.geoserver.wps.jdbc;
-
 /* (c) 2015 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
+
+package org.geoserver.wps.jdbc;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;

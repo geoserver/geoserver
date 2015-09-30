@@ -6,6 +6,7 @@ package org.geoserver.wps;
 
 import static org.junit.Assert.*;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.geoserver.wps.executor.ExecutionStatus;
@@ -43,7 +44,7 @@ public abstract class AbstractProcessStoreTest {
     protected ExecutionStatus s4;
 
     @Before
-    public void setup() {
+    public void setup() throws IOException {
         // prepare a few statues
         this.store = buildStore();
 
@@ -66,8 +67,9 @@ public abstract class AbstractProcessStoreTest {
      * Builds the status store for this test
      * 
      * @return
+     * @throws IOException 
      */
-    protected abstract ProcessStatusStore buildStore();
+    protected abstract ProcessStatusStore buildStore() throws IOException;
 
     /**
      * Puts all the test statuses in the store
@@ -99,6 +101,7 @@ public abstract class AbstractProcessStoreTest {
         checkFiltered(store, query("phase = 'RUNNING'", 1, 1, asc("progress")), s4);
         checkFiltered(store, query("phase = 'RUNNING'", 0, 1, desc("progress")), s4);
         checkFiltered(store, query("phase = 'RUNNING'", 1, 1, desc("progress")), s3);
+        
         // force a post filter
         String lowercaseRunning = "strToLowerCase(phase) = 'running'";
         checkFiltered(store, query(lowercaseRunning), s3, s4);

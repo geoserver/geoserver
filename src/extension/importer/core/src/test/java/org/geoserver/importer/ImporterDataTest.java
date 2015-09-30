@@ -42,6 +42,7 @@ import org.geotools.feature.FeatureIterator;
 import org.geotools.filter.text.cql2.CQL;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.referencing.CRS;
 import org.junit.Test;
 import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeature;
@@ -293,8 +294,7 @@ public class ImporterDataTest extends ImporterTestSupport {
 
         ImportTask task = context.getTasks().get(0);
         assertEquals(ImportTask.State.NO_CRS, task.getState());
-        assertNull(task.getLayer().getResource().getLatLonBoundingBox());
-
+        
         task.getLayer().getResource().setSRS("EPSG:26713");
         importer.changed(task);
 
@@ -304,6 +304,21 @@ public class ImporterDataTest extends ImporterTestSupport {
         assertNotNull(r.getLatLonBoundingBox());
         assertNotNull(r.boundingBox());
         assertNotNull(r.boundingBox().getCoordinateReferenceSystem());
+        
+        assertEquals("EPSG:26713", CRS.toSRS(r.boundingBox().getCoordinateReferenceSystem()));
+        
+        //Do the import, verify the changed CRS is preserved when the bounds are calculated
+        importer.doDirectImport(task);
+        assertEquals(ImportTask.State.COMPLETE, task.getState());
+
+        r = task.getLayer().getResource();
+        assertNotNull(r.getLatLonBoundingBox());
+        assertNotEquals(VectorFormat.EMPTY_BOUNDS, r.getLatLonBoundingBox());
+        assertNotNull(r.boundingBox());
+        assertNotEquals(VectorFormat.EMPTY_BOUNDS, r.boundingBox());
+        assertNotNull(r.boundingBox().getCoordinateReferenceSystem());
+        
+        assertEquals("EPSG:26713", CRS.toSRS(r.boundingBox().getCoordinateReferenceSystem()));
     }
 
     @Test

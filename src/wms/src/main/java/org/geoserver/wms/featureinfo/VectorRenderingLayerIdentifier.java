@@ -127,7 +127,7 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
     @Override
     public List<FeatureCollection> identify(FeatureInfoRequestParameters params,
             final int maxFeatures) throws Exception {
-        LOGGER.log(Level.FINER, "Appliying rendering based feature info identifier");
+        LOGGER.log(Level.FINER, "Applying rendering based feature info identifier");
         
         // at the moment the new identifier works only with simple features due to a limitation
         // in the StreamingRenderer

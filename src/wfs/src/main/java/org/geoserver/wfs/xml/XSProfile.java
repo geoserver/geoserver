@@ -46,6 +46,7 @@ public class XSProfile extends TypeMappingProfile {
         proper.add(name(XS.INTEGER)); //BigInteger.class
         proper.add(name(XS.DECIMAL)); //BigDecimal.class
         proper.add(name(XS.ANYURI)); //URI.class
+        proper.add(name(XS.UUID)); //java.util.UUID.class
         profiles.add( new ProfileImpl( new XSSchema(), proper ) );
         
         //date mappings between java and xml schema are kind of messed up, so 
@@ -57,7 +58,7 @@ public class XSProfile extends TypeMappingProfile {
         ab.setBinding(Date.class);
         
         additional.put(name(XS.DATETIME), ab.buildType() );
-        profiles.add( new ProfileImpl( additional, Collections.singleton( name( XS.DATETIME))));
+        profiles.add( new ProfileImpl( additional, Collections.singleton( name( XS.DATETIME))));       
         
         //profile.add(name(XS.ANYTYPE)); //Map.class
     }

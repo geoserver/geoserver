@@ -27,17 +27,17 @@
             <input type="text" wicket:id="patternString" class="text"/>
           </li>
 
-          <li>
-            <input id="disabled" wicket:id="disabled" type="checkbox" class="field checkbox"/>
-            <label class="choice"><wicket:message key="disabled"></wicket:message></label>
+          <li class="choiceItem">
+            <input id="disabled" wicket:id="disabled" type="checkbox"/>
+            <label for="disabled"><wicket:message key="disabled"></wicket:message></label>
           </li>
-          <li>
-            <input id="allowSessionCreation" wicket:id="allowSessionCreation" type="checkbox" class="field checkbox"/>
-            <label class="choice"><wicket:message key="allowSessionCreation"></wicket:message></label>
+          <li class="choiceItem">
+            <input id="allowSessionCreation" wicket:id="allowSessionCreation" type="checkbox"/>
+            <label for="allowSessionCreation"><wicket:message key="allowSessionCreation"></wicket:message></label>
           </li>
-          <li>
-            <input id="requireSSL" wicket:id="requireSSL" type="checkbox" class="field checkbox"/>
-            <label for="requireSSL" class="choice"><wicket:message key="requireSSL"></wicket:message></label>
+          <li class="choiceItem">
+            <input id="requireSSL" wicket:id="requireSSL" type="checkbox"/>
+            <label for="requireSSL"><wicket:message key="requireSSL"></wicket:message></label>
           </li>
           <li>
              <label for="roleFilterName"><wicket:message key="roleFilterName"></wicket:message></label>
@@ -50,40 +50,38 @@
           <span><wicket:message key="chainConfigMethod"></wicket:message></span>
           <a href="#" wicket:id="chainConfigMethodHelp" class="help-link"></a>
          </legend>
-         <ul>
-          <li>
-            <p>
-            <input id="matchHTTPMethod" wicket:id="matchHTTPMethod" type="checkbox" class="field checkbox"/>
-            <label for="matchHTTPMethod" class="choice"><wicket:message key="matchHTTPMethod"></wicket:message></label>
-            </p>
+         <ul class="choiceList">
+          <li style="margin-bottom: 0.5em;">
+            <input id="matchHTTPMethod" wicket:id="matchHTTPMethod" type="checkbox"/>
+            <label for="matchHTTPMethod"><wicket:message key="matchHTTPMethod"></wicket:message></label>
           </li>
           <li>
-	         <input id="GET" wicket:id="GET" type="checkbox" class="field checkbox"/>
-	         <label class="choice">GET</label>
+	         <input id="GET" wicket:id="GET" type="checkbox"/>
+	         <label for="GET">GET</label>
          </li>
          <li>
-	         <input id="POST" wicket:id="POST" type="checkbox" class="field checkbox"/>
-	         <label class="choice">POST</label>
+	         <input id="POST" wicket:id="POST" type="checkbox"/>
+	         <label for="POST">POST</label>
          </li>
          <li>
-             <input id="PUT" wicket:id="PUT" type="checkbox" class="field checkbox"/>
-             <label class="choice">PUT</label>
+             <input id="PUT" wicket:id="PUT" type="checkbox"/>
+             <label for="PUT">PUT</label>
          </li>
          <li>
-             <input id="DELETE" wicket:id="DELETE" type="checkbox" class="field checkbox"/>
-             <label class="choice">DELETE</label>
+             <input id="DELETE" wicket:id="DELETE" type="checkbox"/>
+             <label for="DELETE">DELETE</label>
          </li>
          <li>
-             <input id="OPTIONS" wicket:id="OPTIONS" type="checkbox" class="field checkbox"/>
-             <label class="choice">OPTIONS</label>
+             <input id="OPTIONS" wicket:id="OPTIONS" type="checkbox"/>
+             <label for="OPTIONS">OPTIONS</label>
          </li>
          <li>
-            <input id="HEAD" wicket:id="HEAD" type="checkbox" class="field checkbox"/>
-            <label class="choice">HEAD</label>
+            <input id="HEAD" wicket:id="HEAD" type="checkbox"/>
+            <label for="HEAD">HEAD</label>
          </li>
          <li>
-            <input id="TRACE" wicket:id="TRACE" type="checkbox" class="field checkbox"/>
-            <label class="choice">TRACE</label>
+            <input id="TRACE" wicket:id="TRACE" type="checkbox"/>
+            <label for="TRACE">TRACE</label>
          </li>
          </ul>
       </fieldset>

@@ -15,13 +15,13 @@
               <label for="name"><wicket:message key="name">Name</wicket:message></label>
               <input id="name" class="text" type="text" wicket:id="name"/>
             </li>
-            <li>
-              <input id="basic-enabled" class="field checkbox" wicket:id="enabled" type="checkbox"/>
-              <label class="choice"><wicket:message key="enabled">Enabled</wicket:message></label>
+            <li class="choiceItem">
+              <input id="basic-enabled" wicket:id="enabled" type="checkbox"/>
+              <label for="basic-enabled"><wicket:message key="enabled">Enabled</wicket:message></label>
             </li>
-	        <li>
-	          <input id="basic-advertised" class="field checkbox" wicket:id="advertised" type="checkbox"/>
-	          <label class="choice"><wicket:message key="advertised">Advertised</wicket:message></label>
+	        <li class="choiceItem">
+	          <input id="basic-advertised" wicket:id="advertised" type="checkbox"/>
+	          <label for="basic-advertised"><wicket:message key="advertised">Advertised</wicket:message></label>
 	        </li>
             <li>
               <label for="title"><wicket:message key="titleMsg">Title</wicket:message></label>

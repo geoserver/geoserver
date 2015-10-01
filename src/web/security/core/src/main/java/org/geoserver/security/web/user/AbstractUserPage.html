@@ -13,19 +13,19 @@
                    <label for="username"><wicket:message key="username">username</wicket:message></label>
                    <input type="text" wicket:id="username" id="username" class="text" />
                 </li>
-                <li>
-                   <input type="checkbox"  wicket:id="enabled" id="enabled" class="field checkbox"/>
-                   <label class="choice"><wicket:message key="enabled">enabled</wicket:message></label>
+                <li class="choiceItem">
+                   <input type="checkbox"  wicket:id="enabled" id="enabled"/>
+                   <label for="enabled"><wicket:message key="enabled">enabled</wicket:message></label>
                 </li>
                 <li>
                   <label for="password"><wicket:message key="password">password</wicket:message></label>
-                  <input type="password" " wicket:id="password" id="password" class="text"/>
+                  <input type="password" wicket:id="password" id="password" class="text"/>
                 </li>
                 <li>
                   <label for="confirmPassword">
                     <wicket:message key="confirmPassword">confirmPassword</wicket:message>
                   </label> 
-                  <input type="password" " wicket:id="confirmPassword" id="confirmPassword" class="text"/>
+                  <input type="password" wicket:id="confirmPassword" id="confirmPassword" class="text"/>
                 </li>
             </ul>
           </fieldset>

@@ -1,8 +1,11 @@
+/* (c) 2015 Open Source Geospatial Foundation - all rights reserved
+* This code is licensed under the GPL 2.0 license, available at the root
+* application directory.
+*/
 package org.geoserver.web.data.resource;
 
 import org.apache.wicket.model.IModel;
 import org.geoserver.catalog.FeatureTypeInfo;
-import org.geoserver.catalog.impl.FeatureTypeInfoImpl;
 import org.geoserver.data.test.MockData;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.junit.Test;

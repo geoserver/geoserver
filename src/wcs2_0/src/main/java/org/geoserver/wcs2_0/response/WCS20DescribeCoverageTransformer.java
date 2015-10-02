@@ -306,10 +306,6 @@ public class WCS20DescribeCoverageTransformer extends GMLTransformer {
             element("wcs:CoverageSubtype", "RectifiedGridCoverage");
             
             String mapNativeFormat = mimemapper.mapNativeFormat(ci);
-            if(mapNativeFormat==null){
-                // fall back on GeoTiff when a native format cannot be determined
-                mapNativeFormat = GeoTIFFCoverageResponseDelegate.GEOTIFF_CONTENT_TYPE;
-            }
             element("wcs:nativeFormat",mapNativeFormat);
             end("wcs:ServiceParameters");
         }

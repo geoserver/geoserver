@@ -40,6 +40,7 @@ import org.geoserver.wcs2_0.exception.WCS20Exception;
 import org.geoserver.wcs2_0.exception.WCS20Exception.WCS20ExceptionCode;
 import org.geoserver.wcs2_0.response.DimensionBean;
 import org.geoserver.wcs2_0.response.GranuleStackImpl;
+import org.geoserver.wcs2_0.response.MIMETypeMapper;
 import org.geoserver.wcs2_0.response.WCSDimensionsSubsetHelper;
 import org.geoserver.wcs2_0.util.EnvelopeAxesLabelsMapper;
 import org.geoserver.wcs2_0.util.NCNameResourceCodec;
@@ -153,6 +154,8 @@ public class GetCoverage {
     /** Factory used to create new coverages */
     private GridCoverageFactory gridCoverageFactory;
 
+    private MIMETypeMapper mimeMapper;
+
     public final static String SRS_STARTER="http://www.opengis.net/def/crs/EPSG/0/";
 
     /** Hints to indicate that a scale has been pre-applied, reporting the scaling factors */
@@ -160,10 +163,11 @@ public class GetCoverage {
 
     private static final double EPS = 1e-6;
 
-    public GetCoverage(WCSInfo serviceInfo, Catalog catalog, EnvelopeAxesLabelsMapper envelopeDimensionsMapper) {
+    public GetCoverage(WCSInfo serviceInfo, Catalog catalog, EnvelopeAxesLabelsMapper envelopeDimensionsMapper, MIMETypeMapper mimeMapper) {
         this.wcs = serviceInfo;
         this.catalog = catalog;
         this.envelopeDimensionsMapper=envelopeDimensionsMapper;
+        this.mimeMapper = mimeMapper;
 
         // building the needed URI CRS Factories
         Hints hints = GeoTools.getDefaultHints();
@@ -206,6 +210,16 @@ public class GetCoverage {
         final CoverageInfo cinfo = (CoverageInfo) linfo.getResource();
         if(LOGGER.isLoggable(Level.FINE)){
             LOGGER.fine("Executing GetCoverage request on coverage :"+linfo.toString());
+        }
+        
+        // prepare the default format
+        if(request.getFormat() == null) {
+            try {
+                String nativeFormat = mimeMapper.mapNativeFormat(cinfo);
+                request.setFormat(nativeFormat);
+            } catch(Exception e) {
+                LOGGER.log(Level.WARNING, "Could not compute the native type of the coverage, defaulting to image/tiff", e);
+            }
         }
 
         // === k, now start the execution

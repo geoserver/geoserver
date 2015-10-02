@@ -82,6 +82,8 @@ import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.helpers.AttributesImpl;
 
+import sun.security.action.GetBooleanAction;
+
 import com.google.common.collect.Iterables;
 import com.vividsolutions.jts.geom.Envelope;
 
@@ -950,7 +952,7 @@ public class GetCapabilitiesTransformer extends TransformerBase {
                     element("Title", ftStyle.getDescription().getTitle());
                     element("Abstract", ftStyle.getDescription().getAbstract());
                 }
-                handleLegendURL(layer, layer.getLegend(), null ,layer.getDefaultStyle());
+                handleLegendURL(layer, defaultStyle.getLegend(), null, defaultStyle);
                 end("Style");
 
                 Set<StyleInfo> styles = layer.getStyles();
@@ -967,7 +969,7 @@ public class GetCapabilitiesTransformer extends TransformerBase {
                         element("Title", ftStyle.getDescription().getTitle());
                         element("Abstract", ftStyle.getDescription().getAbstract());
                     }
-                    handleLegendURL(layer, null, styleInfo, styleInfo);
+                    handleLegendURL(layer, styleInfo.getLegend(), styleInfo, styleInfo);
                     end("Style");
                 }
             }
@@ -1270,7 +1272,9 @@ public class GetCapabilitiesTransformer extends TransformerBase {
                 attrs.clear();
                 attrs.addAttribute("", "xmlns:xlink", "xmlns:xlink", "", XLINK_NS);
                 attrs.addAttribute(XLINK_NS, "type", "xlink:type", "", "simple");
-                attrs.addAttribute(XLINK_NS, "href", "xlink:href", "", legend.getOnlineResource());
+                
+                String legendUrl = buildURL(request.getBaseUrl(), legend.getOnlineResource(), null, URLType.RESOURCE);
+                attrs.addAttribute(XLINK_NS, "href", "xlink:href", "", legendUrl);
 
                 element("OnlineResource", null, attrs);
 

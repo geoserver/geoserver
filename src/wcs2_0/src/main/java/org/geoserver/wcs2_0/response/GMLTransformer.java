@@ -179,7 +179,7 @@ class GMLTransformer extends TransformerBase {
             }
             final String srsName = GetCoverage.SRS_STARTER + EPSGCode;
             // handle axes swap for geographic crs
-            final boolean axisSwap = CRS.getAxisOrder(crs).equals(AxisOrder.EAST_NORTH);
+            final boolean axisSwap = !CRS.getAxisOrder(crs).equals(AxisOrder.EAST_NORTH);
 
             final AttributesImpl attributes = new AttributesImpl();
             helper.registerNamespaces(getNamespaceSupport(), attributes);

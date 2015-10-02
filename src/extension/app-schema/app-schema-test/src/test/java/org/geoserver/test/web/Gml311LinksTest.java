@@ -9,6 +9,7 @@ import java.util.Arrays;
 
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.test.FeatureChainingMockData;
+import org.junit.Test;
 
 public class Gml311LinksTest extends AbstractMapPreviewPageTest {
 
@@ -23,6 +24,11 @@ public class Gml311LinksTest extends AbstractMapPreviewPageTest {
     @Override
     protected SystemTestData createTestData() throws Exception {
         return new FeatureChainingMockData();
+    }
+
+    @Test
+    public void testGml311Links() {
+        super.testAppSchemaGmlLinks();
     }
 
 }

@@ -46,7 +46,7 @@ public class DefaultWebCoverageService20 implements WebCoverageService20 {
 
     protected Logger LOGGER = Logging.getLogger(DefaultWebCoverageService20.class);
     
-    private MIMETypeMapper mimemapper;
+    private MIMETypeMapper mimeMapper;
 
     private Catalog catalog;
 
@@ -68,7 +68,7 @@ public class DefaultWebCoverageService20 implements WebCoverageService20 {
         this.catalog = geoServer.getCatalog();
         this.responseFactory = responseFactory;
         this.envelopeAxesMapper=envelopeDimensionsMapper;
-        this.mimemapper=mimemappe;
+        this.mimeMapper=mimemappe;
         this.wcsDescribeCoverageExtensions = GeoServerExtensions
                 .extensions(WCS20DescribeCoverageExtension.class);
         this.availableDescribeCovExtensions = wcsDescribeCoverageExtensions != null
@@ -121,7 +121,7 @@ public class DefaultWebCoverageService20 implements WebCoverageService20 {
 
         WCSInfo wcs = getServiceInfo();
 
-        WCS20DescribeCoverageTransformer describeTransformer = new WCS20DescribeCoverageTransformer(wcs, catalog, responseFactory,envelopeAxesMapper,mimemapper);
+        WCS20DescribeCoverageTransformer describeTransformer = new WCS20DescribeCoverageTransformer(wcs, catalog, responseFactory,envelopeAxesMapper,mimeMapper);
         describeTransformer.setEncoding(Charset.forName(wcs.getGeoServer().getSettings().getCharset()));
         return describeTransformer;
     }
@@ -135,7 +135,7 @@ public class DefaultWebCoverageService20 implements WebCoverageService20 {
             throw new OWS20Exception("Required parameter coverageId missing", WCS20Exception.WCS20ExceptionCode.EmptyCoverageIdList, "coverageId");
         }
         
-        return new GetCoverage(getServiceInfo(), catalog,envelopeAxesMapper).run(request);
+        return new GetCoverage(getServiceInfo(), catalog, envelopeAxesMapper, mimeMapper).run(request);
     }
 
     @Override

@@ -18,21 +18,21 @@ import org.opengis.coverage.grid.GridCoverageReader;
  * @author Andrea Aime - GeoSolutions
  * 
  */
-public class ReaderClassMimeMapper implements CoverageMimeTypeMapper {
+public class FormatNameMimeMapper implements CoverageMimeTypeMapper {
+
+    private String formatName;
 
     private String mime;
 
-    private Class<? extends GridCoverageReader> readerClass;
-
-    public ReaderClassMimeMapper(Class<? extends GridCoverageReader> readerClass, String mime) {
-        this.readerClass = readerClass;
+    public FormatNameMimeMapper(String formatName, String mime) {
+        this.formatName = formatName;
         this.mime = mime;
     }
 
     @Override
     public String getMimeType(CoverageInfo ci) throws IOException {
         GridCoverageReader reader = ci.getGridCoverageReader(null, null);
-        if (reader != null && readerClass.isAssignableFrom(reader.getClass())) {
+        if (formatName.equals(reader.getFormat().getName())) {
             return mime;
         }
 

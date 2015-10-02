@@ -1,0 +1,32 @@
+package org.geoserver.web.data.resource;
+
+import org.apache.wicket.model.IModel;
+import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.impl.FeatureTypeInfoImpl;
+import org.geoserver.data.test.MockData;
+import org.geoserver.web.GeoServerWicketTestSupport;
+import org.junit.Test;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+
+public class FeatureResourceConfigurationPanelTest extends GeoServerWicketTestSupport {
+    @Test()
+    public void testResourceUpdatedAcceptsNull() {
+        FeatureResourceConfigurationPanel panel = new FeatureResourceConfigurationPanel("toto", new IModel() {
+            @Override
+            public FeatureTypeInfo getObject() {
+                return getCatalog().getResourceByName(MockData.BRIDGES.getLocalPart(), FeatureTypeInfo.class);
+            }
+
+            @Override
+            public void setObject(Object o) {
+                throw new NotImplementedException();
+            }
+
+            @Override
+            public void detach() {
+                throw new NotImplementedException();
+            }
+        });
+        panel.resourceUpdated(null);
+    }
+}

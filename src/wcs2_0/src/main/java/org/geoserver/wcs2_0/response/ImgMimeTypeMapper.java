@@ -60,8 +60,13 @@ public class ImgMimeTypeMapper implements CoverageMimeTypeMapper {
                 if (LOGGER.isLoggable(Level.FINE)) {
                     LOGGER.fine("Found reader for format: " + reader.getFormatName());
                 }
-                return reader.getOriginatingProvider().getMIMETypes()[0];
-
+                String mime = reader.getOriginatingProvider().getMIMETypes()[0];
+                // the native format rules says "the range set values can be obtained unaltered", 
+                // so we cannot allow lossy compressions (which would alter the range set values)
+                String lcMime = mime.toLowerCase();
+                if(lcMime.contains("jpeg") || lcMime.contains("mrsid") || lcMime.contains("ecw")) {
+                    return null;
+                }
             }
         } catch (Exception e) {
             if (LOGGER.isLoggable(Level.WARNING)) {

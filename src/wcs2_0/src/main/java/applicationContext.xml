@@ -157,13 +157,8 @@
     <constructor-arg ref="catalog" index="1" />
   </bean>
 
-  <bean id="arcGridWcsMimeMapper" class="org.geoserver.wcs2_0.response.ReaderClassMimeMapper">
-    <constructor-arg index="0" value="org.geotools.gce.arcgrid.ArcGridReader"/>
-    <constructor-arg index="1" value="text/plain" />
-  </bean>
-  
-  <bean id="gtopo30WcsMimeMapper" class="org.geoserver.wcs2_0.response.ReaderClassMimeMapper">
-    <constructor-arg index="0" value="org.geotools.gce.gtopo30.GTopo30Reader"/>
+  <bean id="arcGridWcsMimeMapper" class="org.geoserver.wcs2_0.response.FormatNameMimeMapper">
+    <constructor-arg index="0" value="ArcGrid"/>
     <constructor-arg index="1" value="text/plain" />
   </bean>
   

@@ -317,27 +317,39 @@ public class GeoJSONTest extends WFSTestSupport {
     }
     
     @Test
-    public void testGetFeatureCount() throws Exception {        
+    public void testGetFeatureCountNoFilter() throws Exception {        
         //request without filter
         String out = getAsString("wfs?request=GetFeature&version=1.0.0&typename=sf:PrimitiveGeoFeature&maxfeatures=10&outputformat="+JSONType.json);
         JSONObject rootObject = JSONObject.fromObject( out );
         assertEquals(rootObject.get("totalFeatures"),5);
+    }
 
+    @Test
+    public void testGetFeatureCountFilter() throws Exception {
         //request with filter (featureid=PrimitiveGeoFeature.f001)
         String out2 = getAsString("wfs?request=GetFeature&version=1.0.0&typename=sf:PrimitiveGeoFeature&maxfeatures=10&outputformat="+JSONType.json+"&featureid=PrimitiveGeoFeature.f001");
         JSONObject rootObject2 = JSONObject.fromObject( out2 );
         assertEquals(rootObject2.get("totalFeatures"),1);
-        
+    }
+    
+    @Test
+    public void testGetFeatureCountMaxFeatures() throws Exception {
         //check if maxFeatures doesn't affect totalFeatureCount; set Filter and maxFeatures
         String out3 = getAsString("wfs?request=GetFeature&version=1.0.0&typename=sf:PrimitiveGeoFeature&maxfeatures=1&outputformat="+JSONType.json+"&featureid=PrimitiveGeoFeature.f001,PrimitiveGeoFeature.f002");
         JSONObject rootObject3 = JSONObject.fromObject( out3 );
         assertEquals(rootObject3.get("totalFeatures"),2);
-        
+    }
+    
+    @Test
+    public void testGetFeatureCountMultipleFeatureTypes() throws Exception {
         //request with multiple featureTypes and Filter
         String out4 = getAsString("wfs?request=GetFeature&version=1.0.0&typename=sf:PrimitiveGeoFeature,sf:AggregateGeoFeature&outputformat="+JSONType.json + "&featureid=PrimitiveGeoFeature.f001,PrimitiveGeoFeature.f002,AggregateGeoFeature.f009");
         JSONObject rootObject4 = JSONObject.fromObject( out4 );
         assertEquals(rootObject4.get("totalFeatures"),3);
-        
+    }
+    
+    @Test
+    public void testGetFeatureCountSpatialFilter() throws Exception {
         //post with spatial-filter in another projection than layer-projection
         String xml = "<wfs:GetFeature " + "service=\"WFS\" " + "outputFormat=\""+JSONType.json+"\" "
                 + "version=\"1.1.0\" "

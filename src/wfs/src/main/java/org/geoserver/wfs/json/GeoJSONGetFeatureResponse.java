@@ -13,16 +13,10 @@ import java.io.Writer;
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.xml.namespace.QName;
-
-import org.eclipse.emf.common.util.EList;
-import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
@@ -32,34 +26,22 @@ import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.WFSGetFeatureOutputFormat;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
-import org.geoserver.wfs.request.GetFeatureRequest;
-import org.geotools.data.FeatureSource;
-import org.geotools.data.Query;
-import org.geotools.factory.CommonFactoryFinder;
-import org.geotools.factory.Hints;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
-import org.geotools.filter.spatial.ReprojectingFilterVisitor;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.gml2.SrsSyntax;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.NamedIdentifier;
-import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;
-import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.GeometryDescriptor;
-import org.opengis.filter.Filter;
-import org.opengis.filter.FilterFactory2;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.ReferenceIdentifier;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import com.vividsolutions.jts.geom.Geometry;
 
-import net.opengis.wfs.GetFeatureType;
-import net.opengis.wfs.QueryType;
 import net.sf.json.JSONException;
 
 /**
@@ -130,20 +112,10 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat {
         boolean hasGeom = false;
 
         // get feature count for request
-        BigInteger featureCount = null;
-        // for WFS 1.0.0 and WFS 1.1.0 a request with the query must be executed
-        if(describeFeatureType != null) {
-            if (describeFeatureType.getParameters()[0] instanceof GetFeatureType) {
-                featureCount = BigInteger.valueOf(getFeatureCountFromWFS11Request(describeFeatureType, wfs));
-            }
-            // for WFS 2.0.0 the total number of features is stored in the featureCollection
-            else if (describeFeatureType.getParameters()[0] instanceof net.opengis.wfs20.GetFeatureType){
-                BigInteger totalNumberOfFeatures = featureCollection.getTotalNumberOfFeatures();
-                featureCount = (totalNumberOfFeatures != null && totalNumberOfFeatures.longValue() < 0)
-                        ? null : totalNumberOfFeatures;
-            }
-        }
-        
+        BigInteger totalNumberOfFeatures = featureCollection.getTotalNumberOfFeatures();
+        BigInteger featureCount = (totalNumberOfFeatures != null && totalNumberOfFeatures.longValue() < 0)
+                ? null : totalNumberOfFeatures;
+
         try {
             osw = new OutputStreamWriter(output, gs.getGlobal().getSettings().getCharset());
             outWriter = new BufferedWriter(osw);
@@ -391,67 +363,6 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat {
         return JSONType.getCallbackFunction(request.getKvp());
     }
 
-    
-    /**
-     * getFeatureCountFromWFS11Request
-     * 
-     * Function gets the total number of features from a WFS 1.0.0 or WFS 1.1.0 request and returns it.
-     * 
-     * @param Operation describeFeatureType
-     * @param WFSInfo wfs
-     * @return int featurecount 
-     * @throws IOException
-     */
-    @SuppressWarnings("unchecked")
-    private int getFeatureCountFromWFS11Request(Operation operation, WFSInfo wfs)
-            throws IOException {
-        final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2(null);
-        int totalCount = 0;
-        Catalog catalog = wfs.getGeoServer().getCatalog();
-        
-        GetFeatureType request = (GetFeatureType) operation.getParameters()[0];
-        List<Map<String, String>> viewParams = new GetFeatureRequest.WFS11(request).getViewParams();
-        int idx = 0;
-        for (QueryType query :  (EList<QueryType>) request.getQuery()) {
-            QName typeName = (QName) query.getTypeName().get(0);
-            FeatureTypeInfo meta = catalog.getFeatureTypeByName(typeName.getNamespaceURI(),
-                    typeName.getLocalPart());
-
-            FeatureSource<? extends FeatureType, ? extends Feature> source = meta.getFeatureSource(
-                    null, null);
-            Filter filter = query.getFilter();
-            
-            if (filter == null) {
-                filter = Filter.INCLUDE;
-            } else {
-                // reproject spatial filter to the native crs
-                ReprojectingFilterVisitor reprojector = new ReprojectingFilterVisitor(FF, source.getSchema());
-                filter = (Filter) filter.accept(reprojector, null);
-            }
-            
-            Query countQuery = new Query(typeName.getLocalPart(), filter);
-            Map<String, String> viewParam = viewParams != null && viewParams.size() > idx ? viewParams
-                    .get(idx) : null;
-            if (viewParam != null) {
-                final Hints hints = new Hints();
-                hints.put(Hints.VIRTUAL_TABLE_PARAMETERS, viewParam);
-                countQuery.setHints(hints);
-            }
-            
-            int count = 0;
-            count = source.getCount(countQuery);
-            if (count == -1) {
-                // information was not available in the header!
-                org.geotools.data.Query gtQuery = new org.geotools.data.Query(countQuery);
-                FeatureCollection<? extends FeatureType, ? extends Feature> features = source
-                        .getFeatures(gtQuery);
-                count = features.size();
-            }
-            totalCount +=count;
-        }
-
-        return totalCount;
-    }
     
     @Override
     public String getCharset(Operation operation){

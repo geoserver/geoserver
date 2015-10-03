@@ -22,6 +22,8 @@ import javax.xml.namespace.QName;
 import net.opengis.wfs.XlinkPropertyNameType;
 import net.opengis.wfs20.ResultTypeType;
 import net.opengis.wfs20.StoredQueryType;
+import net.sf.cglib.proxy.Enhancer;
+import net.sf.cglib.proxy.LazyLoader;
 
 import org.geoserver.catalog.AttributeTypeInfo;
 import org.geoserver.catalog.Catalog;
@@ -296,7 +298,7 @@ public class GetFeature {
 
         boolean isNumberMatchedSkipped = false;
         int count = 0; // should probably be long
-        int totalCount = 0;
+        BigInteger totalCount = BigInteger.ZERO;
 
         //offset into result set in which to return features
         int totalOffset = request.getStartIndex() != null ? request.getStartIndex().intValue() : -1;
@@ -309,9 +311,15 @@ public class GetFeature {
             totalOffset = 0;
         }
         int offset = totalOffset;
+        
+        // feature collection size, we may need to calculate it
+        // optimization: WFS 1.0 does not require count unless we have multiple query elements
+        // and we are asked to perform a global limit on the results returned
+        boolean calculateSize = !(("1.0".equals(request.getVersion()) || "1.0.0".equals(request.getVersion())) && 
+            (queries.size() == 1 || maxFeatures == Integer.MAX_VALUE));
 
         List results = new ArrayList();
-        List<CountExecutor> totalCountExecutors = new ArrayList<CountExecutor>();
+        final List<CountExecutor> totalCountExecutors = new ArrayList<CountExecutor>();
         try {
             for (int i = 0; (i < queries.size()) && (count < maxFeatures); i++) {
 
@@ -505,14 +513,6 @@ public class GetFeature {
                     features.getSchema().getUserData().put("targetVersion", request.getVersion());
                 }
 
-                //feature collection size, we may need to calculate it
-                boolean calculateSize = true;
-
-                // optimization: WFS 1.0 does not require count unless we have multiple query elements
-                // and we are asked to perform a global limit on the results returned
-                calculateSize = !(("1.0".equals(request.getVersion()) || "1.0.0".equals(request.getVersion())) && 
-                    (queries.size() == 1 || maxFeatures == Integer.MAX_VALUE));
-                
                 if (!calculateSize) {
                     //if offset was specified and we have more queries left in this request then we 
                     // must calculate size in order to adjust the offset 
@@ -553,8 +553,8 @@ public class GetFeature {
                 // collect queries required to return numberMatched/totalSize
                 // check maxFeatures and offset, if they are unset we can use the size we 
                 // calculated above
-                    isNumberMatchedSkipped = meta.getSkipNumberMatched()
-                            && !request.isResultTypeHits();
+                isNumberMatchedSkipped = meta.getSkipNumberMatched()
+                        && !request.isResultTypeHits();
                 if (!isNumberMatchedSkipped) {
                     if (calculateSize && queryMaxFeatures == Integer.MAX_VALUE && offset == 0) {
                         totalCountExecutors.add(new CountExecutor(size));
@@ -604,29 +604,26 @@ public class GetFeature {
                 }
             }
             
+            
             // total count represents the total count of the features matched for this query in cases
-            // where the client has limited the result set size, as an optimization we only calculate
-            // this if the following conditions hold
-            // 1. the request is wfs 2.0
-            // 2. maxFeatures != Integer.MAX_VALUE
-            //TODO: we could actually add a third a optimization that when the count of features is 
-            // less than maxFeatures we don't have to calculate it since it is the same as count, but 
-            // this requires that we do that check post query loop which requires a bit of code 
-            // refactoring
-
-            // we need the total count only for WFS 2.0
-            if (!request.getVersion().startsWith("2")) {
-                totalCount = -1;
+            // where the client has limited the result set size, so we compute it lazily
+            if (isNumberMatchedSkipped) {
+                totalCount = BigInteger.valueOf(-1);
+                totalOffset = 0;
+            } else if(count < maxFeatures && calculateSize) {
+                 // optimization: if count < max features then total count == count
+                 totalCount = BigInteger.valueOf(count);
             } else {
-                if (isNumberMatchedSkipped) {
-                    totalCount = -1;
-                    totalOffset = 0;
-                } else {
-                    // optimization: if count < max features then total count == count
-                    if(count < maxFeatures) {
-                        totalCount = count;
-                    } else {
-                        // ok, in this case we're forced to run the queries to discover the actual total count
+                // ok, in this case we're forced to run the queries to discover the actual total count
+                // We do so lazily, not all output formats need it, leveraging the fact that BigInteger
+                // is not final to wrap it in a lazy loading proxy
+                Enhancer enhancer = new Enhancer();
+                enhancer.setSuperclass(BigInteger.class);
+                enhancer.setCallback(new LazyLoader() {
+                    
+                    @Override
+                    public Object loadObject() throws Exception {
+                        long totalCount = 0;
                         for (CountExecutor q : totalCountExecutors) {
                             int result = q.getCount();
                             // if the count is unknown for one, we don't know the total, period
@@ -637,10 +634,11 @@ public class GetFeature {
                                 totalCount += result;
                             }
                         }
+                        return BigInteger.valueOf(totalCount);
                     }
-                }
+                });
+                totalCount = (BigInteger) enhancer.create(new Class[] {String.class}, new Object[] {"0"});
             }
-            
         } catch (IOException e) {
             throw new WFSException(request, "Error occurred getting features", e, request.getHandle());
         } catch (SchemaException e) {
@@ -711,11 +709,11 @@ public class GetFeature {
      * Allows subclasses to alter the result generation
      */
     protected FeatureCollectionResponse buildResults(GetFeatureRequest request, int offset, int maxFeatures, 
-        int count, int total, List results, String lockId) {
+        int count, BigInteger total, List results, String lockId) {
 
         FeatureCollectionResponse result = request.createResponse();
         result.setNumberOfFeatures(BigInteger.valueOf(count));
-        result.setTotalNumberOfFeatures(BigInteger.valueOf(total));
+        result.setTotalNumberOfFeatures(total);
         result.setTimeStamp(Calendar.getInstance());
         result.setLockId(lockId);
         result.getFeature().addAll(results);
@@ -759,7 +757,7 @@ public class GetFeature {
                 //next
 
                 //calculate the count of the next result set 
-                int nextCount = total - (offset + count);
+                int nextCount = total.intValue() - (offset + count);
                 if (nextCount > 0) {
                     kvp.put("startIndex", String.valueOf(offset > 0 ? offset + count : count));
                     //kvp.put("count", String.valueOf(nextCount));

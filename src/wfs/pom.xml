@@ -42,6 +42,10 @@
       <artifactId>gt-shapefile</artifactId>
     </dependency>
     <dependency>
+      <groupId>cglib</groupId>
+      <artifactId>cglib-nodep</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.geoserver</groupId>
       <artifactId>gs-main</artifactId>
       <classifier>tests</classifier>

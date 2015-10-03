@@ -146,7 +146,7 @@ Run GeoServer from Eclipse
       :width: 600
 
 #. After running the first time you can return to the ``Run Configurations`` dialog
-   to fine tune your launch environment (including setting a GEOSERVER_DATA_DIRECTORY).
+   to fine tune your launch environment (including setting a GEOSERVER_DATA_DIR).
 
 .. note::
    

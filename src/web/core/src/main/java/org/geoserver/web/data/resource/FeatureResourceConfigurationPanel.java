@@ -205,7 +205,9 @@ public class FeatureResourceConfigurationPanel extends ResourceConfigurationPane
     
     @Override
     public void resourceUpdated(AjaxRequestTarget target) {
-        target.addComponent(attributePanel);
+        if (target != null) {
+            target.addComponent(attributePanel);
+        }
     }
 
     static class ReloadWarningDialog extends WebPage {

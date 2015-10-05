@@ -14,7 +14,7 @@ Windows
 
 GeoServer documentation projects all include a :file:`make.bat` which provides much of the same functionality as the :command:`make` command.  If you wish to install :command:`make` anyway, it is available as part of the `MSYS <http://www.mingw.org/wiki/msys>`_ package.
 
-#. Download and install Python. Though there are various distributions and versions, the `official version 2.5.4 <http://www.python.org/download/releases/2.5.4/>`_ has been tested and works as expected.
+#. Download and install Python. Though there are various distributions and versions, the `official version <https://www.python.org/downloads/>`_ 
 
 #. Download and install `setuptools for Python 2.5 <http://pypi.python.org/pypi/setuptools#downloads>`_
 

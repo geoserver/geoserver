@@ -109,7 +109,7 @@ class RasterEstimator {
                 .getGridCoverageReader(null, null);
 
         // Area to read in pixel
-        final double areaRead;
+        final long areaRead;
         // take scaling into account
         ScaleToTarget scaling = null;
         if (roi != null) {
@@ -145,12 +145,27 @@ class RasterEstimator {
         scaling.setTargetSize(targetSizeX, targetSizeY);
         GridGeometry2D gg = scaling.getGridGeometry();
 
-        areaRead = gg.getGridRange2D().width * gg.getGridRange2D().height;
+        areaRead = (long) gg.getGridRange2D().width * gg.getGridRange2D().height;
 
         // checks on the area we want to download
         if (LOGGER.isLoggable(Level.FINE)) {
             LOGGER.fine("Area to read in pixels: " + areaRead);
         }
+
+        // If the area to read or the target image size are above Integer.MAX_VALUE, false is returned,
+        // as raster processing operations (e.g. Crop, Scale) may fail if image size exceeds integer limits
+        long targetArea = 1L;
+        Integer[] targetSize = scaling.getTargetSize();
+        if (targetSize[0] != null && targetSize[1] != null) {
+            targetArea = (long) targetSize[0] * targetSize[1];
+        }
+        if (areaRead >= Integer.MAX_VALUE || targetArea >= Integer.MAX_VALUE) {
+            if (LOGGER.isLoggable(Level.FINE)) {
+                LOGGER.log(Level.FINE, "Area to read or target image size exceed maximum integer value: " + Integer.MAX_VALUE);
+            }
+            return false;
+        }
+
         // If the area exceeds the limits, false is returned
         if (areaRead > rasterSizeLimits) {
             if (LOGGER.isLoggable(Level.FINE)) {

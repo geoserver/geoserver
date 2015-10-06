@@ -1041,7 +1041,11 @@ public class XStreamPersister {
                 
                 if ( name != null ) {
                     writer.startNode("name");
-                    writer.setValue( name );
+                    if(wsName == null) {
+                        writer.setValue( name );
+                    } else {
+                        writer.setValue( wsName + ":" + name );
+                    }
                     writer.endNode();
 
                     callback.postEncodeReference( source, name, wsName, writer, context );

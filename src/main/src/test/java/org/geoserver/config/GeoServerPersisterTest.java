@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -814,7 +814,7 @@ public class GeoServerPersisterTest extends GeoServerSystemTestSupport {
         assertTrue( f.exists() );
 
         s = catalog.getStyleByName("foostyle");
-        assertNull(s);
+        assertNotNull(s);
         s = catalog.getStyleByName(catalog.getDefaultWorkspace(), "foostyle");
         catalog.remove(s);
         assertFalse( f.exists() );

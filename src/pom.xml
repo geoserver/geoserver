@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!-- 
- Copyright (C) 2014 - Open Source Geospatial Foundation. All rights reserved.
+ Copyright (C) 2015 - Open Source Geospatial Foundation. All rights reserved.
  This code is licensed under the GPL 2.0 license, available at the root
  application directory.
  -->
@@ -53,8 +53,8 @@
  <repositories>
   <repository>
    <id>boundless</id>
-   <name>Boundless Maven Repository</name>
-   <url>http://repo.boundlessgeo.com/main</url>
+   <name>Boundless Cloud Repository</name>
+   <url>https://boundless.artifactoryonline.com/boundless/snapshot/</url>
    <snapshots>
      <enabled>true</enabled>
    </snapshots>
@@ -1569,13 +1569,13 @@
   <repository>
    <id>boundless</id>
    <name>Boundless Maven Repository</name>
-   <url>http://repo.boundlessgeo.com/main</url>
+   <url>https://boundless.artifactoryonline.com/boundless/release/</url>
    <uniqueVersion>false</uniqueVersion>
   </repository>
   <snapshotRepository>
    <id>boundless</id>
    <name>Boundless Maven Repository</name>
-   <url>http://repo.boundlessgeo.com/main</url>
+   <url>https://boundless.artifactoryonline.com/boundless/snapshot/</url>
    <uniqueVersion>false</uniqueVersion>
   </snapshotRepository>
  </distributionManagement>

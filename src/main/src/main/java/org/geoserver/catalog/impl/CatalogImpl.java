@@ -1286,7 +1286,13 @@ public class CatalogImpl implements Catalog {
             String resource = name.substring(colon + 1);
 
             result = getStyleByName(prefix, resource);
-        } 
+        } else {
+            // search in default workspace first
+            WorkspaceInfo ws = getDefaultWorkspace();
+            if ( ws != null ) {
+                result = getStyleByName(ws, name);
+            }
+        }
         if (result == null) {
             result = facade.getStyleByName(name);
         }

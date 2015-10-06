@@ -194,7 +194,7 @@ public class LayerTest extends CatalogRESTTestSupport {
         assertNotNull(l.getDefaultStyle().getWorkspace());
 
         Document dom = getAsDOM("/rest/layers/cite:Buildings.xml");
-        assertXpathExists("/layer/defaultStyle/name[text() = 'foo']", dom);
+        assertXpathExists("/layer/defaultStyle/name[text() = 'cite:foo']", dom);
         assertXpathExists("/layer/defaultStyle/workspace[text() = 'cite']", dom);
         assertXpathEvaluatesTo("http://localhost:8080/geoserver/rest/workspaces/cite/styles/foo.xml", 
             "//defaultStyle/atom:link/@href", dom );
@@ -238,7 +238,7 @@ public class LayerTest extends CatalogRESTTestSupport {
         assertNotNull(style.getWorkspace());
 
         Document dom = getAsDOM("/rest/layers/cite:Buildings.xml");
-        assertXpathExists("/layer/styles/style/name[text() = 'foo']", dom);
+        assertXpathExists("/layer/styles/style/name[text() = 'cite:foo']", dom);
         assertXpathExists("/layer/styles/style/workspace[text() = 'cite']", dom);
         assertXpathEvaluatesTo("http://localhost:8080/geoserver/rest/workspaces/cite/styles/foo.xml", 
             "//styles/style/atom:link/@href", dom );

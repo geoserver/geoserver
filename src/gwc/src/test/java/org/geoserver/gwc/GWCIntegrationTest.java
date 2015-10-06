@@ -93,7 +93,6 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         WorkspaceInfo wi = catalog.getWorkspaceByName(TEST_WORKSPACE_NAME);
         testData.addStyle(wi, WORKSPACED_STYLE_NAME, WORKSPACED_STYLE_FILE, this.getClass(), catalog);
         
-        assertThat(catalog.getStyleByName(WORKSPACED_STYLE_NAME), Matchers.describedAs("Style %0 should not be in the global workspace.", (nullValue()), WORKSPACED_STYLE_NAME));
         assertThat(catalog.getStyleByName(wi, WORKSPACED_STYLE_NAME), Matchers.describedAs("Style %0 should be in workspace %1.", (not(nullValue())), WORKSPACED_STYLE_NAME, TEST_WORKSPACE_NAME));
 
         Map<LayerProperty, Object> props = new HashMap<>();

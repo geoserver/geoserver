@@ -8,6 +8,7 @@ package org.geoserver.catalog.impl;
 import static com.google.common.collect.Sets.newHashSet;
 import static org.geoserver.catalog.Predicates.*;
 import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;
@@ -1551,8 +1552,7 @@ public class CatalogImplTest {
         s2.setWorkspace(ws);
         catalog.add(s2);
 
-        assertNull("style is not global, should't have been found",     
-                catalog.getStyleByName("styleNameWithWorkspace"));
+        assertNotNull(catalog.getStyleByName("styleNameWithWorkspace"));
         assertNotNull(catalog.getStyleByName(ws.getName(), "styleNameWithWorkspace"));
         assertNotNull(catalog.getStyleByName(ws, "styleNameWithWorkspace"));
         assertNull(catalog.getStyleByName((WorkspaceInfo)null, "styleNameWithWorkspace"));
@@ -1583,8 +1583,7 @@ public class CatalogImplTest {
         s2.setWorkspace(ws2);
         catalog.add(s2);
 
-        //none is global, so none should be returned
-        assertNull(catalog.getStyleByName("foo"));
+        assertEquals(s1, catalog.getStyleByName("foo"));
 
         assertEquals(s1, catalog.getStyleByName(ws.getName(), "foo"));
         assertEquals(s1, catalog.getStyleByName(ws, "foo"));

@@ -826,11 +826,10 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
     public StyleInfo getStyleByName(String name) {
         for (Iterator s = styles.iterator(); s.hasNext();) {
             StyleInfo style = (StyleInfo) s.next();
-            if (null == style.getWorkspace() && name.equals(style.getName())) {
+            if (name.equals(style.getName())) {
                 return ModificationProxy.create(style, StyleInfo.class);
             }
         }
-
         return null;
     }
 

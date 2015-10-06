@@ -964,6 +964,54 @@ public class DownloadProcessTest extends WPSTestSupport {
     }
 
     /**
+     * Test download estimator for raster data. The result should exceed the integer limits
+     *
+     * @throws Exception the exception
+     */
+    @Test
+    public void testDownloadEstimatorIntegerMaxValueLimitRaster() throws Exception {
+        // Estimator process for checking limits
+        DownloadEstimatorProcess limits = new DownloadEstimatorProcess(
+                new StaticDownloadServiceConfiguration(new DownloadServiceConfiguration(
+                        DownloadServiceConfiguration.NO_LIMIT,
+                        (long) 1E12, // huge number, way above integer limits
+                        DownloadServiceConfiguration.NO_LIMIT,
+                        DownloadServiceConfiguration.NO_LIMIT,
+                        DownloadServiceConfiguration.DEFAULT_COMPRESSION_LEVEL)), getGeoServer());
+
+        final WPSResourceManager resourceManager = getResourceManager();
+        // Creates the new process for the download
+        DownloadProcess downloadProcess = new DownloadProcess(getGeoServer(), limits,
+                resourceManager);
+        // ROI as polygon
+        Polygon roi = (Polygon) new WKTReader2()
+                .read("POLYGON (( -127.57473954542964 54.06575021619523, -130.8545966116691 52.00807146727025, -129.50812897394974 49.85372324691927, -130.5300633861675 49.20465679591609, -129.25955033314003 48.60392508062591, -128.00975216684665 50.986137055052474, -125.8623089087404 48.63154492960477, -123.984159178178 50.68231871628503, -126.91186316993704 52.15307567440926, -125.3444367403868 53.54787804784162, -127.57473954542964 54.06575021619523 ))");
+        roi.setSRID(4326);
+
+        try {
+            // Download the data with ROI. It should throw an exception
+            downloadProcess.execute(getLayerId(MockData.USA_WORLDIMG), // layerName
+                    null, // filter
+                    "image/tiff", // outputFormat
+                    null, // targetCRS
+                    CRS.decode("EPSG:4326", true), // roiCRS
+                    roi, // roi
+                    false, // cropToGeometry
+                    null, // interpolation
+                    100000, // targetSizeX
+                    60000, // targetSizeY
+                    new NullProgressListener() // progressListener
+                    );
+            Assert.fail();
+        } catch (ProcessException e) {
+            Assert.assertEquals(
+                    "java.lang.IllegalArgumentException: Download Limits Exceeded. Unable to proceed!",
+                    e.getMessage());
+        }
+
+    }
+
+    /**
      * Test download estimator for vectorial data. The result should be exceed the hard output limits
      * 
      * @throws Exception the exception

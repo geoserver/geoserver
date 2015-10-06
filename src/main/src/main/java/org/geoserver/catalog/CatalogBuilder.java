@@ -83,6 +83,9 @@ public class CatalogBuilder {
 
     static final Logger LOGGER = Logging.getLogger(CatalogBuilder.class);
 
+    /** Default SRS; will be set on the provided feature type by lookupSRS methods if none was found */
+    public static final String DEFAULT_SRS = "EPSG:404000";
+
     /**
      * the catalog
      */
@@ -658,6 +661,8 @@ public class CatalogBuilder {
             } catch (FactoryException e) {
                 throw (IOException) new IOException().initCause(e);
             }
+        } else {
+            ftinfo.setSRS(DEFAULT_SRS);
         }
     }
 

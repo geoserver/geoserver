@@ -12,7 +12,7 @@ Contains the following data stores:
 
 INSTALLATION
 
-1. Copy gt2-oracle jar in to your GeoServer library directory.  In
+1. Copy gt2-jdbc-oracle-xx.jar in to your GeoServer library directory.  In
    a binary install this is [GEOSERVER_HOME]/server/geoserver/WEB-INF/lib/
    In a war install this is [container]/webapps/geoserver/WEB-INF/lib/
 

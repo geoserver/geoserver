@@ -17,6 +17,8 @@ import java.io.File;
 
 import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Files;
+import org.geoserver.platform.resource.Paths;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -54,8 +56,8 @@ public class GWCConfigPersisterTest {
             assertTrue(configFile.delete());
         }
 
-        when(resourceLoader.getBaseDirectory()).thenReturn(baseDirectory);
-        when(resourceLoader.find(eq(GWCConfigPersister.GWC_CONFIG_FILE))).thenReturn(configFile);
+        when(resourceLoader.get(Paths.BASE)).thenReturn(Files.asResource(baseDirectory));
+        when(resourceLoader.get(eq(GWCConfigPersister.GWC_CONFIG_FILE))).thenReturn(Files.asResource(configFile));
 
         GWCConfig config = GWCConfig.getOldDefaults();
         config.setCacheNonDefaultStyles(true);
@@ -69,8 +71,8 @@ public class GWCConfigPersisterTest {
         assertEquals(config, persister.getConfig());
 
         // provoque a IOException
-        when(resourceLoader.find(eq(GWCConfigPersister.GWC_CONFIG_FILE))).thenReturn(
-                new File("shall_not_exist"));
+        when(resourceLoader.get(eq(GWCConfigPersister.GWC_CONFIG_FILE))).thenReturn(
+                Files.asResource(new File("shall_not_exist")));
         persister = new GWCConfigPersister(new XStreamPersisterFactory(), resourceLoader);
 
         GWCConfig expected = new GWCConfig();

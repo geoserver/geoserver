@@ -5,12 +5,17 @@
  */
 package org.geoserver.gwc;
 
-import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.geoserver.gwc.config.GeoserverXMLResourceProvider;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.ResourceStore;
+import org.geoserver.platform.resource.Resources;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.SecurityManagerListener;
 import org.geotools.util.logging.Logging;
@@ -19,12 +24,9 @@ import org.geowebcache.diskquota.DiskQuotaConfig;
 import org.geowebcache.diskquota.QuotaStore;
 import org.geowebcache.diskquota.jdbc.JDBCConfiguration;
 import org.geowebcache.diskquota.jdbc.JDBCQuotaStoreFactory;
-import org.geowebcache.storage.DefaultStorageFinder;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.ApplicationListener;
-import org.springframework.context.event.ContextRefreshedEvent;
 
 /**
  * Loads/save and tests the JDBC configuration in the GeoServer environment, adding support for the
@@ -32,20 +34,20 @@ import org.springframework.context.event.ContextRefreshedEvent;
  * 
  * @author Andrea Aime - GeoSolutions
  * 
- */
+ */     
 class JDBCConfigurationStorage implements ApplicationContextAware, SecurityManagerListener {
 
     static final Logger LOGGER = Logging.getLogger(JDBCConfigurationStorage.class);
 
     private JDBCPasswordEncryptionHelper passwordHelper;
 
-    private DefaultStorageFinder storageFinder;
-
     private ApplicationContext applicationContext;
 
-    public JDBCConfigurationStorage(DefaultStorageFinder storageFinder,
+    private Resource configDir;
+
+    public JDBCConfigurationStorage(ResourceStore store,
             GeoServerSecurityManager securityManager) {
-        this.storageFinder = storageFinder;
+        this.configDir = store.get(GeoserverXMLResourceProvider.DEFAULT_CONFIGURATION_DIR_NAME);
         this.passwordHelper = new JDBCPasswordEncryptionHelper(securityManager);
         securityManager.addListener(this);
     }
@@ -53,12 +55,17 @@ class JDBCConfigurationStorage implements ApplicationContextAware, SecurityManag
     public synchronized void saveDiskQuotaConfig(DiskQuotaConfig config,
             JDBCConfiguration jdbcConfig) throws ConfigurationException, IOException,
             InterruptedException {
-        File configFile = new File(storageFinder.getDefaultPath(), "geowebcache-diskquota-jdbc.xml");
+        Resource configFile = configDir.get("geowebcache-diskquota-jdbc.xml");
         if ("JDBC".equals(config.getQuotaStore())) {
             JDBCConfiguration encrypted = passwordHelper.encryptPassword(jdbcConfig);
-            JDBCConfiguration.store(encrypted, configFile);
+            OutputStream os = configFile.out();
+            try {
+                JDBCConfiguration.store(encrypted, os);
+            } finally {
+                os.close();
+            }
         } else {
-            if (configFile.exists() && !configFile.delete()) {
+            if (Resources.exists(configFile) && !configFile.delete()) {
                 LOGGER.log(Level.SEVERE, "Failed to delete " + configFile
                         + ", this might cause misbehavior on GeoServer restart");
             }
@@ -67,12 +74,18 @@ class JDBCConfigurationStorage implements ApplicationContextAware, SecurityManag
 
     public synchronized JDBCConfiguration getJDBCDiskQuotaConfig() throws IOException,
             org.geowebcache.config.ConfigurationException {
-        File configFile = new File(storageFinder.getDefaultPath(), "geowebcache-diskquota-jdbc.xml");
-        if (!configFile.exists()) {
+        Resource configFile = configDir.get("geowebcache-diskquota-jdbc.xml");
+        if (!Resources.exists(configFile)) {
             return null;
         }
         try {
-            JDBCConfiguration configuration = JDBCConfiguration.load(configFile);
+            JDBCConfiguration configuration;
+            InputStream is = configFile.in();
+            try {
+                configuration = JDBCConfiguration.load(is);
+            } finally {
+                is.close();
+            }
             return passwordHelper.unencryptPassword(configuration);
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Failed to load geowebcache-diskquota-jdbc.xml", e);
@@ -116,11 +129,17 @@ class JDBCConfigurationStorage implements ApplicationContextAware, SecurityManag
         try {
             JDBCConfiguration config = getJDBCDiskQuotaConfig();
             if(config != null) {
-                File configFile = new File(storageFinder.getDefaultPath(), "geowebcache-diskquota-jdbc.xml");
-                if(!configFile.exists()) {
+                Resource configFile = configDir.get("geowebcache-diskquota-jdbc.xml");
+                if(!Resources.exists(configFile)) {
                     return;
                 }
-                JDBCConfiguration c1 = JDBCConfiguration.load(configFile);
+                JDBCConfiguration c1;
+                InputStream is = configFile.in();
+                try {
+                    c1 = JDBCConfiguration.load(is);
+                } finally {
+                    is.close();
+                }
                 if(c1 == null || c1.getConnectionPool() == null) {
                     return;
                 }
@@ -132,7 +151,12 @@ class JDBCConfigurationStorage implements ApplicationContextAware, SecurityManag
                 JDBCConfiguration c3 = passwordHelper.encryptPassword(c2);
                 String newEncrypted = c3.getConnectionPool().getPassword();
                 if(!originalEncrypted.equals(newEncrypted)) { 
-                    JDBCConfiguration.store(c3, configFile);
+                    OutputStream os = configFile.out();
+                    try {
+                        JDBCConfiguration.store(c3, os);
+                    } finally {
+                        os.close();
+                    }
                 }
             }
         } catch (Exception e) {

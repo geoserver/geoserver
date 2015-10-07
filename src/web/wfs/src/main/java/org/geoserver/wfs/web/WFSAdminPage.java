@@ -5,7 +5,6 @@
  */
 package org.geoserver.wfs.web;
 
-import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
@@ -32,6 +31,9 @@ import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.validation.validator.MinimumValidator;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Paths;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.web.services.BaseServiceAdminPage;
 import org.geoserver.web.util.MapModel;
 import org.geoserver.web.wicket.LiveCollectionModel;
@@ -118,8 +120,8 @@ public class WFSAdminPage extends BaseServiceAdminPage<WFSInfo> {
             // See discussion in GEOS-4503
             GeoServerResourceLoader resourceLoader = GeoServerExtensions
                     .bean(GeoServerResourceLoader.class);
-            File esriProjs = resourceLoader.find("user_projections", "esri.properties");
-            if (null == esriProjs) {
+            Resource esriProjs = resourceLoader.get(Paths.path("user_projections", "esri.properties"));
+            if (esriProjs.getType() != Type.RESOURCE) {
                 defaultPrjFormat.setEnabled(false);
                 defaultPrjFormat.getModel().setObject(Boolean.FALSE);
                 defaultPrjFormat.add(new AttributeModifier("title", true, new Model(

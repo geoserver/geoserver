@@ -5,8 +5,9 @@
  */
 package org.geoserver.web.demo;
 
-import java.io.File;
 import java.io.Serializable;
+
+import org.geoserver.platform.resource.Resource;
 
 /**
  * Holds on the properties used as arguments for the TestWfsPost servlet
@@ -19,7 +20,7 @@ public class DemoRequest implements Serializable {
     /**
      * The directory containing the demo files
      */
-    private final File demoDir;
+    private final Resource demoDir;
 
     private String requestFileName;
 
@@ -31,7 +32,7 @@ public class DemoRequest implements Serializable {
 
     private String password;
 
-    public DemoRequest(final File demoDir) {
+    public DemoRequest(final Resource demoDir) {
         this.demoDir = demoDir;
     }
 
@@ -75,7 +76,7 @@ public class DemoRequest implements Serializable {
         this.requestBody = requestBody;
     }
 
-    public File getDemoDir() {
+    public Resource getDemoDir() {
         return demoDir;
     }
 }

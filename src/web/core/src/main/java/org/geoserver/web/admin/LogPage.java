@@ -58,23 +58,19 @@ public class LogPage extends GeoServerSecuredPage {
             location= getGeoServerApplication().getGeoServer().getLogging().getLocation();
         }
         if (location == null) {
-            try {
-                GeoServerResourceLoader loader = getGeoServerApplication().getResourceLoader();
-                location = new File(loader.findOrCreateDirectory("logs"), "geoserver.log")
-                        .getAbsolutePath();
-            } catch (IOException e) {
-                throw new RuntimeException("Unexpeced error, could not find the log file location",
-                        e);
+            GeoServerResourceLoader loader = getGeoServerApplication().getResourceLoader();
+            logFile = loader.get("logs").get("geoserver.log").file();         
+            location = logFile.getAbsolutePath();
+        } else {
+            logFile = new File(location);
+            if (!logFile.isAbsolute()) {
+                // locate the geoserver.log file
+                GeoServerDataDirectory dd = getGeoServerApplication().getBeanOfType(
+                        GeoServerDataDirectory.class);
+                logFile = dd.get(logFile.getPath()).file();
             }
         }
-        logFile = new File(location);
         
-        if (!logFile.isAbsolute()) {
-            // locate the geoserver.log file
-            GeoServerDataDirectory dd = getGeoServerApplication().getBeanOfType(
-                    GeoServerDataDirectory.class);
-            logFile = new File(dd.root(), logFile.getPath());
-        }
         
         if (!logFile.exists()) {
             error("Could not find the GeoServer log file: " + logFile.getAbsolutePath());

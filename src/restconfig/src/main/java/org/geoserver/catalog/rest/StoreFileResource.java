@@ -15,12 +15,13 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.resource.Files;
+import org.geoserver.platform.resource.Paths;
+import org.geoserver.platform.resource.Resources;
 import org.geoserver.rest.RestletException;
 import org.geoserver.rest.util.RESTUploadPathMapper;
 import org.geoserver.rest.util.RESTUtils;
@@ -86,8 +87,8 @@ public abstract class StoreFileResource extends Resource {
       * @param storeName The name of the store being added
       * @param format The store format.
       */
-     protected List<File> doFileUpload(String method, String workspaceName, String storeName, String format) {
-         File directory = null;
+     protected List<org.geoserver.platform.resource.Resource> doFileUpload(String method, String workspaceName, String storeName, String format) {
+         org.geoserver.platform.resource.Resource directory = null;
          
          // Prepare the directory only in case this is not an external upload
          if (isInlineUpload(method)){ 
@@ -107,11 +108,11 @@ public abstract class StoreFileResource extends Resource {
          return handleFileUpload(storeName, workspaceName, format, directory);
      }
 
-    private File createFinalRoot(String workspaceName, String storeName) throws IOException {
+    private org.geoserver.platform.resource.Resource createFinalRoot(String workspaceName, String storeName) throws IOException {
         // Check if the Request is a POST request, in order to search for an existing coverage
         Method method = getRequest().getMethod();
         boolean isPost = method.equals(Method.POST);
-        File directory = null;
+        org.geoserver.platform.resource.Resource directory = null;
         if (isPost && storeName != null) {
             // Check if the coverage already exists
             CoverageStoreInfo coverage = catalog.getCoverageStoreByName(storeName);
@@ -121,25 +122,24 @@ public abstract class StoreFileResource extends Resource {
                                 .equalsIgnoreCase(workspaceName))) {
                     // If the coverage exists then the associated directory is defined by its URL
                     File dirFile = DataUtilities.urlToFile(new URL(coverage.getURL()));
-                    // If the directory does not exists, it means that the path is relative and then
-                    // the directory is searched inside the data directory
-                    if (!dirFile.exists()) {
-                        directory = catalog.getResourceLoader().findOrCreateDirectory(dirFile, "");
+                    
+                    // If the directory is relative and then the directory is searched inside the data directory
+                    if (dirFile.isAbsolute()) {
+                        directory = Files.asResource(dirFile);
                     } else {
-                        // Else the directory is used
-                        directory = dirFile;
+                        directory = catalog.getResourceLoader().get(dirFile.getPath());
                     }
                 }
             }
         }
         // If the directory has not been found then it is created directly
         if (directory == null) {
-            directory = catalog.getResourceLoader().findOrCreateDirectory("data", workspaceName,
-                    storeName);
+            directory = catalog.getResourceLoader().get(Paths.path("data", workspaceName,
+                    storeName));
         }
 
         // Selection of the original ROOT directory path
-        StringBuilder root = new StringBuilder(directory.getAbsolutePath());
+        StringBuilder root = new StringBuilder(directory.path());
         // StoreParams to use for the mapping.
         Map<String, String> storeParams = new HashMap<String, String>();
         // Listing of the available pathMappers
@@ -149,10 +149,7 @@ public abstract class StoreFileResource extends Resource {
         for (RESTUploadPathMapper mapper : mappers) {
             mapper.mapStorePath(root, workspaceName, storeName, storeParams);
         }
-        // Creation of a new File pointing to the new root
-        directory = new File(root.toString());
-        // Creation of the new directory
-        directory.mkdirs();
+        directory = Resources.fromPath(root.toString());
         return directory;
     }
 
@@ -163,16 +160,17 @@ public abstract class StoreFileResource extends Resource {
      * @param directory
      * @return
      */
-    protected List<File> handleFileUpload(String store, String workspace, String format, File directory) {
+    protected List<org.geoserver.platform.resource.Resource> handleFileUpload(String store, String workspace, String format, 
+            org.geoserver.platform.resource.Resource directory) {
         getResponse().setStatus(Status.SUCCESS_ACCEPTED);
 
         MediaType mediaType = getRequest().getEntity().getMediaType();
         if(LOGGER.isLoggable(Level.INFO))
             LOGGER.info("PUT file, mimetype: " + mediaType );
 
-        List<File> files = new ArrayList<File>();
+        List<org.geoserver.platform.resource.Resource> files = new ArrayList<org.geoserver.platform.resource.Resource>();
         
-        File uploadedFile = null;
+        org.geoserver.platform.resource.Resource uploadedFile = null;
         boolean external = false;
         try {
             String method = (String) getRequest().getResourceRef().getLastSegment();
@@ -203,12 +201,13 @@ public abstract class StoreFileResource extends Resource {
         //handle the case that the uploaded file was a zip file, if so unzip it
         if (mediaType!=null && RESTUtils.isZipMediaType( mediaType ) ) {
             //rename to .zip if need be
-            if ( !uploadedFile.getName().endsWith( ".zip") ) {
-                File newUploadedFile = new File( uploadedFile.getParentFile(), FilenameUtils.getBaseName(uploadedFile.getAbsolutePath()) + ".zip" );
-                String oldFileName = uploadedFile.getName();
+            if ( !uploadedFile.name().endsWith( ".zip") ) {
+                org.geoserver.platform.resource.Resource newUploadedFile = 
+                        uploadedFile.parent().get(FilenameUtils.getBaseName(uploadedFile.path()) + ".zip" );
+                String oldFileName = uploadedFile.name();
                 if (!uploadedFile.renameTo( newUploadedFile )) {
                     String errorMessage = "Error renaming zip file from " + oldFileName
-                            + " -> " + newUploadedFile.getName();
+                            + " -> " + newUploadedFile.name();
                     throw new RestletException(errorMessage, Status.SERVER_ERROR_INTERNAL);
                 }
                 uploadedFile = newUploadedFile;
@@ -221,7 +220,7 @@ public abstract class StoreFileResource extends Resource {
                 
                 //look for the "primary" file
                 //TODO: do a better check
-                File primaryFile = findPrimaryFile( directory, format );
+                org.geoserver.platform.resource.Resource primaryFile = findPrimaryFile( directory, format );
                 if ( primaryFile != null ) {
                     uploadedFile = primaryFile;
                 }
@@ -250,8 +249,10 @@ public abstract class StoreFileResource extends Resource {
      * @param format
      * @return
      */
-    protected File findPrimaryFile(File directory, String format) {
-        for (File f : FileUtils.listFiles(directory, new String[] { format }, true)) {
+    protected org.geoserver.platform.resource.Resource findPrimaryFile(
+            org.geoserver.platform.resource.Resource directory, String format) {
+        for (org.geoserver.platform.resource.Resource f : 
+            Resources.list(directory, new Resources.ExtensionFilter(format.toUpperCase()), true)) {
             // assume the first
             return f;
         }

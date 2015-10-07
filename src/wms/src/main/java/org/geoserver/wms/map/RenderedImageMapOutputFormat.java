@@ -21,7 +21,6 @@ import java.awt.image.ComponentColorModel;
 import java.awt.image.DataBuffer;
 import java.awt.image.IndexColorModel;
 import java.awt.image.RenderedImage;
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -676,11 +675,9 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
                 Resource layouts = loader.get("layouts");
                 if (layouts.getType() == Type.DIRECTORY ) {
                     Resource layoutConfig = layouts.get(layoutName+".xml");
-                    //File layoutConfig = new File(layoutDir, layoutName + ".xml");
 
                     if( layoutConfig.getType() == Type.RESOURCE ){
-                        File layoutConfigFile = layoutConfig.file();
-                        layout = MapDecorationLayout.fromFile(layoutConfigFile, tiled);
+                        layout = MapDecorationLayout.fromFile(layoutConfig, tiled);
                     } else {
                         LOGGER.log(Level.WARNING, "Unknown layout requested: " + layoutName);
                     }

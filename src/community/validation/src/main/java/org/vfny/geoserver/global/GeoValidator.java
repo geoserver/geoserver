@@ -5,7 +5,6 @@
  */
 package org.vfny.geoserver.global;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -14,6 +13,8 @@ import java.util.Set;
 import java.util.logging.Level;
 
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resources;
 import org.geotools.validation.FeatureValidation;
 import org.geotools.validation.IntegrityValidation;
 import org.geotools.validation.PlugIn;
@@ -70,13 +71,13 @@ public class GeoValidator extends ValidationProcessor {
         Map testSuites = null;
 
         try {
-            File plugInDir = loader.get("plugIns").dir();
-            File validationDir = loader.get("validation").dir();
-            if (plugInDir != null && plugInDir.exists()) {
-                plugIns = XMLReader.loadPlugIns(plugInDir);
+            Resource plugInDir = loader.get("plugIns");
+            Resource validationDir = loader.get("validation");
+            if (Resources.exists(plugInDir)) {
+                plugIns = XMLReader.loadPlugIns(plugInDir.dir());
 
-                if (validationDir != null && validationDir.exists()) {
-                    testSuites = XMLReader.loadValidations(validationDir, plugIns);
+                if (Resources.exists(validationDir)) {
+                    testSuites = XMLReader.loadValidations(validationDir.dir(), plugIns);
                 }
             } 
         } catch (Exception e) {

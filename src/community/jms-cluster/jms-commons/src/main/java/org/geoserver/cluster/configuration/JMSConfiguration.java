@@ -6,15 +6,17 @@
 package org.geoserver.cluster.configuration;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.List;
 import java.util.Properties;
 import java.util.UUID;
 
 import javax.annotation.PostConstruct;
 
+import org.geoserver.platform.resource.Files;
+import org.geoserver.platform.resource.Resource;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.util.WebUtils;
@@ -47,13 +49,13 @@ final public class JMSConfiguration {
      * This variable stores the configuration path dir. the default initialization will set this to the webapp temp dir. If you need to store it to a
      * new path use the setter to change it.
      */
-    private static File configPathDir = getTempDir();
+    private static Resource configPathDir = Files.asResource(getTempDir());
 
-    public static void setConfigPathDir(File dir) {
+    public static void setConfigPathDir(Resource dir) {
         configPathDir = dir;
     }
 
-    public static final File getConfigPathDir() {
+    public static final Resource getConfigPathDir() {
         return configPathDir;
     }
 
@@ -168,26 +170,22 @@ final public class JMSConfiguration {
     }
 
     public void loadConfig() throws IOException {
-        final File config = new File(configPathDir, CONFIG_FILE_NAME);
-        FileInputStream fis = null;
+        final Resource config = configPathDir.get(CONFIG_FILE_NAME);
+        InputStream fis = config.in();
         try {
-            fis = new FileInputStream(config);
             this.configuration.load(fis);
         } finally {
-            if (fis != null)
-                fis.close();
+            fis.close();
         }
     }
 
     public void storeConfig() throws IOException {
-        final File config = new File(configPathDir, CONFIG_FILE_NAME);
-        FileOutputStream fos = null;
+        final Resource config = configPathDir.get(CONFIG_FILE_NAME);
+        OutputStream fos = config.out();
         try {
-            fos = new FileOutputStream(config);
             this.configuration.store(fos, "");
         } finally {
-            if (fos != null)
-                fos.close();
+            fos.close();
         }
     }
 

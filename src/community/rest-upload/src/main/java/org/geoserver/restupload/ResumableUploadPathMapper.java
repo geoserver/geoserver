@@ -39,10 +39,7 @@ public class ResumableUploadPathMapper extends RESTUploadPathMapperImpl {
         }
         String root = RESTUtils.getRootDirectory(workspace, store, catalog);
         if (root == null || root.isEmpty()) {
-            //GEOSERVER_DATA_DIR/data/
-            GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
-            Resource data = loader.get("data");
-            root = data.dir().getAbsolutePath();
+            root = "data";
         }
         String destination = FilenameUtils.concat(root, itemPath.toString());
         itemPath.setLength(0);

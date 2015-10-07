@@ -5,9 +5,6 @@
  */
 package org.geoserver.ftp;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -20,6 +17,8 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.geoserver.config.util.SecureXStream;
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resources;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.HierarchicalStreamDriver;
@@ -46,13 +45,13 @@ class FTPConfigLoader {
     public FTPConfig load() {
         InputStream in = null;
         try {
-            File configFile = findConfigFile();
-            if (!configFile.exists()) {
+            Resource configFile = findConfigFile();
+            if (!Resources.exists(configFile)) {
                 FTPConfig ftpConfig = new FTPConfig();
                 save(ftpConfig);
                 return ftpConfig;
             }
-            in = new FileInputStream(configFile);
+            in = configFile.in();
             XStream xs = getPersister();
             FTPConfig config = (FTPConfig) xs.fromXML(in);
             return config;
@@ -103,11 +102,11 @@ class FTPConfigLoader {
     }
 
     public void save(FTPConfig config) {
-        File configFile;
+        Resource configFile;
         OutputStream out = null;
         try {
             configFile = findConfigFile();
-            out = new FileOutputStream(configFile);
+            out = configFile.out();
             XStream xs = getPersister();
             xs.toXML(config, new OutputStreamWriter(out, "UTF-8"));
         } catch (IOException e) {
@@ -123,12 +122,8 @@ class FTPConfigLoader {
         }
     }
 
-    private File findConfigFile() throws IOException {
-        File configFile = resourceLoader.find(CONFIG_FILE_NAME);
-        if (configFile == null) {
-            configFile = new File(resourceLoader.getBaseDirectory(), CONFIG_FILE_NAME);
-        }
-        return configFile;
+    private Resource findConfigFile() throws IOException {
+        return resourceLoader.get(CONFIG_FILE_NAME);
     }
 
     private static final class CommentingStaxWriter extends StaxDriver {

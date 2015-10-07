@@ -6,7 +6,7 @@
 package org.geoserver.wps.gs.download;
 
 import java.io.File;
-import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -22,6 +22,8 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.config.GeoServer;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resources;
 import org.geoserver.wps.ppio.ZipArchivePPIO;
 import org.geoserver.wps.resource.WPSFileResource;
 import org.geoserver.wps.resource.WPSResourceManager;
@@ -199,7 +201,7 @@ public class DownloadProcess implements GSProcess, ApplicationContextAware {
             }
 
             // CORE CODE
-            File internalOutput = null;
+            Resource internalOutput = null;
             if (resourceInfo instanceof FeatureTypeInfo) {
                 if (LOGGER.isLoggable(Level.FINE)) {
                     LOGGER.log(Level.FINE, "The resource to work on is a vector layer");
@@ -242,11 +244,11 @@ public class DownloadProcess implements GSProcess, ApplicationContextAware {
                 throw new IllegalStateException(
                         "Could not complete the Download Process, output file is null");
             }
-            if (!internalOutput.exists() || !internalOutput.canRead()) {
+            if (!Resources.exists(internalOutput) || !Resources.canRead(internalOutput)) {
                 // wrong type
                 throw new IllegalStateException(
                         "Could not complete the Download Process, output file invalid! --> "
-                                + internalOutput.getAbsolutePath());
+                                + internalOutput.path());
 
             }
 
@@ -255,26 +257,27 @@ public class DownloadProcess implements GSProcess, ApplicationContextAware {
                 LOGGER.log(Level.FINE, "Preparing the result");
             }
             // build output zip
-            final File result = resourceManager.getOutputResource(
-                    resourceManager.getExecutionId(true), resourceInfo.getName() + ".zip").file();
+            final Resource result = resourceManager.getOutputResource(
+                    resourceManager.getExecutionId(true), resourceInfo.getName() + ".zip");
 
-            FileOutputStream os1 = null;
+            OutputStream os1 = null;
             try {
-                os1 = new FileOutputStream(result);
+                os1 = result.out();
 
                 if (LOGGER.isLoggable(Level.FINE)) {
                     LOGGER.log(Level.FINE, "Listing files");
                 }
                 // output
                 List<File> filesToDownload = new ArrayList<File>();
-                filesToDownload.add(internalOutput);
+                filesToDownload.add(internalOutput.file());
 
                 if (LOGGER.isLoggable(Level.FINE)) {
                     LOGGER.log(Level.FINE, "Collecting styles");
                 }
                 // add all SLD to zip
-                List<File> styles = DownloadUtilities.collectStyles(layerInfo);
-                filesToDownload.addAll(styles);
+                for (Resource style : DownloadUtilities.collectStyles(layerInfo)) {
+                    filesToDownload.add(style.file());
+                }                
 
                 if (LOGGER.isLoggable(Level.FINE)) {
                     LOGGER.log(Level.FINE, "Zipping files");
@@ -303,7 +306,7 @@ public class DownloadProcess implements GSProcess, ApplicationContextAware {
             }
 
             // return
-            return result;
+            return result.file();
         } catch (Throwable e) {
             if (LOGGER.isLoggable(Level.FINE)) {
                 LOGGER.log(Level.FINE, "Download failed");

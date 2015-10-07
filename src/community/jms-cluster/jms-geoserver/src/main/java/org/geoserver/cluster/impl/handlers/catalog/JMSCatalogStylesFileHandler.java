@@ -15,6 +15,8 @@ import org.geoserver.cluster.impl.handlers.DocumentFile;
 import org.geoserver.cluster.impl.handlers.DocumentFileHandler;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resources;
 
 import com.thoughtworks.xstream.XStream;
 
@@ -50,16 +52,15 @@ public class JMSCatalogStylesFileHandler extends DocumentFileHandler {
 			try {
 				GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
 				final String fileName = File.separator + "styles"
-						+ File.separator + event.getPath().getName();
-				File file = new File(loader.getBaseDirectory().getCanonicalPath(), fileName);
+						+ File.separator + event.getPath().name();
+				Resource file = loader.get(fileName);
 				
-				if ( !file.exists() ) {
-					final String styleAbsolutePath = event.getPath().getAbsolutePath();
+				if ( !Resources.exists(file) ) {
+					final String styleAbsolutePath = event.getPath().path();
 					if ( styleAbsolutePath.indexOf("workspaces") > 0 ) {
 						final String styleFileName = File.separator + 
 								styleAbsolutePath.substring(styleAbsolutePath.indexOf("workspaces"));
-						file =  new File(loader.getBaseDirectory().getCanonicalPath(), 
-								styleFileName);
+						file =  loader.get(styleFileName);
 					}
 				}
 				

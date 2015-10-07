@@ -5,7 +5,6 @@
  */
 package org.geoserver.cluster.impl.configuration;
 
-import java.io.File;
 import java.io.IOException;
 
 import javax.annotation.PostConstruct;
@@ -13,6 +12,8 @@ import javax.annotation.PostConstruct;
 import org.geoserver.cluster.configuration.JMSConfiguration;
 import org.geoserver.cluster.configuration.JMSConfigurationExt;
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resources;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -36,21 +37,13 @@ final public class ConfigDirConfiguration implements JMSConfigurationExt {
     @PostConstruct
     private void init() throws IOException {
         // check for override
-        File baseDir=null;
+        Resource baseDir=null;
         final String baseDirPath = JMSConfiguration.getOverride(CONFIGDIR_KEY);
         // if no override try to load from the GeoServer loader
         if (baseDirPath != null) {
-            baseDir = new File(baseDirPath);
+            baseDir = Resources.fromPath(baseDirPath);
         } else {
-            baseDir = loader.getBaseDirectory();
-            if (baseDir != null) {
-                baseDir = new File(baseDir, "cluster");
-            }
-        }
-        if (baseDir != null) {
-            if (!baseDir.exists() && !baseDir.mkdirs()) {
-                throw new IOException("Unable to create directory: " + baseDir);
-            }
+            baseDir = loader.get("cluster");
         }
         JMSConfiguration.setConfigPathDir(baseDir);
     }

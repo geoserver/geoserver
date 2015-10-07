@@ -14,7 +14,7 @@ public abstract class ScriptProcessIntTest extends ScriptIntTestSupport {
     protected void oneTimeSetUp() throws Exception {
         super.oneTimeSetUp();
 
-        File script = new File(getScriptManager().getWpsRoot(), "map." + getExtension());
+        File script = new File(getScriptManager().wps().dir(), "map." + getExtension());
         FileUtils.copyURLToFile(getClass().getResource(script.getName()), script);
     }
 
@@ -35,6 +35,7 @@ public abstract class ScriptProcessIntTest extends ScriptIntTestSupport {
                  "</wps:Execute>";
           
          Document doc = postAsDOM("wps", xml);
+         print(doc);
          assertEquals("map", doc.getDocumentElement().getLocalName());
          
          assertXpathEvaluatesTo("widget", "/map/name", doc);

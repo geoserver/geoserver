@@ -5,10 +5,9 @@
  */
 package org.geoserver.wps.gs.download;
 
-import it.geosolutions.imageio.stream.output.FileImageOutputStreamExtImpl;
+import it.geosolutions.imageio.stream.output.ImageOutputStreamAdapter;
 import it.geosolutions.io.output.adapter.OutputStreamAdapter;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.logging.Level;
@@ -19,6 +18,7 @@ import javax.media.jai.Interpolation;
 
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.data.util.CoverageUtils;
+import org.geoserver.platform.resource.Resource;
 import org.geoserver.wps.ppio.ComplexPPIO;
 import org.geoserver.wps.ppio.ProcessParameterIO;
 import org.geoserver.wps.resource.GridCoverageResource;
@@ -110,7 +110,7 @@ class RasterDownload {
      * @return
      * @throws Exception
      */
-    public File execute(String mimeType, final ProgressListener progressListener,
+    public Resource execute(String mimeType, final ProgressListener progressListener,
             CoverageInfo coverageInfo, Geometry roi, CoordinateReferenceSystem targetCRS,
             boolean clip, Filter filter, Interpolation interpolation, Integer targetSizeX,
             Integer targetSizeY) throws Exception {
@@ -313,7 +313,7 @@ class RasterDownload {
      * 
      * @throws Exception
      */
-    private File writeRaster(String mimeType, CoverageInfo coverageInfo, GridCoverage2D gridCoverage)
+    private Resource writeRaster(String mimeType, CoverageInfo coverageInfo, GridCoverage2D gridCoverage)
             throws Exception {
         if (LOGGER.isLoggable(Level.FINE)) {
             LOGGER.log(Level.FINE, "Writing raster");
@@ -348,11 +348,11 @@ class RasterDownload {
         if (LOGGER.isLoggable(Level.FINE)) {
             LOGGER.log(Level.FINE, "Writing file in a temporary folder");
         }
-        final File output = resourceManager.getTemporaryResource("." + extension).file();
+        final Resource output = resourceManager.getTemporaryResource("." + extension);
 
         // the limit output stream will throw an exception if the process is trying to writer more than the max allowed bytes
-        final FileImageOutputStreamExtImpl fileImageOutputStreamExtImpl = new FileImageOutputStreamExtImpl(
-                output);
+        final ImageOutputStream fileImageOutputStreamExtImpl = new ImageOutputStreamAdapter(
+                output.out());
         ImageOutputStream os = null;
         // write
         try {

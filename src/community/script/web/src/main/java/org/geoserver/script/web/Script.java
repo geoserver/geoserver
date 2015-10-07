@@ -7,12 +7,15 @@ package org.geoserver.script.web;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.util.logging.Logger;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.resource.Files;
+import org.geoserver.platform.resource.Resource;
 import org.geoserver.script.ScriptManager;
 import org.geoserver.script.ScriptType;
 import org.geotools.util.logging.Logging;
@@ -29,19 +32,24 @@ public class Script implements Serializable {
 
     private String extension;
 
-    private File file;
+    private Resource file;
 
     private String contents;
 
     public Script() {
     }
-
-    public Script(File file) {
+    
+    public Script(Resource file) {
         this.file = file;
         this.name = getNameFromFile(file);
         this.type = findType(file);
-        this.extension = FilenameUtils.getExtension(file.getName());
+        this.extension = FilenameUtils.getExtension(file.name());
         this.contents = readFile(file);
+    }
+
+    @Deprecated
+    public Script(File file) {
+        this(Files.asResource(file));
     }
 
     public Script(String name, String type, String extension, String contents) {
@@ -52,22 +60,22 @@ public class Script implements Serializable {
         this.contents = contents;
     }
 
-    private String getNameFromFile(File file) {
-        String baseName = FilenameUtils.getBaseName(file.getName());
-        if (file.getParentFile().getParentFile().getName().equals("wps")) {
-            return file.getParentFile().getName() + ":" + baseName;
+    private String getNameFromFile(Resource file) {
+        String baseName = FilenameUtils.getBaseName(file.name());
+        if (file.parent().parent().name().equals("wps")) {
+            return file.parent().name() + ":" + baseName;
         } else {
-            return FilenameUtils.getBaseName(file.getName());
+            return FilenameUtils.getBaseName(file.name());
         }
     }
 
-    private File findFile(String name, String type, String extension) {
+    private Resource findFile(String name, String type, String extension) {
         ScriptManager scriptManager = (ScriptManager) GeoServerExtensions.bean("scriptMgr");
         try {
             if (name.contains(":")) {
                 name = name.replace(":",File.separator);
             }
-            File f = scriptManager.findScriptFile(name, ScriptType.getByLabel(type), extension);
+            Resource f = scriptManager.scriptFile(name, ScriptType.getByLabel(type), extension);
             return f;
         } catch (IOException ex) {
             LOGGER.warning(String.format(
@@ -77,17 +85,21 @@ public class Script implements Serializable {
         return null;
     }
 
-    private String readFile(File file) {
+    private String readFile(Resource file) {
+        InputStream in = file.in();
         try {
-            return FileUtils.readFileToString(file);
+            String s = IOUtils.toString(in);
+            return s;
         } catch (IOException ex) {
             LOGGER.warning(String.format("Error reading file '%s' because ",
-                    file.getAbsolutePath(), ex.getMessage()));
+                    file.path(), ex.getMessage()));
+        } finally {
+            IOUtils.closeQuietly(in);
         }
         return "";
     }
 
-    private String findType(File file) {
+    private String findType(Resource file) {
         ScriptManager scriptManager = (ScriptManager) GeoServerExtensions.bean("scriptMgr");
         return scriptManager.getScriptType(file).getLabel();
     }
@@ -103,12 +115,17 @@ public class Script implements Serializable {
     public String getExtension() {
         return extension;
     }
-
-    public File getFile() {
+    
+    public Resource getResource() {
         if (file == null) {
             this.file = findFile(name, type, extension);
         }
         return this.file;
+    }
+
+    @Deprecated
+    public File getFile() {
+        return getResource().file();
     }
 
     public String getContents() {

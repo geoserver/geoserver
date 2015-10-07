@@ -5,8 +5,7 @@
  */
 package org.geoserver.cluster.impl.handlers;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.OutputStream;
 
 import org.apache.commons.io.IOUtils;
 import org.geoserver.cluster.JMSEventHandler;
@@ -28,12 +27,12 @@ public class DocumentFileHandler extends
 
 	@Override
 	public boolean synchronize(DocumentFile event) throws Exception {
-		FileOutputStream fout = null;
+		OutputStream fout = null;
 		try {
-			fout = new FileOutputStream(event.getPath());
+			fout = event.getPath().out();
 			xstream.toXML(event.getBody(), fout);
 			return true;
-		} catch (IOException e) {
+		} catch (IllegalStateException e) {
 			if (LOGGER.isLoggable(java.util.logging.Level.SEVERE))
 				LOGGER.severe(e.getLocalizedMessage());
 			throw e;

@@ -23,7 +23,7 @@ public class PyAppTest extends ScriptIntTestSupport {
     protected void setUpInternal() throws Exception {
         super.setUpInternal();
 
-        app = getScriptManager().findOrCreateAppDir("foo");
+        app = getScriptManager().app("foo").dir();
     }
 
     public void testSimple() throws Exception {

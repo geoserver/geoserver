@@ -23,7 +23,7 @@ public abstract class WfsTxHookTest extends ScriptIntTestSupport {
     public abstract String getExtension();
 
     File copyOverFile(String basename) throws Exception {
-        File wfsTx = scriptMgr.getWfsTxRoot();
+        File wfsTx = scriptMgr.wfsTx().dir();
         File f = new File(wfsTx, basename + "." + getExtension());
 
         FileUtils.copyURLToFile(getClass().getResource(f.getName()), f);

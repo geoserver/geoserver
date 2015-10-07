@@ -12,6 +12,7 @@ import java.util.List;
 import javax.script.ScriptEngine;
 
 import org.geoserver.platform.FileWatcher;
+import org.geoserver.platform.resource.Resource;
 import org.geoserver.script.ScriptFileWatcher;
 import org.geoserver.script.ScriptManager;
 import org.geotools.filter.FunctionImpl;
@@ -38,7 +39,13 @@ public class ScriptFunction {
 
     /** watcher for changes */
     ScriptFileWatcher watcher;
+    
+    public ScriptFunction(Resource file, ScriptManager scriptMgr) {
+        watcher = new ScriptFileWatcher(file, scriptMgr);
+        hook = scriptMgr.lookupFilterHook(file);
+    }
 
+    @Deprecated
     public ScriptFunction(File file, ScriptManager scriptMgr) {
         watcher = new ScriptFileWatcher(file, scriptMgr);
         hook = scriptMgr.lookupFilterHook(file);

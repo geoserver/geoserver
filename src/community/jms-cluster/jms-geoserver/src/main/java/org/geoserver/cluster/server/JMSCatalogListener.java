@@ -25,6 +25,9 @@ import org.geoserver.cluster.JMSPublisher;
 import org.geoserver.cluster.impl.handlers.DocumentFile;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resource.Type;
+import org.geoserver.platform.resource.Resources;
 import org.geotools.util.logging.Logging;
 
 /**
@@ -78,12 +81,11 @@ public class JMSCatalogListener extends JMSAbstractGeoServerProducer implements 
             if (info instanceof StyleInfo) {
                 final StyleInfo sInfo=((StyleInfo) info);
                 WorkspaceInfo wInfo =sInfo.getWorkspace();
-                File styleFile=null;
+                Resource styleFile=null;
                 
                 // make sure we work fine with workspace specific styles
                 if(wInfo!=null){
-                    styleFile=new File(
-                            loader.getBaseDirectory()+
+                    styleFile=loader.get(
                             File.separator+
                             "workspaces"+
                             File.separator+
@@ -94,10 +96,10 @@ public class JMSCatalogListener extends JMSAbstractGeoServerProducer implements 
                             sInfo.getFilename());
                     
                 }else{
-                    styleFile=loader.find("styles/" + sInfo.getFilename());
+                    styleFile=loader.get("styles/" + sInfo.getFilename());
                 }
                 // checks
-                if(!styleFile.exists()||!styleFile.canRead()||!styleFile.isFile()){
+                if(!Resources.exists(styleFile)||!Resources.canRead(styleFile)||styleFile.getType() == Type.RESOURCE){
                     throw new IllegalStateException("Unable to find style for event: "+sInfo.toString());
                 }
 
@@ -172,17 +174,15 @@ public class JMSCatalogListener extends JMSAbstractGeoServerProducer implements 
                 final String canonicalStyleFileName = File.separator + "styles" + File.separator
                         + ((StyleInfo) info).getFilename();
                 
-                File styleFile = new File(loader.getBaseDirectory().getCanonicalPath(), 
-                		canonicalStyleFileName);
+                Resource styleFile = loader.get(canonicalStyleFileName);
 
-                if ( !styleFile.exists() ) {
+                if ( !Resources.exists(styleFile) ) {
                 	final String workspace = ((StyleInfo) info).getWorkspace().getName();
                 	final String styleFileName = File.separator + "workspaces" +
                 			File.separator + workspace +
                 	        File.separator + "styles" + File.separator + 
                 	        ((StyleInfo) info).getFilename();
-                	styleFile =  new File(loader.getBaseDirectory().getCanonicalPath(), 
-                			styleFileName);
+                	styleFile =  loader.get(styleFileName);
                 }
                 
                 // publish the style xml document

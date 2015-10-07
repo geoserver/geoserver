@@ -42,7 +42,7 @@ public class ScriptFinderTest extends ScriptIntTestSupport {
         MockHttpServletResponse resp = getAsServletResponse("/rest/scripts/apps/app1/main.py");
         assertEquals(404, resp.getStatusCode());
 
-        File dir = scriptMgr.findOrCreateScriptDir("apps/app1");
+        File dir = scriptMgr.script("apps/app1").dir();
         FileUtils.writeStringToFile(new File(dir, "main.py"), "print 'foo'");
 
         resp = getAsServletResponse("/rest/scripts/apps/app1/main.py");
@@ -67,7 +67,7 @@ public class ScriptFinderTest extends ScriptIntTestSupport {
         assertTrue(((JSONObject) json).getString("scripts").isEmpty());
 
         // Add two Functions scripts
-        File dir = scriptMgr.findOrCreateScriptDir("apps");
+        File dir = scriptMgr.script("apps").dir();
         FileUtils.writeStringToFile(new File(new File(dir, "foo"), "main.py"), "print 'foo'");
         FileUtils.writeStringToFile(new File(new File(dir, "bar"), "main.py"), "print 'bar'");
 
@@ -107,7 +107,7 @@ public class ScriptFinderTest extends ScriptIntTestSupport {
         MockHttpServletResponse resp = getAsServletResponse("/rest/scripts/apps/app1/main.py");
         assertEquals(404, resp.getStatusCode());
 
-        File dir = scriptMgr.findOrCreateScriptDir("apps/app1");
+        File dir = scriptMgr.script("apps/app1").dir();
         FileUtils.writeStringToFile(new File(dir, "main.py"), "print 'foo'");
 
         resp = getAsServletResponse("/rest/scripts/apps/app1/main.py");
@@ -128,7 +128,7 @@ public class ScriptFinderTest extends ScriptIntTestSupport {
         MockHttpServletResponse resp = getAsServletResponse("/rest/scripts/wfs/tx/foo.py");
         assertEquals(404, resp.getStatusCode());
 
-        File dir = scriptMgr.findOrCreateScriptDir("wfs/tx");
+        File dir = scriptMgr.script("wfs/tx").dir();
         FileUtils.writeStringToFile(new File(dir, "foo.py"), "print 'foo'");
 
         resp = getAsServletResponse("/rest/scripts/wfs/tx/foo.py");
@@ -153,7 +153,7 @@ public class ScriptFinderTest extends ScriptIntTestSupport {
         assertTrue(((JSONObject) json).getString("scripts").isEmpty());
 
         // Add two Functions scripts
-        File dir = scriptMgr.findOrCreateScriptDir("wfs/tx");
+        File dir = scriptMgr.script("wfs/tx").dir();
         FileUtils.writeStringToFile(new File(dir, "foo.py"), "print 'foo'");
         FileUtils.writeStringToFile(new File(dir, "bar.py"), "print 'bar'");
 
@@ -193,7 +193,7 @@ public class ScriptFinderTest extends ScriptIntTestSupport {
         MockHttpServletResponse resp = getAsServletResponse("/rest/scripts/wfs/tx/foo.py");
         assertEquals(404, resp.getStatusCode());
 
-        File dir = scriptMgr.findOrCreateScriptDir("wfs/tx");
+        File dir = scriptMgr.script("wfs/tx").dir();
         FileUtils.writeStringToFile(new File(dir, "foo.py"), "print 'foo'");
 
         resp = getAsServletResponse("/rest/scripts/wfs/tx/foo.py");
@@ -213,7 +213,7 @@ public class ScriptFinderTest extends ScriptIntTestSupport {
         MockHttpServletResponse resp = getAsServletResponse("/rest/scripts/function/foo.py");
         assertEquals(404, resp.getStatusCode());
 
-        File dir = scriptMgr.findOrCreateScriptDir("function");
+        File dir = scriptMgr.script("function").dir();
         FileUtils.writeStringToFile(new File(dir, "foo.py"), "print 'foo'");
 
         resp = getAsServletResponse("/rest/scripts/function/foo.py");
@@ -238,7 +238,7 @@ public class ScriptFinderTest extends ScriptIntTestSupport {
         assertTrue(((JSONObject) json).getString("scripts").isEmpty());
 
         // Add two Functions scripts
-        File dir = scriptMgr.findOrCreateScriptDir("function");
+        File dir = scriptMgr.script("function").dir();
         FileUtils.writeStringToFile(new File(dir, "foo.py"), "print 'foo'");
         FileUtils.writeStringToFile(new File(dir, "bar.py"), "print 'bar'");
 
@@ -278,7 +278,7 @@ public class ScriptFinderTest extends ScriptIntTestSupport {
         MockHttpServletResponse resp = getAsServletResponse("/rest/scripts/function/foo.py");
         assertEquals(404, resp.getStatusCode());
 
-        File dir = scriptMgr.findOrCreateScriptDir("function");
+        File dir = scriptMgr.script("function").dir();
         FileUtils.writeStringToFile(new File(dir, "foo.py"), "print 'foo'");
 
         resp = getAsServletResponse("/rest/scripts/function/foo.py");
@@ -298,7 +298,7 @@ public class ScriptFinderTest extends ScriptIntTestSupport {
         MockHttpServletResponse resp = getAsServletResponse("/rest/scripts/wps/foo.py");
         assertEquals(404, resp.getStatusCode());
 
-        File dir = scriptMgr.findOrCreateScriptDir("wps");
+        File dir = scriptMgr.script("wps").dir();
         FileUtils.writeStringToFile(new File(dir, "foo.py"), "print 'foo'");
 
         resp = getAsServletResponse("/rest/scripts/wps/foo.py");
@@ -310,7 +310,7 @@ public class ScriptFinderTest extends ScriptIntTestSupport {
         MockHttpServletResponse resp = getAsServletResponse("/rest/scripts/wps/foo.py");
         assertEquals(404, resp.getStatusCode());
 
-        File dir = scriptMgr.findOrCreateScriptDir("wps");
+        File dir = scriptMgr.script("wps").dir();
         File nsDir = new File(dir, "bar");
         FileUtils.writeStringToFile(new File(nsDir, "foo.py"), "print 'foo'");
 
@@ -347,7 +347,7 @@ public class ScriptFinderTest extends ScriptIntTestSupport {
         assertTrue(((JSONObject) json).getString("scripts").isEmpty());
 
         // Add two WPS scripts
-        File dir = scriptMgr.findOrCreateScriptDir("wps");
+        File dir = scriptMgr.script("wps").dir();
         FileUtils.writeStringToFile(new File(dir, "foo.py"), "print 'foo'");
         FileUtils.writeStringToFile(new File(dir, "bar.py"), "print 'bar'");
         // Add WPS script with custom namespace
@@ -391,7 +391,7 @@ public class ScriptFinderTest extends ScriptIntTestSupport {
         MockHttpServletResponse resp = getAsServletResponse("/rest/scripts/wps/foo.py");
         assertEquals(404, resp.getStatusCode());
 
-        File dir = scriptMgr.findOrCreateScriptDir("wps");
+        File dir = scriptMgr.script("wps").dir();
         FileUtils.writeStringToFile(new File(dir, "foo.py"), "print 'foo'");
 
         resp = getAsServletResponse("/rest/scripts/wps/foo.py");
@@ -409,7 +409,7 @@ public class ScriptFinderTest extends ScriptIntTestSupport {
         MockHttpServletResponse resp = getAsServletResponse("/rest/scripts/wps/bar:foo.py");
         assertEquals(404, resp.getStatusCode());
 
-        File dir = scriptMgr.findOrCreateScriptDir("wps");
+        File dir = scriptMgr.script("wps").dir();
         File nsDir = new File(dir, "bar");
         FileUtils.writeStringToFile(new File(nsDir, "foo.py"), "print 'foo'");
 

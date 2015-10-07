@@ -72,7 +72,7 @@ public class GeofencePageTest extends GeoServerWicketTestSupport {
         ft.submit("submit");
         tester.assertRenderedPage(GeoServerHomePage.class);
 
-        File configFile = configurer.getConfigFile();
+        File configFile = configurer.getConfigFile().file();
         LOGGER.info("Config file is " + configFile);
 
         assertTrue(GeofenceTestUtils.readConfig(configFile).length() > 0);

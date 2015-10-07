@@ -28,6 +28,7 @@ import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resources;
 import org.geoserver.wcs.WCSInfo;
 import org.geoserver.wcs.responses.CoverageResponseDelegate;
 import org.geoserver.wcs.responses.CoverageResponseDelegateFinder;
@@ -85,33 +86,28 @@ public class WCSGetCoverageStoreResponse extends Response {
         CoverageInfo coverageInfo = catalog.getCoverageByName(request.getIdentifier().getValue());
         
         // write the coverage to temporary storage in the data dir
-        File wcsStore = null;
+        Resource wcsStore = null;
         try {
             GeoServerResourceLoader loader = geoServer.getCatalog().getResourceLoader();
-            Resource wcs = loader.get("temp/wcs");
-            wcsStore = wcs.dir();
-//            File temp = GeoserverDataDirectory.findCreateConfigDir("temp");
-//            wcsStore = new File(temp, "wcs");
-//            if(!wcsStore.exists())
-//                wcsStore.mkdir();
+            wcsStore = loader.get("temp/wcs");
         } catch(Exception e) {
             throw new WcsException("Could not create the temporary storage directory for WCS");
         }
         
         // Make sure we create a file name that's not already there (even if splitting the same nanosecond
         // with two requests should not ever happen...)
-        File coverageFile = null;
+        Resource coverageFile = null;
         while(true) {
             // TODO: find a way to get good extensions
-            coverageFile = new File(wcsStore, coverageInfo.getName().replace(':', '_') + "_" + System.nanoTime() + "." + delegate.getFileExtension(outputFormat));
-            if(!coverageFile.exists())
+            coverageFile = wcsStore.get(coverageInfo.getName().replace(':', '_') + "_" + System.nanoTime() + "." + delegate.getFileExtension(outputFormat));
+            if(!Resources.exists(coverageFile))
                 break;
         }
        
         // store the coverage
         OutputStream os = null;
         try {
-            os = new BufferedOutputStream(new FileOutputStream(coverageFile));
+            os = new BufferedOutputStream(coverageFile.out());
             delegate.encode(coverage, outputFormat,Collections.EMPTY_MAP, os);
             os.flush();
         } finally {
@@ -121,7 +117,7 @@ public class WCSGetCoverageStoreResponse extends Response {
         
         // build the path where the clients will be able to retrieve the coverage files
         final String coverageLocation = buildURL(request.getBaseUrl(), 
-                appendPath("temp/wcs", coverageFile.getName()), null, URLType.RESOURCE);
+                appendPath("temp/wcs", coverageFile.name()), null, URLType.RESOURCE);
         
         // build the response
         WCSInfo wcs = geoServer.getService(WCSInfo.class);

@@ -5,8 +5,8 @@
  */
 package org.geoserver.wps.gs;
 
-import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.URL;
 
 import org.geoserver.platform.resource.Resource;
@@ -57,10 +57,10 @@ public class StoreCoverage implements GSProcess {
             throws IOException {
         String fileName = coverage.getName().toString() + ".tif";
         final Resource resource = resources.getOutputResource(null, fileName);
-        final File file = resource.file();
 
         // TODO check file prior to writing
-        GeoTiffWriter writer = new GeoTiffWriter(file);
+        OutputStream os = resource.out();
+        GeoTiffWriter writer = new GeoTiffWriter(os);
 
         // setting the write parameters for this geotiff
         final ParameterValueGroup params = new GeoTiffFormat().getWriteParameters();
@@ -76,6 +76,7 @@ public class StoreCoverage implements GSProcess {
             } catch (Exception e) {
                 // we tried, no need to fuss around this one
             }
+            os.close();
         }
 
         return new URL(resources.getOutputResourceUrl(fileName, "image/tiff"));

@@ -5,8 +5,8 @@
  */
 package org.geoserver.community.css.web;
 
-import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
@@ -14,17 +14,17 @@ import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.markup.html.IHeaderContributor;
 import org.apache.wicket.markup.html.IHeaderResponse;
 import org.apache.wicket.markup.html.panel.Panel;
-
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.config.GeoServerDataDirectory;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resources;
 import org.geoserver.web.GeoServerApplication;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.util.logging.Logging;
@@ -65,11 +65,16 @@ class OpenLayersMapPanel extends Panel implements IHeaderContributor {
 
     private void ensureLegendDecoration() throws IOException {
         GeoServerDataDirectory dd = GeoServerApplication.get().getBeanOfType(GeoServerDataDirectory.class);
-        File layouts = dd.findOrCreateDir("layouts");
-        File legend = new File(layouts, "css-legend.xml");
-        if(!legend.exists()) {
+        Resource layouts = dd.get("layouts");
+        Resource legend = layouts.get("css-legend.xml");
+        if(!Resources.exists(legend)) {
             String legendLayout = IOUtils.toString(OpenLayersMapPanel.class.getResourceAsStream("css-legend.xml"));
-            FileUtils.writeStringToFile(legend, legendLayout);
+            OutputStream os = legend.out();
+            try {
+                IOUtils.write(legendLayout, os);
+            } finally {
+                os.close();
+            }
         }
         
     }

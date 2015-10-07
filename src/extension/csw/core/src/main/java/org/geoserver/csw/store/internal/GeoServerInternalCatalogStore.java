@@ -5,7 +5,6 @@
  */
 package org.geoserver.csw.store.internal;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,6 +14,8 @@ import java.util.logging.Logger;
 import org.geoserver.config.GeoServer;
 import org.geoserver.data.util.IOUtils;
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resources;
 import org.geoserver.security.PropertyFileWatcher;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.type.Name;
@@ -61,16 +62,16 @@ public class GeoServerInternalCatalogStore extends InternalCatalogStore {
     public GeoServerInternalCatalogStore(GeoServer geoserver) throws IOException {
         super( geoserver.getCatalog());
         GeoServerResourceLoader loader = geoserver.getCatalog().getResourceLoader();
-        File dir = loader.findOrCreateDirectory("csw");
+        Resource dir = loader.get("csw");
         for (Name name : descriptorByType.keySet()) {
             String typeName = name.getLocalPart();
-            File f = new File(dir, typeName + ".properties");
+            Resource f = dir.get(typeName + ".properties");
 
             PropertyFileWatcher watcher = new PropertyFileWatcher(f);
             watchers.put(typeName, watcher);
             
-            if (!f.exists()) {           
-                IOUtils.copy(getClass().getResourceAsStream(typeName + ".default.properties"),f);
+            if (!Resources.exists(f)) {           
+                IOUtils.copy(getClass().getResourceAsStream(typeName + ".default.properties"),f.out());
             }
             
             addMapping (typeName, CatalogStoreMapping.parse(new HashMap<String, String>((Map) watcher.getProperties())));

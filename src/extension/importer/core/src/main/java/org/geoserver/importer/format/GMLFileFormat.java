@@ -8,6 +8,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -34,6 +36,9 @@ import org.geoserver.importer.transform.ReprojectTransform;
 import org.geoserver.importer.transform.TransformChain;
 import org.geoserver.importer.transform.VectorTransform;
 import org.geoserver.importer.transform.VectorTransformChain;
+import org.geoserver.platform.resource.Files;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resources;
 import org.geotools.data.FeatureReader;
 import org.geotools.factory.Hints;
 import org.geotools.feature.AttributeTypeBuilder;
@@ -106,7 +111,7 @@ public class GMLFileFormat extends VectorFormat {
 
     @Override
     public FeatureReader read(ImportData data, ImportTask task) throws IOException {
-        File file = getFileFromData(data);
+        Resource file = getFileFromData(data);
 
         // we need to get the feature type, to use for the particular parse through the file
         // since we put it on the metadata from the list method, we first check if that's still
@@ -120,7 +125,7 @@ public class GMLFileFormat extends VectorFormat {
             FeatureTypeInfo fti = (FeatureTypeInfo) task.getLayer().getResource();
             ft = buildFeatureTypeFromInfo(fti);
         }
-        return new GMLReader(new FileInputStream(file), version.getConfiguration(), ft);
+        return new GMLReader(file.in(), version.getConfiguration(), ft);
     }
 
     @Override
@@ -131,7 +136,7 @@ public class GMLFileFormat extends VectorFormat {
     @Override
     public List<ImportTask> list(ImportData data, Catalog catalog, ProgressMonitor monitor)
             throws IOException {
-        File file = getFileFromData(data);
+        Resource file = getFileFromData(data);
         SimpleFeatureType featureType = getSchema(file);
         CatalogFactory factory = catalog.getFactory();
         CatalogBuilder cb = new CatalogBuilder(catalog);
@@ -203,11 +208,16 @@ public class GMLFileFormat extends VectorFormat {
         return Collections.singletonList(task);
     }
 
+    @Deprecated
     SimpleFeatureType getSchema(File file) throws IOException {
+        return getSchema(Files.asResource(file));
+    }
+    
+    SimpleFeatureType getSchema(Resource file) throws IOException {
         // do we have a schema location?
         boolean hasSchema = false;
         GMLVersion version = GMLVersion.GML3;
-        try (FileReader input = new FileReader(file)) {
+        try (InputStreamReader input = new InputStreamReader(file.in())) {
             // create a pull parser
             XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
             factory.setNamespaceAware(true);
@@ -253,7 +263,7 @@ public class GMLFileFormat extends VectorFormat {
         String typeName = null;
         Map<String, AttributeDescriptor> guessedTypes = new HashMap<>();
         SimpleFeatureType result = null;
-        try (FileInputStream fis = new FileInputStream(file)) {
+        try (InputStream fis = file.in()) {
             SimpleFeature sf = null;
             PullParser parser = new PullParser(version.getConfiguration(), fis, SimpleFeature.class);
             sf = (SimpleFeature) parser.parse();
@@ -421,8 +431,8 @@ public class GMLFileFormat extends VectorFormat {
 
     @Override
     public boolean canRead(ImportData data) throws IOException {
-        File file = getFileFromData(data);
-        return file.canRead() && "gml".equalsIgnoreCase(FilenameUtils.getExtension(file.getName()));
+        Resource file = getFileFromData(data);
+        return Resources.canRead(file) && "gml".equalsIgnoreCase(FilenameUtils.getExtension(file.name()));
     }
 
     @Override

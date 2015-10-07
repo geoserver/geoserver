@@ -8,10 +8,18 @@ package org.geoserver.importer;
 import java.io.File;
 import java.io.IOException;
 
+import org.geoserver.platform.resource.Files;
+import org.geoserver.platform.resource.Resource;
+
 public class Archive extends Directory {
 
-    public Archive(File file) throws IOException {
+    public Archive(Resource file) throws IOException {
         super(Directory.createFromArchive(file).getFile());
+    }
+
+    @Deprecated
+    public Archive(File file) throws IOException {
+        this(Files.asResource(file));
     }
 
 }

@@ -4,7 +4,6 @@
  */
 package org.geoserver.wps.resource;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +12,6 @@ import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.platform.resource.ResourceStore;
-import org.geoserver.platform.resource.Resources;
 
 /**
  * Default implementation that will store the artifacts on the file system inside
@@ -41,13 +39,6 @@ public class DefaultProcessArtifactsStore implements ProcessArtifactsStore {
             result = store.get(Paths.path(executionId, "out", name));
         } else {
             result = store.get(Paths.path(executionId, "tmp", name));
-        }
-        if (result != null) {
-            // make sure we have the root directory
-            File dir = result.parent().dir();
-            if (!dir.exists()) {
-                dir.mkdirs();
-            }
         }
 
         return result;

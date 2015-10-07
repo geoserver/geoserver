@@ -75,10 +75,10 @@ public class FilenameTimeHandler extends TimeHandler {
         Preconditions.checkNotNull(filenamePattern);
         Preconditions.checkNotNull(timeFormat);
 
-        String filename = g.getFile().getName();
+        String filename = g.getFile().name();
 
         //TODO: add a reason for cases why timestamp can't be determined
-        Matcher m = filenamePattern.matcher(g.getFile().getName());
+        Matcher m = filenamePattern.matcher(g.getFile().name());
         if (!m.matches() || m.groupCount() != 2) {
             //report back message
             String msg = "Failure parsing time from file " + filename + " with pattern " 

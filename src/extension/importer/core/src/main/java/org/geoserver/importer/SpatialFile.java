@@ -6,17 +6,22 @@
 package org.geoserver.importer;
 
 import static org.apache.commons.io.FilenameUtils.getBaseName;
-import static org.apache.commons.io.FilenameUtils.getExtension;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 
-import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.geotools.referencing.CRS;
 import org.geoserver.importer.job.ProgressMonitor;
+import org.geoserver.platform.resource.Files;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resources;
+import org.geoserver.platform.resource.Resource.Type;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
@@ -27,12 +32,17 @@ public class SpatialFile extends FileData {
     /**
      * .prj file
      */
-    File prjFile;
+    Resource prjFile;
 
     /** supplementary files, like indexes, etc...  */
-    List<File> suppFiles = new ArrayList<File>();
+    List<Resource> suppFiles = new ArrayList<Resource>();
 
+    @Deprecated
     public SpatialFile(File file) {
+        this(Files.asResource(file));
+    }
+    
+    public SpatialFile(Resource file) {
         super(file);
     }
 
@@ -42,20 +52,20 @@ public class SpatialFile extends FileData {
         this.suppFiles.addAll(other.getSuppFiles());
     }
 
-    public File getPrjFile() {
+    public Resource getPrjFile() {
         return prjFile;
     }
 
-    public void setPrjFile(File prjFile) {
+    public void setPrjFile(Resource prjFile) {
         this.prjFile = prjFile;
     }
 
-    public List<File> getSuppFiles() {
+    public List<Resource> getSuppFiles() {
         return suppFiles;
     }
 
-    public List<File> allFiles() {
-        ArrayList<File> all = new ArrayList<File>();
+    public List<Resource> allFiles() {
+        ArrayList<Resource> all = new ArrayList<Resource>();
         all.add(file);
         if (prjFile != null) {
             all.add(prjFile);
@@ -71,22 +81,22 @@ public class SpatialFile extends FileData {
         prjFile = null;
 
         // getBaseName only gets the LAST extension so beware for .shp.aux.xml stuff
-        final String baseName = getBaseName(file.getName());
+        final String baseName = getBaseName(file.name());
         
-        for (File f : file.getParentFile().listFiles()) {
+        for (Resource f : file.parent().list()) {
             if (f.equals(file)) {
                 continue;
             }
             
-            if (!f.getName().startsWith(baseName)) {
+            if (!f.name().startsWith(baseName)) {
                 continue;
             }
 
-            if (!f.isFile()) {
+            if (f.getType() != Type.RESOURCE) {
                 continue;
             }
 
-            String ext = f.getName().substring(baseName.length());
+            String ext = f.name().substring(baseName.length());
             // once the basename is stripped, extension(s) should be present
             if (ext.charAt(0) == '.') {
                 if (".prj".equalsIgnoreCase(ext)) {
@@ -124,7 +134,9 @@ public class SpatialFile extends FileData {
             }
             if (epsgCrs != null) {
                 String epsgWKT = epsgCrs.toWKT();
-                FileUtils.writeStringToFile(getPrjFile(), epsgWKT);
+                final PrintStream printStream = new PrintStream(getPrjFile().out());
+                printStream.print(epsgWKT);
+                printStream.close();
             }
         }
         catch (FactoryException e) {
@@ -133,12 +145,14 @@ public class SpatialFile extends FileData {
     }
     
     public CoordinateReferenceSystem readPrjToCRS() throws IOException {
-        File prj = getPrjFile();
-        if (prj == null || !prj.exists()) {
+        Resource prj = getPrjFile();
+        if (prj == null || !Resources.exists(prj)) {
             return null;
         }
         
-        String wkt = FileUtils.readFileToString(prj);
+        InputStream is = prj.in();
+        String wkt = IOUtils.toString(is);
+        is.close();
         try {
             return CRS.parseWKT(wkt);
         } 
@@ -173,7 +187,7 @@ public class SpatialFile extends FileData {
     }
 
     private Object readResolve() {
-        suppFiles = suppFiles == null ? new ArrayList<File>() : suppFiles;
+        suppFiles = suppFiles == null ? new ArrayList<Resource>() : suppFiles;
         return this;
     }
 }

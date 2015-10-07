@@ -6,13 +6,10 @@
 package org.geoserver.wps.gs;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Timer;
@@ -69,7 +66,6 @@ public class GeorectifyConfiguration implements ApplicationListener {
     public GeorectifyConfiguration() {
         GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
         configFile = loader.get(GDAL_CONFIG_FILE);
-        //configFile = new File(GeoserverDataDirectory.getGeoserverDataDirectory(), GDAL_CONFIG_FILE);
         timer = new Timer(true);
         timer.schedule(new ConfigurationPoller(), 1000);
     }

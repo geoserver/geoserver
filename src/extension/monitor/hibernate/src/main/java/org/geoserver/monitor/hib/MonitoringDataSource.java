@@ -5,9 +5,6 @@
  */
 package org.geoserver.monitor.hib;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -21,6 +18,8 @@ import org.apache.commons.io.IOUtils;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.monitor.Monitor;
 import org.geoserver.monitor.MonitorConfig;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resources;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.factory.DisposableBean;
 
@@ -65,10 +64,10 @@ public class MonitoringDataSource extends BasicDataSource implements DisposableB
     }
 
     void initializeDataSource() throws Exception {
-        File monitoringDir = dataDirectory.findOrCreateDir("monitoring");
-        File dbprops = new File(monitoringDir, "db.properties");
-        if (dbprops.exists()) {
-            LOGGER.info("Configuring monitoring database from: " + dbprops.getAbsolutePath());
+        Resource monitoringDir = dataDirectory.get("monitoring");
+        Resource dbprops = monitoringDir.get("db.properties");
+        if (Resources.exists(dbprops)) {
+            LOGGER.info("Configuring monitoring database from: " + dbprops.path());
 
             //attempt to configure
             try {
@@ -76,8 +75,8 @@ public class MonitoringDataSource extends BasicDataSource implements DisposableB
             }
             catch(SQLException e) {
                 //configure failed, try db1.properties
-                dbprops = new File(monitoringDir, "db1.properties");
-                if (dbprops.exists()) {
+                dbprops = monitoringDir.get("db1.properties");
+                if (Resources.exists(dbprops)) {
                     try {
                         configureDataSource(dbprops, monitoringDir);
                         
@@ -86,8 +85,8 @@ public class MonitoringDataSource extends BasicDataSource implements DisposableB
                     }
                     catch(SQLException e1) {
                         //secondary file failed as well, try for third
-                        dbprops = new File(monitoringDir, "db2.properties");
-                        if (dbprops.exists()) {
+                        dbprops = monitoringDir.get("db2.properties");
+                        if (Resources.exists(dbprops)) {
                             try {
                                 configureDataSource(dbprops, monitoringDir);
                                 
@@ -108,20 +107,20 @@ public class MonitoringDataSource extends BasicDataSource implements DisposableB
         }
     }
     
-    void configureDataSource(File dbprops, File monitoringDir) throws Exception {
+    void configureDataSource(Resource dbprops, Resource monitoringDir) throws Exception {
         Properties db = new Properties();
 
         if (dbprops == null) {
-            dbprops = new File(monitoringDir, "db.properties");
+            dbprops = monitoringDir.get("db.properties");
             
             //use a default, and copy the template over
             InputStream in = getClass().getResourceAsStream("db.properties");
-            IOUtils.copy(in, new FileOutputStream(dbprops));
+            IOUtils.copy(in, dbprops.out());
             
             db.load(getClass().getResourceAsStream("db.properties"));
         }
         else {
-            FileInputStream in = new FileInputStream(dbprops);
+            InputStream in = dbprops.in();
             db.load(in);
             in.close();
         }

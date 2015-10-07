@@ -28,6 +28,8 @@ import org.geoserver.catalog.ProjectionPolicy;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.platform.resource.Paths;
+import org.geoserver.platform.resource.Resource;
 import org.geoserver.wps.WPSException;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
@@ -280,8 +282,8 @@ public class ImportProcess implements GSProcess {
         else if (coverage != null)
         {
         	try {
-        		final File directory = catalog.getResourceLoader().findOrCreateDirectory("data", workspace, store);
-        		final File file = File.createTempFile(store, ".tif", directory);
+        		final Resource directory = catalog.getResourceLoader().get(Paths.path("data", workspace, store));
+        		final File file = File.createTempFile(store, ".tif", directory.dir());
                 ((CoverageStoreInfo)storeInfo).setURL( file.toURL().toExternalForm() );
                 ((CoverageStoreInfo)storeInfo).setType("GeoTIFF");
                 

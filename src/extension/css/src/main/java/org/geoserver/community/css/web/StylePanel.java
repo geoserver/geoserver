@@ -6,12 +6,12 @@
 package org.geoserver.community.css.web;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStreamWriter;
 import java.io.Writer;
 
-import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.IAjaxCallDecorator;
@@ -23,19 +23,24 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resources;
 import org.geoserver.web.wicket.CodeMirrorEditor;
 
 public class StylePanel extends Panel {
     private String styleBody;
 
     public StylePanel(String id, IModel<CssDemoPage> model, final CssDemoPage page,
-            final File cssFile) {
+            final Resource cssFile) {
         super(id, model);
-        if (cssFile != null && cssFile.exists()) {
+        if (cssFile != null && Resources.exists(cssFile)) {
+            InputStream is = cssFile.in();
             try {
-                styleBody = FileUtils.readFileToString(cssFile);
+                styleBody = IOUtils.toString(is, "UTF-8");
             } catch (IOException ioe) {
                 throw new WicketRuntimeException("Error loading CSS: ", ioe);
+            } finally {
+                IOUtils.closeQuietly(is);
             }
         } else {
             styleBody = "No CSS file was found for this style. Please make sure "
@@ -73,7 +78,7 @@ public class StylePanel extends Panel {
                     } else {
                         // create the sld side car file
                         String sld = page.cssText2sldText(body, info);
-                        Writer writer = new FileWriter(cssFile);
+                        Writer writer = new OutputStreamWriter(cssFile.out());
                         writer.write(body);
                         writer.close();
                         page.catalog()

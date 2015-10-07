@@ -7,12 +7,9 @@ package org.geoserver.importer;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -31,6 +28,11 @@ import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.VFS;
 import org.geoserver.data.util.IOUtils;
 import org.geoserver.importer.job.ProgressMonitor;
+import org.geoserver.platform.resource.Files;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resource.Type;
+import org.geoserver.platform.resource.Resources;
+import org.geoserver.util.Filter;
 import org.geotools.util.logging.Logging;
 
 import com.google.common.base.Predicate;
@@ -53,38 +55,42 @@ public class Directory extends FileData {
     boolean recursive;
     String name;
 
-    public Directory(File file) {
+    public Directory(Resource file) {
         this(file, true);
     }
 
-    public Directory(File file, boolean recursive) {
+    public Directory(Resource file, boolean recursive) {
         super(file);
         this.recursive = recursive;
     }
 
-    public static Directory createNew(File parent) throws IOException {
-        File directory = File.createTempFile("tmp", "", parent);
-        if (!directory.delete() || !directory.mkdir()) throw new IOException("Error creating temp directory at " + directory.getAbsolutePath());
+    @Deprecated
+    public Directory(File dir) {
+        this(Files.asResource(dir));
+    }
+
+    public static Directory createNew(Resource parent) throws IOException {
+        Resource directory = Resources.createRandom("tmp", "", parent);
         return new Directory(directory);
     }
 
-    public static Directory createFromArchive(File archive) throws IOException {
+    public static Directory createFromArchive(Resource archive) throws IOException {
         VFSWorker vfs = new VFSWorker();
         if (!vfs.canHandle(archive)) {
-            throw new IOException(archive.getPath() + " is not a recognizable  format");
+            throw new IOException(archive.path() + " is not a recognizable  format");
         }
 
-        String basename = FilenameUtils.getBaseName(archive.getName());
-        File dir = new File(archive.getParentFile(), basename);
+        String basename = FilenameUtils.getBaseName(archive.name());
+        Resource dir = archive.parent().get(basename);
         int i = 0;
-        while (dir.exists()) {
-            dir = new File(archive.getParentFile(), basename + i++);
+        while (Resources.exists(dir)) {
+            dir = archive.parent().get(basename + i++);
         }
         vfs.extractTo(archive, dir);
         return new Directory(dir);
     }
 
-    public File getFile() {
+    public Resource getFile() {
         return file;
     }
 
@@ -92,31 +98,31 @@ public class Directory extends FileData {
         return files;
     }
 
-    public void unpack(File file) throws IOException {
+    public void unpack(Resource file) throws IOException {
         //if the file is an archive, unpack it
         VFSWorker vfs = new VFSWorker();
         if (vfs.canHandle(file)) {
-            LOGGER.fine("unpacking " + file.getAbsolutePath() + " to " + this.file.getAbsolutePath());
+            LOGGER.fine("unpacking " + file.path() + " to " + this.file.path());
             vfs.extractTo(file, this.file);
 
-            LOGGER.fine("deleting " + file.getAbsolutePath());
+            LOGGER.fine("deleting " + file.path());
             if (!file.delete()) {
                 throw new IOException("unable to delete file");
             }
         }
     }
     
-    public File child(String name) {
+    public Resource child(String name) {
         if (name == null) {
             //create random
             try {
-                return File.createTempFile("child", "tmp", file);
+                return Resources.createRandom("child", "tmp", file);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         }
 
-        return new File(this.file,name);
+        return file.get(name);
     }
 
     public void setName(String name) {
@@ -125,7 +131,7 @@ public class Directory extends FileData {
 
     @Override
     public String getName() {
-        return this.name != null ? this.name : file.getName();
+        return this.name != null ? this.name : file.name();
     }
 
     @Override
@@ -133,37 +139,33 @@ public class Directory extends FileData {
         files = new ArrayList<FileData>();
 
         //recursively search for spatial files, maintain a queue of directories to recurse into
-        LinkedList<File> q = new LinkedList<File>();
+        LinkedList<Resource> q = new LinkedList<Resource>();
         q.add(file);
 
         while(!q.isEmpty()) {
-            File dir = q.poll();
+            Resource dir = q.poll();
 
             if (m.isCanceled()) {
                 return;
             }
-            m.setTask("Scanning " + dir.getPath());
+            m.setTask("Scanning " + dir.path());
 
             //get all the regular (non directory) files
-            File[] fileList = dir.listFiles(new FilenameFilter() {
-                public boolean accept(File dir, String name) {
-                    return !new File(dir, name).isDirectory();
+            List<Resource> fileList = Resources.list(dir, new Filter<Resource>() {
+                @Override
+                public boolean accept(Resource obj) {
+                    return obj.getType() != Type.DIRECTORY;
                 }
             });
-            if (fileList == null) {
-                // it can be null in case of I/O error, even if the
-                // dir is indeed a directory
-                continue;
-            }
-            Set<File> all = new LinkedHashSet<File>(Arrays.asList(fileList));
+            Set<Resource> all = new LinkedHashSet<Resource>(fileList);
 
             //scan all the files looking for spatial ones
-            for (File f : dir.listFiles()) {
-                if (f.isHidden()) {
+            for (Resource f : dir.list()) {
+                if (Resources.isHidden(f)) {
                     all.remove(f);
                     continue;
                 }
-                if (f.isDirectory()) {
+                if (f.getType() == Type.DIRECTORY) {
                     if (!recursive && !f.equals(file)) {
                         //skip it
                         continue;
@@ -172,7 +174,7 @@ public class Directory extends FileData {
                     // this could probably be dealt with in a better way elsewhere
                     // like by having Directory ignore the contents since they
                     // are all hidden files anyway
-                    if (!"__MACOSX".equals(f.getName())) {
+                    if (!"__MACOSX".equals(f.name())) {
                         Directory d = new Directory(f);
                         d.prepare(m);
 
@@ -184,7 +186,7 @@ public class Directory extends FileData {
 
                 //special case for .aux files, they are metadata but get picked up as readable 
                 // by the erdas imagine reader...just ignore them for now 
-                if ("aux".equalsIgnoreCase(FilenameUtils.getExtension(f.getName()))) {
+                if ("aux".equalsIgnoreCase(FilenameUtils.getExtension(f.name()))) {
                     continue;
                 }
 
@@ -204,7 +206,7 @@ public class Directory extends FileData {
             }
 
             //take any left overs and add them as unspatial/unrecognized
-            for (File f : all) {
+            for (Resource f : all) {
                 files.add(new ASpatialFile(f));
             }
         }
@@ -247,7 +249,7 @@ public class Directory extends FileData {
      * @param f The raw file.
      * @param format The spatial format of the file.
      */
-    protected SpatialFile newSpatialFile(File f, DataFormat format) {
+    protected SpatialFile newSpatialFile(Resource f, DataFormat format) {
         SpatialFile sf = new SpatialFile(f);
         sf.setFormat(format);
         return sf;
@@ -366,7 +368,7 @@ public class Directory extends FileData {
             if (f.getFormat() != null) {
                 format = f.getName();
             }
-            buf.append(f.getFile().getName()).append(" : ").append(format).append('\n');
+            buf.append(f.getFile().name()).append(" : ").append(format).append('\n');
         }
         LOGGER.warning(buf.toString());
     }
@@ -379,16 +381,16 @@ public class Directory extends FileData {
 
     @Override
     public String toString() {
-        return file.getPath();
+        return file.path();
     }
 
     public void accept(FileObject fo) throws IOException {
         FileName name = fo.getName();
         String localName = name.getBaseName();
-        File dest = child(localName);
+        Resource dest = child(localName);
         FileObject dfo = null;
         try {
-            dfo = VFS.getManager().resolveFile(dest.getAbsolutePath());
+            dfo = VFS.getManager().resolveFile(dest.file().getAbsolutePath());
             dfo.copyFrom(fo, new AllFileSelector());
 
             unpack(dest);
@@ -400,48 +402,48 @@ public class Directory extends FileData {
     }
 
     public void accept(String childName, InputStream in) throws IOException {
-        File dest = child(childName);
+        Resource dest = child(childName);
         
-        IOUtils.copy(in, dest);
+        IOUtils.copy(in, dest.out());
 
         try {
             unpack(dest);
         } catch (IOException ioe) {
             // problably should delete on error
-            LOGGER.warning("Possible invalid file uploaded to " + dest.getAbsolutePath());
+            LOGGER.warning("Possible invalid file uploaded to " + dest.path());
             throw ioe;
         }
     }
 
     public void accept(FileItem item) throws Exception {
-        File dest = child(item.getName());
-        item.write(dest);
+        Resource dest = child(item.getName());
+        item.write(dest.file());
 
         try {
             unpack(dest);
         } 
         catch (IOException e) {
             // problably should delete on error
-            LOGGER.warning("Possible invalid file uploaded to " + dest.getAbsolutePath());
+            LOGGER.warning("Possible invalid file uploaded to " + dest.path());
             throw e;
         }
     }
     
-    public void archive(File output) throws IOException {
-        File archiveDir = output.getAbsoluteFile().getParentFile();
-        String outputName = output.getName().replace(".zip","");
+    public void archive(Resource output) throws IOException {
+        Resource archiveDir = output.parent();
+        String outputName = output.name().replace(".zip","");
         int id = 0;
-        while (output.exists()) {
-            output = new File(archiveDir, outputName + id + ".zip");
+        while (Resources.exists(output)) {
+            output = archiveDir.get(outputName + id + ".zip");
             id++;
         }
-        ZipOutputStream zout = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(output)));
+        ZipOutputStream zout = new ZipOutputStream(new BufferedOutputStream(output.out()));
         Exception error = null;
 
         // don't call zout.close in finally block, if an error occurs and the zip
         // file is empty by chance, the second error will mask the first
         try {
-            IOUtils.zipDirectory(file, zout, null);
+            IOUtils.zipDirectory(file.dir(), zout, null);
         } catch (Exception ex) {
             error = ex;
             try {
@@ -464,18 +466,15 @@ public class Directory extends FileData {
 
     @Override
     public void cleanup() throws IOException {
-        File[] files = file.listFiles();
-        if (files != null) {
-            for (File f: files) {
-                if (f.isDirectory()) {
-                    new Directory(f).cleanup();
-                } else {
-                    if (LOGGER.isLoggable(Level.FINE)) {
-                        LOGGER.fine("Deleting file " + f.getAbsolutePath());
-                    }
-                    if (!f.delete()) {
-                        throw new IOException("unable to delete " + f);
-                    }
+        for (Resource f : file.list()) {
+            if (f.getType() == Type.DIRECTORY) {
+                new Directory(f).cleanup();
+            } else {
+                if (LOGGER.isLoggable(Level.FINE)) {
+                    LOGGER.fine("Deleting file " + f.path());
+                }
+                if (!f.delete()) {
+                    throw new IOException("unable to delete " + f);
                 }
             }
         }
@@ -506,7 +505,7 @@ public class Directory extends FileData {
 
         List<FileData> filter;
 
-        public Filtered(File file, List<FileData> filter) {
+        public Filtered(Resource file, List<FileData> filter) {
             super(file);
             this.filter = filter;
         }

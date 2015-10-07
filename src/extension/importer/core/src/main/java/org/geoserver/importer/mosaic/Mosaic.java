@@ -25,6 +25,9 @@ import org.geoserver.importer.GridFormat;
 import org.geoserver.importer.RasterFormat;
 import org.geoserver.importer.SpatialFile;
 import org.geoserver.importer.job.ProgressMonitor;
+import org.geoserver.platform.resource.Files;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resources;
 
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
@@ -37,9 +40,14 @@ public class Mosaic extends Directory {
     TimeMode timeMode;
     TimeHandler timeHandler;
     
-    public Mosaic(File file) {
+    public Mosaic(Resource file) {
         super(file, false);
         setTimeMode(TimeMode.NONE);
+    }
+
+    @Deprecated
+    public Mosaic(File dir) {
+        this(Files.asResource(dir));
     }
 
     public TimeMode getTimeMode() {
@@ -63,12 +71,12 @@ public class Mosaic extends Directory {
         files.removeAll(Collections2.filter(files, new Predicate<FileData>() {
             @Override
             public boolean apply(FileData input) {
-                File f = input.getFile();
-                String basename = FilenameUtils.getBaseName(f.getName());
+                Resource f = input.getFile();
+                String basename = FilenameUtils.getBaseName(f.name());
 
                 //is this file part a shapefile or properties file?
-                if (new File(f.getParentFile(), basename+".shp").exists() || 
-                    new File(f.getParentFile(), basename+".properties").exists()) {
+                if (Resources.exists(f.parent().get(basename+".shp")) || 
+                        Resources.exists(f.parent().get(basename+".properties"))) {
                     return true;
                 }
 
@@ -95,7 +103,7 @@ public class Mosaic extends Directory {
     }
 
     @Override
-    protected SpatialFile newSpatialFile(File f, DataFormat format) {
+    protected SpatialFile newSpatialFile(Resource f, DataFormat format) {
         if (format instanceof GridFormat) {
             Granule g = new Granule(super.newSpatialFile(f, format));
 

@@ -8,7 +8,7 @@
 <beans>
 
 	<bean id="hazelcastLoader" class="org.geoserver.wps.hz.HazelcastLoader">
-       <constructor-arg ref="dataDirectory"/>
+       <constructor-arg ref="resourceLoader"/>
     </bean>
     
     <bean id="hazelcastProcessStatusStore" class="org.geoserver.wps.hz.HazelcastStatusStore">

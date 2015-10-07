@@ -52,6 +52,7 @@ import org.geoserver.importer.transform.RasterTransformChain;
 import org.geoserver.importer.transform.ReprojectTransform;
 import org.geoserver.importer.transform.TransformChain;
 import org.geoserver.importer.transform.VectorTransformChain;
+import org.geoserver.platform.resource.Resources;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -366,7 +367,7 @@ public class ImportJSONReader {
         if (json.has("file")) {
             //TODO: find out if spatial or not
             String file = json.getString("file");
-            return FileData.createFromFile(new File(file));
+            return FileData.createFromFile(Resources.fromPath(file));
             //return new FileData(new File(file));
         }
         else {
@@ -396,7 +397,7 @@ public class ImportJSONReader {
     }
 
     Mosaic mosaic(JSONObject json) throws IOException {
-        Mosaic m = new Mosaic(json.has("location") ?  new File(json.getString("location")) : 
+        Mosaic m = new Mosaic(json.has("location") ?  Resources.fromPath(json.getString("location")) : 
             Directory.createNew(importer.getUploadRoot()).getFile());
         if (json.has("name")) {
             m.setName(json.getString("name"));
@@ -424,7 +425,7 @@ public class ImportJSONReader {
 
     Directory directory(JSONObject json) throws IOException {
         if (json.has("location")) {
-            return new Directory(new File(json.getString("location")));
+            return new Directory(Resources.fromPath(json.getString("location")));
         }
         else {
             return Directory.createNew(importer.getUploadRoot());

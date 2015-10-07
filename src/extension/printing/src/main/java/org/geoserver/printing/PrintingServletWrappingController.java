@@ -5,10 +5,7 @@
  */
 package org.geoserver.printing;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.Properties;
 import java.util.logging.Logger;
 
@@ -19,6 +16,7 @@ import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
+import org.geoserver.platform.resource.Resources;
 
 /**
  * Wrapper for Spring's ServletWrappingController to allow use of GeoServer's config dir.
@@ -42,14 +40,13 @@ ServletWrappingController {
 
             if (config.getType() == Type.UNDEFINED) {
                 InputStream conf = getClass().getResourceAsStream("default-config.yaml");
-                IOUtils.copy(conf, config.file());
+                IOUtils.copy(conf, config.out());
             }
-            File qualifiedConfig = config.file();
-            if (!qualifiedConfig.canRead()) {
+            if (!Resources.canRead(config)) {
                 LOG.warning("Printing module missing its configuration.  Any actions it takes will fail.");
                 return;
             }
-            initParameters.setProperty("config", qualifiedConfig.getCanonicalPath());
+            initParameters.setProperty("config", config.path());
         } catch (java.io.IOException e) {
             LOG.warning("Unable to calcule canonical path for MapFish printing servlet. "
                     + "Module will fail when run.  IO Exception is: " + e);

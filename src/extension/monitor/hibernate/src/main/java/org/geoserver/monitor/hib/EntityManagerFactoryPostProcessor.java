@@ -5,16 +5,18 @@
  */
 package org.geoserver.monitor.hib;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.geoserver.config.GeoServerDataDirectory;
+import org.geoserver.platform.resource.Paths;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resources;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
@@ -42,16 +44,16 @@ public class EntityManagerFactoryPostProcessor implements BeanPostProcessor {
     
     void init(AbstractEntityManagerFactoryBean factory) {
         try {
-            File f = data.findDataFile("monitoring", "hibernate.properties");
-            if (f == null) {
+            Resource f = data.get(Paths.path("monitoring", "hibernate.properties"));
+            if (!Resources.exists(f)) {
                 //copy one out from 
                 Properties props = new Properties();
                 props.putAll(factory.getJpaVendorAdapter().getJpaPropertyMap());
                 props.putAll(factory.getJpaPropertyMap());
                 
-                File monitoring = data.findOrCreateDataDir("monitoring");
-                File file = new File( monitoring, "hibernate.properties" );
-                FileOutputStream fout = new FileOutputStream(file);
+                Resource monitoring = data.get("monitoring");
+                Resource file =  monitoring.get("hibernate.properties" );
+                OutputStream fout = file.out();
                 
                 props.store(fout, "hibernate configuration");
                 fout.flush();
@@ -60,7 +62,7 @@ public class EntityManagerFactoryPostProcessor implements BeanPostProcessor {
             else {
                 //use config to overide
                 Properties props = new Properties();
-                FileInputStream fin = new FileInputStream(f);
+                InputStream fin = f.in();
                 props.load(fin);
                 fin.close();
 

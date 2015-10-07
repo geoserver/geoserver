@@ -26,6 +26,8 @@ import org.apache.commons.vfs2.FileSelector;
 import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.FileSystemManager;
 import org.apache.commons.vfs2.VFS;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resource.Type;
 import org.geotools.util.logging.Logging;
 
 /**
@@ -44,8 +46,8 @@ public class VFSWorker {
 
     }
 
-    public boolean canHandle(final File file) {
-        final String name = file.getName().toLowerCase();
+    public boolean canHandle(final Resource file) {
+        final String name = file.name().toLowerCase();
         for (String supportedExtension : extensions) {
             if (name.endsWith(supportedExtension)) {
                 return true;
@@ -74,7 +76,7 @@ public class VFSWorker {
      * 
      * @return
      */
-    public List<String> listFiles(final File archiveFile, final FilenameFilter filter) {
+    public List<String> listFiles(final Resource archiveFile, final FilenameFilter filter) {
         FileSystemManager fsManager;
         try {
             fsManager = VFS.getManager();
@@ -93,9 +95,9 @@ public class VFSWorker {
                  * @see org.apache.commons.vfs2.FileSelector#includeFile(org.apache.commons.vfs2.FileSelectInfo)
                  */
                 public boolean includeFile(FileSelectInfo fileInfo) throws Exception {
-                    File folder = archiveFile.getParentFile();
+                    Resource folder = archiveFile.parent();
                     String name = fileInfo.getFile().getName().getFriendlyURI();
-                    return filter.accept(folder, name);
+                    return filter.accept(folder.dir(), name);
                 }
             };
 
@@ -105,7 +107,7 @@ public class VFSWorker {
             } else {
                 fileSystem = resolvedFile;
             }
-            LOGGER.fine("Listing spatial data files archived in " + archiveFile.getName());
+            LOGGER.fine("Listing spatial data files archived in " + archiveFile.name());
             FileObject[] containedFiles = fileSystem.findFiles(fileSelector);
             List<String> names = new ArrayList<String>(containedFiles.length);
             for (FileObject fo : containedFiles) {
@@ -113,7 +115,7 @@ public class VFSWorker {
                 String pathDecoded = fo.getName().getPathDecoded();
                 names.add(pathDecoded);
             }
-            LOGGER.fine("Found " + names.size() + " spatial data files in " + archiveFile.getName()
+            LOGGER.fine("Found " + names.size() + " spatial data files in " + archiveFile.name()
                     + ": " + names);
             return names;
         } catch (FileSystemException e) {
@@ -124,17 +126,17 @@ public class VFSWorker {
         return Collections.emptyList();
     }
 
-    private String resolveArchiveURI(final File archiveFile) {
+    private String resolveArchiveURI(final Resource archiveFile) {
         String archivePrefix = getaArchiveURLProtocol(archiveFile);
-        String absolutePath = archivePrefix + archiveFile.getAbsolutePath();
+        String absolutePath = archivePrefix + archiveFile.file().getAbsolutePath();
         return absolutePath;
     }
 
-    private String getaArchiveURLProtocol(final File file) {
-        if (file.exists() && file.isDirectory()) {
+    private String getaArchiveURLProtocol(final Resource file) {
+        if (file.getType() == Type.DIRECTORY) {
             return "file://";
         }
-        String name = file.getName().toLowerCase();
+        String name = file.name().toLowerCase();
         if (name.endsWith(".zip") || name.endsWith(".kmz")) {
             return "zip://";
         }
@@ -163,7 +165,7 @@ public class VFSWorker {
      * Extracts the archive file {@code archiveFile} to {@code targetFolder}; both shall previously
      * exist.
      */
-    public void extractTo(File archiveFile, File targetFolder) throws IOException {
+    public void extractTo(Resource archiveFile, Resource targetFolder) throws IOException {
 
         FileSystemManager manager = VFS.getManager();
         String sourceURI = resolveArchiveURI(archiveFile);
@@ -173,7 +175,7 @@ public class VFSWorker {
             source = manager.createFileSystem(source);
         }
         FileObject target = manager.createVirtualFileSystem(manager.resolveFile(targetFolder
-                .getAbsolutePath()));
+                .dir().getAbsolutePath()));
 
         FileSelector selector = new AllFileSelector() {
             @Override

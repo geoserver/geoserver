@@ -137,9 +137,9 @@ public class WPSInitializer implements GeoServerInitializer {
             }
             // use a clustering ready lock provider
             try {
-                File lockDirectory = resourceLoader.findOrCreateDirectory("tmp");
-                resourceStore.setLockProvider(new FileLockProvider(lockDirectory));
-            } catch (IOException e) {
+                Resource lockDirectory = resourceLoader.get("tmp");
+                resourceStore.setLockProvider(new FileLockProvider(lockDirectory.dir()));
+            } catch (IllegalStateException e) {
                 throw new RuntimeException(
                         "Unexpected failure searching for tmp directory inside geoserver data dir",
                         e);

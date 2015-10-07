@@ -5,33 +5,33 @@
  */
 package org.geoserver.wps.process;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 
+import org.geoserver.platform.resource.Resource;
+
 /**
- * An implementation of RawData backed by a File
+ * An implementation of RawData backed by a Resource
  * 
  * @author Andrea Aime - GeoSolutions
  */
-public class FileRawData extends AbstractRawData {
+public class ResourceRawData extends AbstractRawData {
 
-    File file;
+    Resource file;
 
-    public FileRawData(File file, String mimeType) {
+    public ResourceRawData(Resource file, String mimeType) {
         super(mimeType);
         this.file = file;
     }
 
-    public FileRawData(File file, String mimeType, String extension) {
+    public ResourceRawData(Resource file, String mimeType, String extension) {
         super(mimeType, extension);
         this.file = file;
     }
 
     @Override
     public InputStream getInputStream() throws FileNotFoundException {
-        return new FileInputStream(file);
+        return file.in();
     }
 
     @Override
@@ -45,7 +45,7 @@ public class FileRawData extends AbstractRawData {
                 + "]";
     }
 
-    public File getFile() {
+    public Resource getResource() {
         return file;
     }
 

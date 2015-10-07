@@ -764,7 +764,7 @@ public class GeoServerPersister implements CatalogListener, ConfigurationListene
         }
     }
     private void ensureParent(Resource r) {
-        r.parent().dir();
+        //r.parent().dir();
     }
     
     private Resource uriToResource(Resource base, URI uri) throws MalformedURLException {

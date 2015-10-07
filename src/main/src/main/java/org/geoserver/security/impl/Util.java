@@ -20,6 +20,7 @@ import java.util.Properties;
 import java.util.SortedSet;
 import java.util.logging.Logger;
 
+import org.geoserver.platform.resource.Resource;
 import org.geoserver.security.GeoServerRoleService;
 import org.geoserver.security.GeoServerRoleStore;
 import org.geoserver.security.GeoServerUserGroupService;
@@ -204,6 +205,22 @@ public class Util {
         }
         finally {
             fin.close();
+        }
+    }
+    
+    /**
+     * Reads a property file resource.
+     * <p>
+     * This method delegates to {@link #loadUniversal(InputStream)}.
+     * </p>
+     */
+    public static Properties loadPropertyFile(Resource f) throws IOException {
+        InputStream in = f.in();
+        try {
+            return loadUniversal(in);
+        }
+        finally {
+            in.close();
         }
     }
     

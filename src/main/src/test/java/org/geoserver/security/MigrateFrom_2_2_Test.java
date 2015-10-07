@@ -40,11 +40,11 @@ public class MigrateFrom_2_2_Test extends GeoServerSystemTestSupport {
     @Test
     public void testMigration() throws Exception{
         
-        File logoutFilterDir = new File(getSecurityManager().getFilterRoot(),GeoServerSecurityFilterChain.FORM_LOGOUT_FILTER);        
+        File logoutFilterDir = new File(getSecurityManager().get("security/filter").dir(),GeoServerSecurityFilterChain.FORM_LOGOUT_FILTER);        
         File oldLogoutFilterConfig = new File(logoutFilterDir,"config.xml.2.2.x");
         assertTrue(oldLogoutFilterConfig.exists());
         
-        File oldSecManagerConfig = new File(getSecurityManager().getSecurityRoot(), "config.xml.2.2.x");
+        File oldSecManagerConfig = new File(getSecurityManager().get("security").dir(), "config.xml.2.2.x");
         assertTrue(oldSecManagerConfig.exists());
         
         RoleFilterConfig rfConfig = (RoleFilterConfig) 

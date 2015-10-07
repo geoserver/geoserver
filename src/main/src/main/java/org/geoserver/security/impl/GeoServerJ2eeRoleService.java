@@ -22,6 +22,7 @@ import java.util.TreeSet;
 import java.util.logging.Logger;
 
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.resource.Resource;
 import org.geoserver.security.GeoServerRoleService;
 import org.geoserver.security.GeoServerRoleStore;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
@@ -408,8 +409,8 @@ public class GeoServerJ2eeRoleService extends AbstractGeoServerSecurityService
     /**
      * The root configuration for the role service.
      */
-    public File getConfigRoot() throws IOException {
-        return new File(getSecurityManager().getRoleRoot(), getName());
+    public Resource getConfigRoot() throws IOException {
+        return getSecurityManager().role().get(getName());
     }
     
     public int getRoleCount() throws IOException {

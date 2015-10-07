@@ -23,6 +23,7 @@ import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.logging.LoggingUtils.GeoToolsLoggingRedirection;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Resource;
 import org.geotools.util.logging.CommonsLoggerFactory;
 import org.geotools.util.logging.Log4JLoggerFactory;
 import org.geotools.util.logging.Logging;
@@ -105,10 +106,10 @@ public class LoggingStartupContextListener implements ServletContextListener {
         // Exposing this is a hack to provide JDBCConfig with the information it needs to compute
         // the "change" between logging.xml and the versions stored in JDBC. KS
         // TODO find a better solution than re-initializing on JDBCCOnfig startup.
-        File f= loader.find( "logging.xml" );
+        Resource f= loader.get( "logging.xml" );
         if ( f != null ) {
             XStreamPersister xp = new XStreamPersisterFactory().createXMLPersister();
-            BufferedInputStream in = new BufferedInputStream( new FileInputStream( f ) );
+            BufferedInputStream in = new BufferedInputStream( f.in() );
             try {
                 LoggingInfo loginfo = xp.load(in,LoggingInfo.class);
                 return loginfo;

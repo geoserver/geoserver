@@ -5,10 +5,9 @@
  */
 package org.geoserver.security;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.security.Key;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -21,6 +20,8 @@ import java.util.logging.Logger;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.security.password.RandomPasswordProvider;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.factory.BeanNameAware;
@@ -53,7 +54,7 @@ public class KeyStoreProviderImpl implements BeanNameAware, KeyStoreProvider{
     
     static protected Logger LOGGER = Logging.getLogger("org.geoserver.security");
     protected String name;
-    protected File keyStoreFile;
+    protected Resource keyStoreResource;
     protected KeyStore ks;
 
     public final static String KEYSTORETYPE = "JCEKS";
@@ -84,15 +85,11 @@ public class KeyStoreProviderImpl implements BeanNameAware, KeyStoreProvider{
      * @see org.geoserver.security.password.KeystoreProvider#getKeyStoreProvderFile()
      */
     @Override
-    public File getFile() {
-        if (keyStoreFile == null) {
-            try {
-                keyStoreFile = new File(securityManager.getSecurityRoot(), DEFAULT_FILE_NAME);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+    public Resource getResource() {
+        if (keyStoreResource == null) {
+            keyStoreResource = securityManager.security().get(DEFAULT_FILE_NAME);
         }
-        return keyStoreFile;
+        return keyStoreResource;
     }
 
     /* (non-Javadoc)
@@ -237,15 +234,14 @@ public class KeyStoreProviderImpl implements BeanNameAware, KeyStoreProvider{
         char[] passwd = securityManager.getMasterPassword();
         try {
             ks = KeyStore.getInstance(KEYSTORETYPE);
-            if (getFile().exists()==false) { // create an empy one
+            if (getResource().getType() == Type.UNDEFINED) { // create an empy one
                 ks.load(null, passwd);
                 addInitialKeys();
-                FileOutputStream fos = new FileOutputStream(getFile());
+                OutputStream fos = getResource().out();
                 ks.store(fos, passwd);
                 fos.close();
             } else {
-                FileInputStream fis =
-                        new FileInputStream(getFile());
+                InputStream fis = getResource().in();
                 ks.load(fis, passwd);
                 fis.close();
             }
@@ -274,8 +270,7 @@ public class KeyStoreProviderImpl implements BeanNameAware, KeyStoreProvider{
             // should not happen, see assertActivatedKeyStore
             throw new RuntimeException(e1);
         }
-        FileInputStream fis =
-                new FileInputStream(getFile());
+        InputStream fis = getResource().in();
         try {
             testStore.load(fis, password);
         } catch (IOException e2) {
@@ -339,7 +334,7 @@ public class KeyStoreProviderImpl implements BeanNameAware, KeyStoreProvider{
     public void storeKeyStore() throws IOException{
         // store away the keystore
         assertActivatedKeyStore();
-        FileOutputStream fos = new  FileOutputStream(getFile());
+        OutputStream fos = getResource().out();
 
         char[] passwd = securityManager.getMasterPassword(); 
         try {
@@ -376,14 +371,15 @@ public class KeyStoreProviderImpl implements BeanNameAware, KeyStoreProvider{
     public void prepareForMasterPasswordChange(char[] oldPassword, char[] newPassword) throws IOException{
 
                 
-        File dir = getFile().getParentFile();
-        File newKSFile = new File(dir,PREPARED_FILE_NAME);
-        if (newKSFile.exists())
+        Resource dir = getResource().parent();
+        Resource newKSFile = dir.get(PREPARED_FILE_NAME);
+        if (newKSFile.getType() != Type.UNDEFINED) {
             newKSFile.delete();
+        }
         
         try {
             KeyStore oldKS=KeyStore.getInstance(KEYSTORETYPE);
-            FileInputStream fin = new FileInputStream(getFile());
+            InputStream fin = getResource().in();
             oldKS.load(fin, oldPassword);
             fin.close();
             
@@ -411,7 +407,7 @@ public class KeyStoreProviderImpl implements BeanNameAware, KeyStoreProvider{
                     newKS.setEntry(alias, entry, protectionparam);
             }            
            
-            FileOutputStream fos = new FileOutputStream(newKSFile);                    
+            OutputStream fos = newKSFile.out();                    
             newKS.store(fos, newPassword);
             fos.close();
 
@@ -426,9 +422,9 @@ public class KeyStoreProviderImpl implements BeanNameAware, KeyStoreProvider{
      */
     @Override
     public void abortMasterPasswordChange() {
-        File dir = getFile().getParentFile();
-        File newKSFile = new File(dir,PREPARED_FILE_NAME);
-        if (newKSFile.exists()) {
+        Resource dir = getResource().parent();
+        Resource newKSFile = dir.get(PREPARED_FILE_NAME);
+        if (newKSFile.getType() != Type.UNDEFINED) {
             //newKSFile.delete();
         }
         
@@ -440,18 +436,20 @@ public class KeyStoreProviderImpl implements BeanNameAware, KeyStoreProvider{
      */
     @Override
     public void commitMasterPasswordChange() throws IOException {
-        File dir = getFile().getParentFile();
-        File newKSFile = new File(dir,PREPARED_FILE_NAME);
-        File oldKSFile = new File(dir,DEFAULT_FILE_NAME);
+        Resource dir = getResource().parent();
+        Resource newKSFile = dir.get(PREPARED_FILE_NAME);
+        Resource oldKSFile = dir.get(DEFAULT_FILE_NAME);
         
-        if (newKSFile.exists()==false)
+        if (newKSFile.getType() == Type.UNDEFINED) {
             return; //nothing to do
+        }
 
-        if (oldKSFile.exists()==false)
+        if (oldKSFile.getType() == Type.UNDEFINED) {
             return; //not initialized
+        }
         
         // Try to open with new password
-        FileInputStream fin = new FileInputStream(newKSFile);
+        InputStream fin = newKSFile.in();
         char[] passwd = securityManager.getMasterPassword();
         
         try {
@@ -466,13 +464,13 @@ public class KeyStoreProviderImpl implements BeanNameAware, KeyStoreProvider{
             fin.close();
             fin=null;
             if (oldKSFile.delete()==false) { 
-                LOGGER.severe("cannot delete " +getFile().getCanonicalPath());
+                LOGGER.severe("cannot delete " + oldKSFile.path());
                 return;
             }
             
             if (newKSFile.renameTo(oldKSFile)==false) {
-                String msg = "cannot rename "+ newKSFile.getCanonicalPath();
-                msg += "to " + oldKSFile.getCanonicalPath();
+                String msg = "cannot rename "+ newKSFile.path();
+                msg += "to " + oldKSFile.path();
                 msg += "Try to rename manually and restart";
                 LOGGER.severe(msg);
                 return;
@@ -480,7 +478,7 @@ public class KeyStoreProviderImpl implements BeanNameAware, KeyStoreProvider{
             reloadKeyStore();
             LOGGER.info("Successfully changed master password");            
         } catch (IOException e) {
-            String msg = "Error creating new keystore: " + newKSFile.getCanonicalPath();
+            String msg = "Error creating new keystore: " + newKSFile.path();
             LOGGER.log(Level.WARNING, msg, e);
             throw e;
         } catch (Exception ex) {

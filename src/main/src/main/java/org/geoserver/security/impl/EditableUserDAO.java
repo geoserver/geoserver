@@ -6,8 +6,6 @@
 package org.geoserver.security.impl;
 
 import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -67,14 +65,9 @@ public class EditableUserDAO implements UserDetailsService {
    * @throws ConfigurationException if the user configuration file does not exist and cannot be created
    * @throws IOException if an error occurs while opening the user configuration file
    */
-    private File getUserFile() throws ConfigurationException, IOException {
+    private Resource getUserFile() throws ConfigurationException, IOException {
         GeoServerResourceLoader loader = geoServer.getCatalog().getResourceLoader();
-        Resource user = loader.get("security/users.properties");
-        File userFile = user.file(); // find or create
-        if( userFile == null ){
-            throw new ConfigurationException("Couldn't create users.properties");
-        }
-        return userFile;
+        return loader.get("security/users.properties");
     }
 
   /**
@@ -229,7 +222,7 @@ public class EditableUserDAO implements UserDetailsService {
       prop.setProperty(key, value);
     }
 
-    OutputStream os = new BufferedOutputStream(new FileOutputStream(getUserFile()));
+    OutputStream os = new BufferedOutputStream(getUserFile().out());
 
     prop.store(os, "Geoserver user data. Format is username=password,role1,role2,...[enabled|disabled]");
   }

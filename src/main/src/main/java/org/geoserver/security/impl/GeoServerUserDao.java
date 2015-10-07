@@ -95,8 +95,6 @@ public class GeoServerUserDao implements UserDetailsService {
         InputStream is = null;
         OutputStream os = null;
         try {
-            //securityDir = GeoserverDataDirectory.findCreateConfigDir("security");
-            //File propFile = new File(securityDir, "users.properties");
             if (propFile.getType() == Type.RESOURCE) {
                 // we're probably dealing with an old data dir, create
                 // the file without
@@ -117,7 +115,6 @@ public class GeoServerUserDao implements UserDetailsService {
     
                 // setup a sample service.properties
                 Resource serviceFile = loader.get("security/service.properties");
-                //File serviceFile = new File(securityDir, "service.properties");
                 os = serviceFile.out();
                 is = GeoServerUserDao.class
                         .getResourceAsStream("serviceTemplate.properties");
@@ -224,7 +221,6 @@ public class GeoServerUserDao implements UserDetailsService {
 
             // write out to the data dir
             Resource propFile = userDefinitionsFile.getResource();
-            //File propFile = new File(securityDir, "users.properties");
             os = propFile.out();
             p.store(os, null);
         } catch (Exception e) {

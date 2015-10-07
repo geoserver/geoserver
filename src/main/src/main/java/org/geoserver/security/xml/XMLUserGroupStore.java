@@ -24,8 +24,6 @@ import static org.geoserver.security.xml.XMLConstants.NS_UR;
 import static org.geoserver.security.xml.XMLConstants.VERSION_UR_1_0;
 
 import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.SortedSet;
@@ -41,6 +39,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.io.IOUtils;
+import org.geoserver.platform.resource.Resource;
 import org.geoserver.security.GeoServerUserGroupService;
 import org.geoserver.security.file.LockFile;
 import org.geoserver.security.impl.AbstractUserGroupStore;
@@ -55,11 +54,12 @@ import org.w3c.dom.Element;
  *
  */
 public class XMLUserGroupStore extends AbstractUserGroupStore {
-            
-
+    
     static Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.geoserver.security.xml");
-    protected File userFile;    
-    protected LockFile lockFile = null; 
+    
+    protected Resource userResource;    
+    //TODO: use resource locking system
+    protected LockFile lockFile = null;
     /**
      * Validate against schema on load/store,
      * default = true;
@@ -82,7 +82,7 @@ public class XMLUserGroupStore extends AbstractUserGroupStore {
      * @see org.geoserver.security.GeoserverUserGroupStore#initializeFromServer(org.geoserver.security.GeoserverUserGroupService)
      */
     public void initializeFromService(GeoServerUserGroupService service) throws IOException {
-        this.userFile=((XMLUserGroupService) service).userFile;
+        this.userResource=((XMLUserGroupService) service).userResource;
         this.validatingXMLSchema=((XMLUserGroupService) service).isValidatingXMLSchema();
         super.initializeFromService(service);
     }
@@ -159,7 +159,7 @@ public class XMLUserGroupStore extends AbstractUserGroupStore {
             tx.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
             tx.setOutputProperty(OutputKeys.INDENT, "yes");
 
-             OutputStream out = new BufferedOutputStream(new FileOutputStream(userFile));
+             OutputStream out = new BufferedOutputStream((userResource.out()));
              try {
                  tx.transform(new DOMSource(doc), new StreamResult(out));
                  out.flush();
@@ -196,21 +196,23 @@ public class XMLUserGroupStore extends AbstractUserGroupStore {
 
     
     protected void ensureLock() throws IOException {
-        if (lockFile!=null) return; // we have one
-        lockFile=new LockFile(userFile);
+        if (lockFile != null)
+            return; // we have one
+        lockFile = new LockFile(userResource.file());
         try {
             lockFile.writeLock();
         } catch (IOException ex) { // cannot obtain lock
-            lockFile=null; // assert lockFile == null
+            lockFile = null; // assert lockFile == null
             throw ex; // throw again
         }
     }
 
     
     protected void releaseLock()  {
-        if (lockFile==null) return; // we have none        
+        if (lockFile == null)
+            return; // we have none
         lockFile.writeUnLock();
-        lockFile=null;
+        lockFile = null;
     }
     
     @Override

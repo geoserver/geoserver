@@ -13,6 +13,7 @@ import static org.geoserver.security.password.URLMasterPasswordProviderException
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,6 +24,8 @@ import java.net.URLConnection;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.config.util.XStreamPersister;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.GeoServerSecurityProvider;
 import org.geoserver.security.MasterPasswordProvider;
@@ -95,8 +98,8 @@ public final class URLMasterPasswordProvider extends MasterPasswordProvider {
         }
     }
 
-    File getConfigDir() throws IOException {
-        return new File(getSecurityManager().getMasterPasswordProviderRoot(), getName());
+    Resource getConfigDir() throws IOException {
+        return getSecurityManager().masterPasswordProvider().get(getName());
     }
 
     byte[] encode(char[] passwd) {
@@ -141,15 +144,16 @@ public final class URLMasterPasswordProvider extends MasterPasswordProvider {
         return SecurityUtils.permute(BASE, 32, PERM);
     }
 
-    static OutputStream output(URL url, File configDir) throws IOException {
+    static OutputStream output(URL url, Resource configDir) throws IOException {
         //check for file url
         if ("file".equalsIgnoreCase(url.getProtocol())) {
             File f = DataUtilities.urlToFile(url);
             if (!f.isAbsolute()) {
                 //make relative to config dir
-                f = new File(configDir, f.getPath());
+                return configDir.get(f.getPath()).out();
+            } else {
+                return new FileOutputStream(f);
             }
-            return new FileOutputStream(f);
         }
         else {
             URLConnection cx = url.openConnection();
@@ -158,16 +162,21 @@ public final class URLMasterPasswordProvider extends MasterPasswordProvider {
         }
     }
 
-    static InputStream input(URL url, File configDir) throws IOException {
+    static InputStream input(URL url, Resource configDir) throws IOException {
         //check for a file url
         if ("file".equalsIgnoreCase(url.getProtocol())) {
             File f = DataUtilities.urlToFile(url);
             //check if the file is relative
             if (!f.isAbsolute()) {
                 //make it relative to the config directory for this password provider
-                f = new File(configDir, f.getPath());
+                Resource res = configDir.get(f.getPath());
+                if (res.getType() != Type.RESOURCE) { //file must already exist.
+                    throw new FileNotFoundException();
+                }
+                return res.in();
+            } else {
+                return new FileInputStream(f);
             }
-            return new FileInputStream(f);
         }
         else {
             return url.openStream();
@@ -196,7 +205,7 @@ public final class URLMasterPasswordProvider extends MasterPasswordProvider {
                 //read-only, assure we can read from url
                 try {
                     InputStream in = input(url, 
-                        new File(manager.getMasterPasswordProviderRoot(), config.getName()));
+                        manager.masterPasswordProvider().get(config.getName()));
                     try {
                         in.read();
                     }

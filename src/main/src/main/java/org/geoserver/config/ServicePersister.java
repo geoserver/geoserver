@@ -5,7 +5,6 @@
  */
 package org.geoserver.config;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.logging.Level;
@@ -14,6 +13,8 @@ import java.util.logging.Logger;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.util.XStreamServiceLoader;
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Paths;
+import org.geoserver.platform.resource.Resource;
 import org.geotools.util.logging.Logging;
 
 public class ServicePersister extends ConfigurationListenerAdapter {
@@ -44,10 +45,10 @@ public class ServicePersister extends ConfigurationListenerAdapter {
             WorkspaceInfo old = (WorkspaceInfo) oldValues.get(i);
             if (old != null) {
                 WorkspaceInfo ws = (WorkspaceInfo) newValues.get(i);
-                File f;
+                Resource f;
                 try {
-                    f = new File(dir(ws), loader.getFilename());
-                    f.renameTo(new File(dir(ws,true), loader.getFilename()));
+                    f = dir(ws).get(loader.getFilename());
+                    f.renameTo(dir(ws).get(loader.getFilename()));
                 } catch (IOException e) {
                     throw new RuntimeException( e );
                 }
@@ -61,8 +62,8 @@ public class ServicePersister extends ConfigurationListenerAdapter {
         try {
             //TODO: handle workspace move, factor this class out into
             // separate persister class
-            File directory = service.getWorkspace() != null 
-                ? dir(service.getWorkspace(), true) : null;
+            Resource directory = service.getWorkspace() != null 
+                ? dir(service.getWorkspace()) : null;
             loader.save( service, geoServer, directory);
         } catch (Throwable t) {
             throw new RuntimeException( t );
@@ -73,9 +74,9 @@ public class ServicePersister extends ConfigurationListenerAdapter {
     public void handleServiceRemove(ServiceInfo service) {
         XStreamServiceLoader loader = findServiceLoader(service);
         try {
-            File dir = service.getWorkspace() != null ? dir(service.getWorkspace()) 
-                : resourceLoader.getBaseDirectory();
-            new File(dir, loader.getFilename()).delete();
+            Resource dir = service.getWorkspace() != null ? dir(service.getWorkspace()) 
+                : resourceLoader.get(Paths.BASE);
+            dir.get(loader.getFilename()).delete();
         }
         catch(Throwable t) {
             throw new RuntimeException(t);
@@ -97,15 +98,8 @@ public class ServicePersister extends ConfigurationListenerAdapter {
         return loader;
     }
 
-    File dir( WorkspaceInfo ws ) throws IOException {
-        return dir( ws, false );
+    Resource dir( WorkspaceInfo ws ) throws IOException {
+        return resourceLoader.get( Paths.path("workspaces", ws.getName()) );
     }
 
-    File dir( WorkspaceInfo ws, boolean create ) throws IOException {
-        File d = resourceLoader.find( "workspaces", ws.getName() );
-        if ( d == null && create ) {
-            d = resourceLoader.createDirectory( "workspaces", ws.getName() );
-        }
-        return d;
-    }
 }

@@ -7,10 +7,8 @@ package org.geoserver.wfs;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -18,6 +16,8 @@ import java.util.logging.Logger;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resource.Type;
 import org.geotools.util.logging.Logging;
 import org.geotools.wfs.v2_0.WFS;
 import org.geotools.wfs.v2_0.WFSConfiguration;
@@ -71,21 +71,16 @@ public class StoredQueryProvider {
         //add the default as mandated by spec
         queries.add(StoredQuery.DEFAULT);
 
-        // add user created ones
-        try {
-            File dir = storedQueryDir();
-            for (String f : dir.list()) {
-                try {
-                    queries.add(parseStoredQuery(new File(dir, f), p));
-                } 
-                catch(Exception e) {
-                    LOGGER.log(Level.WARNING, "Error occured parsing stored query: "+f, e);
-                }
+        // add user created ones        
+        Resource dir = storedQueryDir();
+        for (Resource f : dir.list()) {
+            try {
+                queries.add(parseStoredQuery(f, p));
+            } catch (Exception e) {
+                LOGGER.log(Level.WARNING, "Error occured parsing stored query: " + f, e);
             }
-        } 
-        catch (IOException e) {
-            throw new RuntimeException("i/o error listing stored queries", e);
         }
+        
         
         return queries;
     }
@@ -120,30 +115,20 @@ public class StoredQueryProvider {
      * @param query The stored query
      */
     public void removeStoredQuery(StoredQuery query) {
-        try {
-            File f = new File(storedQueryDir(), toFilename(query.getName()));
-            if (f.exists()) {
-                f.delete();
-            }
-        }
+    //    try {
+            storedQueryDir().get(toFilename(query.getName())).delete();
+   /*     }
         catch(IOException e) {
             throw new RuntimeException(e);
-        }
+        }*/
     }
     
     /**
      * Removes all stored queries.
      */
     public void removeAll() {
-        try {
-            File dir = storedQueryDir();
-            File[] files = dir.listFiles();
-            for(int i=0; i<files.length; i++) {
-                 files[i].delete();
-            }
-        }
-        catch(IOException e) {
-            throw new RuntimeException(e);
+        for (Resource file : storedQueryDir().list()) {
+            file.delete();
         }
     }
 
@@ -160,14 +145,13 @@ public class StoredQueryProvider {
         }
 
         try {
-            File dir = storedQueryDir();
-            File f = new File(dir, toFilename(name));
+            Resource res = storedQueryDir().get(toFilename(name));
             
-            if (!f.exists()) {
+            if (res.getType() != Type.RESOURCE) {
                 return null;
             }
             
-            return parseStoredQuery(f);
+            return parseStoredQuery(res);
         } 
         catch(Exception e) {
             throw new RuntimeException("Error accessign stoed query: " + name, e);
@@ -181,13 +165,13 @@ public class StoredQueryProvider {
      */
     public void putStoredQuery(StoredQuery query) {
         try {
-            File dir = storedQueryDir();
-            File f = new File(dir, toFilename(query.getName()) );
-            if (f.exists()) {
+            Resource dir = storedQueryDir();
+            Resource f = dir.get(toFilename(query.getName()) );
+            if (f.getType() != Type.UNDEFINED) {
                 //TODO: back up the old file in case there is an error during encoding
             }
             
-            BufferedOutputStream bout = new BufferedOutputStream(new FileOutputStream(f));
+            BufferedOutputStream bout = new BufferedOutputStream(f.out());
             try {
                 Encoder e = new Encoder(new WFSConfiguration());
                 e.setRootElementType(WFS.StoredQueryDescriptionType);
@@ -208,20 +192,17 @@ public class StoredQueryProvider {
         return name.replaceAll("\\W", "") +".xml";
     }
 
-    File storedQueryDir() throws IOException {
-        File dir = loader.find("wfs", "query");
-        if (dir != null) return dir;
-        
-        return loader.findOrCreateDirectory("wfs", "stored_queries");
+    Resource storedQueryDir() {
+        return loader.get("wfs/query");
     }
     
-    StoredQuery parseStoredQuery(File file) throws Exception {
+    StoredQuery parseStoredQuery(Resource file) throws Exception {
         return parseStoredQuery(file, new Parser(new WFSConfiguration()));
     }
     
-    StoredQuery parseStoredQuery(File file, Parser p) throws Exception {
+    StoredQuery parseStoredQuery(Resource file, Parser p) throws Exception {
         p.setRootElementType(WFS.StoredQueryDescriptionType);
-        FileInputStream fin = new FileInputStream(file);
+        InputStream fin = file.in();
         try {
             StoredQueryDescriptionType q = 
                 (StoredQueryDescriptionType) p.parse(new BufferedInputStream(fin));

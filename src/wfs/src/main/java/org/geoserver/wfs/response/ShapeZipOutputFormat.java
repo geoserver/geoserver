@@ -8,12 +8,12 @@ package org.geoserver.wfs.response;
 import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -53,6 +53,8 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.template.GeoServerTemplateLoader;
 import org.geoserver.wfs.WFSException;
 import org.geoserver.wfs.WFSGetFeatureOutputFormat;
@@ -471,13 +473,13 @@ public class ShapeZipOutputFormat extends WFSGetFeatureOutputFormat implements A
             LOGGER.info("Can't find the EPSG code for the shapefile CRS");
             return;
         }
-        File file = resourceLoader.find("user_projections", "esri.properties");
+        Resource file = resourceLoader.get("user_projections/esri.properties");
 
-        if (file != null && file.exists()) {
+        if (file.getType() == Type.RESOURCE) {
             Properties properties = new Properties();
-            FileInputStream fis = null;
+            InputStream fis = null;
             try {
-            	fis = new FileInputStream(file);
+            	fis = file.in();
             	properties.load(fis);
             } finally {
             	org.apache.commons.io.IOUtils.closeQuietly(fis);

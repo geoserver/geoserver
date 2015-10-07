@@ -8,6 +8,7 @@ package org.geoserver.platform.resource;
 import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -19,7 +20,7 @@ import java.util.List;
  * Resource creation is handled in a lazy fashion, simply use {@link #file()} or {@link #out()} and the resource will be created as required. In a
  * similar fashion setting up a child resource will create any required parent directories.
  */
-public interface Resource {
+public interface Resource extends Serializable {
     /**
      * Enumeration indicating kind of resource used.
      */

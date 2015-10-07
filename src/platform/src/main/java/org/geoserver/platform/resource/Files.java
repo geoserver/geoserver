@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -41,6 +42,8 @@ public final class Files {
      * in the data directory.
      */
     static final class ResourceAdaptor implements Resource {
+        private static final long serialVersionUID = -3529072360389761648L;
+        
         final File file;
 
         private ResourceAdaptor(File file) {
@@ -75,9 +78,12 @@ public final class Files {
 
         @Override
         public InputStream in() {
+            final File actualFile = file();
+            if (!actualFile.exists()) {
+                throw new IllegalStateException("Cannot access " + actualFile);
+            }
             try {
-                file.createNewFile();
-                return new FileInputStream(file);
+                return new FileInputStream(actualFile);
             } catch (IOException e) {
                 throw new IllegalStateException(e);
             }
@@ -85,6 +91,10 @@ public final class Files {
 
         @Override
         public OutputStream out() {
+            final File actualFile = file();
+            if (!actualFile.exists()) {
+                throw new IllegalStateException("Cannot access " + actualFile);
+            }
             // first save to a temp file
             final File temp;
             synchronized(this) {
@@ -132,10 +142,10 @@ public final class Files {
                     }
                 };
             } catch (IOException ex)  {
-                LOGGER.log(Level.WARNING, "Could not create temporary file {0} writing directly to {1} instead.", new Object[]{temp, file});
+                LOGGER.log(Level.WARNING, "Could not create temporary file {0} writing directly to {1} instead.", 
+                        new Object[]{temp, actualFile});
                 try {
-                    file.createNewFile();
-                    return new FileOutputStream(file);
+                    return new FileOutputStream(actualFile);
                 } catch (IOException e) {
                     throw new IllegalStateException(e);
                 }
@@ -144,12 +154,30 @@ public final class Files {
 
         @Override
         public File file() {
+            if (file.isDirectory()) {
+                throw new IllegalStateException("Cannot create file: is already a directory.");
+            }
+            try {
+                if (!file.exists() && 
+                        !((file.getParentFile() == null || file.getParentFile().exists() || file.getParentFile().mkdirs())
+                                && file.createNewFile())) {
+                    throw new IllegalStateException("Could not create file.");
+                }
+            } catch (IOException e) {
+                 throw new IllegalStateException(e);
+            }
             return file;
         }
 
         @Override
         public File dir() {
-            throw new IllegalStateException("Resource adaptor cannot be used to create directory");
+            if (file.exists() && !file.isDirectory()) {
+                throw new IllegalStateException("Cannot create directory: is already a file.");
+            }
+            if (!file.exists() && !file.mkdirs()) {
+                throw new IllegalStateException("Could not create directory.");
+            }
+            return file;
         }
 
         @Override
@@ -159,22 +187,29 @@ public final class Files {
 
         @Override
         public Resource parent() {
-            throw new IllegalStateException("Resource adaptor dos not support parent()");
+            return new ResourceAdaptor(file.getParentFile());
         }
 
         @Override
         public Resource get(String resourcePath) {
-            throw new IllegalStateException();
+            return new ResourceAdaptor(new File(file, resourcePath));
         }
 
         @Override
         public List<Resource> list() {
-            return Collections.emptyList();
+            if (!file.isDirectory()) {
+            	return Collections.emptyList();
+            }
+            List<Resource> result = new ArrayList<Resource>();
+            for (File child : file.listFiles()) {
+                result.add(new ResourceAdaptor(child));
+            }
+            return result;
         }
 
         @Override
         public Type getType() {
-            return file.exists() ? Type.RESOURCE : Type.UNDEFINED;
+            return file.exists() ? file.isDirectory()? Type.DIRECTORY : Type.RESOURCE : Type.UNDEFINED;
         }
 
         @Override
@@ -323,18 +358,12 @@ public final class Files {
      * </code></pre>
      * Note this only an adapter for single files (not directories).
      * 
-     * @param file File (not a directory) to adapt as a Resource
+     * @param file File to adapt as a Resource
      * @return resource adaptor for provided file
      */
     public static Resource asResource(final File file ){
         if( file == null ){
             throw new IllegalArgumentException("File required");
-        }
-        if( !file.exists() ){
-            // caution required some test cases like to work with files before they exist
-        }
-        if( file.isDirectory() ){
-            throw new IllegalArgumentException("File required (not a directory)");
         }
         return new ResourceAdaptor(file);
     }

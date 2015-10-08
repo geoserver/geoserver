@@ -586,7 +586,8 @@ public class GetFeature {
                 totalCount = -1;
             } else {
                 // optimization: if count < max features then total count == count
-                if(count < maxFeatures) {
+            	// Fix for GEOS-7233: totalFeatures for WFS 2.0 request returns wrong count.
+                if(count < maxFeatures && totalOffset <= 0) {
                     totalCount = count;
                 } else {
                     // ok, in this case we're forced to run the queries to discover the actual total count

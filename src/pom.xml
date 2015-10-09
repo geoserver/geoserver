@@ -53,8 +53,8 @@
  <repositories>
   <repository>
    <id>boundless</id>
-   <name>Boundless Cloud Repository</name>
-   <url>https://boundless.artifactoryonline.com/boundless/snapshot/</url>
+   <name>Boundless Maven Repository</name>
+   <url>http://repo.boundlessgeo.com/main/</url>
    <snapshots>
      <enabled>true</enabled>
    </snapshots>
@@ -1565,15 +1565,15 @@
  <distributionManagement>
   <repository>
    <id>boundless</id>
-   <name>Boundless Maven Repository</name>
-   <url>https://boundless.artifactoryonline.com/boundless/release/</url>
+   <name>Boundless Release Repository</name>
+   <url>http://repo.boundlessgeo.com/release/</url>
    <uniqueVersion>false</uniqueVersion>
   </repository>
   <snapshotRepository>
-   <id>boundless</id>
-   <name>Boundless Maven Repository</name>
-   <url>https://boundless.artifactoryonline.com/boundless/snapshot/</url>
-   <uniqueVersion>false</uniqueVersion>
+      <id>boundless</id>
+      <uniqueVersion>false</uniqueVersion>
+      <name>Boundless Snapshot Repository</name>
+      <url>http://repo.boundlessgeo.com/snapshot/</url>
   </snapshotRepository>
  </distributionManagement>
 

@@ -1573,7 +1573,7 @@
       <id>boundless</id>
       <uniqueVersion>false</uniqueVersion>
       <name>Boundless Snapshot Repository</name>
-      <url>http://repo.boundlessgeo.com/snapshot/</url>
+      <url>https://boundless.artifactoryonline.com/boundless/snapshot/</url>
   </snapshotRepository>
  </distributionManagement>
 

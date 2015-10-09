@@ -1568,15 +1568,15 @@
  <distributionManagement>
   <repository>
    <id>boundless</id>
-   <name>Boundless Maven Repository</name>
-   <url>http://repo.boundlessgeo.com/main</url>
+   <name>Boundless Release Repository</name>
+   <url>https://boundless.artifactoryonline.com/boundless/release/</url>
    <uniqueVersion>false</uniqueVersion>
   </repository>
   <snapshotRepository>
-   <id>boundless</id>
-   <name>Boundless Maven Repository</name>
-   <url>http://repo.boundlessgeo.com/main</url>
-   <uniqueVersion>false</uniqueVersion>
+      <id>boundless</id>
+      <uniqueVersion>false</uniqueVersion>
+      <name>Boundless Snapshot Repository</name>
+      <url>https://boundless.artifactoryonline.com/boundless/snapshot/</url>
   </snapshotRepository>
  </distributionManagement>
 

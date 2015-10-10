@@ -232,15 +232,12 @@ public class RESTDataTest extends ImporterTestSupport {
 
         task = getTask(0, 0);
         assertEquals("READY", task.get("state"));
-        context = importer.getContext(context.getId());
-        ReferencedEnvelope latLonBoundingBox = 
-            context.getTasks().get(0).getLayer().getResource().getLatLonBoundingBox();
-        assertFalse("expected not empty bbox",latLonBoundingBox.isEmpty());
 
         DataStore store = (DataStore) ds.getDataStore(null);
         assertEquals(store.getTypeNames().length, 0);
 
         postImport(0);
+        
         assertEquals(store.getTypeNames().length, 1);
         assertEquals("archsites", store.getTypeNames()[0]);
     }

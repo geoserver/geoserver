@@ -427,10 +427,7 @@ public class TaskResourceTest extends ImporterTestSupport {
         setSRSRequest("/rest/imports/1/tasks/0","EPSG:26713");
         
         ImportContext context = importer.getContext(1);
-        ReferencedEnvelope latLonBoundingBox = 
-            context.getTasks().get(0).getLayer().getResource().getLatLonBoundingBox();
-        assertFalse("expected not empty bbox",latLonBoundingBox.isEmpty());
-
+        
         json = (JSONObject) getAsJSON("/rest/imports/1/tasks/0?expand=2");
         task = json.getJSONObject("task");
         assertEquals("READY", task.get("state"));

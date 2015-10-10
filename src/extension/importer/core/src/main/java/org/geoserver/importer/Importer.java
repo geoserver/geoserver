@@ -917,6 +917,29 @@ public class Importer implements DisposableBean, ApplicationListener {
             }
 
             addToCatalog(task);
+            
+            //Calculate bounds, if applicable
+            if (task.getLayer().getResource() instanceof FeatureTypeInfo) {
+                FeatureTypeInfo featureType = (FeatureTypeInfo) task.getLayer().getResource();
+                FeatureTypeInfo resource = getCatalog().getResourceByName(
+                        featureType.getName(), FeatureTypeInfo.class);
+                if (resource.getNativeBoundingBox().isEmpty()
+                        || resource.getMetadata().get("recalculate-bounds").equals(Boolean.TRUE)) {
+                    
+                    // force computation
+                    CatalogBuilder cb = new CatalogBuilder(getCatalog());
+                    ReferencedEnvelope nativeBounds = cb.getNativeBounds(resource);
+                    resource.setNativeBoundingBox(nativeBounds);
+                    resource.setLatLonBoundingBox(cb.getLatLonBounds(nativeBounds,
+                            resource.getCRS()));
+                    getCatalog().save(resource);
+                    
+                    //Do not re-calculate on subsequent imports
+                    if (resource.getMetadata().get("recalculate-bounds") != null) {
+                        resource.getMetadata().remove("recalculate-bounds");
+                    }
+                }
+            }
 
             // apply post transform
             if (!doPostTransform(task, task.getData(), tx)) {
@@ -979,7 +1002,7 @@ public class Importer implements DisposableBean, ApplicationListener {
                     FeatureTypeInfo resource = getCatalog().getResourceByName(
                             featureType.getQualifiedName(), FeatureTypeInfo.class);
                     if (resource.getNativeBoundingBox().isEmpty()
-                            || resource.getMetadata().get("recalculate-bounds") != null) {
+                            || resource.getMetadata().get("recalculate-bounds").equals(Boolean.TRUE)) {
                         // force computation
                         CatalogBuilder cb = new CatalogBuilder(getCatalog());
                         ReferencedEnvelope nativeBounds = cb.getNativeBounds(resource);
@@ -987,6 +1010,11 @@ public class Importer implements DisposableBean, ApplicationListener {
                         resource.setLatLonBoundingBox(cb.getLatLonBounds(nativeBounds,
                                 resource.getCRS()));
                         getCatalog().save(resource);
+                        
+                        //Do not re-calculate on subsequent imports
+                        if (resource.getMetadata().get("recalculate-bounds") != null) {
+                            resource.getMetadata().remove("recalculate-bounds");
+                        }
                     }
                 }
             }

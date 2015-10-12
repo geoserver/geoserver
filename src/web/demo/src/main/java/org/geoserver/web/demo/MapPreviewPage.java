@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -14,9 +14,11 @@ import static org.geoserver.web.demo.PreviewLayerProvider.TYPE;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 
@@ -31,12 +33,12 @@ import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.geoserver.catalog.LayerInfo;
-import org.geoserver.config.GeoServer;
 import org.geoserver.catalog.PublishedType;
+import org.geoserver.config.GeoServer;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoServerBasePage;
+import org.geoserver.web.demo.PreviewLayer.GMLOutputParams;
 import org.geoserver.web.demo.PreviewLayer.PreviewLayerType;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerTablePanel;
@@ -57,6 +59,9 @@ public class MapPreviewPage extends GeoServerBasePage {
     
     private transient List<String> availableWMSFormats;
     private transient List<String> availableWFSFormats;
+
+    /** GML output params computation may be expensive, results are cached in this map */
+    private transient Map<String, GMLOutputParams> gmlParamsCache = new HashMap<String, GMLOutputParams>();
 
     public MapPreviewPage() {
         // output formats for the drop downs
@@ -84,15 +89,11 @@ public class MapPreviewPage extends GeoServerBasePage {
                     Fragment f = new Fragment(id, "commonLinks", MapPreviewPage.this);
                     final String olUrl = layer.getWmsLink() + "&format=application/openlayers";
                     f.add(new ExternalLink("ol", olUrl, "OpenLayers"));
-                    
                     // kml preview
                     final String kmlUrl = layer.getBaseUrl("wms") + "/kml?layers=" + layer.getName();
                     f.add(new ExternalLink("kml", kmlUrl, "KML"));
-                    
                     // gml preview (we actually want it only for vector layers)
-                    final String gmlUrl = 
-                        layer.getBaseUrl("ows") + "?service=WFS&version=1.0.0&request=GetFeature&typeName="
-                        + layer.getName() + getMaxFeatures();
+                    final String gmlUrl = layer.getGmlLink(gmlParamsCache) + getMaxFeatures();
                     Component gmlLink = new ExternalLink("gml", gmlUrl, "GML");
                     f.add(gmlLink);
                     gmlLink.setVisible(layer.getType() == PreviewLayerType.Vector);

@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -28,6 +28,7 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.wms.GetMapRequest;
+import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSTestSupport;
 import org.geoserver.wms.WebMapService;
 import org.geoserver.wms.map.RenderedImageMap;
@@ -129,18 +130,17 @@ public class AnimatorTest extends WMSTestSupport {
         String requestURL = "wms/animate?layers=" + layerName
                 + "&aparam=fake_param&avalues=val0,val\\,1,val2\\,\\,,val3";
         
-        checkAnimatedGif(requestURL, false);
-        checkAnimatedGif(requestURL + "&format_options=gif_loop_continuously:true", true);
-        checkAnimatedGif(requestURL + "&format_options=gif_loop_continuosly:true", true);
+        checkAnimatedGif(requestURL, false, WMS.DISPOSAL_METHOD_DEFAULT);
+        checkAnimatedGif(requestURL + "&format_options=gif_loop_continuously:true", true, WMS.DISPOSAL_METHOD_DEFAULT);
+        checkAnimatedGif(requestURL + "&format_options=gif_loop_continuosly:true", true, WMS.DISPOSAL_METHOD_DEFAULT);
         // check all valid disposal methods
-        checkAnimatedGif(requestURL + "&format_options=gif_disposal:none", false);
-        checkAnimatedGif(requestURL + "&format_options=gif_disposal:doNotDispose", false);
-        checkAnimatedGif(requestURL + "&format_options=gif_disposal:backgroundColor", false);
-        checkAnimatedGif(requestURL + "&format_options=gif_disposal:previous", false);
+        for (String disposal : WMS.DISPOSAL_METHODS) {
+            checkAnimatedGif(requestURL + "&format_options=gif_disposal:" + disposal, false, disposal);
+        }
     }
 
-    private void checkAnimatedGif(String requestURL, boolean loopContinously) throws Exception,
-            IOException {
+    private void checkAnimatedGif(String requestURL, boolean loopContinously, String disposal) 
+            throws Exception, IOException {
         MockHttpServletResponse resp = getAsServletResponse(requestURL);
         
         assertEquals("image/gif", resp.getContentType());
@@ -156,6 +156,18 @@ public class AnimatorTest extends WMSTestSupport {
             IIOMetadataNode node = (IIOMetadataNode) imageMetadata
                     .getAsTree("javax_imageio_gif_image_1.0");
             // print("", node);
+            
+            // check the applied disposal method
+            IIOMetadataNode nodeGCE = (IIOMetadataNode) 
+                    node.getElementsByTagName("GraphicControlExtension").item(0);
+            // assign the proper specified value for the disposal method option
+            if(disposal == "backgroundColor") {
+                disposal = "restoreToBackgroundColor";
+            } else if(disposal == "previous") {
+                disposal = "restoreToPrevious";
+            }
+            assertEquals(disposal, nodeGCE.getAttribute("disposalMethod").toString());
+
             NodeList nodes = node.getElementsByTagName("ApplicationExtensions");
             node = (IIOMetadataNode) nodes.item(0);
             nodes = node.getElementsByTagName("ApplicationExtension");

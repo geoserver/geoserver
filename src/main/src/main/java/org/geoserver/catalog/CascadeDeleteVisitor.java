@@ -118,7 +118,7 @@ public class CascadeDeleteVisitor implements CatalogVisitor {
         // first update the groups, remove the layer, and if no
         // other layers remained, remove the group as well
 
-        Filter groupContainsLayer = Predicates.equal("layers", layer, MatchAction.ANY);
+        Filter groupContainsLayer = Predicates.equal("layers.id", layer.getId(), MatchAction.ANY);
         try (CloseableIterator<LayerGroupInfo> groups = catalog.list(LayerGroupInfo.class,
                 groupContainsLayer)) {
             while (groups.hasNext()) {
@@ -233,8 +233,8 @@ public class CascadeDeleteVisitor implements CatalogVisitor {
     
     public void visit(StyleInfo style) {
         // find the layers having this style as primary or secondary
-        Filter anyStyle = Predicates.equal("styles", style, MatchAction.ANY);
-        Filter layersAssociated = Predicates.or(Predicates.equal("defaultStyle", style), anyStyle);
+        Filter anyStyle = Predicates.equal("styles.id", style.getId(), MatchAction.ANY);
+        Filter layersAssociated = Predicates.or(Predicates.equal("defaultStyle.id", style.getId()), anyStyle);
 
         // remove style references in layers
         try (CloseableIterator<LayerInfo> it = catalog.list(LayerInfo.class, layersAssociated)) {
@@ -245,7 +245,7 @@ public class CascadeDeleteVisitor implements CatalogVisitor {
         }
         // groups can also refer to style, reset each reference to the
         // associated layer default style
-        Filter groupAssociated = Predicates.or(Predicates.equal("rootLayerStyle", style), anyStyle);
+        Filter groupAssociated = Predicates.or(Predicates.equal("rootLayerStyle.id", style.getId()), anyStyle);
         try (CloseableIterator<LayerGroupInfo> it = catalog.list(LayerGroupInfo.class,
                 groupAssociated)) {
             while (it.hasNext()) {
@@ -260,7 +260,7 @@ public class CascadeDeleteVisitor implements CatalogVisitor {
 
     public void visit(LayerGroupInfo layerGroupToRemove) {
         // remove layerGroupToRemove references from other groups
-        Filter associatedTo = Predicates.equal("layers", layerGroupToRemove, MatchAction.ANY);
+        Filter associatedTo = Predicates.equal("layers.id", layerGroupToRemove.getId(), MatchAction.ANY);
         try (CloseableIterator<LayerGroupInfo> it = catalog
                 .list(LayerGroupInfo.class, associatedTo)) {
             while (it.hasNext()) {

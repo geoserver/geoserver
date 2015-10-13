@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -211,7 +211,8 @@ public class CatalogStyleChangeListener implements CatalogListener {
         final String styleName = modifiedStyle.prefixedName();
         log.finer("Handling style modification: " + styleName);
         // First we collect all the layers that use this style
-        for (LayerInfo affectedLayer : mediator.getLayerInfosFor(modifiedStyle)) {
+        Iterable<LayerInfo> layers = mediator.getLayerInfosFor(modifiedStyle);
+        for (LayerInfo affectedLayer : layers) {
             // If the style name changes, we need to update the layer's parameter filter
             String prefixedName = tileLayerName(affectedLayer);
             log.info("Truncating layer '" + prefixedName + "' due to a change in style '"

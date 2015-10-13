@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -19,7 +19,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -35,12 +34,13 @@ import javax.xml.XMLConstants;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
-import org.geoserver.catalog.LayerGroupHelper;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.NamespaceInfo;
+import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.gwc.config.GWCConfig;
 import org.geoserver.gwc.config.GWCConfigPersister;
 import org.geoserver.gwc.layer.CatalogConfiguration;
@@ -62,6 +62,7 @@ import org.geoserver.security.decorators.SecuredLayerInfo;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.map.RenderedImageMap;
+import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.visitor.ExtractBoundsFilterVisitor;
 import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.geometry.jts.JTS;
@@ -111,6 +112,9 @@ import org.geowebcache.storage.StorageBroker;
 import org.geowebcache.storage.StorageException;
 import org.geowebcache.storage.TileRange;
 import org.opengis.filter.Filter;
+import org.opengis.filter.FilterFactory2;
+import org.opengis.filter.MultiValuedFilter.MatchAction;
+import org.opengis.filter.Or;
 import org.opengis.metadata.extent.GeographicBoundingBox;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
@@ -188,6 +192,8 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
     private JDBCPasswordEncryptionHelper passwordHelper;
 
     private JDBCConfigurationStorage jdbcConfigurationStorage;
+    
+    private FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2();
     
     public GWC(final GWCConfigPersister gwcConfigPersister, final StorageBroker sb,
             final TileLayerDispatcher tld, final GridSetBroker gridSetBroker,
@@ -1238,14 +1244,20 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         return gridSetBroker;
     }
 
-    // public GeoServerTileLayer getTileLayerById(final String id) {
-    // return embeddedConfig.getLayerById(id);
-    // }
-
+    /**
+     * Use getCatalog().list(...) with the proper filters to avoid
+     * full linear scans
+     */
+    @Deprecated
     public List<LayerInfo> getLayerInfos() {
         return getCatalog().getLayers();
     }
 
+    /**
+     * Use getCatalog().list(...) with the proper filters to avoid
+     * full linear scans
+     */
+    @Deprecated
     public List<LayerGroupInfo> getLayerGroups() {
         return getCatalog().getLayerGroups();
     }
@@ -1346,7 +1358,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         }
 
         final FeatureTypeInfo typeInfo = getCatalog().getFeatureTypeByName(namespace, typeName);
-        final List<LayerInfo> layers = getCatalog().getLayers(typeInfo);
+                final List<LayerInfo> layers = getCatalog().getLayers(typeInfo);
 
         Set<String> affectedLayers = new HashSet<String>();
 
@@ -1356,18 +1368,32 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
                 affectedLayers.add(tileLayerName);
             }
         }
-
-        for (LayerGroupInfo lgi : getLayerGroups()) {
+        
+        // build a query to find all groups directly containing any
+        // of the layers associated to the feature type
+        List<Filter> filters = new ArrayList<>();
+        for (LayerInfo layer : layers) {
+            filters.add(ff.equal(ff.property("layers.id"), ff.literal(layer.getId()), true, MatchAction.ANY));
+            filters.add(ff.equal(ff.property("rootLayer.id"), ff.literal(layer.getId())));
+        }
+        Or groupFilter = ff.or(filters);
+        List<LayerGroupInfo> groups = new ArrayList<>();
+        try(CloseableIterator<LayerGroupInfo> it = getCatalog().list(LayerGroupInfo.class, groupFilter)) {
+            while(it.hasNext()) {
+                LayerGroupInfo lg = it.next();
+                groups.add(lg);
+            }
+        } catch (Exception e) {
+            log.log(Level.SEVERE, "Failed to load groups associated to feature type " + typeName, e);
+        }
+        // add the parents recursively
+        loadGroupParents(groups);
+        for (LayerGroupInfo lgi : groups) {
             final String tileLayerName = tileLayerName(lgi);
             if (!tileLayerExists(tileLayerName)) {
                 continue;
             }
-            for (LayerInfo li : lgi.layers()) {
-                ResourceInfo resource = li.getResource();
-                if (typeInfo.equals(resource)) {
-                    affectedLayers.add(tileLayerName);
-                }
-            }
+            affectedLayers.add(tileLayerName);
         }
         return affectedLayers;
     }
@@ -1592,27 +1618,26 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
      *         style
      */
     public Iterable<LayerInfo> getLayerInfosFor(final StyleInfo style) {
-        final String styleName = style.prefixedName();
+        return getLayerInfosFor(style, true);
+    }
+    
+    /**
+     * @return all the {@link LayerInfo}s in the {@link Catalog} that somehow refer to the given
+     *         style
+     */
+    private Iterable<LayerInfo> getLayerInfosFor(final StyleInfo style, boolean includeSecondaryStyles) {
         List<LayerInfo> result = new ArrayList<LayerInfo>();
-        {
-            for (LayerInfo layer : getLayerInfos()) {
-                try {
-                    String name = layer.getDefaultStyle().prefixedName();
-                    if (styleName.equals(name)) {
-                        result.add(layer);
-                        continue;
-                    }
-                    for (StyleInfo alternateStyle : layer.getStyles()) {
-                        name = alternateStyle.prefixedName();
-                        if (styleName.equals(name)) {
-                            result.add(layer);
-                            break;
-                        }
-                    }
-                } catch (Exception e) {
-                    log.log(Level.SEVERE, "Failed to retrieve style info for layer" + layer.getName(), e);
-                }
+        Filter styleFilter = ff.equal(ff.property("defaultStyle.id"), ff.literal(style.getId()), true);
+        if(includeSecondaryStyles) {
+            styleFilter = ff.or(styleFilter, ff.equal(ff.property("styles.id"), ff.literal(style.getId()), true, MatchAction.ANY));
+        }
+
+        try(CloseableIterator<LayerInfo> it = getCatalog().list(LayerInfo.class, styleFilter)) {
+            while(it.hasNext()) {
+                result.add(it.next());
             }
+        } catch (Exception e) {
+            log.log(Level.SEVERE, "Failed to layers associated to style " + style.prefixedName(), e);
         }
         return result;
     }
@@ -1622,26 +1647,99 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
      */
     public Iterable<LayerGroupInfo> getLayerGroupsFor(final StyleInfo style) {
         List<LayerGroupInfo> layerGroups = new ArrayList<LayerGroupInfo>();
+        
+        // get the layers whose default style is that style, they might be in layer groups
+        // using their default style
+        Iterable<LayerInfo> layers = getLayerInfosFor(style);
 
-        for (LayerGroupInfo layerGroup : getLayerGroups()) {
-            LayerGroupHelper helper = new LayerGroupHelper(layerGroup);
-            final Iterator<LayerInfo> groupLayers = helper.allLayers().iterator();
-            final Iterator<StyleInfo> explicitLayerGroupStyles = helper.allStyles().iterator();
-
-            while (groupLayers.hasNext()) {
-                LayerInfo childLayer = groupLayers.next();
-                StyleInfo assignedLayerStyle = explicitLayerGroupStyles.next();
-                if (assignedLayerStyle == null) {
-                    assignedLayerStyle = childLayer.getDefaultStyle();
+        // build a query retrieving the first list of candidates
+        List<Filter> filters = new ArrayList<>();
+        filters.add(ff.equal(ff.property("styles.id"), ff.literal(style.getId()), true, MatchAction.ANY));
+        filters.add(ff.equal(ff.property("rootLayerStyle.id"), ff.literal(style.getId())));
+        for (LayerInfo layer : layers) {
+            filters.add(ff.equal(ff.property("layers.id"), ff.literal(layer.getId()), true, MatchAction.ANY));
+            filters.add(ff.equal(ff.property("rootLayer.id"), ff.literal(layer.getId())));
+        }
+        Or groupFilter = ff.or(filters);
+        
+        try(CloseableIterator<LayerGroupInfo> it = getCatalog().list(LayerGroupInfo.class, groupFilter)) {
+            while(it.hasNext()) {
+                LayerGroupInfo lg = it.next();
+                if(isLayerGroupFor(lg, style)) {
+                    layerGroups.add(lg);
                 }
+            }
+        } catch (Exception e) {
+            log.log(Level.SEVERE, "Failed to load groups associated to style " + style.prefixedName(), e);
+        }
+        
+        loadGroupParents(layerGroups); 
+        
 
-                if (style.equals(assignedLayerStyle)) {
-                    layerGroups.add(layerGroup);
-                    break;
-                }                
+        return layerGroups;
+    }
+
+    /**
+     * Given a list of groups, recursively loads all other groups containing any of them
+     * @param layerGroups
+     */
+    private void loadGroupParents(List<LayerGroupInfo> layerGroups) {
+        // we now have groups that are directly referencing the incriminated style, and need
+        // to find all their parents, recursively...
+        boolean foundNewParents = true;
+        List<LayerGroupInfo> newGroups = new ArrayList<>(layerGroups);
+        while(foundNewParents && !newGroups.isEmpty()) {
+            List<Filter> parentFilters = new ArrayList<>();
+            for (LayerGroupInfo lg : newGroups) {
+                parentFilters.add(ff.equal(ff.property("layers.id"), ff.literal(lg.getId()), true, MatchAction.ANY));
+            }
+            Or parentFilter = ff.or(parentFilters);
+            newGroups.clear();
+            foundNewParents = false;
+            try(CloseableIterator<LayerGroupInfo> it = getCatalog().list(LayerGroupInfo.class, parentFilter)) {
+                while(it.hasNext()) {
+                    LayerGroupInfo lg = it.next();
+                    if(!layerGroups.contains(lg)) {
+                        newGroups.add(lg);
+                        layerGroups.add(lg);
+                        foundNewParents = true;
+                    }
+                }
+            } catch (Exception e) {
+                log.log(Level.SEVERE, "Failed to recursively load parents group parents ");
             }
         }
-        return layerGroups;
+    }
+
+    private boolean isLayerGroupFor(LayerGroupInfo lg, StyleInfo style) {
+        // check root layer
+        if(style.equals(lg.getRootLayerStyle()) || 
+                (lg.getRootLayerStyle() == null && lg.getRootLayer() != null && style.equals(lg.getRootLayer().getDefaultStyle()))) {
+            return true;
+        }
+        // check the layers (and only the layers, not the sub-groups, if we got here 
+        // it means we have a style involved, or a layer that has the default style we search
+        // but we don't know if the default style got overridden
+        final int styleCount = lg.getStyles().size();
+        final int layerCount = lg.getLayers().size();
+        final int count = Math.max(styleCount, layerCount);
+        for (int i = 0; i < count; i++) {
+            // paranoid check in case the two lists are not in sync
+            StyleInfo si = i < styleCount ? lg.getStyles().get(i) : null;
+            PublishedInfo pi = i < layerCount ? lg.getLayers().get(i) : null;
+            if(pi instanceof LayerInfo) {
+                if(style.equals(si)) {
+                    return true;
+                } else {
+                    LayerInfo li = (LayerInfo) pi;
+                    if(style.equals(li.getDefaultStyle())) {
+                        return true;
+                    }
+                }
+            }
+        }
+        
+        return false;
     }
 
     /**
@@ -1942,7 +2040,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
      * @throws ServiceException 
      */
     public void verifyAccessLayer(String layerName, ReferencedEnvelope boundingBox) throws ServiceException {
-        LayerInfo layerInfo =  getLayerInfoByName(layerName); //catalog.getLayerByName(layerName);
+        LayerInfo layerInfo =  getLayerInfoByName(layerName); 
         if (layerInfo == null) {
             throw new ServiceException("Could not find layer " + layerName, "LayerNotDefined");
         }

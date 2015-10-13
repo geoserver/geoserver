@@ -1329,6 +1329,16 @@
         </dependency>
       </dependencies>
    </profile>
+   <profile>
+      <id>hz-cluster</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-hz-cluster</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+   </profile>
 
  </profiles>
 </project>

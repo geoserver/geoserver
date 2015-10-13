@@ -114,7 +114,9 @@ public class WMS implements ApplicationContextAware {
     public static final String FRAMES_DELAY = "framesDelay";
 
     public static final int FRAMES_DELAY_DEFAULT = 1000;
-     
+
+    public static final String DISPOSAL_METHOD = "disposalMethod";
+
     public static final String LOOP_CONTINUOUSLY = "loopContinuously";
 
     public static final Boolean LOOP_CONTINUOUSLY_DEFAULT = Boolean.FALSE;
@@ -198,6 +200,26 @@ public class WMS implements ApplicationContextAware {
      * Advanced projection key
      */
     public static String ADVANCED_PROJECTION_KEY = "advancedProjectionHandling";
+
+    /**
+     * GIF disposal methods
+     */
+    public static final String DISPOSAL_METHOD_NONE = "none";
+
+    public static final String DISPOSAL_METHOD_NOT_DISPOSE = "doNotDispose";
+
+    public static final String DISPOSAL_METHOD_BACKGROUND = "backgroundColor";
+
+    public static final String DISPOSAL_METHOD_PREVIOUS = "previous";
+
+    public static final String DISPOSAL_METHOD_DEFAULT = DISPOSAL_METHOD_NONE;
+
+    public static final String[] DISPOSAL_METHODS = {
+            DISPOSAL_METHOD_NONE, 
+            DISPOSAL_METHOD_NOT_DISPOSE,
+            DISPOSAL_METHOD_BACKGROUND,
+            DISPOSAL_METHOD_PREVIOUS
+    };
 
     /**
      * the WMS Animator animatorExecutor service
@@ -531,6 +553,10 @@ public class WMS implements ApplicationContextAware {
 
     public Integer getFramesDelay() {
         return getMetadataValue(FRAMES_DELAY, FRAMES_DELAY_DEFAULT, Integer.class);
+    }
+    
+    public String getDisposalMethod() {
+        return getMetadataValue(DISPOSAL_METHOD, DISPOSAL_METHOD_DEFAULT, String.class);
     }
     
     public Boolean getLoopContinuously() {

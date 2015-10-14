@@ -12,6 +12,7 @@ The integrated geofence server can be configured using its WebGUI page or REST c
    :maxdepth: 2
 
    installing
+   gui
    rest
    rest-userrole
 

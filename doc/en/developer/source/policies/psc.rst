@@ -143,8 +143,10 @@ We would like to thank prior PSC members:
 
 * Chris Holmes
 * Brent Owens
+* Dave Blasby
 * Gabriel Roldan
 * Justin Deoliveira
+* Rob Atkinson
 
 PSC Voting procedure
 --------------------

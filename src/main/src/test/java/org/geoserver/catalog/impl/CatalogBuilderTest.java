@@ -91,6 +91,16 @@ public class CatalogBuilderTest extends GeoServerMockTestSupport {
         assertNull(fti.getNativeBoundingBox().getCoordinateReferenceSystem());
         assertNotNull(fti.getLatLonBoundingBox());
     }
+    
+    @Test
+    public void testGetBoundsFromCRS() throws Exception {
+        Catalog cat = getCatalog();
+        CatalogBuilder cb = new CatalogBuilder(cat);
+        cb.setStore(cat.getDataStoreByName(MockData.BRIDGES.getPrefix()));
+        FeatureTypeInfo fti = cb.buildFeatureType(toName(MockData.BRIDGES));
+        
+        assertTrue(false);
+    }
 
     
     @Test

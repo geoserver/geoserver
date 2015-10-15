@@ -949,6 +949,14 @@ display: inline;
 padding-right: 10px;
 }
 
+/* Controls underneath native bounding box eg. calculate from data, from CRS */
+.bounding-box-controls {
+margin-bottom: 1em;
+}
+
+.bounding-box-controls a {
+display: block;
+}
 
 /* Page */
 

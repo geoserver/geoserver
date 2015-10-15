@@ -54,6 +54,7 @@ import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.GeometryDescriptor;
 import org.opengis.feature.type.Name;
 import org.opengis.feature.type.PropertyDescriptor;
+import org.opengis.geometry.Envelope;
 import org.opengis.metadata.Identifier;
 import org.opengis.parameter.ParameterValueGroup;
 import org.opengis.referencing.FactoryException;
@@ -1529,5 +1530,40 @@ public class CatalogBuilder {
         }
         
         return attributes;
+    }
+
+    /**
+     * Creates referenced envelope from resource based off the native or declared SRS. This bbox
+     * depends on the projection policy.
+     * 
+     * - force declared, reproject native to declared: use the declared SRS bounding box 
+     * - keep native: 
+     * 
+     * @param resource
+     * @return the new referenced envelope or null if there is no bounding box associated with the 
+     *         CRS
+     */
+    public ReferencedEnvelope getBoundsFromCRS(ResourceInfo resource) {
+        ReferencedEnvelope crsReferencedEnvelope = null;
+        
+        ProjectionPolicy projPolicy = resource.getProjectionPolicy();
+        CoordinateReferenceSystem crs = null;
+        
+        //find the right crs to use based on the projection policy
+        if (projPolicy == ProjectionPolicy.NONE) {
+            crs = resource.getNativeCRS();
+        }
+        else {
+            crs = resource.getCRS();
+        }
+        
+        if (crs != null) {
+            Envelope crsEnvelope = CRS.getEnvelope(crs);
+            if (crsEnvelope != null) {
+                crsReferencedEnvelope = new ReferencedEnvelope(crsEnvelope);    
+            } 
+        }
+        
+        return crsReferencedEnvelope;
     }
 }

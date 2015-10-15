@@ -129,10 +129,6 @@ public class CatalogBuilderTest extends GeoServerMockTestSupport {
         
         fti.setProjectionPolicy(ProjectionPolicy.REPROJECT_TO_DECLARED);
         assertEquals(new ReferencedEnvelope(CRS.getEnvelope(crs4326)), crsBounds);
-        
-        fti.setSRS("NOTHING");
-        crsBounds = cb.getBoundsFromCRS(fti);
-        assertEquals(new ReferencedEnvelope(CRS.getEnvelope(crs4326)), crsBounds);
     }
 
     

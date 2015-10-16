@@ -19,12 +19,15 @@ see the :ref:`data_vector`, :ref:`data_raster`, and :ref:`data_database` section
    dxf/index   
    excel
    geosearch
+   grib/grib
    imagemap
    importer/index
    inspire/index
    jp2k/index
    libjpeg-turbo/index
    monitoring/index
+   netcdf/netcdf
+   netcdf-out/index
    ogr
    printing/index
    querylayer/index

@@ -5,6 +5,7 @@ NetCDF
 
 Adding a NetCDF data store
 --------------------------
+To add a NetCDF data store the user must go to :guilabel:`Stores --> Add New Store --> GRIB`.
 
 .. figure:: netcdfcreate.png
    :align: center

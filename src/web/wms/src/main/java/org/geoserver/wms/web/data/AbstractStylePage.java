@@ -12,6 +12,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.Arrays;
@@ -60,6 +61,7 @@ import org.geoserver.catalog.impl.StyleInfoImpl;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.resource.Resource;
 import org.geoserver.web.ComponentAuthorizer;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.data.style.StyleDetachableModel;
@@ -277,20 +279,14 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
                         si.setFilename(styleFileName);
                         si.setName(styleName);
                         si.setWorkspace(wsChoice.getModel().getObject());
-                        File styleFile = null;
+                        Resource styleResource = null;
                         try {
-                            styleFile = dd.findOrCreateStyleSldFile(si);
-                            FileUtils.writeStringToFile(styleFile, lastStyle);
-                            StyledLayerDescriptor sld = styleHandler().parse(styleFile, null, null, null);
-                            if (sld != null && sld.getStyledLayers().length > 0) {
-                                Style style = null;
-                                StyledLayer sl = sld.getStyledLayers()[0];
-                                if (sl instanceof UserLayer) {
-                                    style = ((UserLayer) sl).getUserStyles()[0];
-                                } else {
-                                    style = ((NamedLayer) sl).getStyles()[0];
-                                }
-
+                            styleResource = dd.style(si);
+                            try(OutputStream os = styleResource.out()) {
+                                IOUtils.write(lastStyle, os);
+                            }
+                            Style style = dd.parsedStyle(si);
+                            if (style != null) {
                                 GetLegendGraphicRequest request = new GetLegendGraphicRequest();
                                 request.setStyle(style);
                                 request.setLayer(null);
@@ -314,7 +310,9 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
                         } catch (IOException e) {
                             throw new RuntimeException(e);
                         } finally {
-                            FileUtils.deleteQuietly(styleFile);
+                            if(styleResource != null) {
+                                styleResource.delete();
+                            }
                         }
                     }
 

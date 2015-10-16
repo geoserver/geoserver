@@ -26,9 +26,9 @@ import org.opengis.referencing.crs.CRSAuthorityFactory;
 public class NetCDFCRSOverridingAuthorityFactory extends NetCDFCRSAuthorityFactory implements CRSAuthorityFactory {
 
     public NetCDFCRSOverridingAuthorityFactory() {
-        super(null, MAXIMUM_PRIORITY - 2);
+        this(null);
     }
-    
+
     public NetCDFCRSOverridingAuthorityFactory(Hints userHints) {
         super(userHints, MAXIMUM_PRIORITY - 2);
     }

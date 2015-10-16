@@ -158,6 +158,9 @@ public class CatalogImpl implements Catalog {
         StoreInfo added;
         synchronized (facade) {
             added = facade.add(resolve(store));
+             if(getDefaultDataStore(store.getWorkspace()) == null && store instanceof DataStoreInfo) {
+                setDefaultDataStore(store.getWorkspace(), (DataStoreInfo) store);
+            }
         }
         added(added);
     }

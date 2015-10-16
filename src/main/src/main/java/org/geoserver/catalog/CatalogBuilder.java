@@ -1541,7 +1541,7 @@ public class CatalogBuilder {
      *  <li>keep native: use the native SRS bounding box</li>
      * <ul>
      * 
-     * @param resource resource 
+     * @param resource
      * @return the new referenced envelope or null if there is no bounding box associated with the 
      *         CRS
      */

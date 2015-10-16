@@ -918,7 +918,7 @@ public class NetCDFOutputManager {
                 if (value == null) {
                     value = "";
                 }
-                if (value.equalsIgnoreCase(NetCDFUtilities.CONVENTIONS)) {
+                if (key.equalsIgnoreCase(NetCDFUtilities.CONVENTIONS)) {
                     Attribute attr = new Attribute(NetCDFUtilities.COORD_SYS_BUILDER, NetCDFUtilities.COORD_SYS_BUILDER_CONVENTION);
                     writer.addGroupAttribute(null, attr);
                 }

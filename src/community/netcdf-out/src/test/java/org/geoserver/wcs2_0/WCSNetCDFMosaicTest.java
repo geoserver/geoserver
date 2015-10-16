@@ -170,6 +170,7 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
         List<GlobalAttribute> attributes = new ArrayList<GlobalAttribute>();
         attributes.add(new GlobalAttribute("custom_attribute", "testing WCS"));
         attributes.add(new GlobalAttribute("Conventions", "CF-1.6"));
+        attributes.add(new GlobalAttribute("NULLAttribute", null));
         container.setGlobalAttributes(attributes);
 
         // Setting a different name from the standard table as well as the proper

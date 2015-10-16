@@ -954,11 +954,12 @@ public class SystemTestData extends CiteTestData {
     
     @Override
     public void tearDown() throws Exception {
-        if(SystemUtils.IS_OS_WINDOWS && WINDOWS_LENIENCY) {
+        if((SystemUtils.IS_OS_WINDOWS && WINDOWS_LENIENCY) || Boolean.getBoolean("testdata.force.delete")) {
             int MAX_ATTEMPTS = 100;
             for (int i = 0; i < MAX_ATTEMPTS; i++) {
                 try {
-                    FileUtils.deleteDirectory(data);  
+                    FileUtils.deleteDirectory(data);
+                    break;
                 } catch(IOException e) {
                     if(i >= MAX_ATTEMPTS) {
                         throw new IOException("Failed to clean up test data dir after " + MAX_ATTEMPTS  + " attempts", e);

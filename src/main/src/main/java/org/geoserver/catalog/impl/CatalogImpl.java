@@ -158,6 +158,7 @@ public class CatalogImpl implements Catalog {
         StoreInfo added;
         synchronized (facade) {
             added = facade.add(resolve(store));
+            // if there is no default store use this one as the default
              if(getDefaultDataStore(store.getWorkspace()) == null && store instanceof DataStoreInfo) {
                 setDefaultDataStore(store.getWorkspace(), (DataStoreInfo) store);
             }

@@ -1536,10 +1536,12 @@ public class CatalogBuilder {
      * Creates referenced envelope from resource based off the native or declared SRS. This bbox
      * depends on the projection policy.
      * 
-     * - force declared, reproject native to declared: use the declared SRS bounding box 
-     * - keep native: 
+     * <ul>
+     *  <li>force declared, reproject native to declared: use the declared SRS bounding box </li>
+     *  <li>keep native: use the native SRS bounding box</li>
+     * <ul>
      * 
-     * @param resource
+     * @param resource resource 
      * @return the new referenced envelope or null if there is no bounding box associated with the 
      *         CRS
      */

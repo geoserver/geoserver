@@ -141,10 +141,11 @@ Current PSC
 
 We would like to thank prior PSC members:
 
-* Chris Holmes
 * Brent Owens
+* Chris Holmes
 * Gabriel Roldan
 * Justin Deoliveira
+* Rob Atkinson
 
 PSC Voting procedure
 --------------------

@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014-2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -37,6 +37,7 @@ import org.geoserver.web.wicket.LiveCollectionModel;
 import org.geoserver.web.wicket.SRSToCRSModel;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
+import org.opengis.geometry.Envelope;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
@@ -90,6 +91,9 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
                 new SRSToCRSModel(new PropertyModel(model, "sRS")));
         declaredCRS.setRequired(true);
         refForm.add(declaredCRS);
+        
+        //compute from native or declared crs links
+        refForm.add(computeBoundsFromSRS(refForm, nativeBBox));
 
         projectionPolicy = new DropDownChoice("srsHandling", new PropertyModel(model,
                 "projectionPolicy"), Arrays.asList(ProjectionPolicy.values()),
@@ -101,9 +105,7 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
         }
         refForm.add(projectionPolicy);
         
-        
         refForm.add(new ReprojectionIsPossibleValidator(nativeCRS, declaredCRS, projectionPolicy));
-
     }
 
     AjaxSubmitLink computeNativeBoundsLink(final Form refForm,
@@ -133,6 +135,35 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
                 return false;
             }
 
+        };
+    }
+    
+    /**
+     * Compute the native bounds from the native CRS. Acts as an alternative to computing the bounds
+     * from the data itself.
+     */
+    AjaxSubmitLink computeBoundsFromSRS(final Form refForm, final EnvelopePanel nativeBoundsPanel) {
+        
+        return new AjaxSubmitLink("computeLatLonFromNativeSRS", refForm) {
+            @Override
+            protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                LOGGER.log(Level.FINE, "Computing bounds from native CRS");
+                ResourceInfo resource = 
+                        (ResourceInfo) BasicResourceConfig.this.getDefaultModelObject();
+                CatalogBuilder cb = new CatalogBuilder(GeoServerApplication.get().getCatalog());
+                ReferencedEnvelope nativeBBox = cb.getBoundsFromCRS(resource);
+                
+                if (nativeBBox != null) {
+                    nativeBoundsPanel.setModelObject(nativeBBox);
+                }
+                
+                target.addComponent(nativeBoundsPanel);
+            }
+            
+            @Override
+            public boolean getDefaultFormProcessing() {
+                return false;
+            }
         };
     }
 

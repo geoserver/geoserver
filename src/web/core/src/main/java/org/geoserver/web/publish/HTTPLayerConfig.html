@@ -8,9 +8,9 @@
       <fieldset>
         <legend><span><wicket:message key="httpSettings">HTTP Settings</wicket:message></span></legend>
         <ul>
-          <li>
-            <input id="cachingEnabled" class="field checkbox" wicket:id="cachingEnabled" type="checkbox">
-            <label for="cachingEnabled" class="choice"><wicket:message key="cacheResponses">Cache Responses</wicket:message></label>
+          <li class="choiceItem">
+            <input id="cachingEnabled" wicket:id="cachingEnabled" type="checkbox">
+            <label for="cachingEnabled"><wicket:message key="cacheResponses">Cache Responses</wicket:message></label>
           </li>
           <li>
             <label for="cacheAgeMax"><wicket:message key="cacheTime">Cache Time (seconds)</wicket:message></label>

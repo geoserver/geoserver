@@ -4,17 +4,17 @@
 <wicket:extend>
 <form wicket:id="form">
   <ul>
-    <li>
-      <input id="verbose" class="field checkbox" type="checkbox" wicket:id="verbose" />
-      <label class="choice"><wicket:message key="verboseMessaging">Enable Verbose Messaging</wicket:message></label>
+    <li class="choiceItem">
+      <input id="verbose" type="checkbox" wicket:id="verbose" />
+      <label for="verbose"><wicket:message key="verboseMessaging">Enable Verbose Messaging</wicket:message></label>
     </li>
-    <li>
-      <input id="verboseExceptions" class="field checkbox" type="checkbox" wicket:id="verboseExceptions" />
-      <label class="choice"><wicket:message key="verboseExceptions">Enable Verbose Exceptions</wicket:message></label>
+    <li class="choiceItem">
+      <input id="verboseExceptions" type="checkbox" wicket:id="verboseExceptions" />
+      <label for="verboseExceptions"><wicket:message key="verboseExceptions">Enable Verbose Exceptions</wicket:message></label>
     </li>
-    <li>
-      <input id="globalServices" class="field checkbox" type="checkbox" wicket:id="globalServices" />
-      <label class="choice"><wicket:message key="globalServices">Enable Global Services</wicket:message></label>
+    <li class="choiceItem">
+      <input id="globalServices" type="checkbox" wicket:id="globalServices" />
+      <label for="globalServices"><wicket:message key="globalServices">Enable Global Services</wicket:message></label>
     </li>
     <li>
       <label for="charset"><wicket:message key="resourceErrorHandling">Resource Error Handling</wicket:message></label>
@@ -36,9 +36,9 @@
       <label for="log4jConfigFile"><wicket:message key="log4jConfigFile">Logging Profile</wicket:message></label>
       <select id="log4jConfigFile" class="field select" wicket:id="log4jConfigFile" />
     </li>
-    <li>
-      <input id="stdOutLogging" class="field checkbox" type="checkbox" wicket:id="stdOutLogging" />
-      <label class="choice"><wicket:message key="stdOutLogging">Enable logging to STDOUT</wicket:message></label>
+    <li class="choiceItem">
+      <input id="stdOutLogging" type="checkbox" wicket:id="stdOutLogging" />
+      <label for="stdOutLogging"><wicket:message key="stdOutLogging">Enable logging to STDOUT</wicket:message></label>
     </li>
     <li>
       <label for="loggingLocation"><wicket:message key="loggingLocation">Logfile</wicket:message></label>
@@ -48,10 +48,10 @@
       <label for="xmlPostRequestLogBufferSize"><wicket:message key="xmlPostRequestLogBufferSize">log buffer size for incoming XML POST requests</wicket:message></label>
       <input id="xmlPostRequestLogBufferSize"class="field text" type="text" wicket:id="xmlPostRequestLogBufferSize" />
     </li>
-    <li>
-      <label for="xmlExternalEntitiesEnabled"><wicket:message key="xmlExternalEntities">XML Entities</wicket:message></label>
-      <input id="xmlExternalEntitiesEnabled" class="field checkbox" type="checkbox" wicket:id="xmlExternalEntitiesEnabled" />
-      <label class="choice"><wicket:message key="xmlExternalEntitiesEnabled">Evaluate XML Entities</wicket:message></label>
+    <li class="choiceItem">
+      <span class="fieldname"><wicket:message key="xmlExternalEntities">XML Entities</wicket:message></span>
+      <input id="xmlExternalEntitiesEnabled" type="checkbox" wicket:id="xmlExternalEntitiesEnabled" />
+      <label for="xmlExternalEntitiesEnabled"><wicket:message key="xmlExternalEntitiesEnabled">Evaluate XML Entities</wicket:message></label>
     </li>
     <li>
       <label for="featureTypeCacheSize"><wicket:message key="featureTypeCacheSize">Feature Type Cache Size</wicket:message></label>

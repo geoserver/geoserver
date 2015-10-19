@@ -19,13 +19,13 @@
       <url>https://artifacts.unidata.ucar.edu/content/repositories/unidata/</url>
     </repository>
    </repositories>
- <parent>
-  <groupId>org.geoserver</groupId>
-  <artifactId>community</artifactId>
-  <version>2.9-SNAPSHOT</version>
- </parent>
- 
- <groupId>org.geoserver.community</groupId>
+  <parent>
+    <groupId>org.geoserver</groupId>
+    <artifactId>extension</artifactId>
+    <version>2.9-SNAPSHOT</version>
+  </parent>
+
+ <groupId>org.geoserver.extension</groupId>
  <artifactId>gs-netcdf-out</artifactId>
  <packaging>jar</packaging>
  <name>WCS NetCDF output Module</name>

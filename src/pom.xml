@@ -1327,6 +1327,9 @@
       <descriptor>release/ext-libjpeg-turbo.xml</descriptor>
       <descriptor>release/ext-importer.xml</descriptor>
       <descriptor>release/ext-importer-bdb.xml</descriptor>
+      <descriptor>release/ext-grib.xml</descriptor>
+      <descriptor>release/ext-netcdf.xml</descriptor>
+      <descriptor>release/ext-netcdf-out.xml</descriptor>
      </descriptors>
      <finalName>geoserver-2.9-SNAPSHOT</finalName>
      <outputDirectory>${project.build.directory}/release</outputDirectory>

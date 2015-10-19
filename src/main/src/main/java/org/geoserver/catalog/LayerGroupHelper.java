@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -12,6 +12,7 @@ import java.util.Stack;
 import org.geoserver.catalog.LayerGroupInfo.Mode;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
+import org.opengis.geometry.Envelope;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.TransformException;
@@ -164,6 +165,23 @@ public class LayerGroupHelper {
         }
         
         group.setBounds(bounds);
+    }
+    
+    /**
+     * Use the CRS's defined bounds to populate the LayerGroup bounds.
+     * 
+     * If the CRS has no bounds then the layer group bounds are set to null instead
+     * 
+     * @param crs
+     */
+    public void calculateBoundsFromCRS(CoordinateReferenceSystem crs) {
+        Envelope crsEnvelope = CRS.getEnvelope(crs);
+        if (crsEnvelope != null) {
+            ReferencedEnvelope refEnvelope = new ReferencedEnvelope(crsEnvelope);
+            this.group.setBounds(refEnvelope);
+        } else {
+            this.group.setBounds(null);
+        }
     }
     
     /**

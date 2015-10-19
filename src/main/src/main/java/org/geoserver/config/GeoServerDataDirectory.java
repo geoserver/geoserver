@@ -1235,8 +1235,16 @@ public class GeoServerDataDirectory implements ResourceStore {
                 URL url = super.locateResource(uri);
                 if(url.getProtocol().equalsIgnoreCase("resource")) {
                     //GEOS-7025: Just get the path; don't try to create the file
-                    return fileToUrlPreservingCqlTemplates(
+                    URL u = fileToUrlPreservingCqlTemplates(
                             Paths.toFile(root(), urlToResource(url).path()));
+                    if (url.getQuery() != null) {
+                        try {
+                            return new URL(u.toString() + "?" + url.getQuery());
+                        } catch (MalformedURLException ex) {
+                            return null;
+                        }
+                    }
+                    return u;
                 } else {
                     return url;
                 }
@@ -1431,7 +1439,7 @@ public class GeoServerDataDirectory implements ResourceStore {
 
     /**
      * Wrapper for {@link DataUtilities#fileToURL} that unescapes braces used to delimit CQL templates.
-     */
+     */ 
     public static URL fileToUrlPreservingCqlTemplates(File file) {
         URL url = DataUtilities.fileToURL(file);
         if (!file.getPath().contains("${")) {

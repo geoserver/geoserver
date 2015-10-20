@@ -353,11 +353,30 @@ public class RenderingBasedFeatureInfoTest extends WMSTestSupport {
             // with wrapping enabled we should get the giant polygon on the other side too
             assertEquals(1, result.getJSONArray("features").size());
 
+            String disableRequest = request + "&format_options=mapWrapping:false";
+            result = (JSONObject) getAsJSON(disableRequest);
+            // with wrapping disabled we should not get any hits
+            assertEquals(0, result.getJSONArray("features").size());
+
+            String enableRequest = request + "&format_options=mapWrapping:true";
+            result = (JSONObject) getAsJSON(enableRequest);
+            // with wrapping enabled we should get the giant polygon on the other side too
+            assertEquals(1, result.getJSONArray("features").size());
+
             wms.getMetadata().put(WMS.MAP_WRAPPING_KEY, Boolean.FALSE);
             gs.save(wms);
             result = (JSONObject) getAsJSON(request);
             // with wrapping disabled we should not get any hit
             assertEquals(0, result.getJSONArray("features").size());
+
+            result = (JSONObject) getAsJSON(disableRequest);
+            // with wrapping disabled in the config, the request param should be ignored
+            assertEquals(0, result.getJSONArray("features").size());
+
+            result = (JSONObject) getAsJSON(enableRequest);
+            // with wrapping disabled in the config, the request param should be ignored
+            assertEquals(0, result.getJSONArray("features").size());
+
         } finally {
             wms.getMetadata().put(WMS.MAP_WRAPPING_KEY, original);
             gs.save(wms);

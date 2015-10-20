@@ -78,6 +78,9 @@ public class GetMapIntegrationTest extends WMSTestSupport {
     public static QName GIANT_POLYGON = new QName(MockData.CITE_URI, "giantPolygon",
             MockData.CITE_PREFIX);
 
+    public static QName LARGE_POLYGON = new QName(MockData.CITE_URI, "slightlyLessGiantPolygon",
+            MockData.CITE_PREFIX);
+
     String bbox = "-130,24,-66,50";
 
     String styles = "states";
@@ -184,6 +187,9 @@ public class GetMapIntegrationTest extends WMSTestSupport {
                 "mosaic.zip", null, properties,GetMapIntegrationTest.class,catalog);
 
         testData.addVectorLayer(GIANT_POLYGON, Collections.EMPTY_MAP, "giantPolygon.properties",
+                GetMapTest.class, getCatalog());
+
+        testData.addVectorLayer(LARGE_POLYGON, Collections.EMPTY_MAP, "slightlyLessGiantPolygon.properties",
                 GetMapTest.class, getCatalog());
 
         addCoverageViewLayer();
@@ -1029,14 +1035,31 @@ public class GetMapIntegrationTest extends WMSTestSupport {
                     + "&request=GetMap&layers=" + layer + "&styles=polygon"
                     + "&width=100&height=100&srs=EPSG:4326";
 
+            String wrapDisabledOptionRequest = request + "&format_options=mapWrapping:false";
+            String wrapEnabledOptionRequest = request + "&format_options=mapWrapping:true";
+
             BufferedImage image = getAsImage(request, "image/png");
             // with wrapping enabled we should get a gray pixel
+            assertPixel(image, 75, 0, new Color(170, 170, 170));
+
+            image = getAsImage(wrapDisabledOptionRequest, "image/png");
+            // This should disable wrapping, so we get white pixel (nothing)
+            assertPixel(image, 75, 0, Color.WHITE);
+
+            image = getAsImage(wrapEnabledOptionRequest, "image/png");
+            // with wrapping explictly enabled we should get a gray pixel
             assertPixel(image, 75, 0, new Color(170, 170, 170));
 
             wms.getMetadata().put(WMS.MAP_WRAPPING_KEY, Boolean.FALSE);
             gs.save(wms);
             image = getAsImage(request, "image/png");
             // with wrapping disabled we should get a white one (nothing)
+            assertPixel(image, 75, 0, Color.WHITE);
+
+            image = getAsImage(wrapDisabledOptionRequest, "image/png");
+            // With explicit config disable, our option should be disabled
+            assertPixel(image, 75, 0, Color.WHITE);
+            image = getAsImage(wrapEnabledOptionRequest, "image/png");
             assertPixel(image, 75, 0, Color.WHITE);
         } finally {
             wms.getMetadata().put(WMS.MAP_WRAPPING_KEY, original);
@@ -1045,4 +1068,54 @@ public class GetMapIntegrationTest extends WMSTestSupport {
 
     }
 
+    @Test
+    public void testAdvancedProjectionHandling() throws Exception {
+        GeoServer gs = getGeoServer();
+        WMSInfo wms = gs.getService(WMSInfo.class);
+        Boolean original = wms.getMetadata().get(WMS.ADVANCED_PROJECTION_KEY, Boolean.class);
+        try {
+            wms.getMetadata().put(WMS.ADVANCED_PROJECTION_KEY, Boolean.TRUE);
+            gs.save(wms);
+
+            String layer = getLayerId(LARGE_POLYGON);
+
+            String request = "wms?version=1.1.1&bbox=-18643898.1832,0,18084728.7111,20029262&format=image/png"
+                    + "&request=GetMap&layers=" + layer + "&styles=polygon"
+                    + "&width=400&height=400&srs=EPSG:3832";
+
+            String disabledRequest = request + "&format_options=advancedProjectionHandling:false";
+            String enabledRequest = request + "&format_options=advancedProjectionHandling:true";
+
+            BufferedImage image = getAsImage(request, "image/png");
+            // with APH, we should get a gap
+            assertPixel(image, 200, 200, Color.WHITE);
+
+            // APH enabled in the GUI, disabled in the request
+            image = getAsImage(disabledRequest, "image/png");
+            // expect it to cross the image
+            assertPixel(image, 200, 200, new Color(170, 170, 170));
+
+            // APH enabled in the GUI, explictly enabled in the request
+            image = getAsImage(enabledRequest, "image/png");
+            assertPixel(image, 200, 200, Color.WHITE);
+
+            wms.getMetadata().put(WMS.ADVANCED_PROJECTION_KEY, Boolean.FALSE);
+            gs.save(wms);
+            image = getAsImage(request, "image/png");
+            assertPixel(image, 200, 200, new Color(170, 170, 170));
+
+            // APH disabled in the GUI, disabled in the request
+            image = getAsImage(disabledRequest, "image/png");
+            // expect it to cross the image
+            assertPixel(image, 200, 200, new Color(170, 170, 170));
+
+            // APH disabled in the GUI, explictly enabled in the request
+            image = getAsImage(enabledRequest, "image/png");
+            // does not override admin disabled.
+            assertPixel(image, 200, 200, new Color(170, 170, 170));
+        } finally {
+            wms.getMetadata().put(WMS.ADVANCED_PROJECTION_KEY, original);
+            gs.save(wms);
+        }
+    }
 }

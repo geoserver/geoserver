@@ -79,22 +79,26 @@ projection. This includes, among others:
 
 * Cutting the geometries so that they fit within the area of mathematical stability of the projection math,
   e.g., it will cut any bit at more than 45 degrees west and east from the central meridian of a 
-  transverse mercator projection, or beyond 85 degrees north or south in a mercator projection
+  transverse Mercator projection, or beyond 85 degrees north or south in a Mercator projection
 * Make sure both "ends" of the world get queried for data when a map in polar stereographic is
   hitting an area that includes the dateline
 
 Along with advanced projection handling there is the possibility of creating a continuous map 
 across the dateline, wrapping the data on the other side of the longitude range, to get a continuous
-map. This is called continous map wrapping, and it's enabled in Mercator and Equirectangular (plate carrée) projections.
+map. This is called continuous map wrapping, and it's enabled in Mercator and Equirectangular (plate carrée) projections.
 
-Both functionality is rather useful, and enabled by default, but the tendency to generate multiple
+Both functionalities are rather useful, and enabled by default, but the tendency to generate multiple
 or-ed bounding boxes (to query both sides of the dateline) can cause extreme slowness in certain databases (e.g. Oracle),
-and some might simply not like the wrapping output, thus, it's possible to disable them both
+and some users might simply not like the wrapping output, thus, it's possible to disable both functions
 in the WMS UI: 
 
 .. figure:: ../images/services_WMS_aph.png
    :align: center
  
+Continuous map wrapping is disabled if advanced projection handling is disabled.
+
+Advanced projection handling can also be disabled using the ``advancedProjectionHandling`` :ref:`Format Option <format_options>`.
+Similarly, continuous map wrapping can also be disabled using the ``mapWrapping`` :ref:`Format Option <format_options>`.
 
      
 Restricting MIME types for GetMap and GetFeatureInfo requests

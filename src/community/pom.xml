@@ -42,12 +42,9 @@
           <descriptor>release/ext-dds.xml</descriptor>
           <descriptor>release/ext-aggregate.xml</descriptor>
           <descriptor>release/ext-wms-eo.xml</descriptor>
-          <descriptor>release/ext-netcdf.xml</descriptor>
-          <descriptor>release/ext-netcdf-out.xml</descriptor>
           <descriptor>release/ext-colormap.xml</descriptor>
           <descriptor>release/ext-mbtiles.xml</descriptor>
           <descriptor>release/ext-geopkg.xml</descriptor>
-          <descriptor>release/ext-grib.xml</descriptor>
           <descriptor>release/ext-pgraster.xml</descriptor>
           <descriptor>release/ext-dyndimension.xml</descriptor>
           <descriptor>release/ext-rest-ext.xml</descriptor>

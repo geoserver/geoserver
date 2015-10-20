@@ -263,6 +263,8 @@ Process
    #. Copy the profile for the community module from ``community/pom.xml`` 
       to ``extension/pom.xml``
    #. Remove the profile from ``community/pom.xml``
+   #. Remove the release descriptor from ``community/pom.xml`` contained in the maven-assembly-plugin configuration section
+   #. Remove the dependency from ``community/release/pom.xml``
 
 #. **Update the release process**
 

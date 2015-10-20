@@ -106,12 +106,12 @@ to style them as red circles with a size of 6 pixels.
 
    
 Although the example looks long, only a few lines are really important to understand.  
-**Line 14** states that a "PointSymbolizer" is to be used to style data as points.  
-**Lines 15-17** state that points are to be styled using a graphic shape specified by a "well known name", in this case a circle.  
+**Line 15** states that a "PointSymbolizer" is to be used to style data as points.  
+**Lines 16-18** state that points are to be styled using a graphic shape specified by a "well known name", in this case a circle.  
 SLD provides names for many shapes such as "square", "star", "triangle", etc.  
-**Lines 18-20** specify the shape should be filled with a color of ``#FF0000`` (red).  
+**Lines 19-21** specify the shape should be filled with a color of ``#FF0000`` (red).  
 This is an RGB color code, written in hexadecimal, in the form of #RRGGBB.  
-Finally, **line 22** specifies that the size of the shape is 6 pixels in width.  
+Finally, **line 23** specifies that the size of the shape is 6 pixels in width.  
 The rest of the structure contains metadata about the style, such as a name identifying the style
 and a title for use in legends.
 

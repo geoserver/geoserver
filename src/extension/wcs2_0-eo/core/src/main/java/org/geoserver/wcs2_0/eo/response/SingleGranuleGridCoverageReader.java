@@ -23,6 +23,8 @@ import org.geotools.coverage.grid.io.GranuleSource;
 import org.geotools.coverage.grid.io.HarvestedSource;
 import org.geotools.coverage.grid.io.OverviewPolicy;
 import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
+import org.geotools.data.ResourceInfo
+import org.geotools.data.ServiceInfo
 import org.geotools.factory.Hints;
 import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -297,4 +299,13 @@ public class SingleGranuleGridCoverageReader implements StructuredGridCoverage2D
         return reader.getDatasetLayout(coverageName);
     }
 
+    @Override
+    public ServiceInfo getInfo() {
+        return delegate.getInfo();
+    }
+
+    @Override
+    public ResourceInfo getInfo(String coverageName) {
+        return delegate.getInfo(coverageName);
+    }
 }

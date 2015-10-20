@@ -1040,6 +1040,11 @@
       <artifactId>pngj</artifactId>
       <version>2.0.1</version>
     </dependency>
+    <dependency>
+      <groupId>xml-apis</groupId>
+      <artifactId>xml-apis</artifactId>
+      <version>1.4.01</version>
+    </dependency>
 	<dependency>
 	  <groupId>javax.jms</groupId>
 	  <artifactId>jms-api</artifactId>

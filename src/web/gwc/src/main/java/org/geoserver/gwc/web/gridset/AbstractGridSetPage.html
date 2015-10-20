@@ -1,56 +1,78 @@
 <html xmlns:wicket="http://wicket.apache.org/">
+<wicket:head>
+	<script
+		src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.3.10/proj4.js"></script>
+	<script
+		src="web/resources/org.geoserver.web.GeoServerBasePage/js/getCoordHelpFunctions.js"></script>
+	<style type="text/css">
+#openMap {
+	height: 50px;
+	width: 50px;
+	background:
+		url(resources/org.geoserver.web.GeoServerBasePage/img/mapIcon.png);
+	background-size: contain;
+	cursor: pointer
+}
+</style>
+</wicket:head>
+
 <body>
-<wicket:extend>
-  <form wicket:id="gridSetForm">
-    <fieldset>
-      <ul>
-        <li>
-          <div class="seflclear">
-            <span wicket:id="name">Name</span>
-          </div>
-        </li>
-        <li>
- 	      <label for="description"><wicket:message key="descriptionField">Description</wicket:message></label>
-          <textarea wicket:id="description" class="field textarea" style="height: 45px; width: 100%"></textarea> 
-        </li>
-        <li>
-          <label for="crs"><wicket:message key="crs">CRS</wicket:message></label>
-          <span id="crs" wicket:id="crs"></span>
-        </li>
-        <li>
-          <label for="bounds"><wicket:message key="bounds">GridSet bounds</wicket:message></label>
-          <span id="bounds" wicket:id="bounds"></span>
-          <a href="#" wicket:id="computeBounds"><wicket:message key="computeBounds">Compute from CRS</wicket:message></a>
-        </li>
-        <li>
-          <div><span wicket:id="tileWidth">Tile width</span></div>
-        </li>
-        <li>
-          <div><span wicket:id="tileHeight">Tile Height</span></div>
-        </li>
-      </ul>
-    </fieldset>
-    <fieldset>
-      <legend>
-        <span><wicket:message key="tileMatrixSet">Tile Matrix Set</wicket:message></span>
-      </legend>
-      <ul>
-        <li><div wicket:id="tileMatrixSetEditor"></div></li>
-        <li>
-          <div>
-           <span>
-            <a href="#" wicket:id="addZoomLevel"><wicket:message key="addZoomLevel">Add zoom level</wicket:message></a>
-           </span>
-          </div>
-        </li>
-      </ul>
-    </fieldset>
-    <div wicket:id="feedback"></div>
-    <div class="button-group selfclear">
-      <a href="#" wicket:id="save"><wicket:message key="save">Save</wicket:message></a>
-      <a href="#" wicket:id="cancel"><wicket:message key="cancel">Cancel</wicket:message></a>
-    </div>
-	</form>
-</wicket:extend>
+	<wicket:extend>
+		<form wicket:id="gridSetForm">
+			<fieldset>
+				<ul>
+					<li>
+						<div class="seflclear">
+							<span wicket:id="name">Name</span>
+						</div>
+					</li>
+					<li><label for="description"><wicket:message
+								key="descriptionField">Description</wicket:message></label> <textarea
+							wicket:id="description" class="field textarea"
+							style="height: 45px; width: 100%"></textarea></li>
+					<li><label for="crs"><wicket:message key="crs">CRS</wicket:message></label>
+						<span id="crs" wicket:id="crs"></span></li>
+					<li><label for="bounds"><wicket:message key="bounds">GridSet bounds</wicket:message></label>
+						<span id="bounds" wicket:id="bounds"></span> <span><input
+							type="button" src="" id="openMap" onclick="openWin()"
+							class="btn btn-lg btn-danger" data-toggle="popover"
+							title="Draw a bounding box in the map and get the coordinates"></input></span>
+						<a href="#" wicket:id="computeBounds"><wicket:message
+								key="computeBounds">Compute from CRS</wicket:message></a></li>
+					<li>
+						<div>
+							<span wicket:id="tileWidth">Tile width</span>
+						</div>
+					</li>
+					<li>
+						<div>
+							<span wicket:id="tileHeight">Tile Height</span>
+						</div>
+					</li>
+				</ul>
+			</fieldset>
+			<fieldset>
+				<legend>
+					<span><wicket:message key="tileMatrixSet">Tile Matrix Set</wicket:message></span>
+				</legend>
+				<ul>
+					<li><div wicket:id="tileMatrixSetEditor"></div></li>
+					<li>
+						<div>
+							<span> <a href="#" wicket:id="addZoomLevel"><wicket:message
+										key="addZoomLevel">Add zoom level</wicket:message></a>
+							</span>
+						</div>
+					</li>
+				</ul>
+			</fieldset>
+			<div wicket:id="feedback"></div>
+			<div class="button-group selfclear">
+				<a href="#" wicket:id="save"><wicket:message key="save">Save</wicket:message></a>
+				<a href="#" wicket:id="cancel"><wicket:message key="cancel">Cancel</wicket:message></a>
+			</div>
+		</form>
+
+	</wicket:extend>
 </body>
 </html>

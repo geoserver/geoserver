@@ -147,6 +147,9 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
     private final static List<String> AA_SETTINGS = Arrays.asList(new String[] { AA_NONE, AA_TEXT,
             AA_FULL });
 
+    private static final String MAP_WRAPPING_FORMAT_OPTION = "mapWrapping";
+    private static final String ADV_PROJECTION_HANDLING_FORMAT_OPTION = "advancedProjectionHandling";
+
     /**
      * The size of a megabyte
      */
@@ -442,7 +445,15 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
             }
         }
 
-        
+        if (getFormatOptionAsBoolean(request, ADV_PROJECTION_HANDLING_FORMAT_OPTION) == false) {
+            rendererParams.put(StreamingRenderer.ADVANCED_PROJECTION_HANDLING_KEY, false);
+            rendererParams.put(StreamingRenderer.CONTINUOUS_MAP_WRAPPING, false);
+        }
+
+        if (getFormatOptionAsBoolean(request, MAP_WRAPPING_FORMAT_OPTION) == false) {
+            rendererParams.put(StreamingRenderer.CONTINUOUS_MAP_WRAPPING, false);
+        }
+
         // see if the user specified a dpi
         if (request.getFormatOptions().get("dpi") != null) {
             rendererParams.put(StreamingRenderer.DPI_KEY, (request
@@ -589,6 +600,16 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         }
         throw serviceException;
     }
+
+    private boolean getFormatOptionAsBoolean(final GetMapRequest request, final String formatOptionKey) {
+        if (request.getFormatOptions().get(formatOptionKey) != null) {
+            String formatOptionValue = (String)request.getFormatOptions().get(formatOptionKey);
+            return (!"false".equalsIgnoreCase(formatOptionValue));
+        }
+        // else key not present
+        return true;
+    }
+
     private RenderedImageMap optimizeAndBuildMap(IndexColorModel palette, RenderedImage preparedImage, WMSMapContent mapContent) {
         RenderedImage image;
         if (palette != null && palette.getMapSize() < 256) {

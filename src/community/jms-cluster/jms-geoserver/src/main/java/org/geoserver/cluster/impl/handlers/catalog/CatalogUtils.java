@@ -145,7 +145,7 @@ public abstract class CatalogUtils {
 		if (info==null || catalog==null)
 			throw new NullArgumentException("Arguments may never be null");
 		
-		final LayerInfo localObject=catalog.getLayerByName(info.getName());
+		final LayerInfo localObject=catalog.getLayerByName(info.prefixedName());
 		
 		if (localObject !=null){
 			return localObject;
@@ -214,7 +214,7 @@ public abstract class CatalogUtils {
 		if (info==null || catalog==null)
 			throw new NullArgumentException("Arguments may never be null");
 		
-		final LayerGroupInfo localObject=catalog.getLayerGroupByName(info.getName());
+		final LayerGroupInfo localObject=catalog.getLayerGroupByName(info.prefixedName());
 		
 		if (localObject !=null){
 			return localObject;

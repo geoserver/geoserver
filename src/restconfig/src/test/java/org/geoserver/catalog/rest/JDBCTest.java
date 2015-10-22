@@ -1,24 +1,27 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.catalog.rest;
 
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import org.geoserver.catalog.DataStoreInfo;
-import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.MockData;
+import org.geoserver.data.test.SystemTestData;
 import org.geotools.data.DataStore;
 import org.geotools.data.FeatureWriter;
 import org.geotools.data.Transaction;
@@ -26,7 +29,7 @@ import org.geotools.data.h2.H2DataStoreFactory;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.jdbc.JDBCDataStore;
 import org.geotools.jdbc.JDBCDataStoreFactory;
-import org.junit.Assume;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -37,9 +40,6 @@ import com.mockrunner.mock.web.MockHttpServletResponse;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Point;
-
-import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
-import static org.junit.Assert.*;
 
 public class JDBCTest extends CatalogRESTTestSupport {
 
@@ -286,5 +286,10 @@ public class JDBCTest extends CatalogRESTTestSupport {
         writer.write( "ds.1='one'|POINT(1 1)\n");
         writer.flush();
         return output.toByteArray();
+    }
+
+    @After
+    public void cleanupDataStore() {
+        removeStore("gs", "acme");
     }
 }

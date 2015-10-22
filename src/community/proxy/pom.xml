@@ -18,6 +18,7 @@
   <version>2.9-SNAPSHOT</version>
   <name>HTTP Proxy Extension</name>
   
+  <!--
   <repositories>
     <repository>
       <id>maven-restlet</id>
@@ -25,7 +26,8 @@
       <url>http://maven.restlet.org</url>
     </repository>
   </repositories>
-
+  -->
+  
   <!-- declare dependency on geoserver main -->
   <dependencies>
     <dependency>

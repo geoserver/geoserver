@@ -12,13 +12,17 @@
  <properties>
     <netcdf.version>4.6.2</netcdf.version>
   </properties>
+  
+  <!--
   <repositories>
     <repository>
       <id>unidata</id>
       <name>Unidata UCAR Libraries repository</name>
       <url>https://artifacts.unidata.ucar.edu/content/repositories/unidata/</url>
     </repository>
-   </repositories>
+  </repositories>
+  -->
+  
   <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>extension</artifactId>

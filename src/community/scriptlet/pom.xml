@@ -17,7 +17,8 @@
     <packaging>jar</packaging>
     <version>2.9-SNAPSHOT</version>
     <name>JavaScript REST Extension Support</name>
-
+    
+    <!--
     <repositories>
         <repository>
             <id>maven-restlet</id>
@@ -25,7 +26,8 @@
             <url>http://maven.restlet.org</url>
         </repository>
     </repositories>
-
+    -->
+    
     <!-- declare dependency on geoserver main -->
     <dependencies>
         <dependency>

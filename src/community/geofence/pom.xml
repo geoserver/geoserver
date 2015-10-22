@@ -116,18 +116,18 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-
-	<repositories>
-		<repository>
-			<id>boundless</id>
-			<name>Boundless Maven Repository</name>
-			<url>http://repo.boundlessgeo.com/main</url>
-			<snapshots>
-			 <enabled>true</enabled>
-			</snapshots>
-		</repository>
-
-	</repositories>
+    <!--
+    <repositories>
+        <repository>
+            <id>boundless</id>
+            <name>Boundless Maven Repository</name>
+            <url>http://repo.boundlessgeo.com/main</url>
+            <snapshots>
+              <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+    -->
     <build>
         <resources>
             <resource>
@@ -143,7 +143,7 @@
                     <include>**/*</include>
                 </includes>
             </resource>
-        </resources>		
+        </resources>        
     </build>
 </project>
 

@@ -5,16 +5,21 @@
  <packaging>jar</packaging>
  <version>${version}</version>
  <name>My Web Plugin</name>
+
  <repositories>
   <repository>
-   <id>opengeo</id>
-   <name>opengeo</name>
-   <url>http://repo.opengeo.org/</url>
+   <id>boundless</id>
+   <name>Boundless Maven Repository</name>
+   <url>https://boundless.artifactoryonline.com/boundless/main/</url>
    <snapshots>
-    <enabled>true</enabled>
+     <enabled>true</enabled>
    </snapshots>
-  </repository>
+   <releases>
+     <enabled>true</enabled>
+   </releases>
+  </repository>  
  </repositories>
+
  <dependencies>
   <dependency>
    <groupId>org.geoserver.web</groupId>

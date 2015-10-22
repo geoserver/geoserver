@@ -17,6 +17,8 @@ import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.OverviewPolicy;
 import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
+import org.geotools.data.ResourceInfo;
+import org.geotools.data.ServiceInfo;
 import org.geotools.geometry.GeneralEnvelope;
 import org.opengis.coverage.grid.Format;
 import org.opengis.coverage.grid.GridEnvelope;
@@ -224,4 +226,13 @@ public class SingleGridCoverage2DReader implements GridCoverage2DReader {
         return delegate.getDatasetLayout(coverageName);
     }
 
+    @Override
+    public ServiceInfo getInfo() {
+        return delegate.getInfo();
+    }
+
+    @Override
+    public ResourceInfo getInfo(String coverageName) {
+        return delegate.getInfo(coverageName);
+    }
 }

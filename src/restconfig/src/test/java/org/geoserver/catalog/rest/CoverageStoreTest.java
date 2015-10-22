@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -315,6 +315,8 @@ public class CoverageStoreTest extends CatalogRESTTestSupport {
         // Getting the list of available coverages
         dom = getAsDOM( "/rest/workspaces/wcs/coveragestores/empty/coverages.xml?list=all");
         assertXpathEvaluatesTo("index", "/list/coverageName", dom );
+        assertEquals( 200, deleteAsServletResponse("/rest/workspaces/wcs/coveragestores/empty?recurse=true&purge=all").getStatusCode());
+
     }
 
     private void purgeRequest(final String purge, final int expectedFiles) throws Exception {

@@ -88,7 +88,7 @@ public abstract class CatalogUtils {
 		if (info==null || catalog==null)
 			throw new NullArgumentException("Arguments may never be null");
 		
-		final StyleInfo localObject = catalog.getStyleByName(info.getName());
+		final StyleInfo localObject = catalog.getStyleByName(info.getWorkspace(),info.getName());
 		if (localObject != null) {
 			return localObject;
 		}

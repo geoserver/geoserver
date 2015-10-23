@@ -42,12 +42,9 @@
           <descriptor>release/ext-dds.xml</descriptor>
           <descriptor>release/ext-aggregate.xml</descriptor>
           <descriptor>release/ext-wms-eo.xml</descriptor>
-          <descriptor>release/ext-netcdf.xml</descriptor>
-          <descriptor>release/ext-netcdf-out.xml</descriptor>
           <descriptor>release/ext-colormap.xml</descriptor>
           <descriptor>release/ext-mbtiles.xml</descriptor>
           <descriptor>release/ext-geopkg.xml</descriptor>
-          <descriptor>release/ext-grib.xml</descriptor>
           <descriptor>release/ext-pgraster.xml</descriptor>
           <descriptor>release/ext-dyndimension.xml</descriptor>
           <descriptor>release/ext-rest-ext.xml</descriptor>
@@ -180,11 +177,8 @@
         <module>script</module>
         <module>wms-eo</module>
         <module>colormap</module>
-        <module>netcdf</module>
-        <module>netcdf-out</module>
         <module>mbtiles</module>
         <module>geopkg</module>
-        <module>grib</module>
         <module>pgraster</module>
         <module>dyndimension</module>
         <module>rest-ext</module>
@@ -262,24 +256,6 @@
       </modules>
     </profile>
     <profile>
-      <id>netcdf-out</id>
-      <activation>
-        <property><name>netcdf-out</name></property>
-      </activation> 
-      <modules>
-        <module>netcdf-out</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>netcdf</id>
-      <activation>
-        <property><name>netcdf</name></property>
-      </activation> 
-      <modules>
-        <module>netcdf</module>
-      </modules>
-    </profile>
-        <profile>
       <id>pgraster</id>
       <activation>
         <property><name>pgraster</name></property>
@@ -335,15 +311,6 @@
       <id>geoserver-sync</id>
       <modules>
         <module>geoserver-sync</module>
-      </modules>
-    </profile>
-	<profile>
-      <id>grib</id>
-	  <activation>
-        <property><name>grib</name></property>
-      </activation>
-      <modules>
-        <module>grib</module>
       </modules>
     </profile>
     <profile>

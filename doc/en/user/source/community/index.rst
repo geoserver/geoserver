@@ -17,16 +17,13 @@ officially part of the GeoServer releases. They are however built along with the
 
    authkey/index
    dds/index
-   netcdf/netcdf
    python/index
    scripting/index
    spatialite/index
-   netcdf-out/index
    colormap/index
    jdbcconfig/index
    mbtiles/index
    geopkg/index
-   grib/grib
    rest/index
    pgraster/pgraster
    wps-download/index

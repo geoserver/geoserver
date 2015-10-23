@@ -285,6 +285,36 @@
         <module>importer</module>
       </modules>
     </profile>
+    
+    <profile>
+      <id>grib</id>
+	  <activation>
+        <property><name>grib</name></property>
+      </activation>
+      <modules>
+        <module>grib</module>
+      </modules>
+    </profile>
+
+    <profile>
+      <id>netcdf</id>
+      <activation>
+        <property><name>netcdf</name></property>
+      </activation> 
+      <modules>
+        <module>netcdf</module>
+      </modules>
+    </profile>
+
+    <profile>
+      <id>netcdf-out</id>
+      <activation>
+        <property><name>netcdf-out</name></property>
+      </activation> 
+      <modules>
+        <module>netcdf-out</module>
+      </modules>
+    </profile>
 
     <!-- allExtensions profile, includes all modules -->
     <profile>
@@ -321,6 +351,9 @@
         <module>wcs2_0-eo</module>
         <module>libjpeg-turbo</module>
         <module>importer</module>
+        <module>grib</module>
+        <module>netcdf</module>
+        <module>netcdf-out</module>
       </modules>
     </profile>
 
@@ -359,6 +392,9 @@
         <module>wcs2_0-eo</module>
         <module>libjpeg-turbo</module>
         <module>importer</module>
+        <module>grib</module>
+        <module>netcdf</module>
+        <module>netcdf-out</module>
       </modules>
     </profile>
 

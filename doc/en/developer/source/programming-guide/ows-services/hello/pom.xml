@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+<modelVersion>4.0.0</modelVersion>
+
+<!-- set parent pom to community pom -->
+<parent>
+    <groupId>org.geoserver</groupId>
+    <artifactId>community</artifactId>
+    <version>2.9-SNAPSHOT</version> <!-- change this to the proper GeoServer version -->
+</parent>  
+
+<groupId>org.geoserver</groupId>
+<artifactId>hello</artifactId>
+<packaging>jar</packaging>
+<version>1.0</version>
+<name>Hello World Service Module</name>
+
+<!-- declare depenency on geoserver main -->
+<dependencies>
+    <dependency>
+        <groupId>org.geoserver</groupId>
+        <artifactId>gs-main</artifactId>
+        <version>2.9-SNAPSHOT</version> <!-- change this to the proper GeoServer version -->
+    </dependency>
+</dependencies>
+
+<repositories>
+    <repository>
+        <id>boundless</id>
+        <name>Boundless Maven Repository</name>
+        <url>https://boundless.artifactoryonline.com/boundless/snapshot</url>
+        <snapshots>
+            <enabled>true</enabled>
+        </snapshots>
+    </repository>
+</repositories>
+
+</project>

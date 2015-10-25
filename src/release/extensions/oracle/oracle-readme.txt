@@ -1,4 +1,4 @@
-GEOSERVER 2.7+ DATA STORE EXTRAS README
+GEOSERVER 2.9+ DATA STORE EXTRAS README
 ---------------------------------------
 
 This package contains an Oracle DataStore implementation that is 

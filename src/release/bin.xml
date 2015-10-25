@@ -42,7 +42,7 @@
     <include>jetty-*.jar</include>
     <include>jetty-util-*.jar</include>
     <include>jsp-api-*.jar</include>
-    <include>servlet-api-*.jar</include>
+    <include>*servlet-api-*.jar</include>
     <include>xmlParserAPIs-*.jar</include>
    </includes>
   </fileSet>

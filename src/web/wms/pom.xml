@@ -37,7 +37,12 @@
       <artifactId>gt-xsd-sld</artifactId>
       <version>${gt.version}</version>
     </dependency>
-   <dependency>
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>org.geoserver.web</groupId>
       <artifactId>gs-web-core</artifactId>
       <version>${project.version}</version>

@@ -13,14 +13,15 @@ import org.apache.wicket.resource.Properties;
 import org.apache.wicket.resource.PropertiesFactory;
 import org.apache.wicket.resource.loader.ClassStringResourceLoader;
 import org.apache.wicket.resource.loader.ComponentStringResourceLoader;
+import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.webapp.WebAppContext;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoServerResourceStreamLocator;
 import org.geoserver.web.GeoServerStringResourceLoader;
-import org.mortbay.jetty.Connector;
-import org.mortbay.jetty.Server;
-import org.mortbay.jetty.bio.SocketConnector;
-import org.mortbay.jetty.servlet.Context;
-import org.mortbay.jetty.servlet.ServletHolder;
+import org.eclipse.jetty.server.Connector;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.servlet.ServletHolder;
 
 /**
  * Application object for your web application.
@@ -97,16 +98,16 @@ public class WicketTestApplication extends WebApplication
 	    
 	    // setup the embedded Jetty server
         Server server = new Server();
-        SocketConnector connector = new SocketConnector();
+        ServerConnector connector = new ServerConnector(server);
         
         // Set some timeout options to make debugging easier.
-        connector.setMaxIdleTime(1000 * 60 * 60);
+        connector.setIdleTimeout(1000 * 60 * 60);
         connector.setSoLingerTime(-1);
         connector.setPort(port);
         server.setConnectors(new Connector[] { connector });
 
         // programmatically add the wicket servlet to the context
-        Context root = new Context(server, contextPath ,Context.SESSIONS);
+        ServletContextHandler root = new ServletContextHandler(server, contextPath, WebAppContext.SESSIONS);
         ServletHolder wicket = new ServletHolder(WicketServlet.class);
         wicket.setInitParameter("applicationClassName", WicketTestApplication.class.getName());
         root.addServlet(wicket, "/*");

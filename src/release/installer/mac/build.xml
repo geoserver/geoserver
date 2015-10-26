@@ -5,13 +5,16 @@
   <target name="bootstrap">
     <mkdir dir="lib"/>
     <get dest="lib" usetimestamp="true"
-       src="http://repo.boundlessgeo.com/main/com/oracle/appbundler/1.0ea/appbundler-1.0ea.jar"/>
+       src="https://boundless.artifactoryonline.com/boundless/main/com/oracle/appbundler/1.0ea/appbundler-1.0ea.jar"/>
      <get dest="lib" usetimestamp="true"
        src="http://central.maven.org/maven2/ant-contrib/ant-contrib/1.0b3/ant-contrib-1.0b3.jar"/>
   </target>
 
   <target name="clean">
     <delete dir="${work.dir}"/>
+    <delete>
+      <fileset dir="." includes="*.dmg"/>
+    </delete>
   </target>
 
   <target name="init" depends="clean,bootstrap">

@@ -755,12 +755,14 @@ Section "Main" SectionMain
   CreateDirectory "$INSTDIR"
   SetOutPath "$INSTDIR"
   File /a start.jar
+  File /a start.ini
   File /a GPL.txt
   File /a LICENSE.txt
   File /a README.txt
   File /a RUNNING.txt
   File /r data_dir
   File /r etc
+  File /r modules
   File /r lib
   File /r logs
   File /r resources
@@ -860,6 +862,7 @@ Section -FinishSection
 
   ${EndIf}
 
+  SetOutPath "$INSTDIR"
   CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Start GeoServer.lnk" "$INSTDIR\bin\startup.bat" \
                  "" "$INSTDIR\gs.ico" 0
   CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Stop GeoServer.lnk" "$INSTDIR\bin\shutdown.bat" \
@@ -920,6 +923,7 @@ Section Uninstall
   RMDir /r "$INSTDIR\data_dir"
   RMDir /r "$INSTDIR\bin"
   RMDir /r "$INSTDIR\etc"
+  RMDir /r "$INSTDIR\modules"
   RMDir /r "$INSTDIR\lib"
   RMDir /r "$INSTDIR\logs"
   RMDir /r "$INSTDIR\resources"

@@ -104,7 +104,7 @@ Both the 2 configurations should define the following parameters:
 	#. Map configuration must have a fixed size defined in Mb
 	#. Map configuration must have **USED_HEAP_SIZE** as *MaxSizePolicy* 
 	
-.. warning:: Be careful that all the cluster instances have the same configuration, because different configurations may result in a wrong Hazelcast behaviour. 
+.. warning:: Be careful that all the cluster instances have the same configuration, because different configurations may result in incorrect Hazelcast behaviour. 
 .. warning:: In order to avoid missing tiles, the cluster instances should access the same data.
 
 Configuration with *hazelcast.xml*
@@ -199,8 +199,9 @@ In this section are described other available configuration parameters to config
 					<max-idle-seconds>0</max-idle-seconds>
 				
 				</map>
+
 		Where *time-to-live-seconds* indicates how many seconds an entry can stay in cache and *max-idle-seconds* indicates how many seconds an entry may be not accessed before being evicted.
-		
+
 	* Near Cache.
 	
 			.. code-block:: xml
@@ -231,6 +232,6 @@ In this section are described other available configuration parameters to config
 				
 				</map>	
 
-		Near Cache is a local cache for each cluster instance which is used for caching entries in the other cluster instances. This behaviour avoids to request those entries each time by executing a remote call. This feature could be helpful in order to improve Hazelcast Cache performances.
+		Near Cache is a local cache for each cluster instance which is used for caching entries in the other cluster instances. This behaviour avoids requesting those entries each time by executing a remote call. This feature could be helpful in order to improve Hazelcast Cache performance.
 		
 		.. note:: A value of *max-size* bigger or equal to Integer.MAX_VALUE cannot be used in order to avoid an uncontrollable growth of the cache size.

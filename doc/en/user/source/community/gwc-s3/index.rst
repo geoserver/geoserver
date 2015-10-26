@@ -1,4 +1,4 @@
-.. _community_geofence_server:
+.. _community_s3_tilecache:
 
 GWC S3 BlobStore plugin
 ========================

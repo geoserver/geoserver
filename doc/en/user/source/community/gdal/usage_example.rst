@@ -1,3 +1,5 @@
+:orphan:
+
 For example, the above produces the following output using gdal 1.11.2 compiled with libgeotiff 1.4.0, libpng 1.6,  libjpeg-turbo 1.3.1, libjasper 1.900.1 and libecwj2 3.3::
 
    Usage: gdal_translate [--help-general] [--long-usage]

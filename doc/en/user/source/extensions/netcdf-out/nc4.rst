@@ -1,3 +1,5 @@
+:orphan:
+
 .. _nc4:
 
 Installing required NetCDF-4 Native libraries

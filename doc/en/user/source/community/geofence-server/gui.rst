@@ -1,4 +1,4 @@
-.. _rest_api_geofence_server:
+.. geofence_server_gui:
 
 GeoFence Server GUI
 ===================

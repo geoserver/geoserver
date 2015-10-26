@@ -35,6 +35,7 @@ Configuring a GRIB data store
      -  
    * - ``URL``
      - 
+
 -----------------------------
 
 .. note:: Note that internally the GRIB extension uses the NetCDF reader, which supports also GRIB data.

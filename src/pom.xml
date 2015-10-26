@@ -877,12 +877,12 @@
    <dependency>
      <groupId>org.slf4j</groupId>
      <artifactId>slf4j-api</artifactId>
-     <version>1.6.1</version>
+     <version>${slf4j.version}</version>
    </dependency>
    <dependency>
      <groupId>org.slf4j</groupId>
      <artifactId>slf4j-log4j12</artifactId>
-     <version>1.7.10</version>
+     <version>${slf4j.version}</version>
    </dependency>
    <dependency>
     <groupId>log4j</groupId>
@@ -1647,6 +1647,7 @@
   <hibernate-generic-dao-version>1.1.0</hibernate-generic-dao-version>
   <hibernate-spatial-version>1.1.1</hibernate-spatial-version>
   <hibernate-spatial-h2-version>1.1.1</hibernate-spatial-h2-version>
+  <slf4j.version>1.7.10</slf4j.version>
  </properties>
 
  <profiles>

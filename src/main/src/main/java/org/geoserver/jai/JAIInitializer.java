@@ -1,17 +1,16 @@
-/* (c) 2014-2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.jai;
 
-import it.geosolutions.jaiext.JAIExt;
-
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
 import javax.media.jai.JAI;
+import javax.media.jai.TileCache;
 
 import org.geoserver.config.ConfigurationListenerAdapter;
 import org.geoserver.config.GeoServer;
@@ -23,7 +22,7 @@ import org.geotools.coverage.processing.CoverageProcessor;
 import org.geotools.image.ImageWorker;
 import org.geotools.image.jai.Registry;
 
-import com.sun.media.jai.util.SunTileCache;
+import it.geosolutions.jaiext.JAIExt;
 
 /**
  * Initializes JAI functionality from configuration.
@@ -107,7 +106,7 @@ public class JAIInitializer implements GeoServerInitializer {
         }
         
         // Setting up Cache Capacity
-        SunTileCache jaiCache = (SunTileCache) jaiDef.getTileCache();
+        TileCache jaiCache = jaiDef.getTileCache();
         jai.setTileCache( jaiCache );
         
         long jaiMemory = (long) (jai.getMemoryCapacity() * Runtime.getRuntime().maxMemory());

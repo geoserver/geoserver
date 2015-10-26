@@ -17,15 +17,25 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.mortbay.jetty</groupId>
-      <artifactId>start</artifactId>
-      <version>6.0.2</version>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-start</artifactId>
+      <version>${jetty.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.mortbay.jetty</groupId>
-      <artifactId>jetty</artifactId>
-      <version>6.0.2</version>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-server</artifactId>
+      <version>${jetty.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-webapp</artifactId>
+      <version>${jetty.version}</version>
       <scope>provided</scope>
     </dependency>
   </dependencies>
+
+  <properties>
+    <jetty.version>9.2.13.v20150730</jetty.version>
+  </properties>
 </project>

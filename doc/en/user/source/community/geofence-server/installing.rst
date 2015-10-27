@@ -1,3 +1,5 @@
+.. _geofence_server_install:
+
 Installing the GeoServer GeoFence Server extension
 ==================================================
 

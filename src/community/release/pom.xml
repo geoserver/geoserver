@@ -197,7 +197,7 @@
       <!-- remove some unwanted dependencies that get pulled over -->
        <tasks>
         <delete>
-         <fileset dir="${project.build.directory}/dependency" includes="servlet-api-2.4.jar,core*.jar"/>
+         <fileset dir="${project.build.directory}/dependency" includes="servlet-api-*.jar,core*.jar"/>
         </delete>
        </tasks>
       </configuration>

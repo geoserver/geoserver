@@ -19,12 +19,27 @@
  <name>GeoServer Release Module</name>
  <dependencies>
   <dependency>
-   <groupId>org.mortbay.jetty</groupId>
-   <artifactId>jetty</artifactId>
+   <groupId>org.eclipse.jetty</groupId>
+   <artifactId>jetty-server</artifactId>
   </dependency>
   <dependency>
-   <groupId>org.mortbay.jetty</groupId>
+   <groupId>org.eclipse.jetty</groupId>
    <artifactId>jetty-util</artifactId>
+  </dependency>
+  <dependency>
+   <groupId>org.eclipse.jetty</groupId>
+   <artifactId>jetty-webapp</artifactId>
+   <version>${jetty.version}</version>
+  </dependency>
+  <dependency>
+   <groupId>org.eclipse.jetty</groupId>
+   <artifactId>jetty-deploy</artifactId>
+   <version>${jetty.version}</version>
+  </dependency>
+  <dependency>
+   <groupId>org.eclipse.jetty.toolchain</groupId>
+   <artifactId>jetty-schemas</artifactId>
+   <version>3.1.M0</version>
   </dependency>
   <!--dependency>
    <groupId>org.mortbay.jetty</groupId>
@@ -341,7 +356,7 @@
       <!-- remove some unwanted dependencies that get pulled over -->
        <tasks>
         <delete>
-         <fileset dir="${project.build.directory}/dependency" includes="servlet-api-2.4.jar,core*.jar"/>
+         <fileset dir="${project.build.directory}/dependency" includes="servlet-api-*.jar,core*.jar"/>
         </delete>
        </tasks>
       </configuration>

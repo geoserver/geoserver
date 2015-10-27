@@ -28,12 +28,17 @@ import javax.security.auth.x500.X500Principal;
 import org.bouncycastle.jce.X509Principal;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.x509.X509V3CertificateGenerator;
-import org.mortbay.jetty.Connector;
-import org.mortbay.jetty.Server;
-import org.mortbay.jetty.bio.SocketConnector;
-import org.mortbay.jetty.security.SslSocketConnector;
-import org.mortbay.jetty.webapp.WebAppContext;
-import org.mortbay.xml.XmlConfiguration;
+import org.eclipse.jetty.http.HttpVersion;
+import org.eclipse.jetty.server.Connector;
+import org.eclipse.jetty.server.HttpConfiguration;
+import org.eclipse.jetty.server.HttpConnectionFactory;
+import org.eclipse.jetty.server.SecureRequestCustomizer;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.server.SslConnectionFactory;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
+import org.eclipse.jetty.webapp.WebAppContext;
+import org.eclipse.jetty.xml.XmlConfiguration;
 import org.springframework.security.web.authentication.preauth.x509.SubjectDnX509PrincipalExtractor;
 
 
@@ -52,16 +57,14 @@ public class Start {
         final Server jettyServer = new Server();
 
         try {
-            SocketConnector conn = new SocketConnector();
-            String portVariable = System.getProperty("jetty.port");
-            int port = parsePort(portVariable);
-            if(port <= 0)
-            	port = 8080;
-            conn.setPort(port);
-            conn.setAcceptQueueSize(100);
-            conn.setMaxIdleTime(1000 * 60 * 60);
-            conn.setSoLingerTime(-1);
-            
+            HttpConfiguration httpConfig = new HttpConfiguration();
+
+            ServerConnector http = new ServerConnector(jettyServer, new HttpConnectionFactory(httpConfig));
+            http.setPort(Integer.getInteger("jetty.port", 8080));
+            http.setAcceptQueueSize(100);
+            http.setIdleTimeout(1000 * 60 * 60);
+            http.setSoLingerTime(-1);
+
             // Use this to set a limit on the number of threads used to respond requests
             // BoundedThreadPool tp = new BoundedThreadPool();
             // tp.setMinThreads(8);
@@ -70,19 +73,21 @@ public class Start {
             
             // SSL host name given ?
             String sslHost = System.getProperty("ssl.hostname");
-            SslSocketConnector sslConn = null;
+            ServerConnector https = null;
             if (sslHost!=null && sslHost.length()>0) {   
                 Security.addProvider(new BouncyCastleProvider());
-                sslConn = getSslSocketConnector(sslHost);
+                SslContextFactory ssl = createSSLContextFactory(sslHost);
+
+                HttpConfiguration httpsConfig = new HttpConfiguration(httpConfig);
+                httpsConfig.addCustomizer(new SecureRequestCustomizer());
+
+                https = new ServerConnector(jettyServer, new SslConnectionFactory(ssl, HttpVersion.HTTP_1_1.asString()), 
+                    new HttpConnectionFactory(httpsConfig));
+                https.setPort(8443);
             }
+
             
-            if (sslConn==null) {
-                jettyServer.setConnectors(new Connector[] { conn });
-            }
-            else {
-                conn.setConfidentialPort(sslConn.getPort());
-                jettyServer.setConnectors(new Connector[] { conn,sslConn });
-            }
+            jettyServer.setConnectors(https != null ? new Connector[]{http, https} : new Connector[]{http});
 
             /*Constraint constraint = new Constraint();
             constraint.setName(Constraint.__BASIC_AUTH);;
@@ -162,45 +167,37 @@ public class Start {
         }
     }
 
-	private static int parsePort(String portVariable) {
-		if(portVariable == null)
-			return -1;
-	    try {
-	    	return Integer.valueOf(portVariable).intValue();
-	    } catch(NumberFormatException e) {
-	    	return -1;
-	    }
-	}
-	
-	private static SslSocketConnector getSslSocketConnector(String hostname) {
-	    
-	    String  password= "changeit";
-	    SslSocketConnector conn = new SslSocketConnector();
-	    conn.setPort(8443);
-	    File userHome = new File(System.getProperty("user.home"));
-	    File geoserverDir = new File(userHome,".geoserver");
-	    if (geoserverDir.exists()==false)
-	        geoserverDir.mkdir();	    
-	    File keyStoreFile = new File(geoserverDir,"keystore.jks");
-	    try {
-                assureSelfSignedServerCertificate(hostname,keyStoreFile,password);
-            } catch (Exception e) {
-                log.log(Level.WARNING, "NO SSL available", e);
-                return null;                
-            }
-	    conn.setKeystore(keyStoreFile.getAbsolutePath());
-	    conn.setKeyPassword(password);
-	    conn.setPassword(password);
-	    File javaHome = new File(System.getProperty("java.home"));
-	    File cacerts = new File(javaHome,"lib");
-	    cacerts =  new File(cacerts,"security");
-	    cacerts =  new File(cacerts,"cacerts");
-	    
-            if (cacerts.exists()== false) 
-                return null;
-	    conn.setTruststore(cacerts.getAbsolutePath());
-	    conn.setTrustPassword("changeit");
-	    return conn;
+    private static SslContextFactory createSSLContextFactory(String hostname) {
+        String  password= "changeit";
+
+        File userHome = new File(System.getProperty("user.home"));
+        File geoserverDir = new File(userHome,".geoserver");
+        if (!geoserverDir.exists()) {
+            geoserverDir.mkdir();
+        }
+
+        File keyStoreFile = new File(geoserverDir,"keystore.jks");
+        try {
+            assureSelfSignedServerCertificate(hostname,keyStoreFile,password);
+        } catch (Exception e) {
+            log.log(Level.WARNING, "NO SSL available", e);
+            return null;
+        }
+        SslContextFactory ssl = new SslContextFactory();
+        ssl.setKeyStorePath(keyStoreFile.getAbsolutePath());
+        ssl.setKeyStorePassword(password);
+
+        File javaHome = new File(System.getProperty("java.home"));
+        File cacerts = new File(javaHome, "lib").toPath().resolve("security/cacerts").toFile();
+
+        if (!cacerts.exists()) {
+            return null;
+        }
+
+        ssl.setTrustStorePath(cacerts.getAbsolutePath());
+        ssl.setTrustStorePassword("changeit");
+
+        return ssl;
 	}
 	
 	private static void assureSelfSignedServerCertificate(String hostname, File keyStoreFile, String password) throws Exception {

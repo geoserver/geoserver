@@ -41,11 +41,11 @@ import javax.swing.event.MenuListener;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 
-import org.mortbay.jetty.Connector;
-import org.mortbay.jetty.Server;
-import org.mortbay.jetty.bio.SocketConnector;
-import org.mortbay.jetty.webapp.WebAppContext;
-import org.mortbay.start.Main;
+import org.eclipse.jetty.server.Connector;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.start.Main;
+import org.eclipse.jetty.webapp.WebAppContext;
 
 /**
  * Swing application which controls a running instance of GeoServer.
@@ -83,12 +83,8 @@ public class GeoServerConsole {
         }
         
         void initServer(Server server ) {
-            SocketConnector conn = new SocketConnector();
-            String portVariable = System.getProperty("jetty.port");
-            int port = parsePort(portVariable);
-            if(port <= 0)
-                port = 8080;
-            conn.setPort(port);
+            ServerConnector conn = new ServerConnector(server);
+            conn.setPort(Integer.getInteger("jetty.port", 8080));
             
             //conn.setThreadPool(tp);
             conn.setAcceptQueueSize(100);
@@ -99,16 +95,6 @@ public class GeoServerConsole {
             wah.setWar("src/main/webapp");
             server.setHandler(wah);
             wah.setTempDirectory(new File("target/work"));
-        }
-        
-        int parsePort(String portVariable) {
-            if(portVariable == null)
-                    return -1;
-            try {
-                return Integer.valueOf(portVariable).intValue();
-            } catch(NumberFormatException e) {
-                return -1;
-            }
         }
 
         public void start() throws Exception {
@@ -133,10 +119,14 @@ public class GeoServerConsole {
      */
     public static class ProductionHandler implements Handler {
 
-        Main main = new Main();
+        Main main;
         
+        public ProductionHandler() throws IOException {
+            main = new Main();
+        }
+
         public void start() throws Exception {
-            main.start(new String[]{});
+            main.start(main.processCommandLine(new String[]{}));
         }
         public boolean isStarted() throws Exception {
             //attempt a connection

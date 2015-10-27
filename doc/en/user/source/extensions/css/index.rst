@@ -16,6 +16,8 @@ The CSS extension adds an alternative style editor to GeoServer that uses a CSS-
    multivalueprops
    properties
    valuetypes
+   directives
    styledmarks
+   cascading
    cookbook/index
    examples/index

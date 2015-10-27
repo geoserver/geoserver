@@ -32,12 +32,12 @@ public class SessionTest extends ScriptIntTestSupport {
         response = 
             putAsServletResponse("/script/sessions/js/" + sid, "print('Hello World!');", "text/plain");
 
-        assertEquals("Hello World!", response.getOutputStreamContent());
+        assertEquals("Hello World!", response.getOutputStreamContent().trim()); // print is a Rhino-specific function
 
         putAsServletResponse("/script/sessions/js/" + sid, "var x = 3;", "text/plain");
         response = 
             putAsServletResponse("/script/sessions/js/" + sid, "print(x);", "text/plain");
-        assertEquals("3", response.getOutputStreamContent());
+        assertEquals("3", response.getOutputStreamContent().trim());
     }
 
     public void testGet() throws Exception {

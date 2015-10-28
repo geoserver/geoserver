@@ -908,27 +908,11 @@ public class Importer implements DisposableBean, ApplicationListener {
 
             addToCatalog(task);
             
-            //Calculate bounds, if applicable
             if (task.getLayer().getResource() instanceof FeatureTypeInfo) {
                 FeatureTypeInfo featureType = (FeatureTypeInfo) task.getLayer().getResource();
                 FeatureTypeInfo resource = getCatalog().getResourceByName(
                         featureType.getName(), FeatureTypeInfo.class);
-                if (resource.getNativeBoundingBox().isEmpty()
-                        || resource.getMetadata().get("recalculate-bounds").equals(Boolean.TRUE)) {
-                    
-                    // force computation
-                    CatalogBuilder cb = new CatalogBuilder(getCatalog());
-                    ReferencedEnvelope nativeBounds = cb.getNativeBounds(resource);
-                    resource.setNativeBoundingBox(nativeBounds);
-                    resource.setLatLonBoundingBox(cb.getLatLonBounds(nativeBounds,
-                            resource.getCRS()));
-                    getCatalog().save(resource);
-                    
-                    //Do not re-calculate on subsequent imports
-                    if (resource.getMetadata().get("recalculate-bounds") != null) {
-                        resource.getMetadata().remove("recalculate-bounds");
-                    }
-                }
+                calculateBounds(resource);
             }
 
             // apply post transform
@@ -984,28 +968,9 @@ public class Importer implements DisposableBean, ApplicationListener {
                     if (task.getUpdateMode() == UpdateMode.CREATE) {
                         addToCatalog(task);
                     }
-    
-                    // verify that the newly created featuretype's resource
-                    // has bounding boxes computed - this might be required
-                    // for csv or other uploads that have a geometry that is
-                    // the result of a transform. there may be another way...
                     FeatureTypeInfo resource = getCatalog().getResourceByName(
                             featureType.getQualifiedName(), FeatureTypeInfo.class);
-                    if (resource.getNativeBoundingBox().isEmpty()
-                            || resource.getMetadata().get("recalculate-bounds").equals(Boolean.TRUE)) {
-                        // force computation
-                        CatalogBuilder cb = new CatalogBuilder(getCatalog());
-                        ReferencedEnvelope nativeBounds = cb.getNativeBounds(resource);
-                        resource.setNativeBoundingBox(nativeBounds);
-                        resource.setLatLonBoundingBox(cb.getLatLonBounds(nativeBounds,
-                                resource.getCRS()));
-                        getCatalog().save(resource);
-                        
-                        //Do not re-calculate on subsequent imports
-                        if (resource.getMetadata().get("recalculate-bounds") != null) {
-                            resource.getMetadata().remove("recalculate-bounds");
-                        }
-                    }
+                    calculateBounds(resource);
                 }
             }
             catch(Exception e) {
@@ -1055,6 +1020,42 @@ public class Importer implements DisposableBean, ApplicationListener {
 
         task.setState(canceled ? ImportTask.State.CANCELED : ImportTask.State.COMPLETE);
 
+    }
+    
+    /**
+     * (Re)calculates the bounds for a FeatureTypeInfo.
+     * Bounds will be calculated if:
+     * <li> The native bounds of the resource are null or empty
+     * <li> The resource has a metadata entry "recalculate-bounds"="true"<br><br>
+     * 
+     * Otherwise, this method has no effect.<br><br>
+     * 
+     * If the metadata entry "recalculate-bounds"="true" exists, 
+     * it will be removed after bounds are calculated.<br><br>
+     * 
+     * This is currently used by csv / kml uploads that have a geometry that may be the result of a 
+     * transform, and by JDBC imports which wait to calculate bounds until after the layers that 
+     * will be imported have been chosen.
+     * 
+     * @param resource The resource to calculate the bounds for
+     */
+    protected void calculateBounds(FeatureTypeInfo resource) throws IOException {
+        if (resource.getNativeBoundingBox() == null || resource.getNativeBoundingBox().isEmpty()
+                || Boolean.TRUE.equals(resource.getMetadata().get("recalculate-bounds"))
+                || "true".equals(resource.getMetadata().get("recalculate-bounds"))) {
+            // force computation
+            CatalogBuilder cb = new CatalogBuilder(getCatalog());
+            ReferencedEnvelope nativeBounds = cb.getNativeBounds(resource);
+            resource.setNativeBoundingBox(nativeBounds);
+            resource.setLatLonBoundingBox(cb.getLatLonBounds(nativeBounds,
+                    resource.getCRS()));
+            getCatalog().save(resource);
+            
+            //Do not re-calculate on subsequent imports
+            if (resource.getMetadata().get("recalculate-bounds") != null) {
+                resource.getMetadata().remove("recalculate-bounds");
+            }
+        }
     }
 
     private void checkSingleHarvest(List<HarvestedSource> harvests) throws IOException {

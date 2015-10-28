@@ -86,6 +86,7 @@ import sun.security.action.GetBooleanAction;
 
 import com.google.common.collect.Iterables;
 import com.vividsolutions.jts.geom.Envelope;
+import org.geoserver.wfs.json.JSONType;
 
 /**
  * Geotools xml framework based encoder for a Capabilities WMS 1.1.1 document.
@@ -102,7 +103,8 @@ public class GetCapabilitiesTransformer extends TransformerBase {
 
     /** the WMS supported exception formats */
     static final String[] EXCEPTION_FORMATS = { "application/vnd.ogc.se_xml",
-            "application/vnd.ogc.se_inimage", "application/vnd.ogc.se_blank" };
+            "application/vnd.ogc.se_inimage", "application/vnd.ogc.se_blank",
+            "application/json"};
 
     /**
      * Set of supported metadta link types. Links of any other type will be ignored to honor the DTD
@@ -566,7 +568,9 @@ public class GetCapabilitiesTransformer extends TransformerBase {
             for (String exceptionFormat : GetCapabilitiesTransformer.EXCEPTION_FORMATS) {
                 element("Format", exceptionFormat);
             }
-
+            if (JSONType.isJsonpEnabled()) {
+                element("Format", JSONType.jsonp);
+            }
             end("Exception");
         }
 

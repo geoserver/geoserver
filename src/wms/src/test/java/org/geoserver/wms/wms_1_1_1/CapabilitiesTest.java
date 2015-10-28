@@ -33,6 +33,7 @@ import org.geoserver.config.ContactInfo;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.wfs.json.JSONType;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSTestSupport;
 import org.junit.Test;
@@ -411,7 +412,21 @@ public class CapabilitiesTest extends WMSTestSupport {
         assertTrue(xpath.evaluate("//Exception/Format[1]", doc).equals("application/vnd.ogc.se_xml"));
         assertTrue(xpath.evaluate("//Exception/Format[2]", doc).equals("application/vnd.ogc.se_inimage"));
         assertTrue(xpath.evaluate("//Exception/Format[3]", doc).equals("application/vnd.ogc.se_blank"));
-        assertTrue(xpath.getMatchingNodes("//Exception/Format", doc).getLength() == 3);
+        assertTrue(xpath.evaluate("//Exception/Format[4]", doc).equals("application/json"));
+        assertTrue(xpath.getMatchingNodes("//Exception/Format", doc).getLength() >= 4);
+
+        boolean jsonpOriginal = JSONType.isJsonpEnabled();
+        try {
+            JSONType.setJsonpEnabled(true);
+            doc = getAsDOM("wms?service=WMS&request=getCapabilities&version=1.1.1", true);
+            assertTrue(xpath.evaluate("//Exception/Format[5]", doc).equals("text/javascript"));
+            assertTrue(xpath.getMatchingNodes("//Exception/Format", doc).getLength() == 5);
+            JSONType.setJsonpEnabled(false);
+            doc = getAsDOM("wms?service=WMS&request=getCapabilities&version=1.1.1", true);
+            assertTrue(xpath.getMatchingNodes("//Exception/Format", doc).getLength() == 4);
+        } finally {
+            JSONType.setJsonpEnabled(jsonpOriginal);
+        }
     }
 
     @org.junit.Test 

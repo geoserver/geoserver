@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import static junit.framework.Assert.assertTrue;
 
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
@@ -35,6 +36,7 @@ import org.geoserver.config.ContactInfo;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.wfs.json.JSONType;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSTestSupport;
 import org.geoserver.wms.map.OpenLayersMapOutputFormat;
@@ -355,6 +357,28 @@ public class CapabilitiesIntegrationTest extends WMSTestSupport {
         assertXpathEvaluatesTo("none", base + "wms:AccessConstraints", doc);
     }
     
+    @Test
+    public void testExceptions() throws Exception {
+        Document doc = getAsDOM("wms?service=WMS&request=getCapabilities&version=1.3.0", true);
+        assertXpathEvaluatesTo("XML", "wms:WMS_Capabilities/wms:Capability/wms:Exception/wms:Format[1]", doc);
+        assertXpathEvaluatesTo("INIMAGE", "wms:WMS_Capabilities/wms:Capability/wms:Exception/wms:Format[2]", doc);
+        assertXpathEvaluatesTo("BLANK", "wms:WMS_Capabilities/wms:Capability/wms:Exception/wms:Format[3]", doc);
+        assertXpathEvaluatesTo("JSON", "wms:WMS_Capabilities/wms:Capability/wms:Exception/wms:Format[4]", doc);
+
+        boolean jsonpOriginal = JSONType.isJsonpEnabled();
+        try {
+            JSONType.setJsonpEnabled(true);
+            doc = getAsDOM("wms?service=WMS&request=getCapabilities&version=1.3.0", true);
+            assertXpathEvaluatesTo("JSONP", "wms:WMS_Capabilities/wms:Capability/wms:Exception/wms:Format[5]", doc);
+            assertXpathEvaluatesTo("5", "count(wms:WMS_Capabilities/wms:Capability/wms:Exception/wms:Format)", doc);
+            JSONType.setJsonpEnabled(false);
+            doc = getAsDOM("wms?service=WMS&request=getCapabilities&version=1.3.0", true);
+            assertXpathEvaluatesTo("4", "count(wms:WMS_Capabilities/wms:Capability/wms:Exception/wms:Format)", doc);
+        } finally {
+            JSONType.setJsonpEnabled(jsonpOriginal);
+        }
+    }
+
     @org.junit.Test
     public void testQueryable() throws Exception {
         LayerInfo lines = getCatalog().getLayerByName(MockData.LINES.getLocalPart());

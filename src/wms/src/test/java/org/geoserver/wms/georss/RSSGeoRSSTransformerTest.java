@@ -60,12 +60,13 @@ public class RSSGeoRSSTransformerTest extends WMSTestSupport {
         assertEquals("Test Abstract", description.item(0).getChildNodes().item(0).getNodeValue());
     }
 	
+    @Test
     public void testLinkTemplate() throws Exception {
         WMSMapContent map = new WMSMapContent(createGetMapRequest(MockData.BASIC_POLYGONS));
         map.addLayer(createMapLayer(MockData.BASIC_POLYGONS));
 
 		try {
-			File linkFile = new File(testData.getDataDirectoryRoot().getPath() + "/featureTypes/cite_BasicPolygons/link.ftl");
+			File linkFile = new File(testData.getDataDirectoryRoot().getAbsolutePath() + "/workspaces/cite/cite/BasicPolygons/link.ftl");
 			FileOutputStream out = new FileOutputStream(linkFile);
 			out.write("http://dummp.com".getBytes());
 			out.close();
@@ -93,6 +94,7 @@ public class RSSGeoRSSTransformerTest extends WMSTestSupport {
         }
     }
 
+    @Test
     public void testLatLongInternal() throws Exception {
         WMSMapContent map = new WMSMapContent(createGetMapRequest(MockData.BASIC_POLYGONS));
         map.addLayer(createMapLayer(MockData.BASIC_POLYGONS));

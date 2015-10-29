@@ -79,7 +79,7 @@
     <artifactId>gs-wcs2_0</artifactId>
   </dependency>
   <dependency>
-    <groupId>org.geoserver.extensions</groupId>
+    <groupId>org.geoserver.extension</groupId>
     <artifactId>gs-netcdf</artifactId>
 	<version>${project.version}</version>
   </dependency>

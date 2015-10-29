@@ -248,8 +248,7 @@ public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
 
     protected ResourceAccessManager buildManager(String propertyFile,
             ResourceAccessManagerWrapper wrapper) throws Exception {
-        ResourceAccessManager manager = new DataAccessManagerAdapter(
-                buildLegacyAccessManager(propertyFile));
+        ResourceAccessManager manager = buildAccessManager(propertyFile);
 
         if (wrapper != null) {
             wrapper.setDelegate(manager);
@@ -269,7 +268,7 @@ public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
         return manager;
     }
 
-    protected DataAccessManager buildLegacyAccessManager(String propertyFile) throws Exception {
+    protected DefaultResourceAccessManager buildAccessManager(String propertyFile) throws Exception {
         Properties props = new Properties();
         props.load(getClass().getResourceAsStream(propertyFile));
         return new DefaultResourceAccessManager(new MemoryDataAccessRuleDAO(catalog, props));

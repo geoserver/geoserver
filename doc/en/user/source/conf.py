@@ -63,7 +63,13 @@ today_fmt = '%B %d, %Y'
 
 # List of directories, relative to source directories, that shouldn't be searched
 # for source files.
-exclude_trees = []
+#exclude_trees = []
+
+# A list of glob-style patterns that should be excluded when looking for source files.
+# They are matched against the source file names relative to the source directory,
+# using slashes as directory separators on all platforms.
+# New in Sphinx 1.0, makes unused_docs, exclude_trees and exclude_dirnames obsolete.
+exclude_patterns = ['community/gdal/usage_example.rst']
 
 # The reST default role (used for this markup: `text`) to use for all documents.
 #default_role = None

@@ -38,8 +38,7 @@ public class LocalWorkspaceSecureCatalogTest extends AbstractAuthorizationTest {
     }
 
     CatalogFilterAccessManager setupAccessManager() throws Exception {
-        DataAccessManager def = buildLegacyAccessManager("wideOpen.properties");
-        ResourceAccessManager defAsResourceManager = new DataAccessManagerAdapter(def);
+        ResourceAccessManager defAsResourceManager = buildAccessManager("wideOpen.properties");
         CatalogFilterAccessManager mgr = new CatalogFilterAccessManager();
         mgr.setCatalogFilters(Collections.singletonList(new LocalWorkspaceCatalogFilter(catalog)));
         mgr.setDelegate(defAsResourceManager);

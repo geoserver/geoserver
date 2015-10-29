@@ -250,6 +250,13 @@ public class DefaultResourceAccessManager implements ResourceAccessManager, Data
 
     @Override
     public Filter getSecurityFilter(Authentication user, Class<? extends CatalogInfo> clazz) {
+        if(getMode() == CatalogMode.CHALLENGE) {
+            // If we're in CHALLENGE mode, we cannot pre-filter
+            // for the other types we have no clue, use the in memory filtering
+            return InMemorySecurityFilter.buildUserAccessFilter(this, user);
+        }
+
+        
         if (WorkspaceInfo.class.isAssignableFrom(clazz)) {
             // base access
             boolean rootAccess = canAccess(user, root);

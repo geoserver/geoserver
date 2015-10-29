@@ -28,7 +28,7 @@ For example:
 
   
 Supported directives
----------------
+--------------------
 
 .. list-table::
     :widths: 15 15 60 10

@@ -132,6 +132,7 @@ public abstract class AbstractToolConfigurator implements ApplicationListener<Co
         xstream.alias("ToolConfiguration", ToolConfiguration.class);
         xstream.alias("Format", Format.class);
         xstream.allowTypes(new Class[] { ToolConfiguration.class, Format.class });
+        xstream.allowTypeHierarchy(FormatAdapter.class);
         xstream.addImplicitCollection(Format.class, "options", "option", String.class);
         NamedMapConverter environmentConverter = new NamedMapConverter(xstream
                 .getMapper(), "variable", "name", String.class, "value", String.class,

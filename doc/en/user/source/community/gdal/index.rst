@@ -37,7 +37,7 @@ The gdal_translate utility is usually able to convert more formats than the defa
 
 and you'll get the full set of options usable by the program, along with the supported formats.
 
-.. include:: usage_example.rst
+.. include:: usage_example.txt
 
 The full list of formats that gdal_translate is able to support is available on the `GDAL site <http://www.gdal.org/formats_list.html>`_. Mind that this output format can handle only outputs that are file based and that do support creation. So, for example, you won't be able to use the PostGIS Raster output (since it's database based) or the Arc/Info Binary Grid (creation not supported).
 

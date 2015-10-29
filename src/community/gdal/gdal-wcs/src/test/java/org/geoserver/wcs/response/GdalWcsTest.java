@@ -8,6 +8,10 @@ package org.geoserver.wcs.response;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assume.assumeTrue;
 
+import javax.xml.namespace.QName;
+
+import org.geoserver.data.test.MockData;
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wcs2_0.kvp.WCSKVPTestSupport;
 import org.junit.Before;
 import org.junit.Test;
@@ -16,6 +20,18 @@ import org.w3c.dom.Document;
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
 public class GdalWcsTest extends WCSKVPTestSupport {
+    
+    private static final QName GRAYALPHA = new QName(MockData.SF_URI, "grayAlpha", MockData.SF_PREFIX);
+    private static final QName PALETTED = new QName(MockData.SF_URI, "paletted", MockData.SF_PREFIX);
+
+    
+    @Override
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        super.onSetUp(testData);
+        testData.addRasterLayer(GRAYALPHA, "gray_alpha.tif", "tif", null, GdalWcsTest.class, getCatalog());
+        testData.addRasterLayer(PALETTED, "paletted.tif", "tif", null, GdalWcsTest.class, getCatalog());
+    }
+
 
     @Before
     public void setup() {
@@ -64,6 +80,23 @@ public class GdalWcsTest extends WCSKVPTestSupport {
 
         assertEquals("application/pdf", response.getContentType());
     }
+    
+    @Test
+    public void testGrayAlphaGetCoveragePdf() throws Exception {
+        MockHttpServletResponse response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1"
+                + "&coverageId=" + getLayerId(GRAYALPHA) + "&Format=application/pdf");
+
+        assertEquals("application/pdf", response.getContentType());
+    }
+    
+    @Test
+    public void testPalettedGetCoveragePdf() throws Exception {
+        MockHttpServletResponse response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1"
+                + "&coverageId=" + getLayerId(PALETTED) + "&Format=application/pdf");
+
+        assertEquals("application/pdf", response.getContentType());
+    }
+
 
     @Test
     public void testGetCoveragePdfByName() throws Exception {

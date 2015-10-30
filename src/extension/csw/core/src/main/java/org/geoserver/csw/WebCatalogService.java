@@ -1,10 +1,13 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 
 package org.geoserver.csw;
+
+import java.io.File;
+import java.util.List;
 
 import net.opengis.cat.csw20.CapabilitiesType;
 import net.opengis.cat.csw20.DescribeRecordType;
@@ -81,5 +84,14 @@ public interface WebCatalogService {
      * @throws CSWException
      */
     HarvestResponseType transaction(TransactionType request) throws ServiceException;
+    
+    /**
+     * Runs a direct download request
+     * 
+     * @param request
+     * @param response
+     * @throws CSWException
+     */
+    List<File> directDownload(DirectDownloadType type) throws ServiceException;
 
 }

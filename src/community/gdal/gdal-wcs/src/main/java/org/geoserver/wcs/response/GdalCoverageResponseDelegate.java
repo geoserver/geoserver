@@ -20,6 +20,7 @@ import java.util.zip.ZipOutputStream;
 import org.geoserver.config.GeoServer;
 import org.geoserver.data.util.IOUtils;
 import org.geoserver.ogr.core.Format;
+import org.geoserver.ogr.core.FormatAdapter;
 import org.geoserver.ogr.core.FormatConverter;
 import org.geoserver.ogr.core.ToolWrapper;
 import org.geoserver.ogr.core.ToolWrapperFactory;
@@ -317,6 +318,10 @@ public class GdalCoverageResponseDelegate implements CoverageResponseDelegate, F
 
         // figure out which output format we're going to generate
         Format format = getGdalFormat(outputFormat);
+        
+        for (FormatAdapter adapter: format.getFormatAdapters()) {
+            coverage = (GridCoverage2D) adapter.adapt(coverage);
+        }
 
         // create the first temp directory, used for dumping gs generated
         // content

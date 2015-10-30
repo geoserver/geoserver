@@ -13,6 +13,8 @@ import org.geoserver.ogr.core.OutputType;
 import org.geoserver.ogr.core.ToolConfiguration;
 import org.geoserver.ogr.core.ToolWrapperFactory;
 
+import com.thoughtworks.xstream.XStream;
+
 /**
  * Loads the gdal_translate.xml configuration file and configures the output format accordingly.
  *
@@ -27,12 +29,15 @@ public class GdalConfigurator extends AbstractToolConfigurator {
     static {
         // assume it's in the classpath and GDAL_DATA is properly set in the enviroment
         // and add some default formats
+        Format pdfFormat = new Format("PDF", "GDAL-PDF", ".pdf", true, "application/pdf");
+        pdfFormat.getFormatAdapters().add(new GrayAlphaToRGBA());
+        pdfFormat.getFormatAdapters().add(new PalettedToRGB());
         DEFAULT = new ToolConfiguration(
                 "gdal_translate",
                 new HashMap<String, String>(),
                 new Format[] {
                     new Format("JPEG2000", "GDAL-JPEG2000", ".jp2", true, "image/jp2"),
-                    new Format("PDF", "GDAL-PDF", ".pdf", true, "application/pdf"),
+                    pdfFormat,
                     new Format("AAIGrid", "GDAL-ArcInfoGrid", ".asc", false, null),
                     new Format("XYZ", "GDAL-XYZ", ".txt", true, "text/plain", OutputType.TEXT)
                 });
@@ -50,6 +55,14 @@ public class GdalConfigurator extends AbstractToolConfigurator {
     @Override
     protected ToolConfiguration getDefaultConfiguration() {
         return DEFAULT;
+    }
+    
+    @Override
+    protected XStream buildXStream() {
+        XStream xstream = super.buildXStream();
+        xstream.alias("GrayAlphaToRGBA", GrayAlphaToRGBA.class);
+        xstream.alias("PalettedToRGB", PalettedToRGB.class);
+        return xstream;
     }
 
 }

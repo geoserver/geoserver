@@ -609,6 +609,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         // else key not present
         return true;
     }
+
     private RenderedImageMap optimizeAndBuildMap(IndexColorModel palette, RenderedImage preparedImage, WMSMapContent mapContent) {
         RenderedImage image;
         if (palette != null && palette.getMapSize() < 256) {

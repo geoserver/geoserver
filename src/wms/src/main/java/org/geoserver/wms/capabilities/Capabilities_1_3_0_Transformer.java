@@ -88,6 +88,7 @@ import org.xml.sax.helpers.AttributesImpl;
 
 import com.google.common.collect.Iterables;
 import com.vividsolutions.jts.geom.Envelope;
+import org.geoserver.wfs.json.JSONType;
 
 /**
  * Geotools xml framework based encoder for a Capabilities WMS 1.3.0 document.
@@ -106,7 +107,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
     public static final String WMS_CAPS_MIME = "text/xml";
 
     /** the WMS supported exception formats */
-    static final String[] EXCEPTION_FORMATS = { "XML", "INIMAGE", "BLANK" };
+    static final String[] EXCEPTION_FORMATS = { "XML", "INIMAGE", "BLANK", "JSON" };
 
     /**
      * The geoserver base URL to append it the schemas/wms/1.3.0/exceptions_1_3_0.xsd schema
@@ -590,7 +591,9 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             for (String exceptionFormat : EXCEPTION_FORMATS) {
                 element("Format", exceptionFormat);
             }
-
+            if (JSONType.isJsonpEnabled()) {
+                element("Format", "JSONP");
+            }
             end("Exception");
         }
 

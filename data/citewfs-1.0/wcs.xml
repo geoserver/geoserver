@@ -31,7 +31,7 @@ This is a description of your Web Coverage Server.
     <metadataType>other</metadataType>
   </metadataLink>
   <citeCompliant>false</citeCompliant>
-  <onlineResource>http://geoserver.sourceforge.net/html/index.php</onlineResource>
+  <onlineResource>http://geoserver.org</onlineResource>
   <schemaBaseURL>http://schemas.opengis.net</schemaBaseURL>
   <verbose>false</verbose>
   <gmlPrefixing>false</gmlPrefixing>

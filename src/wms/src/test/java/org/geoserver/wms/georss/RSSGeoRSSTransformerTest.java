@@ -65,14 +65,14 @@ public class RSSGeoRSSTransformerTest extends WMSTestSupport {
         WMSMapContent map = new WMSMapContent(createGetMapRequest(MockData.BASIC_POLYGONS));
         map.addLayer(createMapLayer(MockData.BASIC_POLYGONS));
 
-		try {
-			File linkFile = new File(testData.getDataDirectoryRoot().getAbsolutePath() + "/workspaces/cite/cite/BasicPolygons/link.ftl");
-			FileOutputStream out = new FileOutputStream(linkFile);
-			out.write("http://dummp.com".getBytes());
-			out.close();
-		} catch (Exception e) {
-			System.out.println("Error writing link.ftl: " + e);
-		}
+        try {
+            File linkFile = new File(testData.getDataDirectoryRoot().getAbsolutePath() + "/workspaces/cite/cite/BasicPolygons/link.ftl");
+            FileOutputStream out = new FileOutputStream(linkFile);
+            out.write("http://dummp.com".getBytes());
+            out.close();
+        } catch (Exception e) {
+            System.out.println("Error writing link.ftl: " + e);
+        }
 
         Document document;
         try {

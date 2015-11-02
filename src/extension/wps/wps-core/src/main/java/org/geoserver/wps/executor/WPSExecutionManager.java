@@ -391,6 +391,13 @@ public class WPSExecutionManager implements ApplicationContextAware,
                 SubProgressListener executionListener = new SubProgressListener(listener,
                         inputPercentage, executionPercentage);
                 notifier.checkDismissed();
+                
+                //The system only moves from Queued to Running when the progress notifier fires (!!!).  This fires when inputs are read.
+                //   However, if there are no inputs, it never moves to running state!
+                //Since we are executing, we can move this from queued to running state. 
+                if (status.getPhase() == ProcessState.QUEUED) {
+                	status.setPhase(ProcessState.RUNNING);
+                }
                 processManager.submit(status.getExecutionId(), status.getProcessName(), inputs,
                         executionListener, status.isAsynchronous());
 

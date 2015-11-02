@@ -838,9 +838,7 @@ public class GetCoverage {
         GeneralParameterValue[] readParameters = CoverageUtils.getParameters(readParametersDescriptor, cinfo.getParameters());
         readParameters = (readParameters != null ? readParameters : new GeneralParameterValue[0]);
         // work in streaming fashion when JAI is involved
-        readParameters = WCSUtils.replaceParameter(
-                readParameters, 
-                Boolean.FALSE, 
+        readParameters = WCSUtils.replaceParameter(readParameters, Boolean.TRUE,
                 AbstractGridFormat.USE_JAI_IMAGEREAD);
 
         // handle "time"

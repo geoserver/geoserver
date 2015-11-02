@@ -20,7 +20,7 @@
             <Label>
               <ogc:PropertyName>name</ogc:PropertyName>
             </Label>
-             <Font>
+            <Font>
               <CssParameter name="font-family">Arial</CssParameter>
               <CssParameter name="font-size">10</CssParameter>
               <CssParameter name="font-style">normal</CssParameter>
@@ -29,7 +29,7 @@
             <LabelPlacement>
               <LinePlacement />
             </LabelPlacement>
-           <Fill>
+            <Fill>
               <CssParameter name="fill">#000000</CssParameter>
             </Fill>
             <VendorOption name="followLine">true</VendorOption>

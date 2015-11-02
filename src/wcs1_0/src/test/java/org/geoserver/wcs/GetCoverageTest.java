@@ -77,6 +77,8 @@ public class GetCoverageTest extends WCSTestSupport {
     private Catalog catalog;
     
     private static final QName MOSAIC = new QName(MockData.SF_URI, "rasterFilter", MockData.SF_PREFIX);
+    
+    private static final QName SPATIO_TEMPORAL = new QName(MockData.SF_URI, "spatio-temporal", MockData.SF_PREFIX);
 
     @Before
     public void setUp() {
@@ -92,6 +94,7 @@ public class GetCoverageTest extends WCSTestSupport {
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
         testData.addRasterLayer(MOSAIC, "raster-filter-test.zip", null, getCatalog());
+        testData.addRasterLayer(SPATIO_TEMPORAL, "spatio-temporal.zip", null, null, SystemTestData.class, getCatalog());
         // enable dimensions on the water temperature layer
         setupRasterDimension(WATTEMP, ResourceInfo.TIME, DimensionPresentation.LIST, null);
         setupRasterDimension(WATTEMP, ResourceInfo.ELEVATION, DimensionPresentation.LIST, null);
@@ -152,6 +155,23 @@ public class GetCoverageTest extends WCSTestSupport {
         // dispose
         CoverageCleanerCallback.disposeCoverage(baseCoverage);
         CoverageCleanerCallback.disposeCoverage(coverages[0]);
+    }
+    
+    @Test
+    public void testDeferredLoading() throws Exception {
+        Map<String, Object> raw = baseMap();
+        final String getLayerId = getLayerId(SPATIO_TEMPORAL);
+        raw.put("sourcecoverage", getLayerId);
+        raw.put("format", "image/tiff");
+        raw.put("BBox", "-90,-180,90,180");
+        raw.put("crs", "EPSG:4326");
+        raw.put("resx", "0.001");
+        raw.put("resy", "0.001");
+
+
+        GridCoverage[] coverages = executeGetCoverageKvp(raw);
+        assertEquals(1, coverages.length);
+        assertDeferredLoading(coverages[0].getRenderedImage());
     }
     
     @Test

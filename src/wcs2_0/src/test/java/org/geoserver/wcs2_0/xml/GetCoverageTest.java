@@ -2,6 +2,7 @@ package org.geoserver.wcs2_0.xml;
 
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertTrue;
+import static org.junit.Assert.assertNotNull;
 
 import java.awt.image.Raster;
 import java.awt.image.RenderedImage;
@@ -22,7 +23,9 @@ import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.resource.Resource;
+import org.geoserver.wcs2_0.DefaultWebCoverageService20;
 import org.geoserver.wcs2_0.GetCoverage;
 import org.geoserver.wcs2_0.WCSTestSupport;
 import org.geoserver.wcs2_0.exception.WCS20Exception;
@@ -37,12 +40,17 @@ import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.junit.Before;
 import org.junit.Test;
+import org.opengis.coverage.grid.GridCoverage;
 import org.opengis.coverage.grid.GridEnvelope;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.w3c.dom.Document;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
+
+import it.geosolutions.rendered.viewer.RenderedImageBrowser;
+import net.opengis.wcs20.GetCoverageType;
+import net.opengis.wcs20.Wcs20Factory;
 /**
  * Testing WCS 2.0 Core {@link GetCoverage}
  * 
@@ -59,6 +67,8 @@ public class GetCoverageTest extends WCSTestSupport {
     private static final QName RAIN = new QName(MockData.SF_URI, "rain", MockData.SF_PREFIX);
 
     private static final QName BORDERS = new QName(MockData.SF_URI, "borders", MockData.SF_PREFIX);
+    
+    private static final QName SPATIO_TEMPORAL = new QName(MockData.SF_URI, "spatio-temporal", MockData.SF_PREFIX);
 
     @Before
     public void clearDimensions() {
@@ -87,6 +97,7 @@ public class GetCoverageTest extends WCSTestSupport {
         testData.addRasterLayer(RAIN, "rain.zip", "asc", getCatalog());
         testData.addRasterLayer(BORDERS, "/borders.zip", null, getCatalog());
         testData.addRasterLayer(TIMERANGES, "timeranges.zip", null, null, SystemTestData.class, getCatalog());
+        testData.addRasterLayer(SPATIO_TEMPORAL, "spatio-temporal.zip", null, null, SystemTestData.class, getCatalog());
 
         sortByElevation(TIMERANGES);
     }
@@ -856,6 +867,24 @@ public class GetCoverageTest extends WCSTestSupport {
         } finally {
             readerTarget.dispose();
             scheduleForCleaning(targetCoverage);
+        }
+    }
+    
+    @Test
+    public void testDeferredLoading() throws Exception {
+        DefaultWebCoverageService20 wcs = GeoServerExtensions.bean(DefaultWebCoverageService20.class);
+        GetCoverageType getCoverage = Wcs20Factory.eINSTANCE.createGetCoverageType();
+        getCoverage.setCoverageId(getLayerId(SPATIO_TEMPORAL));
+        getCoverage.setVersion("2.0.0");
+        getCoverage.setService("WCS");
+        GridCoverage coverage = null;
+        try {
+            coverage = wcs.getCoverage(getCoverage);
+            assertNotNull(coverage);
+            
+            assertDeferredLoading(coverage.getRenderedImage());
+        } finally {
+            scheduleForCleaning(coverage);
         }
     }
 }

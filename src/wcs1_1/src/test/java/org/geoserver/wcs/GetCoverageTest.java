@@ -53,13 +53,15 @@ public class GetCoverageTest extends AbstractGetCoverageTest {
             MockData.SF_PREFIX);
 
     private static final QName RAIN = new QName(MockData.SF_URI, "rain", MockData.SF_PREFIX);
+    
+    private static final QName SPATIO_TEMPORAL = new QName(MockData.SF_URI, "spatio-temporal", MockData.SF_PREFIX);
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
         testData.addRasterLayer(MOSAIC, "raster-filter-test.zip", null, getCatalog());
         testData.addRasterLayer(RAIN, "rain.zip", "asc", getCatalog());
-
+        testData.addRasterLayer(SPATIO_TEMPORAL, "spatio-temporal.zip", null, null, SystemTestData.class, getCatalog());
     }
 
     @Test
@@ -606,6 +608,21 @@ public class GetCoverageTest extends AbstractGetCoverageTest {
     @Test
     public void testEmptyInterpolation() throws Exception {
         this.testInterpolationMethods("");
+    }
+    
+    @Test
+    public void testDeferredLoading() throws Exception {
+        Map<String, Object> raw = baseMap();
+        final String getLayerId = getLayerId(SPATIO_TEMPORAL);
+        raw.put("identifier", getLayerId);
+        raw.put("format", "image/tiff");
+        raw.put("BoundingBox", "-90,-180,90,180,urn:ogc:def:crs:EPSG:6.6:4326");
+        raw.put("store", "false");
+        raw.put("GridBaseCRS", "urn:ogc:def:crs:EPSG:6.6:4326");
+
+        GridCoverage[] coverages = executeGetCoverageKvp(raw);
+        assertEquals(1, coverages.length);
+        assertDeferredLoading(coverages[0].getRenderedImage());
     }
 
     private void testInterpolationMethods(String method) throws Exception {

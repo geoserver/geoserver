@@ -5,10 +5,11 @@
  */
 package org.geoserver.test;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.fail;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import java.awt.image.BufferedImage;
+import java.awt.image.RenderedImage;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -49,9 +50,6 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
-
-import net.sf.json.JSON;
-import net.sf.json.JSONSerializer;
 
 import org.apache.commons.codec.binary.Base64;
 import org.geoserver.catalog.CascadeDeleteVisitor;
@@ -121,6 +119,9 @@ import com.mockrunner.mock.web.MockHttpSession;
 import com.mockrunner.mock.web.MockServletConfig;
 import com.mockrunner.mock.web.MockServletContext;
 import com.mockrunner.mock.web.MockServletOutputStream;
+
+import net.sf.json.JSON;
+import net.sf.json.JSONSerializer;
 
 /**
  * Base test class for GeoServer system tests that require a fully configured spring context and
@@ -1896,6 +1897,19 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
     }
 
  
+    /**
+     * Checks the image and its sources are all deferred loaded, that is, there is no BufferedImage in the chain
+     * @param image
+     */
+    protected void assertDeferredLoading(RenderedImage image) {
+        if(image instanceof BufferedImage) {
+            fail("Found a buffered image in the chain, the original image is not fully deferred loaded");
+        } else {
+            for (RenderedImage ri : image.getSources()) {
+                assertDeferredLoading(ri);
+            }
+        }
+    }
 
     public static class GeoServerMockHttpServletRequest extends MockHttpServletRequest {
         private byte[] myBody;

@@ -911,7 +911,7 @@ public class Importer implements DisposableBean, ApplicationListener {
             if (task.getLayer().getResource() instanceof FeatureTypeInfo) {
                 FeatureTypeInfo featureType = (FeatureTypeInfo) task.getLayer().getResource();
                 FeatureTypeInfo resource = getCatalog().getResourceByName(
-                        featureType.getName(), FeatureTypeInfo.class);
+                        featureType.getQualifiedName(), FeatureTypeInfo.class);
                 calculateBounds(resource);
             }
 

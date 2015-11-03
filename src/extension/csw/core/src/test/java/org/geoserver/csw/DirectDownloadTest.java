@@ -103,7 +103,9 @@ public class DirectDownloadTest extends GeoServerSystemTestSupport {
         final CoverageInfo coverageInfo = cat.getCoverageByName(name);
         coverageInfo.setName(name);
         coverageInfo.setNativeName(name);
-        coverageInfo.setNativeCoverageName(name);
+        // This line of code has been commented on purpose
+        // in order to test the fix for GEOS-7290
+        // coverageInfo.setNativeCoverageName(name);
         coverageInfo.setTitle(name);
         final MetadataMap metadata = coverageInfo.getMetadata();
         DirectDownloadSettings settings = new DirectDownloadSettings();

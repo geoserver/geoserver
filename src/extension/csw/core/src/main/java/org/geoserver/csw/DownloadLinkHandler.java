@@ -242,7 +242,11 @@ public class DownloadLinkHandler {
         try {
             reader = (GridCoverage2DReader) coverageInfo.getGridCoverageReader(null,
                     GeoTools.getDefaultHints());
-            ResourceInfo resourceInfo = reader.getInfo(coverageInfo.getNativeCoverageName());
+            String name = DirectDownload.extractName(coverageInfo);
+            if (reader == null) {
+                throw new IllegalArgumentException ("No reader available for the specified coverage: " + name);
+            }
+            ResourceInfo resourceInfo = reader.getInfo(name);
             if (resourceInfo instanceof FileResourceInfo) {
                 FileResourceInfo fileResourceInfo = (FileResourceInfo) resourceInfo;
 

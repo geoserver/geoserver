@@ -176,8 +176,8 @@ public class DirectDownload {
         }
 
         // Get resources for the specified file
-        String nativeCoverageName = info.getNativeCoverageName();
-        getFileResources(reader, nativeCoverageName, fileId, result);
+        String name = extractName(info);
+        getFileResources(reader, name, fileId, result);
 
         // Only StructuredGridCoverage2DReader can deal with multiple coverages
         // standard readers return same content for FileInfo and ResourceInfo
@@ -302,5 +302,19 @@ public class DirectDownload {
                 }
             }
         }
+    }
+
+    public static String extractName(CoverageInfo coverageInfo) {
+        String name = null;
+        if (coverageInfo != null) {
+            name = coverageInfo.getNativeCoverageName();
+            if (name == null) {
+                name = coverageInfo.getName();
+            }
+            if (name == null) {
+                name = coverageInfo.getNativeName();
+            }
+        }
+        return name;
     }
 }

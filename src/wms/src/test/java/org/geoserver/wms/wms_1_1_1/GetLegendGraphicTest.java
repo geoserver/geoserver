@@ -116,11 +116,6 @@ public class GetLegendGraphicTest extends WMSTestSupport {
 
         image = getAsImage(base, "image/png");        
         
-        String user_home = System.getProperty("user.home");
-        File home = new File(user_home);
-        ImageIO.write(expected, "png",  new File(home,"expected.png"));
-        ImageIO.write(image, "png",  new File(home,"actual.png"));
-        
         Color expectedColor = getPixelColor(expected,11,11);
         Color actualColor = getPixelColor(image,8,8);
         assertEquals( "red", expectedColor.getRed(), actualColor.getRed() );

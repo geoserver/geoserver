@@ -563,9 +563,10 @@ public class GetFeature {
                     isNumberMatchedSkipped = meta.getSkipNumberMatched()
                             && !request.isResultTypeHits();
                 if (!isNumberMatchedSkipped) {
+                		// Fix for GEOS-7233: totalFeatures for WFS 2.0 request returns wrong count.
                         if (calculateSize
                                 && (queryMaxFeatures == Integer.MAX_VALUE || size < queryMaxFeatures)
-                                && offset <= 0) {
+                                && totalOffset <= 0) {
                         totalCountExecutors.add(new CountExecutor(size));
                     } else {
                         org.geotools.data.Query qTotal = toDataQuery(query, filter, 0,
@@ -632,7 +633,8 @@ public class GetFeature {
                     totalOffset = 0;
                 } else {
                     // optimization: if count < max features then total count == count
-                    if(count < maxFeatures) {
+                	// Fix for GEOS-7233: totalFeatures for WFS 2.0 request returns wrong count.
+                    if(count < maxFeatures && totalOffset <= 0) {
                         totalCount = count;
                     } else {
                         // ok, in this case we're forced to run the queries to discover the actual total count

@@ -16,6 +16,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
@@ -138,7 +139,7 @@ public class ExternalGraphicPanel extends Panel {
                     GeoServerResourceLoader resources = GeoServerApplication.get().getResourceLoader();
                     try {
                         File styles = resources.find("styles");
-                        String[] path = value.split(File.separator);
+                        String[] path = value.split(Pattern.quote(File.separator));
                         File test = resources.find(styles, path);
                         if (test == null) {
                             ValidationError error = new ValidationError();

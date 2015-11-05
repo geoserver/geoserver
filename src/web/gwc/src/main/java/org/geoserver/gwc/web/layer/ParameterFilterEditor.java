@@ -196,6 +196,9 @@ class ParameterFilterEditor extends FormComponentPanel<Set<ParameterFilter>> {
                     @Override
                     protected void onSubmit(AjaxRequestTarget target, Form form) {
                         getList().remove((ParameterFilter) getDefaultModelObject());
+                        filters.remove(this.getParent()); // Otherwise Wicket 'recycles' it and it 
+                                                          // may be re-used for other filters which
+                                                          // may require a completely different UI
                         target.addComponent(container);
                     }
                 };

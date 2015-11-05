@@ -115,7 +115,7 @@ public class StyleParameterFilterSubform extends AbstractParameterFilterSubform<
 
         @Override
         public void setObject(String object) {
-            if (object.equals(label)) {
+            if (label.equals(object)) {
                 realModel.setObject("");
             } else {
                 realModel.setObject(object);

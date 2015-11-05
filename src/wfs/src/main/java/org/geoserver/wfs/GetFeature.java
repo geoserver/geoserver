@@ -528,6 +528,9 @@ public class GetFeature {
 
                 int size = 0;
                 if (calculateSize) {
+                    if (features.getSchema() instanceof SimpleFeatureType && queries.size() == 1)
+                        features = new CachedFeatureCollection((SimpleFeatureCollection)features);
+                    
                     size = features.size();
                 }
                 

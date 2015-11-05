@@ -333,9 +333,12 @@ public class GetFeature {
                     }
                 }
 
+                boolean totalCountBanned = false;
                 List<FeatureTypeInfo> metas = new ArrayList();
                 for (QName typeName : query.getTypeNames()) {
-                    metas.add(featureTypeInfo(typeName, request));
+                    FeatureTypeInfo featureTypeInfoObj = featureTypeInfo(typeName, request);
+                    totalCountBanned = totalCountBanned || featureTypeInfoObj.isTotalCountBanned();
+                    metas.add(featureTypeInfoObj);
                 }
 
                     // first is the primary feature type
@@ -562,7 +565,7 @@ public class GetFeature {
                 // calculated above
                 isNumberMatchedSkipped = meta.getSkipNumberMatched()
                         && !request.isResultTypeHits();
-                if (!isNumberMatchedSkipped) {
+                if (!isNumberMatchedSkipped && !totalCountBanned) {
                         if (calculateSize
                                 && (queryMaxFeatures == Integer.MAX_VALUE || size < queryMaxFeatures)
                                 && offset <= 0) {

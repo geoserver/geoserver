@@ -72,6 +72,9 @@ public class FeatureResourceConfigurationPanel extends ResourceConfigurationPane
         CheckBox circularArcs = new CheckBox("circularArcPresent");
         add(circularArcs);
         
+        CheckBox totalCountBanned = new CheckBox("totalCountBanned");
+        add(totalCountBanned);
+        
         TextField<Measure> tolerance = new TextField<Measure>("linearizationTolerance", Measure.class);
         add(tolerance);
 

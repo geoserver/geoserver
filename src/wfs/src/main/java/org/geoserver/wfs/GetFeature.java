@@ -523,12 +523,16 @@ public class GetFeature {
                     features.getSchema().getUserData().put("targetVersion", request.getVersion());
                 }
 
+                if (totalCountBanned) {
+                	calculateSize = false;
+                }
+
                 if (!calculateSize) {
                     //if offset was specified and we have more queries left in this request then we 
                     // must calculate size in order to adjust the offset 
                     calculateSize = offset > 0 && i < queries.size() - 1; 
                 }
-
+                
                 int size = 0;
                 if (calculateSize) {
                     size = features.size();
@@ -544,7 +548,7 @@ public class GetFeature {
                         //features returned, offset can be set to zero
                         offset = 0;
                     }
-                    else {
+                    else if (!totalCountBanned) {
                         //no features might have been because of the offset that was specified, check 
                         // the size of the same query but with no offset
                             org.geotools.data.Query q2 = toDataQuery(query, filter, 0,

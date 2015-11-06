@@ -47,6 +47,8 @@ public class XSProfile extends TypeMappingProfile {
         proper.add(name(XS.INTEGER)); //BigInteger.class
         proper.add(name(XS.DECIMAL)); //BigDecimal.class
         proper.add(name(XS.ANYURI)); //URI.class
+        // Fix for GEOT-5235 : WFS request for format GML3.2 generate exception for UUID
+        proper.add(name(XS.UUID)); //java.util.UUID.class
         profiles.add( new ProfileImpl( new XSSchema(), proper ) );
         
         //date mappings between java and xml schema are kind of messed up, so 

@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -166,6 +166,13 @@ public class OpenLayersMapOutputFormat implements GetMapOutputFormat {
             map.put("maxResolution", new Double(getMaxResolution(mapContent.getRenderingArea())));
 
             String baseUrl = ResponseUtils.buildURL(request.getBaseUrl(), "/", null, URLType.RESOURCE);
+            String queryString = null;
+            // remove query string from baseUrl
+            if (baseUrl.indexOf("?") > 0) {
+                int idx = baseUrl.indexOf("?");
+                queryString = baseUrl.substring(idx); // include question mark
+                baseUrl = baseUrl.substring(0, idx); // leave out question mark
+            }
             map.put("baseUrl", canonicUrl(baseUrl));
 
             // TODO: replace service path with call to buildURL since it does this
@@ -176,6 +183,10 @@ public class OpenLayersMapOutputFormat implements GetMapOutputFormat {
             }
             if (LocalWorkspace.get() != null) {
                 servicePath = LocalWorkspace.get().getName() + "/" + servicePath;
+            }
+            // append query string to servicePath
+            if (queryString != null) {
+                servicePath += queryString;
             }
             map.put("servicePath", servicePath);
 

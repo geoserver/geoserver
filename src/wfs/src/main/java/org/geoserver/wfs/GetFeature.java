@@ -523,7 +523,10 @@ public class GetFeature {
                     features.getSchema().getUserData().put("targetVersion", request.getVersion());
                 }
 
-                if (totalCountBanned) {
+                // Attempt to set calculateSize to false if total count is banned. However, if the
+                // GetFeature request contains multiple queries, we must surrender and let the
+                // code calculate the size.
+                if (totalCountBanned && queries.size() == 1) {
                 	calculateSize = false;
                 }
 
@@ -548,7 +551,7 @@ public class GetFeature {
                         //features returned, offset can be set to zero
                         offset = 0;
                     }
-                    else if (!totalCountBanned) {
+                    else if (!(totalCountBanned && queries.size() == 1)) { // avoid this query if possible
                         //no features might have been because of the offset that was specified, check 
                         // the size of the same query but with no offset
                             org.geotools.data.Query q2 = toDataQuery(query, filter, 0,

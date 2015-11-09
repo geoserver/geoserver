@@ -35,7 +35,33 @@ Configuring a NetCDF data store
      -  
    * - ``URL``
      - 
-	 
+Notes on supported NetCDFs
+--------------------------
+The NetCDF plugin for GeoServer supports gridded NetCDF files having dimensions following the COARDS convention (custom, Time, Elevation, Lat, Lon).
+
+
+`ToolsUI <ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.6/toolsUI-4.6.jar>`_ is an useful java tool developed by UCAR which can be useful for a preliminary check on your dataset.
+Opening a sample NetCDF using that tool will show an output like this in the Viewer tab:
+
+.. figure:: dataset.png
+   :align: center
+
+   *NetCDF viewer in ToolsUI*
+
+* This dataset has 4 dimensions (time, z, lat, lon, marked by the D icon in the left side of the GUI. They have been marked by a blue rectangle in the screenshot).
+* Each dimension has an associated independent coordinate variable (marked by the green rectangle).
+* Finally, the dataset has 3 geophysical variables, marked by a red rectangle, each having 4 dimensions.
+
+The NetCDF plugin supports datasets where each variable's axis is identified by an independent coordinate variable, as shown in the previous example.
+Two dimensional non-independent latitude-longitude coordinate variables aren't currently supported. 
+A coordinate variable like this will be a coordinate variable having 2 dimensions to index it (such as y,x/rows,cols/i,j...).
+A similar dataset will look like this in ToolsUI. Look at the red marked latitude and longitude coordinate variables, each one identified by a y,x 2D matrix.
+
+.. figure:: dataset2dcoords.png
+   :align: center
+
+   *NetCDF viewer in ToolsUI for 2D coordinate variables*
+
 Supporting Custom NetCDF Coordinate Reference Systems
 -----------------------------------------------------
 Starting with GeoServer 2.8.x, NetCDF related modules (both NetCDF/GRIB store, imageMosaic store based on NetCDF/GRIB dataset and NetCDF output format) allow to support custom Coordinate Reference Systems and Projections.

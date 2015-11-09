@@ -38,7 +38,7 @@ Configuring a GRIB data store
 
 -----------------------------
 
-.. note:: Note that internally the GRIB extension uses the NetCDF reader, which supports also GRIB data.
+.. note:: Note that internally the GRIB extension uses the NetCDF reader, which supports also GRIB data. See also the :ref:`netcdf` documentation page for further information.
  
  
 Current limitations

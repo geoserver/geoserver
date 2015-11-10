@@ -1622,7 +1622,7 @@
   <gs.version>2.9-SNAPSHOT</gs.version>
   <gt.version>15-SNAPSHOT</gt.version>
   <gwc.version>1.9-SNAPSHOT</gwc.version>
-  <spring.version>3.1.4.RELEASE</spring.version>
+  <spring.version>3.2.15.RELEASE</spring.version>
   <spring.security.version>3.1.0.RELEASE</spring.security.version> 
   <jetty.version>9.2.13.v20150730</jetty.version>
   <poi.version>3.8</poi.version>

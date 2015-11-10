@@ -8,6 +8,7 @@ package org.geoserver.kml.icons;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -76,10 +77,20 @@ public class IconService extends AbstractController {
         String q = request.getQueryString();
         try {
             Style style = styleInfo.getStyle();
-            Map<String,String> properties = 
+            Map<String,Object> properties = 
                 q != null ? KvpUtils.parseQueryString("?"+q) : Collections.EMPTY_MAP;
+            Map<String, String> kvp = new HashMap<String, String>();
+            for (String key : properties.keySet()) {
+                Object value = properties.get(key);
+                if (value instanceof String) {
+                    kvp.put(key, (String) value);
+                } else {
+                    String[] values = (String[]) value;
+                    kvp.put(key, values[0]);
+                }
+            }
 
-            Style adjustedStyle = IconPropertyInjector.injectProperties(style, properties);
+            Style adjustedStyle = IconPropertyInjector.injectProperties(style, kvp);
 
             BufferedImage image = IconRenderer.renderIcon(adjustedStyle);
 

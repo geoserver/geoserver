@@ -13,6 +13,9 @@
   <bean id="inspireWfsExtendedCapsProvider" class="org.geoserver.inspire.wfs.WFSExtendedCapabilitiesProvider">
   </bean>
   
+  <bean id="inspireWcsExtendedCapsProvider" class="org.geoserver.inspire.wcs.WCSExtendedCapabilitiesProvider">
+  </bean>
+  
   <bean id="inspireWmsAdminPanel" class="org.geoserver.web.services.AdminPagePanelInfo">
       <description>This bean adds the necessary form fields to Geoserver admin interface</description>
     <property name="id" value="inspireWmsAdminPanel"/>
@@ -26,5 +29,12 @@
     <property name="titleKey" value="inspire"/>
     <property name="componentClass" value="org.geoserver.inspire.web.InspireAdminPanel"/>
     <property name="serviceClass" value="org.geoserver.wfs.WFSInfo"/>
+  </bean>
+  <bean id="inspireWcsAdminPanel" class="org.geoserver.web.services.AdminPagePanelInfo">
+      <description>This bean adds the necessary form fields to Geoserver admin interface</description>
+    <property name="id" value="inspireWcsAdminPanel"/>
+    <property name="titleKey" value="inspire"/>
+    <property name="componentClass" value="org.geoserver.inspire.web.InspireAdminPanel"/>
+    <property name="serviceClass" value="org.geoserver.wcs.WCSInfo"/>
   </bean>
 </beans>

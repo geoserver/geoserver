@@ -35,6 +35,7 @@ import org.geoserver.web.services.AdminPagePanel;
 import org.geoserver.web.util.MapModel;
 import org.geoserver.web.util.MetadataMapModel;
 import org.geoserver.wfs.WFSInfo;
+import org.geoserver.wcs.WCSInfo;
 
 /**
  * Panel for the service admin page to set the service INSPIRE extension
@@ -53,14 +54,15 @@ public class InspireAdminPanel extends AdminPagePanel {
         String metadataURL = (String) serviceMetadata.get(SERVICE_METADATA_URL.key);
         String mediaType = (String) serviceMetadata.get(SERVICE_METADATA_TYPE.key);
         String language = (String) serviceMetadata.get(LANGUAGE.key);
-        boolean isWfs = model.getObject() instanceof WFSInfo;
+        boolean isDownloadService = model.getObject() instanceof WFSInfo ||
+                model.getObject() instanceof WCSInfo;
         UniqueResourceIdentifiers ids = null;
-        if (isWfs) {
+        if (isDownloadService) {
             ids = (UniqueResourceIdentifiers) serviceMetadata.get(SPATIAL_DATASET_IDENTIFIER_TYPE.key, UniqueResourceIdentifiers.class);
         }
         if (!serviceMetadata.containsKey(CREATE_EXTENDED_CAPABILITIES.key)) {
             if (metadataURL == null
-                    || isWfs
+                    || isDownloadService
                     && (ids == null || ids.isEmpty())) {
                 serviceMetadata.put(CREATE_EXTENDED_CAPABILITIES.key, false);
             } else {
@@ -141,10 +143,11 @@ public class InspireAdminPanel extends AdminPagePanel {
 
         configs.add(serviceMetadataRecordType);
 
-        // this is WFS specific, will appear only if the service is WFS
+        // this is download service specific, will appear only if the service is
+        // WFS or WCS
         WebMarkupContainer identifiersContainer = new WebMarkupContainer(
                 "datasetIdentifiersContainer");
-        identifiersContainer.setVisible(isWfs);
+        identifiersContainer.setVisible(isDownloadService);
         configs.add(identifiersContainer);
         IModel<UniqueResourceIdentifiers> sdiModel = new MetadataMapModel(metadata, SPATIAL_DATASET_IDENTIFIER_TYPE.key, UniqueResourceIdentifiers.class);
         UniqueResourceIdentifiersEditor identifiersEditor = new UniqueResourceIdentifiersEditor(

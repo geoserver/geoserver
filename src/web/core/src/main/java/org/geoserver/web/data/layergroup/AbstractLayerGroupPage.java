@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -163,6 +163,20 @@ public abstract class AbstractLayerGroupPage extends GeoServerSecuredPage {
                 catch (Exception e) {
                     throw new WicketRuntimeException( e );
                 }
+            }
+        });
+        
+        form.add(new GeoServerAjaxFormLink("generateBoundsFromCRS"){
+
+            @Override
+            protected void onClick(AjaxRequestTarget target, Form form) {
+                LOGGER.log(Level.FINE, "Computing bounds for LG based off CRS");
+                LayerGroupInfo lg = AbstractLayerGroupPage.this.lgModel.getObject();
+                CoordinateReferenceSystem crs = envelopePanel.getCoordinateReferenceSystem();
+                new CatalogBuilder(getCatalog()).calculateLayerGroupBoundsFromCRS(lg, crs);
+
+                envelopePanel.modelChanged();
+                target.addComponent(envelopePanel);
             }
         });
         

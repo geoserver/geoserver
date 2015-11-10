@@ -1367,6 +1367,20 @@ public class CatalogBuilder {
         LayerGroupHelper helper = new LayerGroupHelper(layerGroup);
         helper.calculateBounds(crs);
     }
+    
+    /**
+     * Calculate the bounds of a layer group from the CRS defined bounds. 
+     * Relies on the {@link LayerGroupHelper}
+     * 
+     * @param layerGroup
+     * @param crs the CRS who's bounds should be used
+     * @see LayerGroupHelper#calculateBoundsFromCRS(CoordinateReferenceSystem)
+     */
+    public void calculateLayerGroupBoundsFromCRS(
+            LayerGroupInfo layerGroup, CoordinateReferenceSystem crs) {
+        LayerGroupHelper helper = new LayerGroupHelper(layerGroup);
+        helper.calculateBoundsFromCRS(crs);
+    }
 
     /**
      * Calculates the bounds of a layer group by aggregating the bounds of each layer.

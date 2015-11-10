@@ -187,8 +187,7 @@ public class GetFeatureKvpRequestReader extends WFSKvpRequestReader {
                     }
                 }
                 
-                // Fix for GEOS-7215 : incorrect result from WFS request
-				//remove duplicate typeNames from the list
+                //remove duplicate typeNames from the list
                 HashSet hTypeNames = new HashSet(typeNames);
                 typeNames.clear();
                 typeNames.addAll(hTypeNames);

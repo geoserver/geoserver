@@ -39,6 +39,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.LogManager;
 import org.geoserver.config.impl.CoverageAccessInfoImpl;
 import org.geoserver.jai.ConcurrentOperationRegistry;
+import org.geoserver.jai.ConcurrentTileFactory;
 import org.geoserver.logging.LoggingUtils;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geotools.coverage.CoverageFactoryFinder;
@@ -56,6 +57,8 @@ import org.geotools.util.WeakCollectionCleaner;
 import org.geotools.util.logging.Logging;
 import org.opengis.referencing.AuthorityFactory;
 import org.opengis.referencing.FactoryException;
+
+import it.geosolutions.concurrent.ConcurrentTileCache;
 
 /**
  * Listens for GeoServer startup and tries to configure axis order, logging
@@ -118,6 +121,11 @@ public class GeoserverInitStartupListener implements ServletContextListener {
         JAI jaiDef = JAI.getDefaultInstance();
         if(!(jaiDef.getOperationRegistry() instanceof ConcurrentOperationRegistry)) {
             jaiDef.setOperationRegistry(ConcurrentOperationRegistry.initializeRegistry());
+        }
+        
+        // setup the concurrent tile cache (has proper memory limit handling also for small tiles)
+        if(!(jaiDef.getTileCache() instanceof ConcurrentTileCache)) {
+            jaiDef.setTileCache(new ConcurrentTileCache());
         }
         
         // make sure we remember if GeoServer controls logging or not

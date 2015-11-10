@@ -966,6 +966,11 @@
     <version>1.1</version>
    </dependency>
    <dependency>
+    <groupId>it.geosolutions.jaiext.concurrent-tile-cache</groupId>
+    <artifactId>jt-concurrent-tile-cache</artifactId>
+    <version>${jaiext.version}</version>
+   </dependency>
+   <dependency>
     <groupId>org.eclipse.emf</groupId>
     <artifactId>common</artifactId>
     <version>2.6.0</version>
@@ -1624,6 +1629,7 @@
   <wicket.version>1.4.12</wicket.version>
   <ant.version>1.8.4</ant.version>
   <imageio-ext.version>1.1.11</imageio-ext.version>
+  <jaiext.version>1.0.8</jaiext.version>
   <java.awt.headless>true</java.awt.headless>
   <jvm.opts></jvm.opts>
   <jalopy.phase>disabled</jalopy.phase>

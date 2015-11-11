@@ -45,6 +45,7 @@ import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.Query;
 import org.geotools.data.simple.SimpleFeatureCollection;
+import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.factory.FactoryRegistryException;
 import org.geotools.feature.IllegalAttributeException;
@@ -134,60 +135,12 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
         Style basicStyle = styleByName.getStyle();
         
         //Build up a complex map so that we can reasonably guarantee a 1 ms timout
-        FeatureSource fs = catalog.getFeatureTypeByName(MockData.BASIC_POLYGONS.getPrefix(),
+        SimpleFeatureSource fs = (SimpleFeatureSource) catalog.getFeatureTypeByName(MockData.BASIC_POLYGONS.getPrefix(),
                 MockData.BASIC_POLYGONS.getLocalPart()).getFeatureSource(null, null);
         Envelope env = fs.getBounds();
-        map.addLayer(new FeatureLayer(fs, basicStyle));
-        
-        fs = catalog.getFeatureTypeByName(MockData.BRIDGES.getPrefix(),
-                MockData.BRIDGES.getLocalPart()).getFeatureSource(null, null);
-        env.expandToInclude(fs.getBounds());
-        map.addLayer(new FeatureLayer(fs, basicStyle));
-        
-        fs = catalog.getFeatureTypeByName(MockData.BUILDINGS.getPrefix(),
-                MockData.BUILDINGS.getLocalPart()).getFeatureSource(null, null);
-        env.expandToInclude(fs.getBounds());
-        map.addLayer(new FeatureLayer(fs, basicStyle));
-        
-        fs = catalog.getFeatureTypeByName(MockData.DIVIDED_ROUTES.getPrefix(),
-                MockData.DIVIDED_ROUTES.getLocalPart()).getFeatureSource(null, null);
-        env.expandToInclude(fs.getBounds());
-        map.addLayer(new FeatureLayer(fs, basicStyle));
-        
-        fs = catalog.getFeatureTypeByName(MockData.FORESTS.getPrefix(),
-                MockData.FORESTS.getLocalPart()).getFeatureSource(null, null);
-        env.expandToInclude(fs.getBounds());
-        map.addLayer(new FeatureLayer(fs, basicStyle));
-        
-        fs = catalog.getFeatureTypeByName(MockData.LAKES.getPrefix(),
-                MockData.LAKES.getLocalPart()).getFeatureSource(null, null);
-        env.expandToInclude(fs.getBounds());
-        map.addLayer(new FeatureLayer(fs, basicStyle));
-        
-        fs = catalog.getFeatureTypeByName(MockData.MAP_NEATLINE.getPrefix(),
-                MockData.MAP_NEATLINE.getLocalPart()).getFeatureSource(null, null);
-        env.expandToInclude(fs.getBounds());
-        map.addLayer(new FeatureLayer(fs, basicStyle));
-        
-        fs = catalog.getFeatureTypeByName(MockData.NAMED_PLACES.getPrefix(),
-                MockData.NAMED_PLACES.getLocalPart()).getFeatureSource(null, null);
-        env.expandToInclude(fs.getBounds());
-        map.addLayer(new FeatureLayer(fs, basicStyle));
-        
-        fs = catalog.getFeatureTypeByName(MockData.PONDS.getPrefix(),
-                MockData.PONDS.getLocalPart()).getFeatureSource(null, null);
-        env.expandToInclude(fs.getBounds());
-        map.addLayer(new FeatureLayer(fs, basicStyle));
-        
-        fs = catalog.getFeatureTypeByName(MockData.ROAD_SEGMENTS.getPrefix(),
-                MockData.ROAD_SEGMENTS.getLocalPart()).getFeatureSource(null, null);
-        env.expandToInclude(fs.getBounds());
-        map.addLayer(new FeatureLayer(fs, basicStyle));
-        
-        fs = catalog.getFeatureTypeByName(MockData.STREAMS.getPrefix(),
-                MockData.STREAMS.getLocalPart()).getFeatureSource(null, null);
-        env.expandToInclude(fs.getBounds());
-        map.addLayer(new FeatureLayer(fs, basicStyle));
+        SimpleFeatureCollection features = fs.getFeatures();
+        SimpleFeatureCollection delayedCollection = new DelayedFeatureCollection(features, 10);
+        map.addLayer(new FeatureLayer(delayedCollection, basicStyle));
         
         LOGGER.info("about to create map ctx for "+map.layers().size()+" layers with bounds " + env);
         

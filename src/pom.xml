@@ -1116,7 +1116,12 @@
 		<artifactId>geoserver-manager</artifactId>
 		<version>1.5.1</version>
 		<scope>test</scope>
-	</dependency>	
+	</dependency>
+   <dependency>
+     <groupId>joda-time</groupId>
+     <artifactId>joda-time</artifactId>
+     <version>2.2</version> 
+   </dependency>	
   </dependencies>
  </dependencyManagement>
 

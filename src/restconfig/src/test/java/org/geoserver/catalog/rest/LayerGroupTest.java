@@ -339,6 +339,24 @@ public class LayerGroupTest extends CatalogRESTTestSupport {
                   "<style>polygon</style>" +
                   "<style>line</style>" +
                 "</styles>" +
+                "<attribution>" +
+                "  <logoWidth>101</logoWidth>" +
+                "  <logoHeight>102</logoHeight>" +
+                "</attribution>" +
+                "<metadataLinks>   " +
+                "<metadataLink>" +
+                "  <id>1</id>" +
+                "  <type>text/html</type>" +
+                "  <metadataType>FGDC</metadataType>" +
+                "  <content>http://my/metadata/link/1</content>" +
+                "</metadataLink>    " +
+                "<metadataLink>" +
+                "  <id>2</id>" +
+                "  <type>text/html</type>" +
+                "  <metadataType>FGDC</metadataType>" +
+                "  <content>http://my/metadata/link/2</content>" +
+                "</metadataLink>    " +
+                "</metadataLinks>" +
               "</layerGroup>";
         
         MockHttpServletResponse response = putAsServletResponse("/rest/layergroups/sfLayerGroup", xml, "text/xml" );
@@ -350,6 +368,9 @@ public class LayerGroupTest extends CatalogRESTTestSupport {
         assertEquals( 2, lg.getStyles().size() );
         assertEquals( "polygon", lg.getStyles().get( 0 ).getName() );
         assertEquals( "line", lg.getStyles().get( 1 ).getName() );
+        assertEquals( 101, lg.getAttribution().getLogoWidth() );
+        assertEquals( 102, lg.getAttribution().getLogoHeight() );
+        assertEquals( 2, lg.getMetadataLinks().size() );
     }
 
     @Test

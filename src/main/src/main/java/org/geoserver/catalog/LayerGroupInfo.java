@@ -6,6 +6,7 @@
 package org.geoserver.catalog;
 
 import java.util.List;
+
 import org.geotools.geometry.jts.ReferencedEnvelope;
 
 
@@ -151,5 +152,14 @@ public interface LayerGroupInfo extends PublishedInfo {
      * Sets the workspace.
      */
     void setWorkspace(WorkspaceInfo workspace);
+    
+
+    /**
+     * A collection of metadata links for the resource.
+     * 
+     * @uml.property name="metadataLinks"
+     * @see MetadataLinkInfo
+     */
+    List<MetadataLinkInfo> getMetadataLinks();
     
 }

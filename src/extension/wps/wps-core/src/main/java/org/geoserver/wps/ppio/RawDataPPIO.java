@@ -52,7 +52,10 @@ public class RawDataPPIO extends ComplexPPIO {
     @Override
     public void encode(Object value, OutputStream os) throws Exception {
         RawData rd = (RawData) value;
-        IOUtils.copy(rd.getInputStream(), os);
+
+        try (InputStream is = rd.getInputStream()) {
+            IOUtils.copy(is, os);
+        };
     }
 
     @Override

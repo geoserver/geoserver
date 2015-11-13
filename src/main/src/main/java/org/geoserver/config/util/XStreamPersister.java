@@ -2039,9 +2039,10 @@ public class XStreamPersister {
                 }
             }
         }
-
-         public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {        	
-            String name =null; 
+        
+        @SuppressWarnings("rawtypes")
+		public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {        	
+        	String name =null; 
             String sql = null;  
             String geomName =null;
             Class type = null;

@@ -5,7 +5,12 @@
  */
 package org.geoserver.config.util;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -175,7 +180,7 @@ public class XStreamPersisterTest {
         GeoServerInfo g2 = persister.load( in, GeoServerInfo.class );
         assertEquals( g1, g2 );
     }
-   
+      
     static class MyServiceInfo extends ServiceInfoImpl {
         
         String foo;
@@ -1023,4 +1028,13 @@ public class XStreamPersisterTest {
         }
 
     }
+
+    @Test
+    public void tsv() throws Exception {
+    	FeatureTypeInfo ft = persister.load( getClass().getResourceAsStream("/org/geoserver/config/virtualtable_order_error.xml") , FeatureTypeInfo.class );
+        VirtualTable vtc = (VirtualTable) ft.getMetadata().get(FeatureTypeInfo.JDBC_VIRTUAL_TABLE);                
+        assertEquals(vtc.getSql(),"select * from table\n");        
+        assertEquals(vtc.getName(),"sqlview");
+    }
+
 }

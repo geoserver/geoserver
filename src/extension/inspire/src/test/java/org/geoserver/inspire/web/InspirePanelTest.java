@@ -30,6 +30,7 @@ import org.geoserver.web.ComponentBuilder;
 import org.geoserver.web.FormTestPage;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import static org.geoserver.web.GeoServerWicketTestSupport.tester;
+import org.geoserver.wcs.WCSInfo;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wms.WMSInfo;
 import org.geotools.util.Converters;
@@ -118,6 +119,29 @@ public class InspirePanelTest extends GeoServerWicketTestSupport {
     }
 
     @Test
+    public void testCreateExtCapsOffWCS() {
+        final ServiceInfo serviceInfo = getGeoServer().getService(WCSInfo.class);
+        final MetadataMap metadata = serviceInfo.getMetadata();
+        clearInspireMetadata(metadata);
+        metadata.put(CREATE_EXTENDED_CAPABILITIES.key, false);
+        metadata.put(SERVICE_METADATA_URL.key, "http://foo.com?bar=baz");
+        metadata.put(SERVICE_METADATA_TYPE.key, "application/vnd.iso.19139+xml");
+        metadata.put(LANGUAGE.key, "fre");
+        metadata.put(SPATIAL_DATASET_IDENTIFIER_TYPE.key,
+                "one,http://www.geoserver.org/one");
+        getGeoServer().save(serviceInfo);
+        startPage(serviceInfo);
+        
+        tester.assertComponent("form", Form.class);
+
+        // check ExtendedCapabilities off
+        tester.assertComponent("form:panel:createExtendedCapabilities", CheckBox.class);
+        tester.assertModelValue("form:panel:createExtendedCapabilities", false);
+
+        tester.assertInvisible("form:panel:container:configs");
+    }
+
+    @Test
     public void testWithFullSettingsWMS() {
         final ServiceInfo serviceInfo = getGeoServer().getService(WMSInfo.class);
         final MetadataMap metadata = serviceInfo.getMetadata();
@@ -158,6 +182,44 @@ public class InspirePanelTest extends GeoServerWicketTestSupport {
     @Test
     public void testWithFullSettingsWFS() {
         final ServiceInfo serviceInfo = getGeoServer().getService(WFSInfo.class);
+        final MetadataMap metadata = serviceInfo.getMetadata();
+        clearInspireMetadata(metadata);
+        metadata.put(CREATE_EXTENDED_CAPABILITIES.key, true);
+        metadata.put(SERVICE_METADATA_URL.key, "http://foo.com?bar=baz");
+        metadata.put(SERVICE_METADATA_TYPE.key, "application/vnd.iso.19139+xml");
+        metadata.put(LANGUAGE.key, "fre");
+        metadata.put(SPATIAL_DATASET_IDENTIFIER_TYPE.key,
+                "one,http://www.geoserver.org/one;two,http://www.geoserver.org/two,http://metadata.geoserver.org/id?two");
+        getGeoServer().save(serviceInfo);
+        startPage(serviceInfo);
+
+        tester.assertComponent("form", Form.class);
+
+        // check ExtendedCapabilities on
+        tester.assertComponent("form:panel:createExtendedCapabilities", CheckBox.class);
+        tester.assertModelValue("form:panel:createExtendedCapabilities", true);
+
+        // check language
+        tester.assertComponent("form:panel:container:configs:language", LanguageDropDownChoice.class);
+        tester.assertModelValue("form:panel:container:configs:language", "fre");
+
+        // check metadata url
+        tester.assertComponent("form:panel:container:configs:border:metadataURL", TextField.class);
+        tester.assertModelValue("form:panel:container:configs:border:metadataURL", "http://foo.com?bar=baz");
+
+        // check metadata url type
+        tester.assertComponent("form:panel:container:configs:metadataURLType", DropDownChoice.class);
+        tester.assertModelValue("form:panel:container:configs:metadataURLType", "application/vnd.iso.19139+xml");
+
+        // the spatial identifiers editor
+        tester.assertComponent("form:panel:container:configs:datasetIdentifiersContainer:spatialDatasetIdentifiers", UniqueResourceIdentifiersEditor.class);
+        UniqueResourceIdentifiers expected = Converters.convert("one,http://www.geoserver.org/one;two,http://www.geoserver.org/two,http://metadata.geoserver.org/id?two", UniqueResourceIdentifiers.class);
+        tester.assertModelValue("form:panel:container:configs:datasetIdentifiersContainer:spatialDatasetIdentifiers", expected);
+    }
+    
+    @Test
+    public void testWithFullSettingsWCS() {
+        final ServiceInfo serviceInfo = getGeoServer().getService(WCSInfo.class);
         final MetadataMap metadata = serviceInfo.getMetadata();
         clearInspireMetadata(metadata);
         metadata.put(CREATE_EXTENDED_CAPABILITIES.key, true);
@@ -313,8 +375,77 @@ public class InspirePanelTest extends GeoServerWicketTestSupport {
     }
     
     @Test
+    public void testCreateExtCapMissingWithRequiredSettingsWCS() {
+        final ServiceInfo serviceInfo = getGeoServer().getService(WCSInfo.class);
+        final MetadataMap metadata = serviceInfo.getMetadata();
+        clearInspireMetadata(metadata);
+        metadata.put(SERVICE_METADATA_URL.key, "http://foo.com?bar=baz");
+        metadata.put(SERVICE_METADATA_TYPE.key, "application/vnd.iso.19139+xml");
+        metadata.put(LANGUAGE.key, "fre");
+        metadata.put(SPATIAL_DATASET_IDENTIFIER_TYPE.key,
+                "one,http://www.geoserver.org/one");
+        getGeoServer().save(serviceInfo);
+        startPage(serviceInfo);
+
+        tester.assertComponent("form", Form.class);
+        
+        // check ExtendedCapabilities on
+        tester.assertComponent("form:panel:createExtendedCapabilities", CheckBox.class);
+        tester.assertModelValue("form:panel:createExtendedCapabilities", true);
+
+        // Just check there is some configuration won't repeat all checks as for when check box explcitly set.
+        tester.assertComponent("form:panel:container:configs:language", LanguageDropDownChoice.class);
+        tester.assertModelValue("form:panel:container:configs:language", "fre");
+    }
+    
+    @Test
+    public void testCreateExtCapMissingWithoutRequiredSettingsWCS() {
+        final ServiceInfo serviceInfo = getGeoServer().getService(WCSInfo.class);
+        final MetadataMap metadata = serviceInfo.getMetadata();
+        clearInspireMetadata(metadata);
+        metadata.put(SERVICE_METADATA_URL.key, "http://foo.com?bar=baz");
+        metadata.put(SERVICE_METADATA_TYPE.key, "application/vnd.iso.19139+xml");
+        metadata.put(LANGUAGE.key, "fre");
+        getGeoServer().save(serviceInfo);
+        startPage(serviceInfo);
+        
+        tester.assertComponent("form", Form.class);
+
+        // check ExtendedCapabilities off
+        tester.assertComponent("form:panel:createExtendedCapabilities", CheckBox.class);
+        tester.assertModelValue("form:panel:createExtendedCapabilities", false);
+
+        tester.assertInvisible("form:panel:container:configs");
+    }
+    
+    @Test
     public void testEditBasicWFS() {
         final ServiceInfo serviceInfo = getGeoServer().getService(WFSInfo.class);
+        final MetadataMap metadata = serviceInfo.getMetadata();
+        clearInspireMetadata(metadata);
+        metadata.put(CREATE_EXTENDED_CAPABILITIES.key, true);
+        metadata.put(SERVICE_METADATA_URL.key, "http://foo.com?bar=baz");
+        metadata.put(SERVICE_METADATA_TYPE.key, "application/vnd.iso.19139+xml");
+        metadata.put(LANGUAGE.key, "fre");
+        metadata.put(SPATIAL_DATASET_IDENTIFIER_TYPE.key,
+                "one,http://www.geoserver.org/one;two,http://www.geoserver.org/two,http://metadata.geoserver.org/id?two");
+        getGeoServer().save(serviceInfo);
+        startPage(serviceInfo);
+
+        FormTester ft = tester.newFormTester("form");
+        ft.select("panel:container:configs:language", 0);
+        ft.setValue("panel:container:configs:border:metadataURL", "http://www.geoserver.org/test");
+        ft.select("panel:container:configs:metadataURLType", 0);
+        ft.submit();
+
+        tester.assertModelValue("form:panel:container:configs:language", "bul");
+        tester.assertModelValue("form:panel:container:configs:border:metadataURL", "http://www.geoserver.org/test");
+        tester.assertModelValue("form:panel:container:configs:metadataURLType", "application/vnd.ogc.csw.GetRecordByIdResponse_xml");
+    }
+
+    @Test
+    public void testEditBasicWCS() {
+        final ServiceInfo serviceInfo = getGeoServer().getService(WCSInfo.class);
         final MetadataMap metadata = serviceInfo.getMetadata();
         clearInspireMetadata(metadata);
         metadata.put(CREATE_EXTENDED_CAPABILITIES.key, true);

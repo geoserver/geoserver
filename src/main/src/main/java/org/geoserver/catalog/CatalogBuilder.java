@@ -1099,7 +1099,7 @@ public class CatalogBuilder {
             if (categories != null) {
                 for (Category cat : categories) {
 
-                    if ((cat != null) && cat.getName().toString().equalsIgnoreCase("no data")) {
+                    if ((cat != null) && cat.getName().toString(Locale.ENGLISH).equalsIgnoreCase("no data")) {
                         double min = cat.getRange().getMinimum();
                         double max = cat.getRange().getMaximum();
 

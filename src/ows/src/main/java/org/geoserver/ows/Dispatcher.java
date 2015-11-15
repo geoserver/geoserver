@@ -704,7 +704,9 @@ public class Dispatcher extends AbstractController {
                     if (kvpParsed && xmlParsed || (!kvpParsed && !xmlParsed)) {
                         throw new ServiceException(
                                 "Could not find request reader (either kvp or xml) for: "
-                                        + parameterType.getName());
+                                        + parameterType.getName() 
+                                        + ", it might be that some request parameters are missing, "
+                                        + "please check the documentation");
                     } else if (kvpParsed) {
                         throw new ServiceException("Could not parse the KVP for: "
                                 + parameterType.getName());

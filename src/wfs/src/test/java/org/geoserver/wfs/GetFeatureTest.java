@@ -88,6 +88,11 @@ public class GetFeatureTest extends WFSTestSupport {
     }
     
     @Test
+    public void testGetFilterEmpty() throws Exception {
+        testGetFifteenAll("wfs?request=GetFeature&typename=cdf:Fifteen&version=1.0.0&service=wfs&filter=");
+    }
+    
+    @Test
     public void testGetPropertyNameStar() throws Exception {
     	testGetFifteenAll("wfs?request=GetFeature&typename=cdf:Fifteen&version=1.0.0&service=wfs&propertyname=*");
     }

@@ -17,9 +17,6 @@ import java.util.Collections;
 
 import javax.xml.namespace.QName;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-
 import org.custommonkey.xmlunit.XMLAssert;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
@@ -29,7 +26,6 @@ import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
-import org.geoserver.wfs.json.JSONType;
 import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
@@ -91,6 +87,11 @@ public class GetFeatureTest extends WFSTestSupport {
     @Test
     public void testGetPropertyNameEmpty() throws Exception {
     	testGetFifteenAll("wfs?request=GetFeature&typename=cdf:Fifteen&version=1.0.0&service=wfs&propertyname=");
+    }
+    
+    @Test
+    public void testGetFilterEmpty() throws Exception {
+        testGetFifteenAll("wfs?request=GetFeature&typename=cdf:Fifteen&version=1.0.0&service=wfs&filter=");
     }
     
     @Test

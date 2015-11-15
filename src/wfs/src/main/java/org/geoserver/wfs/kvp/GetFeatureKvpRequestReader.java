@@ -472,6 +472,15 @@ public class GetFeatureKvpRequestReader extends WFSKvpRequestReader {
                 throw new WFSException(request, msg);
             }
         }
+        if(m < n) {
+            // fill the rest with nulls
+            List newValues = new ArrayList<>();
+            newValues.addAll(values);
+            for (int i = 0; i < n - m; i++) {
+                newValues.add(null);
+            }
+            values = newValues;
+        }
 
         EMFUtils.set(query, property, values);
     }

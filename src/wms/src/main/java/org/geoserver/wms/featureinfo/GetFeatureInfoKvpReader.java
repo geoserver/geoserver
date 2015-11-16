@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2014 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -114,12 +114,21 @@ public class GetFeatureInfoKvpReader extends KvpRequestReader {
                     + "It should be a proper subset of those instead");
         }
 
-        for (MapLayerInfo l : request.getQueryLayers()) {
+        // remove no-queryable layers
+        for (MapLayerInfo l : request.getQueryLayers().toArray(new MapLayerInfo[0])) {
             LayerInfo layerInfo = l.getLayerInfo();
             if (!wms.isQueryable(layerInfo)) {
-                throw new ServiceException("Layer " + l.getName() + " is not queryable",
-                    WMSErrorCode.LAYER_NOT_QUERYABLE.get(request.getVersion()), "QUERY_LAYERS");
+                int layerIndex = getMapLayers.indexOf(l);
+                getMapLayers.remove(l);
+                request.getQueryLayers().remove(l);
+                if (layerIndex != -1) {
+                    request.getGetMapRequest().getStyles().remove(layerIndex);
+                }
             }
+        }
+        if (request.getQueryLayers().size() == 0) {
+            throw new ServiceException("GetFeatureInfo request has not queryable layers",
+                    WMSErrorCode.LAYER_NOT_QUERYABLE.get(request.getVersion()), "QUERY_LAYERS");
         }
 
         String format = (String) (kvp.containsKey("INFO_FORMAT") ? kvp.get("INFO_FORMAT") : null);

@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2014 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -19,13 +19,16 @@ import javax.xml.namespace.QName;
 import org.custommonkey.xmlunit.XMLAssert;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
+import org.geoserver.catalog.CatalogFactory;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ProjectionPolicy;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMSStoreInfo;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.SystemTestData.LayerProperty;
@@ -872,4 +875,51 @@ public class GetFeatureInfoTest extends WMSTestSupport {
        assertPixel(image, 150, 150, Color.BLUE);
    }
    
+   /**
+    * Test GetFeatureInfo on a group layer with some no-queryable layers
+    * @throws Exception
+    */
+   @Test
+   public void testGroupLayerWithNotQueryableLayers() throws Exception {
+       Catalog catalog = getCatalog();
+       CatalogFactory factory = catalog.getFactory();
+       WorkspaceInfo workspace = catalog.getWorkspaceByName(MockData.CITE_PREFIX);
+       String groupLayer = "glqueryable";
+       
+       // Only last layer will be queryable.
+       LayerInfo buildingsLayer = catalog.getLayerByName(getLayerId(MockData.BUILDINGS));
+       buildingsLayer.setQueryable(false);
+       catalog.save(buildingsLayer);
+       LayerInfo bridgesLayer = catalog.getLayerByName(getLayerId(MockData.BRIDGES));
+       bridgesLayer.setQueryable(false);
+       catalog.save(bridgesLayer);
+       LayerInfo forestLayer = catalog.getLayerByName(getLayerId(MockData.FORESTS));
+       forestLayer.setQueryable(true);
+       catalog.save(forestLayer);
+       
+       LayerGroupInfo layerGroup = factory.createLayerGroup();
+       layerGroup.setName(groupLayer);
+       layerGroup.setWorkspace(workspace);
+       layerGroup.getLayers().add(buildingsLayer);
+       layerGroup.getLayers().add(bridgesLayer);
+       layerGroup.getLayers().add(forestLayer);
+       new CatalogBuilder(catalog).calculateLayerGroupBounds(layerGroup);
+       catalog.add(layerGroup);
+       
+       String name = MockData.CITE_PREFIX+":"+groupLayer;
+       String request = "wms?bbox=-0.002,-0.002,0.002,0.002&styles=&format=jpeg" +
+               "&info_format=text/plain&request=GetFeatureInfo&layers="
+               + name + "&query_layers=" + name + "&width=20&height=20&x=10&y=10";
+       
+       String result = getAsString(request);
+       assertNotNull(result);
+       assertTrue(result.indexOf("Green Forest") > 0);
+       
+       buildingsLayer.setQueryable(true);
+       catalog.save(buildingsLayer);
+       bridgesLayer.setQueryable(true);
+       catalog.save(bridgesLayer);
+       
+       catalog.remove(layerGroup);
+   }
 }

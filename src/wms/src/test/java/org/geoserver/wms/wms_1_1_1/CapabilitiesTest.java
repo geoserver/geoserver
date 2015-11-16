@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -289,7 +289,7 @@ public class CapabilitiesTest extends WMSTestSupport {
         try {
             System.out.println(getAsString("wms?service=WMS&request=getCapabilities&version=1.1.1"));
             Document doc = getAsDOM("wms?service=WMS&request=getCapabilities&version=1.1.1", true);
-            print(doc);
+            //print(doc);
             assertXpathEvaluatesTo("1", "count(//Layer[Name='MyLayerGroup']/Attribution)", doc);
             assertXpathEvaluatesTo("My Attribution", "//Layer[Name='MyLayerGroup']/Attribution/Title", doc);
             assertXpathEvaluatesTo("1", "count(//Layer[Name='MyLayerGroup']/MetadataURL)", doc);

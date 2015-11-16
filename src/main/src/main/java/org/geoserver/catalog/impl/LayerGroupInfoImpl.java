@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -270,6 +270,8 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
         result = prime * result + ((rootLayerStyle == null) ? 0 : rootLayerStyle.hashCode());        
         result = prime * result + ((authorityURLs == null) ? 0 : authorityURLs.hashCode());
         result = prime * result + ((identifiers == null) ? 0 : identifiers.hashCode());
+        result = prime * result + ((attribution == null) ? 0 : attribution.hashCode());
+        result = prime * result + ((metadataLinks == null) ? 0 : metadataLinks.hashCode());
         return result;
     }
 
@@ -356,6 +358,18 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
             if (other.getRootLayerStyle() != null)
                 return false;
         } else if (!rootLayerStyle.equals(other.getRootLayerStyle()))
+            return false;
+        
+        if(attribution == null){
+            if (other.getAttribution() != null)
+                return false;
+        } else if (!attribution.equals(other.getAttribution()))
+            return false;
+        
+        if(metadataLinks == null){
+            if (other.getMetadataLinks() != null)
+                return false;
+        } else if (!metadataLinks.equals(other.getMetadataLinks()))
             return false;
         
         return true;

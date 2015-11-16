@@ -225,7 +225,7 @@ public class StoredQueryProvider {
         try {
             StoredQueryDescriptionType q = 
                 (StoredQueryDescriptionType) p.parse(new BufferedInputStream(fin));
-            return createStoredQuery(q);
+            return createStoredQuery(q, false);
         } 
         finally {
             fin.close();

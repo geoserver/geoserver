@@ -45,6 +45,9 @@
     <include>servlet-api-*.jar</include>
     <include>xmlParserAPIs-*.jar</include>
    </includes>
+   <excludes>
+    <exclude>log4j-over-slf4j-*.jar</exclude>
+   </excludes>
   </fileSet>
   <fileSet>
    <!-- windows batch files -->

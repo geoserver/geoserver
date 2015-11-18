@@ -1607,7 +1607,9 @@ public class Dispatcher extends AbstractController {
 
     void exception(Throwable t, Service service, Request request) {
         Throwable current = t;
-        while (current != null && !(current instanceof ClientStreamAbortedException) && !(isSecurityException(current))) {
+        while (current != null && !(current instanceof ClientStreamAbortedException) 
+                && !isSecurityException(current)
+                && !(current instanceof HttpErrorCodeException)) {
             if(current instanceof SAXException)
                 current = ((SAXException) current).getException();
             else
@@ -1617,46 +1619,53 @@ public class Dispatcher extends AbstractController {
             logger.log(Level.FINER, "Client has closed stream", t);
             return;
         }
-        if ( isSecurityException(current))
+        if ( isSecurityException(current)) {
             throw (RuntimeException) current;
-        
-        
-        //unwind the exception stack until we find one we know about 
-        Throwable cause = t;
-        while( cause != null ) {
-            if ( cause instanceof ServiceException ) {
-                break;
-            }
-            if ( cause instanceof HttpErrorCodeException ) {
-                break;
-            }
-            if ( isSecurityException(cause) ) {
-                break;
-            }
-            
-            cause = cause.getCause();
         }
         
-        if ( cause == null ) {
-            //did not fine a "special" exception, create a service exception
-            // by default
-            cause = new ServiceException(t);
-        }
-        
-        if (!(cause instanceof HttpErrorCodeException)) {
-            logger.log(Level.SEVERE, "", t);
-        } else {
-            int errorCode = ((HttpErrorCodeException)cause).getErrorCode();
+        if (current instanceof HttpErrorCodeException) {
+            HttpErrorCodeException ece = (HttpErrorCodeException) current;
+            int errorCode = ece.getErrorCode();
             if (errorCode < 199 || errorCode > 299) {
                 logger.log(Level.FINE, "", t);
-            }
-            else{
+            } else {
                 logger.log(Level.FINER, "", t);
             }
-        }
-
+            
+            try {
+                if(ece.getMessage() != null) {
+                    request.getHttpResponse().sendError(ece.getErrorCode(),ece.getMessage());
+                } else {
+                    request.getHttpResponse().sendError(ece.getErrorCode());
+                }
+                if (ece.getErrorCode() < 400) {
+                    // gwc returns an HttpErrorCodeException for 304s
+                    // we don't want to flag these as errors for upstream filters, ie the monitoring extension
+                    t = null;
+                } 
+            } catch (IOException e) {
+                // means the resposne was already commited something
+                logger.log(Level.FINER, "", t);
+            }
+        } else {
+            logger.log(Level.SEVERE, "", t);
         
-        if ( cause instanceof ServiceException ) {
+            //unwind the exception stack until we find one we know about 
+            Throwable cause = t;
+            while( cause != null ) {
+                if ( cause instanceof ServiceException ) {
+                    break;
+                }
+                
+                cause = cause.getCause();
+            }
+            
+            if ( cause == null ) {
+                // did not fine a "special" exception, create a service exception by default
+                cause = new ServiceException(t);
+            }
+            
+            // at this point we're sure it'a service exception
             ServiceException se = (ServiceException) cause;
             if ( cause != t ) {
                 //copy the message, code + locator, but set cause equal to root
@@ -1664,28 +1673,6 @@ public class Dispatcher extends AbstractController {
             }
             
             handleServiceException(se,service,request);
-        }
-        else if ( cause instanceof HttpErrorCodeException ) {
-            //TODO: log the exception stack trace
-            
-            //set the error code
-            HttpErrorCodeException ece = (HttpErrorCodeException) cause;
-            try {
-            	if(ece.getMessage() != null) {
-                	request.getHttpResponse().sendError(ece.getErrorCode(),ece.getMessage());
-            	} else {
-            		request.getHttpResponse().sendError(ece.getErrorCode());
-            	}
-                if (ece.getErrorCode() < 400) {
-                    // gwc returns an HttpErrorCodeException for 304s
-                    // we don't want to flag these as errors for upstream filters, ie the monitoring extension
-                    t = null;
-                }
-            } 
-            catch (IOException e) {
-                //means the resposne was already commited
-                //TODO: something
-            }
         }
         
         request.error = t;

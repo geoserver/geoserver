@@ -54,7 +54,7 @@
   <repository>
    <id>boundless</id>
    <name>Boundless Maven Repository</name>
-   <url>https://boundless.artifactoryonline.com/boundless/main/</url>
+   <url>https://repo.boundlessgeo.com/main/</url>
    <!-- contains snapshot and release (including third-party-dependences)               -->
    <!-- Restlet maven Repository (http://maven.restlet.org)                             -->
    <!-- ucar (https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases) -->
@@ -62,9 +62,9 @@
    <snapshots>
      <enabled>true</enabled>
    </snapshots>
-   <!--releases>
+   <releases>
      <enabled>true</enabled>
-   </releases-->
+   </releases>
   </repository>
   
   <repository>
@@ -1602,14 +1602,14 @@
   <repository>
    <id>boundless</id>
    <name>Boundless Release Repository</name>
-   <url>https://boundless.artifactoryonline.com/boundless/release/</url>
+   <url>https://repo.boundlessgeo.com/release/</url>
    <uniqueVersion>false</uniqueVersion>
   </repository>
   <snapshotRepository>
    <id>boundless</id>
    <uniqueVersion>false</uniqueVersion>
    <name>Boundless Snapshot Repository</name>
-   <url>https://boundless.artifactoryonline.com/boundless/snapshot/</url>
+   <url>https://repo.boundlessgeo.com/snapshot/</url>
   </snapshotRepository>
  </distributionManagement>
 

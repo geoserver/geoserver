@@ -21,4 +21,22 @@
     <maxy>4874173.55649313</maxy>
     <crs class="projected">EPSG:3003</crs>
   </bounds>
+  <metadataLinks>   
+    <metadataLink>
+      <id>1</id>
+      <type>text/html</type>
+      <metadataType>FGDC</metadataType>
+      <content>http://my/metadata/link/1</content>
+    </metadataLink>    
+    <metadataLink>
+      <id>2</id>
+      <type>text/html</type>
+      <metadataType>FGDC</metadataType>
+      <content>http://my/metadata/link/2</content>
+    </metadataLink>    
+  </metadataLinks>
+  <attribution>
+    <logoWidth>101</logoWidth>
+    <logoHeight>102</logoHeight>
+  </attribution>
 </layerGroup>

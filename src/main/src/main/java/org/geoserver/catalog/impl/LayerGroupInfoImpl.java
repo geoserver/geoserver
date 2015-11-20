@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -8,12 +8,14 @@ package org.geoserver.catalog.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.geoserver.catalog.AttributionInfo;
 import org.geoserver.catalog.AuthorityURLInfo;
 import org.geoserver.catalog.CatalogVisitor;
 import org.geoserver.catalog.LayerGroupHelper;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerIdentifierInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.MetadataLinkInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.StyleInfo;
@@ -50,9 +52,12 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
     
     protected List<PublishedInfo> publishables = new ArrayList<PublishedInfo>();
     protected List<StyleInfo> styles = new ArrayList<StyleInfo>();
+    protected List<MetadataLinkInfo> metadataLinks = new ArrayList<MetadataLinkInfo>();
     
     protected ReferencedEnvelope bounds;
     protected MetadataMap metadata = new MetadataMap();
+
+    protected AttributionInfo attribution;
 
     /**
      * This property is transient in 2.1.x series and stored under the metadata map with key
@@ -70,6 +75,7 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
      */
     protected List<LayerIdentifierInfo> identifiers = new ArrayList<LayerIdentifierInfo>(2);
     
+        
     
     public LayerGroupInfoImpl() {
         mode = Mode.SINGLE;
@@ -264,6 +270,8 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
         result = prime * result + ((rootLayerStyle == null) ? 0 : rootLayerStyle.hashCode());        
         result = prime * result + ((authorityURLs == null) ? 0 : authorityURLs.hashCode());
         result = prime * result + ((identifiers == null) ? 0 : identifiers.hashCode());
+        result = prime * result + ((attribution == null) ? 0 : attribution.hashCode());
+        result = prime * result + ((metadataLinks == null) ? 0 : metadataLinks.hashCode());
         return result;
     }
 
@@ -352,6 +360,18 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
         } else if (!rootLayerStyle.equals(other.getRootLayerStyle()))
             return false;
         
+        if(attribution == null){
+            if (other.getAttribution() != null)
+                return false;
+        } else if (!attribution.equals(other.getAttribution()))
+            return false;
+        
+        if(metadataLinks == null){
+            if (other.getMetadataLinks() != null)
+                return false;
+        } else if (!metadataLinks.equals(other.getMetadataLinks()))
+            return false;
+        
         return true;
     }
 
@@ -387,5 +407,24 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
     @Override
     public PublishedType getType() {
         return PublishedType.GROUP;
+    }
+
+    @Override
+    public AttributionInfo getAttribution() {
+        return attribution;
+    }
+
+    @Override
+    public void setAttribution(AttributionInfo attribution) {
+        this.attribution = attribution;
+    }
+
+    @Override
+    public List<MetadataLinkInfo> getMetadataLinks() {
+        return metadataLinks;
+    }
+    
+    public void setMetadataLinks(List<MetadataLinkInfo> metadataLinks) {
+        this.metadataLinks = metadataLinks;
     }
 }

@@ -10,6 +10,7 @@ import org.geoserver.platform.GeoServerResourceLoader;
 import org.geotools.wfs.v2_0.WFS;
 import org.geotools.wfs.v2_0.WFSConfiguration;
 import org.geotools.xml.Parser;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -61,9 +62,19 @@ public class StoredQueryProviderTest {
 
     private GeoServerResourceLoader loader;
 
+    private void verifyTmpFolderWorking(File folder) {
+        try {
+            File query = createMyStoredQueryDefinitionFile(folder);
+            Assume.assumeTrue(query.exists());
+        } catch (IOException e) {
+            Assume.assumeNoException(e);
+        }
+    }
+
     @Before
     public void setup() throws IOException {
         baseDirectory = tmpFolder.newFolder();
+        verifyTmpFolderWorking(baseDirectory);
         catalog = createMock(Catalog.class);
         loader = new GeoServerResourceLoader(baseDirectory);
         expect(catalog.getResourceLoader()).andReturn(loader);
@@ -81,7 +92,7 @@ public class StoredQueryProviderTest {
 
     @Test
     public void whenBogusStoredQueryDefinitionCreatedItIsNotReturnedInTheListOfStoredQueries() throws IOException {
-        createMyStoredQueryDefinitionFile();
+        createMyStoredQueryDefinitionFile(storedQueryProvider.storedQueryDir());
         createMyBogusStoredQueryDefinition();
         List<StoredQuery> queries = storedQueryProvider.listStoredQueries();
         assertThat(queries, hasSize(2));
@@ -91,7 +102,7 @@ public class StoredQueryProviderTest {
 
     @Test
     public void whenStoredQueryDefinitionCreatedByFileItIsReturnedInTheListOfStoredQueries() throws IOException {
-        createMyStoredQueryDefinitionFile();
+        createMyStoredQueryDefinitionFile(storedQueryProvider.storedQueryDir());
         List<StoredQuery> queries = storedQueryProvider.listStoredQueries();
         assertThat(queries, hasSize(2));
         assertThat(storedQueryProvider.getStoredQuery("urn:ogc:def:query:OGC-WFS::GetFeatureById"), is(notNullValue()));
@@ -109,7 +120,7 @@ public class StoredQueryProviderTest {
     @Test
     public void storedQueryDefinitionIsNotRewrittenByListingTheQueries() throws IOException {
         // c.f. GEOS-7297
-        File myStoredQueryDefinition = createMyStoredQueryDefinitionFile();
+        File myStoredQueryDefinition = createMyStoredQueryDefinitionFile(storedQueryProvider.storedQueryDir());
         try {
             myStoredQueryDefinition.setReadOnly();
             List<StoredQuery> queries = storedQueryProvider.listStoredQueries();
@@ -123,7 +134,7 @@ public class StoredQueryProviderTest {
 
     @Test
     public void canRemoveStoredQueryDefinition() throws IOException {
-        File myStoredQueryDefinition = createMyStoredQueryDefinitionFile();
+        File myStoredQueryDefinition = createMyStoredQueryDefinitionFile(storedQueryProvider.storedQueryDir());
         List<StoredQuery> queries = storedQueryProvider.listStoredQueries();
         assertThat(queries, hasSize(2));
         StoredQuery myStoredQuery = storedQueryProvider.getStoredQuery("myStoredQuery");
@@ -135,7 +146,7 @@ public class StoredQueryProviderTest {
 
     @Test
     public void canRemoveAllStoredQueryDefinitions() throws IOException {
-        File myStoredQueryDefinition = createMyStoredQueryDefinitionFile();
+        File myStoredQueryDefinition = createMyStoredQueryDefinitionFile(storedQueryProvider.storedQueryDir());
         List<StoredQuery> queries = storedQueryProvider.listStoredQueries();
         assertThat(queries, hasSize(2));
         storedQueryProvider.removeAll();
@@ -149,8 +160,7 @@ public class StoredQueryProviderTest {
     }
 
 
-    private File createMyStoredQueryDefinitionFile() throws IOException {
-        File storedQueryDir = storedQueryProvider.storedQueryDir();
+    private File createMyStoredQueryDefinitionFile(File storedQueryDir) throws IOException {
         File storedQueryDefinition = new File(storedQueryDir, "MyStoredQuery.xml");
         Writer writer = new FileWriter(storedQueryDefinition);
         writer.write(MY_STORED_QUERY_DEFINITION);

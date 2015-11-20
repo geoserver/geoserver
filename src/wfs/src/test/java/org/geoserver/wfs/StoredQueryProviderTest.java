@@ -27,12 +27,14 @@ import static org.junit.Assert.assertThat;
 
 public class StoredQueryProviderTest {
 
+    public static final String MY_STORED_QUERY = "MyStoredQuery";
+
     @Rule
     public TemporaryFolder tmpFolder = new TemporaryFolder();
 
     public static final String MY_STORED_QUERY_DEFINITION =
             "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-            "<wfs:StoredQueryDescription id='myStoredQuery'" +
+            "<wfs:StoredQueryDescription id='MyStoredQuery'" +
                     " xmlns:xlink=\"http://www.w3.org/1999/xlink\"" +
                     " xmlns:ows=\"http://www.opengis.net/ows/1.1\"" +
                     " xmlns:gml=\"http://www.opengis.net/gml/3.2\"" +
@@ -62,19 +64,9 @@ public class StoredQueryProviderTest {
 
     private GeoServerResourceLoader loader;
 
-    private void verifyTmpFolderWorking(File folder) {
-        try {
-            File query = createMyStoredQueryDefinitionFile(folder);
-            Assume.assumeTrue(query.exists());
-        } catch (IOException e) {
-            Assume.assumeNoException(e);
-        }
-    }
-
     @Before
     public void setup() throws IOException {
         baseDirectory = tmpFolder.newFolder();
-        verifyTmpFolderWorking(baseDirectory);
         catalog = createMock(Catalog.class);
         loader = new GeoServerResourceLoader(baseDirectory);
         expect(catalog.getResourceLoader()).andReturn(loader);
@@ -97,7 +89,7 @@ public class StoredQueryProviderTest {
         List<StoredQuery> queries = storedQueryProvider.listStoredQueries();
         assertThat(queries, hasSize(2));
         assertThat(storedQueryProvider.getStoredQuery("urn:ogc:def:query:OGC-WFS::GetFeatureById"), is(notNullValue()));
-        assertThat(storedQueryProvider.getStoredQuery("myStoredQuery"), is(notNullValue()));
+        assertThat(storedQueryProvider.getStoredQuery(MY_STORED_QUERY), is(notNullValue()));
     }
 
     @Test
@@ -106,15 +98,15 @@ public class StoredQueryProviderTest {
         List<StoredQuery> queries = storedQueryProvider.listStoredQueries();
         assertThat(queries, hasSize(2));
         assertThat(storedQueryProvider.getStoredQuery("urn:ogc:def:query:OGC-WFS::GetFeatureById"), is(notNullValue()));
-        assertThat(storedQueryProvider.getStoredQuery("myStoredQuery").getName(), is("myStoredQuery"));
+        assertThat(storedQueryProvider.getStoredQuery(MY_STORED_QUERY).getName(), is(MY_STORED_QUERY));
     }
 
     @Test
     public void whenStoredQueryDefinitionCreatedByDescriptionItIsReturnedInTheListOfStoredQueries() throws Exception {
         StoredQueryDescriptionType storedQueryDescriptionType = createMyStoredQueryDefinitionInStoredQueryDescriptionType();
         StoredQuery result = storedQueryProvider.createStoredQuery(storedQueryDescriptionType);
-        assertThat(result.getName(), is("myStoredQuery"));
-        assertThat(storedQueryProvider.getStoredQuery("myStoredQuery").getName(), is("myStoredQuery"));
+        assertThat(result.getName(), is(MY_STORED_QUERY));
+        assertThat(storedQueryProvider.getStoredQuery(MY_STORED_QUERY).getName(), is(MY_STORED_QUERY));
     }
 
     @Test
@@ -126,7 +118,7 @@ public class StoredQueryProviderTest {
             List<StoredQuery> queries = storedQueryProvider.listStoredQueries();
             assertThat(queries, hasSize(2));
             assertThat(storedQueryProvider.getStoredQuery("urn:ogc:def:query:OGC-WFS::GetFeatureById"), is(notNullValue()));
-            assertThat(storedQueryProvider.getStoredQuery("myStoredQuery").getName(), is("myStoredQuery"));
+            assertThat(storedQueryProvider.getStoredQuery(MY_STORED_QUERY).getName(), is(MY_STORED_QUERY));
         } finally {
             myStoredQueryDefinition.setWritable(true);
         }
@@ -137,8 +129,8 @@ public class StoredQueryProviderTest {
         File myStoredQueryDefinition = createMyStoredQueryDefinitionFile(storedQueryProvider.storedQueryDir());
         List<StoredQuery> queries = storedQueryProvider.listStoredQueries();
         assertThat(queries, hasSize(2));
-        StoredQuery myStoredQuery = storedQueryProvider.getStoredQuery("myStoredQuery");
-        assertThat(myStoredQuery.getName(), is("myStoredQuery"));
+        StoredQuery myStoredQuery = storedQueryProvider.getStoredQuery(MY_STORED_QUERY);
+        assertThat(myStoredQuery.getName(), is(MY_STORED_QUERY));
         storedQueryProvider.removeStoredQuery(myStoredQuery);
         assertThat(myStoredQueryDefinition.exists(), is(false));
         assertThat(storedQueryProvider.getStoredQuery(myStoredQuery.getName()), is(nullValue()));
@@ -151,7 +143,7 @@ public class StoredQueryProviderTest {
         assertThat(queries, hasSize(2));
         storedQueryProvider.removeAll();
         assertThat(myStoredQueryDefinition.exists(), is(false));
-        assertThat(storedQueryProvider.getStoredQuery("myStoredQuery"), is(nullValue()));
+        assertThat(storedQueryProvider.getStoredQuery(MY_STORED_QUERY), is(nullValue()));
     }
 
     @Test
@@ -161,7 +153,7 @@ public class StoredQueryProviderTest {
 
 
     private File createMyStoredQueryDefinitionFile(File storedQueryDir) throws IOException {
-        File storedQueryDefinition = new File(storedQueryDir, "MyStoredQuery.xml");
+        File storedQueryDefinition = new File(storedQueryDir, MY_STORED_QUERY + ".xml");
         Writer writer = new FileWriter(storedQueryDefinition);
         writer.write(MY_STORED_QUERY_DEFINITION);
         writer.close();

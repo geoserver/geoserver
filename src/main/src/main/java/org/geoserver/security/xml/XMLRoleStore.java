@@ -202,7 +202,7 @@ public class XMLRoleStore extends AbstractRoleStore {
     protected void ensureLock() throws IOException {
         if (lockFile != null)
             return; // we have one
-        lockFile = new LockFile(roleResource.file());
+        lockFile = new LockFile(roleResource);
         try {
             lockFile.writeLock();
         } catch (IOException ex) { // cannot obtain lock

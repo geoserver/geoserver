@@ -198,7 +198,7 @@ public class XMLUserGroupStore extends AbstractUserGroupStore {
     protected void ensureLock() throws IOException {
         if (lockFile != null)
             return; // we have one
-        lockFile = new LockFile(userResource.file());
+        lockFile = new LockFile(userResource);
         try {
             lockFile.writeLock();
         } catch (IOException ex) { // cannot obtain lock

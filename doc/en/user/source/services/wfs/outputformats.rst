@@ -40,6 +40,20 @@ where ``<format>`` is one of the following options:
      
 .. _wfs_outputformat_shapezip:
 
+Shapefile output
+----------------
+
+The shapefile format has a number of limitations that would prevent turning data sources into an equivalent shapefile. In order to abide with such limitations
+the shape-zip output format will automatically apply some transformations on the source data, and eventually split the single colleciton into multiple
+shapefiles. In particular, the shape-zip format will:
+
+* Reduce attribute names to the DBF accepted length, making sure there are not conflicts (counters being added at the end of the attribute name to handle this).
+* Fan out multiple geometry type into parallel shapefiles, named after the original feature type, plus the geometry type as a suffix.
+* Fan out multiple shapefiles in case the maximum size is reached
+
+The default max size for both .shp and .dbf file is 2GB, it's possible to modify those limits by setting the GS_SHP_MAX_SIZE and 
+GS_DBF_MAX_SIZE system variables to a different value (as a byte count, the default value being 2147483647).
+
 Shapefile output customization
 ------------------------------
 

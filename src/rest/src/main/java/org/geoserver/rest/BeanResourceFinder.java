@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -18,12 +18,17 @@ import org.springframework.context.ApplicationContextAware;
  * <p>
  * The following shows an example of using this class in a spring context:
  * <pre>
- *   <bean id="myResource" class="org.acme.MyResource"/>
+ *   <bean id="myResource" class="org.acme.MyResource" scope="prototype" />
  *   
  *   <bean id="myBeanResourceFinder" class="org.geoserver.rest.BeanResourceFinder">
  *     <constructor-arg ref="myResource"/>
  *   </bean>
  * </pre>
+ * </p>
+ * <p>The creation scope of the bean must be "prototype", at each lookup the resource
+ * will be provided the request and response via its {@link Resource#init(org.restlet.Context, Request, Response)}
+ * method, making it hold those values in the object fields: a singleton won't thus
+ * be thread safe
  * </p>
  * 
  * @author David Winslow, OpenGEO
@@ -69,7 +74,7 @@ public class BeanResourceFinder extends Finder implements ApplicationContextAwar
     public String getBeanToFind(){
         return beanName;
     }
-
+    
     public Resource findTarget(Request request, Response response){
         Resource res = (Resource) applicationContext.getBean(getBeanToFind());
         res.init(getContext(), request, response);

@@ -970,18 +970,16 @@ public class WMS implements ApplicationContextAware {
     }
 
     public boolean isQueryable(LayerGroupInfo layerGroup) {
+        boolean queryable = false;
+        
         for (PublishedInfo published : layerGroup.getLayers()) {
             if (published instanceof LayerInfo) {
-                if (!isQueryable((LayerInfo) published)) {
-                    return false;
-                }
+                queryable |= isQueryable((LayerInfo) published);
             } else {
-                if (!isQueryable((LayerGroupInfo) published)) {
-                    return false;
-                }
+                queryable |= isQueryable((LayerGroupInfo) published);
             }
         }
-        return true;
+        return queryable;
     }
 
     /**

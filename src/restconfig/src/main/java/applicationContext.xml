@@ -543,7 +543,7 @@
      <constructor-arg index="1" value="true"/> <!--  force reset instead of reload -->
   </bean>
 
-  <bean id="fontFinder" class="org.geoserver.rest.FontListResource"/>
+  <bean id="fontFinder" class="org.geoserver.rest.FontListResource"  singleton="false"/>
   
   <bean id="catalogLocker" class="org.geoserver.rest.RestConfigurationLockCallback">
     <constructor-arg index="0" ref="configurationLock"/>

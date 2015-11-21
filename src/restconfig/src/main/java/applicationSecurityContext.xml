@@ -19,7 +19,7 @@
 </property>
 </bean>
 
-  <bean id="masterPasswordResource" class="org.geoserver.security.rest.MasterPasswordResource">
+  <bean id="masterPasswordResource" class="org.geoserver.security.rest.MasterPasswordResource" singleton="false">
   </bean>
   
 </beans>

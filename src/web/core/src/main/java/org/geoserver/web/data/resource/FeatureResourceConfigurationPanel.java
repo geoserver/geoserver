@@ -206,6 +206,8 @@ public class FeatureResourceConfigurationPanel extends ResourceConfigurationPane
     @Override
     public void resourceUpdated(AjaxRequestTarget target) {
         if (target != null) {
+            // force it to reload the attribute list
+            attributes.getModel().detach();
             target.addComponent(attributePanel);
         }
     }
@@ -280,7 +282,9 @@ public class FeatureResourceConfigurationPanel extends ResourceConfigurationPane
                 FeatureTypeInfo typeInfo = (FeatureTypeInfo) getDefaultModelObject();
                 Catalog catalog = GeoServerApplication.get().getCatalog();
                 final ResourcePool resourcePool = catalog.getResourcePool();
-                return resourcePool.getAttributes(typeInfo);
+                // using loadAttributes to dodge the ResourcePool caches, the
+                // feature type structure might have been modified (e.g., SQL view editing)
+                return resourcePool.loadAttributes(typeInfo);
             } catch (Exception e) {
                 LOGGER.log(Level.SEVERE, "Grabbing the attribute list failed", e);
                 String error = new ParamResourceModel("attributeListingFailed", FeatureResourceConfigurationPanel.this, e.getMessage()).getString();

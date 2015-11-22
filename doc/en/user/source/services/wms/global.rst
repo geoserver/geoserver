@@ -20,12 +20,6 @@ Can be ``true`` or ``false`` (defaults to: ``false``).
 When ``true`` any stroke whose width is less than 1.5 pixels gets slimmed down to "zero", which is actually not zero, but a very thin line. That was the behaviour GeoServer used to default to before the 2.0 series.
 When ``false`` the stroke width is not modified and it's possible to specify widths less than one pixel. This is the default behaviour starting from the 2.0.0 release
 
-USE_STREAMING_RENDERER
-----------------------
-
-Can be ``true`` or ``false`` (defaults to: ``false``).
-When ``true`` the *StreamingRenderer* is used for all data. The *StreamingRenderer* is the one used by default for all data sources by shapefiles, it is usually faster at rendering styles with multiple ``FeatureTypeStyle`` elements but slower at rendering high amount of data.
-
 ENABLE_JSONP
 -------------
 

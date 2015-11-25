@@ -65,7 +65,7 @@
  
   <profiles>
     <profile>
-      <id>oracle</id>
+      <id>oracleDriver</id>
       <dependencies>
         <dependency>
           <groupId>com.oracle</groupId>
@@ -74,7 +74,7 @@
       </dependencies>
     </profile>
     <profile>
-      <id>sqlserver</id>
+      <id>sqlserverDriver</id>
       <dependencies>
         <dependency>
           <groupId>com.microsoft</groupId>

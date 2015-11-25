@@ -93,7 +93,7 @@
   </dependencies>
   <profiles>
       <profile>
-          <id>oracle</id>
+          <id>oracleDriver</id>
           <dependencies>
             <dependency>
                 <groupId>com.oracle</groupId>

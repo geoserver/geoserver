@@ -6,25 +6,24 @@
 package org.geoserver.gwc.web.layer;
 
 import org.apache.wicket.model.IModel;
-import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.gwc.GWC;
 import org.geoserver.gwc.config.GWCConfig;
 import org.geoserver.gwc.layer.GeoServerTileLayer;
 import org.geoserver.gwc.layer.GeoServerTileLayerInfo;
 import org.geoserver.gwc.layer.TileLayerInfoUtil;
-import org.geoserver.web.data.resource.LayerEditTabPanelInfo;
+import org.geoserver.web.publish.CommonPublishedEditTabPanelInfo;
 
-public class LayerEditCacheOptionsTabPanelInfo extends LayerEditTabPanelInfo {
+public class LayerEditCacheOptionsTabPanelInfo extends CommonPublishedEditTabPanelInfo {
 
     private static final long serialVersionUID = 7917940832781227130L;
 
     @Override
     public GeoServerTileLayerInfoModel createOwnModel(
-            final IModel<? extends ResourceInfo> resourceModel, final IModel<LayerInfo> layerModel,
+            final IModel<? extends PublishedInfo> layerModel,
             final boolean isNew) {
 
-        LayerInfo layerInfo = layerModel.getObject();
+        PublishedInfo layerInfo = layerModel.getObject();
         GeoServerTileLayerInfo tileLayerInfo;
 
         final GWC mediator = GWC.get();

@@ -16,7 +16,7 @@
   <bean id="kmlSelfLinksDecorator" class="org.geoserver.kml.decorator.PlacemarkSelfLinkDecoratorFactory"/>
   
   <!-- Add configuration section to Wicket UI -->
-  <bean id="geosearchLayerConfig" class="org.geoserver.web.publish.LayerConfigurationPanelInfo">
+  <bean id="geosearchLayerConfig" class="org.geoserver.web.publish.CommonPublishedConfigurationPanelInfo">
     <property name="id" value="geosearchLayerConfig"/>
     <property name="titleKey" value="publish.layer.config.geosearch"/>
     <property name="componentClass" value="org.geoserver.geosearch.web.GeoSearchLayerConfigPanel"/>

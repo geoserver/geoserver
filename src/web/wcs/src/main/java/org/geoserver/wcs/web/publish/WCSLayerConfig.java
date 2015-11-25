@@ -21,16 +21,18 @@ import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
 import org.geoserver.catalog.CoverageInfo;
-import org.geoserver.web.publish.LayerConfigurationPanel;
+import org.geoserver.catalog.LayerInfo;
+import org.geoserver.web.publish.PublishedConfigurationPanel;
 import org.geoserver.web.wicket.LiveCollectionModel;
 import org.geoserver.web.wicket.SimpleChoiceRenderer;
 
 /**
  * A configuration panel for CoverageInfo properties that related to WCS publication
  */
-@SuppressWarnings("serial")
-public class WCSLayerConfig extends LayerConfigurationPanel {
+public class WCSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
 
+    private static final long serialVersionUID = 6120092654147588736L;
+    
     private static final List<String> WCS_FORMATS = Arrays.asList("GIF","PNG","JPEG","TIFF","GTOPO30","GEOTIFF","IMAGEMOSAIC","ARCGRID");
     private static final List<String> INTERPOLATIONS = Arrays.asList("nearest neighbor","bilinear","bicubic");
     
@@ -41,18 +43,20 @@ public class WCSLayerConfig extends LayerConfigurationPanel {
     private String newResponseSRS;
     private String newInterpolationMethod;
 
-    public WCSLayerConfig(String id, IModel model){
+    public WCSLayerConfig(String id, IModel<LayerInfo> model){
         super(id, model);
 
-        final CoverageInfo coverage = (CoverageInfo) getLayerInfo().getResource();
-        add(new ListMultipleChoice("requestSRS", 
-                    new PropertyModel(this, "selectedRequestSRSs"), 
+        final CoverageInfo coverage = (CoverageInfo) getPublishedInfo().getResource();
+        add(new ListMultipleChoice<String>("requestSRS", 
+                    new PropertyModel<List<String>>(this, "selectedRequestSRSs"), 
                     coverage.getRequestSRS())
         );
 
-        add(new TextField("newRequestSRS", new PropertyModel(this, "newRequestSRS")));
+        add(new TextField<String>("newRequestSRS", new PropertyModel<String>(this, "newRequestSRS")));
 
         add(new Button("deleteSelectedRequestSRSs"){
+            private static final long serialVersionUID = 8363252127939759315L;
+
             public void onSubmit(){
                 coverage.getRequestSRS().removeAll(selectedRequestSRSs);
                 selectedRequestSRSs.clear();
@@ -60,20 +64,24 @@ public class WCSLayerConfig extends LayerConfigurationPanel {
         });
 
         add(new Button("addNewRequestSRS"){
+            private static final long serialVersionUID = -3493317500980471055L;
+
             public void onSubmit(){
                 coverage.getRequestSRS().add(newRequestSRS);
                 newRequestSRS = "";
             }
         });
 
-        add (new ListMultipleChoice("responseSRS", 
-                    new PropertyModel(this, "selectedResponseSRSs"),
+        add (new ListMultipleChoice<String>("responseSRS", 
+                    new PropertyModel<List<String>>(this, "selectedResponseSRSs"),
                     coverage.getResponseSRS())
         );
 
-        add(new TextField("newResponseSRS", new PropertyModel(this, "newResponseSRS")));
+        add(new TextField<String>("newResponseSRS", new PropertyModel<String>(this, "newResponseSRS")));
 
         add(new Button("deleteSelectedResponseSRSs"){
+            private static final long serialVersionUID = -8727831157546262491L;
+
             public void onSubmit(){
                 coverage.getResponseSRS().removeAll(selectedResponseSRSs);
                 selectedResponseSRSs.clear();
@@ -81,18 +89,23 @@ public class WCSLayerConfig extends LayerConfigurationPanel {
         });
 
         add(new Button("addNewResponseSRS"){
+            private static final long serialVersionUID = -2888152896129259019L;
+
             public void onSubmit(){
                 coverage.getResponseSRS().add(newResponseSRS);
                 newResponseSRS = "";
             }
         });
 
-        add(new DropDownChoice("defaultInterpolationMethod", new PropertyModel(coverage, "defaultInterpolationMethod"),
-               new WCSInterpolationModel()));
+        add(new DropDownChoice<String>("defaultInterpolationMethod", 
+                new PropertyModel<String>(coverage, "defaultInterpolationMethod"),
+                new WCSInterpolationModel()));
  
-        Palette interpolationMethods = new Palette("interpolationMethods", LiveCollectionModel
-                .list(new PropertyModel(coverage, "interpolationMethods")),
+        Palette<String> interpolationMethods = new Palette<String>("interpolationMethods", LiveCollectionModel
+                .list(new PropertyModel<String>(coverage, "interpolationMethods")),
                 new WCSInterpolationModel(), new SimpleChoiceRenderer(), 7, false) {
+            private static final long serialVersionUID = 6815545819673802290L;
+
             /**
              * Override otherwise the header is not i18n'ized
              */
@@ -114,13 +127,15 @@ public class WCSLayerConfig extends LayerConfigurationPanel {
         add(interpolationMethods);
 
         // don't allow editing the native format
-        TextField nativeFormat = new TextField("nativeFormat", new PropertyModel(coverage, "nativeFormat"));
+        TextField<String> nativeFormat = new TextField<String>("nativeFormat", new PropertyModel<String>(coverage, "nativeFormat"));
         nativeFormat.setEnabled(false);
         add(nativeFormat);
 
-        Palette formatPalette = new Palette("formatPalette", LiveCollectionModel
-                .list(new PropertyModel(coverage, "supportedFormats")), new WCSFormatsModel(),
+        Palette<String> formatPalette = new Palette<String>("formatPalette", LiveCollectionModel
+                .list(new PropertyModel<String>(coverage, "supportedFormats")), new WCSFormatsModel(),
                 new SimpleChoiceRenderer(), 10, false) {
+            private static final long serialVersionUID = -2463012775305597908L;
+
             /**
              * Override otherwise the header is not i18n'ized
              */
@@ -143,27 +158,31 @@ public class WCSLayerConfig extends LayerConfigurationPanel {
    }
     
     
-    static class WCSFormatsModel extends LoadableDetachableModel {
+    static class WCSFormatsModel extends LoadableDetachableModel<ArrayList<String>> {
+
+        private static final long serialVersionUID = 1802421566341456007L;
 
         WCSFormatsModel() {
-            super(new ArrayList(WCS_FORMATS));
+            super(new ArrayList<String>(WCS_FORMATS));
         }
 
         @Override
-        protected Object load() {
-            return new ArrayList(WCS_FORMATS);
+        protected ArrayList<String> load() {
+            return new ArrayList<String>(WCS_FORMATS);
         }
     }
     
-    static class WCSInterpolationModel extends LoadableDetachableModel {
+    static class WCSInterpolationModel extends LoadableDetachableModel<ArrayList<String>> {
+
+        private static final long serialVersionUID = 7328612985196203413L;
 
         WCSInterpolationModel() {
-            super(new ArrayList(INTERPOLATIONS));
+            super(new ArrayList<String>(INTERPOLATIONS));
         }
 
         @Override
-        protected Object load() {
-            return new ArrayList(INTERPOLATIONS);
+        protected ArrayList<String> load() {
+            return new ArrayList<String>(INTERPOLATIONS);
         }
     }
 }

@@ -14,16 +14,16 @@ import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.wcs2_0.eo.WCSEOMetadata;
-import org.geoserver.web.publish.LayerConfigurationPanel;
+import org.geoserver.web.publish.PublishedConfigurationPanel;
 import org.geoserver.web.util.MapModel;
-import org.geoserver.web.util.MetadataMapModel;
 import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
 
 /**
  * A configuration panel for CoverageInfo properties that related to WCS publication
  */
-@SuppressWarnings("serial")
-public class WCSEOLayerConfig extends LayerConfigurationPanel {
+public class WCSEOLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
+
+    private static final long serialVersionUID = 5069332181659419455L;
 
     public WCSEOLayerConfig(String id, IModel<LayerInfo> model) {
         super(id, model);

@@ -221,7 +221,7 @@ public class SecurityFilterChainsPanel
                 target.addComponent( tablePanel );
             }
         };
-        link.getImage().add(new AttributeModifier("alt", true, new ParamResourceModel("AbstractLayerGroupPage.th.remove", link)));
+        link.getImage().add(new AttributeModifier("alt", true, new ParamResourceModel("LayerGroupEditPage.th.remove", link)));
         return link;
     }
 

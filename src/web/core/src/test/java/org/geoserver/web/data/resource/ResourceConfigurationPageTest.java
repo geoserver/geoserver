@@ -17,8 +17,8 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
 
         login();
         tester.startPage(new ResourceConfigurationPage(layer, false));
-        tester.assertLabel("resourcename", layer.getResource().getPrefixedName());
-        tester.assertComponent("resource:tabs:panel:theList:0:content", BasicResourceConfig.class);
+        tester.assertLabel("publishedinfoname", layer.getResource().getPrefixedName());
+        tester.assertComponent("publishedinfo:tabs:panel:theList:0:content", BasicResourceConfig.class);
     }
     
     // I can't make the last assertion work, my wicket-fu is not good enough or else the

@@ -3,12 +3,12 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.web.data.resource;
+package org.geoserver.web.publish;
 
 import org.apache.wicket.model.IModel;
-import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.web.ComponentInfo;
+import org.geoserver.web.data.resource.ResourceConfigurationPage;
 
 /**
  * Information about panels plugged into additional tabs on layer edit page.
@@ -21,10 +21,11 @@ import org.geoserver.web.ComponentInfo;
  * @author Justin Deoliveira, OpenGeo
  *
  */
-public class LayerEditTabPanelInfo extends ComponentInfo<LayerEditTabPanel> {
-
-    private static final long serialVersionUID = 4849692244366766812L;
+public abstract class PublishedEditTabPanelInfo<T extends PublishedInfo> 
+    extends ComponentInfo<PublishedEditTabPanel<T>> {
     
+    private static final long serialVersionUID = 4849692244366766812L;
+           
     /**
      * order of the panel with respect to other panels.
      */
@@ -45,24 +46,28 @@ public class LayerEditTabPanelInfo extends ComponentInfo<LayerEditTabPanel> {
     }
     
     /**
-     * It may be that a tab contribution to the {@link ResourceConfigurationPage} need to work on a
+     * It may be that a tab contribution to the {@link PublishedConfigurationPage} need to work on a
      * different model object that the page's layer and resource models (for example, because it
      * edits and saves related information not directly attached to the layer/resource); if such is
-     * the case, this method shall return the model to be passed to the {@link LayerEditTabPanel}
+     * the case, this method shall return the model to be passed to the {@link PublishedEditTabPanel}
      * constructor.
      * <p>
      * This default implementation just returns {@code null} and assumes the
-     * {@link LayerEditTabPanel} described by this tab panel info works against the
+     * {@link PublishedEditTabPanel} described by this tab panel info works against the
      * {@link ResourceConfigurationPage} LayerInfo model. Subclasses may override as appropriate.
      * 
-     * @param resourceModel
-     * @param layerModel
+     * @param model
      * @param isNew
      * @return {@code null} if no need for a custom model for the tab, the model to use otherwise
-     * @see LayerEditTabPanel#save()
+     * @see PublishedEditTabPanel#save()
      */
-    public IModel<?> createOwnModel(IModel<? extends ResourceInfo> resourceModel,
-            IModel<LayerInfo> layerModel, boolean isNew) {
+    public IModel<?> createOwnModel(IModel<? extends T> model, boolean isNew) {
         return null;
+    }
+
+    public abstract Class<T> getPublishedInfoClass();
+    
+    public boolean supports(PublishedInfo pi) {
+        return getPublishedInfoClass().isAssignableFrom(pi.getClass());
     }
 }

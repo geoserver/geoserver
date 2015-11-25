@@ -23,13 +23,13 @@
     <property name="componentClass" value="org.geoserver.wms.web.publish.WMSLayerConfig"/>
   </bean>
 
-  <bean id="wmsLayerGroupConfig" class="org.geoserver.web.publish.LayerGroupConfigurationPanelInfo">
-    <property name="id" value="wmsLayerGroupConfig"/>
+  <bean id="wmsLayerGroupConfig" class="org.geoserver.web.publish.CommonPublishedConfigurationPanelInfo">
+    <property name="id" value="authoritiesAndIdentifiersConfig"/>
     <property name="titleKey" value="publish.layergroup.config.wms"/>
-    <property name="componentClass" value="org.geoserver.wms.web.publish.WMSLayerGroupConfig"/>
+    <property name="componentClass" value="org.geoserver.wms.web.publish.LayerAuthoritiesAndIdentifiersConfigPanel"/>
   </bean>
 
-  <bean id="attributionLayerConfig" class="org.geoserver.web.publish.LayerConfigurationPanelInfo">
+  <bean id="attributionLayerConfig" class="org.geoserver.web.publish.CommonPublishedConfigurationPanelInfo">
     <property name="id" value="attributionLayerConfig"/>
     <property name="titleKey" value="publish.layer.config.attribution"/>
     <property name="componentClass" value="org.geoserver.wms.web.publish.AttributionLayerConfigPanel"/>

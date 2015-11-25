@@ -27,6 +27,7 @@ import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.impl.DimensionInfoImpl;
 import org.geoserver.catalog.util.ReaderDimensionsAccessor;
+import org.geoserver.web.publish.PublishedEditTabPanel;
 import org.geoserver.web.util.MetadataMapModel;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
@@ -37,18 +38,20 @@ import org.geotools.util.logging.Logging;
  * 
  * @author Alessio
  */
-@SuppressWarnings("serial")
-public class ResourceDimensionsTabPanelInfo extends LayerEditTabPanel {
+public class ResourceDimensionsTabPanelInfo extends PublishedEditTabPanel<LayerInfo> {
+
+    private static final long serialVersionUID = 4702596541385329270L;
+    
     static final Logger LOGGER = Logging.getLogger(ResourceDimensionsTabPanelInfo.class);
 
     @SuppressWarnings("unchecked")
-    public ResourceDimensionsTabPanelInfo(String id, IModel model) {
+    public ResourceDimensionsTabPanelInfo(String id, IModel<LayerInfo> model) {
         super(id, model);
 
-        final LayerInfo layer = (LayerInfo) model.getObject();
+        final LayerInfo layer = model.getObject();
         final ResourceInfo resource = layer.getResource();
 
-        final PropertyModel metadata = new PropertyModel(model, "resource.metadata");
+        final PropertyModel<MetadataMap> metadata = new PropertyModel<MetadataMap>(model, "resource.metadata");
 
         // time
         IModel time = new MetadataMapModel(metadata, ResourceInfo.TIME, DimensionInfo.class);
@@ -116,22 +119,22 @@ public class ResourceDimensionsTabPanelInfo extends LayerEditTabPanel {
     }
 
     class RasterDimensionModel extends MetadataMapModel {
+        private static final long serialVersionUID = 4734439907138483817L;
+
         boolean hasRange;
 
         boolean hasResolution;
 
         
-        public RasterDimensionModel(IModel model, String expression, Class<?> target,
+        public RasterDimensionModel(IModel<?> model, String expression, Class<?> target,
                 boolean hasRange, boolean hasResolution) {
             super(model, expression, target);
         }
         
-        @SuppressWarnings("unchecked")
         public Object getObject() {
             return ((MetadataMap) model.getObject()).get(ResourceInfo.CUSTOM_DIMENSION_PREFIX + expression, target);
         }
 
-        @SuppressWarnings("unchecked")
         public void setObject(Object object) {
             ((MetadataMap) model.getObject()).put(ResourceInfo.CUSTOM_DIMENSION_PREFIX + expression, (Serializable) object);
         }

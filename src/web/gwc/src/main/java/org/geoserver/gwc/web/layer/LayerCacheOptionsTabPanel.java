@@ -9,30 +9,31 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.gwc.layer.CatalogConfiguration;
 import org.geoserver.gwc.layer.GeoServerTileLayerInfo;
-import org.geoserver.web.data.resource.LayerEditTabPanel;
-import org.geoserver.web.data.resource.LayerEditTabPanelInfo;
+import org.geoserver.web.publish.PublishedEditTabPanel;
 
 /**
  * A contribution to the layer edit page to set up the layer caching options on a separate tab.
  * 
  * @author groldan
  * @see GeoServerTileLayerEditor
- * @see LayerEditTabPanelInfo
+ * @see PublishedEditTabPanelInfo
  * @see LayerGroupCacheOptionsPanel
  */
-public class LayerCacheOptionsTabPanel extends LayerEditTabPanel {
+public class LayerCacheOptionsTabPanel extends PublishedEditTabPanel<PublishedInfo> {
 
     private static final long serialVersionUID = 1L;
 
     private GeoServerTileLayerEditor editor;
 
-    public LayerCacheOptionsTabPanel(String id, IModel<LayerInfo> layerModel,
+    public LayerCacheOptionsTabPanel(String id, IModel<? extends PublishedInfo> layerModel,
             IModel<GeoServerTileLayerInfo> tileLayerModel) {
-        super(id, tileLayerModel);
+        super(id, layerModel);
 
-        if (CatalogConfiguration.isLayerExposable(layerModel.getObject())) {
+        if (!(layerModel.getObject() instanceof LayerInfo)
+            || CatalogConfiguration.isLayerExposable((LayerInfo) layerModel.getObject())) {
             editor = new GeoServerTileLayerEditor("tileLayerEditor", layerModel, tileLayerModel);
             add(editor);
         } else {

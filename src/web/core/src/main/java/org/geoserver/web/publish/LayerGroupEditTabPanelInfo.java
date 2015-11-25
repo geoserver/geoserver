@@ -2,9 +2,9 @@ package org.geoserver.web.publish;
 
 import org.geoserver.catalog.LayerGroupInfo;
 
-public class LayerGroupConfigurationPanelInfo extends PublishedConfigurationPanelInfo<LayerGroupInfo> {
+public class LayerGroupEditTabPanelInfo extends PublishedEditTabPanelInfo<LayerGroupInfo> {
 
-    private static final long serialVersionUID = 8382295309912226673L;
+    private static final long serialVersionUID = -388475157541960108L;
 
     @Override
     public Class<LayerGroupInfo> getPublishedInfoClass() {

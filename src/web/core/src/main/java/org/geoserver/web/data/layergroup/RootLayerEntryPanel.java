@@ -12,9 +12,9 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.form.DropDownChoice;
-import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.Panel;
+import org.apache.wicket.model.IModel;
 import org.apache.wicket.util.convert.IConverter;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -31,7 +31,7 @@ import org.geoserver.web.wicket.ParamResourceModel;
 public class RootLayerEntryPanel extends Panel {
 
     @SuppressWarnings({ "rawtypes" })
-    public RootLayerEntryPanel(String id, final Form form, WorkspaceInfo workspace) {
+    public RootLayerEntryPanel(String id,WorkspaceInfo workspace, final IModel<LayerGroupInfo> model) {
         super(id);
         
         setOutputMarkupId(true);
@@ -39,7 +39,11 @@ public class RootLayerEntryPanel extends Panel {
         final TextField<LayerInfo> rootLayerField = new TextField<LayerInfo>("rootLayer") {
             @Override
             public IConverter getConverter(Class<?> type) { 
-                return form.getConverter(type);
+                if (LayerInfo.class.isAssignableFrom(type)) {
+                    return new LayerInfoConverter();
+                } else {
+                    return super.getConverter(type);
+                }
             } 
         };
         rootLayerField.setOutputMarkupId(true);
@@ -65,7 +69,11 @@ public class RootLayerEntryPanel extends Panel {
         DropDownChoice<StyleInfo> styleField = new DropDownChoice<StyleInfo>("rootLayerStyle", styles) {
             @Override
             public IConverter getConverter(Class<?> type) { 
-                return form.getConverter(type);
+                if (StyleInfo.class.isAssignableFrom(type)) {
+                    return new StyleInfoConverter(); 
+                } else {
+                    return super.getConverter(type);
+                }
             }             
         };
         styleField.setNullValid(true);
@@ -83,7 +91,7 @@ public class RootLayerEntryPanel extends Panel {
                     @Override
                     protected void handleLayer(LayerInfo layer, AjaxRequestTarget target) {
                         popupWindow.close(target);
-                        ((LayerGroupInfo) form.getModelObject()).setRootLayer(layer);
+                        model.getObject().setRootLayer(layer);
                         target.addComponent(rootLayerField);
                     }
                 });

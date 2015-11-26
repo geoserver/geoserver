@@ -1002,7 +1002,7 @@ public class GetCapabilitiesTransformer extends TransformerBase {
          * 
          * @param layer
          */
-        private void handleScaleHint(LayerInfo layer) {
+        private void handleScaleHint(PublishedInfo layer) {
 
             try {
                 NumberRange<Double> scaleDenominators = CapabilityUtil.searchMinMaxScaleDenominator(layer);
@@ -1144,6 +1144,7 @@ public class GetCapabilitiesTransformer extends TransformerBase {
            // one possibility, the lack of styles that will make it use
            // the default ones for each layer
 
+           handleScaleHint(layerGroup);
            end("Layer");
        }
        

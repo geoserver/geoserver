@@ -13,14 +13,14 @@ import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.ResourceInfo;
-import org.geoserver.web.data.resource.LayerEditTabPanel;
 import org.geoserver.web.netcdf.NetCDFSettingsContainer;
+import org.geoserver.web.publish.PublishedEditTabPanel;
 import org.geoserver.web.util.MetadataMapModel;
 
 /**
  * {@link LayerEditTabPanel} implementation for configuring NetCDF output settings
  */
-public class NetCDFOutTabPanel extends LayerEditTabPanel {
+public class NetCDFOutTabPanel extends PublishedEditTabPanel<LayerInfo> {
 
     /** serialVersionUID */
     private static final long serialVersionUID = 1L;

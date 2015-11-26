@@ -45,14 +45,14 @@ public abstract class XStreamServiceLoader<T extends ServiceInfo> implements Ser
     }
     
     public final T load(GeoServer gs) throws Exception {
-        return load(gs, null);
+        return load(gs, resourceLoader.get(""));
     }
 
     public final T load(GeoServer gs, Resource directory) throws Exception {
         //look for file matching classname
         Resource file;
                
-        if ( Resources.exists(directory) && Resources.exists(file = directory.get(getFilename()))) {
+        if ( Resources.exists(file = directory.get(getFilename()))) {
             //xstream it in
             BufferedInputStream in = 
                 new BufferedInputStream( file.in() );

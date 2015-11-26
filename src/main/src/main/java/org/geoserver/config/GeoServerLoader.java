@@ -644,14 +644,14 @@ public abstract class GeoServerLoader {
             //load services
             final List<XStreamServiceLoader> loaders = 
                 GeoServerExtensions.extensions( XStreamServiceLoader.class );
-            loadServices(null, loaders, geoServer);
+            loadServices(resourceLoader.get(""), true, loaders, geoServer);
 
             //load services specific to workspace
             if (workspaces != null) {
                 for (Resource dir : workspaces.list()) {
                     if (dir.getType() != Type.DIRECTORY) continue;
 
-                    loadServices(dir, loaders, geoServer);
+                    loadServices(dir, false, loaders, geoServer);
                 }
             }
             
@@ -708,11 +708,11 @@ public abstract class GeoServerLoader {
         }
     }
 
-    void loadServices(Resource directory, List<XStreamServiceLoader> loaders, GeoServer geoServer) {
+    void loadServices(Resource directory, boolean global, List<XStreamServiceLoader> loaders, GeoServer geoServer) {
         for ( XStreamServiceLoader<ServiceInfo> l : loaders ) {
             try {
                 ServiceInfo s = l.load( geoServer, directory);
-                if (Resources.exists(directory) && s.getWorkspace() == null) continue;
+                if (!global && s.getWorkspace() == null) continue;
 
                 geoServer.add( s );
                 

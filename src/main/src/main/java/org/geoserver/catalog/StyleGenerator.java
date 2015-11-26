@@ -158,7 +158,7 @@ public class StyleGenerator {
         } catch (UnsupportedOperationException e) {
             //Handler does not support loading from template; load SLD template and convert
             SLDHandler sldHandler = new SLDHandler();
-            String sldTemplate =  handler.getStyle(styleType, color.color, color.name, layerName);
+            String sldTemplate =  sldHandler.getStyle(styleType, color.color, color.name, layerName);
             
             StyledLayerDescriptor sld = sldHandler.parse(sldTemplate, null, null, null);
             ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -179,6 +179,7 @@ public class StyleGenerator {
         StyleInfo style = catalog.getFactory().createStyle();
         style.setName(styleName);
         style.setFilename(styleName + "." + handler.getFileExtension());
+        style.setFormat(handler.getFormat());
         if (workspace != null) {
             style.setWorkspace(workspace);
         }

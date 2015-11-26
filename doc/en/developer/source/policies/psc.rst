@@ -136,6 +136,7 @@ Current PSC
 * Christian Mueller
 * Jody Garnett
 * Jukka Rahkonen
+* Kevin Smith
 * Phil Scadden
 * Simone Giannecchini
 

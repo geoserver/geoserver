@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -94,7 +94,23 @@ public class WMSMapContent extends MapContent {
         super();
         request = req;
     }
-
+    
+    public WMSMapContent(WMSMapContent other, boolean copyLayers) {
+        this.mapWidth = other.mapWidth;
+        this.mapHeight = other.mapHeight;
+        this.bgColor = other.bgColor;
+        this.transparent = other.transparent;
+        this.tileSize = other.tileSize;
+        this.angle = other.angle;
+        this.callbacks = new ArrayList<>(other.callbacks);
+        this.buffer = other.buffer;
+        this.icm = other.icm;
+        this.request = other.request;
+        if(copyLayers) {
+            this.layers().addAll(other.layers());
+        }
+        this.getViewport().setBounds(other.getViewport().getBounds());
+    }
 
     public Color getBgColor() {
         return this.bgColor;

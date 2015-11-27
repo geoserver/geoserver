@@ -310,7 +310,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
                 transparent);
         // .. use a fake streaming renderer to evaluate the extra back buffers used when rendering
         // multiple featureTypeStyles against the same layer
-        StreamingRenderer testRenderer = new StreamingRenderer();
+        StreamingRenderer testRenderer = buildRenderer();
         testRenderer.setMapContent(mapContent);
         memory += testRenderer.getMaxBackBufferMemory(paintArea.width, paintArea.height);
         if (maxMemory > 0 && memory > maxMemory) {
@@ -410,8 +410,8 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         graphic.setRenderingHints(hintsMap);
 
         RenderingHints hints = new RenderingHints(hintsMap);
-        StreamingRenderer renderer = new StreamingRenderer();
-        renderer .setThreadPool(DefaultWebMapService.getRenderingPool());
+        StreamingRenderer renderer = buildRenderer();
+        renderer.setThreadPool(DefaultWebMapService.getRenderingPool());
         renderer.setMapContent(mapContent);
         renderer.setJava2DHints(hints);
 
@@ -597,6 +597,16 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
             graphic.dispose();
         }
         throw serviceException;
+    }
+
+    /**
+     * Creates a {@link StreamingRenderer} instance (subclasses can provide
+     * their own specialized subclasses of {@link StreamingRenderer}
+     * 
+     * @return
+     */
+    protected StreamingRenderer buildRenderer() {
+        return new StreamingRenderer();
     }
 
     private boolean getFormatOptionAsBoolean(final GetMapRequest request, final String formatOptionKey) {

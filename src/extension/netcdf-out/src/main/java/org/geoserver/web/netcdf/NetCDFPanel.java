@@ -185,9 +185,10 @@ public class NetCDFPanel<T extends NetCDFSettingsContainer> extends FormComponen
         };
         addLink.add(new Icon("addIcon", ADD_ICON));
         container.add(addLink);
-
         NetCDFSettingsContainer object = netcdfModel.getObject();
-        object.toString();
+        if (object == null) {
+            netcdfModel.setObject((T)new NetCDFSettingsContainer());
+        }
     }
 
     @Override

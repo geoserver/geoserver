@@ -144,8 +144,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
 
     private final static String AA_FULL = "FULL";
 
-    private final static List<String> AA_SETTINGS = Arrays.asList(new String[] { AA_NONE, AA_TEXT,
-            AA_FULL });
+    private final static List<String> AA_SETTINGS = Arrays.asList(AA_NONE, AA_TEXT, AA_FULL);
 
     private static final String MAP_WRAPPING_FORMAT_OPTION = "mapWrapping";
     private static final String ADV_PROJECTION_HANDLING_FORMAT_OPTION = "advancedProjectionHandling";
@@ -264,7 +263,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
     }
     
     /**
-     * Actually produces the map image, careing about meta tiling if {@code tiled == true}.
+     * Actually produces the map image, caring about meta tiling if {@code tiled == true}.
      * 
      * @param mapContent
      * @param tiled
@@ -333,8 +332,8 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
 
         RenderedImage image = null;
         // fast path for pure coverage rendering
-        if (DefaultWebMapService.isDirectRasterPathEnabled() && 
-                mapContent.layers().size() == 1 
+        if (DefaultWebMapService.isDirectRasterPathEnabled()
+                && mapContent.layers().size() == 1
                 && mapContent.getAngle() == 0.0
                 && (layout == null || layout.isEmpty())) {
             List<GridCoverage2D> renderedCoverages = new ArrayList<GridCoverage2D>(2);
@@ -965,8 +964,9 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
                         mapRasterArea, worldToScreen, interpolationHints);
                 gcr.setAdvancedProjectionHandlingEnabled(true);
                 gcr.setWrapEnabled(wms.isContinuousMapWrappingEnabled());
+                //use null background here, background color is handled afterwards
                 image = gcr.renderImage(reader, readParameters, symbolizer, interpolation,
-                        mapContent.getBgColor(), tileSizeX, tileSizeY);
+                        null, tileSizeX, tileSizeY);
                 if (image == null) {
                     // we're outside of the coverage definition area, return an empty space
                     image = createBkgImage(mapWidth, mapHeight, bgColor, null);
@@ -981,8 +981,8 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
                 final boolean equalsMetadata = CRS.equalsIgnoreMetadata(mapCRS, coverageCRS);
                 boolean sameCRS;
                 try {
-                    sameCRS = equalsMetadata ? true : CRS.findMathTransform(mapCRS, coverageCRS,
-                            true).isIdentity();
+                    sameCRS = equalsMetadata || CRS.findMathTransform(mapCRS, coverageCRS, true)
+                            .isIdentity();
                 } catch (FactoryException e1) {
                     final IOException ioe = new IOException();
                     ioe.initCause(e1);
@@ -1067,8 +1067,9 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
                     gcr.setAdvancedProjectionHandlingEnabled(false);
 
                     // create a solid color empty image
+                    // use null background, background is handled separately
                     image = gcr.renderImage(coverage, symbolizer, interpolation,
-                            mapContent.getBgColor(), tileSizeX, tileSizeY);
+                            null, tileSizeX, tileSizeY);
                 }
             }
         } catch (Throwable e) {
@@ -1525,19 +1526,4 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         }
         return readParams;
     }
-
-    /**
-     * Returns the list of raster symbolizers contained in a specific layer of the map context (the
-     * full map context is provided in order to compute the current scale and thus determine the
-     * active rules)
-     * 
-     * @param mc
-     * @param layerIndex
-     * @return
-     */
-//    static List<RasterSymbolizer> getRasterSymbolizers(WMSMapContent mc, int layerIndex) {
-//        
-//    }
-
-
 }

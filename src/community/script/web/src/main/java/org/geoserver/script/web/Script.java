@@ -115,7 +115,7 @@ public class Script implements Serializable {
     public String getExtension() {
         return extension;
     }
-    
+
     public Resource getResource() {
         if (file == null) {
             this.file = findFile(name, type, extension);

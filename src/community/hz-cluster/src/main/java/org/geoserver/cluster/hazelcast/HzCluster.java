@@ -138,11 +138,8 @@ public class HzCluster implements DisposableBean, InitializingBean {
     
     private Config loadHazelcastConfig(GeoServerResourceLoader rl) throws IOException{
         Resource hzf = getConfigFile(HAZELCAST_FILENAME, HzCluster.class);
-        InputStream hzIn = hzf.in();
-        try {
+        try (InputStream hzIn = hzf.in()) {
             return new XmlConfigBuilder(hzIn).build();
-        } finally {
-            hzIn.close();
         }
     }
     

@@ -45,10 +45,9 @@ public class GeoserverXMLResourceProvider implements ConfigurationResourceProvid
         
         this.configFileName = configFileName;
         
-        if(configFileDirectory!=null) {
+        if(configFileDirectory != null) {
             // Use the given path
-            if (configFileDirectory.startsWith("/") || configFileDirectory.contains(":\\")
-                    || configFileDirectory.startsWith("\\\\")) {
+            if ((new File(configFileDirectory)).isAbsolute()) {
                 
                 log.info("Provided configuration directory as absolute path '" + configFileDirectory + "'");
                 this.configDirectory = Files.asResource(new File(configFileDirectory));

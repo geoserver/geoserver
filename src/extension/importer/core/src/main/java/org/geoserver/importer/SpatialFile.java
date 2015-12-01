@@ -27,6 +27,8 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 public class SpatialFile extends FileData {
     
+    private static final long serialVersionUID = -280215815681792790L;
+
     static EPSGCodeLookupCache EPSG_LOOKUP_CACHE = new EPSGCodeLookupCache();
 
     /**
@@ -37,13 +39,25 @@ public class SpatialFile extends FileData {
     /** supplementary files, like indexes, etc...  */
     List<Resource> suppFiles = new ArrayList<Resource>();
 
+    /**
+     * Create from file system
+     *  
+     * @param file the spatial file
+     *      * 
+     * @Depecrated Use Resource instead of File
+     */
     @Deprecated
     public SpatialFile(File file) {
         this(Files.asResource(file));
     }
     
-    public SpatialFile(Resource file) {
-        super(file);
+    /**
+     * Create from resource
+     * 
+     * @param resource the spatial resource
+     */
+    public SpatialFile(Resource resource) {
+        super(resource);
     }
 
     public SpatialFile(SpatialFile other) {
@@ -134,9 +148,9 @@ public class SpatialFile extends FileData {
             }
             if (epsgCrs != null) {
                 String epsgWKT = epsgCrs.toWKT();
-                final PrintStream printStream = new PrintStream(getPrjFile().out());
-                printStream.print(epsgWKT);
-                printStream.close();
+                try (PrintStream printStream = new PrintStream(getPrjFile().out())) {
+                    printStream.print(epsgWKT);
+                }
             }
         }
         catch (FactoryException e) {
@@ -150,12 +164,9 @@ public class SpatialFile extends FileData {
             return null;
         }
         
-        InputStream is = prj.in();
-        String wkt = IOUtils.toString(is);
-        is.close();
-        try {
-            return CRS.parseWKT(wkt);
-        } 
+        try (InputStream is = prj.in()) {
+            return CRS.parseWKT(IOUtils.toString(is));
+        }
         catch (Exception e) {
             throw (IOException) new IOException().initCause(e);
         }

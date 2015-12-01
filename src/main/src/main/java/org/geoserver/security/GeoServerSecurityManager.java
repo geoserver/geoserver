@@ -339,7 +339,7 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
             try {
                 Resource masterPasswordInfo = security().get(MASTER_PASSWD_INFO_FILENAME);
                 if (masterPasswordInfo.getType() != Type.UNDEFINED) {
-                    LOGGER.warning(masterPasswordInfo.path()+" is a security risk. Please read this file and remove it afterward");
+                    LOGGER.warning(masterPasswordInfo.path() + " is a security risk. Please read this file and remove it afterward");
                 }
             } catch (Exception e1) {
                 throw new RuntimeException(e1);
@@ -2042,23 +2042,24 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
      * @param masterPasswordArray
      * @throws IOException
      */
-    void writeMasterPasswordInfo(Resource file,String message,char[] masterPasswordArray) throws IOException {
-        BufferedWriter w = new BufferedWriter(new OutputStreamWriter(file.out()));
-        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");                
-        w.write("This file was created at "+dateFormat.format(new Date()));
-        w.newLine();
-        w.newLine();
-        w.write(message);
-        if (masterPasswordArray!=null) 
-            w.write(masterPasswordArray);
-        w.newLine();
-        w.newLine();
-        w.write("Test the master password by logging in as user \"root\"");
-        w.newLine();
-        w.newLine();
-        w.write("This file should be removed after reading !!!.");
-        w.newLine();
-        w.close();        
+    void writeMasterPasswordInfo(Resource file, String message, char[] masterPasswordArray) throws IOException {
+        try (BufferedWriter w = new BufferedWriter(new OutputStreamWriter(file.out()))) {
+            DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+            w.write("This file was created at " + dateFormat.format(new Date()));
+            w.newLine();
+            w.newLine();
+            w.write(message);
+            if (masterPasswordArray != null) {
+                w.write(masterPasswordArray);
+            }
+            w.newLine();
+            w.newLine();
+            w.write("Test the master password by logging in as user \"root\"");
+            w.newLine();
+            w.newLine();
+            w.write("This file should be removed after reading !!!.");
+            w.newLine();
+        }
     }
     
     /**
@@ -2195,9 +2196,9 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
     boolean migrateFrom21() throws Exception{
         
         if (role().getType() != Type.UNDEFINED) {
-            Resource oldUserFile = security().get( "users.properties.old");
+            Resource oldUserFile = security().get("users.properties.old");
             if (oldUserFile.getType() != Type.UNDEFINED) {
-                LOGGER.warning(oldUserFile.path()+" could be removed manually");
+                LOGGER.warning(oldUserFile.path() + " could be removed manually");
             }
             return false; // already migrated
         }
@@ -2519,18 +2520,22 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
         // TODO Justin, a little bit brute force, is this ok ?
         for (String filename : new String[]{"services.properties","layers.properties","rest.properties"}) {
             Resource file = security().get(filename);
-            if (file.getType()==Type.UNDEFINED) continue;
-            List<String> lines = new ArrayList<String>();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(file.in()));
-            String line;
-            while ((line = reader.readLine()) != null)
-            	lines.add(line.replace(GeoServerRole.ADMIN_ROLE.getAuthority(), XMLRoleService.DEFAULT_LOCAL_ADMIN_ROLE));
-            reader.close();
-            PrintWriter writer = new PrintWriter(new OutputStreamWriter(file.out()));
-            for (String s : lines) {
-            	writer.println(s);
+            if (file.getType() == Type.UNDEFINED) {
+                continue;
             }
-            writer.close();
+            List<String> lines = new ArrayList<String>();
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(file.in()))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                	lines.add(line.replace(GeoServerRole.ADMIN_ROLE.getAuthority(), 
+                	        XMLRoleService.DEFAULT_LOCAL_ADMIN_ROLE));
+                }
+                try (PrintWriter writer = new PrintWriter(new OutputStreamWriter(file.out()))) {
+                    for (String s : lines) {
+                            writer.println(s);
+                    }
+                }             
+            }            
         }
                                 
 
@@ -2539,12 +2544,13 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
         if (serviceFile.getType() != Type.UNDEFINED) {
             Properties props = Util.loadPropertyFile(serviceFile);
             for (Entry<Object,Object> entry: props.entrySet()) {
-                StringTokenizer tokenizer = new StringTokenizer((String)entry.getValue(),",");
+                StringTokenizer tokenizer = new StringTokenizer((String)entry.getValue(), ",");
                 while (tokenizer.hasMoreTokens()) {
                     String roleName = tokenizer.nextToken().trim();
                     if (roleName.length()>0) {
-                        if (roleStore.getRoleByName(roleName)==null)
+                        if (roleStore.getRoleByName(roleName) == null) {
                             roleStore.addRole(roleStore.createRoleObject(roleName));
+                        }
                     }
                 }
             }
@@ -2557,7 +2563,7 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
             for (Entry<Object,Object> entry: props.entrySet()) {
                 if ("mode".equals(entry.getKey().toString()))
                     continue; // skip mode directive
-                StringTokenizer tokenizer = new StringTokenizer((String)entry.getValue(),",");
+                StringTokenizer tokenizer = new StringTokenizer((String)entry.getValue(), ",");
                 while (tokenizer.hasMoreTokens()) {
                     String roleName = tokenizer.nextToken().trim();
                     if (roleName.length()>0 && roleName.equals("*")==false) {
@@ -2575,9 +2581,9 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
         
         // first part of migration finished, rename old file
         if (usersFile.getType() != Type.UNDEFINED) {
-            Resource oldUserFile = dataDir.get(usersFile.path()+".old");
+            Resource oldUserFile = dataDir.get(usersFile.path() + ".old");
             usersFile.renameTo(oldUserFile);
-            LOGGER.info("Renamed "+usersFile.path() + " to " +
+            LOGGER.info("Renamed " + usersFile.path() + " to " +
                     oldUserFile.path());
         }
                         
@@ -2625,14 +2631,14 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
         saveFilter(sslConfig);
             
         // set redirect url after successful logout
-        if (migratedFrom21== false)
+        if (!migratedFrom21)
             org.geoserver.data.util.IOUtils.copy(logoutFilterDir.get("config.xml").in(), 
                     oldLogoutFilterConfig.out());
         LogoutFilterConfig loConfig = (LogoutFilterConfig) loadFilterConfig(GeoServerSecurityFilterChain.FORM_LOGOUT_FILTER);
         loConfig.setRedirectURL(GeoServerLogoutFilter.URL_AFTER_LOGOUT);
         saveFilter(loConfig);
         
-        if (migratedFrom21== false)
+        if (!migratedFrom21)
             org.geoserver.data.util.IOUtils.copy(security().get("config.xml").in(), 
                     oldSecManagerConfig.out());
         SecurityManagerConfig config = loadSecurityConfig();
@@ -2674,7 +2680,7 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
         // load and store all filter configuration
         // some filter configurations may have their class name as top level xml element in config.xml,
         // the alias should be used instead, this was bug fixed during GSIP 82
-        if (migratedFrom21== false) {
+        if (!migratedFrom21) {
             for (String fName : listFilters()) {
                 SecurityFilterConfig fConfig = loadFilterConfig(fName );
                 if (fConfig!=null) 

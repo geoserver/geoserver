@@ -17,7 +17,7 @@
   <!-- The location of a static configuration file for GeoWebCache. 
        By default this lives in WEB-INF/classes/geowebcache.xml -->
   <bean id="gwcXmlConfig" class="org.geowebcache.config.XMLConfiguration">
-	<constructor-arg ref="gwcAppCtx" />
+    <constructor-arg ref="gwcAppCtx" />
     <constructor-arg ref="gwcXmlConfigResourceProvider" />
     <property name="template" value="/geowebcache_empty.xml">
       <description>Create an empty geoebcache.xml in data_dir/gwc as template</description>

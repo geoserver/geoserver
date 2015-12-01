@@ -115,12 +115,7 @@ public class StoredQueryProvider {
      * @param query The stored query
      */
     public void removeStoredQuery(StoredQuery query) {
-    //    try {
-            storedQueryDir().get(toFilename(query.getName())).delete();
-   /*     }
-        catch(IOException e) {
-            throw new RuntimeException(e);
-        }*/
+        storedQueryDir().get(toFilename(query.getName())).delete();
     }
     
     /**

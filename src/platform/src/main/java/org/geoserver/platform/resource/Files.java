@@ -209,7 +209,7 @@ public final class Files {
 
         @Override
         public Type getType() {
-            return file.exists() ? file.isDirectory()? Type.DIRECTORY : Type.RESOURCE : Type.UNDEFINED;
+            return file.exists() ? (file.isDirectory()? Type.DIRECTORY : Type.RESOURCE) : Type.UNDEFINED;
         }
 
         @Override

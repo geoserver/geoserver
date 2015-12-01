@@ -25,6 +25,7 @@ import org.geoserver.cluster.JMSPublisher;
 import org.geoserver.cluster.impl.handlers.DocumentFile;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.platform.resource.Resources;
@@ -167,27 +168,20 @@ public class JMSCatalogListener extends JMSAbstractGeoServerProducer implements 
 
         try {
             // check if we may publish also the file
-        	GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
+            GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
             final CatalogInfo info = event.getSource();
             if (info instanceof StyleInfo) {
                 // build local datadir file style path
-                final String canonicalStyleFileName = File.separator + "styles" + File.separator
-                        + ((StyleInfo) info).getFilename();
-                
-                Resource styleFile = loader.get(canonicalStyleFileName);
+                Resource styleFile = loader.get("styles").get(((StyleInfo) info).getFilename());
 
-                if ( !Resources.exists(styleFile) ) {
-                	final String workspace = ((StyleInfo) info).getWorkspace().getName();
-                	final String styleFileName = File.separator + "workspaces" +
-                			File.separator + workspace +
-                	        File.separator + "styles" + File.separator + 
-                	        ((StyleInfo) info).getFilename();
-                	styleFile =  loader.get(styleFileName);
+                if (!Resources.exists(styleFile)) {
+                    final String workspace = ((StyleInfo) info).getWorkspace().getName();
+                    styleFile = loader.get(Paths.path("workspaces", workspace, "styles",
+                            ((StyleInfo) info).getFilename()));
                 }
-                
+
                 // publish the style xml document
-                jmsPublisher.publish(getTopic(), getJmsTemplate(), options, new DocumentFile(
-                        styleFile));
+                jmsPublisher.publish(getTopic(), getJmsTemplate(), options, new DocumentFile(styleFile));
             }
 
             // propagate the event

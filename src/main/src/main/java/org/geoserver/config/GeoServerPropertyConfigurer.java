@@ -107,10 +107,10 @@ public class GeoServerPropertyConfigurer extends PropertyPlaceholderConfigurer {
         catch(FileNotFoundException e) {
             //location was not found, create 
             if (configFile != null && copyOutTemplate) {
-                OutputStream fout = configFile.out();
-                props.store(fout, comments);
-                fout.flush();
-                fout.close();
+                try (OutputStream fout = configFile.out()) {
+                    props.store(fout, comments);                
+                    fout.flush();
+                }
             }
         }
     }

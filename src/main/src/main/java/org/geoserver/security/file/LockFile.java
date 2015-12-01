@@ -36,11 +36,11 @@ public class LockFile  {
     static Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.geoserver.security.xml");
     
     public LockFile(Resource file) throws IOException{
-        lockFileTarget=file;
+        lockFileTarget = file;
         if (!Resources.exists(file)) {
-            throw new IOException("Cannot lock a not existing file: "+file.path());
+            throw new IOException("Cannot lock a not existing file: " + file.path());
         }              
-        lockFile = file.parent().get(lockFileTarget.name()+".lock");
+        lockFile = file.parent().get(lockFileTarget.name() + ".lock");
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {  // remove on shutdown
 
             @Override
@@ -59,7 +59,7 @@ public class LockFile  {
      * @throws IOException
      */
     public boolean hasWriteLock() throws IOException{        
-        return Resources.exists(lockFile) && lockFile.lastmodified()==lockFileLastModified;
+        return Resources.exists(lockFile) && lockFile.lastmodified() == lockFileLastModified;
     }
 
     /**
@@ -69,7 +69,7 @@ public class LockFile  {
      * @throws IOException
      */
     public boolean hasForeignWriteLock() throws IOException{        
-        return Resources.exists(lockFile) && lockFile.lastmodified()!=lockFileLastModified;
+        return Resources.exists(lockFile) && lockFile.lastmodified() != lockFileLastModified;
     }
     
     /**
@@ -78,7 +78,7 @@ public class LockFile  {
      */
     public void writeUnLock() {        
         if (Resources.exists(lockFile)) {
-            if (lockFile.lastmodified()==lockFileLastModified) {
+            if (lockFile.lastmodified() == lockFileLastModified) {
                 lockFileLastModified=0;
                 lockFile.delete();
             } else {
@@ -110,7 +110,7 @@ public class LockFile  {
             throw new IOException(Util.convertPropsToString(props,"Already locked" ));
         } else { // success             
             writeLockFileContent(lockFile);
-            lockFileLastModified =lockFile.lastmodified();
+            lockFileLastModified = lockFile.lastmodified();
             LOGGER.info("Successful lock: " + lockFile.path());
         }
     }

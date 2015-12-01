@@ -75,11 +75,8 @@ public class GWCConfigPersister {
         XStreamPersister xmlPersister = this.persisterFactory.createXMLPersister();
         configureXstream(xmlPersister.getXStream());
         try {
-            InputStream in = configFile.in();
-            try {
+            try (InputStream in = configFile.in()) {
                 this.config = xmlPersister.load(in, GWCConfig.class);
-            } finally {
-                in.close();
             }
             LOGGER.fine("GWC GeoServer specific configuration loaded from " + GWC_CONFIG_FILE);
         } catch (Exception e) {

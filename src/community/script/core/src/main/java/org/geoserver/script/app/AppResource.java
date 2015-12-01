@@ -36,7 +36,7 @@ public class AppResource extends Resource {
 
     ScriptManager scriptMgr;
     org.geoserver.platform.resource.Resource script;
-    
+
     public AppResource(org.geoserver.platform.resource.Resource script, ScriptManager scriptMgr, Request request, Response response) {
         super(null, request, response);
         this.scriptMgr = scriptMgr;

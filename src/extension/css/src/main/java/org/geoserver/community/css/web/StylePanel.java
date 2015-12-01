@@ -34,13 +34,10 @@ public class StylePanel extends Panel {
             final Resource cssFile) {
         super(id, model);
         if (cssFile != null && Resources.exists(cssFile)) {
-            InputStream is = cssFile.in();
-            try {
+            try (InputStream is = cssFile.in()) {
                 styleBody = IOUtils.toString(is, "UTF-8");
             } catch (IOException ioe) {
                 throw new WicketRuntimeException("Error loading CSS: ", ioe);
-            } finally {
-                IOUtils.closeQuietly(is);
             }
         } else {
             styleBody = "No CSS file was found for this style. Please make sure "

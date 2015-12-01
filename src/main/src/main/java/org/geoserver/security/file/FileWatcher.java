@@ -83,10 +83,12 @@ public abstract class FileWatcher implements ResourceListener {
      * 
      * @deprecated Use Resource instead of File
      */
+    @Deprecated
     protected FileWatcher(File file) {
         this.resource = Files.asResource(file);
         this.path = resource.path();
     }
+    
     protected FileWatcher(Resource resource) {
         this.resource = resource;
         this.path = resource.path();

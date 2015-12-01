@@ -177,20 +177,19 @@ public abstract class GeoServerLoader {
     /**
      * Copies a well known style out to the data directory and adds a catalog entry for it.
      */
-    void initializeStyle( Catalog catalog, String styleName, String sld ) throws IOException {
-        
-        //copy the file out to the data directory if necessary
-        Resource styleResource = resourceLoader.get( Paths.path("styles", sld));
-        if ( !Resources.exists(styleResource) ) {
-            IOUtils.copy(GeoServerLoader.class.getResourceAsStream(sld), 
-                 styleResource.out() );
+    void initializeStyle(Catalog catalog, String styleName, String sld) throws IOException {
+
+        // copy the file out to the data directory if necessary
+        Resource styleResource = resourceLoader.get(Paths.path("styles", sld));
+        if (!Resources.exists(styleResource)) {
+            IOUtils.copy(GeoServerLoader.class.getResourceAsStream(sld), styleResource.out());
         }
-        
-        //create a style for it
+
+        // create a style for it
         StyleInfo s = catalog.getFactory().createStyle();
-        s.setName( styleName );
-        s.setFilename( sld );
-        catalog.add( s );
+        s.setName(styleName);
+        s.setFilename(sld);
+        catalog.add(s);
     }
     
     public void reload() throws Exception {
@@ -449,7 +448,7 @@ public abstract class GeoServerLoader {
                                 }
                             }
                         } else {
-                            f = sd.get("wmsstore.xml" );
+                            f = sd.get("wmsstore.xml");
                             if(Resources.exists(f)) {
                                 WMSStoreInfo wms = null;
                                 try {
@@ -612,7 +611,7 @@ public abstract class GeoServerLoader {
         //look for services.xml, if it exists assume we are dealing with 
         // an old data directory
         Resource f = resourceLoader.get( "services.xml" );
-        if ( !Resources.exists(f)) {
+        if (!Resources.exists(f)) {
             //assume 2.x style
             f = resourceLoader.get( "global.xml");
             if ( Resources.exists(f) ) {

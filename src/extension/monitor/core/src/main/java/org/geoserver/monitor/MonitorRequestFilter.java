@@ -37,7 +37,7 @@ public class MonitorRequestFilter {
     public MonitorRequestFilter(GeoServerResourceLoader loader) throws IOException {
         Resource configFile = loader.get( Paths.path("monitoring", "filter.properties") );
         if (configFile.getType() == Type.UNDEFINED) {
-            IOUtils.copy(getClass().getResourceAsStream("filter.properties"), configFile.out() );
+            IOUtils.copy(getClass().getResourceAsStream("filter.properties"), configFile.out());
         }
         filters = new ArrayList<Filter>();
         watcher = new FilterPropertyFileWatcher(configFile);

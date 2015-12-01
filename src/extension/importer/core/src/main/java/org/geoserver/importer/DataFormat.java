@@ -45,9 +45,11 @@ public abstract class DataFormat implements Serializable {
     private static final long serialVersionUID = 1L;
 
     static Logger LOG = Logging.getLogger(DataFormat.class);
-    
+
     /**
      * looks up a format based on file extension.
+     * 
+     * @deprecated Use {@link #lookup(Resource)}
      */
     @Deprecated
     public static DataFormat lookup(File file) {

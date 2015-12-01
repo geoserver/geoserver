@@ -5,8 +5,6 @@
 package org.geoserver.importer.format;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -208,6 +206,10 @@ public class GMLFileFormat extends VectorFormat {
         return Collections.singletonList(task);
     }
 
+    /**
+     * 
+     * @deprecated Use {@link #getSchema(Resource)} 
+     */
     @Deprecated
     SimpleFeatureType getSchema(File file) throws IOException {
         return getSchema(Files.asResource(file));

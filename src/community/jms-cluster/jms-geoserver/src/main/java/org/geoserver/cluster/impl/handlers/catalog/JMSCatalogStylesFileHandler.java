@@ -51,16 +51,12 @@ public class JMSCatalogStylesFileHandler extends DocumentFileHandler {
 		} else if (!ReadOnlyConfiguration.isReadOnly(config)) {
 			try {
 				GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
-				final String fileName = File.separator + "styles"
-						+ File.separator + event.getPath().name();
-				Resource file = loader.get(fileName);
+				Resource file = loader.get("styles").get(event.getPath().name());
 				
 				if ( !Resources.exists(file) ) {
 					final String styleAbsolutePath = event.getPath().path();
 					if ( styleAbsolutePath.indexOf("workspaces") > 0 ) {
-						final String styleFileName = File.separator + 
-								styleAbsolutePath.substring(styleAbsolutePath.indexOf("workspaces"));
-						file =  loader.get(styleFileName);
+						file = loader.get(styleAbsolutePath.substring(styleAbsolutePath.indexOf("workspaces")));
 					}
 				}
 				

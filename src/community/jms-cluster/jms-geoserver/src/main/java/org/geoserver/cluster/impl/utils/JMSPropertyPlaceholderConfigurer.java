@@ -19,52 +19,50 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
 import org.springframework.core.io.Resource;
 
-public class JMSPropertyPlaceholderConfigurer extends
-		PropertyPlaceholderConfigurer implements InitializingBean {
+public class JMSPropertyPlaceholderConfigurer extends PropertyPlaceholderConfigurer implements InitializingBean {
 
-	private final JMSConfiguration config;
-	private final Resource defaults;
+    private final JMSConfiguration config;
 
-	public JMSPropertyPlaceholderConfigurer(Resource defaultFile,
-			JMSConfiguration config) throws IOException {
-		if (!defaultFile.exists()) {
-			throw new IOException("Unable to locate the default properties file at:"+ defaultFile);
+    private final Resource defaults;
 
-		}
-		this.defaults = defaultFile;
-		this.config = config;
-	}
+    public JMSPropertyPlaceholderConfigurer(Resource defaultFile, JMSConfiguration config)
+            throws IOException {
+        if (!defaultFile.exists()) {
+            throw new IOException("Unable to locate the default properties file at:" + defaultFile);
 
-	public Properties[] getProperties() {
-		return localProperties;
-	}
+        }
+        this.defaults = defaultFile;
+        this.config = config;
+    }
 
-	@Override
-	public void afterPropertiesSet() throws Exception {
-		org.geoserver.platform.resource.Resource properties = 
-		        Resources.fromPath(config.getConfiguration(EmbeddedBrokerConfiguration.EMBEDDED_BROKER_PROPERTIES_KEY).toString(),
-		                JMSConfiguration.getConfigPathDir());
-		if (properties.getType() != Type.RESOURCE) {
-			// copy the defaults
-			
-			InputStream inputStream = null;
-			try{
-				inputStream = defaults.getInputStream();
-				IOUtils.copy(inputStream, properties.out());
-			}finally{
-				if(inputStream!=null){
-					org.apache.commons.io.IOUtils.closeQuietly(inputStream);
-				}
-			}
-		}
-		super.setLocation(new SpringResourceAdaptor(properties));
-		
-		// make sure the activemq.base is set to a valuable default 
-		final Properties props=new Properties();
-		props.setProperty("activemq.base", (String)config.getConfiguration("CLUSTER_CONFIG_DIR"));
-		props.setProperty("instanceName", (String)config.getConfiguration("instanceName"));
-		setProperties(props);
-	}
+    public Properties[] getProperties() {
+        return localProperties;
+    }
 
-   
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        org.geoserver.platform.resource.Resource properties = Resources.fromPath(
+                config.getConfiguration(EmbeddedBrokerConfiguration.EMBEDDED_BROKER_PROPERTIES_KEY).toString(), 
+                JMSConfiguration.getConfigPathDir());
+        if (properties.getType() != Type.RESOURCE) {
+            // copy the defaults
+            InputStream inputStream = null;
+            try {
+                inputStream = defaults.getInputStream();
+                IOUtils.copy(inputStream, properties.out());
+            } finally {
+                if (inputStream != null) {
+                    org.apache.commons.io.IOUtils.closeQuietly(inputStream);
+                }
+            }
+        }
+        super.setLocation(new SpringResourceAdaptor(properties));
+
+        // make sure the activemq.base is set to a valuable default
+        final Properties props = new Properties();
+        props.setProperty("activemq.base", (String) config.getConfiguration("CLUSTER_CONFIG_DIR"));
+        props.setProperty("instanceName", (String) config.getConfiguration("instanceName"));
+        setProperties(props);
+    }
+
 }

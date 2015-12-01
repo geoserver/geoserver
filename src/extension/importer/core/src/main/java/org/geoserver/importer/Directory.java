@@ -55,15 +55,34 @@ public class Directory extends FileData {
     boolean recursive;
     String name;
 
+    /**
+     * Create from Resource (recursive)
+     * 
+     * @param resource The directory resource
+     */
     public Directory(Resource file) {
         this(file, true);
     }
 
-    public Directory(Resource file, boolean recursive) {
-        super(file);
+    /**
+     * Create from Resource
+     * 
+     * @param resource The directory resource
+     * @param recursive loop recursively through directories
+     */
+    public Directory(Resource resource, boolean recursive) {
+        super(resource);
         this.recursive = recursive;
     }
 
+    /**
+     * 
+     * Create from file system
+     * 
+     * @param dir The directory
+     * 
+     * @Deprecated Use Resource instead of File
+     */
     @Deprecated
     public Directory(File dir) {
         this(Files.asResource(dir));
@@ -431,7 +450,7 @@ public class Directory extends FileData {
     
     public void archive(Resource output) throws IOException {
         Resource archiveDir = output.parent();
-        String outputName = output.name().replace(".zip","");
+        String outputName = output.name().replace(".zip", "");
         int id = 0;
         while (Resources.exists(output)) {
             output = archiveDir.get(outputName + id + ".zip");

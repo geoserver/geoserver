@@ -35,7 +35,7 @@ public abstract class ScriptProcessIntTest extends ScriptIntTestSupport {
                  "</wps:Execute>";
           
          Document doc = postAsDOM("wps", xml);
-         print(doc);
+         //print(doc);
          assertEquals("map", doc.getDocumentElement().getLocalName());
          
          assertXpathEvaluatesTo("widget", "/map/name", doc);

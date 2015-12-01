@@ -37,7 +37,7 @@ final public class ConfigDirConfiguration implements JMSConfigurationExt {
     @PostConstruct
     private void init() throws IOException {
         // check for override
-        Resource baseDir=null;
+        Resource baseDir = null;
         final String baseDirPath = JMSConfiguration.getOverride(CONFIGDIR_KEY);
         // if no override try to load from the GeoServer loader
         if (baseDirPath != null) {

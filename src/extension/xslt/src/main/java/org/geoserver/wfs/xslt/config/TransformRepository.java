@@ -332,12 +332,8 @@ public class TransformRepository {
         }
         Resource file = getTransformInfoFile(transform.getName());
 
-        OutputStream fos = null;
-        try {
-            fos = file.out();
+        try (OutputStream fos = file.out()){
             xs.toXML(transform, fos);
-        } finally {
-            IOUtils.closeQuietly(fos);
         }
 
         infoCache.put(transform, file);

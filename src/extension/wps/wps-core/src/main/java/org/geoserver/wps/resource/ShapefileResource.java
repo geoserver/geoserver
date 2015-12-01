@@ -24,7 +24,7 @@ public class ShapefileResource implements WPSResource {
     ShapefileDataStore store;
 
     String name;
-    
+
     public ShapefileResource(ShapefileDataStore store, File directory) throws IOException {
         this(store, Files.asResource(directory));   
     }

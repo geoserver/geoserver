@@ -18,6 +18,7 @@ import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
 import org.geoserver.wps.ppio.ComplexPPIO;
@@ -239,7 +240,7 @@ final class DownloadUtilities {
      */
     static Resource findStyle(StyleInfo style) throws IOException {
         GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
-        Resource styleFile = loader.get("/styles/" + style.getFilename()); 
+        Resource styleFile = loader.get(Paths.path("styles", style.getFilename())); 
         if (styleFile != null && styleFile.getType() == Resource.Type.RESOURCE
                 && Resources.canRead(styleFile)) {
             if (LOGGER.isLoggable(Level.FINE)) {
@@ -254,8 +255,8 @@ final class DownloadUtilities {
             }
             // the SLD file is not public, most probably it is located under a workspace.
             // lets try to search for the file inside the same layer workspace folder ...
-            Resource workspaces = loader.get ("/workspaces");
-            styleFile = workspaces.get(style.getWorkspace().getName() + "/styles/" + style.getFilename());
+            styleFile = loader.get(Paths.path("workspaces", style.getWorkspace().getName(),
+                    "styles", style.getFilename()));
 
             if (styleFile != null && styleFile.getType() == Resource.Type.RESOURCE
                     && Resources.canRead(styleFile)) {

@@ -9,8 +9,6 @@ import static org.geoserver.ows.util.ResponseUtils.appendPath;
 import static org.geoserver.ows.util.ResponseUtils.buildURL;
 
 import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Collections;
@@ -105,14 +103,10 @@ public class WCSGetCoverageStoreResponse extends Response {
         }
        
         // store the coverage
-        OutputStream os = null;
-        try {
-            os = new BufferedOutputStream(coverageFile.out());
+        try (OutputStream os = new BufferedOutputStream(coverageFile.out())) {
             delegate.encode(coverage, outputFormat,Collections.EMPTY_MAP, os);
             os.flush();
-        } finally {
-            if(os != null) os.close();
-        }
+        } 
         System.out.println(coverageFile);
         
         // build the path where the clients will be able to retrieve the coverage files

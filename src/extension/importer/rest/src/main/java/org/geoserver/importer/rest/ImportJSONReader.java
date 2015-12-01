@@ -397,7 +397,7 @@ public class ImportJSONReader {
     }
 
     Mosaic mosaic(JSONObject json) throws IOException {
-        Mosaic m = new Mosaic(json.has("location") ?  Resources.fromPath(json.getString("location")) : 
+        Mosaic m = new Mosaic(json.has("location") ? Resources.fromPath(json.getString("location")) : 
             Directory.createNew(importer.getUploadRoot()).getFile());
         if (json.has("name")) {
             m.setName(json.getString("name"));

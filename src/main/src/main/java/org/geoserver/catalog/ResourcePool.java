@@ -1821,7 +1821,7 @@ public class ResourcePool {
     public void writeStyle( StyleInfo info, Style style, boolean format) throws IOException {
         synchronized ( styleCache ) {
             Resource styleFile = dataDir().style(info);
-            BufferedOutputStream out = new BufferedOutputStream( styleFile.out() );
+            BufferedOutputStream out = new BufferedOutputStream(styleFile.out());
             
             try {
                 Styles.handler(info.getFormat()).encode(Styles.sld(style), info.getFormatVersion(), format, out);
@@ -1848,26 +1848,20 @@ public class ResourcePool {
         }
     }
 
-	/**
-	 * Safe write on styleFile the passed inputStream
-	 * 
-	 * @param in
-	 *            the new stream to write to styleFile
-	 * @param styleFile
-	 *            file to update
-	 * @throws IOException
-	 */
-	public static void writeStyle(final InputStream in, final Resource styleFile)
-			throws IOException {
-		BufferedOutputStream out = null;
-		try {
-			out = new BufferedOutputStream(styleFile.out());
-			IOUtils.copy(in, out);
-			out.flush();
-		} finally {
-			out.close();
-		}
-	}
+    /**
+     * Safe write on styleFile the passed inputStream
+     * 
+     * @param in the new stream to write to styleFile
+     * @param styleFile file to update
+     * @throws IOException
+     */
+    public static void writeStyle(final InputStream in, final Resource styleFile)
+            throws IOException {
+        try (BufferedOutputStream out = new BufferedOutputStream(styleFile.out())) {
+            IOUtils.copy(in, out);
+            out.flush();
+        } 
+    }
 
     /**
      * Deletes a style from the configuration.

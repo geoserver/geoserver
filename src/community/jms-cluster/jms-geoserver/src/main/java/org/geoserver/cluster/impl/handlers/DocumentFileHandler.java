@@ -27,18 +27,14 @@ public class DocumentFileHandler extends
 
 	@Override
 	public boolean synchronize(DocumentFile event) throws Exception {
-		OutputStream fout = null;
-		try {
-			fout = event.getPath().out();
+		try (OutputStream fout = event.getPath().out()) {			
 			xstream.toXML(event.getBody(), fout);
 			return true;
 		} catch (IllegalStateException e) {
 			if (LOGGER.isLoggable(java.util.logging.Level.SEVERE))
 				LOGGER.severe(e.getLocalizedMessage());
 			throw e;
-		} finally {
-			IOUtils.closeQuietly(fout);
-		}
+		} 
 	}
 
 	@Override

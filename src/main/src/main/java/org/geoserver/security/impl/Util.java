@@ -215,12 +215,8 @@ public class Util {
      * </p>
      */
     public static Properties loadPropertyFile(Resource f) throws IOException {
-        InputStream in = f.in();
-        try {
+        try (InputStream in = f.in()) {
             return loadUniversal(in);
-        }
-        finally {
-            in.close();
         }
     }
     

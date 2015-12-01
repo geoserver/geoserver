@@ -103,7 +103,7 @@ public class ScriptFunctionFactory extends ScriptFactory implements FunctionFact
                     Resource filterRoot = scriptMgr.function();
                     Resource f = null;
                     if (name.getNamespaceURI() != null) {
-                        f = filterRoot.get(name.getLocalPart()+"."+name.getNamespaceURI());
+                        f = filterRoot.get(name.getLocalPart() + "." + name.getNamespaceURI());
                     }
                     else {
                         //look for a file based on basename
@@ -120,7 +120,6 @@ public class ScriptFunctionFactory extends ScriptFactory implements FunctionFact
                     }
                     
                     if (!Resources.exists(f)) {
-                        //throw new FileNotFoundException(f.getPath());
                         LOGGER.log(Level.WARNING, "File not found : " + f.path());
                         return null;
                     }

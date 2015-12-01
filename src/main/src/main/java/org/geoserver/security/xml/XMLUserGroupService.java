@@ -147,17 +147,11 @@ public class XMLUserGroupService extends AbstractUserGroupService {
         try {
             
             Document doc=null;
-            InputStream is = null;
-            try {
-                is = userResource.in();
-		doc = builder.parse(is);
+            try (InputStream is = userResource.in()) {
+                doc = builder.parse(is);
             } catch (SAXException e) {
                 throw new IOException(e);
-            } finally {
-            	try {
-            	    is.close();
-            	} catch (IOException e) {}
-            }
+            } 
             
             if (isValidatingXMLSchema()) {
                 XMLValidator.Singleton.validateUserGroupRegistry(doc);

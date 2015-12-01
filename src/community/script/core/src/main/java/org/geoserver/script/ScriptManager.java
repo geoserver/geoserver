@@ -566,7 +566,7 @@ public class ScriptManager implements InitializingBean {
         }
         return plugins;
     }
-    
+
     /*
      * Looks up the plugin for the specified script.
      */
@@ -585,7 +585,7 @@ public class ScriptManager implements InitializingBean {
     /*
      * Helper method for extracting extension from filename throwing exception if the file has no
      * extension. 
-     */    
+     */
     String ext(String scriptName) throws IllegalArgumentException {
         String ext = FilenameUtils.getExtension(scriptName);
         if (ext == null) {

@@ -58,11 +58,8 @@ class JDBCConfigurationStorage implements ApplicationContextAware, SecurityManag
         Resource configFile = configDir.get("geowebcache-diskquota-jdbc.xml");
         if ("JDBC".equals(config.getQuotaStore())) {
             JDBCConfiguration encrypted = passwordHelper.encryptPassword(jdbcConfig);
-            OutputStream os = configFile.out();
-            try {
+            try (OutputStream os = configFile.out()) {
                 JDBCConfiguration.store(encrypted, os);
-            } finally {
-                os.close();
             }
         } else {
             if (Resources.exists(configFile) && !configFile.delete()) {
@@ -80,12 +77,9 @@ class JDBCConfigurationStorage implements ApplicationContextAware, SecurityManag
         }
         try {
             JDBCConfiguration configuration;
-            InputStream is = configFile.in();
-            try {
+            try (InputStream is = configFile.in()) {
                 configuration = JDBCConfiguration.load(is);
-            } finally {
-                is.close();
-            }
+            } 
             return passwordHelper.unencryptPassword(configuration);
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Failed to load geowebcache-diskquota-jdbc.xml", e);
@@ -134,11 +128,8 @@ class JDBCConfigurationStorage implements ApplicationContextAware, SecurityManag
                     return;
                 }
                 JDBCConfiguration c1;
-                InputStream is = configFile.in();
-                try {
+                try (InputStream is = configFile.in()) {
                     c1 = JDBCConfiguration.load(is);
-                } finally {
-                    is.close();
                 }
                 if(c1 == null || c1.getConnectionPool() == null) {
                     return;
@@ -151,11 +142,8 @@ class JDBCConfigurationStorage implements ApplicationContextAware, SecurityManag
                 JDBCConfiguration c3 = passwordHelper.encryptPassword(c2);
                 String newEncrypted = c3.getConnectionPool().getPassword();
                 if(!originalEncrypted.equals(newEncrypted)) { 
-                    OutputStream os = configFile.out();
-                    try {
+                    try (OutputStream os = configFile.out()) {
                         JDBCConfiguration.store(c3, os);
-                    } finally {
-                        os.close();
                     }
                 }
             }

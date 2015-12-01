@@ -837,7 +837,7 @@ public class Importer implements DisposableBean, ApplicationListener {
     public Resource getArchiveFile(ImportContext context) throws IOException {
         //String archiveName = "import-" + task.getContext().getId() + "-" + task.getId() + "-" + task.getData().getName() + ".zip";
         String archiveName = "import-" + context.getId() + ".zip";
-        Resource dir = getCatalog().getResourceLoader().get(Paths.path("uploads","archives"));
+        Resource dir = getCatalog().getResourceLoader().get(Paths.path("uploads", "archives"));
         return dir.get(archiveName);
     }
     

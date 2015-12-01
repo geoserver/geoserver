@@ -54,15 +54,10 @@ public abstract class XStreamServiceLoader<T extends ServiceInfo> implements Ser
                
         if ( Resources.exists(file = directory.get(getFilename()))) {
             //xstream it in
-            BufferedInputStream in = 
-                new BufferedInputStream( file.in() );
-            try {
+            try (BufferedInputStream in = new BufferedInputStream(file.in())) {
                 XStreamPersister xp = xpf.createXMLPersister();
                 initXStreamPersister(xp, gs);
                 return initialize( xp.load( in, getServiceClass() ) );
-            }
-            finally {
-                in.close();    
             }
         }
         else {

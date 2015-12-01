@@ -109,13 +109,9 @@ public class LoggingStartupContextListener implements ServletContextListener {
         Resource f= loader.get( "logging.xml" );
         if ( f != null ) {
             XStreamPersister xp = new XStreamPersisterFactory().createXMLPersister();
-            BufferedInputStream in = new BufferedInputStream( f.in() );
-            try {
+            try (BufferedInputStream in = new BufferedInputStream(f.in())) {
                 LoggingInfo loginfo = xp.load(in,LoggingInfo.class);
                 return loginfo;
-            }
-            finally {
-                in.close();
             }
         } else {
             return null;

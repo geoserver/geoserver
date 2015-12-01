@@ -237,13 +237,13 @@ public class KeyStoreProviderImpl implements BeanNameAware, KeyStoreProvider{
             if (getResource().getType() == Type.UNDEFINED) { // create an empy one
                 ks.load(null, passwd);
                 addInitialKeys();
-                OutputStream fos = getResource().out();
-                ks.store(fos, passwd);
-                fos.close();
+                try (OutputStream fos = getResource().out()) {
+                    ks.store(fos, passwd);
+                }
             } else {
-                InputStream fis = getResource().in();
-                ks.load(fis, passwd);
-                fis.close();
+                try (InputStream fis = getResource().in()) {
+                    ks.load(fis, passwd);
+                }
             }
         } catch (Exception ex) {
             if (ex instanceof IOException) // avoid useless wrapping
@@ -270,8 +270,7 @@ public class KeyStoreProviderImpl implements BeanNameAware, KeyStoreProvider{
             // should not happen, see assertActivatedKeyStore
             throw new RuntimeException(e1);
         }
-        InputStream fis = getResource().in();
-        try {
+        try (InputStream fis = getResource().in()) {
             testStore.load(fis, password);
         } catch (IOException e2) {
             // indicates invalid password
@@ -279,8 +278,7 @@ public class KeyStoreProviderImpl implements BeanNameAware, KeyStoreProvider{
         } catch (Exception e) {
             // should not happen, see assertActivatedKeyStore
             throw new RuntimeException(e);
-        }                
-        fis.close();     
+        }    
         return true;
     }
     
@@ -334,18 +332,18 @@ public class KeyStoreProviderImpl implements BeanNameAware, KeyStoreProvider{
     public void storeKeyStore() throws IOException{
         // store away the keystore
         assertActivatedKeyStore();
-        OutputStream fos = getResource().out();
+        try (OutputStream fos = getResource().out()) {
 
-        char[] passwd = securityManager.getMasterPassword(); 
-        try {
-            ks.store(fos, passwd);
-        } catch (Exception e) {
-            throw new IOException(e);
+            char[] passwd = securityManager.getMasterPassword(); 
+            try {
+                ks.store(fos, passwd);
+            } catch (Exception e) {
+                throw new IOException(e);
+            }
+            finally {
+                securityManager.disposePassword(passwd);
+            }
         }
-        finally {
-            securityManager.disposePassword(passwd);
-        }
-        fos.close();
     }
     
     /**
@@ -379,9 +377,9 @@ public class KeyStoreProviderImpl implements BeanNameAware, KeyStoreProvider{
         
         try {
             KeyStore oldKS=KeyStore.getInstance(KEYSTORETYPE);
-            InputStream fin = getResource().in();
-            oldKS.load(fin, oldPassword);
-            fin.close();
+            try (InputStream fin = getResource().in()) {
+                oldKS.load(fin, oldPassword);
+            }
             
             KeyStore newKS = KeyStore.getInstance(KEYSTORETYPE);
             newKS.load(null, newPassword);
@@ -407,9 +405,9 @@ public class KeyStoreProviderImpl implements BeanNameAware, KeyStoreProvider{
                     newKS.setEntry(alias, entry, protectionparam);
             }            
            
-            OutputStream fos = newKSFile.out();                    
-            newKS.store(fos, newPassword);
-            fos.close();
+            try (OutputStream fos = newKSFile.out()) {                    
+                newKS.store(fos, newPassword);
+            }
 
         } catch (Exception ex) {
             throw new IOException(ex);

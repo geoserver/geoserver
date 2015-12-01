@@ -99,7 +99,7 @@ public class ServicePersister extends ConfigurationListenerAdapter {
     }
 
     Resource dir( WorkspaceInfo ws ) throws IOException {
-        return resourceLoader.get( Paths.path("workspaces", ws.getName()) );
+        return resourceLoader.get(Paths.path("workspaces", ws.getName()));
     }
 
 }

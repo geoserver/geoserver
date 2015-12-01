@@ -58,25 +58,21 @@ public class StoreCoverage implements GSProcess {
         String fileName = coverage.getName().toString() + ".tif";
         final Resource resource = resources.getOutputResource(null, fileName);
 
-        // TODO check file prior to writing
-        OutputStream os = resource.out();
-        GeoTiffWriter writer = new GeoTiffWriter(os);
-
         // setting the write parameters for this geotiff
         final ParameterValueGroup params = new GeoTiffFormat().getWriteParameters();
         params.parameter(AbstractGridFormat.GEOTOOLS_WRITE_PARAMS.getName().toString()).setValue(
                 DEFAULT_WRITE_PARAMS);
         final GeneralParameterValue[] wps = params.values().toArray(
-                new GeneralParameterValue[1]);
-        try {
-            writer.write(coverage, wps);
-        } finally {
+                new GeneralParameterValue[1]);        
+        
+        // TODO check file prior to writing        
+        try (OutputStream os = resource.out()) {
+            GeoTiffWriter writer = new GeoTiffWriter(os);    
             try {
+                writer.write(coverage, wps);
+            } finally {
                 writer.dispose();
-            } catch (Exception e) {
-                // we tried, no need to fuss around this one
             }
-            os.close();
         }
 
         return new URL(resources.getOutputResourceUrl(fileName, "image/tiff"));

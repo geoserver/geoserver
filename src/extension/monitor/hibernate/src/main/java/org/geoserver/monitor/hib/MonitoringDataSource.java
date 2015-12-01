@@ -120,9 +120,9 @@ public class MonitoringDataSource extends BasicDataSource implements DisposableB
             db.load(getClass().getResourceAsStream("db.properties"));
         }
         else {
-            InputStream in = dbprops.in();
-            db.load(in);
-            in.close();
+            try (InputStream in = dbprops.in()) {
+                db.load(in);
+            }
         }
 
         logDbProperties(db);

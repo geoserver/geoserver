@@ -15,7 +15,6 @@ import java.util.logging.Logger;
 import javax.media.jai.Interpolation;
 import javax.media.jai.JAI;
 
-import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -260,10 +259,7 @@ public class DownloadProcess implements GSProcess, ApplicationContextAware {
             final Resource result = resourceManager.getOutputResource(
                     resourceManager.getExecutionId(true), resourceInfo.getName() + ".zip");
 
-            OutputStream os1 = null;
-            try {
-                os1 = result.out();
-
+            try (OutputStream os1 = result.out()) {
                 if (LOGGER.isLoggable(Level.FINE)) {
                     LOGGER.log(Level.FINE, "Listing files");
                 }
@@ -287,9 +283,6 @@ public class DownloadProcess implements GSProcess, ApplicationContextAware {
                         .getCompressionLevel()).encode(filesToDownload, os1);
 
             } finally {
-                if (os1 != null) {
-                    IOUtils.closeQuietly(os1);
-                }
                 if (LOGGER.isLoggable(Level.FINE)) {
                     LOGGER.log(Level.FINE, "Prepare the result for deletion");
                 }

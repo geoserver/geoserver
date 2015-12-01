@@ -170,22 +170,16 @@ final public class JMSConfiguration {
     }
 
     public void loadConfig() throws IOException {
-        final Resource config = configPathDir.get(CONFIG_FILE_NAME);
-        InputStream fis = config.in();
-        try {
+        Resource config = configPathDir.get(CONFIG_FILE_NAME);
+        try (InputStream fis = config.in()) {
             this.configuration.load(fis);
-        } finally {
-            fis.close();
         }
     }
 
     public void storeConfig() throws IOException {
-        final Resource config = configPathDir.get(CONFIG_FILE_NAME);
-        OutputStream fos = config.out();
-        try {
+        Resource config = configPathDir.get(CONFIG_FILE_NAME);
+        try (OutputStream fos = config.out()) {
             this.configuration.store(fos, "");
-        } finally {
-            fos.close();
         }
     }
 

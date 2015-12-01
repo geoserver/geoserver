@@ -64,6 +64,9 @@ public class Resources {
     
     /**
      * Test if the file or directory behind the resource is hidden.
+     * For file system based resources, the platform-dependent hidden property is used. 
+     * For other resource implementations, filenames starting with a "." are considered hidden, irrespective of the platform.
+     * 
      * 
      * @see File#isHidden()
      * @param resource

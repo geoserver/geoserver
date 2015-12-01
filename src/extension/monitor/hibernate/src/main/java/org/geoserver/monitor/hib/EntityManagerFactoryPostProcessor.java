@@ -52,7 +52,7 @@ public class EntityManagerFactoryPostProcessor implements BeanPostProcessor {
                 props.putAll(factory.getJpaPropertyMap());
                 
                 Resource monitoring = data.get("monitoring");
-                Resource file =  monitoring.get("hibernate.properties" );
+                Resource file =  monitoring.get("hibernate.properties");
                 OutputStream fout = file.out();
                 
                 props.store(fout, "hibernate configuration");

@@ -62,11 +62,8 @@ public class DocumentFile {
             throw new IllegalArgumentException("Unable to locate the file path: \'" + path + "\'");
         }
         this.path = path;
-        InputStream in = path.in();
-        try {
+        try (InputStream in = path.in()) {
             this.body = IOUtils.toString(in);
-        } finally {
-            in.close();
         }
     }
 
@@ -78,11 +75,8 @@ public class DocumentFile {
      * @throws IOException
      */
     public void writeTo(Resource file) throws JDOMException, IOException {
-        OutputStream out = path.out();
-        try {
+        try (OutputStream out = path.out()) {
             IOUtils.write(body, out);
-        } finally {
-            out.close();
         }
     }
 }

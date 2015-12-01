@@ -137,16 +137,16 @@ Current PSC
 * Jody Garnett
 * Jukka Rahkonen
 * Kevin Smith
-* Phil Scadden
 * Simone Giannecchini
 
 We would like to thank prior PSC members:
 
-* Brent Owens
-* Chris Holmes
-* Gabriel Roldan
-* Justin Deoliveira
 * Rob Atkinson
+* Justin Deoliveira
+* Chris Holmes
+* Brent Owens
+* Gabriel Roldan
+* Phil Scadden
 
 PSC Voting procedure
 --------------------

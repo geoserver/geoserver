@@ -80,7 +80,7 @@ import org.geotools.util.logging.Logging;
 public class SystemTestData extends CiteTestData {
     
     /** Multiband tiff */
-    private static final QName MULTIBAND = new QName(WCS_URI, "multiband", WCS_PREFIX);
+    public static final QName MULTIBAND = new QName(WCS_URI, "multiband", WCS_PREFIX);
     
     static final Logger LOGGER = Logging.getLogger(SystemTestData.class);
     

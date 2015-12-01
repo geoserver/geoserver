@@ -202,16 +202,9 @@ public class RESTUtils {
             }
         }
         
-        final ReadableByteChannel source = request.getEntity().getChannel();
-        final WritableByteChannel outputChannel = Channels.newChannel(newFile.out());;
-        try {            
-            IOUtils.copyChannel(1024 * 1024, source, outputChannel);
-        } finally {
-            try {
-                outputChannel.close();                
-            } finally {
-                IOUtils.closeQuietly(source);
-                IOUtils.closeQuietly(outputChannel);
+        try (ReadableByteChannel source = request.getEntity().getChannel()) {
+            try (WritableByteChannel outputChannel = Channels.newChannel(newFile.out())) {
+                IOUtils.copyChannel(1024 * 1024, source, outputChannel);
             }
         }
         return newFile;

@@ -44,7 +44,6 @@ public abstract class FileWatcher implements ResourceListener {
     /** The delay to observe between every check. By default set {@link #DEFAULT_DELAY}. */
     //protected long delay = DEFAULT_DELAY; 
     
-    //File file;
     Resource resource;
     
     long lastModified = 0;
@@ -79,10 +78,17 @@ public abstract class FileWatcher implements ResourceListener {
         }
     }
 
+    /**
+     * @param file
+     * 
+     * @deprecated Use Resource instead of File
+     */
+    @Deprecated
     protected FileWatcher(File file) {
         this.resource = Files.asResource(file);
         this.path = resource.path();
     }
+    
     protected FileWatcher(Resource resource) {
         this.resource = resource;
         this.path = resource.path();

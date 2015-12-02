@@ -5,7 +5,6 @@
  */
 package org.geoserver.security.impl;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashSet;
@@ -14,6 +13,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.SortedSet;
 
+import org.geoserver.platform.resource.Resource;
 import org.geoserver.security.GeoServerRoleService;
 import org.geoserver.security.GeoServerRoleStore;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
@@ -242,8 +242,8 @@ public abstract class AbstractRoleService extends AbstractGeoServerSecurityServi
     /**
      * The root configuration for the role service.
      */
-    public File getConfigRoot() throws IOException {
-        return new File(getSecurityManager().getRoleRoot(), getName());
+    public Resource getConfigRoot() throws IOException {
+        return getSecurityManager().role().get(getName());
     }
     
     public int getRoleCount() throws IOException {

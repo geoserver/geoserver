@@ -7,7 +7,7 @@ package org.geoserver.security.jdbc;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
@@ -28,6 +28,10 @@ import javax.sql.DataSource;
 
 import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.commons.io.FileUtils;
+import org.geoserver.data.util.IOUtils;
+import org.geoserver.platform.resource.Files;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resources;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
 import org.geoserver.security.impl.AbstractGeoServerSecurityService;
 import org.geoserver.security.jdbc.config.JDBCSecurityServiceConfig;
@@ -467,25 +471,30 @@ public abstract class AbstractJDBCService extends AbstractGeoServerSecurityServi
      * @throws IOException
      * @return the file to use
      */
-    protected File checkORCreateJDBCPropertyFile(String fileName,
-            File namedRoot, String defaultResource) throws IOException {
+    protected Resource checkORCreateJDBCPropertyFile(String fileName,
+            Resource namedRoot, String defaultResource) throws IOException {
 
+        Resource resource;
         fileName = fileName != null ? fileName : defaultResource;
         File file = new File(fileName);
-        if (file.isAbsolute()==false) 
-            file = new File(namedRoot,fileName);
+        if (file.isAbsolute()) {
+            resource = Files.asResource(file);
+        } else {
+            resource = namedRoot.get(fileName);
+        }
 
-        if (file.exists()) 
-            return file; // we are happy
+        if (Resources.exists(resource)) { 
+            return resource; // we are happy
+        }
         
         // try to find a template with the same name
-        URL url = this.getClass().getResource(fileName);
-        if (url!=null) 
-            FileUtils.copyURLToFile(url, file);
+        InputStream is = this.getClass().getResourceAsStream(fileName);
+        if (is!=null) 
+            IOUtils.copy(is, resource.out());
         else // use the default template
             FileUtils.copyURLToFile(getClass().getResource(defaultResource), file);
         
-        return file;
+        return resource;
                             
     }
 }

@@ -11,7 +11,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URL;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -24,8 +23,8 @@ import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.ResourceStore;
 import org.geoserver.platform.resource.Resources;
-import org.geotools.data.DataUtilities;
 import org.springframework.core.io.DefaultResourceLoader;
+import org.springframework.web.context.ServletContextAware;
 
 /**
  * Access to resources in GeoServer including configuration information and unmanaged cache or log files.
@@ -58,7 +57,7 @@ import org.springframework.core.io.DefaultResourceLoader;
  * @author Justin Deoliveira, The Open Planning Project, jdeolive@openplans.org
  * 
  */
-public class GeoServerResourceLoader extends DefaultResourceLoader implements ResourceStore {
+public class GeoServerResourceLoader extends DefaultResourceLoader implements ResourceStore, ServletContextAware {
     private static final Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.vfny.geoserver.global");
     static {
         LOGGER.setLevel(Level.FINER);
@@ -104,29 +103,24 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Re
      * @param baseDirectory The directory in which
      */
     public GeoServerResourceLoader(ResourceStore resourceStore) {
-        this.baseDirectory = resourceStore.get(Paths.BASE).dir();
         this.resources = resourceStore;
     }
     
-    
-// public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-//        if (baseDirectory == null) {
-//            //lookup the data directory
-//            if (applicationContext instanceof WebApplicationContext) {
-//                String data = lookupGeoServerDataDirectory(
-//                        ((WebApplicationContext)applicationContext).getServletContext());
-//                if (data != null) {
-//                    setBaseDirectory(new File(data)); 
-//                }
-//            }
-//        }
-//        if( resources == Resources.EMPTY ){
-//            // lookup the configuration resources
-//            if( baseDirectory != null ){
-//                resources = new FileSystemResourceStore( baseDirectory );
-//            }
-//        }
-//    }
+    @Override
+    public void setServletContext(ServletContext servletContext) {
+        if (baseDirectory == null) {
+            String data = lookupGeoServerDataDirectory(servletContext);
+            if (data != null) {
+                this.baseDirectory = new File(data);
+            } else {
+                throw new IllegalStateException("Unable to determine data directory");
+            }
+        }
+        if (resources == ResourceStore.EMPTY && baseDirectory != null) {
+            // lookup the configuration resources
+            resources = new FileSystemResourceStore(baseDirectory);
+        }
+    }
     
     /**
      * Adds a location to the path used for resource lookups.

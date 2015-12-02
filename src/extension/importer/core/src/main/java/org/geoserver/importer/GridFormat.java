@@ -20,6 +20,8 @@ import org.geoserver.catalog.WorkspaceInfo;
 import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geoserver.importer.job.ProgressMonitor;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resources;
 import org.opengis.referencing.operation.OperationNotFoundException;
 
 /**
@@ -51,7 +53,7 @@ public class GridFormat extends RasterFormat {
     public boolean canRead(ImportData data) throws IOException {
         AbstractGridFormat gridFormat = gridFormat();
         
-        File f = file(data);
+        Resource f = file(data);
         if (f != null) {
             return gridFormat.accepts(f);
         }
@@ -61,7 +63,7 @@ public class GridFormat extends RasterFormat {
     @Override
     public CoverageStoreInfo createStore(ImportData data, WorkspaceInfo workspace, Catalog catalog) 
         throws IOException {
-        File f = file(data);
+        Resource f = file(data);
         if (f == null) {
             return null;
         }
@@ -70,7 +72,7 @@ public class GridFormat extends RasterFormat {
         cb.setWorkspace(workspace);
         
         CoverageStoreInfo store = cb.buildCoverageStore(data.getName());
-        store.setURL(relativeDataFileURL(f.toURI().toURL().toString(), catalog));
+        store.setURL(relativeDataFileURL(Resources.find(f).toURI().toURL().toString(), catalog));
         store.setType(gridFormat().getName());
         
         return store;
@@ -122,7 +124,7 @@ public class GridFormat extends RasterFormat {
 
     public AbstractGridCoverage2DReader gridReader(ImportData data) throws IOException {
         //try file based
-        File f = null;
+        Resource f = null;
         if (data instanceof SpatialFile) {
             f = ((SpatialFile) data).getFile();
         }
@@ -131,14 +133,14 @@ public class GridFormat extends RasterFormat {
         }
         if (f != null) {
             AbstractGridFormat gridFormat = gridFormat();
-            return gridFormat.getReader(f);
+            return gridFormat.getReader(Resources.find(f));
         }
         return null;
     }
 
-    File file(ImportData data) {
+    Resource file(ImportData data) {
         //try file based
-        File f = null;
+        Resource f = null;
         if (data instanceof SpatialFile) {
             f = ((SpatialFile) data).getFile();
         }

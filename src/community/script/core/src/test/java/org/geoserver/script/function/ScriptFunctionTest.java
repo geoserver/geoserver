@@ -18,7 +18,7 @@ public class ScriptFunctionTest extends ScriptTestSupport {
     protected void setUp() throws Exception {
         super.setUp();
         
-        File function = scriptMgr.getFunctionRoot();
+        File function = scriptMgr.function().dir();
         File script = new File(function, "factorial." + getExtension());
 
         FileUtils.copyURLToFile(getClass().getResource(script.getName()), script);

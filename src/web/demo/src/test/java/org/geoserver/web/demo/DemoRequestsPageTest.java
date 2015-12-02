@@ -24,6 +24,7 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.config.GeoServerInfo;
+import org.geoserver.platform.resource.Files;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geotools.test.TestData;
 import org.junit.Before;
@@ -41,7 +42,7 @@ public class DemoRequestsPageTest extends GeoServerWicketTestSupport {
     @Before
     public void setUp() throws Exception {
         demoDir = TestData.file(this, "demo-requests");
-        tester.startPage(new DemoRequestsPage(demoDir));
+        tester.startPage(new DemoRequestsPage(Files.asResource(demoDir)));
     }
 
     /**
@@ -108,7 +109,7 @@ public class DemoRequestsPageTest extends GeoServerWicketTestSupport {
         assertTrue(model.getObject() instanceof DemoRequest);
         DemoRequest req = (DemoRequest) model.getObject();
 
-        assertEquals(demoDir, req.getDemoDir());
+        assertEquals(demoDir, req.getDemoDir().dir());
         String requestFileName = req.getRequestFileName();
         String requestUrl = req.getRequestUrl();
         String requestBody = req.getRequestBody();
@@ -145,7 +146,7 @@ public class DemoRequestsPageTest extends GeoServerWicketTestSupport {
         assertTrue(model.getObject() instanceof DemoRequest);
         DemoRequest req = (DemoRequest) model.getObject();
 
-        assertEquals(demoDir, req.getDemoDir());
+        assertEquals(demoDir, req.getDemoDir().dir());
         String requestFileName = req.getRequestFileName();
         String requestUrl = req.getRequestUrl();
         String requestBody = req.getRequestBody();
@@ -220,7 +221,7 @@ public class DemoRequestsPageTest extends GeoServerWicketTestSupport {
             assertTrue(model.getObject() instanceof DemoRequest);
             DemoRequest req = (DemoRequest) model.getObject();
     
-            assertEquals(demoDir, req.getDemoDir());
+            assertEquals(demoDir, req.getDemoDir().dir());
             String requestFileName = req.getRequestFileName();
             String requestUrl = req.getRequestUrl();
     

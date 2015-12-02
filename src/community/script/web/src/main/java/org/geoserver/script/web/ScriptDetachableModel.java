@@ -5,15 +5,15 @@
  */
 package org.geoserver.script.web;
 
-import java.io.File;
-
 import org.apache.wicket.model.IModel;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resources;
 
 public class ScriptDetachableModel implements IModel {
 
     transient Script script;
 
-    File file;
+    Resource file;
 
     public ScriptDetachableModel(Script script) {
         setObject(script);
@@ -27,8 +27,11 @@ public class ScriptDetachableModel implements IModel {
     }
 
     public void setObject(Object object) {
-        this.script = (Script) object;
-        this.file = script != null ? script.getFile() : null;
+        script = (Script) object;
+        file = script.getResource();
+        if (!Resources.exists(file)) {
+            file = null;
+        }
     }
 
     public void detach() {

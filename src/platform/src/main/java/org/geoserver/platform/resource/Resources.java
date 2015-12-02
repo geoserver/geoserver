@@ -10,12 +10,19 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.security.SecureRandom;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
+import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Resource.Type;
+import org.geoserver.util.Filter;
 
 /**
  * Utility methods for working with {@link ResourceStore}.
@@ -25,6 +32,7 @@ import org.geoserver.platform.resource.Resource.Type;
  * @author Jody Garnett
  */
 public class Resources {
+
     /**
      * Test if the file or directory denoted by this resource exists.
      * 
@@ -34,6 +42,46 @@ public class Resources {
      */
     public static boolean exists(Resource resource) {
         return resource != null && resource.getType() != Resource.Type.UNDEFINED;
+    }
+    
+    /**
+     * Test if the file or directory can be read.
+     * 
+     * @see File#canRead()
+     * @param resource
+     * @return true If resource is not UNDEFINED
+     */
+    public static boolean canRead(Resource resource) {
+        try {
+            InputStream is = resource.in();
+            is.read();
+            is.close();
+            return true;
+        } catch (IOException | IllegalStateException e) {
+            return false;
+        }
+    }
+    
+    /**
+     * Test if the file or directory behind the resource is hidden.
+     * For file system based resources, the platform-dependent hidden property is used. 
+     * For other resource implementations, filenames starting with a "." are considered hidden, irrespective of the platform.
+     * 
+     * 
+     * @see File#isHidden()
+     * @param resource
+     * @return true If resource is hidden
+     */
+    public static boolean isHidden(Resource resource) {
+        if (resource instanceof FileSystemResourceStore.FileSystemResource || 
+                resource instanceof Files.ResourceAdaptor) {
+            //this is a file based resource, just check the file
+            return find(resource).isHidden();
+        } else {
+            //not a file system based resource, no point in caching
+            //we only support linux style hidden file.
+            return resource.name().startsWith(".");
+        }
     }
 
     /**
@@ -280,4 +328,125 @@ public class Resources {
             return false;
         }
     }
+    
+    /**
+     * Returns filtered children of a directory
+     * 
+     * @param dir parent directory
+     * @param filter the filter that selects children
+     * @param recursive searches recursively
+     * @return filtered list
+     */
+    public static List<Resource> list(Resource dir, Filter<Resource> filter, boolean recursive) {
+        List<Resource> res = new ArrayList<Resource>();
+        for (Resource child : dir.list()) {
+            if (filter.accept(child)) {
+                res.add(child);
+            }
+            if (recursive && child.getType() == Type.DIRECTORY) {
+                res.addAll(list(child, filter, true));
+            }
+        }        
+        return res;        
+    }
+    
+    /**
+     * Convenience method for non recursive listing
+     * 
+     * @param dir parent directory
+     * @param filter parent directory
+     * @return filtered list
+     */
+    public static List<Resource> list(Resource dir, Filter<Resource> filter) {
+        return list(dir, filter, false);
+    }
+
+    /**
+     * 
+     * File Extension based filtering
+     * 
+     *
+     */
+    public static class ExtensionFilter implements Filter<Resource> {
+        
+        private Set<String> extensions;
+        
+        /**
+         * 
+         * Create extension filter
+         * 
+         * @param extensions in upper case
+         */
+        public ExtensionFilter(String... extensions) {
+            this.extensions = new HashSet<String>(Arrays.asList(extensions));
+        }
+
+        @Override
+        public boolean accept(Resource obj) {
+            return extensions.contains(obj.name().substring(obj.name().lastIndexOf(".") + 1).toUpperCase());
+        }
+        
+    }
+    
+
+    public static class DirectoryFilter implements Filter<Resource> {
+        
+        public static final DirectoryFilter INSTANCE = new DirectoryFilter(); 
+        
+        private DirectoryFilter() {};
+
+        @Override
+        public boolean accept(Resource obj) {
+            return obj.getType() == Type.DIRECTORY;
+        }
+
+    }
+    
+    /**
+     * Creates resource from a path, if the path is relative it will return a resource from the default resource loader
+     * otherwise it will return a file based resource
+     * 
+     * @param path relative or absolute path
+     * @return resource
+     */
+    public static Resource fromPath(String path) {
+       GeoServerResourceLoader loader = (GeoServerResourceLoader) GeoServerExtensions.bean("resourceLoader");
+       return fromPath(path, loader.get(Paths.BASE));
+    }
+    
+    /**
+     * Creates resource from a path, if the path is relative it will return a resource relative to the provided directory
+     * otherwise it will return a file based resource
+     * 
+     * @param path relative or absolute path
+     * @param relativeDir directory to which relative paths are relative
+     * @return resource
+     */
+    public static org.geoserver.platform.resource.Resource fromPath(String path,
+            org.geoserver.platform.resource.Resource relativeDir) {
+        File file = new File(path);
+        if (file.isAbsolute()) {
+            return Files.asResource(file);
+        } else {
+            return relativeDir.get(path);
+        }
+    }
+    
+    private static final SecureRandom random = new SecureRandom();
+    public static Resource createRandom(String prefix, String suffix, Resource dir)
+        throws IOException {
+        long n = random.nextLong();
+        if (n == Long.MIN_VALUE) {
+            n = 0;      // corner case
+        } else {
+            n = Math.abs(n);
+        }
+
+        // Use only the file name from the supplied prefix
+        prefix = (new File(prefix)).getName();
+
+        String name = prefix + Long.toString(n) + suffix;
+        return dir.get(name);
+    }
+
 }

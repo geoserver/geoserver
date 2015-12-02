@@ -33,23 +33,15 @@ public class WCSStorageCleaner extends TimerTask {
             // first check that temp/wcs is really there in the data dir
             GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
             Resource wcs = loader.get("temp/wcs");
-            
-//            File temp = GeoserverDataDirectory.findConfigDir(GeoserverDataDirectory.getGeoserverDataDirectory(), "temp");
-//            if (temp == null || !temp.exists())return;
-//
-//            File wcsTemp = new File(temp, "wcs");
-//            if (!wcsTemp.exists())
-//                return;
-            
+                       
             if( wcs.getType() != Type.DIRECTORY ){
                 return; // nothing to cleanup
             }
             
-            File wcsTemp = wcs.dir();
             // ok, now scan for existing files there and clean up those that are too old
             long now = System.currentTimeMillis();
-            for(File f : wcsTemp.listFiles()) {
-                if(now - f.lastModified() > (expirationDelay * 1000)){
+            for(Resource f : wcs.list()) {
+                if(now - f.lastmodified() > (expirationDelay * 1000)){
                     f.delete();
                 }
             }

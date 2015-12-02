@@ -30,7 +30,7 @@ public abstract class ScriptProcessTestSupport extends ScriptIntTestSupport {
     }
 
     protected File copyScriptIfExists(String baseName) throws IOException {
-        File wps = scriptMgr.getWpsRoot();
+        File wps = scriptMgr.wps().dir();
         File directory;
         if (getNamespace().equals(getExtension())) {
             directory = wps;

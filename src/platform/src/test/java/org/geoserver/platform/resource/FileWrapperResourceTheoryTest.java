@@ -1,7 +1,6 @@
 package org.geoserver.platform.resource;
 
 import static org.junit.Assert.fail;
-import static org.junit.Assume.assumeFalse;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,15 +18,13 @@ public class FileWrapperResourceTheoryTest extends ResourceTheoryTest {
 
     @DataPoints
     public static String[] testPaths() {
-        return new String[] { "FileA", "FileB", "DirC/FileD", "UndefF",
+        return new String[] { "FileA", "FileB", "DirC", "DirE", "DirC/FileD", "UndefF",
                 "DirC/UndefF", "DirE/UndefF" };
     }
 
     @Override
-    protected Resource getResource(String path) throws Exception {
-        final File file = Paths.toFile(folder.getRoot(), path);
-        assumeFalse(file.isDirectory());
-        return Files.asResource(file);
+    protected Resource getResource(String path) throws Exception {        
+        return Files.asResource(path.startsWith("/") ? new File(path) : Paths.toFile(folder.getRoot(), path));
     }
 
     @Before
@@ -62,60 +59,6 @@ public class FileWrapperResourceTheoryTest extends ResourceTheoryTest {
     @Override
     protected Resource getUndefined() {
         return Files.asResource(new File(folder.getRoot(),"NonTestUndef"));
-    }
-
-    // Directories are not allowed for this class, so ignore the tests.
-    @Override @Ignore
-    public void theoryDirectoriesHaveNoIstreams(String path) throws Exception {
-        
-    }
-
-    @Override @Ignore
-    public void theoryDirectoriesHaveNoOstream(String path) throws Exception {
-        
-    }
-
-    @Override @Ignore
-    public void theoryDirectoriesHaveChildren(String path) throws Exception {
-        
-    }
-
-    @Override @Ignore
-    public void theoryChildrenKnowTheirParents(String path) throws Exception {
-        
-    }
-
-    @Override @Ignore
-    public void theoryParentsKnowTheirChildren(String path) throws Exception {
-        
-    }
-
-    @Override @Ignore
-    public void theoryParentIsDirectory(String path) throws Exception {
-        
-    }
-
-    @Override @Ignore
-    public void theoryHaveDir(String path) throws Exception {
-        
-    }
-
-    @Override @Ignore
-    public void theoryDirectoriesHaveFileWithSameNamedChildren(String path)
-            throws Exception {
-        
-    }
-
-    @Override @Ignore
-    public void theoryAddingFileToDirectoryAddsResource(String path)
-            throws Exception {
-        
-    }
-
-    @Override @Ignore
-    public void theoryRecursiveDelete(String path)
-            throws Exception {
-        
     }
     
     // paths for file wrapper are special so ignore this test

@@ -16,6 +16,8 @@ import org.apache.commons.io.IOCase;
 import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.resource.Files;
+import org.geoserver.platform.resource.Resource;
 import org.geotools.coverage.io.netcdf.cf.NetCDFCFParser;
 import org.geotools.imageio.netcdf.utilities.NetCDFUtilities;
 import org.geotools.util.logging.Logging;
@@ -33,7 +35,7 @@ public class NetCDFParserBean {
 
     private NetCDFCFParser parser;
 
-    public static File netcdfFile;
+    public static Resource netcdfFile;
 
     static {
         // Check if an external file has been defined
@@ -44,13 +46,13 @@ public class NetCDFParserBean {
             boolean valid = newFile.exists() && newFile.canRead() && newFile.isFile();
             // If the file is valid, use it has standard name table
             if (valid) {
-                netcdfFile = newFile;
+                netcdfFile = Files.asResource(newFile);
             }
         }
     }
 
     public NetCDFParserBean() {
-        File cfStandardTable = null;
+        Resource cfStandardTable = null;
         // Check if an external file has been defined
         if (netcdfFile != null) {
             cfStandardTable = netcdfFile;
@@ -66,7 +68,7 @@ public class NetCDFParserBean {
             File[] files = netCDFDir.listFiles(filter);
             // Getting the file if present
             if (files != null && files.length > 0) {
-                cfStandardTable = files[0];
+                cfStandardTable = Files.asResource(files[0]);
             }
         }
 
@@ -75,8 +77,8 @@ public class NetCDFParserBean {
             GeoServerDataDirectory datadir = GeoServerExtensions.bean(GeoServerDataDirectory.class);
             // Checking if the standard table is present
             try {
-                cfStandardTable = datadir.findFile(NETCDF_STANDARD_NAME);
-            } catch (IOException e) {
+                cfStandardTable = datadir.get(NETCDF_STANDARD_NAME);
+            } catch (IllegalStateException e) {
                 LOGGER.log(Level.SEVERE, e.getMessage(), e);
             }
         }
@@ -85,8 +87,10 @@ public class NetCDFParserBean {
         if (cfStandardTable != null) {
             NetCDFCFParser parser = null;
             try {
-                parser = NetCDFCFParser.unmarshallXml(cfStandardTable);
+                parser = NetCDFCFParser.unmarshallXml(cfStandardTable.file());
             } catch (JAXBException e) {
+                LOGGER.log(Level.SEVERE, e.getMessage(), e);
+            } catch (IllegalStateException e) {
                 LOGGER.log(Level.SEVERE, e.getMessage(), e);
             }
             // If so set it as global attribute

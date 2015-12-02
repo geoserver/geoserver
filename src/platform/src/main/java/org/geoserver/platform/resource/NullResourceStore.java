@@ -23,6 +23,8 @@ final class NullResourceStore implements ResourceStore {
     @Override
     public Resource get(final String resourcePath) {
         return new Resource() {
+            private static final long serialVersionUID = -8613315438546471004L;
+            
             String path = resourcePath;
 
             @Override

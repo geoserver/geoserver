@@ -23,6 +23,7 @@ import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Files;
 import org.geoserver.wps.validator.MaxSizeValidator;
 import org.geoserver.wps.validator.MultiplicityValidator;
 import org.geoserver.wps.validator.NumberRangeValidator;
@@ -118,7 +119,7 @@ public class WPSXStreamLoaderTest extends WPSTestSupport {
         wps.getProcessGroups().add(geoGroup);
         wps.getProcessGroups().add(rasGroup);
 
-        loader.save(wps, null, root);
+        loader.save(wps, null, Files.asResource(root));
 
         // check the xml
         String xml = FileUtils.readFileToString(new File(root, "wps.xml"));
@@ -147,7 +148,7 @@ public class WPSXStreamLoaderTest extends WPSTestSupport {
                 + "/validators/entry[@key='levels']/rangeValidator/range/maxValue", dom);
 
         // check unmarshalling
-        WPSInfo wps2 = loader.load(null, root);
+        WPSInfo wps2 = loader.load(null, Files.asResource(root));
         assertEquals(wps, wps2);
     }
 

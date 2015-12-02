@@ -5,10 +5,13 @@
  */
 package org.geoserver.cluster.impl.handlers;
 
-import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
-import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resources;
 import org.jdom.JDOMException;
 
 /**
@@ -20,14 +23,14 @@ import org.jdom.JDOMException;
  */
 public class DocumentFile {
 
-    private final File path;
+    private final Resource path;
 
     private final String body;
 
     /**
      * @return the path
      */
-    public final File getPath() {
+    public final Resource getPath() {
         return path;
     }
 
@@ -46,20 +49,22 @@ public class DocumentFile {
      * @throws JDOMException
      * @throws IOException
      */
-    public DocumentFile(File path, final String document) throws JDOMException, IOException {
-        if (!path.exists()) {
+    public DocumentFile(Resource path, final String document) throws JDOMException, IOException {
+        if (!Resources.exists(path)) {
             throw new IllegalArgumentException("Unable to locate the file path: \'" + path + "\'");
         }
         this.path = path;
         this.body = document;
     }
 
-    public DocumentFile(File path) throws JDOMException, IOException {
-        if (!path.exists()) {
+    public DocumentFile(Resource path) throws JDOMException, IOException {
+        if (!Resources.exists(path)) {
             throw new IllegalArgumentException("Unable to locate the file path: \'" + path + "\'");
         }
         this.path = path;
-        this.body = FileUtils.readFileToString(path);
+        try (InputStream in = path.in()) {
+            this.body = IOUtils.toString(in);
+        }
     }
 
     /**
@@ -69,7 +74,9 @@ public class DocumentFile {
      * @throws JDOMException
      * @throws IOException
      */
-    public void writeTo(File file) throws JDOMException, IOException {
-        FileUtils.writeStringToFile(file, body);
+    public void writeTo(Resource file) throws JDOMException, IOException {
+        try (OutputStream out = path.out()) {
+            IOUtils.write(body, out);
+        }
     }
 }

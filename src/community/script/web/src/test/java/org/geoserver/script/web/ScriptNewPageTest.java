@@ -61,7 +61,7 @@ public class ScriptNewPageTest extends GeoServerWicketTestSupport {
         tester.assertNoErrorMessage();
 
         ScriptManager scriptManager = GeoServerExtensions.bean(ScriptManager.class);
-        File file = new File(new File(scriptManager.getAppRoot(), "hello"), "main.js");
+        File file = new File(new File(scriptManager.app().dir(), "hello"), "main.js");
         assertTrue(file.exists());
 
         assertEquals("console.log('Hi');", FileUtils.readFileToString(file));

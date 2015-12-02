@@ -80,7 +80,7 @@ public class LoggingUtils {
                     Appender gslf = org.apache.log4j.Logger.getRootLogger().getAppender("geoserverlogfile");
                     if (gslf instanceof org.apache.log4j.FileAppender) {
                         if (logFileName == null ) {
-                            logFileName = new File(loader.findOrCreateDirectory("logs"),  "geoserver.log").getAbsolutePath();
+                            logFileName = loader.get("logs").get("geoserver.log").file().getAbsolutePath();
                         } else { 
                             if (!new File(logFileName).isAbsolute()) {
                                 logFileName = new File(loader.getBaseDirectory(), logFileName).getAbsolutePath();

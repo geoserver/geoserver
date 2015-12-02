@@ -14,6 +14,7 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptException;
 
 import org.geoserver.platform.FileWatcher;
+import org.geoserver.platform.resource.Resource;
 import org.geoserver.script.ScriptFileWatcher;
 import org.geoserver.script.ScriptManager;
 import org.geotools.data.Parameter;
@@ -51,7 +52,16 @@ public class ScriptProcess implements Process {
 
     /** the hook for interacting with the script */
     WpsHook hook;
+    
+    ScriptProcess(Name name, Resource script, ScriptManager scriptMgr) {
+        this.name = name;
+        this.scriptMgr = scriptMgr;
 
+        hook = scriptMgr.lookupWpsHook(script);
+        fw = new ScriptFileWatcher(script, scriptMgr);
+    }
+    
+    @Deprecated
     ScriptProcess(Name name, File script, ScriptManager scriptMgr) {
         this.name = name;
         this.scriptMgr = scriptMgr;

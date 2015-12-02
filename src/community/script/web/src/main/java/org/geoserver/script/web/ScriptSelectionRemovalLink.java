@@ -5,13 +5,13 @@
  */
 package org.geoserver.script.web;
 
-import java.io.File;
 import java.util.List;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.basic.Label;
+import org.geoserver.platform.resource.Resource;
 import org.geoserver.script.ScriptType;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.GeoServerTablePanel;
@@ -49,10 +49,10 @@ public class ScriptSelectionRemovalLink extends AjaxLink {
 
             protected boolean onSubmit(AjaxRequestTarget target, Component contents) {
                 for (Script script : selection) {
-                    File file = script.getFile();
+                    Resource file = script.getResource();
                     file.delete();
                     if (script.getType().equalsIgnoreCase(ScriptType.APP.getLabel())) {
-                        file.getParentFile().delete();
+                        file.parent().delete();
                     }
                 }
 

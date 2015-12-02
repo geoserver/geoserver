@@ -19,6 +19,7 @@ import javax.annotation.Nullable;
 import net.opengis.wfs.TransactionResponseType;
 import net.opengis.wfs.TransactionType;
 
+import org.geoserver.platform.resource.Resource;
 import org.geoserver.script.ScriptManager;
 import org.geoserver.wfs.TransactionEvent;
 import org.geoserver.wfs.TransactionEventType;
@@ -36,7 +37,7 @@ public class ScriptTransactionPlugin implements TransactionPlugin {
 
     ScriptManager scriptMgr;
 
-    SoftValueHashMap<File, ScriptTxDelegate> delegates = new SoftValueHashMap<File, ScriptTxDelegate>(); 
+    SoftValueHashMap<Resource, ScriptTxDelegate> delegates = new SoftValueHashMap<Resource, ScriptTxDelegate>(); 
 
     public ScriptTransactionPlugin(ScriptManager scriptMgr) {
         this.scriptMgr = scriptMgr;
@@ -124,23 +125,23 @@ public class ScriptTransactionPlugin implements TransactionPlugin {
     }
 
     Iterator<ScriptTxDelegate> delegates() {
-        List<File> files;
+        List<Resource> files;
         try {
-            files = Arrays.asList(scriptMgr.getWfsTxRoot().listFiles());
+            files = scriptMgr.wfsTx().list();
         } catch (IOException e) {
             LOGGER.log(Level.WARNING, "Error listing files in wfs/tx directory", e);
             return Iterators.emptyIterator();
         }
 
-        return Iterators.transform(files.iterator(), new Function<File, ScriptTxDelegate>() {
+        return Iterators.transform(files.iterator(), new Function<Resource, ScriptTxDelegate>() {
             @Override
-            public ScriptTxDelegate apply(@Nullable File input) {
+            public ScriptTxDelegate apply(@Nullable Resource input) {
                 return delegate(input);
             }
         }); 
     }
 
-    ScriptTxDelegate delegate(File f) {
+    ScriptTxDelegate delegate(Resource f) {
         ScriptTxDelegate delegate = delegates.get(f);
         if (delegate == null) {
             synchronized (this) {

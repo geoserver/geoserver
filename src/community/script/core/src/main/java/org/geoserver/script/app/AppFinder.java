@@ -7,10 +7,6 @@ package org.geoserver.script.app;
 
 import static java.lang.String.format;
 
-import java.io.File;
-import java.io.IOException;
-
-import org.apache.commons.io.FilenameUtils;
 import org.geoserver.rest.RestletException;
 import org.geoserver.script.ScriptManager;
 import org.geoserver.script.rest.FinderSupport;
@@ -41,10 +37,10 @@ public class AppFinder extends FinderSupport {
             return new AppListResource(scriptMgr, request, response);
         }
 
-        File appDir;
+        org.geoserver.platform.resource.Resource appDir;
         try {
-            appDir = scriptMgr.findAppDir(app);
-        } catch (IOException e) {
+            appDir = scriptMgr.app(app);
+        } catch (IllegalStateException e) {
             throw new RestletException(format("Error looking up app directory %s", app), 
                 Status.SERVER_ERROR_INTERNAL, e);
         }
@@ -54,7 +50,7 @@ public class AppFinder extends FinderSupport {
         }
 
         //look for main script
-        File main = scriptMgr.findAppMainScript(appDir);
+        org.geoserver.platform.resource.Resource main = scriptMgr.findAppMainScript(appDir);
         if (main == null) {
             throw new RestletException(format("No main file for app %s", app), Status.CLIENT_ERROR_NOT_FOUND);
         }

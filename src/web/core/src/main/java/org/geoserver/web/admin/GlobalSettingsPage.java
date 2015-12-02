@@ -40,6 +40,10 @@ import org.geoserver.config.SettingsInfo;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.LockProvider;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resource.Type;
+import org.geoserver.platform.resource.Resources;
+import org.geoserver.util.Filter;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.data.settings.SettingsPluginPanelInfo;
 import org.geoserver.web.wicket.LocalizedChoiceRenderer;
@@ -130,15 +134,18 @@ public class GlobalSettingsPage extends ServerAdminPage {
                 GeoServerResourceLoader.class);
         List<String> logProfiles = null;
         try {
-            File logsDirectory = loader.find("logs");
-            if(logsDirectory.exists() && logsDirectory.isDirectory()) {
-                String[] propFiles = logsDirectory.list(new FilenameFilter() {
-                    
-                    public boolean accept(File dir, String name) {
-                        return name.toLowerCase().endsWith("logging.properties");
+            Resource logsDirectory = loader.get("logs");
+            if(logsDirectory.getType() == Type.DIRECTORY) {
+                List<Resource> propFiles = Resources.list(logsDirectory, new Filter<Resource>() {
+                    @Override
+                    public boolean accept(Resource obj) {
+                        return obj.name().toLowerCase().endsWith("logging.properties");
                     }
                 });
-                logProfiles = Arrays.asList(propFiles);
+                logProfiles = new ArrayList<String>();
+                for (Resource res : propFiles) {
+                    logProfiles.add(res.name());
+                }
                 Collections.sort(logProfiles, String.CASE_INSENSITIVE_ORDER);
             }
         } catch (Exception e) {

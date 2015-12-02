@@ -7,7 +7,6 @@ package org.geoserver.security.impl;
 
 import static org.geoserver.security.impl.DataAccessRule.*;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,6 +21,7 @@ import java.util.logging.Logger;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.resource.Resource;
 import org.geoserver.security.AccessMode;
 import org.geoserver.security.CatalogMode;
 import org.geotools.util.logging.Logging;
@@ -73,7 +73,7 @@ public class DataAccessRuleDAO extends AbstractAccessRuleDAO<DataAccessRule> {
      * 
      * @param rawCatalog
      */
-    DataAccessRuleDAO(Catalog rawCatalog, File securityDir) {
+    DataAccessRuleDAO(Catalog rawCatalog, Resource securityDir) {
         super(securityDir, LAYERS);
         this.rawCatalog = rawCatalog;
     }

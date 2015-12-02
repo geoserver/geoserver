@@ -5,17 +5,15 @@
  */
 package org.geoserver.wps.ppio;
 
-import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.logging.Logger;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
+import org.geoserver.data.util.IOUtils;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.wps.RawDataEncoderDelegate;
 import org.geoserver.wps.process.AbstractRawData;
-import org.geoserver.wps.process.FileRawData;
+import org.geoserver.wps.process.ResourceRawData;
 import org.geoserver.wps.process.RawData;
 import org.geoserver.wps.process.StreamRawData;
 import org.geoserver.wps.resource.WPSResourceManager;
@@ -41,9 +39,8 @@ public class RawDataPPIO extends ComplexPPIO {
     public Object decode(InputStream input, String mimeType, boolean asynchronous) throws Exception {
         if (asynchronous) {
             Resource tmp = resourceManager.getTemporaryResource(".bin");
-            File file = tmp.file();
-            FileUtils.copyInputStreamToFile(input, file);
-            return new FileRawData(file, mimeType);
+            IOUtils.copy(input, tmp.out());
+            return new ResourceRawData(tmp, mimeType);
         } else {
             return new StreamRawData(mimeType, input);
         }

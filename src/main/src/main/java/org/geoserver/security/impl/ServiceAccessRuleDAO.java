@@ -7,7 +7,6 @@ package org.geoserver.security.impl;
 
 import static org.geoserver.security.impl.DataAccessRule.*;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Properties;
@@ -19,6 +18,7 @@ import java.util.logging.Logger;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.resource.Resource;
 import org.geotools.util.logging.Logging;
 
 /**
@@ -67,7 +67,7 @@ public class ServiceAccessRuleDAO extends AbstractAccessRuleDAO<ServiceAccessRul
      * 
      * @param rawCatalog
      */
-    ServiceAccessRuleDAO(Catalog rawCatalog, File securityDir) {
+    ServiceAccessRuleDAO(Catalog rawCatalog, Resource securityDir) {
         super(securityDir, SERVICES);
     }
 
@@ -167,7 +167,7 @@ public class ServiceAccessRuleDAO extends AbstractAccessRuleDAO<ServiceAccessRul
             if (rule.getRoles().contains(role))
                 result.add(rule);
         return result;
-    }               
+    }
 
 
 }

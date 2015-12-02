@@ -12,9 +12,9 @@ import java.io.OutputStream;
 import java.util.logging.Logger;
 
 import org.apache.commons.io.IOUtils;
-import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
+import org.geoserver.platform.resource.ResourceStore;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.factory.DisposableBean;
 
@@ -44,9 +44,9 @@ public class HazelcastLoader implements DisposableBean {
      * @param dd
      * @throws IOException
      */
-    public HazelcastLoader(GeoServerDataDirectory dd) throws IOException {
+    public HazelcastLoader(ResourceStore store) throws IOException {
         // see if we have the hazelcast configuration ready, otherwise create one from the classpath
-        Resource resource = dd.get(HAZELCAST_NAME);
+        Resource resource = store.get(HAZELCAST_NAME);
         if (resource.getType() == Type.UNDEFINED) {
             try (OutputStream os = resource.out();
                     InputStream is = HazelcastLoader.class.getResourceAsStream(HAZELCAST_NAME)) {

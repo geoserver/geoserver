@@ -6,8 +6,6 @@
 package org.geoserver.wps.gs.download;
 
 import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.logging.Level;
@@ -15,6 +13,7 @@ import java.util.logging.Logger;
 
 import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.platform.resource.Resource;
 import org.geoserver.wps.ppio.ComplexPPIO;
 import org.geoserver.wps.ppio.ProcessParameterIO;
 import org.geoserver.wps.resource.WPSResourceManager;
@@ -91,7 +90,7 @@ class VectorDownload {
      * @return a file, given the provided mime-type.
      * @throws Exception
      */
-    public File execute(FeatureTypeInfo resourceInfo, String mimeType, Geometry roi, boolean clip,
+    public Resource execute(FeatureTypeInfo resourceInfo, String mimeType, Geometry roi, boolean clip,
             Filter filter, CoordinateReferenceSystem targetCRS,
             final ProgressListener progressListener) throws Exception {
 
@@ -217,7 +216,7 @@ class VectorDownload {
      * @return a {@link File} containing the written features
      * @throws Exception
      */
-    private File writeVectorOutput(final SimpleFeatureCollection features, final String name,
+    private Resource writeVectorOutput(final SimpleFeatureCollection features, final String name,
             final String mimeType) throws Exception {
 
         if (LOGGER.isLoggable(Level.FINE)) {
@@ -258,7 +257,7 @@ class VectorDownload {
         if (LOGGER.isLoggable(Level.FINE)) {
             LOGGER.log(Level.FINE, "Writing file in a temporary folder");
         }
-        final File output = resourceManager.getTemporaryResource(extension).file();
+        final Resource output = resourceManager.getTemporaryResource(extension);
 
         // write checking limits
         OutputStream os = null;
@@ -266,7 +265,7 @@ class VectorDownload {
 
             // If limits are configured we must create an OutputStream that checks limits
             final BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(
-                    new FileOutputStream(output));
+                    output.out());
             if (limit > DownloadServiceConfiguration.NO_LIMIT) {
                 os = new LimitedOutputStream(bufferedOutputStream, limit) {
 

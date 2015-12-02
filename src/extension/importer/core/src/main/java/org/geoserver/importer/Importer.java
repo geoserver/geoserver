@@ -5,7 +5,6 @@
  */
 package org.geoserver.importer;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -53,6 +52,8 @@ import org.geoserver.importer.transform.TransformChain;
 import org.geoserver.importer.transform.VectorTransformChain;
 import org.geoserver.platform.ContextLoadedEvent;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.resource.Paths;
+import org.geoserver.platform.resource.Resource;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geotools.coverage.grid.io.HarvestedSource;
 import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
@@ -797,11 +798,11 @@ public class Importer implements DisposableBean, ApplicationListener {
                 if (context.getData() instanceof Directory) {
                     directory = (Directory) context.getData();
                 } else if ( context.getData() instanceof SpatialFile ) {
-                    directory = new Directory( ((SpatialFile) context.getData()).getFile().getParentFile() );
+                    directory = new Directory( ((SpatialFile) context.getData()).getFile().parent() );
                 }
                 if (directory != null) {
                     if (LOGGER.isLoggable(Level.FINE)) {
-                        LOGGER.fine("Archiving directory " + directory.getFile().getAbsolutePath());
+                        LOGGER.fine("Archiving directory " + directory.getFile().path());
                     }       
                     try {
                         directory.archive(getArchiveFile(context));
@@ -833,11 +834,11 @@ public class Importer implements DisposableBean, ApplicationListener {
 
     }
     
-    public File getArchiveFile(ImportContext context) throws IOException {
+    public Resource getArchiveFile(ImportContext context) throws IOException {
         //String archiveName = "import-" + task.getContext().getId() + "-" + task.getId() + "-" + task.getData().getName() + ".zip";
         String archiveName = "import-" + context.getId() + ".zip";
-        File dir = getCatalog().getResourceLoader().findOrCreateDirectory("uploads","archives");
-        return new File(dir, archiveName);
+        Resource dir = getCatalog().getResourceLoader().get(Paths.path("uploads", "archives"));
+        return dir.get(archiveName);
     }
     
     public void changed(ImportContext context) {
@@ -1088,7 +1089,7 @@ public class Importer implements DisposableBean, ApplicationListener {
             throws IOException {
         if (data instanceof SpatialFile) {
             SpatialFile sf = (SpatialFile) data;
-            List<HarvestedSource> harvests = sr.harvest(null, sf.getFile(),
+            List<HarvestedSource> harvests = sr.harvest(null, sf.getFile().file(),
                     null);
             checkSingleHarvest(harvests);
         } else if (data instanceof Directory) {
@@ -1473,21 +1474,12 @@ public class Importer implements DisposableBean, ApplicationListener {
     }
 
     //file location methods
-    public File getImportRoot() {
-        try {
-            return catalog.getResourceLoader().findOrCreateDirectory("imports");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    public Resource getImportRoot() {
+        return catalog.getResourceLoader().get("imports");
     }
 
-    public File getUploadRoot() {
-        try {
-            return catalog.getResourceLoader().findOrCreateDirectory("uploads");
-        }
-        catch(IOException e) {
-            throw new RuntimeException(e);
-        }
+    public Resource getUploadRoot() {
+        return catalog.getResourceLoader().get("uploads");
     }
 
     public void destroy() throws Exception {
@@ -1568,11 +1560,12 @@ public class Importer implements DisposableBean, ApplicationListener {
                 securityManager));
         
         // security
-        xs.allowTypes(new Class[] { ImportContext.class, ImportTask.class, File.class });
+        xs.allowTypes(new Class[] { ImportContext.class, ImportTask.class });
         xs.allowTypeHierarchy(TransformChain.class);
         xs.allowTypeHierarchy(DataFormat.class);
         xs.allowTypeHierarchy(ImportData.class);
         xs.allowTypeHierarchy(ImportTransform.class);
+        xs.allowTypeHierarchy(Resource.class);
 
         return xp;
     }

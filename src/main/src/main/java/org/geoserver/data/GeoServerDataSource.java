@@ -5,15 +5,16 @@
  */
 package org.geoserver.data;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Properties;
 
 import org.apache.commons.dbcp.BasicDataSource;
 import org.geoserver.config.GeoServerDataDirectory;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resource.Type;
 
 /**
  * A datasource that is user configurable via properties file stored in the 
@@ -74,16 +75,12 @@ public class GeoServerDataSource extends BasicDataSource {
 
     void initializeDataSource() {
         try {
-            File dbprops = new File(dataDirectory.root(), file);
+            Resource dbprops = dataDirectory.get(file);
             
             Properties db = new Properties();
-            if (!dbprops.exists()) {
-                if (dbprops.getParentFile().exists()) {
-                    dbprops.getParentFile().mkdirs();
-                }
-                
+            if (dbprops.getType() != Type.RESOURCE) {
                 //use the default parameters and save them out
-                FileOutputStream fout = new FileOutputStream(dbprops);
+                OutputStream fout = dbprops.out();
                 try {
                     defaultParameters.store(fout, null);
                 } 
@@ -93,7 +90,7 @@ public class GeoServerDataSource extends BasicDataSource {
                 db.putAll(defaultParameters);
             }
             else {
-                FileInputStream in = new FileInputStream(dbprops);
+                InputStream in = dbprops.in();
                 db.load(in);
                 in.close();
             }

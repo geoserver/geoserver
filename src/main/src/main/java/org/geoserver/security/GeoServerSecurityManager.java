@@ -7,16 +7,12 @@ package org.geoserver.security;
 
 import static org.geoserver.data.util.IOUtils.xStreamPersist;
 
+import java.io.File;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileFilter;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
@@ -51,7 +47,6 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.StoreInfo;
@@ -342,9 +337,9 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
         if (event instanceof ContextLoadedEvent) {
             
             try {
-                File masterPasswordInfo = new File(getSecurityRoot(), MASTER_PASSWD_INFO_FILENAME);
-                if (masterPasswordInfo.exists()) {
-                    LOGGER.warning(masterPasswordInfo.getCanonicalPath()+" is a security risk. Please read this file and remove it afterward");
+                Resource masterPasswordInfo = security().get(MASTER_PASSWD_INFO_FILENAME);
+                if (masterPasswordInfo.getType() != Type.UNDEFINED) {
+                    LOGGER.warning(masterPasswordInfo.path() + " is a security risk. Please read this file and remove it afterward");
                 }
             } catch (Exception e1) {
                 throw new RuntimeException(e1);
@@ -754,8 +749,7 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
      * @deprecated Use {@link #secuirtyRoot()}
      */
     public File getSecurityRoot() throws IOException {
-        Resource directory = get("security");
-        return directory.dir();
+        return get("security").dir();
     }
 
     /**
@@ -771,8 +765,7 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
      * @deprecated Use {@link #role()}
      */
     public File getRoleRoot() throws IOException {
-        Resource directory = get("security/role");
-        return directory.dir();
+        return get("security/role").dir();
     }
 
     /**
@@ -815,8 +808,7 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
      * @deprecated Use {@link #userGroup()}
      */
     public File getUserGroupRoot() throws IOException {
-        Resource directory = get("security/usergroup");
-        return directory.dir();
+        return get("security/usergroup").dir();
     }
 
     /**
@@ -831,8 +823,7 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
      * @deprecated use {@link #auth()}
      */
     public File getAuthRoot() throws IOException {
-        Resource directory = get("security/auth");
-        return directory.dir();
+        return get("security/auth").dir();
     }
 
     /**
@@ -847,8 +838,7 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
      * @deprecated Use {@link #auth()}
      */
     public File getFilterRoot() throws IOException {
-        Resource directory = get("security/filter");
-        return directory.dir();
+        return get("security/filter").dir();
     }
 
     /**
@@ -862,15 +852,14 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
      * @deprecated Use {@link #masterPasswordProvider()}
      */
     public File getMasterPasswordProviderRoot() throws IOException {
-        Resource resource = get("security/masterpw");
-        return resource.dir();
+        return get("security/masterpw").dir();
     }
 
     /**
      * Lists all available role service configurations.
      */
     public SortedSet<String> listRoleServices() throws IOException {
-        return listFiles(getRoleRoot());
+        return listFiles(role());
     }
 
     /**
@@ -1226,14 +1215,14 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
      * Lists all available user group service configurations.
      */
     public SortedSet<String> listUserGroupServices() throws IOException {
-        return listFiles(getUserGroupRoot());
+        return listFiles(userGroup());
     }
     
     /**
      * Lists all available password Validators.
      */
     public SortedSet<String> listPasswordValidators() throws IOException {
-        return listFiles(getPasswordPolicyRoot());
+        return listFiles(passwordPolicy());
     }
 
     /**
@@ -1357,7 +1346,7 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
      * Lists all available authentication provider configurations.
      */
     public SortedSet<String> listAuthenticationProviders() throws IOException {
-        return listFiles(getAuthRoot());
+        return listFiles(auth());
     }
 
     /**
@@ -1496,7 +1485,7 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
      * Lists all available filter configurations.
      */
     public SortedSet<String> listFilters() throws IOException {
-        return listFiles(getFilterRoot());
+        return listFiles(filterRoot());
     }
 
     /**
@@ -1654,7 +1643,7 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
             }
 
             //save out new configuration
-            xStreamPersist(new File(getSecurityRoot(), CONFIG_FILENAME), config, globalPersister());
+            xStreamPersist(security().get(CONFIG_FILENAME), config, globalPersister());
         }
         catch(IOException e) {
             //exception, revert back to known working config
@@ -1759,7 +1748,7 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
      * Saves master password config out directly, not during a password change.
      */
     public void saveMasterPasswordConfig(MasterPasswordConfig config) throws IOException {
-        xStreamPersist(new File(getSecurityRoot(), MASTER_PASSWD_CONFIG_FILENAME), 
+        xStreamPersist(security().get(MASTER_PASSWD_CONFIG_FILENAME), 
                 config, globalPersister());
         this.masterPasswordConfig = new MasterPasswordConfig(config);
     }
@@ -1795,9 +1784,9 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
 
     String loadMasterPasswordDigest() throws IOException {
         //look for file
-        File pwDigestFile = new File(getSecurityRoot(),MASTER_PASSWD_DIGEST_FILENAME);
-        if (pwDigestFile.exists()) {
-            FileInputStream fin = new FileInputStream(pwDigestFile);
+        Resource pwDigestFile = security().get(MASTER_PASSWD_DIGEST_FILENAME);
+        if (pwDigestFile.getType() == Type.RESOURCE) {
+            InputStream fin = pwDigestFile.in();
             try {
                 return IOUtils.toString(fin);
             }
@@ -1818,8 +1807,7 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
     }
 
     void saveMasterPasswordDigest(String masterPasswdDigest) throws IOException {
-        FileOutputStream fout = 
-            new FileOutputStream(new File(getSecurityRoot(),MASTER_PASSWD_DIGEST_FILENAME));
+        OutputStream fout = security().get(MASTER_PASSWD_DIGEST_FILENAME).out();
         try {
             IOUtils.write(masterPasswdDigest, fout);
         }
@@ -1967,7 +1955,7 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
      * Lists all available master password provider configurations.
      */
     public SortedSet<String> listMasterPasswordProviders() throws IOException {
-        return listFiles(getMasterPasswordProviderRoot());
+        return listFiles(masterPasswordProvider());
     }
 
     void fireChanged() {
@@ -2030,7 +2018,7 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
         }
         
         String message = null;
-        File info = new File(getSecurityRoot(),MASTER_PASSWD_INFO_FILENAME);
+        Resource info = security().get(MASTER_PASSWD_INFO_FILENAME);
         char[] masterPasswordArray=null;
         if (masterPW!=null) {
             message="Master password is identical to the password of user: "+username;
@@ -2042,7 +2030,7 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
             writeMasterPasswordInfo(info,message,masterPasswordArray);
         }                                
         
-        LOGGER.info("Information regarding the master password is in: "+ info.getCanonicalPath());        
+        LOGGER.info("Information regarding the master password is in: "+ info.path());        
         return masterPasswordArray;
     }
 
@@ -2054,23 +2042,36 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
      * @param masterPasswordArray
      * @throws IOException
      */
-    void writeMasterPasswordInfo(File file,String message,char[] masterPasswordArray) throws IOException {
-        BufferedWriter w = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file)));
-        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");                
-        w.write("This file was created at "+dateFormat.format(new Date()));
-        w.newLine();
-        w.newLine();
-        w.write(message);
-        if (masterPasswordArray!=null) 
-            w.write(masterPasswordArray);
-        w.newLine();
-        w.newLine();
-        w.write("Test the master password by logging in as user \"root\"");
-        w.newLine();
-        w.newLine();
-        w.write("This file should be removed after reading !!!.");
-        w.newLine();
-        w.close();        
+    void writeMasterPasswordInfo(Resource file, String message, char[] masterPasswordArray) throws IOException {
+        try (BufferedWriter w = new BufferedWriter(new OutputStreamWriter(file.out()))) {
+            DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+            w.write("This file was created at " + dateFormat.format(new Date()));
+            w.newLine();
+            w.newLine();
+            w.write(message);
+            if (masterPasswordArray != null) {
+                w.write(masterPasswordArray);
+            }
+            w.newLine();
+            w.newLine();
+            w.write("Test the master password by logging in as user \"root\"");
+            w.newLine();
+            w.newLine();
+            w.write("This file should be removed after reading !!!.");
+            w.newLine();
+        }
+    }
+    
+    /**
+     * 
+     * @param file
+     * @return
+     * @throws IOException
+     * 
+     * @deprecated Use {@link #dumpMasterPassword(Resource)}
+     */
+    public boolean dumpMasterPassword(File file) throws IOException {
+        return dumpMasterPassword(Files.asResource(file));
     }
     
     /**
@@ -2088,7 +2089,7 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
      * @return
      * @throws IOException
      */
-    public boolean dumpMasterPassword(File file) throws IOException {
+    public boolean dumpMasterPassword(Resource file) throws IOException {
         
                 
         if (checkAuthenticationForAdminRole()==false) {
@@ -2194,10 +2195,10 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
      */
     boolean migrateFrom21() throws Exception{
         
-        if (getRoleRoot(false) != null) {
-            File oldUserFile = new File(getSecurityRoot(), "users.properties.old");
-            if (oldUserFile.exists()) {
-                LOGGER.warning(oldUserFile.getCanonicalPath()+" could be removed manually");
+        if (role().getType() != Type.UNDEFINED) {
+            Resource oldUserFile = security().get("users.properties.old");
+            if (oldUserFile.getType() != Type.UNDEFINED) {
+                LOGGER.warning(oldUserFile.path() + " could be removed manually");
             }
             return false; // already migrated
         }
@@ -2205,12 +2206,12 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
         LOGGER.info("Start security migration");
         
         //create required directories
-        getRoleRoot();
-        getUserGroupRoot();
-        getAuthRoot();
-        getPasswordPolicyRoot();
-        getFilterRoot();
-        getMasterPasswordProviderRoot();
+        get("security/role").dir();
+        get("security/usergroup").dir();
+        get("security/auth").dir();
+        get("security/pwpolicy").dir();
+        get("security/filter").dir();
+        get("security/masterpw").dir();
 
         //master password configuration
         MasterPasswordProviderConfig mpProviderConfig = loadMasterPassswordProviderConfig("default"); 
@@ -2227,9 +2228,9 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
             //save out the default master password
             MasterPasswordProvider mpProvider = 
                 loadMasterPasswordProvider(mpProviderConfig.getName());
-            File propFile = new File(getSecurityRoot(), "users.properties");
+            Resource propFile = security().get("users.properties");
             Properties userprops=null;
-            if (propFile.exists())                  
+            if (propFile.getType() == Type.RESOURCE)                  
                 userprops = Util.loadPropertyFile(propFile);            
             mpProvider.setMasterPassword(extractMasterPasswordForMigration(userprops));
         }
@@ -2239,10 +2240,11 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
         saveMasterPasswordConfig(mpConfig);
 
         // check for services.properties, create if necessary
-        File serviceFile = new File(getSecurityRoot(), "services.properties");
-        if (serviceFile.exists()==false) {
-            FileUtils.copyURLToFile(Util.class.getResource("serviceTemplate.properties"),
-                    serviceFile);
+        Resource serviceFile = security().get("services.properties");
+        if (serviceFile.getType() == Type.UNDEFINED) {
+            org.geoserver.data.util.IOUtils.copy(
+                    Util.class.getResourceAsStream("serviceTemplate.properties"),
+                    serviceFile.out());
         }
 
         long checkInterval = 10000; // 10 secs
@@ -2466,8 +2468,8 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
         GeoServerRoleStore roleStore = roleService.createStore();
 
         //migrate from users.properties
-        File usersFile = new File(getSecurityRoot(), "users.properties");
-        if (usersFile.exists()) {
+        Resource usersFile = security().get("users.properties");
+        if (usersFile.getType() == Type.RESOURCE) {
             //load user.properties populate the services 
             Properties props = Util.loadPropertyFile(usersFile);
 
@@ -2517,46 +2519,51 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
         // replace all occurrences of ROLE_ADMINISTRATOR  in the property files
         // TODO Justin, a little bit brute force, is this ok ?
         for (String filename : new String[]{"services.properties","layers.properties","rest.properties"}) {
-            File file = new File(getSecurityRoot(), filename);
-            if (file.exists()==false) continue;
-            List<String> lines = new ArrayList<String>();
-            BufferedReader reader = new BufferedReader(new FileReader(file));
-            String line;
-            while ((line = reader.readLine()) != null)
-            	lines.add(line.replace(GeoServerRole.ADMIN_ROLE.getAuthority(), XMLRoleService.DEFAULT_LOCAL_ADMIN_ROLE));
-            reader.close();
-            PrintWriter writer = new PrintWriter(new FileWriter(file));
-            for (String s : lines) {
-            	writer.println(s);
+            Resource file = security().get(filename);
+            if (file.getType() == Type.UNDEFINED) {
+                continue;
             }
-            writer.close();
+            List<String> lines = new ArrayList<String>();
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(file.in()))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                	lines.add(line.replace(GeoServerRole.ADMIN_ROLE.getAuthority(), 
+                	        XMLRoleService.DEFAULT_LOCAL_ADMIN_ROLE));
+                }
+                try (PrintWriter writer = new PrintWriter(new OutputStreamWriter(file.out()))) {
+                    for (String s : lines) {
+                            writer.println(s);
+                    }
+                }             
+            }            
         }
                                 
 
         // check for roles in services.properties but not in user.properties 
-        serviceFile = new File(getSecurityRoot(), "services.properties");
-        if (serviceFile.exists()) {
+        serviceFile = security().get("services.properties");
+        if (serviceFile.getType() != Type.UNDEFINED) {
             Properties props = Util.loadPropertyFile(serviceFile);
             for (Entry<Object,Object> entry: props.entrySet()) {
-                StringTokenizer tokenizer = new StringTokenizer((String)entry.getValue(),",");
+                StringTokenizer tokenizer = new StringTokenizer((String)entry.getValue(), ",");
                 while (tokenizer.hasMoreTokens()) {
                     String roleName = tokenizer.nextToken().trim();
                     if (roleName.length()>0) {
-                        if (roleStore.getRoleByName(roleName)==null)
+                        if (roleStore.getRoleByName(roleName) == null) {
                             roleStore.addRole(roleStore.createRoleObject(roleName));
+                        }
                     }
                 }
             }
         }
 
         // check for  roles in data.properties but not in user.properties
-        File dataFile = new File(getSecurityRoot(), "layers.properties");
-        if (dataFile.exists()) {
+        Resource dataFile = security().get("layers.properties");
+        if (dataFile.getType() == Type.RESOURCE) {
             Properties props = Util.loadPropertyFile(dataFile);
             for (Entry<Object,Object> entry: props.entrySet()) {
                 if ("mode".equals(entry.getKey().toString()))
                     continue; // skip mode directive
-                StringTokenizer tokenizer = new StringTokenizer((String)entry.getValue(),",");
+                StringTokenizer tokenizer = new StringTokenizer((String)entry.getValue(), ",");
                 while (tokenizer.hasMoreTokens()) {
                     String roleName = tokenizer.nextToken().trim();
                     if (roleName.length()>0 && roleName.equals("*")==false) {
@@ -2573,11 +2580,11 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
         userGroupStore.store();
         
         // first part of migration finished, rename old file
-        if (usersFile.exists()) {
-            File oldUserFile = new File(usersFile.getCanonicalPath()+".old");
+        if (usersFile.getType() != Type.UNDEFINED) {
+            Resource oldUserFile = dataDir.get(usersFile.path() + ".old");
             usersFile.renameTo(oldUserFile);
-            LOGGER.info("Renamed "+usersFile.getCanonicalPath() + " to " +
-                    oldUserFile.getCanonicalPath());
+            LOGGER.info("Renamed " + usersFile.path() + " to " +
+                    oldUserFile.path());
         }
                         
         LOGGER.info("End security migration");
@@ -2596,15 +2603,15 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
         String filterName =GeoServerSecurityFilterChain.ROLE_FILTER;
         GeoServerSecurityFilter filter = loadFilter(filterName);
         
-        File logoutFilterDir = new File(getFilterRoot(),GeoServerSecurityFilterChain.FORM_LOGOUT_FILTER);
-        File oldLogoutFilterConfig = new File(logoutFilterDir,"config.xml.2.2.x");
-        File oldSecManagerConfig = new File(getSecurityRoot(), "config.xml.2.2.x");
+        Resource logoutFilterDir = filterRoot().get(GeoServerSecurityFilterChain.FORM_LOGOUT_FILTER);
+        Resource oldLogoutFilterConfig = logoutFilterDir.get("config.xml.2.2.x");
+        Resource oldSecManagerConfig = security().get("config.xml.2.2.x");
         
         if (filter!=null) {            
-            if (oldLogoutFilterConfig.exists())
-                LOGGER.warning(oldLogoutFilterConfig.getCanonicalPath()+" could be removed manually");
-            if (oldSecManagerConfig.exists()) 
-                LOGGER.warning(oldSecManagerConfig.getCanonicalPath()+" could be removed manually");                
+            if (oldLogoutFilterConfig.getType() == Type.RESOURCE)
+                LOGGER.warning(oldLogoutFilterConfig.path()+" could be removed manually");
+            if (oldSecManagerConfig.getType() == Type.RESOURCE) 
+                LOGGER.warning(oldSecManagerConfig.path()+" could be removed manually");                
             return false; // already migrated
         }
         
@@ -2624,14 +2631,16 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
         saveFilter(sslConfig);
             
         // set redirect url after successful logout
-        if (migratedFrom21== false)
-            FileUtils.copyFile(new File(logoutFilterDir,"config.xml"), oldLogoutFilterConfig);
+        if (!migratedFrom21)
+            org.geoserver.data.util.IOUtils.copy(logoutFilterDir.get("config.xml").in(), 
+                    oldLogoutFilterConfig.out());
         LogoutFilterConfig loConfig = (LogoutFilterConfig) loadFilterConfig(GeoServerSecurityFilterChain.FORM_LOGOUT_FILTER);
         loConfig.setRedirectURL(GeoServerLogoutFilter.URL_AFTER_LOGOUT);
         saveFilter(loConfig);
         
-        if (migratedFrom21== false)
-            FileUtils.copyFile(new File(getSecurityRoot(), "config.xml"), oldSecManagerConfig);
+        if (!migratedFrom21)
+            org.geoserver.data.util.IOUtils.copy(security().get("config.xml").in(), 
+                    oldSecManagerConfig.out());
         SecurityManagerConfig config = loadSecurityConfig();
         for (RequestFilterChain chain : config.getFilterChain().getRequestChains()) {
             if (chain.getFilterNames().contains(GeoServerSecurityFilterChain.SECURITY_CONTEXT_ASC_FILTER)) {
@@ -2671,7 +2680,7 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
         // load and store all filter configuration
         // some filter configurations may have their class name as top level xml element in config.xml,
         // the alias should be used instead, this was bug fixed during GSIP 82
-        if (migratedFrom21== false) {
+        if (!migratedFrom21) {
             for (String fName : listFilters()) {
                 SecurityFilterConfig fConfig = loadFilterConfig(fName );
                 if (fConfig!=null) 
@@ -2749,16 +2758,14 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
     /*
      * list files in a directory.
      */
-    SortedSet<String> listFiles(File dir) {
+    SortedSet<String> listFiles(Resource dir) {
         SortedSet<String> result = new TreeSet<String>();
-        File[] dirs = dir.listFiles(new FileFilter() {
-            @Override
-            public boolean accept(File pathname) {
-                return pathname.isDirectory() && new File(pathname, CONFIG_FILENAME).exists();
+        List<Resource> dirs = dir.list();
+        for (Resource d : dirs) {
+            if (d.getType() == Type.DIRECTORY && 
+                    d.get(CONFIG_FILENAME).getType() == Type.RESOURCE) {
+                result.add(d.name());
             }
-        });
-        for (File d : dirs) {
-            result.add(d.getName());
         }
         return result;
     }
@@ -2811,7 +2818,7 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
      * loads the global security config
      */
     public SecurityManagerConfig loadSecurityConfig() throws IOException {
-        return (SecurityManagerConfig) loadConfigFile(getSecurityRoot(), globalPersister());
+        return (SecurityManagerConfig) loadConfigFile(security(), globalPersister());
     }
 
     /*
@@ -2838,9 +2845,9 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
     /**
      * reads a config file from the specified directly using the specified xstream persister
      */
-    SecurityConfig loadConfigFile(File directory, String filename, XStreamPersister xp) 
+    SecurityConfig loadConfigFile(Resource directory, String filename, XStreamPersister xp) 
         throws IOException {
-        FileInputStream fin = new FileInputStream(new File(directory, filename));
+        InputStream fin = directory.get(filename).in();
         try {
             return xp.load(fin, SecurityConfig.class);
         }
@@ -2853,23 +2860,23 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
      * reads a file named {@value #CONFIG_FILE_NAME} from the specified directly using the specified
      * xstream persister
      */
-    SecurityConfig loadConfigFile(File directory, XStreamPersister xp) throws IOException {
+    SecurityConfig loadConfigFile(Resource directory, XStreamPersister xp) throws IOException {
         return loadConfigFile(directory, CONFIG_FILENAME, xp);
     }
 
     /**
      * saves a config file to the specified directly using the specified xstream persister
      */
-    void saveConfigFile(SecurityConfig config, File directory, String filename, XStreamPersister xp) 
+    void saveConfigFile(SecurityConfig config, Resource directory, String filename, XStreamPersister xp) 
         throws IOException {
-        xStreamPersist(new File(directory, filename), config, xp);
+        xStreamPersist(directory.get(filename), config, xp);
     }
 
     /**
      * saves a file named {@value #CONFIG_FILE_NAME} from the specified directly using the specified xstream 
      * persister
      */
-    void saveConfigFile(SecurityConfig config, File directory, XStreamPersister xp) 
+    void saveConfigFile(SecurityConfig config, Resource directory, XStreamPersister xp) 
             throws IOException {
 
         saveConfigFile(config, directory, CONFIG_FILENAME, xp);
@@ -2889,8 +2896,8 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
          * loads the named entity config from persistence
          */
         public C loadConfig(String name, MigrationHelper migrationHelper) throws IOException {
-            File dir = new File(getRoot(), name);
-            if (!dir.exists()) {
+            Resource dir = getRoot().get(name);
+            if (dir.getType() != Type.DIRECTORY) {
                 return null;
             }
 
@@ -2913,8 +2920,7 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
          * saves the user group service config to persistence
          */
         public void saveConfig(SecurityNamedServiceConfig config) throws IOException {
-            File dir = new File(getRoot(), config.getName());
-            dir.mkdir();
+            Resource dir = getRoot().get(config.getName());
 
             boolean isNew = config.getId() == null;
             if (isNew) {
@@ -2943,7 +2949,7 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
          * removes the user group service config from persistence
          */
         public void removeConfig(String name) throws IOException {
-            FileUtils.deleteDirectory(new File(getRoot(), name));
+            getRoot().get(name).delete();        
         }
 
         public void destroy() {
@@ -2955,7 +2961,7 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
         /**
          * config root
          */
-        protected abstract File getRoot() throws IOException;
+        protected abstract Resource getRoot() throws IOException;
     }
     class UserGroupServiceHelper extends HelperBase<GeoServerUserGroupService,SecurityUserGroupServiceConfig> {
         public GeoServerUserGroupService load(String name) throws IOException {
@@ -3017,8 +3023,8 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
         }
         
         @Override
-        protected File getRoot() throws IOException {
-            return getUserGroupRoot();
+        protected Resource getRoot() throws IOException {
+            return userGroup();
         }
     }
 
@@ -3090,8 +3096,8 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
         }
 
         @Override
-        protected File getRoot() throws IOException {
-            return getRoleRoot();
+        protected Resource getRoot() throws IOException {
+            return role();
         }
     }
 
@@ -3150,8 +3156,8 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
        }
 
        @Override
-       protected File getRoot() throws IOException {
-           return getPasswordPolicyRoot();
+       protected Resource getRoot() throws IOException {
+           return passwordPolicy();
        }
    }
 
@@ -3194,8 +3200,8 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
         }
 
         @Override
-        protected File getRoot() throws IOException {
-            return getMasterPasswordProviderRoot();
+        protected Resource getRoot() throws IOException {
+            return masterPasswordProvider();
         }
     
     }
@@ -3359,8 +3365,8 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
         }
 
         @Override
-        protected File getRoot() throws IOException {
-             return getAuthRoot();
+        protected Resource getRoot() throws IOException {
+             return auth();
         }
     }
 
@@ -3401,8 +3407,8 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
         }
 
         @Override
-        protected File getRoot() throws IOException {
-            return getFilterRoot();
+        protected Resource getRoot() throws IOException {
+            return filterRoot();
         }
     }
 

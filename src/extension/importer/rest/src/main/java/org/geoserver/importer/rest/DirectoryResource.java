@@ -180,7 +180,7 @@ public class DirectoryResource extends BaseResource {
                 return Iterators.find(dir.getFiles().iterator(), new Predicate<FileData>() {
                     @Override
                     public boolean apply(FileData input) {
-                        return input.getFile().getName().equals(file);
+                        return input.getFile().name().equals(file);
                     }
                 });
             }

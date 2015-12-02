@@ -74,11 +74,10 @@ public class XMLSecurityConfigValidator extends SecurityConfigValidator {
         XMLRoleServiceConfig xmlConfig = (XMLRoleServiceConfig) config;
         File file = new File(xmlConfig.getFileName());                
         // check if if file name is absolute and not in standard role directory
-        try {
-            
+        try {            
             if (file.isAbsolute() && 
-                file.getCanonicalPath().startsWith(
-                        new File(manager.getRoleRoot(),config.getName()).getCanonicalPath()+File.separator)==false)
+                !file.getCanonicalPath().startsWith(
+                        manager.role().get(config.getName()).dir().getCanonicalPath()+File.separator))
                 return;
             // file in security sub dir, check if roles exists
             if (manager.loadRoleService(config.getName()).getRoleCount()>0) {
@@ -107,8 +106,8 @@ public class XMLSecurityConfigValidator extends SecurityConfigValidator {
         try {
             
             if (file.isAbsolute() && 
-                file.getCanonicalPath().startsWith(
-                        new File(manager.getUserGroupRoot(),config.getName()).getCanonicalPath()+File.separator)==false)
+                !file.getCanonicalPath().startsWith(
+                        manager.userGroup().get(config.getName()).file().getCanonicalPath()+File.separator))
                 return;
             // file in security sub dir, check if roles exists
             GeoServerUserGroupService service = manager.loadUserGroupService(config.getName()); 

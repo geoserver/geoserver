@@ -5,9 +5,6 @@
  */
 package org.geoserver.security.config;
 
-import java.io.File;
-import org.geoserver.security.file.FileWatcher;
-
 /**
  * Security service configuration object that is persisted in a file.
  * 

@@ -149,6 +149,8 @@ public class FileSystemResourceStore implements ResourceStore {
      * This implementation is a stateless data object, acting as a simple handle around a File.
      */
     class FileSystemResource implements Resource {
+        private static final long serialVersionUID = 5824101017129479435L;
+
         String path;
 
         File file;

@@ -90,7 +90,7 @@ public class AccessManagerConfigTest extends GeoServerTestSupport {
         manager.setConfiguration(config);
         manager.storeConfiguration();
 
-        File configFile = configurer.getConfigFile();
+        File configFile = configurer.getConfigFile().file();
         LOGGER.info("Config file is " + configFile);
 
         String content = GeofenceTestUtils.readConfig(configFile);

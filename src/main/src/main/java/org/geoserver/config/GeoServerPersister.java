@@ -379,7 +379,6 @@ public class GeoServerPersister implements CatalogListener, ConfigurationListene
     private void addWorkspace( WorkspaceInfo ws ) throws IOException {
         LOGGER.fine( "Persisting workspace " + ws.getName() );
         Resource xml = dd.config(ws);
-        ensureParent(xml);
         persist( ws, xml );
     }
     
@@ -405,14 +404,12 @@ public class GeoServerPersister implements CatalogListener, ConfigurationListene
     private void addNamespace( NamespaceInfo ns ) throws IOException {
         LOGGER.fine( "Persisting namespace " + ns.getPrefix() );
         Resource xml = dd.config(ns);
-        ensureParent(xml);
         persist( ns, xml );
     }
     
     private void modifyNamespace( NamespaceInfo ns) throws IOException {
         LOGGER.fine( "Persisting namespace " + ns.getPrefix() );
         Resource xml = dd.config(ns);
-        ensureParent(xml);
         persist( ns, xml );
     }
     
@@ -426,7 +423,6 @@ public class GeoServerPersister implements CatalogListener, ConfigurationListene
     private void addDataStore( DataStoreInfo ds ) throws IOException {
         LOGGER.fine( "Persisting datastore " + ds.getName() );
         Resource xml = dd.config(ds);
-        ensureParent(xml);
         persist( ds, xml );
     }
     
@@ -452,7 +448,6 @@ public class GeoServerPersister implements CatalogListener, ConfigurationListene
     private void addFeatureType( FeatureTypeInfo ft ) throws IOException {
         LOGGER.fine( "Persisting feature type " + ft.getName() );
         Resource xml = dd.config(ft);
-        ensureParent(xml);
         persist( ft, xml );
     }
     
@@ -478,7 +473,6 @@ public class GeoServerPersister implements CatalogListener, ConfigurationListene
     private void addCoverageStore( CoverageStoreInfo cs ) throws IOException {
         LOGGER.fine( "Persisting coverage store " + cs.getName() );
         Resource xml = dd.config(cs);
-        ensureParent(xml);
         persist( cs, xml );
     }
     
@@ -498,7 +492,6 @@ public class GeoServerPersister implements CatalogListener, ConfigurationListene
     private void addCoverage( CoverageInfo c ) throws IOException {
         LOGGER.fine( "Persisting coverage " + c.getName() );
         Resource xml = dd.config(c);
-        ensureParent(xml);
         persist( c, xml );
     }
     
@@ -518,7 +511,6 @@ public class GeoServerPersister implements CatalogListener, ConfigurationListene
     private void addWMSStore( WMSStoreInfo wmss ) throws IOException {
         LOGGER.fine( "Persisting wms store " + wmss.getName() );
         Resource xml = dd.config(wmss);
-        ensureParent(xml);
         persist(wmss, xml);
     }
     
@@ -538,7 +530,6 @@ public class GeoServerPersister implements CatalogListener, ConfigurationListene
     private void addWMSLayer( WMSLayerInfo wms ) throws IOException {
         LOGGER.fine( "Persisting wms layer " + wms.getName() );
         Resource xml = dd.config(wms);
-        ensureParent(xml);
         persist( wms, xml );
     }
     
@@ -558,7 +549,6 @@ public class GeoServerPersister implements CatalogListener, ConfigurationListene
     private void addLayer( LayerInfo l ) throws IOException {
         LOGGER.fine( "Persisting layer " + l.getName() );
         Resource xml = dd.config(l);
-        ensureParent(xml);
         persist( l, xml );
     }
     
@@ -578,7 +568,6 @@ public class GeoServerPersister implements CatalogListener, ConfigurationListene
     private void addStyle( StyleInfo s ) throws IOException {
         LOGGER.fine( "Persisting style " + s.getName() );
         Resource xml = dd.config(s);
-        ensureParent(xml);
         persist( s, xml );
     }
     
@@ -710,7 +699,6 @@ public class GeoServerPersister implements CatalogListener, ConfigurationListene
     private void addLayerGroup( LayerGroupInfo lg ) throws IOException {
         LOGGER.fine( "Persisting layer group " + lg.getName() );
         Resource xml = dd.config(lg);
-        ensureParent(xml);
         persist(lg, xml);
     }
     
@@ -762,9 +750,6 @@ public class GeoServerPersister implements CatalogListener, ConfigurationListene
             OutputStream out = newR.out()){
             IOUtils.copy(in, out);
         }
-    }
-    private void ensureParent(Resource r) {
-        r.parent().dir();
     }
     
     private Resource uriToResource(Resource base, URI uri) throws MalformedURLException {

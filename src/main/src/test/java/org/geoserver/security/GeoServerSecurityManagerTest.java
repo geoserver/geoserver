@@ -16,6 +16,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
+import org.geoserver.platform.resource.Files;
 import org.geoserver.security.config.SecurityManagerConfig;
 import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.security.impl.GeoServerUser;
@@ -103,14 +104,14 @@ public class GeoServerSecurityManagerTest extends GeoServerSecurityTestSupport {
         GeoServerSecurityManager secMgr = getSecurityManager();
         File f = File.createTempFile("masterpw", "info");
         try {
-            assertFalse(secMgr.dumpMasterPassword(f));
+            assertFalse(secMgr.dumpMasterPassword(Files.asResource(f)));
 
             TestingAuthenticationToken auth = new TestingAuthenticationToken("admin", "geoserver",
                     (List) Arrays.asList(GeoServerRole.ADMIN_ROLE));
             auth.setAuthenticated(true);
             SecurityContextHolder.getContext().setAuthentication(auth);
 
-            assertTrue(secMgr.dumpMasterPassword(f));
+            assertTrue(secMgr.dumpMasterPassword(Files.asResource(f)));
             dumpPWInfoFile(f);
             assertTrue(masterPWInfoFileContains(f, new String(secMgr.getMasterPassword())));
         } finally {
@@ -124,14 +125,14 @@ public class GeoServerSecurityManagerTest extends GeoServerSecurityTestSupport {
         GeoServerSecurityManager secMgr = getSecurityManager();
         File f = File.createTempFile("masterpw", "info");
         try {
-            assertFalse(secMgr.dumpMasterPassword(f));
+            assertFalse(secMgr.dumpMasterPassword(Files.asResource(f)));
 
             TestingAuthenticationToken auth = new TestingAuthenticationToken("admin", "geoserver",
                     (List) Arrays.asList(GeoServerRole.ADMIN_ROLE));
             auth.setAuthenticated(true);
             SecurityContextHolder.getContext().setAuthentication(auth);
 
-            assertFalse(secMgr.dumpMasterPassword(f));
+            assertFalse(secMgr.dumpMasterPassword(Files.asResource(f)));
         } finally {
             f.delete();
         }
@@ -152,7 +153,7 @@ public class GeoServerSecurityManagerTest extends GeoServerSecurityTestSupport {
 
     
     void dumpPWInfoFile() throws Exception {
-        dumpPWInfoFile(new File(getSecurityManager().getSecurityRoot(),GeoServerSecurityManager.MASTER_PASSWD_INFO_FILENAME));                
+        dumpPWInfoFile(new File(getSecurityManager().get("security").dir(),GeoServerSecurityManager.MASTER_PASSWD_INFO_FILENAME));                
     }
 
     boolean masterPWInfoFileContains(File infoFile,String searchString) throws Exception {        
@@ -172,7 +173,7 @@ public class GeoServerSecurityManagerTest extends GeoServerSecurityTestSupport {
     
     
     boolean masterPWInfoFileContains(String searchString) throws Exception {
-        return masterPWInfoFileContains(new File(getSecurityManager().getSecurityRoot(),
+        return masterPWInfoFileContains(new File(getSecurityManager().get("security").dir(),
                 GeoServerSecurityManager.MASTER_PASSWD_INFO_FILENAME),searchString);
         
     }

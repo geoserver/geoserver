@@ -12,9 +12,9 @@ import java.util.List;
 import java.util.UUID;
 
 import com.google.common.io.Files;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.LayerInfo;
@@ -26,6 +26,7 @@ import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.rest.RestletException;
 import org.geoserver.rest.format.DataFormat;
+import org.geoserver.rest.util.IOUtils;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.styling.SLDParser;
 import org.geotools.styling.Style;
@@ -41,11 +42,15 @@ import org.restlet.data.Status;
 public class StyleResource extends AbstractCatalogResource {
 
     private List<String> validImageFileExtensions = new ArrayList<String>();
+    
+    private GeoServerDataDirectory dataDir;
 
     public StyleResource(Context context, Request request, Response response, Catalog catalog) {
         super(context, request, response, StyleInfo.class, catalog);
 
         validImageFileExtensions = Arrays.asList(new String[]{"svg", "png", "jpg"});
+        
+        dataDir = new GeoServerDataDirectory(catalog.getResourceLoader());
     }
     
     @Override
@@ -156,14 +161,14 @@ public class StyleResource extends AbstractCatalogResource {
                     styleInfo.setWorkspace(catalog.getWorkspaceByName(workspace));
                 }
 
+                Resource style = dataDir.style(styleInfo);
                 // ensure that a existing resource does not already exist, because we may not want to overwrite it
-                GeoServerDataDirectory dataDir = new GeoServerDataDirectory(catalog.getResourceLoader());
                 if (dataDir.style(styleInfo).getType() != Resource.Type.UNDEFINED) {
                     String msg = "Style resource " + styleInfo.getFilename() + " already exists.";
                     throw new RestletException(msg, Status.CLIENT_ERROR_FORBIDDEN);
                 }
 
-                serializeSldFileInCatalog(new File(getStylePath(styleInfo)), uploadedFile);
+                serializeSldFileInCatalog(style, uploadedFile);
 
                 catalog.add(styleInfo);
 
@@ -318,7 +323,7 @@ public class StyleResource extends AbstractCatalogResource {
 
                 // Save the style: serialize the style out into the data directory
                 StyleInfo styleInfo = catalog.getStyleByName( workspace, style );
-                serializeSldFileInCatalog(new File(getStylePath(styleInfo)), uploadedFile);
+                serializeSldFileInCatalog(dataDir.style(styleInfo), uploadedFile);
 
                 LOGGER.info("PUT Style Package: " + name + ", workspace: " + workspace);
 
@@ -434,13 +439,13 @@ public class StyleResource extends AbstractCatalogResource {
      * @throws java.io.IOException
      */
     private void saveImageResources(File directory, String workspace) throws IOException {
-        File stylesDir = new File(getStylesFolderPath(workspace));
+        Resource stylesDir = workspace == null ? dataDir.getStyles() : dataDir.getStyles(catalog.getWorkspaceByName(workspace));
 
         File[] imageFiles = retrieveImageFiles(directory);
 
         for (int i = 0; i < imageFiles.length; i++) {
-            FileUtils.copyFileToDirectory(imageFiles[i],
-                    stylesDir);
+            IOUtils.copyStream(new FileInputStream(imageFiles[i]),
+                    stylesDir.get(imageFiles[i].getName()).out(), true, true);
         }
     }
 
@@ -512,10 +517,10 @@ public class StyleResource extends AbstractCatalogResource {
      * @param sldFile
      * @param uploadedSldFile
      */
-    private void serializeSldFileInCatalog(File sldFile, File uploadedSldFile) {
+    private void serializeSldFileInCatalog(Resource sldFile, File uploadedSldFile) {
         BufferedOutputStream out = null;
         try {
-            out = new BufferedOutputStream(new FileOutputStream(sldFile));
+            out = new BufferedOutputStream(sldFile.out());
             byte[] sldContent = FileUtils.readFileToByteArray(uploadedSldFile);
             out.write(sldContent);
             out.flush();
@@ -526,23 +531,4 @@ public class StyleResource extends AbstractCatalogResource {
         }
     }
 
-    private String getStylePath(StyleInfo styleInfo) {
-        String workspaceName = (styleInfo.getWorkspace() != null)?styleInfo.getWorkspace().getName():null;
-
-        String stylesFolder = getStylesFolderPath(workspaceName);
-        String stylePath = stylesFolder + "/" + styleInfo.getFilename();
-
-        return stylePath;
-    }
-
-    private String getStylesFolderPath(String workspace) {
-        String path = "styles" + File.separator;
-
-        if (workspace != null) {
-            path = "workspaces" + File.separator + workspace + File.separator + path;
-        }
-        path = catalog.getResourceLoader().getBaseDirectory().getAbsolutePath() + File.separator + path;
-
-        return path;
-    }
 }

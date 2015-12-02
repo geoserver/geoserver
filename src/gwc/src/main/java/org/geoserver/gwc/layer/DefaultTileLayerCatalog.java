@@ -8,16 +8,13 @@ package org.geoserver.gwc.layer;
 import static com.google.common.base.Throwables.propagate;
 import static com.google.common.base.Throwables.propagateIfInstanceOf;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
+import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.concurrent.ExecutionException;
@@ -25,6 +22,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resource.Type;
+import org.geoserver.platform.resource.Resources;
+import org.geoserver.util.Filter;
 import org.geotools.util.logging.Logging;
 import org.geowebcache.config.ContextualConfigurationProvider.Context;
 import org.geowebcache.config.XMLConfiguration;
@@ -95,31 +96,25 @@ public class DefaultTileLayerCatalog implements TileLayerCatalog {
 
         layersById.clear();
 
-        File baseDir;
-        try {
-            baseDir = resourceLoader.findOrCreateDirectory(baseDirectory);
-        } catch (IOException e) {
-            throw propagate(e);
-        }
+        Resource baseDir = resourceLoader.get(baseDirectory);
 
-        LOGGER.info("GeoServer TileLayer store base directory is: " + baseDir.getAbsolutePath());
+        LOGGER.info("GeoServer TileLayer store base directory is: " + baseDir.path());
 
-        final String[] tileLayerFiles = baseDir.list(new FilenameFilter() {
+        final List<Resource> tileLayerFiles = Resources.list(baseDir, new Filter<Resource>() {
             @Override
-            public boolean accept(File dir, String name) {
-                return name.endsWith(".xml");
+            public boolean accept(Resource res) {
+                return res.name().endsWith(".xml");
             }
         });
 
-        LOGGER.info("Loading tile layers from " + baseDir.getAbsolutePath());
-        for (String fileName : tileLayerFiles) {
+        LOGGER.info("Loading tile layers from " + baseDir.path());
+        for (Resource res : tileLayerFiles) {
             GeoServerTileLayerInfoImpl info;
             try {
-                File file = new File(baseDir, fileName);
-                info = depersist(file);
+                info = depersist(res);
             } catch (Exception e) {
                 LOGGER.log(Level.SEVERE, "Error depersisting tile layer information from file "
-                        + fileName, e);
+                        + res.name(), e);
                 continue;
             }
 
@@ -190,7 +185,7 @@ public class DefaultTileLayerCatalog implements TileLayerCatalog {
         try {
             GeoServerTileLayerInfo info = getLayerById(tileLayerId);
             if (info != null) {
-                File file = getFile(tileLayerId, false);
+                Resource file = getFile(tileLayerId);
                 layersById.remove(tileLayerId);
                 file.delete();
             }
@@ -242,15 +237,14 @@ public class DefaultTileLayerCatalog implements TileLayerCatalog {
 
     private void persist(GeoServerTileLayerInfo real) throws IOException {
         final String tileLayerId = real.getId();
-        File file = getFile(tileLayerId, false);
+        Resource file = getFile(tileLayerId);
         boolean cleanup = false;
-        if (file == null) {
+        if (file.getType() == Type.UNDEFINED) {
             cleanup = true;
-            file = getFile(tileLayerId, true);
         }
-        final File tmp = new File(file.getParentFile(), file.getName() + ".tmp");
+        final Resource tmp = file.parent().get(file.name() + ".tmp");
         try {
-            final Writer writer = new OutputStreamWriter(new FileOutputStream(tmp), "UTF-8");
+            final Writer writer = new OutputStreamWriter(tmp.out(), "UTF-8");
             try {
                 serializer.toXML(real, writer);
             } finally {
@@ -278,32 +272,27 @@ public class DefaultTileLayerCatalog implements TileLayerCatalog {
 
     private GeoServerTileLayerInfoImpl loadInternal(final String tileLayerId)
             throws FileNotFoundException, IOException {
-        final File file = getFile(tileLayerId, false);
-        if (null == file) {
+        final Resource file = getFile(tileLayerId);
+        if (file.getType() == Type.UNDEFINED) {
             throw new FileNotFoundException(tileLayerId);
         }
         return depersist(file);
     }
 
-    private File getFile(final String tileLayerId, final boolean create) throws IOException {
+    private Resource getFile(final String tileLayerId) throws IOException {
         final String fileName = FilePathUtils.filteredLayerName(tileLayerId) + ".xml";
 
-        final File base = resourceLoader.findOrCreateDirectory(baseDirectory);
+        final Resource base = resourceLoader.get(baseDirectory);
 
-        File file = resourceLoader.find(base, fileName);
-        if (null == file && create) {
-            return resourceLoader.createFile(base, fileName);
-        }
-
-        return file;
+        return base.get(fileName);
     }
 
-    private GeoServerTileLayerInfoImpl depersist(final File file) throws IOException {
+    private GeoServerTileLayerInfoImpl depersist(final Resource res) throws IOException {
         if (LOGGER.isLoggable(Level.FINE)) {
-            LOGGER.fine("Depersisting GeoServerTileLayerInfo from " + file.getAbsolutePath());
+            LOGGER.fine("Depersisting GeoServerTileLayerInfo from " + res.path());
         }
         GeoServerTileLayerInfoImpl info;
-        Reader reader = new InputStreamReader(new FileInputStream(file), "UTF-8");
+        Reader reader = new InputStreamReader(res.in(), "UTF-8");
         try {
             info = (GeoServerTileLayerInfoImpl) serializer.fromXML(reader);
         } finally {
@@ -313,18 +302,18 @@ public class DefaultTileLayerCatalog implements TileLayerCatalog {
         return info;
     }
 
-    private void rename(File source, File dest) throws IOException {
-        // same path? Do nothing
-        if (source.getCanonicalPath().equalsIgnoreCase(dest.getCanonicalPath()))
+    private void rename(Resource source, Resource dest) throws IOException {
+        // same resource? Do nothing
+        if (source.equals(dest))
             return;
 
-        // different path
+        // different resource
         boolean win = System.getProperty("os.name").startsWith("Windows");
-        if (win && dest.exists()) {
+        if (win && Resources.exists(dest)) {
             // windows does not do atomic renames, and can not rename a file if the dest file
             // exists
             if (!dest.delete()) {
-                throw new IOException("Could not delete: " + dest.getCanonicalPath());
+                throw new IOException("Could not delete: " + dest.path());
             }
             source.renameTo(dest);
         } else {

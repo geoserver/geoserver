@@ -35,7 +35,7 @@ public class StylePanel extends Panel {
         super(id, model);
         if (cssFile != null && Resources.exists(cssFile)) {
             try (InputStream is = cssFile.in()) {
-                styleBody = IOUtils.toString(is, "UTF-8");
+                styleBody = IOUtils.toString(is);
             } catch (IOException ioe) {
                 throw new WicketRuntimeException("Error loading CSS: ", ioe);
             }

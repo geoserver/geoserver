@@ -2529,13 +2529,13 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
                 while ((line = reader.readLine()) != null) {
                 	lines.add(line.replace(GeoServerRole.ADMIN_ROLE.getAuthority(), 
                 	        XMLRoleService.DEFAULT_LOCAL_ADMIN_ROLE));
-                }
-                try (PrintWriter writer = new PrintWriter(new OutputStreamWriter(file.out()))) {
-                    for (String s : lines) {
-                            writer.println(s);
-                    }
                 }             
-            }            
+            }
+            try (PrintWriter writer = new PrintWriter(new OutputStreamWriter(file.out()))) {
+                for (String s : lines) {
+                        writer.println(s);
+                }
+            }
         }
                                 
 

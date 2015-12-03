@@ -24,7 +24,7 @@ public class FileWrapperResourceTheoryTest extends ResourceTheoryTest {
 
     @Override
     protected Resource getResource(String path) throws Exception {
-        File file = new File(path.replaceAll("/", File.separator));
+        File file = new File(path.replace('/', File.separatorChar));
         if (!file.isAbsolute()) {
             file = Paths.toFile(folder.getRoot(), path);
         }

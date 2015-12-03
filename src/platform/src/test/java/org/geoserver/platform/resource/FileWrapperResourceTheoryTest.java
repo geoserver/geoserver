@@ -23,8 +23,12 @@ public class FileWrapperResourceTheoryTest extends ResourceTheoryTest {
     }
 
     @Override
-    protected Resource getResource(String path) throws Exception {        
-        return Files.asResource(path.startsWith("/") ? new File(path) : Paths.toFile(folder.getRoot(), path));
+    protected Resource getResource(String path) throws Exception {
+        File file = new File(path.replaceAll("/", File.separator));
+        if (!file.isAbsolute()) {
+            file = Paths.toFile(folder.getRoot(), path);
+        }
+        return Files.asResource(file);
     }
 
     @Before

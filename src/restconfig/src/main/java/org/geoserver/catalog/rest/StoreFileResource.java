@@ -121,14 +121,8 @@ public abstract class StoreFileResource extends Resource {
                         || (workspaceName != null && coverage.getWorkspace().getName()
                                 .equalsIgnoreCase(workspaceName))) {
                     // If the coverage exists then the associated directory is defined by its URL
-                    File dirFile = DataUtilities.urlToFile(new URL(coverage.getURL()));
-                    
-                    // If the directory is relative and then the directory is searched inside the data directory
-                    if (dirFile.isAbsolute()) {
-                        directory = Files.asResource(dirFile);
-                    } else {
-                        directory = catalog.getResourceLoader().get(dirFile.getPath());
-                    }
+                    directory = Resources.fromPath(DataUtilities.urlToFile(new URL(coverage.getURL())).getPath(),
+                            catalog.getResourceLoader().get(""));
                 }
             }
         }

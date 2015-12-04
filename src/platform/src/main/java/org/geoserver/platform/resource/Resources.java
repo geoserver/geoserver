@@ -428,7 +428,7 @@ public class Resources {
         if (file.isAbsolute()) {
             return Files.asResource(file);
         } else {
-            return relativeDir.get(path);
+            return relativeDir.get(path.replace(File.separatorChar, '/'));
         }
     }
     

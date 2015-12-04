@@ -7,6 +7,7 @@ package org.geoserver.catalog.rest;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -150,29 +151,34 @@ public class CoverageStoreFileResource extends StoreFileResource {
             
             String defaultRoot = "/data/" + workspace + "/" + coveragestore;
             
-            StringBuilder fileBuilder = new StringBuilder(Resources.find(uploadedFile).getAbsolutePath());
+            StringBuilder urlBuilder;
+            try {
+                urlBuilder = new StringBuilder(Resources.find(uploadedFile).toURI().toURL().toString());
+            } catch (MalformedURLException e) {
+                throw new RestletException("Error create building coverage URL", Status.SERVER_ERROR_INTERNAL, e);
+            }
             
             String url;
             if(uploadedFile.getType() == Type.DIRECTORY && uploadedFile.name().equals(coveragestore)) {
 
-                int def = fileBuilder.indexOf(defaultRoot);
+                int def = urlBuilder.indexOf(defaultRoot);
                 
                 if(def >= 0){
                     url = "file:data/" + workspace + "/" + coveragestore;
                 }else{
-                    url = fileBuilder.toString();
+                    url = urlBuilder.toString();
                 }
             } else {
 
-                int def = fileBuilder.indexOf(defaultRoot);
+                int def = urlBuilder.indexOf(defaultRoot);
                 
                 if(def >= 0){
                     
-                    String itemPath = fileBuilder.substring(def + defaultRoot.length());
+                    String itemPath = urlBuilder.substring(def + defaultRoot.length());
                     
                     url = "file:data/" + workspace + "/" + coveragestore + itemPath;
                 }else{
-                    url = fileBuilder.toString();
+                    url = urlBuilder.toString();
                 }
             }
             if (url.contains("+")) {

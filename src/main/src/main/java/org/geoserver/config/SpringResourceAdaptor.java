@@ -11,6 +11,7 @@ import java.net.URI;
 import java.net.URL;
 
 import org.geoserver.platform.resource.Files;
+import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.ResourceStore;
 import org.geoserver.platform.resource.Resources;
@@ -40,7 +41,7 @@ public class SpringResourceAdaptor implements org.springframework.core.io.Resour
         if (f != null) {
             if (!f.isAbsolute()) {
                 // make relative to data directory -- or create file from resource store
-                Resource res = store.get(f.getPath());
+                Resource res = store.get(Paths.convert(f.getPath()));
                 return new SpringResourceAdaptor(res);
             } else {
                 return new SpringResourceAdaptor(Files.asResource(f));

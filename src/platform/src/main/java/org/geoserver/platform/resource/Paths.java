@@ -420,6 +420,7 @@ public class Paths {
      * <p>
      * This method requires the base directory of the ResourceStore.
      * Note ResourceStore implementations may not create the file until needed.
+     * In the case of an absolute path, base should be null.
      * 
      * @param base Base directory, often GeoServer Data Directory
      * @param path Resource path reference
@@ -427,7 +428,7 @@ public class Paths {
      */
     public static File toFile( File base, String path ){
         for( String item : Paths.names(path) ){
-            base = new File( base, item );           
+            base = new File( base, item );
         }        
         return base;
     }

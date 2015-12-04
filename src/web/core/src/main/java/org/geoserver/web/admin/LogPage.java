@@ -31,6 +31,7 @@ import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.logging.LoggingUtils;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Paths;
 import org.geoserver.web.GeoServerSecuredPage;
 
 /**
@@ -67,7 +68,7 @@ public class LogPage extends GeoServerSecuredPage {
                 // locate the geoserver.log file
                 GeoServerDataDirectory dd = getGeoServerApplication().getBeanOfType(
                         GeoServerDataDirectory.class);
-                logFile = dd.get(logFile.getPath()).file();
+                logFile = dd.get(Paths.convert(logFile.getPath())).file();
             }
         }
         

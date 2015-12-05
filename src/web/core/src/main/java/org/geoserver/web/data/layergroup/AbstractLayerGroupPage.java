@@ -16,6 +16,7 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.WebMarkupContainer;
+import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.SubmitLink;
@@ -25,6 +26,7 @@ import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.util.convert.IConverter;
 import org.apache.wicket.validation.IValidatable;
 import org.apache.wicket.validation.validator.AbstractValidator;
@@ -59,6 +61,7 @@ public abstract class AbstractLayerGroupPage extends GeoServerSecuredPage {
     String layerGroupId;
     protected RootLayerEntryPanel rootLayerPanel;    
     private ListView<LayerGroupConfigurationPanelInfo> extensionPanels;
+    private CheckBox queryableCheckBox;
     
     /**
      * Subclasses must call this method to initialize the UI for this page 
@@ -112,6 +115,9 @@ public abstract class AbstractLayerGroupPage extends GeoServerSecuredPage {
         });
         
         form.add(modeChoice);
+        
+        queryableCheckBox = new CheckBox("queryable", new Model<Boolean>(!layerGroup.isQueryDisabled()));
+        form.add(queryableCheckBox);
         
         form.add(new TextField("title"));
         form.add(new TextArea("abstract"));
@@ -262,6 +268,10 @@ public abstract class AbstractLayerGroupPage extends GeoServerSecuredPage {
                     lg.getStyles().add(entry.getStyle());
                 }
 
+                // update not queryable flag
+                Boolean queryable = queryableCheckBox.getModelObject();
+                lg.setQueryDisabled(!queryable);
+                
                 try {
                     AbstractLayerGroupPage.this.save();
                 }

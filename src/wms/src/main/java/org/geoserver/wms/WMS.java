@@ -970,6 +970,10 @@ public class WMS implements ApplicationContextAware {
     }
 
     public boolean isQueryable(LayerGroupInfo layerGroup) {
+        
+        if (layerGroup.isQueryDisabled())
+            return false;
+        
         boolean queryable = false;
         
         for (PublishedInfo published : layerGroup.getLayers()) {

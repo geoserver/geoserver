@@ -179,6 +179,13 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
         return request;
     }
 
+    /**
+     * Returns whether the specified resource must be skipped in the context of the current request.
+     */
+    protected boolean skipResource(Object theResource) {
+        return false;
+    }
+    
     @SuppressWarnings("rawtypes")
     @Override
     public GetMapRequest read(Object request, Map kvp, Map rawKvp) throws Exception {
@@ -228,10 +235,19 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
         String layerParam = (String) rawKvp.get("LAYERS");
         if (layerParam != null) {
             List<String> layerNames = KvpUtils.readFlat(layerParam);
-            requestedLayerInfos.addAll(parseLayers(layerNames, remoteOwsUrl, remoteOwsType));
+            
+            for (Object o : parseLayers(layerNames, remoteOwsUrl, remoteOwsType)) {
+                if (!skipResource(o)) {
+                    requestedLayerInfos.add(o);
+                }
+            }
 
             List<MapLayerInfo> layers = new ArrayList<MapLayerInfo>();
             for (Object o : requestedLayerInfos) {
+                
+                if (skipResource(o))
+                    continue;
+                
                 if (o instanceof LayerInfo) {
                     layers.add(new MapLayerInfo((LayerInfo) o));
                 } else if (o instanceof LayerGroupInfo) {

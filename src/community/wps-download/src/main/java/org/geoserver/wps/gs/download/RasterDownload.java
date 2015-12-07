@@ -19,6 +19,7 @@ import javax.media.jai.Interpolation;
 
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.data.util.CoverageUtils;
+import org.geoserver.wps.WPSException;
 import org.geoserver.wps.ppio.ComplexPPIO;
 import org.geoserver.wps.ppio.ProcessParameterIO;
 import org.geoserver.wps.resource.GridCoverageResource;
@@ -230,6 +231,12 @@ class RasterDownload {
 
             // --> READ
             originalGridCoverage = reader.read(readParameters);
+            
+            // check, the reader might have returned a null coverage
+            if(originalGridCoverage == null) {
+                throw new WPSException("The reader did not return any data for current input "
+                        + "parameters. It normally means there is nothing there, or the data got filtered out by the ROI or filter");
+            }
 
             //
             // STEP 1 - Reproject if needed
@@ -265,6 +272,11 @@ class RasterDownload {
                     // reprojecting we might read a bit more than needed!
                     clippedGridCoverage = cropCoverage.execute(reprojectedGridCoverage,
                             roiManager.getSafeRoiInTargetCRS(), progressListener);
+                }
+                
+                if(clippedGridCoverage == null) {
+                    throw new WPSException("No data left after applying the ROI. This means there "
+                            + "is source data, but none matching the requested ROI");
                 }
             } else {
                 // do nothing

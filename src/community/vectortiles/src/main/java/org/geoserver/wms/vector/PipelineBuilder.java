@@ -29,7 +29,7 @@ import com.google.common.base.Throwables;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
-import com.vividsolutions.jts.simplify.DouglasPeuckerSimplifier;
+import com.vividsolutions.jts.simplify.TopologyPreservingSimplifier;
 
 class PipelineBuilder {
 
@@ -69,14 +69,14 @@ class PipelineBuilder {
     }
 
     public static PipelineBuilder newBuilder(ReferencedEnvelope renderingArea, Rectangle paintArea,
-            CoordinateReferenceSystem sourceCrs) throws FactoryException {
+            CoordinateReferenceSystem sourceCrs, double overSampleFactor) throws FactoryException {
 
-        Context context = createContext(renderingArea, paintArea, sourceCrs);
+        Context context = createContext(renderingArea, paintArea, sourceCrs, overSampleFactor);
         return new PipelineBuilder(context);
     }
 
     private static Context createContext(ReferencedEnvelope mapArea, Rectangle paintArea,
-            CoordinateReferenceSystem sourceCrs) throws FactoryException {
+            CoordinateReferenceSystem sourceCrs, double overSampleFactor) throws FactoryException {
 
         Context context = new Context();
         context.renderingArea = mapArea;
@@ -100,10 +100,10 @@ class PipelineBuilder {
         } catch (TransformException e) {
             throw Throwables.propagate(e);
         }
-        context.screenSimplificationDistance = 0.25;
-        context.sourceCRSSimplificationDistance = Math.min(spans[0], spans[1]);
+        context.screenSimplificationDistance = 0.25/overSampleFactor;
+        context.sourceCRSSimplificationDistance = Math.min(spans[0], spans[1])/overSampleFactor;
         context.screenMap = new ScreenMap(0, 0, paintArea.width, paintArea.height);
-        context.screenMap.setSpans(spans[0], spans[1]);
+        context.screenMap.setSpans(spans[0]/overSampleFactor, spans[1]/overSampleFactor);
         context.screenMap.setTransform(context.sourceToScreen);
 
         return context;
@@ -257,10 +257,10 @@ class PipelineBuilder {
             if (geom.getDimension() == 0) {
                 return geom;
             }
-            DouglasPeuckerSimplifier simplifier = new DouglasPeuckerSimplifier(geom);
+            //DJB: Use this instead of com.vividsolutions.jts.simplify.DouglasPeuckerSimplifier because
+            //     DPS does NOT do a good job with polygons.
+            TopologyPreservingSimplifier simplifier = new TopologyPreservingSimplifier(geom);
             simplifier.setDistanceTolerance(this.distanceTolerance);
-            simplifier.setEnsureValid(true);
-
             Geometry simplified = simplifier.getResultGeometry();
             return simplified;
         }

@@ -10,7 +10,7 @@ The tutorial assumes:
 
 * GeoServer is running on http://localhost:8080/geoserver
 
-* You have a user/group service called "default" that allows the creation of new users. If your primary user/group service is not called "default", create a new text file called '/geofence/geofence-server.properties' in the geoserver data directory and add the following line::
+* You have a user/group service called "default" that allows the creation of new users. If your primary user/group service is not called "default", create a new text file called :file:`/geofence/geofence-server.properties` in the geoserver data directory and add the following line::
 
         defaultUserGroupServiceName=<name_of_usergroupservice>
 
@@ -83,7 +83,7 @@ Do this by sending a POST request to the following URL http://localhost:8080/geo
         <enabled>true</enabled>
   </user>
 
-You should receive a "201 Created" HTTP Response.
+You should receive a ``201 Created`` HTTP Response.
 
 3. Now we will create an access rule for this user. 
 Do this by sending a POST request to the following URL: http://localhost:8080/geoserver/geofence/rest/rules with the following content::
@@ -97,7 +97,7 @@ Do this by sending a POST request to the following URL: http://localhost:8080/ge
         <access>ALLOW</access>
   </Rule>
 
-Again, you should receive a "201 Created" HTTP Response. 
+Again, you should receive a ``201 Created`` HTTP Response. 
 When browsing to the URL http://localhost:8080/geoserver/geofence/rest/rules we should now see the following information::
 
   <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
@@ -122,6 +122,6 @@ When browsing to the URL http://localhost:8080/geoserver/geofence/rest/rules we 
   	</Rule>
   </Rules>
 
-4. It should now be possible to log on with username 'michaeljfox' and password 'back2$future` and perform a 'GetMap' on the layer 'topp:states', but nothing else.
+4. It should now be possible to log on with username ``michaeljfox`` and password ``back2$future`` and perform a ``GetMap`` on the layer ``topp:states``, but nothing else.
 
 

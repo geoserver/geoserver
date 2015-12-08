@@ -21,6 +21,7 @@ import org.geoserver.platform.resource.Files;
 import org.geoserver.platform.resource.Paths;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 public class GWCConfigPersisterTest {
 
@@ -71,8 +72,10 @@ public class GWCConfigPersisterTest {
         assertEquals(config, persister.getConfig());
 
         // provoque a IOException
+        TemporaryFolder tempFolder = new TemporaryFolder();
+        tempFolder.create();
         when(resourceLoader.get(eq(GWCConfigPersister.GWC_CONFIG_FILE))).thenReturn(
-                Files.asResource(new File("shall_not_exist")));
+                Files.asResource(tempFolder.newFile("shall_not_exist")));
         persister = new GWCConfigPersister(new XStreamPersisterFactory(), resourceLoader);
 
         GWCConfig expected = new GWCConfig();

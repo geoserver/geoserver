@@ -277,14 +277,21 @@ public class Resources {
     }
     
     /**
-     * Write the contents of a resource into another resource
+     * Write the contents of a resource into another resource. Also supports directories (recursively).
+     * 
      * @param data resource to read
      * @param destination resource to write to
      * @throws IOException
      */
     public static void copy (Resource data, Resource destination) throws IOException {
-        try(InputStream in = data.in()) {
-            copy(in, destination);
+        if (data.getType() == Type.DIRECTORY) {
+            for (Resource child : data.list()) {
+                copy(child, destination.get(child.name()));
+            }
+        } else {        
+            try(InputStream in = data.in()) {
+                copy(in, destination);
+            }
         }
     }
     
@@ -347,9 +354,9 @@ public class Resources {
                 res.addAll(list(child, filter, true));
             }
         }        
-        return res;        
+        return res;
     }
-    
+
     /**
      * Convenience method for non recursive listing
      * 
@@ -359,6 +366,17 @@ public class Resources {
      */
     public static List<Resource> list(Resource dir, Filter<Resource> filter) {
         return list(dir, filter, false);
+    }
+   
+    /**
+     * 
+     * Recursively loops through directory to provide all children
+     * 
+     * @param resource directory
+     * @return list of children with recursive children
+     */
+    public static List<Resource> listRecursively(Resource dir) {
+        return list(dir, AnyFilter.INSTANCE, true);
     }
 
     /**
@@ -398,6 +416,19 @@ public class Resources {
         @Override
         public boolean accept(Resource obj) {
             return obj.getType() == Type.DIRECTORY;
+        }
+
+    }
+    
+    public static class AnyFilter implements Filter<Resource> {
+        
+        public static final AnyFilter INSTANCE = new AnyFilter(); 
+        
+        private AnyFilter() {};
+
+        @Override
+        public boolean accept(Resource obj) {
+            return true;
         }
 
     }

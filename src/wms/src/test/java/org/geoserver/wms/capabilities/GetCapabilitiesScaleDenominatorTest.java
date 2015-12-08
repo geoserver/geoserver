@@ -4,15 +4,13 @@
  * application directory.
  */package org.geoserver.wms.capabilities;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 import javax.xml.namespace.QName;
 
@@ -27,13 +25,13 @@ import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.wms.ExtendedCapabilitiesProvider;
 import org.geoserver.wms.GetCapabilitiesRequest;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSTestSupport;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
-import org.junit.Assert;
 import org.junit.Test;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.w3c.dom.Document;
@@ -48,15 +46,11 @@ import org.w3c.dom.NodeList;
  * @author Niels Charlier
  *
  */
-public class GetCapabilitiesScaleHintTest extends WMSTestSupport {
-
+public class GetCapabilitiesScaleDenominatorTest extends WMSTestSupport {
+    
     private final XpathEngine xpath;
 
     private static final String BASE_URL = "http://localhost/geoserver";
-
-    private static final Set<String> FORMATS = Collections.singleton("image/png");
-
-    private static final Set<String> LEGEND_FORMAT = Collections.singleton("image/png");
 
     /** Test layers */
     public static final QName REGIONATED = new QName(MockData.SF_URI, "Regionated", MockData.SF_PREFIX);
@@ -67,10 +61,11 @@ public class GetCapabilitiesScaleHintTest extends WMSTestSupport {
 
     private Catalog catalog;
 
-    public GetCapabilitiesScaleHintTest(){
+    public GetCapabilitiesScaleDenominatorTest(){
 
         Map<String, String> namespaces = new HashMap<String, String>();
         namespaces.put("xlink", "http://www.w3.org/1999/xlink");
+        namespaces.put("wms", "http://www.opengis.net/wms");
         XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));
         xpath = XMLUnit.newXpathEngine();
     }
@@ -154,226 +149,31 @@ public class GetCapabilitiesScaleHintTest extends WMSTestSupport {
 
         Document dom = findCapabilities(false);
         
-        //print(dom);
+        print(dom);
 
         Element layerElement= searchLayerElement("testLayerGroup1", dom);
 
-        NodeList scaleNode = layerElement.getElementsByTagName("ScaleHint");
-        Element scaleElement = (Element)scaleNode.item(0);
-
-        assertEquals(Double.valueOf(80000000), Double.valueOf(scaleElement.getAttribute("min")));
-        assertEquals(Double.valueOf(1000000000), Double.valueOf(scaleElement.getAttribute("max")));
+        NodeList minScaleNode = layerElement.getElementsByTagName("MinScaleDenominator");
+        Element minScaleElement = (Element)minScaleNode.item(0);
+        
+        NodeList maxScaleNode = layerElement.getElementsByTagName("MaxScaleDenominator");
+        Element maxScaleElement = (Element)maxScaleNode.item(0);
+        
+        assertEquals(Double.valueOf(80000000), Double.valueOf(minScaleElement.getTextContent()));
+        assertEquals(Double.valueOf(1000000000), Double.valueOf(maxScaleElement.getTextContent()));
         
         layerElement= searchLayerElement("testLayerGroup3", dom);        
-        scaleNode = layerElement.getElementsByTagName("ScaleHint");
-        scaleElement = (Element)scaleNode.item(0);
+        
+        minScaleNode = layerElement.getElementsByTagName("wms:MinScaleDenominator");
+        minScaleElement = (Element)minScaleNode.item(0);
+        
+        maxScaleNode = layerElement.getElementsByTagName("wms:MaxScaleDenominator");
+        maxScaleElement = (Element)minScaleNode.item(0);
 
-        assertNull(scaleElement);
+        assertNull(minScaleElement);
+        assertNull(maxScaleElement);
     }
-
-    /**
-     * Default values for ScaleHint should be set.
-     * 
-     * <pre>
-     * The computation of Min and Max values return: 
-     * 		Min: 0.0
-     * 		Max: infinity
-     * 
-     * Capabilities document Expected:
-     *  
-     * 		ScaleHint element shouldn't be generated.
-     * </pre>
-     * 
-     * @throws Exception
-     */
-    @Test
-    public void scaleHintDefaultValues()throws Exception{
-
-        Document dom = findCapabilities(false);
-
-        Element layerElement= searchLayerElement(getLayerId(ACCIDENT), dom);
-
-        NodeList scaleNode = layerElement.getElementsByTagName("ScaleHint");
-
-        Element scaleElement = (Element)scaleNode.item(0);
-
-        assertTrue(scaleElement == null); // scale hint is not generated
-    }
-
-    /**
-     * Default values for ScaleHint should be set.
-     * 
-     * <pre>
-     * Check the min and max values return:
-     * 		Min: 0.0
-     * 		Max: a value
-     * 
-     * Capabilities document Expected:
-     *  
-     *   <ScaleHint min=0 max=value/>     
-     * </pre>
-     * 
-     * @throws Exception
-     */
-    @Test
-    public void scaleHintDefaultMinValue()throws Exception{
-
-        Document dom = findCapabilities(false);
-
-        Element layerElement= searchLayerElement(getLayerId(ACCIDENT2), dom);
-
-        NodeList scaleNode = layerElement.getElementsByTagName("ScaleHint");
-
-        Element scaleElement = (Element)scaleNode.item(0);
-
-        assertEquals(0.0, Double.valueOf(scaleElement.getAttribute("min")));
-
-        assertEquals(Double.valueOf(640000000), Double.valueOf(scaleElement.getAttribute("max")));
-
-    }
-
-    /**
-     * Default values for ScaleHint should be set.
-     * 
-     * <pre>
-     * The computation of Min and Max values when the option 
-     * 'Scalehint in units per diagonal pixel' is set. Return: 
-     * 		Min: 0.0
-     * 		Max: a value
-     * 
-     * Capabilities document Expected:
-     *  
-     *   <ScaleHint min=0 max=value/>     
-     * </pre>
-     * 
-     * @throws Exception
-     */
-    @Test
-    public void scaleHintUnitsPerPixelDefaultMinValue()throws Exception{
-
-        Document dom = findCapabilities(true);
-
-        Element layerElement= searchLayerElement(getLayerId(ACCIDENT2), dom);
-
-        NodeList scaleNode = layerElement.getElementsByTagName("ScaleHint");
-
-        Element scaleElement = (Element)scaleNode.item(0);
-
-        assertEquals(0.0, Double.valueOf(scaleElement.getAttribute("min")));
-
-        assertEquals(Double.valueOf(253427.07037725858), Double.valueOf(scaleElement.getAttribute("max")));
-
-    }
-
-    /**
-     * Default values for ScaleHint should be set.
-     * 
-     * <pre>
-     * Check the Min and Max values return: 
-     * 		Min: a value
-     * 		Max: Infinity
-     * 
-     * Capabilities document Expected:
-     *  
-     *   <ScaleHint min=value max=infinity/>     
-     * </pre>
-     * 
-     * @throws Exception
-     */
-    @Test
-    public void scaleHintDefaultMaxValue()throws Exception{
-
-        Document dom = findCapabilities(false);
-
-        Element layerElement= searchLayerElement(getLayerId(ACCIDENT3), dom);
-
-        NodeList scaleNode = layerElement.getElementsByTagName("ScaleHint");
-
-        Element scaleElement = (Element)scaleNode.item(0);
-
-        assertEquals(Double.valueOf(320000000), Double.valueOf(scaleElement.getAttribute("min")));
-        assertEquals(Double.POSITIVE_INFINITY, Double.valueOf(scaleElement.getAttribute("max")));
-
-    }
-
-    /**
-     * Default values for ScaleHint should be set.
-     * 
-     * <pre>
-     * The computation of Min and Max values when the option 
-     * 'Scalehint in units per diagonal pixel' is set. Return: 
-     * 		Min: a value
-     * 		Max: Infinity
-     * 
-     * Capabilities document Expected:
-     *  
-     *   <ScaleHint min=value max=infinity/>     
-     * </pre>
-     * 
-     * @throws Exception
-     */
-    @Test
-    public void scaleHintUnitsPerPixelDefaultMaxValue()throws Exception{
-
-        Document dom = findCapabilities(true);
-
-        Element layerElement= searchLayerElement(getLayerId(ACCIDENT3), dom);
-
-        NodeList scaleNode = layerElement.getElementsByTagName("ScaleHint");
-
-        Element scaleElement = (Element)scaleNode.item(0);
-
-        assertEquals(Double.valueOf(126713.53518862929), Double.valueOf(scaleElement.getAttribute("min")));
-        assertEquals(Double.POSITIVE_INFINITY, Double.valueOf(scaleElement.getAttribute("max")));
-
-    }
-
-    /**
-     * <pre>
-     * Max is the maximum value found in the set of rules 
-     * Min is the minimum value found in the set of rules
-     * </pre>
-     * 
-     * @throws Exception
-     */
-    @Test
-    public void scaleHintFoundMaxMinDenominators()throws Exception{
-
-        Document dom = findCapabilities(false);
-
-        final String layerName = getLayerId(REGIONATED);
-        Element layerElement= searchLayerElement(layerName, dom);
-
-        NodeList scaleNode = layerElement.getElementsByTagName("ScaleHint");
-        Element scaleElement = (Element)scaleNode.item(0);
-
-        assertEquals(Double.valueOf(80000000), Double.valueOf(scaleElement.getAttribute("min")));
-        assertEquals(Double.valueOf(640000000), Double.valueOf(scaleElement.getAttribute("max")));
-    }
-
-    /**
-     * <pre>
-     * Max is the maximum value found in the set of rules 
-     * Min is the minimum value found in the set of rules
-     * Both values are computed as units per diagonal pixel
-     * </pre>
-     * 
-     * @throws Exception
-     */
-    @Test
-    public void scaleHintUnitsPerPixelFoundMaxMinDenominators()throws Exception{
-
-        Document dom = findCapabilities(true);
-
-        final String layerName = getLayerId(REGIONATED);
-        Element layerElement= searchLayerElement(layerName, dom);
-
-        NodeList scaleNode = layerElement.getElementsByTagName("ScaleHint");
-        Element scaleElement = (Element)scaleNode.item(0);
-
-        assertEquals(Double.valueOf(31678.383797157323), Double.valueOf(scaleElement.getAttribute("min")));
-        assertEquals(Double.valueOf(253427.07037725858), Double.valueOf(scaleElement.getAttribute("max")));
-    }
+    
     /**
      * Retrieves the WMS's capabilities document.
      * 
@@ -390,15 +190,16 @@ public class GetCapabilitiesScaleHintTest extends WMSTestSupport {
         mm.put(WMS.SCALEHINT_MAPUNITS_PIXEL, scaleHintUnitsPerDiaPixel);
         info.getGeoServer().save(info);
 
-        GetCapabilitiesTransformer tr = new GetCapabilitiesTransformer(wms, BASE_URL, FORMATS, LEGEND_FORMAT, null);
+        Capabilities_1_3_0_Transformer tr = new Capabilities_1_3_0_Transformer(wms, BASE_URL, 
+                wms.getAllowedMapFormats(), new HashSet<ExtendedCapabilitiesProvider>());
         GetCapabilitiesRequest req = new GetCapabilitiesRequest();
         req.setBaseUrl(BASE_URL);
-        req.setVersion(WMS.VERSION_1_1_1.toString());
+        req.setVersion(WMS.VERSION_1_3_0.toString());
 
         Document dom = WMSTestSupport.transform(req, tr);
 
         Element root = dom.getDocumentElement();
-        Assert.assertEquals(WMS.VERSION_1_1_1.toString(), root.getAttribute("version"));
+        assertEquals(WMS.VERSION_1_3_0.toString(), root.getAttribute("version"));
 
         return dom;
     }
@@ -414,7 +215,7 @@ public class GetCapabilitiesScaleHintTest extends WMSTestSupport {
      */
     private Element searchLayerElement(final String layerRequired, Document capabilities) throws XpathException {
 
-        NodeList layersNodes = xpath.getMatchingNodes("//Layer/Name",capabilities);
+        NodeList layersNodes = xpath.getMatchingNodes("//wms:Layer/wms:Name",capabilities);
         for (int i = 0; i < layersNodes.getLength(); i++) {
 
             Element e = (Element) layersNodes.item(i);
@@ -432,7 +233,5 @@ public class GetCapabilitiesScaleHintTest extends WMSTestSupport {
         }
         return null; // not found
     }
-
-
 
 }

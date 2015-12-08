@@ -23,7 +23,7 @@ import org.custommonkey.xmlunit.XpathEngine;
 import org.custommonkey.xmlunit.exceptions.XpathException;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.Keyword;
-import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.impl.CatalogImpl;
 import org.geoserver.config.ContactInfo;
 import org.geoserver.config.GeoServer;
@@ -86,7 +86,7 @@ public class GetCapabilitiesTransformerTest {
         }
 
         @Override
-        public NumberRange<Double> overrideScaleDenominators(LayerInfo layer,
+        public NumberRange<Double> overrideScaleDenominators(PublishedInfo layer,
                 NumberRange<Double> scaleDenominators) {
             return null;
         }
@@ -131,7 +131,7 @@ public class GetCapabilitiesTransformerTest {
         }
 
         @Override
-        public NumberRange<Double> overrideScaleDenominators(LayerInfo layer,
+        public NumberRange<Double> overrideScaleDenominators(PublishedInfo layer,
                 NumberRange<Double> scaleDenominators) {
             return new NumberRange<Double>(Double.class, 0d, 1000d);
         }

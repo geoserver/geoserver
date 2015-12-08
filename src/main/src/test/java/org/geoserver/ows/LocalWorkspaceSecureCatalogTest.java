@@ -5,10 +5,14 @@
  */
 package org.geoserver.ows;
 
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.emptyCollectionOf;
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.*;
 
 import java.util.Collections;
 
+import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
@@ -20,8 +24,11 @@ import org.geoserver.security.DataAccessManagerAdapter;
 import org.geoserver.security.ResourceAccessManager;
 import org.geoserver.security.SecureCatalogImpl;
 import org.geoserver.security.impl.AbstractAuthorizationTest;
+import org.geoserver.util.PropertyRule;
+import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.opengis.filter.Filter;
 import org.springframework.security.core.Authentication;
@@ -29,11 +36,14 @@ import org.springframework.security.core.Authentication;
 import com.google.common.collect.Iterators;
 
 public class LocalWorkspaceSecureCatalogTest extends AbstractAuthorizationTest {
-
+    
+    @Rule
+    public PropertyRule inheritance = PropertyRule.system("GEOSERVER_GLOBAL_LAYER_GROUP_INHERIT");
+    
     @Before
     public void setUp() throws Exception {
+        LocalWorkspaceCatalogFilter.groupInherit = null;
         super.setUp();
-        
         populateCatalog();
     }
 
@@ -75,22 +85,42 @@ public class LocalWorkspaceSecureCatalogTest extends AbstractAuthorizationTest {
         assertEquals(1, sc.getStyles().size());
     }
 
+    @SuppressWarnings({ "unchecked" })
     @Test
     public void testAccessToLayerGroup() throws Exception {
         CatalogFilterAccessManager mgr = setupAccessManager();
 
         SecureCatalogImpl sc = new SecureCatalogImpl(catalog, mgr) {};
-        assertEquals(3, sc.getLayerGroups().size());
+        assertThat(sc.getLayerGroups(), containsInAnyOrder(equalTo(layerGroupGlobal), equalTo(layerGroupTopp), equalTo(layerGroupWithSomeLockedLayer)));
 
         WorkspaceInfo ws = sc.getWorkspaceByName("topp");
         LocalWorkspace.set(ws);
-        assertEquals(3, sc.getLayerGroups().size());
+        assertThat(sc.getLayerGroups(), containsInAnyOrder(equalTo(layerGroupGlobal), equalTo(layerGroupTopp), equalTo(layerGroupWithSomeLockedLayer)));
         LocalWorkspace.remove();
 
         ws = sc.getWorkspaceByName("nurc");
         LocalWorkspace.set(ws);
-        assertEquals(1, sc.getLayerGroups().size());
-        assertEquals("layerGroup", sc.getLayerGroups().get(0).getName());
+        assertThat(sc.getLayerGroups(), containsInAnyOrder(equalTo(layerGroupGlobal)));
+        LocalWorkspace.remove();
+    }
+    
+    @SuppressWarnings({ "unchecked" })
+    @Test
+    public void testAccessToLayerGroupNoInheritance() throws Exception {
+        CatalogFilterAccessManager mgr = setupAccessManager();
+        inheritance.setValue("false");
+
+        SecureCatalogImpl sc = new SecureCatalogImpl(catalog, mgr) {};
+        assertThat(sc.getLayerGroups(), containsInAnyOrder(equalTo(layerGroupGlobal), equalTo(layerGroupTopp), equalTo(layerGroupWithSomeLockedLayer)));
+
+        WorkspaceInfo ws = sc.getWorkspaceByName("topp");
+        LocalWorkspace.set(ws);
+        assertThat(sc.getLayerGroups(), containsInAnyOrder(equalTo(layerGroupTopp), equalTo(layerGroupWithSomeLockedLayer)));
+        LocalWorkspace.remove();
+
+        ws = sc.getWorkspaceByName("nurc");
+        LocalWorkspace.set(ws);
+        assertThat(sc.getLayerGroups(), emptyCollectionOf(LayerGroupInfo.class));
         LocalWorkspace.remove();
     }
 

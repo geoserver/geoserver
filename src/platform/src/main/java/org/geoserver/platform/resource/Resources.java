@@ -10,13 +10,13 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import org.apache.commons.io.IOUtils;
 import org.geoserver.platform.GeoServerExtensions;
@@ -463,21 +463,19 @@ public class Resources {
         }
     }
     
-    private static final SecureRandom random = new SecureRandom();
     public static Resource createRandom(String prefix, String suffix, Resource dir)
         throws IOException {
-        long n = random.nextLong();
-        if (n == Long.MIN_VALUE) {
-            n = 0;      // corner case
-        } else {
-            n = Math.abs(n);
-        }
-
         // Use only the file name from the supplied prefix
         prefix = (new File(prefix)).getName();
 
-        String name = prefix + Long.toString(n) + suffix;
-        return dir.get(name);
+        Resource res;
+        do {
+            UUID uuid = UUID.randomUUID();
+            String name = prefix + uuid + suffix;
+            res = dir.get(name);
+        } while(exists(res));
+
+        return res;
     }
 
 }

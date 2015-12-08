@@ -5,10 +5,16 @@
  */
 package org.geoserver.ows;
 
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.emptyCollectionOf;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.*;
 
 import java.util.Collections;
 
+import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
@@ -20,8 +26,11 @@ import org.geoserver.security.DataAccessManagerAdapter;
 import org.geoserver.security.ResourceAccessManager;
 import org.geoserver.security.SecureCatalogImpl;
 import org.geoserver.security.impl.AbstractAuthorizationTest;
+import org.geoserver.util.PropertyRule;
+import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.opengis.filter.Filter;
 import org.springframework.security.core.Authentication;
@@ -29,11 +38,14 @@ import org.springframework.security.core.Authentication;
 import com.google.common.collect.Iterators;
 
 public class LocalWorkspaceSecureCatalogTest extends AbstractAuthorizationTest {
-
+    
+    @Rule
+    public PropertyRule inheritance = PropertyRule.system("GEOSERVER_GLOBAL_LAYER_GROUP_INHERIT");
+    
     @Before
     public void setUp() throws Exception {
+        LocalWorkspaceCatalogFilter.groupInherit = null;
         super.setUp();
-        
         populateCatalog();
     }
 
@@ -75,6 +87,7 @@ public class LocalWorkspaceSecureCatalogTest extends AbstractAuthorizationTest {
         assertEquals(1, sc.getStyles().size());
     }
 
+    @SuppressWarnings({ "unchecked" })
     @Test
     public void testAccessToLayerGroup() throws Exception {
         CatalogFilterAccessManager mgr = setupAccessManager();
@@ -97,6 +110,27 @@ public class LocalWorkspaceSecureCatalogTest extends AbstractAuthorizationTest {
 
     private long getWorkspaceAccessibleGroupSize(String workspaceName) {
         return catalog.getLayerGroups().stream().filter(lg -> lg.getWorkspace() == null || workspaceName.equals(lg.getWorkspace().getName())).count();
+    }
+
+    @Test
+    public void testAccessToLayerGroupNoInheritance() throws Exception {
+        CatalogFilterAccessManager mgr = setupAccessManager();
+        inheritance.setValue("false");
+
+        SecureCatalogImpl sc = new SecureCatalogImpl(catalog, mgr) {};
+        assertThat(sc.getLayerGroups(), hasItem(equalTo(layerGroupGlobal)));
+        assertThat(sc.getLayerGroups(), hasItem(equalTo(layerGroupTopp)));
+        WorkspaceInfo ws = sc.getWorkspaceByName("topp");
+        LocalWorkspace.set(ws);
+        assertThat(sc.getLayerGroups(), not(hasItem(equalTo(layerGroupGlobal))));
+        assertThat(sc.getLayerGroups(), hasItem(equalTo(layerGroupTopp)));
+        LocalWorkspace.remove();
+
+        ws = sc.getWorkspaceByName("nurc");
+        LocalWorkspace.set(ws);
+        assertThat(sc.getLayerGroups(), not(hasItem(equalTo(layerGroupGlobal))));
+        assertThat(sc.getLayerGroups(), not(hasItem(equalTo(layerGroupTopp))));
+        LocalWorkspace.remove();
     }
 
     @Test

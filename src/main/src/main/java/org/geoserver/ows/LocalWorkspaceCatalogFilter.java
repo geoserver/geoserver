@@ -21,6 +21,7 @@ import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.Wrapper;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.AbstractCatalogFilter;
 import org.geotools.filter.expression.InternalVolatileFunction;
 import org.opengis.filter.Filter;
@@ -99,6 +100,25 @@ public class LocalWorkspaceCatalogFilter extends AbstractCatalogFilter {
         return hideWorkspace(style.getWorkspace());
     }
 
+    static Boolean groupInherit = null; 
+    /**
+     * Should local workspaces include layer groups from the global workspace
+     * @return
+     */
+    public static boolean workspaceLayerGroupInherit() {
+        if(groupInherit==null){
+            // Just sets it based on the property so no need to synchronize
+            String value = GeoServerExtensions.getProperty("GEOSERVER_GLOBAL_LAYER_GROUP_INHERIT");
+            if(value != null){
+                groupInherit = Boolean.parseBoolean(value);
+            } else {
+                // Local workspaces inherit global layer groups by default.
+                groupInherit = true;
+            }
+        }
+        return groupInherit;
+    }
+    
     @Override
     public boolean hideLayerGroup(LayerGroupInfo layerGroup) {
         PublishedInfo local = LocalPublished.get();
@@ -113,12 +133,17 @@ public class LocalWorkspaceCatalogFilter extends AbstractCatalogFilter {
         }
 
         if (layerGroup.getWorkspace() == null) {
-            //global layer group, hide it if a local workspace layer group shared the same name, ie 
-            // overrides it
-            if (LocalWorkspace.get() != null) {
-                if (catalog.getLayerGroupByName(LocalWorkspace.get(), layerGroup.getName()) != null) {
-                    return true;
+            if(workspaceLayerGroupInherit()) {
+                //global layer group, hide it if a local workspace layer group shared the same name, ie 
+                // overrides it
+                if (LocalWorkspace.get() != null) {
+                    if (catalog.getLayerGroupByName(LocalWorkspace.get(), layerGroup.getName()) != null) {
+                        return true;
+                    }
                 }
+            } else {
+                // Only show a global layer group in the global workspace.
+                return LocalWorkspace.get() != null;
             }
             return false;
         }

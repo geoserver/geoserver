@@ -52,6 +52,7 @@ public class VectorTileMapOutputFormat extends AbstractMapOutputFormat {
     private final VectorTileBuilderFactory tileBuilderFactory;
 
     private boolean clipToMapBounds;
+    private double  overSamplingFactor = 2.0; //1=no oversampling, 4=four time oversample (generialization will be 1/4 pixel)
 
     private boolean transformToScreenCoordinates;
 
@@ -61,6 +62,10 @@ public class VectorTileMapOutputFormat extends AbstractMapOutputFormat {
         this.tileBuilderFactory = tileBuilderFactory;
     }
 
+    public void setOverSamplingFactor(double  factor) {
+        this.overSamplingFactor = factor;
+    }
+    
     public void setClipToMapBounds(boolean clip) {
         this.clipToMapBounds = clip;
     }
@@ -100,17 +105,17 @@ public class VectorTileMapOutputFormat extends AbstractMapOutputFormat {
 
             PipelineBuilder builder;
             try {
-                builder = PipelineBuilder.newBuilder(renderingArea, paintArea, sourceCrs);
+                builder = PipelineBuilder.newBuilder(renderingArea, paintArea, sourceCrs,overSamplingFactor);
             } catch (FactoryException e) {
                 throw new ServiceException(e);
             }
 
-            Pipeline pipeline = builder//
-                    .preprocess()//
-                    .transform(transformToScreenCoordinates)//
-                    .simplify(transformToScreenCoordinates)//
-                    .clip(clipToMapBounds, transformToScreenCoordinates)//
-                    .collapseCollections()//
+            Pipeline pipeline = builder
+                    .preprocess()
+                    .transform(transformToScreenCoordinates)
+                    .simplify(transformToScreenCoordinates)
+                    .clip(clipToMapBounds, transformToScreenCoordinates)
+                    .collapseCollections()
                     .build();
 
             Query query = getStyleQuery(layer, mapContent);

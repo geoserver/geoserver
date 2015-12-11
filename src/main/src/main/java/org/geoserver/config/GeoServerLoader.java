@@ -615,15 +615,23 @@ public abstract class GeoServerLoader {
             //assume 2.x style
             f = resourceLoader.get( "global.xml");
             if ( Resources.exists(f) ) {
-                GeoServerInfo global = depersist(xp, f, GeoServerInfo.class);
-                geoServer.setGlobal( global );
+                try {
+                    GeoServerInfo global = depersist(xp, f, GeoServerInfo.class);
+                    geoServer.setGlobal( global );
+                } catch (IOException e) {
+                    LOGGER.log(Level.WARNING, "Failed to load global configuration file '" + f.name() + "'" , e );
+                }
             }
             
             //load logging
             f = resourceLoader.get( "logging.xml" );
             if ( Resources.exists(f) ) {
-                LoggingInfo logging = depersist(xp, f, LoggingInfo.class );
-                geoServer.setLogging( logging );
+                try {
+                    LoggingInfo logging = depersist(xp, f, LoggingInfo.class );
+                    geoServer.setLogging( logging );
+                } catch (IOException e) {
+                    LOGGER.log(Level.WARNING, "Failed to load logging configuration file '" + f.name() + "'" , e );
+                }
             }
 
             // load workspace specific settings
@@ -634,8 +642,12 @@ public abstract class GeoServerLoader {
     
                     f = dir.get("settings.xml");
                     if (Resources.exists(f)) {
-                        SettingsInfo settings = depersist(xp, f, SettingsInfo.class );
-                        geoServer.add(settings);
+                        try {
+                            SettingsInfo settings = depersist(xp, f, SettingsInfo.class );
+                            geoServer.add(settings);
+                        } catch (IOException e) {
+                            LOGGER.log(Level.WARNING, "Failed to load configuration file '" + f.name() + "' for workspace " + dir.name() , e );
+                        }
                     }
                 }
             }

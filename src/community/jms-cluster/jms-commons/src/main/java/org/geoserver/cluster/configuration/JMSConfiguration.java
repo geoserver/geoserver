@@ -31,13 +31,14 @@ import org.springframework.web.util.WebUtils;
 final public class JMSConfiguration {
     public static final String DEFAULT_GROUP = "geoserver-cluster";
 
-	protected static final java.util.logging.Logger LOGGER = Logging.getLogger(JMSConfiguration.class);
+    protected static final java.util.logging.Logger LOGGER = Logging
+            .getLogger(JMSConfiguration.class);
 
     @Autowired
     public List<JMSConfigurationExt> exts;
 
     public static final String INSTANCE_NAME_KEY = "instanceName";
-    
+
     public static final String GROUP_KEY = "group";
 
     /**
@@ -117,9 +118,9 @@ final public class JMSConfiguration {
      * @throws IOException
      */
     public void initDefaults() throws IOException {
-    	// set the group
-    	configuration.put(GROUP_KEY, DEFAULT_GROUP);
-    	
+        // set the group
+        configuration.put(GROUP_KEY, DEFAULT_GROUP);
+
         // set the name
         configuration.put(INSTANCE_NAME_KEY, UUID.randomUUID().toString());
         if (exts != null) {
@@ -184,7 +185,9 @@ final public class JMSConfiguration {
     }
 
     public final static File getTempDir() {
-        String tempPath = ApplicationProperties.getProperty(WebUtils.TEMP_DIR_CONTEXT_ATTRIBUTE);
+        String tempPath = (ApplicationProperties.getProperty(WebUtils.TEMP_DIR_CONTEXT_ATTRIBUTE) != null ? ApplicationProperties
+                .getProperty(WebUtils.TEMP_DIR_CONTEXT_ATTRIBUTE) : System
+                .getProperty("java.io.tmpdir"));
         if (tempPath == null) {
             return null;
         }

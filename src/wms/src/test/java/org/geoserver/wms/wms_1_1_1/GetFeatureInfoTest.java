@@ -922,4 +922,41 @@ public class GetFeatureInfoTest extends WMSTestSupport {
        
        catalog.remove(layerGroup);
    }
+   
+   /**
+    * Test GetFeatureInfo on a group layer with no-queryable flag activated
+    * @throws Exception
+    */
+   @Test
+   public void testNotQueryableGroupLayer() throws Exception {
+       Catalog catalog = getCatalog();
+       CatalogFactory factory = catalog.getFactory();
+       WorkspaceInfo workspace = catalog.getWorkspaceByName(MockData.CITE_PREFIX);
+       String groupLayer = "glnotqueryable";
+       
+       LayerGroupInfo layerGroup = factory.createLayerGroup();
+       layerGroup.setName(groupLayer);
+       layerGroup.setWorkspace(workspace);
+       layerGroup.getLayers().add( catalog.getLayerByName(getLayerId(MockData.FORESTS)) );
+       new CatalogBuilder(catalog).calculateLayerGroupBounds(layerGroup);
+       catalog.add(layerGroup);
+       
+       String name = MockData.CITE_PREFIX+":"+groupLayer;
+       String request = "wms?bbox=-0.002,-0.002,0.002,0.002&styles=&format=jpeg" +
+               "&info_format=text/plain&request=GetFeatureInfo&layers="
+               + name + "&query_layers=" + name + "&width=20&height=20&x=10&y=10";
+       
+       String result = getAsString(request);
+       assertNotNull(result);
+       assertTrue(result.indexOf("Green Forest") > 0);
+       
+       // Test no-queryable flag activated
+       layerGroup.setQueryDisabled(true);
+       
+       result = getAsString(request);
+       assertNotNull(result);
+       assertTrue(result.indexOf("no layer was queryable") > 0);
+       
+       catalog.remove(layerGroup);
+   }
 }

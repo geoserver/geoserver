@@ -71,6 +71,8 @@ You can view layer groups in the :ref:`layerpreview` section of the web admin.
 
    *Openlayers preview of the layer group "tasmania"*
 
+.. note:: By default, a layer group is queryable when at least a child layer is queryable. Uncheck "Queryable" box if you want to explicitly indicate that it is not queryable independently of how the child layers are configured.
+
 Add a Layer Group
 -----------------
 

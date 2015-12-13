@@ -618,7 +618,7 @@ public abstract class GeoServerLoader {
                 try {
                     GeoServerInfo global = depersist(xp, f, GeoServerInfo.class);
                     geoServer.setGlobal( global );
-                } catch (IOException e) {
+                } catch (Exception e) {
                     LOGGER.log(Level.WARNING, "Failed to load global configuration file '" + f.name() + "'" , e );
                 }
             }
@@ -629,7 +629,7 @@ public abstract class GeoServerLoader {
                 try {
                     LoggingInfo logging = depersist(xp, f, LoggingInfo.class );
                     geoServer.setLogging( logging );
-                } catch (IOException e) {
+                } catch (Exception e) {
                     LOGGER.log(Level.WARNING, "Failed to load logging configuration file '" + f.name() + "'" , e );
                 }
             }
@@ -645,7 +645,7 @@ public abstract class GeoServerLoader {
                         try {
                             SettingsInfo settings = depersist(xp, f, SettingsInfo.class );
                             geoServer.add(settings);
-                        } catch (IOException e) {
+                        } catch (Exception e) {
                             LOGGER.log(Level.WARNING, "Failed to load configuration file '" + f.name() + "' for workspace " + dir.name() , e );
                         }
                     }

@@ -446,5 +446,11 @@
         <module>wps-jdbc</module>
       </modules>
     </profile>
-  </profiles>   
+    <profile>
+      <id>community-release-module</id>
+      <modules>
+        <module>release</module>
+      </modules>
+    </profile>
+  </profiles>
 </project>

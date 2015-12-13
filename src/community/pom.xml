@@ -398,5 +398,11 @@
           <module>hz-cluster</module>
         </modules>
     </profile>
+    <profile>
+      <id>community-release-module</id>
+      <modules>
+        <module>release</module>
+      </modules>
+    </profile>
   </profiles>
 </project>

@@ -39,11 +39,7 @@ public class RootLayerEntryPanel extends Panel {
         final TextField<LayerInfo> rootLayerField = new TextField<LayerInfo>("rootLayer") {
             @Override
             public IConverter getConverter(Class<?> type) { 
-                if (LayerInfo.class.isAssignableFrom(type)) {
-                    return new LayerInfoConverter();
-                } else {
-                    return super.getConverter(type);
-                }
+                return new LayerInfoConverter();
             } 
         };
         rootLayerField.setOutputMarkupId(true);

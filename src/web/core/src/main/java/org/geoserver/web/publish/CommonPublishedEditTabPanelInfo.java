@@ -1,7 +1,16 @@
+/* (c) 2015 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.web.publish;
 
 import org.geoserver.catalog.PublishedInfo;
 
+/**
+ * 
+ * @author Niels Charlier
+ *
+ */
 public class CommonPublishedEditTabPanelInfo extends PublishedEditTabPanelInfo<PublishedInfo> {
 
     private static final long serialVersionUID = -388475157541960108L;

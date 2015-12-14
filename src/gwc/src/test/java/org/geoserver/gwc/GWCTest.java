@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -111,6 +111,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
+import com.google.common.collect.Sets.SetView;
 import com.vividsolutions.jts.geom.Envelope;
 
 /**
@@ -1181,13 +1182,14 @@ public class GWCTest {
         Set<String> defaultFormats = ImmutableSet.of("image/png", "image/png8", "image/jpeg",
                 "image/gif");
 
-        assertEquals(defaultFormats, GWC.getAdvertisedCachedFormats(PublishedType.VECTOR));
-        assertEquals(defaultFormats, GWC.getAdvertisedCachedFormats(PublishedType.REMOTE));
+        SetView<String> formatsWithUtfGrid = union(defaultFormats, Collections.singleton("application/json;type=utfgrid"));
+        assertEquals(formatsWithUtfGrid, GWC.getAdvertisedCachedFormats(PublishedType.VECTOR));
+        assertEquals(formatsWithUtfGrid, GWC.getAdvertisedCachedFormats(PublishedType.REMOTE));
 
         assertEquals(defaultFormats, GWC.getAdvertisedCachedFormats(PublishedType.RASTER));
         assertEquals(defaultFormats, GWC.getAdvertisedCachedFormats(PublishedType.WMS));
 
-        assertEquals(defaultFormats, GWC.getAdvertisedCachedFormats(PublishedType.GROUP));
+        assertEquals(formatsWithUtfGrid, GWC.getAdvertisedCachedFormats(PublishedType.GROUP));
     }
 
     @Test
@@ -1206,16 +1208,15 @@ public class GWCTest {
         }
 
         // from src/main/resources/org/geoserver/gwc/advertised_formats.properties
-        Set<String> defaultFormats = ImmutableSet.of("image/png", "image/png8", "image/jpeg",
-                "image/gif");
+        Set<String> defaultFormats = ImmutableSet.of("image/png", "image/png8", "image/jpeg", "image/gif");
 
         // see src/test/resources/org/geoserver/gwc/advertised_formats.properties
         Set<String> expectedVector = union(defaultFormats,
-                ImmutableSet.of("test/vector1", "test/vector2"));
+                ImmutableSet.of("test/vector1", "test/vector2", "application/json;type=utfgrid"));
         Set<String> expectedRaster = union(defaultFormats,
                 ImmutableSet.of("test/raster1", "test/raster2;type=test"));
         Set<String> expectedGroup = union(defaultFormats,
-                ImmutableSet.of("test/group1", "test/group2"));
+                ImmutableSet.of("test/group1", "test/group2", "application/json;type=utfgrid"));
 
         assertEquals(expectedVector, GWC.getAdvertisedCachedFormats(PublishedType.VECTOR, urls));
         assertEquals(expectedVector, GWC.getAdvertisedCachedFormats(PublishedType.REMOTE, urls));

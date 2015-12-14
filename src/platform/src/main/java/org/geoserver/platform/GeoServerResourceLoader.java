@@ -180,12 +180,12 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Re
      * Used to look up files based on user provided url (or path).
      * 
      * This method (originally from vfny GeoserverDataDirectory) is used to process a URL provided
-     * by a user: <i>iven a path, tries to interpret it as a file into the data directory, or as an absolute
+     * by a user: <i>Given a path, tries to interpret it as a file into the data directory, or as an absolute
      * location, and returns the actual absolute location of the file.</i>
      * 
      * Over time this url method has grown in the telling to support:
      * <ul>
-     * <li>Actual URL to external resoruce using http or ftp protocol - will return null</li>
+     * <li>Actual URL to external resource using http or ftp protocol - will return null</li>
      * <li>Resource URL - will support resources from resource store</li>
      * <li>File URL - will support absolute file references</li>
      * <li>File URL - will support relative file references - this is deprecated, use resource: instead</li>

@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 
-import org.geoserver.platform.resource.Resource.Type;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 
@@ -23,17 +22,16 @@ public class ResourceHasContents extends BaseMatcher<Resource> {
     @Override
     public boolean matches(Object item) {
         if(item instanceof Resource) {
-            try {
-                InputStream in = ((Resource) item).in();
-                try {
-                    byte[] result = new byte[contents.length];
-                    int len = in.read(result);
-                    if(len != contents.length) return false;
-                    if(in.read()!=-1) return false;
-                    return Arrays.equals(contents, result);
-                } finally {
-                    in.close();
+            try (InputStream in = ((Resource) item).in()) {
+                byte[] result = new byte[contents.length];
+                int len = in.read(result);
+                if (len != contents.length) {
+                    return false;
+                } 
+                if (in.read() != -1) {
+                    return false;
                 }
+                return Arrays.equals(contents, result);
             } catch (IOException ex) {
                 throw new IllegalStateException("Exception while reading resource contents", ex);
             }

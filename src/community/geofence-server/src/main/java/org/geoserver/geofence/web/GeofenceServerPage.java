@@ -10,32 +10,34 @@ import org.apache.wicket.ResourceReference;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.ComponentTag;
+import org.apache.wicket.markup.html.CSSPackageResource;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.geoserver.geofence.services.dto.ShortRule;
 import org.geoserver.web.GeoServerSecuredPage;
+import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.ImageAjaxLink;
 import org.geoserver.web.wicket.ParamResourceModel;
-import org.geoserver.web.wicket.GeoServerDataProvider.Property;
+import wicketdnd.*;
+import wicketdnd.theme.WebTheme;
 
 /**
  * GeoFence Server wicket administration UI for GeoServer.
- * 
- * @author Niels Charlier
  *
+ * @author Niels Charlier
  */
 @SuppressWarnings("serial")
-public class GeofenceServerPage extends GeoServerSecuredPage { 
-    
+public class GeofenceServerPage extends GeoServerSecuredPage {
+
     private GeofenceRulesModel rulesModel;
-    
+
     private GeoServerTablePanel<ShortRule> rulesPanel;
-    
+
     private AjaxLink<Object> remove;
-        
-    public GeofenceServerPage() {              
-                
+
+    public GeofenceServerPage() {
+
         // the add button
         add(new AjaxLink<Object>("addNew") {
             @Override
@@ -43,20 +45,20 @@ public class GeofenceServerPage extends GeoServerSecuredPage {
                 setResponsePage(new GeofenceRulePage(rulesModel.newRule(), rulesModel));
             }
         });
-        
+
         // the removal button
         add(remove = new AjaxLink<Object>("removeSelected") {
             @Override
             public void onClick(AjaxRequestTarget target) {
                 rulesModel.remove(rulesPanel.getSelection());
                 target.addComponent(rulesPanel);
-            }  
+            }
         });
         remove.setOutputMarkupId(true);
         remove.setEnabled(false);
-         
+
         //the panel
-        add(rulesPanel =  new GeoServerTablePanel<ShortRule>("rulesPanel", 
+        add(rulesPanel = new GeoServerTablePanel<ShortRule>("rulesPanel",
                 rulesModel = new GeofenceRulesModel(), true) {
 
             @Override
@@ -64,8 +66,8 @@ public class GeofenceServerPage extends GeoServerSecuredPage {
 
                 if (property == GeofenceRulesModel.BUTTONS) {
                     return new ButtonPanel(id, (ShortRule) itemModel.getObject());
-                } 
-                
+                }
+
                 return null;
             }
 
@@ -75,24 +77,43 @@ public class GeofenceServerPage extends GeoServerSecuredPage {
                 target.addComponent(remove);
             }
         });
+        rulesPanel.add(CSSPackageResource.getHeaderContribution(new WebTheme()));
+        rulesPanel.add(new DragSource(Operation.MOVE).drag("tr"));
+        rulesPanel.add(new DropTarget(Operation.MOVE) {
+            public void onDrop(AjaxRequestTarget target, Transfer transfer, Location location) {
+                if (location == null || !(location.getComponent().getDefaultModel().getObject() instanceof ShortRule)) {
+                    return;
+                }
+                ShortRule movedRule = transfer.getData();
+                ShortRule targetRule = (ShortRule) location.getComponent().getDefaultModel().getObject();
+                if (movedRule.getId().equals(targetRule.getId())) {
+                    return;
+                }
+                if (movedRule.getPriority() < targetRule.getPriority()) {
+                    movedRule.setPriority(targetRule.getPriority() + 1);
+                } else {
+                    movedRule.setPriority(targetRule.getPriority());
+                }
+                rulesModel.save(movedRule);
+                doReturn(GeofenceServerPage.class);
+            }
+        }.dropCenter("tr"));
         rulesPanel.setOutputMarkupId(true);
     }
-     
+
     /**
-     * 
      * Panel with buttons up, down and edit
-     *
      */
     private class ButtonPanel extends Panel {
-        
+
         private ImageAjaxLink upLink;
-        private ImageAjaxLink downLink;      
-        
-        public ButtonPanel( String id, final ShortRule rule ) {
-            super( id );
+        private ImageAjaxLink downLink;
+
+        public ButtonPanel(String id, final ShortRule rule) {
+            super(id);
             this.setOutputMarkupId(true);
-            
-            upLink = new ImageAjaxLink( "up", new ResourceReference( getClass(), "img/arrow_up.png") ) {                                                                                       
+
+            upLink = new ImageAjaxLink("up", new ResourceReference(getClass(), "img/arrow_up.png")) {
                 private static final long serialVersionUID = -8179503447106596760L;
 
                 @Override
@@ -100,7 +121,7 @@ public class GeofenceServerPage extends GeoServerSecuredPage {
                     rulesModel.moveUp(rule);
                     target.addComponent(rulesPanel);
                 }
-                
+
                 @Override
                 protected void onComponentTag(ComponentTag tag) {
                     if (rulesModel.canUp(rule)) {
@@ -112,17 +133,17 @@ public class GeofenceServerPage extends GeoServerSecuredPage {
             };
             upLink.getImage().add(new AttributeModifier("alt", true, new ParamResourceModel("GeofenceServerPage.up", upLink)));
             upLink.setOutputMarkupId(true);
-            add(upLink);            
+            add(upLink);
 
-            downLink = new ImageAjaxLink( "down", new ResourceReference( getClass(), "img/arrow_down.png") ) {
+            downLink = new ImageAjaxLink("down", new ResourceReference(getClass(), "img/arrow_down.png")) {
                 private static final long serialVersionUID = 4640187752303674221L;
 
                 @Override
                 protected void onClick(AjaxRequestTarget target) {
                     rulesModel.moveDown(rule);
-                    target.addComponent(rulesPanel);           
+                    target.addComponent(rulesPanel);
                 }
-                
+
                 @Override
                 protected void onComponentTag(ComponentTag tag) {
                     if (rulesModel.canDown(rule)) {
@@ -135,8 +156,8 @@ public class GeofenceServerPage extends GeoServerSecuredPage {
             downLink.getImage().add(new AttributeModifier("alt", true, new ParamResourceModel("GeofenceServerPage.down", downLink)));
             downLink.setOutputMarkupId(true);
             add(downLink);
-            
-            ImageAjaxLink editLink = new ImageAjaxLink( "edit", new ResourceReference( getClass(), "img/edit.png") ) {
+
+            ImageAjaxLink editLink = new ImageAjaxLink("edit", new ResourceReference(getClass(), "img/edit.png")) {
                 private static final long serialVersionUID = 4640187752303674221L;
 
                 @Override
@@ -145,9 +166,9 @@ public class GeofenceServerPage extends GeoServerSecuredPage {
                 }
             };
             editLink.getImage().add(new AttributeModifier("alt", true, new ParamResourceModel("GeofenceServerPage.edit", editLink)));
-            editLink.setOutputMarkupId(true);            
+            editLink.setOutputMarkupId(true);
             add(editLink);
         }
     }
-    
+
 }

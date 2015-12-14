@@ -120,6 +120,17 @@
             <groupId>xerces</groupId>
             <artifactId>xercesImpl</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>wicket-dnd</groupId>
+            <artifactId>wicket-dnd</artifactId>
+            <version>0.4.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.wicketstuff</groupId>
+            <artifactId>prototype</artifactId>
+            <version>1.4.7</version>
+        </dependency>
         
         <!-- test dependencies -->
         <dependency>

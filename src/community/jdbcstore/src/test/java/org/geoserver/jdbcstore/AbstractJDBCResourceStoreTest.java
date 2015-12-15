@@ -100,7 +100,7 @@ public abstract class AbstractJDBCResourceStoreTest {
         JDBCResourceStore store = new JDBCResourceStore(support.getDataSource(), config);
         store.setLockProvider(new NullLockProvider());
         {
-            // Check that the database has a resource table with a root record
+            // Check that the database has a resources table with a root record
             
             ResultSet rs = support.getConnection().createStatement().executeQuery("SELECT * from resources where oid = 0");
             
@@ -134,7 +134,7 @@ public abstract class AbstractJDBCResourceStoreTest {
         JDBCResourceStore store = new JDBCResourceStore(support.getDataSource(), config);
         store.setLockProvider(new NullLockProvider());
         {
-            // Check that the database has a resource table with a root record
+            // Check that the database has a resources table with a root record
             
             ResultSet rs = support.getConnection().createStatement().executeQuery("SELECT * from resources where oid = 0");
             

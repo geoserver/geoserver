@@ -384,28 +384,21 @@ public class JDBCQueryHelper {
     }
         
     public List<Map<String, Object>> anyMultiQuery(QueryBuilder query, Field<?>... fields) {
+        LOGGER.log(Level.FINEST, query.toString());
+        
         try (Connection c = ds.getConnection()) {
-            LOGGER.log(Level.FINEST, query.toString());
-            PreparedStatement stmt = query.toStatement(c);
-            
-            try {
-                ResultSet rs = stmt.executeQuery();
-                
-                try {
+            try (PreparedStatement stmt = query.toStatement(c)) {
+                try (ResultSet rs = stmt.executeQuery()) {
                     ArrayList<Map<String, Object>> results = new ArrayList<Map<String, Object>>();
-                    while(rs.next()) {           
+                    while (rs.next()) {
                         Map<String, Object> result = new HashMap<String, Object>();
-                        for(int i = 0; i< fields.length; i++) {
+                        for (int i = 0; i < fields.length; i++) {
                             result.put(fields[i].getFieldName(), fields[i].getValue(rs));
                         }
                         results.add(result);
-                    } 
+                    }
                     return results;
-                } finally {
-                    rs.close();
-                }
-            } finally {
-                stmt.close();
+                } 
             }
         } catch (SQLException ex) {
             throw new IllegalStateException("MultiSelectQuery Failed",ex);
@@ -413,43 +406,34 @@ public class JDBCQueryHelper {
     }
     
     public Map<String, Object> anyQuery(QueryBuilder query, Field<?>... fields) {
-        try (Connection c = ds.getConnection()) {
-            LOGGER.log(Level.FINEST, query.toString());
-            PreparedStatement stmt = query.toStatement(c);
-            
-            try {            
-                ResultSet rs = stmt.executeQuery();
-                
-                try {
-                    if(rs.next()) {                
-                        assert(rs.last());
+        LOGGER.log(Level.FINEST, query.toString());
+        
+        try (Connection c = ds.getConnection()) {           
+            try (PreparedStatement stmt = query.toStatement(c)) {
+                try (ResultSet rs = stmt.executeQuery()) {
+                    if (rs.next()) {
+                        assert (rs.last());
                         Map<String, Object> result = new HashMap<String, Object>();
-                        for(int i = 0; i< fields.length; i++) {
+                        for (int i = 0; i < fields.length; i++) {
                             result.put(fields[i].getFieldName(), fields[i].getValue(rs));
                         }
                         return result;
                     } else {
                         return null;
                     }
-                } finally {
-                    rs.close();
                 }
-            } finally {
-                stmt.close();
             }
         } catch (SQLException ex) {
-            throw new IllegalStateException("SelectQuery Failed",ex);
+            throw new IllegalStateException("SelectQuery Failed", ex);
         }
     }
     
     public int anyUpdateQuery(QueryBuilder query) {
-        try (Connection c = ds.getConnection()) {
-            LOGGER.log(Level.FINEST, query.toString());
-            PreparedStatement stmt = query.toStatement(c);
-            try {
+        LOGGER.log(Level.FINEST, query.toString());
+                
+        try (Connection c = ds.getConnection()) {            
+            try (PreparedStatement stmt = query.toStatement(c)) {
                 return stmt.executeUpdate();
-            } finally {
-                stmt.close();
             }
         } catch (SQLException ex) {
             throw new IllegalStateException("UpdateQuery Failed",ex);
@@ -457,24 +441,22 @@ public class JDBCQueryHelper {
     }
     
     public List<Integer> anyInsertQuery(QueryBuilder query) {
+        LOGGER.log(Level.FINEST, query.toString());
+        
         try (Connection c = ds.getConnection()) {
-            LOGGER.log(Level.FINEST, query.toString());
-            PreparedStatement stmt = query.toStatement(c, Statement.RETURN_GENERATED_KEYS);
-            try {
+            try (PreparedStatement stmt = query.toStatement(c, Statement.RETURN_GENERATED_KEYS)) {
                 if (stmt.executeUpdate() <= 0) {
                     return null;
                 }
                 
-                ResultSet rs = stmt.getGeneratedKeys();
-                List<Integer> list = new ArrayList<Integer>();
-                while (rs.next()) {
-                    list.add(rs.getInt(1));
+                try (ResultSet rs = stmt.getGeneratedKeys()) {               
+                    List<Integer> list = new ArrayList<Integer>();
+                    while (rs.next()) {
+                        list.add(rs.getInt(1));
+                    }
+                    return list;
                 }
-                rs.close();
-                return list;
-            } finally {
-                stmt.close();
-            }
+            } 
         } catch (SQLException ex) {
             throw new IllegalStateException("InsertQuery Failed", ex);
         }
@@ -486,6 +468,8 @@ public class JDBCQueryHelper {
      * 
      */
     public InputStream anyBlobQuery(QueryBuilder query, Field<InputStream> field) {
+        LOGGER.log(Level.FINEST, query.toString());
+        
         Connection c;        
         boolean closeConnection = false;
         try {
@@ -493,14 +477,9 @@ public class JDBCQueryHelper {
         } catch (SQLException ex) {
             throw new IllegalStateException("Could not connect to DataSource.",ex);
         } 
-        try {
-            LOGGER.log(Level.FINEST, query.toString());
-            PreparedStatement stmt = query.toStatement(c);            
-            
-            try {
-                ResultSet rs = stmt.executeQuery();
-                
-                try {
+        try {            
+            try (PreparedStatement stmt = query.toStatement(c)){
+                try (ResultSet rs = stmt.executeQuery()) {
                     if(rs.next()) {                
                         assert(rs.last());                   
                         InputStream is = field.getValue(rs);
@@ -509,11 +488,7 @@ public class JDBCQueryHelper {
                         closeConnection = true;
                         return null;
                     }
-                } finally {
-                    rs.close();
                 }
-            } finally {
-                stmt.close();
             }
         } catch (SQLException ex) {
             throw new IllegalStateException("BlobQuery Failed", ex);

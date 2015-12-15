@@ -37,7 +37,7 @@ public class PostgresTestSupport implements DatabaseTestSupport {
     PreparedStatement insert;
     
     public PostgresTestSupport() throws Exception {
-        ds = testDataSource();
+        ds = createTestDataSource();
         conn = ds.getConnection();
         try {
             insert = conn.prepareStatement("INSERT INTO resource (name, parent, content) VALUES (?, ?, ?) RETURNING oid;");
@@ -46,7 +46,7 @@ public class PostgresTestSupport implements DatabaseTestSupport {
         }
     }
     
-    static private PGSimpleDataSource testDataSource() throws SQLException {
+    static private PGSimpleDataSource createTestDataSource() throws SQLException {
         PGSimpleDataSource ds = new PGSimpleDataSource();
         
         ds.setServerName("localhost");
@@ -56,16 +56,14 @@ public class PostgresTestSupport implements DatabaseTestSupport {
         ds.setPassword("jdbcstore");
         
         // Ensure the database is empty
-        Connection conn = ds.getConnection();
-        try {
-            Statement stmt = conn.createStatement();
-            stmt.execute("DROP SCHEMA IF EXISTS public CASCADE;");
-            stmt.execute("CREATE SCHEMA public;");
-            stmt.execute("GRANT ALL ON SCHEMA public TO postgres;");
-            stmt.execute("GRANT ALL ON SCHEMA public TO public;");
-            stmt.execute("COMMENT ON SCHEMA public IS 'standard public schema';");
-        } finally {
-            conn.close();
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
+                stmt.execute("DROP SCHEMA IF EXISTS public CASCADE;");
+                stmt.execute("CREATE SCHEMA public;");
+                stmt.execute("GRANT ALL ON SCHEMA public TO postgres;");
+                stmt.execute("GRANT ALL ON SCHEMA public TO public;");
+                stmt.execute("COMMENT ON SCHEMA public IS 'standard public schema';");
+            }
         }
         
         return ds;

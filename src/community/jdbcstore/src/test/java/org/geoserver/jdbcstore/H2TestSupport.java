@@ -121,18 +121,15 @@ public class H2TestSupport implements DatabaseTestSupport {
         // database is empty.
         JdbcDataSource ds = new JdbcDataSource();
         ds.setURL("jdbc:h2:mem:test");
-        conn = ds.getConnection();
-        try {
-            ResultSet rs = conn.getMetaData().getTables(null, null, null, new String[]{"TABLE"});
-            
-            boolean result = false;
-            while(rs.next()) {
-                result=true;
-                System.out.printf("%s\n", rs.getString("TABLE_NAME"));
+        try (Connection testConn = ds.getConnection()) {
+            try (ResultSet rs = testConn.getMetaData().getTables(null, null, null, new String[]{"TABLE"})) {            
+                boolean result = false;
+                while(rs.next()) {
+                    result = true;
+                    //System.out.printf("%s\n", rs.getString("TABLE_NAME"));
+                }
+                assertThat(result, describedAs("connection closed", is(false)));
             }
-            assertThat(result, describedAs("connection closed", is(false)));
-        } finally {
-            conn.close();
         }
     }
 

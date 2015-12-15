@@ -131,7 +131,7 @@ public class DataSourceFactoryBean implements FactoryBean<DataSource>, Disposabl
             try {
                 Optional<DataSource> ds =  Optional.of((DataSource)jndiCtx.lookup(name.get()));
                 if(LOGGER.isLoggable(Level.INFO)) {
-                    LOGGER.log(Level.INFO, "JDBCLoaer using JNDI DataSource {0}", name.get());
+                    LOGGER.log(Level.INFO, "JDBCLoader using JNDI DataSource {0}", name.get());
                 }
                 config.setDatasourceId(name.get());
                 return ds;

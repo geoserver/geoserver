@@ -50,18 +50,11 @@ public class SimpleResourceCache implements ResourceCache {
 
     void cacheData(Resource res, File file) throws IOException {
         assert res.getType()==Type.RESOURCE;
-        OutputStream out = new FileOutputStream(file);
-        try {
-            InputStream in = res.in();
-            try {
+        try (OutputStream out = new FileOutputStream(file)) {
+            try (InputStream in = res.in()) {
                 IOUtils.copy(in, out);
-            } finally {
-                in.close();
             }
-        } finally {
-            out.close();
         }
-        
     }
     
     void cacheChildren(Resource res, File file) throws IOException {

@@ -240,7 +240,7 @@ public class JDBCResourceStore implements ResourceStore {
         public List<Resource> list() {
             if (getType() != Type.DIRECTORY) {
                 return Collections.EMPTY_LIST;
-            }            
+            }
 
             List<Resource> list = new ArrayList<Resource>();
 

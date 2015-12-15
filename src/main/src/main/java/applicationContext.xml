@@ -17,7 +17,7 @@
     <bean id="lockProviderInitializer" class="org.geoserver.config.LockProviderInitializer"/>
     
     
-    <bean id="resourceWatcher" class="org.geoserver.platform.resource.ResourceWatcher"/>
+    <bean id="resourceWatcher" class="org.geoserver.platform.resource.SimpleResourceWatcher"/>
     
 	<!-- resources -->
     <bean id="dataDirectoryResourceStore" class="org.geoserver.platform.resource.DataDirectoryResourceStore">

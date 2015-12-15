@@ -432,10 +432,10 @@
     </profile>    
     <profile>
       <id>jdbcstore</id>
-        <modules>
-          <module>jdbcconfig</module>
-          <module>jdbcstore</module>
-        </modules>
+      <modules>
+        <module>jdbcconfig</module>
+        <module>jdbcstore</module>
+      </modules>
     </profile>
     <profile>
       <id>gdal-translate</id>

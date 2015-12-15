@@ -28,15 +28,15 @@ public abstract class JDBCLoaderPropertiesFactoryBean extends PropertiesFactoryB
 
     private static final Logger LOGGER = Logging.getLogger(JDBCGeoServerLoader.class);
     
-    protected static final String CONFIG_FILE = "${pref}.properties";
+    protected static final String CONFIG_FILE = "${prefix}.properties";
             
-    protected static final String CONFIG_SYSPROP = "${pref}.properties";
+    protected static final String CONFIG_SYSPROP = "${prefix}.properties";
     
-    protected static final String JDBCURL_SYSPROP = "${pref}.jdbcurl";
+    protected static final String JDBCURL_SYSPROP = "${prefix}.jdbcurl";
     
-    protected static final String INITDB_SYSPROP = "${pref}.initdb";
+    protected static final String INITDB_SYSPROP = "${prefix}.initdb";
     
-    protected static final String IMPORT_SYSPROP = "${pref}.import";
+    protected static final String IMPORT_SYSPROP = "${prefix}.import";
 
     protected ResourceStore resourceStore;
     
@@ -55,8 +55,8 @@ public abstract class JDBCLoaderPropertiesFactoryBean extends PropertiesFactoryB
     
     protected abstract String[] getSampleConfigurations();
     
-    protected String pref(String s) {
-        return s.replace("${pref}", prefix);        
+    protected String replacePrefix(String s) {
+        return s.replace("${prefix}", prefix);        
     }
 
     @Override
@@ -105,24 +105,24 @@ public abstract class JDBCLoaderPropertiesFactoryBean extends PropertiesFactoryB
     
     protected JDBCLoaderProperties loadDefaultConfig() throws IOException {
         JDBCLoaderProperties config = createConfig();
-        config.load(getClass().getResourceAsStream("/" + pref(CONFIG_FILE)));
+        config.load(getClass().getResourceAsStream("/" + replacePrefix(CONFIG_FILE)));
         return config;
     }
 
     protected boolean loadConfigFromSysProps(JDBCLoaderProperties config) throws IOException {
-        String jdbcUrl = System.getProperty(pref(JDBCURL_SYSPROP));
+        String jdbcUrl = System.getProperty(replacePrefix(JDBCURL_SYSPROP));
         if (jdbcUrl != null) {
             config.setJdbcUrl(jdbcUrl);
 
-            config.setInitDb(Boolean.getBoolean(pref(INITDB_SYSPROP)));
-            config.setImport(Boolean.getBoolean(pref(IMPORT_SYSPROP)));
+            config.setInitDb(Boolean.getBoolean(replacePrefix(INITDB_SYSPROP)));
+            config.setImport(Boolean.getBoolean(replacePrefix(IMPORT_SYSPROP)));
             
             if (LOGGER.isLoggable(Level.INFO)) {
                 StringBuilder msg = 
                     new StringBuilder("Configuring jdbcloader from system properties:\n");
-                msg.append("  ").append(pref(JDBCURL_SYSPROP)).append("=").append(jdbcUrl).append("\n");
-                msg.append("  ").append(pref(INITDB_SYSPROP)).append("=").append(config.isInitDb()).append("\n");
-                msg.append("  ").append(pref(IMPORT_SYSPROP)).append("=").append(config.isImport()).append("\n");
+                msg.append("  ").append(replacePrefix(JDBCURL_SYSPROP)).append("=").append(jdbcUrl).append("\n");
+                msg.append("  ").append(replacePrefix(INITDB_SYSPROP)).append("=").append(config.isInitDb()).append("\n");
+                msg.append("  ").append(replacePrefix(IMPORT_SYSPROP)).append("=").append(config.isImport()).append("\n");
                 LOGGER.info(msg.toString());
             }
             return true;
@@ -131,7 +131,7 @@ public abstract class JDBCLoaderPropertiesFactoryBean extends PropertiesFactoryB
     }
 
     private boolean loadConfigFromURL(JDBCLoaderProperties config) throws IOException {
-        String propUrl = System.getProperty(pref(CONFIG_SYSPROP));
+        String propUrl = System.getProperty(replacePrefix(CONFIG_SYSPROP));
         if (propUrl == null) {
             return false;
         }
@@ -166,12 +166,12 @@ public abstract class JDBCLoaderPropertiesFactoryBean extends PropertiesFactoryB
             return true;
         }
         
-        LOGGER.severe("System property " + pref(CONFIG_SYSPROP) + " specified " + propUrl + " but could not be read, ignoring.");
+        LOGGER.severe("System property " + replacePrefix(CONFIG_SYSPROP) + " specified " + propUrl + " but could not be read, ignoring.");
         return false;
     }
 
     private boolean loadConfigFromDataDir(JDBCLoaderProperties config) throws IOException {
-        Resource propFile = getBaseDir().get(pref(CONFIG_FILE));
+        Resource propFile = getBaseDir().get(replacePrefix(CONFIG_FILE));
         if (Resources.exists(propFile)) {
             LOGGER.info("Loading jdbcloader properties from " + propFile.path());
             InputStream stream = propFile.in();
@@ -190,7 +190,7 @@ public abstract class JDBCLoaderPropertiesFactoryBean extends PropertiesFactoryB
     }
 
     private void saveConfig(JDBCLoaderProperties config, String comment) throws IOException {
-        Resource propFile = getBaseDir().get(pref(CONFIG_FILE));
+        Resource propFile = getBaseDir().get(replacePrefix(CONFIG_FILE));
         
         try {
             OutputStream out = propFile.out();

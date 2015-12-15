@@ -400,7 +400,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
                         // expand the filter on the layer group to all its sublayers
                         if (filters != null) {
                             for (int j = 0; j < layers.size(); j++) {
-                                newFilters.add(getFilter(filters, i));
+                                newFilters.add(getFilter(filters, j));
                             }
                         }
                     } else if (o instanceof LayerInfo) {

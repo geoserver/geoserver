@@ -45,6 +45,7 @@ import org.geotools.styling.Style;
 import org.geotools.util.DateRange;
 import org.opengis.filter.FilterFactory;
 import org.opengis.filter.Id;
+import org.opengis.filter.MultiValuedFilter.MatchAction;
 import org.opengis.filter.PropertyIsEqualTo;
 
 @SuppressWarnings("unchecked")
@@ -335,6 +336,34 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
         assertEquals(1, request.getCQLFilter().size());
 
         PropertyIsEqualTo filter = (PropertyIsEqualTo) request.getCQLFilter().get(0);
+    }
+    
+    public void testMultipleCQLFilters() throws Exception {    	
+        HashMap kvp = new HashMap();
+        kvp.put("CQL_FILTER", "foo = bar;baz = baq");
+        kvp.put("LAYERS", "testGroup2");
+        kvp.put("STYLES", "");
+
+        GetMapRequest request = (GetMapRequest) reader.createRequest();
+        request = (GetMapRequest) reader.read(request, parseKvp(kvp), kvp);
+
+        assertNotNull(request.getCQLFilter());
+        assertEquals(2, request.getCQLFilter().size());        
+        assertEquals(2, request.getFilter().size());
+
+        assertEquals(request.getCQLFilter().get(0), request.getFilter().get(0));
+        assertEquals(request.getCQLFilter().get(1), request.getFilter().get(1));
+        
+        PropertyIsEqualTo filter = (PropertyIsEqualTo) request.getCQLFilter().get(0);
+        PropertyIsEqualTo filter2 = (PropertyIsEqualTo) request.getCQLFilter().get(1);
+        
+        assertEquals("foo", filter.getExpression1().toString());
+        assertEquals("bar", filter.getExpression2().toString());
+        assertEquals(MatchAction.ANY, filter.getMatchAction());
+        
+        assertEquals("baz", filter2.getExpression1().toString());
+        assertEquals("baq", filter2.getExpression2().toString());
+        assertEquals(MatchAction.ANY, filter.getMatchAction());
     }
 
     public void testFeatureId() throws Exception {

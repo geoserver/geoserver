@@ -65,7 +65,7 @@ public class H2TestSupport implements DatabaseTestSupport {
     
     private PreparedStatement getInsert() throws SQLException {
         if(insert==null) {
-            insert = conn.prepareStatement("INSERT INTO resource (name, parent, content) VALUES (?, ?, ?)");
+            insert = conn.prepareStatement("INSERT INTO resources (name, parent, content) VALUES (?, ?, ?)");
         }
         return insert;
     }

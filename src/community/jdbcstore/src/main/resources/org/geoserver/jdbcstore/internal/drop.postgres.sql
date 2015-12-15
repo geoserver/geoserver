@@ -1,1 +1,1 @@
-DROP TABLE resource CASCADE;
+DROP TABLE resources CASCADE;

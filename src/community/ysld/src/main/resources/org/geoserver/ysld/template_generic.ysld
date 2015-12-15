@@ -6,14 +6,14 @@ feature-styles:
       - raster:
           opacity: 1.0
   - title: ${colorName} polygon
-    filter: ${dimension(geometry)=2}
+    filter: ${dimension(geometry())='2'}
     symbolizers:
     - polygon:
         stroke-width: 0.5
         stroke-color: '#000000'
         fill-color: '${colorCode}'
   - title: ${colorName} line
-    filter: ${dimension(geometry)=1}
+    filter: ${dimension(geometry())='1'}
     symbolizers:
     - line:
         stroke-width: 1.0

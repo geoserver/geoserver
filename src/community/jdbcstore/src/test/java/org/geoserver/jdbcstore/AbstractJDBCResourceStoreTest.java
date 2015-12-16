@@ -66,9 +66,9 @@ public abstract class AbstractJDBCResourceStoreTest {
         @SuppressWarnings("unused")
         ResourceStore store = new JDBCResourceStore(support.getDataSource(), config);
         
-        // Check that the database has a resource table with a root record
+        // Check that the database has a resources table with a root record
         
-        ResultSet rs = support.getConnection().createStatement().executeQuery("SELECT * from resource where oid = 0");
+        ResultSet rs = support.getConnection().createStatement().executeQuery("SELECT * from resources where oid = 0");
         
         assertThat(rs.next(), describedAs("found root record",is(true)));
         assertThat(rs.getString("name"), equalTo(""));
@@ -100,9 +100,9 @@ public abstract class AbstractJDBCResourceStoreTest {
         JDBCResourceStore store = new JDBCResourceStore(support.getDataSource(), config);
         store.setLockProvider(new NullLockProvider());
         {
-            // Check that the database has a resource table with a root record
+            // Check that the database has a resources table with a root record
             
-            ResultSet rs = support.getConnection().createStatement().executeQuery("SELECT * from resource where oid = 0");
+            ResultSet rs = support.getConnection().createStatement().executeQuery("SELECT * from resources where oid = 0");
             
             assertThat(rs.next(), describedAs("found root record",is(true)));
             assertThat(rs.getString("name"), equalTo(""));
@@ -114,7 +114,7 @@ public abstract class AbstractJDBCResourceStoreTest {
         {
             // Check that the database has one of the child nodes
             
-            ResultSet rs = support.getConnection().createStatement().executeQuery("SELECT * from resource where parent = 0 and name='FileA'");
+            ResultSet rs = support.getConnection().createStatement().executeQuery("SELECT * from resources where parent = 0 and name='FileA'");
             
             assertThat(rs.next(), describedAs("found child FileA",is(true)));
             assertThat(rs.getString("name"), equalTo("FileA"));
@@ -134,9 +134,9 @@ public abstract class AbstractJDBCResourceStoreTest {
         JDBCResourceStore store = new JDBCResourceStore(support.getDataSource(), config);
         store.setLockProvider(new NullLockProvider());
         {
-            // Check that the database has a resource table with a root record
+            // Check that the database has a resources table with a root record
             
-            ResultSet rs = support.getConnection().createStatement().executeQuery("SELECT * from resource where oid = 0");
+            ResultSet rs = support.getConnection().createStatement().executeQuery("SELECT * from resources where oid = 0");
             
             assertThat(rs.next(), describedAs("found root record",is(true)));
             assertThat(rs.getString("name"), equalTo(""));

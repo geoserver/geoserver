@@ -40,7 +40,7 @@ public class PostgresTestSupport implements DatabaseTestSupport {
         ds = createTestDataSource();
         conn = ds.getConnection();
         try {
-            insert = conn.prepareStatement("INSERT INTO resource (name, parent, content) VALUES (?, ?, ?) RETURNING oid;");
+            insert = conn.prepareStatement("INSERT INTO resources (name, parent, content) VALUES (?, ?, ?) RETURNING oid;");
         } finally {
             if(insert==null) conn.close();
         }

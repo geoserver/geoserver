@@ -35,7 +35,7 @@ public class JDBCDirectoryStructure {
 
     private static final Logger LOGGER = org.geotools.util.logging.Logging.getLogger(JDBCDirectoryStructure.class);
 
-    protected final static String TABLE_RESOURCE = "resources";
+    protected final static String TABLE_RESOURCES = "resources";
 
     protected final static Field<Integer> OID = new Field<Integer>("oid", "oid", TYPE_INT);
 
@@ -75,7 +75,7 @@ public class JDBCDirectoryStructure {
 
         @SuppressWarnings("unchecked")
         protected <T> T getValue(Field<T> prop) {
-            Map<String, Object> record = helper.selectQuery(TABLE_RESOURCE, new PathSelector(path),
+            Map<String, Object> record = helper.selectQuery(TABLE_RESOURCES, new PathSelector(path),
                     prop);
             return record == null ? null : (T) record.get(prop.getFieldName());
         }
@@ -108,7 +108,7 @@ public class JDBCDirectoryStructure {
             List<Entry> list = new ArrayList<Entry>();
             Integer oid = getOid();
             if (oid != null) {
-                for (Map<String, Object> result : helper.multiSelectQuery(TABLE_RESOURCE,
+                for (Map<String, Object> result : helper.multiSelectQuery(TABLE_RESOURCES,
                         new FieldSelector<Integer>(PARENT, oid), NAME)) {
                     list.add(new Entry(path, (String) result.get(NAME.getFieldName())));
                 }
@@ -128,7 +128,7 @@ public class JDBCDirectoryStructure {
                 return false;
             }
 
-            if (helper.deleteQuery(TABLE_RESOURCE, new FieldSelector<Integer>(OID, oid)) <= 0) {
+            if (helper.deleteQuery(TABLE_RESOURCES, new FieldSelector<Integer>(OID, oid)) <= 0) {
                 LOGGER.warning("Delete operation failed or incomplete for entry " + toString());
                 return false;
             }
@@ -168,7 +168,7 @@ public class JDBCDirectoryStructure {
                 destParentOid = destParent.getOid();
             }
 
-            if (helper.updateQuery(TABLE_RESOURCE, new FieldSelector<Integer>(OID, oid),
+            if (helper.updateQuery(TABLE_RESOURCES, new FieldSelector<Integer>(OID, oid),
                     new Assignment<String>(NAME, dest.getName()), new Assignment<Integer>(PARENT,
                             destParentOid)) <= 0) {
                 LOGGER.warning("Unable to perform rename operation for entry " + toString());
@@ -180,7 +180,7 @@ public class JDBCDirectoryStructure {
         }
 
         public InputStream getContent() {
-            InputStream is = helper.blobQuery(TABLE_RESOURCE, new PathSelector(path), CONTENT);
+            InputStream is = helper.blobQuery(TABLE_RESOURCES, new PathSelector(path), CONTENT);
             if (is == null) {
                 throw new IllegalStateException("Could not find content for entry " + toString());
             }
@@ -188,7 +188,7 @@ public class JDBCDirectoryStructure {
         }
 
         public void setContent(InputStream is) {
-            if (helper.updateQuery(TABLE_RESOURCE, new PathSelector(path),
+            if (helper.updateQuery(TABLE_RESOURCES, new PathSelector(path),
                     new Assignment<InputStream>(CONTENT, is), new Assignment<Timestamp>(
                             LAST_MODIFIED, new Timestamp(new java.util.Date().getTime()))) <= 0) {
                 LOGGER.warning("Unable to write content to entry " + toString());
@@ -198,11 +198,11 @@ public class JDBCDirectoryStructure {
         public void createDirectory() {
             int parentOid = 0;
             for (String name : path) {
-                Map<String, Object> record = helper.selectQuery(TABLE_RESOURCE, new ChildSelector(
+                Map<String, Object> record = helper.selectQuery(TABLE_RESOURCES, new ChildSelector(
                         parentOid, name), OID, DIRECTORY);
 
                 if (record == null) {
-                    parentOid = helper.insertQuery(TABLE_RESOURCE, new Assignment<String>(NAME,
+                    parentOid = helper.insertQuery(TABLE_RESOURCES, new Assignment<String>(NAME,
                             name), new Assignment<Integer>(PARENT, parentOid));
                 } else {
                     if (!(Boolean) record.get(DIRECTORY.getFieldName())) {
@@ -237,7 +237,7 @@ public class JDBCDirectoryStructure {
             }
 
             ByteArrayInputStream is = new ByteArrayInputStream(new byte[0]);
-            Integer oid = helper.insertQuery(TABLE_RESOURCE,
+            Integer oid = helper.insertQuery(TABLE_RESOURCES,
                     new Assignment<String>(NAME, getName()),
                     new Assignment<Integer>(PARENT, parent.getOid()), new Assignment<InputStream>(
                             CONTENT, is));
@@ -323,7 +323,7 @@ public class JDBCDirectoryStructure {
     private boolean deleteChildren(Integer oid) {
         // get ids of children
         List<Integer> children = new ArrayList<Integer>();
-        for (Map<String, Object> result : helper.multiSelectQuery(TABLE_RESOURCE,
+        for (Map<String, Object> result : helper.multiSelectQuery(TABLE_RESOURCES,
                 new FieldSelector<Integer>(PARENT, oid), OID)) {
             children.add((Integer) result.get(OID.getFieldName()));
         }
@@ -337,7 +337,7 @@ public class JDBCDirectoryStructure {
             }
 
             // delete all children in one go
-            if (helper.deleteQuery(TABLE_RESOURCE, new FieldSelector<Integer>(PARENT, oid)) < children
+            if (helper.deleteQuery(TABLE_RESOURCES, new FieldSelector<Integer>(PARENT, oid)) < children
                     .size()) {
                 return false;
             }
@@ -364,12 +364,12 @@ public class JDBCDirectoryStructure {
             assert (i < path.size());
 
             if (i > 0) {
-                builder.append("SELECT oid FROM resource WHERE parent=(");
+                builder.append("SELECT oid FROM " + TABLE_RESOURCES + " WHERE parent=(");
                 oidQuery(builder, i - 1);
                 builder.append(") and name=? ");
                 builder.addParameter(new Parameter<String>(TYPE_STRING, path.get(i)));
             } else {
-                builder.append("SELECT oid FROM resource WHERE parent=? and name=? ");
+                builder.append("SELECT oid FROM " + TABLE_RESOURCES + " WHERE parent=? and name=? ");
                 builder.addParameter(new Parameter<Integer>(TYPE_INT, contextOid));
                 builder.addParameter(new Parameter<String>(TYPE_STRING, path.get(i)));
             }

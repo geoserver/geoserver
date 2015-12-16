@@ -173,6 +173,11 @@
      <artifactId>gs-gdal-wps</artifactId>
      <version>${project.version}</version>
    </dependency>
+   <dependency>
+     <groupId>org.geoserver.community</groupId>
+     <artifactId>gs-vectortiles</artifactId>
+     <version>${project.version}</version>
+   </dependency>
 
  </dependencies>
  <build>

@@ -61,6 +61,7 @@
           <descriptor>release/ext-gwc-distributed.xml</descriptor>  
           <descriptor>release/ext-geofence-server.xml</descriptor>
           <descriptor>release/ext-gwc-s3.xml</descriptor>	
+          <descriptor>release/ext-vectortiles.xml</descriptor>
 	  <descriptor>release/ext-gdal-wcs.xml</descriptor>
 	  <descriptor>release/ext-gdal-wps.xml</descriptor>
         </descriptors>

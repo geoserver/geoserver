@@ -69,6 +69,7 @@
           <descriptor>release/ext-gdal-wcs.xml</descriptor>
           <descriptor>release/ext-gdal-wps.xml</descriptor>
           <descriptor>release/ext-wps-jdbc.xml</descriptor>
+          <descriptor>release/ext-vectortiles.xml</descriptor>
         </descriptors>
       </configuration>
      </plugin>

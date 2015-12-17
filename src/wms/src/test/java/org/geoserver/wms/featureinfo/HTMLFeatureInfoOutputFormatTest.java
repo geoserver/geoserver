@@ -7,7 +7,7 @@
 package org.geoserver.wms.featureinfo;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayOutputStream;
@@ -15,14 +15,17 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import net.opengis.wfs.FeatureCollectionType;
 import net.opengis.wfs.WfsFactory;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -36,7 +39,6 @@ import org.geoserver.data.test.MockData;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
 import org.geoserver.template.GeoServerTemplateLoader;
-import org.geoserver.wfs.json.JSONType;
 import org.geoserver.wms.GetFeatureInfoRequest;
 import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.WMSTestSupport;
@@ -191,5 +193,66 @@ public class HTMLFeatureInfoOutputFormatTest extends WMSTestSupport {
 
         // Check if the character encoding is the one expected
         assertTrue("UTF-8".equals(response.getCharacterEncoding()));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testConcurrentRequests() throws Exception {
+        FeatureTypeInfo featureType1 = getFeatureTypeInfo(MockData.PRIMITIVEGEOFEATURE);
+        List<MapLayerInfo> layers1 = Collections.singletonList(new MapLayerInfo(
+            getCatalog().getLayerByName(featureType1.prefixedName())));
+        FeatureCollectionType type1 = WfsFactory.eINSTANCE.createFeatureCollectionType();
+        type1.getFeature().add(featureType1.getFeatureSource(null, null).getFeatures());
+        final FeatureTypeInfo featureType2 = getFeatureTypeInfo(MockData.BASIC_POLYGONS);
+        List<MapLayerInfo> layers2 = Collections.singletonList(new MapLayerInfo(
+            getCatalog().getLayerByName(featureType2.prefixedName())));
+        FeatureCollectionType type2 = WfsFactory.eINSTANCE.createFeatureCollectionType();
+        type2.getFeature().add(featureType2.getFeatureSource(null, null).getFeatures());
+        final HTMLFeatureInfoOutputFormat format = new HTMLFeatureInfoOutputFormat(getWMS());
+        format.templateLoader = new GeoServerTemplateLoader(getClass(), getDataDirectory()) {
+            @Override
+            public Object findTemplateSource(String path) throws IOException {
+                String templatePath = "empty.ftl";
+                if (path.toLowerCase().contains("content") && (this.resource != null) && 
+                        this.resource.prefixedName().equals(featureType2.prefixedName())) {
+                    templatePath = "test_content.ftl";
+                }
+                try {
+                    return new File(this.getClass()
+                        .getResource(templateFolder + templatePath).toURI());
+                } catch (URISyntaxException e) {
+                    return null;
+                }
+            }
+        };
+        int numRequests = 50;
+        List<Callable<String>> tasks = new ArrayList<>(numRequests);
+        for (int i = 0; i < numRequests; i++) {
+            final GetFeatureInfoRequest request = new GetFeatureInfoRequest();
+            request.setQueryLayers(((i % 2) == 0) ? layers1 : layers2);
+            final FeatureCollectionType type = (((i % 2) == 0) ? type1 : type2);
+            tasks.add(new Callable<String>() {
+                @Override
+                public String call() throws Exception {
+                    ByteArrayOutputStream output = new ByteArrayOutputStream();
+                    format.write(type, request, output);
+                    return new String(output.toByteArray());
+                }
+            });
+        }
+        ExecutorService executor = Executors.newFixedThreadPool(8);
+        try {
+            List<Future<String>> futures = executor.invokeAll(tasks);
+            for (int i = 0; i < numRequests; i++) {
+                String info = futures.get(i).get();
+                if ((i % 2) == 0) {
+                    assertEquals("", info);
+                } else {
+                    assertNotEquals("", info);
+                }
+            }
+        } finally {
+            executor.shutdown();
+        }
     }
 }

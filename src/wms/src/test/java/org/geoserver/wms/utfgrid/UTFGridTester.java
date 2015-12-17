@@ -89,7 +89,18 @@ class UTFGridTester {
         String key = "" + (int) gridToKey(code);
         return data.getJSONObject(key);
     }
-
+    
+    /**
+     * Look up code at row and col provided.
+     * @param row
+     * @param col
+     * @return grid code
+     */
+    char charAt( int row, int col){
+        String gridRow = grid.getString(row);
+        return gridRow.charAt(col);
+    }
+    
     /**
      * Check the specified code can be found in the grid at row/col
      * @param code

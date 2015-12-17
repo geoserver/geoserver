@@ -335,27 +335,26 @@ public class UTFGridIntegrationTest extends WMSTestSupport {
         assertEquals("Route 75", f.getString("NAME"));
         assertEquals(0, f.getInt("NUM_LANES"));
         
-        tester.assertGridPixel('#', 6, 27);
-        f = tester.getFeature('#');
+        char code = tester.charAt( 6, 27);
+        f = tester.getFeature(code);
         assertEquals("111", f.getString("FID"));
         assertEquals("Cam Stream", f.getString("NAME"));
         
-        tester.assertGridPixel('%', 10, 12);
-        f = tester.getFeature('%');
+        code = tester.charAt( 10, 12);
+        f = tester.getFeature(code);
         assertEquals("120", f.getString("FID"));
         assertEquals(" ", f.getString("NAME"));
         assertEquals("Stock Pond", f.getString("TYPE"));
         
-        tester.assertGridPixel('$', 10, 62);
-        f = tester.getFeature('$');
+        code = tester.charAt(10, 62);
+        f = tester.getFeature(code);
         assertEquals("103", f.getString("FID"));
         assertEquals("Route 5", f.getString("NAME"));
         
-        tester.assertGridPixel('\'', 23, 33);
-        f = tester.getFeature('\'');
+        code = tester.charAt(23, 33);
+        f = tester.getFeature(code);
         assertEquals("110", f.getString("FID"));
         assertEquals("Cam Bridge", f.getString("NAME"));
-
         
         tester.assertGridPixel('&', 22, 56);
         tester.assertGridPixel('&', 24, 35);
@@ -367,8 +366,8 @@ public class UTFGridIntegrationTest extends WMSTestSupport {
         assertEquals("109", f.getString("FID"));
         assertEquals("Green Forest", f.getString("NAME"));
         
-        tester.assertGridPixel('(', 32, 9);
-        f = tester.getFeature('(');
+        code = tester.charAt( 32, 9);
+        f = tester.getFeature(code);
         assertEquals("102", f.getString("FID"));
         assertEquals("Route 5", f.getString("NAME"));
     }

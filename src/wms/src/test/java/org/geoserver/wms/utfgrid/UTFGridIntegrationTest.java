@@ -102,7 +102,7 @@ public class UTFGridIntegrationTest extends WMSTestSupport {
             fail("Expected json but got " + response.getContentType());
         }
         JSON json = json(response);
-        print(json);
+        // print(json);
         UTFGridTester tester = new UTFGridTester(json, width, height, resolution);
         return tester;
     }

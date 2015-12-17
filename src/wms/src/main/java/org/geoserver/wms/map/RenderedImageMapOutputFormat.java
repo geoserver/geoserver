@@ -1030,11 +1030,11 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
                     coverage = readBestCoverage(reader, params,
                             ReferencedEnvelope.reference(readGG.getEnvelope()),
                             readGG.getGridRange2D(), interpolation, readerBgColor);
-                    // Nothing found, we return a constant image with background value
-                    if (coverage == null) {
-                        // we're outside of the coverage definition area, return an empty space
-                        image = createBkgImage(mapWidth, mapHeight, bgColor, null);
-                    }
+                }
+                // Nothing found, we return a constant image with background value
+                if (coverage == null) {
+                    // we're outside of the coverage definition area, return an empty space
+                    image = createBkgImage(mapWidth, mapHeight, bgColor, null);
                 }
                 // If the image has not already been prepared, we render the image using the
                 // GridCoverageRenderer

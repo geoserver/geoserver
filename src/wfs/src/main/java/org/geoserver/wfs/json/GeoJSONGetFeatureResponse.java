@@ -137,7 +137,7 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat {
             // execute should of set all the header information
             // including the lockID
             //
-            // execute should also fail if all of the locks could not be aquired
+            // execute should also fail if all of the locks could not be acquired
             List<FeatureCollection> resultsList = featureCollection.getFeature();
             CoordinateReferenceSystem crs = null;
             for (int i = 0; i < resultsList.size(); i++) {
@@ -165,10 +165,10 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat {
                             jsonWriter.key("id").value(value);
                         }
                         
-                        GeometryDescriptor defaultGeomType = fType.getGeometryDescriptor();
-                        if(defaultGeomType != null) {
+                        GeometryDescriptor mainGeomType = fType.getGeometryDescriptor();
+                        if(mainGeomType != null) {
                             CoordinateReferenceSystem featureCrs =
-                                    defaultGeomType.getCoordinateReferenceSystem();
+                                    mainGeomType.getCoordinateReferenceSystem();
                             
                             jsonWriter.setAxisOrder(CRS.getAxisOrder(featureCrs));
                             
@@ -189,6 +189,7 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat {
                                 Object value = feature.getAttribute(j);
                                 if (value != null && value instanceof Geometry) {
                                     aGeom = (Geometry) value;
+                                    mainGeomType = (GeometryDescriptor) types.get(j);
                                 }
                             }
                         }
@@ -199,8 +200,8 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat {
                         } else {
                             jsonWriter.value(null);
                         }
-                        if (defaultGeomType != null)
-                            jsonWriter.key("geometry_name").value(defaultGeomType.getLocalName());
+                        if (mainGeomType != null)
+                            jsonWriter.key("geometry_name").value(mainGeomType.getLocalName());
 
                         jsonWriter.key("properties");
                         jsonWriter.object();
@@ -210,32 +211,29 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat {
                             AttributeDescriptor ad = types.get(j);
                             
                             if( id_option != null && id_option.equals(ad.getLocalName()) ){
-                            	continue; // skip this value as it is used as the id
+                                continue; // skip this value as it is used as the id
                             }
-                            if (value != null) {
-                                if (value instanceof Geometry) {
-                                    // This is an area of the spec where they
-                                    // decided to 'let convention evolve',
-                                    // that is how to handle multiple
-                                    // geometries. My take is to print the
-                                    // geometry here if it's not the default.
-                                    // If it's the default that you already
-                                    // printed above, so you don't need it here.
-                                    if (ad.equals(defaultGeomType)) {
-                                        // Do nothing, we wrote it above
-                                        // jsonWriter.value("geometry_name");
-                                    } else {
-                                        jsonWriter.key(ad.getLocalName());
-                                        jsonWriter.writeGeom((Geometry) value);
-                                    }
-                                } else {
+                            if (ad instanceof GeometryDescriptor) {
+                                // This is an area of the spec where they
+                                // decided to 'let convention evolve',
+                                // that is how to handle multiple
+                                // geometries. My take is to print the
+                                // geometry here if it's not the default.
+                                // If it's the default that you already
+                                // printed above, so you don't need it here.
+                                if (ad.equals(mainGeomType)) {
+                                    // Do nothing, we wrote it above
+                                    // jsonWriter.value("geometry_name");
+                                } else if(value == null){
                                     jsonWriter.key(ad.getLocalName());
-                                    jsonWriter.value(value);
+                                    jsonWriter.value(null);
+                                }else {
+                                    jsonWriter.key(ad.getLocalName());
+                                    jsonWriter.writeGeom((Geometry) value);
                                 }
-
                             } else {
                                 jsonWriter.key(ad.getLocalName());
-                                jsonWriter.value(null);
+                                jsonWriter.value(value);
                             }
                         }
                         // Bounding box for feature in properties
@@ -253,7 +251,7 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat {
             }
             jsonWriter.endArray(); // end features
 
-            // Coordinate Referense System
+            // Coordinate Reference System
             try {
                 if ("true".equals(GeoServerExtensions.getProperty("GEOSERVER_GEOJSON_LEGACY_CRS"))){
                     // This is wrong, but GeoServer used to do it this way.

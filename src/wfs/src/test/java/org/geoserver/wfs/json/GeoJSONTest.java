@@ -9,7 +9,12 @@ package org.geoserver.wfs.json;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.util.Collection;
@@ -51,6 +56,7 @@ public class GeoJSONTest extends WFSTestSupport {
     public static QName LINE3D = new QName(SystemTestData.CITE_URI, "Line3D", SystemTestData.CITE_PREFIX);
     public static QName POINT_LATLON = new QName(SystemTestData.CITE_URI, "PointLatLon", SystemTestData.CITE_PREFIX);
     public static QName POINT_LONLAT = new QName(SystemTestData.CITE_URI, "PointLonLat", SystemTestData.CITE_PREFIX);
+    public static QName MULTI_GEOMETRIES_WITH_NULL = new QName(SystemTestData.CITE_URI, "MultiGeometriesWithNull", SystemTestData.CITE_PREFIX);
     
     @Override
     @SuppressWarnings("unchecked")
@@ -79,7 +85,9 @@ public class GeoJSONTest extends WFSTestSupport {
         pointLatLon.setSRS("EPSG:4326");
         pointLatLon.setProjectionPolicy(ProjectionPolicy.FORCE_DECLARED);
         getCatalog().save(pointLonLat);
-
+        
+        // A feature with a constant test setup for testing geometry/geometry_name consistency with null geometries
+        data.addVectorLayer (MULTI_GEOMETRIES_WITH_NULL, Collections.EMPTY_MAP, getClass(), getCatalog());
     }
 	
     @Test
@@ -478,6 +486,67 @@ public class GeoJSONTest extends WFSTestSupport {
         CoordinateReferenceSystem expectedCrs = getCatalog().getLayerByName(getLayerId(layer)).getResource().getCRS();
         JSONObject aCRS = collection.getJSONObject("crs");
         assertThat(aCRS, encodesCRS(expectedCrs));
+    }
+    
+    @Test
+    public void testGeometryAndGeometryNameConsistency() throws Exception {
+        JSONObject collection = (JSONObject) getAsJSON(
+                "wfs?request=GetFeature&version=1.0.0&typename="
+                        + getLayerId(MULTI_GEOMETRIES_WITH_NULL) + "&outputformat=" + JSONType.json);
+         print(collection);
+        assertEquals(3, collection.getInt("totalFeatures"));
+        
+        JSONArray features = collection.getJSONArray("features");
+        assertEquals(3, features.size());
+        
+        // see MultiGeometriesWithNull.properties
+        // -- MultiGeometriesWithNull.0 --
+        JSONObject feature = features.getJSONObject(0);
+        assertEquals("MultiGeometriesWithNull.0", feature.getString("id"));
+        assertEquals("All geometries present, first geometry must be default (backwards compatible)", 
+                "geom_a", feature.getString("geometry_name"));
+        JSONObject geometry = feature.getJSONObject("geometry");
+        JSONArray coords = geometry.getJSONArray("coordinates");
+        assertEquals("geom_a has coodinate 1", 1, coords.getInt(0));
+        JSONObject properties = feature.getJSONObject("properties");
+        assertFalse("geom_a must not be present, its the default geom", properties.containsKey("geom_a"));
+        JSONObject propertyGeomB = properties.getJSONObject("geom_b");
+        coords = propertyGeomB.getJSONArray("coordinates");
+        assertEquals("geom_b has coodinate 2", 2, coords.getInt(0));
+        JSONObject propertyGeomC = properties.getJSONObject("geom_c");
+        coords = propertyGeomC.getJSONArray("coordinates");
+        assertEquals("geom_c has coodinate 3", 3, coords.getInt(0));
+        
+        // -- MultiGeometriesWithNull.1 --
+        feature = features.getJSONObject(1);
+        assertEquals("MultiGeometriesWithNull.1", feature.getString("id"));
+        assertEquals("2nd and 3rd geometries present, 2nd geometry must be default (backwards compatible)", 
+                "geom_b", feature.getString("geometry_name"));
+        geometry = feature.getJSONObject("geometry");
+        coords = geometry.getJSONArray("coordinates");
+        assertEquals("geom_b has coodinate 2", 2, coords.getInt(0));
+        properties = feature.getJSONObject("properties");
+        assertTrue("geom_a is not default geom, must be present as null", properties.containsKey("geom_a"));
+        assertTrue(properties.getJSONObject("geom_a").isNullObject());
+        assertFalse(properties.containsKey("geom_b"));
+        propertyGeomC = properties.getJSONObject("geom_c");
+        coords = propertyGeomC.getJSONArray("coordinates");
+        assertEquals("geom_c has coodinate 3", 3, coords.getInt(0));
+        
+        // -- MultiGeometriesWithNull.2 --
+        feature = features.getJSONObject(2);
+        assertEquals("MultiGeometriesWithNull.2", feature.getString("id"));
+        assertEquals("no geometries present, 1st geometry must be default (backwards compatible)", 
+                "geom_a", feature.getString("geometry_name"));
+        geometry = feature.getJSONObject("geometry");
+        assertTrue(geometry.isNullObject());
+        properties = feature.getJSONObject("properties");
+        assertFalse("geom_a is default geom, must not be present", properties.containsKey("geom_a"));
+        assertTrue(properties.containsKey("geom_b"));
+        assertTrue(properties.getJSONObject("geom_b").isNullObject());
+        assertTrue(properties.containsKey("geom_c"));
+        assertTrue(properties.getJSONObject("geom_c").isNullObject());
+
     }
     
     private org.hamcrest.Matcher<JSONObject> encodesCRS(final CoordinateReferenceSystem crs) {

@@ -1249,7 +1249,8 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         //
         // If we need to add a collar use mosaic or if we need to blend/apply a bkg color
         if(!(imageBounds.contains(mapRasterArea) || imageBounds.equals(mapRasterArea))||transparencyType!=Transparency.OPAQUE) {
-            ROI[] rois = new ROI[] { new ROIShape(imageBounds) };
+            Rectangle roi = imageBounds.intersection(mapRasterArea);
+            ROI[] rois = new ROI[] { new ROIShape(!roi.isEmpty() ? roi : mapRasterArea) };
 
             // build the transparency thresholds
             double[][] thresholds = new double[][] { { ColorUtilities.getThreshold(image

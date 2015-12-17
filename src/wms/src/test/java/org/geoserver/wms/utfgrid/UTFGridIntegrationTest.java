@@ -351,8 +351,8 @@ public class UTFGridIntegrationTest extends WMSTestSupport {
         assertEquals("103", f.getString("FID"));
         assertEquals("Route 5", f.getString("NAME"));
         
-        tester.assertGridPixel('(', 23, 33);
-        f = tester.getFeature('(');
+        tester.assertGridPixel('\'', 23, 33);
+        f = tester.getFeature('\'');
         assertEquals("110", f.getString("FID"));
         assertEquals("Cam Bridge", f.getString("NAME"));
 
@@ -367,8 +367,8 @@ public class UTFGridIntegrationTest extends WMSTestSupport {
         assertEquals("109", f.getString("FID"));
         assertEquals("Green Forest", f.getString("NAME"));
         
-        tester.assertGridPixel(')', 32, 9);
-        f = tester.getFeature(')');
+        tester.assertGridPixel('(', 32, 9);
+        f = tester.getFeature('(');
         assertEquals("102", f.getString("FID"));
         assertEquals("Route 5", f.getString("NAME"));
     }

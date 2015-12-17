@@ -136,7 +136,7 @@ public class GeoJSONTest extends WFSTestSupport {
     	assertEquals(rootObject.get("type"),"FeatureCollection");
     	JSONArray featureCol = rootObject.getJSONArray("features");
     	JSONObject aFeature = featureCol.getJSONObject(0);
-    	assertEquals(aFeature.getString("geometry_name"),"surfaceProperty");
+    	assertEquals(aFeature.getString("geometry_name"),"pointProperty");
     }
     
     @Test
@@ -158,7 +158,7 @@ public class GeoJSONTest extends WFSTestSupport {
             assertEquals(rootObject.get("type"), "FeatureCollection");
             JSONArray featureCol = rootObject.getJSONArray("features");
             JSONObject aFeature = featureCol.getJSONObject(0);
-            assertEquals(aFeature.getString("geometry_name"), "surfaceProperty");
+            assertEquals(aFeature.getString("geometry_name"), "pointProperty");
         } finally {
             FeatureTypeInfo primitive = catalog
                     .getFeatureTypeByName(getLayerId(MockData.PRIMITIVEGEOFEATURE));
@@ -178,7 +178,7 @@ public class GeoJSONTest extends WFSTestSupport {
         assertEquals(rootObject.get("type"),"FeatureCollection");
         JSONArray featureCol = rootObject.getJSONArray("features");
         JSONObject aFeature = featureCol.getJSONObject(0);
-        assertEquals(aFeature.getString("geometry_name"),"surfaceProperty");
+        assertEquals(aFeature.getString("geometry_name"),"pointProperty");
     }
 
     @Test
@@ -246,7 +246,7 @@ public class GeoJSONTest extends WFSTestSupport {
     	assertEquals(rootObject.get("type"),"FeatureCollection");
     	JSONArray featureCol = rootObject.getJSONArray("features");
     	JSONObject aFeature = featureCol.getJSONObject(0);
-    	assertEquals(aFeature.getString("geometry_name"),"surfaceProperty");
+    	assertEquals(aFeature.getString("geometry_name"),"pointProperty");
     }
 
     @Test
@@ -321,7 +321,7 @@ public class GeoJSONTest extends WFSTestSupport {
         assertEquals(rootObject.get("type"), "FeatureCollection");
         JSONArray featureCol = rootObject.getJSONArray("features");
         JSONObject aFeature = featureCol.getJSONObject(0);
-        assertEquals(aFeature.getString("geometry_name"), "surfaceProperty");
+        assertEquals(aFeature.getString("geometry_name"), "pointProperty");
     }
     
     @Test

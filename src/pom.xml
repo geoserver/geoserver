@@ -1663,7 +1663,7 @@
   <image.tests>true</image.tests>
   <interactive.tests>false</interactive.tests>
   <windows.leniency>true</windows.leniency>
-  <gf.version>3.0-SNAPSHOT</gf.version>
+  <gf.version>3.1-SNAPSHOT</gf.version>
   <hibernate-version>3.6.0.Final</hibernate-version>
   <hibernate-generic-dao-version>1.1.0</hibernate-generic-dao-version>
   <hibernate-spatial-version>1.1.1</hibernate-spatial-version>

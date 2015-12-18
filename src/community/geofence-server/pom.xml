@@ -17,6 +17,14 @@
     <name>GeoFence Server</name>
     <description>GeoFence security internal server</description>
 
+    <repositories>
+        <repository>
+            <id>wicket-dnd</id>
+            <name>Wicket-dnd Repository</name>
+            <url>http://wicket-dnd.googlecode.com/svn/repo</url>
+        </repository>
+    </repositories>
+
     <dependencies>
          <dependency>
             <groupId>com.googlecode.genericdao</groupId>
@@ -120,7 +128,18 @@
             <groupId>xerces</groupId>
             <artifactId>xercesImpl</artifactId>
         </dependency>
-        
+
+        <dependency>
+            <groupId>wicket-dnd</groupId>
+            <artifactId>wicket-dnd</artifactId>
+            <version>0.4.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.wicketstuff</groupId>
+            <artifactId>prototype</artifactId>
+            <version>1.4.7</version>
+        </dependency>
+
         <!-- test dependencies -->
         <dependency>
             <groupId>org.geoserver</groupId>

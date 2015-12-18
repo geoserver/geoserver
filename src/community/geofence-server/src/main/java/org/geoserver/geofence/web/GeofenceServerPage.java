@@ -10,6 +10,7 @@ import org.apache.wicket.ResourceReference;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.ComponentTag;
+import org.apache.wicket.markup.html.CSSPackageResource;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.geoserver.geofence.services.dto.ShortRule;
@@ -18,6 +19,8 @@ import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.ImageAjaxLink;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
+import wicketdnd.*;
+import wicketdnd.theme.WebTheme;
 
 /**
  * GeoFence Server wicket administration UI for GeoServer.
@@ -75,6 +78,27 @@ public class GeofenceServerPage extends GeoServerSecuredPage {
                 target.addComponent(remove);
             }
         });
+        rulesPanel.add(CSSPackageResource.getHeaderContribution(new WebTheme()));
+        rulesPanel.add(new DragSource(Operation.MOVE).drag("tr"));
+        rulesPanel.add(new DropTarget(Operation.MOVE) {
+            public void onDrop(AjaxRequestTarget target, Transfer transfer, Location location) {
+                if (location == null || !(location.getComponent().getDefaultModel().getObject() instanceof ShortRule)) {
+                    return;
+                }
+                ShortRule movedRule = transfer.getData();
+                ShortRule targetRule = (ShortRule) location.getComponent().getDefaultModel().getObject();
+                if (movedRule.getId().equals(targetRule.getId())) {
+                return;
+                }
+                if (movedRule.getPriority() < targetRule.getPriority()) {
+                    movedRule.setPriority(targetRule.getPriority() + 1);
+                } else {
+                    movedRule.setPriority(targetRule.getPriority());
+                }
+                rulesModel.save(movedRule);
+                    doReturn(GeofenceServerPage.class);
+                }
+            }.dropCenter("tr"));
         rulesPanel.setOutputMarkupId(true);
     }
      

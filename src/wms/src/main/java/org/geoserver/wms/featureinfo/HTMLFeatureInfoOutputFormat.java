@@ -68,7 +68,7 @@ public class HTMLFeatureInfoOutputFormat extends GetFeatureInfoOutputFormat {
         });
     }
 
-    volatile GeoServerTemplateLoader templateLoader;
+    GeoServerTemplateLoader templateLoader;
 
     private WMS wms;
 

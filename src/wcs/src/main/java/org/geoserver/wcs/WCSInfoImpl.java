@@ -62,14 +62,6 @@ public class WCSInfoImpl extends ServiceInfoImpl implements WCSInfo {
         this.maxOutputMemory = maxOutputSize;
     }
 
-    public boolean isGmlPrefixing() {
-        return gmlPrefixing;
-    }
-
-    public void setGmlPrefixing(boolean gmlPrefixing) {
-        this.gmlPrefixing = gmlPrefixing;
-    }
-
     public boolean isSubsamplingEnabled() {
         return subsamplingEnabled == null ? true : subsamplingEnabled; 
     }

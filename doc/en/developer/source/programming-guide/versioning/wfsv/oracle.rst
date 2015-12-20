@@ -1,6 +1,6 @@
 .. _versioning_implementations_oracle:
 
-Oracle Worskspace Manager
+Oracle Workspace Manager
 ==========================================
 
 Workspace manager is an Oracle module that allows for version control like features while retaining the ability to work against the database as if the versioning system was not there.

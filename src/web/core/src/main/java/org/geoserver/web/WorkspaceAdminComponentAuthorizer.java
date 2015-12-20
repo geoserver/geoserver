@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -7,13 +7,11 @@ package org.geoserver.web;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.AccessMode;
-import org.geoserver.security.AdminRequest;
 import org.geoserver.security.ResourceAccessManager;
-import org.geoserver.security.SecureCatalogImpl;
 import org.geoserver.security.WorkspaceAccessLimits;
 import org.geoserver.security.impl.DataAccessRule;
 import org.geoserver.security.impl.DataAccessRuleDAO;
@@ -44,15 +42,46 @@ public class WorkspaceAdminComponentAuthorizer extends AdminComponentAuthorizer 
 
         //TODO: we should cache this result somehow
 
+        // Check for authorization using the pluggable ResourceAccessManager
+        if(isWorkspaceAdmin(authentication)) {
+            return true;
+        }
+
+        // Check for authorization the old way (needed for test at the moment)
         List<String> roles = lookupWorkspaceAdminRoles();
         for (GrantedAuthority auth : authentication.getAuthorities()) {
             if (roles.contains(auth.getAuthority())) {
                 return true;
             }
         }
+
         return false;
     }
 
+    /**
+     * Check if the current user has any admin privilege on at least one workspace.
+     */
+    boolean isWorkspaceAdmin(Authentication authentication) {
+
+        Catalog catalog = getSecurityManager().getCatalog();
+
+        ResourceAccessManager manager = GeoServerExtensions.bean(ResourceAccessManager.class);
+        if(manager != null) {
+            for (WorkspaceInfo workspace : catalog.getWorkspaces()) {
+                WorkspaceAccessLimits accessLimits = manager.getAccessLimits(authentication, workspace);
+                if(accessLimits.isAdminable()) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @deprecated Uses a fixed DAO, should be replaced with a check on pluggable ResourceAccessManager
+     */
+    @Deprecated
     List<String> lookupWorkspaceAdminRoles() {
         List<String> roles = new ArrayList<String>();
         DataAccessRuleDAO dao = DataAccessRuleDAO.get();

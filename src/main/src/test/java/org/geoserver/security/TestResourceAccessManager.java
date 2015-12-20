@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -24,7 +24,17 @@ import org.springframework.security.core.Authentication;
  */
 public class TestResourceAccessManager extends AbstractResourceAccessManager {
     
-    Map<String, Map<String, AccessLimits>> limits = new HashMap<String, Map<String,AccessLimits>>();  
+    Map<String, Map<String, AccessLimits>> limits = new HashMap<String, Map<String,AccessLimits>>();
+    
+    WorkspaceAccessLimits defaultWorkspaceAccessLimits = null;
+    
+    public WorkspaceAccessLimits getDefaultWorkspaceAccessLimits() {
+        return defaultWorkspaceAccessLimits;
+    }
+
+    public void setDefaultWorkspaceAccessLimits(WorkspaceAccessLimits defaultWorkspaceAccessLimits) {
+        this.defaultWorkspaceAccessLimits = defaultWorkspaceAccessLimits;
+    }
 
     public WorkspaceAccessLimits getAccessLimits(Authentication user, WorkspaceInfo workspace) {
         if(user == null) {
@@ -32,7 +42,12 @@ public class TestResourceAccessManager extends AbstractResourceAccessManager {
         }
         
         final String name = user.getName();
-        return (WorkspaceAccessLimits) getUserMap(name).get(workspace.getId());
+        WorkspaceAccessLimits wal = (WorkspaceAccessLimits) getUserMap(name).get(workspace.getId());
+        if(wal != null) {
+            return wal;
+        } else {
+            return defaultWorkspaceAccessLimits;
+        }
     }
 
     public DataAccessLimits getAccessLimits(Authentication user, LayerInfo layer) {

@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2007 - 2012 GeoSolutions S.A.S.
+ *  Copyright (C) 2007 - 2015 GeoSolutions S.A.S.
  *  http://www.geo-solutions.it
  * 
  *  GPLv3 + Classpath exception
@@ -19,14 +19,12 @@
  */
 package org.geoserver.geofence.cache.rest;
 
-import com.google.common.base.Objects;
 import com.google.common.cache.CacheStats;
 
 import org.geoserver.geofence.cache.CachedRuleReader;
 import org.restlet.Context;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.resource.Representation;
 import org.restlet.resource.Resource;
 import org.restlet.resource.StringRepresentation;
 
@@ -51,6 +49,18 @@ public class RESTCacheStats extends Resource {
 
         StringBuilder sb = new StringBuilder()
                 .append("RuleStats[")
+                .append(" size:").append(crr.getCacheSize())
+                .append("/").append(crr.getCacheInitParams().getSize())
+                .append(" hitCount:").append(stats.hitCount())
+                .append(" missCount:").append(stats.missCount())
+                .append(" loadSuccessCount:").append(stats.loadSuccessCount())
+                .append(" loadExceptionCount:").append(stats.loadExceptionCount())
+                .append(" totalLoadTime:").append(stats.totalLoadTime())
+                .append(" evictionCount:").append(stats.evictionCount())
+                .append("] \n");
+
+        stats = crr.getAdminAuthStats();
+        sb.append("AdminAuthStats[")
                 .append(" size:").append(crr.getCacheSize())
                 .append("/").append(crr.getCacheInitParams().getSize())
                 .append(" hitCount:").append(stats.hitCount())

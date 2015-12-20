@@ -58,6 +58,7 @@ public class CachedRuleReader implements RuleReaderService {
 
     private LoadingCache<RuleFilter, AccessInfo> ruleCache;
     private LoadingCache<NamePw, AuthUser>       userCache;
+    private LoadingCache<RuleFilter, AccessInfo>   authCache;
 
     private final GeoFenceConfigurationManager configurationManager;
 
@@ -86,6 +87,7 @@ public class CachedRuleReader implements RuleReaderService {
 
         ruleCache  = getCacheBuilder().build(new RuleLoader());
         userCache = getCacheBuilder().build(new UserLoader());
+        authCache = getCacheBuilder().build(new AuthLoader());
     }
 
 
@@ -143,6 +145,31 @@ public class CachedRuleReader implements RuleReaderService {
         }
     }
 
+    private class AuthLoader extends CacheLoader<RuleFilter, AccessInfo> {
+
+        @Override
+        public AccessInfo load(RuleFilter filter) throws Exception {
+            if(LOGGER.isLoggable(Level.FINE))
+                LOGGER.log(Level.FINE, "Loading {0}", filter);
+            // the service, when integrated, may modify the filter
+            RuleFilter clone = filter.clone();
+            return realRuleReaderService.getAdminAuthorization(clone);
+        }
+
+        @Override
+        public ListenableFuture<AccessInfo> reload(final RuleFilter filter, AccessInfo accessInfo) throws Exception {
+            if(LOGGER.isLoggable(Level.FINE))
+                LOGGER.log(Level.FINE, "Reloading {0}", filter);
+
+            // the service, when integrated, may modify the filter
+            RuleFilter clone = filter.clone();
+
+            // this is a sync implementation
+            AccessInfo ret = realRuleReaderService.getAdminAuthorization(clone);
+            return Futures.immediateFuture(ret);
+        }
+    }
+
     private class UserLoader extends CacheLoader<NamePw, AuthUser> {
 
         @Override
@@ -175,6 +202,7 @@ public class CachedRuleReader implements RuleReaderService {
             LOGGER.log(Level.WARNING, "Forcing cache invalidation");
         ruleCache.invalidateAll();
         userCache.invalidateAll();
+        authCache.invalidateAll();
     }
 
     /**
@@ -199,6 +227,7 @@ public class CachedRuleReader implements RuleReaderService {
             if(dumpCnt.incrementAndGet() % 10 == 0) {
                 LOGGER.info("Rules  :"+ruleCache.stats());
                 LOGGER.info("Users  :"+userCache.stats());
+                LOGGER.info("Auth   :"+authCache.stats());
                 LOGGER.fine("params :"+cacheConfiguration);
             }
 
@@ -208,6 +237,23 @@ public class CachedRuleReader implements RuleReaderService {
             throw new RuntimeException(ex); // fixme: handle me
         }
     }
+
+
+    @Override
+    public AccessInfo getAdminAuthorization(RuleFilter filter) {
+//        return realRuleReaderService.getAdminAuthorization(filter);
+
+        if(LOGGER.isLoggable(Level.FINE)) {
+            LOGGER.log(Level.FINE, "AdminAuth Request for {0}", filter);
+        }
+
+        try {
+            return authCache.get(filter);
+        } catch (ExecutionException ex) {
+            throw new RuntimeException(ex); // fixme: handle me
+        }
+    }
+
 
     /**
      * <B>Deprecated method are not cached.</B>
@@ -254,6 +300,10 @@ public class CachedRuleReader implements RuleReaderService {
         return ruleCache.stats();
     }
 
+    public CacheStats getAdminAuthStats() {
+        return authCache.stats();
+    }
+
     public CacheStats getUserStats() {
         return userCache.stats();
     }
@@ -262,9 +312,14 @@ public class CachedRuleReader implements RuleReaderService {
         return ruleCache.size();
     }
 
+    public long getAdminAuthCacheSize() {
+        return authCache.size();
+    }
+
     public long getUserCacheSize() {
         return userCache.size();
     }
+
 
     /**
      * May be useful if an external peer doesn't want to use the guava dep.
@@ -279,6 +334,7 @@ public class CachedRuleReader implements RuleReaderService {
                 +"["
                 + "Rule:"+ruleCache.stats()
                 + " User:"+userCache.stats()
+                + " Auth:"+authCache.stats()
                 + " " + cacheConfiguration
                 + "]";
     }

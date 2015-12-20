@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2007 - 2014 GeoSolutions S.A.S.
+ *  Copyright (C) 2007 - 2015 GeoSolutions S.A.S.
  *  http://www.geo-solutions.it
  *
  *  GPLv3 + Classpath exception
@@ -104,6 +104,7 @@ import com.vividsolutions.jts.io.WKTReader;
  * Makes GeoServer use the Geofence to assess data access rules
  *
  * @author Andrea Aime - GeoSolutions
+ * @author Emanuele Tajariol- GeoSolutions
  */
 public class GeofenceAccessManager implements ResourceAccessManager, DispatcherCallback
 {
@@ -157,7 +158,8 @@ public class GeofenceAccessManager implements ResourceAccessManager, DispatcherC
     }
 
     @Override
-    public WorkspaceAccessLimits getAccessLimits(Authentication user, WorkspaceInfo workspace) {
+    public WorkspaceAccessLimits getAccessLimits(Authentication user, WorkspaceInfo workspace)
+    {
         LOGGER.log(Level.FINE, "Getting access limits for workspace {0}", workspace.getName());
 
         if ((user != null) && !(user instanceof AnonymousAuthenticationToken)) {
@@ -168,11 +170,48 @@ public class GeofenceAccessManager implements ResourceAccessManager, DispatcherC
 
                 return new WorkspaceAccessLimits(DEFAULT_CATALOG_MODE, true, true);
             }
-            return new WorkspaceAccessLimits(DEFAULT_CATALOG_MODE, true, configurationManager.getConfiguration().isGrantWriteToWorkspacesToAuthenticatedUsers());
+
+            boolean canWrite = configurationManager.getConfiguration().isGrantWriteToWorkspacesToAuthenticatedUsers();
+            boolean canAdmin = isWorkspaceAdmin(user, workspace.getName());
+
+            return new WorkspaceAccessLimits(DEFAULT_CATALOG_MODE, true, canWrite, canAdmin);
         }
 
         // further logic disabled because of https://github.com/geosolutions-it/geofence/issues/6
         return new WorkspaceAccessLimits(DEFAULT_CATALOG_MODE, true, false);
+    }
+
+    /**
+     * We expect the user not to be null and not to be admin
+     */
+    private boolean isWorkspaceAdmin(Authentication user, String workspaceName)
+    {
+        LOGGER.log(Level.FINE, "Getting admin auth for Workspace {0}", workspaceName);
+
+        // get the request infos
+        RuleFilter ruleFilter = new RuleFilter(RuleFilter.SpecialFilterType.ANY);
+
+        ruleFilter.setInstance(configurationManager.getConfiguration().getInstanceName());
+        ruleFilter.setWorkspace(workspaceName);
+        ruleFilter.setUser(user.getName());
+
+        String sourceAddress = retrieveCallerIpAddress();
+        if(sourceAddress != null) {
+            ruleFilter.setSourceAddress(sourceAddress);
+        } else {
+            LOGGER.log(Level.WARNING, "No source IP address found");
+            ruleFilter.setSourceAddress(RuleFilter.SpecialFilterType.DEFAULT);
+        }
+
+        if(LOGGER.isLoggable(Level.FINE)) {
+            LOGGER.log(Level.FINE, "AdminAuth filter: {0}", ruleFilter);
+        }
+
+        AccessInfo auth = rules.getAdminAuthorization(ruleFilter);
+
+        LOGGER.log(Level.FINE, "Admin auth for User:{0} Workspace:{1}: {2}", new Object[]{user.getName(), workspaceName, auth.getAdminRights()});
+
+        return auth.getAdminRights();
     }
 
     String getSourceAddress(HttpServletRequest http) {
@@ -220,13 +259,13 @@ public class GeofenceAccessManager implements ResourceAccessManager, DispatcherC
     }
 
 
-    private WorkspaceAccessLimits buildAccessLimits(WorkspaceInfo workspace, AccessInfo rule) {
-        if (rule == null) {
-            return new WorkspaceAccessLimits(DEFAULT_CATALOG_MODE, true, true);
-        } else {
-            return new WorkspaceAccessLimits(DEFAULT_CATALOG_MODE, rule.getGrant() == GrantType.ALLOW, rule.getGrant() == GrantType.ALLOW);
-        }
-    }
+//    private WorkspaceAccessLimits buildAccessLimits(WorkspaceInfo workspace, AccessInfo rule) {
+//        if (rule == null) {
+//            return new WorkspaceAccessLimits(DEFAULT_CATALOG_MODE, true, true);
+//        } else {
+//            return new WorkspaceAccessLimits(DEFAULT_CATALOG_MODE, rule.getGrant() == GrantType.ALLOW, rule.getGrant() == GrantType.ALLOW);
+//        }
+//    }
 
     @Override
     public StyleAccessLimits getAccessLimits(Authentication user, StyleInfo style)

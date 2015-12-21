@@ -5,18 +5,15 @@
  */
 package org.geoserver.web;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.WorkspaceInfo;
-import org.geoserver.platform.GeoServerExtensions;
-import org.geoserver.security.AccessMode;
 import org.geoserver.security.ResourceAccessManager;
+import org.geoserver.security.SecureCatalogImpl;
 import org.geoserver.security.WorkspaceAccessLimits;
-import org.geoserver.security.impl.DataAccessRule;
-import org.geoserver.security.impl.DataAccessRuleDAO;
+import org.geotools.util.logging.Logging;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 
 /**
  * Authorizer that allows access if the user has admin rights to any workspace. 
@@ -25,6 +22,7 @@ import org.springframework.security.core.GrantedAuthority;
  *
  */
 public class WorkspaceAdminComponentAuthorizer extends AdminComponentAuthorizer {
+    private final static Logger LOGGER = Logging.getLogger(WorkspaceAdminComponentAuthorizer.class);
 
     @Override
     public boolean isAccessAllowed(Class componentClass,
@@ -41,18 +39,8 @@ public class WorkspaceAdminComponentAuthorizer extends AdminComponentAuthorizer 
         }
 
         //TODO: we should cache this result somehow
-
-        // Check for authorization using the pluggable ResourceAccessManager
         if(isWorkspaceAdmin(authentication)) {
             return true;
-        }
-
-        // Check for authorization the old way (needed for test at the moment)
-        List<String> roles = lookupWorkspaceAdminRoles();
-        for (GrantedAuthority auth : authentication.getAuthorities()) {
-            if (roles.contains(auth.getAuthority())) {
-                return true;
-            }
         }
 
         return false;
@@ -65,31 +53,23 @@ public class WorkspaceAdminComponentAuthorizer extends AdminComponentAuthorizer 
 
         Catalog catalog = getSecurityManager().getCatalog();
 
-        ResourceAccessManager manager = GeoServerExtensions.bean(ResourceAccessManager.class);
+        ResourceAccessManager manager = null;
+        try {
+            manager = SecureCatalogImpl.lookupResourceAccessManager();
+        } catch (Exception ex) {
+            LOGGER.log(Level.WARNING, "Error in getting the ResourceAccessManager", ex);
+            return false;
+        }
+
         if(manager != null) {
             for (WorkspaceInfo workspace : catalog.getWorkspaces()) {
                 WorkspaceAccessLimits accessLimits = manager.getAccessLimits(authentication, workspace);
-                if(accessLimits.isAdminable()) {
+                if(accessLimits!= null &&  accessLimits.isAdminable()) {
                     return true;
                 }
             }
         }
 
         return false;
-    }
-
-    /**
-     * @deprecated Uses a fixed DAO, should be replaced with a check on pluggable ResourceAccessManager
-     */
-    @Deprecated
-    List<String> lookupWorkspaceAdminRoles() {
-        List<String> roles = new ArrayList<String>();
-        DataAccessRuleDAO dao = DataAccessRuleDAO.get();
-        for (DataAccessRule rule : dao.getRules()) {
-            if (rule.getAccessMode() == AccessMode.ADMIN) {
-                roles.addAll(rule.getRoles());
-            }
-        }
-        return roles;
     }
 }

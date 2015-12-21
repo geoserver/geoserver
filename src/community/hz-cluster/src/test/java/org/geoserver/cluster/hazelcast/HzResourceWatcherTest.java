@@ -15,7 +15,7 @@ import org.easymock.EasyMock;
 import org.easymock.IAnswer;
 import org.geoserver.platform.resource.AbstractResourceWatcherTest;
 import org.geoserver.platform.resource.ResourceNotification;
-import org.geoserver.platform.resource.ResourceWatcher;
+import org.geoserver.platform.resource.ResourceNotificationDispatcher;
 
 import com.hazelcast.core.Cluster;
 import com.hazelcast.core.HazelcastInstance;
@@ -30,10 +30,10 @@ import com.hazelcast.core.MessageListener;
  */
 public class HzResourceWatcherTest extends AbstractResourceWatcherTest {
 
-    private HzResourceWatcher resourceWatcher;
+    private HzResourceNotificationDispatcher resourceWatcher;
 
     @Override
-    protected ResourceWatcher initWatcher() throws Exception {
+    protected ResourceNotificationDispatcher initWatcher() throws Exception {
         final Capture<MessageListener<ResourceNotification>> captureTopicListener = new Capture<MessageListener<ResourceNotification>>();
         final Capture<ResourceNotification> captureTopicPublish = new Capture<ResourceNotification>();
 
@@ -43,7 +43,7 @@ public class HzResourceWatcherTest extends AbstractResourceWatcherTest {
         final HzCluster hzCluster = createMock(HzCluster.class);
 
         expect(hz.getCluster()).andStubReturn(cluster);
-        expect(hz.<ResourceNotification> getTopic(HzResourceWatcher.TOPIC_NAME)).andStubReturn(topic);
+        expect(hz.<ResourceNotification> getTopic(HzResourceNotificationDispatcher.TOPIC_NAME)).andStubReturn(topic);
         expect(topic.addMessageListener(capture(captureTopicListener))).andReturn("fake-id");
         topic.publish(EasyMock.capture(captureTopicPublish));
         expectLastCall().andStubAnswer(new IAnswer<Object>() {
@@ -66,7 +66,7 @@ public class HzResourceWatcherTest extends AbstractResourceWatcherTest {
         
         replay(cluster, topic, hz, hzCluster);
 
-        resourceWatcher = new HzResourceWatcher();
+        resourceWatcher = new HzResourceNotificationDispatcher();
         resourceWatcher.setCluster(hzCluster);
         resourceWatcher.afterPropertiesSet();
         return resourceWatcher;

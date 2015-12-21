@@ -29,9 +29,9 @@ import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.ResourceListener;
 import org.geoserver.platform.resource.ResourceNotification;
 import org.geoserver.platform.resource.ResourceStore;
-import org.geoserver.platform.resource.ResourceWatcher;
+import org.geoserver.platform.resource.ResourceNotificationDispatcher;
 import org.geoserver.platform.resource.Resources;
-import org.geoserver.platform.resource.SimpleResourceWatcher;
+import org.geoserver.platform.resource.SimpleResourceNotificationDispatcher;
 
 /**
  * Implementation of ResourceStore backed by a JDBC DirectoryStructure.
@@ -47,7 +47,7 @@ public class JDBCResourceStore implements ResourceStore {
     /** LockProvider used to secure resources for exclusive access */
     protected LockProvider lockProvider = new NullLockProvider();
     
-    protected ResourceWatcher resourceWatcher = new SimpleResourceWatcher();
+    protected ResourceNotificationDispatcher resourceWatcher = new SimpleResourceNotificationDispatcher();
             
     protected JDBCDirectoryStructure dir;    
     protected ResourceCache cache;
@@ -76,7 +76,7 @@ public class JDBCResourceStore implements ResourceStore {
      * 
      * @param resourceWatcher
      */
-    public void setResourceWatcher(ResourceWatcher resourceWatcher) {
+    public void setResourceWatcher(ResourceNotificationDispatcher resourceWatcher) {
         this.resourceWatcher = resourceWatcher;
     }
     
@@ -177,7 +177,7 @@ public class JDBCResourceStore implements ResourceStore {
 
         @Override
         public OutputStream out() {
-            List<ResourceNotification.Event> events = SimpleResourceWatcher.createEvents(this,
+            List<ResourceNotification.Event> events = SimpleResourceNotificationDispatcher.createEvents(this,
                     ResourceNotification.Kind.ENTRY_CREATE);
             if (entry.createResource()) {
                 resourceWatcher.changed(new ResourceNotification(path(), ResourceNotification.Kind.ENTRY_CREATE, 
@@ -283,7 +283,7 @@ public class JDBCResourceStore implements ResourceStore {
             List<Lock> locks = new ArrayList<Lock>();
             lockRecursively(locks);
             try {
-                List<ResourceNotification.Event> events = SimpleResourceWatcher.createEvents(this,
+                List<ResourceNotification.Event> events = SimpleResourceNotificationDispatcher.createEvents(this,
                         ResourceNotification.Kind.ENTRY_DELETE);
                 if (entry.delete()) {
                     resourceWatcher.changed(new ResourceNotification(path(), ResourceNotification.Kind.ENTRY_DELETE, 
@@ -308,9 +308,9 @@ public class JDBCResourceStore implements ResourceStore {
 
         @Override
         public boolean renameTo(Resource dest) {
-            List<ResourceNotification.Event> eventsDelete = SimpleResourceWatcher.createEvents(this,
+            List<ResourceNotification.Event> eventsDelete = SimpleResourceNotificationDispatcher.createEvents(this,
                     ResourceNotification.Kind.ENTRY_DELETE);
-            List<ResourceNotification.Event> eventsRename = SimpleResourceWatcher.createRenameEvents(this, dest);
+            List<ResourceNotification.Event> eventsRename = SimpleResourceNotificationDispatcher.createRenameEvents(this, dest);
             boolean result;
             if (dest instanceof JDBCResource) {
                 result = entry.renameTo(((JDBCResource) dest).entry);
@@ -358,7 +358,7 @@ public class JDBCResourceStore implements ResourceStore {
             public void close() throws IOException {            
                 final Lock lock = lock();
                 try {
-                    List<ResourceNotification.Event> events = SimpleResourceWatcher.createEvents(JDBCResource.this,
+                    List<ResourceNotification.Event> events = SimpleResourceNotificationDispatcher.createEvents(JDBCResource.this,
                             ResourceNotification.Kind.ENTRY_MODIFY);
                     
                     entry.setContent(new FileInputStream(tempFile));

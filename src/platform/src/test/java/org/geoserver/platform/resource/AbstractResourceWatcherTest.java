@@ -23,7 +23,7 @@ import org.junit.rules.TemporaryFolder;
 public abstract class AbstractResourceWatcherTest {
         
     protected FileSystemResourceStore store;
-    protected ResourceWatcher watcher;
+    protected ResourceNotificationDispatcher watcher;
     
     protected static class CheckingResourceListener implements ResourceListener {
         private boolean checked = false;
@@ -66,7 +66,7 @@ public abstract class AbstractResourceWatcherTest {
         watcher = initWatcher();
     }
     
-    protected abstract ResourceWatcher initWatcher() throws Exception;
+    protected abstract ResourceNotificationDispatcher initWatcher() throws Exception;
     
     @Test
     public void testDeleteNotification() {
@@ -86,7 +86,7 @@ public abstract class AbstractResourceWatcherTest {
         watcher.addListener(res.get("DirC/FileC1"), chkFileC1);
         watcher.addListener(res.get("DirC/FileC2"), chkFileC2);
         
-        List<Event> events = SimpleResourceWatcher.createEvents(res, Kind.ENTRY_DELETE);        
+        List<Event> events = SimpleResourceNotificationDispatcher.createEvents(res, Kind.ENTRY_DELETE);        
         watcher.changed(new ResourceNotification("DirA", Kind.ENTRY_DELETE, System.currentTimeMillis(), events));
         
         //test that listeners received events
@@ -119,7 +119,7 @@ public abstract class AbstractResourceWatcherTest {
         watcher.addListener(store.get("DirA/DirC"), chkDirC);
         watcher.addListener(store.get("DirA"), chkDirA);
         
-        List<Event> events = SimpleResourceWatcher.createEvents(res, Kind.ENTRY_MODIFY);        
+        List<Event> events = SimpleResourceNotificationDispatcher.createEvents(res, Kind.ENTRY_MODIFY);        
         watcher.changed(new ResourceNotification("DirA/DirC/FileC1", Kind.ENTRY_MODIFY, System.currentTimeMillis(), events));
         
         //test that listeners received events
@@ -148,7 +148,7 @@ public abstract class AbstractResourceWatcherTest {
         watcher.addListener(store.get("DirA/DirC"), chkDirC);
         watcher.addListener(store.get("DirA"), chkDirA);
         
-        List<Event> events = SimpleResourceWatcher.createEvents(res, Kind.ENTRY_CREATE);        
+        List<Event> events = SimpleResourceNotificationDispatcher.createEvents(res, Kind.ENTRY_CREATE);        
         watcher.changed(new ResourceNotification("DirA/DirC/DirD/FileQ", Kind.ENTRY_CREATE, System.currentTimeMillis(), events));
         
         //test that listeners received events

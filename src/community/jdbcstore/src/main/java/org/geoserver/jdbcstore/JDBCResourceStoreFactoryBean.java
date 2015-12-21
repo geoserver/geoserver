@@ -11,7 +11,7 @@ import org.geoserver.jdbcstore.internal.JDBCResourceStoreProperties;
 import org.geoserver.platform.resource.LockProvider;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.ResourceStore;
-import org.geoserver.platform.resource.ResourceWatcher;
+import org.geoserver.platform.resource.ResourceNotificationDispatcher;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -58,7 +58,7 @@ public class JDBCResourceStoreFactoryBean implements FactoryBean<ResourceStore>,
      * 
      * @param resourceWatcher
      */
-    public void setResourceWatcher(ResourceWatcher resourceWatcher) {
+    public void setResourceWatcher(ResourceNotificationDispatcher resourceWatcher) {
         if (resourceStore instanceof JDBCResourceStore) {
             ((JDBCResourceStore) resourceStore).setResourceWatcher(resourceWatcher);
         }

@@ -177,55 +177,36 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Re
     }
     
     /**
-     * Used to look up files based on user provided url (or path).
+     * Used to look up resources based on user provided url (or path) using the Data Directory as base directory.
      * 
-     * This method (originally from vfny GeoserverDataDirectory) is used to process a URL provided
-     * by a user: <i>Given a path, tries to interpret it as a file into the data directory, or as an absolute
-     * location, and returns the actual absolute location of the file.</i>
+     * Convenience method for Resources.fromURL(resources.get(Paths.BASE), url)
      * 
-     * Over time this url method has grown in the telling to support:
-     * <ul>
-     * <li>Actual URL to external resource using http or ftp protocol - will return null</li>
-     * <li>Resource URL - will support resources from resource store</li>
-     * <li>File URL - will support absolute file references</li>
-     * <li>File URL - will support relative file references - this is deprecated, use resource: instead</li>
-     * <li>Fake URLs - sde://user:pass@server:port - will return null.</li>
-     * <li>path - user supplied file path (operating specific specific)</li>
-     * </ul>
+     * See {@link Resources#fromURL(Resource, String)}
      * 
-     * Note that the baseDirectory is optional (and may be null).
-     * 
-     * @param url File URL or path relative to data directory 
-     * 
-     * @return File indicated by provided URL 
      */
     public Resource fromURL(String url) {
         return Resources.fromURL(resources.get(Paths.BASE), url);
     }
     
     /**
-     * Used to look up files based on user provided url. 
+     * Used to look up resources based on user provided url using the Data Directory as base directory.
      * 
-     * Supports
-     * <li>Actual URL to external resource using http or ftp protocol - will return null</li>
-     * <li>Resource URL - will support resources from resource store</li>
-     * <li>File URL - will support absolute file references</li>
-     * <li>File URL - will support relative file references - this is deprecated, use resource: instead</li>
-     * <li>Fake URLs - sde://user:pass@server:port - will return null.</li>
+     * Convenience method for Resources.fromURL(resources.get(Paths.BASE), url)
      * 
-     * @param url the url
-     * @return corresponding Resource
+     * See {@link Resources#fromURL(Resource, URL)}
+     * 
      */
     public Resource fromURL(URL url) {
         return Resources.fromURL(resources.get(Paths.BASE), url);
     }
     
     /**
-     * Creates resource from a path, if the path is relative it will return a resource from the ResourceStore
-     * otherwise it will return a file based resource
+     * Used to look up resources based on user provided path using the Data Directory as base directory.
      * 
-     * @param path relative or absolute path
-     * @return resource
+     * Convenience method for Resources.fromPath(resources.get(Paths.BASE), path)
+     * 
+     * See {@link Resources#fromPath(Resource, String)}
+     * 
      */
     public Resource fromPath(String path) {
        return Resources.fromPath(path, resources.get(Paths.BASE));

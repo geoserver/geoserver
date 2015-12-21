@@ -11,7 +11,7 @@ package org.geoserver.platform.resource;
  * @author Niels Charlier
  *
  */
-public interface ResourceWatcher {
+public interface ResourceNotificationDispatcher {
     
     /**
      * Add resource listener to this watcher.
@@ -37,7 +37,7 @@ public interface ResourceWatcher {
      * Events should be propagated to children and parents automatically where applicable,to avoid unnecessary
      * communication between GeoServer instances in a clustered environment.
      * (Delete notifications are propagated to their children. All operations are propagated to their parents.)
-     * See {@link SimpleResourceWatcher} for an example.
+     * See {@link SimpleResourceNotificationDispatcher} for an example.
      * 
      * @param notification
      */

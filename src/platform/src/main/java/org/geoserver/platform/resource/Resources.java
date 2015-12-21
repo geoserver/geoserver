@@ -485,9 +485,9 @@ public class Resources {
     
     
     /**
-     * Used to look up files based on user provided url (or path).
+     * Used to look up resources based on user provided url (or path) using the Data Directory as base directory.
      * 
-     * This method (originally from vfny GeoserverDataDirectory) is used to process a URL provided
+     * This method is used to process a URL provided
      * by a user: <i>Given a path, tries to interpret it as a file into the data directory, or as an absolute
      * location, and returns the actual absolute location of the file.</i>
      * 
@@ -501,20 +501,18 @@ public class Resources {
      * <li>path - user supplied file path (operating specific specific)</li>
      * </ul>
      * 
-     * Note that the baseDirectory is optional (and may be null).
-     * 
      * @param url File URL or path relative to data directory 
      * 
-     * @return File indicated by provided URL 
+     * @return Resource indicated by provided URL 
      */
     public static Resource fromURL(String path) {
        return ((GeoServerResourceLoader) GeoServerExtensions.bean("resourceLoader")).fromURL(path);
     }
     
     /**
-     * Used to look up files based on user provided url (or path).
+     * Used to look up resources based on user provided url (or path).
      * 
-     * This method (originally from vfny GeoserverDataDirectory) is used to process a URL provided
+     * This method is used to process a URL provided
      * by a user: <i>iven a path, tries to interpret it as a file into the data directory, or as an absolute
      * location, and returns the actual absolute location of the file.</i>
      * 
@@ -533,7 +531,7 @@ public class Resources {
      * @param baseDirectory Optional base directory used to resolve relative file URLs
      * @param url File URL or path relative to data directory 
      * 
-     * @return File indicated by provided URL 
+     * @return Resource indicated by provided URL 
      */
     public static Resource fromURL(Resource baseDirectory, String url) {
         String ss;
@@ -587,7 +585,7 @@ public class Resources {
     }
     
     /**
-     * Used to look up files based on user provided url. 
+     * Used to look up resources based on user provided url, using the Data Directory as base directory. 
      * 
      * Supports
      * <li>Actual URL to external resource using http or ftp protocol - will return null</li>
@@ -596,7 +594,6 @@ public class Resources {
      * <li>File URL - will support relative file references - this is deprecated, use resource: instead</li>
      * <li>Fake URLs - sde://user:pass@server:port - will return null.</li>
      * 
-     * @param baseDirectory base directory for resource: or relative file: paths
      * @param url the url
      * @return corresponding Resource
      */
@@ -605,7 +602,7 @@ public class Resources {
     }
     
     /**
-     * Used to look up files based on user provided url. 
+     * Used to look up a resource based on user provided url. 
      * 
      * Supports
      * <li>Actual URL to external resource using http or ftp protocol - will return null</li>

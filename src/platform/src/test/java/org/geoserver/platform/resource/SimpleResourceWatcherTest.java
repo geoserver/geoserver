@@ -22,8 +22,8 @@ import org.junit.Test;
 public class SimpleResourceWatcherTest extends AbstractResourceWatcherTest {       
     
     @Override
-    protected ResourceWatcher initWatcher() {
-        return new SimpleResourceWatcher();
+    protected ResourceNotificationDispatcher initWatcher() {
+        return new SimpleResourceNotificationDispatcher();
     }
     
     @Test
@@ -31,7 +31,7 @@ public class SimpleResourceWatcherTest extends AbstractResourceWatcherTest {
         Resource src = store.get("DirA");
         Resource dest = store.get("DirB");
         
-        List<Event> events = SimpleResourceWatcher.createRenameEvents(src, dest);
+        List<Event> events = SimpleResourceNotificationDispatcher.createRenameEvents(src, dest);
         
         assertEquals(6, events.size());
         
@@ -56,7 +56,7 @@ public class SimpleResourceWatcherTest extends AbstractResourceWatcherTest {
     public void testDeleteEvents() {
         Resource res = store.get("DirA");
         
-        List<Event> events = SimpleResourceWatcher.createEvents(res, Kind.ENTRY_DELETE);
+        List<Event> events = SimpleResourceNotificationDispatcher.createEvents(res, Kind.ENTRY_DELETE);
         
         assertEquals(6, events.size());
                 
@@ -80,7 +80,7 @@ public class SimpleResourceWatcherTest extends AbstractResourceWatcherTest {
     public void testCreateEvents() {
         Resource res = store.get("DirD/DirE/DirF/FileQ");
         
-        List<Event> events = SimpleResourceWatcher.createEvents(res, Kind.ENTRY_CREATE);
+        List<Event> events = SimpleResourceNotificationDispatcher.createEvents(res, Kind.ENTRY_CREATE);
         
         assertEquals(4, events.size());
                 

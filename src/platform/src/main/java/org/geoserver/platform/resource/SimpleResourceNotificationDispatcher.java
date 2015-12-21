@@ -22,7 +22,7 @@ import org.geoserver.platform.resource.ResourceNotification.Kind;
  * @author Niels Charlier
  *
  */
-public class SimpleResourceWatcher implements ResourceWatcher {
+public class SimpleResourceNotificationDispatcher implements ResourceNotificationDispatcher {
     
     private Map<String, List<ResourceListener>> handlers = new HashMap<String, List<ResourceListener>>();
 

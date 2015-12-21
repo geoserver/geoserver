@@ -108,7 +108,6 @@
       <option value="-DSTOP.KEY=geoserver"/>
       <option value="-Xms128m"/>
       <option value="-Xmx512m"/>
-      <option value="-XX:MaxPermSize=128m"/>
       <option value="-Dapple.laf.useScreenMenuBar=true"/>
 
       <!-- Workaround since the icon parameter for bundleapp doesn't work -->

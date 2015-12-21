@@ -61,11 +61,6 @@ if [ -z $GEOSERVER_DATA_DIR ]; then
     fi
 fi
 
-# if not told otherwise pump up the permgen
-if [ -z "$JAVA_OPTS" ]; then
-  export JAVA_OPTS="-XX:MaxPermSize=128m"
-fi 
-
 cd "$GEOSERVER_HOME"
 
 echo "GEOSERVER DATA DIR is $GEOSERVER_DATA_DIR"

@@ -1269,14 +1269,10 @@
      <artifactId>maven-compiler-plugin</artifactId>
      <version>2.3.2</version>
      <configuration>
-       <source>1.7</source>
-       <target>1.7</target>
+       <source>1.8</source>
+       <target>1.8</target>
        <debug>true</debug>
        <encoding>UTF-8</encoding>
-       <!-- 
-           On the win32 build box the compiler oom's due to the compiler accumulating
-           too many classes in the permanent generation, similar to GEOT-2462  
-       -->
        <fork>${fork.javac}</fork> 
        <maxmem>${javac.maxHeapSize}</maxmem>
      </configuration>
@@ -1298,8 +1294,8 @@
     <version>2.12.3</version>
     <configuration>
      <runOrder>alphabetical</runOrder>
-     <source>1.7</source>
-     <target>1.7</target>
+     <source>1.8</source>
+     <target>1.8</target>
      <includes>
       <include>**/*Test.java</include>
      </includes>
@@ -1307,7 +1303,7 @@
       <exclude>${test.exclude.pattern}</exclude>
      </excludes>
      <forkMode>once</forkMode>
-     <argLine>-Xmx${test.maxHeapSize} -XX:MaxPermSize=${test.maxPermSize} -enableassertions ${jvm.opts} -Djava.awt.headless=${java.awt.headless} -Dsun.java2d.d3d=${sun.java2d.d3d}-DremoteOwsTests=${remoteOwsTests} -DquietTests=${quietTests} -Dorg.geotools.image.test.enabled=${image.tests} -Dorg.geotools.image.test.interactive=${interactive.image} -Duser.timezone=${user.timezone} -Dwindows.leniency=${windows.leniency}</argLine>
+     <argLine>-Xmx${test.maxHeapSize} -enableassertions ${jvm.opts} -Djava.awt.headless=${java.awt.headless} -Dsun.java2d.d3d=${sun.java2d.d3d}-DremoteOwsTests=${remoteOwsTests} -DquietTests=${quietTests} -Dorg.geotools.image.test.enabled=${image.tests} -Dorg.geotools.image.test.interactive=${interactive.image} -Duser.timezone=${user.timezone} -Dwindows.leniency=${windows.leniency}</argLine>
      <enableAssertions>true</enableAssertions>
      <printSummary>true</printSummary>
      <testFailureIgnore>${allow.test.failure.ignore}</testFailureIgnore>
@@ -1490,7 +1486,7 @@
     <artifactId>maven-javadoc-plugin</artifactId>
     <version>2.9</version>
     <configuration>
-     <source>1.7</source>
+     <source>1.8</source>
      <version>false</version>
      <noqualifier>all</noqualifier>
      <quiet>true</quiet>
@@ -1650,7 +1646,6 @@
   <jalopy.phase>disabled</jalopy.phase>
   <jalopy.srcExcludesPattern>disabled</jalopy.srcExcludesPattern>
   <test.maxHeapSize>512M</test.maxHeapSize>
-  <test.maxPermSize>128M</test.maxPermSize>
   <test.excludedGroups></test.excludedGroups>
   <test.exclude.pattern>none</test.exclude.pattern>
   <quietTests>true</quietTests>

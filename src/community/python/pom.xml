@@ -214,7 +214,4 @@
    </plugin>
   </plugins>
  </build>
- <properties>
-   <test.maxPermSize>128m</test.maxPermSize>
- </properties>
 </project>

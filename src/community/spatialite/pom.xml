@@ -63,19 +63,4 @@
    </dependency>
   </dependencies>
 
- <build>
-  <plugins>
-   <plugin>
-     <groupId>org.apache.maven.plugins</groupId>
-     <artifactId>maven-compiler-plugin</artifactId>
-     <configuration>
-       <source>1.5</source> 
-       <target>1.5</target>
-       <debug>true</debug>
-       <encoding>UTF-8</encoding>
-     </configuration>
-    </plugin>
-  </plugins>
- </build>
- 
- </project>
+</project>

@@ -12,22 +12,5 @@ notifications:
   email:
     on_success: never
     on_failure: never
-branches:
-  only:
-    - master
-    - 2.8.x
-os:
-  - linux
-  - osx
-matrix:
-  allow_failures:
-    - os: osx
-  include:
-  # additional builds on linux w/ openjdk7 and oraclejdk8
-    - os: linux
-      jdk: openjdk7
-    - os: linux
-      jdk: oraclejdk8
-before_install:
-   # JAVA_HOME is not available on OSX, set it to allow Maven run
-   - if [ "$TRAVIS_OS_NAME" == "osx" ]; then export JAVA_HOME=$(/usr/libexec/java_home); fi
+jdk:
+  - oraclejdk8

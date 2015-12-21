@@ -3,7 +3,7 @@ http://docs.geoserver.org/latest/en/developer/
 
 ---------------------------
 
-1) Install Java Development Kit (JDK) 7 or greater.
+1) Install Java Development Kit (JDK) 8 or greater.
 
 * http://www.oracle.com/technetwork/java/javase/downloads/index.html
 * http://openjdk.java.net

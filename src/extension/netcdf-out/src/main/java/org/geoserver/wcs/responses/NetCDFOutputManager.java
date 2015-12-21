@@ -265,7 +265,7 @@ public class NetCDFOutputManager {
                 if (NetCDFUtilities.isATime(dataType)) {
                     tree = 
                             //new TreeSet(new DateRangeComparator());
-                            isRange ? new TreeSet(new DateRangeComparator()) : new TreeSet<Date>();
+                            isRange ? new TreeSet(new DateRangeComparator()) : new TreeSet<Object>();
                 } else {
                     tree = //new TreeSet<Object>();
                             isRange ? new TreeSet(new NumberRangeComparator()) : new TreeSet<Object>();

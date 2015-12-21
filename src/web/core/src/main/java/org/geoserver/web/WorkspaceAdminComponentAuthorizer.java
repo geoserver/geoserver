@@ -1,24 +1,19 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.web;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.WorkspaceInfo;
-import org.geoserver.security.AccessMode;
-import org.geoserver.security.AdminRequest;
 import org.geoserver.security.ResourceAccessManager;
 import org.geoserver.security.SecureCatalogImpl;
 import org.geoserver.security.WorkspaceAccessLimits;
-import org.geoserver.security.impl.DataAccessRule;
-import org.geoserver.security.impl.DataAccessRuleDAO;
+import org.geotools.util.logging.Logging;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 
 /**
  * Authorizer that allows access if the user has admin rights to any workspace. 
@@ -27,6 +22,7 @@ import org.springframework.security.core.GrantedAuthority;
  *
  */
 public class WorkspaceAdminComponentAuthorizer extends AdminComponentAuthorizer {
+    private final static Logger LOGGER = Logging.getLogger(WorkspaceAdminComponentAuthorizer.class);
 
     @Override
     public boolean isAccessAllowed(Class componentClass,
@@ -43,24 +39,37 @@ public class WorkspaceAdminComponentAuthorizer extends AdminComponentAuthorizer 
         }
 
         //TODO: we should cache this result somehow
-
-        List<String> roles = lookupWorkspaceAdminRoles();
-        for (GrantedAuthority auth : authentication.getAuthorities()) {
-            if (roles.contains(auth.getAuthority())) {
-                return true;
-            }
+        if(isWorkspaceAdmin(authentication)) {
+            return true;
         }
+
         return false;
     }
 
-    List<String> lookupWorkspaceAdminRoles() {
-        List<String> roles = new ArrayList<String>();
-        DataAccessRuleDAO dao = DataAccessRuleDAO.get();
-        for (DataAccessRule rule : dao.getRules()) {
-            if (rule.getAccessMode() == AccessMode.ADMIN) {
-                roles.addAll(rule.getRoles());
+    /**
+     * Check if the current user has any admin privilege on at least one workspace.
+     */
+    boolean isWorkspaceAdmin(Authentication authentication) {
+
+        Catalog catalog = getSecurityManager().getCatalog();
+
+        ResourceAccessManager manager = null;
+        try {
+            manager = SecureCatalogImpl.lookupResourceAccessManager();
+        } catch (Exception ex) {
+            LOGGER.log(Level.WARNING, "Error in getting the ResourceAccessManager", ex);
+            return false;
+        }
+
+        if(manager != null) {
+            for (WorkspaceInfo workspace : catalog.getWorkspaces()) {
+                WorkspaceAccessLimits accessLimits = manager.getAccessLimits(authentication, workspace);
+                if(accessLimits!= null &&  accessLimits.isAdminable()) {
+                    return true;
+                }
             }
         }
-        return roles;
+
+        return false;
     }
 }

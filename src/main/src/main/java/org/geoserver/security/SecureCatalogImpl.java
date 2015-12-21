@@ -87,7 +87,7 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
         return accessManager;
     }
 
-    static ResourceAccessManager lookupResourceAccessManager() throws Exception {
+    public static ResourceAccessManager lookupResourceAccessManager() throws Exception {
         ResourceAccessManager manager = GeoServerExtensions.bean(ResourceAccessManager.class);
         if (manager == null) {
             DataAccessManager daManager = lookupDataAccessManager();

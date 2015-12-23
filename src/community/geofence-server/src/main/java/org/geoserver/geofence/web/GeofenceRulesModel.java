@@ -10,10 +10,12 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import com.vividsolutions.jts.geom.MultiPolygon;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortParam;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.geoserver.geofence.core.model.Rule;
+import org.geoserver.geofence.core.model.RuleLimits;
 import org.geoserver.geofence.core.model.enums.GrantType;
 import org.geoserver.geofence.services.RuleAdminService;
 import org.geoserver.geofence.services.dto.ShortRule;
@@ -204,7 +206,28 @@ public class GeofenceRulesModel extends GeoServerDataProvider<ShortRule> {
         rule.setPriority(0);
         return rule;
     }
-    
+
+    public void save(Long ruleId, MultiPolygon allowedArea) {
+        Rule rule = adminService().get(ruleId);
+        RuleLimits ruleLimits = rule.getRuleLimits();
+        if (ruleLimits == null) {
+            ruleLimits = new RuleLimits();
+            ruleLimits.setRule(rule);
+        }
+        ruleLimits.setAllowedArea(allowedArea);
+        adminService().setLimits(ruleId, ruleLimits);
+    }
+
+    public RuleLimits getRulesLimits(Long ruleId) {
+        if(ruleId != null) {
+            Rule rule = adminService().get(ruleId);
+            if(rule != null) {
+                return rule.getRuleLimits();
+            }
+        }
+        return null;
+    }
+
     protected static void syncRule(ShortRule shortRule, Rule rule) {
         rule.setPriority(shortRule.getPriority());
         rule.setUsername(shortRule.getUserName());

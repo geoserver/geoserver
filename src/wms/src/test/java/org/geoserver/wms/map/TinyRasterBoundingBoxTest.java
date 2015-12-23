@@ -10,6 +10,7 @@ import java.awt.image.renderable.ParameterBlock;
 
 import javax.media.jai.ROI;
 import javax.media.jai.RenderedOp;
+import javax.xml.namespace.QName;
 
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.data.test.MockData;
@@ -23,6 +24,8 @@ import org.geotools.map.GridReaderLayer;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.resources.image.ImageUtilities;
 import org.geotools.styling.Style;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.opengis.coverage.grid.GridEnvelope;
@@ -45,6 +48,23 @@ public class TinyRasterBoundingBoxTest extends WMSTestSupport {
         System.setProperty("ENABLE_ADVANCED_PROJECTION", "false");
     }
 
+    private WMSMapContent map;
+
+    private BufferedImage image;
+
+    private RenderedOp op;
+
+    @Before
+    public void setUp() {
+        GetMapRequest request = new GetMapRequest();
+        request.setFormat("image/png");
+        this.map = new WMSMapContent();
+        this.map.setMapWidth(256);
+        this.map.setMapHeight(256);
+        this.map.setTransparent(true);
+        this.map.setRequest(request);
+    }
+
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
@@ -52,46 +72,86 @@ public class TinyRasterBoundingBoxTest extends WMSTestSupport {
         testData.addStyle("rainfall", "rainfall.sld", MockData.class, getCatalog());
     }
 
-    @Test
-    public void testTinyRasterBoundingBox() throws Exception {
-        GetMapRequest request = new GetMapRequest();
-        request.setFormat("image/png");
-        WMSMapContent map = new WMSMapContent();
-        map.setMapWidth(256);
-        map.setMapHeight(256);
-        map.setTransparent(true);
-        map.setRequest(request);
+    @After
+    public void tearDown() {
+        ImageUtilities.disposeImage(this.op);
+        this.map.dispose();
+        this.map = null;
+        this.image = null;
+        this.op = null;
+    }
 
-        CoverageInfo coverageInfo = getCatalog().getCoverageByName(
-            MockData.TASMANIA_DEM.getNamespaceURI(), MockData.TASMANIA_DEM.getLocalPart());
-        GridCoverage2DReader reader = (GridCoverage2DReader) 
-            coverageInfo.getGridCoverageReader(null, null);
-        Style style = getCatalog().getStyleByName("rainfall").getStyle();
-        map.addLayer(new GridReaderLayer(reader, style));
+    @Test
+    public void testTinyRasterBboxContained() throws Exception {
+        CoverageInfo coverageInfo = addRasterToMap(MockData.TASMANIA_DEM);
         Envelope env = coverageInfo.boundingBox();
         Coordinate center = env.centre();
         GridEnvelope range = coverageInfo.getGrid().getGridRange();
         double offset = (env.getMaxX() - env.getMinX()) / range.getSpan(0) / 10.0;
-        env = new Envelope(center.x + offset, center.x + 2 * offset, 
+        Rectangle imageBounds = produceMap(center.x + offset, center.x + 2 * offset, 
             center.y + offset, center.y + 2 * offset);
-        map.getViewport().setBounds(new ReferencedEnvelope(env, DefaultGeographicCRS.WGS84));
-
-        RenderedImageMapOutputFormat rasterMapProducer = 
-            new RenderedImageMapOutputFormat(getWMS());
-        RenderedImageMap imageMap = rasterMapProducer.produceMap(map);
-        RenderedOp op = (RenderedOp) imageMap.getImage();
-        BufferedImage image = op.getAsBufferedImage();
-        imageMap.dispose();
-
-        assertNotBlank("testTinyRasterBoundingBox", image);
-        assertEquals("Mosaic", op.getOperationName());
-        Rectangle imageBounds = new Rectangle(0, 0, image.getWidth(), image.getHeight());
-        ParameterBlock pb = op.getParameterBlock();
-        ROI[] rois = (ROI[]) pb.getObjectParameter(2);
-        Rectangle roiBounds = rois[0].getBounds();
+        assertNotBlank("testTinyRasterBboxContained", this.image);
+        assertEquals("Mosaic", this.op.getOperationName());
+        Rectangle roiBounds = getRoiBounds();
         assertTrue("Expected " + imageBounds + " to contain " + roiBounds, 
             imageBounds.contains(roiBounds));
+    }
 
-        ImageUtilities.disposeImage(op);
+    @Test
+    public void testTinyRasterBboxIntersection() throws Exception {
+        CoverageInfo coverageInfo = addRasterToMap(MockData.TASMANIA_DEM);
+        Envelope env = coverageInfo.boundingBox();
+        GridEnvelope range = coverageInfo.getGrid().getGridRange();
+        double offset = (env.getMaxX() - env.getMinX()) / range.getSpan(0) / 20.0;
+        Rectangle imageBounds = produceMap(env.getMinX() - offset, env.getMinX() + offset, 
+            env.getMaxY() - offset, env.getMaxY() + offset);
+        assertNotBlank("testTinyRasterBboxIntersection", this.image);
+        assertEquals("Mosaic", this.op.getOperationName());
+        Rectangle roiBounds = getRoiBounds();
+        assertTrue("Expected " + imageBounds + " to contain " + roiBounds, 
+            imageBounds.contains(roiBounds));
+    }
+
+    @Test
+    public void testTinyRasterBboxNoIntersection() throws Exception {
+        CoverageInfo coverageInfo = addRasterToMap(MockData.TASMANIA_DEM);
+        Envelope env = coverageInfo.boundingBox();
+        GridEnvelope range = coverageInfo.getGrid().getGridRange();
+        double offset = (env.getMaxX() - env.getMinX()) / range.getSpan(0) / 10.0;
+        Rectangle imageBounds = produceMap(env.getMaxX() + offset, env.getMaxX() + 2 * offset, 
+            env.getMinY() - 2 * offset, env.getMinY() - offset);
+        assertNotBlank("testTinyRasterBboxNoIntersection", this.image);
+        assertEquals("Mosaic", this.op.getOperationName());
+        Rectangle roiBounds = getRoiBounds();
+        assertTrue("Expected " + imageBounds + " to contain " + roiBounds, 
+            imageBounds.contains(roiBounds));
+    }
+
+    private CoverageInfo addRasterToMap(QName typeName) throws Exception {
+        CoverageInfo coverageInfo = getCatalog().getCoverageByName(
+            typeName.getNamespaceURI(), typeName.getLocalPart());
+        GridCoverage2DReader reader = (GridCoverage2DReader) 
+            coverageInfo.getGridCoverageReader(null, null);
+        Style style = getCatalog().getStyleByName("rainfall").getStyle();
+        this.map.addLayer(new GridReaderLayer(reader, style));
+        return coverageInfo;
+    }
+
+    private Rectangle getRoiBounds() {
+        ParameterBlock pb = this.op.getParameterBlock();
+        ROI[] rois = (ROI[]) pb.getObjectParameter(2);
+        return rois[0].getBounds();
+    }
+
+    private Rectangle produceMap(double minX, double maxX, double minY, double maxY) {
+        this.map.getViewport().setBounds(new ReferencedEnvelope(
+            minX, maxX, minY, maxY, DefaultGeographicCRS.WGS84));
+        RenderedImageMapOutputFormat rasterMapProducer = 
+            new RenderedImageMapOutputFormat(getWMS());
+        RenderedImageMap imageMap = rasterMapProducer.produceMap(this.map);
+        this.op = (RenderedOp) imageMap.getImage();
+        this.image = this.op.getAsBufferedImage();
+        imageMap.dispose();
+        return new Rectangle(0, 0, this.image.getWidth(), this.image.getHeight());
     }
 }

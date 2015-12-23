@@ -107,6 +107,16 @@
        <property name="order" value="1001" />
        <property name="icon" value="img/icons/geofence.png" />
     </bean>
+
+    <bean id="geofenceServerAdminPage" class="org.geoserver.web.MenuPageInfo">
+        <property name="id" value="geofenceServerAdminPage"/>
+        <property name="titleKey" value="GeofenceServerAdminPage.page.title"/>
+        <property name="descriptionKey" value="GeofenceServerAdminPage.page.description"/>
+        <property name="componentClass" value="org.geoserver.geofence.web.GeofenceServerAdminPage"/>
+        <property name="category" ref="securityCategory" />
+        <property name="order" value="1002" />
+        <property name="icon" value="img/icons/geofence.png" />
+    </bean>
     
     <!-- geofence rest API --> 
 

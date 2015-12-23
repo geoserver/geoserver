@@ -139,7 +139,7 @@
             <artifactId>prototype</artifactId>
             <version>1.4.7</version>
         </dependency>
-        
+
         <!-- test dependencies -->
         <dependency>
             <groupId>org.geoserver</groupId>

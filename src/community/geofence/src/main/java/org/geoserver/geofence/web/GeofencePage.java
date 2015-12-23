@@ -229,6 +229,14 @@ public class GeofencePage extends GeoServerSecuredPage {
     private static final String KEY_RULE_LOADTIME = "rule.loadtime";
     private static final String KEY_RULE_EVICTION = "rule.evict";
 
+    private static final String KEY_ADMIN_SIZE = "admin.size";
+    private static final String KEY_ADMIN_HIT = "admin.hit";
+    private static final String KEY_ADMIN_MISS = "admin.miss";
+    private static final String KEY_ADMIN_LOADOK = "admin.loadok";
+    private static final String KEY_ADMIN_LOADKO = "admin.loadko";
+    private static final String KEY_ADMIN_LOADTIME = "admin.loadtime";
+    private static final String KEY_ADMIN_EVICTION = "admin.evict";
+
     private static final String KEY_USER_SIZE = "user.size";
     private static final String KEY_USER_HIT = "user.hit";
     private static final String KEY_USER_MISS = "user.miss";
@@ -247,6 +255,14 @@ public class GeofencePage extends GeoServerSecuredPage {
         statsValues.put(KEY_RULE_LOADKO, ""+cacheRuleReader.getStats().loadExceptionCount());
         statsValues.put(KEY_RULE_LOADTIME, ""+cacheRuleReader.getStats().totalLoadTime());
         statsValues.put(KEY_RULE_EVICTION, ""+cacheRuleReader.getStats().evictionCount());
+
+        statsValues.put(KEY_ADMIN_SIZE, ""+cacheRuleReader.getAdminAuthCacheSize());
+        statsValues.put(KEY_ADMIN_HIT,  ""+cacheRuleReader.getAdminAuthStats().hitCount());
+        statsValues.put(KEY_ADMIN_MISS, ""+cacheRuleReader.getAdminAuthStats().missCount());
+        statsValues.put(KEY_ADMIN_LOADOK, ""+cacheRuleReader.getAdminAuthStats().loadSuccessCount());
+        statsValues.put(KEY_ADMIN_LOADKO, ""+cacheRuleReader.getAdminAuthStats().loadExceptionCount());
+        statsValues.put(KEY_ADMIN_LOADTIME, ""+cacheRuleReader.getAdminAuthStats().totalLoadTime());
+        statsValues.put(KEY_ADMIN_EVICTION, ""+cacheRuleReader.getAdminAuthStats().evictionCount());
 
         statsValues.put(KEY_USER_SIZE, ""+cacheRuleReader.getUserCacheSize());
         statsValues.put(KEY_USER_HIT, ""+cacheRuleReader.getUserStats().hitCount());

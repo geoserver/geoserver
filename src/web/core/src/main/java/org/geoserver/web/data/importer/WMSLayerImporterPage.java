@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -10,8 +10,6 @@ import java.util.List;
 import java.util.logging.Level;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.PageParameters;
-import org.apache.wicket.ResourceReference;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.markup.html.basic.Label;
@@ -21,6 +19,8 @@ import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.markup.repeater.DefaultItemReuseStrategy;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.apache.wicket.request.resource.ResourceReference;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.LayerInfo;
@@ -32,10 +32,10 @@ import org.geoserver.web.GeoServerBasePage;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.data.importer.LayerResource.LayerStatus;
 import org.geoserver.web.data.resource.ResourceConfigurationPage;
+import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geoserver.web.wicket.SimpleAjaxLink;
-import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 
 public class WMSLayerImporterPage extends GeoServerSecuredPage {
 

@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -8,14 +8,14 @@ package org.geoserver.wms.web.data;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.logging.Level;
-import org.apache.wicket.PageParameters;
+
 import org.apache.wicket.WicketRuntimeException;
-import org.apache.wicket.behavior.AbstractBehavior;
 import org.apache.wicket.behavior.AttributeAppender;
-import org.apache.wicket.markup.html.IHeaderResponse;
+import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.StringResourceModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.Styles;
 import org.geoserver.web.wicket.ParamResourceModel;

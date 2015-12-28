@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -16,7 +16,8 @@ import org.apache.wicket.model.StringResourceModel;
 public class ParamResourceModel extends org.apache.wicket.model.StringResourceModel {
 
     public ParamResourceModel(String resourceKey, Component component, Object... resources) {
-        super(resourceKey, component, null, resources);
+        super(resourceKey, component);
+        setParameters(resources);
     }
 
 }

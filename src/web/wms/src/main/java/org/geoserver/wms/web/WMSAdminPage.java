@@ -13,7 +13,6 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
@@ -30,7 +29,7 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.model.util.CollectionModel;
 import org.apache.wicket.model.util.ListModel;
-import org.apache.wicket.validation.validator.MinimumValidator;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.validation.validator.RangeValidator;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.web.data.store.panel.FileModel;

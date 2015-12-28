@@ -1,11 +1,9 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.importer.web;
-
-import static org.geoserver.ows.util.ResponseUtils.urlEncode;
 
 import java.awt.Toolkit;
 import java.awt.datatransfer.StringSelection;
@@ -14,17 +12,13 @@ import java.io.PrintWriter;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
-import org.apache.wicket.PageParameters;
-import org.apache.wicket.ResourceReference;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
-import org.apache.wicket.behavior.SimpleAttributeModifier;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
@@ -43,8 +37,13 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.StringResourceModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.apache.wicket.request.resource.ResourceReference;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.importer.ImportTask;
+import org.geoserver.importer.Importer;
+import org.geoserver.importer.web.ImportPage.DataIconModel;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.demo.PreviewLayer;
 import org.geoserver.web.wicket.CRSPanel;
@@ -57,16 +56,10 @@ import org.geoserver.web.wicket.Icon;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geoserver.web.wicket.SRSToCRSModel;
 import org.geoserver.web.wicket.SimpleAjaxLink;
-import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.util.logging.Logging;
-
-import org.geoserver.importer.ImportTask;
-import org.geoserver.importer.Importer;
-import org.geoserver.importer.web.ImportPage.DataIconModel;
-
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 public class ImportTaskTable extends GeoServerTablePanel<ImportTask> {
 

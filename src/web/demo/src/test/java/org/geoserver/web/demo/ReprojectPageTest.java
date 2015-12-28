@@ -7,9 +7,9 @@ package org.geoserver.web.demo;
 
 import static org.junit.Assert.assertEquals;
 
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.feedback.FeedbackMessage;
 import org.apache.wicket.markup.html.form.ValidationErrorFeedback;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.web.GeoServerWicketTestSupport;

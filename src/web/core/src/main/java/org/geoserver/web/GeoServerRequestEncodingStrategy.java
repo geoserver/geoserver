@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -6,14 +6,8 @@
 
 package org.geoserver.web;
 
-import org.apache.wicket.IRequestTarget;
-import org.apache.wicket.Request;
-import org.apache.wicket.RequestCycle;
-import org.apache.wicket.protocol.http.request.CryptedUrlWebRequestCodingStrategy;
-import org.apache.wicket.protocol.http.request.WebRequestCodingStrategy;
-import org.apache.wicket.request.IRequestCodingStrategy;
-import org.apache.wicket.request.RequestParameters;
-import org.apache.wicket.request.target.coding.IRequestTargetUrlCodingStrategy;
+import org.apache.wicket.request.Request;
+import org.apache.wicket.request.cycle.RequestCycle;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.GeoServerSecurityManager;
 

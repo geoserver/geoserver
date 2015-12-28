@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -14,9 +14,6 @@ import java.io.InputStream;
 import java.util.LinkedList;
 import java.util.logging.Level;
 
-import org.apache.wicket.IRequestTarget;
-import org.apache.wicket.PageParameters;
-import org.apache.wicket.RequestCycle;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.SubmitLink;
 import org.apache.wicket.markup.html.form.TextArea;
@@ -24,9 +21,10 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.PropertyModel;
-import org.apache.wicket.protocol.http.WebResponse;
+import org.apache.wicket.request.cycle.RequestCycle;
+import org.apache.wicket.request.http.WebResponse;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.io.Streams;
-import org.apache.wicket.validation.validator.MinimumValidator;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.logging.LoggingUtils;
 import org.geoserver.platform.GeoServerExtensions;

@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -14,11 +14,11 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Iterator;
 
-import org.apache.wicket.PageParameters;
-import org.apache.wicket.RequestCycle;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
+import org.apache.wicket.request.cycle.RequestCycle;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.LayerGroupInfo;
@@ -27,7 +27,6 @@ import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
-import org.geoserver.security.AccessMode;
 import org.geoserver.security.AdminRequest;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geoserver.web.UnauthorizedPage;

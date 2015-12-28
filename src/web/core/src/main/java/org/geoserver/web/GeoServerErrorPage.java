@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -21,7 +21,7 @@ import org.apache.wicket.model.ResourceModel;
  */
 public class GeoServerErrorPage extends GeoServerBasePage {
 
-    public GeoServerErrorPage(Page originatingPage, Throwable error) {
+    public GeoServerErrorPage(Throwable error) {
         IModel notice = null, errorText = new Model("");
         
         boolean trace = false;

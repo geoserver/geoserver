@@ -11,9 +11,9 @@ import java.io.UnsupportedEncodingException;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.extensions.ajax.markup.html.tabs.AjaxTabbedPanel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.StyleInfo;

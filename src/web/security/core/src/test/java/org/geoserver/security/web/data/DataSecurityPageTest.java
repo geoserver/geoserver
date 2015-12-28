@@ -1,22 +1,24 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.security.web.data;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.lang.reflect.Method;
 import java.util.Collections;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.Component.IVisitor;
 import org.apache.wicket.Page;
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.form.RadioChoice;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.tester.FormTester;
+import org.apache.wicket.util.visit.IVisitor;
 import org.geoserver.data.test.MockData;
 import org.geoserver.security.AccessMode;
 import org.geoserver.security.impl.DataAccessRule;

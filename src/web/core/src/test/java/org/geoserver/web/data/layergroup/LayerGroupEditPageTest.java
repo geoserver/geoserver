@@ -8,7 +8,7 @@ package org.geoserver.web.data.layergroup;
 import static org.junit.Assert.assertEquals;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.PageParameters;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.web.wicket.DecimalTextField;
 import org.geoserver.web.wicket.EnvelopePanel;

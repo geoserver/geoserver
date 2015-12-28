@@ -15,7 +15,6 @@ import java.util.Map.Entry;
 import java.util.logging.Level;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.markup.html.tabs.AbstractTab;
@@ -32,6 +31,8 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.apache.wicket.util.visit.IVisitor;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.LayerInfo;

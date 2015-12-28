@@ -1,14 +1,12 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.web;
 
-import org.apache.wicket.IRequestTarget;
-import org.apache.wicket.Page;
-import org.apache.wicket.request.target.component.IBookmarkablePageRequestTarget;
-import org.apache.wicket.request.target.component.IPageRequestTarget;
+import org.apache.wicket.request.component.IRequestablePage;
+import org.apache.wicket.request.cycle.RequestCycle;
 import org.geoserver.GeoServerConfigurationLock;
 import org.geoserver.GeoServerConfigurationLock.LockType;
 
@@ -52,27 +50,17 @@ public class WicketConfigurationLockCallback implements WicketCallback {
     }
 
     @Override
-    public void onRequestTargetSet(IRequestTarget target) {
+    public void onRequestTargetSet(Class<IRequestablePage> requestTarget) {
         // we can have many of these calls per http call, avoid locking multiple times,
         // onEndRequest will be called just once
         LockType type = THREAD_LOCK.get();
-        if (type != null) {
+        if (type != null || requestTarget == null) {
             return;
         }
 
         // setup a write lock for secured pages, a read one for the others
-        if (target instanceof IPageRequestTarget) {
-            IPageRequestTarget pt = (IPageRequestTarget) target;
-            Page page = pt.getPage();
-            if (page instanceof GeoServerSecuredPage) {
-                type = LockType.WRITE;
-            }
-        } else if (target instanceof IBookmarkablePageRequestTarget) {
-            IBookmarkablePageRequestTarget bt = (IBookmarkablePageRequestTarget) target;
-
-            if (GeoServerSecuredPage.class.isAssignableFrom(bt.getPageClass())) {
-                type = LockType.WRITE;
-            }
+        if (GeoServerSecuredPage.class.isAssignableFrom(requestTarget)) {
+            type = LockType.WRITE;
         }
         if (type == null) {
             type = LockType.READ;
@@ -84,7 +72,7 @@ public class WicketConfigurationLockCallback implements WicketCallback {
     }
 
     @Override
-    public void onRuntimeException(Page page, RuntimeException e) {
+    public void onRuntimeException(RequestCycle cycle, Exception ex) {
         // nothing to do
     }
 

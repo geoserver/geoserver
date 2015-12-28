@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -7,40 +7,28 @@ package org.geoserver.script.web;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.wicket.PageParameters;
-import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.HiddenField;
 import org.apache.wicket.markup.html.form.SubmitLink;
-import org.apache.wicket.markup.html.form.TextArea;
-import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.PropertyModel;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
 import org.geoserver.script.ScriptManager;
-import org.geoserver.script.ScriptPlugin;
-import org.geoserver.script.ScriptType;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.wicket.CodeMirrorEditor;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.ParamResourceModel;
-import org.geoserver.web.wicket.XMLNameValidator;
 import org.geotools.util.logging.Logging;
-
-import com.google.common.collect.Lists;
 
 /**
  * Allows editing a specific Script

@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -20,7 +20,6 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.DropDownChoice;
@@ -34,17 +33,17 @@ import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.validation.IValidatable;
-import org.apache.wicket.validation.validator.AbstractValidator;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.web.ComponentAuthorizer;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.data.store.StorePage;
 import org.geoserver.web.wicket.GeoServerAjaxFormLink;
+import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.ParamResourceModel;
-import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geotools.data.DataAccess;
 import org.geotools.data.Query;
 import org.geotools.data.Transaction;

@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -13,18 +13,13 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.apache.wicket.Application;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
-import org.apache.wicket.PageParameters;
-import org.apache.wicket.ResourceReference;
-import org.apache.wicket.SharedResources;
 import org.apache.wicket.ajax.AbstractAjaxTimerBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
-import org.apache.wicket.behavior.SimpleAttributeModifier;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
@@ -38,11 +33,18 @@ import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.apache.wicket.request.resource.ResourceReference;
 import org.apache.wicket.util.time.Duration;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.importer.ImportContext;
+import org.geoserver.importer.ImportData;
+import org.geoserver.importer.Importer;
+import org.geoserver.importer.job.ProgressMonitor;
+import org.geoserver.importer.job.Task;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.data.store.StoreChoiceRenderer;
@@ -55,11 +57,6 @@ import org.geoserver.web.wicket.GeoServerDialog.DialogDelegate;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geotools.data.DataStoreFactorySpi;
 import org.geotools.util.logging.Logging;
-import org.geoserver.importer.ImportContext;
-import org.geoserver.importer.ImportData;
-import org.geoserver.importer.Importer;
-import org.geoserver.importer.job.ProgressMonitor;
-import org.geoserver.importer.job.Task;
 
 /**
  * First page of the import wizard.

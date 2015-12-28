@@ -1,9 +1,11 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.web;
+
+import static org.apache.wicket.RuntimeConfigurationType.DEPLOYMENT;
 
 import java.io.File;
 import java.net.URI;
@@ -13,23 +15,24 @@ import java.util.Locale;
 import java.util.logging.Logger;
 
 import org.apache.wicket.Application;
+import org.apache.wicket.ConverterLocator;
+import org.apache.wicket.DefaultExceptionMapper;
 import org.apache.wicket.IConverterLocator;
-import org.apache.wicket.IRequestTarget;
-import org.apache.wicket.Page;
-import org.apache.wicket.Request;
-import org.apache.wicket.Response;
+import org.apache.wicket.RuntimeConfigurationType;
 import org.apache.wicket.Session;
-import org.apache.wicket.protocol.http.PageExpiredException;
-import org.apache.wicket.protocol.http.WebRequest;
-import org.apache.wicket.protocol.http.WebRequestCycle;
-import org.apache.wicket.protocol.http.WebRequestCycleProcessor;
-import org.apache.wicket.protocol.http.WebResponse;
-import org.apache.wicket.request.IRequestCodingStrategy;
-import org.apache.wicket.request.IRequestCycleProcessor;
-import org.apache.wicket.request.RequestParameters;
+import org.apache.wicket.core.request.handler.IPageRequestHandler;
+import org.apache.wicket.core.request.handler.PageProvider;
+import org.apache.wicket.core.request.mapper.CryptoMapper;
+import org.apache.wicket.protocol.http.WebApplication;
+import org.apache.wicket.request.IExceptionMapper;
+import org.apache.wicket.request.IRequestHandler;
+import org.apache.wicket.request.IRequestMapper;
+import org.apache.wicket.request.Request;
+import org.apache.wicket.request.Response;
+import org.apache.wicket.request.cycle.AbstractRequestCycleListener;
+import org.apache.wicket.request.cycle.PageRequestHandlerTracker;
 import org.apache.wicket.resource.loader.IStringResourceLoader;
-import org.apache.wicket.spring.SpringWebApplication;
-import org.apache.wicket.util.convert.ConverterLocator;
+import org.apache.wicket.util.IProvider;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.config.GeoServer;
 import org.geoserver.platform.GeoServerExtensions;
@@ -43,27 +46,29 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.measure.Measure;
 import org.geotools.util.MeasureConverterFactory;
 import org.geotools.util.logging.Logging;
+import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
-import org.wicketstuff.htmlvalidator.HtmlValidationResponseFilter;
+import org.springframework.context.ApplicationContextAware;
 
 /**
- * The GeoServer application, the main entry point for any Wicket application. In particular, this
- * one sets up, among the others, custom resource loader, custom localizers, and custom converters
- * (wrapping the GeoTools ones), as well as providing some convenience methods to access the
+ * The GeoServer application, the main entry point for any Wicket application. In particular, this one sets up, among the others, custom resource
+ * loader, custom localizers, and custom converters (wrapping the GeoTools ones), as well as providing some convenience methods to access the
  * GeoServer Spring context and principal GeoServer objects.
  * 
  * @author Andrea Aaime, The Open Planning Project
  * @author Justin Deoliveira, The Open Planning Project
  */
-public class GeoServerApplication extends SpringWebApplication {
+public class GeoServerApplication extends WebApplication implements ApplicationContextAware {
 
     /**
      * logger for web application
      */
     public static Logger LOGGER = Logging.getLogger("org.geoserver.web");
 
-    public static boolean DETECT_BROWSER = Boolean.valueOf(System.getProperty(
-            "org.geoserver.web.browser.detect", "true"));
+    public static boolean DETECT_BROWSER = Boolean
+            .valueOf(System.getProperty("org.geoserver.web.browser.detect", "true"));
+
+    ApplicationContext applicationContext;
 
     /**
      * The {@link GeoServerHomePage}.
@@ -80,7 +85,7 @@ public class GeoServerApplication extends SpringWebApplication {
      * Returns the spring application context.
      */
     public ApplicationContext getApplicationContext() {
-        return internalGetApplicationContext();
+        return applicationContext;
     }
 
     /**
@@ -103,7 +108,6 @@ public class GeoServerApplication extends SpringWebApplication {
     public GeoServerSecurityManager getSecurityManager() {
         return getBeanOfType(GeoServerSecurityManager.class);
     }
-
 
     /**
      * Returns the geoserver resource loader.
@@ -161,33 +165,19 @@ public class GeoServerApplication extends SpringWebApplication {
         getResourceSettings().setResourceStreamLocator(new GeoServerResourceStreamLocator());
 
         /*
-         * The order string resource loaders are added to IResourceSettings is of importance so we
-         * need to add any contributed loader prior to the standard ones so it takes precedence.
-         * Otherwise it won't be hit due to GeoServerStringResourceLoader never resolving to null
-         * but falling back to the default language
+         * The order string resource loaders are added to IResourceSettings is of importance so we need to add any contributed loader prior to the
+         * standard ones so it takes precedence. Otherwise it won't be hit due to GeoServerStringResourceLoader never resolving to null but falling
+         * back to the default language
          */
-        List<IStringResourceLoader> alternateResourceLoaders = getBeansOfType(IStringResourceLoader.class);
+        List<IStringResourceLoader> alternateResourceLoaders = getBeansOfType(
+                IStringResourceLoader.class);
         for (IStringResourceLoader loader : alternateResourceLoaders) {
             LOGGER.info("Registering alternate resource loader: " + loader);
-            getResourceSettings().addStringResourceLoader(loader);
+            getResourceSettings().getStringResourceLoaders().add(loader);
         }
 
-        getResourceSettings().addStringResourceLoader(0, new GeoServerStringResourceLoader());
-        // getResourceSettings().addStringResourceLoader(new ComponentStringResourceLoader());
-        // getResourceSettings().addStringResourceLoader(new
-        // ClassStringResourceLoader(this.getClass()));
-
-        // we have our own application wide gzip compression filter
-        getResourceSettings().setDisableGZipCompression(true);
-
-        // enable toggable XHTML validation
-        if (DEVELOPMENT.equalsIgnoreCase(getConfigurationType())) {
-            getMarkupSettings().setStripWicketTags(true);
-            HtmlValidationResponseFilter htmlvalidator = new GeoServerHTMLValidatorResponseFilter();
-            htmlvalidator.setIgnoreAutocomplete(true);
-            htmlvalidator.setIgnoreKnownWicketBugs(true);
-            getRequestCycleSettings().addResponseFilter(htmlvalidator);
-        }
+        getResourceSettings().getStringResourceLoaders().add(0,
+                new GeoServerStringResourceLoader());
         getDebugSettings().setAjaxDebugModeEnabled(false);
 
         getApplicationSettings().setPageExpiredErrorPage(GeoServerExpiredPage.class);
@@ -195,20 +185,44 @@ public class GeoServerApplication extends SpringWebApplication {
 
         // figure out which browser we're running against
         getRequestCycleSettings().setGatherExtendedBrowserInfo(DETECT_BROWSER);
+
+        // theoretically, this replaces the old GeoServerRequestEncodingStrategy
+        // by making the URLs encrypted at will
+        GeoServerCryptProvider cryptProvider = new GeoServerCryptProvider(
+                getBeanOfType(GeoServerSecurityManager.class));
+        IRequestMapper cryptoMapper = new CryptoMapper(getRootRequestMapper(), cryptProvider);
+        setRootRequestMapper(cryptoMapper);
+        
+        getRequestCycleListeners().add(new PageRequestHandlerTracker());
+        getRequestCycleListeners().add(new CallbackRequestCycleListener(this));
     }
 
     @Override
-    public String getConfigurationType() {
+    public IProvider<IExceptionMapper> getExceptionMapperProvider() {
+        // IProvider is functional, remove a bit of boilerplate
+        return () -> new DefaultExceptionMapper() {
+            @Override
+            protected IRequestHandler mapUnexpectedExceptions(Exception e,
+                    Application application) {
+
+                return createPageRequestHandler(new PageProvider(new GeoServerErrorPage(e)));
+            }
+        };
+    }
+
+    @Override
+    public RuntimeConfigurationType getConfigurationType() {
         String config = GeoServerExtensions.getProperty("wicket." + Application.CONFIGURATION,
                 getApplicationContext());
         if (config == null) {
             return DEPLOYMENT;
-        } else if (!DEPLOYMENT.equalsIgnoreCase(config) && !DEVELOPMENT.equalsIgnoreCase(config)) {
+        } else if (!"DEPLOYMENT".equalsIgnoreCase(config)
+                && !"DEVELOPMENT".equalsIgnoreCase(config)) {
             LOGGER.warning("Unknown Wicket configuration value '" + config
                     + "', defaulting to DEPLOYMENT");
             return DEPLOYMENT;
         } else {
-            return config;
+            return RuntimeConfigurationType.valueOf(config.toUpperCase());
         }
     }
 
@@ -221,111 +235,93 @@ public class GeoServerApplication extends SpringWebApplication {
     }
 
     /*
-     * Overrides to return a custom request cycle processor. This is done in order to support
-     * "dynamic dispatching" from web.xml.
-     */
-    protected IRequestCycleProcessor newRequestCycleProcessor() {
-        return new RequestCycleProcessor();
-    }
-
-    public final RequestCycle newRequestCycle(final Request request, final Response response) {
-        return new RequestCycle(this, (WebRequest) request, (WebResponse) response);
-    }
-
-    /*
-     * Overrides to return a custom converter locator which loads converters from the GeoToools
-     * converter subsystem.
+     * Overrides to return a custom converter locator which loads converters from the GeoToools converter subsystem.
      */
     protected IConverterLocator newConverterLocator() {
         // TODO: load converters from application context
         ConverterLocator locator = new ConverterLocator();
-        locator.set(ReferencedEnvelope.class, new GeoToolsConverterAdapter(
-                new StringBBoxConverter(), ReferencedEnvelope.class));
+        locator.set(ReferencedEnvelope.class,
+                new GeoToolsConverterAdapter(new StringBBoxConverter(), ReferencedEnvelope.class));
         DataDirectoryConverterLocator dd = new DataDirectoryConverterLocator(getResourceLoader());
         locator.set(File.class, dd.getConverter(File.class));
         locator.set(URI.class, dd.getConverter(URI.class));
         locator.set(URL.class, dd.getConverter(URL.class));
-        locator.set(Measure.class, new GeoToolsConverterAdapter(
-                MeasureConverterFactory.CONVERTER, Measure.class));
+        locator.set(Measure.class,
+                new GeoToolsConverterAdapter(MeasureConverterFactory.CONVERTER, Measure.class));
 
         return locator;
     }
 
-    
-    static class RequestCycleProcessor extends WebRequestCycleProcessor {
-        
-        public IRequestTarget resolve(RequestCycle requestCycle,
-                RequestParameters requestParameters) {
-            IRequestTarget target = super.resolve(requestCycle,
-                    requestParameters);
-            if (target != null) {
-                return target;
-            }
+    // static class RequestCycleProcessor extends WebRequestCycleProcessor {
+    //
+    // public IRequestTarget resolve(RequestCycle requestCycle,
+    // RequestParameters requestParameters) {
+    // IRequestTarget target = super.resolve(requestCycle,
+    // requestParameters);
+    // if (target != null) {
+    // return target;
+    // }
+    //
+    // STILL HAVE TO FIGURE OUT HOW TO SEND THE USER BACK TO THE HOME PAGE IN THE NEW WICKET
+    // return resolveHomePageTarget(requestCycle, requestParameters);
+    // }
+    //
+    //
+    // }
 
-            return resolveHomePageTarget(requestCycle, requestParameters);
-        }
-        @Override
-        protected IRequestCodingStrategy newRequestCodingStrategy() {            
-              return new GeoServerRequestEncodingStrategy();
-        }
-
-    }
-
-    static class RequestCycle extends WebRequestCycle {
+    static class CallbackRequestCycleListener extends AbstractRequestCycleListener {
         private List<WicketCallback> callbacks;
 
-        public RequestCycle(GeoServerApplication app, WebRequest req, WebResponse resp) {
-            super(app, req, resp);
+        public CallbackRequestCycleListener(GeoServerApplication app) {
             callbacks = app.getBeansOfType(WicketCallback.class);
         }
 
         @Override
-        protected void onBeginRequest() {
+        public void onBeginRequest(org.apache.wicket.request.cycle.RequestCycle cycle) {
             for (WicketCallback callback : callbacks) {
                 callback.onBeginRequest();
             }
         }
 
         @Override
-        protected void onAfterTargetsDetached() {
-            for (WicketCallback callback : callbacks) {
-                callback.onAfterTargetsDetached();
-            }
-        }
-
-        @Override
-        protected void onEndRequest() {
+        public void onEndRequest(org.apache.wicket.request.cycle.RequestCycle cycle) {
             for (WicketCallback callback : callbacks) {
                 callback.onEndRequest();
             }
         }
 
         @Override
-        public final Page onRuntimeException(final Page cause, final RuntimeException ex) {
+        public void onDetach(org.apache.wicket.request.cycle.RequestCycle cycle) {
             for (WicketCallback callback : callbacks) {
-                callback.onRuntimeException(cause, ex);
-            }
-            if (ex instanceof PageExpiredException) {
-                return super.onRuntimeException(cause, ex);
-            } else {
-                return new GeoServerErrorPage(cause, ex);
+                callback.onAfterTargetsDetached();
             }
         }
 
         @Override
-        protected void onRequestTargetSet(IRequestTarget requestTarget) {
-            for (WicketCallback callback : callbacks) {
-                callback.onRequestTargetSet(requestTarget);
+        public void onRequestHandlerResolved(org.apache.wicket.request.cycle.RequestCycle cycle,
+                IRequestHandler handler) {
+            IPageRequestHandler lastHandler = PageRequestHandlerTracker.getLastHandler(cycle);
+            if(lastHandler != null) {
+                Class pageClass = lastHandler.getPageClass();
+                for (WicketCallback callback : callbacks) {
+                    callback.onRequestTargetSet(pageClass);
+                }
             }
-            super.onRequestTargetSet(requestTarget);
         }
+
+        @Override
+        public IRequestHandler onException(org.apache.wicket.request.cycle.RequestCycle cycle,
+                Exception ex) {
+            for (WicketCallback callback : callbacks) {
+                callback.onRuntimeException(cycle, ex);
+            }
+            return null;
+        }
+
     }
 
-    private IConverterLocator buildConverterLocator() {
-        ConverterLocator locator = new ConverterLocator();
-
-        return locator;
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
     }
-    
-    
 }

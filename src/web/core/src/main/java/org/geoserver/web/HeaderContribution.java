@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -7,8 +7,9 @@ package org.geoserver.web;
 
 import java.util.logging.Logger;
 
-import org.apache.wicket.ResourceReference;
 import org.apache.wicket.markup.html.WebPage;
+import org.apache.wicket.request.resource.PackageResourceReference;
+import org.apache.wicket.request.resource.ResourceReference;
 import org.geotools.util.logging.Logging;
 
 /**
@@ -97,7 +98,7 @@ public class HeaderContribution {
      */
     public ResourceReference getCSS() {
         if (scope != null && cssFilename != null) {
-            return new ResourceReference(scope, cssFilename);
+            return new PackageResourceReference(scope, cssFilename);
         }
         
         return null;
@@ -109,7 +110,7 @@ public class HeaderContribution {
      */
     public ResourceReference getJavaScript() {
         if ( scope != null && javaScriptFilename != null ) {
-            return new ResourceReference(scope, javaScriptFilename);
+            return new PackageResourceReference(scope, javaScriptFilename);
         }
         
         return null;
@@ -122,7 +123,7 @@ public class HeaderContribution {
      */
     public ResourceReference getFavicon() {
         if( scope != null && faviconFilename != null) {
-            return new ResourceReference(scope, faviconFilename);
+            return new PackageResourceReference(scope, faviconFilename);
         }
         
         return null;

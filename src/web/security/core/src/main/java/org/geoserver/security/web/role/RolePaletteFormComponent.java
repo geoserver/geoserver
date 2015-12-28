@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -57,10 +57,10 @@ public class RolePaletteFormComponent extends PaletteFormComponent<GeoServerRole
         final String roleServiceName = roleService.getName();
         
         if (choicesModel instanceof RuleRolesModel)
-            add(new Label("roles", new StringResourceModel("roles",this,null)));
+            add(new Label("roles", new StringResourceModel("roles",this)));
         else
             add(new Label("roles", new StringResourceModel("rolesFromActiveService",
-                    this,null,new Object[] {roleServiceName})));
+                    this).setParameters(roleServiceName)));
         
         add(new SubmitLink("addRole") {
             @Override

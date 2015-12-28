@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -14,13 +14,7 @@ import java.util.logging.Logger;
 
 import javax.xml.namespace.QName;
 
-import net.opengis.wfs20.ParameterExpressionType;
-import net.opengis.wfs20.StoredQueryDescriptionType;
-import net.opengis.wfs20.StoredQueryListItemType;
-import net.opengis.wfs20.TitleType;
-
 import org.apache.wicket.Component;
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.IChoiceRenderer;
@@ -32,12 +26,13 @@ import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.StringResourceModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.wicket.GeoServerDataProvider;
-import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.GeoServerDataProvider.BeanProperty;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
+import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geotools.data.DataAccess;
 import org.geotools.data.wfs.WFSDataStore;
 import org.geotools.data.wfs.internal.v2_0.storedquery.ParameterMapping;
@@ -46,6 +41,11 @@ import org.geotools.data.wfs.internal.v2_0.storedquery.ParameterMappingDefaultVa
 import org.geotools.data.wfs.internal.v2_0.storedquery.ParameterMappingExpressionValue;
 import org.geotools.data.wfs.internal.v2_0.storedquery.StoredQueryConfiguration;
 import org.geotools.util.logging.Logging;
+
+import net.opengis.wfs20.ParameterExpressionType;
+import net.opengis.wfs20.StoredQueryDescriptionType;
+import net.opengis.wfs20.StoredQueryListItemType;
+import net.opengis.wfs20.TitleType;
 
 
 /**

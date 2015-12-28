@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -6,10 +6,11 @@
 package org.geoserver.web.data.layergroup;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.link.AbstractLink;
 import org.apache.wicket.model.StringResourceModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.apache.wicket.util.visit.IVisitor;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.web.wicket.ParamResourceModel;
 

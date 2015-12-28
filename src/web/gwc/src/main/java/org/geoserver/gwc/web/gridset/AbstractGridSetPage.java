@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -11,7 +11,6 @@ import java.util.logging.Logger;
 import javax.measure.unit.Unit;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.form.AjaxFormSubmitBehavior;
@@ -25,8 +24,8 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.validation.IValidatable;
-import org.apache.wicket.validation.validator.AbstractValidator;
 import org.apache.wicket.validation.validator.RangeValidator;
 import org.geoserver.gwc.GWC;
 import org.geoserver.web.GeoServerSecuredPage;

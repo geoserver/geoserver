@@ -11,12 +11,12 @@
   <!-- Core web app setup -->
   <bean id="webApplication" class="org.geoserver.web.GeoServerApplication">
   </bean>
-
+  
   <bean id="wicket"
     class="org.springframework.web.servlet.mvc.ServletWrappingController"
-    lazy-init="true">
+    lazy-init="true" depends-on="webApplication">
     <property name="servletClass">
-      <value>org.apache.wicket.protocol.http.WicketServlet</value>
+      <value>org.geoserver.web.GeoServerWicketServlet</value>
     </property>
     <property name="servletName">
       <value>wicket</value>
@@ -26,9 +26,6 @@
         <!-- either development on deployment, make sure you set it to deployment 
           before releasing! -->
         <prop key="configuration">development</prop>
-        <!--prop key="configuration">deployment</prop -->
-        <prop key="applicationClassName">org.geoserver.web.GeoServerApplication</prop>
-        <prop key="applicationFactoryClassName">org.apache.wicket.spring.SpringWebApplicationFactory</prop>
       </props>
     </property>
   </bean>

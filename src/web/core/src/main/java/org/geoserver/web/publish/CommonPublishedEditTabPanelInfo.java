@@ -7,6 +7,7 @@ package org.geoserver.web.publish;
 import org.geoserver.catalog.PublishedInfo;
 
 /**
+ * Information about panels plugged into additional tabs on both layer and layergroup edit page.
  * 
  * @author Niels Charlier
  *

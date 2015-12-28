@@ -11,7 +11,7 @@ import org.geoserver.web.ComponentInfo;
 import org.geoserver.web.data.resource.ResourceConfigurationPage;
 
 /**
- * Information about panels plugged into additional tabs on layer edit page.
+ * Information about panels plugged into additional tabs on layer/layergroup edit page.
  * <p>
  * Layer edit tabs have a self declared order which describes where they end up on the layer edit 
  * page. Lower order panels are weighted toward the left hand side, higher order panels are weighted
@@ -19,6 +19,7 @@ import org.geoserver.web.data.resource.ResourceConfigurationPage;
  * </p>
  *
  * @author Justin Deoliveira, OpenGeo
+ * @author Niels Charlier
  *
  */
 public abstract class PublishedEditTabPanelInfo<T extends PublishedInfo> 

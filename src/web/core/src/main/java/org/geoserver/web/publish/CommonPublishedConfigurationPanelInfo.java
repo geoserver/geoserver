@@ -8,6 +8,8 @@ import org.geoserver.catalog.PublishedInfo;
 
 /**
  * 
+ * Extension point for sections of the configuration pages that work for both layers and layergroups.
+ * 
  * @author Niels Charlier
  *
  */

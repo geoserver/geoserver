@@ -26,6 +26,7 @@ import org.geoserver.web.data.resource.ResourceConfigurationPage;
  * </p>
  * 
  * @author Justin Deoliveira, OpenGeo
+ * @author Niels Charlier
  *
  */
 public class PublishedEditTabPanel<T extends PublishedInfo> extends Panel {

@@ -224,7 +224,7 @@ public class CodeMirrorEditor extends FormComponentPanel<String> {
         this.mode = mode;
         if (AjaxRequestTarget.get() != null) {
             String javascript = "document.gsEditors." + editor.getMarkupId() + ".setOption('mode', '" + mode + "');";
-            AjaxRequestTarget.get().appendJavascript(javascript);
+            AjaxRequestTarget.get().appendJavaScript(javascript);
         }
     }
     

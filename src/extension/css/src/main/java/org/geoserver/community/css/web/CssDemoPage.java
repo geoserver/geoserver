@@ -240,7 +240,7 @@ public class CssDemoPage extends GeoServerSecuredPage {
         mainContent.add(new AjaxLink("create.style", new ParamResourceModel(
                 "CssDemoPage.createStyle", this)) {
             public void onClick(AjaxRequestTarget target) {
-                target.appendJavascript("Wicket.Window.unloadConfirmation = false;");
+                target.appendJavaScript("Wicket.Window.unloadConfirmation = false;");
                 popup.setInitialHeight(200);
                 popup.setInitialWidth(300);
                 popup.setTitle(new Model("Choose name for new style"));
@@ -251,7 +251,7 @@ public class CssDemoPage extends GeoServerSecuredPage {
 
         mainContent.add(new SimpleAjaxLink("change.style", styleNameModel) {
             public void onClick(AjaxRequestTarget target) {
-                target.appendJavascript("Wicket.Window.unloadConfirmation = false;");
+                target.appendJavaScript("Wicket.Window.unloadConfirmation = false;");
                 popup.setInitialHeight(400);
                 popup.setInitialWidth(600);
                 popup.setTitle(new Model("Choose style to edit"));
@@ -261,7 +261,7 @@ public class CssDemoPage extends GeoServerSecuredPage {
         });
         mainContent.add(new SimpleAjaxLink("change.layer", layerNameModel) {
             public void onClick(AjaxRequestTarget target) {
-                target.appendJavascript("Wicket.Window.unloadConfirmation = false;");
+                target.appendJavaScript("Wicket.Window.unloadConfirmation = false;");
                 popup.setInitialHeight(400);
                 popup.setInitialWidth(600);
                 popup.setTitle(new Model("Choose layer to edit"));
@@ -272,7 +272,7 @@ public class CssDemoPage extends GeoServerSecuredPage {
         mainContent.add(new AjaxLink("associate.styles", new ParamResourceModel(
                 "CssDemoPage.associateStyles", this)) {
             public void onClick(AjaxRequestTarget target) {
-                target.appendJavascript("Wicket.Window.unloadConfirmation = false;");
+                target.appendJavaScript("Wicket.Window.unloadConfirmation = false;");
                 popup.setInitialHeight(400);
                 popup.setInitialWidth(600);
                 popup.setTitle(new Model("Choose layers to associate"));

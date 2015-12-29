@@ -89,7 +89,7 @@ public class StylePanel extends Panel {
                     if (page.sldPreview != null)
                         target.add(page.sldPreview);
                     if (page.map != null)
-                        target.appendJavascript(page.map.getUpdateCommand());
+                        target.appendJavaScript(page.map.getUpdateCommand());
                 } catch (Exception e) {
                     throw new WicketRuntimeException(e);
                 }

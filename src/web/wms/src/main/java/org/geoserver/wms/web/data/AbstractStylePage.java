@@ -177,7 +177,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
         formatChoice.add(new AjaxFormComponentUpdatingBehavior("onchange") {
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
-                target.appendJavascript(String.format(
+                target.appendJavaScript(String.format(
                     "if (document.gsEditors) { document.gsEditors.editor.setOption('mode', '%s'); }", styleHandler().getCodeMirrorEditMode()));
             }
         });
@@ -451,7 +451,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
                         // same here, force validation or the field won't be updated
                         editor.reset();
                         setRawStyle(new StringReader(styleGen.generateStyle(styleHandler(), template, nameTextField.getInput())));
-                        target.appendJavascript(String
+                        target.appendJavaScript(String
                                 .format("if (document.gsEditors) { document.gsEditors.editor.setOption('mode', '%s'); }", styleHandler().getCodeMirrorEditMode()));
 
                     } catch (Exception e) {
@@ -501,7 +501,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
                         editor.reset();
                         setRawStyle(readFile(style));
                         formatChoice.setModelObject(style.getFormat());
-                        target.appendJavascript(String
+                        target.appendJavaScript(String
                                 .format("if (document.gsEditors) { document.gsEditors.editor.setOption('mode', '%s'); }", styleHandler().getCodeMirrorEditMode()));
 
                     } catch (Exception e) {

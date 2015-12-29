@@ -27,9 +27,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
-import org.apache.wicket.behavior.SimpleAttributeModifier;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
@@ -198,7 +198,7 @@ public final class ArcSDECoverageStoreEditPanel extends StoreEditPanel {
             ResourceModel titleModel = new ResourceModel(titleKey);
             String title = String.valueOf(titleModel.getObject());
 
-            tableNamePanel.add(new SimpleAttributeModifier("title", title));
+            tableNamePanel.add(AttributeModifier.replace("title", title));
         }
 
         return tableNameComponent;
@@ -218,7 +218,7 @@ public final class ArcSDECoverageStoreEditPanel extends StoreEditPanel {
         ResourceModel titleModel = new ResourceModel(resourceKey + ".title", defaultTitle);
         String title = String.valueOf(titleModel.getObject());
 
-        pwdPanel.add(new SimpleAttributeModifier("title", title));
+        pwdPanel.add(AttributeModifier.replace("title", title));
 
         return pwdPanel.getFormComponent();
     }
@@ -239,7 +239,7 @@ public final class ArcSDECoverageStoreEditPanel extends StoreEditPanel {
         ResourceModel titleModel = new ResourceModel(resourceKey + ".title", defaultTitle);
         String title = String.valueOf(titleModel.getObject());
 
-        textParamPanel.add(new SimpleAttributeModifier("title", title));
+        textParamPanel.add(AttributeModifier.replace("title", title));
 
         add(textParamPanel);
         return textParamPanel.getFormComponent();
@@ -250,7 +250,7 @@ public final class ArcSDECoverageStoreEditPanel extends StoreEditPanel {
         final String resourceKey = RESOURCE_KEY_PREFIX + ".prototype";
         Label label = new Label("prototypeLabel", new ResourceModel(resourceKey));
         final String title = String.valueOf(new ResourceModel(resourceKey + ".title").getObject());
-        final SimpleAttributeModifier titleSetter = new SimpleAttributeModifier("title", title);
+        final SimpleAttributeModifier titleSetter = AttributeModifier.replace("title", title);
         label.add(titleSetter);
         add(label);
 

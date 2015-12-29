@@ -108,7 +108,7 @@ public class ImportTaskTable extends GeoServerTablePanel<ImportTask> {
             }
             
             String cssClass = new StatusIconModel(property.getModel(itemModel)).getCssClass();
-            return c.add(new SimpleAttributeModifier("class", cssClass));
+            return c.add(AttributeModifier.replace("class", cssClass));
         }
         if (property == ImportTaskProvider.ACTION) {
             

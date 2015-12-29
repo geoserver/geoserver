@@ -22,7 +22,7 @@ import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
-import org.apache.wicket.behavior.SimpleAttributeModifier;
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.DropDownChoice;
@@ -177,7 +177,7 @@ class ParameterFilterEditor extends FormComponentPanel<Set<ParameterFilter>> {
             protected void populateItem(final ListItem<ParameterFilter> item) {
                 // odd/even style
                 final int index = item.getIndex();
-                item.add(new SimpleAttributeModifier("class", index % 2 == 0 ? "even" : "odd"));
+                item.add(AttributeModifier.replace("class", index % 2 == 0 ? "even" : "odd"));
 
                 //Create form
                 final Label keyLabel;

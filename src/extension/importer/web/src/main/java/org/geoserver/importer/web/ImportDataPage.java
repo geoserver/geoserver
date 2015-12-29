@@ -166,7 +166,7 @@ public class ImportDataPage extends GeoServerSecuredPage {
             protected void disableLink(ComponentTag tag) {
                 super.disableLink(tag);
                 tag.setName("a");
-                tag.addBehavior(new SimpleAttributeModifier("class", "disabled"));
+                tag.addBehavior(AttributeModifier.replace("class", "disabled"));
             }
 
             protected void onError(AjaxRequestTarget target, Form<?> form) {
@@ -176,7 +176,7 @@ public class ImportDataPage extends GeoServerSecuredPage {
             protected void onSubmit(AjaxRequestTarget target, final Form<?> form) {
                 
                 //update status to indicate we are working
-                statusLabel.add(new SimpleAttributeModifier("class", "working-link"));
+                statusLabel.add(AttributeModifier.replace("class", "working-link"));
                 statusLabel.setDefaultModelObject("Working");
                 target.add(statusLabel);
                 
@@ -417,7 +417,7 @@ public class ImportDataPage extends GeoServerSecuredPage {
         form.get("next").setEnabled(true);
         form.get("cancel").setEnabled(false);
         statusLabel.setDefaultModelObject("");
-        statusLabel.add(new SimpleAttributeModifier("class", ""));
+        statusLabel.add(AttributeModifier.replace("class", ""));
         
         target.add(form.get("next"));
         target.add(form.get("cancel"));
@@ -441,8 +441,8 @@ public class ImportDataPage extends GeoServerSecuredPage {
             extra.add(new ExternalLink("link", source.getHelpLink(ImportDataPage.this)));
             
             if (!source.isAvailable()) {
-                get("name").add(new SimpleAttributeModifier("style", "font-style: italic;"));
-                add(new SimpleAttributeModifier("title", "Data source not available. Please " +
+                get("name").add(AttributeModifier.replace("style", "font-style: italic;"));
+                add(AttributeModifier.replace("title", "Data source not available. Please " +
                       "install required plugin and drivers."));
             }
             else {

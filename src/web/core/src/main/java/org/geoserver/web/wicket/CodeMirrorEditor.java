@@ -20,7 +20,7 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.IAjaxCallDecorator;
 import org.apache.wicket.ajax.calldecorator.AjaxCallDecorator;
 import org.apache.wicket.behavior.AbstractBehavior;
-import org.apache.wicket.behavior.SimpleAttributeModifier;
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.markup.html.IHeaderResponse;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
@@ -77,7 +77,7 @@ public class CodeMirrorEditor extends FormComponentPanel<String> {
 
         WebMarkupContainer editorParent = new WebMarkupContainer("editorParent");
         if (enableCodeMirror) {
-            editorParent.add(new SimpleAttributeModifier("style", "border: 1px solid black;"));
+            editorParent.add(AttributeModifier.replace("style", "border: 1px solid black;"));
         }
         container.add(editorParent);
         editor = new TextArea<String>("editor", model);
@@ -87,7 +87,7 @@ public class CodeMirrorEditor extends FormComponentPanel<String> {
         if (enableCodeMirror) {
             editor.add(new CodeMirrorBehavior());
         } else {
-            editor.add(new SimpleAttributeModifier("style", "width:100%"));
+            editor.add(AttributeModifier.replace("style", "width:100%"));
         }
     }
 

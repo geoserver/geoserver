@@ -48,7 +48,7 @@ public class WPSRequestBuilder extends GeoServerBasePage {
     WPSRequestBuilderPanel builder;
 
     public WPSRequestBuilder(PageParameters parameters) {
-        this(parameters.getString(PARAM_NAME));
+        this(parameters.get(PARAM_NAME).toOptionalString());
     }
 
     public WPSRequestBuilder() {

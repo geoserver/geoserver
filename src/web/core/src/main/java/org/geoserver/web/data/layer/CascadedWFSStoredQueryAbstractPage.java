@@ -65,7 +65,7 @@ public abstract class CascadedWFSStoredQueryAbstractPage extends GeoServerSecure
     StoredQueryParameterAttributeProvider parameterProvider;
 
     public CascadedWFSStoredQueryAbstractPage(PageParameters params) throws IOException {
-        this(params.getString(WORKSPACE), params.getString(DATASTORE), null);
+        this(params.get(WORKSPACE).toOptionalString(), params.get(DATASTORE).toString(), null);
     }
 
     public CascadedWFSStoredQueryAbstractPage(String workspaceName, String storeName, String typeName)

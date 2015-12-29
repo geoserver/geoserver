@@ -50,7 +50,7 @@ public class SRSDescriptionPage extends GeoServerBasePage implements IHeaderCont
         add(HeaderContributor.forJavaScript("openlayers/OpenLayers.js"));
 
         final Locale locale = getLocale();
-        final String code = params.getString("code");
+        final String code = params.get("code").toString();
         add(new Label("code", code));
         String name = "";
         try {

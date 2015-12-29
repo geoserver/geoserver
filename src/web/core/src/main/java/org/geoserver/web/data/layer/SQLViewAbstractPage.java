@@ -109,7 +109,7 @@ public abstract class SQLViewAbstractPage extends GeoServerSecuredPage {
             MultiLineString.class, Polygon.class, MultiPolygon.class);
 
     public SQLViewAbstractPage(PageParameters params) throws IOException {
-        this(params.getString(WORKSPACE), params.getString(DATASTORE), null, null);
+        this(params.get(WORKSPACE).toOptionalString(), params.get(DATASTORE).toString(), null, null);
     }
 
     @SuppressWarnings("deprecation")

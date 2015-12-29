@@ -76,20 +76,19 @@ public class LogPage extends GeoServerSecuredPage {
         }
 
         try {
-            if (params.getKey(LINES) != null) {
-                if (params.getInt(LINES) > 0) {
-                    lines = params.getInt(LINES);
+            if (params.getNamedKeys().contains(LINES)) {
+                if (params.get(LINES).toInt() > 0) {
+                    lines = params.get(LINES).toInt();
                 }
             }
         } catch (Exception e) {
-            LOGGER.log(Level.WARNING, "Error parsing the lines parameter: ", params.getKey(LINES));
+            LOGGER.log(Level.WARNING, "Error parsing the lines parameter: ", params.get(LINES).toString());
         }
 
         form.add(new SubmitLink("refresh") {
             @Override
             public void onSubmit() {
-                setResponsePage(LogPage.class, new PageParameters(LINES + "="
-                        + String.valueOf(lines)));
+                setResponsePage(LogPage.class, new PageParameters().add(LINES, lines));
             }
         });
 

@@ -111,8 +111,8 @@ public class CssDemoPage extends GeoServerSecuredPage {
     }
 
     private static LayerInfo extractLayer(PageParameters params, Catalog catalog) {
-        if (params.containsKey("layer")) {
-            String name = params.getString("layer");
+        if (params.getNamedKeys().contains("layer")) {
+            String name = params.get("layer").toString();
             return catalog.getLayerByName(name);
         } else {
             // TODO: Revisit this behavior
@@ -133,8 +133,8 @@ public class CssDemoPage extends GeoServerSecuredPage {
     }
 
     private static StyleInfo extractStyle(PageParameters params, Catalog catalog, LayerInfo layer) {
-        if (params.containsKey("style")) {
-            String style = params.getString("style");
+        if (params.getNamedKeys().contains("style")) {
+            String style = params.get("style").toString();
             String[] parts = style.split(":", 2);
             if (parts.length == 1) {
                 return catalog.getStyleByName(parts[0]);

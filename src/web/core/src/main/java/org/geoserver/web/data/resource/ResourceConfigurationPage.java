@@ -55,7 +55,7 @@ public class ResourceConfigurationPage extends PublishedConfigurationPage<LayerI
     IModel<ResourceInfo> myResourceModel;
 
     public ResourceConfigurationPage(PageParameters parameters) {
-        this(parameters.getString(WORKSPACE), parameters.getString(NAME));
+        this(parameters.get(WORKSPACE).toOptionalString(), parameters.get(NAME).toString());
     }
     
     public ResourceConfigurationPage(String workspaceName, String layerName) {

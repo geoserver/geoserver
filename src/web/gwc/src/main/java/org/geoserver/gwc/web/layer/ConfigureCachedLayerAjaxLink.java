@@ -68,10 +68,9 @@ class ConfigureCachedLayerAjaxLink extends SimpleAjaxLink<TileLayer> {
             LayerGroupInfo layerGroup = geoserverTileLayer.getLayerGroupInfo();
             WorkspaceInfo workspace = layerGroup.getWorkspace();
             String wsName = workspace == null ? null : workspace.getName();
-            Map<String, String> params = new HashMap<String, String>();
-            params.put(LayerGroupEditPage.GROUP, layerGroup.getName());
-            params.put(LayerGroupEditPage.WORKSPACE, wsName);
-            PageParameters parameters = new PageParameters(params);
+            PageParameters parameters = new PageParameters();
+            parameters.add(LayerGroupEditPage.GROUP, layerGroup.getName());
+            parameters.add(LayerGroupEditPage.WORKSPACE, wsName);
             LayerGroupEditPage layerGroupEditPage = new LayerGroupEditPage(parameters);
             if (returnPage != null) {
                 layerGroupEditPage.setReturnPage(returnPage);

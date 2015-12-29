@@ -66,7 +66,7 @@ public class WPSAdminPageTest extends WPSPagesTestSupport {
         // start the page with the custom workspace
         login();
         tester.startPage(WPSAdminPage.class,
-                new PageParameters(Collections.singletonMap("workspace", defaultWs.getName())));
+                new PageParameters().add("workspace", defaultWs.getName()));
         // print(tester.getLastRenderedPage(), true, true, true);
 
         // test that components have been filled as expected

@@ -29,7 +29,7 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
     
     @Test
     public void testComputeBounds() {
-        LayerGroupEditPage page = new LayerGroupEditPage(new PageParameters("group=lakes"));
+        LayerGroupEditPage page = new LayerGroupEditPage(new PageParameters().add("group", "lakes"));
         tester.startPage(page);
         // print(page, true, false);
         
@@ -52,7 +52,7 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
     
     @Test
     public void testComputeBoundsFromCRS() {
-        LayerGroupEditPage page = new LayerGroupEditPage(new PageParameters("group=lakes"));
+        LayerGroupEditPage page = new LayerGroupEditPage(new PageParameters().add("group", "lakes"));
         tester.startPage(page);
         tester.assertRenderedPage(LayerGroupEditPage.class);
         

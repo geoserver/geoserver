@@ -33,7 +33,7 @@ public class ImportContextTable extends GeoServerTablePanel<ImportContext> {
     protected Component getComponentForProperty(String id, IModel itemModel, Property property) {
         if (ImportContextProvider.ID == property) {
             PageParameters pp = new PageParameters();
-            pp.put("id", property.getModel(itemModel).getObject());
+            pp.add("id", property.getModel(itemModel).getObject());
             return new SimpleBookmarkableLink(id, ImportPage.class, property.getModel(itemModel), pp);
         }
         else if (ImportContextProvider.CREATED == property || ImportContextProvider.UPDATED == property) {

@@ -102,8 +102,8 @@ public class CssDemoTest extends GeoServerWicketTestSupport {
         login();
         PageParameters pp = new PageParameters();
         String prefixedName = getLayerId(MockData.BASIC_POLYGONS);
-        pp.put("layer", prefixedName);
-        pp.put("style", prefixedName);
+        pp.add("layer", prefixedName);
+        pp.add("style", prefixedName);
         tester.startPage(CssDemoPage.class, pp);
         // print(tester.getLastRenderedPage(), true, true);
         tester.assertRenderedPage(CssDemoPage.class);
@@ -141,8 +141,8 @@ public class CssDemoTest extends GeoServerWicketTestSupport {
         login();
         PageParameters pp = new PageParameters();
         String prefixedName = getLayerId(MockData.BASIC_POLYGONS);
-        pp.put("layer", prefixedName);
-        pp.put("style", "foo");
+        pp.add("layer", prefixedName);
+        pp.add("style", "foo");
         tester.startPage(CssDemoPage.class, pp);
         // print(tester.getLastRenderedPage(), true, true);
         tester.assertRenderedPage(CssDemoPage.class);

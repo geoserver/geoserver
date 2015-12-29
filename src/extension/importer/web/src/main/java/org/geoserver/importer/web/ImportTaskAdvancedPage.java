@@ -97,7 +97,7 @@ public class ImportTaskAdvancedPage extends GeoServerSecuredPage {
 
                 ImporterWebUtils.importer().changed(task);
 
-                PageParameters pp = new PageParameters("id="+task.getContext().getId());
+                PageParameters pp = new PageParameters().add("id", task.getContext().getId());
                 setResponsePage(ImportPage.class, pp);
             }
         });
@@ -105,7 +105,7 @@ public class ImportTaskAdvancedPage extends GeoServerSecuredPage {
             @Override
             public void onClick(AjaxRequestTarget target) {
                 ImportTask task = model.getObject();
-                PageParameters pp = new PageParameters("id="+task.getContext().getId());
+                PageParameters pp = new PageParameters().add("id", task.getContext().getId());
                 setResponsePage(ImportPage.class, pp);
             }
         });

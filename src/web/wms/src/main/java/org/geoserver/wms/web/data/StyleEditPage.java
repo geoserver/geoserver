@@ -30,8 +30,8 @@ public class StyleEditPage extends AbstractStylePage {
     public static final String WORKSPACE = "workspace";
 
     public StyleEditPage(PageParameters parameters) {
-        String name = parameters.getString(NAME);
-        String workspace = parameters.getString(WORKSPACE);
+        String name = parameters.get(NAME).toString();
+        String workspace = parameters.get(WORKSPACE).toOptionalString();
 
         StyleInfo si = workspace != null ? getCatalog().getStyleByName(workspace, name) : 
             getCatalog().getStyleByName(name);

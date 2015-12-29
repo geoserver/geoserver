@@ -176,8 +176,8 @@ public class NewLayerPage extends GeoServerSecuredPage {
             @Override
             public void onClick(AjaxRequestTarget target) {
                 DataStoreInfo ds = getCatalog().getStore(storeId, DataStoreInfo.class);
-                PageParameters pp = new PageParameters("wsName=" + ds.getWorkspace().getName() + ",storeName=" + ds.getName());
-                setResponsePage(NewFeatureTypePage.class, pp);                
+                PageParameters pp = new PageParameters().add("wsName", ds.getWorkspace().getName()).add("storeName", ds.getName());
+                setResponsePage(NewFeatureTypePage.class, pp);
             }
         };
     }
@@ -188,7 +188,7 @@ public class NewLayerPage extends GeoServerSecuredPage {
             @Override
             public void onClick(AjaxRequestTarget target) {
                 DataStoreInfo ds = getCatalog().getStore(storeId, DataStoreInfo.class);
-                PageParameters pp = new PageParameters("wsName=" + ds.getWorkspace().getName() + ",storeName=" + ds.getName());
+                PageParameters pp = new PageParameters().add("wsName", ds.getWorkspace().getName()).add("storeName", ds.getName());
                 setResponsePage(SQLViewNewPage.class, pp);
             }
         };
@@ -200,7 +200,7 @@ public class NewLayerPage extends GeoServerSecuredPage {
             @Override
             public void onClick(AjaxRequestTarget target) {
                 CoverageStoreInfo cs = getCatalog().getStore(storeId, CoverageStoreInfo.class);
-                PageParameters pp = new PageParameters("wsName=" + cs.getWorkspace().getName() + ",storeName=" + cs.getName());
+                PageParameters pp = new PageParameters().add("wsName", cs.getWorkspace().getName()).add("storeName", cs.getName());
                 setResponsePage(CoverageViewNewPage.class, pp);
             }
         };
@@ -212,7 +212,7 @@ public class NewLayerPage extends GeoServerSecuredPage {
             @Override
             public void onClick(AjaxRequestTarget target) {
                 DataStoreInfo ds = getCatalog().getStore(storeId, DataStoreInfo.class);
-                PageParameters pp = new PageParameters("wsName=" + ds.getWorkspace().getName() + ",storeName=" + ds.getName());
+                PageParameters pp = new PageParameters().add("wsName", ds.getWorkspace().getName()).add("storeName", ds.getName());
                 setResponsePage(CascadedWFSStoredQueryNewPage.class, pp);
             }
         };
@@ -224,7 +224,7 @@ public class NewLayerPage extends GeoServerSecuredPage {
             @Override
             public void onClick(AjaxRequestTarget target) {
                 WMSStoreInfo wms = getCatalog().getStore(storeId, WMSStoreInfo.class);
-                PageParameters pp = new PageParameters("storeId=" + storeId);
+                PageParameters pp = new PageParameters().add("storeId", storeId);
                 setResponsePage(WMSLayerImporterPage.class, pp);
             }
         };

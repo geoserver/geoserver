@@ -93,7 +93,7 @@ public class WPSRequestBuilderTest extends GeoServerWicketTestSupport {
         login();
         
         // start the page
-        tester.startPage(new WPSRequestBuilder(new PageParameters("name=JTS:area")));
+        tester.startPage(new WPSRequestBuilder(new PageParameters().add("name", "JTS:area")));
         
         tester.assertComponent("form:requestBuilder:process", DropDownChoice.class);
         

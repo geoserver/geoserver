@@ -60,8 +60,8 @@ public class LayerGroupEditPage extends PublishedConfigurationPage<LayerGroupInf
     public LayerGroupEditPage(PageParameters parameters) {
         this(false);
         
-        String groupName = parameters.getString(GROUP);
-        String wsName = parameters.getString(WORKSPACE);
+        String groupName = parameters.get(GROUP).toString();
+        String wsName = parameters.get(WORKSPACE).toOptionalString();
 
         LayerGroupInfo lg = wsName != null ? getCatalog().getLayerGroupByName(wsName, groupName) :  
             getCatalog().getLayerGroupByName(groupName);

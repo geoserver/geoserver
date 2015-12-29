@@ -225,7 +225,7 @@ public class ImportDataPage extends GeoServerSecuredPage {
                                        importer.changed(imp);
            
                                        PageParameters pp = new PageParameters();
-                                       pp.put("id", imp.getId());
+                                       pp.add("id", imp.getId());
            
                                        setResponsePage(ImportPage.class, pp);
                                    }

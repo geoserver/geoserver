@@ -60,7 +60,7 @@ public class GridSetNewPageTest extends GeoServerWicketTestSupport {
     @Test
     public void testCreateFromTemplate() {
 
-        PageParameters params = new PageParameters(ImmutableMap.of("template", "EPSG:4326"));
+        PageParameters params = new PageParameters().add("template", "EPSG:4326");
         GridSetNewPage page = new GridSetNewPage(params);
 
         tester.startPage(page);

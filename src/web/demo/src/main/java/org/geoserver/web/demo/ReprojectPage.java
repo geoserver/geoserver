@@ -56,8 +56,8 @@ public class ReprojectPage extends GeoServerBasePage {
     public ReprojectPage(PageParameters params) {
         if(params != null) {
             // get the params, if any
-            sourceCRS = params.getString("fromSRS");
-            targetCRS = params.getString("toSRS");
+            sourceCRS = params.get("fromSRS").toOptionalString();
+            targetCRS = params.get("toSRS").toOptionalString();
         }
         
         // the popup for transformation details

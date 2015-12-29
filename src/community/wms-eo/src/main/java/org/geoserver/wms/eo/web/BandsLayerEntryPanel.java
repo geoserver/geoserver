@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -11,13 +11,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.convert.IConverter;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -60,13 +60,13 @@ public class BandsLayerEntryPanel extends Panel {
         Link link = new Link("bandsLayer") {
             @Override
             public void onClick() {
-                Map<String,String> params = new HashMap<String,String>(2);
+                PageParameters pp = new PageParameters();
                 if (layer.getResource().getStore().getWorkspace() != null) {
-                    params.put(ResourceConfigurationPage.WORKSPACE, layer.getResource().getStore().getWorkspace().getName());
+                    pp.add(ResourceConfigurationPage.WORKSPACE, layer.getResource().getStore().getWorkspace().getName());
                 }
-                params.put(ResourceConfigurationPage.NAME, layer.getName());
-                setResponsePage(ResourceConfigurationPage.class, new PageParameters(params));
-            }            
+                pp.add(ResourceConfigurationPage.NAME, layer.getName());
+                setResponsePage(ResourceConfigurationPage.class, pp);
+            }
         };
         link.add(new Label("bandsLayerName", new PropertyModel(layer, "name")));
         add(link);

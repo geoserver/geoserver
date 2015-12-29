@@ -367,7 +367,7 @@ public class ImportTaskTable extends GeoServerTablePanel<ImportTask> {
                     ImportTask task = getModelObject();
 
                     PageParameters pp = new PageParameters();
-                    pp.put("id", task.getContext().getId());
+                    pp.add("id", task.getContext().getId());
 
                     setResponsePage(new LayerPage(task.getLayer(), pp) {
                         protected void onSuccessfulSave() {

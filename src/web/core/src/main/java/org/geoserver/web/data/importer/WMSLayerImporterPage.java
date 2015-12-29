@@ -50,7 +50,7 @@ public class WMSLayerImporterPage extends GeoServerSecuredPage {
     @SuppressWarnings({ "serial", "unchecked", "rawtypes" })
     public WMSLayerImporterPage(PageParameters params) {
         
-        storeId = params.getString("storeId");
+        storeId = params.get("storeId").toString();
         
         WMSStoreInfo store = getCatalog().getStore(storeId, WMSStoreInfo.class);
 

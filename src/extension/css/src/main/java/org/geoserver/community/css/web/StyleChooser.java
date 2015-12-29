@@ -65,15 +65,13 @@ public class StyleChooser extends Panel {
 
                             public void onClick(AjaxRequestTarget target) {
                                 PageParameters params = new PageParameters();
-                                params.put(
-                                    "layer",
-                                    demo.getLayer().prefixedName()
+                                params.add("layer", demo.getLayer().prefixedName()
                                 );
                                 WorkspaceInfo workspace = style.getWorkspace();
                                 if (workspace == null) {
-                                    params.put("style", style.getName());
+                                    params.add("style", style.getName());
                                 } else {
-                                    params.put("style", workspace.getName() + ":" + style.getName());
+                                    params.add("style", workspace.getName() + ":" + style.getName());
                                 }
                                 setResponsePage(CssDemoPage.class, params);
                             }

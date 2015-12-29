@@ -89,8 +89,8 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
             gridSetName = null;
             templateName = null;
         } else {
-            gridSetName = parameters.getString(GRIDSET_NAME);
-            templateName = parameters.getString(GRIDSET_TEMPLATE_NAME);
+            gridSetName = parameters.get(GRIDSET_NAME).toOptionalString();
+            templateName = parameters.get(GRIDSET_TEMPLATE_NAME).toOptionalString();
         }
 
         GridSetInfo gridsetInfo;

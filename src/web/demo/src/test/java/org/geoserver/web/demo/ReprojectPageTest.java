@@ -92,7 +92,7 @@ public class ReprojectPageTest extends GeoServerWicketTestSupport {
     
     @Test
     public void testPageParams() {
-        tester.startPage(ReprojectPage.class, new PageParameters("fromSRS=EPSG:4326,toSRS=EPSG:32632"));
+        tester.startPage(ReprojectPage.class, new PageParameters().add("fromSRS", "EPSG:4326").add("toSRS", "EPSG:32632"));
         String source = tester.getComponentFromLastRenderedPage("form:sourceCRS:srs").getDefaultModelObjectAsString();
         String target = tester.getComponentFromLastRenderedPage("form:targetCRS:srs").getDefaultModelObjectAsString();
         assertEquals("EPSG:4326", source);

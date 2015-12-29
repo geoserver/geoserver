@@ -23,7 +23,7 @@ import org.geoserver.web.wicket.ParamResourceModel;
 public class CoverageViewNewPage extends CoverageViewAbstractPage {
 
     public CoverageViewNewPage(PageParameters params) throws IOException {
-        this(params.getString(WORKSPACE), params.getString(COVERAGESTORE), null, null);
+        this(params.get(WORKSPACE).toOptionalString(), params.get(COVERAGESTORE).toString(), null, null);
     }
 
     public CoverageViewNewPage(String workspaceName, String storeName, String coverageName,

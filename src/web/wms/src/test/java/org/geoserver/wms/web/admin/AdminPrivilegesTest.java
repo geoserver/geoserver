@@ -138,7 +138,7 @@ public class AdminPrivilegesTest extends GeoServerWicketTestSupport {
     public void testStyleEditPageGlobal() throws Exception {
         loginAsCite();
     
-        tester.startPage(StyleEditPage.class, new PageParameters(StyleEditPage.NAME+"=point"));
+        tester.startPage(StyleEditPage.class, new PageParameters().add(StyleEditPage.NAME, "point"));
         tester.assertRenderedPage(StyleEditPage.class);
 
         //assert all form components disabled except for cancel

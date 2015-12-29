@@ -86,12 +86,12 @@ public class LayerChooser extends Panel {
                                     @Override
                                     public void onClick(AjaxRequestTarget target) {
                                         PageParameters params = new PageParameters();
-                                        params.put("layer", layer.prefixedName());
+                                        params.add("layer", layer.prefixedName());
                                         WorkspaceInfo workspace= demo.getStyleInfo().getWorkspace();
                                         if (workspace == null) {
-                                            params.put("style", demo.getStyleInfo().getName());
+                                            params.add("style", demo.getStyleInfo().getName());
                                         } else {
-                                            params.put("style", workspace.getName() + ":" + demo.getStyleInfo().getName());
+                                            params.add("style", workspace.getName() + ":" + demo.getStyleInfo().getName());
                                         }
                                         setResponsePage(CssDemoPage.class, params);
                                     }

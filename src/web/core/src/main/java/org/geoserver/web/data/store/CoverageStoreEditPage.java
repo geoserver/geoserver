@@ -44,8 +44,8 @@ public class CoverageStoreEditPage extends AbstractCoverageStorePage {
      * @param parameters
      */
     public CoverageStoreEditPage(PageParameters parameters) {
-        String wsName = parameters.getString(WS_NAME);
-        String storeName = parameters.getString(STORE_NAME);
+        String wsName = parameters.get(WS_NAME).toOptionalString();
+        String storeName = parameters.get(STORE_NAME).toString();
         CoverageStoreInfo csi = getCatalog().getCoverageStoreByName(wsName, storeName);
         
         if(csi == null) {

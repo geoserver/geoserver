@@ -59,7 +59,7 @@ public class ImportPage extends GeoServerSecuredPage {
     AtomicBoolean running = new AtomicBoolean(false);
 
     public ImportPage(PageParameters pp) {
-        this(new ImportContextModel(pp.getAsLong("id")));
+        this(new ImportContextModel(pp.get("id").toLong()));
     }
 
     public ImportPage(ImportContext imp) {

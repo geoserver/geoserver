@@ -88,7 +88,7 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
      * @param parameters
      */
     public WorkspaceEditPage(PageParameters parameters) {
-        String wsName = parameters.getString("name");
+        String wsName = parameters.get("name").toString();
         WorkspaceInfo wsi = getCatalog().getWorkspaceByName(wsName);
         
         if(wsi == null) {
@@ -429,8 +429,7 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
 
                             if (s.model instanceof ExistingServiceModel) {
                                 //service that has already been added, 
-                                PageParameters pp = 
-                                        new PageParameters("workspace=" + wsModel.getObject().getName());
+                                PageParameters pp = new PageParameters().add("workspace", wsModel.getObject().getName());
                                 try {
                                     page = s.adminPage.getComponentClass()
                                         .getConstructor(PageParameters.class).newInstance(pp);

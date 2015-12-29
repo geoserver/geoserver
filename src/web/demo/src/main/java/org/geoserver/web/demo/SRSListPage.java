@@ -25,8 +25,7 @@ public class SRSListPage extends GeoServerBasePage {
 
             @Override
             protected void onCodeClicked(AjaxRequestTarget target, String epsgCode) {
-                setResponsePage(SRSDescriptionPage.class, new PageParameters("code=EPSG:"
-                        + epsgCode));
+                setResponsePage(SRSDescriptionPage.class, new PageParameters().add("code", "EPSG:" + epsgCode));
             }
         };
     }

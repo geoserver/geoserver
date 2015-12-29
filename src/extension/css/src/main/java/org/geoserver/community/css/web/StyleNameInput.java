@@ -115,11 +115,11 @@ public class StyleNameInput extends Panel {
                      demo.createCssTemplate(workspace, name);
 
                      PageParameters params = new PageParameters();
-                     params.put("layer", demo.getLayer().prefixedName());
+                     params.add("layer", demo.getLayer().prefixedName());
                      if (workspace == null) {
-                         params.put("style", name);
+                         params.add("style", name);
                      } else {
-                         params.put("style", workspace + ":" + name);
+                         params.add("style", workspace + ":" + name);
                      }
                      setResponsePage(CssDemoPage.class, params);
                  }

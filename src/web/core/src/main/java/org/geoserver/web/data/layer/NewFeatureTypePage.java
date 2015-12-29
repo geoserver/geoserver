@@ -64,7 +64,7 @@ public class NewFeatureTypePage extends GeoServerSecuredPage {
     String storeId;
 
     public NewFeatureTypePage(PageParameters params) {
-        this(params.getString(WORKSPACE), params.getString(DATASTORE));
+        this(params.get(WORKSPACE).toOptionalString(), params.get(DATASTORE).toString());
     }
 
     public NewFeatureTypePage(String workspaceName, String storeName) {

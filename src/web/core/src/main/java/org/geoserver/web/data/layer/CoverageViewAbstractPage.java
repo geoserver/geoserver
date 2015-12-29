@@ -69,7 +69,7 @@ public abstract class CoverageViewAbstractPage extends GeoServerSecuredPage {
     CoverageViewEditor coverageEditor;
 
     public CoverageViewAbstractPage(PageParameters params) throws IOException {
-        this(params.getString(WORKSPACE), params.getString(COVERAGESTORE), null, null);
+        this(params.get(WORKSPACE).toOptionalString(), params.get(COVERAGESTORE).toString(), null, null);
     }
 
     @SuppressWarnings("deprecation")

@@ -17,6 +17,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.apache.wicket.validation.validator.RangeValidator;
 import org.geoserver.wcs.WCSInfo;
 import org.geoserver.web.services.BaseServiceAdminPage;
 import org.geoserver.web.wicket.LiveCollectionModel;
@@ -52,10 +53,10 @@ public class WCSAdminPage extends BaseServiceAdminPage<WCSInfo> {
         
         // resource limits
         TextField maxInputMemory = new TextField("maxInputMemory");
-        maxInputMemory.add(new MinimumValidator(0l));
+        maxInputMemory.add(RangeValidator.minimum(0l));
         form.add(maxInputMemory);
         TextField maxOutputMemory = new TextField("maxOutputMemory");
-        maxOutputMemory.add(new MinimumValidator(0l));
+        maxOutputMemory.add(RangeValidator.minimum(0l));
         form.add(maxOutputMemory);
         
         // lat-lon VS lon-lat

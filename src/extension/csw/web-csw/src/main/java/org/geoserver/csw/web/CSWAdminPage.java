@@ -11,6 +11,7 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.apache.wicket.validation.validator.RangeValidator;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.csw.CSWInfo;
 import org.geoserver.csw.DirectDownloadSettings;
@@ -55,7 +56,7 @@ public class CSWAdminPage extends BaseServiceAdminPage<CSWInfo> {
         form.add(new CheckBox("directDownloadEnabled", new PropertyModel(directDownloadModel, "directDownloadEnabled")));
         TextField maxDownloadSize = new TextField<Integer>("maxDownloadSize", new PropertyModel(
                 directDownloadModel, "maxDownloadSize"));
-        maxDownloadSize.add(new MinimumValidator(0l));
+        maxDownloadSize.add(RangeValidator.minimum(0l));
         form.add(maxDownloadSize);
     }
 

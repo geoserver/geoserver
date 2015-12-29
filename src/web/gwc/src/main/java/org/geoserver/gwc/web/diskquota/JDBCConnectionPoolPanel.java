@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -18,7 +18,7 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
-import org.apache.wicket.validation.validator.MinimumValidator;
+import org.apache.wicket.validation.validator.RangeValidator;
 import org.geowebcache.diskquota.jdbc.JDBCConfiguration.ConnectionPoolConfiguration;
 
 public class JDBCConnectionPoolPanel extends Panel {
@@ -53,17 +53,17 @@ public class JDBCConnectionPoolPanel extends Panel {
         
         TextField<Integer> minConnections = new TextField<Integer>("jdbcMinConnections", new PropertyModel<Integer>(model, "minConnections"));
         minConnections.setRequired(true);
-        minConnections.add(new MinimumValidator<Integer>(0));
+        minConnections.add(RangeValidator.minimum(0));
         add(minConnections);
         
         TextField<Integer> maxConnections = new TextField<Integer>("jdbcMaxConnections", new PropertyModel<Integer>(model, "maxConnections"));
         maxConnections.setRequired(true);
-        maxConnections.add(new MinimumValidator<Integer>(1));
+        maxConnections.add(RangeValidator.minimum(1));
         add(maxConnections);
         
         TextField<Integer> connectionTimeout = new TextField<Integer>("jdbcConnectionTimeout", new PropertyModel<Integer>(model, "connectionTimeout"));
         connectionTimeout.setRequired(true);
-        connectionTimeout.add(new MinimumValidator<Integer>(1));
+        connectionTimeout.add(RangeValidator.minimum(1));
         add(connectionTimeout);
         
         TextField<String> validationQuery = new TextField<String>("jdbcValidationQuery", new PropertyModel<String>(model, "validationQuery"));
@@ -71,7 +71,7 @@ public class JDBCConnectionPoolPanel extends Panel {
         
         TextField<Integer> maxOpenPreparedStatements = new TextField<Integer>("jdbcMaxOpenPreparedStatements", new PropertyModel<Integer>(model, "maxOpenPreparedStatements"));
         maxOpenPreparedStatements.setRequired(true);
-        maxOpenPreparedStatements.add(new MinimumValidator<Integer>(0));
+        maxOpenPreparedStatements.add(RangeValidator.minimum(0));
         add(maxOpenPreparedStatements);
     }
     

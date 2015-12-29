@@ -25,6 +25,7 @@ import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.http.WebResponse;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.io.Streams;
+import org.apache.wicket.validation.validator.RangeValidator;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.logging.LoggingUtils;
 import org.geoserver.platform.GeoServerExtensions;
@@ -93,7 +94,7 @@ public class LogPage extends GeoServerSecuredPage {
         });
 
         TextField lines = new TextField("lines", new PropertyModel(this, "lines"));
-        lines.add(new MinimumValidator(1));
+        lines.add(RangeValidator.minimum(1));
         form.add(lines);
 
         TextArea logs = new TextArea("logs", new GSLogsModel());

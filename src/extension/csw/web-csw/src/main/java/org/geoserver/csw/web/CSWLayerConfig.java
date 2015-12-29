@@ -8,7 +8,7 @@ import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
-import org.apache.wicket.validation.validator.MinimumValidator;
+import org.apache.wicket.validation.validator.RangeValidator;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.config.GeoServer;
@@ -52,7 +52,7 @@ public class CSWLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
 
         maxDownloadSize = new TextField<Long>("maxDownloadSize", new PropertyModel<Long>(
                 directDownloadModel, "maxDownloadSize"));
-        maxDownloadSize.add(new MinimumValidator<Long>(0l));
+        maxDownloadSize.add(RangeValidator.minimum(0l));
         add(maxDownloadSize);
     }
 

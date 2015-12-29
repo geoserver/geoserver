@@ -121,13 +121,13 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
         form.add(new DropDownChoice("interpolation", Arrays.asList(WMSInfo.WMSInterpolation.values()), new InterpolationRenderer()));
         // resource limits
         TextField<Integer> maxMemory = new TextField<Integer>("maxRequestMemory");
-        maxMemory.add(new MinimumValidator<Integer>(0));
+        maxMemory.add(RangeValidator.minimum(0));
         form.add(maxMemory);
         TextField<Integer> maxTime = new TextField<Integer>("maxRenderingTime");
-        maxTime.add(new MinimumValidator<Integer>(0));
+        maxTime.add(RangeValidator.minimum(0));
         form.add(maxTime);
         TextField<Integer> maxErrors = new TextField<Integer>("maxRenderingErrors");
-        maxErrors.add(new MinimumValidator<Integer>(0));
+        maxErrors.add(RangeValidator.minimum(0));
         form.add(maxErrors);
     	// watermark
     	form.add(new CheckBox("watermark.enabled"));

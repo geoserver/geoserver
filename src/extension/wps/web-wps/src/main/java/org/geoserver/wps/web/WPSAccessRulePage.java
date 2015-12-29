@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -32,7 +32,7 @@ import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.StringResourceModel;
-import org.apache.wicket.validation.validator.MinimumValidator;
+import org.apache.wicket.validation.validator.RangeValidator;
 import org.geoserver.security.CatalogMode;
 import org.geoserver.security.GeoServerRoleService;
 import org.geoserver.security.impl.GeoServerRole;
@@ -79,7 +79,7 @@ public class WPSAccessRulePage extends AbstractSecurityPage {
 
         TextField<Integer> maxComplexInputSize = new TextField<Integer>("maxComplexInputSize",
                 Integer.class);
-        maxComplexInputSize.add(new MinimumValidator<Integer>(0));
+        maxComplexInputSize.add(RangeValidator.minimum(0));
         form.add(maxComplexInputSize);
 
         final AutoCompleteSettings settings = new AutoCompleteSettings();

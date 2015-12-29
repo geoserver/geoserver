@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -18,7 +18,7 @@ import org.apache.wicket.markup.html.form.validation.AbstractFormValidator;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.StringResourceModel;
-import org.apache.wicket.validation.validator.MinimumValidator;
+import org.apache.wicket.validation.validator.RangeValidator;
 import org.geoserver.config.CoverageAccessInfo;
 import org.geoserver.config.CoverageAccessInfo.QueueType;
 import org.geoserver.config.GeoServer;
@@ -98,22 +98,22 @@ public class CoverageAccessPage extends ServerAdminPage {
         form.add(new PoolSizeValidator());
         // All the fields
         TextField corePoolSize = new TextField("corePoolSize");
-        corePoolSize.add(new MinimumValidator(1));
+        corePoolSize.add(RangeValidator.minimum(1));
         form.add(corePoolSize);
         
         TextField maxPoolSize = new TextField("maxPoolSize");
-        maxPoolSize.add(new MinimumValidator(1));
+        maxPoolSize.add(RangeValidator.minimum(1));
         form.add(maxPoolSize);
         
         TextField keepAliveTime = new TextField("keepAliveTime");
-        keepAliveTime.add(new MinimumValidator(1));
+        keepAliveTime.add(RangeValidator.minimum(1));
         form.add(keepAliveTime);
         
         final DropDownChoice queueType = new DropDownChoice("queueType", Arrays.asList(CoverageAccessInfo.QueueType.values()), new QueueTypeRenderer());
         form.add(queueType);
         
         TextField imageIOCacheThreshold = new TextField("imageIOCacheThreshold");
-        imageIOCacheThreshold.add(new MinimumValidator(0l));
+        imageIOCacheThreshold.add(RangeValidator.minimum(0l));
         form.add(imageIOCacheThreshold);
                 
         Button submit = new Button("submit", new StringResourceModel("submit", this, null)) {

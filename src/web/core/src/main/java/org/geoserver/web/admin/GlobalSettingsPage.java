@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -29,7 +29,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.StringResourceModel;
-import org.apache.wicket.validation.validator.MinimumValidator;
+import org.apache.wicket.validation.validator.RangeValidator;
 import org.apache.wicket.validation.validator.UrlValidator;
 import org.geoserver.catalog.impl.ModificationProxy;
 import org.geoserver.config.GeoServer;
@@ -73,7 +73,7 @@ public class GlobalSettingsPage extends ServerAdminPage {
         form.add(new CheckBox("verbose"));
         form.add(new CheckBox("verboseExceptions"));
         form.add(new CheckBox("globalServices"));
-        form.add(new TextField<Integer>("numDecimals").add(new MinimumValidator<Integer>(0)));
+        form.add(new TextField<Integer>("numDecimals").add(RangeValidator.minimum(0)));
         form.add(new DropDownChoice("charset", AVAILABLE_CHARSETS));
         form.add(new DropDownChoice<ResourceErrorHandling>("resourceErrorHandling", Arrays.asList(ResourceErrorHandling.values()),
                 new ResourceErrorHandlingRenderer()));
@@ -85,12 +85,12 @@ public class GlobalSettingsPage extends ServerAdminPage {
 
         TextField xmlPostRequestLogBufferSize = new TextField("xmlPostRequestLogBufferSize", new PropertyModel(
                 globalInfoModel, "xmlPostRequestLogBufferSize"));
-        xmlPostRequestLogBufferSize.add(new MinimumValidator<Integer>(0));
+        xmlPostRequestLogBufferSize.add(RangeValidator.minimum(0));
         form.add(xmlPostRequestLogBufferSize);
 
         form.add(new CheckBox("xmlExternalEntitiesEnabled"));    
         
-        form.add(new TextField<Integer>("featureTypeCacheSize").add(new MinimumValidator<Integer>(0)));
+        form.add(new TextField<Integer>("featureTypeCacheSize").add(RangeValidator.minimum(0)));
        
         IModel<String> lockProviderModel = new PropertyModel<String>(globalInfoModel, "lockProviderName");
         ApplicationContext applicationContext = GeoServerApplication.get().getApplicationContext();

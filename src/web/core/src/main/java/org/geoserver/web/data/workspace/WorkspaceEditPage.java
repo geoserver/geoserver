@@ -38,7 +38,8 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
-import org.apache.wicket.request.resource.ResourceReference;
+import org.apache.wicket.request.resource.PackageResourceReference;
+import org.apache.wicket.validation.validator.RangeValidator;
 import org.apache.wicket.validation.validator.UrlValidator;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.NamespaceInfo;
@@ -325,7 +326,7 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
             otherSettingsPanel.add(new CheckBox("verbose"));
             otherSettingsPanel.add(new CheckBox("verboseExceptions"));
             otherSettingsPanel.add(new CheckBox("localWorkspaceIncludesPrefix"));
-            otherSettingsPanel.add(new TextField<Integer>("numDecimals").add(new MinimumValidator<Integer>(0)));
+            otherSettingsPanel.add(new TextField<Integer>("numDecimals").add(RangeValidator.minimum(0)));
             otherSettingsPanel.add(new DropDownChoice("charset", GlobalSettingsPage.AVAILABLE_CHARSETS));
             otherSettingsPanel.add(new TextField("proxyBaseUrl").add(new UrlValidator()));
             

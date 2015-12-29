@@ -365,7 +365,7 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
         }
 
         @Override
-        protected void convertInput() {
+        public void convertInput() {
             try {
                 super.convertInput();
             } finally {

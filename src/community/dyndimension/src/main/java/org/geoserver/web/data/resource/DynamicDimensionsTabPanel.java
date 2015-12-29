@@ -271,7 +271,7 @@ public class DynamicDimensionsTabPanel extends PublishedEditTabPanel<LayerInfo> 
         }
 
         @Override
-        protected void convertInput() {
+        public void convertInput() {
             visitChildren(TextArea.class, new org.apache.wicket.Component.IVisitor<TextArea<?>>() {
 
                 @Override

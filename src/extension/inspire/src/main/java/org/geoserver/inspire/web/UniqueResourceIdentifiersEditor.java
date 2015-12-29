@@ -174,7 +174,7 @@ public class UniqueResourceIdentifiersEditor extends FormComponentPanel<UniqueRe
     
     
     @Override
-    protected void convertInput() {
+    public void convertInput() {
         UniqueResourceIdentifiersProvider provider = (UniqueResourceIdentifiersProvider) identifiers.getDataProvider();
         UniqueResourceIdentifiers ids = provider.model.getObject();
         setConvertedInput(ids);

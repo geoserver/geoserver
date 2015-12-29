@@ -355,7 +355,7 @@ class ParameterFilterEditor extends FormComponentPanel<Set<ParameterFilter>> {
     }
     
     @Override
-    protected void convertInput() {
+    public void convertInput() {
         filters.visitChildren(new Component.IVisitor<Component>() {
 
             @Override

@@ -156,7 +156,7 @@ public class KeywordsEditor extends FormComponentPanel {
     }
     
     @Override
-    protected void convertInput() {
+    public void convertInput() {
         setConvertedInput(choices.getChoices());
     }
 }

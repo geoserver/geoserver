@@ -340,7 +340,7 @@ public class TileMatrixSetEditor extends FormComponentPanel<List<Grid>> {
     }
 
     @Override
-    protected void convertInput() {
+    public void convertInput() {
         List<Grid> info = grids.getModelObject();
         if (info == null || info.size() == 0) {
             setConvertedInput(new ArrayList<Grid>(2));

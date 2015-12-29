@@ -81,7 +81,7 @@ public class RangePanel extends FormComponentPanel<NumberRange> {
     }
 
     @Override
-    protected void convertInput() {
+    public void convertInput() {
         visitChildren(TextField.class, new org.apache.wicket.Component.IVisitor() {
 
             public Object component(Component component) {

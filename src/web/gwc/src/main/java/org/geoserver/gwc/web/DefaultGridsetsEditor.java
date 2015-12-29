@@ -171,7 +171,7 @@ class DefaultGridsetsEditor extends FormComponentPanel<Set<String>> {
     }
 
     @Override
-    protected void convertInput() {
+    public void convertInput() {
         List<String> defaultGridsetIds = selection.getObject();
         Set<String> convertedInput = new HashSet<String>();
         convertedInput.addAll(defaultGridsetIds);

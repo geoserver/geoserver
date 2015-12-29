@@ -348,7 +348,7 @@ class GridSubsetsEditor extends FormComponentPanel<Set<XMLGridSubset>> {
     }
 
     @Override
-    protected void convertInput() {
+    public void convertInput() {
         grids.visitChildren(new Component.IVisitor<Component>() {
 
             @Override

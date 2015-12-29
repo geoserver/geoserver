@@ -116,7 +116,7 @@ public class PropertyEditorFormComponent extends FormComponentPanel<Properties> 
     }
 
     @Override
-    protected void convertInput() {
+    public void convertInput() {
         for (Iterator it = listView.iterator(); it.hasNext();) {
             ListItem item = (ListItem) it.next();
             ((FormComponent)item.get("key")).updateModel();

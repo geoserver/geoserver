@@ -211,7 +211,7 @@ public class LayerIdentifierListEditor extends FormComponentPanel<List<LayerIden
     }
 
     @Override
-    protected void convertInput() {
+    public void convertInput() {
         List<LayerIdentifierInfo> info = identifiers.getModelObject();
         setConvertedInput(info);
     }

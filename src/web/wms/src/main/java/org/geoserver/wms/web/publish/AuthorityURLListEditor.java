@@ -159,7 +159,7 @@ public class AuthorityURLListEditor extends FormComponentPanel<List<AuthorityURL
     }
 
     @Override
-    protected void convertInput() {
+    public void convertInput() {
         List<AuthorityURLInfo> info = authorityURLs.getModelObject();
         if (info == null || info.size() == 0) {
             setConvertedInput(new ArrayList<AuthorityURLInfo>(2));

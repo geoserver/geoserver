@@ -87,7 +87,7 @@ public class CaseNormalizerSubform extends FormComponentPanel<CaseNormalizer> {
     }
     
     @Override
-    protected void convertInput() {
+    public void convertInput() {
         visitChildren(new Component.IVisitor<Component>() {
             
             @Override

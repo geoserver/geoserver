@@ -309,7 +309,7 @@ public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
         return true;
     }
 
-    protected void convertInput() {
+    public void convertInput() {
         //Keep the original attributes
         if (!enabled.getModelObject()) {
             setConvertedInput(new DimensionInfoImpl());

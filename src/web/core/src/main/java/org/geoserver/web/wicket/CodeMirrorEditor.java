@@ -198,7 +198,7 @@ public class CodeMirrorEditor extends FormComponentPanel<String> {
     }
     
     @Override
-    protected void convertInput() {
+    public void convertInput() {
         editor.processInput();
         setConvertedInput(editor.getConvertedInput());
     }

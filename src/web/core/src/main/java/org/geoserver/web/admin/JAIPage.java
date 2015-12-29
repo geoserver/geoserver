@@ -18,7 +18,7 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.StringResourceModel;
-import org.apache.wicket.validation.validator.NumberValidator;
+import org.apache.wicket.validation.validator.RangeValidator;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.JAIEXTInfo;
@@ -49,7 +49,7 @@ public class JAIPage extends ServerAdminPage {
 
         // All the fields
         // ... memory capacity and threshold are percentages
-        NumberValidator percentageValidator = NumberValidator.range(0, 1);
+        RangeValidator<Integer> percentageValidator = RangeValidator.range(0, 1);
         TextField memoryCapacity = new TextField("memoryCapacity");
         memoryCapacity.add(percentageValidator);
         form.add(memoryCapacity);
@@ -57,10 +57,10 @@ public class JAIPage extends ServerAdminPage {
         memoryThreshold.add(percentageValidator);
         form.add(memoryThreshold);
         TextField tileThreads = new TextField("tileThreads");
-        tileThreads.add(NumberValidator.POSITIVE);
+        tileThreads.add(RangeValidator.minimum(0));
         form.add(tileThreads);
         TextField tilePriority = new TextField("tilePriority");
-        tilePriority.add(NumberValidator.POSITIVE);
+        tilePriority.add(RangeValidator.minimum(0));
         form.add(tilePriority);
         form.add(new CheckBox("recycling"));
         form.add(new CheckBox("jpegAcceleration"));

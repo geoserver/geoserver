@@ -33,10 +33,10 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.protocol.http.WebRequest;
+import org.apache.wicket.request.http.WebRequest;
 import org.apache.wicket.validation.IValidatable;
 import org.apache.wicket.validation.ValidationError;
-import org.apache.wicket.validation.validator.NumberValidator;
+import org.apache.wicket.validation.validator.RangeValidator;
 import org.apache.wicket.validation.validator.StringValidator;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
@@ -212,12 +212,12 @@ public class ExternalGraphicPanel extends Panel {
         table.add(format);
 
         width = new TextField("width", styleModel.bind("legend.width"), Integer.class);
-        width.add(NumberValidator.minimum(0));
+        width.add(RangeValidator.minimum(0));
         width.setOutputMarkupId(true);
         table.add(width);
 
         height = new TextField("height", styleModel.bind("legend.height"), Integer.class);
-        height.add(NumberValidator.minimum(0));
+        height.add(RangeValidator.minimum(0));
         height.setOutputMarkupId(true);
         table.add(height);
         

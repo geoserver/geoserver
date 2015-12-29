@@ -107,7 +107,7 @@ public class WMSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
         styleContainer.add(extraStyles);
         
         TextField<Integer> renderingBuffer = new TextField<Integer>("renderingBuffer", new MapModel(new PropertyModel(layerModel, "metadata"), LayerInfo.BUFFER), Integer.class);
-        renderingBuffer.add(NumberValidator.minimum(0));
+        renderingBuffer.add(RangeValidator.minimum(0));
         styleContainer.add(renderingBuffer);
         
         add(new TextField<String>("wmsPath", new PropertyModel<String>(layerModel, "path")));

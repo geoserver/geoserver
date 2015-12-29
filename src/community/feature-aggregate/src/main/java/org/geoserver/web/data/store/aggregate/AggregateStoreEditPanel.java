@@ -143,7 +143,7 @@ public class AggregateStoreEditPanel extends StoreEditPanel {
                 };
             }
         };
-        link.getImage().add(new AttributeModifier("alt", true, new ParamResourceModel("AggregateStoreEditPanel.th.remove", link)));
+        link.getImage().add(new AttributeModifier("alt", new ParamResourceModel("AggregateStoreEditPanel.th.remove", link)));
         return link;
     }
     

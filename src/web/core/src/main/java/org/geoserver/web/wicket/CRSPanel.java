@@ -14,7 +14,8 @@ import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
-import org.apache.wicket.behavior.IBehavior;
+import org.apache.wicket.behavior.Behavior;
+import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.basic.MultiLineLabel;
@@ -47,7 +48,7 @@ public class CRSPanel extends FormComponentPanel {
     private static Logger LOGGER = Logging.getLogger(CRSPanel.class);
     private static final long serialVersionUID = -6677103383336166008L;
     
-    private static IBehavior READ_ONLY = new AttributeModifier("readonly", true, new Model("readonly"));
+    private static Behavior READ_ONLY = new AttributeModifier("readonly", true, new Model("readonly"));
 
     /** pop-up window for WKT and SRS list */
     protected ModalWindow popupWindow;

@@ -43,7 +43,7 @@ public class RolePaletteFormComponent extends PaletteFormComponent<GeoServerRole
 //            protected Recorder<GeoServerRole> newRecorderComponent() {
 //                Recorder<GeoServerRole> rec = super.newRecorderComponent();
 //                //add any behaviours that need to be added
-//                rec.add(toAdd.toArray(new IBehavior[toAdd.size()]));
+//                rec.add(toAdd.toArray(new Behavior[toAdd.size()]));
 //                toAdd.clear();
 //                /*if (isRequired)
 //                    rec.setRequired(true);

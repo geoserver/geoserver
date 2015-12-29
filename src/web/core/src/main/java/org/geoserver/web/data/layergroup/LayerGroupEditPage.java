@@ -29,6 +29,8 @@ import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.web.data.resource.MetadataLinkEditor;
 import org.geoserver.web.data.workspace.WorkspaceChoiceRenderer;
 import org.geoserver.web.data.workspace.WorkspacesModel;
+import org.geoserver.web.publish.PublishedConfigurationPage;
+import org.geoserver.web.publish.PublishedEditTabPanel;
 import org.geoserver.web.wicket.EnvelopePanel;
 import org.geoserver.web.wicket.GeoServerAjaxFormLink;
 import org.geoserver.web.wicket.ParamResourceModel;

@@ -291,15 +291,15 @@ public class WMSLayerImporterPage extends GeoServerSecuredPage {
         public Object getObject() {
             LayerResource resource = (LayerResource) layerResource.getObject();
             if(resource.getStatus() == LayerStatus.ERROR) {
-                return new ResourceReference(
+                return new PackageResourceReference(
                         GeoServerBasePage.class, "img/icons/silk/error.png");
             } else if(resource.getStatus() == LayerStatus.NEW) {
-                return new ResourceReference(
+                return new PackageResourceReference(
                         GeoServerBasePage.class, "img/icons/silk/add.png");
             } else if(resource.getStatus() == LayerStatus.NEWLY_PUBLISHED) {
                 return CatalogIconFactory.ENABLED_ICON;
             } else if(resource.getStatus() == LayerStatus.UPDATED) {
-                return new ResourceReference(
+                return new PackageResourceReference(
                         GeoServerBasePage.class, "img/icons/silk/pencil.png");
             } else if(resource.getStatus() == LayerStatus.PUBLISHED) {
                 return CatalogIconFactory.MAP_ICON;

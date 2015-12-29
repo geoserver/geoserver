@@ -85,13 +85,13 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
 	@SuppressWarnings("serial")
     public GeoServerBasePage() {
         // lookup for a pluggable favicon
-        ResourceReference faviconReference = null;
+        PackageResourceReference faviconReference = null;
         List<HeaderContribution> cssContribs = 
             getGeoServerApplication().getBeansOfType(HeaderContribution.class);
         for (HeaderContribution csscontrib : cssContribs) {
             try {
                 if (csscontrib.appliesTo(this)) {
-                    ResourceReference ref = csscontrib.getFavicon();
+                    PackageResourceReference ref = csscontrib.getFavicon();
                     if(ref != null) {
                         faviconReference = ref;
                     }
@@ -229,7 +229,7 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
         for (HeaderContribution csscontrib : cssContribs) {
             try {
                 if (csscontrib.appliesTo(this)) {
-                    ResourceReference ref = csscontrib.getCSS();
+                    PackageResourceReference ref = csscontrib.getCSS();
                     if (ref != null) {
                         response.render(CssReferenceHeaderItem.forReference(ref));
                     }

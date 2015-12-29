@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -9,7 +9,7 @@ import java.util.List;
 
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
-import org.apache.wicket.ResourceReference;
+import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.panel.Panel;
@@ -38,7 +38,7 @@ public class UpDownPanel<T extends Object> extends Panel {
         this.setOutputMarkupId(true);
         this.container = container;
         
-        upLink = new ImageAjaxLink("up", new ResourceReference(getClass(),
+        upLink = new ImageAjaxLink("up", new PackageResourceReference(getClass(),
                 "../img/icons/silk/arrow_up.png")) {
             @Override
             protected void onClick(AjaxRequestTarget target) {
@@ -65,7 +65,7 @@ public class UpDownPanel<T extends Object> extends Panel {
         upLink.setOutputMarkupId(true);
         add( upLink);            
 
-        downLink = new ImageAjaxLink("down", new ResourceReference(getClass(),
+        downLink = new ImageAjaxLink("down", new PackageResourceReference(getClass(),
                 "../img/icons/silk/arrow_down.png")) {
             @Override
             protected void onClick(AjaxRequestTarget target) {

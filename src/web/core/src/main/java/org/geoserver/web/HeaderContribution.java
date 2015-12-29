@@ -96,7 +96,7 @@ public class HeaderContribution {
      * Returns the resource reference to the css for the header contribution, or 
      * null if there is no css contribution.
      */
-    public ResourceReference getCSS() {
+    public PackageResourceReference getCSS() {
         if (scope != null && cssFilename != null) {
             return new PackageResourceReference(scope, cssFilename);
         }
@@ -108,7 +108,7 @@ public class HeaderContribution {
      * Returns the resource reference to the javascript for the header contribution, or 
      * null if there is no javascript contribution.
      */
-    public ResourceReference getJavaScript() {
+    public PackageResourceReference getJavaScript() {
         if ( scope != null && javaScriptFilename != null ) {
             return new PackageResourceReference(scope, javaScriptFilename);
         }
@@ -121,7 +121,7 @@ public class HeaderContribution {
      * or null if there is no favicon replacement
      * @return
      */
-    public ResourceReference getFavicon() {
+    public PackageResourceReference getFavicon() {
         if( scope != null && faviconFilename != null) {
             return new PackageResourceReference(scope, faviconFilename);
         }

@@ -324,7 +324,7 @@ public class ImportPage extends GeoServerSecuredPage {
         return null;
     }
 
-    static class DataIconModel extends LoadableDetachableModel<ResourceReference> {
+    static class DataIconModel extends LoadableDetachableModel<PackageResourceReference> {
 
         ImportData data;
 
@@ -333,7 +333,7 @@ public class ImportPage extends GeoServerSecuredPage {
         }
 
         @Override
-        protected ResourceReference load() {
+        protected PackageResourceReference load() {
             DataIcon icon = null;
             if (data instanceof FileData) {
                 FileData df = (FileData) data;

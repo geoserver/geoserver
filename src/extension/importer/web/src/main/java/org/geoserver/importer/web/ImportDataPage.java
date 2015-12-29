@@ -496,18 +496,18 @@ public class ImportDataPage extends GeoServerSecuredPage {
             }
         };
         
-//        directory(new ResourceReference(GeoServerApplication.class, "img/icons/silk/folder.png"),
+//        directory(new PackageResourceReference(GeoServerApplication.class, "img/icons/silk/folder.png"),
 //                DirectoryPage.class, "org.geotools.data.shapefile.ShapefileDataStoreFactory"), // 
-//        postgis(new ResourceReference(GeoServerApplication.class,
+//        postgis(new PackageResourceReference(GeoServerApplication.class,
 //                "img/icons/geosilk/database_vector.png"), PostGISPage.class,
 //                "org.geotools.data.postgis.PostgisNGDataStoreFactory"), //
-//        oracle(new ResourceReference(GeoServerApplication.class,
+//        oracle(new PackageResourceReference(GeoServerApplication.class,
 //                "img/icons/geosilk/database_vector.png"), OraclePage.class,
 //                "org.geotools.data.oracle.OracleNGDataStoreFactory"), //
-//        sqlserver(new ResourceReference(GeoServerApplication.class,
+//        sqlserver(new PackageResourceReference(GeoServerApplication.class,
 //                "img/icons/geosilk/database_vector.png"), SQLServerPage.class,
 //                "org.geotools.data.sqlserver.SQLServerDataStoreFactory"), //
-//        arcsde(new ResourceReference(GeoServerApplication.class,
+//        arcsde(new PackageResourceReference(GeoServerApplication.class,
 //                "img/icons/geosilk/database_vector.png"), ArcSDEPage.class,
 //                "org.geotools.arcsde.ArcSDEDataStoreFactory");
 
@@ -529,7 +529,7 @@ public class ImportDataPage extends GeoServerSecuredPage {
             return new ParamResourceModel(this.name().toLowerCase() + "_helpLink", component);
         }
 
-        ResourceReference getIcon() {
+        PackageResourceReference getIcon() {
             return icon.getIcon();
         }
 

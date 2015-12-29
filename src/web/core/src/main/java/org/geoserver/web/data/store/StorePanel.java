@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -10,7 +10,7 @@ import static org.geoserver.web.data.store.StoreProvider.NAME;
 import static org.geoserver.web.data.store.StoreProvider.WORKSPACE;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.ResourceReference;
+import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.image.Image;
@@ -69,7 +69,7 @@ public class StorePanel extends GeoServerTablePanel<StoreInfo> {
         if (property == StoreProvider.DATA_TYPE) {
             final StoreInfo storeInfo = (StoreInfo) itemModel.getObject();
 
-            ResourceReference storeIcon = icons.getStoreIcon(storeInfo);
+            PackageResourceReference storeIcon = icons.getStoreIcon(storeInfo);
 
             Fragment f = new Fragment(id, "iconFragment", StorePanel.this);
             f.add(new Image("storeIcon", storeIcon));
@@ -81,7 +81,7 @@ public class StorePanel extends GeoServerTablePanel<StoreInfo> {
             return storeNameLink(id, itemModel);
         } else if (property == ENABLED) {
             final StoreInfo storeInfo = (StoreInfo) itemModel.getObject();
-            ResourceReference enabledIcon;
+            PackageResourceReference enabledIcon;
             if (storeInfo.isEnabled()) {
                 enabledIcon = icons.getEnabledIcon();
             } else {

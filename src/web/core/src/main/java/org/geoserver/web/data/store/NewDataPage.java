@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -15,7 +15,7 @@ import java.util.Map;
 
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Page;
-import org.apache.wicket.ResourceReference;
+import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.SubmitLink;
@@ -200,7 +200,7 @@ public class NewDataPage extends GeoServerSecuredPage {
     
     private List<OtherStoreDescription> getOtherStores() {
         List<OtherStoreDescription> stores = new ArrayList<OtherStoreDescription>();
-        ResourceReference wmsIcon = new ResourceReference(GeoServerApplication.class, "img/icons/geosilk/server_map.png");
+        PackageResourceReference wmsIcon = new PackageResourceReference(GeoServerApplication.class, "img/icons/geosilk/server_map.png");
         stores.add(new OtherStoreDescription("wms", wmsIcon, WMSStoreNewPage.class));
         
         return stores;
@@ -217,11 +217,11 @@ public class NewDataPage extends GeoServerSecuredPage {
     static class OtherStoreDescription implements Serializable {
         String key;
 
-        ResourceReference icon;
+        PackageResourceReference icon;
 
         Class<? extends Page> configurationPage;
 
-        public OtherStoreDescription(String key, ResourceReference icon,  Class<? extends Page> configurationPage) {
+        public OtherStoreDescription(String key, PackageResourceReference icon,  Class<? extends Page> configurationPage) {
             super();
             this.key = key;
             this.icon = icon;

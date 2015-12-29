@@ -113,7 +113,7 @@ public class NewLayerPage extends GeoServerSecuredPage {
                     final Resource resource = (Resource) itemModel.getObject();
                     final CatalogIconFactory icons = CatalogIconFactory.get();
                     if(resource.isPublished()) {
-                        ResourceReference icon = icons.getEnabledIcon();
+                        PackageResourceReference icon = icons.getEnabledIcon();
                         Fragment f = new Fragment(id, "iconFragment", NewLayerPage.this);
                         f.add(new Image("layerIcon", icon));
                         return f;

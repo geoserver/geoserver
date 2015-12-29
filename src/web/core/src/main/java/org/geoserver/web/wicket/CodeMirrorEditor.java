@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -15,7 +15,7 @@ import java.io.Writer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.wicket.ResourceReference;
+import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.IAjaxCallDecorator;
 import org.apache.wicket.ajax.calldecorator.AjaxCallDecorator;
@@ -37,20 +37,20 @@ import org.apache.wicket.protocol.http.request.WebClientInfo;
 @SuppressWarnings("serial")
 public class CodeMirrorEditor extends FormComponentPanel<String> {
 
-    public static final ResourceReference REFERENCE = new ResourceReference(
+    public static final PackageResourceReference REFERENCE = new PackageResourceReference(
             CodeMirrorEditor.class, "js/codemirror/js/codemirror.js");
     
-    public static final ResourceReference CSS_REFERENCE = new ResourceReference(
+    public static final PackageResourceReference CSS_REFERENCE = new PackageResourceReference(
             CodeMirrorEditor.class, "js/codemirror/css/codemirror.css");
     
-    public static final ResourceReference[] MODES = new ResourceReference[] {
-        new ResourceReference(CodeMirrorEditor.class, "js/codemirror/js/xml.js"),
-        new ResourceReference(CodeMirrorEditor.class, "js/codemirror/js/clike.js"),
-        new ResourceReference(CodeMirrorEditor.class, "js/codemirror/js/groovy.js"),
-        new ResourceReference(CodeMirrorEditor.class, "js/codemirror/js/javascript.js"),
-        new ResourceReference(CodeMirrorEditor.class, "js/codemirror/js/python.js"),
-        new ResourceReference(CodeMirrorEditor.class, "js/codemirror/js/ruby.js"),
-        new ResourceReference(CodeMirrorEditor.class, "js/codemirror/js/css.js")
+    public static final PackageResourceReference[] MODES = new PackageResourceReference[] {
+        new PackageResourceReference(CodeMirrorEditor.class, "js/codemirror/js/xml.js"),
+        new PackageResourceReference(CodeMirrorEditor.class, "js/codemirror/js/clike.js"),
+        new PackageResourceReference(CodeMirrorEditor.class, "js/codemirror/js/groovy.js"),
+        new PackageResourceReference(CodeMirrorEditor.class, "js/codemirror/js/javascript.js"),
+        new PackageResourceReference(CodeMirrorEditor.class, "js/codemirror/js/python.js"),
+        new PackageResourceReference(CodeMirrorEditor.class, "js/codemirror/js/ruby.js"),
+        new PackageResourceReference(CodeMirrorEditor.class, "js/codemirror/js/css.js")
     };
     
 
@@ -257,7 +257,7 @@ public class CodeMirrorEditor extends FormComponentPanel<String> {
             // Add JS
             response.renderJavascriptReference(REFERENCE);
             // Add Modes
-            for(ResourceReference mode : MODES) {
+            for(PackageResourceReference mode : MODES) {
                 response.renderJavascriptReference(mode);
             }
             

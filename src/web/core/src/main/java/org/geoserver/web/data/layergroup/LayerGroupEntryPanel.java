@@ -11,7 +11,7 @@ import java.util.List;
 
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
-import org.apache.wicket.ResourceReference;
+import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
@@ -222,7 +222,7 @@ public class LayerGroupEntryPanel extends Panel {
     
     Component removeLink(String id, IModel itemModel) {
         final LayerGroupEntry entry = (LayerGroupEntry) itemModel.getObject();
-        ImageAjaxLink link = new ImageAjaxLink( id, new ResourceReference( getClass(), "../../img/icons/silk/delete.png") ) {
+        ImageAjaxLink link = new ImageAjaxLink( id, new PackageResourceReference( getClass(), "../../img/icons/silk/delete.png") ) {
             @Override
             protected void onClick(AjaxRequestTarget target) {
                 

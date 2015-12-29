@@ -475,10 +475,10 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
                     Image image;
                     if(info.getIcon() != null) {
                         image = new Image("link.icon", 
-                            new ResourceReference(info.getComponentClass(), info.getIcon()));
+                            new PackageResourceReference(info.getComponentClass(), info.getIcon()));
                     } else {
                         image = new Image("link.icon", 
-                            new ResourceReference(GeoServerBasePage.class, "img/icons/silk/wrench.png"));
+                            new PackageResourceReference(GeoServerBasePage.class, "img/icons/silk/wrench.png"));
                     }
                     image.add(new AttributeModifier("alt", true, new ParamResourceModel(info.getTitleKey(), null)));
                     link.add(image);

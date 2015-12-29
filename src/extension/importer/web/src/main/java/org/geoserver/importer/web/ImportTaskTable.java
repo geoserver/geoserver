@@ -189,28 +189,28 @@ public class ImportTaskTable extends GeoServerTablePanel<ImportTask> {
             return chained;
         }
     }
-    static class StatusIconModel extends StatusModel<ResourceReference> {
+    static class StatusIconModel extends StatusModel<PackageResourceReference> {
 
         StatusIconModel(IModel model) {
             super(model);
         }
         
-        public ResourceReference getObject() {
+        public PackageResourceReference getObject() {
             ImportTask.State state = (ImportTask.State) chained.getObject();
             switch(state) {
             case READY:
-                return new ResourceReference(GeoServerApplication.class, "img/icons/silk/bullet_go.png");
+                return new PackageResourceReference(GeoServerApplication.class, "img/icons/silk/bullet_go.png");
             case RUNNING:
-                return new ResourceReference(ImportTaskTable.class, "indicator.gif");
+                return new PackageResourceReference(ImportTaskTable.class, "indicator.gif");
             case COMPLETE:
-                return new ResourceReference(GeoServerApplication.class, "img/icons/silk/accept.png");
+                return new PackageResourceReference(GeoServerApplication.class, "img/icons/silk/accept.png");
             case NO_BOUNDS:
             case NO_CRS:
             case NO_FORMAT:
             case BAD_FORMAT:
-                return new ResourceReference(GeoServerApplication.class, "img/icons/silk/error.png");
+                return new PackageResourceReference(GeoServerApplication.class, "img/icons/silk/error.png");
             case ERROR:
-                return new ResourceReference(GeoServerApplication.class, "img/icons/silk/delete.png");
+                return new PackageResourceReference(GeoServerApplication.class, "img/icons/silk/delete.png");
             }
             return null;
         }

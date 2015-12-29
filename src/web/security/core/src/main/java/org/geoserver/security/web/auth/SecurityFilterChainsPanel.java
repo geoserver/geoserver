@@ -12,7 +12,7 @@ import java.util.List;
 
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
-import org.apache.wicket.ResourceReference;
+import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.ComponentTag;
@@ -204,7 +204,7 @@ public class SecurityFilterChainsPanel
         final RequestFilterChain chain = (RequestFilterChain) itemModel.getObject();
         
         if (chain.canBeRemoved()==false) {
-            ImageAjaxLink blankLink = new ImageAjaxLink( id, new ResourceReference( getClass(), "../img/icons/blank.png") ) {
+            ImageAjaxLink blankLink = new ImageAjaxLink( id, new PackageResourceReference( getClass(), "../img/icons/blank.png") ) {
                 @Override
                 protected void onClick(AjaxRequestTarget target) {
                 }
@@ -214,7 +214,7 @@ public class SecurityFilterChainsPanel
             return blankLink;
         }
         
-        ImageAjaxLink link = new ImageAjaxLink( id, new ResourceReference( getClass(), "../img/icons/silk/delete.png") ) {
+        ImageAjaxLink link = new ImageAjaxLink( id, new PackageResourceReference( getClass(), "../img/icons/silk/delete.png") ) {
             @Override
             protected void onClick(AjaxRequestTarget target) {                
                 secMgrConfig.getFilterChain().getRequestChains().remove( chain );
@@ -246,7 +246,7 @@ public class SecurityFilterChainsPanel
             this.theChain = chain;
             this.setOutputMarkupId(true);
             
-            upLink = new ImageAjaxLink( "up", new ResourceReference( getClass(), "../img/icons/silk/arrow_up.png") ) {                                                                                       
+            upLink = new ImageAjaxLink( "up", new PackageResourceReference( getClass(), "../img/icons/silk/arrow_up.png") ) {                                                                                       
                 @Override
                 protected void onClick(AjaxRequestTarget target) {
                     int index = getChains().indexOf( PositionPanel.this.theChain );
@@ -271,7 +271,7 @@ public class SecurityFilterChainsPanel
             upLink.setOutputMarkupId(true);
             add( upLink);            
 
-            downLink = new ImageAjaxLink( "down", new ResourceReference( getClass(), "../img/icons/silk/arrow_down.png") ) {
+            downLink = new ImageAjaxLink( "down", new PackageResourceReference( getClass(), "../img/icons/silk/arrow_down.png") ) {
                 @Override
                 protected void onClick(AjaxRequestTarget target) {
                     int index = getChains().indexOf( PositionPanel.this.theChain );

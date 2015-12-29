@@ -263,7 +263,7 @@ public class NewFeatureTypePage extends GeoServerSecuredPage {
         if (attributesProvider.isFirst(attribute)) {
             upDown.add(new PlaceholderLink("up"));
         } else {
-            ImageAjaxLink upLink = new ImageAjaxLink("up", new ResourceReference(getClass(),
+            ImageAjaxLink upLink = new ImageAjaxLink("up", new PackageResourceReference(getClass(),
                     "../../img/icons/silk/arrow_up.png")) {
                 @Override
                 protected void onClick(AjaxRequestTarget target) {
@@ -277,7 +277,7 @@ public class NewFeatureTypePage extends GeoServerSecuredPage {
         if (attributesProvider.isLast(attribute)) {
             upDown.add(new PlaceholderLink("down"));
         } else {
-            ImageAjaxLink downLink = new ImageAjaxLink("down", new ResourceReference(getClass(),
+            ImageAjaxLink downLink = new ImageAjaxLink("down", new PackageResourceReference(getClass(),
                     "../../img/icons/silk/arrow_down.png")) {
                 @Override
                 protected void onClick(AjaxRequestTarget target) {
@@ -304,7 +304,7 @@ public class NewFeatureTypePage extends GeoServerSecuredPage {
     class PlaceholderLink extends ImageAjaxLink {
 
         public PlaceholderLink(String id) {
-            super(id, new ResourceReference(NewFeatureTypePage.class, "../../img/icons/blank.png"));
+            super(id, new PackageResourceReference(NewFeatureTypePage.class, "../../img/icons/blank.png"));
             setEnabled(false);
         }
 

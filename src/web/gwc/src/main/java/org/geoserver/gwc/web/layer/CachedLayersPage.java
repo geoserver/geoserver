@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -23,7 +23,7 @@ import java.util.TreeSet;
 
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
-import org.apache.wicket.ResourceReference;
+import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.behavior.AttributeAppender;
@@ -77,9 +77,9 @@ public class CachedLayersPage extends GeoServerSecuredPage {
 
                 if (property == TYPE) {
                     Fragment f = new Fragment(id, "iconFragment", CachedLayersPage.this);
-                    ResourceReference layerIcon;
+                    PackageResourceReference layerIcon;
                     TileLayer layer = (TileLayer) itemModel.getObject();
-                    layerIcon = (ResourceReference) property.getPropertyValue(layer);
+                    layerIcon = (PackageResourceReference) property.getPropertyValue(layer);
                     f.add(new Image("layerIcon", layerIcon));
                     return f;
                 } else if (property == NAME) {
@@ -93,7 +93,7 @@ public class CachedLayersPage extends GeoServerSecuredPage {
                 } else if (property == ENABLED) {
                     TileLayer layerInfo = (TileLayer) itemModel.getObject();
                     boolean enabled = layerInfo.isEnabled();
-                    ResourceReference icon;
+                    PackageResourceReference icon;
                     if (enabled) {
                         icon = GWCIconFactory.getEnabledIcon();
                     } else {

@@ -16,7 +16,7 @@
   <bean id="kmlSelfLinksDecorator" class="org.geoserver.kml.decorator.PlacemarkSelfLinkDecoratorFactory"/>
   
   <!-- Add configuration section to Wicket UI -->
-  <bean id="geosearchLayerConfig" class="org.geoserver.web.publish.LayerConfigurationPanelInfo">
+  <bean id="geosearchLayerConfig" class="org.geoserver.web.publish.CommonPublishedConfigurationPanelInfo">
     <property name="id" value="geosearchLayerConfig"/>
     <property name="titleKey" value="publish.layer.config.geosearch"/>
     <property name="componentClass" value="org.geoserver.geosearch.web.GeoSearchLayerConfigPanel"/>
@@ -26,12 +26,6 @@
         <value>org.geoserver.catalog.CoverageInfo</value>
       </list>
     </property>
-  </bean>
-  
-  <bean id="geosearchLayerGroupConfig" class="org.geoserver.web.publish.LayerGroupConfigurationPanelInfo">
-    <property name="id" value="geosearchLayerGroupConfig"/>
-    <property name="titleKey" value="publish.layergroup.config.geosearch"/>
-    <property name="componentClass" value="org.geoserver.geosearch.web.GeoSearchLayerGroupConfigPanel"/>
   </bean>
 
   <!-- REST end points and handlers -->

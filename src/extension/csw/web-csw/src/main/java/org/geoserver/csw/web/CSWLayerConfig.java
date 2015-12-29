@@ -15,18 +15,19 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.csw.CSWInfo;
 import org.geoserver.csw.DirectDownloadSettings;
 import org.geoserver.platform.GeoServerExtensions;
-import org.geoserver.web.publish.LayerConfigurationPanel;
+import org.geoserver.web.publish.PublishedConfigurationPanel;
 import org.geoserver.web.util.MetadataMapModel;
 
 /**
  * A configuration panel for CoverageInfo properties that related to CSW publication
  */
-@SuppressWarnings("serial")
-public class CSWLayerConfig extends LayerConfigurationPanel {
+public class CSWLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
+
+    private static final long serialVersionUID = 6204512572932860227L;
 
     protected final CheckBox directDownloadEnabled;
 
-    protected final TextField<Integer> maxDownloadSize;
+    protected final TextField<Long> maxDownloadSize;
 
     public CSWLayerConfig(String id, IModel<LayerInfo> model) {
         super(id, model);
@@ -45,12 +46,13 @@ public class CSWLayerConfig extends LayerConfigurationPanel {
                 DirectDownloadSettings.DIRECTDOWNLOAD_KEY,
                 DirectDownloadSettings.class);
 
-        directDownloadEnabled = new CheckBox("directDownloadEnabled", new PropertyModel(directDownloadModel, "directDownloadEnabled"));
+        directDownloadEnabled = new CheckBox("directDownloadEnabled", new PropertyModel<Boolean>(
+                directDownloadModel, "directDownloadEnabled"));
         add(directDownloadEnabled);
 
-        maxDownloadSize = new TextField<Integer>("maxDownloadSize", new PropertyModel(
+        maxDownloadSize = new TextField<Long>("maxDownloadSize", new PropertyModel<Long>(
                 directDownloadModel, "maxDownloadSize"));
-        maxDownloadSize.add(new MinimumValidator(0l));
+        maxDownloadSize.add(new MinimumValidator<Long>(0l));
         add(maxDownloadSize);
     }
 

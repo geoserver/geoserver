@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -15,8 +15,9 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.util.ListModel;
 import org.apache.wicket.resource.loader.IStringResourceLoader;
+import org.geoserver.catalog.LayerInfo;
 import org.geoserver.web.GeoServerStringResourceLoader;
-import org.geoserver.web.publish.LayerConfigurationPanel;
+import org.geoserver.web.publish.PublishedConfigurationPanel;
 import org.geoserver.web.util.MapModel;
 import org.geoserver.wms.worldwind.BilConfig;
 import org.geotools.util.logging.Logging;
@@ -27,13 +28,13 @@ import org.geotools.util.logging.Logging;
  * 
  * @author Parker Abercrombie
  */
-@SuppressWarnings("serial")
-public class BilLayerConfigPanel extends LayerConfigurationPanel
+public class BilLayerConfigPanel extends PublishedConfigurationPanel<LayerInfo>
 {
+    private static final long serialVersionUID = -7082211085566621848L;
+    
     private static final Logger LOGGER = Logging.getLogger(BilLayerConfigPanel.class);
 
-    @SuppressWarnings("unchecked")
-    public BilLayerConfigPanel(String id, IModel<org.geoserver.catalog.LayerInfo> model)
+    public BilLayerConfigPanel(String id, IModel<LayerInfo> model)
     {
         super(id, model);
 
@@ -64,7 +65,9 @@ public class BilLayerConfigPanel extends LayerConfigurationPanel
     private class ByteOrderRenderer implements IChoiceRenderer<String>
     {
 
-    	public Object getDisplayValue(String str)
+        private static final long serialVersionUID = 9198622236589910965L;
+
+        public Object getDisplayValue(String str)
     	{
     	    IStringResourceLoader loader = new GeoServerStringResourceLoader();
     	    if (ByteOrder.LITTLE_ENDIAN.toString().equals(str))

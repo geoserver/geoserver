@@ -7,15 +7,14 @@ package org.geoserver.web.publish;
 import org.geoserver.catalog.LayerGroupInfo;
 
 /**
- * 
- * Extension point for sections of the configuration pages for layergroups.
+ * Information about panels plugged into additional tabs on layergroup edit page.
  * 
  * @author Niels Charlier
  *
  */
-public class LayerGroupConfigurationPanelInfo extends PublishedConfigurationPanelInfo<LayerGroupInfo> {
+public class LayerGroupEditTabPanelInfo extends PublishedEditTabPanelInfo<LayerGroupInfo> {
 
-    private static final long serialVersionUID = 8382295309912226673L;
+    private static final long serialVersionUID = -388475157541960108L;
 
     @Override
     public Class<LayerGroupInfo> getPublishedInfoClass() {

@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -18,48 +18,52 @@ import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.validation.validator.NumberValidator;
 import org.geoserver.catalog.FeatureTypeInfo;
-import org.geoserver.web.publish.LayerConfigurationPanel;
+import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.MetadataMap;
+import org.geoserver.web.publish.PublishedConfigurationPanel;
 import org.geoserver.web.util.MapModel;
 import org.opengis.feature.type.PropertyDescriptor;
 
 /**
  * Configures a layer KML related attributes (coming from metadata)
  */
-@SuppressWarnings("serial")
-public class KMLLayerConfigPanel extends LayerConfigurationPanel {
+public class KMLLayerConfigPanel extends PublishedConfigurationPanel<LayerInfo> {
     
+    private static final long serialVersionUID = 6469105227923320272L;
     /**
      * TODO: replace this with a list coming from the KML regionation classes 
      */
     static final List<String> KML_STRATEGIES = Arrays.asList("external-sorting", "geometry", "native-sorting", "random");
     
-    public KMLLayerConfigPanel(String id, IModel model){
+    public KMLLayerConfigPanel(String id, IModel<LayerInfo> model){
         super(id, model);
 
-        PropertyModel metadata = new PropertyModel(model, "resource.metadata");
-        add(new DropDownChoice("kml.regionateAttribute", 
+        PropertyModel<MetadataMap> metadata = new PropertyModel<MetadataMap>(model, "resource.metadata");
+        add(new DropDownChoice<String>("kml.regionateAttribute", 
                 new MapModel(metadata, "kml.regionateAttribute"), 
                 new AttributeNamesModel(new PropertyModel(model, "resource"))));
-        add(new DropDownChoice("kml.regionateStrategy", 
+        add(new DropDownChoice<String>("kml.regionateStrategy", 
                     new MapModel(metadata, "kml.regionateStrategy"), KML_STRATEGIES)
            );
-        TextField maxFeatures = new TextField("kml.regionateFeatureLimit",
+        TextField<Integer> maxFeatures = new TextField<Integer>("kml.regionateFeatureLimit",
                     new MapModel(metadata, "kml.regionateFeatureLimit"), Integer.class);
         maxFeatures.add(NumberValidator.minimum(1));
         add(maxFeatures);
     }
     
-    private static class AttributeNamesModel extends LoadableDetachableModel {
-        IModel featureTypeInfo;
+    private static class AttributeNamesModel extends LoadableDetachableModel<List<String>> {
+        private static final long serialVersionUID = 2480902398710400909L;
         
-        public AttributeNamesModel(IModel featureTypeInfo) {
+        IModel<FeatureTypeInfo> featureTypeInfo;
+        
+        public AttributeNamesModel(IModel<FeatureTypeInfo> featureTypeInfo) {
             this.featureTypeInfo = featureTypeInfo;
         }
 
         @Override
-        protected Object load() {
+        protected List<String> load() {
             try {
-                FeatureTypeInfo fti = (FeatureTypeInfo) featureTypeInfo.getObject();
+                FeatureTypeInfo fti = featureTypeInfo.getObject();
                 List<String> result = new ArrayList<String>();
                 for (PropertyDescriptor property :  fti.getFeatureType().getDescriptors()) {
                     result.add(property.getName().getLocalPart());

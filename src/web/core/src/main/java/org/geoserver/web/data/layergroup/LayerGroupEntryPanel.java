@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2014 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -23,6 +23,7 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.DefaultItemReuseStrategy;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.util.convert.IConverter;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.PublishedInfo;
@@ -146,7 +147,7 @@ public class LayerGroupEntryPanel extends Panel {
                 
                 popupWindow.show(target);
             }
-        });        
+        });
     }
     
     public List<LayerGroupEntry> getEntries() {
@@ -229,7 +230,7 @@ public class LayerGroupEntryPanel extends Panel {
                 target.addComponent( layerTable );
             }
         };
-        link.getImage().add(new AttributeModifier("alt", true, new ParamResourceModel("AbstractLayerGroupPage.th.remove", link)));
+        link.getImage().add(new AttributeModifier("alt", true, new ParamResourceModel("LayerGroupEditPage.th.remove", link)));
         return link;
     }
     

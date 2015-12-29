@@ -112,7 +112,7 @@ public class GeofencePage extends GeoServerSecuredPage {
                     LOGGER.log(Level.WARNING, e.getMessage(), e);
                 }
 
-                target.addComponent(getPage().get("feedback"));
+                target.add(getPage().get("feedback"));
             }
 
             private RuleReaderService getRuleReaderService(String servicesUrl) {
@@ -209,10 +209,10 @@ public class GeofencePage extends GeoServerSecuredPage {
                         ".cacheInvalidated", null).getObject());
                 updateStatsValues(cacheRuleReader);
                 for (Label label : statsLabels) {
-                    target.addComponent(label);
+                    target.add(label);
                 }
 
-                target.addComponent(getPage().get("feedback"));
+                target.add(getPage().get("feedback"));
             }
         }.setDefaultFormProcessing(false));
 

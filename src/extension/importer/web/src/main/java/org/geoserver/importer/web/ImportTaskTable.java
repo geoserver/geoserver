@@ -146,7 +146,7 @@ public class ImportTaskTable extends GeoServerTablePanel<ImportTask> {
                     @Override
                     protected boolean onSubmit(AjaxRequestTarget target, Component contents) {
                         ImporterWebUtils.importer().changed(itemModel.getObject());
-                        target.addComponent(ImportTaskTable.this);
+                        target.add(ImportTaskTable.this);
                         return true;
                     }
 
@@ -162,7 +162,7 @@ public class ImportTaskTable extends GeoServerTablePanel<ImportTask> {
 
     protected void onItemFixed(ImportTask task, AjaxRequestTarget target) {
         selectObject(task);
-        target.addComponent(this);
+        target.add(this);
         onSelectionUpdate(target);
     }
 
@@ -341,16 +341,16 @@ public class ImportTaskTable extends GeoServerTablePanel<ImportTask> {
             form.add(new AjaxSubmitLink("apply") {
                 @Override
                 protected void onError(AjaxRequestTarget target, Form<?> form) {
-                    target.addComponent(feedbackPanel);
+                    target.add(feedbackPanel);
                 }
                 @Override
                 protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                    target.addComponent(feedbackPanel);
+                    target.add(feedbackPanel);
                     ImportTask item = model.getObject();
                     ImporterWebUtils.importer().changed(item);
 
                     //ImportItemTable.this.modelChanged();
-                    target.addComponent(ImportTaskTable.this);
+                    target.add(ImportTaskTable.this);
                     onItemFixed(item, target);
                 }
             });

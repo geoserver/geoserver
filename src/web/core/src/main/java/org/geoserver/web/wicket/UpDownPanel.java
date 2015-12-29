@@ -45,10 +45,10 @@ public class UpDownPanel<T extends Object> extends Panel {
                 int index = items.indexOf( UpDownPanel.this.entry );
                 items.remove( index );
                 items.add(Math.max(0, index - 1), UpDownPanel.this.entry);
-                target.addComponent(UpDownPanel.this.container);
-                target.addComponent(this);
-                target.addComponent(downLink);   
-                target.addComponent(upLink);                    
+                target.add(UpDownPanel.this.container);
+                target.add(this);
+                target.add(downLink);   
+                target.add(upLink);                    
             }
             
             @Override
@@ -72,10 +72,10 @@ public class UpDownPanel<T extends Object> extends Panel {
                 int index = items.indexOf( UpDownPanel.this.entry );
                 items.remove( index );
                 items.add(Math.min(items.size(), index + 1), UpDownPanel.this.entry);
-                target.addComponent(UpDownPanel.this.container);
-                target.addComponent(this);                    
-                target.addComponent(downLink);   
-                target.addComponent(upLink);                    
+                target.add(UpDownPanel.this.container);
+                target.add(this);                    
+                target.add(downLink);   
+                target.add(upLink);                    
             }
             
             @Override

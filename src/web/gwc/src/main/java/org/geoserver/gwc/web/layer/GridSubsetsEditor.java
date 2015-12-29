@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -290,8 +290,8 @@ class GridSubsetsEditor extends FormComponentPanel<Set<XMLGridSubset>> {
                         Collections.sort(choices);
                         availableGridSets.setChoices(choices);
 
-                        target.addComponent(container);
-                        target.addComponent(availableGridSets);
+                        target.add(container);
+                        target.add(availableGridSets);
                     }
                 };
                 removeLink.setDefaultModel(item.getModel());
@@ -333,8 +333,8 @@ class GridSubsetsEditor extends FormComponentPanel<Set<XMLGridSubset>> {
                 newSubset.setGridSetName(selectedGridset);
                 grids.getModelObject().add(newSubset);
 
-                target.addComponent(table);
-                target.addComponent(availableGridSets);
+                target.add(table);
+                target.add(availableGridSets);
             }
         };
         addGridsubsetLink.add(new Icon("addIcon", GWCIconFactory.ADD_ICON));
@@ -443,9 +443,9 @@ class GridSubsetsEditor extends FormComponentPanel<Set<XMLGridSubset>> {
         }
 
         if (null != target) {
-            target.addComponent(zoomStop);
-            target.addComponent(minCachedLevel);
-            target.addComponent(maxCachedLevel);
+            target.add(zoomStop);
+            target.add(minCachedLevel);
+            target.add(maxCachedLevel);
         }
     }
 }

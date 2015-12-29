@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -163,7 +163,7 @@ public class DiskQuotaConfigPanel extends Panel {
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
                 jdbcContainer.setVisible("JDBC".equals(quotaStoreChooser.getModelObject()));
-                target.addComponent(quotaStoreContainer);
+                target.add(quotaStoreContainer);
             }
         });
         
@@ -196,7 +196,7 @@ public class DiskQuotaConfigPanel extends Panel {
                 boolean jndiVisible = "JNDI".equals(connectionTypeChooser.getModelObject());
                 jndiContainer.setVisible(jndiVisible);
                 privatePoolPanel.setVisible(!jndiVisible);
-                target.addComponent(connectionTypeContainer);
+                target.add(connectionTypeContainer);
             }
         });
         

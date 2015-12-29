@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -76,7 +76,7 @@ public class SpatialFilePanel extends ImportSourcePanel {
                                 fileField.clearInput();
                                 fileField.setModelObject(file.getAbsolutePath());
 
-                                target.addComponent(fileField);
+                                target.add(fileField);
                                 dialog.close(target);
                             }
                         };
@@ -94,14 +94,14 @@ public class SpatialFilePanel extends ImportSourcePanel {
                         fileField.clearInput();
                         //fileField.setModelObject(file);
                         
-                        target.addComponent(fileField);
+                        target.add(fileField);
                         return true;
                     }
 
                     @Override
                     public void onClose(AjaxRequestTarget target) {
                         // update the field with the user chosen value
-                        target.addComponent(fileField);
+                        target.add(fileField);
                     }
 
                 });

@@ -170,7 +170,7 @@ public class ImportDataPage extends GeoServerSecuredPage {
             }
 
             protected void onError(AjaxRequestTarget target, Form<?> form) {
-                target.addComponent(feedbackPanel);
+                target.add(feedbackPanel);
             }
             
             protected void onSubmit(AjaxRequestTarget target, final Form<?> form) {
@@ -178,15 +178,15 @@ public class ImportDataPage extends GeoServerSecuredPage {
                 //update status to indicate we are working
                 statusLabel.add(new SimpleAttributeModifier("class", "working-link"));
                 statusLabel.setDefaultModelObject("Working");
-                target.addComponent(statusLabel);
+                target.add(statusLabel);
                 
                 //enable cancel and disable this
                 Component cancel = form.get("cancel");
                 cancel.setEnabled(true);
-                target.addComponent(cancel);
+                target.add(cancel);
 
                 setEnabled(false);
-                target.addComponent(this);
+                target.add(this);
                 
                 final AjaxSubmitLink self = this;
 
@@ -245,7 +245,7 @@ public class ImportDataPage extends GeoServerSecuredPage {
                                //update the button back to original state
                                resetButtons(form, target);
 
-                               target.addComponent(feedbackPanel);
+                               target.add(feedbackPanel);
                            }
                            return;
                        }
@@ -254,7 +254,7 @@ public class ImportDataPage extends GeoServerSecuredPage {
                        String msg = m.getTask() != null ? m.getTask().toString() : "Working";
 
                        statusLabel.setDefaultModelObject(msg);
-                       target.addComponent(statusLabel);
+                       target.add(statusLabel);
                    }; 
                 });
             }
@@ -285,8 +285,8 @@ public class ImportDataPage extends GeoServerSecuredPage {
                 Component next = getParent().get("next");
                 next.setEnabled(true);
                 
-                target.addComponent(this);
-                target.addComponent(next);
+                target.add(this);
+                target.add(next);
             }
         }.setOutputMarkupId(true).setEnabled(false));
 
@@ -298,7 +298,7 @@ public class ImportDataPage extends GeoServerSecuredPage {
         }, true) {
             protected void onSelectionUpdate(AjaxRequestTarget target) {
                 removeImportLink.setEnabled(!getSelection().isEmpty());
-                target.addComponent(removeImportLink);
+                target.add(removeImportLink);
             };
         };
         importTable.setOutputMarkupId(true);
@@ -318,7 +318,7 @@ public class ImportDataPage extends GeoServerSecuredPage {
                     }
                 }
                 importTable.clearSelection();
-                target.addComponent(importTable);
+                target.add(importTable);
             }
         });
         removeImportLink.setOutputMarkupId(true).setEnabled(false);
@@ -394,8 +394,8 @@ public class ImportDataPage extends GeoServerSecuredPage {
         workspaceNameTextField.setRequired(ws == null);
 
         if (target != null) {
-            target.addComponent(storeChoice);
-            target.addComponent(workspaceNameTextField.getParent());
+            target.add(storeChoice);
+            target.add(workspaceNameTextField.getParent());
         }
     }
 
@@ -409,7 +409,7 @@ public class ImportDataPage extends GeoServerSecuredPage {
         sourcePanel.add(p);
 
         if (target != null) {
-            target.addComponent(sourcePanel);
+            target.add(sourcePanel);
         }
     }
 
@@ -419,9 +419,9 @@ public class ImportDataPage extends GeoServerSecuredPage {
         statusLabel.setDefaultModelObject("");
         statusLabel.add(new SimpleAttributeModifier("class", ""));
         
-        target.addComponent(form.get("next"));
-        target.addComponent(form.get("cancel"));
-        target.addComponent(form.get("status"));
+        target.add(form.get("next"));
+        target.add(form.get("cancel"));
+        target.add(form.get("status"));
     }
 
     class SourceLabelPanel extends Panel {

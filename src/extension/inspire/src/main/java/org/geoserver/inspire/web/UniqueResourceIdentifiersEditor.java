@@ -115,7 +115,7 @@ public class UniqueResourceIdentifiersEditor extends FormComponentPanel<UniqueRe
                             UniqueResourceIdentifier sdi = (UniqueResourceIdentifier) itemModel
                                     .getObject();
                             identifiers.remove(sdi);
-                            target.addComponent(container);
+                            target.add(container);
                         }
                     };
                     removeFragment.add(removeLink);
@@ -138,7 +138,7 @@ public class UniqueResourceIdentifiersEditor extends FormComponentPanel<UniqueRe
                 UniqueResourceIdentifiers identifiers = identifiersModel.getObject();
                 identifiers.add(new UniqueResourceIdentifier());
 
-                target.addComponent(container);
+                target.add(container);
             }
             
             @Override

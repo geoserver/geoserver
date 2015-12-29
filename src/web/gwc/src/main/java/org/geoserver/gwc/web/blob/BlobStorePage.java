@@ -84,7 +84,7 @@ public class BlobStorePage extends GeoServerSecuredPage {
                             "blobSpecificPanel", blobStoreForm.getModel()));
                 }
 
-                target.addComponent(blobConfigContainer);
+                target.add(blobConfigContainer);
             }
 
         });
@@ -213,7 +213,7 @@ public class BlobStorePage extends GeoServerSecuredPage {
                                 doReturn(BlobStoresPage.class);
                             } else if (error != null) {
                                 error(error);
-                                target.addComponent(feedbackPanel);
+                                target.add(feedbackPanel);
                             }
                         }
 
@@ -224,13 +224,13 @@ public class BlobStorePage extends GeoServerSecuredPage {
                         doReturn(BlobStoresPage.class);
                     } catch (ConfigurationException e) {
                         error(e.getMessage());
-                        target.addComponent(feedbackPanel);
+                        target.add(feedbackPanel);
                     }
                 }
             }
 
             protected void onError(AjaxRequestTarget target, Form<?> form) {
-                target.addComponent(feedbackPanel);
+                target.add(feedbackPanel);
             }
         });
         blobStoreForm

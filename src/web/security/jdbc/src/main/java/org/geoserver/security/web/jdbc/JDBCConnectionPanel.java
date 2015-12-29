@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -60,7 +60,7 @@ public class JDBCConnectionPanel<T extends JDBCSecurityServiceConfig> extends Fo
                 //replace old panel
                 c.addOrReplace(createCxPanel("cxPanel", getModelObject()));
 
-                target.addComponent(c);
+                target.add(c);
             }
         });
 
@@ -80,7 +80,7 @@ public class JDBCConnectionPanel<T extends JDBCSecurityServiceConfig> extends Fo
                     LOGGER.log(Level.WARNING, "Connection error", e);
                 }
                 finally {
-                    target.addComponent(feedbackPanel);
+                    target.add(feedbackPanel);
                 }
             }
         }.setDefaultFormProcessing(false));

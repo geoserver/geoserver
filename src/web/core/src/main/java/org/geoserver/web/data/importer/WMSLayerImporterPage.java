@@ -152,8 +152,8 @@ public class WMSLayerImporterPage extends GeoServerSecuredPage {
                 } catch (Exception e) {
                     LOGGER.log(Level.SEVERE, "Error while setting up mass import", e);
                 }
-                target.addComponent(form);
-                target.addComponent(feedbackPanel);
+                target.add(form);
+                target.add(feedbackPanel);
             }
 
         };
@@ -189,8 +189,8 @@ public class WMSLayerImporterPage extends GeoServerSecuredPage {
                 } catch (Exception e) {
                     LOGGER.log(Level.SEVERE, "Error while setting up mass import", e);
                 }
-                target.addComponent(form);
-                target.addComponent(feedbackPanel);
+                target.add(form);
+                target.add(feedbackPanel);
             }
         };
     }

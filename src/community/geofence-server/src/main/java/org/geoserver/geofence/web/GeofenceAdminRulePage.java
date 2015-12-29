@@ -47,7 +47,7 @@ public class GeofenceAdminRulePage extends GeoServerSecuredPage {
                 userChoice.setChoices(getUserNames(roleChoice.getConvertedInput()));
                 form.getModelObject().setUserName(null);
                 userChoice.modelChanged();
-                target.addComponent(userChoice);
+                target.add(userChoice);
             }
         });
         roleChoice.setNullValid(true);

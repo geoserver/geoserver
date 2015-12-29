@@ -90,7 +90,7 @@ public class SecurityFilterChainsPanel
 //            @Override
 //            protected void onSelectionUpdate(AjaxRequestTarget target) {
 //                if (isAdmin) {
-//                    target.addComponent(removeLink.setEnabled(!getSelection().isEmpty()));
+//                    target.add(removeLink.setEnabled(!getSelection().isEmpty()));
 //                }
 //            }
         });
@@ -218,7 +218,7 @@ public class SecurityFilterChainsPanel
             @Override
             protected void onClick(AjaxRequestTarget target) {                
                 secMgrConfig.getFilterChain().getRequestChains().remove( chain );
-                target.addComponent( tablePanel );
+                target.add( tablePanel );
             }
         };
         link.getImage().add(new AttributeModifier("alt", true, new ParamResourceModel("LayerGroupEditPage.th.remove", link)));
@@ -252,10 +252,10 @@ public class SecurityFilterChainsPanel
                     int index = getChains().indexOf( PositionPanel.this.theChain );
                     getChains().remove( index );
                     getChains().add(Math.max(0, index - 1), PositionPanel.this.theChain);
-                    target.addComponent( tablePanel );
-                    target.addComponent(this);
-                    target.addComponent(downLink);   
-                    target.addComponent(upLink);                    
+                    target.add( tablePanel );
+                    target.add(this);
+                    target.add(downLink);   
+                    target.add(upLink);                    
                 }
                 
                 @Override
@@ -277,10 +277,10 @@ public class SecurityFilterChainsPanel
                     int index = getChains().indexOf( PositionPanel.this.theChain );
                     getChains().remove( index );
                     getChains().add(Math.min(getChains().size(), index + 1), PositionPanel.this.theChain);
-                    target.addComponent( tablePanel );
-                    target.addComponent(this);                    
-                    target.addComponent(downLink);   
-                    target.addComponent(upLink);                    
+                    target.add( tablePanel );
+                    target.add(this);                    
+                    target.add(downLink);   
+                    target.add(upLink);                    
                 }
                 
                 @Override

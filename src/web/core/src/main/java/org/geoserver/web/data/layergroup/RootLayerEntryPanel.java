@@ -88,7 +88,7 @@ public class RootLayerEntryPanel extends Panel {
                     protected void handleLayer(LayerInfo layer, AjaxRequestTarget target) {
                         popupWindow.close(target);
                         model.getObject().setRootLayer(layer);
-                        target.addComponent(rootLayerField);
+                        target.add(rootLayerField);
                     }
                 });
 

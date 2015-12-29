@@ -135,7 +135,7 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
 
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
-                target.addComponent(tileMatrixSetEditor);
+                target.add(tileMatrixSetEditor);
             }
         });
         tileHeight.getFormComponent().add(new AjaxFormComponentUpdatingBehavior("onblur") {
@@ -143,7 +143,7 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
 
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
-                target.addComponent(tileMatrixSetEditor);
+                target.add(tileMatrixSetEditor);
             }
         });
 
@@ -153,7 +153,7 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
             @Override
             protected void onClick(AjaxRequestTarget target, Form form) {
                 addZoomLevel(target);
-                target.addComponent(tileMatrixSetEditor);
+                target.add(tileMatrixSetEditor);
             }
         };
 
@@ -173,7 +173,7 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
             FeedbackPanel feedback = (FeedbackPanel) form.get("feedback");
             if (feedback != null) {
                 feedback.error(message);
-                target.addComponent(feedback);
+                target.add(feedback);
             } else {
                 form.error(message);
             }
@@ -194,8 +194,8 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
             @Override
             protected void onClick(AjaxRequestTarget target, Form form) {
                 computeBounds();
-                target.addComponent(bounds);
-                target.addComponent(tileMatrixSetEditor);
+                target.add(bounds);
+                target.add(tileMatrixSetEditor);
             }
         };
         return link;
@@ -237,14 +237,14 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
 
                     @Override
                     protected void onSubmit(AjaxRequestTarget target) {
-                        target.addComponent(AbstractGridSetPage.this.tileMatrixSetEditor);
+                        target.add(AbstractGridSetPage.this.tileMatrixSetEditor);
                     }
 
                     @SuppressWarnings("unchecked")
                     @Override
                     protected void onError(AjaxRequestTarget target) {
                         UpdatingEnvelopePanel.this.setModelObject(null);
-                        target.addComponent(AbstractGridSetPage.this.tileMatrixSetEditor);
+                        target.add(AbstractGridSetPage.this.tileMatrixSetEditor);
                     }
                 }
 
@@ -332,9 +332,9 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
                         wktLabel.setDefaultModelObject(null);
                         wktLink.setEnabled(false);
                     }
-                    target.addComponent(wktLink);
-                    target.addComponent(units);
-                    target.addComponent(metersPerUnit);
+                    target.add(wktLink);
+                    target.add(units);
+                    target.add(metersPerUnit);
                 }
             });
         }
@@ -349,15 +349,15 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
 
                     String srs = "EPSG:" + epsgCode;
                     srsTextField.setModelObject(srs);
-                    target.addComponent(srsTextField);
+                    target.add(srsTextField);
 
                     CoordinateReferenceSystem crs = fromSRS(srs);
                     wktLabel.setDefaultModelObject(crs.getName().toString());
                     wktLink.setEnabled(true);
-                    target.addComponent(wktLink);
+                    target.add(wktLink);
                     updateUnits(crs);
-                    target.addComponent(units);
-                    target.addComponent(metersPerUnit);
+                    target.add(units);
+                    target.add(metersPerUnit);
                 }
             };
             srsList.setCompactMode(true);
@@ -436,7 +436,7 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
             @Override
             protected void onError(AjaxRequestTarget target, Form<?> form) {
                 super.onError(target, form);
-                target.addComponent(form);
+                target.add(form);
             }
 
             @Override

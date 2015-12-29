@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -140,7 +140,7 @@ public class InMemoryBlobStorePanel extends Panel {
                         cacheConfigContainer.setMapKey(cacheClass, gwcConfigModel);
                     }
 
-                    target.addComponent(cacheConfigContainer);
+                    target.add(cacheConfigContainer);
                 }
             });
             cacheConfigContainer.setEnabled(!store.getCacheProviders()
@@ -163,7 +163,7 @@ public class InMemoryBlobStorePanel extends Panel {
                 boolean isVisible = innerCachingEnabledChoice.getModelObject() == null ? false
                         : innerCachingEnabledChoice.getModelObject();
                 container.setVisible(isVisible);
-                target.addComponent(container.getParent());
+                target.add(container.getParent());
             }
         });
 
@@ -247,7 +247,7 @@ public class InMemoryBlobStorePanel extends Panel {
                 } catch (Throwable t) {
                     error(t);
                 }
-                target.addComponent(statsContainer);
+                target.add(statsContainer);
             }
         };
 

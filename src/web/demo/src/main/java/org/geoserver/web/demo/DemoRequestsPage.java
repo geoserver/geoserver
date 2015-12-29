@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -145,7 +145,7 @@ public class DemoRequestsPage extends GeoServerBasePage {
         demoRequestsForm.add(demoRequestsList);
 
         /*
-         * Wanted to use a simpler OnChangeAjaxBehavior but target.addComponent(body) does not make
+         * Wanted to use a simpler OnChangeAjaxBehavior but target.add(body) does not make
          * the EditAreaBehavior to update the body contents inside it, but instead puts the plain
          * TextArea contents above the empty xml editor
          */
@@ -194,8 +194,8 @@ public class DemoRequestsPage extends GeoServerBasePage {
                     body.setModelObject(contents);
                 }
 
-                // target.addComponent(urlTextField);
-                // target.addComponent(body);
+                // target.add(urlTextField);
+                // target.add(body);
                 /*
                  * Need to setResponsePage, addComponent causes the EditAreaBehavior to sometimes
                  * not updating properly

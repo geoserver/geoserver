@@ -68,7 +68,7 @@ public class LayerGroupPage extends GeoServerSecuredPage {
                 else {
                     removal.setEnabled(false);
                 }
-                target.addComponent(removal);
+                target.add(removal);
             }  
         });
         table.setOutputMarkupId(true);

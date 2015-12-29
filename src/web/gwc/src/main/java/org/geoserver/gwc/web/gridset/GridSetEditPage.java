@@ -48,7 +48,7 @@ public class GridSetEditPage extends AbstractGridSetPage {
             newGridset = GridSetBuilder.build(info);
         } catch (IllegalStateException e) {
             form.error(e.getMessage());
-            target.addComponent(form);
+            target.add(form);
             return;
         }
 
@@ -59,7 +59,7 @@ public class GridSetEditPage extends AbstractGridSetPage {
         } catch (Exception e) {
             e.printStackTrace();
             form.error("Error saving gridset: " + e.getMessage());
-            target.addComponent(form);
+            target.add(form);
         }
     }
 

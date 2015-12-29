@@ -114,7 +114,7 @@ public class MetadataLinkEditor extends Panel {
                     public void onClick(AjaxRequestTarget target) {
                         metadataLinksModel.getObject().remove(getModelObject());
                         updateLinksVisibility();
-                        target.addComponent(container);
+                        target.add(container);
                     }
                     
                 };
@@ -142,7 +142,7 @@ public class MetadataLinkEditor extends Panel {
                 metadataLinksModel.getObject().add(link);
                 updateLinksVisibility();
                 
-                target.addComponent(container);
+                target.add(container);
             }
             
         };

@@ -133,7 +133,7 @@ public class StorePanel extends GeoServerTablePanel<StoreInfo> {
         SimpleAjaxLink linkPanel = new ConfirmationAjaxLink(id, null, resRemove, confirmRemove) {
             public void onClick(AjaxRequestTarget target) {
                 getCatalog().remove((StoreInfo) itemModel.getObject());
-                target.addComponent(StorePanel.this);
+                target.add(StorePanel.this);
             }
         };
         return linkPanel;

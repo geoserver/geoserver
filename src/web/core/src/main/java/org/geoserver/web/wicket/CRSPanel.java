@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -134,7 +134,7 @@ public class CRSPanel extends FormComponentPanel {
                     wktLabel.setDefaultModelObject(null);
                     wktLink.setEnabled(false);
                 }
-                target.addComponent(wktLink);
+                target.add(wktLink);
                 
                 onSRSUpdated(toSRS(crs), target);
             }
@@ -281,13 +281,13 @@ public class CRSPanel extends FormComponentPanel {
                 
                 String srs =  "EPSG:" + epsgCode ;
                 srsTextField.setModelObject( srs );
-                target.addComponent( srsTextField );
+                target.add( srsTextField );
                 
                 CoordinateReferenceSystem crs = fromSRS( srs );
                 CRSPanel.this.setModelObject( crs );
                 wktLabel.setDefaultModelObject( crs.getName().toString() );
                 wktLink.setEnabled(true);
-                target.addComponent( wktLink );
+                target.add( wktLink );
                 
                 onSRSUpdated(srs, target);
             }

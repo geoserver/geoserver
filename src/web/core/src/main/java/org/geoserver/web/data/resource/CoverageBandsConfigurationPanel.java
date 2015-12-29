@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -208,7 +208,7 @@ public class CoverageBandsConfigurationPanel extends ResourceConfigurationPanel 
                     }
                     ci.getDimensions().clear();
                     ci.getDimensions().addAll(rebuilt.getDimensions());
-                    target.addComponent(bands);
+                    target.add(bands);
                 } catch (Exception e) {
                     LOGGER.log(Level.SEVERE, "Failure updating the bands list", e);
                     error(e.toString());

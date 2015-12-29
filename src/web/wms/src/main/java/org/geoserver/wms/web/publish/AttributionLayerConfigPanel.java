@@ -98,9 +98,9 @@ public class AttributionLayerConfigPanel extends PublishedConfigurationPanel<Pub
                     }
                 }
 
-                target.addComponent(type);
-                target.addComponent(height);
-                target.addComponent(width);
+                target.add(type);
+                target.add(height);
+                target.add(width);
             }
         });
     }

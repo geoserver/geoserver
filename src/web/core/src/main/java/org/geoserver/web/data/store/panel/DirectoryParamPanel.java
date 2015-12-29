@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -68,14 +68,14 @@ public class DirectoryParamPanel extends FileParamPanel {
                         textField.clearInput();
                         textField.setModelValue(new String[] { path });
 
-                        target.addComponent(textField);
+                        target.add(textField);
                         return true;
                     }
 
                     @Override
                     public void onClose(AjaxRequestTarget target) {
                         // update the field with the user chosen value
-                        target.addComponent(textField);
+                        target.add(textField);
                     }
 
                     @Override

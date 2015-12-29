@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -278,11 +278,11 @@ public final class ArcSDECoverageStoreEditPanel extends StoreEditPanel {
                         user.setModelObject(connParams.get(USER_NAME_PARAM_NAME));
                         password.setModelObject(connParams.get(PASSWORD_PARAM_NAME));
 
-                        target.addComponent(server);
-                        target.addComponent(port);
-                        target.addComponent(instance);
-                        target.addComponent(user);
-                        target.addComponent(password);
+                        target.add(server);
+                        target.add(port);
+                        target.add(instance);
+                        target.add(user);
+                        target.add(password);
                         break;
                     }
                 }

@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -60,7 +60,7 @@ public class LDAPRoleServicePanel extends RoleServicePanel<LDAPRoleServiceConfig
                 LDAPAuthenticationPanel ldapAuthenticationPanel = (LDAPAuthenticationPanel)c.get("authenticationPanel");
                 ldapAuthenticationPanel.resetModel();
                 ldapAuthenticationPanel.setVisible(getModelObject().booleanValue());
-                target.addComponent(c);
+                target.add(c);
             }
         });
         LDAPAuthenticationPanel authPanel = new LDAPAuthenticationPanel("authenticationPanel");

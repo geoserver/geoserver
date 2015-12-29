@@ -127,7 +127,7 @@ public class AggregateStoreEditPanel extends StoreEditPanel {
             protected void onClick(AjaxRequestTarget target) {
                 
                 configs.remove( entry );
-                target.addComponent( configTable );
+                target.add( configTable );
             }
             
             @Override

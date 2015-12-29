@@ -126,18 +126,18 @@ public class ReprojectPage extends GeoServerBasePage {
                         try {
                             Geometry target = JTS.transform(source, mt);
                             targetGeom.setModelObject(target);
-                            at.addComponent(targetGeom);
+                            at.add(targetGeom);
                         } catch (Exception e) {
                             error(e.getMessage());
                         }
                     }
                 }
-                at.addComponent(feedbackPanel);
+                at.add(feedbackPanel);
             }
 
             @Override
             protected void onError(AjaxRequestTarget target, Form<?> form) {
-                target.addComponent(feedbackPanel);
+                target.add(feedbackPanel);
             }
         };
         form.add(forward);
@@ -156,18 +156,18 @@ public class ReprojectPage extends GeoServerBasePage {
                         try {
                             Geometry source = JTS.transform(target, mt.inverse());
                             sourceGeom.setModelObject(source);
-                            at.addComponent(sourceGeom);
+                            at.add(sourceGeom);
                         } catch (Exception e) {
                             error(e.getMessage());
                         }
                     }
                 }
-                at.addComponent(feedbackPanel);
+                at.add(feedbackPanel);
             }
 
             @Override
             protected void onError(AjaxRequestTarget target, Form<?> form) {
-                target.addComponent(feedbackPanel);
+                target.add(feedbackPanel);
             }
         };
         form.add(backward);
@@ -179,7 +179,7 @@ public class ReprojectPage extends GeoServerBasePage {
             MathTransform mt = getTransform();
             if (mt != null) {
                 wktLink.setEnabled(true);
-                ajaxTarget.addComponent(wktLink);
+                ajaxTarget.add(wktLink);
             }
         }
 

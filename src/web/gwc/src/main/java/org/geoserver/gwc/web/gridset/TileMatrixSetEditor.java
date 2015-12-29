@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -156,7 +156,7 @@ public class TileMatrixSetEditor extends FormComponentPanel<List<Grid>> {
                     next.get("resolution").setEnabled(useResolutions);
                     next.get("scale").setEnabled(!useResolutions);
                 }
-                target.addComponent(table);
+                target.add(table);
             }
         });
 
@@ -266,7 +266,7 @@ public class TileMatrixSetEditor extends FormComponentPanel<List<Grid>> {
                             int index = ((Integer) getDefaultModelObject()).intValue();
                             list.remove(index);
                             grids.setModelObject(list);
-                            target.addComponent(container);
+                            target.add(container);
                         }
                     };
                     removeLink.setDefaultModel(new Model<Integer>(Integer.valueOf(index)));
@@ -296,9 +296,9 @@ public class TileMatrixSetEditor extends FormComponentPanel<List<Grid>> {
                             }
                         }
                         scale.setModelObject(scaleDenominator);
-                        target.addComponent(resolution);
-                        target.addComponent(scale);
-                        target.addComponent(tiles);
+                        target.add(resolution);
+                        target.add(scale);
+                        target.add(tiles);
                     }
                 });
 
@@ -319,9 +319,9 @@ public class TileMatrixSetEditor extends FormComponentPanel<List<Grid>> {
                             }
                         }
                         resolution.setModelObject(res);
-                        target.addComponent(resolution);
-                        target.addComponent(scale);
-                        target.addComponent(tiles);
+                        target.add(resolution);
+                        target.add(scale);
+                        target.add(tiles);
                     }
                 });
             }

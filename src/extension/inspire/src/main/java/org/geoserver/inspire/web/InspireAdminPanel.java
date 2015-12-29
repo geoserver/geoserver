@@ -92,7 +92,7 @@ public class InspireAdminPanel extends AdminPagePanel {
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
                 configs.setVisible(createInspireExtendedCapabilities.getModelObject());
-                target.addComponent(container);
+                target.add(container);
             }
         });
 

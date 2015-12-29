@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -113,7 +113,7 @@ abstract class AbstractWMSStorePage extends GeoServerSecuredPage {
             protected void onUpdate(AjaxRequestTarget target) {
                 boolean enabled = useHttpConnectionPoolModel.getObject();
                 maxConnections.setEnabled(enabled);
-                target.addComponent(maxConnections);
+                target.add(maxConnections);
             }
         });
         
@@ -146,7 +146,7 @@ abstract class AbstractWMSStorePage extends GeoServerSecuredPage {
             @Override
             protected void onError(AjaxRequestTarget target, Form form) {
                 super.onError(target, form);
-                target.addComponent(form);
+                target.add(form);
             }
 
             @Override
@@ -157,7 +157,7 @@ abstract class AbstractWMSStorePage extends GeoServerSecuredPage {
                     onSave(info, target);
                 } catch (IllegalArgumentException e) {
                     form.error(e.getMessage());
-                    target.addComponent(form);
+                    target.add(form);
                 }
             }
         };

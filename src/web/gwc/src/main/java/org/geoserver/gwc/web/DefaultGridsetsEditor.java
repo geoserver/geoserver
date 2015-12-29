@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -84,8 +84,8 @@ class DefaultGridsetsEditor extends FormComponentPanel<Set<String>> {
                     choices.add(gridsetName);
                     Collections.sort(choices);
                     availableGridSets.setChoices(choices);
-                    target.addComponent(defaultGridsetsTable);
-                    target.addComponent(availableGridSets);
+                    target.add(defaultGridsetsTable);
+                    target.add(availableGridSets);
                 }
             };
             removeLink.setDefaultModel(new Model<String>(gridSetName));
@@ -161,8 +161,8 @@ class DefaultGridsetsEditor extends FormComponentPanel<Set<String>> {
                 selectedIds.add(selectedGridset);
                 // Execute setPageable() in order to re-create the inner record list updated.
                 defaultGridsetsTable.setPageable(false);
-                target.addComponent(defaultGridsetsTable);
-                target.addComponent(availableGridSets);
+                target.add(defaultGridsetsTable);
+                target.add(availableGridSets);
             }
         };
         addGridsubsetLink.add(new Icon("addIcon", GWCIconFactory.ADD_ICON));

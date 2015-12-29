@@ -131,7 +131,7 @@ public class CascadedWFSStoredQueryNewPage extends CascadedWFSStoredQueryAbstrac
             protected void onUpdate(AjaxRequestTarget target) {
                 StoredQuery selection = (StoredQuery)dropdown.getDefaultModelObject();
                 parameterProvider.refreshItems(selection.storedQueryId);
-                target.addComponent(parameters);
+                target.add(parameters);
             }
         });
 

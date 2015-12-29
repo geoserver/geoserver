@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -122,8 +122,8 @@ public class EoCoverageSelectorPage extends GeoServerSecuredPage {
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
                 updateCoveragesList(true);
-                target.addComponent(coveragesContainer);
-                target.addComponent(feedbackPanel);
+                target.add(coveragesContainer);
+                target.add(feedbackPanel);
             }
 
         });

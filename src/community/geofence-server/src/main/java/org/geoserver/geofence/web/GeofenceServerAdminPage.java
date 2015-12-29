@@ -44,7 +44,7 @@ public class GeofenceServerAdminPage extends GeoServerSecuredPage {
             @Override
             public void onClick(AjaxRequestTarget target) {
                 rulesModel.remove(rulesPanel.getSelection());
-                target.addComponent(rulesPanel);
+                target.add(rulesPanel);
             }
         });
         remove.setOutputMarkupId(true);
@@ -64,7 +64,7 @@ public class GeofenceServerAdminPage extends GeoServerSecuredPage {
             @Override
             protected void onSelectionUpdate(AjaxRequestTarget target) {
                 remove.setEnabled(rulesPanel.getSelection().size() > 0);
-                target.addComponent(remove);
+                target.add(remove);
             }
         });
         rulesPanel.add(CSSPackageResource.getHeaderContribution(new WebTheme()));
@@ -106,7 +106,7 @@ public class GeofenceServerAdminPage extends GeoServerSecuredPage {
                 @Override
                 protected void onClick(AjaxRequestTarget target) {
                     rulesModel.moveUp(rule);
-                    target.addComponent(rulesPanel);
+                    target.add(rulesPanel);
                 }
 
                 @Override
@@ -128,7 +128,7 @@ public class GeofenceServerAdminPage extends GeoServerSecuredPage {
                 @Override
                 protected void onClick(AjaxRequestTarget target) {
                     rulesModel.moveDown(rule);
-                    target.addComponent(rulesPanel);
+                    target.add(rulesPanel);
                 }
 
                 @Override

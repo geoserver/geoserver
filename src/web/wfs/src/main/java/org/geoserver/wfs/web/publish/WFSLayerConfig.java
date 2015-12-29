@@ -69,7 +69,7 @@ public class WFSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
             protected void onUpdate(AjaxRequestTarget target) {
                 Boolean visible = overrideServiceSRS.getConvertedInput();
                 srsList.setVisible(visible);
-                target.addComponent(otherSrsContainer);
+                target.add(otherSrsContainer);
             }
         });
         add(new AjaxLink<String>("skipNumberMatchedHelp") {

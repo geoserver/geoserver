@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -233,13 +233,13 @@ public abstract class AbstractUserPage extends AbstractSecurityPage {
 
     void updateCalculatedRoles(AjaxRequestTarget target) {
         calculatedRoles.modelChanged();
-        target.addComponent(calculatedRoles.getParent());
+        target.add(calculatedRoles.getParent());
     }
 
     void updateGroupAdminList(AjaxRequestTarget target) {
         adminGroupChoice.setEnabled(
             rolePalette.getSelectedRoles().contains(GeoServerRole.GROUP_ADMIN_ROLE));
-        target.addComponent(adminGroupChoice);
+        target.add(adminGroupChoice);
     }
 
     void handleSubmitError(Exception e) {

@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -43,7 +43,7 @@ public abstract class GeoServerAjaxFormLink extends AjaxSubmitLink {
     protected final void onSubmit(AjaxRequestTarget target, Form form) {
         onClick(target, form);
         if(getPage() instanceof GeoServerBasePage) {
-            target.addComponent(((GeoServerBasePage) getPage()).getFeedbackPanel());
+            target.add(((GeoServerBasePage) getPage()).getFeedbackPanel());
         }
     }
 

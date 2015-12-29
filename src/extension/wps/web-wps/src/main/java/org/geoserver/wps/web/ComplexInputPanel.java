@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -86,7 +86,7 @@ public class ComplexInputPanel extends Panel {
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
                 updateEditor();
-                target.addComponent(ComplexInputPanel.this);
+                target.add(ComplexInputPanel.this);
             }
 
         });
@@ -183,7 +183,7 @@ public class ComplexInputPanel extends Panel {
                     boolean post = method.getModelObject() == ReferenceConfiguration.Method.POST;
                     bodyContainer.setVisible(post);
                     body.setRequired(post);
-                    target.addComponent(ComplexInputPanel.this);
+                    target.add(ComplexInputPanel.this);
                 }
             });
 
@@ -222,7 +222,7 @@ public class ComplexInputPanel extends Panel {
                     // turn the GUI request into an actual WPS request
                     xml.setModelObject(getExecuteXML());
 
-                    target.addComponent(xml);
+                    target.add(xml);
                 }
 
             });

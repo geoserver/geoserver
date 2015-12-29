@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -73,7 +73,7 @@ public class PropertyEditorFormComponent extends FormComponentPanel<Properties> 
                     public void onClick(AjaxRequestTarget target) {
                         List l = ((List)listView.getDefaultModelObject());
                         l.remove(getModelObject());
-                        target.addComponent(container);
+                        target.add(container);
                     }
                 });
             }
@@ -85,7 +85,7 @@ public class PropertyEditorFormComponent extends FormComponentPanel<Properties> 
             @Override
             public void onClick(AjaxRequestTarget target) {
                 ((List)listView.getDefaultModelObject()).add(new Tuple());
-                target.addComponent(container);
+                target.add(container);
             }
         });
     }

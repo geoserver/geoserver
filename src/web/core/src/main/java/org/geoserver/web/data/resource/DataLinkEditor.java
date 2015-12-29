@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -88,7 +88,7 @@ public class DataLinkEditor extends Panel {
                         ResourceInfo ri = (ResourceInfo) resourceModel.getObject();
                         ri.getDataLinks().remove(getModelObject());
                         updateLinksVisibility();
-                        target.addComponent(container);
+                        target.add(container);
                     }
                     
                 };
@@ -115,7 +115,7 @@ public class DataLinkEditor extends Panel {
                 ri.getDataLinks().add(link);
                 updateLinksVisibility();
                 
-                target.addComponent(container);
+                target.add(container);
             }
             
         };

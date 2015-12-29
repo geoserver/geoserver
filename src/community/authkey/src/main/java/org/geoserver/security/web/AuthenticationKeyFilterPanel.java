@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -80,7 +80,7 @@ public class AuthenticationKeyFilterPanel
                 Map<String, String> parameters = getMapperParameters(newSelection);
                 AuthenticationKeyFilterPanel.this.model.getObject().setMapperParameters(parameters);
                 paramsPanel.updateParameters(newSelection, parameters);
-                target.addComponent(paramsPanel);
+                target.add(paramsPanel);
             }
         });
         
@@ -110,7 +110,7 @@ public class AuthenticationKeyFilterPanel
                     LOGGER.log(Level.WARNING, "Authentication key  error ", e);
                 }
                 finally {
-                    target.addComponent(getPage().get("feedback"));                    
+                    target.add(getPage().get("feedback"));                    
                 }
 
             }

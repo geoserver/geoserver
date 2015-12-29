@@ -220,8 +220,8 @@ public class DynamicDimensionsTabPanel extends PublishedEditTabPanel<LayerInfo> 
                                 DefaultValuePolicy currentPolicy = (DefaultValuePolicy) dd
                                         .getConvertedInput();
                                 ta.setVisible(DefaultValuePolicy.EXPRESSION.equals(currentPolicy));
-                                target.addComponent(ta);
-                                target.addComponent(table);
+                                target.add(ta);
+                                target.add(table);
                             }
                         });
                     }

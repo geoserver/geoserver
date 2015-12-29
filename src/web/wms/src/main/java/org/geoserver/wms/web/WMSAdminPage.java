@@ -268,7 +268,7 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
                       textField.clearInput();
                       textField.setModelObject(file.getAbsolutePath());
 
-                      target.addComponent(textField);
+                      target.add(textField);
                       dialog.close(target);
                     };
                 };

@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -70,8 +70,8 @@ class AdvancedDbParamPanel extends Panel {
             @Override
             public void onClick(AjaxRequestTarget target) {
                 advancedPanel.setVisible(!advancedPanel.isVisible());
-                target.addComponent(advancedContainer);
-                target.addComponent(this);
+                target.add(advancedContainer);
+                target.add(this);
             }
         };
         advanced.add(new AttributeModifier("class", true, new AbstractReadOnlyModel() {

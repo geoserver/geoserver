@@ -90,7 +90,7 @@ public class StyleNameInput extends Panel {
                             + ",  cannot be used with a style in workspace " + selected));
                     warning.setVisible(true);
                 }
-                target.addComponent(warningContainer);
+                target.add(warningContainer);
             }
         });
          form.add(workspaceChooser);

@@ -117,7 +117,7 @@ public class CachedLayersPage extends GeoServerSecuredPage {
             @Override
             protected void onSelectionUpdate(AjaxRequestTarget target) {
                 removal.setEnabled(table.getSelection().size() > 0);
-                target.addComponent(removal);
+                target.add(removal);
             }
 
         };
@@ -229,7 +229,7 @@ public class CachedLayersPage extends GeoServerSecuredPage {
 
                     @Override
                     public void onClose(final AjaxRequestTarget target) {
-                        target.addComponent(table);
+                        target.add(table);
                     }
                 });
             }
@@ -362,8 +362,8 @@ public class CachedLayersPage extends GeoServerSecuredPage {
                     List<TileLayer> selection = table.getSelection();
                     if (selection.isEmpty()) {
                         setEnabled(false);
-                        target.addComponent(CachedLayerSelectionRemovalLink.this);
-                        target.addComponent(table);
+                        target.add(CachedLayerSelectionRemovalLink.this);
+                        target.add(table);
                     }
                 }
             });

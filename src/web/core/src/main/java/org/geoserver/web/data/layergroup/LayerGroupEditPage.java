@@ -127,7 +127,7 @@ public class LayerGroupEditPage extends PublishedConfigurationPage<LayerGroupInf
                 protected void onUpdate(AjaxRequestTarget target) {
                     LayerGroupInfo.Mode mode = modeChoice.getModelObject();
                     updateRootLayerPanel(mode);
-                    target.addComponent(rootLayerPanelContainer);
+                    target.add(rootLayerPanelContainer);
                 }
             });
             
@@ -183,7 +183,7 @@ public class LayerGroupEditPage extends PublishedConfigurationPage<LayerGroupInf
                         }
                         
                         envelopePanel.setModelObject( lg.getBounds() );
-                        target.addComponent( envelopePanel );
+                        target.add( envelopePanel );
                         
                     } 
                     catch (Exception e) {
@@ -204,7 +204,7 @@ public class LayerGroupEditPage extends PublishedConfigurationPage<LayerGroupInf
                     new CatalogBuilder(getCatalog()).calculateLayerGroupBoundsFromCRS(lg, crs);
 
                     envelopePanel.modelChanged();
-                    target.addComponent(envelopePanel);
+                    target.add(envelopePanel);
                 }
             });
             

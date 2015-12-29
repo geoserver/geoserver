@@ -196,7 +196,7 @@ class ParameterFilterEditor extends FormComponentPanel<Set<ParameterFilter>> {
                     @Override
                     protected void onSubmit(AjaxRequestTarget target, Form form) {
                         getList().remove((ParameterFilter) getDefaultModelObject());
-                        target.addComponent(container);
+                        target.add(container);
                     }
                 };
                 removeLink.add(new Icon("removeIcon", GWCIconFactory.DELETE_ICON));
@@ -232,7 +232,7 @@ class ParameterFilterEditor extends FormComponentPanel<Set<ParameterFilter>> {
                 
                 addFilter(newFilter);
 
-                target.addComponent(container);
+                target.add(container);
             }
         };
         addStyleFilterLink.add(new Icon("addIcon", GWCIconFactory.ADD_ICON));
@@ -321,7 +321,7 @@ class ParameterFilterEditor extends FormComponentPanel<Set<ParameterFilter>> {
                         LOGGER.log(Level.WARNING, "Could not execute default Constructor for "+type ,ex);
                     }
                 }
-                target.addComponent(container);
+                target.add(container);
             }
         };
         addFilterLink.add(new Icon("addIcon", GWCIconFactory.ADD_ICON));

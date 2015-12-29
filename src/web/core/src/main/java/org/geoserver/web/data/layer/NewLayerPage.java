@@ -262,8 +262,8 @@ public class NewLayerPage extends GeoServerSecuredPage {
                     selectLayers.setVisible(false);
                     createTypeContainer.setVisible(false);
                 }
-                target.addComponent(selectLayersContainer);
-                target.addComponent(feedbackPanel);
+                target.add(selectLayersContainer);
+                target.add(feedbackPanel);
 
             }
 

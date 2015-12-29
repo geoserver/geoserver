@@ -306,12 +306,12 @@ public class CssDemoPage extends GeoServerSecuredPage {
                     @Override
                     public void onClose(AjaxRequestTarget target) {
                         super.onClose(target);
-                        target.addComponent(theComponent);
+                        target.add(theComponent);
                         if (success) {
                             CssDemoPage.this.info(new ParamResourceModel(
                                     "CssDemoPage.styleAssociated", CssDemoPage.this,
                                     styleNameModel, layerNameModel).getString());
-                            target.addComponent(getFeedbackPanel());
+                            target.add(getFeedbackPanel());
                         }
                     }
 

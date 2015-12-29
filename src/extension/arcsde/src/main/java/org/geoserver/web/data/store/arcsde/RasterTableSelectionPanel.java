@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -155,11 +155,11 @@ public class RasterTableSelectionPanel extends Panel {
                     rasterColumns = Collections.emptyList();
                     String message = "Refreshing raster tables list: " + e.getMessage();
                     storeEditForm.error(message);
-                    target.addComponent(storeEditForm);// refresh
+                    target.add(storeEditForm);// refresh
                 }
 
                 choice.setChoices(rasterColumns);
-                target.addComponent(choice);
+                target.add(choice);
                 // do nothing else, so we return to the same page...
             }
         };

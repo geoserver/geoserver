@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2014 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -107,7 +107,7 @@ public class CoverageViewEditor extends FormComponentPanel {
                 compositionType = compositionChoice.getModelObject();
                 // TODO Uncomment these rows when they can be used
                 //definition.setEnabled(compositionType != CompositionType.BAND_SELECT);
-                //target.addComponent(definition);
+                //target.add(definition);
             }
         });
 
@@ -149,8 +149,8 @@ public class CoverageViewEditor extends FormComponentPanel {
                 coveragesChoice.modelChanged();
 
                 // TODO: Reset choice
-                target.addComponent(coveragesChoice);
-                target.addComponent(outputBandsChoice);
+                target.add(coveragesChoice);
+                target.add(outputBandsChoice);
             }
         };
         return button;
@@ -169,7 +169,7 @@ public class CoverageViewEditor extends FormComponentPanel {
                 outputBandsChoice.modelChanged();
 
                 // TODO: Reset choice
-                target.addComponent(outputBandsChoice);
+                target.add(outputBandsChoice);
             }
         };
         return button;
@@ -192,7 +192,7 @@ public class CoverageViewEditor extends FormComponentPanel {
                 outputBandsChoice.modelChanged();
 
                 // TODO: Reset choice
-                target.addComponent(outputBandsChoice);
+                target.add(outputBandsChoice);
             }
         };
         return button;

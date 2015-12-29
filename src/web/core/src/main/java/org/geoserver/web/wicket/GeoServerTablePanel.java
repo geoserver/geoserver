@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -332,8 +332,8 @@ public abstract class GeoServerTablePanel<T> extends Panel {
                 setSelection(selectAllValue);
                 
                 // update table and the checkbox itself
-                target.addComponent(getComponent());
-                target.addComponent(listContainer);
+                target.add(getComponent());
+                target.add(listContainer);
                 
                 // allow subclasses to play on this change as well
                 onSelectionUpdate(target);
@@ -353,7 +353,7 @@ public abstract class GeoServerTablePanel<T> extends Panel {
             protected void onUpdate(AjaxRequestTarget target) {
                 if(Boolean.FALSE.equals(getComponent().getDefaultModelObject())) {
                     selectAllValue = false;
-                    target.addComponent(selectAll);
+                    target.add(selectAll);
                 }
                 onSelectionUpdate(target);
             }
@@ -467,7 +467,7 @@ public abstract class GeoServerTablePanel<T> extends Panel {
                             .setSort(new SortParam(property.getName(), !currSort.isAscending()));
                 }
                 setSelection(false);
-                target.addComponent(listContainer);
+                target.add(listContainer);
             }
 
         };
@@ -492,9 +492,9 @@ public abstract class GeoServerTablePanel<T> extends Panel {
         navigatorBottom.updateMatched();
         setSelection(false);
 
-        target.addComponent(listContainer);
-        target.addComponent(navigatorTop);
-        target.addComponent(navigatorBottom);
+        target.add(listContainer);
+        target.add(navigatorTop);
+        target.add(navigatorBottom);
     }
     
     /**
@@ -652,8 +652,8 @@ public abstract class GeoServerTablePanel<T> extends Panel {
                     pagerDelegate.updateMatched();
                     navigatorTop.updateMatched();
                     navigatorBottom.updateMatched();
-                    target.addComponent(navigatorTop);
-                    target.addComponent(navigatorBottom);
+                    target.add(navigatorTop);
+                    target.add(navigatorBottom);
                 }
             };
         }

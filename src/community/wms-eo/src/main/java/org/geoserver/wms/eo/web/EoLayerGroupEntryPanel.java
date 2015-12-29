@@ -142,7 +142,7 @@ public class EoLayerGroupEntryPanel extends Panel {
                         entry.setStyle( style );
                         
                         //redraw
-                        target.addComponent( layerTable );
+                        target.add( layerTable );
                         popupWindow.close( target );
                     }
                 });
@@ -161,7 +161,7 @@ public class EoLayerGroupEntryPanel extends Panel {
             protected void onClick(AjaxRequestTarget target) {
                 
                 items.remove( entry );
-                target.addComponent( layerTable );
+                target.add( layerTable );
             }
         };
         link.getImage().add(new AttributeModifier("alt", true, new ParamResourceModel("AbstractLayerGroupPage.th.remove", link)));
@@ -231,10 +231,10 @@ public class EoLayerGroupEntryPanel extends Panel {
                     int index = items.indexOf( PositionPanel.this.entry );
                     items.remove( index );
                     items.add(Math.max(0, index - 1), PositionPanel.this.entry);
-                    target.addComponent( layerTable );
-                    target.addComponent(this);
-                    target.addComponent(downLink);   
-                    target.addComponent(upLink);                    
+                    target.add( layerTable );
+                    target.add(this);
+                    target.add(downLink);   
+                    target.add(upLink);                    
                 }
                 
                 @Override
@@ -256,10 +256,10 @@ public class EoLayerGroupEntryPanel extends Panel {
                     int index = items.indexOf( PositionPanel.this.entry );
                     items.remove( index );
                     items.add(Math.min(items.size(), index + 1), PositionPanel.this.entry);
-                    target.addComponent( layerTable );
-                    target.addComponent(this);                    
-                    target.addComponent(downLink);   
-                    target.addComponent(upLink);                    
+                    target.add( layerTable );
+                    target.add(this);                    
+                    target.add(downLink);   
+                    target.add(upLink);                    
                 }
                 
                 @Override

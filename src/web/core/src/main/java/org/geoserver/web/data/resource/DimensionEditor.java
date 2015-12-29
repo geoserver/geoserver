@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -99,7 +99,7 @@ public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
                 Boolean visile = enabled.getModelObject();
 
                 configs.setVisible(visile);
-                target.addComponent(configsContainer);
+                target.add(configsContainer);
             }
 
         });
@@ -193,7 +193,7 @@ public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
             protected void onUpdate(AjaxRequestTarget target) {
                 boolean visible = presentation.getModelObject() == DimensionPresentation.DISCRETE_INTERVAL;
                 resolutions.setVisible(visible);
-                target.addComponent(resContainer);
+                target.add(resContainer);
             }
 
         });
@@ -238,7 +238,7 @@ public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
             protected void onUpdate(AjaxRequestTarget target) {
                 boolean visible = (defaultValueStrategy.getModelObject() == Strategy.FIXED) || (defaultValueStrategy.getModelObject() == Strategy.NEAREST);
                 referenceValueContainer.setVisible(visible);
-                target.addComponent(defValueContainer);
+                target.add(defValueContainer);
             }
 
         });
@@ -254,7 +254,7 @@ public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
             protected void onUpdate(AjaxRequestTarget target) {
                 refValueValidationMessage.setDefaultModelObject(null);
                 refValueValidationMessage.setVisible(false);
-                target.addComponent(referenceValueContainer);
+                target.add(referenceValueContainer);
             }
 
             @Override
@@ -264,7 +264,7 @@ public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
                     refValueValidationMessage.setDefaultModelObject(referenceValue.getFeedbackMessage().getMessage());
                     refValueValidationMessage.setVisible(true);
                 }                
-                target.addComponent(referenceValueContainer);
+                target.add(referenceValueContainer);
             }
         });
         referenceValue.add(new ReferenceValueValidator(id, strategyModel));

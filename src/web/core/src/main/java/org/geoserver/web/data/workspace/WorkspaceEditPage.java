@@ -303,7 +303,7 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
                     protected void onUpdate(AjaxRequestTarget target) {
                         contactPanel.setVisible(set.enabled);
                         otherSettingsPanel.setVisible(set.enabled);
-                        target.addComponent(settingsContainer);
+                        target.add(settingsContainer);
                     }
                 }));
 
@@ -460,7 +460,7 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
                         @Override
                         protected void onUpdate(AjaxRequestTarget target) {
                             link.setEnabled(getModelObject());
-                            target.addComponent(link);
+                            target.add(link);
                         }
                     };
                     item.add(enabled);

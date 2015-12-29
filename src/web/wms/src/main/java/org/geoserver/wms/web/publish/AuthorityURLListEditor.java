@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -115,7 +115,7 @@ public class AuthorityURLListEditor extends FormComponentPanel<List<AuthorityURL
                         list.remove(index);
                         authorityURLs.setModelObject(list);
                         updateLinksVisibility();
-                        target.addComponent(container);
+                        target.add(container);
                     }
 
                 };
@@ -144,7 +144,7 @@ public class AuthorityURLListEditor extends FormComponentPanel<List<AuthorityURL
                 authorityURLs.setModelObject(list);
                 AuthorityURLListEditor.this.convertInput();
                 updateLinksVisibility();
-                target.addComponent(container);
+                target.add(container);
             }
 
         };

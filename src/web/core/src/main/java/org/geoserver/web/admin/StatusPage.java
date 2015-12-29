@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -146,7 +146,7 @@ public class StatusPage extends ServerAdminPage {
                     LOGGER.log(Level.SEVERE, "Error resetting resource caches", t);
                     error(t);
                 }
-                target.addComponent(feedbackPanel);
+                target.add(feedbackPanel);
             }
         });
         
@@ -160,7 +160,7 @@ public class StatusPage extends ServerAdminPage {
                     LOGGER.log(Level.SEVERE, "An error occurred while reloading the catalog", t);
                     error(t);
                 }
-                target.addComponent(feedbackPanel);
+                target.add(feedbackPanel);
             }
         });
     }

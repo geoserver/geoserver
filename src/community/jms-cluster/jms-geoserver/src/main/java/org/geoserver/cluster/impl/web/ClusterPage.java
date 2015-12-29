@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -125,8 +125,8 @@ public class ClusterPage extends GeoServerSecuredPage {
                                 ConnectionConfigurationStatus.disabled.toString());
                     }
                 }
-                target.addComponent(connectionInfo);
-                target.addComponent(fp);
+                target.add(connectionInfo);
+                target.add(fp);
             }
 
         };
@@ -170,7 +170,7 @@ public class ClusterPage extends GeoServerSecuredPage {
                     readOnlyInfo.getModel().setObject("enabled");
                     loader.enable(true);
                 }
-                target.addComponent(this.getParent());
+                target.add(this.getParent());
             }
         };
         form.add(readOnly);
@@ -236,7 +236,7 @@ public class ClusterPage extends GeoServerSecuredPage {
                         fp.error(e.getLocalizedMessage());
                     }
                 }
-                target.addComponent(this.getParent());
+                target.add(this.getParent());
             }
         };
         form.add(embeddedBroker);
@@ -289,7 +289,7 @@ public class ClusterPage extends GeoServerSecuredPage {
                     org.apache.wicket.markup.html.form.Form<?> form) {
                 fp.error("ERROR");
 
-                target.addComponent(fp);
+                target.add(fp);
             };
 
             @Override
@@ -309,8 +309,8 @@ public class ClusterPage extends GeoServerSecuredPage {
                             + " is still registered to the topic destination");
                 }
                 toggleInfo.getModel().setObject(Boolean.toString(switchTo));
-                target.addComponent(toggleInfo);
-                target.addComponent(fp);
+                target.add(toggleInfo);
+                target.add(fp);
 
             }
         };

@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -93,7 +93,7 @@ public class WCSRequestBuilder extends GeoServerBasePage {
             @Override
             protected void onError(AjaxRequestTarget target, Form form) {
                 super.onError(target, form);
-                target.addComponent(builder.getFeedbackPanel());
+                target.add(builder.getFeedbackPanel());
             }
         });
 
@@ -106,13 +106,13 @@ public class WCSRequestBuilder extends GeoServerBasePage {
                     xmlWindow.show(target);
                 } catch (Exception e) {
                     error(e.getMessage());
-                    target.addComponent(getFeedbackPanel());
+                    target.add(getFeedbackPanel());
                 }
             }
 
             @Override
             protected void onError(AjaxRequestTarget target, Form form) {
-                target.addComponent(getFeedbackPanel());
+                target.add(getFeedbackPanel());
             }
         });
     }

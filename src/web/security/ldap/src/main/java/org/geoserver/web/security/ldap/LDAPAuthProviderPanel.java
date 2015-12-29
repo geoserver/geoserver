@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -72,7 +72,7 @@ public class LDAPAuthProviderPanel extends AuthenticationProviderPanel<LDAPSecur
                 //add the new panel
                 c.add(createAuthorizationPanel("authorizationPanel", getModelObject()));
                 
-                target.addComponent(c);
+                target.add(c);
             }
         });
         add(new WebMarkupContainer("authorizationPanelContainer")
@@ -159,7 +159,7 @@ public class LDAPAuthProviderPanel extends AuthenticationProviderPanel<LDAPSecur
                     LDAPSecurityServiceConfig ldapConfig = (LDAPSecurityServiceConfig) getForm().getModelObject();
                     doTest(ldapConfig, username, password);
 
-                    target.addComponent(getPage().get("feedback"));
+                    target.add(getPage().get("feedback"));
                 }
 
                 void doTest(LDAPSecurityServiceConfig ldapConfig, String username,

@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -77,8 +77,8 @@ public class AttributeEditPage extends GeoServerSecuredPage {
                 crsContainer.setVisible(attribute.getBinding() != null
                         && Geometry.class.isAssignableFrom(attribute.getBinding()));
 
-                target.addComponent(getFeedbackPanel());
-                target.addComponent(form);
+                target.add(getFeedbackPanel());
+                target.add(form);
             }
 
             @Override

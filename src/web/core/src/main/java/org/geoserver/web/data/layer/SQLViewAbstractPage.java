@@ -179,7 +179,7 @@ public abstract class SQLViewAbstractPage extends GeoServerSecuredPage {
                 parameters.processInputs();
                 if (sql != null && !"".equals(sql.trim())) {
                     paramProvider.refreshFromSql(sql);
-                    target.addComponent(parameters);
+                    target.add(parameters);
                 }
             }
         });
@@ -188,7 +188,7 @@ public abstract class SQLViewAbstractPage extends GeoServerSecuredPage {
             @Override
             protected void onClick(AjaxRequestTarget target, Form form) {
                 paramProvider.addParameter();
-                target.addComponent(parameters);
+                target.add(parameters);
             }
         });
         form.add(new GeoServerAjaxFormLink("removeParam") {
@@ -197,7 +197,7 @@ public abstract class SQLViewAbstractPage extends GeoServerSecuredPage {
             protected void onClick(AjaxRequestTarget target, Form form) {
                 paramProvider.removeAll(parameters.getSelection());
                 parameters.clearSelection();
-                target.addComponent(parameters);
+                target.add(parameters);
             }
         });
         
@@ -297,7 +297,7 @@ public abstract class SQLViewAbstractPage extends GeoServerSecuredPage {
 
                         if (newSchema != null) {
                             attProvider.setFeatureType(newSchema, null);
-                            target.addComponent(attributes);
+                            target.add(attributes);
                         }
                     } catch (IOException e) {
                         LOGGER.log(Level.INFO, "Error testing SQL query", e);

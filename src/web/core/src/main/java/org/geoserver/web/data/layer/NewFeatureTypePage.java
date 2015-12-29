@@ -251,7 +251,7 @@ public class NewFeatureTypePage extends GeoServerSecuredPage {
             public void onClick(AjaxRequestTarget target, Form form) {
                 attributesProvider.removeAll(attributeTable.getSelection());
                 attributeTable.clearSelection();
-                target.addComponent(form);
+                target.add(form);
             }
         });
 
@@ -268,7 +268,7 @@ public class NewFeatureTypePage extends GeoServerSecuredPage {
                 @Override
                 protected void onClick(AjaxRequestTarget target) {
                     attributesProvider.moveUp(attribute);
-                    target.addComponent(form);
+                    target.add(form);
                 }
             };
             upDown.add(upLink);
@@ -282,7 +282,7 @@ public class NewFeatureTypePage extends GeoServerSecuredPage {
                 @Override
                 protected void onClick(AjaxRequestTarget target) {
                     attributesProvider.moveDown(attribute);
-                    target.addComponent(form);
+                    target.add(form);
                 }
             };
             upDown.add(downLink);

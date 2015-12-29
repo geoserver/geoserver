@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -158,8 +158,8 @@ public class CatalogStressTester extends GeoServerSecuredPage {
 
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
-                target.addComponent(store);
-                target.addComponent(resourceAndLayer);
+                target.add(store);
+                target.add(resourceAndLayer);
             }
         });
 
@@ -206,7 +206,7 @@ public class CatalogStressTester extends GeoServerSecuredPage {
 
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
-                target.addComponent(resourceAndLayer);
+                target.add(resourceAndLayer);
             }
         });
         form.add(store);
@@ -279,17 +279,17 @@ public class CatalogStressTester extends GeoServerSecuredPage {
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
                 progress.setDefaultModelObject("");
                 startLink.setVisible(false);
-                target.addComponent(startLink);
-                target.addComponent(progress);
+                target.add(startLink);
+                target.add(progress);
                 try {
                     startCopy(target, form);
                 } catch (Exception e) {
                     form.error(e.getMessage());
-                    target.addComponent(form);
+                    target.add(form);
                 } finally {
                     startLink.setVisible(true);
-                    target.addComponent(startLink);
-                    target.addComponent(progress);
+                    target.add(startLink);
+                    target.add(progress);
                 }
             }
 
@@ -300,7 +300,7 @@ public class CatalogStressTester extends GeoServerSecuredPage {
 
     private void startCopy(AjaxRequestTarget target, Form<?> form) {
         Session.get().getFeedbackMessages().clear();
-        target.addComponent(getFeedbackPanel());
+        target.add(getFeedbackPanel());
 
         final int numCopies = duplicateCount.getModelObject();
         final String s = sufix.getModelObject();
@@ -362,7 +362,7 @@ public class CatalogStressTester extends GeoServerSecuredPage {
         System.out.println(progressMessage);
         progress.setDefaultModelObject(progressMessage);
         
-        target.addComponent(progress);
+        target.add(progress);
     }
 
     private Class<? extends CatalogInfo> interfaceOf(CatalogInfo original) {

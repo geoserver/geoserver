@@ -26,7 +26,7 @@ public class GridSetNewPage extends AbstractGridSetPage {
             gridset = GridSetBuilder.build(info);
         } catch (IllegalStateException e) {
             form.error(e.getMessage());
-            target.addComponent(form);
+            target.add(form);
             return;
         }
 
@@ -36,7 +36,7 @@ public class GridSetNewPage extends AbstractGridSetPage {
             doReturn(GridSetsPage.class);
         } catch (Exception e) {
             form.error(e.getMessage());
-            target.addComponent(form);
+            target.add(form);
         }
     }
 

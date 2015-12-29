@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -65,7 +65,7 @@ public class GridSetsPage extends GeoServerSecuredPage {
         @Override
         protected void onSelectionUpdate(AjaxRequestTarget target) {
             removal.setEnabled(table.getSelection().size() > 0);
-            target.addComponent(removal);
+            target.add(removal);
         }
 
         @Override
@@ -220,8 +220,8 @@ public class GridSetsPage extends GeoServerSecuredPage {
                     // occurred, so refresh the table
                     if (gridsets.getSelection().size() == 0) {
                         setEnabled(false);
-                        target.addComponent(SelectionRemovalLink.this);
-                        target.addComponent(gridsets);
+                        target.add(SelectionRemovalLink.this);
+                        target.add(gridsets);
                     }
                 }
 

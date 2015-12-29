@@ -199,9 +199,9 @@ public class ExternalGraphicPanel extends Panel {
                     }
                 }
 
-                target.addComponent(format);
-                target.addComponent(width);
-                target.addComponent(height);
+                target.add(format);
+                target.add(width);
+                target.add(height);
             }
         };
         
@@ -242,7 +242,7 @@ public class ExternalGraphicPanel extends Panel {
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
                 updateVisibility(true);
-                target.addComponent(ExternalGraphicPanel.this);
+                target.add(ExternalGraphicPanel.this);
             }
         };
         container.add(show);
@@ -259,7 +259,7 @@ public class ExternalGraphicPanel extends Panel {
                 height.setModelObject("0");
                 
                 updateVisibility(false);
-                target.addComponent(ExternalGraphicPanel.this);
+                target.add(ExternalGraphicPanel.this);
             }
         };
         container.add(hide);

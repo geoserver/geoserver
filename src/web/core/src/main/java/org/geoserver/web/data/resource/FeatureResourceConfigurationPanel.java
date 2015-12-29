@@ -137,7 +137,7 @@ public class FeatureResourceConfigurationPanel extends ResourceConfigurationPane
                 FeatureTypeInfo ft = (FeatureTypeInfo)getResourceInfo();
                 app.getCatalog().getResourcePool().clear(ft);
                 app.getCatalog().getResourcePool().clear(ft.getStore());
-                target.addComponent(attributePanel);
+                target.add(attributePanel);
             }
         };
         reloadContainer.add(reload);
@@ -208,7 +208,7 @@ public class FeatureResourceConfigurationPanel extends ResourceConfigurationPane
         if (target != null) {
             // force it to reload the attribute list
             attributes.getModel().detach();
-            target.addComponent(attributePanel);
+            target.add(attributePanel);
         }
     }
 

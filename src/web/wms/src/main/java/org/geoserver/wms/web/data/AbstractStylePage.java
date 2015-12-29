@@ -218,7 +218,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
             protected void onUpdate(AjaxRequestTarget target) {
                 templates.validate();
                 generateLink.setEnabled(templates.getConvertedInput() != null);
-                target.addComponent(generateLink);
+                target.add(generateLink);
             }
         });
         styleForm.add(templates);
@@ -235,7 +235,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
             protected void onUpdate(AjaxRequestTarget target) {
                 styles.validate();
                 copyLink.setEnabled(styles.getConvertedInput() != null);
-                target.addComponent(copyLink);
+                target.add(copyLink);
             }
         });
         styleForm.add(styles);
@@ -401,7 +401,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
                 lastStyle = editor.getInput();
 
                 legendImg.setVisible(true);
-                target.addComponent(legendContainer);
+                target.add(legendContainer);
             }
 
             @Override
@@ -457,7 +457,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
                     } catch (Exception e) {
                         error("Errors occurred generating the style");
                     }
-                    target.addComponent(styleForm);
+                    target.add(styleForm);
                 }
             }
 
@@ -507,7 +507,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
                     } catch (Exception e) {
                         error("Errors occurred loading the '" + style.getName() + "' style");
                     }
-                    target.addComponent(styleForm);
+                    target.add(styleForm);
                 }
             }
 

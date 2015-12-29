@@ -156,7 +156,7 @@ public class ImportPage extends GeoServerSecuredPage {
 
                 //set running flag and update cancel link
                 running.set(true);
-                target.addComponent(cancelLink(this));
+                target.add(cancelLink(this));
 
                 final Long jobid = importer().runAsync(imp, filter, false);
                 setDefaultModelObject(jobid);
@@ -174,10 +174,10 @@ public class ImportPage extends GeoServerSecuredPage {
                             stop();
     
                             self.setEnabled(true);
-                            target.addComponent(self);
+                            target.add(self);
     
                             running.set(false);
-                            target.addComponent(cancelLink(self));
+                            target.add(cancelLink(self));
                             
                             /*ImportContext imp = model.getObject();
                             if (imp.getState() == ImportContext.State.COMPLETE) {
@@ -192,11 +192,11 @@ public class ImportPage extends GeoServerSecuredPage {
                         }
     
                         // update the table
-                        target.addComponent(taskTable);
-                        target.addComponent(headerTable);
+                        target.add(taskTable);
+                        target.add(headerTable);
                     }
                 });
-                target.addComponent(taskTable);
+                target.add(taskTable);
     
                 // disable import button
                 setLinkEnabled(this, false, target);
@@ -257,7 +257,7 @@ public class ImportPage extends GeoServerSecuredPage {
             @Override
             public void onClick(AjaxRequestTarget target) {
                 taskTable.selectAll();
-                target.addComponent(taskTable);
+                target.add(taskTable);
                 updateImportLink(importLink, taskTable, target);
             }
         });
@@ -265,7 +265,7 @@ public class ImportPage extends GeoServerSecuredPage {
             @Override
             public void onClick(AjaxRequestTarget target) {
                 taskTable.clearSelection();
-                target.addComponent(taskTable);
+                target.add(taskTable);
                 updateImportLink(importLink, taskTable, target);
             }
         });
@@ -273,7 +273,7 @@ public class ImportPage extends GeoServerSecuredPage {
             @Override
             public void onClick(AjaxRequestTarget target) {
                 doSelectReady(getModelObject(), taskTable, target);
-                target.addComponent(taskTable);
+                target.add(taskTable);
                 updateImportLink(importLink, taskTable, target);
             }
         });
@@ -301,7 +301,7 @@ public class ImportPage extends GeoServerSecuredPage {
 
     void setLinkEnabled(AjaxLink link, boolean enabled, AjaxRequestTarget target) {
         link.setEnabled(enabled);
-        target.addComponent(link);
+        target.add(link);
     }
 
     AjaxLink cancelLink(AjaxLink importLink) {

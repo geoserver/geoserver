@@ -60,7 +60,7 @@ public class ImportTaskAdvancedPage extends GeoServerSecuredPage {
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
                 reprojectPanel.setEnabled(reprojectCheckBox.getModelObject());
-                target.addComponent(reprojectPanel);
+                target.add(reprojectPanel);
             }
         });
         form.add(reprojectCheckBox);
@@ -181,7 +181,7 @@ public class ImportTaskAdvancedPage extends GeoServerSecuredPage {
                         protected void onUpdate(AjaxRequestTarget target) {
                             dateFormatTextField.setEnabled(
                                 Date.class.equals(typeChoice.getModelObject()));
-                            target.addComponent(dateFormatTextField);
+                            target.add(dateFormatTextField);
                         }
                     });
                     //dateFormatTextField.setVisible(false);
@@ -209,7 +209,7 @@ public class ImportTaskAdvancedPage extends GeoServerSecuredPage {
                                 item.setModelObject(new NumberFormatTransform(field, type));
                             }
                             
-                            target.addComponent(remapContainer);
+                            target.add(remapContainer);
                         }
                     }.setDefaultFormProcessing(false));
 
@@ -217,7 +217,7 @@ public class ImportTaskAdvancedPage extends GeoServerSecuredPage {
                         @Override
                         protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
                             remaps.remove(item.getModelObject());
-                            target.addComponent(remapContainer);
+                            target.add(remapContainer);
                         }
                     }.setDefaultFormProcessing(false));
 
@@ -231,7 +231,7 @@ public class ImportTaskAdvancedPage extends GeoServerSecuredPage {
                 public void onClick(AjaxRequestTarget target) {
                     ImportTask task = getModelObject();
                     remaps.add(new AttributeRemapTransform(null, null));
-                    target.addComponent(remapContainer);
+                    target.add(remapContainer);
                 }
             });
         }

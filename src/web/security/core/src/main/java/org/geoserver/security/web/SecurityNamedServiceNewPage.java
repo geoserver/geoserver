@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -117,7 +117,7 @@ public class SecurityNamedServiceNewPage
         panelContainer.add(panel);
 
         if (target != null) {
-            target.addComponent(panelContainer);
+            target.add(panelContainer);
         }
     }
 
@@ -161,7 +161,7 @@ public class SecurityNamedServiceNewPage
                         @Override
                         public Object component(AjaxLink<T> component) {
                             component.setEnabled(true);
-                            target.addComponent(component);
+                            target.add(component);
                             return CONTINUE_TRAVERSAL_BUT_DONT_GO_DEEPER;
                         }
                     });
@@ -169,8 +169,8 @@ public class SecurityNamedServiceNewPage
                     setEnabled(false);
 
                     //update
-                    //target.addComponent(AjaxLinkGroup.this.getParent());
-                    target.addComponent(this);
+                    //target.add(AjaxLinkGroup.this.getParent());
+                    target.add(this);
 
                     AjaxLinkGroup.this.onClick(this, target);
                 }

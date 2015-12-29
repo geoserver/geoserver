@@ -100,7 +100,7 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
                 userChoice.setChoices(getUserNames(roleChoice.getConvertedInput()));
                 form.getModelObject().rule.setUserName(null);
                 userChoice.modelChanged();
-                target.addComponent(userChoice);
+                target.add(userChoice);
             }
         });
         roleChoice.setNullValid(true);
@@ -118,7 +118,7 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
                 requestChoice.setChoices(getOperationNames(serviceChoice.getConvertedInput()));
                 form.getModelObject().rule.setRequest(null);
                 requestChoice.modelChanged();
-                target.addComponent(requestChoice);
+                target.add(requestChoice);
             }
         });
         serviceChoice.setNullValid(true);
@@ -138,7 +138,7 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
                 layerChoice.setChoices(getLayerNames(workspaceChoice.getConvertedInput()));
                 form.getModelObject().rule.setLayer(null);
                 layerChoice.modelChanged();
-                target.addComponent(layerChoice);
+                target.add(layerChoice);
             }
         });
         workspaceChoice.setNullValid(true);
@@ -162,8 +162,8 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
                     allowedAreaLabel.setVisible(false);
                     allowedArea.setVisible(false);
                 }
-                target.addComponent(allowedAreaLabel);
-                target.addComponent(allowedArea);
+                target.add(allowedAreaLabel);
+                target.add(allowedArea);
             }
         });
 

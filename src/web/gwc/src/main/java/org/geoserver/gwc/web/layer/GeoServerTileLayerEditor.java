@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -416,19 +416,6 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
         // has an id
         Preconditions.checkState(layer.getId() != null);
         tileLayerInfo.setId(layer.getId());
-
-        // Remove the Layer from the cache if it is present
-        ConfigurableBlobStore store = GeoServerExtensions.bean(ConfigurableBlobStore.class);
-        if(store != null){
-            CacheProvider cache = store.getCache();
-            if (cache != null) {
-                if (enableInMemoryCaching.getModelObject()) {
-                    cache.removeUncachedLayer(getModel().getObject().getName());
-                } else {
-                    cache.addUncachedLayer(getModel().getObject().getName());
-                }
-            } 
-        }
         
         final String name;
         final GridSetBroker gridsets = gwc.getGridSetBroker();
@@ -444,8 +431,21 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
         }
 
         tileLayerInfo.setName(name);
-
-        if (tileLayerExists) {
+        
+        // Remove the Layer from the cache if it is present
+        ConfigurableBlobStore store = GeoServerExtensions.bean(ConfigurableBlobStore.class);
+        if(store != null){
+            CacheProvider cache = store.getCache();
+            if (cache != null) {
+                if (enableInMemoryCaching.getModelObject()) {
+                    cache.removeUncachedLayer(name);
+                } else {
+                    cache.addUncachedLayer(name);
+                }
+            } 
+        }
+        
+        if (tileLayerExists) {          
             gwc.save(tileLayer);
         } else {
             gwc.add(tileLayer);

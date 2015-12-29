@@ -34,7 +34,6 @@ import org.geoserver.web.data.layer.LayerPage;
 import org.geoserver.web.data.layer.NewFeatureTypePage;
 import org.geoserver.web.data.layer.SQLViewNewPage;
 import org.geoserver.web.data.layergroup.LayerGroupEditPage;
-import org.geoserver.web.data.layergroup.LayerGroupNewPage;
 import org.geoserver.web.data.layergroup.LayerGroupPage;
 import org.geoserver.web.data.store.DataAccessEditPage;
 import org.geoserver.web.data.store.DataAccessNewPage;
@@ -248,31 +247,31 @@ public abstract class AbstractAdminPrivilegeTest extends GeoServerWicketTestSupp
     }
 
     @Test
-    public void testLayerGroupNewPageAsAdmin() throws Exception {
+    public void testLayerGroupEditPageAsAdmin() throws Exception {
         login();
 
-        tester.startPage(LayerGroupNewPage.class);
-        tester.assertRenderedPage(LayerGroupNewPage.class);
-        tester.assertModelValue("form:workspace", null);
+        tester.startPage(LayerGroupEditPage.class);
+        tester.assertRenderedPage(LayerGroupEditPage.class);
+        tester.assertModelValue("publishedinfo:tabs:panel:workspace", null);
         
         DropDownChoice choice = 
-            (DropDownChoice) tester.getComponentFromLastRenderedPage("form:workspace");
+            (DropDownChoice) tester.getComponentFromLastRenderedPage("publishedinfo:tabs:panel:workspace");
         assertTrue(choice.isNullValid());
         assertFalse(choice.isRequired());
     }
 
     @Test
-    public void testLayerGroupNewPage() throws Exception {
+    public void testLayerGroupEditPage() throws Exception {
         loginAsCite();
 
-        tester.startPage(LayerGroupNewPage.class);
-        tester.assertRenderedPage(LayerGroupNewPage.class);
+        tester.startPage(LayerGroupEditPage.class);
+        tester.assertRenderedPage(LayerGroupEditPage.class);
 
         Catalog cat = getCatalog();
-        tester.assertModelValue("form:workspace", cat.getWorkspaceByName("cite"));
+        tester.assertModelValue("publishedinfo:tabs:panel:workspace", cat.getWorkspaceByName("cite"));
         
         DropDownChoice choice = 
-            (DropDownChoice) tester.getComponentFromLastRenderedPage("form:workspace");
+            (DropDownChoice) tester.getComponentFromLastRenderedPage("publishedinfo:tabs:panel:workspace");
         assertFalse(choice.isNullValid());
         assertTrue(choice.isRequired());
     }
@@ -285,10 +284,10 @@ public abstract class AbstractAdminPrivilegeTest extends GeoServerWicketTestSupp
         tester.assertRenderedPage(LayerGroupEditPage.class);
 
         //assert all form components disabled except for cancel
-        assertFalse(tester.getComponentFromLastRenderedPage("form:name").isEnabled());
-        assertFalse(tester.getComponentFromLastRenderedPage("form:workspace").isEnabled());
-        assertNull(tester.getComponentFromLastRenderedPage("form:save"));
-        assertTrue(tester.getComponentFromLastRenderedPage("form:cancel").isEnabled());
+        assertFalse(tester.getComponentFromLastRenderedPage("publishedinfo:tabs:panel:name").isEnabled());
+        assertFalse(tester.getComponentFromLastRenderedPage("publishedinfo:tabs:panel:workspace").isEnabled());
+        assertNull(tester.getComponentFromLastRenderedPage("publishedinfo:save"));
+        assertTrue(tester.getComponentFromLastRenderedPage("publishedinfo:cancel").isEnabled());
     }
 
     public void testSqlViewNewPageAsWorkspaceAdmin() throws Exception {

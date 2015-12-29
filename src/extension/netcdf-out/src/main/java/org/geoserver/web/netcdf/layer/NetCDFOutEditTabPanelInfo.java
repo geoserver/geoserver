@@ -12,8 +12,8 @@ import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.platform.GeoServerExtensions;
-import org.geoserver.web.data.resource.LayerEditTabPanelInfo;
 import org.geoserver.web.netcdf.NetCDFSettingsContainer;
+import org.geoserver.web.publish.LayerEditTabPanelInfo;
 
 /**
  * {@link LayerEditTabPanelInfo} implementation for the NetCDF output settings configuration

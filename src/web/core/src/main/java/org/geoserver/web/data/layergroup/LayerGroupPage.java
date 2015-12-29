@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -83,7 +83,7 @@ public class LayerGroupPage extends GeoServerSecuredPage {
         Fragment header = new Fragment(HEADER_PANEL, "header", this);
         
         // the add button
-        header.add(new BookmarkablePageLink("addNew", LayerGroupNewPage.class));
+        header.add(new BookmarkablePageLink("addNew", LayerGroupEditPage.class));
         
         // the removal button
         header.add(removal = new SelectionRemovalLink("removeSelected", table, dialog));

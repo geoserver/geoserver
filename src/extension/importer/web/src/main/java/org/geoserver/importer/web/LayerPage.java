@@ -20,7 +20,7 @@ public class LayerPage extends ResourceConfigurationPage {
 
     @Override
     protected void doSave() {
-        if (getLayerInfo().getId() == null) {
+        if (getPublishedInfo().getId() == null) {
             //do not call super.doSave(), because this layer is not part of the catalog yet
 
             onSuccessfulSave();

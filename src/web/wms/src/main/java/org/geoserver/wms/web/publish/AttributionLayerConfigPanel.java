@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -19,20 +19,22 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.validation.validator.NumberValidator;
 import org.apache.wicket.validation.validator.UrlValidator;
-import org.geoserver.catalog.AttributionInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.web.GeoServerApplication;
-import org.geoserver.web.publish.LayerConfigurationPanel;
+import org.geoserver.web.publish.PublishedConfigurationPanel;
 
 /**
  * Configures a {@link LayerInfo} geo-search related metadata
  */
-@SuppressWarnings("serial")
-public class AttributionLayerConfigPanel extends LayerConfigurationPanel{
-    public AttributionLayerConfigPanel(String id, IModel model){
+public class AttributionLayerConfigPanel extends PublishedConfigurationPanel<PublishedInfo> {
+
+    private static final long serialVersionUID = -5229831547353122190L;
+
+    public AttributionLayerConfigPanel(String id, IModel<? extends PublishedInfo> model){
         super(id, model);
 
-        LayerInfo layer = (LayerInfo) model.getObject();
+        PublishedInfo layer = model.getObject();
 
         if (layer.getAttribution() == null) {
             layer.setAttribution(
@@ -40,42 +42,40 @@ public class AttributionLayerConfigPanel extends LayerConfigurationPanel{
             );
         }
 
-        AttributionInfo attr = layer.getAttribution();
-
-        add(new TextField("wms.attribution.title", 
-            new PropertyModel(model, "attribution.title")
+        add(new TextField<String>("wms.attribution.title", 
+            new PropertyModel<String>(model, "attribution.title")
         ));
 
-        final TextField href = new TextField("wms.attribution.href", 
-            new PropertyModel(model, "attribution.href")
+        final TextField<String> href = new TextField<String>("wms.attribution.href", 
+            new PropertyModel<String>(model, "attribution.href")
         );
         href.add(new UrlValidator());
         href.setOutputMarkupId(true);
         add(href);
 
-        final TextField logo = new TextField("wms.attribution.logo", 
-            new PropertyModel(model, "attribution.logoURL")
+        final TextField<String> logo = new TextField<String>("wms.attribution.logo", 
+            new PropertyModel<String>(model, "attribution.logoURL")
         );
         logo.add(new UrlValidator());
         logo.setOutputMarkupId(true);
         add(logo);
 
-        final TextField type = new TextField("wms.attribution.type",
-            new PropertyModel(model, "attribution.logoType")
+        final TextField<String> type = new TextField<String>("wms.attribution.type",
+            new PropertyModel<String>(model, "attribution.logoType")
         );
         type.setOutputMarkupId(true);
         add(type);
 
-        final TextField height = new TextField("wms.attribution.height", 
-            new PropertyModel(model, "attribution.logoHeight"),
+        final TextField<Integer> height = new TextField<Integer>("wms.attribution.height", 
+            new PropertyModel<Integer>(model, "attribution.logoHeight"),
             Integer.class
         );
         height.add(NumberValidator.minimum(0));
         height.setOutputMarkupId(true);
         add(height);
 
-        final TextField width = new TextField("wms.attribution.width",
-            new PropertyModel(model, "attribution.logoWidth"),
+        final TextField<Integer> width = new TextField<Integer>("wms.attribution.width",
+            new PropertyModel<Integer>(model, "attribution.logoWidth"),
             Integer.class
         );
         width.add(NumberValidator.minimum(0));
@@ -83,7 +83,9 @@ public class AttributionLayerConfigPanel extends LayerConfigurationPanel{
         add(width);
 
         add(new AjaxSubmitLink("verifyImage") {
-            protected void onSubmit(AjaxRequestTarget target, Form form) {
+            private static final long serialVersionUID = 6814575194862084111L;
+
+            protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
                 if (logo.getDefaultModelObjectAsString() != null) {
                     try { 
                         URL url = new URL(logo.getDefaultModelObjectAsString());

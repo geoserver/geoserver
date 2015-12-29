@@ -8,6 +8,7 @@ package org.geoserver.web.data.resource;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.logging.Level;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -26,6 +27,7 @@ import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.validation.validator.PatternValidator;
 import org.geoserver.catalog.CatalogBuilder;
+import org.geoserver.catalog.KeywordInfo;
 import org.geoserver.catalog.ProjectionPolicy;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.web.GeoServerApplication;
@@ -37,46 +39,47 @@ import org.geoserver.web.wicket.LiveCollectionModel;
 import org.geoserver.web.wicket.SRSToCRSModel;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
-import org.opengis.geometry.Envelope;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
  * A generic configuration panel for all basic ResourceInfo properties
  */
-@SuppressWarnings("serial")
 public class BasicResourceConfig extends ResourceConfigurationPanel {
 
-    DropDownChoice projectionPolicy;
+    private static final long serialVersionUID = -552158739086379566L;
+
+    DropDownChoice<ProjectionPolicy> projectionPolicy;
 
     CRSPanel declaredCRS;
 
-    public BasicResourceConfig(String id, IModel model) {
+    public BasicResourceConfig(String id, IModel<ResourceInfo> model) {
         super(id, model);
 
-        TextField name = new TextField("name");
+        TextField<String> name = new TextField<String>("name");
         name.setRequired(true);
         add(name);
         add(new CheckBox("enabled"));
         add(new CheckBox("advertised"));
-        add(new TextField("title"));
-        add(new TextArea("abstract"));
-        add(new KeywordsEditor("keywords", LiveCollectionModel.list(new PropertyModel(model, "keywords"))));
+        add(new TextField<String>("title"));
+        add(new TextArea<String>("abstract"));
+        add(new KeywordsEditor("keywords", 
+                LiveCollectionModel.list(new PropertyModel<List<KeywordInfo>>(model, "keywords"))));
         add(new MetadataLinkEditor("metadataLinks", model));
         add(new DataLinkEditor("dataLinks", model));
 
-        final Form refForm = new Form("referencingForm");
+        final Form<ResourceInfo> refForm = new Form<ResourceInfo>("referencingForm");
         add(refForm);
 
         // native bbox
-        PropertyModel nativeBBoxModel = new PropertyModel(model, "nativeBoundingBox");
+        PropertyModel<ReferencedEnvelope> nativeBBoxModel = new PropertyModel<ReferencedEnvelope>(model, "nativeBoundingBox");
         final EnvelopePanel nativeBBox = new EnvelopePanel("nativeBoundingBox", nativeBBoxModel);
         nativeBBox.setOutputMarkupId(true);
         refForm.add(nativeBBox);
         refForm.add(computeNativeBoundsLink(refForm, nativeBBox));
 
         // lat/lon bbox
-        final EnvelopePanel latLonPanel = new EnvelopePanel("latLonBoundingBox", new PropertyModel(
+        final EnvelopePanel latLonPanel = new EnvelopePanel("latLonBoundingBox", new PropertyModel<ReferencedEnvelope>(
                 model, "latLonBoundingBox"));
         latLonPanel.setOutputMarkupId(true);
         latLonPanel.setRequired(true);
@@ -84,18 +87,18 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
         refForm.add(computeLatLonBoundsLink(refForm, nativeBBox, latLonPanel));
 
         // native srs , declared srs, and srs handling dropdown
-        CRSPanel nativeCRS = new CRSPanel("nativeSRS", new PropertyModel(model, "nativeCRS"));
+        CRSPanel nativeCRS = new CRSPanel("nativeSRS", new PropertyModel<CoordinateReferenceSystem>(model, "nativeCRS"));
         nativeCRS.setReadOnly(true);
         refForm.add(nativeCRS);
         declaredCRS = new CRSPanel("declaredSRS",
-                new SRSToCRSModel(new PropertyModel(model, "sRS")));
+                new SRSToCRSModel(new PropertyModel<String>(model, "sRS")));
         declaredCRS.setRequired(true);
         refForm.add(declaredCRS);
         
         //compute from native or declared crs links
         refForm.add(computeBoundsFromSRS(refForm, nativeBBox));
 
-        projectionPolicy = new DropDownChoice("srsHandling", new PropertyModel(model,
+        projectionPolicy = new DropDownChoice<ProjectionPolicy>("srsHandling", new PropertyModel<ProjectionPolicy>(model,
                 "projectionPolicy"), Arrays.asList(ProjectionPolicy.values()),
                 new ProjectionPolicyRenderer());
         ResourceInfo ri = (ResourceInfo) model.getObject();
@@ -111,6 +114,8 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
     AjaxSubmitLink computeNativeBoundsLink(final Form refForm,
             final EnvelopePanel nativeBBox) {
         return new AjaxSubmitLink("computeNative", refForm) {
+
+            private static final long serialVersionUID = 3106345307476297622L;
 
             @Override
             public void onSubmit(final AjaxRequestTarget target, Form form) {
@@ -142,9 +147,11 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
      * Compute the native bounds from the native CRS. Acts as an alternative to computing the bounds
      * from the data itself.
      */
-    AjaxSubmitLink computeBoundsFromSRS(final Form refForm, final EnvelopePanel nativeBoundsPanel) {
+    AjaxSubmitLink computeBoundsFromSRS(final Form<ResourceInfo> refForm, final EnvelopePanel nativeBoundsPanel) {
         
         return new AjaxSubmitLink("computeLatLonFromNativeSRS", refForm) {
+            private static final long serialVersionUID = 9211250161114770325L;
+
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
                 LOGGER.log(Level.FINE, "Computing bounds from native CRS");
@@ -170,6 +177,8 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
     GeoServerAjaxFormLink computeLatLonBoundsLink(final Form refForm,
             final EnvelopePanel nativeBBox, final EnvelopePanel latLonPanel) {
         return new GeoServerAjaxFormLink("computeLatLon", refForm) {
+
+            private static final long serialVersionUID = -5981662004745936762L;
 
             @Override
             protected void onClick(AjaxRequestTarget target, Form form) {
@@ -200,14 +209,16 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
         };
     }
 
-    class ProjectionPolicyRenderer implements IChoiceRenderer {
+    class ProjectionPolicyRenderer implements IChoiceRenderer<ProjectionPolicy> {
 
-        public Object getDisplayValue(Object object) {
+        private static final long serialVersionUID = -6593748590058977418L;
+
+        public Object getDisplayValue(ProjectionPolicy object) {
             return new StringResourceModel(((ProjectionPolicy) object).name(),
                     BasicResourceConfig.this, null).getString();
         }
 
-        public String getIdValue(Object object, int index) {
+        public String getIdValue(ProjectionPolicy object, int index) {
             return ((ProjectionPolicy) object).name();
         }
     }
@@ -217,6 +228,8 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
      * in particular, only word chars
      */
     static class ResourceNameValidator extends PatternValidator {
+        private static final long serialVersionUID = 2160813837236916013L;
+
         public ResourceNameValidator() {
             super("[\\w][\\w.-]*");
         }
@@ -228,16 +241,18 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
      */
     private static class ReprojectionIsPossibleValidator implements IFormValidator {
 
-        private FormComponent[] dependentFormComponents;
+        private static final long serialVersionUID = -8006718598046409480L;
 
-        private FormComponent nativeCRS;
+        private FormComponent<?>[] dependentFormComponents;
 
-        private FormComponent declaredCRS;
+        private FormComponent<?> nativeCRS;
 
-        private FormComponent projectionPolicy;
+        private FormComponent<?> declaredCRS;
 
-        public ReprojectionIsPossibleValidator(final FormComponent nativeCRS,
-                final FormComponent declaredCRS, final FormComponent projectionPolicy) {
+        private FormComponent<?> projectionPolicy;
+
+        public ReprojectionIsPossibleValidator(final FormComponent<?> nativeCRS,
+                final FormComponent<?> declaredCRS, final FormComponent<?> projectionPolicy) {
             this.nativeCRS = nativeCRS;
             this.declaredCRS = declaredCRS;
             this.projectionPolicy = projectionPolicy;
@@ -245,11 +260,11 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
                     projectionPolicy };
         }
 
-        public FormComponent[] getDependentFormComponents() {
+        public FormComponent<?>[] getDependentFormComponents() {
             return dependentFormComponents;
         }
 
-        public void validate(final Form form) {
+        public void validate(final Form<?> form) {
             CoordinateReferenceSystem nativeCrs;
             CoordinateReferenceSystem declaredCrs;
             ProjectionPolicy policy;
@@ -265,7 +280,7 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
                     String msgKey = "BasicResourceConfig.noTransformFromNativeToDeclaredCRS";
                     String errMsg = e.getMessage();
                     String message =(String) new ResourceModel(msgKey).getObject();
-                    form.error(message, Collections.singletonMap("error", errMsg));
+                    form.error(message, Collections.singletonMap("error", (Object) errMsg));
                 }
             }
         }

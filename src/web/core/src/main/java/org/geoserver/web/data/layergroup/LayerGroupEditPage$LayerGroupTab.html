@@ -1,7 +1,6 @@
 <html xmlns:wicket="http://wicket.apache.org/">
   <body>
-   <wicket:extend>
-    <form wicket:id="form">
+   <wicket:panel>
      <ul>
        <li>
          <label for="name"><wicket:message key="name">Name</wicket:message></label>
@@ -41,18 +40,17 @@
        <li>
          <div wicket:id="layers"></div>
        </li>
-       <li>
-         <br>
-         <div wicket:id="contributedPanels">
-          <span wicket:id="content"></span>
-         </div>
+       <li>       
+        <fieldset>
+          <legend><span><wicket:message key="metadataLinks">Metadata links</wicket:message></span></legend>
+          <ul>
+            <li>
+              <div wicket:id="metadataLinks"></div>
+            </li>
+          </ul>
+        </fieldset>
        </li>
-       <li class="button-group selfclear">
-         <a href="#" wicket:id="save"><wicket:message key="save">Save</wicket:message></a>
-         <a href="#" wicket:id="cancel"><wicket:message key="cancel">Cancel</wicket:message></a>
-       </li>
-     </ul>
-    </form>
-   </wicket:extend>
+     </ul>    
+   </wicket:panel>
   </body>
 </html>

@@ -417,7 +417,7 @@
     <property name="iconBase" value="org.geoserver.web.GeoServerApplication"/> 
     <property name="icon" value="img/icons/geosilk/database_raster.png"/> </bean> -->
 
-  <bean id="ndLayerEditTabPanelInfo" class="org.geoserver.web.data.resource.LayerEditTabPanelInfo">
+  <bean id="ndLayerEditTabPanelInfo" class="org.geoserver.web.publish.LayerEditTabPanelInfo">
     <property name="id" value="ndLayerEditTabPanelInfo" />
     <property name="titleKey" value="NDLayerEditTabPanelInfo.title" />
     <property name="descriptionKey" value="NDLayerEditTabPanelInfo.shortDescription" />

@@ -48,7 +48,7 @@ public class CRSPanel extends FormComponentPanel {
     private static Logger LOGGER = Logging.getLogger(CRSPanel.class);
     private static final long serialVersionUID = -6677103383336166008L;
     
-    private static Behavior READ_ONLY = new AttributeModifier("readonly", true, new Model("readonly"));
+    private static Behavior READ_ONLY = new AttributeModifier("readonly", new Model("readonly"));
 
     /** pop-up window for WKT and SRS list */
     protected ModalWindow popupWindow;

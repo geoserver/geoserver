@@ -217,7 +217,7 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
             model.setEnabled(doCreateTileLayer);
         }
         add(createLayer = new CheckBox("createTileLayer", new Model<Boolean>(doCreateTileLayer)));
-        createLayer.add(new AttributeModifier("title", true, new ResourceModel(
+        createLayer.add(new AttributeModifier("title", new ResourceModel(
                 "createTileLayer.title")));
 
         container = new WebMarkupContainer("container");
@@ -229,7 +229,7 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
         container.add(configs);
 
         add(enabled = new CheckBox("enabled", new PropertyModel<Boolean>(getModel(), "enabled")));
-        enabled.add(new AttributeModifier("title", true, new ResourceModel("enabled.title")));
+        enabled.add(new AttributeModifier("title", new ResourceModel("enabled.title")));
         configs.add(enabled);
         
         IChoiceRenderer<String> blobStoreRenderer = new IChoiceRenderer<String>() {
@@ -256,8 +256,7 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
         configs.add(blobStoreId = new DropDownChoice<String>("blobStoreId", blobStoreModel,
                 blobStoreChoices, blobStoreRenderer));
         blobStoreId.setNullValid(true);
-        blobStoreId
-                .add(new AttributeModifier("title", true, new ResourceModel("blobStoreId.title")));
+        blobStoreId.add(new AttributeModifier("title", new ResourceModel("blobStoreId.title")));
 
         add(new IValidator<GeoServerTileLayerInfo>() {
             private static final long serialVersionUID = 5240602030478856537L;

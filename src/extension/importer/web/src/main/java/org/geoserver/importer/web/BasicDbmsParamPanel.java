@@ -83,7 +83,7 @@ class BasicDbParamPanel extends Panel {
                 target.add(this);
             }
         };
-        connPoolLink.add(new AttributeModifier("class", true, new AbstractReadOnlyModel() {
+        connPoolLink.add(new AttributeModifier("class", new AbstractReadOnlyModel() {
             
             @Override
             public Object getObject() {

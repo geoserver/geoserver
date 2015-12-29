@@ -74,7 +74,7 @@ class AdvancedDbParamPanel extends Panel {
                 target.add(this);
             }
         };
-        advanced.add(new AttributeModifier("class", true, new AbstractReadOnlyModel() {
+        advanced.add(new AttributeModifier("class", new AbstractReadOnlyModel() {
             
             @Override
             public Object getObject() {

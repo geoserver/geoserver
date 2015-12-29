@@ -124,7 +124,7 @@ public class WFSAdminPage extends BaseServiceAdminPage<WFSInfo> {
             if (esriProjs.getType() != Type.RESOURCE) {
                 defaultPrjFormat.setEnabled(false);
                 defaultPrjFormat.getModel().setObject(Boolean.FALSE);
-                defaultPrjFormat.add(new AttributeModifier("title", true, new Model(
+                defaultPrjFormat.add(new AttributeModifier("title", new Model(
                         "No esri.properties file "
                                 + "found in the data directory's user_projections folder. "
                                 + "This option is not available")));

@@ -189,12 +189,12 @@ class GridSubsetsEditor extends FormComponentPanel<Set<XMLGridSubset>> {
                 gridSetLabel = new Label("gridSet", new PropertyModel<String>(item.getModel(),
                         "gridSetName"));
                 if(!gridsetExists){
-                    gridSetLabel.add(new AttributeModifier("style", true, new Model<String>("color:red;text-decoration:line-through;")));
+                    gridSetLabel.add(new AttributeModifier("style", new Model<String>("color:red;text-decoration:line-through;")));
                     getPage().warn("GridSet " + gridSubset.getGridSetName() + " does not exist");
                 }
                 item.add(gridSetLabel);
                 if (null != gridsetDescription) {
-                    gridSetLabel.add(new AttributeModifier("title", true, new Model<String>(
+                    gridSetLabel.add(new AttributeModifier("title", new Model<String>(
                             gridsetDescription)));
                 }
 
@@ -295,7 +295,7 @@ class GridSubsetsEditor extends FormComponentPanel<Set<XMLGridSubset>> {
                     }
                 };
                 removeLink.setDefaultModel(item.getModel());
-                removeLink.add(new AttributeModifier("title", true, new ResourceModel(
+                removeLink.add(new AttributeModifier("title", new ResourceModel(
                         "GridSubsetsEditor.removeLink")));
                 item.add(removeLink);
             }

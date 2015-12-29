@@ -270,7 +270,7 @@ public class TileMatrixSetEditor extends FormComponentPanel<List<Grid>> {
                         }
                     };
                     removeLink.setDefaultModel(new Model<Integer>(Integer.valueOf(index)));
-                    removeLink.add(new AttributeModifier("title", true, new ResourceModel(
+                    removeLink.add(new AttributeModifier("title", new ResourceModel(
                             "TileMatrixSetEditor.removeLink")));
                 }
                 item.add(removeLink);
@@ -335,7 +335,7 @@ public class TileMatrixSetEditor extends FormComponentPanel<List<Grid>> {
 
     private Component thLabel(String id) {
         Label label = new Label(id, new ResourceModel(id));
-        label.add(new AttributeModifier("title", true, new ResourceModel(id + ".title", "")));
+        label.add(new AttributeModifier("title", new ResourceModel(id + ".title", "")));
         return label;
     }
 

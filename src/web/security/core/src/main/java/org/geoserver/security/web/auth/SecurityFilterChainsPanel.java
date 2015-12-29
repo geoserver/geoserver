@@ -209,7 +209,7 @@ public class SecurityFilterChainsPanel
                 protected void onClick(AjaxRequestTarget target) {
                 }
             };
-            blankLink.getImage().add(new AttributeModifier("alt", true, new Model("")));
+            blankLink.getImage().add(new AttributeModifier("alt", new Model("")));
             add(blankLink);
             return blankLink;
         }
@@ -221,7 +221,7 @@ public class SecurityFilterChainsPanel
                 target.add( tablePanel );
             }
         };
-        link.getImage().add(new AttributeModifier("alt", true, new ParamResourceModel("LayerGroupEditPage.th.remove", link)));
+        link.getImage().add(new AttributeModifier("alt", new ParamResourceModel("LayerGroupEditPage.th.remove", link)));
         return link;
     }
 
@@ -267,7 +267,7 @@ public class SecurityFilterChainsPanel
                     }
                 }
             };
-            upLink.getImage().add(new AttributeModifier("alt", true, new ParamResourceModel("SecurityFilterChainsPanel.th.up", upLink)));
+            upLink.getImage().add(new AttributeModifier("alt", new ParamResourceModel("SecurityFilterChainsPanel.th.up", upLink)));
             upLink.setOutputMarkupId(true);
             add( upLink);            
 
@@ -292,7 +292,7 @@ public class SecurityFilterChainsPanel
                     }
                 }
             };
-            downLink.getImage().add(new AttributeModifier("alt", true, new ParamResourceModel("SecurityFilterChainsPanel.th.down", downLink)));
+            downLink.getImage().add(new AttributeModifier("alt", new ParamResourceModel("SecurityFilterChainsPanel.th.down", downLink)));
             downLink.setOutputMarkupId(true);
             add( downLink);
         }

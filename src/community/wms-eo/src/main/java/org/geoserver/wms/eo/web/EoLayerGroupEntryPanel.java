@@ -164,7 +164,7 @@ public class EoLayerGroupEntryPanel extends Panel {
                 target.add( layerTable );
             }
         };
-        link.getImage().add(new AttributeModifier("alt", true, new ParamResourceModel("AbstractLayerGroupPage.th.remove", link)));
+        link.getImage().add(new AttributeModifier("alt", new ParamResourceModel("AbstractLayerGroupPage.th.remove", link)));
         return link;
     }
     
@@ -246,7 +246,7 @@ public class EoLayerGroupEntryPanel extends Panel {
                     }
                 }
             };
-            upLink.getImage().add(new AttributeModifier("alt", true, new ParamResourceModel("up", upLink)));
+            upLink.getImage().add(new AttributeModifier("alt", new ParamResourceModel("up", upLink)));
             upLink.setOutputMarkupId(true);
             add( upLink);            
 
@@ -271,7 +271,7 @@ public class EoLayerGroupEntryPanel extends Panel {
                     }
                 }
             };
-            downLink.getImage().add(new AttributeModifier("alt", true, new ParamResourceModel("down", downLink)));
+            downLink.getImage().add(new AttributeModifier("alt", new ParamResourceModel("down", downLink)));
             downLink.setOutputMarkupId(true);
             add( downLink);
         }

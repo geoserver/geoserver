@@ -221,7 +221,7 @@ public class ExternalGraphicPanel extends Panel {
         height.setOutputMarkupId(true);
         table.add(height);
         
-        table.add(new AttributeModifier("style", true, showhideStyleModel));
+        table.add(new AttributeModifier("style", showhideStyleModel));
         
         container.add(table);
         

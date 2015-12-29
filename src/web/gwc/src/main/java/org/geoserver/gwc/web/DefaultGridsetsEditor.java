@@ -61,7 +61,7 @@ class DefaultGridsetsEditor extends FormComponentPanel<Set<String>> {
         @Override
         protected Component nameLink(final String id, final GridSet gridSet) {
             Label label = new Label(id, gridSet.getName());
-            label.add(new AttributeModifier("title", true, new Model<String>(gridSet
+            label.add(new AttributeModifier("title", new Model<String>(gridSet
                     .getDescription())));
             return label;
         }

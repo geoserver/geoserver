@@ -201,7 +201,7 @@ class ParameterFilterEditor extends FormComponentPanel<Set<ParameterFilter>> {
                 };
                 removeLink.add(new Icon("removeIcon", GWCIconFactory.DELETE_ICON));
                 removeLink.setDefaultModel(item.getModel());
-                removeLink.add(new AttributeModifier("title", true, new ResourceModel(
+                removeLink.add(new AttributeModifier("title", new ResourceModel(
                         "ParameterFilterEditor.removeLink")));
                 item.add(removeLink);
             }

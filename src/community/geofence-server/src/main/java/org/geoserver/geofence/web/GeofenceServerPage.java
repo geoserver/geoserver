@@ -134,7 +134,7 @@ public class GeofenceServerPage extends GeoServerSecuredPage {
                     }
                 }
             };
-            upLink.getImage().add(new AttributeModifier("alt", true, new ParamResourceModel("GeofenceServerPage.up", upLink)));
+            upLink.getImage().add(new AttributeModifier("alt", new ParamResourceModel("GeofenceServerPage.up", upLink)));
             upLink.setOutputMarkupId(true);
             add(upLink);            
 
@@ -156,7 +156,7 @@ public class GeofenceServerPage extends GeoServerSecuredPage {
                     }
                 }
             };
-            downLink.getImage().add(new AttributeModifier("alt", true, new ParamResourceModel("GeofenceServerPage.down", downLink)));
+            downLink.getImage().add(new AttributeModifier("alt", new ParamResourceModel("GeofenceServerPage.down", downLink)));
             downLink.setOutputMarkupId(true);
             add(downLink);
             
@@ -168,7 +168,7 @@ public class GeofenceServerPage extends GeoServerSecuredPage {
                     setResponsePage(new GeofenceRulePage(rule, rulesModel));
                 }
             };
-            editLink.getImage().add(new AttributeModifier("alt", true, new ParamResourceModel("GeofenceServerPage.edit", editLink)));
+            editLink.getImage().add(new AttributeModifier("alt", new ParamResourceModel("GeofenceServerPage.edit", editLink)));
             editLink.setOutputMarkupId(true);            
             add(editLink);
         }

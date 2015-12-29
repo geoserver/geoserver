@@ -433,7 +433,7 @@ public class ImportDataPage extends GeoServerSecuredPage {
             add(new Label("description", source .getDescription(ImportDataPage.this)));
             
             Image icon = new Image("icon", source.getIcon());
-            icon.add(new AttributeModifier("alt", true, source.getDescription(ImportDataPage.this)));
+            icon.add(new AttributeModifier("alt", source.getDescription(ImportDataPage.this)));
             add(icon);
 
             WebMarkupContainer extra = new WebMarkupContainer("extra");

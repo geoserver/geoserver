@@ -51,7 +51,7 @@ public class Icon extends Panel {
      */
     public Icon(String id, IModel model, IModel title) {
         super(id);
-        add(new Image("img", model).add(new AttributeModifier("title", true, title)));
+        add(new Image("img", model).add(new AttributeModifier("title", title)));
     }
 
 }

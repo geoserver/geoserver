@@ -266,7 +266,7 @@ public class CachedLayersPage extends GeoServerSecuredPage {
                 // build option with text and value
                 Label format = new Label(String.valueOf(i++), label);
                 String value = "gridSet=" + gridSetId + "&format=" + mimeType.getFormat();
-                format.add(new AttributeModifier("value", true, new Model<String>(value)));
+                format.add(new AttributeModifier("value", new Model<String>(value)));
                 previewLinks.add(format);
             }
         }

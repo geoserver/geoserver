@@ -97,7 +97,7 @@ public class NewDataPage extends GeoServerSecuredPage {
                 item.add(new Label("resourceDescription", description));
                 Image icon = new Image("storeIcon", icons.getStoreIcon(factory.getClass()));
                 // TODO: icons could provide a description too to be used in alt=...
-                icon.add(new AttributeModifier("alt", true, new Model("")));
+                icon.add(new AttributeModifier("alt", new Model("")));
                 item.add(icon);
             }
         };
@@ -126,7 +126,7 @@ public class NewDataPage extends GeoServerSecuredPage {
                 item.add(new Label("resourceDescription", description));
                 Image icon = new Image("storeIcon", icons.getStoreIcon(format.getClass()));
                 // TODO: icons could provide a description too to be used in alt=...
-                icon.add(new AttributeModifier("alt", true, new Model("")));
+                icon.add(new AttributeModifier("alt", new Model("")));
                 item.add(icon);
             }
         };
@@ -150,7 +150,7 @@ public class NewDataPage extends GeoServerSecuredPage {
                 item.add(new Label("resourceDescription", new ParamResourceModel("other." + store.key + ".description", NewDataPage.this)));
                 Image icon = new Image("storeIcon", store.icon);
                 // TODO: icons could provide a description too to be used in alt=...
-                icon.add(new AttributeModifier("alt", true, new Model("")));
+                icon.add(new AttributeModifier("alt", new Model("")));
                 item.add(icon);
             }
         };

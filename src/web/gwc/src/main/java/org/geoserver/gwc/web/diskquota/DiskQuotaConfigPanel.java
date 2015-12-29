@@ -276,7 +276,7 @@ public class DiskQuotaConfigPanel extends Panel {
         cleanUpFreqModel = new PropertyModel<Integer>(diskQuotaModel, "cacheCleanUpFrequency");
         TextField<Integer> cleanUpFreq = new TextField<Integer>("cleanUpFreq", cleanUpFreqModel);
         cleanUpFreq.setRequired(true);
-        cleanUpFreq.add(new AttributeModifier("title", true, new StringResourceModel(
+        cleanUpFreq.add(new AttributeModifier("title", new StringResourceModel(
                 "DiskQuotaConfigPanel.cleanUpFreq.title", (Component) null, null)));
         add(cleanUpFreq);
         {
@@ -354,8 +354,7 @@ public class DiskQuotaConfigPanel extends Panel {
     static CheckBox checkbox(String id, IModel<Boolean> model, String titleKey) {
         CheckBox checkBox = new CheckBox(id, model);
         if (null != titleKey) {
-            AttributeModifier attributeModifier = new AttributeModifier("title", true,
-                    new StringResourceModel(titleKey, (Component) null, null));
+            AttributeModifier attributeModifier = new AttributeModifier("title", new StringResourceModel(titleKey, (Component) null, null));
             checkBox.add(attributeModifier);
         }
         return checkBox;

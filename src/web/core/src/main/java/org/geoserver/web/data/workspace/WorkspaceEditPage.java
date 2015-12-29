@@ -468,8 +468,7 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
                     
                     ServiceMenuPageInfo info = service.adminPage;
                     
-                    link.add(new AttributeModifier("title", true, 
-                        new StringResourceModel(info.getDescriptionKey(), (Component) null, null)));
+                    link.add(new AttributeModifier("title", new StringResourceModel(info.getDescriptionKey(), (Component) null, null)));
                     link.add(new Label("link.label", 
                         new StringResourceModel(info.getTitleKey(), (Component) null, null)));
                     
@@ -481,7 +480,7 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
                         image = new Image("link.icon", 
                             new PackageResourceReference(GeoServerBasePage.class, "img/icons/silk/wrench.png"));
                     }
-                    image.add(new AttributeModifier("alt", true, new ParamResourceModel(info.getTitleKey(), null)));
+                    image.add(new AttributeModifier("alt", new ParamResourceModel(info.getTitleKey(), null)));
                     link.add(image);
                     item.add(link);
                 }

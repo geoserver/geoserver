@@ -61,7 +61,7 @@ public class UpDownPanel<T extends Object> extends Panel {
                 }
             }
         };
-        upLink.getImage().add(new AttributeModifier("alt", true, new ParamResourceModel("up", upLink)));
+        upLink.getImage().add(new AttributeModifier("alt", new ParamResourceModel("up", upLink)));
         upLink.setOutputMarkupId(true);
         add( upLink);            
 
@@ -88,7 +88,7 @@ public class UpDownPanel<T extends Object> extends Panel {
                 }
             }
         };
-        downLink.getImage().add(new AttributeModifier("alt", true, new ParamResourceModel("down", downLink)));
+        downLink.getImage().add(new AttributeModifier("alt", new ParamResourceModel("down", downLink)));
         downLink.setOutputMarkupId(true);
         add( downLink);
     }

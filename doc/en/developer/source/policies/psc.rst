@@ -133,7 +133,9 @@ Current PSC
 * Alessio Fabiani
 * Andrea Aime
 * Ben Caradoc-Davies
+* Brad Hards
 * Christian Mueller
+* Ian Turton
 * Jody Garnett
 * Jukka Rahkonen
 * Kevin Smith

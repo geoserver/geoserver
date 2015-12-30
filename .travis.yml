@@ -12,9 +12,6 @@ notifications:
   email:
     on_success: never
     on_failure: never
-branches:
-  only:
-    - master
 os:
   - linux
   - osx

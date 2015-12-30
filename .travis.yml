@@ -13,4 +13,21 @@ notifications:
     on_success: never
     on_failure: never
 jdk:
+  - oraclejdk7
   - oraclejdk8
+branches:
+  only:
+    - master
+    - 2.8.x
+os:
+  - linux
+  - osx
+matrix: 
+  allow_failures:
+    - os: osx
+  exclude:
+    - branch: master 
+      jdk: oraclejdk7
+  include:
+    - os: linux
+      jdk: openjdk7

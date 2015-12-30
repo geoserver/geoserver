@@ -545,16 +545,16 @@ public abstract class GeoServerTablePanel<T> extends Panel {
     protected void onPopulateItem(Property<T> property, ListItem item) {
     }
 
-    IModel showingAllRecords(int first, int last, int size) {
+    IModel showingAllRecords(long first, long last, long size) {
         return new ParamResourceModel("showingAllRecords", this, first, last, size);
     }
     
-    IModel matchedXOutOfY(int first, int last, int size, int fullSize) {
+    IModel matchedXOutOfY(long first, long last, long size, long fullSize) {
         return new ParamResourceModel("matchedXOutOfY", this, first, last, size, fullSize);
     }
 
     protected class PagerDelegate implements Serializable {
-        int fullSize, size, first, last;
+        long fullSize, size, first, last;
         
         public PagerDelegate() {
             updateMatched();
@@ -583,8 +583,8 @@ public abstract class GeoServerTablePanel<T> extends Panel {
         /**
          * User oriented index of the first item in the current page
          */
-        int first(int fullSize) {
-            int size = fullSize;
+        long first(long fullSize) {
+            long size = fullSize;
             if (dataProvider.getKeywords() != null) {
                 size = dataView.getDataProvider().size();
             }
@@ -597,11 +597,11 @@ public abstract class GeoServerTablePanel<T> extends Panel {
         /**
          * User oriented index of the last item in the current page
          */
-        int last(int fullSize) {
+        long last(long fullSize) {
             
-            int count = dataProvider.getKeywords() != null ? 
+            long count = dataProvider.getKeywords() != null ? 
                     dataView.getPageCount() : optGetPageCount(fullSize);
-            int page = dataView.getCurrentPage();
+            long page = dataView.getCurrentPage();
             if (page < (count - 1))
                 return dataView.getItemsPerPage() * (page + 1);
             else {
@@ -609,9 +609,9 @@ public abstract class GeoServerTablePanel<T> extends Panel {
             }
         }
         
-        int optGetPageCount(int total) {
-            int page = dataView.getItemsPerPage();
-            int count = total / page;
+        long optGetPageCount(long total) {
+            long page = dataView.getItemsPerPage();
+            long count = total / page;
 
             if (page * count < total)
             {

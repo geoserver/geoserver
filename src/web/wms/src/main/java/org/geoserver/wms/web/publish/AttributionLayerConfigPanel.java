@@ -17,7 +17,7 @@ import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
-import org.apache.wicket.validation.validator.NumberValidator;
+import org.apache.wicket.validation.validator.RangeValidator;
 import org.apache.wicket.validation.validator.UrlValidator;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.PublishedInfo;
@@ -70,7 +70,7 @@ public class AttributionLayerConfigPanel extends PublishedConfigurationPanel<Pub
             new PropertyModel<Integer>(model, "attribution.logoHeight"),
             Integer.class
         );
-        height.add(NumberValidator.minimum(0));
+        height.add(RangeValidator.minimum(0));
         height.setOutputMarkupId(true);
         add(height);
 
@@ -78,7 +78,7 @@ public class AttributionLayerConfigPanel extends PublishedConfigurationPanel<Pub
             new PropertyModel<Integer>(model, "attribution.logoWidth"),
             Integer.class
         );
-        width.add(NumberValidator.minimum(0));
+        width.add(RangeValidator.minimum(0));
         width.setOutputMarkupId(true);
         add(width);
 

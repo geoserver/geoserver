@@ -12,11 +12,4 @@ notifications:
   email:
     on_success: never
     on_failure: never
-branches:
-  only:
-    - master
-    - 2.8.x
 jdk: oraclejdk8
-before_install:
-   # JAVA_HOME is not available on OSX, set it to allow Maven run
-   - if [ "$TRAVIS_OS_NAME" == "osx" ]; then export JAVA_HOME=$(/usr/libexec/java_home); fi

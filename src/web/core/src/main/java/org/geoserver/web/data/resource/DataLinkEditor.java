@@ -13,7 +13,6 @@ import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.form.validation.FormComponentFeedbackBorder;
@@ -24,7 +23,9 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.validation.IValidatable;
-import org.apache.wicket.validation.validator.AbstractValidator;
+import org.apache.wicket.validation.IValidationError;
+import org.apache.wicket.validation.IValidator;
+import org.apache.wicket.validation.ValidationError;
 import org.geoserver.catalog.DataLinkInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.impl.DataLinkInfoImpl;
@@ -129,16 +130,18 @@ public class DataLinkEditor extends Panel {
         noData.setVisible(!anyLink);
     }
     
-    public class UrlValidator extends AbstractValidator<String>{
+    public class UrlValidator implements IValidator<String> {
+
         @Override
-        protected void onValidate(IValidatable<String> validatable) {
+        public void validate(IValidatable<String> validatable) {
             String url = validatable.getValue();
             if (url != null )
             {
                 try {
                     DataLinkInfoImpl.validate(url);
                 } catch (IllegalArgumentException ex) {
-                    error(validatable);
+                    IValidationError err = new ValidationError("invalidDataLinkURL:" + url);
+                    validatable.error(err);
                 }
             }
         }

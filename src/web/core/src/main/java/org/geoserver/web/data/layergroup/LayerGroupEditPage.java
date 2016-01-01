@@ -22,6 +22,9 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.validation.IValidatable;
+import org.apache.wicket.validation.IValidationError;
+import org.apache.wicket.validation.IValidator;
+import org.apache.wicket.validation.ValidationError;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.LayerGroupInfo;
@@ -234,19 +237,19 @@ public class LayerGroupEditPage extends PublishedConfigurationPage<LayerGroupInf
             rootLayerPanel.setVisible(LayerGroupInfo.Mode.EO.equals(mode));
         }     
         
-        class GroupNameValidator extends AbstractValidator<String> {
+        class GroupNameValidator implements IValidator<String> {
 
             private static final long serialVersionUID = -6621372846640620132L;
 
             @Override
-            protected void onValidate(IValidatable<String> validatable) {
+            public void validate(IValidatable<String> validatable) {
                 String name = validatable.getValue();
                 LayerGroupInfo other = getCatalog().getLayerGroupByName(name);
                 if(other != null && (isNew || !other.getId().equals(getPublishedInfo().getId()))) {
-                    error(validatable, "duplicateGroupNameError", Collections.singletonMap("name", (Object) name));
+                    IValidationError err = new ValidationError("duplicateGroupNameError" + Collections.singletonMap("name", (Object) name));
+                    validatable.error(err);
                 }
             }
-            
         }
     }
 

@@ -9,7 +9,9 @@ import java.util.Collections;
 import java.util.regex.Pattern;
 
 import org.apache.wicket.validation.IValidatable;
-import org.apache.wicket.validation.validator.AbstractValidator;
+import org.apache.wicket.validation.IValidationError;
+import org.apache.wicket.validation.IValidator;
+import org.apache.wicket.validation.ValidationError;
 
 /**
  * Checks a string conforms to the XML Name production as declared at {@link http
@@ -19,7 +21,7 @@ import org.apache.wicket.validation.validator.AbstractValidator;
  * 
  */
 @SuppressWarnings("serial")
-public class XMLNameValidator extends AbstractValidator {
+public class XMLNameValidator implements IValidator {
     private static Pattern XML_NAME_PATTERN;
 
     static {
@@ -40,12 +42,12 @@ public class XMLNameValidator extends AbstractValidator {
     }
 
     @Override
-    protected void onValidate(IValidatable validatable) {
+    public void validate(IValidatable validatable) {
         String value = (String) validatable.getValue();
         if (!XML_NAME_PATTERN.matcher(value).matches()) {
-            error(validatable, "invalidXMLName", Collections.singletonMap("name", value));
+            IValidationError err = new ValidationError("invalidXMLName" + Collections.singletonMap("name", value));
+            validatable.error(err);
         }
-
     }
 
 }

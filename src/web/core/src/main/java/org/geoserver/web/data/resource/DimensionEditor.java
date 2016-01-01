@@ -26,7 +26,9 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.validation.IValidatable;
-import org.apache.wicket.validation.validator.AbstractValidator;
+import org.apache.wicket.validation.IValidationError;
+import org.apache.wicket.validation.IValidator;
+import org.apache.wicket.validation.ValidationError;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DimensionDefaultValueSetting;
 import org.geoserver.catalog.DimensionInfo;
@@ -441,7 +443,7 @@ public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
      * @author Ilkka Rinne / Spatineo Inc for the Finnish Meteorological Institute
      *
      */
-    public class ReferenceValueValidator extends AbstractValidator<String> {
+    public class ReferenceValueValidator implements IValidator<String> {
         String dimension;
         IModel<DimensionDefaultValueSetting.Strategy> strategyModel;
         
@@ -449,11 +451,11 @@ public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
             this.dimension = dimensionId;
             this.strategyModel = strategyModel;
         }
-        
+
         @Override
-        protected void onValidate(IValidatable<String> value) {
+        public void validate(IValidatable<String> value) {
             if ( ((strategyModel.getObject() == Strategy.FIXED) || (strategyModel.getObject() == Strategy.NEAREST)) && value.getValue() == null){
-                error(value, "emptyReferenceValue");
+                value.error(new ValidationError("emptyReferenceValue"));
             }
             else if (dimension.equals("time")) {
                 try {
@@ -462,12 +464,15 @@ public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
                     if (strategyModel.getObject() == Strategy.NEAREST) {
                         if (!DimensionDefaultValueSetting.TIME_CURRENT.equalsIgnoreCase(value
                                 .getValue())) {
-                            error(value, "invalidNearestTimeReferenceValue", Collections
+                            IValidationError err = new ValidationError("invalidNearestTimeReferenceValue " + Collections
                                     .singletonMap("value", (Object) value.getValue()));
+                            value.error(err);
                         }
                     } else {
-                        error(value, "invalidTimeReferenceValue", Collections.singletonMap("value",
+                        IValidationError err = new ValidationError("invalidTimeReferenceValue" + Collections.singletonMap("value",
                                 (Object) value.getValue()));
+
+                        value.error(err);
                     }
                 }
             }
@@ -475,15 +480,11 @@ public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
                 try {
                     Double.parseDouble(value.getValue());
                 } catch (NumberFormatException nfe){
-                    error(value, "invalidElevationReferenceValue", Collections.singletonMap("value",
+                    IValidationError err = new ValidationError("invalidElevationReferenceValue " + Collections.singletonMap("value",
                             (Object) value.getValue()));
+                    value.error(err);
                 }
             }
-        }
-
-        @Override
-        public boolean validateOnNullValue() {
-            return true;
         }
     }
     

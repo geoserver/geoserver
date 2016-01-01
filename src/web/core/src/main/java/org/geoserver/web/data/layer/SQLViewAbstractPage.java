@@ -65,6 +65,9 @@ import com.vividsolutions.jts.geom.MultiPoint;
 import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
+import org.apache.wicket.validation.IValidationError;
+import org.apache.wicket.validation.IValidator;
+import org.apache.wicket.validation.ValidationError;
 
 /**
  * Base page for SQL view creation/editing
@@ -552,9 +555,10 @@ public abstract class SQLViewAbstractPage extends GeoServerSecuredPage {
     /**
      * Checks the sql view name is unique
      */
-    class ViewNameValidator extends AbstractValidator {
+    class ViewNameValidator implements IValidator {
+
         @Override
-        protected void onValidate(IValidatable validatable) {
+        public void validate(IValidatable validatable) {
             String vtName = (String) validatable.getValue();
             
             final DataStoreInfo store = getCatalog().getStore(storeId, DataStoreInfo.class);
@@ -567,7 +571,8 @@ public abstract class SQLViewAbstractPage extends GeoServerSecuredPage {
                             Map<String, String> map = new HashMap<String, String>();
                             map.put("name", vtName);
                             map.put("typeName", curr.getName());
-                            error(validatable, "duplicateSqlViewName", map);
+                            IValidationError err = new ValidationError("duplicateSqlViewName:" + vtName);
+                            validatable.error(err);
                             return;
                         }
                     }

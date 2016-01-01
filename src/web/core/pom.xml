@@ -24,7 +24,8 @@
   <dependencies>
     <dependency>
       <groupId>org.apache.wicket</groupId>
-      <artifactId>wicket-core</artifactId>
+      <artifactId>wicket</artifactId>
+      <type>pom</type>
     </dependency>
     <dependency>
       <groupId>org.apache.wicket</groupId>

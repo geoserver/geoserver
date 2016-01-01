@@ -856,7 +856,8 @@
    </dependency>
    <dependency>
      <groupId>org.apache.wicket</groupId>
-     <artifactId>wicket-core</artifactId>
+     <artifactId>wicket</artifactId>
+     <type>pom</type>
      <version>${wicket.version}</version>
    </dependency>
    <dependency>

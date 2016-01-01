@@ -40,6 +40,9 @@ import org.opengis.feature.type.Name;
 
 import net.opengis.wfs20.ParameterExpressionType;
 import net.opengis.wfs20.StoredQueryListItemType;
+import org.apache.wicket.validation.IValidationError;
+import org.apache.wicket.validation.IValidator;
+import org.apache.wicket.validation.ValidationError;
 
 public class CascadedWFSStoredQueryNewPage extends CascadedWFSStoredQueryAbstractPage {
 
@@ -189,9 +192,9 @@ public class CascadedWFSStoredQueryNewPage extends CascadedWFSStoredQueryAbstrac
         }
     }
 
-    class ViewNameValidator extends AbstractValidator {
+    class ViewNameValidator implements IValidator {
         @Override
-        protected void onValidate(IValidatable validatable) {
+        public void validate(IValidatable validatable) {
             String csqName = (String) validatable.getValue();
 
             final DataStoreInfo store = getCatalog().getStore(storeId, DataStoreInfo.class);
@@ -203,7 +206,8 @@ public class CascadedWFSStoredQueryNewPage extends CascadedWFSStoredQueryAbstrac
                         Map<String, String> map = new HashMap<String, String>();
                         map.put("name", csqName);
                         map.put("dataStore", store.getName());
-                        error(validatable, "duplicateSqlViewName", map);
+                        IValidationError err = new ValidationError("duplicateSqlViewName: " + csqName);
+                        validatable.error(err);
                         return;
                     }
                 }

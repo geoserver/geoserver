@@ -25,6 +25,9 @@ import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.validation.IValidatable;
+import org.apache.wicket.validation.IValidationError;
+import org.apache.wicket.validation.IValidator;
+import org.apache.wicket.validation.ValidationError;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
@@ -186,9 +189,10 @@ public abstract class CoverageViewAbstractPage extends GeoServerSecuredPage {
     /**
      * Checks the {@link CoverageView} name is unique
      */
-    class CoverageViewNameValidator extends AbstractValidator {
+    class CoverageViewNameValidator implements IValidator {
+
         @Override
-        protected void onValidate(IValidatable validatable) {
+        public void validate(IValidatable validatable) {
             String vcName = (String) validatable.getValue();
 
             final CoverageStoreInfo store = getCatalog().getStore(storeId, CoverageStoreInfo.class);
@@ -201,7 +205,8 @@ public abstract class CoverageViewAbstractPage extends GeoServerSecuredPage {
                             Map<String, String> map = new HashMap<String, String>();
                             map.put("name", vcName);
                             map.put("coverageName", curr.getName());
-                            error(validatable, "duplicateCoverageViewName", map);
+                            IValidationError err = new ValidationError("duplicateCoverageViewName:" + vcName);
+                            validatable.error(err);
                             return;
                         }
                     }

@@ -25,8 +25,11 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.validation.IValidatable;
-import org.apache.wicket.validation.validator.AbstractValidator;
+import org.apache.wicket.validation.IValidationError;
+import org.apache.wicket.validation.IValidator;
+import org.apache.wicket.validation.ValidationError;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.MetadataLinkInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.impl.MetadataLinkInfoImpl;
@@ -47,9 +50,9 @@ public class MetadataLinkEditor extends Panel {
      */
     private static final List<String> LINK_TYPES = Arrays.asList("ISO19115:2003", "FGDC",
             "TC211", "19139", "other");
-    private ListView<MetadataLinkInfo> links;
-    private Label noMetadata;
-    private WebMarkupContainer table;
+    private final ListView<MetadataLinkInfo> links;
+    private final Label noMetadata;
+    private final WebMarkupContainer table;
     private PropertyModel<List<MetadataLinkInfo>> metadataLinksModel;
 
     /**
@@ -61,7 +64,7 @@ public class MetadataLinkEditor extends Panel {
     
     /**
      * @param id
-     * @param model Must return object that has a "metadataLinks" property
+     * @param resourceModel Must return object that has a "metadataLinks" property
      * (such as a {@link ResourceInfo} or {@link LayerGroupInfo})
      */
     public MetadataLinkEditor(String id, final IModel<?> resourceModel) {
@@ -72,7 +75,7 @@ public class MetadataLinkEditor extends Panel {
         container.setOutputMarkupId(true);
         add(container);
         
-        metadataLinksModel = new PropertyModel<List<MetadataLinkInfo>>(resourceModel, "metadataLinks");
+        metadataLinksModel = new PropertyModel<>(resourceModel, "metadataLinks");
 
         // the link list
         table = new WebMarkupContainer("table");
@@ -136,7 +139,7 @@ public class MetadataLinkEditor extends Panel {
 
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                MetadataLinkInfo link = getCatalog().getFactory().createMetadataLink();;
+                MetadataLinkInfo link = getCatalog().getFactory().createMetadataLink();
                 link.setMetadataType(LINK_TYPES.get(0));
                 link.setType("text/plain");
                 metadataLinksModel.getObject().add(link);
@@ -155,18 +158,19 @@ public class MetadataLinkEditor extends Panel {
         noMetadata.setVisible(!anyLink);
     }
     
-    public class UrlValidator extends AbstractValidator<String>{
+    public class UrlValidator implements IValidator<String>{
         private static final long serialVersionUID = 8435726308689930141L;
 
         @Override
-        protected void onValidate(IValidatable<String> validatable) {
-            String url = validatable.getValue();
+        public void validate(IValidatable validatable) {
+            String url = (String)validatable.getValue();
             if (url != null )
             {
                 try {
                     MetadataLinkInfoImpl.validate(url);
                 } catch (IllegalArgumentException ex) {
-                    error(validatable);
+                    IValidationError err = new ValidationError("invalidURI:" + url);
+                    validatable.error(err);
                 }
             }
         }

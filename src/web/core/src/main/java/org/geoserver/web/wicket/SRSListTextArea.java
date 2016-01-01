@@ -11,7 +11,9 @@ import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.util.convert.IConverter;
 import org.apache.wicket.validation.IValidatable;
-import org.apache.wicket.validation.validator.AbstractValidator;
+import org.apache.wicket.validation.IValidationError;
+import org.apache.wicket.validation.IValidator;
+import org.apache.wicket.validation.ValidationError;
 import org.geotools.referencing.CRS;
 
 public class SRSListTextArea extends TextArea<List<String>> {
@@ -53,24 +55,24 @@ public class SRSListTextArea extends TextArea<List<String>> {
         }
     }
 
-    private static class SRSListValidator extends AbstractValidator {
+    private static class SRSListValidator implements IValidator {
 
         @Override
-        protected void onValidate(IValidatable validatable) {
+        public void validate(IValidatable validatable) {
             List<String> srsList = (List<String>) validatable.getValue();
-            List<String> invalid = new ArrayList<String>();
-            for (String srs : srsList) {
+            List<String> invalid = new ArrayList<>();
+            srsList.stream().forEach((srs) -> {
                 try {
                     CRS.decode("EPSG:" + srs);
                 } catch (Exception e) {
                     invalid.add(srs);
                 }
+            });
+
+            if (invalid.size() > 0) {
+                IValidationError err = new ValidationError("SRSListTextArea.unknownEPSGCodes" + Collections.singletonMap("codes", invalid.toString()));
+                validatable.error(err);
             }
-
-            if (invalid.size() > 0)
-                error(validatable, "SRSListTextArea.unknownEPSGCodes",
-                        Collections.singletonMap("codes", invalid.toString()));
-
         }
 
     }

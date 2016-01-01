@@ -10,10 +10,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.io.IOException;
 
-import org.geoserver.platform.GeoServerResourceLoader;
-import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.web.StringValidatable;
-import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import com.google.common.io.Files;

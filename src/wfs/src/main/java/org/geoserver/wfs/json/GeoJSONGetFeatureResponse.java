@@ -1,5 +1,5 @@
 /* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
- * (c) 2001 - 2016 OpenPlans
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -216,7 +216,7 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat {
                                 } else if(value == null){
                                     jsonWriter.key(ad.getLocalName());
                                     jsonWriter.value(null);
-                                }else {
+                                } else {
                                     jsonWriter.key(ad.getLocalName());
                                     jsonWriter.writeGeom((Geometry) value);
                                 }

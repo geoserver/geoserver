@@ -79,12 +79,12 @@ public abstract class AbstractResourceWatcherTest {
                 chkFileC1 = new CheckingResourceListener(Kind.ENTRY_DELETE), 
                 chkFileC2 = new CheckingResourceListener(Kind.ENTRY_DELETE);
         
-        watcher.addListener(res, chkDirA);
-        watcher.addListener(res.get("FileA1"), chkFileA1);
-        watcher.addListener(res.get("FileA2"), chkFileA2);
-        watcher.addListener(res.get("DirC"), chkDirC);
-        watcher.addListener(res.get("DirC/FileC1"), chkFileC1);
-        watcher.addListener(res.get("DirC/FileC2"), chkFileC2);
+        watcher.addListener(res.path(), chkDirA);
+        watcher.addListener(res.get("FileA1").path(), chkFileA1);
+        watcher.addListener(res.get("FileA2").path(), chkFileA2);
+        watcher.addListener(res.get("DirC").path(), chkDirC);
+        watcher.addListener(res.get("DirC/FileC1").path(), chkFileC1);
+        watcher.addListener(res.get("DirC/FileC2").path(), chkFileC2);
         
         List<Event> events = SimpleResourceNotificationDispatcher.createEvents(res, Kind.ENTRY_DELETE);        
         watcher.changed(new ResourceNotification("DirA", Kind.ENTRY_DELETE, System.currentTimeMillis(), events));
@@ -98,12 +98,12 @@ public abstract class AbstractResourceWatcherTest {
         assertTrue(chkFileC2.isChecked());
         
         //remove listeners
-        assertTrue(watcher.removeListener(res, chkDirA));
-        assertTrue(watcher.removeListener(res.get("FileA1"), chkFileA1));
-        assertTrue(watcher.removeListener(res.get("FileA2"), chkFileA2));
-        assertTrue(watcher.removeListener(res.get("DirC"), chkDirC));
-        assertTrue(watcher.removeListener(res.get("DirC/FileC1"), chkFileC1));
-        assertTrue(watcher.removeListener(res.get("DirC/FileC2"), chkFileC2));
+        assertTrue(watcher.removeListener(res.path(), chkDirA));
+        assertTrue(watcher.removeListener(res.get("FileA1").path(), chkFileA1));
+        assertTrue(watcher.removeListener(res.get("FileA2").path(), chkFileA2));
+        assertTrue(watcher.removeListener(res.get("DirC").path(), chkDirC));
+        assertTrue(watcher.removeListener(res.get("DirC/FileC1").path(), chkFileC1));
+        assertTrue(watcher.removeListener(res.get("DirC/FileC2").path(), chkFileC2));
         
     }
     
@@ -115,9 +115,9 @@ public abstract class AbstractResourceWatcherTest {
                 chkDirC = new CheckingResourceListener(Kind.ENTRY_MODIFY), 
                 chkFileC1 = new CheckingResourceListener(Kind.ENTRY_MODIFY);
         
-        watcher.addListener(res, chkFileC1);
-        watcher.addListener(store.get("DirA/DirC"), chkDirC);
-        watcher.addListener(store.get("DirA"), chkDirA);
+        watcher.addListener(res.path(), chkFileC1);
+        watcher.addListener(store.get("DirA/DirC").path(), chkDirC);
+        watcher.addListener(store.get("DirA").path(), chkDirA);
         
         List<Event> events = SimpleResourceNotificationDispatcher.createEvents(res, Kind.ENTRY_MODIFY);        
         watcher.changed(new ResourceNotification("DirA/DirC/FileC1", Kind.ENTRY_MODIFY, System.currentTimeMillis(), events));
@@ -128,9 +128,9 @@ public abstract class AbstractResourceWatcherTest {
         assertTrue(chkFileC1.isChecked());
         
         //remove listeners
-        assertTrue(watcher.removeListener(res, chkFileC1));
-        assertTrue(watcher.removeListener(store.get("DirA/DirC"), chkDirC));
-        assertTrue(watcher.removeListener(store.get("DirA"), chkDirA));
+        assertTrue(watcher.removeListener(res.path(), chkFileC1));
+        assertTrue(watcher.removeListener(store.get("DirA/DirC").path(), chkDirC));
+        assertTrue(watcher.removeListener(store.get("DirA").path(), chkDirA));
         
     }
     
@@ -143,10 +143,10 @@ public abstract class AbstractResourceWatcherTest {
                 chkDirD = new CheckingResourceListener(Kind.ENTRY_CREATE),
                 chkFileQ = new CheckingResourceListener(Kind.ENTRY_CREATE);
         
-        watcher.addListener(res, chkFileQ);
-        watcher.addListener(store.get("DirA/DirC/DirD"), chkDirD);
-        watcher.addListener(store.get("DirA/DirC"), chkDirC);
-        watcher.addListener(store.get("DirA"), chkDirA);
+        watcher.addListener(res.path(), chkFileQ);
+        watcher.addListener(store.get("DirA/DirC/DirD").path(), chkDirD);
+        watcher.addListener(store.get("DirA/DirC").path(), chkDirC);
+        watcher.addListener(store.get("DirA").path(), chkDirA);
         
         List<Event> events = SimpleResourceNotificationDispatcher.createEvents(res, Kind.ENTRY_CREATE);        
         watcher.changed(new ResourceNotification("DirA/DirC/DirD/FileQ", Kind.ENTRY_CREATE, System.currentTimeMillis(), events));
@@ -158,10 +158,10 @@ public abstract class AbstractResourceWatcherTest {
         assertTrue(chkFileQ.isChecked());
         
         //remove listeners
-        assertTrue(watcher.removeListener(res, chkFileQ));
-        assertTrue(watcher.removeListener(store.get("DirA/DirC/DirD"), chkDirD));
-        assertTrue(watcher.removeListener(store.get("DirA/DirC"), chkDirC));
-        assertTrue(watcher.removeListener(store.get("DirA"), chkDirA));
+        assertTrue(watcher.removeListener(res.path(), chkFileQ));
+        assertTrue(watcher.removeListener(store.get("DirA/DirC/DirD").path(), chkDirD));
+        assertTrue(watcher.removeListener(store.get("DirA/DirC").path(), chkDirC));
+        assertTrue(watcher.removeListener(store.get("DirA").path(), chkDirA));
         
     }
 

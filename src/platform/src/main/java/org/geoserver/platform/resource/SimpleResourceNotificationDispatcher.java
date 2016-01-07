@@ -27,18 +27,18 @@ public class SimpleResourceNotificationDispatcher implements ResourceNotificatio
     private Map<String, List<ResourceListener>> handlers = new HashMap<String, List<ResourceListener>>();
 
     @Override
-    public synchronized void addListener(Resource resource, ResourceListener listener) {
-        List<ResourceListener> listeners  = handlers.get(resource.path());
+    public synchronized void addListener(String resource, ResourceListener listener) {
+        List<ResourceListener> listeners  = handlers.get(resource);
         if (listeners == null) {
             listeners = new ArrayList<ResourceListener>();
-            handlers.put(resource.path(), listeners);
+            handlers.put(resource, listeners);
         }
         listeners.add(listener);
     }
 
     @Override
-    public synchronized boolean removeListener(Resource resource, ResourceListener listener) {
-        List<ResourceListener> listeners  = handlers.get(resource.path());
+    public synchronized boolean removeListener(String resource, ResourceListener listener) {
+        List<ResourceListener> listeners  = handlers.get(resource);
         if (listeners != null) {
             return listeners.remove(listener);
         }        

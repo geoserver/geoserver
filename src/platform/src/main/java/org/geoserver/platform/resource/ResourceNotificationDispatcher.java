@@ -20,7 +20,7 @@ public interface ResourceNotificationDispatcher {
      * @param listener the resource listener
      * @return true iff successful 
      */
-    public void addListener(Resource resource, ResourceListener listener);
+    public void addListener(String resource, ResourceListener listener);
     
     /**
      * Remove resource listener from this watcher.
@@ -29,7 +29,7 @@ public interface ResourceNotificationDispatcher {
      * @param listener the resource listener
      * @return true iff successful 
      */
-    public boolean removeListener(Resource resource, ResourceListener listener);
+    public boolean removeListener(String resource, ResourceListener listener);
     
     /**
      * Send notification.

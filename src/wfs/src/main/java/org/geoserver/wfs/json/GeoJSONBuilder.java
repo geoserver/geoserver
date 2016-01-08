@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -6,6 +6,7 @@
 package org.geoserver.wfs.json;
 
 import java.io.Writer;
+import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.logging.Logger;
 
@@ -44,6 +45,8 @@ public class GeoJSONBuilder extends JSONBuilder {
     
     private CRS.AxisOrder axisOrder = CRS.AxisOrder.EAST_NORTH;
 
+    private int numDecimals = 6;
+
     public GeoJSONBuilder(Writer w) {
         super(w);
     }
@@ -51,8 +54,8 @@ public class GeoJSONBuilder extends JSONBuilder {
     /**
      * Writes any geometry object.  This class figures out which geometry representation to write
      * and calls subclasses to actually write the object.
-     * @param geometry The geoemtry be encoded
-     * @return The JSONBuilder with the new geoemtry
+     * @param geometry The geometry to be encoded
+     * @return The JSONBuilder with the new geometry
      * @throws JSONException If anything goes wrong
      */
     public JSONBuilder writeGeom(Geometry geometry) throws JSONException {
@@ -289,7 +292,8 @@ public class GeoJSONBuilder extends JSONBuilder {
     
     /**
      * Overrides to handle the case of encoding {@code java.util.Date} and its date/time/timestamp
-     * descendants, as well as {@code java.util.Calendar} instances as ISO 8601 strings.
+     * descendants, as well as {@code java.util.Calendar} instances as ISO 8601 strings.  In addition
+     * handles rounding numbers to the specified number of decimal points.
      * 
      * @see net.sf.json.util.JSONBuilder#value(java.lang.Object)
      */
@@ -297,11 +301,17 @@ public class GeoJSONBuilder extends JSONBuilder {
     public GeoJSONBuilder value(Object value) {
         if (value instanceof java.util.Date || value instanceof Calendar) {
             value = Converters.convert(value, String.class);
+        } else if (value instanceof Double) {
+            value = roundToNumberOfDecimalPlaces((Double)value);
         }
         super.value(value);
         return this;
     }
-    
+
+    private double roundToNumberOfDecimalPlaces(Double value) {
+        return new BigDecimal((Double)value).setScale(numDecimals, BigDecimal.ROUND_HALF_UP).doubleValue();		
+    }
+
     /**
      * Set the axis order to assume all input will be provided in. Has no effect on geometries 
      * that have already been written.
@@ -309,5 +319,9 @@ public class GeoJSONBuilder extends JSONBuilder {
      */
     public void setAxisOrder(CRS.AxisOrder axisOrder) {
         this.axisOrder = axisOrder;
+    }
+
+    public void setNumberOfDecimals(int numberOfDecimals) {
+        this.numDecimals = numberOfDecimals;
     }
 }

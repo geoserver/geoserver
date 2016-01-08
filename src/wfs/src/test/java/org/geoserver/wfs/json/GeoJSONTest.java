@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -23,6 +23,9 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.ProjectionPolicy;
 import org.geoserver.config.GeoServer;
+import org.geoserver.config.GeoServerInfo;
+import org.geoserver.config.SettingsInfo;
+import org.geoserver.config.impl.SettingsInfoImpl;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.util.IOUtils;
@@ -51,6 +54,7 @@ public class GeoJSONTest extends WFSTestSupport {
     public static QName LINE3D = new QName(SystemTestData.CITE_URI, "Line3D", SystemTestData.CITE_PREFIX);
     public static QName POINT_LATLON = new QName(SystemTestData.CITE_URI, "PointLatLon", SystemTestData.CITE_PREFIX);
     public static QName POINT_LONLAT = new QName(SystemTestData.CITE_URI, "PointLonLat", SystemTestData.CITE_PREFIX);
+    public static QName POINT_REDUCED = new QName(SystemTestData.CITE_URI, "PointReduced", SystemTestData.CITE_PREFIX);
     
     @Override
     @SuppressWarnings("unchecked")
@@ -79,6 +83,15 @@ public class GeoJSONTest extends WFSTestSupport {
         pointLatLon.setSRS("EPSG:4326");
         pointLatLon.setProjectionPolicy(ProjectionPolicy.FORCE_DECLARED);
         getCatalog().save(pointLonLat);
+        
+        // A feature type with reduced precision
+        data.addVectorLayer (POINT_REDUCED, Collections.EMPTY_MAP, getClass(), getCatalog());
+        FeatureTypeInfo pointReduced = getCatalog().getFeatureTypeByName(POINT_REDUCED.getPrefix(), POINT_REDUCED.getLocalPart());
+        pointReduced.setNativeCRS(crsLatLon);
+        pointReduced.setSRS("EPSG:4326");
+        pointReduced.setProjectionPolicy(ProjectionPolicy.FORCE_DECLARED);
+        pointReduced.setNumDecimals(2);
+        getCatalog().save(pointReduced);
 
     }
 	
@@ -456,6 +469,30 @@ public class GeoJSONTest extends WFSTestSupport {
         CoordinateReferenceSystem expectedCrs = CRS.decode("EPSG:4326");
         JSONObject aCRS = collection.getJSONObject("crs");
         assertThat(aCRS, encodesCRS(expectedCrs));
+    }
+    
+    @Test
+    public void testGetFeatureWhereLayerHasDecimalPointsSet() throws Exception {
+        JSONObject collection = (JSONObject) getAsJSON("wfs?request=GetFeature&version=1.0.0&typename=" + getLayerId(POINT_REDUCED)
+                + "&outputformat=" + JSONType.json);
+        assertThat(collection.getInt("totalFeatures"), is(3));
+
+        JSONArray features = collection.getJSONArray("features");
+        assertThat((Collection<?>)features, Matchers.hasSize(3));
+        JSONObject feature = features.getJSONObject(0);
+        
+        JSONObject geometry = feature.getJSONObject("geometry");
+        assertThat(geometry.getString("type"), is("Point"));
+        
+        JSONArray coords = geometry.getJSONArray("coordinates");
+        assertThat((Iterable<?>)coords, contains((Object)120.12, 0.56));
+        
+        JSONArray bbox = collection.getJSONArray("bbox");
+        assertThat((Iterable<?>)bbox, Matchers.contains((Object)(-170.19), -30.13, 120.12, 45.23));
+        
+        CoordinateReferenceSystem expectedCrs = CRS.decode("EPSG:4326");
+        JSONObject aCRS = collection.getJSONObject("crs");
+        assertThat(aCRS, encodesCRS(expectedCrs));        
     }
     
     @Test

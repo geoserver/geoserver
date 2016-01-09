@@ -333,12 +333,12 @@ public class JDBCResourceStore implements ResourceStore {
 
         @Override
         public void addListener(ResourceListener listener) {
-            resourceWatcher.addListener(this, listener);
+            resourceWatcher.addListener(path(), listener);
         }
 
         @Override
         public void removeListener(ResourceListener listener) {
-            resourceWatcher.removeListener(this, listener);   
+            resourceWatcher.removeListener(path(), listener);
         }
         
 

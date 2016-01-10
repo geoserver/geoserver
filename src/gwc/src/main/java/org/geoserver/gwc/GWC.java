@@ -1055,7 +1055,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
      */
     public boolean isDiskQuotaEnabled() {
         DiskQuotaMonitor diskQuotaMonitor = getDiskQuotaMonitor();
-        return diskQuotaMonitor.getConfig().isEnabled();
+        return diskQuotaMonitor.isEnabled() && diskQuotaMonitor.getConfig().isEnabled();
     }
 
     /**

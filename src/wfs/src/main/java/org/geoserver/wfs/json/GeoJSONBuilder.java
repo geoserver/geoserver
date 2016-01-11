@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -6,6 +6,7 @@
 package org.geoserver.wfs.json;
 
 import java.io.Writer;
+import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.logging.Logger;
 
@@ -13,6 +14,7 @@ import net.sf.json.JSONException;
 import net.sf.json.util.JSONBuilder;
 
 import org.geotools.geometry.jts.coordinatesequence.CoordinateSequences;
+import org.geotools.gml.producer.CoordinateWriter;
 import org.geotools.referencing.CRS;
 import org.geotools.util.Converters;
 
@@ -39,10 +41,13 @@ import com.vividsolutions.jts.geom.impl.CoordinateArraySequence;
  *
  */
 public class GeoJSONBuilder extends JSONBuilder {
+
     private final Logger LOGGER = org.geotools.util.logging.Logging
     .getLogger(this.getClass());
     
     private CRS.AxisOrder axisOrder = CRS.AxisOrder.EAST_NORTH;
+
+    private int numDecimals = 6;
 
     public GeoJSONBuilder(Writer w) {
         super(w);
@@ -51,8 +56,8 @@ public class GeoJSONBuilder extends JSONBuilder {
     /**
      * Writes any geometry object.  This class figures out which geometry representation to write
      * and calls subclasses to actually write the object.
-     * @param geometry The geoemtry be encoded
-     * @return The JSONBuilder with the new geoemtry
+     * @param geometry The geometry to be encoded
+     * @return The JSONBuilder with the new geometry
      * @throws JSONException If anything goes wrong
      */
     public JSONBuilder writeGeom(Geometry geometry) throws JSONException {
@@ -159,14 +164,14 @@ public class GeoJSONBuilder extends JSONBuilder {
     private JSONBuilder writeCoordinate(double x, double y, double z) {
         this.array();
         if(axisOrder==CRS.AxisOrder.NORTH_EAST){
-            this.value(y);
-            this.value(x);
+            roundedValue(y);
+            roundedValue(x);
         } else {
-            this.value(x);
-            this.value(y);
+            roundedValue(x);
+            roundedValue(y);
         }
         if(!Double.isNaN(z)) {
-            this.value(z);
+            roundedValue(z);
         }
 
         return this.endArray();
@@ -183,17 +188,21 @@ public class GeoJSONBuilder extends JSONBuilder {
         this.key("bbox");
         this.array();
         if(axisOrder==CRS.AxisOrder.NORTH_EAST) {
-            this.value(env.getMinY());
-            this.value(env.getMinX());
-            this.value(env.getMaxY());
-            this.value(env.getMaxX());
+            roundedValue(env.getMinY());
+            roundedValue(env.getMinX());
+            roundedValue(env.getMaxY());
+            roundedValue(env.getMaxX());
         } else {
-            this.value(env.getMinX());
-            this.value(env.getMinY());
-            this.value(env.getMaxX());
-            this.value(env.getMaxY());
+            roundedValue(env.getMinX());
+            roundedValue(env.getMinY());
+            roundedValue(env.getMaxX());
+            roundedValue(env.getMaxY());
         }
         return this.endArray();
+    }
+    
+    private void roundedValue(double value) {
+        super.value(RoundingUtil.round(value, numDecimals));
     }
 
     /**
@@ -289,7 +298,8 @@ public class GeoJSONBuilder extends JSONBuilder {
     
     /**
      * Overrides to handle the case of encoding {@code java.util.Date} and its date/time/timestamp
-     * descendants, as well as {@code java.util.Calendar} instances as ISO 8601 strings.
+     * descendants, as well as {@code java.util.Calendar} instances as ISO 8601 strings.  In addition
+     * handles rounding numbers to the specified number of decimal points.
      * 
      * @see net.sf.json.util.JSONBuilder#value(java.lang.Object)
      */
@@ -301,6 +311,7 @@ public class GeoJSONBuilder extends JSONBuilder {
         super.value(value);
         return this;
     }
+
     
     /**
      * Set the axis order to assume all input will be provided in. Has no effect on geometries 
@@ -309,5 +320,9 @@ public class GeoJSONBuilder extends JSONBuilder {
      */
     public void setAxisOrder(CRS.AxisOrder axisOrder) {
         this.axisOrder = axisOrder;
+    }
+
+    public void setNumberOfDecimals(int numberOfDecimals) {
+        this.numDecimals = numberOfDecimals;
     }
 }

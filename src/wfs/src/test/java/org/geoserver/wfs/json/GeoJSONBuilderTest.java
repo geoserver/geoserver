@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -25,7 +25,7 @@ public class GeoJSONBuilderTest {
     StringWriter writer;
 
     GeoJSONBuilder builder;
-
+    
     @Before
     public void setUp() {
         writer = new StringWriter();
@@ -196,6 +196,30 @@ public class GeoJSONBuilderTest {
     @Test
     public void testWrite3DPolygon() throws Exception {
         Geometry g = new WKTReader().read("POLYGON((0 0 0, 0 10 1, 10 10 2, 10 0 3, 0 0 0),(1 1 4, 1 2 5, 2 2 6, 2 1 7, 1 1 4))");
+        builder.writeGeom(g);
+        assertEquals("{\"type\":\"Polygon\",\"coordinates\":[[[0,0,0],[0,10,1],[10,10,2],[10,0,3],[0,0,0]],[[1,1,4],[1,2,5],[2,2,6],[2,1,7],[1,1,4]]]}", writer.toString());
+    }
+    
+    @Test
+    public void testNumberOfDecimalsFor3dPoint() throws Exception {
+        builder.setNumberOfDecimals(2);
+        Geometry g = new WKTReader().read("POINT(2.1234 0.1234 20.9999)");
+        builder.writeGeom(g);
+        assertEquals("{\"type\":\"Point\",\"coordinates\":[2.12,0.12,21]}", writer.toString());        
+    }
+    
+    @Test
+    public void testNumberOfDecimalsFor3dLine() throws Exception {
+        builder.setNumberOfDecimals(3);
+        Geometry g = new WKTReader().read("LINESTRING(1E-3 1E-4 1E-5, 0 10.12312321 1.000002, 10.1 10.2 2.0, 10 0 3, 0 0 0)");
+        builder.writeGeom(g);
+        assertEquals("{\"type\":\"LineString\",\"coordinates\":[[0.001,0,0],[0,10.123,1],[10.1,10.2,2],[10,0,3],[0,0,0]]}", writer.toString());
+    }
+    
+    @Test
+    public void testNumberOfDecimalsFor3dPolygon() throws Exception {
+        builder.setNumberOfDecimals(0);
+        Geometry g = new WKTReader().read("POLYGON((0.1 0.2 0.3, 0.1 10.1 1.1, 10.2 10.3 2.4, 9.5 0.4 3, 0.1 0.2 0.3),(1 1 4, 1 2 5, 2 2 6, 2 1 7, 1 1 4))");
         builder.writeGeom(g);
         assertEquals("{\"type\":\"Polygon\",\"coordinates\":[[[0,0,0],[0,10,1],[10,10,2],[10,0,3],[0,0,0]],[[1,1,4],[1,2,5],[2,2,6],[2,1,7],[1,1,4]]]}", writer.toString());
     }

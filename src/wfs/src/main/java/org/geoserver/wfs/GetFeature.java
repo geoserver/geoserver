@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -609,7 +609,6 @@ public class GetFeature {
             // where the client has limited the result set size, so we compute it lazily
             if (isNumberMatchedSkipped) {
                 totalCount = BigInteger.valueOf(-1);
-                totalOffset = 0;
             } else if(count < maxFeatures && calculateSize) {
                  // optimization: if count < max features then total count == count
                  totalCount = BigInteger.valueOf(count);
@@ -756,11 +755,10 @@ public class GetFeature {
             if (count > 0 && offset > -1) {
                 //next
 
-                //calculate the count of the next result set 
-                int nextCount = total.intValue() - (offset + count);
-                if (nextCount > 0) {
+                // don't return a next if we are at the end.
+                // (ie. are returning less results than requested)
+                if (maxFeatures <= count) {
                     kvp.put("startIndex", String.valueOf(offset > 0 ? offset + count : count));
-                    //kvp.put("count", String.valueOf(nextCount));
                     kvp.put("count", String.valueOf(maxFeatures));
                     result.setNext(buildURL(request.getBaseUrl(), "wfs", kvp, URLType.SERVICE));
                 }

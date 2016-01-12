@@ -1,10 +1,12 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2014 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wms.dimension.impl;
 
+import java.text.ParseException;
+import java.util.Collection;
 import java.util.Date;
 
 import org.geoserver.catalog.CoverageInfo;
@@ -13,6 +15,8 @@ import org.geoserver.catalog.DimensionDefaultValueSetting.Strategy;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.ows.kvp.ElevationParser;
+import org.geoserver.ows.kvp.TimeParser;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.dimension.DimensionDefaultValueSelectionStrategy;
 import org.geoserver.wms.dimension.DimensionDefaultValueSelectionStrategyFactory;
@@ -67,6 +71,10 @@ public class DimensionDefaultValueSelectionStrategyFactoryImpl implements
     private NearestValueStrategyFactory coverageNearestValueStrategyFactory;
     
     private FixedValueStrategyFactory fixedValueStrategyFactory;
+    
+    private TimeParser timeParser = new TimeParser();
+    
+    private ElevationParser elevationParser = new ElevationParser();
 
 
     /**
@@ -329,7 +337,7 @@ public class DimensionDefaultValueSelectionStrategyFactoryImpl implements
     public void setFixedValueStrategyFactory(FixedValueStrategyFactory fixedValueStrategyFactory) {
         this.fixedValueStrategyFactory = fixedValueStrategyFactory;
     }
-
+    
     private DimensionDefaultValueSelectionStrategy getStrategyFromSetting(ResourceInfo resource,
             String dimensionName, DimensionInfo dimensionInfo) {
         DimensionDefaultValueSelectionStrategy retval = null;
@@ -349,13 +357,12 @@ public class DimensionDefaultValueSelectionStrategyFactoryImpl implements
     private DimensionDefaultValueSelectionStrategy getDefaultTimeStrategy(ResourceInfo resource,
             DimensionDefaultValueSetting setting) {
         DimensionDefaultValueSelectionStrategy retval = null;
-        String referenceValue = null;
         Strategy getStrategyType = setting.getStrategyType();
         switch (getStrategyType) {
         case NEAREST: {
             Date refDate;
             String capabilitiesValue = null;
-            referenceValue = setting.getReferenceValue();
+            String referenceValue = setting.getReferenceValue();
             if (referenceValue != null) {
                 if (referenceValue.equalsIgnoreCase(DimensionDefaultValueSetting.TIME_CURRENT)) {
                     refDate = new Date();
@@ -400,18 +407,18 @@ public class DimensionDefaultValueSelectionStrategyFactoryImpl implements
             break;
         }
         case FIXED: {
-            Date refDate;
-            referenceValue = setting.getReferenceValue();
+            Object refDate;
+            String referenceValue = setting.getReferenceValue();
             if (referenceValue != null) {
                 try {
-                    refDate = new Date(DateUtil.parseDateTime(referenceValue));
-                } catch (IllegalArgumentException e) {
+                    refDate = singleValue(timeParser.parse(referenceValue), new Date());
+                } catch (ParseException e) {
                     throw new ServiceException(
                             "Unable to parse time dimension default value reference '"
                                     + referenceValue
-                                    + "' as date, an ISO 8601 datetime format is expected", e);
+                                    + "' as date or a date range, an ISO 8601 datetime format is expected", e);
                 }
-                retval = fixedValueStrategyFactory.createFixedValueStrategy(refDate);
+                retval = fixedValueStrategyFactory.createFixedValueStrategy(refDate, referenceValue);
             } else {
                 throw new ServiceException(
                         "No reference value given for time dimension default value 'fixed' strategy");
@@ -425,11 +432,10 @@ public class DimensionDefaultValueSelectionStrategyFactoryImpl implements
     private DimensionDefaultValueSelectionStrategy getDefaultElevationStrategy(ResourceInfo resource,
             DimensionDefaultValueSetting setting) {
         DimensionDefaultValueSelectionStrategy retval = null;
-        String referenceValue = null;
         switch (setting.getStrategyType()) {
         case NEAREST: {
             Number refNumber;
-            referenceValue = setting.getReferenceValue();
+            String referenceValue = setting.getReferenceValue();
             if (referenceValue != null) {
                 try {
                     refNumber = Long.parseLong(referenceValue);
@@ -472,29 +478,39 @@ public class DimensionDefaultValueSelectionStrategyFactoryImpl implements
             break;
         }
         case FIXED: {
-            Number refNumber;
-            referenceValue = setting.getReferenceValue();
+            Object refNumber;
+            String referenceValue = setting.getReferenceValue();
             if (referenceValue != null) {
                 try {
-                    refNumber = Long.parseLong(referenceValue);
-                } catch (NumberFormatException fne) {
-                    try {
-                        refNumber = Double.parseDouble(referenceValue);
-                    } catch (NumberFormatException e) {
-                        throw new ServiceException(
-                                "Unable to parse elevation dimension default value reference '"
-                                        + referenceValue + "' as long or double", e);
-                    }
+                    refNumber = singleValue(elevationParser.parse(referenceValue), new Date());
+                } catch (ParseException e) {
+                    throw new ServiceException(
+                            "Unable to parse elevation dimension default value reference '"
+                                    + referenceValue + "' as long or double", e);
                 }
             } else {
                 throw new ServiceException(
                         "No reference value given for elevation dimension default value 'fixed' strategy");
             }
-            retval = fixedValueStrategyFactory.createFixedValueStrategy(refNumber);
+            retval = fixedValueStrategyFactory.createFixedValueStrategy(refNumber, referenceValue);
             break;
         }
         }
         return retval;
+    }
+
+    private Object singleValue(Collection parsed, Object defaultValue) {
+        Object result = null;
+        if(parsed.size() == 1) {
+            result = parsed.iterator().next();
+        } else if(parsed.size() > 1) {
+            throw new IllegalArgumentException("Dimension reference value must be a single value or range");
+        }
+        if(result == null) {
+            return defaultValue;
+        } else {
+            return result;
+        }
     }
 
     private DimensionDefaultValueSelectionStrategy getDefaultCustomDimensionStrategy(ResourceInfo resource,

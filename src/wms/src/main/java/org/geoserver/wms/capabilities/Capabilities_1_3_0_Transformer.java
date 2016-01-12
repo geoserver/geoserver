@@ -881,7 +881,10 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                 commit();
             } catch (Exception e) {
                 // report what layer we failed on to help the admin locate and fix it
+                
                 if (skipping) {
+                    LOGGER.log(Level.WARNING,
+                            "Error writing metadata; skipping layer: " + layer.getName(), e);
                     reset();
                 } else { 
                     throw new ServiceException(

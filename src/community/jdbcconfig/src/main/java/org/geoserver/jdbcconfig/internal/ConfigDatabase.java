@@ -12,9 +12,9 @@ import static org.geoserver.jdbcconfig.internal.DbUtils.logStatement;
 import static org.geoserver.jdbcconfig.internal.DbUtils.params;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Proxy;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -67,7 +67,6 @@ import org.geoserver.catalog.impl.StoreInfoImpl;
 import org.geoserver.catalog.impl.StyleInfoImpl;
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.catalog.util.CloseableIteratorAdapter;
-import org.geoserver.config.ConfigurationListener;
 import org.geoserver.config.ConfigurationListenerAdapter;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
@@ -78,6 +77,7 @@ import org.geoserver.config.impl.CoverageAccessInfoImpl;
 import org.geoserver.config.impl.GeoServerInfoImpl;
 import org.geoserver.config.impl.JAIInfoImpl;
 import org.geoserver.ows.util.OwsUtils;
+import org.geoserver.platform.resource.Resource;
 import org.geoserver.util.CacheProvider;
 import org.geoserver.util.DefaultCacheProvider;
 import org.geotools.factory.CommonFactoryFinder;
@@ -184,20 +184,22 @@ public class ConfigDatabase {
     }
 
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public void initDb(@Nullable URL initScript) throws IOException {
+    public void initDb(@Nullable Resource resource) throws IOException {
         this.dbMappings = new DbMappings(dialect());
-        if (null != initScript) {
-            runInitScript(initScript);
+        if (resource != null) {
+            runInitScript(resource);
         }
         dbMappings.initDb(template);
     }
 
-    private void runInitScript(URL initScript) throws IOException {
+    private void runInitScript(Resource resource) throws IOException {
 
-        LOGGER.info("------------- Running catalog database init script " + initScript
+        LOGGER.info("------------- Running catalog database init script " + resource.path()
                 + " ------------");
 
-        Util.runScript(initScript, template.getJdbcOperations(), LOGGER);
+        try (InputStream in = resource.in()) {
+            Util.runScript(in, template.getJdbcOperations(), LOGGER);
+        }
         
         LOGGER.info("Initialization SQL script run sucessfully");
     }

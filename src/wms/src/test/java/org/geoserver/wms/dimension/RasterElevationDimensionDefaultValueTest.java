@@ -1,10 +1,11 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2014 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wms.dimension;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Collections;
@@ -15,6 +16,7 @@ import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DimensionDefaultValueSetting;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.DimensionPresentation;
+import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.DimensionDefaultValueSetting.Strategy;
 import org.geoserver.catalog.impl.DimensionInfoImpl;
@@ -22,6 +24,7 @@ import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSTestSupport;
+import org.geotools.util.Range;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -59,7 +62,7 @@ public class RasterElevationDimensionDefaultValueTest extends WMSTestSupport {
         CoverageInfo elevatedCoverage = getCatalog().getCoverageByName(WATTEMP.getLocalPart());
 
         Double expected = Double.valueOf(0d);
-        Double e = wms.getDefaultElevation(elevatedCoverage);
+        Double e = (Double) wms.getDefaultElevation(elevatedCoverage);
         assertTrue("Default elevation is null", e != null);
         assertTrue("Default elevation should be the smallest one", Math.abs(e.doubleValue()-expected.doubleValue()) < 0.00001);
 
@@ -77,7 +80,7 @@ public class RasterElevationDimensionDefaultValueTest extends WMSTestSupport {
         CoverageInfo elevatedCoverage = getCatalog().getCoverageByName(WATTEMP.getLocalPart());        
         
         Double expected = Double.valueOf(0d);
-        Double e = wms.getDefaultElevation(elevatedCoverage);
+        Double e = (Double) wms.getDefaultElevation(elevatedCoverage);
         assertTrue("Default elevation is null", e != null);
         assertTrue("Default elevation should be the smallest one", Math.abs(e.doubleValue()-expected.doubleValue()) < 0.00001);
     }
@@ -94,7 +97,7 @@ public class RasterElevationDimensionDefaultValueTest extends WMSTestSupport {
         CoverageInfo elevatedCoverage = getCatalog().getCoverageByName(WATTEMP.getLocalPart());
 
         Double expected = Double.valueOf(100d);
-        Double e = wms.getDefaultElevation(elevatedCoverage);
+        Double e = (Double) wms.getDefaultElevation(elevatedCoverage);
         assertTrue("Default elevation is null", e != null);
         assertTrue("Default elevation should be the biggest one", Math.abs(e.doubleValue()-expected.doubleValue()) < 0.00001);
     }
@@ -114,7 +117,7 @@ public class RasterElevationDimensionDefaultValueTest extends WMSTestSupport {
                
         CoverageInfo elevatedCoverage = getCatalog().getCoverageByName(WATTEMP.getLocalPart());
 
-        Double e = wms.getDefaultElevation(elevatedCoverage);
+        Double e = (Double) wms.getDefaultElevation(elevatedCoverage);
         assertTrue("Default elevation is null", e != null);
         assertTrue("Default elevation should be the fixed one", Math.abs(e.doubleValue()-fixedElevation.doubleValue()) < 0.00001);
     }
@@ -135,7 +138,7 @@ public class RasterElevationDimensionDefaultValueTest extends WMSTestSupport {
         
         CoverageInfo elevatedCoverage = getCatalog().getCoverageByName(WATTEMP.getLocalPart());
 
-        Double e = wms.getDefaultElevation(elevatedCoverage);
+        Double e = (Double) wms.getDefaultElevation(elevatedCoverage);
         assertTrue("Default elevation is null", e != null);
         assertTrue("Default elevation should be the fixed one", Math.abs(e.doubleValue()-expected.doubleValue()) < 0.00001);            
                 
@@ -157,9 +160,23 @@ public class RasterElevationDimensionDefaultValueTest extends WMSTestSupport {
         
         CoverageInfo elevatedCoverage = getCatalog().getCoverageByName(WATTEMP.getLocalPart());
 
-        Double e = wms.getDefaultElevation(elevatedCoverage);
+        Double e = (Double) wms.getDefaultElevation(elevatedCoverage);
         assertTrue("Default elevation is null", e != null);
         assertTrue("Default elevation should be the fixed one", Math.abs(e.doubleValue()-expected.doubleValue()) < 0.00001);                
+    }
+    
+    @Test
+    public void testFixedRangeElevation() throws Exception {
+        DimensionDefaultValueSetting defaultValueSetting = new DimensionDefaultValueSetting();
+        defaultValueSetting.setStrategyType(Strategy.FIXED);
+        defaultValueSetting.setReferenceValue("-100/0");
+        setupCoverageElevationDimension(WATTEMP, defaultValueSetting);
+        
+        CoverageInfo elevatedCoverage = getCatalog().getCoverageByName(WATTEMP.getLocalPart());
+        Range<Double> defaultRange = (Range<Double>) wms.getDefaultElevation(elevatedCoverage);
+        assertTrue("Default elevation is null", defaultRange != null);
+        assertEquals(-100,  defaultRange.getMinValue(), 0d);
+        assertEquals(0,  defaultRange.getMaxValue(), 0d);
     }
        
     

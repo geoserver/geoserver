@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -63,6 +63,11 @@ import com.google.common.util.concurrent.UncheckedExecutionException;
  * @see CatalogStyleChangeListener
  */
 public class CatalogConfiguration implements Configuration {
+    
+    /**
+     * The configuration lock timeout, in seconds
+     */
+    static final int GWC_CONFIGURATION_LOCK_TIMEOUT = Integer.getInteger("gwc.configuration.lock.timeout", 60);
 
     /**
      * {@link GeoServerTileLayer} cache loader
@@ -80,7 +85,7 @@ public class CatalogConfiguration implements Configuration {
             GeoServerTileLayer tileLayer = null;
             final GridSetBroker gridSetBroker = CatalogConfiguration.this.gridSetBroker;
 
-            lock.readLock().lock();
+            lock.acquireReadLock();
             try {
                 if (pendingDeletes.contains(layerId)) {
                     throw new IllegalArgumentException("Tile layer '" + layerId + "' was deleted.");
@@ -97,7 +102,7 @@ public class CatalogConfiguration implements Configuration {
                 tileLayer = new GeoServerTileLayer(geoServerCatalog, layerId, gridSetBroker,
                         tileLayerInfo);
             } finally {
-                lock.readLock().unlock();
+                lock.releaseReadLock();
             }
             if (null == tileLayer) {
                 throw new IllegalArgumentException("GeoServer layer or layer group '" + layerId
@@ -105,6 +110,7 @@ public class CatalogConfiguration implements Configuration {
             }
             return tileLayer;
         }
+
     }
 
     private static final Logger LOGGER = Logging.getLogger(CatalogConfiguration.class);
@@ -127,7 +133,7 @@ public class CatalogConfiguration implements Configuration {
      */
     private final Set<String> pendingDeletes = new CopyOnWriteArraySet<String>();
 
-    private final ReadWriteLock lock = new ReentrantReadWriteLock();
+    private final TimeoutReadWriteLock lock = new TimeoutReadWriteLock(GWC_CONFIGURATION_LOCK_TIMEOUT * 1000, "GWC Configuration");
 
     public CatalogConfiguration(final Catalog catalog, final TileLayerCatalog tileLayerCatalog,
             final GridSetBroker gridSetBroker) {
@@ -145,7 +151,7 @@ public class CatalogConfiguration implements Configuration {
                 .maximumSize(100)//
                 .build(new TileLayerLoader(tileLayerCatalog));
     }
-
+    
     /**
      * 
      * @see org.geowebcache.config.Configuration#getIdentifier()
@@ -194,7 +200,7 @@ public class CatalogConfiguration implements Configuration {
      */
     @Override
     public Iterable<GeoServerTileLayer> getLayers() {
-        lock.readLock().lock();
+        lock.acquireReadLock();
         try {
             final Set<String> layerIds = tileLayerCatalog.getLayerIds();
 
@@ -207,7 +213,7 @@ public class CatalogConfiguration implements Configuration {
 
             return Iterables.transform(layerIds, lazyLayerFetch);
         } finally {
-            lock.readLock().unlock();
+            lock.releaseReadLock();
         }
     }
 
@@ -218,7 +224,7 @@ public class CatalogConfiguration implements Configuration {
      */
     @Override
     public Set<String> getTileLayerNames() {
-        lock.readLock().lock();
+        lock.acquireReadLock();
         try {
             final Set<String> storedNames = tileLayerCatalog.getLayerNames();
             Set<String> names = null;
@@ -248,14 +254,14 @@ public class CatalogConfiguration implements Configuration {
             }
             return names == null ? storedNames : Collections.unmodifiableSet(names);
         } finally {
-            lock.readLock().unlock();
+            lock.releaseReadLock();
         }
     }
 
     @Override
     public boolean containsLayer(String layerId) {
         checkNotNull(layerId, "layer id is null");
-        lock.readLock().lock();
+        lock.acquireReadLock();
         try {
             if (pendingDeletes.contains(layerId)) {
                 return false;
@@ -264,7 +270,7 @@ public class CatalogConfiguration implements Configuration {
             boolean hasLayer = layerIds.contains(layerId);
             return hasLayer;
         } finally {
-            lock.readLock().unlock();
+            lock.releaseReadLock();
         }
     }
 
@@ -273,12 +279,15 @@ public class CatalogConfiguration implements Configuration {
         checkNotNull(layerId, "layer id is null");
 
         GeoServerTileLayer layer;
+        lock.acquireReadLock();
         try {
             layer = layerCache.get(layerId);
         } catch (ExecutionException e) {
             throw propagate(e.getCause());
         } catch (UncheckedExecutionException e) {
             throw propagate(e.getCause());
+        } finally {
+            lock.releaseReadLock();
         }
 
         return layer;
@@ -293,14 +302,14 @@ public class CatalogConfiguration implements Configuration {
 
         final String layerId;
 
-        lock.readLock().lock();
+        lock.acquireReadLock();
         try {
             layerId = getLayerId(layerName);
             if (layerId == null) {
                 return null;
             }
         } finally {
-            lock.readLock().unlock();
+            lock.releaseReadLock();
         }
         return getTileLayerById(layerId);
     }
@@ -367,7 +376,7 @@ public class CatalogConfiguration implements Configuration {
     @Override
     public int getTileLayerCount() {
         int count = 0;
-        lock.readLock().lock();
+        lock.acquireReadLock();
         try {
             Set<String> layerIds = tileLayerCatalog.getLayerIds();
             if (pendingDeletes.isEmpty()) {
@@ -381,7 +390,7 @@ public class CatalogConfiguration implements Configuration {
                 }
             }
         } finally {
-            lock.readLock().unlock();
+            lock.releaseReadLock();
         }
         return count;
     }
@@ -391,7 +400,7 @@ public class CatalogConfiguration implements Configuration {
      */
     @Override
     public int initialize(GridSetBroker gridSetBroker) {
-        lock.writeLock().lock();
+        lock.acquireWriteLock();
         try {
             LOGGER.info("Initializing GWC configuration based on GeoServer's Catalog");
             this.gridSetBroker = gridSetBroker;
@@ -415,7 +424,7 @@ public class CatalogConfiguration implements Configuration {
             }
             LOGGER.info("GWC configuration based on GeoServer's Catalog loaded successfuly");
         } finally {
-            lock.writeLock().unlock();
+            lock.releaseWriteLock();
         }
         return getTileLayerCount();
     }
@@ -470,7 +479,7 @@ public class CatalogConfiguration implements Configuration {
             return;
         }
 
-        lock.writeLock().lock();
+        lock.acquireWriteLock();
         try {
             boolean pending = pendingModications.containsKey(info.getId());
             boolean exists = null != tileLayerCatalog.getLayerById(info.getId());
@@ -484,7 +493,7 @@ public class CatalogConfiguration implements Configuration {
             }
             pendingModications.put(info.getId(), info);
         } finally {
-            lock.writeLock().unlock();
+            lock.releaseWriteLock();
         }
     }
 
@@ -503,7 +512,7 @@ public class CatalogConfiguration implements Configuration {
         checkNotNull(tileLayer.getInfo().getName(), "name is null");
 
         final GeoServerTileLayerInfo info = tileLayer.getInfo();
-        lock.writeLock().lock();
+        lock.acquireWriteLock();
         try {
             final String layerId = info.getId();
             // check pendingModifications too to catch unsaved adds
@@ -513,7 +522,7 @@ public class CatalogConfiguration implements Configuration {
             pendingModications.put(layerId, info);
             layerCache.invalidate(layerId);
         } finally {
-            lock.writeLock().unlock();
+            lock.releaseWriteLock();
         }
     }
 
@@ -526,7 +535,7 @@ public class CatalogConfiguration implements Configuration {
     @Override
     public boolean removeLayer(final String layerName) {
         checkNotNull(layerName);
-        lock.writeLock().lock();
+        lock.acquireWriteLock();
         try {
             GeoServerTileLayerInfo tileLayerInfo = getTileLayerInfoByName(layerName);
             if (tileLayerInfo != null) {
@@ -539,7 +548,7 @@ public class CatalogConfiguration implements Configuration {
                 return false;
             }
         } finally {
-            lock.writeLock().unlock();
+            lock.releaseWriteLock();
         }
     }
 
@@ -559,7 +568,7 @@ public class CatalogConfiguration implements Configuration {
         final Set<String/* name */> deletedNames = Sets.newHashSet();
         final List<GeoServerTileLayerInfo[/* old, new */]> modifications = Lists.newLinkedList();
 
-        lock.writeLock().lock();
+        lock.acquireWriteLock();
         // perform the transaction while holding the write lock, then downgrade to the read lock and
         // issue the modification events (otherwise another thread asking for any changed layer
         // would lock)
@@ -589,9 +598,8 @@ public class CatalogConfiguration implements Configuration {
             this.pendingModications.clear();
             this.pendingDeletes.clear();
         } finally {
-            // Downgrade by acquiring read lock before releasing write lock
-            lock.readLock().lock();
-            lock.writeLock().unlock(); // Unlock write, still hold read
+            // Downgrade to read
+            lock.downgradeToReadLock();
             try {
                 // issue notifications
                 for (String deletedLayerName : deletedNames) {
@@ -622,7 +630,7 @@ public class CatalogConfiguration implements Configuration {
                     }
                 }
             } finally {
-                lock.readLock().unlock();
+                lock.releaseReadLock();
             }
         }
     }
@@ -697,12 +705,12 @@ public class CatalogConfiguration implements Configuration {
     }
 
     public void reset() {
-        lock.writeLock().lock();
+        lock.acquireWriteLock();
         try {
             this.layerCache.invalidateAll();
             this.tileLayerCatalog.reset();
         } finally {
-            lock.writeLock().unlock();
+            lock.releaseWriteLock();
         }
     }
 }

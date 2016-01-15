@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -75,6 +75,8 @@ public class StatusPage extends ServerAdminPage {
     private static final String KEY_COVERAGEACCESS_KEEP_ALIVE_TIME = "coverage_thread_keepalivetime";
     
     private static final String KEY_UPDATE_SEQUENCE = "update_sequence";
+    
+    private static final String KEY_JAVA_RENDERER = "renderer";
 
     public StatusPage() {
         values = new HashMap<String, String>();
@@ -98,7 +100,8 @@ public class StatusPage extends ServerAdminPage {
         add(new Label("coverage.maxpoolsize", new MapModel(values, KEY_COVERAGEACCESS_MAX_POOL_SIZE)));
         add(new Label("coverage.keepalivetime", new MapModel(values, KEY_COVERAGEACCESS_KEEP_ALIVE_TIME)));
         add(new Label("updateSequence", new MapModel(values, KEY_UPDATE_SEQUENCE)));
-
+        add(new Label("renderer", new MapModel(values, KEY_JAVA_RENDERER)));
+   
         add(new Link("free.locks") {
             private static final long serialVersionUID = 1L;
 
@@ -198,6 +201,7 @@ public class StatusPage extends ServerAdminPage {
         values.put(KEY_COVERAGEACCESS_KEEP_ALIVE_TIME, Integer.toString(coverageAccess.getKeepAliveTime()));
 
         values.put(KEY_UPDATE_SEQUENCE, Long.toString(geoServerInfo.getUpdateSequence()));
+        values.put(KEY_JAVA_RENDERER, checkRenderer());
     }
 
     /**
@@ -207,6 +211,15 @@ public class StatusPage extends ServerAdminPage {
     private String getDataDirectory() {
         GeoServerDataDirectory dd = getGeoServerApplication().getBeanOfType(GeoServerDataDirectory.class);
         return dd.root().getAbsolutePath();
+    }
+    
+    private String checkRenderer() {
+        try {
+            String renderer = sun.java2d.pipe.RenderingEngine.getInstance().getClass().getName();
+            return renderer;
+        } catch(Throwable e) {
+            return "Unknown";
+        }
     }
 
     boolean isNativeJAIAvailable() {

@@ -1,5 +1,5 @@
 <assembly>
-	<id>pgraster</id>
+	<id>pgraster-plugin</id>
 	<formats>
 		<format>zip</format>
 	</formats>

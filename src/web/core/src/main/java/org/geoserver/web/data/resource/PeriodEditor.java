@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -12,11 +12,12 @@ import org.apache.wicket.markup.html.form.FormComponentPanel;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.util.visit.IVisit;
 import org.apache.wicket.validation.validator.RangeValidator;
 
 /**
- * Helps edit a time period 
- * 
+ * Helps edit a time period
+ *
  * @author Andrea Aime - GeoSolutions
  */
 @SuppressWarnings("serial")
@@ -105,12 +106,8 @@ public class PeriodEditor extends FormComponentPanel<BigDecimal> {
 
     @Override
     public void convertInput() {
-        visitChildren(TextField.class, new org.apache.wicket.Component.IVisitor() {
-
-            public Object component(Component component) {
-                ((TextField) component).processInput();
-                return null;
-            }
+        visitChildren(TextField.class, (Component component, final IVisit<Void> visit) -> {
+            ((TextField) component).processInput();
         });
 
         long time = seconds * secondMS + minutes * minuteMS + hours * hourMS + days * dayMS + weeks
@@ -123,12 +120,8 @@ public class PeriodEditor extends FormComponentPanel<BigDecimal> {
         // when the client programmatically changed the model, update the fields
         // so that the textfields will change too
         updateFields();
-        visitChildren(TextField.class, new Component.IVisitor() {
-
-            public Object component(Component component) {
-                ((TextField) component).clearInput();
-                return CONTINUE_TRAVERSAL;
-            }
+        visitChildren(TextField.class, (Component component, final IVisit<Void> visit) -> {
+            ((TextField) component).clearInput();
         });
     }
 

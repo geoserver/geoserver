@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -10,6 +10,7 @@ import java.io.IOException;
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.util.visit.IVisit;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.web.data.resource.ResourceConfigurationPage;
@@ -17,14 +18,14 @@ import org.geoserver.web.data.resource.ResourceConfigurationPage;
 /**
  * Extension point for panels which appear in separate tabs on the layer edit page.
  * <p>
- * Subclasses <b>must</b> override the {@link #LayerEditTabPanel(String, IModel)} constructor 
- * and <b>not</b> change its signature. 
+ * Subclasses <b>must</b> override the {@link #LayerEditTabPanel(String, IModel)} constructor
+ * and <b>not</b> change its signature.
  * </p>
  * <p>
  * Instances of this class are described in a spring context with a {@link PublishedEditTabPanelInfo}
- * bean. 
+ * bean.
  * </p>
- * 
+ *
  * @author Justin Deoliveira, OpenGeo
  * @author Niels Charlier
  *
@@ -32,7 +33,7 @@ import org.geoserver.web.data.resource.ResourceConfigurationPage;
 public class PublishedEditTabPanel<T extends PublishedInfo> extends Panel {
 
     private static final long serialVersionUID = 8044055895040826418L;
-    
+
     /**
      * @param id The id given to the panel.
      * @param model The model for the panel which wraps a {@link LayerInfo} instance.
@@ -40,7 +41,7 @@ public class PublishedEditTabPanel<T extends PublishedInfo> extends Panel {
     public PublishedEditTabPanel(String id, IModel<? extends T> model) {
         super(id, model);
     }
-    
+
     /**
      * Returns the layer currently being edited by the panel.
      */
@@ -56,15 +57,11 @@ public class PublishedEditTabPanel<T extends PublishedInfo> extends Panel {
     public void save() throws IOException {
         //do nothing by default
     }
-    
-    
+
+
     public PublishedEditTabPanel<T> setInputEnabled(final boolean enabled) {
-        visitChildren(new IVisitor<Component>() {
-            @Override
-            public Object component(Component c) {
-                c.setEnabled(enabled);
-                return CONTINUE_TRAVERSAL;
-            }
+        visitChildren((Component component, final IVisit<Void> visit) -> {
+            component.setEnabled(enabled);
         });
         return this;
     }

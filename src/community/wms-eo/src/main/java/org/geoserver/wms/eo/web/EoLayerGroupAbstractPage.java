@@ -5,7 +5,6 @@
  */
 package org.geoserver.wms.eo.web;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 
@@ -25,7 +24,8 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.util.convert.IConverter;
 import org.apache.wicket.validation.IValidatable;
-import org.apache.wicket.validation.validator.AbstractValidator;
+import org.apache.wicket.validation.IValidator;
+import org.apache.wicket.validation.ValidationError;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
@@ -501,14 +501,14 @@ public abstract class EoLayerGroupAbstractPage extends GeoServerSecuredPage {
      */
     protected abstract void onSubmit(LayerGroupInfo lg);
     
-    class GroupNameValidator extends AbstractValidator {
+    class GroupNameValidator implements IValidator<String> {
 
         @Override
-        protected void onValidate(IValidatable validatable) {
-            String name = (String) validatable.getValue();
+        public void validate(IValidatable<String> iv) {
+            String name = (String) iv.getValue();
             LayerGroupInfo other = getCatalog().getLayerGroupByName(name);
             if(other != null && (layerGroupId == null || !other.getId().equals(layerGroupId))) {
-                error(validatable, "duplicateGroupNameError", Collections.singletonMap("name", name));
+                iv.error(new ValidationError("duplicateGroupNameError"));
             }
         }
         

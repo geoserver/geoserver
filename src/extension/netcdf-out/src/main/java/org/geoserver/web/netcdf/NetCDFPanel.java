@@ -25,9 +25,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.util.visit.IVisit;
-import org.apache.wicket.validation.IValidatable;
-import org.apache.wicket.validation.ValidationError;
-import org.apache.wicket.validation.validator.AbstractValidator;
+import org.apache.wicket.validation.validator.RangeValidator;
 import org.geoserver.web.GeoServerBasePage;
 import org.geoserver.web.netcdf.NetCDFSettingsContainer.GlobalAttribute;
 import org.geoserver.web.wicket.GeoServerAjaxFormLink;
@@ -78,31 +76,7 @@ public class NetCDFPanel<T extends NetCDFSettingsContainer> extends FormComponen
         dataPacking.setOutputMarkupId(true);
         container.add(dataPacking);        
 
-        compressionLevel.add(new AbstractValidator<Integer>() {
-
-            @Override
-            public boolean validateOnNullValue() {
-                return true;
-            }
-
-            @Override
-            protected void onValidate(IValidatable<Integer> validatable) {
-                if (validatable != null && validatable.getValue() != null) {
-                    Integer value = validatable.getValue();
-                    if (value < 0) {
-                        ValidationError error = new ValidationError();
-                        error.setMessage(new ParamResourceModel(
-                                "NetCDFOutSettingsPanel.lowCompression", null, "").getObject());
-                        validatable.error(error);
-                    } else if (value > 9) {
-                        ValidationError error = new ValidationError();
-                        error.setMessage(new ParamResourceModel(
-                                "NetCDFOutSettingsPanel.highCompression", null, "").getObject());
-                        validatable.error(error);
-                    }
-                }
-            }
-        });
+        compressionLevel.add(new RangeValidator(0, 9));
         container.add(compressionLevel);
 
         IModel<List<GlobalAttribute>> attributeModel = new PropertyModel(netcdfModel,

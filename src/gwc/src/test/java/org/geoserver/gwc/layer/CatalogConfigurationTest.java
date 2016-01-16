@@ -1,19 +1,36 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.gwc.layer;
 
-import static junit.framework.Assert.*;
-import static org.geoserver.gwc.GWC.*;
-import static org.geoserver.gwc.GWCTestHelpers.*;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
+import static org.geoserver.gwc.GWC.tileLayerName;
+import static org.geoserver.gwc.GWCTestHelpers.mockGroup;
+import static org.geoserver.gwc.GWCTestHelpers.mockLayer;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.same;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerGroupInfo;
@@ -406,5 +423,44 @@ public class CatalogConfigurationTest {
         config.save();
         
         verify(this.tileLayerCatalog, never()).save(info);
+    }
+    
+    @Test
+    public void testConfigurationDeadlock() throws Exception {
+        // to make it reproducible with some reliability on my machine
+        // 100000 loops need to be attempted. With the fix it works, but runs for 
+        // a minute and a half, so not suitable for actual builds.
+        // For in-build tests I've thus settled down for 1000 loops instead 
+        final int LOOPS = 1000;
+        ExecutorService service = Executors.newFixedThreadPool(8);
+        Runnable reloader = new Runnable() {
+            
+            @Override
+            public void run() {
+                config.initialize(gridSetBroker);
+            }
+        };
+        Runnable tileLayerFetcher = new Runnable() {
+            
+            @Override
+            public void run() {
+                config.getTileLayer(layer1.getName());
+                config.getTileLayer(layer2.getName());
+                config.getTileLayer(group1.getName());
+                config.getTileLayer(group2.getName());
+            }
+        };
+        try {
+            List<Future<?>> futures = new ArrayList<>();
+            for (int i = 0; i < LOOPS; i++) {
+                futures.add(service.submit(reloader));
+                futures.add(service.submit(tileLayerFetcher));
+            }
+            for (Future<?> future : futures) {
+                future.get();
+            }
+        } finally {
+            service.shutdown();
+        }
     }
 }

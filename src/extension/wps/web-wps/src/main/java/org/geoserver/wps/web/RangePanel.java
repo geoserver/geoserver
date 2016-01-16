@@ -1,4 +1,4 @@
-/* (c) 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2015-2016 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -12,6 +12,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
+import org.apache.wicket.util.visit.IVisit;
 import org.geoserver.web.wicket.DecimalTextField;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.util.NumberRange;
@@ -71,23 +72,16 @@ public class RangePanel extends FormComponentPanel<NumberRange> {
     }
 
     public RangePanel setReadOnly(final boolean readOnly) {
-        visitChildren(TextField.class, new org.apache.wicket.Component.IVisitor() {
-            public Object component(Component component) {
-                component.setEnabled(!readOnly);
-                return null;
-            }
+        visitChildren(TextField.class, (Component component, final IVisit<Void> visit) -> {
+            component.setEnabled(!readOnly);
         });
         return this;
     }
 
     @Override
     public void convertInput() {
-        visitChildren(TextField.class, new org.apache.wicket.Component.IVisitor() {
-
-            public Object component(Component component) {
-                ((TextField) component).processInput();
-                return null;
-            }
+        visitChildren(TextField.class, (Component component, final IVisit<Void> visit) -> {
+            ((TextField) component).processInput();
         });
 
         // update the envelope model
@@ -103,12 +97,8 @@ public class RangePanel extends FormComponentPanel<NumberRange> {
         // when the client programmatically changed the model, update the fields
         // so that the textfields will change too
         updateFields();
-        visitChildren(TextField.class, new Component.IVisitor() {
-
-            public Object component(Component component) {
-                ((TextField) component).clearInput();
-                return CONTINUE_TRAVERSAL;
-            }
+        visitChildren(TextField.class, (Component component, final IVisit<Void> visit) -> {
+            ((TextField) component).clearInput();
         });
     }
 

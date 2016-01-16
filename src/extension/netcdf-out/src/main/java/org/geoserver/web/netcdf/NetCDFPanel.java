@@ -1,4 +1,4 @@
-/* (c) 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2015-2016 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -24,6 +24,7 @@ import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.util.visit.IVisit;
 import org.apache.wicket.validation.IValidatable;
 import org.apache.wicket.validation.ValidationError;
 import org.apache.wicket.validation.validator.AbstractValidator;
@@ -192,16 +193,11 @@ public class NetCDFPanel<T extends NetCDFSettingsContainer> extends FormComponen
     }
 
     @Override
-    protected void convertInput() {
-        globalAttributes.visitChildren(new Component.IVisitor<Component>() {
-
-            @Override
-            public Object component(Component component) {
-                if (component instanceof FormComponent) {
-                    FormComponent<?> formComponent = (FormComponent<?>) component;
-                    formComponent.processInput();
-                }
-                return Component.IVisitor.CONTINUE_TRAVERSAL;
+    public void convertInput() {
+        globalAttributes.visitChildren((Component component, final IVisit<Void> visit) -> {
+            if (component instanceof FormComponent) {
+                FormComponent<?> formComponent = (FormComponent<?>) component;
+                formComponent.processInput();
             }
         });
         compressionLevel.processInput();

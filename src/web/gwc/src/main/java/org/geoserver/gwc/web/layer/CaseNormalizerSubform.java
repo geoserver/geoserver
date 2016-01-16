@@ -1,4 +1,4 @@
-/* (c) 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2015-2016 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -16,6 +16,7 @@ import org.apache.wicket.markup.html.form.FormComponentPanel;
 import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.util.visit.IVisit;
 import org.geowebcache.filter.parameters.CaseNormalizer;
 import org.geowebcache.filter.parameters.CaseNormalizer.Case;
 
@@ -88,15 +89,10 @@ public class CaseNormalizerSubform extends FormComponentPanel<CaseNormalizer> {
     
     @Override
     public void convertInput() {
-        visitChildren(new Component.IVisitor<Component>() {
-            
-            @Override
-            public Object component(Component component) {
-                if (component instanceof FormComponent) {
-                    FormComponent<?> formComponent = (FormComponent<?>) component;
-                    formComponent.processInput();
-                }
-                return Component.IVisitor.CONTINUE_TRAVERSAL;
+        visitChildren((Component component, final IVisit<Void> visit) -> {
+            if (component instanceof FormComponent) {
+                FormComponent<?> formComponent = (FormComponent<?>) component;
+                formComponent.processInput();
             }
         });
         CaseNormalizer filter = getModelObject();

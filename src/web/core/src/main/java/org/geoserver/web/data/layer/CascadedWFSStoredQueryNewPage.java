@@ -203,10 +203,10 @@ public class CascadedWFSStoredQueryNewPage extends CascadedWFSStoredQueryAbstrac
                 StoredQueryConfiguration config = curr.getMetadata().get(FeatureTypeInfo.STORED_QUERY_CONFIGURATION, StoredQueryConfiguration.class);
                 if(config != null) {
                     if(curr.getNativeName().equals(csqName)) {
-                        Map<String, String> map = new HashMap<String, String>();
+                        Map<String, Object> map = new HashMap<>();
                         map.put("name", csqName);
                         map.put("dataStore", store.getName());
-                        IValidationError err = new ValidationError("duplicateSqlViewName: " + csqName);
+                        IValidationError err = new ValidationError("duplicateSqlViewName").setVariables(map);
                         validatable.error(err);
                         return;
                     }

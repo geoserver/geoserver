@@ -70,7 +70,8 @@ public class SRSListTextArea extends TextArea<List<String>> {
             });
 
             if (invalid.size() > 0) {
-                IValidationError err = new ValidationError("SRSListTextArea.unknownEPSGCodes" + Collections.singletonMap("codes", invalid.toString()));
+                IValidationError err = new ValidationError("SRSListTextArea.unknownEPSGCodes")
+                        .setVariable("codes", invalid.toString());
                 validatable.error(err);
             }
         }

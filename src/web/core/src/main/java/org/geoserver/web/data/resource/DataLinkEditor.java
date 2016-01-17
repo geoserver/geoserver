@@ -140,7 +140,7 @@ public class DataLinkEditor extends Panel {
                 try {
                     DataLinkInfoImpl.validate(url);
                 } catch (IllegalArgumentException ex) {
-                    IValidationError err = new ValidationError("invalidDataLinkURL:" + url);
+                    IValidationError err = new ValidationError("invalidDataLinkURL").setVariable("url", url);
                     validatable.error(err);
                 }
             }

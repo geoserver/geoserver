@@ -5,11 +5,9 @@
  */
 package org.geoserver.web.wicket;
 
-import java.util.Collections;
 import java.util.regex.Pattern;
 
 import org.apache.wicket.validation.IValidatable;
-import org.apache.wicket.validation.IValidationError;
 import org.apache.wicket.validation.IValidator;
 import org.apache.wicket.validation.ValidationError;
 
@@ -45,8 +43,7 @@ public class XMLNameValidator implements IValidator {
     public void validate(IValidatable validatable) {
         String value = (String) validatable.getValue();
         if (!XML_NAME_PATTERN.matcher(value).matches()) {
-            IValidationError err = new ValidationError("invalidXMLName" + Collections.singletonMap("name", value));
-            validatable.error(err);
+            validatable.error(new ValidationError("invalidXMLName").setVariable("name", value));
         }
     }
 

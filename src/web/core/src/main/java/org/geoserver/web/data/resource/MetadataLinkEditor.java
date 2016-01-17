@@ -169,7 +169,7 @@ public class MetadataLinkEditor extends Panel {
                 try {
                     MetadataLinkInfoImpl.validate(url);
                 } catch (IllegalArgumentException ex) {
-                    IValidationError err = new ValidationError("invalidURI:" + url);
+                    IValidationError err = new ValidationError("invalidURL").setVariable("url", url);
                     validatable.error(err);
                 }
             }

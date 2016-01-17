@@ -1,11 +1,10 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.gwc.web.gridset;
 
-import java.util.Collections;
 import java.util.logging.Logger;
 
 import javax.measure.unit.Unit;
@@ -26,6 +25,8 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.validation.IValidatable;
+import org.apache.wicket.validation.IValidator;
+import org.apache.wicket.validation.ValidationError;
 import org.apache.wicket.validation.validator.RangeValidator;
 import org.geoserver.gwc.GWC;
 import org.geoserver.web.GeoServerSecuredPage;
@@ -449,7 +450,7 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
 
     protected abstract void onSave(AjaxRequestTarget target, Form<?> form);
 
-    private static class UniqueNameValidator extends AbstractValidator<String> {
+    private static class UniqueNameValidator implements IValidator<String> {
         private static final long serialVersionUID = 1L;
 
         private final String previousName;
@@ -464,8 +465,8 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
         }
 
         @Override
-        protected void onValidate(IValidatable<String> validatable) {
-            final String name = validatable.getValue();
+        public void validate(IValidatable<String> iv) {
+            final String name = iv.getValue();
             if (name.equals(previousName)) {
                 return;
             }
@@ -475,8 +476,9 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
             }
             GridSet gridSet = gridSetBroker.get(name);
             if (gridSet != null) {
-                error(validatable, "gridSetAlreadyExists",
-                        Collections.singletonMap("name", (Object) name));
+                ValidationError error = new ValidationError("gridSetAlreadyExists");
+                error.setVariable("name", name);
+                iv.error(error);
             }
         }
     }

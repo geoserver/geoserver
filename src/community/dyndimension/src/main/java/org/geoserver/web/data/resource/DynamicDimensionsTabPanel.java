@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2014 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -272,12 +272,10 @@ public class DynamicDimensionsTabPanel extends PublishedEditTabPanel<LayerInfo> 
 
         @Override
         public void convertInput() {
-            visitChildren(TextArea.class, new org.apache.wicket.Component.IVisitor<TextArea<?>>() {
-
-                @Override
-                public Object component(TextArea<?> component) {
-                    component.updateModel();
-                    return null;
+            visitChildren(TextArea.class, (component, visit) -> {
+                if (component instanceof TextArea) {
+                    TextArea textArea = (TextArea) component;
+                    textArea.updateModel();
                 }
             });
             setConvertedInput(new DefaultValueConfigurations(configurations));

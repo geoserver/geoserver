@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -28,29 +28,29 @@ import org.geoserver.web.GeoServerApplication;
 /**
  * New page for specific class of named security service.
  * <p>
- *  Most of the work is delegated to {@link SecurityNamedServicePanelInfo} and 
- *   {@link SecurityNamedServicePanel}. 
+ *  Most of the work is delegated to {@link SecurityNamedServicePanelInfo} and
+ *   {@link SecurityNamedServicePanel}.
  * </p>
- * 
+ *
  * @author Justin Deoliveira, OpenGeo
- * 
+ *
  */
 public class SecurityNamedServiceNewPage
-    <S extends GeoServerSecurityService, T extends SecurityNamedServiceConfig>  
+    <S extends GeoServerSecurityService, T extends SecurityNamedServiceConfig>
     extends SecurityNamedServicePage<T> {
 
     Form form;
     WebMarkupContainer panelContainer;
 
     public SecurityNamedServiceNewPage(Class<S> serviceClass) {
-        //keys that allow us to dynamically set the page title and description based on 
+        //keys that allow us to dynamically set the page title and description based on
         // type of service class / extension point
         add(new Label("title1", createTitleModel(serviceClass).getString()));
         add(new Label("title2", createTitleModel(serviceClass).getString()));
 
         List<SecurityNamedServicePanelInfo> panelInfos = lookupPanelInfos(serviceClass);
 
-        AjaxLinkGroup<SecurityNamedServicePanelInfo> serviceLinks = 
+        AjaxLinkGroup<SecurityNamedServicePanelInfo> serviceLinks =
             new AjaxLinkGroup<SecurityNamedServicePanelInfo>("services", panelInfos) {
 
                 @Override
@@ -67,7 +67,7 @@ public class SecurityNamedServiceNewPage
                     updatePanel(link.getModelObject(), target);
                 }
         };
-        
+
         add(new WebMarkupContainer("servicesContainer").add(serviceLinks).setOutputMarkupId(true));
 
         add(form = new Form<T>("form"));
@@ -91,7 +91,7 @@ public class SecurityNamedServiceNewPage
 
         updatePanel(panelInfos.get(0), null);
     }
-    
+
     void updatePanel(SecurityNamedServicePanelInfo panelInfo, AjaxRequestTarget target) {
         //create a new config object
         T config = null;
@@ -122,9 +122,9 @@ public class SecurityNamedServiceNewPage
     }
 
     List<SecurityNamedServicePanelInfo> lookupPanelInfos(Class<S> serviceClass) {
-        
+
         List<SecurityNamedServicePanelInfo> panelInfos = new ArrayList();
-        for (SecurityNamedServicePanelInfo pageInfo : 
+        for (SecurityNamedServicePanelInfo pageInfo :
             GeoServerApplication.get().getBeansOfType(SecurityNamedServicePanelInfo.class)) {
             if (serviceClass.isAssignableFrom(pageInfo.getServiceClass())) {
                 panelInfos.add(pageInfo);
@@ -134,7 +134,7 @@ public class SecurityNamedServiceNewPage
         if (panelInfos.isEmpty()) {
             throw new RuntimeException("Unable to find panel info for service class: " + serviceClass);
         }
-        
+
         return panelInfos;
     }
 
@@ -157,13 +157,10 @@ public class SecurityNamedServiceNewPage
                 @Override
                 public void onClick(final AjaxRequestTarget target) {
                     //set all links enabled
-                    AjaxLinkGroup.this.visitChildren(AjaxLink.class, new IVisitor<AjaxLink<T>>() {
-                        @Override
-                        public Object component(AjaxLink<T> component) {
-                            component.setEnabled(true);
-                            target.add(component);
-                            return CONTINUE_TRAVERSAL_BUT_DONT_GO_DEEPER;
-                        }
+                    AjaxLinkGroup.this.visitChildren(AjaxLink.class, (component, visit) -> {
+                        component.setEnabled(true);
+                        target.add(component);
+                        visit.dontGoDeeper();
                     });
                     //set this link disabled
                     setEnabled(false);

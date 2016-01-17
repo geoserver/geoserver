@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -42,7 +42,7 @@ public class GeoServerDialog extends Panel {
 
     /**
      * Sets the window title
-     * 
+     *
      * @param title
      */
     public void setTitle(IModel title) {
@@ -100,7 +100,7 @@ public class GeoServerDialog extends Panel {
     /**
      * Shows an OK/cancel dialog. The delegate will provide contents and behavior for the OK button
      * (and if needed, for the cancel one as well)
-     * 
+     *
      * @param target
      * @param delegate
      */
@@ -134,12 +134,12 @@ public class GeoServerDialog extends Panel {
 
     /**
      * Shows an information style dialog box.
-     * 
+     *
      * @param heading The heading of the information topic.
-     * @param messages A list of models, displayed each as a separate paragraphs, containing the 
+     * @param messages A list of models, displayed each as a separate paragraphs, containing the
      *   information dialog content.
      */
-    public void showInfo(AjaxRequestTarget target, final IModel<String> heading, 
+    public void showInfo(AjaxRequestTarget target, final IModel<String> heading,
             final IModel<String>... messages) {
         window.setPageCreator(new ModalWindow.PageCreator() {
             public Page createPage() {
@@ -177,7 +177,7 @@ public class GeoServerDialog extends Panel {
 
     /**
      * Submit link that will forward to the {@link DialogDelegate}
-     * 
+     *
      * @return
      */
     AjaxSubmitLink sumbitLink(Component contents) {
@@ -187,7 +187,7 @@ public class GeoServerDialog extends Panel {
             protected void onSubmit(AjaxRequestTarget target, Form form) {
                 submit(target, (Component) this.getDefaultModelObject());
             }
-            
+
             @Override
             protected void onError(AjaxRequestTarget target, Form form) {
                 delegate.onError(target, form);
@@ -200,7 +200,7 @@ public class GeoServerDialog extends Panel {
 
     /**
      * Link that will forward to the {@link DialogDelegate}
-     * 
+     *
      * @return
      */
     Component cancelLink() {
@@ -262,7 +262,7 @@ public class GeoServerDialog extends Panel {
 
         /**
          * Builds the contents for this dialog
-         * 
+         *
          * @param id
          * @return
          */
@@ -271,27 +271,22 @@ public class GeoServerDialog extends Panel {
         /**
          * Called when the form inside the dialog breaks. By default adds all feedback
          * panels to the target
-         * to the 
+         *
          * @param target
          * @param form
          */
         public void onError(final AjaxRequestTarget target, Form form) {
-            form.getPage().visitChildren(IFeedback.class, new IVisitor()
-            {
-                public Object component(Component component)
-                {
-                    if(component.getOutputMarkupId())
-                        target.add(component);
-                    return IVisitor.CONTINUE_TRAVERSAL;
+            form.getPage().visitChildren(IFeedback.class, (component, visit) -> {
+                if (component.getOutputMarkupId()) {
+                    target.add(component);
                 }
-
             });
         }
 
         /**
          * Called when the dialog is closed, allows the delegate to perform ajax updates on the page
          * underlying the dialog
-         * 
+         *
          * @param target
          */
         public void onClose(AjaxRequestTarget target) {
@@ -300,15 +295,15 @@ public class GeoServerDialog extends Panel {
 
         /**
          * Called when the dialog is submitted
-         * 
+         *
          * @param target
          * @return true if the dialog is to be closed, false otherwise
          */
         protected abstract boolean onSubmit(AjaxRequestTarget target, Component contents);
 
         /**
-         * Called when the dialog is canceled.
-         * 
+         * Called when the dialog is cancelled.
+         *
          * @param target
          * @return true if the dialog is to be closed, false otherwise
          */

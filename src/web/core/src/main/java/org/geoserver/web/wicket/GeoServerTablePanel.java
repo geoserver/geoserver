@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -514,12 +514,9 @@ public abstract class GeoServerTablePanel<T> extends Panel {
     }
     
     public void processInputs() {
-        this.visitChildren(FormComponent.class, new IVisitor() {
-            
-            public Object component(Component component) {
-                ((FormComponent) component).processInput();
-                return IVisitor.CONTINUE_TRAVERSAL_BUT_DONT_GO_DEEPER;
-            }
+        this.visitChildren(FormComponent.class, (component, visit) -> {
+            ((FormComponent) component).processInput();
+            visit.dontGoDeeper();
         });
     }
 

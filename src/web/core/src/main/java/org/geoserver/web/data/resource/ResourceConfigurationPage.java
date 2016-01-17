@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -12,13 +12,13 @@ import java.util.List;
 import org.apache.wicket.Component;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
-import org.apache.wicket.util.visit.IVisitor;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -51,13 +51,13 @@ import org.geoserver.web.data.layer.LayerPage;
 public class ResourceConfigurationPage extends PublishedConfigurationPage<LayerInfo> {
 
     private static final long serialVersionUID = 7870938096047218989L;
-    
+
     IModel<ResourceInfo> myResourceModel;
 
     public ResourceConfigurationPage(PageParameters parameters) {
         this(parameters.get(WORKSPACE).toOptionalString(), parameters.get(NAME).toString());
     }
-    
+
     public ResourceConfigurationPage(String workspaceName, String layerName) {
         super(false);
         this.returnPageClass = LayerPage.class;
@@ -98,7 +98,7 @@ public class ResourceConfigurationPage extends PublishedConfigurationPage<LayerI
         this.returnPageClass = LayerPage.class;
         setupResource(isNew ? info.getResource() : getCatalog().getResource(info.getResource().getId(), ResourceInfo.class));
     }
-    
+
     private void setupResource(ResourceInfo resource) {
         getPublishedInfo().setResource(resource);
         myResourceModel = new CompoundPropertyModel<ResourceInfo>(new ResourceModel(resource));
@@ -150,13 +150,13 @@ public class ResourceConfigurationPage extends PublishedConfigurationPage<LayerI
             };
             return dataPanelList;
         }
-        
+
     }
 
 
     /**
      * Returns the {@link ResourceInfo} contained in this page
-     * 
+     *
      * @return
      */
     public ResourceInfo getResourceInfo() {
@@ -166,7 +166,7 @@ public class ResourceConfigurationPage extends PublishedConfigurationPage<LayerI
 
     /**
      * Allows collaborating pages to update the resource info object
-     * 
+     *
      * @param info
      * @param target
      */
@@ -176,25 +176,19 @@ public class ResourceConfigurationPage extends PublishedConfigurationPage<LayerI
 
     /**
      * Allows collaborating pages to update the resource info object
-     * 
-     * @param info
+     *
+     * @param info the resource info to update
      * @param target
      */
     public void updateResource(ResourceInfo info, final AjaxRequestTarget target) {
         myResourceModel.setObject(info);
-        visitChildren(new IVisitor<Component>() {
-
-            @Override
-            public Object component(Component component) {
-                if (component instanceof ResourceConfigurationPanel) {
-                    ResourceConfigurationPanel rcp = (ResourceConfigurationPanel) component;
-                    rcp.resourceUpdated(target);
-                    return IVisitor.CONTINUE_TRAVERSAL_BUT_DONT_GO_DEEPER;
-                }
-                return IVisitor.CONTINUE_TRAVERSAL;
+        visitChildren(TextField.class, (component, visit) -> {
+            if (component instanceof ResourceConfigurationPanel) {
+                ResourceConfigurationPanel rcp = (ResourceConfigurationPanel) component;
+                rcp.resourceUpdated(target);
+                visit.dontGoDeeper();
             }
         });
-
     }
 
     @Override
@@ -239,7 +233,7 @@ public class ResourceConfigurationPage extends PublishedConfigurationPage<LayerI
         } else {
             ResourceInfo oldState = catalog.getResource(resourceInfo.getId(),
                     ResourceInfo.class);
-            
+
             catalog.validate(resourceInfo, true).throwIfInvalid();
             catalog.save(resourceInfo);
             try {

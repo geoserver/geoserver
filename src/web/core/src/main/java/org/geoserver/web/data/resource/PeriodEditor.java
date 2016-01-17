@@ -7,12 +7,10 @@ package org.geoserver.web.data.resource;
 
 import java.math.BigDecimal;
 
-import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
-import org.apache.wicket.util.visit.IVisit;
 import org.apache.wicket.validation.validator.RangeValidator;
 
 /**
@@ -106,7 +104,7 @@ public class PeriodEditor extends FormComponentPanel<BigDecimal> {
 
     @Override
     public void convertInput() {
-        visitChildren(TextField.class, (Component component, final IVisit<Void> visit) -> {
+        visitChildren(TextField.class, (component, visit) -> {
             ((TextField) component).processInput();
         });
 
@@ -120,7 +118,7 @@ public class PeriodEditor extends FormComponentPanel<BigDecimal> {
         // when the client programmatically changed the model, update the fields
         // so that the textfields will change too
         updateFields();
-        visitChildren(TextField.class, (Component component, final IVisit<Void> visit) -> {
+        visitChildren(TextField.class, (component, visit) -> {
             ((TextField) component).clearInput();
         });
     }

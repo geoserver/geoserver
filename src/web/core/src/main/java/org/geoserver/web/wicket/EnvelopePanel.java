@@ -5,7 +5,6 @@
  */
 package org.geoserver.web.wicket;
 
-import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
@@ -19,7 +18,6 @@ import org.geotools.geometry.jts.ReferencedEnvelope3D;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import com.vividsolutions.jts.geom.Envelope;
-import org.apache.wicket.util.visit.IVisit;
 
 /**
  * A form component for a {@link Envelope} object.
@@ -152,7 +150,7 @@ public class EnvelopePanel extends FormComponentPanel {
     }
 
     public EnvelopePanel setReadOnly( final boolean readOnly ) {
-        visitChildren(TextField.class, (Component component, final IVisit<Void> visit) -> {
+        visitChildren(TextField.class, (component, visit) -> {
             component.setEnabled(!readOnly);
         });
         crsPanel.setReadOnly(readOnly);
@@ -162,7 +160,7 @@ public class EnvelopePanel extends FormComponentPanel {
 
     @Override
     public void convertInput() {
-        visitChildren(TextField.class, (Component component, final IVisit<Void> visit) -> {
+        visitChildren(TextField.class, (component, visit) -> {
             ((TextField) component).processInput();
         });
 
@@ -194,7 +192,7 @@ public class EnvelopePanel extends FormComponentPanel {
         // when the client programmatically changed the model, update the fields
         // so that the textfields will change too
         updateFields();
-        visitChildren(TextField.class, (Component component, final IVisit<Void> visit) -> {
+        visitChildren(TextField.class, (component, visit) -> {
             ((TextField) component).clearInput();
         });
     }

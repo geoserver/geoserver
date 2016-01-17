@@ -7,10 +7,8 @@ package org.geoserver.web.publish;
 
 import java.io.IOException;
 
-import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.util.visit.IVisit;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.web.data.resource.ResourceConfigurationPage;
@@ -60,7 +58,7 @@ public class PublishedEditTabPanel<T extends PublishedInfo> extends Panel {
 
 
     public PublishedEditTabPanel<T> setInputEnabled(final boolean enabled) {
-        visitChildren((Component component, final IVisit<Void> visit) -> {
+        visitChildren((component, visit) -> {
             component.setEnabled(enabled);
         });
         return this;

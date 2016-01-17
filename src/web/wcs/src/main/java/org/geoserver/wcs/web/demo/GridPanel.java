@@ -7,13 +7,11 @@ package org.geoserver.wcs.web.demo;
 
 import java.awt.Rectangle;
 
-import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
-import org.apache.wicket.util.visit.IVisit;
 import org.geotools.coverage.grid.GridEnvelope2D;
 
 /**
@@ -68,7 +66,7 @@ public class GridPanel extends FormComponentPanel {
     }
 
     public GridPanel setReadOnly( final boolean readOnly ) {
-        visitChildren(TextField.class, (Component component, final IVisit<Void> visit) -> {
+        visitChildren(TextField.class, (component, visit) -> {
             component.setEnabled( !readOnly );
         });
 
@@ -77,7 +75,7 @@ public class GridPanel extends FormComponentPanel {
 
     @Override
     public void convertInput() {
-        visitChildren(TextField.class, (Component component, final IVisit<Void> visit) -> {
+        visitChildren(TextField.class, (component, visit) -> {
             ((TextField) component).processInput();
         });
 
@@ -96,7 +94,7 @@ public class GridPanel extends FormComponentPanel {
         // when the client programmatically changed the model, update the fields
         // so that the textfields will change too
         updateFields();
-        visitChildren(TextField.class, (Component component, final IVisit<Void> visit) -> {
+        visitChildren(TextField.class, (component, visit) -> {
             ((TextField) component).clearInput();
         });
     }

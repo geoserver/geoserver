@@ -151,7 +151,7 @@ public class NetCDFOutSettingsEditor extends NetCDFPanel<NetCDFLayerSettingsCont
 
     @Override
     public void convertInput() {
-        globalAttributes.visitChildren((Component component, final IVisit<Void> visit) -> {
+        globalAttributes.visitChildren((component, visit) -> {
             if (component instanceof FormComponent) {
                 FormComponent<?> formComponent = (FormComponent<?>) component;
                 formComponent.processInput();

@@ -168,7 +168,7 @@ public class NetCDFPanel<T extends NetCDFSettingsContainer> extends FormComponen
 
     @Override
     public void convertInput() {
-        globalAttributes.visitChildren((Component component, final IVisit<Void> visit) -> {
+        globalAttributes.visitChildren((component, visit) -> {
             if (component instanceof FormComponent) {
                 FormComponent<?> formComponent = (FormComponent<?>) component;
                 formComponent.processInput();

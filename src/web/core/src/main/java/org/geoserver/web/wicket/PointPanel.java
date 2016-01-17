@@ -5,7 +5,6 @@
  */
 package org.geoserver.web.wicket;
 
-import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
 import org.apache.wicket.markup.html.form.TextField;
@@ -17,7 +16,6 @@ import org.apache.wicket.model.ResourceModel;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Point;
-import org.apache.wicket.util.visit.IVisit;
 
 /**
  * A form component for a {@link Point} object.
@@ -82,7 +80,7 @@ public class PointPanel extends FormComponentPanel<Point> {
     }
 
     public PointPanel setReadOnly( final boolean readOnly ) {
-        visitChildren(TextField.class, (Component component, final IVisit<Void> visit) -> {
+        visitChildren(TextField.class, (component, visit) -> {
             component.setEnabled(!readOnly);
         });
 
@@ -91,7 +89,7 @@ public class PointPanel extends FormComponentPanel<Point> {
 
     @Override
     public void convertInput() {
-        visitChildren(TextField.class, (Component component, final IVisit<Void> visit) -> {
+        visitChildren(TextField.class, (component, visit) -> {
             ((TextField) component).processInput();
         });
 
@@ -108,7 +106,7 @@ public class PointPanel extends FormComponentPanel<Point> {
         // when the client programmatically changed the model, update the fields
         // so that the textfields will change too
         updateFields();
-        visitChildren(TextField.class, (Component component, final IVisit<Void> visit) -> {
+        visitChildren(TextField.class, (component, visit) -> {
             ((TextField) component).clearInput();
         });
     }

@@ -18,7 +18,6 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.form.RadioChoice;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.tester.FormTester;
-import org.apache.wicket.util.visit.IVisit;
 import org.geoserver.data.test.MockData;
 import org.geoserver.security.AccessMode;
 import org.geoserver.security.impl.DataAccessRule;
@@ -107,7 +106,7 @@ public class DataSecurityPageTest extends AbstractListPageTest<DataAccessRule> {
 
         form.select("catalogMode", 1);
 
-        form.getForm().visitChildren(RadioChoice.class, (Component component, final IVisit<Void> visit) -> {
+        form.getForm().visitChildren(RadioChoice.class, (component, visit) -> {
             if (component.getId().equals("catalogMode")) {
                 ((RadioChoice) component).onSelectionChanged();
             }

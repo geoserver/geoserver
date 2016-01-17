@@ -5,10 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.wicket.Component;
 import org.apache.wicket.Page;
 import org.apache.wicket.markup.html.link.ExternalLink;
-import org.apache.wicket.util.visit.IVisit;
 import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.web.GeoServerHomePage;
 import org.geoserver.web.GeoServerWicketTestSupport;
@@ -28,7 +26,7 @@ public class GWCServiceLinksTest extends GeoServerWicketTestSupport {
 
         Page lastPage = tester.getLastRenderedPage();
         final List<String> services = new ArrayList<String>();
-        lastPage.visitChildren(ExternalLink.class, (Component component, final IVisit<Void> visit) -> {
+        lastPage.visitChildren(ExternalLink.class, (component, visit) -> {
             String url = (String) component.getDefaultModelObject();
             if(url != null) {
                 if(url.startsWith("../gwc/service/")) {

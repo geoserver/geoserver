@@ -29,7 +29,6 @@ import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.markup.repeater.ReuseIfModelsEqualStrategy;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
-import org.apache.wicket.util.visit.IVisit;
 import org.apache.wicket.validation.IValidatable;
 import org.apache.wicket.validation.IValidator;
 import org.geoserver.catalog.DimensionInfo;
@@ -273,7 +272,7 @@ public class DynamicDimensionsTabPanel extends PublishedEditTabPanel<LayerInfo> 
 
         @Override
         public void convertInput() {
-            visitChildren(TextArea.class, (Component component, final IVisit<Void> visit) -> {
+            visitChildren(TextArea.class, (component, visit) -> {
                 if (component instanceof TextArea) {
                     TextArea textArea = (TextArea) component;
                     textArea.updateModel();

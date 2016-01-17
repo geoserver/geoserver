@@ -37,7 +37,6 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
-import org.apache.wicket.util.visit.IVisit;
 import org.apache.wicket.validation.IValidatable;
 import org.apache.wicket.validation.IValidator;
 import org.apache.wicket.validation.ValidationError;
@@ -356,7 +355,7 @@ class ParameterFilterEditor extends FormComponentPanel<Set<ParameterFilter>> {
     
     @Override
     public void convertInput() {
-        filters.visitChildren((Component component, final IVisit<Void> visit) -> {
+        filters.visitChildren((component, visit) -> {
             if (component instanceof FormComponent) {
                 FormComponent<?> formComponent = (FormComponent<?>) component;
                 formComponent.processInput();

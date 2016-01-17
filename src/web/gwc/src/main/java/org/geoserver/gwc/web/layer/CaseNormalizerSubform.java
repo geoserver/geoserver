@@ -9,14 +9,12 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
-import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
 import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
-import org.apache.wicket.util.visit.IVisit;
 import org.geowebcache.filter.parameters.CaseNormalizer;
 import org.geowebcache.filter.parameters.CaseNormalizer.Case;
 
@@ -89,7 +87,7 @@ public class CaseNormalizerSubform extends FormComponentPanel<CaseNormalizer> {
     
     @Override
     public void convertInput() {
-        visitChildren((Component component, final IVisit<Void> visit) -> {
+        visitChildren((component, visit) -> {
             if (component instanceof FormComponent) {
                 FormComponent<?> formComponent = (FormComponent<?>) component;
                 formComponent.processInput();

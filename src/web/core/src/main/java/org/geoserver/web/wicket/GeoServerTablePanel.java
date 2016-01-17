@@ -514,7 +514,7 @@ public abstract class GeoServerTablePanel<T> extends Panel {
     }
     
     public void processInputs() {
-        this.visitChildren(FormComponent.class, (Component component, final IVisit<Void> visit) -> {
+        this.visitChildren(FormComponent.class, (component, visit) -> {
             ((FormComponent) component).processInput();
             visit.dontGoDeeper();
         });

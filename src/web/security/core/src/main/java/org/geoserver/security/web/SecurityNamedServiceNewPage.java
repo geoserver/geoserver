@@ -7,7 +7,6 @@ package org.geoserver.security.web;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.wicket.Component;
 
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -22,7 +21,6 @@ import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.util.visit.IVisit;
 import org.geoserver.security.GeoServerSecurityService;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
 import org.geoserver.web.GeoServerApplication;
@@ -159,7 +157,7 @@ public class SecurityNamedServiceNewPage
                 @Override
                 public void onClick(final AjaxRequestTarget target) {
                     //set all links enabled
-                    AjaxLinkGroup.this.visitChildren(AjaxLink.class, (Component component, final IVisit<Void> visit) -> {
+                    AjaxLinkGroup.this.visitChildren(AjaxLink.class, (component, visit) -> {
                         component.setEnabled(true);
                         target.add(component);
                         visit.dontGoDeeper();

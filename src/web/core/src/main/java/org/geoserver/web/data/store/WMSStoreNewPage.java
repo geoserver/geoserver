@@ -23,6 +23,7 @@ import org.geoserver.web.data.layer.NewLayerPage;
 import org.geotools.data.ows.HTTPClient;
 import org.geotools.data.ows.SimpleHttpClient;
 import org.geotools.data.wms.WebMapServer;
+import org.geotools.ows.ServiceException;
 
 public class WMSStoreNewPage extends AbstractWMSStorePage {
 
@@ -97,9 +98,8 @@ public class WMSStoreNewPage extends AbstractWMSStorePage {
                 }
                 WebMapServer server = new WebMapServer(new URL(url), client);
                 server.getCapabilities();
-            } catch(Exception e) {
-                IValidationError err = new ValidationError("WMSCapabilitiesValidator.connectionFailure" +
-                        Collections.singletonMap("error", e.getMessage()));
+            } catch(IOException | ServiceException e) {
+                IValidationError err = new ValidationError("WMSCapabilitiesValidator.connectionFailure").setVariable("error", e.getMessage());
                 validatable.error(err);
             }
         }

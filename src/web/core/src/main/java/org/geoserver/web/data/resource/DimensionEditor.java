@@ -464,15 +464,10 @@ public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
                     if (strategyModel.getObject() == Strategy.NEAREST) {
                         if (!DimensionDefaultValueSetting.TIME_CURRENT.equalsIgnoreCase(value
                                 .getValue())) {
-                            IValidationError err = new ValidationError("invalidNearestTimeReferenceValue " + Collections
-                                    .singletonMap("value", (Object) value.getValue()));
-                            value.error(err);
+                            value.error(new ValidationError("invalidNearestTimeReferenceValue"));
                         }
                     } else {
-                        IValidationError err = new ValidationError("invalidTimeReferenceValue" + Collections.singletonMap("value",
-                                (Object) value.getValue()));
-
-                        value.error(err);
+                        value.error(new ValidationError("invalidTimeReferenceValue"));
                     }
                 }
             }
@@ -480,9 +475,7 @@ public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
                 try {
                     Double.parseDouble(value.getValue());
                 } catch (NumberFormatException nfe){
-                    IValidationError err = new ValidationError("invalidElevationReferenceValue " + Collections.singletonMap("value",
-                            (Object) value.getValue()));
-                    value.error(err);
+                    value.error(new ValidationError("invalidElevationReferenceValue"));
                 }
             }
         }

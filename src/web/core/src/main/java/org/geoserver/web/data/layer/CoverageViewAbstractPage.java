@@ -202,10 +202,10 @@ public abstract class CoverageViewAbstractPage extends GeoServerSecuredPage {
                 if (currvc != null) {
                     if (coverageInfoId == null || !coverageInfoId.equals(curr.getId())) {
                         if (currvc.getName().equals(vcName) && newCoverage) {
-                            Map<String, String> map = new HashMap<String, String>();
+                            Map<String, Object> map = new HashMap<>();
                             map.put("name", vcName);
                             map.put("coverageName", curr.getName());
-                            IValidationError err = new ValidationError("duplicateCoverageViewName:" + vcName);
+                            IValidationError err = new ValidationError("duplicateCoverageViewName").setVariables(map);
                             validatable.error(err);
                             return;
                         }

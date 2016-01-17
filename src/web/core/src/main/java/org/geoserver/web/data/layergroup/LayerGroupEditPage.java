@@ -246,7 +246,7 @@ public class LayerGroupEditPage extends PublishedConfigurationPage<LayerGroupInf
                 String name = validatable.getValue();
                 LayerGroupInfo other = getCatalog().getLayerGroupByName(name);
                 if(other != null && (isNew || !other.getId().equals(getPublishedInfo().getId()))) {
-                    IValidationError err = new ValidationError("duplicateGroupNameError" + Collections.singletonMap("name", (Object) name));
+                    IValidationError err = new ValidationError("duplicateGroupNameError").setVariable("name", name);
                     validatable.error(err);
                 }
             }

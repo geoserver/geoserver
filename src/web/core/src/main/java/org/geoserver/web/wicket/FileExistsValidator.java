@@ -27,7 +27,7 @@ import org.geotools.util.Converters;
  * Checks the specified file exists on the file system, including checks in the data directory
  */
 @SuppressWarnings("serial")
-public class FileExistsValidator implements IValidator {
+public class FileExistsValidator implements IValidator<String> {
     
     private UrlValidator delegate;
     
@@ -53,8 +53,8 @@ public class FileExistsValidator implements IValidator {
     }
     
     @Override
-    public void validate(IValidatable validatable) {
-        String uriSpec = Converters.convert(validatable.getValue(), String.class);
+    public void validate(IValidatable<String> validatable) {
+        String uriSpec = validatable.getValue();
 
         // Make sure we are dealing with a local path
         try {
@@ -68,7 +68,8 @@ public class FileExistsValidator implements IValidator {
                         connection.setConnectTimeout(10000);
                         is = connection.getInputStream();
                     } catch(Exception e) {
-                        IValidationError err = new ValidationError("FileExistsValidator.unreachable" + e.getLocalizedMessage());
+                        IValidationError err = new ValidationError("FileExistsValidator.unreachable")
+                                .setVariable("file", uriSpec);
                         validatable.error(err);
                     } finally {
                         IOUtils.closeQuietly(is);
@@ -99,7 +100,8 @@ public class FileExistsValidator implements IValidator {
         }
 
         if (relFile == null || !relFile.exists()) {
-            IValidationError err = new ValidationError("FileExistsValidator.fileNotFoundError: " + Collections.singletonMap("file", uriSpec));
+            IValidationError err = new ValidationError("FileExistsValidator.fileNotFoundError")
+                    .setVariable("file", uriSpec);
             validatable.error(err);
         }
     }

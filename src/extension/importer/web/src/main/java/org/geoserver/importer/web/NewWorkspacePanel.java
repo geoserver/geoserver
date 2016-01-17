@@ -42,7 +42,8 @@ class NewWorkspacePanel extends Panel {
         public void validate(IValidatable<String> iv) {
             String value = iv.getValue();
             if (GeoServerApplication.get().getCatalog().getWorkspaceByName(value) != null) {
-                iv.error(new ValidationError("NewWorkspacePanel.duplicateWorkspace"));
+                iv.error(new ValidationError("NewWorkspacePanel.duplicateWorkspace")
+                .setVariable("workspace", value));
             }
         }
     }

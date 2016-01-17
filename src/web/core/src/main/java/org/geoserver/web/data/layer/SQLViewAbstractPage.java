@@ -550,7 +550,7 @@ public abstract class SQLViewAbstractPage extends GeoServerSecuredPage {
     }
 
     /**
-     * Checks the sql view name is unique
+     * Checks the SQL view name is unique
      */
     class ViewNameValidator implements IValidator<String> {
 
@@ -565,7 +565,9 @@ public abstract class SQLViewAbstractPage extends GeoServerSecuredPage {
                 if(currvt != null) {
                     if(typeInfoId == null || !typeInfoId.equals(curr.getId())) {
                         if(currvt.getName().equals(vtName)) {
-                            IValidationError err = new ValidationError("duplicateSqlViewName:" + vtName);
+                            IValidationError err = new ValidationError("duplicateSqlViewName")
+                                    .setVariable("name", vtName)
+                                    .setVariable("typeName", curr.getName());
                             validatable.error(err);
                             return;
                         }

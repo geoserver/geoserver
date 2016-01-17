@@ -508,7 +508,7 @@ public abstract class EoLayerGroupAbstractPage extends GeoServerSecuredPage {
             String name = (String) iv.getValue();
             LayerGroupInfo other = getCatalog().getLayerGroupByName(name);
             if(other != null && (layerGroupId == null || !other.getId().equals(layerGroupId))) {
-                iv.error(new ValidationError("duplicateGroupNameError"));
+                iv.error(new ValidationError("duplicateGroupNameError").setVariable("name", name));
             }
         }
         

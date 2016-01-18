@@ -78,7 +78,7 @@ public class AuthenticationKeyMapperChoice extends DropDownChoice<String> {
         public Object getDisplayValue(String object) {
             //do a resource lookup
             return new StringResourceModel(AuthenticationKeyFilterPanel.class.getSimpleName()+
-                    "."+object,null,object).getObject();
+                    "." + object).setParameters(object).getObject();
         }
         @Override
         public String getIdValue(String object, int index) {

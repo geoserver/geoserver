@@ -5,6 +5,7 @@
  */
 package org.geoserver.web.data.namespace;
 
+import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.geoserver.catalog.NamespaceInfo;
 
@@ -13,24 +14,25 @@ import org.geoserver.catalog.NamespaceInfo;
  * 
  * @author Gabriel Roldan
  */
-public class NamespaceChoiceRenderer implements IChoiceRenderer {
+public class NamespaceChoiceRenderer extends ChoiceRenderer<NamespaceInfo> {
 
     private static final long serialVersionUID = 1L;
 
+    @Override
     /**
-     * @see IChoiceRenderer#getDisplayValue(Object)
+     * @see ChoiceRenderer#getDisplayValue(Object)
      */
-    public Object getDisplayValue(Object object) {
-        NamespaceInfo nsInfo = (NamespaceInfo) object;
+
+    public Object getDisplayValue(NamespaceInfo nsInfo) {
         String displayValue = nsInfo.getPrefix() + ": <" + nsInfo.getURI() + ">";
         return displayValue;
     }
 
     /**
-     * @see IChoiceRenderer#getIdValue(Object, int)
+     * @see ChoiceRenderer#getIdValue(Object, int)
      */
-    public String getIdValue(Object object, int index) {
-        return ((NamespaceInfo) object).getId();
+    @Override
+    public String getIdValue(NamespaceInfo object, int index) {
+        return object.getId();
     }
-
 }

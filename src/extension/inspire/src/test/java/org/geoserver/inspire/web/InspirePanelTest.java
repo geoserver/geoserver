@@ -486,7 +486,8 @@ public class InspirePanelTest extends GeoServerWicketTestSupport {
         
         List<Serializable> messages = tester.getMessages(FeedbackMessage.ERROR);
         assertEquals(1, messages.size());
-        assertTrue(((ValidationErrorFeedback) messages.get(0)).getMessage().contains("Service Metadata URL"));
+        String message = (String) ((ValidationErrorFeedback) messages.get(0)).getMessage();
+        assertTrue(message.contains("Service Metadata URL"));
 
     }
     

@@ -28,15 +28,13 @@ import org.geowebcache.filter.parameters.IntegerParameterFilter;
  */
 public class IntegerParameterFilterSubform extends AbstractParameterFilterSubform<IntegerParameterFilter> {
 
+	private static final long serialVersionUID = 4625052381807389891L;
 
-    /** serialVersionUID */
-    private static final long serialVersionUID = 1L;
-    
-    private static final IConverter INTEGER = new IConverter() {
-        /** serialVersionUID */
-        private static final long serialVersionUID = 1L;
+	private static final IConverter<Integer> INTEGER = new IConverter<Integer>() {
 
-        @Override
+    	private static final long serialVersionUID = -998131942023964739L;
+
+		@Override
         public Integer convertToObject(String value, Locale locale) {
             if(value==null || value.isEmpty()) return null;
             try {
@@ -52,17 +50,17 @@ public class IntegerParameterFilterSubform extends AbstractParameterFilterSubfor
         }
         
         @Override
-        public String convertToString(Object value, Locale locale) {
-            return Integer.toString((Integer)value);
+        public String convertToString(Integer value, Locale locale) {
+            return Integer.toString(value);
         }
     };
     
-    private static final IConverter CONVERT = new IConverter() {
+    private static final IConverter<List<Integer>> CONVERT = new IConverter<List<Integer>>() {
         /** serialVersionUID */
         private static final long serialVersionUID = 1L;
 
         @Override
-        public Object convertToObject(String value, Locale locale) {
+        public List<Integer> convertToObject(String value, Locale locale) {
             if(value==null) {
                 return null;
             } else {
@@ -77,10 +75,8 @@ public class IntegerParameterFilterSubform extends AbstractParameterFilterSubfor
         }
 
         @Override
-        public String convertToString(Object value, Locale locale) {
-            @SuppressWarnings("unchecked")
-            List<Integer> floats =  (List<Integer>) value;
-            Iterator<Integer> i = floats.iterator();
+        public String convertToString(List<Integer> value, Locale locale) {
+            Iterator<Integer> i = value.iterator();
             StringBuilder sb = new StringBuilder();
             if(i.hasNext()) {
                 sb.append(INTEGER.convertToString(i.next(), locale));
@@ -105,24 +101,30 @@ public class IntegerParameterFilterSubform extends AbstractParameterFilterSubfor
         
         final TextArea<List<Integer>> values;
         values = new TextArea<List<Integer>>("values", new PropertyModel<List<Integer>>(model, "values")) {
-            /** serialVersionUID */
-            private static final long serialVersionUID = 1L;
+			private static final long serialVersionUID = 1397063859210766872L;
 
-            @Override
-            public IConverter getConverter(Class<?> type) {
-                return CONVERT;
+			@SuppressWarnings("unchecked")
+			@Override
+            public <S> IConverter<S> getConverter(Class<S> type) {
+            	if (List.class.isAssignableFrom(type)) {
+            		return (IConverter<S>) CONVERT;
+            	}
+            	return super.getConverter(type);
             }
         };
         add(values);
         
         final Component threshold;
         threshold = new TextField<Integer>("threshold", new PropertyModel<Integer>(model, "threshold")) {
-            /** serialVersionUID */
-            private static final long serialVersionUID = 1L;
+			private static final long serialVersionUID = -3975284862791672686L;
 
-            @Override
-            public IConverter getConverter(Class<?> type) {
-                return INTEGER;
+			@SuppressWarnings("unchecked")
+			@Override
+            public <S> IConverter<S> getConverter(Class<S> type) {
+            	if (Integer.class.isAssignableFrom(type)) {
+            		return (IConverter<S>) INTEGER;
+            	}
+            	return super.getConverter(type);
             }
         };
         add(threshold);

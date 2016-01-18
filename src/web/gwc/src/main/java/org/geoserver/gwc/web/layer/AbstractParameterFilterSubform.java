@@ -18,12 +18,9 @@ import org.geowebcache.filter.parameters.ParameterFilter;
  */
 public abstract class AbstractParameterFilterSubform<T extends ParameterFilter> extends FormComponentPanel<T> {
 
+	private static final long serialVersionUID = -213688039804104263L;
 
-    /** serialVersionUID */
-    private static final long serialVersionUID = 1L;
-
-
-    public AbstractParameterFilterSubform(String id,
+	public AbstractParameterFilterSubform(String id,
             IModel<T> model) {
         super(id, model);
         

@@ -16,10 +16,11 @@ import org.geowebcache.layer.TileLayer;
  * modifications in a resource stable across page loads.
  * </p>
  */
-@SuppressWarnings("serial")
 class TileLayerDetachableModel extends LoadableDetachableModel<TileLayer> {
 
-    private String name;
+	private static final long serialVersionUID = -2511578156425555123L;
+	
+	private String name;
 
     public TileLayerDetachableModel(String layerName) {
         this.name = layerName;

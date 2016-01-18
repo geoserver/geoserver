@@ -87,8 +87,10 @@ public class StyleParameterFilterSubform extends AbstractParameterFilterSubform<
         }
     }
     static class LabelledEmptyStringModel implements IModel<String> {
-    
-        final private IModel<String> realModel;
+
+		private static final long serialVersionUID = 7591957769540603345L;
+
+		final private IModel<String> realModel;
         
         final String label;
 

@@ -133,7 +133,6 @@ class CachedLayerProvider extends GeoServerDataProvider<TileLayer> {
         }
     };
 
-    @SuppressWarnings("unchecked")
     static final List<Property<TileLayer>> PROPERTIES = Collections.unmodifiableList(Arrays.asList(
             TYPE, NAME, QUOTA_LIMIT, QUOTA_USAGE, BLOBSTORE, ENABLED, PREVIEW_LINKS, ACTIONS));
 
@@ -157,7 +156,7 @@ class CachedLayerProvider extends GeoServerDataProvider<TileLayer> {
                 return false;
             }
         };
-        tileLayerNames = new ArrayList(Collections2.filter(tileLayerNames, predicate));
+        tileLayerNames = new ArrayList<String>(Collections2.filter(tileLayerNames, predicate));
 
         return Lists.transform(tileLayerNames, new Function<String, TileLayer>() {
 
@@ -179,7 +178,7 @@ class CachedLayerProvider extends GeoServerDataProvider<TileLayer> {
     /**
      * @see org.geoserver.web.wicket.GeoServerDataProvider#newModel(java.lang.Object)
      */
-    public IModel<TileLayer> newModel(final Object tileLayer) {
+    public IModel<TileLayer> newModel(final TileLayer tileLayer) {
         return new TileLayerDetachableModel(((TileLayer) tileLayer).getName());
     }
 
@@ -187,7 +186,7 @@ class CachedLayerProvider extends GeoServerDataProvider<TileLayer> {
      * @see org.geoserver.web.wicket.GeoServerDataProvider#getComparator
      */
     @Override
-    protected Comparator<TileLayer> getComparator(SortParam sort) {
+    protected Comparator<TileLayer> getComparator(SortParam<?> sort) {
         return super.getComparator(sort);
     }
 }

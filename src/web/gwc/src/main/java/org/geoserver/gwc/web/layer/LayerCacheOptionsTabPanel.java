@@ -24,9 +24,9 @@ import org.geoserver.web.publish.PublishedEditTabPanel;
  */
 public class LayerCacheOptionsTabPanel extends PublishedEditTabPanel<PublishedInfo> {
 
-    private static final long serialVersionUID = 1L;
-
-    private GeoServerTileLayerEditor editor;
+	private static final long serialVersionUID = -2995387155768727100L;
+	
+	private GeoServerTileLayerEditor editor;
 
     public LayerCacheOptionsTabPanel(String id, IModel<? extends PublishedInfo> layerModel,
             IModel<GeoServerTileLayerInfo> tileLayerModel) {

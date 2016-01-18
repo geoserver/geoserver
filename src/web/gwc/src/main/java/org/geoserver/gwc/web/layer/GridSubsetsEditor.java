@@ -56,9 +56,9 @@ class GridSubsetsEditor extends FormComponentPanel<Set<XMLGridSubset>> {
 
     private class GridSubsetListValidator implements IValidator<Set<XMLGridSubset>> {
 
-        private static final long serialVersionUID = 1L;
-
-        private boolean validate;
+		private static final long serialVersionUID = -2646310164736911748L;
+		
+		private boolean validate;
 
         public GridSubsetListValidator() {
             this.setEnabled(true);
@@ -271,10 +271,11 @@ class GridSubsetsEditor extends FormComponentPanel<Set<XMLGridSubset>> {
                         "GridSubsetsEditor.bounds.dynamic"));
                 item.add(gridSetBounds);
 
-                removeLink = new ImageAjaxLink("removeLink", GWCIconFactory.DELETE_ICON) {
-                    private static final long serialVersionUID = 1L;
+                removeLink = new ImageAjaxLink<Object>("removeLink", GWCIconFactory.DELETE_ICON) {
 
-                    @Override
+					private static final long serialVersionUID = -5072597940769821889L;
+
+					@Override
                     protected void onClick(AjaxRequestTarget target) {
                         List<XMLGridSubset> list;
                         list = new ArrayList<XMLGridSubset>(grids.getModelObject());
@@ -315,7 +316,7 @@ class GridSubsetsEditor extends FormComponentPanel<Set<XMLGridSubset>> {
             private static final long serialVersionUID = 1L;
 
             @Override
-            protected void onClick(AjaxRequestTarget target, Form form) {
+            protected void onClick(AjaxRequestTarget target, Form<?> form) {
                 availableGridSets.processInput();
 
                 final String selectedGridset = availableGridSets.getModelObject();

@@ -45,12 +45,11 @@ class MasterPasswordInfoPage extends AbstractSecurityPage {
                 }                                    
                 try {
                     if (dumpMasterPassword()) {                        
-                        info (new StringResourceModel("dumpInfo", this,null,
-                                new Object[] {new File(fileName).getCanonicalFile()}).getString());
+                        info (new StringResourceModel("dumpInfo", this).setParameters(new File(fileName).getCanonicalFile()).getString());
                     }
                         
                     else 
-                        error(new StringResourceModel("unauthorized", this,null).getString());   
+                        error(new StringResourceModel("unauthorized", this).getString());   
                 } catch (Exception e) {
                     error(e);
                 }

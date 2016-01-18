@@ -12,6 +12,7 @@ import java.util.List;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.MarkupContainer;
+import org.apache.wicket.ajax.AjaxRequestHandler;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
@@ -104,9 +105,9 @@ public abstract class AbstractSecurityNamedServicePanelTest extends AbstractSecu
             basePage.get(basePanelId + ":table:listContainer:items");
     }
     
-    protected int countItmes() {
+    protected long countItems() {
         tester.debugComponentTrees();
-        return  getDataView().getItemCount();
+        return getDataView().getItemCount();
     }
     
     protected SecurityNamedServiceConfig getSecurityNamedServiceConfig(String name) {
@@ -205,7 +206,7 @@ public abstract class AbstractSecurityNamedServicePanelTest extends AbstractSecu
         tester.clickLink(basePanelId + ":remove", true);
         assertTrue(w.isShown());
         
-        ((GeoServerDialog)w.getParent()).submit(new AjaxRequestTarget(tester.getLastRenderedPage()));
+        ((GeoServerDialog)w.getParent()).submit(new AjaxRequestHandler(tester.getLastRenderedPage()));
         //simulateDeleteSubmit();        
         //executeModalWindowCloseButtonCallback(w);
     }

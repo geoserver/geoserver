@@ -76,11 +76,11 @@ public abstract class AbstractListPageTest<T> extends AbstractSecurityWicketTest
         MarkupContainer listView = (MarkupContainer) tester.getLastRenderedPage().get(ITEMS_PATH);
         
         @SuppressWarnings("unchecked")
-        Iterator<MarkupContainer> it = (Iterator<MarkupContainer>) listView.iterator();
+        Iterator<Component> it = (Iterator<Component>) listView.iterator();
         
         while (it.hasNext()) {
-            MarkupContainer m = it.next();
-            Component c = m.get(columnPath);
+            Component container = it.next();
+            Component c = container.get(columnPath);
             @SuppressWarnings("unchecked")
             T modelObject = (T) c.getDefaultModelObject();
             if (columnValue.equals(property.getPropertyValue(modelObject)))

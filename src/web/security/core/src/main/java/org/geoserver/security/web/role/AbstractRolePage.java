@@ -51,11 +51,10 @@ public abstract class AbstractRolePage extends AbstractSecurityPage {
 
         StringResourceModel descriptionModel;
         if (role.getUserName() != null) {
-            descriptionModel = new StringResourceModel("personalizedRole", getPage(), null, 
-                    new Object[]{role.getUserName()});            
+            descriptionModel = new StringResourceModel("personalizedRole", getPage()).setParameters(role.getUserName());            
         }
         else {
-            descriptionModel = new StringResourceModel("anonymousRole", getPage(), null);
+            descriptionModel = new StringResourceModel("anonymousRole", getPage());
         }
         form.add(new Label("description", descriptionModel));
         

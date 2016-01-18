@@ -140,7 +140,7 @@ public class SecurityNamedServiceNewPage
 
     static abstract class AjaxLinkGroup<T> extends ListView<T> {
 
-        public AjaxLinkGroup(String id, List<? extends T> list) {
+        public AjaxLinkGroup(String id, List<T> list) {
             super(id, list);
         }
 

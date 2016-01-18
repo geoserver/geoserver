@@ -33,7 +33,7 @@ public class ServiceAccessRulePage extends AbstractSecurityPage {
         add(rules = new GeoServerTablePanel<ServiceAccessRule>("table", provider, true) {
 
             @Override
-            protected Component getComponentForProperty(String id, IModel itemModel,
+            protected Component getComponentForProperty(String id, IModel<ServiceAccessRule> itemModel,
                     Property<ServiceAccessRule> property) {
                 if (property == ServiceAccessRuleProvider.RULEKEY) {
                     return editRuleLink(id, itemModel, property);

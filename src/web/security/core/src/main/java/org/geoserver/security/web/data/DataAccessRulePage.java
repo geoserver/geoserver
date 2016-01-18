@@ -52,7 +52,7 @@ public class DataAccessRulePage extends AbstractSecurityPage {
         add(rules = new GeoServerTablePanel<DataAccessRule>("table", provider, true) {
 
             @Override
-            protected Component getComponentForProperty(String id, IModel itemModel,
+            protected Component getComponentForProperty(String id, IModel<DataAccessRule> itemModel,
                     Property<DataAccessRule> property) {
                 if (property == DataAccessRuleProvider.RULEKEY) {
                     return editRuleLink(id, itemModel, property);

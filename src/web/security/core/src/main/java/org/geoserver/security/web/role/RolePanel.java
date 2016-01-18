@@ -48,7 +48,7 @@ public class RolePanel extends Panel {
         add(roles = new GeoServerTablePanel<GeoServerRole>("table", provider, true) {
 
             @Override
-            protected Component getComponentForProperty(String id, IModel itemModel,
+            protected Component getComponentForProperty(String id, IModel<GeoServerRole> itemModel,
                     Property<GeoServerRole> property) {
                 if (property == RoleListProvider.ROLENAME) {
                     return editRoleLink(id, itemModel, property);

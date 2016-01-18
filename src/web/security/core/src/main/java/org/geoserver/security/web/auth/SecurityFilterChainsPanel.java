@@ -121,7 +121,7 @@ public class SecurityFilterChainsPanel
         Serializable msg = null;
         if (e instanceof SecurityConfigException) {
             SecurityConfigException sce = (SecurityConfigException)e;
-            msg = new StringResourceModel("security."+sce.getId(),null,sce.getArgs()).getObject();
+            msg = new StringResourceModel("security."+sce.getId()).setParameters(sce.getArgs()).getObject();
         }
         else {
             msg = e;
@@ -174,7 +174,7 @@ public class SecurityFilterChainsPanel
         }
 
         @Override
-        protected Component getComponentForProperty(String id, IModel itemModel,
+        protected Component getComponentForProperty(String id, IModel<RequestFilterChain> itemModel,
                 Property<RequestFilterChain> property) {
             
             if (property == NAME) {

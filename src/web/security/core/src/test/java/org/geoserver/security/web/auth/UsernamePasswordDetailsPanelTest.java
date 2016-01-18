@@ -71,7 +71,7 @@ public  class UsernamePasswordDetailsPanelTest extends AbstractSecurityNamedServ
         
         activatePanel();
         
-        assertEquals(1, countItmes());
+        assertEquals(1, countItems());
         assertNotNull(getSecurityNamedServiceConfig("default"));
         assertNull(getSecurityNamedServiceConfig("xxxxxxxx"));
         
@@ -87,7 +87,7 @@ public  class UsernamePasswordDetailsPanelTest extends AbstractSecurityNamedServ
         clickCancel();
         
         tester.assertRenderedPage(basePage.getClass());
-        assertEquals(1, countItmes());
+        assertEquals(1, countItems());
         assertNotNull(getSecurityNamedServiceConfig("default"));
         
         clickAddNew();
@@ -101,7 +101,7 @@ public  class UsernamePasswordDetailsPanelTest extends AbstractSecurityNamedServ
         
         
         tester.assertRenderedPage(basePage.getClass());
-        assertEquals(2, countItmes());        
+        assertEquals(2, countItems());        
         assertNotNull(getSecurityNamedServiceConfig("default"));
         
         UsernamePasswordAuthenticationProviderConfig authConfig=

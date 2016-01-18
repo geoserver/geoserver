@@ -5,14 +5,14 @@
  */
 package org.geoserver.wms.eo.web;
 
-import org.apache.wicket.markup.html.form.IChoiceRenderer;
+import org.apache.wicket.markup.html.form.ChoiceRenderer;
 
 /**
  * Renders layer group entries in drop down choice components
  * @author Andrea Aime - GeoSolutions
  *
  */
-class LayerGroupEntryRenderer implements IChoiceRenderer<EoLayerGroupEntry> {
+class LayerGroupEntryRenderer extends ChoiceRenderer<EoLayerGroupEntry> {
     private static final long serialVersionUID = 4073120717494762957L;
 
     @Override

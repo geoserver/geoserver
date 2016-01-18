@@ -82,7 +82,7 @@ public abstract class CascadedWFSStoredQueryAbstractPage extends GeoServerSecure
         parameters = new GeoServerTablePanel<StoredQueryParameterAttribute>("parameters", parameterProvider) {
             @Override
             protected Component getComponentForProperty(String id,
-                    final IModel itemModel,
+                    final IModel<StoredQueryParameterAttribute> itemModel,
                     Property<StoredQueryParameterAttribute> property) {
                 if (property == ATTR_MAPTYPE) {
                     Fragment f = new Fragment(id, "parameterMappingType", CascadedWFSStoredQueryAbstractPage.this);

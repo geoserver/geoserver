@@ -5,21 +5,14 @@
  */
 package org.geoserver.web.data.layer;
 
-import static org.geoserver.web.data.layer.LayerProvider.ENABLED;
-import static org.geoserver.web.data.layer.LayerProvider.NAME;
-import static org.geoserver.web.data.layer.LayerProvider.SRS;
-import static org.geoserver.web.data.layer.LayerProvider.STORE;
-import static org.geoserver.web.data.layer.LayerProvider.TYPE;
-import static org.geoserver.web.data.layer.LayerProvider.WORKSPACE;
-
 import org.apache.wicket.Component;
-import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.request.resource.PackageResourceReference;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.StoreInfo;
@@ -33,10 +26,12 @@ import org.geoserver.web.data.store.CoverageStoreEditPage;
 import org.geoserver.web.data.store.DataAccessEditPage;
 import org.geoserver.web.data.store.WMSStoreEditPage;
 import org.geoserver.web.data.workspace.WorkspaceEditPage;
+import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.SimpleBookmarkableLink;
-import org.geoserver.web.wicket.GeoServerDataProvider.Property;
+
+import static org.geoserver.web.data.layer.LayerProvider.*;
 
 /**
  * Page listing all the available layers. Follows the usual filter/sort/page approach,
@@ -54,7 +49,7 @@ public class LayerPage extends GeoServerSecuredPage {
         table = new GeoServerTablePanel<LayerInfo>("table", provider, true) {
 
             @Override
-            protected Component getComponentForProperty(String id, IModel itemModel,
+            protected Component getComponentForProperty(String id, IModel<LayerInfo> itemModel,
                     Property<LayerInfo> property) {
                 if(property == TYPE) {
                     Fragment f = new Fragment(id, "iconFragment", LayerPage.this);
@@ -84,8 +79,7 @@ public class LayerPage extends GeoServerSecuredPage {
             protected void onSelectionUpdate(AjaxRequestTarget target) {
                 removal.setEnabled(table.getSelection().size() > 0);
                 target.add(removal);
-            }  
-            
+            }
         };
         table.setOutputMarkupId(true);
         add(table);

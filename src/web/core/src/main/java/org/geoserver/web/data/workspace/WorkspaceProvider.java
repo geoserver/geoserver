@@ -8,6 +8,7 @@ package org.geoserver.web.data.workspace;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.model.IModel;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.WorkspaceInfo;
@@ -36,7 +37,7 @@ public class WorkspaceProvider extends GeoServerDataProvider<WorkspaceInfo> {
     static List PROPERTIES = Arrays.asList(NAME, DEFAULT);
     
     public WorkspaceProvider() {
-        setSort(NAME.getName(), true);
+        setSort(NAME.getName(), SortOrder.ASCENDING);
     }
    
     @Override

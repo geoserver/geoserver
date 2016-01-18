@@ -320,7 +320,7 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
             settingsContainer.add(contactPanel);
 
             otherSettingsPanel = new WebMarkupContainer("otherSettings", 
-                new CompoundPropertyModel<GeoServerInfo>(set.model));
+                new CompoundPropertyModel<>(set.model));
             otherSettingsPanel.setOutputMarkupId(true);
             otherSettingsPanel.setVisible(set.enabled);
             otherSettingsPanel.add(new CheckBox("verbose"));

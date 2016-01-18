@@ -13,7 +13,7 @@ import org.geoserver.catalog.MetadataMap;
 /**
  * A model which backs onto an underlying {@link MetadataMap}
  * <p>
- * The semantics of this model are similar to {@link #PropertyModel} except for that expressions map
+ * The semantics of this model are similar to {@link org.apache.wicket.model.PropertyModel} except for that expressions map
  * to keys of a map rather than java bean property names.
  * </p>
  * <p>
@@ -24,9 +24,9 @@ import org.geoserver.catalog.MetadataMap;
  * @author Justin Deoliveira, The Open Planning Project
  */
 @SuppressWarnings("serial")
-public class MetadataMapModel implements IModel<Object> {
+public class MetadataMapModel<T> implements IModel<T> {
 
-    protected IModel<?> model;
+    protected IModel<MetadataMap> model;
 
     protected String expression;
 
@@ -34,26 +34,23 @@ public class MetadataMapModel implements IModel<Object> {
     
     protected Serializable value;
 
-    public MetadataMapModel(MetadataMap map, String expression, Class<?> target) {
-        this(new MetadataMapWrappingModel(map), expression, target);
-    }
-
-    public MetadataMapModel(IModel<?> model, String expression, Class<?> target) {
+    public MetadataMapModel(IModel<MetadataMap> model, String expression, Class<?> target) {
         this.model = model;
         this.expression = expression;
         this.target = target;
     }
 
-    public Object getObject() {
+    @SuppressWarnings("unchecked")
+    public T getObject() {
         if(value == null) {
-            value = (Serializable) ((MetadataMap) model.getObject()).get(expression, target);
+            value = (Serializable) model.getObject().get(expression, target);
         }
-        return value;
+        return (T) value;
     }
 
-    public void setObject(Object object) {
+    public void setObject(T object) {
         value = (Serializable) object;
-        ((MetadataMap) model.getObject()).put(expression, (Serializable) object);
+        model.getObject().put(expression, (Serializable) object);
     }
 
     public void detach() {
@@ -64,7 +61,7 @@ public class MetadataMapModel implements IModel<Object> {
         return expression;
     }
 
-    private static class MetadataMapWrappingModel implements IModel<Object> {
+    private static class MetadataMapWrappingModel implements IModel<MetadataMap> {
 
         private MetadataMap map;
 
@@ -72,17 +69,14 @@ public class MetadataMapModel implements IModel<Object> {
             map = m;
         }
 
-        public Object getObject() {
+        public MetadataMap getObject() {
             return map;
         }
 
-        public void setObject(Object arg0) {
+        public void setObject(MetadataMap arg0) {
         }
 
         public void detach() {
         }
-
     }
-
-
 }

@@ -21,10 +21,17 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.request.IRequestHandler;
+import org.apache.wicket.request.Response;
 import org.apache.wicket.request.cycle.RequestCycle;
+import org.apache.wicket.request.handler.resource.ResourceStreamRequestHandler;
 import org.apache.wicket.request.http.WebResponse;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.apache.wicket.request.resource.ContentDisposition;
+import org.apache.wicket.request.resource.ResourceStreamResource;
 import org.apache.wicket.util.io.Streams;
+import org.apache.wicket.util.resource.FileResourceStream;
+import org.apache.wicket.util.resource.IResourceStream;
 import org.apache.wicket.validation.validator.RangeValidator;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.logging.LoggingUtils;
@@ -46,7 +53,8 @@ public class LogPage extends GeoServerSecuredPage {
     File logFile;
 
     public LogPage(PageParameters params) {
-        Form form = new Form("form");
+        @SuppressWarnings("rawtypes")
+        Form<?> form = new Form("form");
         add(form);
         
         /**
@@ -106,35 +114,20 @@ public class LogPage extends GeoServerSecuredPage {
 
             @Override
             public void onClick() {
-                RequestCycle.get().setRequestTarget(new IRequestTarget() {
-
-                    public void detach(RequestCycle requestCycle) {
+                IResourceStream stream = new FileResourceStream(logFile){
+                    public String getContentType() {
+                        return "text/plain";
                     }
-
-                    public void respond(RequestCycle requestCycle) {
-
-                        InputStream is = null;
-                        try {
-                            is = new FileInputStream(logFile);
-
-                            WebResponse r = (WebResponse) requestCycle.getResponse();
-                            r.setAttachmentHeader("geoserver.log");
-                            r.setContentType("text/plain");
-                            Streams.copy(is, r.getOutputStream());
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        } finally {
-                            if(is != null) {
-                                try {
-                                    is.close();
-                                } catch (IOException e) {
-                                }
-                            }
-                        }
-                    }
-
-                });
-
+                };                
+                IRequestHandler handler = new ResourceStreamRequestHandler(stream){
+                    @Override
+                    protected void configure(ResourceStreamResource resource) {
+                        resource.setFileName("geoserver.log");
+                        resource.setContentDisposition(ContentDisposition.ATTACHMENT);
+                        super.configure(resource);
+                    }                    
+                };    
+                RequestCycle.get().scheduleRequestHandlerAfterCurrent(handler);
             }
         });
 

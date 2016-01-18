@@ -5,15 +5,18 @@
  */
 package org.geoserver.web.admin;
 
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.geoserver.catalog.DataStoreInfo;
+import org.geoserver.config.ContactInfo;
 import org.geoserver.config.CoverageAccessInfo;
+import org.geoserver.config.GeoServer;
+import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.JAIInfo;
+import org.geoserver.config.LoggingInfo;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geotools.data.DataAccess;
 import org.geotools.data.DataStore;
@@ -26,17 +29,17 @@ import org.geotools.data.LockingManager;
 public abstract class ServerAdminPage extends GeoServerSecuredPage {
     private static final long serialVersionUID = 4712657652337914993L;
 
-    public IModel getGeoServerModel(){
-        return new LoadableDetachableModel(){
-            public Object load() {
+    public IModel<GeoServer> getGeoServerModel(){
+        return new LoadableDetachableModel<GeoServer>(){
+            public GeoServer load() {
                 return getGeoServerApplication().getGeoServer();
             }
         };
     }
 
-    public IModel getGlobalInfoModel(){
-        return new LoadableDetachableModel(){
-            public Object load() {
+    public IModel<GeoServerInfo> getGlobalInfoModel(){
+        return new LoadableDetachableModel<GeoServerInfo>(){
+            public GeoServerInfo load() {
                 return getGeoServerApplication().getGeoServer().getGlobal();
             }
         };
@@ -74,10 +77,11 @@ public abstract class ServerAdminPage extends GeoServerSecuredPage {
         CoverageAccessInfo currCoverageAccessInfo = getGeoServerApplication().getGeoServer().getGlobal().getCoverageAccess().clone();
         return new Model<CoverageAccessInfo>(currCoverageAccessInfo);
     }
-
-    public IModel getContactInfoModel(){
-        return new LoadableDetachableModel(){
-            public Object load() {
+    
+    @Deprecated
+    public IModel<ContactInfo> getContactInfoModel(){
+        return new LoadableDetachableModel<ContactInfo>(){
+            public ContactInfo load() {
                 return getGeoServerApplication()
                     .getGeoServer()
                     .getGlobal()
@@ -86,10 +90,10 @@ public abstract class ServerAdminPage extends GeoServerSecuredPage {
         };
     }
     
-    public IModel getLoggingInfoModel() {
-        return new LoadableDetachableModel() {
+    public IModel<LoggingInfo> getLoggingInfoModel() {
+        return new LoadableDetachableModel<LoggingInfo>() {
             @Override
-            protected Object load() {
+            protected LoggingInfo load() {
                 return getGeoServer().getLogging();
             }
         };
@@ -98,16 +102,14 @@ public abstract class ServerAdminPage extends GeoServerSecuredPage {
     private synchronized int getLockCount(){
         int count = 0;
 
-        for (Iterator i = getDataStores().iterator(); i.hasNext();) {
-            DataStoreInfo meta = (DataStoreInfo) i.next();
-
+        for (DataStoreInfo meta : getDataStores()) {
             if (!meta.isEnabled()) {
                 // Don't count locks from disabled datastores.
                 continue;
             }
 
             try {
-                DataAccess store = meta.getDataStore(null);
+                DataAccess<?,?> store = meta.getDataStore(null);
                 if(store instanceof DataStore) {
                     LockingManager lockingManager = ((DataStore) store).getLockingManager();
                     if (lockingManager != null){
@@ -128,9 +130,7 @@ public abstract class ServerAdminPage extends GeoServerSecuredPage {
     private synchronized int getConnectionCount() {
         int count = 0;
 
-        for (Iterator i = getDataStores().iterator(); i.hasNext();) {
-            DataStoreInfo meta = (DataStoreInfo) i.next();
-
+        for (DataStoreInfo meta : getDataStores()) {
             if (!meta.isEnabled()) {
                 // Don't count connections from disabled datastores.
                 continue; 

@@ -62,11 +62,11 @@ public class GlobalSettingsPage extends ServerAdminPage {
     public static final ArrayList<String> AVAILABLE_CHARSETS = new ArrayList<String>(Charset.availableCharsets().keySet());
 
     public GlobalSettingsPage() {
-        final IModel globalInfoModel = getGlobalInfoModel();
-        final IModel loggingInfoModel = getLoggingInfoModel();
+        final IModel<GeoServerInfo> globalInfoModel = getGlobalInfoModel();
+        final IModel<LoggingInfo> loggingInfoModel = getLoggingInfoModel();
         
-        CompoundPropertyModel compoundPropertyModel = new CompoundPropertyModel(globalInfoModel);
-        Form form = new Form("form", compoundPropertyModel);
+        CompoundPropertyModel<GeoServerInfo> compoundPropertyModel = new CompoundPropertyModel<GeoServerInfo>(globalInfoModel);
+        Form<GeoServerInfo> form = new Form<GeoServerInfo>("form", compoundPropertyModel);
 
         add(form);
 
@@ -74,16 +74,16 @@ public class GlobalSettingsPage extends ServerAdminPage {
         form.add(new CheckBox("verboseExceptions"));
         form.add(new CheckBox("globalServices"));
         form.add(new TextField<Integer>("numDecimals").add(RangeValidator.minimum(0)));
-        form.add(new DropDownChoice("charset", AVAILABLE_CHARSETS));
+        form.add(new DropDownChoice<String>("charset", AVAILABLE_CHARSETS));
         form.add(new DropDownChoice<ResourceErrorHandling>("resourceErrorHandling", Arrays.asList(ResourceErrorHandling.values()),
                 new ResourceErrorHandlingRenderer()));
-        form.add(new TextField("proxyBaseUrl").add(new UrlValidator()));
+        form.add(new TextField<String>("proxyBaseUrl").add(new UrlValidator()));
         
         logLevelsAppend(form, loggingInfoModel);
-        form.add(new CheckBox("stdOutLogging", new PropertyModel( loggingInfoModel, "stdOutLogging")));
-        form.add(new TextField("loggingLocation", new PropertyModel( loggingInfoModel, "location")) );
+        form.add(new CheckBox("stdOutLogging", new PropertyModel<Boolean>( loggingInfoModel, "stdOutLogging")));
+        form.add(new TextField<String>("loggingLocation", new PropertyModel<String>( loggingInfoModel, "location")) );
 
-        TextField xmlPostRequestLogBufferSize = new TextField("xmlPostRequestLogBufferSize", new PropertyModel(
+        TextField<String> xmlPostRequestLogBufferSize = new TextField<String>("xmlPostRequestLogBufferSize", new PropertyModel<String>(
                 globalInfoModel, "xmlPostRequestLogBufferSize"));
         xmlPostRequestLogBufferSize.add(RangeValidator.minimum(0));
         form.add(xmlPostRequestLogBufferSize);
@@ -128,7 +128,7 @@ public class GlobalSettingsPage extends ServerAdminPage {
         form.add(cancel);
     }
 
-    private void logLevelsAppend(Form form, IModel loggingInfoModel) {
+    private void logLevelsAppend(Form<GeoServerInfo> form, IModel<LoggingInfo> loggingInfoModel) {
         // search for *LOGGING.properties files in the data directory
         GeoServerResourceLoader loader = GeoServerApplication.get().getBeanOfType(
                 GeoServerResourceLoader.class);
@@ -156,11 +156,12 @@ public class GlobalSettingsPage extends ServerAdminPage {
         if(logProfiles == null || logProfiles.size() == 0)
             logProfiles = DEFAULT_LOG_PROFILES;
 
-        form.add(new ListChoice("log4jConfigFile", new PropertyModel(loggingInfoModel,
-                "level"), logProfiles));
+        form.add(new ListChoice<String>("log4jConfigFile",
+                new PropertyModel<String>(loggingInfoModel, "level"), logProfiles));
     }
     
     class ResourceErrorHandlingRenderer implements IChoiceRenderer<ResourceErrorHandling> {
+        private static final long serialVersionUID = 4183327535180465575L;
 
         @Override
         public Object getDisplayValue(ResourceErrorHandling object) {
@@ -172,5 +173,10 @@ public class GlobalSettingsPage extends ServerAdminPage {
             return object.name();
         }
 
+        @Override
+        public ResourceErrorHandling getObject(String id,
+                IModel<? extends List<? extends ResourceErrorHandling>> choices) {
+            return ResourceErrorHandling.valueOf(id);
+        }
     }
 }

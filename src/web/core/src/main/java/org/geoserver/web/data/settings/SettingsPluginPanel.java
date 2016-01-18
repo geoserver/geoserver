@@ -16,6 +16,7 @@ import org.geoserver.config.SettingsInfo;
  *
  */
 public abstract class SettingsPluginPanel extends Panel{
+    private static final long serialVersionUID = 2747074530701938992L;
 
     public SettingsPluginPanel(String id, IModel<SettingsInfo> model) {
         super(id, model);

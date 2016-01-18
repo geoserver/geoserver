@@ -5,6 +5,8 @@
  */
 package org.geoserver.web.wicket;
 
+import java.awt.Color;
+
 import org.apache.wicket.Component;
 import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.behavior.Behavior;
@@ -21,32 +23,21 @@ import org.apache.wicket.request.resource.PackageResourceReference;
  *
  */
 @SuppressWarnings("serial")
-public class ColorPickerField extends TextField {
+public class ColorPickerField extends TextField<Color> {
     
     private static final PackageResourceReference JSCOLOR_JS = new PackageResourceReference(
             ColorPickerField.class, "js/jscolor/jscolor.js");
 
     public ColorPickerField(String id) {
-        super(id);
+        super(id, Color.class);
         init();
     }
 
-    public ColorPickerField(String id, Class type) {
-        super(id, type);
+    public ColorPickerField(String id, IModel model) {
+        super(id, model, Color.class);
         init();
     }
 
-    public ColorPickerField(String id, IModel model, Class type) {
-        super(id, model, type);
-        init();
-    }
-
-    
-    public ColorPickerField(String id, IModel object) {
-        super(id, object);
-        init();
-    }
-    
     void init() {
         add(new Behavior() {
             @Override

@@ -5,9 +5,12 @@
  */
 package org.geoserver.web.wicket;
 
+
+import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.IAjaxCallDecorator;
-import org.apache.wicket.ajax.calldecorator.AjaxPreprocessingCallDecorator;
+import org.apache.wicket.ajax.attributes.AjaxCallListener;
+import org.apache.wicket.ajax.attributes.AjaxRequestAttributes;
+import org.apache.wicket.ajax.attributes.IAjaxCallListener;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
@@ -35,18 +38,16 @@ public abstract class ConfirmationAjaxLink extends SimpleAjaxLink {
         return new AjaxLink("link", linkModel) {
 
             @Override
-            protected IAjaxCallDecorator getAjaxCallDecorator() {
-                return new AjaxPreprocessingCallDecorator(super
-                        .getAjaxCallDecorator()) {
-
+            protected void updateAjaxAttributes(AjaxRequestAttributes attributes) {
+                super.updateAjaxAttributes(attributes);
+                attributes.getAjaxCallListeners().add(new AjaxCallListener() {
                     @Override
-                    public CharSequence preDecorateScript(CharSequence script) {
-                        return "if(!confirm('" + confirm.getObject()
-                                + "')) return false;" + script;
+                    public CharSequence getPrecondition(Component component) {
+                        return "if(!confirm('" + confirm.getObject() + "')) return false;";
                     }
-                };
+                });
             }
-
+            
             @Override
             public void onClick(AjaxRequestTarget target) {
                 ConfirmationAjaxLink.this.onClick(target);

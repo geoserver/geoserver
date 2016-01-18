@@ -10,7 +10,7 @@ import java.util.Arrays;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.IChoiceRenderer;
+import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
@@ -68,7 +68,7 @@ public class WCSAdminPage extends BaseServiceAdminPage<WCSInfo> {
         return "WCS";
     }
     
-    private class OverviewPolicyRenderer implements  IChoiceRenderer {
+    private class OverviewPolicyRenderer extends ChoiceRenderer {
 
         public Object getDisplayValue(Object object) {
             return new StringResourceModel(((OverviewPolicy) object).name(), WCSAdminPage.this, null).getString();

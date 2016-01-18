@@ -22,7 +22,7 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.IChoiceRenderer;
+import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.SubmitLink;
 import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.form.TextField;
@@ -516,7 +516,7 @@ public abstract class SQLViewAbstractPage extends GeoServerSecuredPage {
      * Displays the geometry type in the geom type drop down
      * @author Andrea Aime - OpenGeo
      */
-    static class GeometryTypeRenderer implements IChoiceRenderer {
+    static class GeometryTypeRenderer extends ChoiceRenderer {
 
         public Object getDisplayValue(Object object) {
             return ((Class) object).getSimpleName();

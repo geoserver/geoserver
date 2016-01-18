@@ -18,7 +18,7 @@ import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.markup.html.form.DropDownChoice;
-import org.apache.wicket.markup.html.form.IChoiceRenderer;
+import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.model.LoadableDetachableModel;
@@ -157,7 +157,7 @@ public class CascadedWFSStoredQueryNewPage extends CascadedWFSStoredQueryAbstrac
         }
     }
 
-    private class StoredQueryListRenderer implements IChoiceRenderer<StoredQuery> {
+    private class StoredQueryListRenderer extends ChoiceRenderer<StoredQuery> {
         @Override
         public Object getDisplayValue(StoredQuery object) {
             return object.getTitle();

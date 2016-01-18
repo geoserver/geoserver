@@ -19,7 +19,7 @@ import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.IChoiceRenderer;
+import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.ListChoice;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.list.ListItem;
@@ -160,7 +160,7 @@ public class GlobalSettingsPage extends ServerAdminPage {
                 new PropertyModel<String>(loggingInfoModel, "level"), logProfiles));
     }
     
-    class ResourceErrorHandlingRenderer implements IChoiceRenderer<ResourceErrorHandling> {
+    class ResourceErrorHandlingRenderer extends ChoiceRenderer<ResourceErrorHandling> {
         private static final long serialVersionUID = 4183327535180465575L;
 
         @Override

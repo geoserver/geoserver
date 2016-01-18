@@ -5,11 +5,11 @@
  */
 package org.geoserver.wms.web.publish;
 
-import org.apache.wicket.markup.html.form.IChoiceRenderer;
+import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.geoserver.catalog.StyleInfo;
 
 @SuppressWarnings("serial")
-public class StyleChoiceRenderer implements IChoiceRenderer {
+public class StyleChoiceRenderer extends ChoiceRenderer {
 
     public Object getDisplayValue(Object object) {
         return ((StyleInfo) object).prefixedName();

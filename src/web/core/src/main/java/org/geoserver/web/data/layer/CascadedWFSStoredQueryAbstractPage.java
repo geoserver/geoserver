@@ -17,7 +17,7 @@ import javax.xml.namespace.QName;
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.IChoiceRenderer;
+import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.SubmitLink;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.link.Link;
@@ -358,7 +358,7 @@ public abstract class CascadedWFSStoredQueryAbstractPage extends GeoServerSecure
         BLOCKED
     }
 
-    public class ParameterMappingTypeRenderer implements IChoiceRenderer<ParameterMappingType> {
+    public class ParameterMappingTypeRenderer extends ChoiceRenderer<ParameterMappingType> {
         @Override
         public Object getDisplayValue(ParameterMappingType object) {
             return new StringResourceModel("ParameterMappingType."+object.toString(), CascadedWFSStoredQueryAbstractPage.this, null).getString();

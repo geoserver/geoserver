@@ -26,11 +26,12 @@ import org.geoserver.wps.executor.WPSExecutionManager;
  * 
  * @author Andrea Aime - GeoSolutions
  */
+@SuppressWarnings("serial")
 public class ProcessStatusPage extends GeoServerSecuredPage {
 
     private GeoServerTablePanel<ExecutionStatus> table;
 
-    private AjaxLink dismissSelected;
+    private AjaxLink<Void> dismissSelected;
 
     private GeoServerDialog dialog;
 
@@ -40,7 +41,7 @@ public class ProcessStatusPage extends GeoServerSecuredPage {
         table = new GeoServerTablePanel<ExecutionStatus>("table", provider, true) {
 
             @Override
-            protected Component getComponentForProperty(String id, IModel itemModel,
+            protected Component getComponentForProperty(String id, IModel<ExecutionStatus> itemModel,
                     Property<ExecutionStatus> property) {
                 // have the base class create a label for us
                 return null;
@@ -73,7 +74,8 @@ public class ProcessStatusPage extends GeoServerSecuredPage {
         return header;
     }
 
-    protected final class ProcessDismissLink extends AjaxLink {
+    protected final class ProcessDismissLink extends AjaxLink<Void> {
+        
         protected ProcessDismissLink(String id) {
             super(id);
         }

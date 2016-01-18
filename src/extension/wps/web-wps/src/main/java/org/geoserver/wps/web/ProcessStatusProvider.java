@@ -80,9 +80,10 @@ public class ProcessStatusProvider extends GeoServerDataProvider<ExecutionStatus
 
     static final List<Property<ExecutionStatus>> PROPERTIES = Arrays.asList(TYPE, NODE, USER,
             PROCESS, CREATED, PHASE, PROGRESS, TASK);
-    private int first;
     
-    private int count;
+    private long first;
+    
+    private long count;
 
     @Override
     protected List<ExecutionStatus> getItems() {
@@ -163,8 +164,8 @@ public class ProcessStatusProvider extends GeoServerDataProvider<ExecutionStatus
         ProcessStatusStore store = tracker.getStore();
         Query query = new Query("status", getFilter());
         if(count>0) {
-            query.setStartIndex(first);
-            query.setMaxFeatures(count);
+            query.setStartIndex((int) first);
+            query.setMaxFeatures((int) count);
         }
         SortParam sort = getSort();
         if(sort!=null) {
@@ -184,7 +185,7 @@ public class ProcessStatusProvider extends GeoServerDataProvider<ExecutionStatus
     }
 
     @Override
-    public Iterator<ExecutionStatus> iterator(int first, int count) {
+    public Iterator<ExecutionStatus> iterator(long first, long count) {
         this.first = first;
         this.count = count;
         Iterator<ExecutionStatus> it = super.iterator(first, count);

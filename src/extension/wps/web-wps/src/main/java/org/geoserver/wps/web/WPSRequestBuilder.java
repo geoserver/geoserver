@@ -78,10 +78,11 @@ public class WPSRequestBuilder extends GeoServerBasePage {
             }
         });
 		
-		// the output response window
+	// the output response window
         responseWindow = new ModalWindow("responseWindow");
         add(responseWindow);
-        responseWindow.setPageMapName("demoResponse");
+        // removed, don't know what it did, but page maps are gone in 1.5...
+        // responseWindow.setPageMapName("demoResponse");
         responseWindow.setCookieName("demoResponse");
 
         responseWindow.setPageCreator(new ModalWindow.PageCreator() {
@@ -89,8 +90,7 @@ public class WPSRequestBuilder extends GeoServerBasePage {
             @SuppressWarnings("unchecked")
             public Page createPage() {
                 DemoRequest request = new DemoRequest(null);
-                HttpServletRequest http = ((WebRequest) WPSRequestBuilder.this.getRequest())
-                        .getHttpServletRequest();
+                HttpServletRequest http = (HttpServletRequest) WPSRequestBuilder.this.getRequest().getContainerRequest();
                 String url = ResponseUtils.buildURL(ResponseUtils.baseURL(http), "ows", Collections
                         .singletonMap("strict", "true"), URLType.SERVICE);
                 request.setRequestUrl(url);

@@ -18,7 +18,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.wicket.Component;
 import org.apache.wicket.Page;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.behavior.SimpleAttributeModifier;
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.WebPage;
@@ -90,7 +90,7 @@ public class FeatureResourceConfigurationPanel extends ResourceConfigurationPane
             protected void populateItem(ListItem item) {
                 
                 // odd/even style
-                item.add(new SimpleAttributeModifier("class",
+                item.add(AttributeModifier.replace("class",
                         item.getIndex() % 2 == 0 ? "even" : "odd"));
 
                 // dump the attribute information we have
@@ -137,7 +137,7 @@ public class FeatureResourceConfigurationPanel extends ResourceConfigurationPane
                 FeatureTypeInfo ft = (FeatureTypeInfo)getResourceInfo();
                 app.getCatalog().getResourcePool().clear(ft);
                 app.getCatalog().getResourcePool().clear(ft.getStore());
-                target.addComponent(attributePanel);
+                target.add(attributePanel);
             }
         };
         reloadContainer.add(reload);
@@ -208,7 +208,7 @@ public class FeatureResourceConfigurationPanel extends ResourceConfigurationPane
         if (target != null) {
             // force it to reload the attribute list
             attributes.getModel().detach();
-            target.addComponent(attributePanel);
+            target.add(attributePanel);
         }
     }
 

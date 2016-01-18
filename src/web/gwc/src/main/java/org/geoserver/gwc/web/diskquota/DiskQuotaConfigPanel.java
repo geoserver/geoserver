@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -163,7 +163,7 @@ public class DiskQuotaConfigPanel extends Panel {
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
                 jdbcContainer.setVisible("JDBC".equals(quotaStoreChooser.getModelObject()));
-                target.addComponent(quotaStoreContainer);
+                target.add(quotaStoreContainer);
             }
         });
         
@@ -196,7 +196,7 @@ public class DiskQuotaConfigPanel extends Panel {
                 boolean jndiVisible = "JNDI".equals(connectionTypeChooser.getModelObject());
                 jndiContainer.setVisible(jndiVisible);
                 privatePoolPanel.setVisible(!jndiVisible);
-                target.addComponent(connectionTypeContainer);
+                target.add(connectionTypeContainer);
             }
         });
         
@@ -276,7 +276,7 @@ public class DiskQuotaConfigPanel extends Panel {
         cleanUpFreqModel = new PropertyModel<Integer>(diskQuotaModel, "cacheCleanUpFrequency");
         TextField<Integer> cleanUpFreq = new TextField<Integer>("cleanUpFreq", cleanUpFreqModel);
         cleanUpFreq.setRequired(true);
-        cleanUpFreq.add(new AttributeModifier("title", true, new StringResourceModel(
+        cleanUpFreq.add(new AttributeModifier("title", new StringResourceModel(
                 "DiskQuotaConfigPanel.cleanUpFreq.title", (Component) null, null)));
         add(cleanUpFreq);
         {
@@ -354,8 +354,7 @@ public class DiskQuotaConfigPanel extends Panel {
     static CheckBox checkbox(String id, IModel<Boolean> model, String titleKey) {
         CheckBox checkBox = new CheckBox(id, model);
         if (null != titleKey) {
-            AttributeModifier attributeModifier = new AttributeModifier("title", true,
-                    new StringResourceModel(titleKey, (Component) null, null));
+            AttributeModifier attributeModifier = new AttributeModifier("title", new StringResourceModel(titleKey, (Component) null, null));
             checkBox.add(attributeModifier);
         }
         return checkBox;

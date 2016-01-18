@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -6,7 +6,7 @@
 package org.geoserver.web.wicket;
 
 import org.apache.wicket.ajax.markup.html.navigation.paging.AjaxPagingNavigator;
-import org.apache.wicket.behavior.SimpleAttributeModifier;
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.navigation.paging.IPageable;
 import org.apache.wicket.markup.html.navigation.paging.IPagingLabelProvider;
@@ -37,7 +37,7 @@ public class GeoServerPagingNavigator extends AjaxPagingNavigator {
     protected Link newPagingNavigationLink(String id, IPageable pageable, int pageNumber) {
         Link link = super.newPagingNavigationLink(id, pageable, pageNumber);
         // we turn the id into the css class
-        link.add(new SimpleAttributeModifier("class", id));
+        link.add(AttributeModifier.replace("class", id));
         return link;
     }
     
@@ -45,7 +45,7 @@ public class GeoServerPagingNavigator extends AjaxPagingNavigator {
     protected Link newPagingNavigationIncrementLink(String id, IPageable pageable, int increment) {
         Link link = super.newPagingNavigationIncrementLink(id, pageable, increment);
         // we turn the id into the css class
-        link.add(new SimpleAttributeModifier("class", id));
+        link.add(AttributeModifier.replace("class", id));
         return link;
     }
     

@@ -1,11 +1,11 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.importer.web;
 
-import org.apache.wicket.ResourceReference;
+import org.apache.wicket.request.resource.PackageResourceReference;
 import org.geoserver.web.GeoServerApplication;
 
 public enum DataIcon {
@@ -18,13 +18,13 @@ public enum DataIcon {
     DATABASE("img/icons/geosilk/database_vector.png"),
     POSTGIS("img/icons/geosilk/postgis.png");
 
-    ResourceReference icon;
+    PackageResourceReference icon;
 
     DataIcon(String iconPath) {
-        this.icon = new ResourceReference(GeoServerApplication.class, iconPath);
+        this.icon = new PackageResourceReference(GeoServerApplication.class, iconPath);
     }
 
-    public ResourceReference getIcon() {
+    public PackageResourceReference getIcon() {
         return icon;
     }
 }

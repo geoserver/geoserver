@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -79,11 +79,11 @@ class BasicDbParamPanel extends Panel {
             @Override
             public void onClick(AjaxRequestTarget target) {
                 connPoolPanel.setVisible(!connPoolPanel.isVisible());
-                target.addComponent(connPoolPanelContainer);
-                target.addComponent(this);
+                target.add(connPoolPanelContainer);
+                target.add(this);
             }
         };
-        connPoolLink.add(new AttributeModifier("class", true, new AbstractReadOnlyModel() {
+        connPoolLink.add(new AttributeModifier("class", new AbstractReadOnlyModel() {
             
             @Override
             public Object getObject() {

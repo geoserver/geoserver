@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -14,11 +14,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import net.opengis.wfs20.ParameterExpressionType;
-import net.opengis.wfs20.StoredQueryListItemType;
-
 import org.apache.wicket.Component;
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.markup.html.form.DropDownChoice;
@@ -28,8 +24,8 @@ import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.validation.IValidatable;
-import org.apache.wicket.validation.validator.AbstractValidator;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -41,6 +37,12 @@ import org.geotools.data.wfs.WFSDataStore;
 import org.geotools.data.wfs.internal.v2_0.storedquery.StoredQueryConfiguration;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.type.Name;
+
+import net.opengis.wfs20.ParameterExpressionType;
+import net.opengis.wfs20.StoredQueryListItemType;
+import org.apache.wicket.validation.IValidationError;
+import org.apache.wicket.validation.IValidator;
+import org.apache.wicket.validation.ValidationError;
 
 public class CascadedWFSStoredQueryNewPage extends CascadedWFSStoredQueryAbstractPage {
 
@@ -132,7 +134,7 @@ public class CascadedWFSStoredQueryNewPage extends CascadedWFSStoredQueryAbstrac
             protected void onUpdate(AjaxRequestTarget target) {
                 StoredQuery selection = (StoredQuery)dropdown.getDefaultModelObject();
                 parameterProvider.refreshItems(selection.storedQueryId);
-                target.addComponent(parameters);
+                target.add(parameters);
             }
         });
 
@@ -190,9 +192,9 @@ public class CascadedWFSStoredQueryNewPage extends CascadedWFSStoredQueryAbstrac
         }
     }
 
-    class ViewNameValidator extends AbstractValidator {
+    class ViewNameValidator implements IValidator {
         @Override
-        protected void onValidate(IValidatable validatable) {
+        public void validate(IValidatable validatable) {
             String csqName = (String) validatable.getValue();
 
             final DataStoreInfo store = getCatalog().getStore(storeId, DataStoreInfo.class);
@@ -201,10 +203,11 @@ public class CascadedWFSStoredQueryNewPage extends CascadedWFSStoredQueryAbstrac
                 StoredQueryConfiguration config = curr.getMetadata().get(FeatureTypeInfo.STORED_QUERY_CONFIGURATION, StoredQueryConfiguration.class);
                 if(config != null) {
                     if(curr.getNativeName().equals(csqName)) {
-                        Map<String, String> map = new HashMap<String, String>();
+                        Map<String, Object> map = new HashMap<>();
                         map.put("name", csqName);
                         map.put("dataStore", store.getName());
-                        error(validatable, "duplicateSqlViewName", map);
+                        IValidationError err = new ValidationError("duplicateSqlViewName").setVariables(map);
+                        validatable.error(err);
                         return;
                     }
                 }

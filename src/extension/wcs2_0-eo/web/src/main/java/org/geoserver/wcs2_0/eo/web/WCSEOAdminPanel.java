@@ -4,7 +4,7 @@ import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
-import org.apache.wicket.validation.validator.MinimumValidator;
+import org.apache.wicket.validation.validator.RangeValidator;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.wcs2_0.eo.WCSEOMetadata;
 import org.geoserver.web.services.AdminPagePanel;
@@ -24,7 +24,7 @@ public class WCSEOAdminPanel extends AdminPagePanel {
         
         TextField<Integer> defaultCount = new TextField<Integer>("defaultCount", new MapModel(metadata,
                 WCSEOMetadata.COUNT_DEFAULT.key), Integer.class);
-        defaultCount.add(new MinimumValidator<Integer>(1));
+        defaultCount.add(RangeValidator.minimum(1));
         add(defaultCount);
     }
 

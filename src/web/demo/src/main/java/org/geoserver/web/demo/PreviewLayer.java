@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.apache.wicket.ResourceReference;
+import org.apache.wicket.request.resource.PackageResourceReference;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
@@ -81,14 +81,14 @@ public class PreviewLayer {
         return null;
     }
     
-    public ResourceReference getIcon() {
+    public PackageResourceReference getIcon() {
         if(layerInfo != null)
             return CatalogIconFactory.get().getSpecificLayerIcon(layerInfo);
         else
             return CatalogIconFactory.GROUP_ICON;
     }
     
-    public ResourceReference getTypeSpecificIcon() {
+    public PackageResourceReference getTypeSpecificIcon() {
         if(layerInfo != null)
             return CatalogIconFactory.get().getSpecificLayerIcon(layerInfo);
         else

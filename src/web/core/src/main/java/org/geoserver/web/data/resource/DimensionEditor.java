@@ -21,6 +21,7 @@ import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
+import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
 import org.apache.wicket.markup.html.form.IChoiceRenderer;
@@ -28,7 +29,9 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.validation.IValidatable;
-import org.apache.wicket.validation.validator.AbstractValidator;
+import org.apache.wicket.validation.IValidationError;
+import org.apache.wicket.validation.IValidator;
+import org.apache.wicket.validation.ValidationError;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DimensionDefaultValueSetting;
 import org.geoserver.catalog.DimensionInfo;
@@ -108,7 +111,7 @@ public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
                 Boolean visile = enabled.getModelObject();
 
                 configs.setVisible(visile);
-                target.addComponent(configsContainer);
+                target.add(configsContainer);
             }
 
         });
@@ -202,7 +205,7 @@ public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
             protected void onUpdate(AjaxRequestTarget target) {
                 boolean visible = presentation.getModelObject() == DimensionPresentation.DISCRETE_INTERVAL;
                 resolutions.setVisible(visible);
-                target.addComponent(resContainer);
+                target.add(resContainer);
             }
 
         });
@@ -247,7 +250,7 @@ public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
             protected void onUpdate(AjaxRequestTarget target) {
                 boolean visible = (defaultValueStrategy.getModelObject() == Strategy.FIXED) || (defaultValueStrategy.getModelObject() == Strategy.NEAREST);
                 referenceValueContainer.setVisible(visible);
-                target.addComponent(defValueContainer);
+                target.add(defValueContainer);
             }
 
         });
@@ -263,17 +266,17 @@ public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
             protected void onUpdate(AjaxRequestTarget target) {
                 refValueValidationMessage.setDefaultModelObject(null);
                 refValueValidationMessage.setVisible(false);
-                target.addComponent(referenceValueContainer);
+                target.add(referenceValueContainer);
             }
 
             @Override
             protected void onError(AjaxRequestTarget target, RuntimeException e) {
                 super.onError(target, e);               
                 if (referenceValue.hasErrorMessage()){
-                    refValueValidationMessage.setDefaultModelObject(referenceValue.getFeedbackMessage().getMessage());
+                    refValueValidationMessage.setDefaultModelObject(referenceValue.getFeedbackMessages().first());
                     refValueValidationMessage.setVisible(true);
                 }                
-                target.addComponent(referenceValueContainer);
+                target.add(referenceValueContainer);
             }
         });
         referenceValue.add(new ReferenceValueValidator(id, strategyModel));
@@ -318,7 +321,7 @@ public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
         return true;
     }
 
-    protected void convertInput() {
+    public void convertInput() {
         //Keep the original attributes
         if (!enabled.getModelObject()) {
             setConvertedInput(new DimensionInfoImpl());
@@ -409,7 +412,7 @@ public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
      * 
      * @author Alessio
      */
-    public class PresentationModeRenderer implements IChoiceRenderer<DimensionPresentation> {
+    public class PresentationModeRenderer extends ChoiceRenderer<DimensionPresentation> {
 
         public PresentationModeRenderer() {
             super();
@@ -429,7 +432,7 @@ public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
      * 
      * @author Ilkka Rinne / Spatineo Inc for the Finnish Meteorological Institute
      */
-    public class DefaultValueStrategyRenderer implements IChoiceRenderer<DimensionDefaultValueSetting.Strategy> {
+    public class DefaultValueStrategyRenderer extends ChoiceRenderer<DimensionDefaultValueSetting.Strategy> {
 
         public DefaultValueStrategyRenderer() {
             super();
@@ -450,7 +453,7 @@ public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
      * @author Ilkka Rinne / Spatineo Inc for the Finnish Meteorological Institute
      *
      */
-    public class ReferenceValueValidator extends AbstractValidator<String> {
+    public class ReferenceValueValidator implements IValidator<String> {
         String dimension;
         IModel<DimensionDefaultValueSetting.Strategy> strategyModel;
         
@@ -460,20 +463,19 @@ public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
         }
         
         @Override
-        protected void onValidate(IValidatable<String> value) {
+        public void validate(IValidatable<String> value) {
             String stringValue = value.getValue();
             if ( ((strategyModel.getObject() == Strategy.FIXED) || (strategyModel.getObject() == Strategy.NEAREST)) && stringValue == null){
-                error(value, "emptyReferenceValue");
+                value.error(new ValidationError("emptyReferenceValue"));
             } else if (dimension.equals("time")) {
                 if(!isValidTimeReference(stringValue, strategyModel.getObject())) {
                     String messageKey = strategyModel.getObject() == Strategy.NEAREST ?  "invalidNearestTimeReferenceValue" : "invalidTimeReferenceValue";
-                    error(value, messageKey , Collections.singletonMap("value", (Object) stringValue));
+                    value.error(new ValidationError(messageKey));
                 }
                 
             } else if (dimension.equals("elevation")) {
                 if(!isValidElevationReference(stringValue)) {
-                    error(value, "invalidElevationReferenceValue", Collections.singletonMap("value",
-                            (Object) stringValue));
+                    value.error(new ValidationError("invalidElevationReferenceValue"));
                 }
             }
         }
@@ -514,11 +516,6 @@ public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
                 }
                 return false;
             }
-        }
-
-        @Override
-        public boolean validateOnNullValue() {
-            return true;
         }
     }
     

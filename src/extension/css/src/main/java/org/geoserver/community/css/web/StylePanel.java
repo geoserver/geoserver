@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -85,11 +85,11 @@ public class StylePanel extends Panel {
                     }
 
                     page.catalog().save(info);
-                    target.addComponent(feedback2);
+                    target.add(feedback2);
                     if (page.sldPreview != null)
-                        target.addComponent(page.sldPreview);
+                        target.add(page.sldPreview);
                     if (page.map != null)
-                        target.appendJavascript(page.map.getUpdateCommand());
+                        target.appendJavaScript(page.map.getUpdateCommand());
                 } catch (Exception e) {
                     throw new WicketRuntimeException(e);
                 }
@@ -98,7 +98,7 @@ public class StylePanel extends Panel {
 
             @Override
             protected void onError(AjaxRequestTarget target, Form<?> form) {
-                target.addComponent(feedback2);
+                target.add(feedback2);
             }
 
             @Override

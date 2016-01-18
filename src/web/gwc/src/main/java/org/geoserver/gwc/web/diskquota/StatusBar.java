@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -44,12 +44,12 @@ public class StatusBar extends Panel {
             excessPercentage = 0;
         }
 
-        usageBar.add(new AttributeModifier("style", true, new Model<String>("width: "
+        usageBar.add(new AttributeModifier("style", new Model<String>("width: "
                 + usedPercentage + "px; left: 5px; border-left: inherit;")));
 
         String redStyle = "width: " + excessPercentage + "px; left: " + (5 + usedPercentage)
                 + "px;";
-        excessBar.add(new AttributeModifier("style", true, new Model<String>(redStyle)));
+        excessBar.add(new AttributeModifier("style", new Model<String>(redStyle)));
 
         add(usageBar);
         add(excessBar);

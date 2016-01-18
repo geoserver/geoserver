@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2014 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -220,8 +220,8 @@ public class DynamicDimensionsTabPanel extends PublishedEditTabPanel<LayerInfo> 
                                 DefaultValuePolicy currentPolicy = (DefaultValuePolicy) dd
                                         .getConvertedInput();
                                 ta.setVisible(DefaultValuePolicy.EXPRESSION.equals(currentPolicy));
-                                target.addComponent(ta);
-                                target.addComponent(table);
+                                target.add(ta);
+                                target.add(table);
                             }
                         });
                     }
@@ -271,13 +271,11 @@ public class DynamicDimensionsTabPanel extends PublishedEditTabPanel<LayerInfo> 
         }
 
         @Override
-        protected void convertInput() {
-            visitChildren(TextArea.class, new org.apache.wicket.Component.IVisitor<TextArea<?>>() {
-
-                @Override
-                public Object component(TextArea<?> component) {
-                    component.updateModel();
-                    return null;
+        public void convertInput() {
+            visitChildren(TextArea.class, (component, visit) -> {
+                if (component instanceof TextArea) {
+                    TextArea textArea = (TextArea) component;
+                    textArea.updateModel();
                 }
             });
             setConvertedInput(new DefaultValueConfigurations(configurations));

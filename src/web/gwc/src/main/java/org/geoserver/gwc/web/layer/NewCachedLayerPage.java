@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.ResourceReference;
+import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.basic.Label;
@@ -67,7 +67,7 @@ public class NewCachedLayerPage extends GeoServerSecuredPage {
                 if (property == TYPE) {
                     Fragment f = new Fragment(id, "iconFragment", NewCachedLayerPage.this);
                     TileLayer layer = (TileLayer) itemModel.getObject();
-                    ResourceReference layerIcon = (ResourceReference) property
+                    PackageResourceReference layerIcon = (PackageResourceReference) property
                             .getPropertyValue(layer);
                     f.add(new Image("layerIcon", layerIcon));
                     return f;
@@ -76,7 +76,7 @@ public class NewCachedLayerPage extends GeoServerSecuredPage {
                 } else if (property == ENABLED) {
                     TileLayer layerInfo = (TileLayer) itemModel.getObject();
                     boolean enabled = layerInfo.isEnabled();
-                    ResourceReference icon;
+                    PackageResourceReference icon;
                     if (enabled) {
                         icon = GWCIconFactory.getEnabledIcon();
                     } else {
@@ -93,7 +93,7 @@ public class NewCachedLayerPage extends GeoServerSecuredPage {
             @Override
             protected void onSelectionUpdate(AjaxRequestTarget target) {
                 updateBulkConfigLink();
-                target.addComponent(bulkConfig);
+                target.add(bulkConfig);
             }
         };
         table.setOutputMarkupId(true);
@@ -208,8 +208,8 @@ public class NewCachedLayerPage extends GeoServerSecuredPage {
                     List<TileLayer> selection = table.getSelection();
                     if (selection.isEmpty()) {
                         updateBulkConfigLink();
-                        target.addComponent(BulkCachedLayerConfigurationLink.this);
-                        target.addComponent(table);
+                        target.add(BulkCachedLayerConfigurationLink.this);
+                        target.add(table);
                     }
                 }
             });

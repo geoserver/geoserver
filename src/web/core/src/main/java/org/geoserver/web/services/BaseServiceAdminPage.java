@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -10,8 +10,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.Page;
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
@@ -31,11 +29,11 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.StringResourceModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.validation.validator.UrlValidator;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.ServiceInfo;
-import org.geoserver.web.GeoServerHomePage;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.data.workspace.WorkspaceChoiceRenderer;
 import org.geoserver.web.data.workspace.WorkspacesModel;
@@ -77,7 +75,7 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
     }
 
     public BaseServiceAdminPage(PageParameters pageParams) {
-        String wsName = pageParams.getString("workspace");
+        String wsName = pageParams.get("workspace").toString();
         init(new ServiceModel(getServiceClass(), wsName));
     }
 
@@ -105,9 +103,7 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
 
         form.add(new HelpLink("workspaceHelp").setDialog(dialog));
 
-        form.add(new Label("service.enabled", new StringResourceModel("service.enabled", this, null, new Object[]{
-            getServiceName()
-        })));
+        form.add(new Label("service.enabled", new StringResourceModel("service.enabled", this).setParameters(getServiceName())));
         form.add(new TextField("maintainer"));
         TextField onlineResource = new TextField("onlineResource");
         onlineResource.add(new UrlValidator());
@@ -315,7 +311,7 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
                     PageParameters pp = new PageParameters();
 
                     if (ws != null) {
-                        pp.put("workspace", ws.getName());
+                        pp.add("workspace", ws.getName());
                     }
 
                     setResponsePage(BaseServiceAdminPage.this.getClass(), pp);

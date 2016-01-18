@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -92,8 +92,8 @@ public abstract class AbstractConfigPage extends GeoServerSecuredPage {
             protected void onUpdate(AjaxRequestTarget target) {
                 types.setChoices(new TypeListModel(stores.getModel()));
                 addLink.setEnabled(false);
-                target.addComponent(types);
-                target.addComponent(addLink);
+                target.add(types);
+                target.add(addLink);
             }
         });
         sources.add(stores);
@@ -105,7 +105,7 @@ public abstract class AbstractConfigPage extends GeoServerSecuredPage {
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
                 addLink.setEnabled(stores.getModelObject() != null && types.getModelObject() != null);
-                target.addComponent(addLink);
+                target.add(addLink);
             }
             
         });
@@ -148,7 +148,7 @@ public abstract class AbstractConfigPage extends GeoServerSecuredPage {
                 AggregateTypeConfiguration config = form.getModelObject();
                 config.getSourceTypes().remove(getModelObject());
                 // refresh the whole form (lazy, we could add a container around the table)
-                target.addComponent(sources);
+                target.add(sources);
             }
         };
         return link;
@@ -163,7 +163,7 @@ public abstract class AbstractConfigPage extends GeoServerSecuredPage {
                 AggregateTypeConfiguration config = form.getModelObject();
                 config.setPrimarySourceType((SourceType) getModelObject());
                 // refresh the whole form (lazy, we could add a container around the table)
-                target.addComponent(sources);
+                target.add(sources);
             }
         };
     }
@@ -181,10 +181,10 @@ public abstract class AbstractConfigPage extends GeoServerSecuredPage {
                 config.addSourceType(storeName, typeName);
                 if(name.getModelObject() == null || "".equals(name.getModelObject())) {
                     name.setModelObject(typeName);
-                    target.addComponent(name);
+                    target.add(name);
                 }
                 // refresh the whole table
-                target.addComponent(sources);
+                target.add(sources);
             }
         };
     }

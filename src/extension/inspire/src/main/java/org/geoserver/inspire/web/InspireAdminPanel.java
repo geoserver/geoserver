@@ -92,7 +92,7 @@ public class InspireAdminPanel extends AdminPagePanel {
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
                 configs.setVisible(createInspireExtendedCapabilities.getModelObject());
-                target.addComponent(container);
+                target.add(container);
             }
         });
 
@@ -108,7 +108,7 @@ public class InspireAdminPanel extends AdminPagePanel {
                 "border");
         metadataURLBorder.add(metadataUrlField);
         configs.add(metadataURLBorder);
-        metadataUrlField.add(new AttributeModifier("title", true, new ResourceModel(
+        metadataUrlField.add(new AttributeModifier("title", new ResourceModel(
                 "InspireAdminPanel.metadataURL.title")));
 
         final Map<String, String> mdUrlTypes = new HashMap<String, String>();

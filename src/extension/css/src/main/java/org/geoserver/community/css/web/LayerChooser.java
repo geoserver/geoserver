@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -9,7 +9,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.basic.Label;
@@ -17,6 +16,7 @@ import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.web.wicket.GeoServerDataProvider;
@@ -86,12 +86,12 @@ public class LayerChooser extends Panel {
                                     @Override
                                     public void onClick(AjaxRequestTarget target) {
                                         PageParameters params = new PageParameters();
-                                        params.put("layer", layer.prefixedName());
+                                        params.add("layer", layer.prefixedName());
                                         WorkspaceInfo workspace= demo.getStyleInfo().getWorkspace();
                                         if (workspace == null) {
-                                            params.put("style", demo.getStyleInfo().getName());
+                                            params.add("style", demo.getStyleInfo().getName());
                                         } else {
-                                            params.put("style", workspace.getName() + ":" + demo.getStyleInfo().getName());
+                                            params.add("style", workspace.getName() + ":" + demo.getStyleInfo().getName());
                                         }
                                         setResponsePage(CssDemoPage.class, params);
                                     }

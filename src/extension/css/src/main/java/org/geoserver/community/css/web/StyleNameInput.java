@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -8,7 +8,6 @@ package org.geoserver.community.css.web;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
@@ -22,6 +21,7 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.validation.IValidatable;
 import org.apache.wicket.validation.IValidator;
 import org.apache.wicket.validation.ValidationError;
@@ -90,7 +90,7 @@ public class StyleNameInput extends Panel {
                             + ",  cannot be used with a style in workspace " + selected));
                     warning.setVisible(true);
                 }
-                target.addComponent(warningContainer);
+                target.add(warningContainer);
             }
         });
          form.add(workspaceChooser);
@@ -115,11 +115,11 @@ public class StyleNameInput extends Panel {
                      demo.createCssTemplate(workspace, name);
 
                      PageParameters params = new PageParameters();
-                     params.put("layer", demo.getLayer().prefixedName());
+                     params.add("layer", demo.getLayer().prefixedName());
                      if (workspace == null) {
-                         params.put("style", name);
+                         params.add("style", name);
                      } else {
-                         params.put("style", workspace + ":" + name);
+                         params.add("style", workspace + ":" + name);
                      }
                      setResponsePage(CssDemoPage.class, params);
                  }

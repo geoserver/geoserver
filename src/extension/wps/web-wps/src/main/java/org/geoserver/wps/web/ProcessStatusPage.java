@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -49,7 +49,7 @@ public class ProcessStatusPage extends GeoServerSecuredPage {
             @Override
             protected void onSelectionUpdate(AjaxRequestTarget target) {
                 dismissSelected.setEnabled(table.getSelection().size() > 0);
-                target.addComponent(dismissSelected);
+                target.add(dismissSelected);
             }
 
         };
@@ -119,8 +119,8 @@ public class ProcessStatusPage extends GeoServerSecuredPage {
                     // occurred, so refresh the table
                     if (table.getSelection().size() == 0) {
                         setEnabled(false);
-                        target.addComponent(ProcessDismissLink.this);
-                        target.addComponent(table);
+                        target.add(ProcessDismissLink.this);
+                        target.add(table);
                     }
                 }
                 

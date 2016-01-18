@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -11,16 +11,13 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.DropDownChoice;
@@ -34,17 +31,17 @@ import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.validation.IValidatable;
-import org.apache.wicket.validation.validator.AbstractValidator;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.web.ComponentAuthorizer;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.data.store.StorePage;
 import org.geoserver.web.wicket.GeoServerAjaxFormLink;
+import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.ParamResourceModel;
-import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geotools.data.DataAccess;
 import org.geotools.data.Query;
 import org.geotools.data.Transaction;
@@ -66,6 +63,9 @@ import com.vividsolutions.jts.geom.MultiPoint;
 import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
+import org.apache.wicket.validation.IValidationError;
+import org.apache.wicket.validation.IValidator;
+import org.apache.wicket.validation.ValidationError;
 
 /**
  * Base page for SQL view creation/editing
@@ -110,7 +110,7 @@ public abstract class SQLViewAbstractPage extends GeoServerSecuredPage {
             MultiLineString.class, Polygon.class, MultiPolygon.class);
 
     public SQLViewAbstractPage(PageParameters params) throws IOException {
-        this(params.getString(WORKSPACE), params.getString(DATASTORE), null, null);
+        this(params.get(WORKSPACE).toOptionalString(), params.get(DATASTORE).toString(), null, null);
     }
 
     @SuppressWarnings("deprecation")
@@ -180,7 +180,7 @@ public abstract class SQLViewAbstractPage extends GeoServerSecuredPage {
                 parameters.processInputs();
                 if (sql != null && !"".equals(sql.trim())) {
                     paramProvider.refreshFromSql(sql);
-                    target.addComponent(parameters);
+                    target.add(parameters);
                 }
             }
         });
@@ -189,7 +189,7 @@ public abstract class SQLViewAbstractPage extends GeoServerSecuredPage {
             @Override
             protected void onClick(AjaxRequestTarget target, Form form) {
                 paramProvider.addParameter();
-                target.addComponent(parameters);
+                target.add(parameters);
             }
         });
         form.add(new GeoServerAjaxFormLink("removeParam") {
@@ -198,7 +198,7 @@ public abstract class SQLViewAbstractPage extends GeoServerSecuredPage {
             protected void onClick(AjaxRequestTarget target, Form form) {
                 paramProvider.removeAll(parameters.getSelection());
                 parameters.clearSelection();
-                target.addComponent(parameters);
+                target.add(parameters);
             }
         });
         
@@ -298,7 +298,7 @@ public abstract class SQLViewAbstractPage extends GeoServerSecuredPage {
 
                         if (newSchema != null) {
                             attProvider.setFeatureType(newSchema, null);
-                            target.addComponent(attributes);
+                            target.add(attributes);
                         }
                     } catch (IOException e) {
                         LOGGER.log(Level.INFO, "Error testing SQL query", e);
@@ -529,34 +529,34 @@ public abstract class SQLViewAbstractPage extends GeoServerSecuredPage {
     }
     
     /**
-     * Validaes the regular expression syntax
+     * Validates the regular expression syntax
      */
-    static class RegexpValidator extends AbstractValidator {
+    static class RegexpValidator implements IValidator<String> {
 
         @Override
-        protected void onValidate(IValidatable validatable) {
-            String value = (String) validatable.getValue();
+        public void validate(IValidatable<String> iv) {
+            String value = iv.getValue();
             if(value != null) {
                 try {
                     Pattern.compile(value);
                 } catch(PatternSyntaxException e) {
-                    Map<String, String> map = new HashMap<String, String>();
-                    map.put("regexp", value);
-                    map.put("error", e.getMessage().replaceAll("\\^?", ""));
-                    error(validatable, "invalidRegexp", map);
+                    ValidationError error = new ValidationError(this);
+                    error.setVariable("regexp", value);
+                    error.setVariable("error", e.getMessage().replaceAll("\\^?", ""));
+                    iv.error(error);
                 }
             }
         }
-        
     }
 
     /**
-     * Checks the sql view name is unique
+     * Checks the SQL view name is unique
      */
-    class ViewNameValidator extends AbstractValidator {
+    class ViewNameValidator implements IValidator<String> {
+
         @Override
-        protected void onValidate(IValidatable validatable) {
-            String vtName = (String) validatable.getValue();
+        public void validate(IValidatable<String> validatable) {
+            String vtName = validatable.getValue();
             
             final DataStoreInfo store = getCatalog().getStore(storeId, DataStoreInfo.class);
             List<FeatureTypeInfo> ftis = getCatalog().getResourcesByStore(store, FeatureTypeInfo.class);
@@ -565,10 +565,10 @@ public abstract class SQLViewAbstractPage extends GeoServerSecuredPage {
                 if(currvt != null) {
                     if(typeInfoId == null || !typeInfoId.equals(curr.getId())) {
                         if(currvt.getName().equals(vtName)) {
-                            Map<String, String> map = new HashMap<String, String>();
-                            map.put("name", vtName);
-                            map.put("typeName", curr.getName());
-                            error(validatable, "duplicateSqlViewName", map);
+                            IValidationError err = new ValidationError("duplicateSqlViewName")
+                                    .setVariable("name", vtName)
+                                    .setVariable("typeName", curr.getName());
+                            validatable.error(err);
                             return;
                         }
                     }

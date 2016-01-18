@@ -13,7 +13,6 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
@@ -30,7 +29,7 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.model.util.CollectionModel;
 import org.apache.wicket.model.util.ListModel;
-import org.apache.wicket.validation.validator.MinimumValidator;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.validation.validator.RangeValidator;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.web.data.store.panel.FileModel;
@@ -122,13 +121,13 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
         form.add(new DropDownChoice("interpolation", Arrays.asList(WMSInfo.WMSInterpolation.values()), new InterpolationRenderer()));
         // resource limits
         TextField<Integer> maxMemory = new TextField<Integer>("maxRequestMemory");
-        maxMemory.add(new MinimumValidator<Integer>(0));
+        maxMemory.add(RangeValidator.minimum(0));
         form.add(maxMemory);
         TextField<Integer> maxTime = new TextField<Integer>("maxRenderingTime");
-        maxTime.add(new MinimumValidator<Integer>(0));
+        maxTime.add(RangeValidator.minimum(0));
         form.add(maxTime);
         TextField<Integer> maxErrors = new TextField<Integer>("maxRenderingErrors");
-        maxErrors.add(new MinimumValidator<Integer>(0));
+        maxErrors.add(RangeValidator.minimum(0));
         form.add(maxErrors);
     	// watermark
     	form.add(new CheckBox("watermark.enabled"));
@@ -269,7 +268,7 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
                       textField.clearInput();
                       textField.setModelObject(file.getAbsolutePath());
 
-                      target.addComponent(textField);
+                      target.add(textField);
                       dialog.close(target);
                     };
                 };

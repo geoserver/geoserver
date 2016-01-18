@@ -204,12 +204,12 @@ public class AuthenticationPage extends AbstractSecurityPage {
                             }
                         }        
                         chainTestResultField.getModel().setObject(result);
-                        target.addComponent(chainTestResultField);
+                        target.add(chainTestResultField);
                     }
                     catch(Exception e) {
                         error(e);
                         LOGGER.log(Level.WARNING, "Connection error", e);
-                        target.addComponent(feedbackPanel);
+                        target.add(feedbackPanel);
                     }
                 }
                 protected GeoServerSecurityFilterChainProxy getProxy() {

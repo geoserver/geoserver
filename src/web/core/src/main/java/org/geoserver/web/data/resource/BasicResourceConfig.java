@@ -14,10 +14,10 @@ import java.util.logging.Level;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.markup.html.form.CheckBox;
+import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponent;
-import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.form.validation.IFormValidator;
@@ -120,7 +120,7 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
             @Override
             public void onSubmit(final AjaxRequestTarget target, Form form) {
                 // perform manual processing otherwise the component contents won't be updated
-                form.process();
+                form.process(null);
                 ResourceInfo resource = (ResourceInfo) BasicResourceConfig.this.getDefaultModelObject();
                 try {
                     CatalogBuilder cb = new CatalogBuilder(GeoServerApplication.get().getCatalog());
@@ -131,7 +131,7 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
                     LOGGER.log(Level.SEVERE, "Error computing the native BBOX", e);
                     error("Error computing the native BBOX:" + e.getMessage());
                 }
-                target.addComponent(nativeBBox);
+                target.add(nativeBBox);
             }
             
             public boolean getDefaultFormProcessing() {
@@ -164,7 +164,7 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
                     nativeBoundsPanel.setModelObject(nativeBBox);
                 }
                 
-                target.addComponent(nativeBoundsPanel);
+                target.add(nativeBoundsPanel);
             }
             
             @Override
@@ -195,7 +195,7 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
                         nativeBounds = cb.getNativeBounds(resource);
                         resource.setNativeBoundingBox(nativeBounds);
                         nativeBBox.setModelObject(nativeBounds);
-                        target.addComponent(nativeBBox);
+                        target.add(nativeBBox);
                     }
                 
                     CatalogBuilder cb = new CatalogBuilder(GeoServerApplication.get().getCatalog());
@@ -204,22 +204,22 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
                     LOGGER.log(Level.SEVERE, "Error computing the geographic BBOX", e);
                     error("Error computing the geographic bounds:" + e.getMessage());
                 }
-                target.addComponent(latLonPanel);
+                target.add(latLonPanel);
             }
         };
     }
 
-    class ProjectionPolicyRenderer implements IChoiceRenderer<ProjectionPolicy> {
+    class ProjectionPolicyRenderer extends ChoiceRenderer<ProjectionPolicy> {
 
         private static final long serialVersionUID = -6593748590058977418L;
 
         public Object getDisplayValue(ProjectionPolicy object) {
-            return new StringResourceModel(((ProjectionPolicy) object).name(),
+            return new StringResourceModel(object.name(),
                     BasicResourceConfig.this, null).getString();
         }
 
         public String getIdValue(ProjectionPolicy object, int index) {
-            return ((ProjectionPolicy) object).name();
+            return object.name();
         }
     }
     

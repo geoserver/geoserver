@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -8,12 +8,11 @@ package org.geoserver.web.demo;
 import java.util.Collection;
 import java.util.Locale;
 
-import org.apache.wicket.PageParameters;
-import org.apache.wicket.behavior.HeaderContributor;
+import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.IHeaderContributor;
-import org.apache.wicket.markup.html.IHeaderResponse;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.image.Image;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.geoserver.web.GeoServerBasePage;
 import org.geoserver.web.crs.DynamicCrsMapResource;
 import org.geoserver.web.wicket.ParamResourceModel;
@@ -51,7 +50,7 @@ public class SRSDescriptionPage extends GeoServerBasePage implements IHeaderCont
         add(HeaderContributor.forJavaScript("openlayers/OpenLayers.js"));
 
         final Locale locale = getLocale();
-        final String code = params.getString("code");
+        final String code = params.get("code").toString();
         add(new Label("code", code));
         String name = "";
         try {

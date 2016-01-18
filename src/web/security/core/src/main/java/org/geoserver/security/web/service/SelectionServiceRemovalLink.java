@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -79,8 +79,8 @@ public class SelectionServiceRemovalLink extends AjaxLink {
                 // occurred, so refresh the table
                 if (services.getSelection().size() == 0) {
                     setEnabled(false);
-                    target.addComponent(SelectionServiceRemovalLink.this);
-                    target.addComponent(services);
+                    target.add(SelectionServiceRemovalLink.this);
+                    target.add(services);
                 }
             }
 

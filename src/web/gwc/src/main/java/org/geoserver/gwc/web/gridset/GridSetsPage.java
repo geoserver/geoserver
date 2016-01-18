@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -65,7 +65,7 @@ public class GridSetsPage extends GeoServerSecuredPage {
         @Override
         protected void onSelectionUpdate(AjaxRequestTarget target) {
             removal.setEnabled(table.getSelection().size() > 0);
-            target.addComponent(removal);
+            target.add(removal);
         }
 
         @Override
@@ -81,12 +81,12 @@ public class GridSetsPage extends GeoServerSecuredPage {
                     gridSetName), AbstractGridSetPage.GRIDSET_NAME, gridSetName);
 
             if (isInternal) {
-                link.add(new AttributeModifier("style", true, new Model<String>(
+                link.add(new AttributeModifier("style", new Model<String>(
                         "font-style: italic;")));
-                link.add(new AttributeModifier("title", true, new ResourceModel(
+                link.add(new AttributeModifier("title", new ResourceModel(
                         "nameLink.titleInternalGridSet")));
             } else {
-                link.add(new AttributeModifier("title", true, new ResourceModel("nameLink.title")));
+                link.add(new AttributeModifier("title", new ResourceModel("nameLink.title")));
             }
             return link;
 
@@ -98,7 +98,7 @@ public class GridSetsPage extends GeoServerSecuredPage {
             link = new SimpleBookmarkableLink(id, GridSetNewPage.class, new ResourceModel(
                     "templateLink"), AbstractGridSetPage.GRIDSET_TEMPLATE_NAME, gridSetName);
 
-            link.add(new AttributeModifier("title", true, new ResourceModel("templateLink.title")));
+            link.add(new AttributeModifier("title", new ResourceModel("templateLink.title")));
             return link;
         }
 
@@ -128,14 +128,14 @@ public class GridSetsPage extends GeoServerSecuredPage {
 
         // the add button
         BookmarkablePageLink newLink = new BookmarkablePageLink("addNew", GridSetNewPage.class);
-        newLink.add(new AttributeModifier("title", true, new ResourceModel("addNew.title")));
+        newLink.add(new AttributeModifier("title", new ResourceModel("addNew.title")));
         header.add(newLink);
 
         // the removal button
         header.add(removal = new SelectionRemovalLink("removeSelected", table, dialog));
         removal.setOutputMarkupId(true);
         removal.setEnabled(false);
-        removal.add(new AttributeModifier("title", true, new ResourceModel("removalLink.title")));
+        removal.add(new AttributeModifier("title", new ResourceModel("removalLink.title")));
 
         return header;
     }
@@ -220,8 +220,8 @@ public class GridSetsPage extends GeoServerSecuredPage {
                     // occurred, so refresh the table
                     if (gridsets.getSelection().size() == 0) {
                         setEnabled(false);
-                        target.addComponent(SelectionRemovalLink.this);
-                        target.addComponent(gridsets);
+                        target.add(SelectionRemovalLink.this);
+                        target.add(gridsets);
                     }
                 }
 

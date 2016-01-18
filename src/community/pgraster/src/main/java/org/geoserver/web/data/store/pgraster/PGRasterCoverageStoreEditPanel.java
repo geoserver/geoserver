@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -7,7 +7,7 @@ package org.geoserver.web.data.store.pgraster;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
-import org.apache.wicket.behavior.SimpleAttributeModifier;
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.Form;
@@ -68,7 +68,7 @@ public final class PGRasterCoverageStoreEditPanel extends StoreEditPanel {
                 Boolean visible = enabled.getModelObject();
 
                 advancedConfigPanel.setVisible(visible);
-                target.addComponent(configsContainer);
+                target.add(configsContainer);
             }
         });
         
@@ -114,7 +114,7 @@ public final class PGRasterCoverageStoreEditPanel extends StoreEditPanel {
         ResourceModel titleModel = new ResourceModel(resourceKey + ".title", defaultTitle);
         String title = String.valueOf(titleModel.getObject());
 
-        textParamPanel.add(new SimpleAttributeModifier("title", title));
+        textParamPanel.add(AttributeModifier.replace("title", title));
 
         add(textParamPanel);
         return textParamPanel.getFormComponent();

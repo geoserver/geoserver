@@ -1,11 +1,14 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.web.data.store.aggregate;
 
-import static org.geotools.data.aggregate.AggregatingDataStoreFactory.*;
+import static org.geotools.data.aggregate.AggregatingDataStoreFactory.CONFIGURATION;
+import static org.geotools.data.aggregate.AggregatingDataStoreFactory.CONFIGURATION_XML;
+import static org.geotools.data.aggregate.AggregatingDataStoreFactory.PARALLELISM;
+import static org.geotools.data.aggregate.AggregatingDataStoreFactory.TOLERATE_CONNECTION_FAILURE;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -15,15 +18,13 @@ import java.util.logging.Logger;
 
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
-import org.apache.wicket.ResourceReference;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.IAjaxCallDecorator;
-import org.apache.wicket.ajax.calldecorator.AjaxPreprocessingCallDecorator;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.request.resource.PackageResourceReference;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.data.store.StoreEditPanel;
 import org.geoserver.web.data.store.panel.CheckBoxParamPanel;
@@ -121,12 +122,12 @@ public class AggregateStoreEditPanel extends StoreEditPanel {
 
     Component removeLink(String id, IModel itemModel) {
         final AggregateTypeConfiguration entry = (AggregateTypeConfiguration) itemModel.getObject();
-        ImageAjaxLink link = new ImageAjaxLink( id, new ResourceReference( GeoServerApplication.class, "img/icons/silk/delete.png") ) {
+        ImageAjaxLink link = new ImageAjaxLink( id, new PackageResourceReference( GeoServerApplication.class, "img/icons/silk/delete.png") ) {
             @Override
             protected void onClick(AjaxRequestTarget target) {
                 
                 configs.remove( entry );
-                target.addComponent( configTable );
+                target.add( configTable );
             }
             
             @Override
@@ -142,7 +143,7 @@ public class AggregateStoreEditPanel extends StoreEditPanel {
                 };
             }
         };
-        link.getImage().add(new AttributeModifier("alt", true, new ParamResourceModel("AggregateStoreEditPanel.th.remove", link)));
+        link.getImage().add(new AttributeModifier("alt", new ParamResourceModel("AggregateStoreEditPanel.th.remove", link)));
         return link;
     }
     

@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2014 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -9,21 +9,21 @@ import java.io.IOException;
 import java.util.List;
 import java.util.logging.Level;
 
-import org.apache.wicket.PageParameters;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
-import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.CoverageView;
 import org.geoserver.catalog.CoverageView.CoverageBand;
+import org.geoserver.catalog.LayerInfo;
 import org.geoserver.web.data.resource.ResourceConfigurationPage;
 import org.geoserver.web.wicket.ParamResourceModel;
 
 public class CoverageViewNewPage extends CoverageViewAbstractPage {
 
     public CoverageViewNewPage(PageParameters params) throws IOException {
-        this(params.getString(WORKSPACE), params.getString(COVERAGESTORE), null, null);
+        this(params.get(WORKSPACE).toOptionalString(), params.get(COVERAGESTORE).toString(), null, null);
     }
 
     public CoverageViewNewPage(String workspaceName, String storeName, String coverageName,

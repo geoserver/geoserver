@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -10,8 +10,6 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
-
-import net.sf.cglib.core.Local;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
@@ -117,10 +115,10 @@ public class KeywordsEditor extends FormComponentPanel {
                 vocabTextField.setModelObject(null);
                 vocabTextField.modelChanged();
 
-                target.addComponent(newKeyword);
-                target.addComponent(langChoice);
-                target.addComponent(vocabTextField);
-                target.addComponent(choices);
+                target.add(newKeyword);
+                target.add(langChoice);
+                target.add(vocabTextField);
+                target.add(choices);
             }
         };
         button.setDefaultFormProcessing(false);
@@ -140,7 +138,7 @@ public class KeywordsEditor extends FormComponentPanel {
                 }
                 choices.setChoices(keywords);
                 choices.modelChanged();
-                target.addComponent(choices);
+                target.add(choices);
             }
         };
         // button.setDefaultFormProcessing(false);
@@ -158,7 +156,7 @@ public class KeywordsEditor extends FormComponentPanel {
     }
     
     @Override
-    protected void convertInput() {
+    public void convertInput() {
         setConvertedInput(choices.getChoices());
     }
 }

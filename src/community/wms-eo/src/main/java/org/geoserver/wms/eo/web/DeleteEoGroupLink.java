@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -79,9 +79,9 @@ class DeleteEoGroupLink extends AjaxLink {
                 // occurred, so refresh the table
                 if (groupTable.getSelection().size() == 0) {
                     setEnabled(false);
-                    target.addComponent(groupTable);
+                    target.add(groupTable);
                     for (AbstractLink link : groupTable.getSelectionLinks()) {
-                        target.addComponent(link);
+                        target.add(link);
                     }                    
                 }
             }            

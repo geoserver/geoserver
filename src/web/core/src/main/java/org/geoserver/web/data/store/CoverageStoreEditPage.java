@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -10,8 +10,8 @@ import java.util.List;
 import java.util.logging.Level;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
@@ -44,8 +44,8 @@ public class CoverageStoreEditPage extends AbstractCoverageStorePage {
      * @param parameters
      */
     public CoverageStoreEditPage(PageParameters parameters) {
-        String wsName = parameters.getString(WS_NAME);
-        String storeName = parameters.getString(STORE_NAME);
+        String wsName = parameters.get(WS_NAME).toOptionalString();
+        String storeName = parameters.get(STORE_NAME).toString();
         CoverageStoreInfo csi = getCatalog().getCoverageStoreByName(wsName, storeName);
         
         if(csi == null) {

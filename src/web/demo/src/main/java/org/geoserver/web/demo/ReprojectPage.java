@@ -1,11 +1,10 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.web.demo;
 
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
@@ -14,6 +13,7 @@ import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.geoserver.web.GeoServerBasePage;
 import org.geoserver.web.wicket.CRSPanel;
 import org.geoserver.web.wicket.GeoServerAjaxFormLink;
@@ -56,8 +56,8 @@ public class ReprojectPage extends GeoServerBasePage {
     public ReprojectPage(PageParameters params) {
         if(params != null) {
             // get the params, if any
-            sourceCRS = params.getString("fromSRS");
-            targetCRS = params.getString("toSRS");
+            sourceCRS = params.get("fromSRS").toOptionalString();
+            targetCRS = params.get("toSRS").toOptionalString();
         }
         
         // the popup for transformation details
@@ -126,18 +126,18 @@ public class ReprojectPage extends GeoServerBasePage {
                         try {
                             Geometry target = JTS.transform(source, mt);
                             targetGeom.setModelObject(target);
-                            at.addComponent(targetGeom);
+                            at.add(targetGeom);
                         } catch (Exception e) {
                             error(e.getMessage());
                         }
                     }
                 }
-                at.addComponent(feedbackPanel);
+                at.add(feedbackPanel);
             }
 
             @Override
             protected void onError(AjaxRequestTarget target, Form<?> form) {
-                target.addComponent(feedbackPanel);
+                target.add(feedbackPanel);
             }
         };
         form.add(forward);
@@ -156,18 +156,18 @@ public class ReprojectPage extends GeoServerBasePage {
                         try {
                             Geometry source = JTS.transform(target, mt.inverse());
                             sourceGeom.setModelObject(source);
-                            at.addComponent(sourceGeom);
+                            at.add(sourceGeom);
                         } catch (Exception e) {
                             error(e.getMessage());
                         }
                     }
                 }
-                at.addComponent(feedbackPanel);
+                at.add(feedbackPanel);
             }
 
             @Override
             protected void onError(AjaxRequestTarget target, Form<?> form) {
-                target.addComponent(feedbackPanel);
+                target.add(feedbackPanel);
             }
         };
         form.add(backward);
@@ -179,7 +179,7 @@ public class ReprojectPage extends GeoServerBasePage {
             MathTransform mt = getTransform();
             if (mt != null) {
                 wktLink.setEnabled(true);
-                ajaxTarget.addComponent(wktLink);
+                ajaxTarget.add(wktLink);
             }
         }
 

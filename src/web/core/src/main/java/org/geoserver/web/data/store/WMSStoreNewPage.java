@@ -8,20 +8,22 @@ package org.geoserver.web.data.store;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Collections;
-import java.util.List;
 import java.util.logging.Level;
 
 import javax.management.RuntimeErrorException;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.validation.IValidatable;
-import org.apache.wicket.validation.validator.AbstractValidator;
+import org.apache.wicket.validation.IValidationError;
+import org.apache.wicket.validation.IValidator;
+import org.apache.wicket.validation.ValidationError;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.web.data.layer.NewLayerPage;
 import org.geotools.data.ows.HTTPClient;
 import org.geotools.data.ows.SimpleHttpClient;
 import org.geotools.data.wms.WebMapServer;
+import org.geotools.ows.ServiceException;
 
 public class WMSStoreNewPage extends AbstractWMSStorePage {
 
@@ -79,10 +81,10 @@ public class WMSStoreNewPage extends AbstractWMSStorePage {
         setResponsePage(layerChooserPage);
     }
     
-    final class WMSCapabilitiesURLValidator extends AbstractValidator {
+    final class WMSCapabilitiesURLValidator implements IValidator {
 
         @Override
-        protected void onValidate(IValidatable validatable) {
+        public void validate(IValidatable validatable) {
             String url = (String) validatable.getValue();
             try {
                 HTTPClient client = new SimpleHttpClient();
@@ -96,9 +98,9 @@ public class WMSStoreNewPage extends AbstractWMSStorePage {
                 }
                 WebMapServer server = new WebMapServer(new URL(url), client);
                 server.getCapabilities();
-            } catch(Exception e) {
-                error(validatable, "WMSCapabilitiesValidator.connectionFailure", 
-                        Collections.singletonMap("error", e.getMessage()));
+            } catch(IOException | ServiceException e) {
+                IValidationError err = new ValidationError("WMSCapabilitiesValidator.connectionFailure").setVariable("error", e.getMessage());
+                validatable.error(err);
             }
         }
         

@@ -104,7 +104,7 @@ public abstract class SolrConfigurationPage extends Panel {
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
                 attProvider.reload((Boolean) this.getDefaultModelObject());
-                target.addComponent(solrAttributePanel);
+                target.add(solrAttributePanel);
             }
         };
 
@@ -171,7 +171,7 @@ public abstract class SolrConfigurationPage extends Panel {
                         .getString());
             }
             if (!pkSet || !geomSet || !sridSet) {
-                target.addComponent(feedbackPanel);
+                target.add(feedbackPanel);
                 return;
             }
             ri.getMetadata().put(SolrLayerConfiguration.KEY, layerConfiguration);

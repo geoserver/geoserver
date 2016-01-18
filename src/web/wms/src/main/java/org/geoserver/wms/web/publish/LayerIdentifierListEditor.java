@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -12,7 +12,7 @@ import java.util.List;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
-import org.apache.wicket.behavior.SimpleAttributeModifier;
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.DropDownChoice;
@@ -124,7 +124,7 @@ public class LayerIdentifierListEditor extends FormComponentPanel<List<LayerIden
             @Override
             protected void populateItem(final ListItem<LayerIdentifierInfo> item) {
                 // odd/even style
-                item.add(new SimpleAttributeModifier("class", item.getIndex() % 2 == 0 ? "even"
+                item.add(AttributeModifier.replace("class", item.getIndex() % 2 == 0 ? "even"
                         : "odd"));
 
                 IModel<String> authModel = new PropertyModel<String>(item.getModel(), "authority");
@@ -167,7 +167,7 @@ public class LayerIdentifierListEditor extends FormComponentPanel<List<LayerIden
                         list.remove(index);
                         identifiers.setModelObject(list);
                         updateLinksVisibility();
-                        target.addComponent(container);
+                        target.add(container);
                     }
 
                 };
@@ -196,7 +196,7 @@ public class LayerIdentifierListEditor extends FormComponentPanel<List<LayerIden
                 list.add(newIdentifier);
                 identifiers.setModelObject(list);
                 updateLinksVisibility();
-                target.addComponent(LayerIdentifierListEditor.this);
+                target.add(LayerIdentifierListEditor.this);
             }
 
         };
@@ -211,7 +211,7 @@ public class LayerIdentifierListEditor extends FormComponentPanel<List<LayerIden
     }
 
     @Override
-    protected void convertInput() {
+    public void convertInput() {
         List<LayerIdentifierInfo> info = identifiers.getModelObject();
         setConvertedInput(info);
     }

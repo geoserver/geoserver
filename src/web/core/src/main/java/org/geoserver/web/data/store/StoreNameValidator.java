@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014, 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -16,8 +16,8 @@ import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.web.GeoServerApplication;
 
 /**
- * A Form validator that takes the workspace and store name form components and validates there's no
- * an existing {@link StoreInfo} in the selected workspace with the same name than the one assigned
+ * A Form validator that takes the workspace and store name form components and validates there is
+ * not an existing {@link StoreInfo} in the selected workspace with the same name as the one assigned
  * through the store name form component.
  * 
  * @author Andrea Aime - OpenGeo
@@ -71,6 +71,7 @@ public class StoreNameValidator implements IFormValidator {
         this.required = required;
     }
 
+    @Override
     public FormComponent[] getDependentFormComponents() {
         return new FormComponent[] { workspaceComponent, storeNameComponent };
     }
@@ -78,13 +79,14 @@ public class StoreNameValidator implements IFormValidator {
     /**
      * Performs the cross validation between the selected workspace and the assigned store name
      * <p>
-     * If there's already a {@link StoreInfo} in the selected workspace with the same name than the
-     * choosed one the store name form component is set with a proper {@link IValidationError error
+     * If there's already a {@link StoreInfo} in the selected workspace with the same name as the
+     * chosen one, then the store name form component is set with a proper {@link IValidationError error
      * message}
      * </p>
      * 
      * @see IFormValidator#validate(Form)
      */
+    @Override
     public void validate(final Form form) {
         final FormComponent[] components = getDependentFormComponents();
         final FormComponent wsComponent = components[0];
@@ -95,9 +97,7 @@ public class StoreNameValidator implements IFormValidator {
         
         if(name == null) {
             if(required) {
-                ValidationError error = new ValidationError();
-                error.addMessageKey("StoreNameValidator.storeNameRequired");
-                nameComponent.error((IValidationError) error);
+                nameComponent.error(new ValidationError("StoreNameValidator.storeNameRequired"));
             }
             return;
         }
@@ -108,11 +108,10 @@ public class StoreNameValidator implements IFormValidator {
         if (existing != null) {
             final String existingId = existing.getId();
             if (!existingId.equals(edittingStoreId)) {
-                ValidationError error = new ValidationError();
-                error.addMessageKey("StoreNameValidator.storeExistsInWorkspace");
-                error.setVariable("workspace", workspace.getName());
-                error.setVariable("storeName", name);
-                nameComponent.error((IValidationError) error);
+                IValidationError error = new ValidationError("StoreNameValidator.storeExistsInWorkspace")
+                        .setVariable("workspace", workspace.getName())
+                        .setVariable("storeName", name);
+                nameComponent.error(error);
             }
         }
     }

@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -11,7 +11,7 @@ import java.util.List;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
-import org.apache.wicket.behavior.SimpleAttributeModifier;
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
@@ -78,7 +78,7 @@ public class AuthorityURLListEditor extends FormComponentPanel<List<AuthorityURL
             @Override
             protected void populateItem(final ListItem<AuthorityURLInfo> item) {
                 // odd/even style
-                item.add(new SimpleAttributeModifier("class", item.getIndex() % 2 == 0 ? "even"
+                item.add(AttributeModifier.replace("class", item.getIndex() % 2 == 0 ? "even"
                         : "odd"));
 
                 // Authority name
@@ -115,7 +115,7 @@ public class AuthorityURLListEditor extends FormComponentPanel<List<AuthorityURL
                         list.remove(index);
                         authorityURLs.setModelObject(list);
                         updateLinksVisibility();
-                        target.addComponent(container);
+                        target.add(container);
                     }
 
                 };
@@ -144,7 +144,7 @@ public class AuthorityURLListEditor extends FormComponentPanel<List<AuthorityURL
                 authorityURLs.setModelObject(list);
                 AuthorityURLListEditor.this.convertInput();
                 updateLinksVisibility();
-                target.addComponent(container);
+                target.add(container);
             }
 
         };
@@ -159,7 +159,7 @@ public class AuthorityURLListEditor extends FormComponentPanel<List<AuthorityURL
     }
 
     @Override
-    protected void convertInput() {
+    public void convertInput() {
         List<AuthorityURLInfo> info = authorityURLs.getModelObject();
         if (info == null || info.size() == 0) {
             setConvertedInput(new ArrayList<AuthorityURLInfo>(2));

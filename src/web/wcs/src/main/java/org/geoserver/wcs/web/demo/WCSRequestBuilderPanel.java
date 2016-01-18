@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -140,7 +140,7 @@ public class WCSRequestBuilderPanel extends Panel {
                     g2w.setModelObject(null);
                     g2w.setVisible(false);
                 }
-                target.addComponent(WCSRequestBuilderPanel.this);
+                target.add(WCSRequestBuilderPanel.this);
             }
         });
 
@@ -169,7 +169,7 @@ public class WCSRequestBuilderPanel extends Panel {
                 gc.targetCRS = ri.getCoordinateReferenceSystem();
                 gc.sourceGridRange = null;
                 describeLink.setEnabled(true);
-                target.addComponent(WCSRequestBuilderPanel.this);
+                target.add(WCSRequestBuilderPanel.this);
             }
         });
 
@@ -301,7 +301,7 @@ public class WCSRequestBuilderPanel extends Panel {
                     g2w.setModelObject(null);
                     g2w.setVisible(false);
                 }
-                target.addComponent(WCSRequestBuilderPanel.this);
+                target.add(WCSRequestBuilderPanel.this);
                 
             }
         });
@@ -340,7 +340,7 @@ public class WCSRequestBuilderPanel extends Panel {
                     sourceGridRange.setModelObject(null);
                     sourceGridRange.setVisible(false);
                 }
-                target.addComponent(WCSRequestBuilderPanel.this);
+                target.add(WCSRequestBuilderPanel.this);
                 
             }
 

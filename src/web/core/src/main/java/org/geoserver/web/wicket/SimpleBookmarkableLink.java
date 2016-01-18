@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -8,11 +8,11 @@ package org.geoserver.web.wicket;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 
 /**
  * A simple bookmarkable link with a label inside. This is a utility component,
@@ -34,12 +34,12 @@ public class SimpleBookmarkableLink extends Panel {
         if(pageParams.length % 2 == 1)
             throw new IllegalArgumentException("The page parameters array should contain an even number of elements");
         
-        Map<String, String> paramMap = new HashMap<String, String>();
+        PageParameters result = new PageParameters();
         for (int i = 0; i < pageParams.length; i += 2) {
-            paramMap.put(pageParams[i], pageParams[i+1]);
+            result.add(pageParams[i], pageParams[i+1]);
         }
         
-        return new PageParameters(paramMap);
+        return result;
             
     }
 

@@ -189,7 +189,7 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider {
      * @see org.apache.wicket.markup.repeater.data.IDataProvider#iterator(int, int)
      */
     @Override
-    public Iterator<T> iterator(int first, int count) {
+    public Iterator<T> iterator(long first, long count) {
         List<T> items = getFilteredItems();
 
         // global sorting
@@ -202,10 +202,10 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider {
             return items.iterator();
         }
         // in memory paging
-        int last = first + count;
+        long last = first + count;
         if (last > items.size())
             last = items.size();
-        return items.subList(first, last).iterator();
+        return items.subList((int) first, (int) last).iterator();
     }
 
     /**
@@ -232,7 +232,7 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider {
      * @see org.apache.wicket.markup.repeater.data.IDataProvider#size()
      */
     @Override
-    public int size() {
+    public long size() {
         return getFilteredItems().size();
     }
 

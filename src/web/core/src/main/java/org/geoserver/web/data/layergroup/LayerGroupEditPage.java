@@ -9,7 +9,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
@@ -21,8 +20,11 @@ import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.StringResourceModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.validation.IValidatable;
-import org.apache.wicket.validation.validator.AbstractValidator;
+import org.apache.wicket.validation.IValidationError;
+import org.apache.wicket.validation.IValidator;
+import org.apache.wicket.validation.ValidationError;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.LayerGroupInfo;
@@ -63,8 +65,8 @@ public class LayerGroupEditPage extends PublishedConfigurationPage<LayerGroupInf
     public LayerGroupEditPage(PageParameters parameters) {
         this(false);
         
-        String groupName = parameters.getString(GROUP);
-        String wsName = parameters.getString(WORKSPACE);
+        String groupName = parameters.get(GROUP).toString();
+        String wsName = parameters.get(WORKSPACE).toOptionalString();
 
         LayerGroupInfo lg = wsName != null ? getCatalog().getLayerGroupByName(wsName, groupName) :  
             getCatalog().getLayerGroupByName(groupName);
@@ -130,7 +132,7 @@ public class LayerGroupEditPage extends PublishedConfigurationPage<LayerGroupInf
                 protected void onUpdate(AjaxRequestTarget target) {
                     LayerGroupInfo.Mode mode = modeChoice.getModelObject();
                     updateRootLayerPanel(mode);
-                    target.addComponent(rootLayerPanelContainer);
+                    target.add(rootLayerPanelContainer);
                 }
             });
             
@@ -186,7 +188,7 @@ public class LayerGroupEditPage extends PublishedConfigurationPage<LayerGroupInf
                         }
                         
                         envelopePanel.setModelObject( lg.getBounds() );
-                        target.addComponent( envelopePanel );
+                        target.add( envelopePanel );
                         
                     } 
                     catch (Exception e) {
@@ -207,7 +209,7 @@ public class LayerGroupEditPage extends PublishedConfigurationPage<LayerGroupInf
                     new CatalogBuilder(getCatalog()).calculateLayerGroupBoundsFromCRS(lg, crs);
 
                     envelopePanel.modelChanged();
-                    target.addComponent(envelopePanel);
+                    target.add(envelopePanel);
                 }
             });
             
@@ -235,19 +237,19 @@ public class LayerGroupEditPage extends PublishedConfigurationPage<LayerGroupInf
             rootLayerPanel.setVisible(LayerGroupInfo.Mode.EO.equals(mode));
         }     
         
-        class GroupNameValidator extends AbstractValidator<String> {
+        class GroupNameValidator implements IValidator<String> {
 
             private static final long serialVersionUID = -6621372846640620132L;
 
             @Override
-            protected void onValidate(IValidatable<String> validatable) {
+            public void validate(IValidatable<String> validatable) {
                 String name = validatable.getValue();
                 LayerGroupInfo other = getCatalog().getLayerGroupByName(name);
                 if(other != null && (isNew || !other.getId().equals(getPublishedInfo().getId()))) {
-                    error(validatable, "duplicateGroupNameError", Collections.singletonMap("name", (Object) name));
+                    IValidationError err = new ValidationError("duplicateGroupNameError").setVariable("name", name);
+                    validatable.error(err);
                 }
             }
-            
         }
     }
 

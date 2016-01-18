@@ -11,7 +11,7 @@ import java.util.List;
 
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
-import org.apache.wicket.ResourceReference;
+import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
@@ -119,7 +119,7 @@ public class LayerGroupEntryPanel extends Panel {
                             new LayerGroupEntry( layer, layer.getDefaultStyle() ) );
                         
                         //getCatalog().save( lg );
-                        target.addComponent( layerTable );
+                        target.add( layerTable );
                     }
                 });
                 
@@ -141,7 +141,7 @@ public class LayerGroupEntryPanel extends Panel {
                         items.add(
                             new LayerGroupEntry( layerGroup, null ) );
                         
-                        target.addComponent( layerTable );
+                        target.add( layerTable );
                     }
                 });
                 
@@ -169,7 +169,7 @@ public class LayerGroupEntryPanel extends Panel {
             protected void onUpdate(AjaxRequestTarget target) {
                 Boolean useDefault = (Boolean) getComponent().getDefaultModelObject();
                 entry.setDefaultStyle(useDefault);
-                target.addComponent(layerTable);
+                target.add(layerTable);
                 
             }
         });
@@ -209,7 +209,7 @@ public class LayerGroupEntryPanel extends Panel {
                         entry.setStyle( style );
                         
                         //redraw
-                        target.addComponent( layerTable );
+                        target.add( layerTable );
                     }
                 });
                 popupWindow.show(target);
@@ -222,15 +222,15 @@ public class LayerGroupEntryPanel extends Panel {
     
     Component removeLink(String id, IModel itemModel) {
         final LayerGroupEntry entry = (LayerGroupEntry) itemModel.getObject();
-        ImageAjaxLink link = new ImageAjaxLink( id, new ResourceReference( getClass(), "../../img/icons/silk/delete.png") ) {
+        ImageAjaxLink link = new ImageAjaxLink( id, new PackageResourceReference( getClass(), "../../img/icons/silk/delete.png") ) {
             @Override
             protected void onClick(AjaxRequestTarget target) {
                 
                 items.remove( entry );
-                target.addComponent( layerTable );
+                target.add( layerTable );
             }
         };
-        link.getImage().add(new AttributeModifier("alt", true, new ParamResourceModel("LayerGroupEditPage.th.remove", link)));
+        link.getImage().add(new AttributeModifier("alt", new ParamResourceModel("LayerGroupEditPage.th.remove", link)));
         return link;
     }
     

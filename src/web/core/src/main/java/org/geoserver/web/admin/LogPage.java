@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -14,9 +14,6 @@ import java.io.InputStream;
 import java.util.LinkedList;
 import java.util.logging.Level;
 
-import org.apache.wicket.IRequestTarget;
-import org.apache.wicket.PageParameters;
-import org.apache.wicket.RequestCycle;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.SubmitLink;
 import org.apache.wicket.markup.html.form.TextArea;
@@ -24,9 +21,11 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.PropertyModel;
-import org.apache.wicket.protocol.http.WebResponse;
+import org.apache.wicket.request.cycle.RequestCycle;
+import org.apache.wicket.request.http.WebResponse;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.io.Streams;
-import org.apache.wicket.validation.validator.MinimumValidator;
+import org.apache.wicket.validation.validator.RangeValidator;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.logging.LoggingUtils;
 import org.geoserver.platform.GeoServerExtensions;
@@ -78,25 +77,24 @@ public class LogPage extends GeoServerSecuredPage {
         }
 
         try {
-            if (params.getKey(LINES) != null) {
-                if (params.getInt(LINES) > 0) {
-                    lines = params.getInt(LINES);
+            if (params.getNamedKeys().contains(LINES)) {
+                if (params.get(LINES).toInt() > 0) {
+                    lines = params.get(LINES).toInt();
                 }
             }
         } catch (Exception e) {
-            LOGGER.log(Level.WARNING, "Error parsing the lines parameter: ", params.getKey(LINES));
+            LOGGER.log(Level.WARNING, "Error parsing the lines parameter: ", params.get(LINES).toString());
         }
 
         form.add(new SubmitLink("refresh") {
             @Override
             public void onSubmit() {
-                setResponsePage(LogPage.class, new PageParameters(LINES + "="
-                        + String.valueOf(lines)));
+                setResponsePage(LogPage.class, new PageParameters().add(LINES, lines));
             }
         });
 
         TextField lines = new TextField("lines", new PropertyModel(this, "lines"));
-        lines.add(new MinimumValidator(1));
+        lines.add(RangeValidator.minimum(1));
         form.add(lines);
 
         TextArea logs = new TextArea("logs", new GSLogsModel());

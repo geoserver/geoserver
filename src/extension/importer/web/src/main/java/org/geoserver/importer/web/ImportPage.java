@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -17,11 +17,8 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 
-import org.apache.wicket.Application;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
-import org.apache.wicket.PageParameters;
-import org.apache.wicket.ResourceReference;
 import org.apache.wicket.ajax.AbstractAjaxTimerBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
@@ -29,9 +26,6 @@ import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.TextArea;
-import org.apache.wicket.markup.html.link.Link;
-import org.apache.wicket.markup.html.list.ListItem;
-import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
@@ -39,18 +33,10 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.model.util.ListModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.apache.wicket.request.resource.ResourceReference;
 import org.apache.wicket.util.time.Duration;
-import org.geoserver.catalog.CoverageStoreInfo;
-import org.geoserver.catalog.DataStoreInfo;
-import org.geoserver.catalog.StoreInfo;
 import org.geoserver.config.util.XStreamPersister;
-import org.geoserver.web.GeoServerApplication;
-import org.geoserver.web.GeoServerBasePage;
-import org.geoserver.web.GeoServerSecuredPage;
-import org.geoserver.web.wicket.GeoServerDataProvider;
-import org.geoserver.web.wicket.GeoServerDialog;
-import org.geoserver.web.wicket.GeoServerDialog.DialogDelegate;
-import org.geoserver.web.wicket.Icon;
 import org.geoserver.importer.BasicImportFilter;
 import org.geoserver.importer.Database;
 import org.geoserver.importer.Directory;
@@ -58,10 +44,13 @@ import org.geoserver.importer.FileData;
 import org.geoserver.importer.ImportContext;
 import org.geoserver.importer.ImportData;
 import org.geoserver.importer.ImportTask;
-import org.geoserver.importer.ImportTask.State;
 import org.geoserver.importer.RasterFormat;
 import org.geoserver.importer.VectorFormat;
 import org.geoserver.importer.job.Task;
+import org.geoserver.web.GeoServerSecuredPage;
+import org.geoserver.web.wicket.GeoServerDialog;
+import org.geoserver.web.wicket.GeoServerDialog.DialogDelegate;
+import org.geoserver.web.wicket.Icon;
 
 public class ImportPage extends GeoServerSecuredPage {
 
@@ -70,7 +59,7 @@ public class ImportPage extends GeoServerSecuredPage {
     AtomicBoolean running = new AtomicBoolean(false);
 
     public ImportPage(PageParameters pp) {
-        this(new ImportContextModel(pp.getAsLong("id")));
+        this(new ImportContextModel(pp.get("id").toLong()));
     }
 
     public ImportPage(ImportContext imp) {
@@ -167,7 +156,7 @@ public class ImportPage extends GeoServerSecuredPage {
 
                 //set running flag and update cancel link
                 running.set(true);
-                target.addComponent(cancelLink(this));
+                target.add(cancelLink(this));
 
                 final Long jobid = importer().runAsync(imp, filter, false);
                 setDefaultModelObject(jobid);
@@ -185,10 +174,10 @@ public class ImportPage extends GeoServerSecuredPage {
                             stop();
     
                             self.setEnabled(true);
-                            target.addComponent(self);
+                            target.add(self);
     
                             running.set(false);
-                            target.addComponent(cancelLink(self));
+                            target.add(cancelLink(self));
                             
                             /*ImportContext imp = model.getObject();
                             if (imp.getState() == ImportContext.State.COMPLETE) {
@@ -203,11 +192,11 @@ public class ImportPage extends GeoServerSecuredPage {
                         }
     
                         // update the table
-                        target.addComponent(taskTable);
-                        target.addComponent(headerTable);
+                        target.add(taskTable);
+                        target.add(headerTable);
                     }
                 });
-                target.addComponent(taskTable);
+                target.add(taskTable);
     
                 // disable import button
                 setLinkEnabled(this, false, target);
@@ -268,7 +257,7 @@ public class ImportPage extends GeoServerSecuredPage {
             @Override
             public void onClick(AjaxRequestTarget target) {
                 taskTable.selectAll();
-                target.addComponent(taskTable);
+                target.add(taskTable);
                 updateImportLink(importLink, taskTable, target);
             }
         });
@@ -276,7 +265,7 @@ public class ImportPage extends GeoServerSecuredPage {
             @Override
             public void onClick(AjaxRequestTarget target) {
                 taskTable.clearSelection();
-                target.addComponent(taskTable);
+                target.add(taskTable);
                 updateImportLink(importLink, taskTable, target);
             }
         });
@@ -284,7 +273,7 @@ public class ImportPage extends GeoServerSecuredPage {
             @Override
             public void onClick(AjaxRequestTarget target) {
                 doSelectReady(getModelObject(), taskTable, target);
-                target.addComponent(taskTable);
+                target.add(taskTable);
                 updateImportLink(importLink, taskTable, target);
             }
         });
@@ -312,7 +301,7 @@ public class ImportPage extends GeoServerSecuredPage {
 
     void setLinkEnabled(AjaxLink link, boolean enabled, AjaxRequestTarget target) {
         link.setEnabled(enabled);
-        target.addComponent(link);
+        target.add(link);
     }
 
     AjaxLink cancelLink(AjaxLink importLink) {
@@ -335,7 +324,7 @@ public class ImportPage extends GeoServerSecuredPage {
         return null;
     }
 
-    static class DataIconModel extends LoadableDetachableModel<ResourceReference> {
+    static class DataIconModel extends LoadableDetachableModel<PackageResourceReference> {
 
         ImportData data;
 
@@ -344,7 +333,7 @@ public class ImportPage extends GeoServerSecuredPage {
         }
 
         @Override
-        protected ResourceReference load() {
+        protected PackageResourceReference load() {
             DataIcon icon = null;
             if (data instanceof FileData) {
                 FileData df = (FileData) data;

@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -10,7 +10,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.Session;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
@@ -18,6 +17,7 @@ import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.gwc.GWC;
 import org.geoserver.web.GeoServerWicketTestSupport;
@@ -60,7 +60,7 @@ public class GridSetNewPageTest extends GeoServerWicketTestSupport {
     @Test
     public void testCreateFromTemplate() {
 
-        PageParameters params = new PageParameters(ImmutableMap.of("template", "EPSG:4326"));
+        PageParameters params = new PageParameters().add("template", "EPSG:4326");
         GridSetNewPage page = new GridSetNewPage(params);
 
         tester.startPage(page);

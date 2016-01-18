@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -8,7 +8,7 @@ package org.geoserver.web.data.store.pgraster;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.apache.wicket.behavior.SimpleAttributeModifier;
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.panel.Panel;
@@ -123,7 +123,7 @@ public class PGRasterPanel extends Panel {
         ResourceModel titleModel = new ResourceModel(resourceKey + ".title", defaultTitle);
         String title = String.valueOf(titleModel.getObject());
 
-        pwdPanel.add(new SimpleAttributeModifier("title", title));
+        pwdPanel.add(AttributeModifier.replace("title", title));
 
         return pwdPanel.getFormComponent();
     }
@@ -144,7 +144,7 @@ public class PGRasterPanel extends Panel {
         ResourceModel titleModel = new ResourceModel(resourceKey + ".title", defaultTitle);
         String title = String.valueOf(titleModel.getObject());
 
-        textParamPanel.add(new SimpleAttributeModifier("title", title));
+        textParamPanel.add(AttributeModifier.replace("title", title));
 
         add(textParamPanel);
         return textParamPanel.getFormComponent();

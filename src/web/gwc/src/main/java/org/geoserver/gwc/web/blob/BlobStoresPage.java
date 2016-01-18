@@ -77,7 +77,7 @@ public class BlobStoresPage extends GeoServerSecuredPage {
                 for (BlobStoreConfig config : blobStoresPanel.getSelection()) {
                     if (config.isDefault()) {
                         error(new ParamResourceModel("deleteError", getPage()).getString());
-                        target.addComponent(feedbackPanel);
+                        target.add(feedbackPanel);
                         return;
                     }
                     ids.add(config.getId());
@@ -128,9 +128,9 @@ public class BlobStoresPage extends GeoServerSecuredPage {
                         public void onClose(AjaxRequestTarget target) {
                             if (error != null) {
                                 error(error);
-                                target.addComponent(feedbackPanel);
+                                target.add(feedbackPanel);
                             } else {
-                                target.addComponent(blobStoresPanel);
+                                target.add(blobStoresPanel);
                             }
                         }
 
@@ -140,9 +140,9 @@ public class BlobStoresPage extends GeoServerSecuredPage {
                         GWC.get().removeBlobStores(ids);
                     } catch (ConfigurationException e) {
                         error(e.toString());
-                        target.addComponent(feedbackPanel);
+                        target.add(feedbackPanel);
                     }
-                    target.addComponent(blobStoresPanel);
+                    target.add(blobStoresPanel);
                 }
             }
         });
@@ -190,7 +190,7 @@ public class BlobStoresPage extends GeoServerSecuredPage {
             @Override
             protected void onSelectionUpdate(AjaxRequestTarget target) {
                 remove.setEnabled(blobStoresPanel.getSelection().size() > 0);
-                target.addComponent(remove);
+                target.add(remove);
             }
         });
         blobStoresPanel.setOutputMarkupId(true);

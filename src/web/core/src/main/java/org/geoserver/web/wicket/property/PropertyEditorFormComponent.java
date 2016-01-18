@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -25,7 +25,6 @@ import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.util.ListModel;
-import org.apache.wicket.validation.IValidationError;
 import org.apache.wicket.validation.ValidationError;
 import org.springframework.util.StringUtils;
 
@@ -73,7 +72,7 @@ public class PropertyEditorFormComponent extends FormComponentPanel<Properties> 
                     public void onClick(AjaxRequestTarget target) {
                         List l = ((List)listView.getDefaultModelObject());
                         l.remove(getModelObject());
-                        target.addComponent(container);
+                        target.add(container);
                     }
                 });
             }
@@ -85,7 +84,7 @@ public class PropertyEditorFormComponent extends FormComponentPanel<Properties> 
             @Override
             public void onClick(AjaxRequestTarget target) {
                 ((List)listView.getDefaultModelObject()).add(new Tuple());
-                target.addComponent(container);
+                target.add(container);
             }
         });
     }
@@ -116,7 +115,7 @@ public class PropertyEditorFormComponent extends FormComponentPanel<Properties> 
     }
 
     @Override
-    protected void convertInput() {
+    public void convertInput() {
         for (Iterator it = listView.iterator(); it.hasNext();) {
             ListItem item = (ListItem) it.next();
             ((FormComponent)item.get("key")).updateModel();
@@ -142,12 +141,12 @@ public class PropertyEditorFormComponent extends FormComponentPanel<Properties> 
         for (Tuple t : listView.getModelObject()) {
             if (StringUtils.hasLength(t.getKey())== false) {
                 invalidTuples=listView.getModelObject();
-                error((IValidationError)new ValidationError().addMessageKey("KeyRequired"));                
+                error(new ValidationError("KeyRequired"));
                 return;
             }
             if (StringUtils.hasLength(t.getValue())== false) {
                 invalidTuples=listView.getModelObject();
-                error((IValidationError)new ValidationError().addMessageKey("ValueRequired"));
+                error(new ValidationError("ValueRequired"));
                 return;
             }            
         }

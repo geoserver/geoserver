@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.behavior.AbstractBehavior;
+import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.list.ListItem;
@@ -71,6 +71,7 @@ public abstract class ReorderableTablePanel<T> extends GeoServerTablePanel<T> {
         this.items = items;
     }
 
+    @Override
     protected void buildRowListView(final GeoServerDataProvider<T> dataProvider, Item item,
             final IModel itemModel) {
         // create one component per viewable property
@@ -114,14 +115,16 @@ public abstract class ReorderableTablePanel<T> extends GeoServerTablePanel<T> {
         this.setOutputMarkupId(true);
     }
 
+    @Override
     protected void onPopulateItem(GeoServerDataProvider.Property<T> property,
             org.apache.wicket.markup.html.list.ListItem item) {
         if (property == RENDERING_ORDER) {
             Label label = (Label) item.get(0);
             OddEvenItem rowContainer = (OddEvenItem) item.getParent().getParent();
             label.setDefaultModel(new Model(rowContainer.getIndex() + 1));
-            item.add(new AbstractBehavior() {
+            item.add(new Behavior() {
 
+                @Override
                 public void onComponentTag(Component component, ComponentTag tag) {
                     tag.put("style", "width:1%");
                 }

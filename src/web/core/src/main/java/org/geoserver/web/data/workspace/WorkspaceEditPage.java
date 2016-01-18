@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -14,8 +14,6 @@ import java.util.logging.Logger;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.Page;
-import org.apache.wicket.PageParameters;
-import org.apache.wicket.ResourceReference;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
@@ -39,7 +37,9 @@ import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.StringResourceModel;
-import org.apache.wicket.validation.validator.MinimumValidator;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.apache.wicket.request.resource.PackageResourceReference;
+import org.apache.wicket.validation.validator.RangeValidator;
 import org.apache.wicket.validation.validator.UrlValidator;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.NamespaceInfo;
@@ -89,7 +89,7 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
      * @param parameters
      */
     public WorkspaceEditPage(PageParameters parameters) {
-        String wsName = parameters.getString("name");
+        String wsName = parameters.get("name").toString();
         WorkspaceInfo wsi = getCatalog().getWorkspaceByName(wsName);
         
         if(wsi == null) {
@@ -304,7 +304,7 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
                     protected void onUpdate(AjaxRequestTarget target) {
                         contactPanel.setVisible(set.enabled);
                         otherSettingsPanel.setVisible(set.enabled);
-                        target.addComponent(settingsContainer);
+                        target.add(settingsContainer);
                     }
                 }));
 
@@ -320,13 +320,13 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
             settingsContainer.add(contactPanel);
 
             otherSettingsPanel = new WebMarkupContainer("otherSettings", 
-                new CompoundPropertyModel<GeoServerInfo>(set.model));
+                new CompoundPropertyModel<>(set.model));
             otherSettingsPanel.setOutputMarkupId(true);
             otherSettingsPanel.setVisible(set.enabled);
             otherSettingsPanel.add(new CheckBox("verbose"));
             otherSettingsPanel.add(new CheckBox("verboseExceptions"));
             otherSettingsPanel.add(new CheckBox("localWorkspaceIncludesPrefix"));
-            otherSettingsPanel.add(new TextField<Integer>("numDecimals").add(new MinimumValidator<Integer>(0)));
+            otherSettingsPanel.add(new TextField<Integer>("numDecimals").add(RangeValidator.minimum(0)));
             otherSettingsPanel.add(new DropDownChoice("charset", GlobalSettingsPage.AVAILABLE_CHARSETS));
             otherSettingsPanel.add(new TextField("proxyBaseUrl").add(new UrlValidator()));
             
@@ -430,8 +430,7 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
 
                             if (s.model instanceof ExistingServiceModel) {
                                 //service that has already been added, 
-                                PageParameters pp = 
-                                        new PageParameters("workspace=" + wsModel.getObject().getName());
+                                PageParameters pp = new PageParameters().add("workspace", wsModel.getObject().getName());
                                 try {
                                     page = s.adminPage.getComponentClass()
                                         .getConstructor(PageParameters.class).newInstance(pp);
@@ -462,27 +461,26 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
                         @Override
                         protected void onUpdate(AjaxRequestTarget target) {
                             link.setEnabled(getModelObject());
-                            target.addComponent(link);
+                            target.add(link);
                         }
                     };
                     item.add(enabled);
                     
                     ServiceMenuPageInfo info = service.adminPage;
                     
-                    link.add(new AttributeModifier("title", true, 
-                        new StringResourceModel(info.getDescriptionKey(), (Component) null, null)));
+                    link.add(new AttributeModifier("title", new StringResourceModel(info.getDescriptionKey(), (Component) null, null)));
                     link.add(new Label("link.label", 
                         new StringResourceModel(info.getTitleKey(), (Component) null, null)));
                     
                     Image image;
                     if(info.getIcon() != null) {
                         image = new Image("link.icon", 
-                            new ResourceReference(info.getComponentClass(), info.getIcon()));
+                            new PackageResourceReference(info.getComponentClass(), info.getIcon()));
                     } else {
                         image = new Image("link.icon", 
-                            new ResourceReference(GeoServerBasePage.class, "img/icons/silk/wrench.png"));
+                            new PackageResourceReference(GeoServerBasePage.class, "img/icons/silk/wrench.png"));
                     }
-                    image.add(new AttributeModifier("alt", true, new ParamResourceModel(info.getTitleKey(), null)));
+                    image.add(new AttributeModifier("alt", new ParamResourceModel(info.getTitleKey(), null)));
                     link.add(image);
                     item.add(link);
                 }

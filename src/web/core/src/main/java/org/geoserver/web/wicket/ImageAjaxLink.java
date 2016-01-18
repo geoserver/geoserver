@@ -1,11 +1,11 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.web.wicket;
 
-import org.apache.wicket.ResourceReference;
+import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.IAjaxCallDecorator;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
@@ -27,14 +27,14 @@ public abstract class ImageAjaxLink extends Panel {
     /**
      * Constructs the panel with a link containing an image.
      */
-    public ImageAjaxLink( String id, ResourceReference imageRef ) {
+    public ImageAjaxLink( String id, PackageResourceReference imageRef ) {
         this( id, imageRef, "" );
     }
 
     /**
      * Constructs the panel with a link containing an image and a label. 
      */
-    public ImageAjaxLink( String id, ResourceReference imageRef, String label ) {
+    public ImageAjaxLink( String id, PackageResourceReference imageRef, String label ) {
         super( id );
         link = new AjaxLink( "link" ) {
             @Override

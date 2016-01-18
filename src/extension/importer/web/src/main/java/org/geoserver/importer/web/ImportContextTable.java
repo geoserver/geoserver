@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -8,14 +8,14 @@ package org.geoserver.importer.web;
 import java.util.Date;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.geoserver.importer.ImportContext;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.SimpleBookmarkableLink;
 import org.ocpsoft.pretty.time.PrettyTime;
-import org.geoserver.importer.ImportContext;
 
 public class ImportContextTable extends GeoServerTablePanel<ImportContext> {
 
@@ -33,7 +33,7 @@ public class ImportContextTable extends GeoServerTablePanel<ImportContext> {
     protected Component getComponentForProperty(String id, IModel itemModel, Property property) {
         if (ImportContextProvider.ID == property) {
             PageParameters pp = new PageParameters();
-            pp.put("id", property.getModel(itemModel).getObject());
+            pp.add("id", property.getModel(itemModel).getObject());
             return new SimpleBookmarkableLink(id, ImportPage.class, property.getModel(itemModel), pp);
         }
         else if (ImportContextProvider.CREATED == property || ImportContextProvider.UPDATED == property) {

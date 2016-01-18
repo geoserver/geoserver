@@ -149,7 +149,7 @@ public class StatusPage extends ServerAdminPage {
                     LOGGER.log(Level.SEVERE, "Error resetting resource caches", t);
                     error(t);
                 }
-                target.addComponent(feedbackPanel);
+                target.add(feedbackPanel);
             }
         });
         
@@ -163,7 +163,7 @@ public class StatusPage extends ServerAdminPage {
                     LOGGER.log(Level.SEVERE, "An error occurred while reloading the catalog", t);
                     error(t);
                 }
-                target.addComponent(feedbackPanel);
+                target.add(feedbackPanel);
             }
         });
     }

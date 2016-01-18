@@ -217,7 +217,7 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
             model.setEnabled(doCreateTileLayer);
         }
         add(createLayer = new CheckBox("createTileLayer", new Model<Boolean>(doCreateTileLayer)));
-        createLayer.add(new AttributeModifier("title", true, new ResourceModel(
+        createLayer.add(new AttributeModifier("title", new ResourceModel(
                 "createTileLayer.title")));
 
         container = new WebMarkupContainer("container");
@@ -229,7 +229,7 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
         container.add(configs);
 
         add(enabled = new CheckBox("enabled", new PropertyModel<Boolean>(getModel(), "enabled")));
-        enabled.add(new AttributeModifier("title", true, new ResourceModel("enabled.title")));
+        enabled.add(new AttributeModifier("title", new ResourceModel("enabled.title")));
         configs.add(enabled);
         
         IChoiceRenderer<String> blobStoreRenderer = new IChoiceRenderer<String>() {
@@ -256,8 +256,7 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
         configs.add(blobStoreId = new DropDownChoice<String>("blobStoreId", blobStoreModel,
                 blobStoreChoices, blobStoreRenderer));
         blobStoreId.setNullValid(true);
-        blobStoreId
-                .add(new AttributeModifier("title", true, new ResourceModel("blobStoreId.title")));
+        blobStoreId.add(new AttributeModifier("title", new ResourceModel("blobStoreId.title")));
 
         add(new IValidator<GeoServerTileLayerInfo>() {
             private static final long serialVersionUID = 5240602030478856537L;
@@ -458,7 +457,7 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
         final boolean createTileLayer = createLayer.getModelObject().booleanValue();
         setValidating(createTileLayer);
         configs.setVisible(createTileLayer);
-        target.addComponent(container);
+        target.add(container);
     }
 
     private void confirmRemovalOfExistingTileLayer(final AjaxRequestTarget origTarget) {
@@ -490,7 +489,7 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
 
             @Override
             public void onClose(final AjaxRequestTarget target) {
-                target.addComponent(createLayer);
+                target.add(createLayer);
                 updateConfigsVisibility(target);
             }
 
@@ -513,7 +512,7 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
      * @see org.apache.wicket.markup.html.form.FormComponent#convertInput()
      */
     @Override
-    protected void convertInput() {
+    public void convertInput() {
         createLayer.processInput();
         final boolean createTileLayer = createLayer.getModelObject().booleanValue();
         GeoServerTileLayerInfoModel model = ((GeoServerTileLayerInfoModel)getModel());

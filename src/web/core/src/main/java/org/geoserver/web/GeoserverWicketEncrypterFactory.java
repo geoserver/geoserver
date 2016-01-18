@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -19,8 +19,8 @@ import java.util.logging.Logger;
 import javax.crypto.Cipher;
 import javax.servlet.http.HttpSession;
 
-import org.apache.wicket.RequestCycle;
 import org.apache.wicket.protocol.http.servlet.ServletWebRequest;
+import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.util.crypt.AbstractCrypt;
 import org.apache.wicket.util.crypt.ICrypt;
 import org.apache.wicket.util.crypt.ICryptFactory;
@@ -99,7 +99,7 @@ public class GeoserverWicketEncrypterFactory implements ICryptFactory {
     public ICrypt newCrypt() {
         RequestCycle cycle = RequestCycle.get();
         ServletWebRequest req = (ServletWebRequest)cycle.getRequest();
-        HttpSession s = (HttpSession) req.getHttpServletRequest().getSession(false);
+        HttpSession s = (HttpSession) req.getContainerRequest().getSession(false);
         if (s!=null) {
             return getEncrypterFromSession(s); 
         } else {

@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -7,7 +7,6 @@ package org.geoserver.wcs.web;
 
 import java.util.Arrays;
 
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
@@ -17,7 +16,8 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.StringResourceModel;
-import org.apache.wicket.validation.validator.MinimumValidator;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.apache.wicket.validation.validator.RangeValidator;
 import org.geoserver.wcs.WCSInfo;
 import org.geoserver.web.services.BaseServiceAdminPage;
 import org.geoserver.web.wicket.LiveCollectionModel;
@@ -53,10 +53,10 @@ public class WCSAdminPage extends BaseServiceAdminPage<WCSInfo> {
         
         // resource limits
         TextField maxInputMemory = new TextField("maxInputMemory");
-        maxInputMemory.add(new MinimumValidator(0l));
+        maxInputMemory.add(RangeValidator.minimum(0l));
         form.add(maxInputMemory);
         TextField maxOutputMemory = new TextField("maxOutputMemory");
-        maxOutputMemory.add(new MinimumValidator(0l));
+        maxOutputMemory.add(RangeValidator.minimum(0l));
         form.add(maxOutputMemory);
         
         // lat-lon VS lon-lat

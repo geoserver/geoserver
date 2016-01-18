@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -12,11 +12,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
-import org.apache.wicket.behavior.SimpleAttributeModifier;
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.DropDownChoice;
@@ -164,7 +163,7 @@ class GridSubsetsEditor extends FormComponentPanel<Set<XMLGridSubset>> {
             protected void populateItem(final ListItem<XMLGridSubset> item) {
                 // odd/even style
                 final int index = item.getIndex();
-                item.add(new SimpleAttributeModifier("class", index % 2 == 0 ? "even" : "odd"));
+                item.add(AttributeModifier.replace("class", index % 2 == 0 ? "even" : "odd"));
 
                 final XMLGridSubset gridSubset = item.getModelObject();
                 GridSetBroker gridSetBroker = GWC.get().getGridSetBroker();
@@ -189,12 +188,12 @@ class GridSubsetsEditor extends FormComponentPanel<Set<XMLGridSubset>> {
                 gridSetLabel = new Label("gridSet", new PropertyModel<String>(item.getModel(),
                         "gridSetName"));
                 if(!gridsetExists){
-                    gridSetLabel.add(new AttributeModifier("style", true, new Model<String>("color:red;text-decoration:line-through;")));
+                    gridSetLabel.add(new AttributeModifier("style", new Model<String>("color:red;text-decoration:line-through;")));
                     getPage().warn("GridSet " + gridSubset.getGridSetName() + " does not exist");
                 }
                 item.add(gridSetLabel);
                 if (null != gridsetDescription) {
-                    gridSetLabel.add(new AttributeModifier("title", true, new Model<String>(
+                    gridSetLabel.add(new AttributeModifier("title", new Model<String>(
                             gridsetDescription)));
                 }
 
@@ -290,12 +289,12 @@ class GridSubsetsEditor extends FormComponentPanel<Set<XMLGridSubset>> {
                         Collections.sort(choices);
                         availableGridSets.setChoices(choices);
 
-                        target.addComponent(container);
-                        target.addComponent(availableGridSets);
+                        target.add(container);
+                        target.add(availableGridSets);
                     }
                 };
                 removeLink.setDefaultModel(item.getModel());
-                removeLink.add(new AttributeModifier("title", true, new ResourceModel(
+                removeLink.add(new AttributeModifier("title", new ResourceModel(
                         "GridSubsetsEditor.removeLink")));
                 item.add(removeLink);
             }
@@ -333,8 +332,8 @@ class GridSubsetsEditor extends FormComponentPanel<Set<XMLGridSubset>> {
                 newSubset.setGridSetName(selectedGridset);
                 grids.getModelObject().add(newSubset);
 
-                target.addComponent(table);
-                target.addComponent(availableGridSets);
+                target.add(table);
+                target.add(availableGridSets);
             }
         };
         addGridsubsetLink.add(new Icon("addIcon", GWCIconFactory.ADD_ICON));
@@ -348,16 +347,11 @@ class GridSubsetsEditor extends FormComponentPanel<Set<XMLGridSubset>> {
     }
 
     @Override
-    protected void convertInput() {
-        grids.visitChildren(new Component.IVisitor<Component>() {
-
-            @Override
-            public Object component(Component component) {
-                if (component instanceof FormComponent) {
-                    FormComponent<?> formComponent = (FormComponent<?>) component;
-                    formComponent.processInput();
-                }
-                return Component.IVisitor.CONTINUE_TRAVERSAL;
+    public void convertInput() {
+        grids.visitChildren((component, visit) -> {
+            if (component instanceof FormComponent) {
+                FormComponent<?> formComponent = (FormComponent<?>) component;
+                formComponent.processInput();
             }
         });
         List<XMLGridSubset> info = grids.getModelObject();
@@ -443,9 +437,9 @@ class GridSubsetsEditor extends FormComponentPanel<Set<XMLGridSubset>> {
         }
 
         if (null != target) {
-            target.addComponent(zoomStop);
-            target.addComponent(minCachedLevel);
-            target.addComponent(maxCachedLevel);
+            target.add(zoomStop);
+            target.add(minCachedLevel);
+            target.add(maxCachedLevel);
         }
     }
 }

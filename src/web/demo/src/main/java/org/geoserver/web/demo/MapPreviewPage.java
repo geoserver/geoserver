@@ -208,7 +208,7 @@ public class MapPreviewPage extends GeoServerBasePage {
             String label = translateFormat("format.wms.", wmsOutputFormat);
             // build option with text and value
             Label format = new Label(i + "", label);
-            format.add(new AttributeModifier("value", true, new Model(ResponseUtils.urlEncode(wmsOutputFormat))));
+            format.add(new AttributeModifier("value", new Model(ResponseUtils.urlEncode(wmsOutputFormat))));
             wmsFormats.add(format);
         }
         menu.add(wmsFormats);
@@ -224,7 +224,7 @@ public class MapPreviewPage extends GeoServerBasePage {
                 String label = translateFormat("format.wfs.", wfsOutputFormat);
                 // build option with text and value
                 Label format = new Label(i + "", label);
-                format.add(new AttributeModifier("value", true, new Model<String>(ResponseUtils.urlEncode(wfsOutputFormat))));
+                format.add(new AttributeModifier("value", new Model<String>(ResponseUtils.urlEncode(wfsOutputFormat))));
                 wfsFormats.add(format);
             }
         }

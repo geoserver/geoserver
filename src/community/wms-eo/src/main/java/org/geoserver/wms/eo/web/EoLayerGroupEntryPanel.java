@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -11,7 +11,7 @@ import java.util.List;
 
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
-import org.apache.wicket.ResourceReference;
+import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.ComponentTag;
@@ -142,7 +142,7 @@ public class EoLayerGroupEntryPanel extends Panel {
                         entry.setStyle( style );
                         
                         //redraw
-                        target.addComponent( layerTable );
+                        target.add( layerTable );
                         popupWindow.close( target );
                     }
                 });
@@ -156,15 +156,15 @@ public class EoLayerGroupEntryPanel extends Panel {
     
     Component removeLink(String id, IModel itemModel) {
         final EoLayerGroupEntry entry = (EoLayerGroupEntry) itemModel.getObject();
-        ImageAjaxLink link = new ImageAjaxLink( id, new ResourceReference( LayerGroupEntryPanel.class, "../../img/icons/silk/delete.png") ) {
+        ImageAjaxLink link = new ImageAjaxLink( id, new PackageResourceReference( LayerGroupEntryPanel.class, "../../img/icons/silk/delete.png") ) {
             @Override
             protected void onClick(AjaxRequestTarget target) {
                 
                 items.remove( entry );
-                target.addComponent( layerTable );
+                target.add( layerTable );
             }
         };
-        link.getImage().add(new AttributeModifier("alt", true, new ParamResourceModel("AbstractLayerGroupPage.th.remove", link)));
+        link.getImage().add(new AttributeModifier("alt", new ParamResourceModel("AbstractLayerGroupPage.th.remove", link)));
         return link;
     }
     
@@ -225,16 +225,16 @@ public class EoLayerGroupEntryPanel extends Panel {
             this.entry = entry;
             this.setOutputMarkupId(true);
             
-            upLink = new ImageAjaxLink( "up", new ResourceReference( LayerGroupEntryPanel.class, "../../img/icons/silk/arrow_up.png") ) {
+            upLink = new ImageAjaxLink( "up", new PackageResourceReference( LayerGroupEntryPanel.class, "../../img/icons/silk/arrow_up.png") ) {
                 @Override
                 protected void onClick(AjaxRequestTarget target) {
                     int index = items.indexOf( PositionPanel.this.entry );
                     items.remove( index );
                     items.add(Math.max(0, index - 1), PositionPanel.this.entry);
-                    target.addComponent( layerTable );
-                    target.addComponent(this);
-                    target.addComponent(downLink);   
-                    target.addComponent(upLink);                    
+                    target.add( layerTable );
+                    target.add(this);
+                    target.add(downLink);   
+                    target.add(upLink);                    
                 }
                 
                 @Override
@@ -246,20 +246,20 @@ public class EoLayerGroupEntryPanel extends Panel {
                     }
                 }
             };
-            upLink.getImage().add(new AttributeModifier("alt", true, new ParamResourceModel("up", upLink)));
+            upLink.getImage().add(new AttributeModifier("alt", new ParamResourceModel("up", upLink)));
             upLink.setOutputMarkupId(true);
             add( upLink);            
 
-            downLink = new ImageAjaxLink( "down", new ResourceReference( LayerGroupEntryPanel.class, "../../img/icons/silk/arrow_down.png") ) {
+            downLink = new ImageAjaxLink( "down", new PackageResourceReference( LayerGroupEntryPanel.class, "../../img/icons/silk/arrow_down.png") ) {
                 @Override
                 protected void onClick(AjaxRequestTarget target) {
                     int index = items.indexOf( PositionPanel.this.entry );
                     items.remove( index );
                     items.add(Math.min(items.size(), index + 1), PositionPanel.this.entry);
-                    target.addComponent( layerTable );
-                    target.addComponent(this);                    
-                    target.addComponent(downLink);   
-                    target.addComponent(upLink);                    
+                    target.add( layerTable );
+                    target.add(this);                    
+                    target.add(downLink);   
+                    target.add(upLink);                    
                 }
                 
                 @Override
@@ -271,7 +271,7 @@ public class EoLayerGroupEntryPanel extends Panel {
                     }
                 }
             };
-            downLink.getImage().add(new AttributeModifier("alt", true, new ParamResourceModel("down", downLink)));
+            downLink.getImage().add(new AttributeModifier("alt", new ParamResourceModel("down", downLink)));
             downLink.setOutputMarkupId(true);
             add( downLink);
         }

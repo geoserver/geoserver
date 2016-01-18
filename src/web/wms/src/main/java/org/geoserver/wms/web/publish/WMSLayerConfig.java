@@ -5,7 +5,6 @@
  */
 package org.geoserver.wms.web.publish;
 
-import java.util.List;
 import java.util.Set;
 
 import org.apache.wicket.Component;
@@ -21,7 +20,7 @@ import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
-import org.apache.wicket.validation.validator.NumberValidator;
+import org.apache.wicket.validation.validator.RangeValidator;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -107,7 +106,7 @@ public class WMSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
         styleContainer.add(extraStyles);
         
         TextField<Integer> renderingBuffer = new TextField<Integer>("renderingBuffer", new MapModel(new PropertyModel(layerModel, "metadata"), LayerInfo.BUFFER), Integer.class);
-        renderingBuffer.add(NumberValidator.minimum(0));
+        renderingBuffer.add(RangeValidator.minimum(0));
         styleContainer.add(renderingBuffer);
         
         add(new TextField<String>("wmsPath", new PropertyModel<String>(layerModel, "path")));

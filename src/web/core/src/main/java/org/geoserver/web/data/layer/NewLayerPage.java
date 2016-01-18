@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -9,8 +9,6 @@ import java.io.IOException;
 import java.util.logging.Level;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.PageParameters;
-import org.apache.wicket.ResourceReference;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
@@ -22,6 +20,8 @@ import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.apache.wicket.request.resource.PackageResourceReference;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.CoverageInfo;
@@ -33,7 +33,6 @@ import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMSStoreInfo;
-import org.geoserver.feature.retype.RetypingDataStore;
 import org.geoserver.web.CatalogIconFactory;
 import org.geoserver.web.ComponentAuthorizer;
 import org.geoserver.web.GeoServerSecuredPage;
@@ -114,7 +113,7 @@ public class NewLayerPage extends GeoServerSecuredPage {
                     final Resource resource = (Resource) itemModel.getObject();
                     final CatalogIconFactory icons = CatalogIconFactory.get();
                     if(resource.isPublished()) {
-                        ResourceReference icon = icons.getEnabledIcon();
+                        PackageResourceReference icon = icons.getEnabledIcon();
                         Fragment f = new Fragment(id, "iconFragment", NewLayerPage.this);
                         f.add(new Image("layerIcon", icon));
                         return f;
@@ -177,8 +176,8 @@ public class NewLayerPage extends GeoServerSecuredPage {
             @Override
             public void onClick(AjaxRequestTarget target) {
                 DataStoreInfo ds = getCatalog().getStore(storeId, DataStoreInfo.class);
-                PageParameters pp = new PageParameters("wsName=" + ds.getWorkspace().getName() + ",storeName=" + ds.getName());
-                setResponsePage(NewFeatureTypePage.class, pp);                
+                PageParameters pp = new PageParameters().add("wsName", ds.getWorkspace().getName()).add("storeName", ds.getName());
+                setResponsePage(NewFeatureTypePage.class, pp);
             }
         };
     }
@@ -189,7 +188,7 @@ public class NewLayerPage extends GeoServerSecuredPage {
             @Override
             public void onClick(AjaxRequestTarget target) {
                 DataStoreInfo ds = getCatalog().getStore(storeId, DataStoreInfo.class);
-                PageParameters pp = new PageParameters("wsName=" + ds.getWorkspace().getName() + ",storeName=" + ds.getName());
+                PageParameters pp = new PageParameters().add("wsName", ds.getWorkspace().getName()).add("storeName", ds.getName());
                 setResponsePage(SQLViewNewPage.class, pp);
             }
         };
@@ -201,7 +200,7 @@ public class NewLayerPage extends GeoServerSecuredPage {
             @Override
             public void onClick(AjaxRequestTarget target) {
                 CoverageStoreInfo cs = getCatalog().getStore(storeId, CoverageStoreInfo.class);
-                PageParameters pp = new PageParameters("wsName=" + cs.getWorkspace().getName() + ",storeName=" + cs.getName());
+                PageParameters pp = new PageParameters().add("wsName", cs.getWorkspace().getName()).add("storeName", cs.getName());
                 setResponsePage(CoverageViewNewPage.class, pp);
             }
         };
@@ -213,7 +212,7 @@ public class NewLayerPage extends GeoServerSecuredPage {
             @Override
             public void onClick(AjaxRequestTarget target) {
                 DataStoreInfo ds = getCatalog().getStore(storeId, DataStoreInfo.class);
-                PageParameters pp = new PageParameters("wsName=" + ds.getWorkspace().getName() + ",storeName=" + ds.getName());
+                PageParameters pp = new PageParameters().add("wsName", ds.getWorkspace().getName()).add("storeName", ds.getName());
                 setResponsePage(CascadedWFSStoredQueryNewPage.class, pp);
             }
         };
@@ -225,7 +224,7 @@ public class NewLayerPage extends GeoServerSecuredPage {
             @Override
             public void onClick(AjaxRequestTarget target) {
                 WMSStoreInfo wms = getCatalog().getStore(storeId, WMSStoreInfo.class);
-                PageParameters pp = new PageParameters("storeId=" + storeId);
+                PageParameters pp = new PageParameters().add("storeId", storeId);
                 setResponsePage(WMSLayerImporterPage.class, pp);
             }
         };
@@ -263,8 +262,8 @@ public class NewLayerPage extends GeoServerSecuredPage {
                     selectLayers.setVisible(false);
                     createTypeContainer.setVisible(false);
                 }
-                target.addComponent(selectLayersContainer);
-                target.addComponent(feedbackPanel);
+                target.add(selectLayersContainer);
+                target.add(feedbackPanel);
 
             }
 

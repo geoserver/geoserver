@@ -1,19 +1,21 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wms.web.admin;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.Iterator;
 
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.data.test.SystemTestData;
@@ -136,7 +138,7 @@ public class AdminPrivilegesTest extends GeoServerWicketTestSupport {
     public void testStyleEditPageGlobal() throws Exception {
         loginAsCite();
     
-        tester.startPage(StyleEditPage.class, new PageParameters(StyleEditPage.NAME+"=point"));
+        tester.startPage(StyleEditPage.class, new PageParameters().add(StyleEditPage.NAME, "point"));
         tester.assertRenderedPage(StyleEditPage.class);
 
         //assert all form components disabled except for cancel

@@ -9,10 +9,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.feedback.FeedbackMessage;
-import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.repeater.data.DataView;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerGroupInfo;
@@ -30,7 +29,7 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
     
     @Test
     public void testComputeBounds() {
-        LayerGroupEditPage page = new LayerGroupEditPage(new PageParameters("group=lakes"));
+        LayerGroupEditPage page = new LayerGroupEditPage(new PageParameters().add("group", "lakes"));
         tester.startPage(page);
         // print(page, true, false);
         
@@ -53,7 +52,7 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
     
     @Test
     public void testComputeBoundsFromCRS() {
-        LayerGroupEditPage page = new LayerGroupEditPage(new PageParameters("group=lakes"));
+        LayerGroupEditPage page = new LayerGroupEditPage(new PageParameters().add("group", "lakes"));
         tester.startPage(page);
         tester.assertRenderedPage(LayerGroupEditPage.class);
         

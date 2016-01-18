@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -17,7 +17,7 @@ import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormChoiceComponentUpdatingBehavior;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
-import org.apache.wicket.behavior.SimpleAttributeModifier;
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
@@ -156,7 +156,7 @@ public class TileMatrixSetEditor extends FormComponentPanel<List<Grid>> {
                     next.get("resolution").setEnabled(useResolutions);
                     next.get("scale").setEnabled(!useResolutions);
                 }
-                target.addComponent(table);
+                target.add(table);
             }
         });
 
@@ -185,7 +185,7 @@ public class TileMatrixSetEditor extends FormComponentPanel<List<Grid>> {
             protected void populateItem(final ListItem<Grid> item) {
                 // odd/even style
                 final int index = item.getIndex();
-                item.add(new SimpleAttributeModifier("class", index % 2 == 0 ? "even" : "odd"));
+                item.add(AttributeModifier.replace("class", index % 2 == 0 ? "even" : "odd"));
 
                 item.add(new Label("zoomLevel", String.valueOf(index)));
 
@@ -266,11 +266,11 @@ public class TileMatrixSetEditor extends FormComponentPanel<List<Grid>> {
                             int index = ((Integer) getDefaultModelObject()).intValue();
                             list.remove(index);
                             grids.setModelObject(list);
-                            target.addComponent(container);
+                            target.add(container);
                         }
                     };
                     removeLink.setDefaultModel(new Model<Integer>(Integer.valueOf(index)));
-                    removeLink.add(new AttributeModifier("title", true, new ResourceModel(
+                    removeLink.add(new AttributeModifier("title", new ResourceModel(
                             "TileMatrixSetEditor.removeLink")));
                 }
                 item.add(removeLink);
@@ -296,9 +296,9 @@ public class TileMatrixSetEditor extends FormComponentPanel<List<Grid>> {
                             }
                         }
                         scale.setModelObject(scaleDenominator);
-                        target.addComponent(resolution);
-                        target.addComponent(scale);
-                        target.addComponent(tiles);
+                        target.add(resolution);
+                        target.add(scale);
+                        target.add(tiles);
                     }
                 });
 
@@ -319,9 +319,9 @@ public class TileMatrixSetEditor extends FormComponentPanel<List<Grid>> {
                             }
                         }
                         resolution.setModelObject(res);
-                        target.addComponent(resolution);
-                        target.addComponent(scale);
-                        target.addComponent(tiles);
+                        target.add(resolution);
+                        target.add(scale);
+                        target.add(tiles);
                     }
                 });
             }
@@ -335,12 +335,12 @@ public class TileMatrixSetEditor extends FormComponentPanel<List<Grid>> {
 
     private Component thLabel(String id) {
         Label label = new Label(id, new ResourceModel(id));
-        label.add(new AttributeModifier("title", true, new ResourceModel(id + ".title", "")));
+        label.add(new AttributeModifier("title", new ResourceModel(id + ".title", "")));
         return label;
     }
 
     @Override
-    protected void convertInput() {
+    public void convertInput() {
         List<Grid> info = grids.getModelObject();
         if (info == null || info.size() == 0) {
             setConvertedInput(new ArrayList<Grid>(2));

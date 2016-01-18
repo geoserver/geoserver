@@ -1,11 +1,9 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.importer.web;
-
-import static org.geoserver.ows.util.ResponseUtils.urlEncode;
 
 import java.awt.Toolkit;
 import java.awt.datatransfer.StringSelection;
@@ -14,17 +12,13 @@ import java.io.PrintWriter;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
-import org.apache.wicket.PageParameters;
-import org.apache.wicket.ResourceReference;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
-import org.apache.wicket.behavior.SimpleAttributeModifier;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
@@ -43,8 +37,13 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.StringResourceModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.apache.wicket.request.resource.ResourceReference;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.importer.ImportTask;
+import org.geoserver.importer.Importer;
+import org.geoserver.importer.web.ImportPage.DataIconModel;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.demo.PreviewLayer;
 import org.geoserver.web.wicket.CRSPanel;
@@ -57,16 +56,10 @@ import org.geoserver.web.wicket.Icon;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geoserver.web.wicket.SRSToCRSModel;
 import org.geoserver.web.wicket.SimpleAjaxLink;
-import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.util.logging.Logging;
-
-import org.geoserver.importer.ImportTask;
-import org.geoserver.importer.Importer;
-import org.geoserver.importer.web.ImportPage.DataIconModel;
-
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 public class ImportTaskTable extends GeoServerTablePanel<ImportTask> {
 
@@ -115,7 +108,7 @@ public class ImportTaskTable extends GeoServerTablePanel<ImportTask> {
             }
             
             String cssClass = new StatusIconModel(property.getModel(itemModel)).getCssClass();
-            return c.add(new SimpleAttributeModifier("class", cssClass));
+            return c.add(AttributeModifier.replace("class", cssClass));
         }
         if (property == ImportTaskProvider.ACTION) {
             
@@ -153,7 +146,7 @@ public class ImportTaskTable extends GeoServerTablePanel<ImportTask> {
                     @Override
                     protected boolean onSubmit(AjaxRequestTarget target, Component contents) {
                         ImporterWebUtils.importer().changed(itemModel.getObject());
-                        target.addComponent(ImportTaskTable.this);
+                        target.add(ImportTaskTable.this);
                         return true;
                     }
 
@@ -169,7 +162,7 @@ public class ImportTaskTable extends GeoServerTablePanel<ImportTask> {
 
     protected void onItemFixed(ImportTask task, AjaxRequestTarget target) {
         selectObject(task);
-        target.addComponent(this);
+        target.add(this);
         onSelectionUpdate(target);
     }
 
@@ -196,28 +189,28 @@ public class ImportTaskTable extends GeoServerTablePanel<ImportTask> {
             return chained;
         }
     }
-    static class StatusIconModel extends StatusModel<ResourceReference> {
+    static class StatusIconModel extends StatusModel<PackageResourceReference> {
 
         StatusIconModel(IModel model) {
             super(model);
         }
         
-        public ResourceReference getObject() {
+        public PackageResourceReference getObject() {
             ImportTask.State state = (ImportTask.State) chained.getObject();
             switch(state) {
             case READY:
-                return new ResourceReference(GeoServerApplication.class, "img/icons/silk/bullet_go.png");
+                return new PackageResourceReference(GeoServerApplication.class, "img/icons/silk/bullet_go.png");
             case RUNNING:
-                return new ResourceReference(ImportTaskTable.class, "indicator.gif");
+                return new PackageResourceReference(ImportTaskTable.class, "indicator.gif");
             case COMPLETE:
-                return new ResourceReference(GeoServerApplication.class, "img/icons/silk/accept.png");
+                return new PackageResourceReference(GeoServerApplication.class, "img/icons/silk/accept.png");
             case NO_BOUNDS:
             case NO_CRS:
             case NO_FORMAT:
             case BAD_FORMAT:
-                return new ResourceReference(GeoServerApplication.class, "img/icons/silk/error.png");
+                return new PackageResourceReference(GeoServerApplication.class, "img/icons/silk/error.png");
             case ERROR:
-                return new ResourceReference(GeoServerApplication.class, "img/icons/silk/delete.png");
+                return new PackageResourceReference(GeoServerApplication.class, "img/icons/silk/delete.png");
             }
             return null;
         }
@@ -348,16 +341,16 @@ public class ImportTaskTable extends GeoServerTablePanel<ImportTask> {
             form.add(new AjaxSubmitLink("apply") {
                 @Override
                 protected void onError(AjaxRequestTarget target, Form<?> form) {
-                    target.addComponent(feedbackPanel);
+                    target.add(feedbackPanel);
                 }
                 @Override
                 protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                    target.addComponent(feedbackPanel);
+                    target.add(feedbackPanel);
                     ImportTask item = model.getObject();
                     ImporterWebUtils.importer().changed(item);
 
                     //ImportItemTable.this.modelChanged();
-                    target.addComponent(ImportTaskTable.this);
+                    target.add(ImportTaskTable.this);
                     onItemFixed(item, target);
                 }
             });
@@ -374,7 +367,7 @@ public class ImportTaskTable extends GeoServerTablePanel<ImportTask> {
                     ImportTask task = getModelObject();
 
                     PageParameters pp = new PageParameters();
-                    pp.put("id", task.getContext().getId());
+                    pp.add("id", task.getContext().getId());
 
                     setResponsePage(new LayerPage(task.getLayer(), pp) {
                         protected void onSuccessfulSave() {

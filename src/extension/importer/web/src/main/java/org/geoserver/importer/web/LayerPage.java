@@ -5,7 +5,7 @@
  */
 package org.geoserver.importer.web;
 
-import org.apache.wicket.PageParameters;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.web.data.resource.ResourceConfigurationPage;
 

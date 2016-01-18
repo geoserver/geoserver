@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -18,11 +18,10 @@ import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
-import org.apache.wicket.behavior.SimpleAttributeModifier;
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.DropDownChoice;
@@ -177,7 +176,7 @@ class ParameterFilterEditor extends FormComponentPanel<Set<ParameterFilter>> {
             protected void populateItem(final ListItem<ParameterFilter> item) {
                 // odd/even style
                 final int index = item.getIndex();
-                item.add(new SimpleAttributeModifier("class", index % 2 == 0 ? "even" : "odd"));
+                item.add(AttributeModifier.replace("class", index % 2 == 0 ? "even" : "odd"));
 
                 //Create form
                 final Label keyLabel;
@@ -196,12 +195,12 @@ class ParameterFilterEditor extends FormComponentPanel<Set<ParameterFilter>> {
                     @Override
                     protected void onSubmit(AjaxRequestTarget target, Form form) {
                         getList().remove((ParameterFilter) getDefaultModelObject());
-                        target.addComponent(container);
+                        target.add(container);
                     }
                 };
                 removeLink.add(new Icon("removeIcon", GWCIconFactory.DELETE_ICON));
                 removeLink.setDefaultModel(item.getModel());
-                removeLink.add(new AttributeModifier("title", true, new ResourceModel(
+                removeLink.add(new AttributeModifier("title", new ResourceModel(
                         "ParameterFilterEditor.removeLink")));
                 item.add(removeLink);
             }
@@ -232,7 +231,7 @@ class ParameterFilterEditor extends FormComponentPanel<Set<ParameterFilter>> {
                 
                 addFilter(newFilter);
 
-                target.addComponent(container);
+                target.add(container);
             }
         };
         addStyleFilterLink.add(new Icon("addIcon", GWCIconFactory.ADD_ICON));
@@ -321,7 +320,7 @@ class ParameterFilterEditor extends FormComponentPanel<Set<ParameterFilter>> {
                         LOGGER.log(Level.WARNING, "Could not execute default Constructor for "+type ,ex);
                     }
                 }
-                target.addComponent(container);
+                target.add(container);
             }
         };
         addFilterLink.add(new Icon("addIcon", GWCIconFactory.ADD_ICON));
@@ -355,16 +354,11 @@ class ParameterFilterEditor extends FormComponentPanel<Set<ParameterFilter>> {
     }
     
     @Override
-    protected void convertInput() {
-        filters.visitChildren(new Component.IVisitor<Component>() {
-
-            @Override
-            public Object component(Component component) {
-                if (component instanceof FormComponent) {
-                    FormComponent<?> formComponent = (FormComponent<?>) component;
-                    formComponent.processInput();
-                }
-                return Component.IVisitor.CONTINUE_TRAVERSAL;
+    public void convertInput() {
+        filters.visitChildren((component, visit) -> {
+            if (component instanceof FormComponent) {
+                FormComponent<?> formComponent = (FormComponent<?>) component;
+                formComponent.processInput();
             }
         });
         List<ParameterFilter> info = filters.getModelObject();

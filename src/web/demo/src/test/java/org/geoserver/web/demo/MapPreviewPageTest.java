@@ -11,7 +11,7 @@ import java.util.Iterator;
 
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.MarkupContainer;
-import org.apache.wicket.behavior.IBehavior;
+import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.repeater.RepeatingView;
@@ -134,8 +134,8 @@ public class MapPreviewPageTest extends GeoServerWicketTestSupport {
 
         Label optionLabel = (Label) tester.getComponentFromLastRenderedPage("table:listContainer:items:4:itemProperties:4:component:menu:wfs:wfsFormats:3");
         assertTrue(optionLabel.getDefaultModelObjectAsString().equals("GML3.2"));
-        for (Iterator<IBehavior> itBehaviors = optionLabel.getBehaviors().iterator(); itBehaviors.hasNext();) {
-            IBehavior b = (IBehavior)(itBehaviors.next());
+        for (Iterator<Behavior> itBehaviors = optionLabel.getBehaviors().iterator(); itBehaviors.hasNext();) {
+            Behavior b = (Behavior)(itBehaviors.next());
             if (b instanceof AttributeModifier) {
                 AttributeModifier am = (AttributeModifier)b;
                 String url = am.toString();
@@ -150,8 +150,8 @@ public class MapPreviewPageTest extends GeoServerWicketTestSupport {
         for (Iterator it = data.iterator(); it.hasNext(); ) {
             MarkupContainer c = (MarkupContainer) it.next();
             MarkupContainer list = (MarkupContainer) c.get("itemProperties:4:component:menu");
-            for (Iterator<IBehavior> itBehaviors = list.getBehaviors().iterator(); itBehaviors.hasNext();) {
-                IBehavior b = (IBehavior)(itBehaviors.next());
+            for (Iterator<Behavior> itBehaviors = list.getBehaviors().iterator(); itBehaviors.hasNext();) {
+                Behavior b = (Behavior)(itBehaviors.next());
                 if (b instanceof AttributeModifier) {
                     AttributeModifier am = (AttributeModifier)b;
                     String url = am.toString();

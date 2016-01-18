@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -107,7 +107,7 @@ public class GWCSettingsPage extends GeoServerSecuredPage {
     static CheckBox checkbox(String id, IModel<Boolean> model, String titleKey) {
         CheckBox checkBox = new CheckBox(id, model);
         if (null != titleKey) {
-            AttributeModifier attributeModifier = new AttributeModifier("title", true,
+            AttributeModifier attributeModifier = new AttributeModifier("title", 
                     new StringResourceModel(titleKey, (Component) null, null));
             checkBox.add(attributeModifier);
         }

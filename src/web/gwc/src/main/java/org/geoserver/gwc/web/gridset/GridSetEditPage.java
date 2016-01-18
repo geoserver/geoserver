@@ -1,14 +1,14 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.gwc.web.gridset;
 
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.ResourceModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.geoserver.gwc.GWC;
 import org.geowebcache.grid.GridSet;
 
@@ -48,7 +48,7 @@ public class GridSetEditPage extends AbstractGridSetPage {
             newGridset = GridSetBuilder.build(info);
         } catch (IllegalStateException e) {
             form.error(e.getMessage());
-            target.addComponent(form);
+            target.add(form);
             return;
         }
 
@@ -59,7 +59,7 @@ public class GridSetEditPage extends AbstractGridSetPage {
         } catch (Exception e) {
             e.printStackTrace();
             form.error("Error saving gridset: " + e.getMessage());
-            target.addComponent(form);
+            target.add(form);
         }
     }
 

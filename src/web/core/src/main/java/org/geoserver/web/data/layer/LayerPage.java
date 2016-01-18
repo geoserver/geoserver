@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -13,7 +13,7 @@ import static org.geoserver.web.data.layer.LayerProvider.TYPE;
 import static org.geoserver.web.data.layer.LayerProvider.WORKSPACE;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.ResourceReference;
+import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.image.Image;
@@ -70,7 +70,7 @@ public class LayerPage extends GeoServerSecuredPage {
                     LayerInfo layerInfo = (LayerInfo) itemModel.getObject();
                     // ask for enabled() instead of isEnabled() to account for disabled resource/store
                     boolean enabled = layerInfo.enabled();
-                    ResourceReference icon = enabled? icons.getEnabledIcon() : icons.getDisabledIcon();
+                    PackageResourceReference icon = enabled? icons.getEnabledIcon() : icons.getDisabledIcon();
                     Fragment f = new Fragment(id, "iconFragment", LayerPage.this);
                     f.add(new Image("layerIcon", icon));
                     return f;
@@ -83,7 +83,7 @@ public class LayerPage extends GeoServerSecuredPage {
             @Override
             protected void onSelectionUpdate(AjaxRequestTarget target) {
                 removal.setEnabled(table.getSelection().size() > 0);
-                target.addComponent(removal);
+                target.add(removal);
             }  
             
         };

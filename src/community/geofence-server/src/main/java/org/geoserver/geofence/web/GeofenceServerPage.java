@@ -6,7 +6,7 @@ package org.geoserver.geofence.web;
 
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
-import org.apache.wicket.ResourceReference;
+import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.ComponentTag;
@@ -52,7 +52,7 @@ public class GeofenceServerPage extends GeoServerSecuredPage {
             @Override
             public void onClick(AjaxRequestTarget target) {
                 rulesModel.remove(rulesPanel.getSelection());
-                target.addComponent(rulesPanel);
+                target.add(rulesPanel);
             }  
         });
         remove.setOutputMarkupId(true);
@@ -75,7 +75,7 @@ public class GeofenceServerPage extends GeoServerSecuredPage {
             @Override
             protected void onSelectionUpdate(AjaxRequestTarget target) {
                 remove.setEnabled(rulesPanel.getSelection().size() > 0);
-                target.addComponent(remove);
+                target.add(remove);
             }
         });
         rulesPanel.add(CSSPackageResource.getHeaderContribution(new WebTheme()));
@@ -116,13 +116,13 @@ public class GeofenceServerPage extends GeoServerSecuredPage {
             super( id );
             this.setOutputMarkupId(true);
             
-            upLink = new ImageAjaxLink( "up", new ResourceReference( getClass(), "img/arrow_up.png") ) {                                                                                       
+            upLink = new ImageAjaxLink( "up", new PackageResourceReference( getClass(), "img/arrow_up.png") ) {                                                                                       
                 private static final long serialVersionUID = -8179503447106596760L;
 
                 @Override
                 protected void onClick(AjaxRequestTarget target) {
                     rulesModel.moveUp(rule);
-                    target.addComponent(rulesPanel);
+                    target.add(rulesPanel);
                 }
                 
                 @Override
@@ -134,17 +134,17 @@ public class GeofenceServerPage extends GeoServerSecuredPage {
                     }
                 }
             };
-            upLink.getImage().add(new AttributeModifier("alt", true, new ParamResourceModel("GeofenceServerPage.up", upLink)));
+            upLink.getImage().add(new AttributeModifier("alt", new ParamResourceModel("GeofenceServerPage.up", upLink)));
             upLink.setOutputMarkupId(true);
             add(upLink);            
 
-            downLink = new ImageAjaxLink( "down", new ResourceReference( getClass(), "img/arrow_down.png") ) {
+            downLink = new ImageAjaxLink( "down", new PackageResourceReference( getClass(), "img/arrow_down.png") ) {
                 private static final long serialVersionUID = 4640187752303674221L;
 
                 @Override
                 protected void onClick(AjaxRequestTarget target) {
                     rulesModel.moveDown(rule);
-                    target.addComponent(rulesPanel);           
+                    target.add(rulesPanel);           
                 }
                 
                 @Override
@@ -156,11 +156,11 @@ public class GeofenceServerPage extends GeoServerSecuredPage {
                     }
                 }
             };
-            downLink.getImage().add(new AttributeModifier("alt", true, new ParamResourceModel("GeofenceServerPage.down", downLink)));
+            downLink.getImage().add(new AttributeModifier("alt", new ParamResourceModel("GeofenceServerPage.down", downLink)));
             downLink.setOutputMarkupId(true);
             add(downLink);
             
-            ImageAjaxLink editLink = new ImageAjaxLink( "edit", new ResourceReference( getClass(), "img/edit.png") ) {
+            ImageAjaxLink editLink = new ImageAjaxLink( "edit", new PackageResourceReference( getClass(), "img/edit.png") ) {
                 private static final long serialVersionUID = 4640187752303674221L;
 
                 @Override
@@ -168,7 +168,7 @@ public class GeofenceServerPage extends GeoServerSecuredPage {
                     setResponsePage(new GeofenceRulePage(rule, rulesModel));
                 }
             };
-            editLink.getImage().add(new AttributeModifier("alt", true, new ParamResourceModel("GeofenceServerPage.edit", editLink)));
+            editLink.getImage().add(new AttributeModifier("alt", new ParamResourceModel("GeofenceServerPage.edit", editLink)));
             editLink.setOutputMarkupId(true);            
             add(editLink);
         }

@@ -9,7 +9,7 @@ import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
-import org.apache.wicket.validation.validator.NumberValidator;
+import org.apache.wicket.validation.validator.RangeValidator;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.web.util.MapModel;
@@ -25,7 +25,7 @@ public class HTTPLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
         super(id, model);
         add(new CheckBox(ResourceInfo.CACHING_ENABLED, new MapModel(new PropertyModel(model, "resource.metadata"), "cachingEnabled")));
         TextField<Long> maxAge = new TextField<Long>(ResourceInfo.CACHE_AGE_MAX, new MapModel(new PropertyModel(model, "resource.metadata"), "cacheAgeMax"), Long.class);
-        maxAge.add(NumberValidator.range(0, Long.MAX_VALUE));
+        maxAge.add(RangeValidator.range(0l, Long.MAX_VALUE));
         add(maxAge);
     }
 }

@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2014 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -16,7 +16,6 @@ import java.util.Map;
 
 import javax.media.jai.ImageLayout;
 
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.apache.wicket.markup.html.form.SubmitLink;
@@ -24,8 +23,11 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.validation.IValidatable;
-import org.apache.wicket.validation.validator.AbstractValidator;
+import org.apache.wicket.validation.IValidationError;
+import org.apache.wicket.validation.IValidator;
+import org.apache.wicket.validation.ValidationError;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
@@ -70,7 +72,7 @@ public abstract class CoverageViewAbstractPage extends GeoServerSecuredPage {
     CoverageViewEditor coverageEditor;
 
     public CoverageViewAbstractPage(PageParameters params) throws IOException {
-        this(params.getString(WORKSPACE), params.getString(COVERAGESTORE), null, null);
+        this(params.get(WORKSPACE).toOptionalString(), params.get(COVERAGESTORE).toString(), null, null);
     }
 
     @SuppressWarnings("deprecation")
@@ -187,9 +189,10 @@ public abstract class CoverageViewAbstractPage extends GeoServerSecuredPage {
     /**
      * Checks the {@link CoverageView} name is unique
      */
-    class CoverageViewNameValidator extends AbstractValidator {
+    class CoverageViewNameValidator implements IValidator {
+
         @Override
-        protected void onValidate(IValidatable validatable) {
+        public void validate(IValidatable validatable) {
             String vcName = (String) validatable.getValue();
 
             final CoverageStoreInfo store = getCatalog().getStore(storeId, CoverageStoreInfo.class);
@@ -199,10 +202,11 @@ public abstract class CoverageViewAbstractPage extends GeoServerSecuredPage {
                 if (currvc != null) {
                     if (coverageInfoId == null || !coverageInfoId.equals(curr.getId())) {
                         if (currvc.getName().equals(vcName) && newCoverage) {
-                            Map<String, String> map = new HashMap<String, String>();
+                            Map<String, Object> map = new HashMap<>();
                             map.put("name", vcName);
                             map.put("coverageName", curr.getName());
-                            error(validatable, "duplicateCoverageViewName", map);
+                            IValidationError err = new ValidationError("duplicateCoverageViewName").setVariables(map);
+                            validatable.error(err);
                             return;
                         }
                     }

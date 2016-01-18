@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -7,7 +7,7 @@ package org.geoserver.printing;
 
 import org.apache.wicket.markup.html.IHeaderContributor;
 import org.apache.wicket.markup.html.IHeaderResponse;
-import org.apache.wicket.markup.html.resources.JavascriptResourceReference;
+import org.apache.wicket.markup.html.resources.JavascriptPackageResourceReference;
 
 import org.geoserver.web.GeoServerBasePage;
 
@@ -23,13 +23,13 @@ public class PrintDemoPage extends GeoServerBasePage implements IHeaderContribut
     response.renderJavascriptReference("http://openlayers.org/api/2.8/OpenLayers.js");
     
     response.renderJavascriptReference(
-    	new JavascriptResourceReference(PrintDemoPage.class, "GeoExt.js")
+    	new JavascriptPackageResourceReference(PrintDemoPage.class, "GeoExt.js")
     );
     response.renderJavascriptReference(
-        new JavascriptResourceReference(PrintDemoPage.class, "GeoExtPrinting.js")
+        new JavascriptPackageResourceReference(PrintDemoPage.class, "GeoExtPrinting.js")
     );
     response.renderJavascriptReference(
-        new JavascriptResourceReference(PrintDemoPage.class, "Printing.js")
+        new JavascriptPackageResourceReference(PrintDemoPage.class, "Printing.js")
     );
   }
 }

@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -7,7 +7,7 @@ package org.geoserver.gwc.web;
 
 import java.io.Serializable;
 
-import org.apache.wicket.ResourceReference;
+import org.apache.wicket.request.resource.PackageResourceReference;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.gwc.layer.GeoServerTileLayer;
 import org.geoserver.web.CatalogIconFactory;
@@ -21,25 +21,25 @@ import org.geowebcache.layer.wms.WMSLayer;
 @SuppressWarnings("serial")
 public class GWCIconFactory implements Serializable {
 
-    public static final ResourceReference UNKNOWN_ICON = new ResourceReference(
+    public static final PackageResourceReference UNKNOWN_ICON = new PackageResourceReference(
             GeoServerBasePage.class, "img/icons/silk/error.png");
 
-    public static final ResourceReference DISABLED_ICON = new ResourceReference(
+    public static final PackageResourceReference DISABLED_ICON = new PackageResourceReference(
             GeoServerBasePage.class, "img/icons/silk/error.png");
 
-    public static final ResourceReference ENABLED_ICON = new ResourceReference(
+    public static final PackageResourceReference ENABLED_ICON = new PackageResourceReference(
             GeoServerBasePage.class, "img/icons/silk/tick.png");
 
-    public static final ResourceReference ADD_ICON = new ResourceReference(GeoServerBasePage.class,
+    public static final PackageResourceReference ADD_ICON = new PackageResourceReference(GeoServerBasePage.class,
             "img/icons/silk/add.png");
 
-    public static final ResourceReference DELETE_ICON = new ResourceReference(
+    public static final PackageResourceReference DELETE_ICON = new PackageResourceReference(
             GeoServerBasePage.class, "img/icons/silk/delete.png");
 
-    public static final ResourceReference GRIDSET = new ResourceReference(GWCSettingsPage.class,
+    public static final PackageResourceReference GRIDSET = new PackageResourceReference(GWCSettingsPage.class,
             "gridset.png");
 
-    public static final ResourceReference GWC = new ResourceReference(GWCSettingsPage.class,
+    public static final PackageResourceReference GWC = new PackageResourceReference(GWCSettingsPage.class,
             "geowebcache-16.png");
 
     private GWCIconFactory() {
@@ -52,7 +52,7 @@ public class GWCIconFactory implements Serializable {
      * @param info
      * @return
      */
-    public static ResourceReference getSpecificLayerIcon(final TileLayer layer) {
+    public static PackageResourceReference getSpecificLayerIcon(final TileLayer layer) {
         if (layer instanceof GeoServerTileLayer) {
             GeoServerTileLayer gsTileLayer = (GeoServerTileLayer) layer;
             LayerInfo layerInfo = gsTileLayer.getLayerInfo();
@@ -71,7 +71,7 @@ public class GWCIconFactory implements Serializable {
      * Returns a reference to a general purpose icon to indicate an enabled/properly configured
      * resource
      */
-    public static ResourceReference getEnabledIcon() {
+    public static PackageResourceReference getEnabledIcon() {
         return ENABLED_ICON;
     }
 
@@ -79,11 +79,11 @@ public class GWCIconFactory implements Serializable {
      * Returns a reference to a general purpose icon to indicate a
      * disabled/misconfigured/unreachable resource
      */
-    public static ResourceReference getDisabledIcon() {
+    public static PackageResourceReference getDisabledIcon() {
         return DISABLED_ICON;
     }
 
-    public static ResourceReference getErrorIcon() {
+    public static PackageResourceReference getErrorIcon() {
         return UNKNOWN_ICON;
     }
 }

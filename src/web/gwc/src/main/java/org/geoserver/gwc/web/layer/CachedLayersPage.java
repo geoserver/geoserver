@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -23,7 +23,7 @@ import java.util.TreeSet;
 
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
-import org.apache.wicket.ResourceReference;
+import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.behavior.AttributeAppender;
@@ -77,9 +77,9 @@ public class CachedLayersPage extends GeoServerSecuredPage {
 
                 if (property == TYPE) {
                     Fragment f = new Fragment(id, "iconFragment", CachedLayersPage.this);
-                    ResourceReference layerIcon;
+                    PackageResourceReference layerIcon;
                     TileLayer layer = (TileLayer) itemModel.getObject();
-                    layerIcon = (ResourceReference) property.getPropertyValue(layer);
+                    layerIcon = (PackageResourceReference) property.getPropertyValue(layer);
                     f.add(new Image("layerIcon", layerIcon));
                     return f;
                 } else if (property == NAME) {
@@ -93,7 +93,7 @@ public class CachedLayersPage extends GeoServerSecuredPage {
                 } else if (property == ENABLED) {
                     TileLayer layerInfo = (TileLayer) itemModel.getObject();
                     boolean enabled = layerInfo.isEnabled();
-                    ResourceReference icon;
+                    PackageResourceReference icon;
                     if (enabled) {
                         icon = GWCIconFactory.getEnabledIcon();
                     } else {
@@ -117,7 +117,7 @@ public class CachedLayersPage extends GeoServerSecuredPage {
             @Override
             protected void onSelectionUpdate(AjaxRequestTarget target) {
                 removal.setEnabled(table.getSelection().size() > 0);
-                target.addComponent(removal);
+                target.add(removal);
             }
 
         };
@@ -229,7 +229,7 @@ public class CachedLayersPage extends GeoServerSecuredPage {
 
                     @Override
                     public void onClose(final AjaxRequestTarget target) {
-                        target.addComponent(table);
+                        target.add(table);
                     }
                 });
             }
@@ -266,7 +266,7 @@ public class CachedLayersPage extends GeoServerSecuredPage {
                 // build option with text and value
                 Label format = new Label(String.valueOf(i++), label);
                 String value = "gridSet=" + gridSetId + "&format=" + mimeType.getFormat();
-                format.add(new AttributeModifier("value", true, new Model<String>(value)));
+                format.add(new AttributeModifier("value", new Model<String>(value)));
                 previewLinks.add(format);
             }
         }
@@ -362,8 +362,8 @@ public class CachedLayersPage extends GeoServerSecuredPage {
                     List<TileLayer> selection = table.getSelection();
                     if (selection.isEmpty()) {
                         setEnabled(false);
-                        target.addComponent(CachedLayerSelectionRemovalLink.this);
-                        target.addComponent(table);
+                        target.add(CachedLayerSelectionRemovalLink.this);
+                        target.add(table);
                     }
                 }
             });

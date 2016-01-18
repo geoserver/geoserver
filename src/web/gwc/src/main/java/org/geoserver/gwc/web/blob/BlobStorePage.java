@@ -84,11 +84,11 @@ public class BlobStorePage extends GeoServerSecuredPage {
                             "blobSpecificPanel", blobStoreForm.getModel()));
                 }
 
-                target.addComponent(blobConfigContainer);
+                target.add(blobConfigContainer);
             }
 
         });
-        typeOfBlobStore.add(new AttributeModifier("title", true, new ResourceModel(
+        typeOfBlobStore.add(new AttributeModifier("title", new ResourceModel(
                 "typeOfBlobStore.title")));
 
         Form selector = new Form("selector");
@@ -106,11 +106,11 @@ public class BlobStorePage extends GeoServerSecuredPage {
         blobStoreForm.setVisible(originalStore != null);
 
         blobStoreForm.add((tfId = new TextField<String>("id")).setRequired(true));
-        tfId.add(new AttributeModifier("title", true, new ResourceModel("id.title")));
+        tfId.add(new AttributeModifier("title", new ResourceModel("id.title")));
         blobStoreForm.add(cbEnabled = new CheckBox("enabled"));
-        cbEnabled.add(new AttributeModifier("title", true, new ResourceModel("enabled.title")));
+        cbEnabled.add(new AttributeModifier("title", new ResourceModel("enabled.title")));
         blobStoreForm.add(cbDefault = new CheckBox("default"));
-        cbDefault.add(new AttributeModifier("title", true, new ResourceModel("default.title")));
+        cbDefault.add(new AttributeModifier("title", new ResourceModel("default.title")));
 
         if (originalStore != null) {
             typeOfBlobStore.getModel().setObject(
@@ -213,7 +213,7 @@ public class BlobStorePage extends GeoServerSecuredPage {
                                 doReturn(BlobStoresPage.class);
                             } else if (error != null) {
                                 error(error);
-                                target.addComponent(feedbackPanel);
+                                target.add(feedbackPanel);
                             }
                         }
 
@@ -224,13 +224,13 @@ public class BlobStorePage extends GeoServerSecuredPage {
                         doReturn(BlobStoresPage.class);
                     } catch (ConfigurationException e) {
                         error(e.getMessage());
-                        target.addComponent(feedbackPanel);
+                        target.add(feedbackPanel);
                     }
                 }
             }
 
             protected void onError(AjaxRequestTarget target, Form<?> form) {
-                target.addComponent(feedbackPanel);
+                target.add(feedbackPanel);
             }
         });
         blobStoreForm

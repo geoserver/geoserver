@@ -43,7 +43,7 @@ Once the extension is properly installed ``SOLR`` will show up as an option when
 
    *SOLR in the list of vector data sources*
 
-.. _config_solr:
+.. _community_solr_configure_store:
 
 Configuring a SOLR data store
 -----------------------------

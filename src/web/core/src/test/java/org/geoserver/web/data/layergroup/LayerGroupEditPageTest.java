@@ -174,8 +174,8 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
         // Ensure that the Row count is equal to the Layers in the Catalog
         Catalog catalog = getGeoServerApplication().getCatalog();
         
-        long layerCount = catalog.count(LayerInfo.class, Filter.INCLUDE);
-        long rowCount = dataView.getRowCount();
+        int layerCount = catalog.count(LayerInfo.class, Filter.INCLUDE);
+        int rowCount = (int) dataView.getRowCount();
         
         assertEquals(layerCount, rowCount);
     }

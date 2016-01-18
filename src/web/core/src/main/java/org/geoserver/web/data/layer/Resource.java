@@ -17,6 +17,8 @@ import org.opengis.feature.type.Name;
  */
 public class Resource implements Comparable<Resource>, Serializable {
 
+    /** serialVersionUID */
+    private static final long serialVersionUID = 8744964557875392120L;
     /**
      * The resource name
      */

@@ -13,6 +13,9 @@ import org.geotools.jdbc.VirtualTableParameter;
 import org.geotools.jdbc.VirtualTableParameter.Validator;
 
 class Parameter implements Serializable {
+    /** serialVersionUID */
+    private static final long serialVersionUID = -5028680760307467030L;
+
     String name;
 
     String defaultValue;

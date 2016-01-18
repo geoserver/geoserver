@@ -20,6 +20,9 @@ import org.geotools.jdbc.VirtualTable;
 
 public class SQLViewNewPage extends SQLViewAbstractPage {
 
+    /** serialVersionUID */
+    private static final long serialVersionUID = 3670565306101168775L;
+
     public SQLViewNewPage(PageParameters params) throws IOException {
         super(params);
     }
@@ -30,7 +33,7 @@ public class SQLViewNewPage extends SQLViewAbstractPage {
             VirtualTable vt = buildVirtualTable();
             DataStoreInfo dsInfo = getCatalog().getStore(storeId, DataStoreInfo.class);
             JDBCDataStore ds = (JDBCDataStore) dsInfo.getDataStore(null);
-            ds.addVirtualTable(vt);
+            ds.createVirtualTable(vt);
 
             CatalogBuilder builder = new CatalogBuilder(getCatalog());
             builder.setStore(dsInfo);

@@ -26,21 +26,21 @@ public final class BlobStoreTypes {
     /**
      * Lazy loaded map of blob store types
      */
-    private static Map<Class<? extends BlobStoreConfig>, BlobStoreType> TYPES;
+    private static Map<Class<? extends BlobStoreConfig>, BlobStoreType<?>> TYPES;
             
     
-    private static Map<Class<? extends BlobStoreConfig>, BlobStoreType> getTypes() {
+    private static Map<Class<? extends BlobStoreConfig>, BlobStoreType<?>> getTypes() {
         if (TYPES == null) {
             //the treemap with comparator makes sure that the types are always displayed in the
             //same order, alphabetically sorted on name
-            TYPES = new TreeMap<Class<? extends BlobStoreConfig>, BlobStoreType>(
-                    new Comparator<Class>() {
+            TYPES = new TreeMap<Class<? extends BlobStoreConfig>, BlobStoreType<?>>(
+                    new Comparator<Class<?>>() {
                         @Override
-                        public int compare(Class o1, Class o2) {
+                        public int compare(Class<?> o1, Class<?> o2) {
                             return o1.toString().compareTo(o2.toString());
                         }
                     });
-            for (BlobStoreType type : GeoWebCacheExtensions.extensions(BlobStoreType.class)) {
+            for (BlobStoreType<?> type : GeoWebCacheExtensions.extensions(BlobStoreType.class)) {
                 TYPES.put(type.getConfigClass(), type);
             }
         }
@@ -54,7 +54,7 @@ public final class BlobStoreTypes {
      * @param clazz 
      * @return
      */
-    public static BlobStoreType getFromClass(Class<? extends BlobStoreConfig> clazz) {
+    public static BlobStoreType<?> getFromClass(Class<? extends BlobStoreConfig> clazz) {
         return getTypes().get(clazz);
     }
 
@@ -63,8 +63,8 @@ public final class BlobStoreTypes {
      * 
      * @return
      */
-    public static List<BlobStoreType> getAll() {
-        return new ArrayList<BlobStoreType>(getTypes().values());
+    public static List<BlobStoreType<?>> getAll() {
+        return new ArrayList<BlobStoreType<?>>(getTypes().values());
     }
 
 }

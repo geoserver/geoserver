@@ -29,7 +29,8 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.StringResourceModel;
-import org.apache.wicket.protocol.http.WebRequest;
+import org.apache.wicket.protocol.http.servlet.ServletWebRequest;
+import org.apache.wicket.request.http.WebRequest;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.ows.URLMangler.URLType;
@@ -208,8 +209,8 @@ public class WCSRequestBuilderPanel extends Panel {
 
             public Page createPage() {
                 DemoRequest request = new DemoRequest(null);
-                HttpServletRequest http = ((WebRequest) WCSRequestBuilderPanel.this.getRequest())
-                        .getHttpServletRequest();
+                HttpServletRequest http = ((ServletWebRequest) WCSRequestBuilderPanel.this.getRequest())
+                        .getContainerRequest();
                 String url = ResponseUtils.buildURL(ResponseUtils.baseURL(http), "ows", Collections
                         .singletonMap("strict", "true"), URLType.SERVICE);
                 request.setRequestUrl(url);

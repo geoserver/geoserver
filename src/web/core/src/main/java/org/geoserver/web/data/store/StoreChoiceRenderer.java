@@ -21,5 +21,4 @@ public class StoreChoiceRenderer extends ChoiceRenderer {
     public String getIdValue(Object object, int index) {
         return ((StoreInfo) object).getId();
     }
-
 }

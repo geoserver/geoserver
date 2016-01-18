@@ -61,7 +61,7 @@ public class StorePanel extends GeoServerTablePanel<StoreInfo> {
     }
 
     @Override
-    protected Component getComponentForProperty(String id, IModel itemModel,
+    protected Component getComponentForProperty(String id, IModel<StoreInfo> itemModel,
             Property<StoreInfo> property) {
 
         final CatalogIconFactory icons = CatalogIconFactory.get();
@@ -95,7 +95,7 @@ public class StorePanel extends GeoServerTablePanel<StoreInfo> {
     }
 
     private Component storeNameLink(String id, final IModel itemModel) {
-        String wsName = (String) WORKSPACE.getModel(itemModel).getObject().getName();
+        String wsName = (String) WORKSPACE.getModel(itemModel).getObject();
         IModel storeNameModel = NAME.getModel(itemModel);
         String storeName = (String) storeNameModel.getObject();
         StoreInfo store = getCatalog().getStoreByName(wsName, storeName, StoreInfo.class);

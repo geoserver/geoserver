@@ -32,8 +32,6 @@ import org.geowebcache.grid.GridSet;
 import org.geowebcache.grid.GridSetBroker;
 import org.junit.Test;
 
-import com.google.common.collect.ImmutableMap;
-
 public class GridSetNewPageTest extends GeoServerWicketTestSupport {
 
     /**

@@ -12,6 +12,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.Arrays;
 
 import org.apache.wicket.Component;
@@ -34,7 +35,6 @@ import org.geoserver.web.FormTestPage;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geowebcache.layer.TileLayer;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class LayerCacheOptionsTabPanelTest extends GeoServerWicketTestSupport {
@@ -279,7 +279,7 @@ public class LayerCacheOptionsTabPanelTest extends GeoServerWicketTestSupport {
         // Ensure that the Component is rendered again
         tester.assertComponent("form:panel:tileLayerEditor", GeoServerTileLayerEditor.class);
         // Ensure that an Error message has been thrown
-        tester.assertErrorMessages(new String[] { "Filter should not be empty" });
+        tester.assertErrorMessages((Serializable[]) new String[] { "Filter should not be empty" });
         // Save the changes
         form.submit();
         // Check no exception has been thrown

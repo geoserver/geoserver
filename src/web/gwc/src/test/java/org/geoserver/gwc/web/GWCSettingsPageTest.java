@@ -14,7 +14,6 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.form.DropDownChoice;
@@ -212,7 +211,8 @@ public class GWCSettingsPageTest extends GeoServerWicketTestSupport {
         tester.assertRenderedPage(GeoServerHomePage.class);
     }
     
-    @Test
+    @SuppressWarnings("unchecked")
+	@Test
     public void testEditLockProvider() {
         GWC gwc = GWC.get();
         ConfigurableLockProvider lockProvider = (ConfigurableLockProvider) gwc.getLockProvider();
@@ -223,8 +223,8 @@ public class GWCSettingsPageTest extends GeoServerWicketTestSupport {
         tester.assertRenderedPage(GWCSettingsPage.class);
         
         // determine in a future proof way which item contains nioLock
-        DropDownChoice lockDropDown = (DropDownChoice) tester.getComponentFromLastRenderedPage("form:cachingOptionsPanel:container:configs:lockProvider");
-        List choices = lockDropDown.getChoices();
+        DropDownChoice<String> lockDropDown = (DropDownChoice<String>) tester.getComponentFromLastRenderedPage("form:cachingOptionsPanel:container:configs:lockProvider");
+        List<String> choices = (List<String>) lockDropDown.getChoices();
         int nioLockIndex = -1;
         for (int i = 0; i < choices.size(); i++) {
             if("nioLock".equals(choices.get(i))) {
@@ -245,7 +245,8 @@ public class GWCSettingsPageTest extends GeoServerWicketTestSupport {
         assertTrue(lockProvider.getDelegate() instanceof NIOLockProvider);
     }
 
-    @Test
+    @SuppressWarnings("unchecked")
+	@Test
     public void testNewDefaultGridSet() throws IOException {
         GWC gwc = GWC.get();
         GWCConfig config = gwc.getConfig();
@@ -329,7 +330,8 @@ public class GWCSettingsPageTest extends GeoServerWicketTestSupport {
         // Check if the Cache Provider is GuavaCacheProvider
         tester.assertComponent("form:cachingOptionsPanel:container:configs:blobstores:container:caches",
                 DropDownChoice.class);
-        DropDownChoice<String> choice = (DropDownChoice<String>) tester.getComponentFromLastRenderedPage("form:cachingOptionsPanel:container:configs:blobstores:container:caches");
+        @SuppressWarnings("unchecked")
+		DropDownChoice<String> choice = (DropDownChoice<String>) tester.getComponentFromLastRenderedPage("form:cachingOptionsPanel:container:configs:blobstores:container:caches");
         assertTrue(choice.getChoices().get(0).equalsIgnoreCase(GuavaCacheProvider.class.toString()));
         
         // Ensure that the other fields are enabled

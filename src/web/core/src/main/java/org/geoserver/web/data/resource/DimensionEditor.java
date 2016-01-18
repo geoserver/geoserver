@@ -21,6 +21,7 @@ import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
+import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
 import org.apache.wicket.markup.html.form.IChoiceRenderer;
@@ -272,7 +273,7 @@ public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
             protected void onError(AjaxRequestTarget target, RuntimeException e) {
                 super.onError(target, e);               
                 if (referenceValue.hasErrorMessage()){
-                    refValueValidationMessage.setDefaultModelObject(referenceValue.getFeedbackMessage().getMessage());
+                    refValueValidationMessage.setDefaultModelObject(referenceValue.getFeedbackMessages().first());
                     refValueValidationMessage.setVisible(true);
                 }                
                 target.add(referenceValueContainer);
@@ -411,7 +412,7 @@ public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
      * 
      * @author Alessio
      */
-    public class PresentationModeRenderer implements IChoiceRenderer<DimensionPresentation> {
+    public class PresentationModeRenderer extends ChoiceRenderer<DimensionPresentation> {
 
         public PresentationModeRenderer() {
             super();
@@ -431,7 +432,7 @@ public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
      * 
      * @author Ilkka Rinne / Spatineo Inc for the Finnish Meteorological Institute
      */
-    public class DefaultValueStrategyRenderer implements IChoiceRenderer<DimensionDefaultValueSetting.Strategy> {
+    public class DefaultValueStrategyRenderer extends ChoiceRenderer<DimensionDefaultValueSetting.Strategy> {
 
         public DefaultValueStrategyRenderer() {
             super();

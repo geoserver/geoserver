@@ -28,17 +28,17 @@ public class LiveActivityPanel extends Panel {
     public LiveActivityPanel(String id) {
         super(id);
         
-        GeoServerTablePanel<RequestData> requests = new GeoServerTablePanel<RequestData>("requests", 
-            new LiveRequestDataProvider()) {
-                @Override
-                protected Component getComponentForProperty(String id, IModel itemModel,
-                        Property<RequestData> property) {
-                    Object prop = ((BeanProperty<RequestData>)property)
-                        .getPropertyValue((RequestData) itemModel.getObject()); 
-                    
-                    String value = prop != null ? prop.toString() : "";
-                    return new Label(id, value); 
-                }
+        GeoServerTablePanel<RequestData> requests = new GeoServerTablePanel<RequestData>("requests",
+                new LiveRequestDataProvider()) {
+            @Override
+            protected Component getComponentForProperty(String id, IModel<RequestData> itemModel,
+                    Property<RequestData> property) {
+                Object prop = ((BeanProperty<RequestData>) property)
+                        .getPropertyValue((RequestData) itemModel.getObject());
+
+                String value = prop != null ? prop.toString() : "";
+                return new Label(id, value);
+            }
         };
         add(requests);
     }

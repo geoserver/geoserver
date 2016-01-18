@@ -10,7 +10,6 @@ import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.attributes.AjaxCallListener;
 import org.apache.wicket.ajax.attributes.AjaxRequestAttributes;
-import org.apache.wicket.ajax.attributes.IAjaxCallListener;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
@@ -20,22 +19,22 @@ import org.apache.wicket.model.Model;
  * dialog before carrying out its job
  */
 @SuppressWarnings("serial")
-public abstract class ConfirmationAjaxLink extends SimpleAjaxLink {
-    IModel confirm;
+public abstract class ConfirmationAjaxLink<T> extends SimpleAjaxLink<T> {
+    IModel<String> confirm;
 
-    public ConfirmationAjaxLink(String id, IModel linkModel, String label, String confirm) {
-        this( id, linkModel, new Model( label ), new Model( confirm ) );
+    public ConfirmationAjaxLink(String id, IModel<T> linkModel, String label, String confirm) {
+        this( id, linkModel, new Model<String>( label ), new Model<String>( confirm ) );
     }
     
-    public ConfirmationAjaxLink(String id, IModel linkModel, IModel labelModel,
-            IModel confirm) {
+    public ConfirmationAjaxLink(String id, IModel<T> linkModel, IModel<String> labelModel,
+            IModel<String> confirm) {
         super(id, linkModel, labelModel);
         this.confirm = confirm;
     }
 
     @Override
-    protected AjaxLink buildAjaxLink(IModel linkModel) {
-        return new AjaxLink("link", linkModel) {
+    protected AjaxLink<T> buildAjaxLink(IModel<T> linkModel) {
+        return new AjaxLink<T>("link", linkModel) {
 
             @Override
             protected void updateAjaxAttributes(AjaxRequestAttributes attributes) {

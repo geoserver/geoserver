@@ -25,7 +25,7 @@ import com.vividsolutions.jts.geom.Envelope;
  * @author Justin Deoliveira, OpenGeo
  * @author Andrea Aime, OpenGeo
  */
-public class EnvelopePanel extends FormComponentPanel {
+public class EnvelopePanel extends FormComponentPanel<ReferencedEnvelope> {
 
     protected Label minXLabel, minYLabel, maxXLabel, maxYLabel, minZLabel, maxZLabel;
 
@@ -45,10 +45,10 @@ public class EnvelopePanel extends FormComponentPanel {
     }
 
     public EnvelopePanel(String id, ReferencedEnvelope e) {
-        this(id, new Model(e));
+        this(id, new Model<ReferencedEnvelope>(e));
     }
 
-    public EnvelopePanel(String id, IModel model) {
+    public EnvelopePanel(String id, IModel<ReferencedEnvelope> model) {
         super(id, model);
 
         initComponents();
@@ -99,12 +99,12 @@ public class EnvelopePanel extends FormComponentPanel {
         add(maxZLabel = new Label("maxZL", new ResourceModel("maxZ")));
 
 
-        add( minXInput = new DecimalTextField( "minX", new PropertyModel(this, "minX")) );
-        add( minYInput = new DecimalTextField( "minY", new PropertyModel(this, "minY")) );
-        add( minZInput = new DecimalTextField( "minZ", new PropertyModel(this, "minZ")) );
-        add( maxXInput = new DecimalTextField( "maxX", new PropertyModel(this, "maxX") ));
-        add( maxYInput = new DecimalTextField( "maxY", new PropertyModel(this, "maxY")) );
-        add( maxZInput = new DecimalTextField( "maxZ", new PropertyModel(this, "maxZ")) );
+        add( minXInput = new DecimalTextField( "minX", new PropertyModel<Double>(this, "minX")) );
+        add( minYInput = new DecimalTextField( "minY", new PropertyModel<Double>(this, "minY")) );
+        add( minZInput = new DecimalTextField( "minZ", new PropertyModel<Double>(this, "minZ")) );
+        add( maxXInput = new DecimalTextField( "maxX", new PropertyModel<Double>(this, "maxX") ));
+        add( maxYInput = new DecimalTextField( "maxY", new PropertyModel<Double>(this, "maxY")) );
+        add( maxZInput = new DecimalTextField( "maxZ", new PropertyModel<Double>(this, "maxZ")) );
 
         minZInput.setVisible(is3D());
         minZLabel.setVisible(is3D());
@@ -113,7 +113,7 @@ public class EnvelopePanel extends FormComponentPanel {
 
         crsContainer = new WebMarkupContainer("crsContainer");
         crsContainer.setVisible(false);
-        crsPanel = new CRSPanel("crs", new PropertyModel(this, "crs"));
+        crsPanel = new CRSPanel("crs", new PropertyModel<CoordinateReferenceSystem>(this, "crs"));
         crsContainer.add(crsPanel);
         add(crsContainer);
     }

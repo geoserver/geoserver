@@ -34,9 +34,6 @@ import org.geoserver.web.GeoServerApplication;
 import org.geotools.util.logging.Logging;
 import org.opengis.filter.Filter;
 
-import com.google.common.collect.Iterators;
-import com.google.common.collect.Lists;
-
 /**
  * GeoServer specific data provider. In addition to the services provided by a SortableDataProvider
  * it can perform keyword based filtering, enum the model properties used for display and sorting.
@@ -46,7 +43,7 @@ import com.google.common.collect.Lists;
  * @param <T>
  */
 @SuppressWarnings("serial")
-public abstract class GeoServerDataProvider<T> extends SortableDataProvider {
+public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, T> {
     static final Logger LOGGER = Logging.getLogger(GeoServerDataProvider.class);
 
     /**
@@ -63,7 +60,7 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider {
      * A cache used to avoid recreating models over and over, this make it possible
      * to make {@link GeoServerTablePanel} editable
      */
-    Map<T, IModel> modelCache = new IdentityHashMap<T, IModel>();
+    Map<T, IModel<T>> modelCache = new IdentityHashMap<>();
     
     /**
      * Sets the data provider as editable, in that case the models should be preserved
@@ -310,7 +307,7 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider {
      * @param sort
      * @return
      */
-    protected Comparator<T> getComparator(SortParam sort) {
+    protected Comparator<T> getComparator(SortParam<T> sort) {
         if(sort == null) {
             return null;
         }
@@ -330,7 +327,7 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider {
         return null;
     }
     
-    protected Property<T> getProperty(SortParam sort){
+    protected Property<T> getProperty(SortParam<T> sort){
         if (sort == null || sort.getProperty() == null)
             return null;
 
@@ -348,9 +345,9 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider {
      * @see org.apache.wicket.markup.repeater.data.IDataProvider#model(java.lang.Object)
      */
     @Override
-    public final IModel model(Object object) {
+    public final IModel<T> model(T object) {
         if(editable) {
-            IModel result = modelCache.get((T) object);
+            IModel<T> result = modelCache.get(object);
             if(result == null) {
                 result = newModel(object);
                 modelCache.put((T) object, result);
@@ -390,7 +387,7 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider {
      * @param object
      * @return
      */
-    protected IModel newModel(Object object) {
+    protected IModel<T> newModel(T object) {
         return new Model((Serializable) object);
     }
 
@@ -420,7 +417,7 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider {
          * @param itemModel
          * @return
          */
-        public IModel getModel(IModel itemModel);
+        public IModel<T> getModel(IModel<T> itemModel);
 
         /**
          * Allows for sorting the property
@@ -468,10 +465,10 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider {
          * not suitable for editable tables, if you need to make one you'll have to
          * roll your own getModel() implementation ( {@link BeanProperty} provides a good example)
          */
-        public IModel getModel(IModel itemModel) {
+        public IModel<T> getModel(IModel<T> itemModel) {
             Object value = getPropertyValue((T) itemModel.getObject());
             if(value instanceof IModel)
-                return (IModel) value;
+                return (IModel<T>) value;
             else
                 return new Model((Serializable) value);
         }
@@ -523,7 +520,7 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider {
          * bean instead of the possibly immutable values contained in it (think a String property)
          */
         public IModel getModel(IModel itemModel) {
-            return new PropertyModel(itemModel, propertyPath);
+            return new PropertyModel<T>(itemModel, propertyPath);
         }
 
         public Object getPropertyValue(T bean) {
@@ -567,7 +564,7 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider {
             return null;
         }
 
-        public IModel getModel(IModel itemModel) {
+        public IModel<T> getModel(IModel<T> itemModel) {
             return itemModel;
         }
 

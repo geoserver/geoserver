@@ -56,7 +56,7 @@ public abstract class GeoServerTablePanel<T> extends Panel {
     private static final int DEFAULT_ITEMS_PER_PAGE = 25;
 
     // filter form components
-    TextField filter;
+    TextField<String> filter;
 
     // table components
     DataView dataView;
@@ -71,7 +71,7 @@ public abstract class GeoServerTablePanel<T> extends Panel {
 
     GeoServerDataProvider<T> dataProvider;
 
-    Form filterForm;
+    Form<?> filterForm;
     
     CheckBox selectAll;
     
@@ -111,7 +111,7 @@ public abstract class GeoServerTablePanel<T> extends Panel {
         listContainer = new WebMarkupContainer("listContainer");
 
         // build the filter form
-        filterForm = new Form("filterForm");
+        filterForm = new Form<>("filterForm");
         filterForm.setOutputMarkupId(true);
         add(filterForm);
         filter = new TextField<String>("filter", new Model<String>()) {
@@ -132,7 +132,7 @@ public abstract class GeoServerTablePanel<T> extends Panel {
         // setup the table
         listContainer.setOutputMarkupId(true);
         add(listContainer);
-        dataView = new DataView("items", dataProvider) {
+        dataView = new DataView<T>("items", dataProvider) {
 
             @Override
             protected Item newItem(String id, int index, IModel model) {

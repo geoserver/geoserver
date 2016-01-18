@@ -5,16 +5,13 @@
  */
 package org.geoserver.web.wicket;
 
-import java.io.Serializable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.wicket.AttributeModifier;
-import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
-import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.basic.Label;
@@ -41,23 +38,24 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
  *   <li>A lookup for browsing for a particular CRS 
  * </ul>
  * </p>
+ * The panel 
  * @author Justin Deoliveira, OpenGeo
  */
 @SuppressWarnings("serial")
-public class CRSPanel extends FormComponentPanel {
+public class CRSPanel extends FormComponentPanel<CoordinateReferenceSystem> {
     private static Logger LOGGER = Logging.getLogger(CRSPanel.class);
     private static final long serialVersionUID = -6677103383336166008L;
     
-    private static Behavior READ_ONLY = new AttributeModifier("readonly", new Model("readonly"));
+    private static Behavior READ_ONLY = new AttributeModifier("readonly", new Model<String>("readonly"));
 
     /** pop-up window for WKT and SRS list */
     protected ModalWindow popupWindow;
     
     /** srs/epsg code text field */
-    protected TextField srsTextField;
+    protected TextField<String> srsTextField;
     
     /** find link */
-    protected AjaxLink findLink;
+    protected AjaxLink<Void> findLink;
     
     /** wkt label */
     protected Label wktLabel;
@@ -86,7 +84,7 @@ public class CRSPanel extends FormComponentPanel {
      * @param id The component id.
      * @param model The model, usually a {@link PropertyModel}.
      */
-    public CRSPanel(String id, IModel model) {
+    public CRSPanel(String id, IModel<CoordinateReferenceSystem> model) {
         super(id, model);
         initComponents();
     }
@@ -103,7 +101,7 @@ public class CRSPanel extends FormComponentPanel {
     public CRSPanel(String id, CoordinateReferenceSystem crs ) {
         //JD: while the CoordinateReferenceSystem interface does not implement Serializable
         // all the CRS objects we use do, hence the cast
-        super(id, new Model((Serializable) crs));
+        super(id, new CRSModel(crs));
         initComponents();
         setConvertedInput(crs);
     }
@@ -116,7 +114,7 @@ public class CRSPanel extends FormComponentPanel {
         popupWindow = new ModalWindow("popup");
         add( popupWindow );
         
-        srsTextField = new TextField( "srs", new Model() );
+        srsTextField = new TextField<String>( "srs", new Model<String>() );
         add( srsTextField );
         srsTextField.setOutputMarkupId( true );
         
@@ -141,7 +139,7 @@ public class CRSPanel extends FormComponentPanel {
             }
         });
         
-        findLink = new AjaxLink( "find" ) {
+        findLink = new AjaxLink<Void>( "find" ) {
             @Override
             public void onClick(AjaxRequestTarget target) {
                 popupWindow.setContent(srsListPanel());
@@ -153,7 +151,7 @@ public class CRSPanel extends FormComponentPanel {
         
         wktLink = new GeoServerAjaxFormLink("wkt") {
             @Override
-            public void onClick(AjaxRequestTarget target, Form form) {
+            public void onClick(AjaxRequestTarget target, Form<?> form) {
                 popupWindow.setInitialHeight( 375 );
                 popupWindow.setInitialWidth( 525 );
                 popupWindow.setContent(new WKTPanel( popupWindow.getContentId(), getCRS()));
@@ -166,7 +164,7 @@ public class CRSPanel extends FormComponentPanel {
         wktLink.setEnabled(getModelObject() != null);
         add(wktLink);
         
-        wktLabel = new Label( "wktLabel", new Model());
+        wktLabel = new Label( "wktLabel", new Model<String>());
         wktLink.add( wktLabel );
         wktLabel.setOutputMarkupId( true );
     }
@@ -199,7 +197,7 @@ public class CRSPanel extends FormComponentPanel {
             }
             crs = fromSRS( srs );
         }
-        setConvertedInput( crs );
+        setConvertedInput(crs );
     }
     
     
@@ -272,7 +270,6 @@ public class CRSPanel extends FormComponentPanel {
     /*
      * Builds the srs list panel component.
      */
-    @SuppressWarnings("serial")
     protected SRSListPanel srsListPanel() {
         SRSListPanel srsList = new SRSListPanel(popupWindow.getContentId()) {
             
@@ -285,7 +282,7 @@ public class CRSPanel extends FormComponentPanel {
                 target.add( srsTextField );
                 
                 CoordinateReferenceSystem crs = fromSRS( srs );
-                CRSPanel.this.setModelObject( crs );
+                CRSPanel.this.setModelObject(crs );
                 wktLabel.setDefaultModelObject( crs.getName().toString() );
                 wktLink.setEnabled(true);
                 target.add( wktLink );
@@ -310,7 +307,7 @@ public class CRSPanel extends FormComponentPanel {
             add( wktLabel );
             
             if ( crs != null ) {
-                wktLabel.setDefaultModel( new Model( crs.toString() ) );
+                wktLabel.setDefaultModel( new Model<String>( crs.toString() ) );
             }
         }
     }

@@ -18,7 +18,7 @@ import org.geotools.util.logging.Logging;
  * 
  * @author Andrea Aime - GeoSolutions
  */
-public class EnumChoiceRenderer extends ChoiceRenderer<Enum> {
+public class EnumChoiceRenderer extends ChoiceRenderer<Enum<?>> {
     private static final long serialVersionUID = -8773437372842472840L;
 
     static final Logger LOGGER = Logging.getLogger(EnumChoiceRenderer.class);
@@ -30,7 +30,7 @@ public class EnumChoiceRenderer extends ChoiceRenderer<Enum> {
     }
 
     @Override
-    public Object getDisplayValue(Enum object) {
+    public Object getDisplayValue(Enum<?> object) {
         try {
             ParamResourceModel rm = new ParamResourceModel(object.name(), reference);
             return rm.getString();
@@ -42,7 +42,7 @@ public class EnumChoiceRenderer extends ChoiceRenderer<Enum> {
     }
 
     @Override
-    public String getIdValue(Enum object, int index) {
+    public String getIdValue(Enum<?> object, int index) {
         return object.name();
     }
 

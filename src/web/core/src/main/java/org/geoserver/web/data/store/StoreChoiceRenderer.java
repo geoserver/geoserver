@@ -12,7 +12,8 @@ import org.geoserver.catalog.StoreInfo;
  * Simple choice renderer for {@link StoreInfo}
  */
 @SuppressWarnings("serial")
-public class StoreChoiceRenderer extends ChoiceRenderer {
+public class StoreChoiceRenderer extends ChoiceRenderer {       
+>>>>>>> changed IChoiceRenderer to ChoiceRenderer, use long type for size
 
     public Object getDisplayValue(Object object) {
         return ((StoreInfo) object).getName();

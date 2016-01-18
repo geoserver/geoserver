@@ -463,7 +463,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
 
             @Override
             protected IAjaxCallDecorator getAjaxCallDecorator() {
-                return new AjaxPreprocessingCallDecorator(super.getAjaxCallDecorator()) {
+                return new AjaxPreprocessingCallDecorator(super.getAjaxCallListener()) {
 
                     @Override
                     public CharSequence preDecorateScript(CharSequence script) {
@@ -513,7 +513,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
 
             @Override
             protected IAjaxCallDecorator getAjaxCallDecorator() {
-                return new AjaxPreprocessingCallDecorator(super.getAjaxCallDecorator()) {
+                return new AjaxPreprocessingCallDecorator(super.getAjaxCallListener()) {
 
                     @Override
                     public CharSequence preDecorateScript(CharSequence script) {

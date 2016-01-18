@@ -103,7 +103,7 @@ public class StylePanel extends Panel {
 
             @Override
             protected IAjaxCallDecorator getAjaxCallDecorator() {
-                return new AjaxPreprocessingCallDecorator(super.getAjaxCallDecorator()) {
+                return new AjaxPreprocessingCallDecorator(super.getAjaxCallListener()) {
 
                     @Override
                     public CharSequence preDecorateScript(CharSequence script) {

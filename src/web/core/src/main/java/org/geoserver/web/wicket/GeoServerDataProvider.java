@@ -43,7 +43,7 @@ import org.opengis.filter.Filter;
  * @param <T>
  */
 @SuppressWarnings("serial")
-public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, T> {
+public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, Object> {
     static final Logger LOGGER = Logging.getLogger(GeoServerDataProvider.class);
 
     /**
@@ -307,7 +307,7 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, T
      * @param sort
      * @return
      */
-    protected Comparator<T> getComparator(SortParam<T> sort) {
+    protected Comparator<T> getComparator(SortParam<?> sort) {
         if(sort == null) {
             return null;
         }
@@ -327,7 +327,7 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, T
         return null;
     }
     
-    protected Property<T> getProperty(SortParam<T> sort){
+    protected Property<T> getProperty(SortParam<?> sort){
         if (sort == null || sort.getProperty() == null)
             return null;
 
@@ -417,7 +417,7 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, T
          * @param itemModel
          * @return
          */
-        public IModel<T> getModel(IModel<T> itemModel);
+        public IModel<?> getModel(IModel<T> itemModel);
 
         /**
          * Allows for sorting the property

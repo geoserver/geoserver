@@ -33,7 +33,9 @@ public abstract class LayerGroupListPanel extends GeoServerTablePanel<LayerGroup
     public LayerGroupListPanel(String id) {
         super(id, new GeoServerDataProvider<LayerGroupInfo>() {
 
-            @Override
+        	private static final long serialVersionUID = 6471805356307807737L;
+
+			@Override
             protected List<LayerGroupInfo> getItems() {
                 return getCatalog().getLayerGroups();
             }
@@ -43,7 +45,7 @@ public abstract class LayerGroupListPanel extends GeoServerTablePanel<LayerGroup
                 return Arrays.asList(NAME, WORKSPACE);
             }
 
-            public IModel newModel(Object object) {
+            public IModel<LayerGroupInfo> newModel(LayerGroupInfo object) {
                 return new LayerGroupDetachableModel((LayerGroupInfo) object);
             }
 
@@ -51,15 +53,18 @@ public abstract class LayerGroupListPanel extends GeoServerTablePanel<LayerGroup
         getTopPager().setVisible(false);
     }
 
-    @Override
-    protected Component getComponentForProperty(String id, final IModel itemModel,
+    @SuppressWarnings("unchecked")
+	@Override
+    protected Component getComponentForProperty(String id, final IModel<LayerGroupInfo> itemModel,
             Property<LayerGroupInfo> property) {
-        IModel model = property.getModel(itemModel);
+        IModel<?> model = property.getModel(itemModel);
         if (NAME == property) {
-            return new SimpleAjaxLink(id, model) {
-                @Override
+            return new SimpleAjaxLink<String>(id, (IModel<String>) model) {
+				private static final long serialVersionUID = -5189072047640596694L;
+
+				@Override
                 protected void onClick(AjaxRequestTarget target) {
-                    LayerGroupInfo layerGroup = (LayerGroupInfo) itemModel.getObject();
+                    LayerGroupInfo layerGroup = itemModel.getObject();
                     handleLayerGroup(layerGroup, target);
                 }
             };

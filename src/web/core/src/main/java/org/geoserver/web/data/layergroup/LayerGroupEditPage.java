@@ -5,7 +5,6 @@
  */
 package org.geoserver.web.data.layergroup;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 
@@ -45,7 +44,9 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
  */
 public class LayerGroupEditPage extends PublishedConfigurationPage<LayerGroupInfo> {
 
-    public static final String GROUP = "group";
+	private static final long serialVersionUID = 5659874305843575438L;
+	
+	public static final String GROUP = "group";
     public static final String WORKSPACE = "workspace";
     
     LayerGroupEntryPanel lgEntryPanel; 

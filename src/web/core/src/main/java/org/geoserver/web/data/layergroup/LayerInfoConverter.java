@@ -12,16 +12,17 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.web.GeoServerApplication;
 
 
-@SuppressWarnings("serial")
-public class LayerInfoConverter implements IConverter {
+public class LayerInfoConverter implements IConverter<LayerInfo> {
 
-    @Override
-    public Object convertToObject(String name, Locale locale) {
+	private static final long serialVersionUID = -3540868744266790608L;
+
+	@Override
+    public LayerInfo convertToObject(String name, Locale locale) {
         return GeoServerApplication.get().getCatalog().getLayerByName(name);
     }
 
     @Override
-    public String convertToString(Object obj, Locale locale) {
+    public String convertToString(LayerInfo obj, Locale locale) {
         if (obj == null) return "";
         else return ((LayerInfo) obj).prefixedName();
     } 

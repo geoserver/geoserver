@@ -12,10 +12,11 @@ import org.geoserver.web.GeoServerApplication;
 /**
  * Model for layer groups
  */
-@SuppressWarnings("serial")
 public class LayerGroupDetachableModel extends LoadableDetachableModel<LayerGroupInfo> {
 
-    String id;
+	private static final long serialVersionUID = 1945014162826151239L;
+	
+	String id;
     LayerGroupInfo layerGroup;
     
     public LayerGroupDetachableModel(LayerGroupInfo layerGroup) {

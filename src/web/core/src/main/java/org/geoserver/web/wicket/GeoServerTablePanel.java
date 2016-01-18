@@ -529,7 +529,7 @@ public abstract class GeoServerTablePanel<T> extends Panel {
      * @param property
      * @return
      */
-    protected abstract Component getComponentForProperty(String id, IModel itemModel,
+    protected abstract Component getComponentForProperty(String id, IModel<T> itemModel,
             Property<T> property);
 
     /**

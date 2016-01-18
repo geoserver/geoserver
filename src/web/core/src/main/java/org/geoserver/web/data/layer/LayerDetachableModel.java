@@ -15,7 +15,7 @@ import org.geoserver.web.GeoServerApplication;
  * in a resource stable across page loads.
  */
 @SuppressWarnings("serial")
-public class LayerDetachableModel extends LoadableDetachableModel {
+public class LayerDetachableModel extends LoadableDetachableModel<LayerInfo> {
     String id;
 
     public LayerDetachableModel(LayerInfo layer) {
@@ -24,7 +24,7 @@ public class LayerDetachableModel extends LoadableDetachableModel {
     }
 
     @Override
-    protected Object load() {
+    protected LayerInfo load() {
         return GeoServerApplication.get().getCatalog().getLayer(id);
     }
 }

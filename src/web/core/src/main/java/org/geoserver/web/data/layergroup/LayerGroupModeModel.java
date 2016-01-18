@@ -15,10 +15,11 @@ import org.geoserver.catalog.LayerGroupInfo;
 /**
  * Simple detachable model listing all the available LayerGroup modes.
  */
-@SuppressWarnings({ "serial" })
 public class LayerGroupModeModel extends LoadableDetachableModel<List<LayerGroupInfo.Mode>> {
     
-    @Override
+	private static final long serialVersionUID = 1781202562325730121L;
+
+	@Override
     protected List<LayerGroupInfo.Mode> load() {
         List<LayerGroupInfo.Mode> modes = new ArrayList<LayerGroupInfo.Mode>();
         modes.add(LayerGroupInfo.Mode.SINGLE);

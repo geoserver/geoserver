@@ -64,7 +64,7 @@ public abstract class SRSListPanel extends Panel {
         table = new GeoServerTablePanel<SRS>("table", new SRSProvider()) {
 
             @Override
-            protected Component getComponentForProperty(String id, IModel itemModel,
+            protected Component getComponentForProperty(String id, IModel<SRS> itemModel,
                     Property<SRS> property) {
 
                 SRS srs = (SRS) itemModel.getObject();

@@ -12,16 +12,17 @@ import org.geoserver.catalog.StyleInfo;
 import org.geoserver.web.GeoServerApplication;
 
 
-@SuppressWarnings("serial")
-public class StyleInfoConverter implements IConverter {
+public class StyleInfoConverter implements IConverter<StyleInfo> {
 
-    @Override
-    public Object convertToObject(String name, Locale locale) {
+	private static final long serialVersionUID = -1984255970892520909L;
+
+	@Override
+    public StyleInfo convertToObject(String name, Locale locale) {
         return GeoServerApplication.get().getCatalog().getStyleByName(name);
     }
 
     @Override
-    public String convertToString(Object obj, Locale locale) {
+    public String convertToString(StyleInfo obj, Locale locale) {
         if (obj == null) return "";
         else return ((StyleInfo) obj).getName();
     }

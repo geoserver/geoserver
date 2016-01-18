@@ -137,7 +137,7 @@ public class LayerProvider extends GeoServerDataProvider<LayerInfo> {
     }
 
     @Override
-    public int size() {
+    public long size() {
         Filter filter = getFilter();
         int count = getCatalog().count(LayerInfo.class, filter);
         return count;
@@ -151,7 +151,7 @@ public class LayerProvider extends GeoServerDataProvider<LayerInfo> {
     }
     
     @Override
-    public Iterator<LayerInfo> iterator(final int first, final int count) {
+    public Iterator<LayerInfo> iterator(final long first, final long count) {
         Iterator<LayerInfo> iterator = filteredItems(first, count);
         if (iterator instanceof CloseableIterator) {
             // don't know how to force wicket to close the iterator, lets return

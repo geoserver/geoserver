@@ -1790,7 +1790,7 @@ public class CatalogImpl implements Catalog {
 
     @Override
     public <T extends CatalogInfo> CloseableIterator<T> list(final Class<T> of,
-            final Filter filter, Long offset, Long count, SortBy sortOrder) {
+            final Filter filter, Integer offset, Integer count, SortBy sortOrder) {
         CatalogFacade facade = getFacade();
         if (sortOrder != null && !facade.canSort(of, sortOrder.getPropertyName().getPropertyName())) {
             // TODO: use GeoTools' merge-sort code to provide sorting anyways
@@ -1804,7 +1804,7 @@ public class CatalogImpl implements Catalog {
     public <T extends CatalogInfo> T get(Class<T> type, Filter filter)
             throws IllegalArgumentException {
 
-        final Long limit = Long.valueOf(2);
+        final Integer limit = Integer.valueOf(2);
         CloseableIterator<T> it = list(type, filter, null, limit, null);
         T result = null;
         try {

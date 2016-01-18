@@ -72,8 +72,7 @@ public abstract class ReorderableTablePanel<T> extends GeoServerTablePanel<T> {
     }
 
     @Override
-    protected void buildRowListView(final GeoServerDataProvider<T> dataProvider, Item item,
-            final IModel itemModel) {
+    protected void buildRowListView(GeoServerDataProvider<T> dataProvider, Item<T> item, IModel<T> itemModel) {
         // create one component per viewable property
         ListView items = new ListView("itemProperties", dataProvider.getVisibleProperties()) {
 
@@ -116,8 +115,7 @@ public abstract class ReorderableTablePanel<T> extends GeoServerTablePanel<T> {
     }
 
     @Override
-    protected void onPopulateItem(GeoServerDataProvider.Property<T> property,
-            org.apache.wicket.markup.html.list.ListItem item) {
+    protected void onPopulateItem(Property<T> property, ListItem<Property<T>> item) {
         if (property == RENDERING_ORDER) {
             Label label = (Label) item.get(0);
             OddEvenItem rowContainer = (OddEvenItem) item.getParent().getParent();

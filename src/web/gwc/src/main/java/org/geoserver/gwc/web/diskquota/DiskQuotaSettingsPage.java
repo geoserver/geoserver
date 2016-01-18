@@ -32,7 +32,9 @@ import org.geowebcache.diskquota.storage.StorageUnit;
 
 public class DiskQuotaSettingsPage extends GeoServerSecuredPage {
 
-    public DiskQuotaSettingsPage() throws Exception {
+	private static final long serialVersionUID = 75816375328629448L;
+
+	public DiskQuotaSettingsPage() throws Exception {
         GWC gwc = getGWC();
 
         final boolean diskQuotaModuleDisabled = gwc.getDiskQuotaConfig() == null;
@@ -139,7 +141,7 @@ public class DiskQuotaSettingsPage extends GeoServerSecuredPage {
             private static final long serialVersionUID = 1L;
 
             @Override
-            protected void onClick(AjaxRequestTarget target, Form form) {
+            protected void onClick(AjaxRequestTarget target, Form<?> form) {
                 doReturn();
             }
 

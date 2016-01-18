@@ -72,7 +72,7 @@ public class CachedLayersPage extends GeoServerSecuredPage {
 
             @SuppressWarnings({ "rawtypes", "unchecked" })
             @Override
-            protected Component getComponentForProperty(String id, IModel itemModel,
+            protected Component getComponentForProperty(String id, IModel<TileLayer> itemModel,
                     Property<TileLayer> property) {
 
                 if (property == TYPE) {
@@ -337,9 +337,9 @@ public class CachedLayersPage extends GeoServerSecuredPage {
                     final String usedQuotaStr = totalQuota.toNiceString();
                     final Integer selectedLayerCount = selectedNames.size();
 
-                    IModel<String> model = new StringResourceModel(
-                            "CachedLayersPage.confirmSelectionRemoval",
-                            CachedLayerSelectionRemovalLink.this, null, new Object[] {
+                    IModel<String> model = new StringResourceModel
+                            ("CachedLayersPage.confirmSelectionRemoval",
+                            CachedLayerSelectionRemovalLink.this).setParameters(new Object[] {
                                     selectedLayerCount.toString(), usedQuotaStr });
                     Label confirmLabel = new Label(id, model);
                     confirmLabel.setEscapeModelStrings(false);// allow some html inside, like

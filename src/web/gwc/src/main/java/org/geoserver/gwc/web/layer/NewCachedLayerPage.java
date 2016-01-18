@@ -44,7 +44,9 @@ import org.geowebcache.layer.TileLayer;
  */
 public class NewCachedLayerPage extends GeoServerSecuredPage {
 
-    private UnconfiguredCachedLayersProvider provider = new UnconfiguredCachedLayersProvider();
+	private static final long serialVersionUID = 6458510742445385219L;
+
+	private UnconfiguredCachedLayersProvider provider = new UnconfiguredCachedLayersProvider();
 
     private GeoServerTablePanel<TileLayer> table;
 
@@ -59,9 +61,8 @@ public class NewCachedLayerPage extends GeoServerSecuredPage {
         table = new GeoServerTablePanel<TileLayer>("table", provider, true) {
             private static final long serialVersionUID = 1L;
 
-            @SuppressWarnings({ "rawtypes", "unchecked" })
             @Override
-            protected Component getComponentForProperty(String id, IModel itemModel,
+            protected Component getComponentForProperty(String id, IModel<TileLayer> itemModel,
                     Property<TileLayer> property) {
 
                 if (property == TYPE) {
@@ -183,8 +184,8 @@ public class NewCachedLayerPage extends GeoServerSecuredPage {
 
                     IModel<String> model = new StringResourceModel(
                             "NewCachedLayerPage.confirmBulkConfig.message",
-                            BulkCachedLayerConfigurationLink.this, null,
-                            new Object[] { selectedLayerCount.toString() });
+                            BulkCachedLayerConfigurationLink.this).setParameters(
+                            		new Object[] { selectedLayerCount.toString() });
                     Label confirmLabel = new Label(id, model);
                     confirmLabel.setEscapeModelStrings(false);// allow some html inside, like
                                                               // <b></b>, etc

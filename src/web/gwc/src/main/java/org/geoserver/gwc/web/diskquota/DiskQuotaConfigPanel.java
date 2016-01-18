@@ -159,8 +159,10 @@ public class DiskQuotaConfigPanel extends Panel {
         
         // make the JDBC configuration visible only when the user chose a JDBC store
         quotaStoreChooser.add(new AjaxFormComponentUpdatingBehavior("onChange") {
-            
-            @Override
+
+			private static final long serialVersionUID = -6806581935751265393L;
+
+			@Override
             protected void onUpdate(AjaxRequestTarget target) {
                 jdbcContainer.setVisible("JDBC".equals(quotaStoreChooser.getModelObject()));
                 target.add(quotaStoreContainer);
@@ -190,8 +192,10 @@ public class DiskQuotaConfigPanel extends Panel {
         
         // make the two ways to configure the JDBC store show up as alternatives
         connectionTypeChooser.add(new AjaxFormComponentUpdatingBehavior("onChange") {
-            
-            @Override
+
+			private static final long serialVersionUID = -8286073946292214144L;
+
+			@Override
             protected void onUpdate(AjaxRequestTarget target) {
                 boolean jndiVisible = "JNDI".equals(connectionTypeChooser.getModelObject());
                 jndiContainer.setVisible(jndiVisible);
@@ -223,8 +227,8 @@ public class DiskQuotaConfigPanel extends Panel {
 
         Object[] progressMessageParams = { globalUsedQuotaModel.getObject().toNiceString(),
                 globalQuotaModel.getObject().toNiceString() };
-        IModel<String> progressMessageModel = new StringResourceModel(
-                "DiskQuotaConfigPanel.usedQuotaMessage", null, progressMessageParams);
+        IModel<String> progressMessageModel = 
+        		new StringResourceModel("DiskQuotaConfigPanel.usedQuotaMessage").setParameters(progressMessageParams);
         addGlobalQuotaStatusBar(globalQuotaModel, globalUsedQuotaModel, progressMessageModel);
 
         TextField<Double> quotaValue = new TextField<Double>("globalQuota", quotaValueModel);

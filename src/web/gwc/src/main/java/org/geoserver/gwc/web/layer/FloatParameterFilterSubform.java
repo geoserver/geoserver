@@ -32,7 +32,7 @@ public class FloatParameterFilterSubform extends AbstractParameterFilterSubform<
     /** serialVersionUID */
     private static final long serialVersionUID = 1L;
     
-    private static final IConverter FLOAT = new IConverter() {
+    private static final IConverter<Float> FLOAT = new IConverter<Float>() {
         /** serialVersionUID */
         private static final long serialVersionUID = 1L;
 
@@ -52,17 +52,17 @@ public class FloatParameterFilterSubform extends AbstractParameterFilterSubform<
         }
         
         @Override
-        public String convertToString(Object value, Locale locale) {
-            return Float.toString((Float)value);
+        public String convertToString(Float value, Locale locale) {
+            return Float.toString(value);
         }
     };
     
-    private static final IConverter CONVERT = new IConverter() {
-        /** serialVersionUID */
-        private static final long serialVersionUID = 1L;
+    private static final IConverter<List<Float>> CONVERT = new IConverter<List<Float>>() {
 
-        @Override
-        public Object convertToObject(String value, Locale locale) {
+    	private static final long serialVersionUID = 6972092160668131862L;
+
+		@Override
+        public List<Float> convertToObject(String value, Locale locale) {
             if(value==null) {
                 return null;
             } else {
@@ -77,10 +77,8 @@ public class FloatParameterFilterSubform extends AbstractParameterFilterSubform<
         }
 
         @Override
-        public String convertToString(Object value, Locale locale) {
-            @SuppressWarnings("unchecked")
-            List<Float> floats =  (List<Float>) value;
-            Iterator<Float> i = floats.iterator();
+        public String convertToString(List<Float> value, Locale locale) {
+            Iterator<Float> i = value.iterator();
             StringBuilder sb = new StringBuilder();
             if(i.hasNext()) {
                 sb.append(FLOAT.convertToString(i.next(), locale));
@@ -109,7 +107,7 @@ public class FloatParameterFilterSubform extends AbstractParameterFilterSubform<
             private static final long serialVersionUID = 1L;
 
             @Override
-            public IConverter getConverter(Class<?> type) {
+            public <S> IConverter<S> getConverter(Class<S> type) {
                 return CONVERT;
             }
         };
@@ -122,7 +120,7 @@ public class FloatParameterFilterSubform extends AbstractParameterFilterSubform<
 
             // Want to use non-localized float parsing so we can handle exponential notation
             @Override
-            public IConverter getConverter(Class<?> type) {
+            public <S> IConverter<S> getConverter(Class<S> type) {
                 return FLOAT;
             }
         };

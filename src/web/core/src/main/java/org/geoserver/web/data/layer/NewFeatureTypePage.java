@@ -86,7 +86,7 @@ public class NewFeatureTypePage extends GeoServerSecuredPage {
                 attributesProvider, true) {
 
             @Override
-            protected Component getComponentForProperty(String id, IModel itemModel,
+            protected Component getComponentForProperty(String id, IModel<AttributeDescription> itemModel,
                     Property<AttributeDescription> property) {
                 AttributeDescription att = (AttributeDescription) itemModel.getObject();
                 if (property == AttributesProvider.NAME) {

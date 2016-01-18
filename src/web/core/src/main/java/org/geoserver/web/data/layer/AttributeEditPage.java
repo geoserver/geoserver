@@ -133,7 +133,7 @@ public class AttributeEditPage extends GeoServerSecuredPage {
     protected boolean validate() {
         boolean valid = true;
         if (attribute.getName() == null || attribute.getName().trim().equals("")) {
-            nameField.error((IValidationError) new ValidationError().addMessageKey("Required"));
+            nameField.error((IValidationError) new ValidationError().addKey("Required"));
             valid = false;
         }
         if (String.class.equals(attribute.getBinding())) {
@@ -150,7 +150,7 @@ public class AttributeEditPage extends GeoServerSecuredPage {
 
         }
         if (Geometry.class.isAssignableFrom(attribute.getBinding()) && attribute.getCrs() == null) {
-            crsField.error((IValidationError) new ValidationError().addMessageKey("Required"));
+            crsField.error((IValidationError) new ValidationError().addKey("Required"));
             valid = false;
         }
 

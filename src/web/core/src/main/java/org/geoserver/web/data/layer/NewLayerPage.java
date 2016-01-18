@@ -106,7 +106,7 @@ public class NewLayerPage extends GeoServerSecuredPage {
 
             @Override
             protected Component getComponentForProperty(String id,
-                    IModel itemModel, Property<Resource> property) {
+                    IModel<Resource> itemModel, Property<Resource> property) {
                 if (property == NewLayerPageProvider.NAME) {
                     return new Label(id, property.getModel(itemModel));
                 } else if (property == NewLayerPageProvider.PUBLISHED) {

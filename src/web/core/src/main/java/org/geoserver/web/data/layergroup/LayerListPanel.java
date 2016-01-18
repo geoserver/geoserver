@@ -41,13 +41,9 @@ public abstract class LayerListPanel extends GeoServerTablePanel<LayerInfo> {
 
 		private static final long serialVersionUID = -4793382279386643262L;
 
-		@Override
+        @Override
         protected List<Property<LayerInfo>> getProperties() {
             return Arrays.asList( NAME, STORE, WORKSPACE );
-        }
-
-        public IModel<LayerInfo> newModel(LayerInfo object) {
-            return new LayerDetachableModel((LayerInfo)object);
         }
     }
 

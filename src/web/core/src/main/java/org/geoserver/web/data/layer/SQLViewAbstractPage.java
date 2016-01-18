@@ -206,7 +206,7 @@ public abstract class SQLViewAbstractPage extends GeoServerSecuredPage {
         parameters = new GeoServerTablePanel<Parameter>("parameters", paramProvider, true) {
 
             @Override
-            protected Component getComponentForProperty(String id, IModel itemModel,
+            protected Component getComponentForProperty(String id, IModel<Parameter> itemModel,
                     Property<Parameter> property) {
                 Fragment f = new Fragment(id, "text", SQLViewAbstractPage.this);
                 TextField text = new TextField("text", property.getModel(itemModel));
@@ -237,7 +237,7 @@ public abstract class SQLViewAbstractPage extends GeoServerSecuredPage {
         attributes = new GeoServerTablePanel<SQLViewAttribute>("attributes", attProvider) {
 
             @Override
-            protected Component getComponentForProperty(String id, IModel itemModel,
+            protected Component getComponentForProperty(String id, IModel<SQLViewAttribute> itemModel,
                     Property<SQLViewAttribute> property) {
                 SQLViewAttribute att = (SQLViewAttribute) itemModel.getObject();
                 boolean isGeometry = att.getType() != null

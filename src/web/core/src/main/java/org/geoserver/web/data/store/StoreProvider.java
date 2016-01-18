@@ -195,7 +195,7 @@ public class StoreProvider extends GeoServerDataProvider<StoreInfo> {
      * Returns the requested page of layer objects after applying any keyword
      * filtering set on the page
      */
-    private Iterator<StoreInfo> filteredItems(Long first, Long count) {
+    private Iterator<StoreInfo> filteredItems(long first, long count) {
         final Catalog catalog = getCatalog();
 
         // global sorting
@@ -218,7 +218,7 @@ public class StoreProvider extends GeoServerDataProvider<StoreInfo> {
 
         final Filter filter = getWorkspaceFilter(getFilter());
         //our already filtered and closeable iterator
-        Iterator<StoreInfo> items = catalog.list(StoreInfo.class, filter, first, count, sortOrder);
+        Iterator<StoreInfo> items = catalog.list(StoreInfo.class, filter, (int)first, (int)count, sortOrder);
 
         return items;
     }

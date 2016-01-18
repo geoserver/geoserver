@@ -45,7 +45,7 @@ public class BlobStorePageTest extends GeoServerWicketTestSupport {
         
         tester.assertInvisible("blobConfigContainer:blobStoreForm");
         
-        DropDownChoice typeOfBlobStore = (DropDownChoice) tester.getComponentFromLastRenderedPage("selector:typeOfBlobStore");
+        DropDownChoice<?> typeOfBlobStore = (DropDownChoice<?>) tester.getComponentFromLastRenderedPage("selector:typeOfBlobStore");
         assertEquals(1, typeOfBlobStore.getChoices().size());
         assertEquals("File BlobStore", typeOfBlobStore.getChoices().get(0).toString());
         

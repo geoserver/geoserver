@@ -5,8 +5,6 @@
  */
 package org.geoserver.web.data.layer;
 
-import static org.geoserver.catalog.Predicates.acceptAll;
-import static org.geoserver.catalog.Predicates.or;
 import static org.geoserver.catalog.Predicates.sortBy;
 
 import java.util.Arrays;
@@ -126,14 +124,14 @@ public class LayerProvider extends GeoServerDataProvider<LayerInfo> {
     protected List<Property<LayerInfo>> getProperties() {
         return PROPERTIES;
     }
-
+    
     @Override
-    protected IModel<LayerInfo> newModel(LayerInfo object) {
+    public IModel<LayerInfo> newModel(LayerInfo object) {
         return new LayerDetachableModel(object);
     }
 
     @Override
-    protected Comparator<LayerInfo> getComparator(SortParam sort) {
+    protected Comparator<LayerInfo> getComparator(SortParam<?> sort) {
         return super.getComparator(sort);
     }
 
@@ -153,7 +151,7 @@ public class LayerProvider extends GeoServerDataProvider<LayerInfo> {
     
     @Override
     public Iterator<LayerInfo> iterator(final long first, final long count) {
-        Iterator<LayerInfo> iterator = filteredItems((int) first, (int) count);
+        Iterator<LayerInfo> iterator = filteredItems(first, count);
         if (iterator instanceof CloseableIterator) {
             // don't know how to force wicket to close the iterator, lets return
             // a copy. Shouldn't be much overhead as we're paging
@@ -171,11 +169,11 @@ public class LayerProvider extends GeoServerDataProvider<LayerInfo> {
      * Returns the requested page of layer objects after applying any keyword
      * filtering set on the page
      */
-    private Iterator<LayerInfo> filteredItems(Integer first, Integer count) {
+    private Iterator<LayerInfo> filteredItems(Long first, Long count) {
         final Catalog catalog = getCatalog();
 
         // global sorting
-        final SortParam sort = getSort();
+        final SortParam<?> sort = getSort();
         final Property<LayerInfo> property = getProperty(sort);
 
         SortBy sortOrder = null;
@@ -187,10 +185,14 @@ public class LayerProvider extends GeoServerDataProvider<LayerInfo> {
                 sortOrder = sortBy("enabled", sort.isAscending());
             }
         }
-
+        if(first>Integer.MAX_VALUE || first<Integer.MIN_VALUE || 
+                count>Integer.MAX_VALUE || count<Integer.MIN_VALUE) {
+            throw new IllegalArgumentException(); // TODO Possibly change catalog API to use long
+        }
+        
         final Filter filter = getFilter();
         //our already filtered and closeable iterator
-        Iterator<LayerInfo> items = catalog.list(LayerInfo.class, filter, first, count, sortOrder);
+        Iterator<LayerInfo> items = catalog.list(LayerInfo.class, filter, first.intValue(), count.intValue(), sortOrder);
 
         return items;
     }

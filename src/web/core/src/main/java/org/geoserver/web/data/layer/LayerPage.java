@@ -6,6 +6,8 @@
 package org.geoserver.web.data.layer;
 
 import org.apache.wicket.Component;
+import org.apache.wicket.request.resource.PackageResourceReference;
+import org.apache.wicket.request.resource.ResourceReference;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.image.Image;
@@ -93,7 +95,7 @@ public class LayerPage extends GeoServerSecuredPage {
         Fragment header = new Fragment(HEADER_PANEL, "header", this);
         
         // the add button
-        header.add(new BookmarkablePageLink("addNew", NewLayerPage.class));
+        header.add(new BookmarkablePageLink<Void>("addNew", NewLayerPage.class));
         
         // the removal button
         header.add(removal = new SelectionRemovalLink("removeSelected", table, dialog));
@@ -103,19 +105,21 @@ public class LayerPage extends GeoServerSecuredPage {
         return header;
     }
 
-    private Component layerLink(String id, final IModel model) {
-        IModel layerNameModel = NAME.getModel(model);
-        String wsName = (String) WORKSPACE.getModel(model).getObject();
+    private Component layerLink(String id, final IModel<LayerInfo> model) {
+        @SuppressWarnings("unchecked")
+        IModel<String> layerNameModel = (IModel<String>) NAME.getModel(model);
+        String wsName = ((ResourceReference) WORKSPACE.getModel(model).getObject()).getName();
         String layerName = (String) layerNameModel.getObject();
         return new SimpleBookmarkableLink(id, ResourceConfigurationPage.class, layerNameModel, 
                 ResourceConfigurationPage.NAME, layerName, ResourceConfigurationPage.WORKSPACE, wsName);
     }
 
-    private Component storeLink(String id, final IModel model) {
-        IModel storeModel = STORE.getModel(model);
-        String wsName = (String) WORKSPACE.getModel(model).getObject();
-        String storeName = (String) storeModel.getObject();
-        LayerInfo layer = (LayerInfo) model.getObject();
+    private Component storeLink(String id, final IModel<LayerInfo> model) {
+        @SuppressWarnings("unchecked")
+        IModel<String> storeModel = (IModel<String>) STORE.getModel(model);
+        String wsName = ((ResourceReference) WORKSPACE.getModel(model).getObject()).getName();
+        String storeName = storeModel.getObject();
+        LayerInfo layer = model.getObject();
         StoreInfo store = layer.getResource().getStore();
         if(store instanceof DataStoreInfo) {
             return new SimpleBookmarkableLink(id, DataAccessEditPage.class, storeModel, 
@@ -132,8 +136,9 @@ public class LayerPage extends GeoServerSecuredPage {
         }
     }
 
-    private Component workspaceLink(String id, final IModel model) {
-    	IModel nameModel = WORKSPACE.getModel(model);
+    private Component workspaceLink(String id, final IModel<LayerInfo> model) {
+    	@SuppressWarnings("unchecked")
+        IModel<String> nameModel = (IModel<String>) WORKSPACE.getModel(model);
         return new SimpleBookmarkableLink(id, WorkspaceEditPage.class, nameModel,
                 "name", (String) nameModel.getObject());
     }

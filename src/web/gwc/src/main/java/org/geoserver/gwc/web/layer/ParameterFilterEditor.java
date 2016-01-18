@@ -193,7 +193,7 @@ class ParameterFilterEditor extends FormComponentPanel<Set<ParameterFilter>> {
                     private static final long serialVersionUID = 1L;
 
                     @Override
-                    protected void onSubmit(AjaxRequestTarget target, Form form) {
+                    protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
                         getList().remove((ParameterFilter) getDefaultModelObject());
                         target.add(container);
                     }
@@ -210,7 +210,8 @@ class ParameterFilterEditor extends FormComponentPanel<Set<ParameterFilter>> {
         // this is necessary to avoid loosing item contents on edit/validation checks
         filters.setReuseItems(true);
         
-        Form filtersForm = new Form("filtersForm", filters.getDefaultModel());
+        @SuppressWarnings({ "rawtypes", "unchecked" })
+		Form<?> filtersForm = new Form("filtersForm", filters.getDefaultModel());
         filtersForm.add(filters);
         
         table.add(filtersForm);
@@ -225,7 +226,7 @@ class ParameterFilterEditor extends FormComponentPanel<Set<ParameterFilter>> {
             private static final long serialVersionUID = 1L;
 
             @Override
-            protected void onClick(AjaxRequestTarget target, Form form) {
+            protected void onClick(AjaxRequestTarget target, Form<?> form) {
                 StyleParameterFilter newFilter = new StyleParameterFilter();
                 newFilter.setLayer((LayerInfo)layerModel.getObject());
                 
@@ -299,7 +300,7 @@ class ParameterFilterEditor extends FormComponentPanel<Set<ParameterFilter>> {
             private static final long serialVersionUID = 1L;
 
             @Override
-            protected void onClick(AjaxRequestTarget target, Form form) {
+            protected void onClick(AjaxRequestTarget target, Form<?> form) {
                 availableFilterTypes.processInput();
                 newFilterKey.processInput();
                 String key = newFilterKey.getModelObject();

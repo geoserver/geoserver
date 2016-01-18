@@ -8,14 +8,10 @@ package org.geoserver.gwc.web.layer;
 import static com.google.common.base.Preconditions.checkArgument;
 import static org.geoserver.gwc.GWC.tileLayerName;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
-import java.util.TreeSet;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
@@ -44,7 +40,6 @@ import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.PublishedInfo;
-import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.impl.ModificationProxy;
 import org.geoserver.gwc.ConfigurableBlobStore;
@@ -55,7 +50,6 @@ import org.geoserver.gwc.layer.GeoServerTileLayerInfo;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.ParamResourceModel;
-import org.geotools.util.logging.Logging;
 import org.geowebcache.config.BlobStoreConfig;
 import org.geowebcache.config.XMLGridSubset;
 import org.geowebcache.diskquota.storage.Quota;
@@ -87,8 +81,6 @@ import com.google.common.collect.Lists;
 class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo> {
 
     private static final long serialVersionUID = 7870938096047218989L;
-
-    private static final Logger LOGGER = Logging.getLogger(GeoServerTileLayerEditor.class);
 
     /**
      * Flag to indicate whether a cached layer initially existed for the given layer/group info so
@@ -309,7 +301,7 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
         configs.add(cacheFormats);
 
         final List<String> formats;
-        formats = Lists.newArrayList(GWC.get().getAdvertisedCachedFormats(info.getType()));
+        formats = Lists.newArrayList(GWC.getAdvertisedCachedFormats(info.getType()));
 
         ListView<String> cacheFormatsList = new ListView<String>("cacheFormats", formats) {
             private static final long serialVersionUID = 1L;

@@ -28,15 +28,13 @@ import org.geowebcache.filter.parameters.FloatParameterFilter;
  */
 public class FloatParameterFilterSubform extends AbstractParameterFilterSubform<FloatParameterFilter> {
 
+	private static final long serialVersionUID = -1715100884515717529L;
 
-    /** serialVersionUID */
-    private static final long serialVersionUID = 1L;
-    
-    private static final IConverter FLOAT = new IConverter() {
-        /** serialVersionUID */
-        private static final long serialVersionUID = 1L;
+	private static final IConverter<Float> FLOAT = new IConverter<Float>() {
 
-        @Override
+		private static final long serialVersionUID = 5393727015187736272L;
+
+		@Override
         public Float convertToObject(String value, Locale locale) {
             if(value==null || value.isEmpty()) return null;
             try {
@@ -52,17 +50,17 @@ public class FloatParameterFilterSubform extends AbstractParameterFilterSubform<
         }
         
         @Override
-        public String convertToString(Object value, Locale locale) {
-            return Float.toString((Float)value);
+        public String convertToString(Float value, Locale locale) {
+            return Float.toString(value);
         }
     };
     
-    private static final IConverter CONVERT = new IConverter() {
-        /** serialVersionUID */
-        private static final long serialVersionUID = 1L;
+    private static final IConverter<List<Float>> CONVERT = new IConverter<List<Float>>() {
 
-        @Override
-        public Object convertToObject(String value, Locale locale) {
+    	private static final long serialVersionUID = 6972092160668131862L;
+
+		@Override
+        public List<Float> convertToObject(String value, Locale locale) {
             if(value==null) {
                 return null;
             } else {
@@ -77,10 +75,8 @@ public class FloatParameterFilterSubform extends AbstractParameterFilterSubform<
         }
 
         @Override
-        public String convertToString(Object value, Locale locale) {
-            @SuppressWarnings("unchecked")
-            List<Float> floats =  (List<Float>) value;
-            Iterator<Float> i = floats.iterator();
+        public String convertToString(List<Float> value, Locale locale) {
+            Iterator<Float> i = value.iterator();
             StringBuilder sb = new StringBuilder();
             if(i.hasNext()) {
                 sb.append(FLOAT.convertToString(i.next(), locale));
@@ -108,9 +104,13 @@ public class FloatParameterFilterSubform extends AbstractParameterFilterSubform<
             /** serialVersionUID */
             private static final long serialVersionUID = 1L;
 
-            @Override
-            public IConverter getConverter(Class<?> type) {
-                return CONVERT;
+            @SuppressWarnings("unchecked")
+			@Override
+            public <S> IConverter<S> getConverter(Class<S> type) {
+            	if (List.class.isAssignableFrom(type)) {
+            		return (IConverter<S>) CONVERT;
+            	}
+            	return super.getConverter(type);
             }
         };
         add(values);
@@ -121,9 +121,13 @@ public class FloatParameterFilterSubform extends AbstractParameterFilterSubform<
             private static final long serialVersionUID = 1L;
 
             // Want to use non-localized float parsing so we can handle exponential notation
-            @Override
-            public IConverter getConverter(Class<?> type) {
-                return FLOAT;
+            @SuppressWarnings("unchecked")
+			@Override
+            public <S> IConverter<S> getConverter(Class<S> type) {
+            	if (Float.class.isAssignableFrom(type)) {
+            		return (IConverter<S>) FLOAT;
+            	}
+            	return super.getConverter(type);
             }
         };
         add(threshold);

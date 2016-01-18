@@ -134,8 +134,7 @@ public class GeoServerTablePanelTest {
             super(id, new IntegerProvider(), selectable);
         }
 
-        @Override
-        protected Component getComponentForProperty(String id, IModel itemModel,
+        protected Component getComponentForProperty(String id, IModel<Integer> itemModel,
                 Property<Integer> property) {
             if(property == IntegerProvider.IDX) {
                 return new Label(id, itemModel);

@@ -22,6 +22,9 @@ import org.geoserver.web.wicket.ParamResourceModel;
 
 public class CoverageViewNewPage extends CoverageViewAbstractPage {
 
+    /** serialVersionUID */
+    private static final long serialVersionUID = -4030117120916582767L;
+
     public CoverageViewNewPage(PageParameters params) throws IOException {
         this(params.get(WORKSPACE).toOptionalString(), params.get(COVERAGESTORE).toString(), null, null);
     }

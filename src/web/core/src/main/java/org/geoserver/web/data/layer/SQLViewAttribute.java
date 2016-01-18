@@ -8,15 +8,18 @@ package org.geoserver.web.data.layer;
 import java.io.Serializable;
 
 class SQLViewAttribute implements Serializable {
+    /** serialVersionUID */
+    private static final long serialVersionUID = -926721043289684925L;
+
     String name;
 
-    Class type;
+    Class<?> type;
 
     Integer srid;
 
     boolean pk;
 
-    public SQLViewAttribute(String name, Class type) {
+    public SQLViewAttribute(String name, Class<?> type) {
         this.name = name;
         this.type = type;
     }
@@ -29,11 +32,11 @@ class SQLViewAttribute implements Serializable {
         this.name = name;
     }
 
-    public Class getType() {
+    public Class<?> getType() {
         return type;
     }
 
-    public void setType(Class type) {
+    public void setType(Class<?> type) {
         this.type = type;
     }
 

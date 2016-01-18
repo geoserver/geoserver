@@ -62,7 +62,6 @@ class UnconfiguredCachedLayersProvider extends GeoServerDataProvider<TileLayer> 
 
     static final Property<TileLayer> ENABLED = new BeanProperty<TileLayer>("enabled", "enabled");
 
-    @SuppressWarnings("unchecked")
     static final List<Property<TileLayer>> PROPERTIES = Collections.unmodifiableList(Arrays.asList(
             TYPE, NAME, ENABLED));
 
@@ -142,7 +141,7 @@ class UnconfiguredCachedLayersProvider extends GeoServerDataProvider<TileLayer> 
     /**
      * @see org.geoserver.web.wicket.GeoServerDataProvider#newModel(java.lang.Object)
      */
-    public IModel<TileLayer> newModel(final Object tileLayer) {
+    public IModel<TileLayer> newModel(final TileLayer tileLayer) {
         return new UnconfiguredTileLayerDetachableModel(((TileLayer) tileLayer).getName());
     }
 
@@ -150,7 +149,7 @@ class UnconfiguredCachedLayersProvider extends GeoServerDataProvider<TileLayer> 
      * @see org.geoserver.web.wicket.GeoServerDataProvider#getComparator
      */
     @Override
-    protected Comparator<TileLayer> getComparator(SortParam sort) {
+    protected Comparator<TileLayer> getComparator(SortParam<?> sort) {
         return super.getComparator(sort);
     }
 

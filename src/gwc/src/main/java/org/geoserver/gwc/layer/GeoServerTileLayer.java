@@ -298,7 +298,7 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
         return null;
     }
 
-    private PublishedInfo getPublishedInfo() {
+    public PublishedInfo getPublishedInfo() {
         if (publishedInfo == null) {
             synchronized (this) {
                 if(publishedInfo == null) {

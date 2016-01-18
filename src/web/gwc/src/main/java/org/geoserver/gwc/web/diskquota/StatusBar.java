@@ -6,23 +6,34 @@
 package org.geoserver.gwc.web.diskquota;
 
 import org.apache.wicket.AttributeModifier;
-import org.apache.wicket.behavior.HeaderContributor;
+import org.apache.wicket.Component;
+import org.apache.wicket.behavior.Behavior;
+import org.apache.wicket.markup.head.CssHeaderItem;
+import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.request.resource.PackageResourceReference;
 
 public class StatusBar extends Panel {
 
     private static final long serialVersionUID = 1L;
 
-    @SuppressWarnings("deprecation")
     public StatusBar(final String id, final IModel<Number> limitModel,
             final IModel<Number> progressModel, final IModel<String> progressMessageModel) {
         super(id);
         setOutputMarkupId(true);
-        add(HeaderContributor.forCss(StatusBar.class, "statusbar.css"));
+        add(new Behavior() {
+			private static final long serialVersionUID = -8058471260136015254L;
+
+			@Override
+        	public void renderHead(Component component, IHeaderResponse response) {
+        		response.render(CssHeaderItem.forReference(new PackageResourceReference(StatusBar.class, "statusbar.css")));
+        	}
+        	
+        });
 
         WebMarkupContainer usageBar = new WebMarkupContainer("statusBarProgress");
         WebMarkupContainer excessBar = new WebMarkupContainer("statusBarExcess");

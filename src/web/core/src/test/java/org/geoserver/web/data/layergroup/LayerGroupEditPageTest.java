@@ -8,6 +8,8 @@ package org.geoserver.web.data.layergroup;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.io.Serializable;
+
 import org.apache.wicket.Component;
 import org.apache.wicket.feedback.FeedbackMessage;
 import org.apache.wicket.markup.repeater.data.DataView;
@@ -86,7 +88,7 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
         // should not work, no name provided, so we remain
         // in the same page
         tester.assertRenderedPage(LayerGroupEditPage.class);
-        tester.assertErrorMessages(new String[] {"Field 'Name' is required.", "Field 'Bounds' is required."});
+        tester.assertErrorMessages((Serializable[]) new String[] {"Field 'Name' is required.", "Field 'Bounds' is required."});
     }
     
     @Test
@@ -152,7 +154,7 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
         
         // should work, we switch to the edit page
         tester.assertRenderedPage(LayerGroupEditPage.class);
-        tester.assertErrorMessages(new String[] {"Field 'Bounds' is required."});
+        tester.assertErrorMessages((Serializable[]) new String[] {"Field 'Bounds' is required."});
     }
     
     @Test
@@ -172,8 +174,8 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
         // Ensure that the Row count is equal to the Layers in the Catalog
         Catalog catalog = getGeoServerApplication().getCatalog();
         
-        int layerCount = catalog.count(LayerInfo.class, Filter.INCLUDE);
-        int rowCount = dataView.getRowCount();
+        long layerCount = catalog.count(LayerInfo.class, Filter.INCLUDE);
+        long rowCount = dataView.getRowCount();
         
         assertEquals(layerCount, rowCount);
     }

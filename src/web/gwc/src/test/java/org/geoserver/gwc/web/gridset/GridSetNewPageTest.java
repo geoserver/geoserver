@@ -11,6 +11,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.Session;
+import org.apache.wicket.ajax.AjaxRequestHandler;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.markup.html.form.Form;
@@ -30,8 +31,6 @@ import org.geowebcache.grid.BoundingBox;
 import org.geowebcache.grid.GridSet;
 import org.geowebcache.grid.GridSetBroker;
 import org.junit.Test;
-
-import com.google.common.collect.ImmutableMap;
 
 public class GridSetNewPageTest extends GeoServerWicketTestSupport {
 
@@ -153,7 +152,7 @@ public class GridSetNewPageTest extends GeoServerWicketTestSupport {
             // tester.executeAjaxEvent("gridSetForm:addZoomLevel", "onclick");
             // tester.clickLink("gridSetForm:addZoomLevel", true);
             // can't get this event to get triggered?
-            AjaxRequestTarget target = new AjaxRequestTarget(page);
+            AjaxRequestTarget target = new AjaxRequestHandler(page);
             page.addZoomLevel(target);
         }
 

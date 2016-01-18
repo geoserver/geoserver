@@ -26,7 +26,8 @@ public class LayerGroupPageTest extends LayerGroupBaseTest {
         tester.assertRenderedPage(LayerGroupPage.class);
         tester.assertNoErrorMessage();
         
-        DataView dv = (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items");
+        @SuppressWarnings("unchecked")
+		DataView<LayerGroupInfo> dv = (DataView<LayerGroupInfo>) tester.getComponentFromLastRenderedPage("table:listContainer:items");
         assertEquals(getCatalog().getLayerGroups().size(), dv.size());
         LayerGroupInfo lg = (LayerGroupInfo) dv.getDataProvider().iterator(0, 1).next();
         assertEquals(getCatalog().getLayerGroups().get(0), lg);

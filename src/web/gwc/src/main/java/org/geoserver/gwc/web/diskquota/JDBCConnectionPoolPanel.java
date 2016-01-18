@@ -25,7 +25,6 @@ public class JDBCConnectionPoolPanel extends Panel {
 
     private static final long serialVersionUID = -1579697287836672528L;
 
-    @SuppressWarnings("unchecked")
     public JDBCConnectionPoolPanel(String id, IModel<ConnectionPoolConfiguration> model) {
         super(id, model);
         

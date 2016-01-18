@@ -92,8 +92,8 @@ public class AttributionLayerConfigPanel extends PublishedConfigurationPanel<Pub
                         URLConnection conn = url.openConnection();
                         type.getModel().setObject(conn.getContentType());
                         BufferedImage image = ImageIO.read(conn.getInputStream());
-                        height.setModelValue("" + image.getHeight());
-                        width.setModelValue("" + image.getWidth());
+                        height.setModelValue(new String[] {"" + image.getHeight()});
+                        width.setModelValue(new String[] {"" + image.getWidth()});
                     } catch (Exception e) {
                     }
                 }

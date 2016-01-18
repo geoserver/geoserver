@@ -66,7 +66,7 @@ public class WMSAdminPageTest extends GeoServerWicketTestSupport {
         ft.submit("submit");
         List errors = tester.getMessages(FeedbackMessage.ERROR);
         assertEquals(1, errors.size());
-        assertTrue(((ValidationErrorFeedback)errors.get(0)).getMessage().contains("bla"));
+        assertTrue(((ValidationErrorFeedback)errors.get(0)).getMessage().toString().contains("bla"));
         tester.assertRenderedPage(WMSAdminPage.class);
     }
 

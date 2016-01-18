@@ -42,7 +42,7 @@ public class StylePage extends GeoServerSecuredPage {
         add(table = new GeoServerTablePanel<StyleInfo>("table", provider, true) {
 
             @Override
-            protected Component getComponentForProperty(String id, IModel itemModel,
+            protected Component getComponentForProperty(String id, IModel<StyleInfo> itemModel,
                     Property<StyleInfo> property) {
                 
                 if ( property == StyleProvider.NAME ) {

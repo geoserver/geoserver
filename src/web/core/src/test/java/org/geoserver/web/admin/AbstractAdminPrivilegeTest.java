@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -14,9 +14,13 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Iterator;
 
+import org.apache.wicket.core.request.handler.PageProvider;
+import org.apache.wicket.core.request.handler.RenderPageRequestHandler;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
+import org.apache.wicket.request.IRequestHandler;
+import org.apache.wicket.request.Response;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.geoserver.catalog.Catalog;
@@ -301,7 +305,10 @@ public abstract class AbstractAdminPrivilegeTest extends GeoServerWicketTestSupp
         pp.add(SQLViewNewPage.DATASTORE, "cite");
 
         new SQLViewNewPage(pp);
-        assertFalse(UnauthorizedPage.class.equals(RequestCycle.get().getResponsePageClass()));
+        
+        RequestCycle cycle = RequestCycle.get();
+        RenderPageRequestHandler handler = (RenderPageRequestHandler) cycle.getRequestHandlerScheduledAfterCurrent();
+        assertFalse(UnauthorizedPage.class.equals( handler.getPageClass() ));
     }
 
     public void testCreateNewFeatureTypePageAsWorkspaceAdmin() throws Exception {
@@ -315,6 +322,9 @@ public abstract class AbstractAdminPrivilegeTest extends GeoServerWicketTestSupp
         pp.add(NewFeatureTypePage.DATASTORE, "cite");
 
         new NewFeatureTypePage(pp);
-        assertFalse(UnauthorizedPage.class.equals(RequestCycle.get().getResponsePageClass()));
+        
+        RequestCycle cycle = RequestCycle.get();
+        RenderPageRequestHandler handler = (RenderPageRequestHandler) cycle.getRequestHandlerScheduledAfterCurrent();
+        assertFalse(UnauthorizedPage.class.equals( handler.getPageClass() ));
     }
 }

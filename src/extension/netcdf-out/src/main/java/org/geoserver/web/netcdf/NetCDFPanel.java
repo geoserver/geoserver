@@ -9,7 +9,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.ResourceReference;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
@@ -24,6 +23,7 @@ import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.util.visit.IVisit;
 import org.apache.wicket.validation.validator.RangeValidator;
 import org.geoserver.web.GeoServerBasePage;
@@ -42,10 +42,10 @@ public class NetCDFPanel<T extends NetCDFSettingsContainer> extends FormComponen
 
     protected final TextField<Integer> compressionLevel;
 
-    public static final ResourceReference ADD_ICON = new ResourceReference(GeoServerBasePage.class,
-            "img/icons/silk/add.png");
+    public static final PackageResourceReference ADD_ICON = new PackageResourceReference(
+            GeoServerBasePage.class, "img/icons/silk/add.png");
 
-    public static final ResourceReference DELETE_ICON = new ResourceReference(
+    public static final PackageResourceReference DELETE_ICON = new PackageResourceReference(
             GeoServerBasePage.class, "img/icons/silk/delete.png");
 
     protected final DropDownChoice<DataPacking> dataPacking;
@@ -112,8 +112,8 @@ public class NetCDFPanel<T extends NetCDFSettingsContainer> extends FormComponen
                         list.remove(attribute);
                         globalAttributes.setModelObject(list);
                         item.remove();
-
-                        target.addComponent(container);
+                        
+                        target.add(container);
                     }
                 };
                 removeLink.setDefaultModel(item.getModel());
@@ -154,7 +154,7 @@ public class NetCDFPanel<T extends NetCDFSettingsContainer> extends FormComponen
                     newKey.setModel(Model.of("")); // Reset the key field
                     newValue.setModel(Model.of("")); // Reset the Value field
 
-                    target.addComponent(container);
+                    target.add(container);
                 }
             }
         };

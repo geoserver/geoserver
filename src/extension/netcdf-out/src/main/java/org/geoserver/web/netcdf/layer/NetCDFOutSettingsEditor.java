@@ -141,7 +141,7 @@ public class NetCDFOutSettingsEditor extends NetCDFPanel<NetCDFLayerSettingsCont
                         }
                         if (e != null) {
                             uom.setModelObject(e.getCanonicalUnits());
-                            target.addComponent(container);
+                            target.add(container);
                         }
                     }
                 }

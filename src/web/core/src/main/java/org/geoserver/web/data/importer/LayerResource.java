@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -17,6 +17,8 @@ import org.opengis.feature.type.Name;
  */
 public class LayerResource implements Comparable<LayerResource>, Serializable {
     
+    private static final long serialVersionUID = 7584589248746230483L;
+
     enum LayerStatus {ERROR, NEWLY_PUBLISHED, UPDATED, NEW, PUBLISHED}; 
 
     /**

@@ -142,11 +142,11 @@ public class CoverageBandsConfigurationPanel extends ResourceConfigurationPanel 
                 new CoverageDimensionsProvider(), true) {
 
             @Override
-            protected Component getComponentForProperty(String id, IModel itemModel,
-                    Property<CoverageDimensionInfo> property) {
+            protected Component getComponentForProperty(String id, IModel<CoverageDimensionInfo> itemModel, 
+                Property<CoverageDimensionInfo> property) {
                 if ("band".equals(property.getName())) {
                     Fragment f = new Fragment(id, "bandtext", CoverageBandsConfigurationPanel.this);
-                    Component text = new TextField<String>("bandtext", property.getModel(itemModel));
+                    Component text = new TextField<>("bandtext", (IModel<String>) property.getModel(itemModel));
                     f.add(text);
                     return f;
                 }
@@ -164,13 +164,13 @@ public class CoverageBandsConfigurationPanel extends ResourceConfigurationPanel 
                 }
                if ("minRange".equals(property.getName())) {
                     Fragment f = new Fragment(id, "minRange", CoverageBandsConfigurationPanel.this);
-                    Component min = new DoubleTextField("minRange", property.getModel(itemModel));
+                    Component min = new DoubleTextField("minRange", (IModel<Double>) property.getModel(itemModel));
                     f.add(min);
                     return f;
                 }
                 if ("maxRange".equals(property.getName())) {
                     Fragment f = new Fragment(id, "maxRange", CoverageBandsConfigurationPanel.this);
-                    Component max = new DoubleTextField("maxRange", property.getModel(itemModel));
+                    Component max = new DoubleTextField("maxRange", (IModel<Double>) property.getModel(itemModel));
                     f.add(max);
                     return f;
                 }

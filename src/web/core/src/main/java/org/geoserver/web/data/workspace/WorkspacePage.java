@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -20,10 +20,7 @@ import org.geoserver.web.ComponentAuthorizer;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.data.SelectionRemovalLink;
-import org.geoserver.web.wicket.GeoServerDialog;
-import org.geoserver.web.wicket.GeoServerTablePanel;
-import org.geoserver.web.wicket.Icon;
-import org.geoserver.web.wicket.SimpleBookmarkableLink;
+import org.geoserver.web.wicket.*;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 
 /**
@@ -40,7 +37,7 @@ public class WorkspacePage extends GeoServerSecuredPage {
         // the middle table
         add(table = new GeoServerTablePanel<WorkspaceInfo>("table", provider, true) {
             @Override
-            protected Component getComponentForProperty(String id, IModel itemModel,
+            protected Component getComponentForProperty(String id, IModel<WorkspaceInfo> itemModel,
                     Property<WorkspaceInfo> property) {
                 if ( property == NAME ) {
                     return workspaceLink(id, itemModel);

@@ -7,6 +7,8 @@ package org.geoserver.web.security.ldap;
 
 import static org.junit.Assert.assertNull;
 
+import java.io.Serializable;
+
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.CompoundPropertyModel;
@@ -54,9 +56,7 @@ public class LDAPRoleServicePanelTest extends AbstractSecurityWicketTestSupport 
     
     @After
     public void tearDown() throws Exception {
-        LdapTestUtils
-                .destroyApacheDirectoryServer(LdapTestUtils.DEFAULT_PRINCIPAL,
-                        LdapTestUtils.DEFAULT_PASSWORD);
+        LdapTestUtils.shutdownEmbeddedServer();
     }
     
     
@@ -90,9 +90,11 @@ public class LDAPRoleServicePanelTest extends AbstractSecurityWicketTestSupport 
     
             public Component buildComponent(String id) {
                 
-                return current = new LDAPRoleServicePanel(id, new Model(config));
+                return current = new LDAPRoleServicePanel(id, new Model<LDAPRoleServiceConfig>(config));
             };
-        }, new CompoundPropertyModel(config)){
+        }, new CompoundPropertyModel<Object>(config)){
+
+            private static final long serialVersionUID = -4090244876841730821L;
 
             @Override
             protected void onBeforeRender() {
@@ -122,10 +124,9 @@ public class LDAPRoleServicePanelTest extends AbstractSecurityWicketTestSupport 
         
         tester.newFormTester("form").submit();
         
-        tester.assertErrorMessages(new String[] {"Field 'Server URL' is required.", "Field 'Group search base' is required."});
+        tester.assertErrorMessages((Serializable [])new String[] {"Field 'Server URL' is required.", "Field 'Group search base' is required."});
     }
 
-    
     @Test
     public void testDataLoadedFromConfigurationWithAuthentication() throws Exception {
         Assume.assumeTrue(LDAPTestUtils.initLdapServer(true, ldapServerUrl, basePath));

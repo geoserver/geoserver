@@ -18,7 +18,7 @@ import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
-import org.apache.wicket.markup.html.form.IChoiceRenderer;
+import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.ListMultipleChoice;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
@@ -198,7 +198,7 @@ public class CoverageViewEditor extends FormComponentPanel {
         return button;
     }
 
-    private class CompositionTypeRenderer implements IChoiceRenderer {
+    private class CompositionTypeRenderer extends ChoiceRenderer {
 
         public CompositionTypeRenderer() {
         }

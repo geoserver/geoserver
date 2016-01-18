@@ -23,7 +23,7 @@ import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.IChoiceRenderer;
+import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.Model;
@@ -419,7 +419,7 @@ public class WCSRequestBuilderPanel extends Panel {
         }
     }
     
-    class TargetLayoutRenderer implements IChoiceRenderer {
+    class TargetLayoutRenderer extends ChoiceRenderer {
 
         public Object getDisplayValue(Object object) {
             final String name = ((TargetLayout) object).name();

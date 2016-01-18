@@ -5,7 +5,7 @@
  */
 package org.geoserver.web.data.store;
 
-import org.apache.wicket.markup.html.form.IChoiceRenderer;
+import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.geoserver.catalog.StoreInfo;
 
 /**
@@ -14,7 +14,7 @@ import org.geoserver.catalog.StoreInfo;
  * @author Andrea Aime - GeoSolutions
  * 
  */
-public class StoreListChoiceRenderer implements IChoiceRenderer<StoreInfo> {
+public class StoreListChoiceRenderer extends ChoiceRenderer<StoreInfo> {
 
     public Object getDisplayValue(StoreInfo info) {
         return new StringBuilder(info.getWorkspace().getName()).append(':').append(info.getName());

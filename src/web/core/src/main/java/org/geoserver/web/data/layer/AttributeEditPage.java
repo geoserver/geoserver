@@ -11,7 +11,7 @@ import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.IChoiceRenderer;
+import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.SubmitLink;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.link.Link;
@@ -157,7 +157,7 @@ public class AttributeEditPage extends GeoServerSecuredPage {
         return valid;
     }
 
-    static class BindingChoiceRenderer implements IChoiceRenderer {
+    static class BindingChoiceRenderer extends ChoiceRenderer {
 
         public Object getDisplayValue(Object object) {
             return AttributeDescription.getLocalizedName((Class) object);

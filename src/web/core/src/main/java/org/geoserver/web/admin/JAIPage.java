@@ -13,7 +13,7 @@ import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.IChoiceRenderer;
+import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
@@ -114,7 +114,7 @@ public class JAIPage extends ServerAdminPage {
         }
         // create the editor, eventually set a default value
         DropDownChoice<JAIInfo.PngEncoderType> editor = new DropDownChoice<JAIInfo.PngEncoderType>(
-                "pngEncoderType", encoders, new IChoiceRenderer<JAIInfo.PngEncoderType>() {
+                "pngEncoderType", encoders, new ChoiceRenderer<JAIInfo.PngEncoderType>() {
                     private static final long serialVersionUID = 1L;
 
                     @Override

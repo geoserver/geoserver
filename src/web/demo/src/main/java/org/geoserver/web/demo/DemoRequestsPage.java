@@ -29,7 +29,7 @@ import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.IChoiceRenderer;
+import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.PasswordTextField;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
@@ -133,7 +133,7 @@ public class DemoRequestsPage extends GeoServerBasePage {
         final DropDownChoice demoRequestsList;
         final IModel reqFileNameModel = new PropertyModel(requestModel, "requestFileName");
         demoRequestsList = new DropDownChoice("demoRequestsList", reqFileNameModel, demoList,
-                new IChoiceRenderer() {
+                new ChoiceRenderer() {
                     public String getIdValue(Object obj, int index) {
                         return String.valueOf(obj);
                     }

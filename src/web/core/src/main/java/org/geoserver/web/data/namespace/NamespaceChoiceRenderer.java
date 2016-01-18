@@ -6,7 +6,7 @@
 package org.geoserver.web.data.namespace;
 
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
-import org.apache.wicket.markup.html.form.IChoiceRenderer;
+import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.geoserver.catalog.NamespaceInfo;
 
 /**

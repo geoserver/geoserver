@@ -25,8 +25,10 @@ import org.geoserver.geoserver.authentication.auth.GeoFenceAuthenticationProvide
 import org.geoserver.security.web.auth.AuthenticationProviderPanel;
 
 public class GeoFenceAuthProviderPanel extends AuthenticationProviderPanel<GeoFenceAuthenticationProviderConfig> {
+   
+	private static final long serialVersionUID = 4454241105050831394L;
 
-    public GeoFenceAuthProviderPanel(String id, IModel<GeoFenceAuthenticationProviderConfig> model) {
+	public GeoFenceAuthProviderPanel(String id, IModel<GeoFenceAuthenticationProviderConfig> model) {
         super(id, model);
     }
 }

@@ -19,7 +19,6 @@
  */
 package org.geoserver.geofence.web;
 
-import java.util.List;
 import java.util.logging.Level;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -42,7 +41,6 @@ import org.geoserver.geofence.config.GeoFenceConfigurationController;
 import org.geoserver.geofence.config.GeoFenceConfigurationManager;
 import org.geoserver.geofence.services.RuleReaderService;
 import org.geoserver.geofence.services.dto.RuleFilter;
-import org.geoserver.geofence.services.dto.ShortRule;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.wicket.model.ExtPropertyModel;
@@ -62,7 +60,9 @@ import org.geoserver.web.util.MapModel;
  */
 public class GeofencePage extends GeoServerSecuredPage {
 
-    /**
+	private static final long serialVersionUID = 5845823599005718408L;
+
+	/**
      * Configuration object.
      */
     private GeoFenceConfiguration config;
@@ -97,16 +97,18 @@ public class GeofencePage extends GeoServerSecuredPage {
                     .setEnabled(!config.isInternal()));
 
         form.add(new AjaxSubmitLink("test") {
-            @Override
+			private static final long serialVersionUID = -91239899377941223L;
+
+			@Override
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                ((FormComponent)form.get("servicesUrl")).processInput();
-                String servicesUrl = (String)((FormComponent)form.get("servicesUrl")).getConvertedInput();
+                ((FormComponent<?>)form.get("servicesUrl")).processInput();
+                String servicesUrl = (String)((FormComponent<?>)form.get("servicesUrl")).getConvertedInput();
                 RuleReaderService ruleReader = getRuleReaderService(servicesUrl);
                 try {
-                    List<ShortRule> rules = ruleReader.getMatchingRules(new RuleFilter());
+                    ruleReader.getMatchingRules(new RuleFilter());
 
                     info(new StringResourceModel(GeofencePage.class.getSimpleName() +
-                            ".connectionSuccessful", null).getObject());
+                            ".connectionSuccessful").getObject());
                 } catch(Exception e) {
                     error(e);
                     LOGGER.log(Level.WARNING, e.getMessage(), e);
@@ -200,13 +202,18 @@ public class GeofencePage extends GeoServerSecuredPage {
 
         form.add(new AjaxSubmitLink("invalidate") {
 
-            @Override
+            /**
+			 * 
+			 */
+			private static final long serialVersionUID = 3847903240475052867L;
+
+			@Override
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
                 CachedRuleReader cacheRuleReader = GeoServerExtensions
                     .bean(CachedRuleReader.class);
                 cacheRuleReader.invalidateAll();
                 info(new StringResourceModel(GeofencePage.class.getSimpleName() +
-                        ".cacheInvalidated", null).getObject());
+                        ".cacheInvalidated").getObject());
                 updateStatsValues(cacheRuleReader);
                 for (Label label : statsLabels) {
                     target.add(label);

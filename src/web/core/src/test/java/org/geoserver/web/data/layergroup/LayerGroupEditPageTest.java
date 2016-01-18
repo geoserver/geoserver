@@ -173,7 +173,7 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
         Catalog catalog = getGeoServerApplication().getCatalog();
         
         int layerCount = catalog.count(LayerInfo.class, Filter.INCLUDE);
-        int rowCount = dataView.getRowCount();
+        int rowCount = (int) dataView.getRowCount();
         
         assertEquals(layerCount, rowCount);
     }

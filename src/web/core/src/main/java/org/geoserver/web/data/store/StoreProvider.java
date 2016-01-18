@@ -131,8 +131,7 @@ public class StoreProvider extends GeoServerDataProvider<StoreInfo> {
         return super.getComparator(sort);
     }
     
-
-    public IModel newModel(Object object) {
+    public IModel newModel(StoreInfo object) {
         return new StoreInfoDetachableModel((StoreInfo) object);
     }
 

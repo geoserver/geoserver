@@ -28,7 +28,7 @@ import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
-import org.apache.wicket.markup.html.form.IChoiceRenderer;
+import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
@@ -250,7 +250,7 @@ class ParameterFilterEditor extends FormComponentPanel<Set<ParameterFilter>> {
             (       "availableFilterTypes", 
                     new Model<Class<? extends ParameterFilter>>(),
                     new Model<ArrayList<Class<? extends ParameterFilter>>>(filterTypes), 
-                    new IChoiceRenderer<Class<? extends ParameterFilter>>() {
+                    new ChoiceRenderer<Class<? extends ParameterFilter>>() {
 
                         /** serialVersionUID */
                         private static final long serialVersionUID = 1L;

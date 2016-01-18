@@ -104,7 +104,7 @@ public class XMLUserGroupConfigDetailsPanelTest extends AbstractSecurityNamedSer
         
         activatePanel();
 
-        assertEquals(2, countItmes());
+        assertEquals(2, countItems());
         assertNotNull(getSecurityNamedServiceConfig("default"));
         assertNotNull(getSecurityNamedServiceConfig("test"));
         assertNull(getSecurityNamedServiceConfig("xxxxxxxx"));
@@ -123,7 +123,7 @@ public class XMLUserGroupConfigDetailsPanelTest extends AbstractSecurityNamedSer
         clickCancel();
         
         tester.assertRenderedPage(basePage.getClass());
-        assertEquals(2, countItmes());
+        assertEquals(2, countItems());
         assertNotNull(getSecurityNamedServiceConfig("default"));
         
         clickAddNew();
@@ -142,7 +142,7 @@ public class XMLUserGroupConfigDetailsPanelTest extends AbstractSecurityNamedSer
         
         tester.assertNoErrorMessage();
         tester.assertRenderedPage(basePage.getClass());
-        assertEquals(3, countItmes());
+        assertEquals(3, countItems());
         assertNotNull(getSecurityNamedServiceConfig("default"));
         
         XMLUserGroupServiceConfig xmlConfig=

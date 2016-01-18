@@ -17,7 +17,7 @@ import java.util.Map;
 import javax.media.jai.ImageLayout;
 
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.IChoiceRenderer;
+import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.SubmitLink;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.link.Link;
@@ -228,7 +228,7 @@ public abstract class CoverageViewAbstractPage extends GeoServerSecuredPage {
         this.selectedCoverages = selectedCoverages;
     }
 
-    private class CompositionTypeRenderer implements IChoiceRenderer {
+    private class CompositionTypeRenderer extends ChoiceRenderer {
 
         public CompositionTypeRenderer() {
         }

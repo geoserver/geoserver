@@ -14,7 +14,7 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.IChoiceRenderer;
+import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.RadioChoice;
 import org.apache.wicket.markup.html.form.SubmitLink;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
@@ -53,7 +53,7 @@ public class DataSecurityPage extends AbstractSecurityPage {
         add(rules = new GeoServerTablePanel<DataAccessRule>("table", provider, true) {
 
             @Override
-            protected Component getComponentForProperty(String id, IModel itemModel,
+            protected Component getComponentForProperty(String id, IModel<DataAccessRule> itemModel,
                     Property<DataAccessRule> property) {
                 if (property == DataAccessRuleProvider.RULEKEY) {
                     return editRuleLink(id, itemModel, property);
@@ -128,7 +128,7 @@ public class DataSecurityPage extends AbstractSecurityPage {
         return header;
     }
 
-    class CatalogModeRenderer implements IChoiceRenderer {
+    class CatalogModeRenderer extends ChoiceRenderer {
 
         public Object getDisplayValue(Object object) {
             return (String) new ParamResourceModel(((CatalogMode) object).name(), getPage())

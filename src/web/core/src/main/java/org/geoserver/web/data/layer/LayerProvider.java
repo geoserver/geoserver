@@ -127,8 +127,9 @@ public class LayerProvider extends GeoServerDataProvider<LayerInfo> {
         return PROPERTIES;
     }
 
-    public IModel newModel(Object object) {
-        return new LayerDetachableModel((LayerInfo) object);
+    @Override
+    protected IModel<LayerInfo> newModel(LayerInfo object) {
+        return new LayerDetachableModel(object);
     }
 
     @Override
@@ -152,7 +153,7 @@ public class LayerProvider extends GeoServerDataProvider<LayerInfo> {
     
     @Override
     public Iterator<LayerInfo> iterator(final long first, final long count) {
-        Iterator<LayerInfo> iterator = filteredItems(first, count);
+        Iterator<LayerInfo> iterator = filteredItems((int) first, (int) count);
         if (iterator instanceof CloseableIterator) {
             // don't know how to force wicket to close the iterator, lets return
             // a copy. Shouldn't be much overhead as we're paging

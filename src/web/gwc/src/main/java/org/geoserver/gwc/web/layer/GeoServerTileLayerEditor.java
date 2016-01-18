@@ -29,7 +29,7 @@ import org.apache.wicket.markup.html.form.CheckGroup;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
-import org.apache.wicket.markup.html.form.IChoiceRenderer;
+import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
@@ -232,7 +232,7 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
         enabled.add(new AttributeModifier("title", new ResourceModel("enabled.title")));
         configs.add(enabled);
         
-        IChoiceRenderer<String> blobStoreRenderer = new IChoiceRenderer<String>() {
+        ChoiceRenderer<String> blobStoreRenderer = new ChoiceRenderer<String>() {
             private static final long serialVersionUID = 1L;
 
             final String defaultStore = getDefaultBlobStoreId();

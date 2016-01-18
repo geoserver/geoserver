@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -16,18 +16,19 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.geoserver.security.ldap.LDAPRoleServiceConfig;
 import org.geoserver.security.web.role.RoleServicePanel;
-import org.geoserver.web.security.ldap.LDAPAuthProviderPanel.AuthorizationPanel;
-import org.geoserver.web.security.ldap.LDAPAuthProviderPanel.LDAPAuthorizationPanel;
-import org.geoserver.web.security.ldap.LDAPAuthProviderPanel.UserGroupAuthorizationPanel;
 
 public class LDAPRoleServicePanel extends RoleServicePanel<LDAPRoleServiceConfig> {
 
-    
-        class LDAPAuthenticationPanel extends FormComponentPanel {
+    private static final long serialVersionUID = -67788557484913489L;
+
+        class LDAPAuthenticationPanel extends FormComponentPanel<String> {
         
+            /** serialVersionUID */
+            private static final long serialVersionUID = 8919421089437979222L;
+
             public LDAPAuthenticationPanel(String id) {
-                super(id, new Model());
-                add(new TextField("user"));
+                super(id, new Model<String>());
+                add(new TextField<String>("user"));
             
                 PasswordTextField pwdField = new PasswordTextField("password");
                 // avoid reseting the password which results in an
@@ -44,13 +45,15 @@ public class LDAPRoleServicePanel extends RoleServicePanel<LDAPRoleServiceConfig
     
     public LDAPRoleServicePanel(String id, IModel<LDAPRoleServiceConfig> model) {
         super(id, model);
-        add(new TextField("serverURL").setRequired(true));
+        add(new TextField<String>("serverURL").setRequired(true));
         add(new CheckBox("useTLS"));
-        add(new TextField("groupSearchBase").setRequired(true));
-        add(new TextField("groupSearchFilter"));
-        add(new TextField("allGroupsSearchFilter"));
-        add(new TextField("userFilter"));
+        add(new TextField<String>("groupSearchBase").setRequired(true));
+        add(new TextField<String>("groupSearchFilter"));
+        add(new TextField<String>("allGroupsSearchFilter"));
+        add(new TextField<String>("userFilter"));
         add(new AjaxCheckBox("bindBeforeGroupSearch") {
+            private static final long serialVersionUID = -1675695153498067857L;
+
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
                 WebMarkupContainer c = (WebMarkupContainer) 

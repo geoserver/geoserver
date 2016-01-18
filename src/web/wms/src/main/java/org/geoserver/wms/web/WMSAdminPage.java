@@ -20,7 +20,7 @@ import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.IChoiceRenderer;
+import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
@@ -294,7 +294,7 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
         return "WMS";
     }
     
-    private class WatermarkPositionRenderer implements  IChoiceRenderer {
+    private class WatermarkPositionRenderer extends ChoiceRenderer {
 
         public Object getDisplayValue(Object object) {
             return new StringResourceModel(((Position) object).name(), WMSAdminPage.this, null).getString();
@@ -306,7 +306,7 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
         
     }
     
-    private class InterpolationRenderer implements  IChoiceRenderer {
+    private class InterpolationRenderer extends ChoiceRenderer {
 
         public Object getDisplayValue(Object object) {
             return new StringResourceModel(((WMSInterpolation) object).name(), WMSAdminPage.this, null).getString();
@@ -318,7 +318,7 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
         
     }
     
-    private class SVGMethodRenderer implements  IChoiceRenderer {
+    private class SVGMethodRenderer extends ChoiceRenderer {
 
         public Object getDisplayValue(Object object) {
             return new StringResourceModel("svg." + object, WMSAdminPage.this, null).getString();

@@ -167,7 +167,7 @@ public class LayerGroupEditPage extends PublishedConfigurationPage<LayerGroupInf
                 private static final long serialVersionUID = -5290731459036222837L;
 
                 @Override
-                public void onClick(AjaxRequestTarget target, Form form) {
+                public void onClick(AjaxRequestTarget target, Form<?> form) {
                     // build a layer group with the current contents of the group
                     LayerGroupInfo lg = getCatalog().getFactory().createLayerGroup();
                     for ( LayerGroupEntry entry : lgEntryPanel.getEntries() ) {
@@ -203,7 +203,7 @@ public class LayerGroupEditPage extends PublishedConfigurationPage<LayerGroupInf
                 private static final long serialVersionUID = -7907583302556368270L;
 
                 @Override
-                protected void onClick(AjaxRequestTarget target, Form form) {
+                protected void onClick(AjaxRequestTarget target, Form<?> form) {
                     LOGGER.log(Level.FINE, "Computing bounds for LG based off CRS");
                     LayerGroupInfo lg = getPublishedInfo();
                     CoordinateReferenceSystem crs = envelopePanel.getCoordinateReferenceSystem();

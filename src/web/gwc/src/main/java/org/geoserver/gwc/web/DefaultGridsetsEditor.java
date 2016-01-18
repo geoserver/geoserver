@@ -26,6 +26,7 @@ import org.geoserver.gwc.config.GWCConfig;
 import org.geoserver.gwc.web.gridset.GridSetListTablePanel;
 import org.geoserver.gwc.web.gridset.GridSetTableProvider;
 import org.geoserver.web.wicket.GeoServerAjaxFormLink;
+import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.Icon;
 import org.geoserver.web.wicket.ImageAjaxLink;
 import org.geowebcache.grid.GridSet;
@@ -69,6 +70,7 @@ class DefaultGridsetsEditor extends FormComponentPanel<Set<String>> {
         @Override
         protected Component actionLink(final String id, String gridSetName) {
 
+            @SuppressWarnings("rawtypes")
             Component removeLink = new ImageAjaxLink(id, GWCIconFactory.DELETE_ICON) {
                 private static final long serialVersionUID = 1L;
 
@@ -91,6 +93,13 @@ class DefaultGridsetsEditor extends FormComponentPanel<Set<String>> {
             removeLink.setDefaultModel(new Model<String>(gridSetName));
 
             return removeLink;
+        }
+
+        @Override
+        protected Component getComponentForProperty(String id, IModel<GridSet> itemModel,
+                Property<GridSet> property) {
+            // TODO Auto-generated method stub
+            return null;
         }
 
     }
@@ -144,7 +153,7 @@ class DefaultGridsetsEditor extends FormComponentPanel<Set<String>> {
             private static final long serialVersionUID = 1L;
 
             @Override
-            protected void onClick(AjaxRequestTarget target, Form form) {
+            protected void onClick(AjaxRequestTarget target, Form<?> form) {
                 availableGridSets.processInput();
 
                 final String selectedGridset = availableGridSets.getModelObject();

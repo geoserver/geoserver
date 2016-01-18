@@ -40,7 +40,7 @@ public class BlobStoresProvider extends GeoServerDataProvider<BlobStoreConfig> {
     }
 
     @Override
-    protected Comparator<BlobStoreConfig> getComparator(final SortParam sort) {
+    protected Comparator<BlobStoreConfig> getComparator(final SortParam<?> sort) {
         if (sort != null && sort.getProperty().equals(TYPE.getName())) {
 
             return new Comparator<BlobStoreConfig>() {

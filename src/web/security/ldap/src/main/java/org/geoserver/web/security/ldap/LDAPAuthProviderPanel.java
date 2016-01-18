@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -6,13 +6,9 @@
 package org.geoserver.web.security.ldap;
 
 import java.util.HashMap;
-import java.util.Map;
 import java.util.logging.Level;
 
 import javax.naming.AuthenticationException;
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.SSLSession;
-
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxCheckBox;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
@@ -26,19 +22,14 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.StringResourceModel;
-import org.geoserver.security.ldap.GeoserverLdapBindAuthenticator;
 import org.geoserver.security.ldap.LDAPAuthenticationProvider;
 import org.geoserver.security.ldap.LDAPSecurityProvider;
 import org.geoserver.security.ldap.LDAPSecurityServiceConfig;
 import org.geoserver.security.web.auth.AuthenticationProviderPanel;
 import org.geoserver.security.web.usergroup.UserGroupServiceChoice;
-import org.geoserver.web.GeoServerBasePage;
 import org.geoserver.web.util.MapModel;
-import org.springframework.ldap.core.support.DefaultTlsDirContextAuthenticationStrategy;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.ldap.DefaultSpringSecurityContextSource;
-import org.springframework.security.ldap.authentication.SpringSecurityAuthenticationSource;
 
 /**
  * Configuration panel for {@link LDAPAuthenticationProvider}.
@@ -47,17 +38,22 @@ import org.springframework.security.ldap.authentication.SpringSecurityAuthentica
  */
 public class LDAPAuthProviderPanel extends AuthenticationProviderPanel<LDAPSecurityServiceConfig> {
 
+    private static final long serialVersionUID = 4772173006888418298L;
+
     public LDAPAuthProviderPanel(String id, IModel<LDAPSecurityServiceConfig> model) {
         super(id, model);
 
-        add(new TextField("serverURL").setRequired(true));
+        add(new TextField<String>("serverURL").setRequired(true));
         add(new CheckBox("useTLS"));        
-        add(new TextField("userDnPattern"));
-        add(new TextField("userFilter"));
-        add(new TextField("userFormat"));
+        add(new TextField<String>("userDnPattern"));
+        add(new TextField<String>("userFilter"));
+        add(new TextField<String>("userFormat"));
 
         boolean useLdapAuth = model.getObject().getUserGroupServiceName() == null;
-        add(new AjaxCheckBox("useLdapAuthorization", new Model(useLdapAuth)) {
+        add(new AjaxCheckBox("useLdapAuthorization", new Model<Boolean>(useLdapAuth)) {
+
+            private static final long serialVersionUID = 2060279075143716273L;
+
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
                 WebMarkupContainer c = (WebMarkupContainer) 
@@ -86,16 +82,20 @@ public class LDAPAuthProviderPanel extends AuthenticationProviderPanel<LDAPSecur
         return useLDAP ? new LDAPAuthorizationPanel(id) : new UserGroupAuthorizationPanel(id);
     }
 
-    abstract class AuthorizationPanel extends FormComponentPanel {
+    abstract class AuthorizationPanel extends FormComponentPanel<HashMap<String, Object>> {
+
+        private static final long serialVersionUID = -2021795762927385164L;
 
         public AuthorizationPanel(String id) {
-            super(id, new Model());
+            super(id, new Model<HashMap<String, Object>>());
         }
 
         public abstract void resetModel();
     }
 
     class UserGroupAuthorizationPanel extends AuthorizationPanel {
+
+        private static final long serialVersionUID = 2464048864034610244L;
 
         public UserGroupAuthorizationPanel(String id) {
             super(id);
@@ -111,50 +111,56 @@ public class LDAPAuthProviderPanel extends AuthenticationProviderPanel<LDAPSecur
 
     class LDAPAuthorizationPanel extends AuthorizationPanel {
 
+        private static final long serialVersionUID = 7541432269535150812L;
+
         public LDAPAuthorizationPanel(String id) {
             super(id);
             add(new CheckBox("bindBeforeGroupSearch"));
-            add(new TextField("adminGroup"));
-            add(new TextField("groupAdminGroup"));
-            add(new TextField("groupSearchBase"));
-            add(new TextField("groupSearchFilter"));
+            add(new TextField<String>("adminGroup"));
+            add(new TextField<String>("groupAdminGroup"));
+            add(new TextField<String>("groupSearchBase"));
+            add(new TextField<String>("groupSearchFilter"));
         }
 
         @Override
         public void resetModel() {
-        	get("bindBeforeGroupSearch").setDefaultModelObject(null);
-        	get("adminGroup").setDefaultModelObject(null);
-        	get("groupAdminGroup").setDefaultModelObject(null);
+            get("bindBeforeGroupSearch").setDefaultModelObject(null);
+            get("adminGroup").setDefaultModelObject(null);
+            get("groupAdminGroup").setDefaultModelObject(null);
             get("groupSearchBase").setDefaultModelObject(null);
             get("groupSearchFilter").setDefaultModelObject(null);
         }
     }
 
-    class TestLDAPConnectionPanel extends FormComponentPanel {
+    class TestLDAPConnectionPanel extends FormComponentPanel<HashMap<String, Object>> {
+
+        private static final long serialVersionUID = 5433983389877706266L;
 
         public TestLDAPConnectionPanel(String id) {
-            super(id, new Model(new HashMap()));
+            super(id, new Model<HashMap<String, Object>>(new HashMap<String, Object>()));
 
-            add(new TextField("username", new MapModel(getModel(), "username")));
-            add(new PasswordTextField("password", new MapModel(getModel(), "password")).setRequired(false));
+            add(new TextField<HashMap<String, Object>>("username", new MapModel<HashMap<String, Object>>(getModel().getObject(), "username")));
+            add(new PasswordTextField("password", new MapModel<String>(getModel().getObject(), "password")).setRequired(false));
             add(new AjaxSubmitLink("test") {
+
+                private static final long serialVersionUID = 2373404292655355758L;
 
                 @Override
                 protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
                     //since this is not a regular form submit we have to manually update models 
                     // of form components we care about
-                    ((FormComponent)TestLDAPConnectionPanel.this.get("username")).processInput();
-                    ((FormComponent)TestLDAPConnectionPanel.this.get("password")).processInput();
+                    ((FormComponent<?>)TestLDAPConnectionPanel.this.get("username")).processInput();
+                    ((FormComponent<?>)TestLDAPConnectionPanel.this.get("password")).processInput();
 
-                    ((FormComponent)LDAPAuthProviderPanel.this.get("serverURL")).processInput();
-                    ((FormComponent)LDAPAuthProviderPanel.this.get("useTLS")).processInput();
+                    ((FormComponent<?>)LDAPAuthProviderPanel.this.get("serverURL")).processInput();
+                    ((FormComponent<?>)LDAPAuthProviderPanel.this.get("useTLS")).processInput();
 
-                    ((FormComponent)LDAPAuthProviderPanel.this.get("userDnPattern")).processInput();
-                    ((FormComponent)LDAPAuthProviderPanel.this.get("userFilter")).processInput();
-                    ((FormComponent)LDAPAuthProviderPanel.this.get("userFormat")).processInput();
+                    ((FormComponent<?>)LDAPAuthProviderPanel.this.get("userDnPattern")).processInput();
+                    ((FormComponent<?>)LDAPAuthProviderPanel.this.get("userFilter")).processInput();
+                    ((FormComponent<?>)LDAPAuthProviderPanel.this.get("userFormat")).processInput();
                     
-                    String username = (String)((FormComponent)TestLDAPConnectionPanel.this.get("username")).getConvertedInput();
-                    String password = (String)((FormComponent)TestLDAPConnectionPanel.this.get("password")).getConvertedInput();
+                    String username = (String)((FormComponent<?>)TestLDAPConnectionPanel.this.get("username")).getConvertedInput();
+                    String password = (String)((FormComponent<?>)TestLDAPConnectionPanel.this.get("password")).getConvertedInput();
                     
                     LDAPSecurityServiceConfig ldapConfig = (LDAPSecurityServiceConfig) getForm().getModelObject();
                     doTest(ldapConfig, username, password);
@@ -185,7 +191,7 @@ public class LDAPAuthProviderPanel extends AuthenticationProviderPanel<LDAPSecur
 
                         provider.destroy(null);
                         info(new StringResourceModel(LDAPAuthProviderPanel.class.getSimpleName() + 
-                            ".connectionSuccessful", null).getObject());
+                            ".connectionSuccessful").getObject());
                     } catch (Exception e) {
                         error(e);
                         LOGGER.log(Level.WARNING, e.getMessage(), e);

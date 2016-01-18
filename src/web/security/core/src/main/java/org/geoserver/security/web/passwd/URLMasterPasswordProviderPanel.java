@@ -16,6 +16,7 @@ import org.apache.wicket.util.convert.IConverter;
 import org.geoserver.security.password.URLMasterPasswordProviderConfig;
 import org.geoserver.web.wicket.HelpLink;
 
+@SuppressWarnings("serial")
 public class URLMasterPasswordProviderPanel 
     extends MasterPasswordProviderPanel<URLMasterPasswordProviderConfig> {
 
@@ -23,9 +24,9 @@ public class URLMasterPasswordProviderPanel
         super(id, model);
 
         add(new HelpLink("urlHelp", this).setDialog(dialog));
-        add(new TextField("uRL", URL.class) {
+        add(new TextField<URL>("uRL", URL.class) {
             @Override
-            public IConverter getConverter(Class<?> type) {
+            public <C> IConverter<C> getConverter(Class<C> type) {
                 return new IConverter() {
                     @Override
                     public String convertToString(Object value, Locale locale) {

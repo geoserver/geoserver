@@ -59,7 +59,7 @@ public class GroupPanel extends Panel {
         add(groups = new GeoServerTablePanel<GeoServerUserGroup>("table", provider, true) {
 
             @Override
-            protected Component getComponentForProperty(String id, IModel itemModel,
+            protected Component getComponentForProperty(String id, IModel<GeoServerUserGroup> itemModel,
                     Property<GeoServerUserGroup> property) {
                 if (property == GroupListProvider.GROUPNAME) {
                     return editGroupLink(id, itemModel, property);

@@ -22,7 +22,7 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.IChoiceRenderer;
+import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.SubmitLink;
 import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.form.TextField;
@@ -206,7 +206,7 @@ public abstract class SQLViewAbstractPage extends GeoServerSecuredPage {
         parameters = new GeoServerTablePanel<Parameter>("parameters", paramProvider, true) {
 
             @Override
-            protected Component getComponentForProperty(String id, IModel itemModel,
+            protected Component getComponentForProperty(String id, IModel<Parameter> itemModel,
                     Property<Parameter> property) {
                 Fragment f = new Fragment(id, "text", SQLViewAbstractPage.this);
                 TextField text = new TextField("text", property.getModel(itemModel));
@@ -237,7 +237,7 @@ public abstract class SQLViewAbstractPage extends GeoServerSecuredPage {
         attributes = new GeoServerTablePanel<SQLViewAttribute>("attributes", attProvider) {
 
             @Override
-            protected Component getComponentForProperty(String id, IModel itemModel,
+            protected Component getComponentForProperty(String id, IModel<SQLViewAttribute> itemModel,
                     Property<SQLViewAttribute> property) {
                 SQLViewAttribute att = (SQLViewAttribute) itemModel.getObject();
                 boolean isGeometry = att.getType() != null
@@ -516,7 +516,7 @@ public abstract class SQLViewAbstractPage extends GeoServerSecuredPage {
      * Displays the geometry type in the geom type drop down
      * @author Andrea Aime - OpenGeo
      */
-    static class GeometryTypeRenderer implements IChoiceRenderer {
+    static class GeometryTypeRenderer extends ChoiceRenderer {
 
         public Object getDisplayValue(Object object) {
             return ((Class) object).getSimpleName();

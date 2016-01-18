@@ -30,7 +30,7 @@ public class JAIEXTPanel extends Panel {
         Palette jaiextSelector = new Palette<String>("jaiextOps",
                 LiveCollectionModel.set(new PropertyModel(jaiextModel, "JAIOperations")),
                 LiveCollectionModel.set(new PropertyModel(jaiextModel, "JAIEXTOperations")),
-                new JAIChoiceRenderer(), 7, false) {
+                new JAChoiceRenderer(), 7, false) {
                     private static final long serialVersionUID = -4665147378650094510L;
 
             /**
@@ -53,7 +53,7 @@ public class JAIEXTPanel extends Panel {
     }
 
     
-    static class JAIChoiceRenderer extends ChoiceRenderer<String> {
+    static class JAChoiceRenderer extends ChoiceRenderer<String> {
         private static final long serialVersionUID = -1978519626641784908L;
         
         private static final String ALGEBRIC = "algebric";

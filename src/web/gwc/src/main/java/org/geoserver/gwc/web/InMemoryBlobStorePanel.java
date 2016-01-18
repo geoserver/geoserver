@@ -20,7 +20,7 @@ import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.IChoiceRenderer;
+import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
@@ -114,7 +114,7 @@ public class InMemoryBlobStorePanel extends Panel {
             final Map<String, String> cacheProviders = store.getCacheProvidersNames();
             final IModel<String> providerClass = new PropertyModel<String>(gwcConfigModel,
                     "cacheProviderClass");
-            IChoiceRenderer<String> renderer = new CacheProviderRenderer(cacheProviders);
+            ChoiceRenderer<String> renderer = new CacheProviderRenderer(cacheProviders);
             choice = new DropDownChoice<String>("caches", providerClass, new ArrayList<String>(
                     cacheProviders.keySet()), renderer);
             choice.add(new AjaxFormComponentUpdatingBehavior("onChange") {
@@ -295,11 +295,11 @@ public class InMemoryBlobStorePanel extends Panel {
     }
 
     /**
-     * {@link IChoiceRenderer} implementation mapping available {@link CacheProvider} names with the {@link CacheProvider} class names.
+     * {@link ChoiceRenderer} implementation mapping available {@link CacheProvider} names with the {@link CacheProvider} class names.
      * 
      * @author Nicola Lagomarsini Geosolutions
      */
-    static class CacheProviderRenderer implements IChoiceRenderer<String> {
+    static class CacheProviderRenderer extends ChoiceRenderer<String> {
 
         private Map<String, String> map;
 

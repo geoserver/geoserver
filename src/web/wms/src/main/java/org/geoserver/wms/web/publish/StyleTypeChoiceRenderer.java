@@ -4,11 +4,11 @@
  */
 package org.geoserver.wms.web.publish;
 
-import org.apache.wicket.markup.html.form.IChoiceRenderer;
+import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.geoserver.catalog.StyleType;
 
 @SuppressWarnings("serial")
-public class StyleTypeChoiceRenderer implements IChoiceRenderer {
+public class StyleTypeChoiceRenderer extends ChoiceRenderer {
 
     public Object getDisplayValue(Object object) {
         return object.toString();

@@ -12,7 +12,7 @@ import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponent;
-import org.apache.wicket.markup.html.form.IChoiceRenderer;
+import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.NumberTextField;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.form.validation.AbstractFormValidator;
@@ -140,7 +140,7 @@ public class CoverageAccessPage extends ServerAdminPage {
      * Display and ID mapping adapter for QueueType.
      */
     // TODO: consider use of EnumChoiceRenderer<QueueType>
-    private class QueueTypeRenderer implements  IChoiceRenderer<QueueType> {
+    private class QueueTypeRenderer extends ChoiceRenderer<QueueType> {
         private static final long serialVersionUID = -702911785346928083L;
         public String getDisplayValue(QueueType type) {
             return new StringResourceModel(type.name(), CoverageAccessPage.this, null).getString();

@@ -44,7 +44,10 @@ import org.geowebcache.layer.TileLayer;
  */
 public class BlobStorePage extends GeoServerSecuredPage {
 
-    private DropDownChoice<BlobStoreType> typeOfBlobStore;
+	private static final long serialVersionUID = -59024268194792891L;
+
+	@SuppressWarnings("rawtypes")
+	private DropDownChoice<BlobStoreType> typeOfBlobStore;
 
     private WebMarkupContainer blobConfigContainer;
 
@@ -60,7 +63,8 @@ public class BlobStorePage extends GeoServerSecuredPage {
         this(null);
     }
 
-    public BlobStorePage(final BlobStoreConfig originalStore) {
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+	public BlobStorePage(final BlobStoreConfig originalStore) {
 
         final List<String> assignedLayers = new ArrayList<String>();
 
@@ -74,7 +78,7 @@ public class BlobStorePage extends GeoServerSecuredPage {
         typeOfBlobStore.add(new AjaxFormComponentUpdatingBehavior("onchange") {
             private static final long serialVersionUID = 359589121400814043L;
 
-            @Override
+			@Override
             protected void onUpdate(AjaxRequestTarget target) {
                 blobStoreForm.setVisible(typeOfBlobStore.getModelObject() != null);
                 if (typeOfBlobStore.getModelObject() != null) {
@@ -91,7 +95,7 @@ public class BlobStorePage extends GeoServerSecuredPage {
         typeOfBlobStore.add(new AttributeModifier("title", new ResourceModel(
                 "typeOfBlobStore.title")));
 
-        Form selector = new Form("selector");
+        Form<BlobStoreType<?>> selector = new Form<BlobStoreType<?>>("selector");
         selector.add(typeOfBlobStore);
         add(selector);
 
@@ -101,7 +105,7 @@ public class BlobStorePage extends GeoServerSecuredPage {
 
         blobStoreForm = new Form<BlobStoreConfig>("blobStoreForm",
                 new CompoundPropertyModel<BlobStoreConfig>(originalStore == null ? null
-                        : originalStore.clone()));
+                        : (BlobStoreConfig) originalStore.clone()));
         blobConfigContainer.add(blobStoreForm);
         blobStoreForm.setVisible(originalStore != null);
 

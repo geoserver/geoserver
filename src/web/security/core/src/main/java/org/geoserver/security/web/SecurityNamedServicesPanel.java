@@ -224,7 +224,7 @@ public abstract class SecurityNamedServicesPanel<T extends SecurityNamedServiceC
         }
     
         @Override
-        protected Component getComponentForProperty(String id, IModel itemModel, Property<T> property) {
+        protected Component getComponentForProperty(String id, IModel<T> itemModel, Property<T> property) {
             if (property == NAME) {
                 return createEditLink(id, itemModel, property);
             }

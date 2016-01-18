@@ -40,7 +40,9 @@ import org.geowebcache.layer.TileLayer;
  */
 public class BlobStoresPage extends GeoServerSecuredPage {
 
-    private AjaxLink<Object> remove;
+	private static final long serialVersionUID = 6076989713813458347L;
+
+	private AjaxLink<Object> remove;
 
     private GeoServerTablePanel<BlobStoreConfig> blobStoresPanel;
 
@@ -157,11 +159,11 @@ public class BlobStoresPage extends GeoServerSecuredPage {
             private static final long serialVersionUID = -5380703588873422601L;
 
             @Override
-            protected Component getComponentForProperty(String id, IModel itemModel,
+            protected Component getComponentForProperty(String id, IModel<BlobStoreConfig> itemModel,
                     Property<BlobStoreConfig> property) {
                 final BlobStoreConfig blobStore = (BlobStoreConfig) itemModel.getObject();
                 if (property == BlobStoresProvider.ID) {
-                    return new SimpleAjaxLink(id, itemModel, property.getModel(itemModel)) {
+                    return new SimpleAjaxLink<BlobStoreConfig>(id, itemModel, property.getModel(itemModel)) {
                         private static final long serialVersionUID = 1L;
 
                         @Override

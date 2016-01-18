@@ -12,7 +12,7 @@ import java.util.Locale;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
-import org.apache.wicket.markup.html.form.IChoiceRenderer;
+import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.geowebcache.filter.parameters.CaseNormalizer;
@@ -49,7 +49,7 @@ public class CaseNormalizerSubform extends FormComponentPanel<CaseNormalizer> {
         final IModel<Case> caseModel = new PropertyModel<Case>(model, "case");
         final IModel<Locale> localeModel = new PropertyModel<Locale>(model, "configuredLocale");
         
-        localeEntry = new DropDownChoice<>("locale", localeModel, getLocales(), new IChoiceRenderer<Locale>(){
+        localeEntry = new DropDownChoice<>("locale", localeModel, getLocales(), new ChoiceRenderer<Locale>(){
             
             @Override
             public Object getDisplayValue(Locale object) {
@@ -64,7 +64,7 @@ public class CaseNormalizerSubform extends FormComponentPanel<CaseNormalizer> {
         });
         localeEntry.setNullValid(true);
         
-        caseEntry = new DropDownChoice<Case>("case", caseModel, Arrays.asList(Case.values()), new IChoiceRenderer<Case>(){
+        caseEntry = new DropDownChoice<Case>("case", caseModel, Arrays.asList(Case.values()), new ChoiceRenderer<Case>(){
             
             /** serialVersionUID */
             private static final long serialVersionUID = 1L;

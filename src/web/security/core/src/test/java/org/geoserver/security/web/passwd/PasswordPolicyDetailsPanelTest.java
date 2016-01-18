@@ -104,7 +104,7 @@ public  class PasswordPolicyDetailsPanelTest extends AbstractSecurityNamedServic
         
         activatePanel();
         
-        assertEquals(2, countItmes());
+        assertEquals(2, countItems());
         assertNotNull(getSecurityNamedServiceConfig("default"));
         assertNull(getSecurityNamedServiceConfig("xxxxxxxx"));
         
@@ -122,7 +122,7 @@ public  class PasswordPolicyDetailsPanelTest extends AbstractSecurityNamedServic
         clickCancel();
         
         tester.assertRenderedPage(basePage.getClass());
-        assertEquals(2, countItmes());
+        assertEquals(2, countItems());
         assertNotNull(getSecurityNamedServiceConfig("default"));
         assertNotNull(getSecurityNamedServiceConfig("master"));
         
@@ -144,7 +144,7 @@ public  class PasswordPolicyDetailsPanelTest extends AbstractSecurityNamedServic
         
         tester.assertRenderedPage(basePage.getClass());
 
-        assertEquals(3, countItmes());        
+        assertEquals(3, countItems());        
         assertNotNull(getSecurityNamedServiceConfig("default"));
         assertNotNull(getSecurityNamedServiceConfig("master"));
         PasswordPolicyConfig pwConfig=

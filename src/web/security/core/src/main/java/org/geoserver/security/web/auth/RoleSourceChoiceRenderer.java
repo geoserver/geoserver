@@ -6,7 +6,7 @@
 package org.geoserver.security.web.auth;
 
 import org.apache.wicket.Application;
-import org.apache.wicket.markup.html.form.IChoiceRenderer;
+import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.geoserver.security.config.RoleSource;
 
 /**
@@ -14,7 +14,7 @@ import org.geoserver.security.config.RoleSource;
  * 
  * @author Mauro Bartolomeoli (mauro.bartolomeoli@geo-solutions.it)
  */
-public class RoleSourceChoiceRenderer implements IChoiceRenderer<RoleSource> {
+public class RoleSourceChoiceRenderer extends ChoiceRenderer<RoleSource> {
 
     /** serialVersionUID */
     private static final long serialVersionUID = 1L;

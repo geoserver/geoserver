@@ -17,7 +17,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.markup.html.form.DropDownChoice;
-import org.apache.wicket.markup.html.form.IChoiceRenderer;
+import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
@@ -255,7 +255,7 @@ public class GeoServerFileChooser extends Panel {
 //        return "file://" + file.getAbsolutePath();
 //    }
 //    
-    class FileRootsRenderer implements IChoiceRenderer {
+    class FileRootsRenderer extends ChoiceRenderer {
 
 		public Object getDisplayValue(Object o) {
 			File f = (File) o;

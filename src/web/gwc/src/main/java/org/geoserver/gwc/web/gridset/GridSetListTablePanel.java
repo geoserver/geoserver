@@ -36,13 +36,12 @@ public abstract class GridSetListTablePanel extends GeoServerTablePanel<GridSet>
 
     }
 
-    @SuppressWarnings("rawtypes")
     @Override
-    protected Component getComponentForProperty(final String id, final IModel itemModel,
+    protected Component getComponentForProperty(final String id, final IModel<GridSet> itemModel,
             final Property<GridSet> property) {
 
         if (property == GridSetTableProvider.NAME) {
-            GridSet gridSet = (GridSet) itemModel.getObject();
+            GridSet gridSet = itemModel.getObject();
             return nameLink(id, gridSet);
 
         } else if (property == GridSetTableProvider.EPSG_CODE) {
@@ -88,7 +87,7 @@ public abstract class GridSetListTablePanel extends GeoServerTablePanel<GridSet>
      * @see org.geoserver.web.wicket.GeoServerTablePanel#selectOneCheckbox
      */
     @Override
-    protected CheckBox selectOneCheckbox(Item item) {
+    protected CheckBox selectOneCheckbox(Item<GridSet> item) {
         CheckBox cb = super.selectOneCheckbox(item);
 
         GridSet gs = (GridSet) item.getModelObject();

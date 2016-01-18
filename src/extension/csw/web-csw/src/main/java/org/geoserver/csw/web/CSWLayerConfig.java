@@ -1,4 +1,4 @@
-/* (c) 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2015 - 2016 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -42,7 +42,7 @@ public class CSWLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
                     GeoServerExtensions.bean(GeoServer.class).getService(CSWInfo.class)));
 
         }
-        IModel<DirectDownloadSettings> directDownloadModel = new MetadataMapModel(map,
+        IModel<DirectDownloadSettings> directDownloadModel = new MetadataMapModel<DirectDownloadSettings>(map,
                 DirectDownloadSettings.DIRECTDOWNLOAD_KEY,
                 DirectDownloadSettings.class);
 

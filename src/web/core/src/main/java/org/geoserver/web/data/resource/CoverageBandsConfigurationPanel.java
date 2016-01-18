@@ -5,6 +5,7 @@
  */
 package org.geoserver.web.data.resource;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -27,7 +28,7 @@ import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.markup.repeater.ReuseIfModelsEqualStrategy;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.util.convert.IConverter;
-import org.apache.wicket.util.convert.converters.DoubleConverter;
+import org.apache.wicket.util.convert.converter.DoubleConverter;
 import org.apache.wicket.util.string.Strings;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
@@ -63,8 +64,8 @@ public class CoverageBandsConfigurationPanel extends ResourceConfigurationPanel 
         }
 
         @Override
-        public IConverter getConverter(Class<?> type) {
-            return new DoubleInfinityConverter();
+        public <C> IConverter<C> getConverter(Class<C> type) {
+            return (IConverter<C>) new DoubleInfinityConverter();
         }
     }
 
@@ -75,7 +76,8 @@ public class CoverageBandsConfigurationPanel extends ResourceConfigurationPanel 
 
         @Override
         public Double convertToObject(String value, Locale locale) {
-            final Number number = parse(value, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, Locale.US);
+            final Number number = parse(value, BigDecimal.valueOf(Double.NEGATIVE_INFINITY), 
+                    BigDecimal.valueOf(Double.POSITIVE_INFINITY), Locale.US);
             if (number == null) {
                 return null;
             }
@@ -84,7 +86,7 @@ public class CoverageBandsConfigurationPanel extends ResourceConfigurationPanel 
         }
 
         @Override
-        public String convertToString(Object value, Locale locale) {
+        public String convertToString(Double value, Locale locale) {
             return super.convertToString(value, Locale.US);
         }
     }

@@ -201,6 +201,7 @@
         <module>sldService</module>
         <module>release</module>
 	<module>gwc-distributed</module>
+	<module>jdbcstore</module>
 	<module>gdal</module>
 	<module>gwc-s3</module>
       </modules>
@@ -251,6 +252,7 @@
       <id>jdbcconfig</id>
       <modules>
         <module>jdbcconfig</module>
+        <module>jdbcstore</module>
       </modules>
     </profile>
     <profile>
@@ -428,6 +430,13 @@
         <modules>
           <module>vectortiles</module>
         </modules>
+    </profile>    
+    <profile>
+      <id>jdbcstore</id>
+      <modules>
+        <module>jdbcconfig</module>
+        <module>jdbcstore</module>
+      </modules>
     </profile>
     <profile>
       <id>gdal-translate</id>

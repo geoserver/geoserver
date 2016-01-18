@@ -113,18 +113,27 @@ public class JAIPage extends ServerAdminPage {
             encoders.remove(PngEncoderType.NATIVE);
         }
         // create the editor, eventually set a default value
-        DropDownChoice<JAIInfo.PngEncoderType> editor = new DropDownChoice<JAIInfo.PngEncoderType>("pngEncoderType", encoders, new IChoiceRenderer<JAIInfo.PngEncoderType>() {
+        DropDownChoice<JAIInfo.PngEncoderType> editor = new DropDownChoice<JAIInfo.PngEncoderType>(
+                "pngEncoderType", encoders, new IChoiceRenderer<JAIInfo.PngEncoderType>() {
+                    private static final long serialVersionUID = 1L;
 
-            @Override
-            public Object getDisplayValue(PngEncoderType type) {
-                return new ParamResourceModel("pngEncoder." + type.name(), JAIPage.this).getString();
-            }
+                    @Override
+                    public Object getDisplayValue(PngEncoderType type) {
+                        return new ParamResourceModel("pngEncoder." + type.name(), JAIPage.this)
+                                .getString();
+                    }
 
-            @Override
-            public String getIdValue(PngEncoderType type, int index) {
-                return type.name();
-            }
-        });
+                    @Override
+                    public String getIdValue(PngEncoderType type, int index) {
+                        return type.name();
+                    }
+
+                    @Override
+                    public PngEncoderType getObject(String id,
+                            IModel<? extends List<? extends PngEncoderType>> choices) {
+                        return PngEncoderType.valueOf(id);
+                    }
+                });
         form.add(editor);
         if(!encoders.contains(editor.getModelObject())) {
             editor.setModelObject(PngEncoderType.PNGJ);

@@ -12,6 +12,7 @@ import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.markup.html.image.resource.BufferedDynamicImageResource;
 import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.model.IModel;
+import org.geoserver.web.wicket.GeoServerDataProvider;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 
@@ -32,13 +33,11 @@ public class JVMFontsPage extends ServerAdminPage {
 
     @SuppressWarnings("serial")
 	private void updateModel() {
-    	
        table = new GeoServerTablePanel<PreviewFont>("table", provider) {
-
-            @Override
-            protected Component getComponentForProperty(String id,
-                    final IModel itemModel, Property<PreviewFont> property) {
-                PreviewFont previewFont = (PreviewFont) itemModel.getObject();
+           @Override
+           protected Component getComponentForProperty(String id, IModel<PreviewFont> itemModel, 
+            Property<PreviewFont> property) {
+                PreviewFont previewFont = itemModel.getObject();
 
                 if (property == PREVIEW_IMAGE) {
                 	BufferedDynamicImageResource image = previewFont.getPreviewImage();

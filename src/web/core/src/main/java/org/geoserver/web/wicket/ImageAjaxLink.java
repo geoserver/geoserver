@@ -1,17 +1,18 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.web.wicket;
 
-import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.IAjaxCallDecorator;
+import org.apache.wicket.ajax.attributes.AjaxRequestAttributes;
+import org.apache.wicket.ajax.attributes.IAjaxCallListener;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.markup.html.panel.Panel;
+import org.apache.wicket.request.resource.PackageResourceReference;
 
 /**
  * A panel which encapsulates a link containing a image and an optional label.
@@ -20,9 +21,9 @@ import org.apache.wicket.markup.html.panel.Panel;
  *
  */
 @SuppressWarnings("serial")
-public abstract class ImageAjaxLink extends Panel {
+public abstract class ImageAjaxLink<T> extends Panel {
     protected Image image;
-    protected AjaxLink link;
+    protected AjaxLink<T> link;
 
     /**
      * Constructs the panel with a link containing an image.
@@ -36,15 +37,18 @@ public abstract class ImageAjaxLink extends Panel {
      */
     public ImageAjaxLink( String id, PackageResourceReference imageRef, String label ) {
         super( id );
-        link = new AjaxLink( "link" ) {
+        link = new AjaxLink<T>( "link" ) {
             @Override
             public void onClick(AjaxRequestTarget target) {
                 ImageAjaxLink.this.onClick(target);
             }
             
-            protected IAjaxCallDecorator getAjaxCallDecorator() {
-                return ImageAjaxLink.this.getAjaxCallDecorator();
-            };
+            @Override
+            protected void updateAjaxAttributes(AjaxRequestAttributes attributes) {
+                super.updateAjaxAttributes(attributes);
+                attributes.getAjaxCallListeners().add(ImageAjaxLink.this.getAjaxCallListener());
+            }
+            
         };
         add(link);
         link.add(image = new Image( "image", imageRef ) );
@@ -52,7 +56,7 @@ public abstract class ImageAjaxLink extends Panel {
     }
     
     
-    protected IAjaxCallDecorator getAjaxCallDecorator() {
+    protected IAjaxCallListener getAjaxCallListener() {
         return null;
     }
 
@@ -69,7 +73,7 @@ public abstract class ImageAjaxLink extends Panel {
      * (allows playing with its attributes and enable/disable the link)
      * @return
      */
-    public AjaxLink getLink() {
+    public AjaxLink<T> getLink() {
         return link;
     }
 

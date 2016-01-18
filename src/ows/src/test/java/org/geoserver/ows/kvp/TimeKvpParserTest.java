@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -50,14 +50,14 @@ public class TimeKvpParserTest extends TestCase {
     private final static DateFormat format;
     static {
     	 format = new SimpleDateFormat("yyyy-MM-dd'T'HH'Z'");
-    	 format.setTimeZone(TimeKvpParser.UTC_TZ);
+    	 format.setTimeZone(TimeParser.UTC_TZ);
     }
     
     public void testReducedAccuracyYear() throws Exception {
     	Calendar c = new GregorianCalendar();
-    	c.setTimeZone(TimeKvpParser.UTC_TZ);
+    	c.setTimeZone(TimeParser.UTC_TZ);
     	
-    	DateRange year = (DateRange) TimeKvpParser.getFuzzyDate("2000");
+    	DateRange year = (DateRange) TimeParser.getFuzzyDate("2000");
     	c.clear();
     	c.set(Calendar.YEAR, 2000);
     	assertRangeStarts(year, c.getTime());
@@ -65,7 +65,7 @@ public class TimeKvpParserTest extends TestCase {
     	c.add(Calendar.MILLISECOND, -1);
     	assertRangeEnds(year, c.getTime());
     	
-    	year = (DateRange) TimeKvpParser.getFuzzyDate("2001");
+    	year = (DateRange) TimeParser.getFuzzyDate("2001");
     	c.clear();
     	c.set(Calendar.YEAR, 2001);
     	assertRangeStarts(year, c.getTime());
@@ -73,7 +73,7 @@ public class TimeKvpParserTest extends TestCase {
     	c.add(Calendar.MILLISECOND, -1);
     	assertRangeEnds(year, c.getTime());
     	
-    	year = (DateRange) TimeKvpParser.getFuzzyDate("-6052");
+    	year = (DateRange) TimeParser.getFuzzyDate("-6052");
     	c.clear();
     	c.set(Calendar.ERA, GregorianCalendar.BC);
     	c.set(Calendar.YEAR, 6053);
@@ -85,10 +85,10 @@ public class TimeKvpParserTest extends TestCase {
     
     public void testReducedAccuracyHour() throws Exception {
         Calendar c = new GregorianCalendar();
-        c.setTimeZone(TimeKvpParser.UTC_TZ);
+        c.setTimeZone(TimeParser.UTC_TZ);
         c.clear();
         
-        DateRange hour = (DateRange) TimeKvpParser.getFuzzyDate("2000-04-04T12Z");
+        DateRange hour = (DateRange) TimeParser.getFuzzyDate("2000-04-04T12Z");
         c.set(Calendar.YEAR, 2000);
         c.set(Calendar.MONTH, 3); // 0-indexed
         c.set(Calendar.DAY_OF_MONTH, 4);
@@ -98,7 +98,7 @@ public class TimeKvpParserTest extends TestCase {
         c.add(Calendar.MILLISECOND, -1);
         assertRangeEnds(hour, c.getTime());
         
-        hour = (DateRange) TimeKvpParser.getFuzzyDate("2005-12-31T23Z"); // selected due to leapsecond at 23:59:60 UTC
+        hour = (DateRange) TimeParser.getFuzzyDate("2005-12-31T23Z"); // selected due to leapsecond at 23:59:60 UTC
         c.clear();
         c.set(Calendar.YEAR, 2005);
         c.set(Calendar.MONTH, 11);
@@ -109,7 +109,7 @@ public class TimeKvpParserTest extends TestCase {
         c.add(Calendar.MILLISECOND, -1);
         assertRangeEnds(hour, c.getTime());
         
-        hour = (DateRange) TimeKvpParser.getFuzzyDate("-25-06-08T17Z");
+        hour = (DateRange) TimeParser.getFuzzyDate("-25-06-08T17Z");
         c.clear();
         c.set(Calendar.ERA, GregorianCalendar.BC);
         c.set(Calendar.YEAR, 26);
@@ -124,17 +124,17 @@ public class TimeKvpParserTest extends TestCase {
     
     public void testReducedAccuracyMilliseconds() throws Exception {
         Calendar c = new GregorianCalendar();
-        c.setTimeZone(TimeKvpParser.UTC_TZ);
+        c.setTimeZone(TimeParser.UTC_TZ);
         c.clear();
         
-        Date instant = (Date) TimeKvpParser.getFuzzyDate("2000-04-04T12:00:00.000Z");
+        Date instant = (Date) TimeParser.getFuzzyDate("2000-04-04T12:00:00.000Z");
         c.set(Calendar.YEAR, 2000);
         c.set(Calendar.MONTH, 3); // 0-indexed
         c.set(Calendar.DAY_OF_MONTH, 4);
         c.set(Calendar.HOUR_OF_DAY, 12);
         assertEquals(instant, c.getTime());
         
-        instant = (Date) TimeKvpParser.getFuzzyDate("2005-12-31T23:59:60.000Z"); // selected due to leapsecond at 23:59:60 UTC
+        instant = (Date) TimeParser.getFuzzyDate("2005-12-31T23:59:60.000Z"); // selected due to leapsecond at 23:59:60 UTC
         c.clear();
         c.set(Calendar.YEAR, 2005);
         c.set(Calendar.MONTH, 11);
@@ -144,7 +144,7 @@ public class TimeKvpParserTest extends TestCase {
         c.set(Calendar.SECOND, 60);
         assertEquals(instant, c.getTime());
         
-        instant = (Date) TimeKvpParser.getFuzzyDate("-25-06-08T17:15:00.123Z");
+        instant = (Date) TimeParser.getFuzzyDate("-25-06-08T17:15:00.123Z");
         c.clear();
         c.set(Calendar.ERA, GregorianCalendar.BC);
         c.set(Calendar.YEAR, 26);
@@ -162,13 +162,13 @@ public class TimeKvpParserTest extends TestCase {
      * @throws ParseException if the string can't be parsed.
      */
     public void testPeriod() throws ParseException {
-        final long millisInDay = TimeKvpParser.MILLIS_IN_DAY;
-        assertEquals(               millisInDay,  TimeKvpParser.parsePeriod("P1D"));
-        assertEquals(             3*millisInDay,  TimeKvpParser.parsePeriod("P3D"));
-        assertEquals(            14*millisInDay,  TimeKvpParser.parsePeriod("P2W"));
-        assertEquals(             8*millisInDay,  TimeKvpParser.parsePeriod("P1W1D"));
-        assertEquals(               millisInDay,  TimeKvpParser.parsePeriod("PT24H"));
-        assertEquals(Math.round(1.5*millisInDay), TimeKvpParser.parsePeriod("P1.5D"));
+        final long millisInDay = TimeParser.MILLIS_IN_DAY;
+        assertEquals(               millisInDay,  TimeParser.parsePeriod("P1D"));
+        assertEquals(             3*millisInDay,  TimeParser.parsePeriod("P3D"));
+        assertEquals(            14*millisInDay,  TimeParser.parsePeriod("P2W"));
+        assertEquals(             8*millisInDay,  TimeParser.parsePeriod("P1W1D"));
+        assertEquals(               millisInDay,  TimeParser.parsePeriod("PT24H"));
+        assertEquals(Math.round(1.5*millisInDay), TimeParser.parsePeriod("P1.5D"));
     }
 
     /**
@@ -237,7 +237,7 @@ public class TimeKvpParserTest extends TestCase {
     }
 
     public void testContinuousRelativeInterval() throws ParseException {
-        final int millisInDay = (int) TimeKvpParser.MILLIS_IN_DAY;
+        final int millisInDay = (int) TimeParser.MILLIS_IN_DAY;
         TimeKvpParser timeKvpParser = new TimeKvpParser("TIME");
         Calendar back = Calendar.getInstance();
         Calendar now = (Calendar) back.clone();

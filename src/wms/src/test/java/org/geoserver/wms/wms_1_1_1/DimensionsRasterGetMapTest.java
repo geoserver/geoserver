@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -8,12 +8,10 @@ package org.geoserver.wms.wms_1_1_1;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 
-import javax.swing.ImageIcon;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-
+import org.geoserver.catalog.DimensionDefaultValueSetting;
 import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.DimensionDefaultValueSetting.Strategy;
 import org.geoserver.wms.WMSDimensionsTestSupport;
 import org.junit.Test;
 
@@ -123,6 +121,65 @@ public class DimensionsRasterGetMapTest extends WMSDimensionsTestSupport {
         image = getAsImage(baseUrl + "&TIME=2008-10-31T12:00:00.000Z/2008-10-31T16:00:00.000Z", "image/png");
         assertPixel(image, 36, 31, Color.BLACK);
         assertPixel(image, 68, 72, new Color(255, 170, 170));
+    }
+    
+    @Test 
+    public void testTimeDefaultAsRange() throws Exception {
+        setupRasterDimension(WATTEMP, ResourceInfo.ELEVATION, DimensionPresentation.LIST, null, UNITS, UNIT_SYMBOL);
+        // setup a default 
+        DimensionDefaultValueSetting defaultValueSetting = new DimensionDefaultValueSetting();
+        defaultValueSetting.setStrategyType(Strategy.FIXED);
+        defaultValueSetting.setReferenceValue("2008-10-30T23:00:00.000Z/2008-10-31T01:00:00.000Z");
+        setupResourceDimensionDefaultValue(WATTEMP, ResourceInfo.TIME, defaultValueSetting);
+        
+        // default time, specific elevation
+        // BufferedImage image = getAsImage(BASE_URL + "&time=2008-10-31T00:00:00.000Z&elevation=100", "image/png");
+        BufferedImage image = getAsImage(BASE_URL + "&elevation=100", "image/png");
+
+        // at this elevation the pixel is black
+        assertPixel(image, 36, 31, new Color(0,0,0));
+        // and this one a light blue, but slightly darker than before
+        assertPixel(image, 68, 72, new Color(240, 240, 255));
+    }
+    
+    @Test 
+    public void testElevationDefaultAsRange() throws Exception {
+        setupRasterDimension(WATTEMP, ResourceInfo.TIME, DimensionPresentation.LIST, null, null, null);
+        // setup a default 
+        DimensionDefaultValueSetting defaultValueSetting = new DimensionDefaultValueSetting();
+        defaultValueSetting.setStrategyType(Strategy.FIXED);
+        defaultValueSetting.setReferenceValue("99/101");
+        setupResourceDimensionDefaultValue(WATTEMP, ResourceInfo.ELEVATION, defaultValueSetting);
+        
+        // default elevation, specific time
+        BufferedImage image = getAsImage(BASE_URL + "&time=2008-10-31T00:00:00.000Z", "image/png");
+
+        // at this elevation the pixel is black
+        assertPixel(image, 36, 31, new Color(0,0,0));
+        // and this one a light blue, but slightly darker than before
+        assertPixel(image, 68, 72, new Color(240, 240, 255));
+    }
+    
+    @Test 
+    public void testTimeElevationDefaultAsRange() throws Exception {
+        // setup a range default for time
+        DimensionDefaultValueSetting defaultValueSetting = new DimensionDefaultValueSetting();
+        defaultValueSetting.setStrategyType(Strategy.FIXED);
+        defaultValueSetting.setReferenceValue("2008-10-30T23:00:00.000Z/2008-10-31T01:00:00.000Z");
+        setupResourceDimensionDefaultValue(WATTEMP, ResourceInfo.TIME, defaultValueSetting);
+        // setup a range default for elevation
+        defaultValueSetting = new DimensionDefaultValueSetting();
+        defaultValueSetting.setStrategyType(Strategy.FIXED);
+        defaultValueSetting.setReferenceValue("99/101");
+        setupResourceDimensionDefaultValue(WATTEMP, ResourceInfo.ELEVATION, defaultValueSetting);
+        
+        // use defaults for both time and elevation
+        BufferedImage image = getAsImage(BASE_URL, "image/png");
+
+        // at this elevation the pixel is black
+        assertPixel(image, 36, 31, new Color(0,0,0));
+        // and this one a light blue, but slightly darker than before
+        assertPixel(image, 68, 72, new Color(240, 240, 255));
     }
     
 }

@@ -286,4 +286,8 @@ For each enabled dimension the following configuration options are available:
 
 For time dimension the value must be in ISO 8601 DateTime format ``yyyy-MM-ddThh:mm:ss.SSSZ`` For elevation dimension, the value must be and integer of floating point number.
 
+Only for the "Reference value" strategy, it is also possible to use ranges or times and ranges of elevation, in the form ``fromValue/toValue``. 
+Only for the "Reference value" strategy, and limited to times, it's also possible to use relative times like ``P1M/PRESENT``, but caution is given that the reference value
+is copied verbatim into the capabilities document, and as a result, not all client might be recognizing that syntax.
+
 .. note:: For more information on specifying times, please see the section on :ref:`wms_time`.

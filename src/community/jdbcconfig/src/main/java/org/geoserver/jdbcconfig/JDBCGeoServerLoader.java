@@ -6,7 +6,6 @@
 package org.geoserver.jdbcconfig;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -56,8 +55,9 @@ public class JDBCGeoServerLoader extends DefaultGeoServerLoader {
 
         ConfigDatabase configDatabase = ((JDBCCatalogFacade) catalogFacade).getConfigDatabase();
 
-        URL initScript = config.isInitDb() ? config.getInitScript() : null;
-        configDatabase.initDb(initScript);
+        if (config.isInitDb()) {
+            configDatabase.initDb(config.getInitScript());
+        }
 
         config.setInitDb(false);
         config.save();
@@ -88,6 +88,8 @@ public class JDBCGeoServerLoader extends DefaultGeoServerLoader {
         if (config.isImport()) {
             readCatalog(catalog, xp);
             decImportStep();
+            config.setImport(false);
+            config.save();
         }
     }
 

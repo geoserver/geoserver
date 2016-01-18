@@ -20,9 +20,7 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.CatalogImpl;
-import org.geoserver.web.ComponentAuthorizer;
 import org.geoserver.web.GeoServerSecuredPage;
-import org.geoserver.web.wicket.ParamResourceModel;
 import org.geoserver.web.wicket.URIValidator;
 import org.geoserver.web.wicket.XMLNameValidator;
 
@@ -65,11 +63,11 @@ public class WorkspaceNewPage extends GeoServerSecuredPage {
         nameTextField.setRequired(true);
         nameTextField.add(new XMLNameValidator());
         nameTextField.add(new StringValidator() {
-            
+
             @Override
-            protected void onValidate(IValidatable<String> validatable) {
+            public void validate(IValidatable<String> validatable) {
                 if(CatalogImpl.DEFAULT.equals(validatable.getValue())) {
-                    error(validatable, "defaultWsError");
+                    error(validatable.getValue() + "defaultWsError");
                 }
             }
         });

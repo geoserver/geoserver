@@ -37,7 +37,8 @@ import org.apache.wicket.model.StringResourceModel;
  * @author Justin Deoliveira, OpenGeo
  *
  */
-public class HelpLink extends AjaxLink {
+@SuppressWarnings("serial")
+public class HelpLink extends AjaxLink<Void> {
 
     GeoServerDialog dialog;
     Component container;

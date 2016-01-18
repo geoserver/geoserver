@@ -5,8 +5,6 @@
  */
 package org.geoserver.web.data.layergroup;
 
-import static org.geoserver.catalog.Predicates.acceptAll;
-import static org.geoserver.catalog.Predicates.or;
 import static org.geoserver.catalog.Predicates.sortBy;
 
 import java.util.Arrays;
@@ -20,7 +18,6 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.IModel;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.Predicates;
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.catalog.util.CloseableIteratorAdapter;
 import org.geoserver.web.data.layer.LayerDetachableModel;
@@ -42,12 +39,14 @@ public abstract class LayerListPanel extends GeoServerTablePanel<LayerInfo> {
     
     protected static abstract class LayerListProvider extends LayerProvider {
 
-        @Override
+		private static final long serialVersionUID = -4793382279386643262L;
+
+		@Override
         protected List<Property<LayerInfo>> getProperties() {
             return Arrays.asList( NAME, STORE, WORKSPACE );
         }
 
-        public IModel newModel(Object object) {
+        public IModel<LayerInfo> newModel(LayerInfo object) {
             return new LayerDetachableModel((LayerInfo)object);
         }
     }
@@ -66,9 +65,11 @@ public abstract class LayerListPanel extends GeoServerTablePanel<LayerInfo> {
     public LayerListPanel( String id ) {
         this( id, new LayerListProvider(){
 
-            @Override
-            public Iterator<LayerInfo> iterator(final int first, final int count) {
-                Iterator<LayerInfo> iterator = filteredItems(first, count);
+        	private static final long serialVersionUID = 426375054014475107L;
+
+			@Override
+            public Iterator<LayerInfo> iterator(final long first, final long count) {
+                Iterator<LayerInfo> iterator = filteredItems((int) first, (int) count);
                 if (iterator instanceof CloseableIterator) {
                     // don't know how to force wicket to close the iterator, lets return
                     // a copy. Shouldn't be much overhead as we're paging
@@ -90,7 +91,7 @@ public abstract class LayerListPanel extends GeoServerTablePanel<LayerInfo> {
                 final Catalog catalog = getCatalog();
 
                 // global sorting
-                final SortParam sort = getSort();
+                final SortParam<?> sort = getSort();
                 final Property<LayerInfo> property = getProperty(sort);
 
                 SortBy sortOrder = null;
@@ -116,13 +117,16 @@ public abstract class LayerListPanel extends GeoServerTablePanel<LayerInfo> {
     }
     
     
-    @Override
-    protected Component getComponentForProperty(String id, final IModel itemModel,
+    @SuppressWarnings("unchecked")
+	@Override
+    protected Component getComponentForProperty(String id, final IModel<LayerInfo> itemModel,
             Property<LayerInfo> property) {
-        IModel model = property.getModel( itemModel );
+        IModel<?> model = property.getModel( itemModel );
         if ( NAME == property ) {
-            return new SimpleAjaxLink( id, model ) {
-                @Override
+            return new SimpleAjaxLink<String>(id, (IModel<String>) model ) {
+				private static final long serialVersionUID = -2968338284881141281L;
+
+				@Override
                 protected void onClick(AjaxRequestTarget target) {
                     LayerInfo layer = (LayerInfo) itemModel.getObject();
                     handleLayer( layer, target );

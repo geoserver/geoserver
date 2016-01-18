@@ -16,10 +16,11 @@ import org.geoserver.web.GeoServerApplication;
 /**
  * Represents one layer in the layer group
  */
-@SuppressWarnings("serial")
 public class LayerGroupEntry implements Serializable {
 
-    String styleId;
+	private static final long serialVersionUID = -2212620293553872451L;
+	
+	String styleId;
     String layerId;
     String layerGroupId;
     

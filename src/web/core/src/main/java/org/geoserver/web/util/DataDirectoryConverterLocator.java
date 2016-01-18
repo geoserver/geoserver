@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -13,10 +13,13 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.wicket.IConverterLocator;
 import org.apache.wicket.util.convert.IConverter;
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.geotools.util.logging.Logging;
 
 /**
  * Special converter locator which can resolve relative urls relative to the
@@ -31,6 +34,7 @@ import org.geoserver.platform.GeoServerResourceLoader;
 @SuppressWarnings("serial")
 public class DataDirectoryConverterLocator implements IConverterLocator {
 
+    static final Logger LOGGER = Logging.getLogger(DataDirectoryConverterLocator.class);
     GeoServerResourceLoader resourceLoader;
     
     public DataDirectoryConverterLocator( GeoServerResourceLoader resourceLoader ) {
@@ -73,7 +77,7 @@ public class DataDirectoryConverterLocator implements IConverterLocator {
             return resourceLoader.find( value );
         } 
         catch (IOException e) {
-            //TODO: log this
+            LOGGER.log(Level.WARNING, "Error converting \""+value+"\" to File", e);
         }
         
         return null;
@@ -107,62 +111,60 @@ public class DataDirectoryConverterLocator implements IConverterLocator {
         return null;
     }
     
-    class FileLocator implements IConverter {
+    class FileLocator implements IConverter<File> {
 
-        public Object convertToObject(String value, Locale locale) {
+        public File convertToObject(String value, Locale locale) {
             return toFile( value );
         }
 
-        public String convertToString(Object value, Locale locale) {
+        public String convertToString(File value, Locale locale) {
             return fromFile( (File) value );
         }
         
     }
     
-    class URLLocator implements IConverter {
+    class URLLocator implements IConverter<URL> {
 
-        public Object convertToObject(String value, Locale locale) {
+        public URL convertToObject(String value, Locale locale) {
             File file = toFile( value );
             if ( file != null ) {
                 try {
-                    return file.toURL();
+                    return file.toURI().toURL();
                 } 
                 catch (MalformedURLException e) {
-                    //TODO: log this
+                    LOGGER.log(Level.WARNING, "Error converting \""+value+"\" to URL", e);
                 }
             }
             
             return null;
         }
 
-        public String convertToString(Object value, Locale locale) {
-            URL url = (URL) value;
-            String file = url.getFile();
+        public String convertToString(URL value, Locale locale) {
+            String file = value.getFile();
             if ( file != null && !"".equals( file ) ) {
-                return fromFile( new File( url.getFile() ) );
+                return fromFile( new File( value.getFile() ) );
             }
             return null;
         }
         
     }
     
-    class URILocator implements IConverter {
+    class URILocator implements IConverter<URI> {
 
-        public Object convertToObject(String value, Locale locale) {
+        public URI convertToObject(String value, Locale locale) {
             File file = toFile( value );
             if ( file != null ) {
                 return file.toURI();
             }
-            
             return null;
         }
 
-        public String convertToString(Object value, Locale locale) {
-            URI uri = (URI) value;
+        public String convertToString(URI value, Locale locale) {
             try {
-                return new URLLocator().convertToString( uri.toURL() , locale );
+                return new URLLocator().convertToString( value.toURL() , locale );
             } 
             catch (Exception e) {
+                LOGGER.log(Level.WARNING, "Error converting \""+value+"\" to URI", e);
                 return null;
             }
         }

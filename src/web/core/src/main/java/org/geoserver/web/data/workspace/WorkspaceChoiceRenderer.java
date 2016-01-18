@@ -5,14 +5,14 @@
  */
 package org.geoserver.web.data.workspace;
 
-import org.apache.wicket.markup.html.form.IChoiceRenderer;
+import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.geoserver.catalog.WorkspaceInfo;
 
 /**
  * Simple choice renderer for {@link WorkspaceInfo}
  */
 @SuppressWarnings("serial")
-public class WorkspaceChoiceRenderer implements IChoiceRenderer {
+public class WorkspaceChoiceRenderer extends ChoiceRenderer {
 
     public Object getDisplayValue(Object object) {
         return ((WorkspaceInfo) object).getName();
@@ -21,5 +21,4 @@ public class WorkspaceChoiceRenderer implements IChoiceRenderer {
     public String getIdValue(Object object, int index) {
         return ((WorkspaceInfo) object).getId();
     }
-
 }

@@ -15,9 +15,9 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
@@ -101,7 +101,7 @@ public class CatalogStressTester extends GeoServerSecuredPage {
         }
     }
 
-    private static class TupleChoiceRenderer implements IChoiceRenderer<Tuple> {
+    private static class TupleChoiceRenderer extends ChoiceRenderer<Tuple> {
         private static final long serialVersionUID = 1L;
 
         @Override

@@ -1,10 +1,8 @@
-package org.geoserver.jdbcconfig.internal;
+package org.geoserver.jdbcloader;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -17,7 +15,6 @@ import org.apache.commons.dbcp.BasicDataSource;
 import org.geotools.factory.GeoTools;
 import org.geotools.util.Converters;
 import org.geotools.util.logging.Logging;
-import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.FactoryBean;
 
@@ -27,11 +24,11 @@ public class DataSourceFactoryBean implements FactoryBean<DataSource>, Disposabl
 
     private static final Logger LOGGER = Logging.getLogger(DataSourceFactoryBean.class);
 
-    JDBCConfigProperties config;
+    JDBCLoaderProperties config;
     Context jndiCtx;
     DataSource dataSource;
     
-    private static Context getJNDI(JDBCConfigProperties config) {
+    private static Context getJNDI(JDBCLoaderProperties config) {
         if(config.isEnabled() && config.getJndiName().isPresent()) {
             try {
                 return GeoTools.getInitialContext(GeoTools.getDefaultHints());
@@ -45,12 +42,12 @@ public class DataSourceFactoryBean implements FactoryBean<DataSource>, Disposabl
         }
     }
     
-    public DataSourceFactoryBean(JDBCConfigProperties config) {
+    public DataSourceFactoryBean(JDBCLoaderProperties config) {
         this(config, getJNDI(config));
     }
 
     
-    public DataSourceFactoryBean(JDBCConfigProperties config, Context jndiCtx) {
+    public DataSourceFactoryBean(JDBCLoaderProperties config, Context jndiCtx) {
         this.config = config;
         this.jndiCtx = jndiCtx;
     }
@@ -105,15 +102,15 @@ public class DataSourceFactoryBean implements FactoryBean<DataSource>, Disposabl
         } catch (Exception ex) {
             // Provide a useful error message that won't get lost in the stack trace.
             if(jndi) {
-                LOGGER.severe("Error connecting to JDBCConfig database. Verify the settings of your JNDI data source and that the database is available.");
+                LOGGER.severe("Error connecting to JDBC database. Verify the settings of your JNDI data source and that the database is available.");
             } else {
-                LOGGER.severe("Error connecting to JDBCConfig database. Verify the settings in jdbcconfig/jdbcconfig.properties and that the database is available.");
+                LOGGER.severe("Error connecting to JDBC database. Verify the settings in your properties file and that the database is available.");
             }
             throw ex;
         }
         return ds;
     }
-    
+
     /**
      * Get an unconfigured BasicDataSource to set up
      * @return
@@ -134,26 +131,26 @@ public class DataSourceFactoryBean implements FactoryBean<DataSource>, Disposabl
             try {
                 Optional<DataSource> ds =  Optional.of((DataSource)jndiCtx.lookup(name.get()));
                 if(LOGGER.isLoggable(Level.INFO)) {
-                    LOGGER.log(Level.INFO, "JDBCConfig using JNDI DataSource {0}", name.get());
+                    LOGGER.log(Level.INFO, "JDBCLoader using JNDI DataSource {0}", name.get());
                 }
                 config.setDatasourceId(name.get());
                 return ds;
             } catch (NamingException ex) {
                 if(LOGGER.isLoggable(Level.WARNING)) {
-                    LOGGER.log(Level.WARNING, "Could not resolve JNDI name "+name.get()+" for JDBCConfig Database", ex);
+                    LOGGER.log(Level.WARNING, "Could not resolve JNDI name "+name.get()+" for JDBCLoader Database", ex);
                 }
                 return Optional.absent();
             }
         } else {
             if(LOGGER.isLoggable(Level.FINE)) {
-                LOGGER.fine("No JNDI name given for JDBCConfig DB.");
+                LOGGER.fine("No JNDI name given for JDBCLoader DB.");
             }
             return Optional.absent();
         }
     }
     
     /**
-     * Create and configure a DataSource based on the JDBCConfigProperties
+     * Create and configure a DataSource based on the JDBCLoaderProperties
      * @return
      * @throws Exception
      */

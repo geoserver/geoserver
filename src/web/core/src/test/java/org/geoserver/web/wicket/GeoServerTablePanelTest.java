@@ -149,12 +149,12 @@ public class GeoServerTablePanelTest {
         }
         
         @Override
-        IModel showingAllRecords(int first, int last, int size) {
+        IModel showingAllRecords(long first, long last, long size) {
             return new Model(first + " -> " + last + " of " + size);
         }
         
         @Override
-        IModel matchedXOutOfY(int first, int last, int size, int fullSize) {
+        IModel matchedXOutOfY(long first, long last, long size, long fullSize) {
             return new Model(first + " -> " + last + " of " + size + "/" + fullSize);
         }
     }

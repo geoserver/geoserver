@@ -26,7 +26,7 @@ public class Icon extends Panel {
      * Constructs an Icon from a resource reference.
      */
     public Icon(String id, PackageResourceReference PackageResourceReference) {
-        this(id, new Model(PackageResourceReference));
+        this(id, new Model<PackageResourceReference>(PackageResourceReference));
     }
 
     /**
@@ -34,13 +34,13 @@ public class Icon extends Panel {
      * attribute to apply to the rendered "&lt;img>" tag.
      */
     public Icon(String id, PackageResourceReference PackageResourceReference, IModel title) {
-        this(id, new Model(PackageResourceReference), title);
+        this(id, new Model<PackageResourceReference>(PackageResourceReference), title);
     }
     
     /**
      * Constructs an Icon from a model.
      */
-    public Icon(String id, IModel model) {
+    public Icon(String id, IModel<?> model) {
         super(id);
         add(new Image("img", model));
     }
@@ -49,7 +49,7 @@ public class Icon extends Panel {
      * Constructs an Icon from a model for the resource reference and a resource model for the
      * "title" attribute to apply to the rendered "&lt;img>" tag. 
      */
-    public Icon(String id, IModel model, IModel title) {
+    public Icon(String id, IModel<?> model, IModel<String> title) {
         super(id);
         add(new Image("img", model).add(new AttributeModifier("title", title)));
     }

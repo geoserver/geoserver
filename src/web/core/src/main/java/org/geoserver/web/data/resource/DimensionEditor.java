@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -12,6 +12,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -19,6 +21,7 @@ import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
+import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
 import org.apache.wicket.markup.html.form.IChoiceRenderer;
@@ -37,9 +40,14 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.DimensionDefaultValueSetting.Strategy;
 import org.geoserver.catalog.impl.DimensionInfoImpl;
+import org.geoserver.ows.kvp.ElevationKvpParser;
+import org.geoserver.ows.kvp.TimeKvpParser;
+import org.geoserver.ows.kvp.TimeParser;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
-import org.geotools.feature.type.DateUtil;
+import org.geotools.util.Range;
+import org.geotools.util.logging.Logging;
 import org.opengis.coverage.grid.GridCoverageReader;
 import org.opengis.feature.type.PropertyDescriptor;
 
@@ -50,6 +58,8 @@ import org.opengis.feature.type.PropertyDescriptor;
  */
 @SuppressWarnings("serial")
 public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
+    
+    static final Logger LOGGER = Logging.getLogger(DimensionEditor.class);
 
     List<DimensionPresentation> presentationModes;
     
@@ -263,7 +273,7 @@ public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
             protected void onError(AjaxRequestTarget target, RuntimeException e) {
                 super.onError(target, e);               
                 if (referenceValue.hasErrorMessage()){
-                    refValueValidationMessage.setDefaultModelObject(referenceValue.getFeedbackMessage().getMessage());
+                    refValueValidationMessage.setDefaultModelObject(referenceValue.getFeedbackMessages().first());
                     refValueValidationMessage.setVisible(true);
                 }                
                 target.add(referenceValueContainer);
@@ -402,7 +412,7 @@ public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
      * 
      * @author Alessio
      */
-    public class PresentationModeRenderer implements IChoiceRenderer<DimensionPresentation> {
+    public class PresentationModeRenderer extends ChoiceRenderer<DimensionPresentation> {
 
         public PresentationModeRenderer() {
             super();
@@ -422,7 +432,7 @@ public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
      * 
      * @author Ilkka Rinne / Spatineo Inc for the Finnish Meteorological Institute
      */
-    public class DefaultValueStrategyRenderer implements IChoiceRenderer<DimensionDefaultValueSetting.Strategy> {
+    public class DefaultValueStrategyRenderer extends ChoiceRenderer<DimensionDefaultValueSetting.Strategy> {
 
         public DefaultValueStrategyRenderer() {
             super();
@@ -451,32 +461,60 @@ public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
             this.dimension = dimensionId;
             this.strategyModel = strategyModel;
         }
-
+        
         @Override
         public void validate(IValidatable<String> value) {
-            if ( ((strategyModel.getObject() == Strategy.FIXED) || (strategyModel.getObject() == Strategy.NEAREST)) && value.getValue() == null){
+            String stringValue = value.getValue();
+            if ( ((strategyModel.getObject() == Strategy.FIXED) || (strategyModel.getObject() == Strategy.NEAREST)) && stringValue == null){
                 value.error(new ValidationError("emptyReferenceValue"));
-            }
-            else if (dimension.equals("time")) {
-                try {
-                    DateUtil.parseDateTime(value.getValue());
-                } catch (IllegalArgumentException iae) {
-                    if (strategyModel.getObject() == Strategy.NEAREST) {
-                        if (!DimensionDefaultValueSetting.TIME_CURRENT.equalsIgnoreCase(value
-                                .getValue())) {
-                            value.error(new ValidationError("invalidNearestTimeReferenceValue"));
-                        }
-                    } else {
-                        value.error(new ValidationError("invalidTimeReferenceValue"));
-                    }
+            } else if (dimension.equals("time")) {
+                if(!isValidTimeReference(stringValue, strategyModel.getObject())) {
+                    String messageKey = strategyModel.getObject() == Strategy.NEAREST ?  "invalidNearestTimeReferenceValue" : "invalidTimeReferenceValue";
+                    value.error(new ValidationError(messageKey));
                 }
-            }
-            else if (dimension.equals("elevation")) {
-                try {
-                    Double.parseDouble(value.getValue());
-                } catch (NumberFormatException nfe){
+                
+            } else if (dimension.equals("elevation")) {
+                if(!isValidElevationReference(stringValue)) {
                     value.error(new ValidationError("invalidElevationReferenceValue"));
                 }
+            }
+        }
+
+        private boolean isValidElevationReference(String stringValue) {
+            try {
+                ElevationKvpParser parser = GeoServerExtensions.bean(ElevationKvpParser.class);
+                List values = (List) parser.parse(stringValue);
+                // the KVP parser accepts also lists of values, we want a single one 
+                return values.size() == 1;
+            } catch (Exception e) {
+                if(LOGGER.isLoggable(Level.FINER)) {
+                    LOGGER.log(Level.FINER, "Invalid elevation value " + stringValue, e);
+                }
+                return false;
+            }
+        }
+
+        private boolean isValidTimeReference(String stringValue, Strategy strategy) {
+            try {
+                TimeParser parser = new TimeParser();
+                List values = (List) parser.parse(stringValue);
+                // the KVP parser accepts also lists of values, we want a single one
+                if(strategy == Strategy.FIXED) {
+                    // point or range, but just one
+                    return values.size() == 1;
+                } else if(strategy == Strategy.NEAREST) {
+                    // only point value, no ranges allowed
+                    return values.size() == 1 && !(values.get(0) instanceof Range);
+                } else {
+                    // nope, we cannot have a reference value if the strategy is 
+                    // not fixed or nearest
+                    return false;
+                }
+            } catch (Exception e) {
+                if(LOGGER.isLoggable(Level.FINER)) {
+                    LOGGER.log(Level.FINER, "Invalid time value " + stringValue, e);
+                }
+                return false;
             }
         }
     }

@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -6,13 +6,14 @@
 package org.geoserver.web.admin;
 
 import java.util.Arrays;
+import java.util.List;
 
-import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.IChoiceRenderer;
+import org.apache.wicket.markup.html.form.NumberTextField;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.form.validation.AbstractFormValidator;
 import org.apache.wicket.model.CompoundPropertyModel;
@@ -29,6 +30,7 @@ import org.geoserver.web.wicket.ParamResourceModel;
  * Edits the Coverage configuration parameters
  */
 public class CoverageAccessPage extends ServerAdminPage {
+    private static final long serialVersionUID = -5028265196560034398L;
 
     class PoolSizeValidator extends AbstractFormValidator {
     
@@ -45,18 +47,14 @@ public class CoverageAccessPage extends ServerAdminPage {
             }
         
             // Getting pool components
-            final Component maxPoolComponent = form.get("maxPoolSize");
-            final Component corePoolComponent = form.get("corePoolSize");
+            final TextField<?> maxPoolField = (TextField<?>) form.get("maxPoolSize");
+            final TextField<?> corePoolField = (TextField<?>) form.get("corePoolSize");
         
             int maxPool;
             int corePool;
         
             // checking limits are properly set
-            if (maxPoolComponent != null && maxPoolComponent instanceof TextField<?>
-                    && corePoolComponent != null
-                    && corePoolComponent instanceof TextField<?>) {
-                final TextField maxPoolField = (TextField) maxPoolComponent;
-                final TextField corePoolField = (TextField) corePoolComponent;
+            if (maxPoolField != null && corePoolField != null) {
                 final String mp = maxPoolField.getValue();
                 final String cp = corePoolField.getValue();
                 if (!(mp == null || cp == null || mp.trim().isEmpty() || cp.trim()
@@ -76,8 +74,7 @@ public class CoverageAccessPage extends ServerAdminPage {
                     }
         
                     if (maxPool >= 1 && corePool >= 1 && maxPool < corePool) {
-                        form.error(new ParamResourceModel("poolSizeCheck", getPage())
-                                .getString());
+                        form.error(new ParamResourceModel("poolSizeCheck", getPage()).getString());
                     }
                 }
             }
@@ -85,38 +82,39 @@ public class CoverageAccessPage extends ServerAdminPage {
     }
 
     public CoverageAccessPage(){
-        final IModel geoServerModel = getGeoServerModel();
+        final IModel<?> geoServerModel = getGeoServerModel();
         
-        // this invokation will trigger a clone of the CoverageAccessInfo,
+        // this invocation will trigger a clone of the CoverageAccessInfo,
         // which will allow the modification proxy seeing changes on the
         // CoverageAccess page with respect to the original CoverageAccessInfo object
-        final IModel coverageModel = getCoverageAccessModel();
+        final IModel<CoverageAccessInfo> coverageModel = getCoverageAccessModel();
 
         // form and submit
-        Form form = new Form("form", new CompoundPropertyModel(coverageModel));
+        Form<CoverageAccessInfo> form = new Form<CoverageAccessInfo>("form", new CompoundPropertyModel<CoverageAccessInfo>(coverageModel));
         add( form );
         form.add(new PoolSizeValidator());
         // All the fields
-        TextField corePoolSize = new TextField("corePoolSize");
-        corePoolSize.add(RangeValidator.minimum(1));
+        NumberTextField<Integer> corePoolSize = new NumberTextField<Integer>("corePoolSize",Integer.class);
+        corePoolSize.setMinimum(1);
         form.add(corePoolSize);
         
-        TextField maxPoolSize = new TextField("maxPoolSize");
+        TextField<String> maxPoolSize = new TextField<String>("maxPoolSize");
         maxPoolSize.add(RangeValidator.minimum(1));
         form.add(maxPoolSize);
         
-        TextField keepAliveTime = new TextField("keepAliveTime");
+        TextField<String> keepAliveTime = new TextField<String>("keepAliveTime");
         keepAliveTime.add(RangeValidator.minimum(1));
         form.add(keepAliveTime);
         
-        final DropDownChoice queueType = new DropDownChoice("queueType", Arrays.asList(CoverageAccessInfo.QueueType.values()), new QueueTypeRenderer());
+        final DropDownChoice<QueueType> queueType = new DropDownChoice<QueueType>("queueType", Arrays.asList(CoverageAccessInfo.QueueType.values()), new QueueTypeRenderer());
         form.add(queueType);
         
-        TextField imageIOCacheThreshold = new TextField("imageIOCacheThreshold");
+        TextField<String> imageIOCacheThreshold = new TextField<String>("imageIOCacheThreshold");
         imageIOCacheThreshold.add(RangeValidator.minimum(0l));
         form.add(imageIOCacheThreshold);
                 
         Button submit = new Button("submit", new StringResourceModel("submit", this, null)) {
+            private static final long serialVersionUID = 4149741045073254811L;
             @Override
             public void onSubmit() {
                 GeoServer gs = (GeoServer) geoServerModel.getObject();
@@ -129,6 +127,7 @@ public class CoverageAccessPage extends ServerAdminPage {
         form.add(submit);
         
         Button cancel = new Button("cancel") {
+            private static final long serialVersionUID = -57093747603810865L;
             @Override
             public void onSubmit() {
                 doReturn();
@@ -137,14 +136,23 @@ public class CoverageAccessPage extends ServerAdminPage {
         form.add(cancel);
     }
     
-    private class QueueTypeRenderer implements  IChoiceRenderer {
-
-        public Object getDisplayValue(Object object) {
-            return new StringResourceModel(((QueueType) object).name(), CoverageAccessPage.this, null).getString();
+    /**
+     * Display and ID mapping adapter for QueueType.
+     */
+    // TODO: consider use of EnumChoiceRenderer<QueueType>
+    private class QueueTypeRenderer implements  IChoiceRenderer<QueueType> {
+        private static final long serialVersionUID = -702911785346928083L;
+        public String getDisplayValue(QueueType type) {
+            return new StringResourceModel(type.name(), CoverageAccessPage.this, null).getString();
         }
 
-        public String getIdValue(Object object, int index) {
-            return ((QueueType) object).name();
+        public String getIdValue(QueueType type, int index) {
+            return type.name();
+        }
+
+        @Override
+        public QueueType getObject(String id, IModel<? extends List<? extends QueueType>> choices) {
+            return QueueType.valueOf(id);
         }
     }
 }

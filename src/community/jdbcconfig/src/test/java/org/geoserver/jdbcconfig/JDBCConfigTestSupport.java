@@ -9,6 +9,7 @@ import static org.easymock.classextension.EasyMock.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -28,6 +29,7 @@ import org.geoserver.config.util.XStreamPersisterInitializer;
 import org.geoserver.jdbcconfig.internal.ConfigDatabase;
 import org.geoserver.jdbcconfig.internal.DbMappings;
 import org.geoserver.jdbcconfig.internal.Dialect;
+import org.geoserver.jdbcconfig.internal.JDBCConfigProperties;
 import org.geoserver.jdbcconfig.internal.JDBCConfigXStreamPersisterInitializer;
 import org.geoserver.jdbcconfig.internal.Util;
 import org.geoserver.jdbcconfig.internal.XStreamInfoSerialBinding;
@@ -301,33 +303,34 @@ public class JDBCConfigTestSupport {
     }
 
     public void runScript(String dbScriptName, Logger logger, boolean tx) throws IOException {
-        final URL url = JDBCGeoServerLoader.class.getResource(dbScriptName);
-        if (url == null) {
-            throw new IllegalArgumentException("Script not found: " + getClass().getName() + "/"
-                    + dbScriptName);
-        }
+        try (InputStream script = JDBCConfigProperties.class.getResourceAsStream(dbScriptName)) {
+            if (script == null) {
+                throw new IllegalArgumentException("Script not found: " + JDBCConfigProperties.class.getName() + "/"
+                        + dbScriptName);
+            }
 
-        if (!tx) {
-            NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(dataSource);
-            Util.runScript(url, template.getJdbcOperations(), null);
-        } else {
-            DataSourceTransactionManager transactionManager = new DataSourceTransactionManager(dataSource);
-            NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(transactionManager.getDataSource());
-            TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
-            final JdbcOperations jdbcOperations = template.getJdbcOperations();
-            transactionTemplate.execute(new TransactionCallback<Object>() {
+            if (!tx) {
+                NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(dataSource);
+                Util.runScript(script, template.getJdbcOperations(), null);
+            } else {
+                DataSourceTransactionManager transactionManager = new DataSourceTransactionManager(dataSource);
+                NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(transactionManager.getDataSource());
+                TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
+                final JdbcOperations jdbcOperations = template.getJdbcOperations();
+                transactionTemplate.execute(new TransactionCallback<Object>() {
 
-                @Override
-                public Object doInTransaction(TransactionStatus ts) {
-                    try {
-                        Util.runScript(url, jdbcOperations, null);
-                    } catch (IOException ex) {
-                        throw new RuntimeException(ex);
+                    @Override
+                    public Object doInTransaction(TransactionStatus ts) {
+                        try {
+                            Util.runScript(script, jdbcOperations, null);
+                        } catch (IOException ex) {
+                            throw new RuntimeException(ex);
+                        }
+                        return null;
                     }
-                    return null;
-                }
-            });
-        }
+                });
+            }
+        }        
     }
 
     public DataSource getDataSource() {

@@ -10,19 +10,25 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.security.SecureRandom;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLStreamHandler;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.util.Filter;
+import org.geotools.data.DataUtilities;
 
 /**
  * Utility methods for working with {@link ResourceStore}.
@@ -277,14 +283,21 @@ public class Resources {
     }
     
     /**
-     * Write the contents of a resource into another resource
+     * Write the contents of a resource into another resource. Also supports directories (recursively).
+     * 
      * @param data resource to read
      * @param destination resource to write to
      * @throws IOException
      */
     public static void copy (Resource data, Resource destination) throws IOException {
-        try(InputStream in = data.in()) {
-            copy(in, destination);
+        if (data.getType() == Type.DIRECTORY) {
+            for (Resource child : data.list()) {
+                copy(child, destination.get(child.name()));
+            }
+        } else {        
+            try(InputStream in = data.in()) {
+                copy(in, destination);
+            }
         }
     }
     
@@ -347,9 +360,9 @@ public class Resources {
                 res.addAll(list(child, filter, true));
             }
         }        
-        return res;        
+        return res;
     }
-    
+
     /**
      * Convenience method for non recursive listing
      * 
@@ -359,6 +372,17 @@ public class Resources {
      */
     public static List<Resource> list(Resource dir, Filter<Resource> filter) {
         return list(dir, filter, false);
+    }
+   
+    /**
+     * 
+     * Recursively loops through directory to provide all children
+     * 
+     * @param resource directory
+     * @return list of children with recursive children
+     */
+    public static List<Resource> listRecursively(Resource dir) {
+        return list(dir, AnyFilter.INSTANCE, true);
     }
 
     /**
@@ -402,6 +426,19 @@ public class Resources {
 
     }
     
+    public static class AnyFilter implements Filter<Resource> {
+        
+        public static final AnyFilter INSTANCE = new AnyFilter(); 
+        
+        private AnyFilter() {};
+
+        @Override
+        public boolean accept(Resource obj) {
+            return true;
+        }
+
+    }
+    
     /**
      * Creates resource from a path, if the path is relative it will return a resource from the default resource loader
      * otherwise it will return a file based resource
@@ -410,8 +447,7 @@ public class Resources {
      * @return resource
      */
     public static Resource fromPath(String path) {
-       GeoServerResourceLoader loader = (GeoServerResourceLoader) GeoServerExtensions.bean("resourceLoader");
-       return fromPath(path, loader.get(Paths.BASE));
+       return ((GeoServerResourceLoader) GeoServerExtensions.bean("resourceLoader")).fromPath(path);
     }
     
     /**
@@ -432,21 +468,212 @@ public class Resources {
         }
     }
     
-    private static final SecureRandom random = new SecureRandom();
     public static Resource createRandom(String prefix, String suffix, Resource dir)
         throws IOException {
-        long n = random.nextLong();
-        if (n == Long.MIN_VALUE) {
-            n = 0;      // corner case
-        } else {
-            n = Math.abs(n);
-        }
-
         // Use only the file name from the supplied prefix
         prefix = (new File(prefix)).getName();
 
-        String name = prefix + Long.toString(n) + suffix;
-        return dir.get(name);
+        Resource res;
+        do {
+            UUID uuid = UUID.randomUUID();
+            String name = prefix + uuid + suffix;
+            res = dir.get(name);
+        } while(exists(res));
+
+        return res;
+    }
+    
+    
+    /**
+     * Used to look up resources based on user provided url (or path) using the Data Directory as base directory.
+     * 
+     * This method is used to process a URL provided
+     * by a user: <i>Given a path, tries to interpret it as a file into the data directory, or as an absolute
+     * location, and returns the actual absolute location of the file.</i>
+     * 
+     * Over time this url method has grown in the telling to support:
+     * <ul>
+     * <li>Actual URL to external resource using http or ftp protocol - will return null</li>
+     * <li>Resource URL - will support resources from resource store</li>
+     * <li>File URL - will support absolute file references</li>
+     * <li>File URL - will support relative file references - this is deprecated, use resource: instead</li>
+     * <li>Fake URLs - sde://user:pass@server:port - will return null.</li>
+     * <li>path - user supplied file path (operating specific specific)</li>
+     * </ul>
+     * 
+     * @param url File URL or path relative to data directory 
+     * 
+     * @return Resource indicated by provided URL 
+     */
+    public static Resource fromURL(String path) {
+       return ((GeoServerResourceLoader) GeoServerExtensions.bean("resourceLoader")).fromURL(path);
+    }
+    
+    /**
+     * Used to look up resources based on user provided url (or path).
+     * 
+     * This method is used to process a URL provided
+     * by a user: <i>iven a path, tries to interpret it as a file into the data directory, or as an absolute
+     * location, and returns the actual absolute location of the file.</i>
+     * 
+     * Over time this url method has grown in the telling to support:
+     * <ul>
+     * <li>Actual URL to external resoruce using http or ftp protocol - will return null</li>
+     * <li>Resource URL - will support resources from resource store</li>
+     * <li>File URL - will support absolute file references</li>
+     * <li>File URL - will support relative file references - this is deprecated, use resource: instead</li>
+     * <li>Fake URLs - sde://user:pass@server:port - will return null.</li>
+     * <li>path - user supplied file path (operating specific specific)</li>
+     * </ul>
+     * 
+     * Note that the baseDirectory is optional (and may be null).
+     * 
+     * @param baseDirectory Optional base directory used to resolve relative file URLs
+     * @param url File URL or path relative to data directory 
+     * 
+     * @return Resource indicated by provided URL 
+     */
+    public static Resource fromURL(Resource baseDirectory, String url) {
+        String ss;
+        if ((ss = StringUtils.removeStart(url, "resource:")) != url) {
+            return baseDirectory.get(ss);
+        }
+                
+        // if path looks like an absolute file: URL, try standard conversion
+        if (url.startsWith("file:/")) {
+            try {
+                return Files.asResource(DataUtilities.urlToFile(new URL(url)));
+            } catch (Exception e) {
+                // failure, so fall through
+            }
+        }
+
+        // do we ever have something that is not a file system reference?
+        // yes. See GEOS-5931: cases like sde://user:pass@server:port or 
+        // pgraster://user:pass@server:port or similar custom store URLs.
+        if (url.startsWith("file:")) {
+            url = url.substring(5); // remove 'file:' prefix
+
+            File f = new File(url);
+            
+            if (f.isAbsolute() || f.exists()) {
+                return Files.asResource(f); // if it's an absolute path, use it as such
+
+            } else {
+                // otherwise try to map it inside the data dir
+                if( baseDirectory != null ){
+                    return baseDirectory.get(url);
+                }
+                return Files.asResource(f); // fine return it as is
+            }
+        } else {
+            // Treating 'url' as a normal file path
+            File file = new File(url);
+            if (file.isAbsolute() || file.exists()) {
+                return Files.asResource(file); // if it's an absolute path, use it as such
+            }
+            // otherwise try to map it inside the data dir
+            if( baseDirectory != null ){
+                Resource res = baseDirectory.get(url);
+                if( exists(res) ){
+                    return res;
+                }
+            }
+            // Allows dealing with custom URL Strings. Don't return a file for them
+            return null;
+        }
+    }
+    
+    /**
+     * Used to look up resources based on user provided url, using the Data Directory as base directory. 
+     * 
+     * Supports
+     * <li>Actual URL to external resource using http or ftp protocol - will return null</li>
+     * <li>Resource URL - will support resources from resource store</li>
+     * <li>File URL - will support absolute file references</li>
+     * <li>File URL - will support relative file references - this is deprecated, use resource: instead</li>
+     * <li>Fake URLs - sde://user:pass@server:port - will return null.</li>
+     * 
+     * @param url the url
+     * @return corresponding Resource
+     */
+    public static Resource fromURL(URL url) {
+        return ((GeoServerResourceLoader) GeoServerExtensions.bean("resourceLoader")).fromURL(url);
+    }
+    
+    /**
+     * Used to look up a resource based on user provided url. 
+     * 
+     * Supports
+     * <li>Actual URL to external resource using http or ftp protocol - will return null</li>
+     * <li>Resource URL - will support resources from resource store</li>
+     * <li>File URL - will support absolute file references</li>
+     * <li>File URL - will support relative file references - this is deprecated, use resource: instead</li>
+     * <li>Fake URLs - sde://user:pass@server:port - will return null.</li>
+     * 
+     * @param baseDirectory base directory for resource: or relative file: paths
+     * @param url the url
+     * @return corresponding Resource
+     */
+    public static Resource fromURL(Resource baseDirectory, URL url) {
+        if(url.getProtocol().equalsIgnoreCase("resource")) {
+            return baseDirectory.get(Paths.convert(url.getPath()));
+        } else if (url.getProtocol().equalsIgnoreCase("file")){
+            return Files.asResource(DataUtilities.urlToFile(url));
+        } else {
+            return null;
+        }
+    }
+    
+    /**
+     * Create a URL from a resource.
+     * 
+     * @param res
+     * @return
+     */
+    public static URL toURL(final Resource res) {        
+        try {
+            if (res instanceof Files.ResourceAdaptor) {
+               return res.file().toURI().toURL();
+            }            
+            
+            if (res instanceof URIs.ResourceAdaptor) {
+                return ((URIs.ResourceAdaptor) res).getURL();
+            }
+            
+            return new URL("resource", null, -1, String.format(res.getType()==Type.DIRECTORY?"/%s/":"/%s", res.path()),
+                new URLStreamHandler(){
+
+                @Override
+                protected URLConnection openConnection(URL u)
+                        throws IOException {
+                    return new URLConnection(u){
+
+                        @Override
+                        public void connect() throws IOException {                            
+                        }
+
+                        @Override
+                        public long getLastModified() {
+                            return res.lastmodified();
+                        }
+
+                        @Override
+                        public InputStream getInputStream() throws IOException {
+                            return res.in();
+                        }
+
+                        @Override
+                        public OutputStream getOutputStream() throws IOException {
+                            return res.out();
+                        }
+                    };
+                }
+                
+            });
+        } catch (MalformedURLException e) {
+            throw new IllegalStateException("Should not happen",e);
+        }
     }
 
 }

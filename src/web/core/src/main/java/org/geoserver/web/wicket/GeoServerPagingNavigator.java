@@ -5,9 +5,9 @@
  */
 package org.geoserver.web.wicket;
 
-import org.apache.wicket.ajax.markup.html.navigation.paging.AjaxPagingNavigator;
 import org.apache.wicket.AttributeModifier;
-import org.apache.wicket.markup.html.link.Link;
+import org.apache.wicket.ajax.markup.html.navigation.paging.AjaxPagingNavigator;
+import org.apache.wicket.markup.html.link.AbstractLink;
 import org.apache.wicket.markup.html.navigation.paging.IPageable;
 import org.apache.wicket.markup.html.navigation.paging.IPagingLabelProvider;
 import org.apache.wicket.markup.html.navigation.paging.PagingNavigation;
@@ -26,24 +26,24 @@ public class GeoServerPagingNavigator extends AjaxPagingNavigator {
     }
     
     @Override
-    protected PagingNavigation newNavigation(IPageable pageable, IPagingLabelProvider labelProvider) {
+    protected PagingNavigation newNavigation(String id, IPageable pageable, IPagingLabelProvider labelProvider) {
         // make sure we don't have too many links, it gets quite busy in popups
-        PagingNavigation navigation = super.newNavigation(pageable, labelProvider);
+        PagingNavigation navigation = super.newNavigation(id, pageable, labelProvider);
         navigation.setViewSize(5);
         return navigation;
     }
     
     @Override
-    protected Link newPagingNavigationLink(String id, IPageable pageable, int pageNumber) {
-        Link link = super.newPagingNavigationLink(id, pageable, pageNumber);
+    protected AbstractLink newPagingNavigationLink(String id, IPageable pageable, int pageNumber) {
+        AbstractLink link = super.newPagingNavigationLink(id, pageable, pageNumber);
         // we turn the id into the css class
         link.add(AttributeModifier.replace("class", id));
         return link;
     }
     
     @Override
-    protected Link newPagingNavigationIncrementLink(String id, IPageable pageable, int increment) {
-        Link link = super.newPagingNavigationIncrementLink(id, pageable, increment);
+    protected AbstractLink newPagingNavigationIncrementLink(String id, IPageable pageable, int increment) {
+        AbstractLink link = super.newPagingNavigationIncrementLink(id, pageable, increment);
         // we turn the id into the css class
         link.add(AttributeModifier.replace("class", id));
         return link;

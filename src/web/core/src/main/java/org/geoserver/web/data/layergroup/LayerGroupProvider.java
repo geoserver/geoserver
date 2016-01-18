@@ -16,16 +16,17 @@ import org.geoserver.web.wicket.GeoServerDataProvider;
 /**
  * Provides a table model for listing layer groups
  */
-@SuppressWarnings("serial")
 public class LayerGroupProvider extends GeoServerDataProvider<LayerGroupInfo> {
 
-    public static Property<LayerGroupInfo> NAME = 
+	private static final long serialVersionUID = 4806818198949114395L;
+
+	public static Property<LayerGroupInfo> NAME = 
         new BeanProperty<LayerGroupInfo>( "name", "name" );
 
     public static Property<LayerGroupInfo> WORKSPACE = 
             new BeanProperty<LayerGroupInfo>( "workspace", "workspace.name" );
 
-    static List PROPERTIES = Arrays.asList(NAME, WORKSPACE);
+    static List<Property<LayerGroupInfo>> PROPERTIES = Arrays.asList(NAME, WORKSPACE);
     
     protected LayerGroupProviderFilter groupFilter = null;
     
@@ -56,7 +57,7 @@ public class LayerGroupProvider extends GeoServerDataProvider<LayerGroupInfo> {
         return PROPERTIES;
     }
 
-    public IModel newModel(Object object) {
+    public IModel<LayerGroupInfo> newModel(LayerGroupInfo object) {
         return new LayerGroupDetachableModel( (LayerGroupInfo) object );
     }
 

@@ -12,7 +12,6 @@ import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.model.IModel;
 import org.geoserver.catalog.StyleInfo;
-import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.data.style.StyleDetachableModel;
 import org.geoserver.web.wicket.GeoServerDataProvider;
 import org.geoserver.web.wicket.GeoServerTablePanel;
@@ -26,18 +25,20 @@ import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 public abstract class StyleListPanel extends GeoServerTablePanel<StyleInfo> {
 
     protected static class StyleListProvider extends GeoServerDataProvider<StyleInfo> {
-        @Override
+		private static final long serialVersionUID = -5061497681708482229L;
+
+		@Override
         protected List<StyleInfo> getItems() {
             return getCatalog().getStyles();
         }
 
         @Override
         protected List<Property<StyleInfo>> getProperties() {
-            return Arrays.asList( NAME );
+            return Arrays.asList(NAME);
         }
 
-        public IModel newModel(Object object) {
-            return new StyleDetachableModel( (StyleInfo) object );
+        public IModel<StyleInfo> newModel(StyleInfo object) {
+            return new StyleDetachableModel(object);
         }
     }
 
@@ -55,13 +56,16 @@ public abstract class StyleListPanel extends GeoServerTablePanel<StyleInfo> {
         this(id, new StyleListProvider());
     }
     
-    @Override
-    protected Component getComponentForProperty(String id, IModel itemModel,
+    @SuppressWarnings("unchecked")
+	@Override
+    protected Component getComponentForProperty(String id, IModel<StyleInfo> itemModel,
             Property<StyleInfo> property) {
         final StyleInfo style = (StyleInfo) itemModel.getObject();
-        if ( property == NAME ) {
-            return new SimpleAjaxLink( id, NAME.getModel( itemModel ) ) {
-                @Override
+        if (property == NAME) {
+            return new SimpleAjaxLink<String>( id, (IModel<String>) NAME.getModel(itemModel) ) {
+				private static final long serialVersionUID = -2537227506881638001L;
+
+				@Override
                 public void onClick(AjaxRequestTarget target) {
                     handleStyle(style, target);
                 }

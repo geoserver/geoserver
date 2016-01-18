@@ -56,7 +56,7 @@ Using JDK tools to get stack and memory dumps
 
 The JDK contains three useful command line tools that can be used to gather information about GeoServer instances that are leaking memory or not performing as requested: ``jps``, ``jstack`` and ``jmap``. 
 
-All tools work against a live Java Virtual Machine, the one running GeoServer in particular. In other for them to work properly you'll have to run them with a user that has enough privileges to connect to the JVM process, in particular super user or the same user that's running the JVM usually have the required right.
+All tools work against a live Java Virtual Machine, the one running GeoServer in particular. In order for them to work properly you'll have to run them with a user that has enough privileges to connect to the JVM process, in particular super user or the same user that's running the JVM usually have the required right.
 
 jps
 ````

@@ -8,25 +8,24 @@ package org.geoserver.web.wicket;
 import org.apache.wicket.Component;
 import org.apache.wicket.model.IModel;
 
+@SuppressWarnings("serial")
 public class DelegatingModel<T> implements IModel<T> {
-    Component myComponent; 
+    Component myComponent;
 
-    public DelegatingModel(Component c){
+    public DelegatingModel(Component c) {
         myComponent = c;
     }
 
-    public T getObject(){
+    public T getObject() {
         return (T) myComponent.getDefaultModel().getObject();
     }
 
-    public void setObject(T o){
-        IModel<T> mod = (IModel<T>) myComponent.getDefaultModel(); 
+    public void setObject(T o) {
+        IModel<T> mod = (IModel<T>) myComponent.getDefaultModel();
         mod.setObject(o);
     }
 
-    public void detach(){
+    public void detach() {
         myComponent.getDefaultModel().detach();
     }
 }
-
-

@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -16,6 +16,7 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.DimensionDefaultValueSetting.Strategy;
 import org.geoserver.catalog.impl.LayerGroupInfoImpl;
 import org.geoserver.wms.WMSDimensionsTestSupport;
 import org.junit.Test;
@@ -77,7 +78,7 @@ public class DimensionsVectorCapabilitiesTest extends WMSDimensionsTestSupport {
         // check we have the extent
         assertXpathEvaluatesTo("1", "count(//Layer/Extent)", dom);
         assertXpathEvaluatesTo("elevation", "//Layer/Extent/@name", dom);
-        assertXpathEvaluatesTo("0.0", "//Layer/Extent/@default", dom);
+        assertXpathEvaluatesTo("0", "//Layer/Extent/@default", dom);
         // and that it is empty
         assertXpathEvaluatesTo("", "//Layer/Extent", dom);
     }
@@ -269,4 +270,35 @@ public class DimensionsVectorCapabilitiesTest extends WMSDimensionsTestSupport {
             getCatalog().remove(eoProduct);
         }
     }
+    
+    @Test
+    public void testDefaultTimeRangeFixed() throws Exception {
+        DimensionDefaultValueSetting defaultValueSetting = new DimensionDefaultValueSetting();
+        defaultValueSetting.setStrategyType(Strategy.FIXED);
+        defaultValueSetting.setReferenceValue("P1M/PRESENT");
+        setupResourceDimensionDefaultValue(V_TIME_ELEVATION, ResourceInfo.TIME, defaultValueSetting);
+
+        Document dom = dom(get("wms?request=getCapabilities&version=1.1.1"), false);
+        // print(dom);
+        
+        assertXpathEvaluatesTo("1", "count(//Layer/Dimension)", dom);
+        assertXpathEvaluatesTo("time", "//Layer/Dimension/@name", dom);
+        assertXpathEvaluatesTo("P1M/PRESENT", "//Layer/Extent/@default", dom);
+    }
+    
+    @Test
+    public void testDefaultElevationRangeFixed() throws Exception {
+        DimensionDefaultValueSetting defaultValueSetting = new DimensionDefaultValueSetting();
+        defaultValueSetting.setStrategyType(Strategy.FIXED);
+        defaultValueSetting.setReferenceValue("-100/0");
+        setupResourceDimensionDefaultValue(V_TIME_ELEVATION, ResourceInfo.ELEVATION, defaultValueSetting);
+
+        Document dom = dom(get("wms?request=getCapabilities&version=1.1.1"), false);
+        // print(dom);
+        
+        assertXpathEvaluatesTo("1", "count(//Layer/Dimension)", dom);
+        assertXpathEvaluatesTo("elevation", "//Layer/Dimension/@name", dom);
+        assertXpathEvaluatesTo("-100/0", "//Layer/Extent/@default", dom);
+    }
+
 }

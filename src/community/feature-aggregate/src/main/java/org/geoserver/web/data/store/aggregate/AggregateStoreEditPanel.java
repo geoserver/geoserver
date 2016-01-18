@@ -131,7 +131,7 @@ public class AggregateStoreEditPanel extends StoreEditPanel {
             }
             
             @Override
-            protected IAjaxCallDecorator getAjaxCallDecorator() {
+            protected IAjaxCallDecorator getAjaxCallListener() {
                 return new AjaxPreprocessingCallDecorator(null) {
 
                     @Override

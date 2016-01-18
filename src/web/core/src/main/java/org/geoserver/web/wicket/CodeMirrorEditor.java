@@ -16,14 +16,23 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.wicket.AttributeModifier;
+import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.attributes.AjaxCallListener;
+import org.apache.wicket.ajax.attributes.IAjaxCallListener;
+import org.apache.wicket.behavior.Behavior;
+import org.apache.wicket.markup.head.CssHeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.head.JavaScriptHeaderItem;
+import org.apache.wicket.markup.head.OnDomReadyHeaderItem;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
 import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.protocol.http.ClientProperties;
+import org.apache.wicket.protocol.http.WebSession;
 import org.apache.wicket.protocol.http.request.WebClientInfo;
+import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.resource.PackageResourceReference;
 
 /**
@@ -89,7 +98,7 @@ public class CodeMirrorEditor extends FormComponentPanel<String> {
 
     private boolean isCodeMirrorSupported() {
         boolean enableCodeMirror = true;
-        WebClientInfo clientInfo = (WebClientInfo) WebRequestCycle.get().getClientInfo();
+        WebClientInfo clientInfo = (WebClientInfo) WebSession.get().getClientInfo();
         ClientProperties clientProperties = clientInfo.getProperties();
         if (clientProperties.isBrowserInternetExplorer()) {
             ClientProperties props = extractIEVersion(clientProperties.getNavigatorUserAgent());
@@ -174,17 +183,6 @@ public class CodeMirrorEditor extends FormComponentPanel<String> {
         return props;
     }
 
-    private ClientProperties extractChromeVersion(String userAgent) {
-        ClientProperties props = new ClientProperties();
-        props.setBrowserVersionMajor(-1);
-        props.setBrowserVersionMinor(-1);
-        if (userAgent != null) {
-            String userAgencyLc = userAgent.toLowerCase();
-            setMajorMinorVersionByPattern(userAgencyLc, "chrome/(\\d+)\\.(\\d+)", props);
-        }
-        return props;
-    }
-
     private void setMajorMinorVersionByPattern(String userAgent, String patternString, ClientProperties properties) {
         Matcher matcher = Pattern.compile(patternString).matcher(userAgent);
         if (matcher.find()) {
@@ -218,9 +216,10 @@ public class CodeMirrorEditor extends FormComponentPanel<String> {
     
     public void setMode(String mode) {
         this.mode = mode;
-        if (AjaxRequestTarget.get() != null) {
+        AjaxRequestTarget requestTarget = RequestCycle.get().find(AjaxRequestTarget.class);
+        if (requestTarget != null) {
             String javascript = "document.gsEditors." + editor.getMarkupId() + ".setOption('mode', '" + mode + "');";
-            AjaxRequestTarget.get().appendJavaScript(javascript);
+            requestTarget .appendJavaScript(javascript);
         }
     }
     
@@ -230,34 +229,35 @@ public class CodeMirrorEditor extends FormComponentPanel<String> {
         editor.clearInput();
     }
     
-    public IAjaxCallDecorator getSaveDecorator() {
+    public IAjaxCallListener getSaveDecorator() {
         // we need to force CodeMirror to update the textarea contents (which it hid)
         // before submitting the form, otherwise the validation will use the old contents
-        return new AjaxCallDecorator() {
+        return new AjaxCallListener() {
+            
             @Override
-            public CharSequence decorateScript(CharSequence script) {
-                // textarea.value = codemirrorinstance.getCode()
+            public CharSequence getBeforeHandler(Component component) {
                 String id = getTextAreaMarkupId();
-                return "if (document.gsEditors) { document.getElementById('" + id + "').value = document.gsEditors." + id + ".getValue(); }" + script;
+                return "if (document.gsEditors) { document.getElementById('" + id + "').value = document.gsEditors." + id + ".getValue(); }";            
             }
+            
         };
     }
     
-    class CodeMirrorBehavior extends AbstractBehavior {
+    class CodeMirrorBehavior extends Behavior {
 
         @Override
-        public void renderHead(IHeaderResponse response) {
-            super.renderHead(response);
+        public void renderHead(Component component, IHeaderResponse response) {
+            super.renderHead(component, response);
             // Add CSS
-            response.renderCSSReference(CSS_REFERENCE);
+            response.render(CssHeaderItem.forReference(CSS_REFERENCE));
             // Add JS
-            response.renderJavascriptReference(REFERENCE);
+            response.render(JavaScriptHeaderItem.forReference(REFERENCE));
             // Add Modes
             for(PackageResourceReference mode : MODES) {
-                response.renderJavascriptReference(mode);
+                response.render(JavaScriptHeaderItem.forReference(mode));
             }
             
-            response.renderOnDomReadyJavascript(getInitJavascript());
+            response.render(OnDomReadyHeaderItem.forScript(getInitJavascript()));
         }
 
         private String getInitJavascript() {

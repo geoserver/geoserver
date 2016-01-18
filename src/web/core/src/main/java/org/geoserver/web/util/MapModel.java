@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -19,16 +19,16 @@ import org.apache.wicket.model.IModel;
  * @author Justin Deoliveira, The Open Planning Project
  *
  */
-public class MapModel implements IModel, IChainingModel {
+public class MapModel implements IModel<Object>, IChainingModel<Object> {
     private static final long serialVersionUID = 3122822158252376260L;
-    IModel model;
+    IModel<?> model;
     String expression;
     
     public MapModel( Map<String,?> map, String expression ) {
         this(new MapWrappingModel(map), expression);
     }
     
-    public MapModel(IModel model, String expression){
+    public MapModel(IModel<?> model, String expression){
         this.model = model;
         this.expression = expression;
     }
@@ -47,7 +47,7 @@ public class MapModel implements IModel, IChainingModel {
         model.detach();
     }
     
-    private static class MapWrappingModel implements IModel{
+    private static class MapWrappingModel implements IModel<Object>{
         /**
          * 
          */
@@ -71,11 +71,11 @@ public class MapModel implements IModel, IChainingModel {
         
     }
 
-    public IModel getChainedModel() {
+    public IModel<?> getChainedModel() {
         return null;
     }
 
-    public void setChainedModel(IModel arg0) {
+    public void setChainedModel(IModel<?> arg0) {
         
     }
 

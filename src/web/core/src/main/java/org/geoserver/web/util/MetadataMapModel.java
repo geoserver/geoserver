@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -7,7 +7,6 @@ package org.geoserver.web.util;
 
 import java.io.Serializable;
 
-import org.apache.wicket.model.IChainingModel;
 import org.apache.wicket.model.IModel;
 import org.geoserver.catalog.MetadataMap;
 
@@ -25,9 +24,9 @@ import org.geoserver.catalog.MetadataMap;
  * @author Justin Deoliveira, The Open Planning Project
  */
 @SuppressWarnings("serial")
-public class MetadataMapModel implements IModel {
+public class MetadataMapModel implements IModel<Object> {
 
-    protected IModel model;
+    protected IModel<?> model;
 
     protected String expression;
 
@@ -39,13 +38,12 @@ public class MetadataMapModel implements IModel {
         this(new MetadataMapWrappingModel(map), expression, target);
     }
 
-    public MetadataMapModel(IModel model, String expression, Class<?> target) {
+    public MetadataMapModel(IModel<?> model, String expression, Class<?> target) {
         this.model = model;
         this.expression = expression;
         this.target = target;
     }
 
-    @SuppressWarnings("unchecked")
     public Object getObject() {
         if(value == null) {
             value = (Serializable) ((MetadataMap) model.getObject()).get(expression, target);
@@ -53,7 +51,6 @@ public class MetadataMapModel implements IModel {
         return value;
     }
 
-    @SuppressWarnings("unchecked")
     public void setObject(Object object) {
         value = (Serializable) object;
         ((MetadataMap) model.getObject()).put(expression, (Serializable) object);
@@ -67,7 +64,7 @@ public class MetadataMapModel implements IModel {
         return expression;
     }
 
-    private static class MetadataMapWrappingModel implements IModel {
+    private static class MetadataMapWrappingModel implements IModel<Object> {
 
         private MetadataMap map;
 

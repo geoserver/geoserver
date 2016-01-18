@@ -45,7 +45,7 @@ public class GeoServerDialog extends Panel {
      *
      * @param title
      */
-    public void setTitle(IModel title) {
+    public void setTitle(IModel<String> title) {
         window.setTitle(title);
     }
 
@@ -184,17 +184,17 @@ public class GeoServerDialog extends Panel {
         AjaxSubmitLink link = new AjaxSubmitLink("submit") {
 
             @Override
-            protected void onSubmit(AjaxRequestTarget target, Form form) {
+            protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
                 submit(target, (Component) this.getDefaultModelObject());
             }
 
             @Override
-            protected void onError(AjaxRequestTarget target, Form form) {
+            protected void onError(AjaxRequestTarget target, Form<?> form) {
                 delegate.onError(target, form);
             }
 
         };
-        link.setDefaultModel(new Model(contents));
+        link.setDefaultModel(new Model<Component>(contents));
         return link;
     }
 
@@ -204,7 +204,7 @@ public class GeoServerDialog extends Panel {
      * @return
      */
     Component cancelLink() {
-        return new AjaxLink("cancel") {
+        return new AjaxLink<Void>("cancel") {
 
             @Override
             public void onClick(AjaxRequestTarget target) {
@@ -227,7 +227,7 @@ public class GeoServerDialog extends Panel {
     protected class ContentsPage extends WebPage {
 
         public ContentsPage(Component contents) {
-            Form form = new Form("form");
+            Form<?> form = new Form<>("form");
             add(form);
             form.add(contents);
             AjaxSubmitLink submit = sumbitLink(contents);
@@ -239,11 +239,12 @@ public class GeoServerDialog extends Panel {
     }
 
     protected class InfoPage extends WebPage {
-        public InfoPage(IModel title,IModel... messages) {
+        @SafeVarargs
+        public InfoPage(IModel<String> title, IModel<String>... messages) {
             add(new Label("title", title));
-            add(new ListView<IModel>("messages", Arrays.asList(messages)) {
+            add(new ListView<IModel<String>>("messages", Arrays.asList(messages)) {
                 @Override
-                protected void populateItem(ListItem<IModel> item) {
+                protected void populateItem(ListItem<IModel<String>> item) {
                     item.add(new Label("message", item.getModelObject()).setEscapeModelStrings(false));
                 }
             });
@@ -275,7 +276,7 @@ public class GeoServerDialog extends Panel {
          * @param target
          * @param form
          */
-        public void onError(final AjaxRequestTarget target, Form form) {
+        public void onError(final AjaxRequestTarget target, Form<?> form) {
             form.getPage().visitChildren(IFeedback.class, (component, visit) -> {
                 if (component.getOutputMarkupId()) {
                     target.add(component);

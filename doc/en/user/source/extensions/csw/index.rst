@@ -12,6 +12,7 @@ For more information on CSW, please refer to `OGC OpenGIS Implementation Specifi
 
    installing
    features
+   directdownload
    tutorial
 
 

@@ -1,5 +1,4 @@
-:orphan:
-.. _directdownload:
+.. _community_csw_directdownload:
 
 DirectDownload
 ==============

@@ -14,66 +14,55 @@ import org.geoserver.cluster.client.JMSContainerHandlerExceptionListener;
  * @author carlo cancellieri - geosolutions sas
  *
  */
-public class JMSContainerHandlerExceptionListenerImpl implements
-		JMSContainerHandlerExceptionListener {
+public class JMSContainerHandlerExceptionListenerImpl
+        implements JMSContainerHandlerExceptionListener {
 
-	private FeedbackPanel fp;
-	private Session session;
+    private FeedbackPanel fp;
 
-	public JMSContainerHandlerExceptionListenerImpl() {
-	}
+    private Session session;
 
-	public void setFeedbackPanel(FeedbackPanel fp) {
-		this.fp = fp;
-	}
+    public JMSContainerHandlerExceptionListenerImpl() {
+    }
 
-	public void setSession(Session s) {
-		if (session != null) {
-			synchronized (this.session) {
-				this.session = s;
-			}
-		} else {
-			synchronized (s) {
-				this.session = s;
-			}
-		}
-	}
+    public void setFeedbackPanel(FeedbackPanel fp) {
+        this.fp = fp;
+    }
 
-	//
-	// public void setRequestCycle(RequestCycle rc) {
-	// if (session != null) {
-	// synchronized (this.rc) {
-	// this.rc = rc;
-	// }
-	// } else {
-	// synchronized (rc) {
-	// this.rc = rc;
-	// }
-	// }
-	// }
+    public void setSession(Session s) {
+        if (session != null) {
+            synchronized (this.session) {
+                this.session = s;
+            }
+        } else {
+            synchronized (s) {
+                this.session = s;
+            }
+        }
+    }
 
-	@Override
-	public void handleListenerSetupFailure(Throwable ex,
-			boolean alreadyRecovered) {
-		if (session != null) {
-			synchronized (session) {
-				if (session.isSessionInvalidated()) {
-					return; // skip
-				}
-				Session.set(session);
+    //
+    @Override
+    public void handleListenerSetupFailure(Throwable ex, boolean alreadyRecovered) {
+        if (session != null) {
+            synchronized (session) {
+                if (session.isSessionInvalidated()) {
+                    return; // skip
+                }
+                // what was this doing...
+                // Session.set(session);
 
-				if (fp != null) {
-					if (alreadyRecovered) {
-						fp.warn("There was an error which seems already fixed: "
-								+ ex.getLocalizedMessage());
-					} else {
-						fp.error(ex.getLocalizedMessage());
+                if (fp != null) {
+                    if (alreadyRecovered) {
+                        fp.warn("There was an error which seems already fixed: "
+                                + ex.getLocalizedMessage());
+                    } else {
+                        fp.error(ex.getLocalizedMessage());
 
-					}
-				}
-			}
-		}
+                    }
+                }
+            }
+        }
 
-	}
+    }
 
 }

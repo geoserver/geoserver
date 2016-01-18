@@ -18,7 +18,8 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
  * @author Justin Deoliveira, OpenGeo
  *
  */
-public class CRSModel implements IModel {
+@SuppressWarnings("serial")
+public class CRSModel implements IModel<CoordinateReferenceSystem> {
 
     transient CoordinateReferenceSystem crs;
     String wkt;
@@ -41,8 +42,7 @@ public class CRSModel implements IModel {
         }
     }
 
-    public void setObject(Object object) {
-        this.crs = (CoordinateReferenceSystem )object;
+    public void setObject(CoordinateReferenceSystem object) {
         this.wkt = crs != null ? crs.toWKT() : null;
     }
 

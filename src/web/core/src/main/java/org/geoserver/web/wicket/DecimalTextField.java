@@ -26,23 +26,23 @@ public class DecimalTextField extends TextField<Double> {
 
     private NumberFormat format;
 
-    private IConverter decimalConverter;
+    private IConverter<Double> decimalConverter;
 
     public DecimalTextField(String id, IModel<Double> model) {
         super(id, model, Double.class);
         format = DecimalFormat.getInstance();
         format.setMaximumFractionDigits(16);
 
-        decimalConverter = new IConverter() {
+        decimalConverter = new IConverter<Double>() {
             private static final long serialVersionUID = 1L;
 
             @Override
-            public String convertToString(Object value, Locale locale) {
+            public String convertToString(Double value, Locale locale) {
                 return value == null? null : format.format(value);
             }
 
             @Override
-            public Object convertToObject(String value, Locale locale) {
+            public Double convertToObject(String value, Locale locale) {
                 if (value == null || value.trim().length() == 0) {
                     return null;
                 }
@@ -62,8 +62,9 @@ public class DecimalTextField extends TextField<Double> {
         format.setMaximumFractionDigits(maximumFractionDigits);
     }
 
+    
     @Override
-    public IConverter getConverter(Class<?> type) {
-        return decimalConverter;
+    public <C> IConverter<C> getConverter(Class<C> type) {
+        return (IConverter<C>) decimalConverter;
     }
 }

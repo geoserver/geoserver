@@ -5,7 +5,11 @@
  */
 package org.geoserver.web.wicket;
 
+import org.apache.wicket.Component;
 import org.apache.wicket.behavior.AttributeAppender;
+import org.apache.wicket.behavior.Behavior;
+import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
@@ -44,7 +48,13 @@ public class ColorPickerField extends TextField {
     }
     
     void init() {
-        add(HeaderContributor.forJavaScript(JSCOLOR_JS));
+        add(new Behavior() {
+            @Override
+            public void renderHead(Component component, IHeaderResponse response) {
+                super.renderHead(component, response);
+                response.render(JavaScriptHeaderItem.forReference(JSCOLOR_JS));
+            }
+        });
         add(new AttributeAppender("class", new Model("color {required:false}"), ","));
     }
     

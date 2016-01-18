@@ -50,16 +50,17 @@ import org.geoserver.web.wicket.GeoServerDataProvider.Property;
  * 
  * @param <T>
  */
-@SuppressWarnings("serial")
 public abstract class GeoServerTablePanel<T> extends Panel {
 
-    private static final int DEFAULT_ITEMS_PER_PAGE = 25;
+	private static final long serialVersionUID = -5275268446479549108L;
+
+	private static final int DEFAULT_ITEMS_PER_PAGE = 25;
 
     // filter form components
     TextField<String> filter;
 
     // table components
-    DataView dataView;
+    DataView<T> dataView;
 
     WebMarkupContainer listContainer;
 
@@ -115,7 +116,9 @@ public abstract class GeoServerTablePanel<T> extends Panel {
         filterForm.setOutputMarkupId(true);
         add(filterForm);
         filter = new TextField<String>("filter", new Model<String>()) {
-            @Override
+			private static final long serialVersionUID = -1252520208030081584L;
+
+			@Override
             protected void onComponentTag(ComponentTag tag) {
                 super.onComponentTag(tag);
                 tag.put("onkeypress", "if(event.keyCode == 13) {document.getElementById('"
@@ -133,17 +136,18 @@ public abstract class GeoServerTablePanel<T> extends Panel {
         listContainer.setOutputMarkupId(true);
         add(listContainer);
         dataView = new DataView<T>("items", dataProvider) {
+			private static final long serialVersionUID = 7201317388415148823L;
 
-            @Override
-            protected Item newItem(String id, int index, IModel model) {
-                OddEvenItem item = new OddEvenItem(id, index, model);
+			@Override
+            protected Item<T> newItem(String id, int index, IModel<T> model) {
+                OddEvenItem<T> item = new OddEvenItem<T>(id, index, model);
                 item.setOutputMarkupId(true);
                 return item;
             }
             
             @Override
-            protected void populateItem(Item item) {
-                final IModel itemModel = item.getModel();
+            protected void populateItem(Item<T> item) {
+                final IModel<T> itemModel = item.getModel();
 
                 // add row selector (visible only if selection is active)
                 WebMarkupContainer cnt = new WebMarkupContainer("selectItemContainer");
@@ -177,18 +181,20 @@ public abstract class GeoServerTablePanel<T> extends Panel {
         navigatorBottom.setOutputMarkupId(true);
     }
 
-    protected ListView buildLinksListView(final GeoServerDataProvider<T> dataProvider) {
-        return new ListView("sortableLinks", dataProvider.getVisibleProperties()) {
+    protected ListView<Property<T>> buildLinksListView(final GeoServerDataProvider<T> dataProvider) {
+        return new ListView<Property<T>>("sortableLinks", dataProvider.getVisibleProperties()) {
 
-            @Override
-            protected void populateItem(ListItem item) {
+			private static final long serialVersionUID = -7565457802398721254L;
+
+			@Override
+            protected void populateItem(ListItem<Property<T>> item) {
                 Property<T> property = (Property<T>) item.getModelObject();
 
                 // build a sortable link if the property is sortable, a label otherwise
-                IModel titleModel = getPropertyTitle(property);
+                IModel<String> titleModel = getPropertyTitle(property);
                 if (sortable && property.getComparator() != null) {
                     Fragment f = new Fragment("header", "sortableHeader", item);
-                    AjaxLink link = sortLink(dataProvider, item);
+                    AjaxLink<Property<T>> link = sortLink(dataProvider, item);
                     link.add(new Label("label", titleModel));
                     f.add(link);
                     item.add(f);
@@ -200,14 +206,16 @@ public abstract class GeoServerTablePanel<T> extends Panel {
         };
     }
 
-    protected void buildRowListView(final GeoServerDataProvider<T> dataProvider, Item item,
-            final IModel itemModel) {
+    protected void buildRowListView(final GeoServerDataProvider<T> dataProvider, Item<T> item,
+            final IModel<T> itemModel) {
         // create one component per viewable property
-        ListView items = new ListView("itemProperties", dataProvider.getVisibleProperties()) {
+        ListView<Property<T>> items = new ListView<Property<T>>("itemProperties", dataProvider.getVisibleProperties()) {
 
-            @Override
-            protected void populateItem(ListItem item) {
-                Property<T> property = (Property<T>) item.getModelObject();
+			private static final long serialVersionUID = -4552413955986008990L;
+
+			@Override
+            protected void populateItem(ListItem<Property<T>> item) {
+                Property<T> property = item.getModelObject();
 
                 Component component = getComponentForProperty("component", itemModel, property);
 
@@ -286,7 +294,7 @@ public abstract class GeoServerTablePanel<T> extends Panel {
      * @param property
      * @return
      */
-    protected IModel getPropertyTitle(Property<T> property) {
+    protected IModel<String> getPropertyTitle(Property<T> property) {
         ResourceModel resMod = new ResourceModel("th." + property.getName(),  property.getName());
         return resMod;
     }
@@ -308,13 +316,14 @@ public abstract class GeoServerTablePanel<T> extends Panel {
      * Returns the items that have been selected by the user 
      * @return
      */
-    public List<T> getSelection() {
+    @SuppressWarnings("unchecked")
+	public List<T> getSelection() {
         List<T> result = new ArrayList<T>();
         int i = 0;
-        for (Iterator it = dataView.iterator(); it.hasNext();) {
-            Item  item = (Item) it.next();
+        for (Iterator<Component> it = dataView.iterator(); it.hasNext();) {
+            Component item = it.next();
             if(selection[i]) {
-                result.add((T) item.getModelObject());
+                result.add((T) item.getDefaultModelObject());
             }
             i++;
         }
@@ -322,11 +331,16 @@ public abstract class GeoServerTablePanel<T> extends Panel {
     }
     
     CheckBox selectAllCheckbox() {
-        CheckBox sa = new CheckBox("selectAll", new PropertyModel(this, "selectAllValue"));
+        CheckBox sa = new CheckBox("selectAll", new PropertyModel<Boolean>(this, "selectAllValue"));
         sa.setOutputMarkupId(true);
         sa.add(new AjaxFormComponentUpdatingBehavior("onclick") {
 
-            @Override
+            /**
+			 * 
+			 */
+			private static final long serialVersionUID = 1154921156065269691L;
+
+			@Override
             protected void onUpdate(AjaxRequestTarget target) {
                 // select all the checkboxes
                 setSelection(selectAllValue);
@@ -343,13 +357,18 @@ public abstract class GeoServerTablePanel<T> extends Panel {
         return sa;
     }
     
-    protected CheckBox selectOneCheckbox(Item item) {
+    protected CheckBox selectOneCheckbox(Item<T> item) {
         CheckBox cb = new CheckBox("selectItem", new SelectionModel(item.getIndex()));
         cb.setOutputMarkupId(true);
         cb.setVisible(selectable);
         cb.add(new AjaxFormComponentUpdatingBehavior("onclick") {
 
-            @Override
+            /**
+			 * 
+			 */
+			private static final long serialVersionUID = -2419184741329470638L;
+
+			@Override
             protected void onUpdate(AjaxRequestTarget target) {
                 if(Boolean.FALSE.equals(getComponent().getDefaultModelObject())) {
                     selectAllValue = false;
@@ -397,8 +416,9 @@ public abstract class GeoServerTablePanel<T> extends Panel {
      */
     public void selectObject(T object) {
         int i = 0;
-        for (Iterator it = dataView.iterator(); it.hasNext();) {
-            Item  item = (Item) it.next();
+        for (Iterator<Component> it = dataView.iterator(); it.hasNext();) {
+            @SuppressWarnings("unchecked")
+			Item<T>  item = (Item<T>) it.next();
             if (object.equals(item.getModelObject())) {
                 selection[i] = true;
                 return;
@@ -421,8 +441,13 @@ public abstract class GeoServerTablePanel<T> extends Panel {
     AjaxButton hiddenSubmit() {
         return new AjaxButton("submit") {
 
-            @Override
-            protected void onSubmit(AjaxRequestTarget target, Form form) {
+            /**
+			 * 
+			 */
+			private static final long serialVersionUID = 5334592790005438960L;
+
+			@Override
+            protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
                 updateFilter(target, filter.getDefaultModelObjectAsString());
             }
 
@@ -453,18 +478,20 @@ public abstract class GeoServerTablePanel<T> extends Panel {
      * Builds a sort link that will force sorting on a certain column, and flip it to the other
      * direction when clicked again
      */
-    AjaxLink sortLink(final GeoServerDataProvider<T> dataProvider, ListItem item) {
-        return new AjaxLink("link", item.getModel()) {
+    <S> AjaxLink<S> sortLink(final GeoServerDataProvider<T> dataProvider, ListItem<S> item) {
+        return new AjaxLink<S>("link", item.getModel()) {
 
-            @Override
+			private static final long serialVersionUID = -6180419488076488737L;
+
+			@Override
             public void onClick(AjaxRequestTarget target) {
-                SortParam currSort = dataProvider.getSort();
-                Property<T> property = (Property<T>) getModelObject();
+                SortParam<?> currSort = dataProvider.getSort();
+                @SuppressWarnings("unchecked")
+				Property<T> property = (Property<T>) getModelObject();
                 if (currSort == null || !property.getName().equals(currSort.getProperty())) {
-                    dataProvider.setSort(new SortParam(property.getName(), true));
+                    dataProvider.setSort(new SortParam<Object>(property.getName(), true));
                 } else {
-                    dataProvider
-                            .setSort(new SortParam(property.getName(), !currSort.isAscending()));
+                    dataProvider.setSort(new SortParam<Object>(property.getName(), !currSort.isAscending()));
                 }
                 setSelection(false);
                 target.add(listContainer);
@@ -515,7 +542,7 @@ public abstract class GeoServerTablePanel<T> extends Panel {
     
     public void processInputs() {
         this.visitChildren(FormComponent.class, (component, visit) -> {
-            ((FormComponent) component).processInput();
+            ((FormComponent<?>) component).processInput();
             visit.dontGoDeeper();
         });
     }
@@ -539,19 +566,23 @@ public abstract class GeoServerTablePanel<T> extends Panel {
      * to the &lt;td&gt; element created for the column.
      * </p>
      */
-    protected void onPopulateItem(Property<T> property, ListItem item) {
+    protected void onPopulateItem(Property<T> property, ListItem<Property<T>> item) {
     }
 
-    IModel showingAllRecords(long first, long last, long size) {
+    IModel<String> showingAllRecords(long first, long last, long size) {
         return new ParamResourceModel("showingAllRecords", this, first, last, size);
     }
     
-    IModel matchedXOutOfY(long first, long last, long size, long fullSize) {
+    IModel<String> matchedXOutOfY(long first, long last, long size, long fullSize) {
         return new ParamResourceModel("matchedXOutOfY", this, first, last, size, fullSize);
     }
 
     protected class PagerDelegate implements Serializable {
-        long fullSize, size, first, last;
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = -6928477338531850338L;
+		long fullSize, size, first, last;
         
         public PagerDelegate() {
             updateMatched();
@@ -569,7 +600,7 @@ public abstract class GeoServerTablePanel<T> extends Panel {
             }
         }
         
-        public IModel model() {
+        public IModel<String> model() {
             if (dataProvider.getKeywords() == null) {
                 return showingAllRecords(first, last, fullSize);
             } else {
@@ -625,7 +656,12 @@ public abstract class GeoServerTablePanel<T> extends Panel {
      */
     protected class Pager extends Panel {
 
-        GeoServerPagingNavigator navigator;
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 6128188748404971154L;
+
+		GeoServerPagingNavigator navigator;
 
         Label matched;
 
@@ -633,7 +669,7 @@ public abstract class GeoServerTablePanel<T> extends Panel {
             super(id);
 
             add(navigator = updatingPagingNavigator());
-            add(matched = new Label("filterMatch", new Model()));
+            add(matched = new Label("filterMatch", new Model<String>()));
             updateMatched();
         }
 
@@ -642,7 +678,12 @@ public abstract class GeoServerTablePanel<T> extends Panel {
          */
         private GeoServerPagingNavigator updatingPagingNavigator() {
             return new GeoServerPagingNavigator("navigator", dataView) {
-                @Override
+                /**
+				 * 
+				 */
+				private static final long serialVersionUID = -1795278469204272385L;
+
+				@Override
                 protected void onAjaxEvent(AjaxRequestTarget target) {
                     super.onAjaxEvent(target);
                     setSelection(false);
@@ -663,19 +704,23 @@ public abstract class GeoServerTablePanel<T> extends Panel {
         }
     }
     
-    public class SelectionModel implements IModel {
-        int index;
+    public class SelectionModel implements IModel<Boolean> {
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 7681891298556441330L;
+		int index;
         
         public SelectionModel(int index) {
             this.index = index;
         }
 
-        public Object getObject() {
+        public Boolean getObject() {
             return selection[index];
         }
 
-        public void setObject(Object object) {
-            selection[index] = ((Boolean) object).booleanValue();            
+        public void setObject(Boolean object) {
+            selection[index] = object.booleanValue();            
         }
 
         public void detach() {

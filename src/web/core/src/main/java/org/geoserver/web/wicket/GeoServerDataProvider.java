@@ -465,12 +465,14 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
          * not suitable for editable tables, if you need to make one you'll have to
          * roll your own getModel() implementation ( {@link BeanProperty} provides a good example)
          */
-        public IModel<T> getModel(IModel<T> itemModel) {
+        @SuppressWarnings("unchecked")
+		public IModel<T> getModel(IModel<T> itemModel) {
             Object value = getPropertyValue((T) itemModel.getObject());
-            if(value instanceof IModel)
+            if(value instanceof IModel) {
                 return (IModel<T>) value;
-            else
+            } else {
                 return new Model((Serializable) value);
+            }
         }
 
         public String getName() {
@@ -519,7 +521,7 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
          * tables: uses a property model against the bean so that writes will hit the
          * bean instead of the possibly immutable values contained in it (think a String property)
          */
-        public IModel getModel(IModel itemModel) {
+        public IModel<T> getModel(IModel<T> itemModel) {
             return new PropertyModel<T>(itemModel, propertyPath);
         }
 

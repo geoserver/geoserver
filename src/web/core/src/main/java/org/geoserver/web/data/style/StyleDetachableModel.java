@@ -9,16 +9,18 @@ import org.apache.wicket.model.LoadableDetachableModel;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.web.GeoServerApplication;
 
-public class StyleDetachableModel extends LoadableDetachableModel {
+public class StyleDetachableModel extends LoadableDetachableModel<StyleInfo> {
 
-    String id;
+	private static final long serialVersionUID = 1429186780251933703L;
+	
+	String id;
     
     public StyleDetachableModel(StyleInfo style) {
         this.id = style.getId();
     }
     
     @Override
-    protected Object load() {
+    protected StyleInfo load() {
         StyleInfo style = GeoServerApplication.get().getCatalog().getStyle( id );
 
         // Make sure the legend object isn't null
@@ -30,7 +32,6 @@ public class StyleDetachableModel extends LoadableDetachableModel {
 
     @Override
     protected void onDetach() {
-        // TODO Auto-generated method stub
         super.onDetach();
     }
 

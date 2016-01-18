@@ -11,14 +11,15 @@ import org.geoserver.catalog.WorkspaceInfo;
 /**
  * Simple choice renderer for {@link WorkspaceInfo}
  */
-@SuppressWarnings("serial")
-public class WorkspaceChoiceRenderer extends ChoiceRenderer {
+public class WorkspaceChoiceRenderer extends ChoiceRenderer<WorkspaceInfo> {
 
-    public Object getDisplayValue(Object object) {
-        return ((WorkspaceInfo) object).getName();
+	private static final long serialVersionUID = 9065816461497078542L;
+
+	public Object getDisplayValue(WorkspaceInfo object) {
+        return object.getName();
     }
 
-    public String getIdValue(Object object, int index) {
-        return ((WorkspaceInfo) object).getId();
+    public String getIdValue(WorkspaceInfo object, int index) {
+        return object.getId();
     }
 }

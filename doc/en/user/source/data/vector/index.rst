@@ -1,7 +1,7 @@
 .. _data_vector:
 
-Working with Vector Data
-========================
+Vector data
+===========
 
 This section discusses the vector data sources that GeoServer can access.
 

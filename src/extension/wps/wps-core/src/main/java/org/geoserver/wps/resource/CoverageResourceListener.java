@@ -1,15 +1,18 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wps.resource;
 
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.geoserver.wcs.CoverageCleanerCallback;
-import org.geoserver.wps.ProcessListenerAdapter;
 import org.geoserver.wps.ProcessEvent;
+import org.geoserver.wps.ProcessListenerAdapter;
 import org.geoserver.wps.WPSException;
 import org.opengis.coverage.grid.GridCoverage;
 
@@ -27,9 +30,9 @@ public class CoverageResourceListener extends ProcessListenerAdapter {
      * @author Andrea Aime - GeoSolutions
      */
     private static class ResourceStatus {
-        boolean inputChecked;
+        final Set<String> inputsChecked = new HashSet<>();
 
-        boolean outputChecked;
+        final Set<String> outputsChecked = new HashSet<>();
     }
 
     WPSResourceManager resourceManager;
@@ -44,39 +47,46 @@ public class CoverageResourceListener extends ProcessListenerAdapter {
 
     @Override
     public void progress(ProcessEvent event) throws WPSException {
-        if (event.getInputs() == null) {
-            return;
-        }
-
         checkInputOutput(event);
     }
 
     private void checkInputOutput(ProcessEvent event) {
+        Map<String, Object> inputs = event.getInputs();
+        Map<String, Object> outputs = event.getOutputs();
+        if (((inputs == null) || inputs.isEmpty()) &&
+                ((outputs == null) || outputs.isEmpty())) {
+            return;
+        }
+        // check if we have the status
         String executionId = event.getStatus().getExecutionId();
-
-        // check if we have the status, and if inputs have already been checked
         ResourceStatus status = resourceStates.get(executionId);
         if (status == null) {
             status = new ResourceStatus();
             resourceStates.put(executionId, status);
         }
-        if (!status.inputChecked) {
-            for (Object input : event.getInputs().values()) {
-                if (input instanceof GridCoverage) {
-                    resourceManager.addResource(new GridCoverageResource(((GridCoverage) input)));
+
+        // check if the available inputs have already been checked
+        Set<String> inputsChecked = status.inputsChecked;
+        if ((inputs != null) && (inputsChecked.size() < inputs.size())) {
+            for (Entry<String, Object> entry : inputs.entrySet()) {
+                Object input = entry.getValue();
+                if ((input != null) && inputsChecked.add(entry.getKey()) &&
+                        (input instanceof GridCoverage)) {
+                    resourceManager.addResource(new GridCoverageResource((GridCoverage) input));
                 }
             }
-            status.inputChecked = true;
         }
 
-        // check if the outputs are available have already been checked
-        if (!status.outputChecked && event.getOutputs() != null) {
-            for (Object output : event.getOutputs().values()) {
-                if (output instanceof GridCoverage) {
-                    resourceManager.addResource(new GridCoverageResource(((GridCoverage) output)));
+        // check if the available outputs have already been checked
+        Set<String> outputsChecked = status.outputsChecked;
+        if ((outputs != null) && (outputsChecked.size() < outputs.size())) {
+            for (Entry<String, Object> entry : outputs.entrySet()) {
+                Object output = entry.getValue();
+                if ((output != null) && outputsChecked.add(entry.getKey()) &&
+                        (output instanceof GridCoverage)) {
+                    resourceManager.addResource(new GridCoverageResource((GridCoverage) output));
                 }
             }
-            status.outputChecked = true;
         }
     }
 

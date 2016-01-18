@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2014 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -49,8 +49,8 @@ public class FeatureNearestValueSelectionStrategyImpl extends
     }
 
     @Override
-    public <T> T getDefaultValue(ResourceInfo resource, String dimensionName,
-            DimensionInfo dimension, Class<T> clz) {        
+    public Object getDefaultValue(ResourceInfo resource, String dimensionName,
+            DimensionInfo dimension, Class clz) {        
         String attrName = dimension.getAttribute();
         Class<?> attrType = String.class;
         if (resource instanceof FeatureTypeInfo){
@@ -82,8 +82,7 @@ public class FeatureNearestValueSelectionStrategyImpl extends
     public String getCapabilitiesRepresentation(ResourceInfo resource, String dimensionName, DimensionInfo dimensionInfo) {
         if (fixedCapabilitiesValue != null){
             return this.fixedCapabilitiesValue;
-        }
-        else {
+        } else {
             return super.getCapabilitiesRepresentation(resource, dimensionName, dimensionInfo);
         }
     }

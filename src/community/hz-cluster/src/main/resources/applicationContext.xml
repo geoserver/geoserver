@@ -24,4 +24,13 @@
    
    <bean id="hzExtensionFilter" class="org.geoserver.cluster.hazelcast.HzExtensionFilter">
    </bean>
+
+   <bean id="hzLockProvider" class="org.geoserver.cluster.hazelcast.HzLockProvider">
+      <property name="cluster" ref="hzCluster"/>
+   </bean>
+   
+   <!-- override the default one -->
+   <bean id="resourceWatcher" class="org.geoserver.cluster.hazelcast.HzResourceWatcher">
+      <property name="cluster" ref="hzCluster"/>
+   </bean>
 </beans>

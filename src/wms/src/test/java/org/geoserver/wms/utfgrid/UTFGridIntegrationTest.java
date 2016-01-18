@@ -1,4 +1,4 @@
-/* (c) 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2015 - 2016 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -81,6 +81,19 @@ public class UTFGridIntegrationTest extends WMSTestSupport {
         XpathEngine xpath = XMLUnit.newXpathEngine();
         assertEquals("1",
                 xpath.evaluate("count(//wms:GetMap[wms:Format='application/json;type=utfgrid'])", dom));
+    }
+    
+    @Test
+    public void testEmptyOutput() throws Exception {
+        UTFGridTester tester = getAsGridTester(
+                "wms?service=WMS&version=1.1.0&request=GetMap&layers=cite:Forests"
+                        + "&styles=&bbox=-10.0028,-0.0028,-9.0048,0.0048&width=256&height=256&srs=EPSG:4326&format=utfgrid");
+        assertEquals(1, tester.getKeyCount());
+        for (int i = 0; i < 32; i++) {
+            for(int j = 0; j < 32; j++) {
+                tester.assertGridPixel(' ', i, j);                
+            }
+        }
     }
 
     @Test

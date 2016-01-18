@@ -1,11 +1,13 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wms.wms_1_1_1;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
@@ -13,8 +15,10 @@ import java.io.ByteArrayInputStream;
 
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
+import org.geoserver.catalog.DimensionDefaultValueSetting;
 import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.DimensionDefaultValueSetting.Strategy;
 import org.geoserver.wms.WMSDimensionsTestSupport;
 import org.junit.Before;
 import org.junit.Test;
@@ -138,5 +142,58 @@ public class DimensionsRasterGetFeatureInfoTest extends WMSDimensionsTestSupport
         assertEquals(20.027, getFeatureAt(url, 68, 72, layer), EPS);
     }
     
+    @Test 
+    public void testTimeDefaultAsRange() throws Exception {
+        setupRasterDimension(WATTEMP, ResourceInfo.ELEVATION, DimensionPresentation.LIST, null, UNITS, UNIT_SYMBOL);
+        // setup a default 
+        DimensionDefaultValueSetting defaultValueSetting = new DimensionDefaultValueSetting();
+        defaultValueSetting.setStrategyType(Strategy.FIXED);
+        defaultValueSetting.setReferenceValue("2008-10-30T23:00:00.000Z/2008-10-31T01:00:00.000Z");
+        setupResourceDimensionDefaultValue(WATTEMP, ResourceInfo.TIME, defaultValueSetting);
+        
+        // use the default time range, specify elevation
+        String url = BASE_URL + "&elevation=100";
+        // this one should be the no-data
+        assertEquals(-30000, getFeatureAt(url, 36, 31, "sf:watertemp"), EPS);
+        // and this one should be medium
+        assertEquals(14.134, getFeatureAt(url, 68, 72, "sf:watertemp"), EPS);
+    }
     
+    @Test 
+    public void testElevationDefaultAsRange() throws Exception {
+        setupRasterDimension(WATTEMP, ResourceInfo.TIME, DimensionPresentation.LIST, null, null, null);
+        // setup a default 
+        DimensionDefaultValueSetting defaultValueSetting = new DimensionDefaultValueSetting();
+        defaultValueSetting.setStrategyType(Strategy.FIXED);
+        defaultValueSetting.setReferenceValue("99/101");
+        setupResourceDimensionDefaultValue(WATTEMP, ResourceInfo.ELEVATION, defaultValueSetting);
+        
+        // default elevation, specific time
+        String url = BASE_URL + "&time=2008-10-31T00:00:00.000Z";
+        // this one should be the no-data
+        assertEquals(-30000, getFeatureAt(url, 36, 31, "sf:watertemp"), EPS);
+        // and this one should be medium
+        assertEquals(14.134, getFeatureAt(url, 68, 72, "sf:watertemp"), EPS);
+    }
+    
+    @Test 
+    public void testTimeElevationDefaultAsRange() throws Exception {
+        // setup a range default for time
+        DimensionDefaultValueSetting defaultValueSetting = new DimensionDefaultValueSetting();
+        defaultValueSetting.setStrategyType(Strategy.FIXED);
+        defaultValueSetting.setReferenceValue("2008-10-30T23:00:00.000Z/2008-10-31T01:00:00.000Z");
+        setupResourceDimensionDefaultValue(WATTEMP, ResourceInfo.TIME, defaultValueSetting);
+        // setup a range default for elevation
+        defaultValueSetting = new DimensionDefaultValueSetting();
+        defaultValueSetting.setStrategyType(Strategy.FIXED);
+        defaultValueSetting.setReferenceValue("99/101");
+        setupResourceDimensionDefaultValue(WATTEMP, ResourceInfo.ELEVATION, defaultValueSetting);
+        
+        // default elevation, default time
+        String url = BASE_URL;
+        // this one should be the no-data
+        assertEquals(-30000, getFeatureAt(url, 36, 31, "sf:watertemp"), EPS);
+        // and this one should be medium
+        assertEquals(14.134, getFeatureAt(url, 68, 72, "sf:watertemp"), EPS);
+    }
 }

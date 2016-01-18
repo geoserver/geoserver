@@ -21,12 +21,12 @@ import java.util.List;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
-import org.hamcrest.Matchers;
 import org.junit.Rule;
 import org.junit.experimental.theories.Theories;
 import org.junit.experimental.theories.Theory;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
+
 
 /**
  * JUnit Theory test class for Resource invariants. Subclasses should provide representative 
@@ -87,7 +87,7 @@ public abstract class ResourceTheoryTest {
     public void theoryHaveName(String path) throws Exception {
         Resource res = getResource(path);
         
-        String result = res.path();
+        String result = res.name();
         
         assertThat(result, notNullValue());
     }
@@ -110,9 +110,9 @@ public abstract class ResourceTheoryTest {
         
         assumeThat(res, is(resource()));
         
-        InputStream result = res.in();
-        
-        assertThat(result, notNullValue());
+        try (InputStream result = res.in()) {
+            assertThat(result, notNullValue());
+        }
     }
     
     @Theory
@@ -121,31 +121,33 @@ public abstract class ResourceTheoryTest {
         
         assumeThat(res, is(resource()));
         
-        OutputStream result = res.out();
-        
-        assertThat(result, notNullValue());
+        try (OutputStream result = res.out()) {
+            assertThat(result, notNullValue());
+        }
     }
     
     @Theory
-    public void theoryUndefinedHaveIstream(String path) throws Exception {
+    public void theoryUndefinedHaveIstreamAndBecomeResource(String path) throws Exception {
         Resource res = getResource(path);
         
         assumeThat(res, is(undefined()));
         
-        InputStream result = res.in();
-        
-        assertThat(result, notNullValue());
+        try (InputStream result = res.in()) {
+            assertThat(result, notNullValue());
+            assertThat(res, is(resource()));
+        }
     }
     
     @Theory
-    public void theoryUndefinedHaveOstream(String path) throws Exception {
+    public void theoryUndefinedHaveOstreamAndBecomeResource(String path) throws Exception {
         Resource res = getResource(path);
         
         assumeThat(res, is(undefined()));
         
-        OutputStream result = res.out();
-        
-        assertThat(result, notNullValue());
+        try (OutputStream result = res.out()) {
+            assertThat(result, notNullValue());
+            assertThat(res, is(resource()));
+        }
     }
     
     @Theory
@@ -156,21 +158,15 @@ public abstract class ResourceTheoryTest {
         
         byte[] test = {42, 29, 32, 120, 69, 0, 1};
         
-        OutputStream ostream = res.out();
-        try {
+        try (OutputStream ostream = res.out()) {
             ostream.write(test);
-        } finally {
-            ostream.close();
         }
         
         byte[] result=new byte[test.length];
         
-        InputStream istream = res.in();
-        try {
+        try (InputStream istream = res.in()) {
             istream.read(result);
             assertThat(istream.read(), is(-1));
-        } finally {
-            istream.close();
         }
         assertThat(result, equalTo(test));
     }
@@ -181,7 +177,7 @@ public abstract class ResourceTheoryTest {
         assumeThat(res, is(directory()));
         
         exception.expect(IllegalStateException.class);
-        res.in();
+        res.in().close();
     }
     
     @Theory
@@ -190,7 +186,7 @@ public abstract class ResourceTheoryTest {
         assumeThat(res, is(directory()));
         
         exception.expect(IllegalStateException.class);
-        res.out();
+        res.out().close();
     }
     
     @Theory
@@ -262,7 +258,7 @@ public abstract class ResourceTheoryTest {
         Resource parent = res.parent();
         assumeThat(path+" not root", parent, notNullValue());
         
-        if( res.getType() != Type.UNDEFINED){
+        if (res.getType() != Type.UNDEFINED) {
             assertThat(path+" directory",parent, is(directory()));
         }
     }
@@ -343,21 +339,15 @@ public abstract class ResourceTheoryTest {
         
         byte[] test = {42, 29, 32, 120, 69, 0, 1};
         
-        OutputStream ostream = res.out();
-        try {
+        try (OutputStream ostream = res.out()) {
             ostream.write(test);
-        } finally {
-            ostream.close();
         }
         
         byte[] result=new byte[test.length];
         
-        InputStream istream = new FileInputStream(res.file());
-        try {
+        try (InputStream istream = new FileInputStream(res.file())) {
             istream.read(result);
             assertThat(istream.read(), is(-1));
-        } finally {
-            istream.close();
         }
         assertThat(result, equalTo(test));
     }
@@ -376,7 +366,7 @@ public abstract class ResourceTheoryTest {
         String[] resChildrenNames = new String[resChildren.size()];
         
         int i=0;
-        for(Resource child: resChildren) {
+        for (Resource child: resChildren) {
             resChildrenNames[i]=child.name();
             i++;
         }
@@ -397,34 +387,21 @@ public abstract class ResourceTheoryTest {
         byte[] testFile = {27, 3, 5, 90, -120, -3};
         
         // Write to resource
-        {
-            OutputStream ostream = res.out();
-            try {
-                ostream.write(testResource);
-            } finally {
-                ostream.close();
-            }
+        try (OutputStream ostream = res.out()) {
+            ostream.write(testResource);
         }
         
         // Write to file
-        {
-            OutputStream ostream = new FileOutputStream(res.file());
-            try {
-                ostream.write(testFile);
-            } finally {
-                ostream.close();
-            }
+        try (OutputStream ostream = new FileOutputStream(res.file())) {
+            ostream.write(testFile);
         }
         
         // Read from resource
         byte[] result=new byte[testFile.length];
         
-        InputStream istream = res.in();
-        try {
+        try (InputStream istream = res.in()) {
             istream.read(result);
             assertThat(istream.read(), is(-1));
-        } finally {
-            istream.close();
         }
         
         // Should be what was written to the file
@@ -464,20 +441,21 @@ public abstract class ResourceTheoryTest {
         final byte[] thread2Content = "Thread 2 has this content".getBytes();
         
         
-        try(OutputStream out1 = res.out();
-            OutputStream out2 = res.out()) {
-            for(int i=0; i<thread1Content.length || i<thread2Content.length; i++) {
-                if(i<thread1Content.length) {
-                    out1.write(thread1Content[i]);
-                }
-                if(i<thread2Content.length) {
-                    out2.write(thread2Content[i]);
+        try (OutputStream out1 = res.out()) {
+            try (OutputStream out2 = res.out()) {
+                for(int i=0; i<thread1Content.length || i<thread2Content.length; i++) {
+                    if(i<thread1Content.length) {
+                        out1.write(thread1Content[i]);
+                    }
+                    if(i<thread2Content.length) {
+                        out2.write(thread2Content[i]);
+                    }
                 }
             }
         }
         
         final byte[] resultContent;
-        try(InputStream in = res.in()) {
+        try (InputStream in = res.in()) {
             resultContent = IOUtils.toByteArray(in);
         }
         

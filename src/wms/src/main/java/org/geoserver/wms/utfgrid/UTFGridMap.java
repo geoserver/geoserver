@@ -1,4 +1,4 @@
-/* (c) 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2015 - 2016 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -46,15 +46,19 @@ public class UTFGridMap extends RawMap {
         List<UTFGridEntry> encodedEntries = writeGrid(pw, image, entries);
         pw.println("],");
         pw.println("\"keys\": [");
-        pw.println("  \"\",");
-        for (Iterator<UTFGridEntry> it = encodedEntries.iterator(); it.hasNext();) {
-            UTFGridEntry entry = (UTFGridEntry) it.next();
-            pw.print("  \"");
-            pw.print(entry.getKey());
-            if (it.hasNext()) {
-                pw.println("\",");
-            } else {
-                pw.println("\"");
+        if(encodedEntries.isEmpty()) {
+            pw.println("  \"\"");
+        } else {
+            pw.println("  \"\",");
+            for (Iterator<UTFGridEntry> it = encodedEntries.iterator(); it.hasNext();) {
+                UTFGridEntry entry = (UTFGridEntry) it.next();
+                pw.print("  \"");
+                pw.print(entry.getKey());
+                if (it.hasNext()) {
+                    pw.println("\",");
+                } else {
+                    pw.println("\"");
+                }
             }
         }
         pw.println("],");

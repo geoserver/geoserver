@@ -23,6 +23,7 @@ import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.markup.html.WebMarkupContainer;
+import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.IChoiceRenderer;
@@ -142,7 +143,7 @@ public abstract class AbstractDbPanel extends ImportSourcePanel {
     Component connectionTypeChoice(final Map<String, Component> paramPanelMap) {
         ArrayList<String> connectionTypeList = new ArrayList<String>(paramPanelMap.keySet());
         DropDownChoice choice = new DropDownChoice("connType", new PropertyModel(this,
-                "connectionType"), new Model(connectionTypeList), new IChoiceRenderer() {
+                "connectionType"), new Model(connectionTypeList), new ChoiceRenderer() {
 
             public String getIdValue(Object object, int index) {
                 return String.valueOf(object);
@@ -170,7 +171,6 @@ public abstract class AbstractDbPanel extends ImportSourcePanel {
      * Updates the panel visibility to show only the currently selected one.
      * Can also be used to perform actions when the panel visibility is updated
      *
-     * @param paramPanelMap
      * @param target Used when doing ajax updates, might be null
      */
     protected void updatePanelVisibility(AjaxRequestTarget target) {

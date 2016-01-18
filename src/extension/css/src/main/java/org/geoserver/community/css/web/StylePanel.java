@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -12,10 +12,11 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.wicket.Component;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.IAjaxCallDecorator;
-import org.apache.wicket.ajax.calldecorator.AjaxPreprocessingCallDecorator;
+import org.apache.wicket.ajax.attributes.AjaxCallListener;
+import org.apache.wicket.ajax.attributes.AjaxRequestAttributes;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
@@ -28,25 +29,22 @@ import org.geoserver.platform.resource.Resources;
 import org.geoserver.web.wicket.CodeMirrorEditor;
 
 public class StylePanel extends Panel {
-    private String styleBody;
-
+    /** serialVersionUID */
+    private static final long serialVersionUID = -8437128284428556984L;
     public StylePanel(String id, IModel<CssDemoPage> model, final CssDemoPage page,
             final Resource cssFile) {
         super(id, model);
         if (cssFile != null && Resources.exists(cssFile)) {
             try (InputStream is = cssFile.in()) {
-                styleBody = IOUtils.toString(is);
+                IOUtils.toString(is);
             } catch (IOException ioe) {
                 throw new WicketRuntimeException("Error loading CSS: ", ioe);
             }
         } else {
-            styleBody = "No CSS file was found for this style. Please make sure "
-                    + "this is the style you intended to edit, since saving "
-                    + "the CSS will destroy the existing SLD.";
         }
 
-        Form styleEditorForm = new Form("style-editor");
-        final PropertyModel<String> styleBodyModel = new PropertyModel(this, "styleBody");
+        Form<?> styleEditorForm = new Form<Object>("style-editor");
+        final PropertyModel<String> styleBodyModel = new PropertyModel<String>(this, "styleBody");
 
         final CodeMirrorEditor editor = new CodeMirrorEditor("editor", styleBodyModel);
         editor.setMode("css");
@@ -62,6 +60,8 @@ public class StylePanel extends Panel {
         styleEditorForm.add(feedback2);
 
         styleEditorForm.add(new AjaxSubmitLink("submit") {
+            private static final long serialVersionUID = -584632920520391772L;
+
             @Override
             public void onSubmit(AjaxRequestTarget target, Form<?> form) {
                 try {
@@ -102,16 +102,18 @@ public class StylePanel extends Panel {
             }
 
             @Override
-            protected IAjaxCallDecorator getAjaxCallDecorator() {
-                return new AjaxPreprocessingCallDecorator(super.getAjaxCallListener()) {
+            protected void updateAjaxAttributes(AjaxRequestAttributes attributes) {
+                
+                attributes.getAjaxCallListeners().add(new AjaxCallListener() {
+                    private static final long serialVersionUID = -523975844113684799L;
 
                     @Override
-                    public CharSequence preDecorateScript(CharSequence script) {
+                    public CharSequence getBeforeHandler(Component component) {
                         return "if(event.view.document.gsEditors) { "
                                 + "event.view.document.gsEditors." + editor.getTextAreaMarkupId()
-                                + ".save(); } \n" + script;
+                                + ".save(); } \n";
                     }
-                };
+                });
             }
         });
         add(styleEditorForm);

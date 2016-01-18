@@ -13,6 +13,7 @@ import org.geotools.util.logging.Logging;
 
 public class CssValidator implements IValidator<String> {
 
+    private static final long serialVersionUID = 2801344384920672147L;
     static final Logger LOGGER = Logging.getLogger(CssValidator.class);
 
     @Override

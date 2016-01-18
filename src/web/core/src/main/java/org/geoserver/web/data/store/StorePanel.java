@@ -95,7 +95,7 @@ public class StorePanel extends GeoServerTablePanel<StoreInfo> {
     }
 
     private Component storeNameLink(String id, final IModel itemModel) {
-        String wsName = (String) WORKSPACE.getModel(itemModel).getObject();
+        String wsName = (String) WORKSPACE.getModel(itemModel).getObject().getName();
         IModel storeNameModel = NAME.getModel(itemModel);
         String storeName = (String) storeNameModel.getObject();
         StoreInfo store = getCatalog().getStoreByName(wsName, storeName, StoreInfo.class);

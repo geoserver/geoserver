@@ -1762,7 +1762,7 @@ public interface Catalog extends CatalogInfo {
      *         !canSort(of, sortOrder)}
      */
     public <T extends CatalogInfo> CloseableIterator<T> list(final Class<T> of,
-            final Filter filter, @Nullable Integer offset, @Nullable Integer count,
+            final Filter filter, @Nullable Long offset, @Nullable Long count,
             @Nullable SortBy sortBy);
 
     /**

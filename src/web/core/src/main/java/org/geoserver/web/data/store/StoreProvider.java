@@ -161,7 +161,7 @@ public class StoreProvider extends GeoServerDataProvider<StoreInfo> {
     }
     
     @Override
-    public int size() {
+    public long size() {
         Filter filter = getFilter();
         filter = getWorkspaceFilter(filter);
         int count = getCatalog().count(StoreInfo.class, filter);
@@ -177,7 +177,7 @@ public class StoreProvider extends GeoServerDataProvider<StoreInfo> {
     }
     
     @Override
-    public Iterator<StoreInfo> iterator(final int first, final int count) {
+    public Iterator<StoreInfo> iterator(final long first, final long count) {
         Iterator<StoreInfo> iterator = filteredItems(first, count);
         if (iterator instanceof CloseableIterator) {
             // don't know how to force wicket to close the iterator, lets return
@@ -196,7 +196,7 @@ public class StoreProvider extends GeoServerDataProvider<StoreInfo> {
      * Returns the requested page of layer objects after applying any keyword
      * filtering set on the page
      */
-    private Iterator<StoreInfo> filteredItems(Integer first, Integer count) {
+    private Iterator<StoreInfo> filteredItems(Long first, Long count) {
         final Catalog catalog = getCatalog();
 
         // global sorting

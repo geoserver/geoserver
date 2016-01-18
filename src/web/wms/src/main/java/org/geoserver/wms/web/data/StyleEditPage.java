@@ -9,9 +9,13 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.logging.Level;
 
+import org.apache.wicket.Component;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.behavior.AttributeAppender;
+import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.head.JavaScriptHeaderItem;
+import org.apache.wicket.markup.head.OnLoadHeaderItem;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.StringResourceModel;
@@ -55,14 +59,18 @@ public class StyleEditPage extends AbstractStylePage {
 
                 editor.add(new AttributeAppender("class", new Model("disabled"), " "));
                 get("validate").add(new AttributeAppender("style", new Model("display:none;"), " "));
-                add(new AbstractBehavior() {
+                add(new Behavior() {
+                    
                     @Override
-                    public void renderHead(IHeaderResponse response) {
-                        response.renderOnLoadJavascript(
-                            "document.getElementById('mainFormSubmit').style.display = 'none';");
-                        response.renderOnLoadJavascript(
-                            "document.getElementById('uploadFormSubmit').style.display = 'none';");
+                    public void renderHead(Component component, IHeaderResponse response) {
+                        super.renderHead(component, response);
+                        response.render(OnLoadHeaderItem.forScript(
+                                "document.getElementById('mainFormSubmit').style.display = 'none';"));
+                        response.render(OnLoadHeaderItem.forScript(
+                                "document.getElementById('uploadFormSubmit').style.display = 'none';"));
+
                     }
+                    
                 });
 
                 info(new StringResourceModel("globalStyleReadOnly", this, null).getString());

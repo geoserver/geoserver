@@ -43,7 +43,7 @@ public class StyleProvider extends GeoServerDataProvider<StyleInfo> {
     static List PROPERTIES = Arrays.asList(NAME, WORKSPACE);
     
     public StyleProvider() {
-        setSort(NAME.getName(), true);
+        setSort(new SortParam<Object>(NAME.getName(), true));
     }
     
     @Override
@@ -58,12 +58,12 @@ public class StyleProvider extends GeoServerDataProvider<StyleInfo> {
         return PROPERTIES;
     }
 
-    public IModel newModel(Object object) {
-        return new StyleDetachableModel( (StyleInfo) object );
+    public IModel newModel(StyleInfo object) {
+        return new StyleDetachableModel(object );
     }
     
     @Override
-    public int size() {
+    public long size() {
         Filter filter = getFilter();
         int count = getCatalog().count(StyleInfo.class, filter);
         return count;
@@ -77,8 +77,8 @@ public class StyleProvider extends GeoServerDataProvider<StyleInfo> {
     }
     
     @Override
-    public Iterator<StyleInfo> iterator(final int first, final int count) {
-        Iterator<StyleInfo> iterator = filteredItems(first, count);
+    public Iterator<StyleInfo> iterator(final long first, final long count) {
+        Iterator<StyleInfo> iterator = filteredItems((int) first, (int) count);
         if (iterator instanceof CloseableIterator) {
             // don't know how to force wicket to close the iterator, lets return
             // a copy. Shouldn't be much overhead as we're paging

@@ -20,6 +20,9 @@ import org.geotools.util.logging.Logging;
 
 public class SQLViewParamProvider extends GeoServerDataProvider<Parameter> {
 
+    /** serialVersionUID */
+    private static final long serialVersionUID = 4823593149295419810L;
+
     private static final String DEFAULT_REGEXP = "^[\\w\\d\\s]+$";
 
     static final Logger LOGGER = Logging.getLogger(SQLViewParamProvider.class);

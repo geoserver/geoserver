@@ -17,9 +17,12 @@ import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.image.Image;
+import org.apache.wicket.markup.html.image.NonCachingImage;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
+import org.apache.wicket.request.Url;
+import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.validation.validator.RangeValidator;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -57,14 +60,13 @@ public class WMSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
         defaultStyle.setRequired(true);
         styleContainer.add(defaultStyle);
 
-        final Image defStyleImg = new Image("defaultStyleLegendGraphic");
+        final Image defStyleImg = new NonCachingImage("defaultStyleLegendGraphic");
         defStyleImg.setOutputMarkupId(true);
         styleContainer.add(defStyleImg);
 
         // the wms url is build without qualification to allow usage of global styles,
         // the style name and layer name will be ws qualified instead
-        String wmsURL = getRequest().getRelativePathPrefixToContextRoot();
-        wmsURL += wmsURL.endsWith("/") ? "wms?" : "/wms?";
+        String wmsURL = RequestCycle.get().getUrlRenderer().renderFullUrl(Url.parse("wms?"));
 
         final LegendGraphicAjaxUpdater defaultStyleUpdater;
         defaultStyleUpdater = new LegendGraphicAjaxUpdater(wmsURL, defStyleImg, defaultStyleModel);

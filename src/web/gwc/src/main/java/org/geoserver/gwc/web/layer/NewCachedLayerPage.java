@@ -59,9 +59,10 @@ public class NewCachedLayerPage extends GeoServerSecuredPage {
     public NewCachedLayerPage() {
 
         table = new GeoServerTablePanel<TileLayer>("table", provider, true) {
-            private static final long serialVersionUID = 1L;
 
-            @Override
+			private static final long serialVersionUID = -5260899839139961722L;
+
+			@Override
             protected Component getComponentForProperty(String id, IModel<TileLayer> itemModel,
                     Property<TileLayer> property) {
 

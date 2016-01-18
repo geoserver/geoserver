@@ -29,10 +29,9 @@ public class RegexParameterFilterSubform
 
     static final private IValidator<String> REGEXP_VALIDATOR = new IValidator<String>() {
 
-        /** serialVersionUID */
-        private static final long serialVersionUID = 1L;
+		private static final long serialVersionUID = 3753607592277740081L;
 
-        @Override
+		@Override
         public void validate(IValidatable<String> validatable) {
             final String regex = validatable.getValue();
             try{
@@ -40,7 +39,7 @@ public class RegexParameterFilterSubform
             } catch (PatternSyntaxException ex) {
                 ValidationError error = new ValidationError();
                 error.setMessage("Invalid Regular expression");
-                error.addMessageKey(getClass().getSimpleName() + "." + "invalidRegularExpression");
+                error.addKey(getClass().getSimpleName() + "." + "invalidRegularExpression");
                 validatable.error(error);
             }
         }

@@ -88,7 +88,7 @@ public class ProcessLimitsPage extends GeoServerSecuredPage {
         table = new GeoServerTablePanel<InputLimit>("table", inputLimitsProvider) {
 
             @Override
-            protected Component getComponentForProperty(String id, IModel itemModel,
+            protected Component getComponentForProperty(String id, IModel<InputLimit> itemModel,
                     Property<InputLimit> property) {
                 InputLimit limit = (InputLimit) itemModel.getObject();
                 String propertyName = property.getName();

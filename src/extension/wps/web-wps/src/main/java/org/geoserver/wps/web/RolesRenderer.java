@@ -5,8 +5,8 @@
 
 package org.geoserver.wps.web;
 
-import org.apache.wicket.Response;
 import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AbstractAutoCompleteRenderer;
+import org.apache.wicket.request.Response;
 
 /**
  * Renders roles as string
@@ -24,8 +24,8 @@ public class RolesRenderer extends AbstractAutoCompleteRenderer<String> {
     protected void renderChoice(String object, Response response,
             String criteria) {
         response.write(object);
-
     }
+    
     @Override
     protected String getTextValue(String object) {
         return selectedRoles.toString()+object;

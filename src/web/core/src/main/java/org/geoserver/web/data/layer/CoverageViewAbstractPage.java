@@ -17,7 +17,6 @@ import java.util.Map;
 import javax.media.jai.ImageLayout;
 
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.SubmitLink;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.link.Link;
@@ -75,7 +74,6 @@ public abstract class CoverageViewAbstractPage extends GeoServerSecuredPage {
         this(params.get(WORKSPACE).toOptionalString(), params.get(COVERAGESTORE).toString(), null, null);
     }
 
-    @SuppressWarnings("deprecation")
     public CoverageViewAbstractPage(String workspaceName, String storeName, String coverageName,
             CoverageInfo coverageInfo) throws IOException {
         storeId = getCatalog().getStoreByName(workspaceName, storeName, CoverageStoreInfo.class)
@@ -125,16 +123,18 @@ public abstract class CoverageViewAbstractPage extends GeoServerSecuredPage {
         selectedCoverages = new ArrayList<String>(availableCoverages);
 
         // build the form and the text area
-        Form form = new Form("form", new CompoundPropertyModel(this));
+        Form<CoverageViewAbstractPage> form = new Form<>("form", new CompoundPropertyModel<>(this));
         add(form);
 
-        final TextField nameField = new TextField("name");
+        final TextField<String> nameField = new TextField<>("name");
         nameField.setRequired(true);
         nameField.add(new CoverageViewNameValidator());
         form.add(nameField);
 
-        coverageEditor = new CoverageViewEditor("coverages", new PropertyModel(this,
-                "selectedCoverages"), new PropertyModel(this, "outputBands"), availableCoverages);
+        coverageEditor = new CoverageViewEditor("coverages", 
+                new PropertyModel<>(this,"selectedCoverages"), 
+                new PropertyModel<>(this, "outputBands"), 
+                availableCoverages);
         form.add(coverageEditor);
 
         // save and cancel at the bottom of the page
@@ -144,7 +144,7 @@ public abstract class CoverageViewAbstractPage extends GeoServerSecuredPage {
                 onSave();
             }
         });
-        form.add(new Link("cancel") {
+        form.add(new Link<Void>("cancel") {
 
             @Override
             public void onClick() {
@@ -189,11 +189,11 @@ public abstract class CoverageViewAbstractPage extends GeoServerSecuredPage {
     /**
      * Checks the {@link CoverageView} name is unique
      */
-    class CoverageViewNameValidator implements IValidator {
+    class CoverageViewNameValidator implements IValidator<String> {
 
         @Override
-        public void validate(IValidatable validatable) {
-            String vcName = (String) validatable.getValue();
+        public void validate(IValidatable<String> validatable) {
+            String vcName = validatable.getValue();
 
             final CoverageStoreInfo store = getCatalog().getStore(storeId, CoverageStoreInfo.class);
             List<CoverageInfo> coverages = getCatalog().getCoveragesByCoverageStore(store);
@@ -226,20 +226,6 @@ public abstract class CoverageViewAbstractPage extends GeoServerSecuredPage {
 
     public void setSelectedCoverages(List<String> selectedCoverages) {
         this.selectedCoverages = selectedCoverages;
-    }
-
-    private class CompositionTypeRenderer extends ChoiceRenderer {
-
-        public CompositionTypeRenderer() {
-        }
-
-        public Object getDisplayValue(Object object) {
-            return object.toString();
-        }
-
-        public String getIdValue(Object object, int index) {
-            return object.toString();
-        }
     }
 
 }

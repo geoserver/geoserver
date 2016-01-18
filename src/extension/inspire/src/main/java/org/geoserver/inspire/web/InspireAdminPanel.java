@@ -21,6 +21,7 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.CheckBox;
+import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.apache.wicket.markup.html.form.TextField;
@@ -31,11 +32,11 @@ import org.apache.wicket.model.ResourceModel;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.config.ServiceInfo;
 import org.geoserver.inspire.UniqueResourceIdentifiers;
+import org.geoserver.wcs.WCSInfo;
 import org.geoserver.web.services.AdminPagePanel;
 import org.geoserver.web.util.MapModel;
 import org.geoserver.web.util.MetadataMapModel;
 import org.geoserver.wfs.WFSInfo;
-import org.geoserver.wcs.WCSInfo;
 
 /**
  * Panel for the service admin page to set the service INSPIRE extension
@@ -118,7 +119,7 @@ public class InspireAdminPanel extends AdminPagePanel {
 
         IModel<String> urlTypeModel = new MapModel(metadata, SERVICE_METADATA_TYPE.key);
 
-        IChoiceRenderer<String> urlTypeChoiceRenderer = new IChoiceRenderer<String>() {
+        IChoiceRenderer<String> urlTypeChoiceRenderer = new ChoiceRenderer<String>() {
             private static final long serialVersionUID = 1L;
 
             @Override

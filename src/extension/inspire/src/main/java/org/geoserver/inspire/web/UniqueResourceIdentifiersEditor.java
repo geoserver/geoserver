@@ -66,7 +66,8 @@ public class UniqueResourceIdentifiersEditor extends FormComponentPanel<UniqueRe
                 new UniqueResourceIdentifiersProvider(identifiersModel), false) {
 
             @Override
-            protected Component getComponentForProperty(String id, final IModel itemModel,
+            protected Component getComponentForProperty(String id,
+                    IModel<UniqueResourceIdentifier> itemModel,
                     Property<UniqueResourceIdentifier> property) {
                 String name = property.getName();
                 if ("code".equals(name)) {
@@ -129,7 +130,7 @@ public class UniqueResourceIdentifiersEditor extends FormComponentPanel<UniqueRe
         identifiers.setSortable(false);
         identifiers.setFilterable(false);
         container.add(identifiers);
-
+        
         // add new link button
         button = new AjaxButton("addIdentifier") {
 
@@ -144,7 +145,7 @@ public class UniqueResourceIdentifiersEditor extends FormComponentPanel<UniqueRe
             @Override
             protected void onError(AjaxRequestTarget target, Form<?> form) {
                 // the form validator triggered, but we don't want the msg to display
-                Session.get().cleanupFeedbackMessages();
+                Session.get().getFeedbackMessages().clear(); // formally cleanupFeedbackMessages()
                 Session.get().dirty();
                 onSubmit(target, form);
             }

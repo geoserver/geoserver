@@ -1,6 +1,6 @@
 .. _data_directory:
 
-GeoServer Data Directory
+GeoServer data directory
 ========================
 
 The GeoServer **data directory** is the location in the file system where GeoServer stores its configuration information. 

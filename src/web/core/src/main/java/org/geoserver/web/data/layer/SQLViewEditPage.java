@@ -20,6 +20,9 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
  * @author Andrea Aime - OpenGeo
  */
 public class SQLViewEditPage extends SQLViewAbstractPage {
+    /** serialVersionUID */
+    private static final long serialVersionUID = 7301602944709110330L;
+    
     ResourceConfigurationPage previusPage;
     String originalName;
     FeatureTypeInfo tinfo;

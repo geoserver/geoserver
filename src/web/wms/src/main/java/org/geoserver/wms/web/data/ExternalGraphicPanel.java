@@ -97,7 +97,7 @@ public class ExternalGraphicPanel extends Panel {
                 if (last == -1 || !EXTENSIONS.contains( value.substring(last + 1).toLowerCase() ) ){
                     ValidationError error = new ValidationError();
                     error.setMessage( "Not an image" );
-                    error.addMessageKey("nonImage");
+                    error.addKey("nonImage");
                     input.error(error);
                     return;
                 }
@@ -118,19 +118,19 @@ public class ExternalGraphicPanel extends Panel {
                         if("text/html".equals(conn.getContentType())){
                             ValidationError error = new ValidationError();
                             error.setMessage("Unable to access image");
-                            error.addMessageKey("imageUnavailable");
+                            error.addKey("imageUnavailable");
                             input.error(error);
                             return; // error message back!
                         }
                     } catch (MalformedURLException e) {
                         ValidationError error = new ValidationError();
                         error.setMessage("Unable to access image");
-                        error.addMessageKey("imageUnavailable");
+                        error.addKey("imageUnavailable");
                         input.error(error);
                     } catch (IOException e) {
                         ValidationError error = new ValidationError();
                         error.setMessage("Unable to access image");
-                        error.addMessageKey("imageUnavailable");
+                        error.addKey("imageUnavailable");
                         input.error(error);
                     }
                     return; // no further checks possible
@@ -144,13 +144,13 @@ public class ExternalGraphicPanel extends Panel {
                         if (test == null) {
                             ValidationError error = new ValidationError();
                             error.setMessage("File not found in styles directory");
-                            error.addMessageKey("imageNotFound");
+                            error.addKey("imageNotFound");
                             input.error(error);
                         }
                     } catch (IOException e) {
                         ValidationError error = new ValidationError();
                         error.setMessage("File not found in styles directory");
-                        error.addMessageKey("imageNotFound");
+                        error.addKey("imageNotFound");
                         input.error(error);
                     }
                 }
@@ -187,10 +187,10 @@ public class ExternalGraphicPanel extends Panel {
                             return; // error message back!
                         }
                         
-                        format.setModelValue(conn.getContentType());
+                        format.setModelValue(new String[] {conn.getContentType()});
                         BufferedImage image = ImageIO.read(conn.getInputStream());
-                        width.setModelValue("" + image.getWidth());
-                        height.setModelValue("" + image.getHeight());
+                        width.setModelValue(new String[] {"" + image.getWidth()});
+                        height.setModelValue(new String[] {"" + image.getHeight()});
                     } catch (FileNotFoundException notFound ){
                         form.error( "Unable to access "+url);
                     } catch (Exception e) {
@@ -278,9 +278,7 @@ public class ExternalGraphicPanel extends Panel {
      * @return baseUrl
      */
     protected String baseURL(Form form) {
-        WebRequest request = (WebRequest) form.getRequest();
-        HttpServletRequest httpServletRequest;
-        httpServletRequest = ((WebRequest) request).getHttpServletRequest();
+        HttpServletRequest httpServletRequest = (HttpServletRequest) form.getRequest().getContainerRequest();
         String baseUrl = GeoServerExtensions.getProperty("PROXY_BASE_URL");
         if (StringUtils.isEmpty(baseUrl)) {
             GeoServer gs = GeoServerApplication.get().getGeoServer();

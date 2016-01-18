@@ -6,7 +6,7 @@ GeoServer is an open source software server written in Java that allows users to
 This User Manual is a comprehensive guide to all aspects of using GeoServer. Whether you are a novice or a veteran user of this software, we hope that this documentation will be a helpful reference.
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
    introduction/index
    installation/index
@@ -16,8 +16,8 @@ This User Manual is a comprehensive guide to all aspects of using GeoServer. Whe
    data/vector/index
    data/raster/index
    data/database/index
-   data/app-schema/index
    data/cascaded/index
+   data/app-schema/index
    filter/index
    styling/index
    services/index
@@ -28,8 +28,8 @@ This User Manual is a comprehensive guide to all aspects of using GeoServer. Whe
    geowebcache/index
    googleearth/index
    extensions/index
-   tutorials/index
    community/index
+   tutorials/index
 
 
 

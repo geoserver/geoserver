@@ -1,6 +1,6 @@
 .. _getting_started:
 
-Getting Started
+Getting started
 ===============
 
 This section contains short tutorials for common tasks in GeoServer, to get new users using the system quickly and easily.

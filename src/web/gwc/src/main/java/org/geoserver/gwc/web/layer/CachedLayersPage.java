@@ -57,7 +57,9 @@ import org.geowebcache.mime.MimeType;
  * @see GWC#removeTileLayers(List)
  */
 public class CachedLayersPage extends GeoServerSecuredPage {
-    private CachedLayerProvider provider = new CachedLayerProvider();
+	private static final long serialVersionUID = -6795610175856538774L;
+
+	private CachedLayerProvider provider = new CachedLayerProvider();
 
     private GeoServerTablePanel<TileLayer> table;
 
@@ -70,7 +72,7 @@ public class CachedLayersPage extends GeoServerSecuredPage {
         table = new GeoServerTablePanel<TileLayer>("table", provider, true) {
             private static final long serialVersionUID = 1L;
 
-            @SuppressWarnings({ "rawtypes", "unchecked" })
+            @SuppressWarnings({ "unchecked" })
             @Override
             protected Component getComponentForProperty(String id, IModel<TileLayer> itemModel,
                     Property<TileLayer> property) {
@@ -85,10 +87,10 @@ public class CachedLayersPage extends GeoServerSecuredPage {
                 } else if (property == NAME) {
                     return nameLink(id, itemModel);
                 } else if (property == QUOTA_LIMIT) {
-                    IModel<Quota> quotaLimitModel = property.getModel(itemModel);
+                    IModel<Quota> quotaLimitModel = (IModel<Quota>) property.getModel(itemModel);
                     return quotaLink(id, quotaLimitModel);
                 } else if (property == QUOTA_USAGE) {
-                    IModel<Quota> quotaUsageModel = property.getModel(itemModel);
+                    IModel<Quota> quotaUsageModel =  (IModel<Quota>) property.getModel(itemModel);
                     return quotaLink(id, quotaUsageModel);
                 } else if (property == ENABLED) {
                     TileLayer layerInfo = (TileLayer) itemModel.getObject();

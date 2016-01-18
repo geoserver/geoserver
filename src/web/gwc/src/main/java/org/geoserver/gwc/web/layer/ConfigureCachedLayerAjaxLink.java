@@ -5,9 +5,6 @@
  */
 package org.geoserver.gwc.web.layer;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.wicket.Page;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.model.IModel;
@@ -15,6 +12,7 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.gwc.layer.GeoServerTileLayer;
 import org.geoserver.web.data.layergroup.LayerGroupEditPage;
@@ -54,18 +52,18 @@ class ConfigureCachedLayerAjaxLink extends SimpleAjaxLink<TileLayer> {
             return;
         }
         final GeoServerTileLayer geoserverTileLayer = (GeoServerTileLayer) getModelObject();
-        LayerInfo layerInfo = geoserverTileLayer.getLayerInfo();
-        if (layerInfo != null) {
+        PublishedInfo publishedInfo = geoserverTileLayer.getPublishedInfo();
+        if (publishedInfo instanceof LayerInfo) {
             ResourceConfigurationPage resourceConfigPage;
-            resourceConfigPage = new ResourceConfigurationPage(layerInfo, false);
+            resourceConfigPage = new ResourceConfigurationPage((LayerInfo) publishedInfo, false);
             // tell the resource/layer edit page to start up on the tile cache tab
             resourceConfigPage.setSelectedTab(LayerCacheOptionsTabPanel.class);
             if (returnPage != null) {
                 resourceConfigPage.setReturnPage(returnPage);
             }
             setResponsePage(resourceConfigPage);
-        } else {
-            LayerGroupInfo layerGroup = geoserverTileLayer.getLayerGroupInfo();
+        } else if (publishedInfo instanceof LayerGroupInfo) {
+            LayerGroupInfo layerGroup = (LayerGroupInfo) publishedInfo;
             WorkspaceInfo workspace = layerGroup.getWorkspace();
             String wsName = workspace == null ? null : workspace.getName();
             PageParameters parameters = new PageParameters();

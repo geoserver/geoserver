@@ -46,9 +46,12 @@ import org.apache.wicket.validation.ValidationError;
 
 public class CascadedWFSStoredQueryNewPage extends CascadedWFSStoredQueryAbstractPage {
 
+    /** serialVersionUID */
+    private static final long serialVersionUID = 5430480206314316146L;
+
     static final Logger LOGGER = Logging.getLogger(CascadedWFSStoredQueryNewPage.class);
 
-    DropDownChoice storedQueriesDropDown;
+    DropDownChoice<StoredQuery> storedQueriesDropDown;
 
     private String nativeName;
 
@@ -62,7 +65,7 @@ public class CascadedWFSStoredQueryNewPage extends CascadedWFSStoredQueryAbstrac
         storedQueriesDropDown = storedQueriesDropDown();
         f.add(storedQueriesDropDown);
 
-        TextField textField = new TextField("nativeName", new PropertyModel(this, "nativeName"));
+        TextField<String> textField = new TextField<>("nativeName", new PropertyModel<>(this, "nativeName"));
         textField.setRequired(true);
         textField.add(new ViewNameValidator());
 
@@ -94,12 +97,10 @@ public class CascadedWFSStoredQueryNewPage extends CascadedWFSStoredQueryAbstrac
                 createStoredQueryConfiguration(parameterProvider.getItems(),
                 selection.storedQueryId);
 
-        String storedQueryId = selection.storedQueryId;
-
         try {
             DataStoreInfo dsInfo = getCatalog().getStore(storeId, DataStoreInfo.class);
             WFSDataStore directDs = getContentDataStore();
-            DataAccess da = dsInfo.getDataStore(null);
+            DataAccess<?,?> da = dsInfo.getDataStore(null);
 
             Name typeName = directDs.addStoredQuery(getNativeName(), config.getStoredQueryId());
 
@@ -123,12 +124,15 @@ public class CascadedWFSStoredQueryNewPage extends CascadedWFSStoredQueryAbstrac
         doReturn(LayerPage.class);
     }
 
-    private DropDownChoice storedQueriesDropDown() {
-        final DropDownChoice dropdown = new DropDownChoice("storedQueriesDropDown", new Model(),
+    private DropDownChoice<StoredQuery> storedQueriesDropDown() {
+        final DropDownChoice<StoredQuery> dropdown = new DropDownChoice<>("storedQueriesDropDown", new Model<>(),
                 new StoredQueryListModel(), new StoredQueryListRenderer());
 
         dropdown.setRequired(true);
         dropdown.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+
+            /** serialVersionUID */
+            private static final long serialVersionUID = -7195159596309736905L;
 
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
@@ -142,6 +146,9 @@ public class CascadedWFSStoredQueryNewPage extends CascadedWFSStoredQueryAbstrac
     }
 
     private class StoredQueryListModel extends LoadableDetachableModel<List<StoredQuery>> {
+        /** serialVersionUID */
+        private static final long serialVersionUID = 2434460260811775002L;
+
         @Override
         protected List<StoredQuery> load() {
             List<StoredQuery> ret = new ArrayList<StoredQuery>();
@@ -158,6 +165,9 @@ public class CascadedWFSStoredQueryNewPage extends CascadedWFSStoredQueryAbstrac
     }
 
     private class StoredQueryListRenderer extends ChoiceRenderer<StoredQuery> {
+        /** serialVersionUID */
+        private static final long serialVersionUID = 7539702994237874704L;
+
         @Override
         public Object getDisplayValue(StoredQuery object) {
             return object.getTitle();
@@ -192,9 +202,12 @@ public class CascadedWFSStoredQueryNewPage extends CascadedWFSStoredQueryAbstrac
         }
     }
 
-    class ViewNameValidator implements IValidator {
+    class ViewNameValidator implements IValidator<String> {
+        /** serialVersionUID */
+        private static final long serialVersionUID = 8023559657640603820L;
+
         @Override
-        public void validate(IValidatable validatable) {
+        public void validate(IValidatable<String> validatable) {
             String csqName = (String) validatable.getValue();
 
             final DataStoreInfo store = getCatalog().getStore(storeId, DataStoreInfo.class);

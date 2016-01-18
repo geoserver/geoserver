@@ -34,12 +34,17 @@ public class MetadataMapModel<T> implements IModel<T> {
     
     protected Serializable value;
 
+    public MetadataMapModel(MetadataMap map, String expression, Class<?> target) {
+        this(new MetadataMapWrappingModel(map),expression, target);
+    }
+    
     public MetadataMapModel(IModel<MetadataMap> model, String expression, Class<?> target) {
         this.model = model;
         this.expression = expression;
         this.target = target;
     }
-
+    
+    
     @SuppressWarnings("unchecked")
     public T getObject() {
         if(value == null) {

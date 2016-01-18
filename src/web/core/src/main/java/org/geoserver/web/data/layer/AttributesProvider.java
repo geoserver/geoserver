@@ -13,6 +13,9 @@ import org.geoserver.web.wicket.GeoServerDataProvider;
 
 class AttributesProvider extends GeoServerDataProvider<AttributeDescription> {
 
+    /** serialVersionUID */
+    private static final long serialVersionUID = -1478240785822735763L;
+
     List<AttributeDescription> attributes = new ArrayList<AttributeDescription>();
 
     static final Property<AttributeDescription> NAME = new BeanProperty<AttributeDescription>(

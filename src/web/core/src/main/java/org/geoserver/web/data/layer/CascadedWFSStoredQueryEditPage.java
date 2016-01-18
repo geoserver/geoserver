@@ -21,6 +21,9 @@ import org.geotools.data.wfs.internal.v2_0.storedquery.StoredQueryConfiguration;
 public class CascadedWFSStoredQueryEditPage extends
         CascadedWFSStoredQueryAbstractPage {
 
+    /** serialVersionUID */
+    private static final long serialVersionUID = 7254877970765799559L;
+
     private ResourceConfigurationPage previousPage;
 
     private FeatureTypeInfo editableType;

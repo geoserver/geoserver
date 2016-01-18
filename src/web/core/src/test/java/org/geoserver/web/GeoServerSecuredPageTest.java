@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -18,7 +18,7 @@ public class GeoServerSecuredPageTest extends GeoServerWicketTestSupport {
         tester.startPage(LayerPage.class);
         tester.assertRenderedPage(GeoServerLoginPage.class);
         // make sure the spring security emulation is properly setup
-        SavedRequest sr = (SavedRequest) tester.getServletSession().getAttribute(GeoServerSecuredPage.SAVED_REQUEST);
+        SavedRequest sr = (SavedRequest) tester.getSession().getAttribute(GeoServerSecuredPage.SAVED_REQUEST);
         assertNotNull(sr);
         assertTrue(sr.getRedirectUrl().endsWith("?wicket:bookmarkablePage=:org.geoserver.web.data.layer.LayerPage"));
                         

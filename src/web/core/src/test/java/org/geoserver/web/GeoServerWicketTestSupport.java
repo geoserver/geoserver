@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -11,7 +11,6 @@ import org.apache.wicket.Component;
 import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.behavior.Behavior;
-import org.apache.wicket.feedback.DefaultCleanupFeedbackMessageFilter;
 import org.apache.wicket.feedback.IFeedbackMessageFilter;
 import org.apache.wicket.util.tester.WicketTester;
 import org.apache.wicket.util.visit.IVisit;
@@ -113,7 +112,7 @@ public abstract class GeoServerWicketTestSupport extends GeoServerSecurityTestSu
      * @param componentClass the target class, or null if any component will do
      * @return
      */
-    public Component findComponentByContent(MarkupContainer root, Object content, Class componentClass) {
+    public Component findComponentByContent(MarkupContainer root, Object content, Class<?> componentClass) {
         ComponentContentFinder finder = new ComponentContentFinder(content);
         root.visitChildren(componentClass, finder);
         return finder.candidate;

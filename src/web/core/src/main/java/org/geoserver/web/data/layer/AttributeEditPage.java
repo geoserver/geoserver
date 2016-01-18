@@ -38,11 +38,11 @@ public class AttributeEditPage extends GeoServerSecuredPage {
 
     boolean newAttribute;
 
-    private TextField nameField;
+    private TextField<String> nameField;
 
     String size;
 
-    private TextField sizeField;
+    private TextField<String> sizeField;
 
     private CRSPanel crsField;
 
@@ -58,12 +58,12 @@ public class AttributeEditPage extends GeoServerSecuredPage {
         this.attribute = attribute;
         this.size = String.valueOf(attribute.getSize());
 
-        final Form form = new Form("form", new CompoundPropertyModel(attribute));
+        final Form<AttributeDescription> form = new Form<>("form", new CompoundPropertyModel<>(attribute));
         form.setOutputMarkupId(true);
         add(form);
 
-        form.add(nameField = new TextField("name"));
-        DropDownChoice binding = new DropDownChoice("binding", AttributeDescription.BINDINGS,
+        form.add(nameField = new TextField<>("name"));
+        DropDownChoice<Class<?>> binding = new DropDownChoice<>("binding", AttributeDescription.BINDINGS,
                 new BindingChoiceRenderer());
         binding.add(new AjaxFormSubmitBehavior("onchange") {
 
@@ -92,7 +92,7 @@ public class AttributeEditPage extends GeoServerSecuredPage {
         sizeContainer = new WebMarkupContainer("sizeContainer");
         sizeContainer.setOutputMarkupId(true);
         form.add(sizeContainer);
-        sizeContainer.add(sizeField = new TextField("size", new PropertyModel(this, "size")));
+        sizeContainer.add(sizeField = new TextField<>("size", new PropertyModel<>(this, "size")));
         sizeContainer.setVisible(String.class.equals(attribute.getBinding()));
 
         crsContainer = new WebMarkupContainer("crsContainer");
@@ -116,7 +116,7 @@ public class AttributeEditPage extends GeoServerSecuredPage {
         };
         form.setDefaultButton(submit);
         form.add(submit);
-        form.add(new Link("cancel") {
+        form.add(new Link<Void>("cancel") {
 
             @Override
             public void onClick() {
@@ -157,14 +157,14 @@ public class AttributeEditPage extends GeoServerSecuredPage {
         return valid;
     }
 
-    static class BindingChoiceRenderer extends ChoiceRenderer {
+    static class BindingChoiceRenderer extends ChoiceRenderer<Class<?>> {
 
-        public Object getDisplayValue(Object object) {
-            return AttributeDescription.getLocalizedName((Class) object);
+        public Object getDisplayValue(Class<?> object) {
+            return AttributeDescription.getLocalizedName((Class<?>) object);
         }
 
-        public String getIdValue(Object object, int index) {
-            return ((Class) object).getName();
+        public String getIdValue(Class<?> object, int index) {
+            return object.getName();
         }
 
     }

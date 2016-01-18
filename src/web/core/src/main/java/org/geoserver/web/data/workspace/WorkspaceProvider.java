@@ -50,7 +50,6 @@ public class WorkspaceProvider extends GeoServerDataProvider<WorkspaceInfo> {
         return PROPERTIES;
     }
 
-    @Override
     protected IModel<WorkspaceInfo> newModel(WorkspaceInfo object) {
         return new WorkspaceDetachableModel(object);
     }

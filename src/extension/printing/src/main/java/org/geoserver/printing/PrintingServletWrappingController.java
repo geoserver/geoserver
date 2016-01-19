@@ -46,7 +46,7 @@ ServletWrappingController {
                 LOG.warning("Printing module missing its configuration.  Any actions it takes will fail.");
                 return;
             }
-            initParameters.setProperty("config", config.path());
+            initParameters.setProperty("config", config.file().getAbsolutePath());
         } catch (java.io.IOException e) {
             LOG.warning("Unable to calcule canonical path for MapFish printing servlet. "
                     + "Module will fail when run.  IO Exception is: " + e);

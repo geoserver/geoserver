@@ -74,7 +74,7 @@ public class EoLayerGroupEntryPanel extends Panel {
         layerTable = new GeoServerTablePanel<EoLayerGroupEntry>("layers",entryProvider) {
 
             @Override
-            protected Component getComponentForProperty(String id, IModel itemModel,
+            protected Component getComponentForProperty(String id, IModel<EoLayerGroupEntry> itemModel,
                     Property<EoLayerGroupEntry> property) {
                 if ( property == LayerGroupEntryProvider.LAYER ) {
                     EoLayerGroupEntry entry = (EoLayerGroupEntry) itemModel.getObject();

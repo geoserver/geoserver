@@ -89,14 +89,14 @@ public abstract class EoLayerGroupAbstractPage extends GeoServerSecuredPage {
 
         Form form = new Form( "form", new CompoundPropertyModel( lgModel ) ) {
             @Override
-            public IConverter getConverter(Class<?> type) {
+            public <C> IConverter<C> getConverter(Class<C> type) {
                 if (LayerInfo.class.isAssignableFrom(type)) {
-                    return new LayerInfoConverter();
+                    return (IConverter<C>) new LayerInfoConverter();
                 } else if (StyleInfo.class.isAssignableFrom(type)) {
-                    return new StyleInfoConverter(); 
+                    return (IConverter<C>) new StyleInfoConverter(); 
                 } else {
                     return super.getConverter(type);
-                }
+                }            
             }
         };
         

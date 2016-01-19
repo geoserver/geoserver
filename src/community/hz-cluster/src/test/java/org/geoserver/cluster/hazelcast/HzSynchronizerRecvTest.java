@@ -120,6 +120,7 @@ public abstract class HzSynchronizerRecvTest extends HzSynchronizerTest {
     
     protected abstract void expectationTestFTDelete(FeatureTypeInfo info, String ftName, String ftId, String dsId, Class clazz) throws Exception;
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testFTDelete() throws Exception {
         FeatureTypeInfo info;
@@ -140,7 +141,7 @@ public abstract class HzSynchronizerRecvTest extends HzSynchronizerTest {
             expect(info.getId()).andStubReturn(ftId);
             expect(info.getStore()).andStubReturn(dsInfo);
             
-            expect(catalog.getStore(EasyMock.eq(dsId), EasyMock.anyObject(Class.class))).andStubReturn(dsInfo);;
+            expect(catalog.getStore(EasyMock.eq(dsId), (Class<DataStoreInfo>)EasyMock.anyObject(Class.class))).andStubReturn(dsInfo);;
             
             expectationTestFTDelete(info, ftName, ftId, dsId, FeatureTypeInfo.class);
         }

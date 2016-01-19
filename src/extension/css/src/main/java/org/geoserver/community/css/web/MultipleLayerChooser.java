@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -18,13 +18,15 @@ import org.apache.wicket.model.IModel;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.web.wicket.GeoServerDataProvider;
-import static org.geoserver.web.wicket.GeoServerDataProvider.AbstractProperty;
 import static org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerTablePanel;
-import org.geoserver.web.wicket.ParamResourceModel;
 
 public class MultipleLayerChooser extends Panel {
+    private static final long serialVersionUID = -59522993086560769L;
+
     private class LayerProvider extends GeoServerDataProvider<LayerInfo> {
+        private static final long serialVersionUID = -1800971869092748431L;
+
         private final CssDemoPage demo;
 
         public LayerProvider(CssDemoPage demo) {
@@ -38,6 +40,8 @@ public class MultipleLayerChooser extends Panel {
 
         Property<LayerInfo> workspace = 
             new AbstractProperty<LayerInfo>("Workspace") {
+                private static final long serialVersionUID = -1851109132536014276L;
+
                 @Override 
                 public Object getPropertyValue(LayerInfo x) {
                     return x.getResource().getStore().getWorkspace().getName();
@@ -46,6 +50,8 @@ public class MultipleLayerChooser extends Panel {
 
         Property<LayerInfo> layer = 
             new AbstractProperty<LayerInfo>("Layer") {
+                private static final long serialVersionUID = -1041914399204405146L;
+
                 @Override 
                 public Object getPropertyValue(LayerInfo x) {
                     return x.getName();
@@ -54,6 +60,8 @@ public class MultipleLayerChooser extends Panel {
 
         Property<LayerInfo> associated = 
             new AbstractProperty<LayerInfo>("Associated") {
+                private static final long serialVersionUID = 890930107903888545L;
+
                 @Override
                 public Object getPropertyValue(LayerInfo x) {
                     return usesEditedStyle(x);
@@ -81,17 +89,20 @@ public class MultipleLayerChooser extends Panel {
 
         final LayerProvider layerProvider = new LayerProvider(demo);
 
-        GeoServerTablePanel layerTable =
+        GeoServerTablePanel<LayerInfo> layerTable =
             new GeoServerTablePanel<LayerInfo>("layer.table", layerProvider) {
+                private static final long serialVersionUID = 6100831799966767858L;
+
                 @Override 
                 public Component getComponentForProperty(
-                    String id, IModel value, Property<LayerInfo> property
+                    String id, IModel<LayerInfo> value, Property<LayerInfo> property
                 ) {
                     final LayerInfo layer = (LayerInfo)value.getObject();
                     String text = property.getPropertyValue(layer).toString();
                     if (property == layerProvider.associated) {
                         IModel<Boolean> model = 
                             new IModel<java.lang.Boolean>() {
+                                private static final long serialVersionUID = -5895600269146950033L;
                                 public Boolean getObject() {
                                     return usesEditedStyle(layer);
                                 }
@@ -127,6 +138,8 @@ public class MultipleLayerChooser extends Panel {
                         Fragment fragment = new Fragment(
                             id, "layer.association.checkbox", MultipleLayerChooser.this);
                         fragment.add(new AjaxCheckBox("selected", model) { 
+                            private static final long serialVersionUID = 3572882767660629935L;
+
                             public void onUpdate(AjaxRequestTarget target) {} 
                         });
                         return fragment;

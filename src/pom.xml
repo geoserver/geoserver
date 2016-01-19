@@ -867,8 +867,23 @@
    </dependency>
    <dependency>
      <groupId>org.apache.wicket</groupId>
+     <artifactId>wicket-spring</artifactId>
+     <version>${wicket.version}</version>
+   </dependency>			
+   <dependency>
+     <groupId>org.apache.wicket</groupId>
      <artifactId>wicket-extensions</artifactId>
      <version>${wicket.version}</version>
+   </dependency>
+   <dependency>
+     <groupId>org.wicketstuff</groupId>
+     <artifactId>prototype</artifactId>
+     <version>1.4.7</version>
+   </dependency>
+   <dependency>
+      <groupId>org.wicketstuff</groupId>
+      <artifactId>htmlvalidator</artifactId>
+      <version>1.4.7</version>
    </dependency>
    <dependency>
      <groupId>org.slf4j</groupId>

@@ -23,9 +23,7 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.StringResourceModel;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.AuthenticationKeyFilterConfig;
@@ -103,7 +101,7 @@ public class AuthenticationKeyFilterPanel
                     mapper.setSecurityManager(getSecurityManager());
                     mapper.setUserGroupServiceName(config.getUserGroupServiceName());
                     int numberOfNewKeys=mapper.synchronize();
-                    info(new StringResourceModel("synchronizeSuccessful",AuthenticationKeyFilterPanel.this, null,new Object[] {numberOfNewKeys}).getObject());
+                    info(new StringResourceModel("synchronizeSuccessful",AuthenticationKeyFilterPanel.this).setParameters(numberOfNewKeys).getObject());
                 }
                 catch(Exception e) {
                     error(e);                    
@@ -136,8 +134,6 @@ public class AuthenticationKeyFilterPanel
                            "AuthenticationKeyFilterPanel." + authMapperName + "." + item.getModel().getObject(), this, null)));
                    item.add(new TextField<String>("parameterField", new MapModel(parameters, item.getModel().getObject())));
                 }        
-                
-                
             });
         }
     

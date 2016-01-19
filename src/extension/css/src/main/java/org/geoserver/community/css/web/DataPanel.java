@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -34,6 +34,8 @@ import org.opengis.feature.type.PropertyDescriptor;
 import com.vividsolutions.jts.geom.Geometry;
 
 public class DataPanel extends Panel {
+    private static final long serialVersionUID = -2635691554700860434L;
+
     static final Logger LOGGER = Logging.getLogger(DataPanel.class);
     
     String featureTypeId;
@@ -55,12 +57,16 @@ public class DataPanel extends Panel {
         add(attsContainer);
         final GeoServerTablePanel<DataAttribute> attributes = new GeoServerTablePanel<DataAttribute>("attributes", summaries) {
 
+            private static final long serialVersionUID = 7753093373969576568L;
+
             @Override
-            protected Component getComponentForProperty(String id, final IModel itemModel,
+            protected Component getComponentForProperty(String id, final IModel<DataAttribute> itemModel,
                     Property<DataAttribute> property) {
                 if(DataAttributesProvider.COMPUTE_STATS.equals(property.getName())) {
                     Fragment f = new Fragment(id, "computeStatsFragment", DataPanel.this);
                     f.add(new AjaxLink<Void>("computeStats") {
+
+                        private static final long serialVersionUID = 1L;
 
                         @Override
                         public void onClick(AjaxRequestTarget target) {
@@ -89,7 +95,7 @@ public class DataPanel extends Panel {
     
     protected void updateAttributeStats(DataAttribute attribute) throws IOException {
         FeatureTypeInfo featureType = GeoServerApplication.get().getCatalog().getFeatureType(featureTypeId);
-        FeatureSource fs = featureType.getFeatureSource(null, null);
+        FeatureSource<?, ?> fs = featureType.getFeatureSource(null, null);
         
         // check we can compute min and max
         PropertyDescriptor pd = fs.getSchema().getDescriptor(attribute.getName());
@@ -102,7 +108,7 @@ public class DataPanel extends Panel {
         // query to the dbms in case of such data source)
         Query q = new Query();
         q.setPropertyNames(new String[] {attribute.getName()});
-        FeatureCollection fc = fs.getFeatures(q);
+        FeatureCollection<?, ?> fc = fs.getFeatures(q);
         MinVisitor minVisitor = new MinVisitor(attribute.getName());
         MaxVisitor maxVisitor = new MaxVisitor(attribute.getName());
         fc.accepts(minVisitor, null);
@@ -114,11 +120,11 @@ public class DataPanel extends Panel {
     }
 
     private Feature getSampleFeature(FeatureTypeInfo layerInfo) throws IOException {
-        FeatureSource fs = layerInfo.getFeatureSource(null, null);
+        FeatureSource<?, ?> fs = layerInfo.getFeatureSource(null, null);
         Query q = new Query();
         q.setMaxFeatures(1);
-        FeatureCollection features = fs.getFeatures(q);
-        FeatureIterator fi = null;
+        FeatureCollection<?, ?> features = fs.getFeatures(q);
+        FeatureIterator<?> fi = null;
         Feature sample = null;
         try {
             fi = features.features();

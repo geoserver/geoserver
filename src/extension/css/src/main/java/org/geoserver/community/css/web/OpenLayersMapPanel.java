@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -16,8 +16,10 @@ import java.util.logging.Logger;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.wicket.WicketRuntimeException;
+import org.apache.wicket.markup.head.CssHeaderItem;
+import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 import org.apache.wicket.markup.html.IHeaderContributor;
-import org.apache.wicket.markup.html.IHeaderResponse;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
@@ -35,6 +37,7 @@ import freemarker.template.Template;
 import freemarker.template.TemplateException;
 
 class OpenLayersMapPanel extends Panel implements IHeaderContributor {
+    private static final long serialVersionUID = 3484477911061256642L;
     static final Logger LOGGER  = Logging.getLogger(OpenLayersMapPanel.class);
     final static Configuration templates;
     
@@ -98,7 +101,7 @@ class OpenLayersMapPanel extends Panel implements IHeaderContributor {
         Template template = templates.getTemplate("ol-style.ftl");
         StringWriter css = new java.io.StringWriter();
         template.process(context, css);
-        header.renderString(css.toString());
+        header.render(CssHeaderItem.forCSS(css.toString(),null));
     }
 
     private void renderHeaderScript(IHeaderResponse header) 
@@ -110,7 +113,7 @@ class OpenLayersMapPanel extends Panel implements IHeaderContributor {
         context.put("maxx", bbox.getMaxX());
         context.put("maxy", bbox.getMaxY());
         context.put("id", getMarkupId());
-        context.put("layer", resource.getPrefixedName());
+        context.put("layer", resource.prefixedName());
         context.put("style", style.getName());
         if (style.getWorkspace() != null) {
           context.put("styleWorkspace", style.getWorkspace().getName());
@@ -120,8 +123,8 @@ class OpenLayersMapPanel extends Panel implements IHeaderContributor {
         Template template = templates.getTemplate("ol-load.ftl");
         StringWriter script = new java.io.StringWriter();
         template.process(context, script);
-        header.renderJavascriptReference("../openlayers/OpenLayers.js");
-        header.renderOnLoadJavascript(script.toString());
+        header.render(JavaScriptHeaderItem.forUrl("../openlayers/OpenLayers.js"));
+        header.render(JavaScriptHeaderItem.forScript(script.toString(), null));
     }
 
     public String getUpdateCommand() throws IOException, TemplateException {

@@ -137,7 +137,6 @@
         <dependency>
             <groupId>org.wicketstuff</groupId>
             <artifactId>prototype</artifactId>
-            <version>1.4.7</version>
         </dependency>
 
         <!-- test dependencies -->

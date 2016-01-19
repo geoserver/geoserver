@@ -29,10 +29,11 @@
 			<groupId>org.geoserver.web</groupId>
 			<artifactId>gs-web-core</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>org.apache.wicket</groupId>
-			<artifactId>wicket</artifactId>
-		</dependency>
+      <dependency>
+          <groupId>org.apache.wicket</groupId>
+          <artifactId>wicket</artifactId>
+          <type>pom</type>
+      </dependency>
 		<dependency>
 			<groupId>org.apache.wicket</groupId>
 			<artifactId>wicket-extensions</artifactId>

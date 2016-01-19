@@ -28,6 +28,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
  * 
  * @author Davide Savazzi - geo-solutions.it
  */
+@SuppressWarnings("serial")
 public class LayerGroupTablePanel extends GeoServerTablePanel<LayerGroupInfo> {
 
     protected AbstractLink[] editSelectionLinks;
@@ -51,7 +52,7 @@ public class LayerGroupTablePanel extends GeoServerTablePanel<LayerGroupInfo> {
     }
     
     @Override
-    protected Component getComponentForProperty(String id, IModel itemModel, Property<LayerGroupInfo> property) {
+    protected Component getComponentForProperty(String id, IModel<LayerGroupInfo> itemModel, Property<LayerGroupInfo> property) {
         if (property == LayerGroupProvider.NAME) {
             return createLayerGroupLink(id, itemModel); 
         }

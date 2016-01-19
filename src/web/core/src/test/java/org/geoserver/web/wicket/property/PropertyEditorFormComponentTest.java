@@ -9,6 +9,7 @@ import static org.junit.Assert.*;
 
 import java.util.Iterator;
 
+import org.apache.wicket.Component;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.list.ListView;
@@ -78,7 +79,7 @@ public class PropertyEditorFormComponentTest extends GeoServerWicketTestSupport 
         assertNotNull(list);
 
         int i = 0;
-        for (Iterator<ListItem> it = list.iterator(); it.hasNext(); i++) {
+        for (Iterator<Component> it = list.iterator(); it.hasNext(); i++) {
             if ("baz".equals(it.next().get("key").getDefaultModelObjectAsString())) {
                 break;
             }

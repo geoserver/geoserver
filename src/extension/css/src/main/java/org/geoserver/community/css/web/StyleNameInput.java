@@ -29,16 +29,19 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 
 public class StyleNameInput extends Panel {
+    private static final long serialVersionUID = 2132602896817040015L;
     String workspace = null;
     String name = "";
 
     public StyleNameInput(String id, final CssDemoPage demo) {
         super(id);
 
-        final Form form = new Form("layer.name.form");
+        final Form<?> form = new Form<Object>("layer.name.form");
 
         IValidator<String> nameValidator =
             new IValidator<String>() {
+                private static final long serialVersionUID = 1558466250290018192L;
+
                 @Override
                 public void validate(IValidatable<String> text) {
                     final String value = text.getValue();
@@ -58,7 +61,9 @@ public class StyleNameInput extends Panel {
          }
          IChoiceRenderer<String> workspaceRenderer = 
            new ChoiceRenderer<String>() {
-               @Override
+            private static final long serialVersionUID = 2319702138663206028L;
+
+            @Override
                public Object getDisplayValue(String value) {
                    return value == null ? "No workspace" : value;
                }
@@ -77,6 +82,8 @@ public class StyleNameInput extends Panel {
                  workspaceRenderer);
          workspaceChooser.add(new AjaxFormComponentUpdatingBehavior("onchange") {
             
+            private static final long serialVersionUID = 1645220914767539957L;
+
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
                 LayerInfo layer = demo.getLayer();
@@ -85,7 +92,7 @@ public class StyleNameInput extends Panel {
                 if(selected == null || selected.equals(layerWorkspace.getName())) {
                     warning.setVisible(false);
                 } else {
-                    warning.setDefaultModel(new Model("Warning, the layer " 
+                    warning.setDefaultModel(new Model<String>("Warning, the layer " 
                             + layer.getName() + " is in workspace " + layerWorkspace.getName() 
                             + ",  cannot be used with a style in workspace " + selected));
                     warning.setVisible(true);
@@ -95,8 +102,8 @@ public class StyleNameInput extends Panel {
         });
          form.add(workspaceChooser);
 
-         TextField nameField =
-             new TextField(
+         TextField<String> nameField =
+             new TextField<String>(
                  "layer.name.field",
                  new PropertyModel<String>(this, "name")
              );
@@ -104,8 +111,10 @@ public class StyleNameInput extends Panel {
 
          AjaxButton submitButton =
              new AjaxButton("submit.button", form) {
-                 @Override
-                 public void onSubmit(AjaxRequestTarget target, Form f) {
+                private static final long serialVersionUID = -2701440643314381309L;
+
+                @Override
+                 public void onSubmit(AjaxRequestTarget target, Form<?> f) {
                      if (demo.catalog().getStyleByName(workspace, name) != null) {
                          throw new RuntimeException(
                              "Trying to create style with same name as existing one!"

@@ -53,7 +53,7 @@ public class BrowseImageLayerEntryPanel extends Panel {
                     pp.add(ResourceConfigurationPage.WORKSPACE, layer.getResource().getStore().getWorkspace().getName());
                 }
                 pp.add(ResourceConfigurationPage.NAME, layer.getName());
-                setResponsePage(ResourceConfigurationPage.class, );
+                setResponsePage(ResourceConfigurationPage.class, pp);
             }            
         };
         link.add(new Label("rootLayerName", new PropertyModel(layer, "name")));
@@ -78,9 +78,9 @@ public class BrowseImageLayerEntryPanel extends Panel {
         
         DropDownChoice<StyleInfo> styleField = new DropDownChoice<StyleInfo>("rootLayerStyle", new PropertyModel<StyleInfo>(this, "layerStyle"), styles) {
             @Override
-            public IConverter getConverter(Class<?> type) { 
+            public <C> IConverter<C> getConverter(Class<C> type) {
                 return form.getConverter(type);
-            }             
+            }
         };
         styleField.setNullValid(true);
         add(styleField);

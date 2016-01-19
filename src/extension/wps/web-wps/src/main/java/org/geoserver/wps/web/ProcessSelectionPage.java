@@ -84,11 +84,11 @@ public class ProcessSelectionPage extends AbstractSecurityPage {
         processSelector = new GeoServerTablePanel<FilteredProcess>("selectionTable", provider) {
 
             @Override
-            protected Component getComponentForProperty(String id, final IModel itemModel,
+            protected Component getComponentForProperty(String id, final IModel<FilteredProcess> itemModel,
                     Property<FilteredProcess> property) {
                 if(property.getName().equals("enabled")) {
                     Fragment fragment = new Fragment(id, "enabledFragment", ProcessSelectionPage.this);
-                    CheckBox enabled = new CheckBox("enabled", property.getModel(itemModel));
+                    CheckBox enabled = new CheckBox("enabled", (IModel<Boolean>) property.getModel(itemModel));
                     enabled.setOutputMarkupId(true);
                     fragment.add(enabled);
                     return fragment;
@@ -98,8 +98,8 @@ public class ProcessSelectionPage extends AbstractSecurityPage {
                     return new Label(id, property.getModel(itemModel));
                 } else if(property.getName().equals("roles")) {
                     Fragment fragment = new Fragment(id, "rolesFragment", ProcessSelectionPage.this);
-                    TextArea<String> roles = new  TextArea<String>("roles", property.getModel(itemModel)){
-                        public org.apache.wicket.util.convert.IConverter getConverter(java.lang.Class<?> type) {
+                    TextArea<?> roles = new TextArea("roles", property.getModel(itemModel)) {
+                        public <C extends Object> org.apache.wicket.util.convert.IConverter<C> getConverter(java.lang.Class<C> type) {
                             return new RolesConverter(availableRoles);
                         };
                     };
@@ -111,7 +111,7 @@ public class ProcessSelectionPage extends AbstractSecurityPage {
                     fragment.add(roles);
                     return fragment;
                 } else if (property.getName().equals("validated")) {
-                    final IModel<Boolean> hasValidatorsModel = property.getModel(itemModel); 
+                    final IModel<Boolean> hasValidatorsModel = (IModel<Boolean>) property.getModel(itemModel); 
                     IModel<String> availableModel = new AbstractReadOnlyModel<String>() {
 
                         @Override

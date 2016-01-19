@@ -48,11 +48,6 @@
       <classifier>tests</classifier>
       <version>${project.version}</version>
     </dependency>
-    <dependency>
-        <groupId>org.apache.wicket</groupId>
-        <artifactId>wicket</artifactId>
-        <type>pom</type>
-    </dependency>
   </dependencies>
   
 </project>

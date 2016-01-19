@@ -163,9 +163,10 @@ public class InspirePanelTest extends GeoServerWicketTestSupport {
         tester.assertComponent("form:panel:container:configs:language", LanguageDropDownChoice.class);
         tester.assertModelValue("form:panel:container:configs:language", "fre");
 
+        print( tester.getLastRenderedPage(), true, true );
         // check metadata url
-        tester.assertComponent("form:panel:container:configs:border:metadataURL", TextField.class);
-        tester.assertModelValue("form:panel:container:configs:border:metadataURL", "http://foo.com?bar=baz");
+        tester.assertComponent("form:panel:container:configs:border:border_body:metadataURL", TextField.class);
+        tester.assertModelValue("form:panel:container:configs:border:border_body:metadataURL", "http://foo.com?bar=baz");
 
         // check metadata url type
         tester.assertComponent("form:panel:container:configs:metadataURLType", DropDownChoice.class);
@@ -204,8 +205,8 @@ public class InspirePanelTest extends GeoServerWicketTestSupport {
         tester.assertModelValue("form:panel:container:configs:language", "fre");
 
         // check metadata url
-        tester.assertComponent("form:panel:container:configs:border:metadataURL", TextField.class);
-        tester.assertModelValue("form:panel:container:configs:border:metadataURL", "http://foo.com?bar=baz");
+        tester.assertComponent("form:panel:container:configs:border:border_body:metadataURL", TextField.class);
+        tester.assertModelValue("form:panel:container:configs:border:border_body:metadataURL", "http://foo.com?bar=baz");
 
         // check metadata url type
         tester.assertComponent("form:panel:container:configs:metadataURLType", DropDownChoice.class);
@@ -242,8 +243,8 @@ public class InspirePanelTest extends GeoServerWicketTestSupport {
         tester.assertModelValue("form:panel:container:configs:language", "fre");
 
         // check metadata url
-        tester.assertComponent("form:panel:container:configs:border:metadataURL", TextField.class);
-        tester.assertModelValue("form:panel:container:configs:border:metadataURL", "http://foo.com?bar=baz");
+        tester.assertComponent("form:panel:container:configs:border:border_body:metadataURL", TextField.class);
+        tester.assertModelValue("form:panel:container:configs:border:border_body:metadataURL", "http://foo.com?bar=baz");
 
         // check metadata url type
         tester.assertComponent("form:panel:container:configs:metadataURLType", DropDownChoice.class);
@@ -434,12 +435,12 @@ public class InspirePanelTest extends GeoServerWicketTestSupport {
 
         FormTester ft = tester.newFormTester("form");
         ft.select("panel:container:configs:language", 0);
-        ft.setValue("panel:container:configs:border:metadataURL", "http://www.geoserver.org/test");
+        ft.setValue("panel:container:configs:border:border_body:metadataURL", "http://www.geoserver.org/test");
         ft.select("panel:container:configs:metadataURLType", 0);
         ft.submit();
 
         tester.assertModelValue("form:panel:container:configs:language", "bul");
-        tester.assertModelValue("form:panel:container:configs:border:metadataURL", "http://www.geoserver.org/test");
+        tester.assertModelValue("form:panel:container:configs:border:border_body:metadataURL", "http://www.geoserver.org/test");
         tester.assertModelValue("form:panel:container:configs:metadataURLType", "application/vnd.ogc.csw.GetRecordByIdResponse_xml");
     }
 
@@ -459,12 +460,12 @@ public class InspirePanelTest extends GeoServerWicketTestSupport {
 
         FormTester ft = tester.newFormTester("form");
         ft.select("panel:container:configs:language", 0);
-        ft.setValue("panel:container:configs:border:metadataURL", "http://www.geoserver.org/test");
+        ft.setValue("panel:container:configs:border:border_body:metadataURL", "http://www.geoserver.org/test");
         ft.select("panel:container:configs:metadataURLType", 0);
         ft.submit();
 
         tester.assertModelValue("form:panel:container:configs:language", "bul");
-        tester.assertModelValue("form:panel:container:configs:border:metadataURL", "http://www.geoserver.org/test");
+        tester.assertModelValue("form:panel:container:configs:border:border_body:metadataURL", "http://www.geoserver.org/test");
         tester.assertModelValue("form:panel:container:configs:metadataURLType", "application/vnd.ogc.csw.GetRecordByIdResponse_xml");
     }
 

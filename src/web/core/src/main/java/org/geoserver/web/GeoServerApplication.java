@@ -166,6 +166,7 @@ public class GeoServerApplication extends WebApplication implements ApplicationC
      */
     protected void init() {
         // enable GeoServer custom resource locators
+        getResourceSettings().setUseMinifiedResources(false);
         getResourceSettings().setResourceStreamLocator(new GeoServerResourceStreamLocator());
 
         /*

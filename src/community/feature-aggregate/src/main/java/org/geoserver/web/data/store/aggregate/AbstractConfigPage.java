@@ -118,7 +118,7 @@ public abstract class AbstractConfigPage extends GeoServerSecuredPage {
                 "sourceTypes", new SourceTypeProvider(configModel)) {
 
             @Override
-            protected Component getComponentForProperty(String id, IModel itemModel,
+            protected Component getComponentForProperty(String id, IModel<SourceType> itemModel,
                     Property<SourceType> property) {
                 if(property.getName().equals("default")) {
                     return new Label(id, property.getModel(itemModel));

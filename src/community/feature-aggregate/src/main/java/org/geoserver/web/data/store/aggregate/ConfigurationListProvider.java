@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -22,8 +22,12 @@ class ConfigurationListProvider extends GeoServerDataProvider<AggregateTypeConfi
     public static Property<AggregateTypeConfiguration> SOURCES = new AbstractProperty<AggregateTypeConfiguration>(
             "sources") {
 
-        public IModel getModel(final IModel itemModel) {
-            return new IModel() {
+        private static final long serialVersionUID = 8445881898430736063L;
+
+        public IModel<AggregateTypeConfiguration> getModel(final IModel<AggregateTypeConfiguration> itemModel) {
+            return new IModel<AggregateTypeConfiguration>() {
+
+                private static final long serialVersionUID = -1612531825990914783L;
 
                 @Override
                 public void detach() {
@@ -31,12 +35,12 @@ class ConfigurationListProvider extends GeoServerDataProvider<AggregateTypeConfi
                 }
 
                 @Override
-                public Object getObject() {
-                    return getPropertyValue((AggregateTypeConfiguration) itemModel.getObject());
+                public AggregateTypeConfiguration getObject() {
+                    return (AggregateTypeConfiguration) getPropertyValue( itemModel.getObject());
                 }
 
                 @Override
-                public void setObject(Object object) {
+                public void setObject(AggregateTypeConfiguration object) {
                     // read only                    
                 }
             };
@@ -61,7 +65,7 @@ class ConfigurationListProvider extends GeoServerDataProvider<AggregateTypeConfi
     public static Property<AggregateTypeConfiguration> REMOVE = 
         new PropertyPlaceholder<AggregateTypeConfiguration>( "remove" );
 
-    static List PROPERTIES = Arrays.asList(NAME, SOURCES, REMOVE);
+    static List<org.geoserver.web.wicket.GeoServerDataProvider.Property<AggregateTypeConfiguration>> PROPERTIES = Arrays.asList(NAME, SOURCES, REMOVE);
 
     List<AggregateTypeConfiguration> items;
 

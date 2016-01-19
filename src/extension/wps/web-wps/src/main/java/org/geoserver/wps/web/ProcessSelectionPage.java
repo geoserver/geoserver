@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -153,8 +153,9 @@ public class ProcessSelectionPage extends AbstractSecurityPage {
                // super.onSubmit();
                 pfi.getFilteredProcesses().clear();
                 for (FilteredProcess process : provider.getItems()){
-                    if (!process.getRoles().isEmpty() || !process.getEnabled()
-                            || !process.getValidators().isEmpty()) {
+                    if ((process.getRoles() != null && !process.getRoles().isEmpty()) 
+                            || !process.getEnabled()
+                            || (process.getValidators() != null && !process.getValidators().isEmpty())) {
                         ProcessInfo pai = process.toProcessInfo();
                         pfi.getFilteredProcesses().add(pai);
                     }

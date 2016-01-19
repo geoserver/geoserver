@@ -138,7 +138,7 @@ public class ArcSDECoverageStoreEditPanelTest extends GeoServerWicketTestSupport
         // this is a TextParamPanel instead of a RasterTableSelectionPanel when editing instead of
         // adding
         tester.assertComponent(base + "tableNamePanel", TextParamPanel.class);
-        tester.assertModelValue(base + "tableNamePanel:border:paramValue", "FAKE.TABLE");
+        tester.assertModelValue(base + "tableNamePanel:border:border_body:paramValue", "FAKE.TABLE");
     }
 
     /**
@@ -235,10 +235,7 @@ public class ArcSDECoverageStoreEditPanelTest extends GeoServerWicketTestSupport
                 };
             }
         });
-
-        //print(page, true, true);
-
-        final String dropDownPath = base + "tableNamePanel:border:rasterTable";
+        final String dropDownPath = base + "tableNamePanel:border:border_body:rasterTable";
         final DropDownChoice choice = (DropDownChoice) tester
                 .getComponentFromLastRenderedPage(dropDownPath);
         assertTrue(choice.getChoices().isEmpty());

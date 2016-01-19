@@ -78,7 +78,7 @@ public class StyleNewPage extends AbstractStylePage {
             getCatalog().add(s);
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error occurred saving the style", e);
-            error(e);
+            error(e.getMessage());
             return;
         }
 

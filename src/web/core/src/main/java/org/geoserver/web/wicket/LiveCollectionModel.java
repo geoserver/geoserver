@@ -33,7 +33,9 @@ public abstract class LiveCollectionModel implements IModel {
     public void setObject(Object object) {
         Collection collection = (Collection) wrapped.getObject();
         collection.clear();
-        collection.addAll((Collection) object);
+        if(object != null) {
+            collection.addAll((Collection) object);
+        }
     }
 
     public void detach() {

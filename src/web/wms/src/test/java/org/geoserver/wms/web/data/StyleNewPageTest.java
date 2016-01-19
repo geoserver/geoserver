@@ -27,7 +27,7 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
     public void setUp() throws Exception {
         login();
         tester.startPage(StyleNewPage.class);
-        org.geoserver.web.wicket.WicketHierarchyPrinter.print(tester.getLastRenderedPage(), true, false);
+        // org.geoserver.web.wicket.WicketHierarchyPrinter.print(tester.getLastRenderedPage(), true, true);
     }
 
     @Test
@@ -94,7 +94,7 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
         java.io.File file = getResourceLoader().createFile("styles","legend.png");
         getResourceLoader().copyFromClassPath( "legend.png", file,  getClass());
         
-        FormTester form = tester.newFormTester("form");
+        FormTester form = tester.newFormTester("form", false);
         File styleFile = new File(new java.io.File(getClass().getResource("default_point.sld").toURI()));
         String sld = IOUtils.toString(new FileReader(styleFile)).replaceAll("\r\n", "\n").replaceAll("\r", "\n");
         form.setValue("styleEditor:editorContainer:editorParent:editor", sld);
@@ -103,6 +103,7 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
         form.setValue("legendPanel:container:list:width", "100");
         form.setValue("legendPanel:container:list:height", "100");
         form.setValue("legendPanel:container:list:format", "image/png");
+        form.setValue("format", "sld");
         form.submit();
         tester.assertNoErrorMessage();
         tester.assertRenderedPage(StylePage.class);
@@ -120,7 +121,7 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
         tester.assertComponent("form:legendPanel:container:list:height", TextField.class);
         tester.assertComponent("form:legendPanel:container:list:format", TextField.class);
         
-        FormTester form = tester.newFormTester("form");
+        FormTester form = tester.newFormTester("form", false);
         File styleFile = new File(new java.io.File(getClass().getResource("default_point.sld").toURI()));
         String sld = IOUtils.toString(new FileReader(styleFile)).replaceAll("\r\n", "\n").replaceAll("\r", "\n");
         form.setValue("styleEditor:editorContainer:editorParent:editor", sld);
@@ -130,9 +131,9 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
         form.setValue("legendPanel:container:list:height", "-1");
         form.setValue("legendPanel:container:list:format", "image/png");        
         form.submit();
-        tester.assertErrorMessages(new String[] {"Graphic resource must be a png, gif or jpeg",
-                                                "'-1' is smaller than the minimum of 0.", 
-                                                "'-1' is smaller than the minimum of 0."});       
+        tester.assertErrorMessages("Graphic resource must be a png, gif or jpeg",
+                                   "The value of 'Width' must be at least 0.", 
+                                   "The value of 'Height' must be at least 0.");       
         
     }
     
@@ -177,7 +178,7 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
         form.submit();               
         tester.assertRenderedPage(StyleNewPage.class);
         
-        tester.assertErrorMessages(new String[] {"java.lang.IllegalArgumentException: Style named 'repeatedname' already exists"});
+        tester.assertErrorMessages("Style named 'repeatedname' already exists");
     }
 
     @Test

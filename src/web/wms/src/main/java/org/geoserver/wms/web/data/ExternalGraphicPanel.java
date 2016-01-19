@@ -35,6 +35,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.request.http.WebRequest;
 import org.apache.wicket.validation.IValidatable;
+import org.apache.wicket.validation.IValidator;
 import org.apache.wicket.validation.ValidationError;
 import org.apache.wicket.validation.validator.RangeValidator;
 import org.apache.wicket.validation.validator.StringValidator;
@@ -88,10 +89,11 @@ public class ExternalGraphicPanel extends Panel {
         
         IModel<String> bind = styleModel.bind("legend.onlineResource");
         onlineResource = new TextField<String>("onlineResource", bind );
-        onlineResource.add(new StringValidator(){
+        onlineResource.add(new IValidator<String>() {
             final List<String> EXTENSIONS = Arrays.asList(new String[]{"png","gif","jpeg","jpg"});
             
-            protected void onValidate(IValidatable<String> input) {
+            @Override
+            public void validate(IValidatable<String> input) {
                 String value = input.getValue();
                 int last = value == null ? -1 : value.lastIndexOf('.');
                 if (last == -1 || !EXTENSIONS.contains( value.substring(last + 1).toLowerCase() ) ){

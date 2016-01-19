@@ -322,7 +322,8 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
     }
 
     StyleHandler styleHandler() {
-        return Styles.handler(formatChoice.getModelObject());
+        String modelObject = formatChoice.getModelObject();
+        return Styles.handler(modelObject);
     }
 
     Form uploadForm(final Form form) {

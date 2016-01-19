@@ -29,18 +29,23 @@ import org.geoserver.platform.resource.Resources;
 import org.geoserver.web.wicket.CodeMirrorEditor;
 
 public class StylePanel extends Panel {
-    /** serialVersionUID */
     private static final long serialVersionUID = -8437128284428556984L;
+    
+    private String styleBody;
+    
     public StylePanel(String id, IModel<CssDemoPage> model, final CssDemoPage page,
             final Resource cssFile) {
         super(id, model);
         if (cssFile != null && Resources.exists(cssFile)) {
             try (InputStream is = cssFile.in()) {
-                IOUtils.toString(is);
+                setStyleBody(IOUtils.toString(is));
             } catch (IOException ioe) {
                 throw new WicketRuntimeException("Error loading CSS: ", ioe);
             }
         } else {
+            setStyleBody("No CSS file was found for this style. Please make sure "
+                    + "this is the style you intended to edit, since saving "
+                    + "the CSS will destroy the existing SLD.");
         }
 
         Form<?> styleEditorForm = new Form<Object>("style-editor");
@@ -117,7 +122,13 @@ public class StylePanel extends Panel {
             }
         });
         add(styleEditorForm);
+    }
 
+    public String getStyleBody() {
+        return styleBody;
+    }
 
+    public void setStyleBody(String styleBody) {
+        this.styleBody = styleBody;
     }
 }

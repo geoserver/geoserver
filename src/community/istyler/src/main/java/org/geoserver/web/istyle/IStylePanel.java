@@ -70,10 +70,10 @@ public class IStylePanel extends Panel {
                 mapPanel.update(l, null, target);
 
                 updateStyles(l);
-                target.addComponent(styleChoice);
+                target.add(styleChoice);
                 
                 updateSLD();
-                target.addComponent(sldTextArea);
+                target.add(sldTextArea);
             }
         });
         layerChoice.setModelObject(layer);
@@ -93,7 +93,7 @@ public class IStylePanel extends Panel {
                 mapPanel.update(null,s,target);
                 
                 updateSLD();
-                target.addComponent(sldTextArea);
+                target.add(sldTextArea);
             }
         });
         updateStyles(layer);

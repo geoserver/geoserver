@@ -9,8 +9,11 @@ import java.io.StringWriter;
 import java.util.Random;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.head.JavaScriptReferenceHeaderItem;
+import org.apache.wicket.markup.head.OnLoadHeaderItem;
+import org.apache.wicket.markup.head.StringHeaderItem;
 import org.apache.wicket.markup.html.IHeaderContributor;
-import org.apache.wicket.markup.html.IHeaderResponse;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.StyleInfo;
@@ -51,15 +54,16 @@ public class OpenLayersMapPanel extends Panel implements IHeaderContributor {
         return style;
     }
     
+    @Override
     public void renderHead(IHeaderResponse response) {
         try {
             //render css
             SimpleHash model = new SimpleHash();
             model.put("markupId", getMarkupId());
-            response.renderString( renderTemplate("OL-css.ftl", model) );
+            response.render(StringHeaderItem.forString(renderTemplate("OL-css.ftl", model)));
             
             //TODO: point back to GeoServer
-            response.renderJavascriptReference("http://openlayers.org/api/OpenLayers.js");  
+            response.render(JavaScriptReferenceHeaderItem.forUrl("http://openlayers.org/api/OpenLayers.js"));  
             
             model.put("layers", layer.getName());
             model.put("styles", style.getName());
@@ -68,12 +72,13 @@ public class OpenLayersMapPanel extends Panel implements IHeaderContributor {
             
             //render
             model.put("ran", rand.nextInt());
-            response.renderOnLoadJavascript(renderTemplate("OL-onload.ftl", model));
+            response.render(OnLoadHeaderItem.forScript(renderTemplate("OL-onload.ftl", model)));
         }
         catch( Exception e ) {
             throw new RuntimeException(e);
         }
     }
+    
     
     public void update(LayerInfo layer, StyleInfo style, AjaxRequestTarget target) {
         layer = layer != null ? layer : this.layer;
@@ -97,7 +102,7 @@ public class OpenLayersMapPanel extends Panel implements IHeaderContributor {
             model.put("ran", rand.nextInt());
             model.put("layerChanged", !layer.equals(this.layer));
             
-            target.appendJavascript(renderTemplate("OL-update.ftl", model));
+            target.appendJavaScript(renderTemplate("OL-update.ftl", model));
             
             this.layer = layer;
             this.style = style;

@@ -46,10 +46,10 @@ public class DataAccessEditPageTest extends GeoServerWicketTestSupport {
         tester.assertNoErrorMessage();
 
         tester.assertLabel("dataStoreForm:storeType", "Properties");
-        tester.assertModelValue("dataStoreForm:dataStoreNamePanel:border:paramValue", "cite");
+        tester.assertModelValue("dataStoreForm:dataStoreNamePanel:border:border_body:paramValue", "cite");
         String expectedPath = new File(getTestData().getDataDirectoryRoot(), "cite").getPath();
         tester.assertModelValue(
-                "dataStoreForm:parametersPanel:parameters:0:parameterPanel:border:paramValue",
+                "dataStoreForm:parametersPanel:parameters:0:parameterPanel:border:border_body:paramValue",
                 expectedPath);
     }
 
@@ -72,8 +72,8 @@ public class DataAccessEditPageTest extends GeoServerWicketTestSupport {
     public void testNameRequired() {
         
         FormTester form = tester.newFormTester("dataStoreForm");
-        form.setValue("dataStoreNamePanel:border:paramValue", null);
-        form.setValue("workspacePanel:border:paramValue", "cite");
+        form.setValue("dataStoreNamePanel:border:border_body:paramValue", null);
+        form.setValue("workspacePanel:border:border_body:paramValue", "cite");
         form.submit();
         // missing click link , the validation triggers before it
 

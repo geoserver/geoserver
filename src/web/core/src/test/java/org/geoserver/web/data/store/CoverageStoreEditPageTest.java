@@ -94,12 +94,12 @@ public class CoverageStoreEditPageTest extends GeoServerWicketTestSupport {
 
         final FormTester formTester = tester.newFormTester("rasterStoreForm");
 
-        final String wsDropdownPath = "rasterStoreForm:workspacePanel:border:paramValue";
+        final String wsDropdownPath = "rasterStoreForm:workspacePanel:border:border_body:paramValue";
 
         tester.assertModelValue(wsDropdownPath, catalog.getWorkspaceByName(MockData.WCS_PREFIX));
 
         // select the fifth item in the drop down, which is the cdf workspace
-        formTester.select("workspacePanel:border:paramValue", 2);
+        formTester.select("workspacePanel:border:border_body:paramValue", 2);
 
         // weird on this test I need to both call form.submit() and also simulate clicking on the
         // ajax "save" link for the model to be updated. On a running geoserver instance it works ok

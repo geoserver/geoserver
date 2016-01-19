@@ -25,10 +25,10 @@ import java.util.Map;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.AttributeModifier;
+import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponent;
-import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.apache.wicket.markup.html.form.validation.FormComponentFeedbackBorder;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
@@ -99,14 +99,14 @@ public class RasterTableSelectionPanel extends Panel {
         /*
          * Make table name match the option id
          */
-        choice.setChoiceRenderer(new IChoiceRenderer() {
+        choice.setChoiceRenderer(new ChoiceRenderer<String>() {
             private static final long serialVersionUID = 1L;
 
-            public String getIdValue(Object tableName, int index) {
+            public String getIdValue(String tableName, int index) {
                 return tableName.toString();
             }
 
-            public Object getDisplayValue(Object tableName) {
+            public Object getDisplayValue(String tableName) {
                 return tableName;
             }
         });

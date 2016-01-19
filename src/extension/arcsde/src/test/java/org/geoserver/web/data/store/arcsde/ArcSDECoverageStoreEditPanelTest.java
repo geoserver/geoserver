@@ -164,7 +164,7 @@ public class ArcSDECoverageStoreEditPanelTest extends GeoServerWicketTestSupport
         // simulate clicking on the refresh button
         String submitLink = base + "tableNamePanel:refresh";
         tester.executeAjaxEvent(submitLink, "onclick");
-        FeedbackMessage feedbackMessage = formTester.getForm().getFeedbackMessage();
+        FeedbackMessage feedbackMessage = formTester.getForm().getFeedbackMessages().first();
         assertNotNull(feedbackMessage);
         Serializable message = feedbackMessage.getMessage();
         assertNotNull(message);
@@ -246,7 +246,7 @@ public class ArcSDECoverageStoreEditPanelTest extends GeoServerWicketTestSupport
         // simulate clicking on the refresh button
         String submitLink = base + "tableNamePanel:refresh";
         tester.executeAjaxEvent(submitLink, "onclick");
-        FeedbackMessage feedbackMessage = formTester.getForm().getFeedbackMessage();
+        FeedbackMessage feedbackMessage = formTester.getForm().getFeedbackMessages().first();
         assertNull(feedbackMessage);
 
         assertEquals(rasterColumns, choice.getChoices());

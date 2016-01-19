@@ -62,7 +62,7 @@ public class HTTPLayerConfigTest extends GeoServerWicketTestSupport {
         FormTester ft = tester.newFormTester("form");
         ft.setValue("panel:cacheAgeMax", "-20");
         ft.submit();
-        assertEquals(1,  page.getSession().getFeedbackMessages().messages(new ErrorLevelFeedbackMessageFilter(FeedbackMessage.ERROR)).size());
+        tester.assertErrorMessages("The value of 'cacheAgeMax' must be between 0 and 9223372036854775807.");
     }
     
     @Test

@@ -52,7 +52,7 @@ public class ReprojectPageTest extends GeoServerWicketTestSupport {
         
         assertEquals(ReprojectPage.class, tester.getLastRenderedPage().getClass());
         assertEquals(1, tester.getMessages(FeedbackMessage.ERROR).size());
-        String message = ((ValidationErrorFeedback) tester.getMessages(FeedbackMessage.ERROR).get(0)).getMessage();
+        String message = ((ValidationErrorFeedback) tester.getMessages(FeedbackMessage.ERROR).get(0)).getMessage().toString();
         String expected = new ParamResourceModel("GeometryTextArea.parseError", null).getString();
         assertEquals(expected, message);
     }
@@ -85,7 +85,7 @@ public class ReprojectPageTest extends GeoServerWicketTestSupport {
         
         assertEquals(ReprojectPage.class, tester.getLastRenderedPage().getClass());
         assertEquals(1, tester.getMessages(FeedbackMessage.ERROR).size());
-        String message = ((ValidationErrorFeedback) tester.getMessages(FeedbackMessage.ERROR).get(0)).getMessage();
+        String message = ((ValidationErrorFeedback) tester.getMessages(FeedbackMessage.ERROR).get(0)).getMessage().toString();
         String expected = new ParamResourceModel("GeometryTextArea.parseError", null).getString();
         assertEquals(expected, message);
     }

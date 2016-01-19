@@ -19,11 +19,12 @@ import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.wicket.Component;
 import org.apache.wicket.Page;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.IAjaxCallDecorator;
-import org.apache.wicket.ajax.calldecorator.AjaxCallDecorator;
+import org.apache.wicket.ajax.attributes.AjaxCallListener;
+import org.apache.wicket.ajax.attributes.AjaxRequestAttributes;
 import org.apache.wicket.ajax.form.AjaxFormSubmitBehavior;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
@@ -35,7 +36,7 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
-import org.apache.wicket.protocol.http.WebRequest;
+import org.apache.wicket.protocol.http.servlet.ServletWebRequest;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
@@ -96,7 +97,7 @@ public class DemoRequestsPage extends GeoServerBasePage {
 
     /**
      * Loads the contents of the demo request file named {@code reqFileName} and located in the
-     * {@link #getDemoDir() demo directory}.
+     * demo directory.
      * 
      * @param reqFileName
      *            the file name to load the contents for
@@ -158,9 +159,9 @@ public class DemoRequestsPage extends GeoServerBasePage {
                 String proxyBaseUrl;
                 final String baseUrl;
                 {
-                    WebRequest request = (WebRequest) DemoRequestsPage.this.getRequest();
+                    ServletWebRequest request = (ServletWebRequest) DemoRequestsPage.this.getRequest();
                     HttpServletRequest httpServletRequest;
-                    httpServletRequest = ((WebRequest) request).getHttpServletRequest();                   
+                    httpServletRequest = request.getContainerRequest();                   
                     proxyBaseUrl = GeoServerExtensions.getProperty("PROXY_BASE_URL");                    
                     if (StringUtils.isEmpty(proxyBaseUrl)) {
                         GeoServer gs = getGeoServer();
@@ -233,7 +234,8 @@ public class DemoRequestsPage extends GeoServerBasePage {
 
         responseWindow = new ModalWindow("responseWindow");
         add(responseWindow);
-        responseWindow.setPageMapName("demoResponse");
+        
+        //responseWindow.setPageMapName("demoResponse");
         responseWindow.setCookieName("demoResponse");
 
         responseWindow.setPageCreator(new ModalWindow.PageCreator() {
@@ -250,19 +252,18 @@ public class DemoRequestsPage extends GeoServerBasePage {
             }
 
             @Override
-            protected IAjaxCallDecorator getAjaxCallDecorator() {
+            protected void updateAjaxAttributes(AjaxRequestAttributes attributes) {
+                super.updateAjaxAttributes(attributes);
                 // we need to force EditArea to update the textarea contents (which it hides)
                 // before submitting the form, otherwise the contents won't be the ones the user
                 // edited
-                return new AjaxCallDecorator() {
+                attributes.getAjaxCallListeners().add(new AjaxCallListener() {
                     @Override
-                    public CharSequence decorateScript(CharSequence script) {
-                        return "document.getElementById('requestBody').value = document.gsEditors.requestBody.getValue();"
-                                + script;
+                    public CharSequence getBeforeHandler(Component component) {
+                        return "document.getElementById('requestBody').value = document.gsEditors.requestBody.getValue();";
                     }
-                };
+                });
             }
-
         });
     }
 

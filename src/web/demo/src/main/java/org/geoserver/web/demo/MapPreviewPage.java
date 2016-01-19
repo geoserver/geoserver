@@ -72,9 +72,8 @@ public class MapPreviewPage extends GeoServerBasePage {
         table = new GeoServerTablePanel<PreviewLayer>("table", provider) {
 
             @Override
-            protected Component getComponentForProperty(String id,
-                    final IModel itemModel, Property<PreviewLayer> property) {
-                PreviewLayer layer = (PreviewLayer) itemModel.getObject();
+            protected Component getComponentForProperty(String id, IModel<PreviewLayer> itemModel, Property<PreviewLayer> property) {
+                PreviewLayer layer = itemModel.getObject();
 
                 if (property == TYPE) {
                     Fragment f = new Fragment(id, "iconFragment", MapPreviewPage.this);

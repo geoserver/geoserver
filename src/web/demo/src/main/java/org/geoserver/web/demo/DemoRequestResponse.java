@@ -5,7 +5,6 @@
  */
 package org.geoserver.web.demo;
 
-import org.apache.wicket.PageMap;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.form.Form;
@@ -42,7 +41,10 @@ public class DemoRequestResponse extends WebPage {
         // this page being in an IFrame needs to grap its own PageMap
         // in order not to share it with the parent page and thus be
         // marked as expired
-        super(PageMap.forName("demoRequestResponse"));
+        // JD: Couldn't find a replacement for PageMap, hopefully this is a non-issue
+        // now, but won't know until we get things up and running with the new version
+        //super(PageMap.forName("demoRequestResponse"));
+        super(model);
 
         Form form = new Form("form");
         add(form);

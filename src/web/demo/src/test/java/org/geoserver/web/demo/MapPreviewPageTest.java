@@ -134,8 +134,8 @@ public class MapPreviewPageTest extends GeoServerWicketTestSupport {
 
         Label optionLabel = (Label) tester.getComponentFromLastRenderedPage("table:listContainer:items:4:itemProperties:4:component:menu:wfs:wfsFormats:3");
         assertTrue(optionLabel.getDefaultModelObjectAsString().equals("GML3.2"));
-        for (Iterator<Behavior> itBehaviors = optionLabel.getBehaviors().iterator(); itBehaviors.hasNext();) {
-            Behavior b = (Behavior)(itBehaviors.next());
+        for (Iterator<? extends Behavior> itBehaviors = optionLabel.getBehaviors().iterator(); itBehaviors.hasNext();) {
+            Behavior b = itBehaviors.next();
             if (b instanceof AttributeModifier) {
                 AttributeModifier am = (AttributeModifier)b;
                 String url = am.toString();
@@ -150,8 +150,8 @@ public class MapPreviewPageTest extends GeoServerWicketTestSupport {
         for (Iterator it = data.iterator(); it.hasNext(); ) {
             MarkupContainer c = (MarkupContainer) it.next();
             MarkupContainer list = (MarkupContainer) c.get("itemProperties:4:component:menu");
-            for (Iterator<Behavior> itBehaviors = list.getBehaviors().iterator(); itBehaviors.hasNext();) {
-                Behavior b = (Behavior)(itBehaviors.next());
+            for (Iterator<? extends Behavior> itBehaviors = list.getBehaviors().iterator(); itBehaviors.hasNext();) {
+                Behavior b = itBehaviors.next();
                 if (b instanceof AttributeModifier) {
                     AttributeModifier am = (AttributeModifier)b;
                     String url = am.toString();

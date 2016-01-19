@@ -8,11 +8,20 @@ package org.geoserver.web.demo;
 import java.util.Collection;
 import java.util.Locale;
 
+import org.apache.wicket.Component;
+import org.apache.wicket.behavior.Behavior;
+import org.apache.wicket.markup.head.CssUrlReferenceHeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.head.JavaScriptUrlReferenceHeaderItem;
+import org.apache.wicket.markup.head.OnDomReadyHeaderItem;
 import org.apache.wicket.markup.html.IHeaderContributor;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.image.Image;
+import org.apache.wicket.protocol.http.servlet.ServletWebRequest;
+import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.apache.wicket.request.resource.CssPackageResource;
+import org.geoserver.ows.URLMangler;
 import org.geoserver.web.GeoServerBasePage;
 import org.geoserver.web.crs.DynamicCrsMapResource;
 import org.geoserver.web.wicket.ParamResourceModel;
@@ -25,6 +34,11 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
 import org.opengis.util.InternationalString;
 
+import javax.servlet.http.HttpServletRequest;
+
+import static org.geoserver.ows.util.ResponseUtils.baseURL;
+import static org.geoserver.ows.util.ResponseUtils.buildURL;
+
 public class SRSDescriptionPage extends GeoServerBasePage implements IHeaderContributor {
 
     private String jsSrs;
@@ -36,18 +50,29 @@ public class SRSDescriptionPage extends GeoServerBasePage implements IHeaderCont
     /**
      * Adds the call to the {@code initMap()} js function at the onload event of the body tag
      * 
-     * @see org.apache.wicket.markup.html.IHeaderContributor#renderHead(org.apache.wicket.markup.html.IHeaderResponse)
      */
     public void renderHead(IHeaderResponse headerResponse) {
         String onLoadJsCall = "initMap('" + jsSrs + "', " + jsBbox + ", " + jsMaxResolution + ")";
-        headerResponse.renderOnLoadJavascript(onLoadJsCall);
+        headerResponse.render(new OnDomReadyHeaderItem(onLoadJsCall));
     }
 
     public SRSDescriptionPage(PageParameters params) {
 
         // this two contributions should be relative to the root of the webbapp's context path
-        add(HeaderContributor.forCss("openlayers/theme/default/style.css"));
-        add(HeaderContributor.forJavaScript("openlayers/OpenLayers.js"));
+        add(new Behavior() {
+            @Override
+            public void renderHead(Component component, IHeaderResponse response) {
+                HttpServletRequest req = ((ServletWebRequest)RequestCycle.get().getRequest()).getContainerRequest();
+                String baseUrl = baseURL(req);
+
+                response.render(new CssUrlReferenceHeaderItem(
+                    buildURL(baseUrl, "openlayers/theme/default/style.css", null, URLMangler.URLType.RESOURCE),
+                    null, null));
+                response.render(new JavaScriptUrlReferenceHeaderItem(
+                    buildURL(baseUrl, "openlayers/OpenLayers.js", null, URLMangler.URLType.RESOURCE),
+                    null, false, "UTF-8", null));
+            }
+        });
 
         final Locale locale = getLocale();
         final String code = params.get("code").toString();

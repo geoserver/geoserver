@@ -121,12 +121,13 @@ public class PreviewLayerProvider extends GeoServerDataProvider<PreviewLayer> {
         return PROPERTIES;
     }
 
-    public IModel newModel(Object object) {
-        return new PreviewLayerModel((PreviewLayer) object);
+    @Override
+    protected IModel<PreviewLayer> newModel(PreviewLayer object) {
+        return new PreviewLayerModel(object);
     }
     
     @Override
-    public int size() {
+    public long size() {
         try {
             return cache.get(KEY_SIZE, sizeCaller);
         } catch (ExecutionException e) {
@@ -154,7 +155,7 @@ public class PreviewLayerProvider extends GeoServerDataProvider<PreviewLayer> {
     }
     
     @Override
-    public Iterator<PreviewLayer> iterator(final int first, final int count) {
+    public Iterator<PreviewLayer> iterator(final long first, final long count) {
         Iterator<PreviewLayer> iterator = filteredItems(first, count);
         if (iterator instanceof CloseableIterator) {
             // don't know how to force wicket to close the iterator, lets return
@@ -174,7 +175,7 @@ public class PreviewLayerProvider extends GeoServerDataProvider<PreviewLayer> {
      * filtering set on the page
      */
     @SuppressWarnings("resource")
-    private Iterator<PreviewLayer> filteredItems(Integer first, Integer count) {
+    private Iterator<PreviewLayer> filteredItems(long first, long count) {
         final Catalog catalog = getCatalog();
 
         // global sorting
@@ -193,8 +194,8 @@ public class PreviewLayerProvider extends GeoServerDataProvider<PreviewLayer> {
         }
 
         Filter filter = getFilter();
-        CloseableIterator<PublishedInfo> pi = catalog.list(PublishedInfo.class, filter, first,
-                count, sortOrder);
+        CloseableIterator<PublishedInfo> pi = catalog.list(PublishedInfo.class, filter, (int) first,
+                (int) count, sortOrder);
 
         return CloseableIteratorAdapter.transform(pi, new Function<PublishedInfo, PreviewLayer>() {
 

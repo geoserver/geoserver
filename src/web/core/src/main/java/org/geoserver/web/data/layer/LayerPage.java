@@ -107,7 +107,7 @@ public class LayerPage extends GeoServerSecuredPage {
     private Component layerLink(String id, final IModel<LayerInfo> model) {
         @SuppressWarnings("unchecked")
         IModel<String> layerNameModel = (IModel<String>) NAME.getModel(model);
-        String wsName = ((ResourceReference) WORKSPACE.getModel(model).getObject()).getName();
+        String wsName = WORKSPACE.getModel(model).getObject().toString();
         String layerName = (String) layerNameModel.getObject();
         return new SimpleBookmarkableLink(id, ResourceConfigurationPage.class, layerNameModel, 
                 ResourceConfigurationPage.NAME, layerName, ResourceConfigurationPage.WORKSPACE, wsName);
@@ -116,7 +116,7 @@ public class LayerPage extends GeoServerSecuredPage {
     private Component storeLink(String id, final IModel<LayerInfo> model) {
         @SuppressWarnings("unchecked")
         IModel<String> storeModel = (IModel<String>) STORE.getModel(model);
-        String wsName = ((ResourceReference) WORKSPACE.getModel(model).getObject()).getName();
+        String wsName =  WORKSPACE.getModel(model).getObject().toString();
         String storeName = storeModel.getObject();
         LayerInfo layer = model.getObject();
         StoreInfo store = layer.getResource().getStore();

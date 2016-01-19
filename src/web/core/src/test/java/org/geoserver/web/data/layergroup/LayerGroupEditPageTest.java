@@ -199,7 +199,8 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
         form.setValue("tabs:panel:bounds:crsContainer:crs:srs", "EPSG:4326");
         
         tester.executeAjaxEvent("publishedinfo:tabs:panel:metadataLinks:addlink", "click");
-        form.setValue("tabs:panel:metadataLinks:container:table:links:0:urlBorder:metadataLinkURL", "http://test.me");
+        
+        form.setValue("tabs:panel:metadataLinks:container:table:links:0:urlBorder:urlBorder_body:metadataLinkURL", "http://test.me");
         tester.executeAjaxEvent("publishedinfo:tabs:panel:metadataLinks:addlink", "click");
         
         LayerGroupInfo info = page.getPublishedInfo();

@@ -48,7 +48,7 @@ public class ImportTaskProvider extends GeoServerDataProvider<ImportTask> {
     }
 
     @Override
-    protected IModel newModel(Object object) {
-        return new ImportTaskModel((ImportTask)object);
+    protected IModel<ImportTask> newModel(ImportTask object) {
+        return new ImportTaskModel(object);
     }
 }

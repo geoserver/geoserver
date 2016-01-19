@@ -8,11 +8,8 @@ package org.geoserver.importer.web;
 import java.io.File;
 import java.io.InputStream;
 
-import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
-import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.util.tester.FormTester;
-import org.apache.wicket.util.tester.TestPanelSource;
 import org.geoserver.data.util.IOUtils;
 import org.geoserver.importer.Archive;
 import org.geoserver.importer.ImportContext;
@@ -54,21 +51,12 @@ public class ImportTaskTableTest extends GeoServerWicketTestSupport {
         context = ImporterWebUtils.importer().createContext(data);
         
         provider = new ImportTaskProvider(context);
-        
-        tester.startPanel(new TestPanelSource(){
-            
-            /** serialVersionUID */
-            private static final long serialVersionUID = 1L;
 
-            @Override
-            public Panel getTestPanel(String panelId) {
-                ImportTaskTable table = new ImportTaskTable(panelId, provider, true);
-                table.setFeedbackPanel(feedback);
-                table.setOutputMarkupId(true);
-                return table;
-            }
-            
-        });
+        ImportTaskTable table = new ImportTaskTable("taskTable", provider, true);
+        table.setFeedbackPanel(feedback);
+        table.setOutputMarkupId(true);
+        
+        tester.startComponentInPage(table);
     }
     
     @Test

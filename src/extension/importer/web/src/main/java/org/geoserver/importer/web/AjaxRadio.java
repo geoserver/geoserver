@@ -5,9 +5,12 @@
  */
 package org.geoserver.importer.web;
 
+import org.apache.wicket.Component;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.head.OnDomReadyHeaderItem;
 import org.apache.wicket.markup.html.form.Radio;
 import org.apache.wicket.markup.html.form.RadioGroup;
 import org.apache.wicket.model.IModel;
@@ -34,12 +37,14 @@ public abstract class AjaxRadio<T> extends Radio<T> {
                 radioGroup.processInput();
                 onAjaxEvent(target);
             }
-    
-            protected final CharSequence getEventHandler() {
-                return generateCallbackScript(new AppendingStringBuffer(
+
+            @Override
+            public void renderHead(Component component, IHeaderResponse response) {
+                super.renderHead(component, response);
+                response.render(OnDomReadyHeaderItem.forScript(new AppendingStringBuffer(
                         "wicketAjaxPost('").append(getCallbackUrl())
                         .append("', wicketSerialize(Wicket.$('")
-                        .append(AjaxRadio.this.getMarkupId()).append("'))"));
+                        .append(AjaxRadio.this.getMarkupId()).append("'))")));
             }
         });
     }

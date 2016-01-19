@@ -34,7 +34,7 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.model.util.ListModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
-import org.apache.wicket.request.resource.ResourceReference;
+import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.util.time.Duration;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.importer.BasicImportFilter;
@@ -171,7 +171,7 @@ public class ImportPage extends GeoServerSecuredPage {
                         Task<ImportContext> job = importer().getTask(jobid);
                         if (job == null || job.isDone()) {
                             // remove the timer
-                            stop();
+                            stop(null);
     
                             self.setEnabled(true);
                             target.add(self);

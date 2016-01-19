@@ -34,6 +34,7 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.request.resource.ResourceReference;
 import org.apache.wicket.util.time.Duration;
 import org.geoserver.catalog.Catalog;
@@ -240,7 +241,7 @@ public class ImportDataPage extends GeoServerSecuredPage {
                                LOGGER.log(Level.WARNING, "", e);
                            }
                            finally {
-                               stop();
+                               stop(null);
                                
                                //update the button back to original state
                                resetButtons(form, target);

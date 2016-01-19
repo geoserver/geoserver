@@ -5,8 +5,8 @@
  */
 package org.geoserver.importer.web;
 
-import org.apache.wicket.Application;
 import org.apache.wicket.AttributeModifier;
+import org.apache.wicket.RuntimeConfigurationType;
 import org.apache.wicket.markup.ComponentTag;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.importer.Importer;
@@ -24,7 +24,7 @@ public class ImporterWebUtils {
     }
 
     static boolean isDevMode() {
-        return Application.DEVELOPMENT.equalsIgnoreCase(GeoServerApplication.get().getConfigurationType());
+        return RuntimeConfigurationType.DEVELOPMENT == GeoServerApplication.get().getConfigurationType();
     }
 
     static void disableLink(ComponentTag tag) {

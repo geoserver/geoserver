@@ -72,7 +72,7 @@ public class PropertyEditorFormComponentTest extends GeoServerWicketTestSupport 
         try {
             tester.assertComponent("form:props:container:list:3:remove",AjaxLink.class);
             fail();
-        } catch(Exception e) {}
+        } catch(AssertionError e) {}
 
         ListView list = 
             (ListView) tester.getComponentFromLastRenderedPage("form:props:container:list");

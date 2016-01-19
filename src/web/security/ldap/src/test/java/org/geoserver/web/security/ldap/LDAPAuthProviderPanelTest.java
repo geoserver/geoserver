@@ -98,7 +98,7 @@ public class LDAPAuthProviderPanelTest extends AbstractSecurityWicketTestSupport
             protected void onBeforeRender() {
                 feedbackPanel = new FeedbackPanel("feedback");
                 feedbackPanel.setOutputMarkupId(true);
-                add(feedbackPanel);
+                addOrReplace(feedbackPanel);
                 super.onBeforeRender();
             }
             

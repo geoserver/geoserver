@@ -10,12 +10,20 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
+import org.apache.commons.io.FilenameUtils;
+import org.apache.wicket.core.util.resource.locator.IResourceNameIterator;
+import org.apache.wicket.core.util.resource.locator.ResourceNameIterator;
 import org.apache.wicket.core.util.resource.locator.ResourceStreamLocator;
 import org.apache.wicket.util.resource.AbstractResourceStream;
 import org.apache.wicket.util.resource.IResourceStream;
@@ -24,7 +32,11 @@ import org.geotools.util.logging.Logging;
 
 /**
  * A custom resource stream locator which supports loading i18n properties files on a single file
- * per module basis. It also works around https://issues.apache.org/jira/browse/WICKET-2534
+ * per module basis. It also works around https://issues.apache.org/jira/browse/WICKET-2534.
+ * <p>
+ * This class also tries to optimize resource lookups (which are slower with the wicket 7 upgrade) by skipping the 
+ * mechanism that looks up static files (markup, css, etc...) with the locale specific prefixes.
+ * </p>
  */
 public class GeoServerResourceStreamLocator extends ResourceStreamLocator {
     public static Logger LOGGER = Logging.getLogger("org.geoserver.web");
@@ -81,5 +93,44 @@ public class GeoServerResourceStreamLocator extends ResourceStreamLocator {
         return super.locate(clazz, path);
     }
 
+    
+    static Map<String,List<String>> PREFIXES = new HashMap<>();
+    static {
+        PREFIXES.put("html", Arrays.asList("html"));
+        PREFIXES.put("css", Arrays.asList("css"));
+        PREFIXES.put("png", Arrays.asList("png"));
+        PREFIXES.put("js", Arrays.asList("js"));
+        PREFIXES.put("ico", Arrays.asList("ico"));    
+    }
 
+    @Override
+    public IResourceNameIterator newResourceNameIterator(
+        String path, Locale locale, String style, String variation, String extension, boolean strict) {
+        
+        Iterable<String> extensions = null;
+
+        // if the resource under the geoserver or wicket namespace?
+        if (path.startsWith("org/geoserver") || path.startsWith("org/apache/wicket")) {
+            String ext = extension;
+            if (ext == null) {
+                // no extension passed in, strip it from the path
+                ext = FilenameUtils.getExtension(path);
+            }
+
+            if (ext != null) {
+                // we have an extension, look it up in the whitelist
+                extensions = PREFIXES.get(ext);
+            }
+        }
+
+        if (extensions != null) {
+            // ensure the path doesn't contain the extension, sometimes this method is called with extension == null, 
+            // in which case the extension is usually in the path
+            path = FilenameUtils.getPathNoEndSeparator(path) + "/" + FilenameUtils.getBaseName(path);
+            return new ResourceNameIterator(path, style, variation, null, extensions, false);
+        }
+
+        // couldn't optimize, just pass through to parent
+        return super.newResourceNameIterator(path, locale, style, variation, extension, strict);
+    }
 }

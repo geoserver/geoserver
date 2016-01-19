@@ -13,6 +13,7 @@ import org.apache.wicket.resource.Properties;
 import org.apache.wicket.resource.PropertiesFactory;
 import org.apache.wicket.resource.loader.ClassStringResourceLoader;
 import org.apache.wicket.resource.loader.ComponentStringResourceLoader;
+import org.apache.wicket.settings.ResourceSettings;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.webapp.WebAppContext;
@@ -46,13 +47,14 @@ public class WicketTestApplication extends WebApplication
         protected void init() {
             //JD: override some resource settings to allow for custom i18n lookups
             getResourceSettings().setResourceStreamLocator(new GeoServerResourceStreamLocator());
-            getResourceSettings().addStringResourceLoader(new GeoServerStringResourceLoader());
-            getResourceSettings().addStringResourceLoader(new ComponentStringResourceLoader());
-            getResourceSettings().addStringResourceLoader(new ClassStringResourceLoader(this.getClass()));
+            
+            getResourceSettings().getStringResourceLoaders().add(new GeoServerStringResourceLoader());
+            getResourceSettings().getStringResourceLoaders().add(new ComponentStringResourceLoader());
+            getResourceSettings().getStringResourceLoaders().add(new ClassStringResourceLoader(this.getClass()));
 
-            getResourceSettings().setPropertiesFactory(new PropertiesFactory(this) {
+            getResourceSettings().setPropertiesFactory(new PropertiesFactory(new ResourceSettings(this)) {
                 @Override
-                public Properties load(Class clazz, String path) {
+                public Properties load(Class<?> clazz, String path) {
                     if ( clazz == WicketTestApplication.class && path.startsWith(wtapath)) {
                         String newPath = path.replace( wtapath, gsapath );
                         return super.load( GeoServerApplication.class, newPath );

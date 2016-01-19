@@ -231,8 +231,8 @@ public class CRSPanel extends FormComponentPanel<CoordinateReferenceSystem> {
      * </p>
      */
     public CoordinateReferenceSystem getCRS() {
-        convertInput();
-        return (CoordinateReferenceSystem) getConvertedInput();
+        // convertInput();
+        return getModelObject();
     }
     
     /*

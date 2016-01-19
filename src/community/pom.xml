@@ -142,12 +142,6 @@
       </modules>
     </profile>
     <profile>
-      <id>dbconfig</id>
-      <modules>
-        <module>dbconfig</module>
-      </modules>
-    </profile>
-    <profile>
       <id>istyler</id>
       <modules>
         <module>istyler</module>

@@ -5,17 +5,21 @@
  */
 package org.geoserver.gwc.layer;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
 import static org.geoserver.gwc.GWCTestHelpers.mockLayer;
 import static org.geoserver.gwc.layer.TileLayerInfoUtil.loadOrCreate;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasProperty;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertThat;
 
+import java.beans.Introspector;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.SortedSet;
+import java.util.function.Function;
 
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.PublishedType;
@@ -26,6 +30,8 @@ import org.geowebcache.filter.parameters.FloatParameterFilter;
 import org.geowebcache.filter.parameters.RegexParameterFilter;
 import org.geowebcache.filter.parameters.StringParameterFilter;
 import org.geowebcache.grid.BoundingBox;
+import org.hamcrest.Matcher;
+import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.web.context.WebApplicationContext;
@@ -48,8 +54,24 @@ public class GeoServerTileLayerInfoPersistenceTest {
         defaultVectorInfo.getMimeFormats().clear();
         defaultVectorInfo.getMimeFormats().addAll(defaults.getDefaultVectorCacheFormats());
     }
-
-    private GeoServerTileLayerInfo testMarshaling(GeoServerTileLayerInfo info) {
+    
+    <T> Matcher<T> sameProperty(T expected, String property) throws Exception {
+        return sameProperty(expected, property, Matchers::is);
+    }
+    
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    <T> Matcher<T> sameProperty(T expected, String property, Function<?, Matcher<?>> valueMatcher) throws Exception {
+        Object value = Arrays.stream(
+                    Introspector.getBeanInfo(expected.getClass()).getPropertyDescriptors())
+                .filter(p->p.getName().equals(property))
+                .findAny()
+                .orElseThrow(()-> new IllegalArgumentException("bean expected lacks the property "+property))
+                .getReadMethod()
+                .invoke(expected);
+        return hasProperty(property, (Matcher<?>)((Function)valueMatcher).apply(value));
+    }
+    
+    private GeoServerTileLayerInfo testMarshaling(GeoServerTileLayerInfo info) throws Exception {
 
         XStream xstream = XMLConfiguration.getConfiguredXStream(new XStream(), (WebApplicationContext) null);
         xstream = new GWCGeoServerConfigurationProvider().getConfiguredXStream(xstream);
@@ -59,36 +81,26 @@ public class GeoServerTileLayerInfoPersistenceTest {
         GeoServerTileLayerInfo unmarshalled = (GeoServerTileLayerInfo) xstream
                 .fromXML(new StringReader(marshalled));
 
-        assertNotNull(unmarshalled);
+        assertThat(unmarshalled, notNullValue());
+        
+        assertThat(unmarshalled, sameProperty(info ,"enabled"));
+        assertThat(unmarshalled, sameProperty(info ,"autoCacheStyles"));
+        
+        assertThat(unmarshalled, sameProperty(info ,"gutter"));
+        assertThat(unmarshalled, sameProperty(info ,"metaTilingX"));
+        assertThat(unmarshalled, sameProperty(info ,"metaTilingY"));
+        assertThat(unmarshalled, sameProperty(info ,"gridSubsets"));
+        assertThat(unmarshalled, sameProperty(info ,"mimeFormats"));
+        assertThat(unmarshalled, sameProperty(info, "parameterFilters"));
+        assertThat(unmarshalled, equalTo(info));
 
-        assertEquals("enabled", info.isEnabled(), unmarshalled.isEnabled());
-        assertEquals("autoCacheStyles", info.isAutoCacheStyles(), unmarshalled.isAutoCacheStyles());
+        assertThat("cachedStyles", unmarshalled.cachedStyles(), equalTo(info.cachedStyles()));
 
-        assertEquals("gutter", info.getGutter(), unmarshalled.getGutter());
-        assertEquals("metaTilingX", info.getMetaTilingX(), unmarshalled.getMetaTilingX());
-        assertEquals("metaTilingY", info.getMetaTilingY(), unmarshalled.getMetaTilingY());
-        assertEquals("cachedStyles", info.cachedStyles(), unmarshalled.cachedStyles());
-        assertEquals("gridSubsets", info.getGridSubsets(), unmarshalled.getGridSubsets());
-        assertEquals("mimeFormats", info.getMimeFormats(), unmarshalled.getMimeFormats());
-        assertCollection("parameterFilters", info.getParameterFilters(),
-                unmarshalled.getParameterFilters());
-
-        assertEquals("info", info, unmarshalled);
         return unmarshalled;
     }
 
-    private void assertCollection(String message, Collection<?> c1, Collection<?> c2) {
-        if (c1 == null && c2 != null) {
-            assertEquals(message, 0, c2.size());
-        } else if (c1 != null && c2 == null) {
-            assertEquals(message, 0, c1.size());
-        } else {
-            assertEquals(message, c1, c2);
-        }
-    }
-
     @Test
-    public void testMarshallingDefaults() {
+    public void testMarshallingDefaults() throws Exception {
         GWCConfig oldDefaults = GWCConfig.getOldDefaults();
         LayerInfo layerInfo = mockLayer("testLayer", new String[]{}, PublishedType.RASTER);
         info = loadOrCreate(layerInfo, oldDefaults);
@@ -96,17 +108,17 @@ public class GeoServerTileLayerInfoPersistenceTest {
     }
 
     @Test
-    public void testMarshallingBlobStoreId() {
+    public void testMarshallingBlobStoreId() throws Exception {
         GWCConfig oldDefaults = GWCConfig.getOldDefaults();
         LayerInfo layerInfo = mockLayer("testLayer", new String[]{}, PublishedType.RASTER);
         info = loadOrCreate(layerInfo, oldDefaults);
         info.setBlobStoreId("myBlobStore");
         GeoServerTileLayerInfo unmarshalled = testMarshaling(info);
-        assertEquals("myBlobStore", unmarshalled.getBlobStoreId());
+        assertThat(unmarshalled, hasProperty("blobStoreId", is("myBlobStore")));
     }
 
     @Test
-    public void testMarshallingGridSubsets() {
+    public void testMarshallingGridSubsets() throws Exception {
         List<XMLGridSubset> subsets = new ArrayList<XMLGridSubset>();
         XMLGridSubset subset;
         subset = new XMLGridSubset();
@@ -146,7 +158,7 @@ public class GeoServerTileLayerInfoPersistenceTest {
         StringParameterFilter strParam = new StringParameterFilter();
         strParam.setKey("TIME");
         strParam.setDefaultValue("now");
-        List<String> strValues = new ArrayList(strParam.getValues());
+        List<String> strValues = new ArrayList<>(strParam.getValues());
         strValues.addAll(Arrays.asList("today", "yesterday", "tomorrow"));
         strParam.setValues(strValues);
 
@@ -158,7 +170,7 @@ public class GeoServerTileLayerInfoPersistenceTest {
         FloatParameterFilter floatParam = new FloatParameterFilter();
         floatParam.setKey("ENV");
         floatParam.setThreshold(Float.valueOf(1E-4F));
-        List<Float> floatValues = new ArrayList(floatParam.getValues());
+        List<Float> floatValues = new ArrayList<>(floatParam.getValues());
         floatValues.addAll(Arrays.asList(1f, 1.5f, 2f, 2.5f));
         floatParam.setValues(floatValues);
 
@@ -186,11 +198,10 @@ public class GeoServerTileLayerInfoPersistenceTest {
         StringParameterFilter strParam2 = new StringParameterFilter();
         strParam2.setKey("ELEVATION");
         strParam2.setDefaultValue("1");
-        List<String> strValues2 = new ArrayList(strParam2.getValues());
+        List<String> strValues2 = new ArrayList<>(strParam2.getValues());
         strValues2.addAll(Arrays.asList("1", "2", "3"));
         strParam2.setValues(strValues2);
         info.getParameterFilters().add(strParam2);
         testMarshaling(info);
     }
-
 }

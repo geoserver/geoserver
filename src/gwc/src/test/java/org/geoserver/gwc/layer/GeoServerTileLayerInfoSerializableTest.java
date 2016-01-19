@@ -10,6 +10,7 @@ import static org.geoserver.gwc.layer.TileLayerInfoUtil.loadOrCreate;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
 import java.beans.Introspector;
@@ -86,6 +87,8 @@ public class GeoServerTileLayerInfoSerializableTest {
         try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(f));){
             unmarshalled = (GeoServerTileLayerInfo) in.readObject();
         }
+        
+        assertThat(unmarshalled, notNullValue());
         
         assertThat(unmarshalled, sameProperty(info ,"enabled"));
         assertThat(unmarshalled, sameProperty(info ,"autoCacheStyles"));

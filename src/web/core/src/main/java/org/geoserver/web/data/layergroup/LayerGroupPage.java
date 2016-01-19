@@ -103,8 +103,13 @@ public class LayerGroupPage extends GeoServerSecuredPage {
         String groupName = (String) groupNameModel.getObject();
         String wsName = (String) wsModel.getObject();
         
-        return new SimpleBookmarkableLink(id, LayerGroupEditPage.class, groupNameModel, 
-            LayerGroupEditPage.GROUP, groupName, LayerGroupEditPage.WORKSPACE, wsName);
+        if (wsName == null) {
+        	return new SimpleBookmarkableLink(id, LayerGroupEditPage.class, groupNameModel, 
+        			LayerGroupEditPage.GROUP, groupName);
+        } else {
+        	return new SimpleBookmarkableLink(id, LayerGroupEditPage.class, groupNameModel, 
+        			LayerGroupEditPage.GROUP, groupName, LayerGroupEditPage.WORKSPACE, wsName);
+        }
     }
    
 

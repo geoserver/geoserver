@@ -25,7 +25,7 @@ import org.geoserver.web.wicket.ParamResourceModel;
  * for reporting the objects that will be affected by the removal
  */
 @SuppressWarnings("serial")
-public class SelectionRemovalLink extends AjaxLink {
+public class SelectionRemovalLink extends AjaxLink<Void> {
     
     GeoServerTablePanel<? extends CatalogInfo> catalogObjects;
     GeoServerDialog dialog;

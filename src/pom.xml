@@ -876,16 +876,6 @@
      <version>${wicket.version}</version>
    </dependency>
    <dependency>
-     <groupId>org.wicketstuff</groupId>
-     <artifactId>prototype</artifactId>
-     <version>1.4.7</version>
-   </dependency>
-   <dependency>
-      <groupId>org.wicketstuff</groupId>
-      <artifactId>htmlvalidator</artifactId>
-      <version>1.4.7</version>
-   </dependency>
-   <dependency>
      <groupId>org.slf4j</groupId>
      <artifactId>slf4j-api</artifactId>
      <version>${slf4j.version}</version>

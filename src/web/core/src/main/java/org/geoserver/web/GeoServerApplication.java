@@ -187,9 +187,6 @@ public class GeoServerApplication extends WebApplication implements ApplicationC
         getApplicationSettings().setPageExpiredErrorPage(GeoServerExpiredPage.class);
         getSecuritySettings().setCryptFactory(GeoserverWicketEncrypterFactory.get());
 
-        // figure out which browser we're running against
-        getRequestCycleSettings().setGatherExtendedBrowserInfo(DETECT_BROWSER);
-
         // theoretically, this replaces the old GeoServerRequestEncodingStrategy
         // by making the URLs encrypted at will
         GeoServerCryptProvider cryptProvider = new GeoServerCryptProvider(

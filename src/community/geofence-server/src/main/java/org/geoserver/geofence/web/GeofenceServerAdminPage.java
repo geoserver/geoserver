@@ -10,7 +10,6 @@ import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.ComponentTag;
-import org.apache.wicket.markup.html.CSSPackageResource;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.geoserver.geofence.services.dto.ShortAdminRule;
@@ -22,10 +21,14 @@ import org.geoserver.web.wicket.ParamResourceModel;
 import wicketdnd.*;
 import wicketdnd.theme.WebTheme;
 
-@SuppressWarnings("serial")
 public class GeofenceServerAdminPage extends GeoServerSecuredPage {
 
-    private GeofenceAdminRulesModel rulesModel;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -4321944040817919546L;
+
+	private GeofenceAdminRulesModel rulesModel;
 
     private GeoServerTablePanel<ShortAdminRule> rulesPanel;
 
@@ -34,14 +37,26 @@ public class GeofenceServerAdminPage extends GeoServerSecuredPage {
     public GeofenceServerAdminPage() {
 
         add(new AjaxLink<Object>("addNew") {
-            @Override
+
+
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = -4136656891019857299L;
+
+			@Override
             public void onClick(AjaxRequestTarget target) {
                 setResponsePage(new GeofenceAdminRulePage(rulesModel.newRule(), rulesModel));
             }
         });
 
         add(remove = new AjaxLink<Object>("removeSelected") {
-            @Override
+            /**
+			 * 
+			 */
+			private static final long serialVersionUID = 2421854498051377608L;
+
+			@Override
             public void onClick(AjaxRequestTarget target) {
                 rulesModel.remove(rulesPanel.getSelection());
                 target.add(rulesPanel);
@@ -53,8 +68,14 @@ public class GeofenceServerAdminPage extends GeoServerSecuredPage {
         add(rulesPanel = new GeoServerTablePanel<ShortAdminRule>("rulesPanel",
                 rulesModel = new GeofenceAdminRulesModel(), true) {
 
-            @Override
-            protected Component getComponentForProperty(String id, IModel itemModel, Property<ShortAdminRule> property) {
+            /**
+					 * 
+					 */
+					private static final long serialVersionUID = -9041215145551707243L;
+
+			@Override
+            protected Component getComponentForProperty(String id, IModel<ShortAdminRule> itemModel, 
+            		Property<ShortAdminRule> property) {
                 if (property == GeofenceAdminRulesModel.BUTTONS) {
                     return new ButtonPanel(id, (ShortAdminRule) itemModel.getObject());
                 }
@@ -67,10 +88,15 @@ public class GeofenceServerAdminPage extends GeoServerSecuredPage {
                 target.add(remove);
             }
         });
-        rulesPanel.add(CSSPackageResource.getHeaderContribution(new WebTheme()));
+        rulesPanel.add(new WebTheme());
         rulesPanel.add(new DragSource(Operation.MOVE).drag("tr"));
         rulesPanel.add(new DropTarget(Operation.MOVE) {
-            public void onDrop(AjaxRequestTarget target, Transfer transfer, Location location) {
+            /**
+			 * 
+			 */
+			private static final long serialVersionUID = -2153630274380471165L;
+
+			public void onDrop(AjaxRequestTarget target, Transfer transfer, Location location) {
                 if (location == null || !(location.getComponent().getDefaultModel().getObject() instanceof ShortAdminRule)) {
                     return;
                 }
@@ -93,14 +119,18 @@ public class GeofenceServerAdminPage extends GeoServerSecuredPage {
 
     private class ButtonPanel extends Panel {
 
-        private ImageAjaxLink upLink;
-        private ImageAjaxLink downLink;
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = -3702358364804495550L;
+		private ImageAjaxLink<Object> upLink;
+        private ImageAjaxLink<Object> downLink;
 
         public ButtonPanel(String id, final ShortAdminRule rule) {
             super(id);
             this.setOutputMarkupId(true);
 
-            upLink = new ImageAjaxLink("up", new PackageResourceReference(getClass(), "img/arrow_up.png")) {
+            upLink = new ImageAjaxLink<Object>("up", new PackageResourceReference(getClass(), "img/arrow_up.png")) {
                 private static final long serialVersionUID = -8179503447106596760L;
 
                 @Override
@@ -122,7 +152,7 @@ public class GeofenceServerAdminPage extends GeoServerSecuredPage {
             upLink.setOutputMarkupId(true);
             add(upLink);
 
-            downLink = new ImageAjaxLink("down", new PackageResourceReference(getClass(), "img/arrow_down.png")) {
+            downLink = new ImageAjaxLink<Object>("down", new PackageResourceReference(getClass(), "img/arrow_down.png")) {
                 private static final long serialVersionUID = 4640187752303674221L;
 
                 @Override
@@ -144,7 +174,7 @@ public class GeofenceServerAdminPage extends GeoServerSecuredPage {
             downLink.setOutputMarkupId(true);
             add(downLink);
 
-            ImageAjaxLink editLink = new ImageAjaxLink("edit", new PackageResourceReference(getClass(), "img/edit.png")) {
+            ImageAjaxLink<Object> editLink = new ImageAjaxLink<Object>("edit", new PackageResourceReference(getClass(), "img/edit.png")) {
                 private static final long serialVersionUID = 4640187752303674221L;
 
                 @Override

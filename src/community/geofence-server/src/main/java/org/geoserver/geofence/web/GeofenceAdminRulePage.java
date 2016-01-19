@@ -12,7 +12,6 @@ import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.ResourceModel;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.geofence.core.model.enums.AdminGrantType;
-import org.geoserver.geofence.core.model.enums.GrantType;
 import org.geoserver.geofence.services.dto.ShortAdminRule;
 import org.geoserver.security.GeoServerRoleService;
 import org.geoserver.security.GeoServerSecurityManager;
@@ -29,7 +28,8 @@ import java.util.logging.Level;
 
 public class GeofenceAdminRulePage extends GeoServerSecuredPage {
 
-    protected DropDownChoice<String> userChoice, roleChoice, workspaceChoice;
+	private static final long serialVersionUID = -1652083500548496180L;
+	protected DropDownChoice<String> userChoice, roleChoice, workspaceChoice;
     protected DropDownChoice<AdminGrantType> grantTypeChoice;
 
     public GeofenceAdminRulePage(final ShortAdminRule rule, final GeofenceAdminRulesModel rules) {
@@ -42,7 +42,9 @@ public class GeofenceAdminRulePage extends GeoServerSecuredPage {
         form.add(roleChoice = new DropDownChoice<>("roleName", getRoleNames()));
         roleChoice.add(new OnChangeAjaxBehavior() {
 
-            @Override
+			private static final long serialVersionUID = -8846522500239968004L;
+
+			@Override
             protected void onUpdate(AjaxRequestTarget target) {
                 userChoice.setChoices(getUserNames(roleChoice.getConvertedInput()));
                 form.getModelObject().setUserName(null);
@@ -64,7 +66,9 @@ public class GeofenceAdminRulePage extends GeoServerSecuredPage {
 
         form.add(new SubmitLink("save") {
 
-            @Override
+			private static final long serialVersionUID = -6524151967046867889L;
+
+			@Override
             public void onSubmit() {
                 ShortAdminRule rule = (ShortAdminRule) getForm().getModelObject();
                 try {
@@ -127,9 +131,11 @@ public class GeofenceAdminRulePage extends GeoServerSecuredPage {
         return new ArrayList<>(resultSet);
     }
 
-    protected class AdminGrantTypeRenderer implements IChoiceRenderer<AdminGrantType> {
+    protected class AdminGrantTypeRenderer extends ChoiceRenderer<AdminGrantType> {
 
-        public Object getDisplayValue(AdminGrantType object) {
+		private static final long serialVersionUID = -7146780173551842734L;
+
+		public Object getDisplayValue(AdminGrantType object) {
             return new ParamResourceModel(object.name(), getPage()).getObject();
         }
 

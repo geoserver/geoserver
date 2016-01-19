@@ -11,6 +11,8 @@ import java.util.Comparator;
 import java.util.List;
 
 import com.vividsolutions.jts.geom.MultiPolygon;
+
+import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortParam;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
@@ -29,15 +31,18 @@ import org.geoserver.web.wicket.GeoServerDataProvider;
  * @author Niels Charlier
  *
  */
-@SuppressWarnings("serial")
 public class GeofenceRulesModel extends GeoServerDataProvider<ShortRule> {
             
-    /** 
+	private static final long serialVersionUID = 478867886089304835L;
+
+	/** 
      * Makes columns that are unsortable and display "*" instead of empty when null
      * 
      */
     public static class RuleBeanProperty<T> extends BeanProperty<T> {
-        public RuleBeanProperty(String key, String propertyPath) {
+		private static final long serialVersionUID = 483799722644223445L;
+
+		public RuleBeanProperty(String key, String propertyPath) {
             super(key, propertyPath);
         }
         
@@ -46,9 +51,12 @@ public class GeofenceRulesModel extends GeoServerDataProvider<ShortRule> {
             return null;
         }        
         
-        public IModel getModel(IModel itemModel) { //replace null by *
+        @SuppressWarnings({ "unchecked", "rawtypes" })
+		public IModel getModel(IModel<T> itemModel) { //replace null by *
             return new PropertyModel<Object>(itemModel, getPropertyPath()) {
-                @Override
+				private static final long serialVersionUID = 1L;
+
+				@Override
                 public Object getObject() {
                     Object o = super.getObject();
                     return o == null ? "*" : o;
@@ -79,16 +87,16 @@ public class GeofenceRulesModel extends GeoServerDataProvider<ShortRule> {
     
     public GeofenceRulesModel() {
         rules = adminService().getAll();   
-        setSort("priority", true);
+        setSort("priority", SortOrder.ASCENDING);
     }
     
     @Override
-    protected Comparator<ShortRule> getComparator(SortParam sort) {
+    protected Comparator<ShortRule> getComparator(SortParam<?> sort) {
         return null; //disable on-the-fly sorting
     }
     
     @Override 
-    public void setSort(SortParam param) {
+    public void setSort(SortParam<Object> param) {
         super.setSort(param);
         //enable in-memory sorting
         Collections.sort(rules, super.getComparator(param));

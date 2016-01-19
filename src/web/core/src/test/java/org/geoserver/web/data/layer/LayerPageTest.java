@@ -82,7 +82,7 @@ public class LayerPageTest extends GeoServerWicketTestSupport {
         CheckBox selector = (CheckBox) tester.getComponentFromLastRenderedPage(checkBoxPath);
         // dirty trick, how to set a form component value without a form
         tester.getRequest().setParameter(selector.getInputName(), "true");
-        tester.executeAjaxEvent(selector, "onclick");
+        tester.executeAjaxEvent(selector, "click");
         assertEquals(1, table.getSelection().size());
         LayerInfo li = (LayerInfo) table.getSelection().get(0);
         assertEquals("cite", li.getResource().getStore().getWorkspace().getName());

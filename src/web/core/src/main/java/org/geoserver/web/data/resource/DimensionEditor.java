@@ -104,7 +104,7 @@ public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
         final PropertyModel<Boolean> enabledModel = new PropertyModel<Boolean>(model, "enabled");
         enabled = new CheckBox("enabled", enabledModel);
         add(enabled);
-        enabled.add(new AjaxFormComponentUpdatingBehavior("onclick") {
+        enabled.add(new AjaxFormComponentUpdatingBehavior("click") {
 
             @Override
             protected void onUpdate(AjaxRequestTarget target) {

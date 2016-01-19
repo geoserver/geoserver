@@ -56,7 +56,7 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
         tester.assertComponent("form:styleEditor:editorContainer:editorParent:editor", TextArea.class);
         
         //Load the legend
-        tester.executeAjaxEvent("form:legendPanel:container:showhide:show", "onclick");
+        tester.executeAjaxEvent("form:legendPanel:container:showhide:show", "click");
         
         tester.assertComponent("form:legendPanel", ExternalGraphicPanel.class);
         
@@ -126,7 +126,7 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
         tester.debugComponentTrees();
         tester.newFormTester("form").setValue("styleEditor:editorContainer:editorParent:editor", xml);
 
-        tester.executeAjaxEvent("validate", "onclick");
+        tester.executeAjaxEvent("validate", "click");
         tester.assertNoErrorMessage();
     }
 }

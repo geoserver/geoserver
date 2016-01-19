@@ -71,11 +71,11 @@ public class GridSetNewPageTest extends GeoServerWicketTestSupport {
         ft.setValue("name:border:paramValue", "customWGS84");
 
         // add two zoom levels
-        tester.executeAjaxEvent("gridSetForm:addZoomLevel", "onclick");
-        tester.executeAjaxEvent("gridSetForm:addZoomLevel", "onclick");
+        tester.executeAjaxEvent("gridSetForm:addZoomLevel", "click");
+        tester.executeAjaxEvent("gridSetForm:addZoomLevel", "click");
 
         // submit
-        tester.executeAjaxEvent("gridSetForm:save", "onclick");
+        tester.executeAjaxEvent("gridSetForm:save", "click");
 
         GWC mediator = GWC.get();
         GridSetBroker gridSetBroker = mediator.getGridSetBroker();
@@ -110,7 +110,7 @@ public class GridSetNewPageTest extends GeoServerWicketTestSupport {
                 .getComponentFromLastRenderedPage("gridSetForm:computeBounds");
         assertTrue(computeBounds.isEnabled());
 
-        // hard to trigger an onclick event for a GeoServerAjaxSubmitLink, to invoking directly
+        // hard to trigger an click event for a GeoServerAjaxSubmitLink, to invoking directly
         page.computeBounds();
         // print(page, true, true);
 
@@ -149,7 +149,7 @@ public class GridSetNewPageTest extends GeoServerWicketTestSupport {
         // add zoom levels
         final int numLevels = 6;
         for (int i = 0; i < numLevels; i++) {
-            // tester.executeAjaxEvent("gridSetForm:addZoomLevel", "onclick");
+            // tester.executeAjaxEvent("gridSetForm:addZoomLevel", "click");
             // tester.clickLink("gridSetForm:addZoomLevel", true);
             // can't get this event to get triggered?
             AjaxRequestTarget target = new AjaxRequestHandler(page);
@@ -160,7 +160,7 @@ public class GridSetNewPageTest extends GeoServerWicketTestSupport {
 
         // submit
         Session.get().getFeedbackMessages().clear();
-        tester.executeAjaxEvent("gridSetForm:save", "onclick");
+        tester.executeAjaxEvent("gridSetForm:save", "click");
 
         tester.assertNoErrorMessage();
 

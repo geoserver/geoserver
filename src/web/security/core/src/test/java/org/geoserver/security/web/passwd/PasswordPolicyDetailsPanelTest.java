@@ -73,7 +73,7 @@ public  class PasswordPolicyDetailsPanelTest extends AbstractSecurityNamedServic
     
     protected void setUnlimted(boolean value){
         formTester.setValue("panel:content:unlimitedMaxLength", value);
-        tester.executeAjaxEvent("form:panel:content:unlimitedMaxLength","onclick");
+        tester.executeAjaxEvent("form:panel:content:unlimitedMaxLength","click");
                                  
     }
     
@@ -205,7 +205,7 @@ public  class PasswordPolicyDetailsPanelTest extends AbstractSecurityNamedServic
         newFormTester("panel:panel:form");
         //setUnlimted(true);
         formTester.setValue("panel:unlimitedMaxLength", true);
-        tester.executeAjaxEvent("panel:panel:form:panel:unlimitedMaxLength","onclick");
+        tester.executeAjaxEvent("panel:panel:form:panel:unlimitedMaxLength","click");
         tester.assertInvisible("panel:panel:form:panel:maxLength:maxLength");
         newFormTester("panel:panel:form");
         //setDigitRequired(false);

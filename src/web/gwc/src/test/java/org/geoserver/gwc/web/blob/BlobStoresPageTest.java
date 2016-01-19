@@ -125,7 +125,7 @@ public class BlobStoresPageTest extends GeoServerWicketTestSupport {
         //select
         CheckBox selector = ((CheckBox) tester.getComponentFromLastRenderedPage("storesPanel:listContainer:items:1:selectItemContainer:selectItem"));
         tester.getRequest().setParameter(selector.getInputName(), "true");
-        tester.executeAjaxEvent(selector, "onclick");
+        tester.executeAjaxEvent(selector, "click");
                 
         assertEquals(1, table.getSelection().size());        
         assertEquals(dummy1, table.getSelection().get(0));
@@ -152,7 +152,7 @@ public class BlobStoresPageTest extends GeoServerWicketTestSupport {
         //super.print(page, false, false, true);
         selector = ((CheckBox) tester.getComponentFromLastRenderedPage("storesPanel:listContainer:items:2:selectItemContainer:selectItem"));
         tester.getRequest().setParameter(selector.getInputName(), "true");
-        tester.executeAjaxEvent(selector, "onclick");
+        tester.executeAjaxEvent(selector, "click");
         
         //click delete
         assertEquals(1, table.getSelection().size());        

@@ -277,7 +277,7 @@ public class GWCSettingsPageTest extends GeoServerWicketTestSupport {
         FormTester form = tester.newFormTester("form");
         form.select("cachingOptionsPanel:container:configs:cachedGridsets:availableGridsets", 0);
         tester.executeAjaxEvent(
-                "form:cachingOptionsPanel:container:configs:cachedGridsets:addGridset", "onclick");
+                "form:cachingOptionsPanel:container:configs:cachedGridsets:addGridset", "click");
         // Check that the page is correctly rendered
         tester.assertRenderedPage(GWCSettingsPage.class);
         // Save the changes

@@ -275,7 +275,7 @@ public class LayerCacheOptionsTabPanelTest extends GeoServerWicketTestSupport {
         // Click on the addFilter button withou setting any filter
         tester.executeAjaxEvent(
                 "form:panel:tileLayerEditor:container:configs:parameterFilters:addFilter",
-                "onclick");
+                "click");
         // Ensure that the Component is rendered again
         tester.assertComponent("form:panel:tileLayerEditor", GeoServerTileLayerEditor.class);
         // Ensure that an Error message has been thrown

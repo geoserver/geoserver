@@ -64,7 +64,7 @@ public class EditRolePageTest extends AbstractSecurityWicketTestSupport {
         //form.select("parent", index);
         
         
-        //tester.executeAjaxEvent("form:properties:add", "onclick");
+        //tester.executeAjaxEvent("form:properties:add", "click");
         //form = tester.newFormTester("form");
         
         
@@ -100,7 +100,7 @@ public class EditRolePageTest extends AbstractSecurityWicketTestSupport {
         tester.assertModelValue("form:properties:container:list:1:key", "employee");
         tester.assertModelValue("form:properties:container:list:1:value", "");
         
-        tester.executeAjaxEvent("form:properties:container:list:1:remove", "onclick");
+        tester.executeAjaxEvent("form:properties:container:list:1:remove", "click");
         FormTester form = tester.newFormTester("form");
         form.submit("save");
         tester.assertRenderedPage(SecurityNamedServiceEditPage.class);

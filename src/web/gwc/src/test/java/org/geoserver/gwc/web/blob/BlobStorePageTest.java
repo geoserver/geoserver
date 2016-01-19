@@ -66,7 +66,7 @@ public class BlobStorePageTest extends GeoServerWicketTestSupport {
         formTester.setValue("id", "myblobstore");       
         formTester.setValue("enabled", false);
         formTester.setValue("blobSpecificPanel:baseDirectory:border:paramValue", "/mydir");
-        tester.executeAjaxEvent("blobConfigContainer:blobStoreForm:save", "onclick");
+        tester.executeAjaxEvent("blobConfigContainer:blobStoreForm:save", "click");
         
         List<BlobStoreConfig> blobStores = GWC.get().getBlobStores();
         BlobStoreConfig config = blobStores.get(0);
@@ -98,7 +98,7 @@ public class BlobStorePageTest extends GeoServerWicketTestSupport {
         formTester.setValue("id", "yourblobstore");
         formTester.setValue("blobSpecificPanel:baseDirectory:border:paramValue", "/yourdir");
         formTester.submit();
-        tester.executeAjaxEvent("blobConfigContainer:blobStoreForm:save", "onclick");
+        tester.executeAjaxEvent("blobConfigContainer:blobStoreForm:save", "click");
         
         BlobStoreConfig config = GWC.get().getBlobStores().get(0);
         assertTrue(config instanceof FileBlobStoreConfig);

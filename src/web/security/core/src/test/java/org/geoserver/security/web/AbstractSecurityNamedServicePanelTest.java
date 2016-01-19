@@ -139,7 +139,7 @@ public abstract class AbstractSecurityNamedServicePanelTest extends AbstractSecu
        while (it.hasNext()) {
            Item<SecurityNamedServiceConfig> item = it.next();
            if (name.equals(item.getModelObject().getName()))
-               tester.executeAjaxEvent(item.getPageRelativePath()+":"+CHECKBOX_PATH,"onclick");
+               tester.executeAjaxEvent(item.getPageRelativePath()+":"+CHECKBOX_PATH,"click");
        }       
     }
 
@@ -171,7 +171,7 @@ public abstract class AbstractSecurityNamedServicePanelTest extends AbstractSecu
 
             FormTester ft = tester.newFormTester(GeoserverTablePanelTestPage.FORM);
             //ft.setValue(testPage.getComponentId()+":"+relId, "true");
-            tester.executeAjaxEvent(selectAllPath, "onclick");
+            tester.executeAjaxEvent(selectAllPath, "click");
         } 
         else {
             DataView<SecurityNamedServiceConfig> dataview = (DataView<SecurityNamedServiceConfig>)
@@ -190,7 +190,7 @@ public abstract class AbstractSecurityNamedServicePanelTest extends AbstractSecu
                     tester.assertComponent(checkBoxPath, CheckBox.class);
                     //ft.setValue(testPage.getComponentId()+":"+checkBoxPath.replace("form:0:", ""), true);
                     testPage.get(checkBoxPath).setDefaultModelObject(true);
-                    //tester.executeAjaxEvent(checkBoxPath, "onclick");
+                    //tester.executeAjaxEvent(checkBoxPath, "click");
                 }
             }
         }
@@ -239,7 +239,7 @@ public abstract class AbstractSecurityNamedServicePanelTest extends AbstractSecu
             }
          }
         AjaxLink link = (AjaxLink) ((MarkupContainer)list.get(toClick)).get("link");
-        tester.executeAjaxEvent(link, "onclick");
+        tester.executeAjaxEvent(link, "click");
 //        formTester.select("config.className", index);     
 //        tester.executeAjaxEvent(formTester.getForm().getPageRelativePath()+":config.className", "onchange");
     }

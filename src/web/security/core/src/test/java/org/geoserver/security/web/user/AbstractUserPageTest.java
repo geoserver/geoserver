@@ -103,7 +103,7 @@ public abstract class AbstractUserPageTest extends AbstractSecurityWicketTestSup
     }
     
     protected void addUserProperty(String key, String value) {
-        tester.executeAjaxEvent("form:properties:add", "onclick");
+        tester.executeAjaxEvent("form:properties:add", "click");
         //newFormTester();
        
         form.setValue("properties:container:list:0:key", key);

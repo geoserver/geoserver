@@ -70,7 +70,7 @@ public class NewRolePageTest extends AbstractSecurityWicketTestSupport {
         form.select("parent", index);
         
         
-        //tester.executeAjaxEvent("form:properties:add", "onclick");
+        //tester.executeAjaxEvent("form:properties:add", "click");
         //form = tester.newFormTester("form");
         //print(tester.getLastRenderedPage(),true,true);
         

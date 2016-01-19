@@ -143,7 +143,7 @@ public class LDAPRoleServicePanelTest extends AbstractSecurityWicketTestSupport 
         setupPanel(false, true);
         tester.assertInvisible("form:panel:authenticationPanelContainer:authenticationPanel");
         tester.newFormTester("form").setValue("panel:bindBeforeGroupSearch", "on");
-        tester.executeAjaxEvent("form:panel:bindBeforeGroupSearch","onclick");
+        tester.executeAjaxEvent("form:panel:bindBeforeGroupSearch","click");
         tester.assertVisible("form:panel:authenticationPanelContainer:authenticationPanel");
     }
     
@@ -152,7 +152,7 @@ public class LDAPRoleServicePanelTest extends AbstractSecurityWicketTestSupport 
         setupPanel(true, true);
         tester.assertVisible("form:panel:authenticationPanelContainer:authenticationPanel");
         tester.newFormTester("form").setValue("panel:bindBeforeGroupSearch", "");
-        tester.executeAjaxEvent("form:panel:bindBeforeGroupSearch","onclick");
+        tester.executeAjaxEvent("form:panel:bindBeforeGroupSearch","click");
         tester.assertInvisible("form:panel:authenticationPanelContainer:authenticationPanel");
     }
     

@@ -142,12 +142,12 @@ public abstract class AbstractTabbedListPageTest<T> extends AbstractSecurityWick
         
         FormTester ft = tester.newFormTester(GeoserverTablePanelTestPage.FORM);
         ft.setValue(testPage.getComponentId()+":"+getTabbedPanelPath()+":panel:table:listContainer:selectAllContainer:selectAll", "true");
-        tester.executeAjaxEvent(selectAllPath, "onclick");
+        tester.executeAjaxEvent(selectAllPath, "click");
 
         String windowPath=testPage.getWicketPath()+":"+getTabbedPanelPath()+ ":panel:dialog:dialog";       
         ModalWindow w  = (ModalWindow) testPage.get(windowPath);                        
         assertNull(w.getTitle()); // window was not opened
-        tester.executeAjaxEvent(pathForLink, "onclick");
+        tester.executeAjaxEvent(pathForLink, "click");
         assertNotNull(w.getTitle()); // window was opened        
         simulateDeleteSubmit();        
         executeModalWindowCloseButtonCallback(w);

@@ -299,7 +299,7 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
                 new ExistingSettingsModel(wsModel) : new NewSettingsModel(wsModel); 
 
             add(new CheckBox("enabled", new PropertyModel<Boolean>(set, "enabled")).
-                add(new AjaxFormComponentUpdatingBehavior("onclick") {
+                add(new AjaxFormComponentUpdatingBehavior("click") {
                     @Override
                     protected void onUpdate(AjaxRequestTarget target) {
                         contactPanel.setVisible(set.enabled);

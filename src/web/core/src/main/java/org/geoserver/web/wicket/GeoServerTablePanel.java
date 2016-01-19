@@ -333,7 +333,7 @@ public abstract class GeoServerTablePanel<T> extends Panel {
     CheckBox selectAllCheckbox() {
         CheckBox sa = new CheckBox("selectAll", new PropertyModel<Boolean>(this, "selectAllValue"));
         sa.setOutputMarkupId(true);
-        sa.add(new AjaxFormComponentUpdatingBehavior("onclick") {
+        sa.add(new AjaxFormComponentUpdatingBehavior("click") {
 
             /**
 			 * 
@@ -361,7 +361,7 @@ public abstract class GeoServerTablePanel<T> extends Panel {
         CheckBox cb = new CheckBox("selectItem", new SelectionModel(item.getIndex()));
         cb.setOutputMarkupId(true);
         cb.setVisible(selectable);
-        cb.add(new AjaxFormComponentUpdatingBehavior("onclick") {
+        cb.add(new AjaxFormComponentUpdatingBehavior("click") {
 
             /**
 			 * 

@@ -62,7 +62,7 @@ public class ShapefileDirectoryStorePageTest extends GeoServerWicketTestSupport 
         ft.select("workspacePanel:border:paramValue", 2);
         ft.submit();
         tester.executeAjaxEvent("dataStoreForm:workspacePanel:border:paramValue", "onchange");
-        tester.executeAjaxEvent("dataStoreForm:save", "onclick");
+        tester.executeAjaxEvent("dataStoreForm:save", "click");
         
         
         // get the workspace we have just configured in the GUI

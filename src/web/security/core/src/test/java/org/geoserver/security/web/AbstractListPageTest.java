@@ -132,11 +132,11 @@ public abstract class AbstractListPageTest<T> extends AbstractSecurityWicketTest
         
         FormTester ft = tester.newFormTester(GeoserverTablePanelTestPage.FORM);
         ft.setValue(testPage.getComponentId()+":table:listContainer:selectAllContainer:selectAll", "true");
-        tester.executeAjaxEvent(selectAllPath, "onclick");
+        tester.executeAjaxEvent(selectAllPath, "click");
         
         ModalWindow w  = (ModalWindow) tester.getLastRenderedPage().get("dialog:dialog");        
         assertNull(w.getTitle()); // window was not opened
-        tester.executeAjaxEvent(pathForLink, "onclick");
+        tester.executeAjaxEvent(pathForLink, "click");
         assertNotNull(w.getTitle()); // window was opened        
         simulateDeleteSubmit();        
         executeModalWindowCloseButtonCallback(w);

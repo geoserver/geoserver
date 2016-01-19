@@ -36,6 +36,8 @@ import org.geoserver.catalog.ProjectionPolicy;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.data.test.CiteTestData;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.test.TestSetup;
+import org.geoserver.test.TestSetupFrequency;
 import org.geoserver.wcs.WCSInfo;
 import org.geoserver.wcs2_0.response.GranuleStack;
 import org.geoserver.web.netcdf.DataPacking;
@@ -59,6 +61,7 @@ import ucar.nc2.dataset.NetcdfDataset;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
+@TestSetup(run=TestSetupFrequency.ONCE)
 public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
 
     private static final double DELTA = 1E-6;

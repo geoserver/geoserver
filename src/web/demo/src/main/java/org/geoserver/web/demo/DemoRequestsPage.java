@@ -36,12 +36,12 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
-import org.apache.wicket.protocol.http.servlet.ServletWebRequest;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
+import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoServerBasePage;
 import org.geoserver.web.wicket.CodeMirrorEditor;
 import org.geotools.util.logging.Logging;
@@ -159,9 +159,8 @@ public class DemoRequestsPage extends GeoServerBasePage {
                 String proxyBaseUrl;
                 final String baseUrl;
                 {
-                    ServletWebRequest request = (ServletWebRequest) DemoRequestsPage.this.getRequest();
-                    HttpServletRequest httpServletRequest;
-                    httpServletRequest = request.getContainerRequest();                   
+                    HttpServletRequest httpServletRequest = 
+                        getGeoServerApplication().servletRequest(DemoRequestsPage.this.getRequest());
                     proxyBaseUrl = GeoServerExtensions.getProperty("PROXY_BASE_URL");                    
                     if (StringUtils.isEmpty(proxyBaseUrl)) {
                         GeoServer gs = getGeoServer();

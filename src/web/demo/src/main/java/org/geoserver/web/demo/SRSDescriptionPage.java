@@ -17,10 +17,7 @@ import org.apache.wicket.markup.head.OnDomReadyHeaderItem;
 import org.apache.wicket.markup.html.IHeaderContributor;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.image.Image;
-import org.apache.wicket.protocol.http.servlet.ServletWebRequest;
-import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
-import org.apache.wicket.request.resource.CssPackageResource;
 import org.geoserver.ows.URLMangler;
 import org.geoserver.web.GeoServerBasePage;
 import org.geoserver.web.crs.DynamicCrsMapResource;
@@ -62,7 +59,7 @@ public class SRSDescriptionPage extends GeoServerBasePage implements IHeaderCont
         add(new Behavior() {
             @Override
             public void renderHead(Component component, IHeaderResponse response) {
-                HttpServletRequest req = ((ServletWebRequest)RequestCycle.get().getRequest()).getContainerRequest();
+                HttpServletRequest req = getGeoServerApplication().servletRequest(getRequest());
                 String baseUrl = baseURL(req);
 
                 response.render(new CssUrlReferenceHeaderItem(

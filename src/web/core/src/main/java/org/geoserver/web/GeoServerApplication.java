@@ -24,6 +24,7 @@ import org.apache.wicket.core.request.handler.IPageRequestHandler;
 import org.apache.wicket.core.request.handler.PageProvider;
 import org.apache.wicket.core.request.mapper.CryptoMapper;
 import org.apache.wicket.protocol.http.WebApplication;
+import org.apache.wicket.protocol.http.servlet.ServletWebRequest;
 import org.apache.wicket.request.IExceptionMapper;
 import org.apache.wicket.request.IRequestHandler;
 import org.apache.wicket.request.IRequestMapper;
@@ -31,6 +32,7 @@ import org.apache.wicket.request.Request;
 import org.apache.wicket.request.Response;
 import org.apache.wicket.request.cycle.AbstractRequestCycleListener;
 import org.apache.wicket.request.cycle.PageRequestHandlerTracker;
+import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.resource.loader.IStringResourceLoader;
 import org.apache.wicket.util.IProvider;
 import org.geoserver.catalog.Catalog;
@@ -49,6 +51,8 @@ import org.geotools.util.logging.Logging;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * The GeoServer application, the main entry point for any Wicket application. In particular, this one sets up, among the others, custom resource
@@ -323,5 +327,31 @@ public class GeoServerApplication extends WebApplication implements ApplicationC
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
+    }
+
+    /**
+     * Convenience method to get the underlying servlet request backing the current wicket request.
+     * <p>
+     *     The request is obtained from the current RequestCycle.
+     * </p>
+     */
+    public HttpServletRequest servletRequest() {
+        RequestCycle cycle = RequestCycle.get();
+        if (cycle == null) {
+            throw new IllegalStateException("Method must be called from a wicket request thread");
+        }
+
+        return servletRequest(cycle.getRequest());
+    }
+
+    /**
+     * Convenience method to get the underlying servlet request backing the current wicket request.
+     */
+    public HttpServletRequest servletRequest(Request req) {
+        if (req == null || !(req instanceof ServletWebRequest)) {
+            throw new IllegalStateException("Request not of type ServletWebRequest, was: " + req.getClass().getName());
+        }
+
+        return ((ServletWebRequest) req).getContainerRequest();
     }
 }

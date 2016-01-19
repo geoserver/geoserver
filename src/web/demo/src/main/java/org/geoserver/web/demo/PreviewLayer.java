@@ -39,6 +39,8 @@ import org.opengis.feature.type.Name;
 import com.google.common.collect.Iterables;
 import com.vividsolutions.jts.geom.Envelope;
 
+import javax.servlet.http.HttpServletRequest;
+
 /**
  * A model class for the UI, hides the difference between simple layers and
  * groups, centralizes the computation of a valid preview request
@@ -195,12 +197,15 @@ public class PreviewLayer {
     }
 
     String getBaseUrl(String service, boolean useGlobalRef) {
+        HttpServletRequest req = GeoServerApplication.get().servletRequest();
+        String base = ResponseUtils.baseURL(req);
+
         String ws = getWorkspace();
         if(ws == null || useGlobalRef) {
             // global reference
-            return ResponseUtils.buildURL("../", service, null, URLType.SERVICE);
+            return ResponseUtils.buildURL(base, service, null, URLType.SERVICE);
         } else {
-            return ResponseUtils.buildURL("../", ws + "/" + service, null, URLType.SERVICE);
+            return ResponseUtils.buildURL(base, ws + "/" + service, null, URLType.SERVICE);
         }
     }
 

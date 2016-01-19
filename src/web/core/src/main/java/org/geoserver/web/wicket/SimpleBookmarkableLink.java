@@ -36,7 +36,13 @@ public class SimpleBookmarkableLink extends Panel {
         
         PageParameters result = new PageParameters();
         for (int i = 0; i < pageParams.length; i += 2) {
-            result.add(pageParams[i], pageParams[i+1]);
+            String name = pageParams[i];
+            String value = pageParams[i+1];
+            // starting with wicket 6 the value cannot be null, in that case the
+            // param sould not be provided
+            if(value != null) {
+                result.add(name, value);
+            }
         }
         
         return result;

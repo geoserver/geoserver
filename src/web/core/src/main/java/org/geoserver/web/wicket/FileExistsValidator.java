@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -67,6 +67,7 @@ public class FileExistsValidator implements IValidator<String> {
                         is = connection.getInputStream();
                     } catch(Exception e) {
                         IValidationError err = new ValidationError("FileExistsValidator.unreachable")
+                                .addKey("FileExistsValidator.unreachable")
                                 .setVariable("file", uriSpec);
                         validatable.error(err);
                     } finally {
@@ -99,6 +100,7 @@ public class FileExistsValidator implements IValidator<String> {
 
         if (relFile == null || !relFile.exists()) {
             IValidationError err = new ValidationError("FileExistsValidator.fileNotFoundError")
+                    .addKey("FileExistsValidator.fileNotFoundError")
                     .setVariable("file", uriSpec);
             validatable.error(err);
         }

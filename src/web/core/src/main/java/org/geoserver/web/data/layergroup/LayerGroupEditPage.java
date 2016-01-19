@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -247,7 +247,8 @@ public class LayerGroupEditPage extends PublishedConfigurationPage<LayerGroupInf
                 String name = validatable.getValue();
                 LayerGroupInfo other = getCatalog().getLayerGroupByName(name);
                 if(other != null && (isNew || !other.getId().equals(getPublishedInfo().getId()))) {
-                    IValidationError err = new ValidationError("duplicateGroupNameError").setVariable("name", name);
+                    IValidationError err = new ValidationError("duplicateGroupNameError")
+                            .addKey("duplicateGroupNameError").setVariable("name", name);
                     validatable.error(err);
                 }
             }

@@ -466,16 +466,17 @@ public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
         public void validate(IValidatable<String> value) {
             String stringValue = value.getValue();
             if ( ((strategyModel.getObject() == Strategy.FIXED) || (strategyModel.getObject() == Strategy.NEAREST)) && stringValue == null){
-                value.error(new ValidationError("emptyReferenceValue"));
+                value.error(new ValidationError("emptyReferenceValue").addKey("emptyReferenceValue"));
             } else if (dimension.equals("time")) {
                 if(!isValidTimeReference(stringValue, strategyModel.getObject())) {
                     String messageKey = strategyModel.getObject() == Strategy.NEAREST ?  "invalidNearestTimeReferenceValue" : "invalidTimeReferenceValue";
-                    value.error(new ValidationError(messageKey));
+                    value.error(new ValidationError(messageKey).addKey(messageKey));
                 }
                 
             } else if (dimension.equals("elevation")) {
                 if(!isValidElevationReference(stringValue)) {
-                    value.error(new ValidationError("invalidElevationReferenceValue"));
+                    value.error(new ValidationError("invalidElevationReferenceValue")
+                            .addKey("invalidElevationReferenceValue"));
                 }
             }
         }

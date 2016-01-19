@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -219,7 +219,8 @@ public class CascadedWFSStoredQueryNewPage extends CascadedWFSStoredQueryAbstrac
                         Map<String, Object> map = new HashMap<>();
                         map.put("name", csqName);
                         map.put("dataStore", store.getName());
-                        IValidationError err = new ValidationError("duplicateSqlViewName").setVariables(map);
+                        IValidationError err = new ValidationError("duplicateSqlViewName")
+                                .addKey("duplicateSqlViewName").setVariables(map);
                         validatable.error(err);
                         return;
                     }

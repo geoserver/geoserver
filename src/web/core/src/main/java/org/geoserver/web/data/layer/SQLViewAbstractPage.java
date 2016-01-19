@@ -567,6 +567,7 @@ public abstract class SQLViewAbstractPage extends GeoServerSecuredPage {
                     if(typeInfoId == null || !typeInfoId.equals(curr.getId())) {
                         if(currvt.getName().equals(vtName)) {
                             IValidationError err = new ValidationError("duplicateSqlViewName")
+                                    .addKey("duplicateSqlViewName")
                                     .setVariable("name", vtName)
                                     .setVariable("typeName", curr.getName());
                             validatable.error(err);

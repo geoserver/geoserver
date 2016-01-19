@@ -141,12 +141,12 @@ public class PropertyEditorFormComponent extends FormComponentPanel<Properties> 
         for (Tuple t : listView.getModelObject()) {
             if (StringUtils.hasLength(t.getKey())== false) {
                 invalidTuples=listView.getModelObject();
-                error(new ValidationError("KeyRequired"));
+                error(new ValidationError("KeyRequired").addKey("KeyRequired"));
                 return;
             }
             if (StringUtils.hasLength(t.getValue())== false) {
                 invalidTuples=listView.getModelObject();
-                error(new ValidationError("ValueRequired"));
+                error(new ValidationError("ValueRequired").addKey("ValueRequired"));
                 return;
             }            
         }

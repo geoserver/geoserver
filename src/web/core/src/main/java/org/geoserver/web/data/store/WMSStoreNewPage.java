@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -99,7 +99,9 @@ public class WMSStoreNewPage extends AbstractWMSStorePage {
                 WebMapServer server = new WebMapServer(new URL(url), client);
                 server.getCapabilities();
             } catch(IOException | ServiceException e) {
-                IValidationError err = new ValidationError("WMSCapabilitiesValidator.connectionFailure").setVariable("error", e.getMessage());
+                IValidationError err = new ValidationError("WMSCapabilitiesValidator.connectionFailure")
+                        .addKey("WMSCapabilitiesValidator.connectionFailure")
+                        .setVariable("error", e.getMessage());
                 validatable.error(err);
             }
         }

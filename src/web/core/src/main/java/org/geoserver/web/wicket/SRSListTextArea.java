@@ -1,3 +1,8 @@
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2013 OpenPlans
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.web.wicket;
 
 import java.util.ArrayList;
@@ -71,6 +76,7 @@ public class SRSListTextArea extends TextArea<List<String>> {
 
             if (invalid.size() > 0) {
                 IValidationError err = new ValidationError("SRSListTextArea.unknownEPSGCodes")
+                        .addKey("SRSListTextArea.unknownEPSGCodes")
                         .setVariable("codes", invalid.toString());
                 validatable.error(err);
             }

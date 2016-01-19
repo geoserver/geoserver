@@ -1,4 +1,4 @@
-/* (c) 2014, 2016 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -97,7 +97,8 @@ public class StoreNameValidator implements IFormValidator {
         
         if(name == null) {
             if(required) {
-                nameComponent.error(new ValidationError("StoreNameValidator.storeNameRequired"));
+                nameComponent.error(new ValidationError("StoreNameValidator.storeNameRequired")
+                        .addKey("StoreNameValidator.storeNameRequired"));
             }
             return;
         }
@@ -109,6 +110,7 @@ public class StoreNameValidator implements IFormValidator {
             final String existingId = existing.getId();
             if (!existingId.equals(edittingStoreId)) {
                 IValidationError error = new ValidationError("StoreNameValidator.storeExistsInWorkspace")
+                        .addKey("StoreNameValidator.storeExistsInWorkspace")
                         .setVariable("workspace", workspace.getName())
                         .setVariable("storeName", name);
                 nameComponent.error(error);

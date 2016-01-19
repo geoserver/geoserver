@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2014 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -205,7 +205,8 @@ public abstract class CoverageViewAbstractPage extends GeoServerSecuredPage {
                             Map<String, Object> map = new HashMap<>();
                             map.put("name", vcName);
                             map.put("coverageName", curr.getName());
-                            IValidationError err = new ValidationError("duplicateCoverageViewName").setVariables(map);
+                            IValidationError err = new ValidationError("duplicateCoverageViewName")
+                                    .addKey("duplicateCoverageViewName").setVariables(map);
                             validatable.error(err);
                             return;
                         }

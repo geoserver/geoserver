@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -43,7 +43,8 @@ public class XMLNameValidator implements IValidator {
     public void validate(IValidatable validatable) {
         String value = (String) validatable.getValue();
         if (!XML_NAME_PATTERN.matcher(value).matches()) {
-            validatable.error(new ValidationError("invalidXMLName").setVariable("name", value));
+            validatable.error(new ValidationError("invalidXMLName")
+                    .addKey("invalidXMLName").setVariable("name", value));
         }
     }
 

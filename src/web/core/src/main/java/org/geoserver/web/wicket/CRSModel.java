@@ -33,6 +33,10 @@ public class CRSModel implements IModel<CoordinateReferenceSystem> {
             return crs;
         }
         
+        if(wkt == null) {
+            return null;
+        }
+        
         try {
             crs = CRS.parseWKT( wkt );
             return crs;
@@ -43,6 +47,7 @@ public class CRSModel implements IModel<CoordinateReferenceSystem> {
     }
 
     public void setObject(CoordinateReferenceSystem object) {
+        this.crs = object;
         this.wkt = crs != null ? crs.toWKT() : null;
     }
 

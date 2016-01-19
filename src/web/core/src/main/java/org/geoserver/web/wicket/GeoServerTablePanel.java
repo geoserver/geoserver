@@ -193,7 +193,7 @@ public abstract class GeoServerTablePanel<T> extends Panel {
                 // build a sortable link if the property is sortable, a label otherwise
                 IModel<String> titleModel = getPropertyTitle(property);
                 if (sortable && property.getComparator() != null) {
-                    Fragment f = new Fragment("header", "sortableHeader", item);
+                    Fragment f = new Fragment("header", "sortableHeader", GeoServerTablePanel.this);
                     AjaxLink<Property<T>> link = sortLink(dataProvider, item);
                     link.add(new Label("label", titleModel));
                     f.add(link);

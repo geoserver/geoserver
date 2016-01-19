@@ -200,7 +200,6 @@ public class CRSPanel extends FormComponentPanel<CoordinateReferenceSystem> {
         setConvertedInput(crs );
     }
     
-    
     /**
      * Subclasses can override to perform custom behaviors when the SRS is updated, which happens
      * either when the text field is left or when the find dialog returns

@@ -87,7 +87,7 @@ public class CRSPanelTest extends GeoServerWicketTestSupport {
         TextField srs = (TextField) tester.getComponentFromLastRenderedPage( "form:crs:srs");
         srs.setModelObject( "EPSG:3005");
         
-        FormTester ft = tester.newFormTester( "form");
+        FormTester ft = tester.newFormTester("form");
         ft.submit();
         
         CRSPanel crsPanel = (CRSPanel) tester.getComponentFromLastRenderedPage( "form:crs");
@@ -114,7 +114,7 @@ public class CRSPanelTest extends GeoServerWicketTestSupport {
         FormTester ft = tester.newFormTester( "form");
         ft.submit();
         
-        assertEquals(1, Session.get().getFeedbackMessages().size());
+        assertEquals(1, panel.getFeedbackMessages().size());
         // System.out.println(Session.get().getFeedbackMessages().messageForComponent(panel));
     }
     

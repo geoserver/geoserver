@@ -449,6 +449,11 @@ margin-top: 0 !important;
   text-shadow: 1px 1px 0 #dddddd;
 }
 
+.literal {
+background: rgba(240,240,240,0.8);
+padding: 3px;
+}
+
 
 /* "Footnotes" heading */
 p.rubric {
@@ -571,12 +576,11 @@ padding-right: 5px;
 }
 
 pre {
-padding: 5px;
-background-color: #efc;
+padding: 8px;
+background-color: rgba(240,240,240,0.8);
 color: #333;
-border: 1px solid #ac9;
-border-left: none;
-border-right: none;
+border: 1px solid #cccccc;
+border-radius: 2px;
 white-space: pre-wrap;       /* css-3 */
 white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
 white-space: -o-pre-wrap;    /* Opera 7 */

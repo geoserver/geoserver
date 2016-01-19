@@ -164,22 +164,15 @@ public abstract class GeoServerWicketTestSupport extends GeoServerSecurityTestSu
 
     /**
      * Execute Ajax Event Behavior with attached value.
-     * Particularly useful to execute an onchange in a DropDownChoice (not supported by tester
-     * or formtester in wicket 1.4). 
      * 
      * @param path
      * @param event
      * @param value
      */
     protected void executeAjaxEventBehavior(String path, String event, String value) {
-        throw new UnsupportedOperationException("Check if Wicket 7 has support for this case, cannot easily replicate this behavior");
-//        AjaxEventBehavior behavior = getAjaxBehavior(path, event);
-//        CharSequence url = behavior.getCallbackUrl();
-//        WebRequestCycle cycle = tester.setupRequestAndResponse(true);
-//        tester.getServletRequest().setRequestToRedirectString(url.toString());
-//        String[] ids = path.split(":");
-//        String id = ids[ids.length-1];
-//        tester.getServletRequest().setParameter(id, value);
-//        tester.processRequestCycle(cycle);
+        String[] ids = path.split(":");
+        String id = ids[ids.length-1];
+        tester.getRequest().setParameter(id, value);
+        tester.executeAjaxEvent(path, event);
     }
 }

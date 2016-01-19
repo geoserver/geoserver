@@ -30,6 +30,8 @@ public class GeoServerConsoleFlagTest extends GeoServerSystemTestSupport {
     
     private SimpleUrlHandlerMapping getWebDispatcherMapping(boolean disabled) throws Exception {
         setGeoserverConsoleDisabled(disabled);
+        // tear down the test so that we close down the pre-existing Wicket filter
+        tearDown(getTestData());
         setUp(getTestData());
         
         // Get the list of URL mappings from spring

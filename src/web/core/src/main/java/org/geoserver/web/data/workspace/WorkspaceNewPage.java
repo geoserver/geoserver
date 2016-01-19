@@ -15,6 +15,7 @@ import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.validation.IValidatable;
+import org.apache.wicket.validation.ValidationError;
 import org.apache.wicket.validation.validator.StringValidator;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.NamespaceInfo;
@@ -67,7 +68,7 @@ public class WorkspaceNewPage extends GeoServerSecuredPage {
             @Override
             public void validate(IValidatable<String> validatable) {
                 if(CatalogImpl.DEFAULT.equals(validatable.getValue())) {
-                    error(validatable.getValue() + "defaultWsError");
+                    validatable.error(new ValidationError("defaultWsError").addKey("defaultWsError"));
                 }
             }
         });

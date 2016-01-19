@@ -47,7 +47,7 @@ public class ProxyAdminPage extends GeoServerSecuredPage {
         hostnameFilterTable = 
             new GeoServerTablePanel<String>("hostnameTable", hostnameProvider, true) {
             @Override
-            protected Component getComponentForProperty(String id, IModel itemModel,
+            protected Component getComponentForProperty(String id, IModel<String> itemModel,
                     Property<String> property) {
                 return new Label(id, property.getModel(itemModel));
             }
@@ -77,7 +77,7 @@ public class ProxyAdminPage extends GeoServerSecuredPage {
         mimetypeFilterTable = 
             new GeoServerTablePanel<String>("mimetypeTable", mimetypeProvider, true) {
             @Override
-            protected Component getComponentForProperty(String id, IModel itemModel,
+            protected Component getComponentForProperty(String id, IModel<String> itemModel,
                     Property<String> property) {
                 return new Label(id, property.getModel(itemModel));
             }

@@ -94,6 +94,12 @@ public class GeofenceRulesModel extends GeoServerDataProvider<ShortRule> {
     protected Comparator<ShortRule> getComparator(SortParam<?> sort) {
         return null; //disable on-the-fly sorting
     }
+
+    @Override
+    public void setSort(Object property, SortOrder order) {
+        super.setSort(property, order);
+        Collections.sort(rules, super.getComparator(new SortParam<>(property, order == SortOrder.ASCENDING)));
+    }
     
     @Override 
     public void setSort(SortParam<Object> param) {

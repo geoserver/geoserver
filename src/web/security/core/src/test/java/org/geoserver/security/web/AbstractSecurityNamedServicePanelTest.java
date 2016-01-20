@@ -147,14 +147,10 @@ public abstract class AbstractSecurityNamedServicePanelTest extends AbstractSecu
     protected void doRemove(String pathForLink, String ... serviceNames) throws Exception {
         AbstractSecurityPage testPage = (AbstractSecurityPage) tester.getLastRenderedPage();
 
-        //form:0:tabbedPanel:panel:table:listContainer:items:5:selectItemContainer:selectItem
         if (serviceNames.length==0) {
             String selectAllPath = basePanelId + ":table:listContainer:selectAllContainer:selectAll";
-            //String selectAllPath = testPage.getWicketPath() + ":" + relId; 
             tester.assertComponent(selectAllPath, CheckBox.class);
 
-            //FormTester ft = tester.newFormTester(GeoserverTablePanelTestPage.FORM);
-            //ft.setValue(testPage.getComponentId()+":"+relId, "true");
             FormComponent selectAllPathComponent = (FormComponent) tester.getComponentFromLastRenderedPage(selectAllPath);
             setFormComponentValue(selectAllPathComponent, "true");
             tester.executeAjaxEvent(selectAllPath, "click");

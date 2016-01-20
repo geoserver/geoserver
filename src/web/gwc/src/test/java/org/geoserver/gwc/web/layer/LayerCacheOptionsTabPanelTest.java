@@ -270,8 +270,6 @@ public class LayerCacheOptionsTabPanelTest extends GeoServerWicketTestSupport {
         tester.startPage(page);
         // Ensure the GeoServerTileLayerEditor is rendered
         tester.assertComponent("form:panel:tileLayerEditor", GeoServerTileLayerEditor.class);
-        // Create new form tester for the final submit
-        FormTester form = tester.newFormTester("form");
         // Click on the addFilter button withou setting any filter
         tester.executeAjaxEvent(
                 "form:panel:tileLayerEditor:container:configs:parameterFilters:addFilter",
@@ -280,6 +278,8 @@ public class LayerCacheOptionsTabPanelTest extends GeoServerWicketTestSupport {
         tester.assertComponent("form:panel:tileLayerEditor", GeoServerTileLayerEditor.class);
         // Ensure that an Error message has been thrown
         tester.assertErrorMessages((Serializable[]) new String[] { "Filter should not be empty" });
+        // Create new form tester for the final submit
+        FormTester form = tester.newFormTester("form");
         // Save the changes
         form.submit();
         // Check no exception has been thrown

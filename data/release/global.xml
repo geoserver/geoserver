@@ -1,13 +1,23 @@
 <global>
-  <contact>
-    <addressCity>Alexandria</addressCity>
-    <addressCountry>Egypt</addressCountry>
-    <addressType>Work</addressType>
-    <contactEmail>claudius.ptolomaeus@gmail.com</contactEmail>
-    <contactOrganization>The ancient geographes INC</contactOrganization>
-    <contactPerson>Claudius Ptolomaeus</contactPerson>
-    <contactPosition>Chief geographer</contactPosition>
-  </contact>
+  <settings>
+    <id>SettingsInfoImpl-630d4764:1525c704d7f:-7fff</id>
+    <contact>
+      <address>rtertert</address>
+      <addressCity>Alexandria</addressCity>
+      <addressCountry>Egypt</addressCountry>
+      <addressType>Work</addressType>
+      <contactEmail>claudius.ptolomaeus@gmail.com</contactEmail>
+      <contactOrganization>The ancient geographes INC</contactOrganization>
+      <contactPerson>Claudius Ptolomaeus</contactPerson>
+      <contactPosition>Chief geographer</contactPosition>
+    </contact>
+    <charset>UTF-8</charset>
+    <numDecimals>8</numDecimals>
+    <onlineResource>http://geoserver.org</onlineResource>
+    <verbose>false</verbose>
+    <verboseExceptions>false</verboseExceptions>
+    <localWorkspaceIncludesPrefix>false</localWorkspaceIncludesPrefix>
+  </settings>
   <jai>
     <allowInterpolation>false</allowInterpolation>
     <recycling>false</recycling>
@@ -19,6 +29,7 @@
     <pngAcceleration>true</pngAcceleration>
     <jpegAcceleration>true</jpegAcceleration>
     <allowNativeMosaic>false</allowNativeMosaic>
+    <allowNativeWarp>false</allowNativeWarp>
   </jai>
   <coverageAccess>
     <maxPoolSize>10</maxPoolSize>
@@ -27,12 +38,7 @@
     <queueType>UNBOUNDED</queueType>
     <imageIOCacheThreshold>10240</imageIOCacheThreshold>
   </coverageAccess>
-  <charset>UTF-8</charset>
-  <numDecimals>8</numDecimals>
-  <onlineResource>http://geoserver.org</onlineResource>
-  <verbose>false</verbose>
-  <verboseExceptions>false</verboseExceptions>
-  <updateSequence>78</updateSequence>
+  <updateSequence>91</updateSequence>
   <featureTypeCacheSize>0</featureTypeCacheSize>
   <globalServices>true</globalServices>
   <xmlPostRequestLogBufferSize>1024</xmlPostRequestLogBufferSize>

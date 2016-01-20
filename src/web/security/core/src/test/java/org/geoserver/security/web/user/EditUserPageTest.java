@@ -129,7 +129,6 @@ public class EditUserPageTest extends AbstractUserPageTest {
         
         newFormTester();
         assignRole(GeoServerRole.ADMIN_ROLE.getAuthority());
-        newFormTester();        
         form.submit("save");
         
         SortedSet<GeoServerRole> roleList = gaService.getRolesForUser("user1");

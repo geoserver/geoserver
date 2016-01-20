@@ -183,8 +183,7 @@ class ParameterFilterEditor extends FormComponentPanel<Set<ParameterFilter>> {
                 keyLabel = new Label("key", new PropertyModel<String>(item.getModel(),"key"));
                 item.add(keyLabel);
                 
-                final Component subForm = getSubform("subform", item.getModel());
-                //final Component subForm = new Label("subform", "Blah");
+                final Component subForm = getSubform("subform", new Model<ParameterFilter> (item.getModelObject()));
                 item.add(subForm);
                 
                 final AjaxSubmitLink removeLink;
@@ -194,7 +193,7 @@ class ParameterFilterEditor extends FormComponentPanel<Set<ParameterFilter>> {
 
                     @Override
                     protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                    	removeFilter((ParameterFilter) getDefaultModelObject());
+                    	filters.getModelObject().remove((ParameterFilter) getDefaultModelObject());
                     	
                         target.add(container);
                     }
@@ -211,12 +210,10 @@ class ParameterFilterEditor extends FormComponentPanel<Set<ParameterFilter>> {
         // this is necessary to avoid loosing item contents on edit/validation checks
         filters.setReuseItems(true);
         
-     /*   @SuppressWarnings({ "rawtypes", "unchecked" })
-		Form<?> filtersForm = new Form("filtersForm", filters.getDefaultModel());
+		Form<?> filtersForm = new Form<>("filtersForm", filters.getDefaultModel());
         filtersForm.add(filters);
                 
-        table.add(filtersForm);*/
-        table.add(filters);
+        table.add(filtersForm);
 
         List<String> parameterKeys = new ArrayList<String>(GWC.get().getGridSetBroker().getNames());
         for (ParameterFilter filter : model.getObject()) {
@@ -381,10 +378,6 @@ class ParameterFilterEditor extends FormComponentPanel<Set<ParameterFilter>> {
 
         filters.getModelObject().add(filter);
         return true;
-    }
-    
-    private boolean removeFilter(ParameterFilter filter) {
-    	return filters.getModelObject().remove(filter);
     }
     
     /**

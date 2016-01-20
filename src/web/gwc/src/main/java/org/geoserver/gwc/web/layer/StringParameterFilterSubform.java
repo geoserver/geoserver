@@ -86,6 +86,7 @@ public class StringParameterFilterSubform extends
             	return super.getConverter(type);
             }
         };
+        values.setConvertEmptyInputStringToNull(false);
         add(values);
         
         normalize = new CaseNormalizerSubform("normalize", new PropertyModel<CaseNormalizer>(model, "normalize"));

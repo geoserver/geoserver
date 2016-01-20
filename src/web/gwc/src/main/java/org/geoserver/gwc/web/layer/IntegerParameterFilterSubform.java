@@ -112,6 +112,7 @@ public class IntegerParameterFilterSubform extends AbstractParameterFilterSubfor
             	return super.getConverter(type);
             }
         };
+        values.setConvertEmptyInputStringToNull(false);
         add(values);
         
         final Component threshold;

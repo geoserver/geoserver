@@ -110,15 +110,12 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
     private void init(WorkspaceInfo ws) {
         defaultWs = ws.getId().equals(getCatalog().getDefaultWorkspace().getId());
         
-        wsModel = new WorkspaceDetachableModel( ws );
+        wsModel = new WorkspaceDetachableModel(ws);
 
         NamespaceInfo ns = getCatalog().getNamespaceByPrefix( ws.getName() );
         nsModel = new NamespaceDetachableModel(ns);
         
         Form<NamespaceInfo> form = new Form<NamespaceInfo>( "form", new CompoundPropertyModel<NamespaceInfo>( nsModel ) ) {
-            /**
-			 * 
-			 */
 			private static final long serialVersionUID = 5140757565172795453L;
 
 			protected void onSubmit() {
@@ -244,9 +241,6 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
 
     static class ExistingSettingsModel extends LoadableDetachableModel<SettingsInfo> {
 
-        /**
-		 * 
-		 */
 		private static final long serialVersionUID = -8203239697623788188L;
 		IModel<WorkspaceInfo> wsModel;
 
@@ -264,9 +258,6 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
 
     static class NewSettingsModel extends Model<SettingsInfo> {
 
-        /**
-		 * 
-		 */
 		private static final long serialVersionUID = -4365626821652771933L;
 		IModel<WorkspaceInfo> wsModel;
         SettingsInfo info;
@@ -298,7 +289,7 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
         }
     }
 
-    class SettingsPanel extends FormComponentPanel<WorkspaceInfo> {
+    class SettingsPanel extends FormComponentPanel<Serializable> {
 
 		private static final long serialVersionUID = -1580928887379954134L;
 		
@@ -307,8 +298,8 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
         WebMarkupContainer otherSettingsPanel;
         Settings set;
 
-        public SettingsPanel(String id, IModel<WorkspaceInfo> model) {
-            super(id, new Model());
+		public SettingsPanel(String id, IModel<WorkspaceInfo> model) {
+            super(id, new Model<>());
 
             SettingsInfo settings = getGeoServer().getSettings(model.getObject());
 
@@ -382,9 +373,6 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
 
     static class NewServiceModel extends Model<ServiceInfo> {
         
-        /**
-		 * 
-		 */
 		private static final long serialVersionUID = -3467556623909292282L;
 		IModel<WorkspaceInfo> wsModel;
         Class<ServiceInfo> serviceClass;
@@ -423,9 +411,6 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
 
     static class ExistingServiceModel extends LoadableDetachableModel<ServiceInfo> {
 
-        /**
-		 * 
-		 */
 		private static final long serialVersionUID = -2170117760214309321L;
 		IModel<WorkspaceInfo> wsModel;
         Class<ServiceInfo> serviceClass;
@@ -441,23 +426,17 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
         }
     }
 
-    class ServicesPanel extends FormComponentPanel<WorkspaceInfo> {
+    class ServicesPanel extends FormComponentPanel<Serializable> {
 
-        /**
-		 * 
-		 */
 		private static final long serialVersionUID = 7375904545106343626L;
 		List<Service> services;
         
         public ServicesPanel(String id, final IModel<WorkspaceInfo> wsModel) {
-            super(id, new Model());
+            super(id, new Model<>());
 
             services = services(wsModel);
             ListView<Service> serviceList = new ListView<Service>("services", services) {
 
-                /**
-				 * 
-				 */
 				private static final long serialVersionUID = -4142739871430618450L;
 
 				@Override

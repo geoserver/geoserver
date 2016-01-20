@@ -308,7 +308,7 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
         Settings set;
 
         public SettingsPanel(String id, IModel<WorkspaceInfo> model) {
-            super(id, model);
+            super(id, new Model());
 
             SettingsInfo settings = getGeoServer().getSettings(model.getObject());
 
@@ -450,7 +450,7 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
 		List<Service> services;
         
         public ServicesPanel(String id, final IModel<WorkspaceInfo> wsModel) {
-            super(id, wsModel);
+            super(id, new Model());
 
             services = services(wsModel);
             ListView<Service> serviceList = new ListView<Service>("services", services) {

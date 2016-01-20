@@ -274,13 +274,15 @@ public class GWCSettingsPageTest extends GeoServerWicketTestSupport {
         assertTrue(item.equalsIgnoreCase("GlobalCRS84Pixel"));
 
         // Selection of the form tests
-        FormTester form = tester.newFormTester("form");
+        FormTester form = tester.newFormTester("form", false);
         form.select("cachingOptionsPanel:container:configs:cachedGridsets:availableGridsets", 0);
         tester.executeAjaxEvent(
                 "form:cachingOptionsPanel:container:configs:cachedGridsets:addGridset", "click");
         // Check that the page is correctly rendered
         tester.assertRenderedPage(GWCSettingsPage.class);
         // Save the changes
+        form = tester.newFormTester("form", false);
+        form.select("cachingOptionsPanel:container:configs:cachedGridsets:availableGridsets", 0);
         form.submit("submit");
         // Check no exception has been thrown
         tester.assertNoErrorMessage();

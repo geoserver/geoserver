@@ -63,7 +63,7 @@ public class IStylePanel extends Panel {
                     return ((LayerInfo)object).getName();
                 }
         }));
-        layerChoice.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+        layerChoice.add(new AjaxFormComponentUpdatingBehavior("change") {
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
                 LayerInfo l = (LayerInfo) layerChoice.getModelObject();
@@ -86,7 +86,7 @@ public class IStylePanel extends Panel {
                     return ((StyleInfo)object).getName();
                 }
         }));
-        styleChoice.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+        styleChoice.add(new AjaxFormComponentUpdatingBehavior("change") {
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
                 StyleInfo s = (StyleInfo) styleChoice.getModelObject();

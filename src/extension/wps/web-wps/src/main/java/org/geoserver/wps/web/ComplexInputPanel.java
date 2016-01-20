@@ -81,7 +81,7 @@ public class ComplexInputPanel extends Panel {
 
         updateEditor();
 
-        typeChoice.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+        typeChoice.add(new AjaxFormComponentUpdatingBehavior("change") {
 
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
@@ -139,7 +139,7 @@ public class ComplexInputPanel extends Panel {
 
             // we need to update the raster own bounding box as wcs requests
             // mandate a spatial extent (why oh why???)
-            layer.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+            layer.add(new AjaxFormComponentUpdatingBehavior("change") {
 
                 @Override
                 protected void onUpdate(AjaxRequestTarget target) {
@@ -176,7 +176,7 @@ public class ComplexInputPanel extends Panel {
             bodyContainer.add(body);
             bodyContainer.setVisible(false);
 
-            method.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+            method.add(new AjaxFormComponentUpdatingBehavior("change") {
 
                 @Override
                 protected void onUpdate(AjaxRequestTarget target) {

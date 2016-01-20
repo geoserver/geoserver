@@ -481,7 +481,7 @@ public class InspirePanelTest extends GeoServerWicketTestSupport {
         
         FormTester ft = tester.newFormTester("form");
         ft.setValue("panel:createExtendedCapabilities", true);
-        tester.executeAjaxEvent("form:panel:createExtendedCapabilities", "onchange");
+        tester.executeAjaxEvent("form:panel:createExtendedCapabilities", "change");
 
         tester.submitForm("form");
         

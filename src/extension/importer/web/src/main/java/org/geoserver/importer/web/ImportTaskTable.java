@@ -275,7 +275,7 @@ public class ImportTaskTable extends GeoServerTablePanel<ImportTask> {
 //        public FormatPanel(String id, IModel model) {
 //            super(id);
 //            add(new FormatDropDownChoice("format", model).add(
-//                new AjaxFormComponentUpdatingBehavior("onchange") {
+//                new AjaxFormComponentUpdatingBehavior("change") {
 //                    @Override
 //                    protected void onUpdate(AjaxRequestTarget target) {}
 //                }));
@@ -407,7 +407,7 @@ public class ImportTaskTable extends GeoServerTablePanel<ImportTask> {
                 }
             }).setNullValid(false).setOutputMarkupId(true));
 
-            add(new ExternalLink("go","#").add(new AttributeModifier("onclick", 
+            add(new ExternalLink("go","#").add(new AttributeModifier("click", 
                 new Model("go(document.getElementById('" + get("links").getMarkupId() + "'));"))));
        }
 

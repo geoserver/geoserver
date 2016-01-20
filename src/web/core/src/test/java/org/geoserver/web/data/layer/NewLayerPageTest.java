@@ -46,14 +46,14 @@ public class NewLayerPageTest extends GeoServerWicketTestSupport {
         
         // select the first datastore
         tester.newFormTester("selector").select("storesDropDown", 1);
-        tester.executeAjaxEvent("selector:storesDropDown", "onchange");
+        tester.executeAjaxEvent("selector:storesDropDown", "change");
         
         // now it should be there
         assertNotNull(tester.getComponentFromLastRenderedPage("selectLayersContainer:selectLayers"));
         
         // select "choose one" item (unselect the form)
         tester.newFormTester("selector").setValue("storesDropDown", "");
-        tester.executeAjaxEvent("selector:storesDropDown", "onchange");
+        tester.executeAjaxEvent("selector:storesDropDown", "change");
         
         // now it should be there
         assertNull(tester.getComponentFromLastRenderedPage("selectLayersContainer:selectLayers"));

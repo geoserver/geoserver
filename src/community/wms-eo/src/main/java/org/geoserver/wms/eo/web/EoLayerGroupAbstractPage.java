@@ -240,7 +240,7 @@ public abstract class EoLayerGroupAbstractPage extends GeoServerSecuredPage {
         outlinesEntryChooser.setEnabled(!outlinesPresent(lgEntryPanel.items));
         form.add(outlinesEntryChooser);
         
-        outlinesEntryChooser.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+        outlinesEntryChooser.add(new AjaxFormComponentUpdatingBehavior("change") {
 
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
@@ -270,7 +270,7 @@ public abstract class EoLayerGroupAbstractPage extends GeoServerSecuredPage {
             
         });
         
-        layerTypes.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+        layerTypes.add(new AjaxFormComponentUpdatingBehavior("change") {
 
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
@@ -282,7 +282,7 @@ public abstract class EoLayerGroupAbstractPage extends GeoServerSecuredPage {
             
         });
         
-        name.add(new AjaxFormComponentUpdatingBehavior("onblur") {
+        name.add(new AjaxFormComponentUpdatingBehavior("blur") {
 
             @Override
             protected void onUpdate(AjaxRequestTarget target) {

@@ -48,7 +48,7 @@ public class WPSRequestBuilderTest extends GeoServerWicketTestSupport {
         // choose a process
         FormTester form = tester.newFormTester("form");
         form.select("requestBuilder:process", index);
-        tester.executeAjaxEvent("form:requestBuilder:process", "onchange");
+        tester.executeAjaxEvent("form:requestBuilder:process", "change");
 
         // print(tester.getComponentFromLastRenderedPage("form"), true, true);
 

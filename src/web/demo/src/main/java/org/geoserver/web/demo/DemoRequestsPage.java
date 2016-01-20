@@ -150,7 +150,7 @@ public class DemoRequestsPage extends GeoServerBasePage {
          * the EditAreaBehavior to update the body contents inside it, but instead puts the plain
          * TextArea contents above the empty xml editor
          */
-        demoRequestsList.add(new AjaxFormSubmitBehavior(demoRequestsForm, "onchange") {
+        demoRequestsList.add(new AjaxFormSubmitBehavior(demoRequestsForm, "change") {
 
             @Override
             protected void onSubmit(AjaxRequestTarget target) {

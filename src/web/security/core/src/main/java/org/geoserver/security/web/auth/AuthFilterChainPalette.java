@@ -85,7 +85,7 @@ public class AuthFilterChainPalette extends Palette<String> {
     protected Recorder newRecorderComponent()
     {
       Recorder recorder=super.newRecorderComponent();     
-      recorder.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+      recorder.add(new AjaxFormComponentUpdatingBehavior("change") {
         private static final long serialVersionUID = 1L;
 
         @Override

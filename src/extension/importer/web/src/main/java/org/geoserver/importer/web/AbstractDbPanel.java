@@ -154,7 +154,7 @@ public abstract class AbstractDbPanel extends ImportSourcePanel {
             }
         });
 
-        choice.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+        choice.add(new AjaxFormComponentUpdatingBehavior("change") {
 
             @Override
             protected void onUpdate(AjaxRequestTarget target) {

@@ -65,7 +65,7 @@ public class AttributeEditPage extends GeoServerSecuredPage {
         form.add(nameField = new TextField<>("name"));
         DropDownChoice<Class<?>> binding = new DropDownChoice<>("binding", AttributeDescription.BINDINGS,
                 new BindingChoiceRenderer());
-        binding.add(new AjaxFormSubmitBehavior("onchange") {
+        binding.add(new AjaxFormSubmitBehavior("change") {
 
             @Override
             protected void onError(AjaxRequestTarget target) {

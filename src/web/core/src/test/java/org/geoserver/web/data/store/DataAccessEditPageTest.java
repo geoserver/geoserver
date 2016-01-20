@@ -120,7 +120,7 @@ public class DataAccessEditPageTest extends GeoServerWicketTestSupport {
         // select the fifth item in the drop down, which is the cdf workspace
         formTester.select("workspacePanel:border:border_body:paramValue", 4);
         Component wsDropDown = tester.getComponentFromLastRenderedPage(wsDropdownPath);
-        tester.executeAjaxEvent(wsDropDown, "onchange");
+        tester.executeAjaxEvent(wsDropDown, "change");
 
         // final String namespaceParamPath =
         // "dataStoreForm:parameters:1:parameterPanel:border:border_body:paramValue";

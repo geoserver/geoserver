@@ -44,7 +44,7 @@ public class NewDataAccessRulePageTest extends AbstractSecurityWicketTestSupport
         FormTester form = tester.newFormTester("form");
         int index = indexOf(page.workspaceChoice.getChoices(),MockData.CITE_PREFIX);        
         form.select("workspace", index);
-        tester.executeAjaxEvent("form:workspace", "onchange");
+        tester.executeAjaxEvent("form:workspace", "change");
         form = tester.newFormTester("form");
         index = indexOf(page.layerChoice.getChoices(),MockData.STREAMS.getLocalPart());
         form.select("layer", index);
@@ -102,7 +102,7 @@ public class NewDataAccessRulePageTest extends AbstractSecurityWicketTestSupport
         FormTester form = tester.newFormTester("form");
         int index = indexOf(page.workspaceChoice.getChoices(),MockData.CITE_PREFIX);        
         form.select("workspace", index);
-        tester.executeAjaxEvent("form:workspace", "onchange");
+        tester.executeAjaxEvent("form:workspace", "change");
         form = tester.newFormTester("form");
         index = indexOf(page.layerChoice.getChoices(),MockData.BRIDGES.getLocalPart());
         form.select("layer", index);
@@ -126,7 +126,7 @@ public class NewDataAccessRulePageTest extends AbstractSecurityWicketTestSupport
         FormTester form = tester.newFormTester("form");
         int index = indexOf(page.workspaceChoice.getChoices(),MockData.CITE_PREFIX);        
         form.select("workspace", index);
-        tester.executeAjaxEvent("form:workspace", "onchange");
+        tester.executeAjaxEvent("form:workspace", "change");
         form = tester.newFormTester("form");
         index = indexOf(page.layerChoice.getChoices(),MockData.STREAMS.getLocalPart());
         form.select("layer", index);
@@ -156,7 +156,7 @@ public class NewDataAccessRulePageTest extends AbstractSecurityWicketTestSupport
         FormTester form = tester.newFormTester("form");
         int index = indexOf(page.workspaceChoice.getChoices(),MockData.CITE_PREFIX);        
         form.select("workspace", index);
-        tester.executeAjaxEvent("form:workspace", "onchange");
+        tester.executeAjaxEvent("form:workspace", "change");
         form = tester.newFormTester("form");
         index = indexOf(page.layerChoice.getChoices(),DataAccessRule.ANY);
         form.select("layer", index);

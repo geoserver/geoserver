@@ -62,7 +62,7 @@ public class WFSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
         srsList.setOutputMarkupId(true);
         srsList.setVisible(Boolean.TRUE.equals(overrideServiceSRSModel.getObject())); 
         otherSrsContainer.add(srsList);
-        overrideServiceSRS.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+        overrideServiceSRS.add(new AjaxFormComponentUpdatingBehavior("change") {
             private static final long serialVersionUID = -6590810763209350915L;
 
             @Override

@@ -51,12 +51,12 @@ public class S3BlobStorePageTest extends GeoServerWicketTestSupport {
         assertEquals("File BlobStore", typeOfBlobStore.getChoices().get(0).toString());
         assertEquals("S3 BlobStore", typeOfBlobStore.getChoices().get(1).toString());
         
-        executeAjaxEventBehavior("selector:typeOfBlobStore", "onchange", "0");
+        executeAjaxEventBehavior("selector:typeOfBlobStore", "change", "0");
                         
         tester.assertVisible("blobConfigContainer:blobStoreForm");        
         tester.assertComponent("blobConfigContainer:blobStoreForm:blobSpecificPanel", FileBlobStorePanel.class);
         
-        executeAjaxEventBehavior("selector:typeOfBlobStore", "onchange", "1");
+        executeAjaxEventBehavior("selector:typeOfBlobStore", "change", "1");
         tester.assertComponent("blobConfigContainer:blobStoreForm:blobSpecificPanel", S3BlobStorePanel.class);
     }   
     
@@ -65,7 +65,7 @@ public class S3BlobStorePageTest extends GeoServerWicketTestSupport {
         BlobStorePage page = new BlobStorePage();
 
         tester.startPage(page);
-        executeAjaxEventBehavior("selector:typeOfBlobStore", "onchange", "1");
+        executeAjaxEventBehavior("selector:typeOfBlobStore", "change", "1");
         
         FormTester formTester = tester.newFormTester("blobConfigContainer:blobStoreForm");
         formTester.setValue("id", "myblobstore");       
@@ -73,7 +73,7 @@ public class S3BlobStorePageTest extends GeoServerWicketTestSupport {
         formTester.setValue("blobSpecificPanel:bucket", "mybucket");
         formTester.setValue("blobSpecificPanel:awsAccessKey", "myaccesskey");
         formTester.setValue("blobSpecificPanel:awsSecretKey", "mysecretkey");
-        tester.executeAjaxEvent("blobConfigContainer:blobStoreForm:save", "onclick");
+        tester.executeAjaxEvent("blobConfigContainer:blobStoreForm:save", "click");
         
         List<BlobStoreConfig> blobStores = GWC.get().getBlobStores();
         BlobStoreConfig config = blobStores.get(0);
@@ -112,7 +112,7 @@ public class S3BlobStorePageTest extends GeoServerWicketTestSupport {
         formTester.setValue("id", "yourblobstore");
         formTester.setValue("blobSpecificPanel:bucket", "yourbucket");
         formTester.submit();
-        tester.executeAjaxEvent("blobConfigContainer:blobStoreForm:save", "onclick");
+        tester.executeAjaxEvent("blobConfigContainer:blobStoreForm:save", "click");
         
         BlobStoreConfig config = GWC.get().getBlobStores().get(0);
         assertTrue(config instanceof S3BlobStoreConfig);

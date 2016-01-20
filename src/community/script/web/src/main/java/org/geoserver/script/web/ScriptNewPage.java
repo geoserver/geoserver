@@ -93,7 +93,7 @@ public class ScriptNewPage extends GeoServerSecuredPage {
             }
         );
         extensionDropDownChoice.setRequired(true);
-        extensionDropDownChoice.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+        extensionDropDownChoice.add(new AjaxFormComponentUpdatingBehavior("change") {
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
                 int i = Integer.parseInt(extensionDropDownChoice.getValue());

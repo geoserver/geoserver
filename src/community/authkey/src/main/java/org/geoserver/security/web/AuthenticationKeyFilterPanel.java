@@ -72,7 +72,7 @@ public class AuthenticationKeyFilterPanel
         
         AuthenticationKeyMapperChoice authenticationKeyMapperChoice = new AuthenticationKeyMapperChoice("authKeyMapperName");
         
-        authenticationKeyMapperChoice.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+        authenticationKeyMapperChoice.add(new AjaxFormComponentUpdatingBehavior("change") {
             protected void onUpdate(AjaxRequestTarget target) {
                 String newSelection = (String) getFormComponent().getConvertedInput();
                 Map<String, String> parameters = getMapperParameters(newSelection);

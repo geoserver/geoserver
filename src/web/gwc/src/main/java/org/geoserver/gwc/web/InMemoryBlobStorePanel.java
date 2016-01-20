@@ -117,7 +117,7 @@ public class InMemoryBlobStorePanel extends Panel {
             ChoiceRenderer<String> renderer = new CacheProviderRenderer(cacheProviders);
             choice = new DropDownChoice<String>("caches", providerClass, new ArrayList<String>(
                     cacheProviders.keySet()), renderer);
-            choice.add(new AjaxFormComponentUpdatingBehavior("onChange") {
+            choice.add(new AjaxFormComponentUpdatingBehavior("change") {
 
                 @Override
                 protected void onUpdate(AjaxRequestTarget target) {
@@ -154,7 +154,7 @@ public class InMemoryBlobStorePanel extends Panel {
         // Adding cache configuration container to the global container
         container.add(cacheConfigContainer);
         // Definition of the behavior related to caching
-        innerCachingEnabledChoice.add(new AjaxFormComponentUpdatingBehavior("onChange") {
+        innerCachingEnabledChoice.add(new AjaxFormComponentUpdatingBehavior("change") {
 
             @Override
             protected void onUpdate(AjaxRequestTarget target) {

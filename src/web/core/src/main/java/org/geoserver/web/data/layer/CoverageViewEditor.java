@@ -98,7 +98,7 @@ public class CoverageViewEditor extends FormComponentPanel<List<String>> {
                 "compositionType"), Arrays.asList(CompositionType.BAND_SELECT), new CompositionTypeRenderer());
 
         compositionChoice.setOutputMarkupId(true);
-        compositionChoice.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+        compositionChoice.add(new AjaxFormComponentUpdatingBehavior("change") {
             private static final long serialVersionUID = 1L;
 
             @Override

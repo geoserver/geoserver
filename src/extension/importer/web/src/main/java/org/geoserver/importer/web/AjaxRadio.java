@@ -29,7 +29,7 @@ public abstract class AjaxRadio<T> extends Radio<T> {
     }
     
     private void addAjaxBehavior() {
-        add(new AjaxEventBehavior("onclick") {
+        add(new AjaxEventBehavior("click") {
             private static final long serialVersionUID = 1L;
     
             protected void onEvent(final AjaxRequestTarget target) {

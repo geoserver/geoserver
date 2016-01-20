@@ -304,7 +304,7 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
             final DropDownChoice<WorkspaceInfo> wsChoice = new DropDownChoice<WorkspaceInfo>("workspace",
                 new ServiceFilteredWorkspacesModel(new WorkspacesModel()), new WorkspaceChoiceRenderer());
             wsChoice.setNullValid(true);
-            wsChoice.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+            wsChoice.add(new AjaxFormComponentUpdatingBehavior("change") {
                 @Override
                 protected void onUpdate(AjaxRequestTarget target) {
                     WorkspaceInfo ws = wsChoice.getModelObject();

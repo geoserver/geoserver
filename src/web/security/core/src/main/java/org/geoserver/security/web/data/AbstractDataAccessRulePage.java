@@ -51,7 +51,7 @@ public abstract class AbstractDataAccessRulePage extends AbstractSecurityPage {
         form.add (new EmptyRolesValidator());
         form.add(workspaceChoice = new DropDownChoice<String>("workspace", getWorkspaceNames()));
         workspaceChoice.setRequired(true);
-        workspaceChoice.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+        workspaceChoice.add(new AjaxFormComponentUpdatingBehavior("change") {
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
                 layerChoice.setChoices(new Model<ArrayList<String>>(

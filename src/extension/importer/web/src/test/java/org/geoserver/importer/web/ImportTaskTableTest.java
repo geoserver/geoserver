@@ -91,7 +91,7 @@ public class ImportTaskTableTest extends GeoServerWicketTestSupport {
     void fill(String formPath, String fieldPath, String value) {
         FormTester form = tester.newFormTester(formPath);
         form.setValue(fieldPath, value);
-        tester.executeAjaxEvent(String.format("%s:%s", formPath, fieldPath), "onblur");
+        tester.executeAjaxEvent(String.format("%s:%s", formPath, fieldPath), "blur");
     }
     
     @Test

@@ -233,7 +233,7 @@ public class NewLayerPage extends GeoServerSecuredPage {
         final DropDownChoice<StoreInfo> stores = new DropDownChoice<>("storesDropDown", new Model<StoreInfo>(),
                 new StoreListModel(), new StoreListChoiceRenderer());
         stores.setOutputMarkupId(true);
-        stores.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+        stores.add(new AjaxFormComponentUpdatingBehavior("change") {
             
             @Override
             protected void onUpdate(AjaxRequestTarget target) {

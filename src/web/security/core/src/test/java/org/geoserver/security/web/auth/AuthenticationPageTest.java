@@ -66,7 +66,7 @@ public class AuthenticationPageTest extends AbstractSecurityWicketTestSupport {
 //    protected void assignAuthProvider(String providerName) throws Exception {
 //        form.setValue("config.authProviderNames:recorder", providerName);
 //        // tester.executeAjaxEvent(formComponentId+":config.authProviderNames:recorder",
-//        // "onchange");
+//        // change);
 //        // newFormTester();
 //    }
 //    

@@ -199,7 +199,7 @@ public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
                 presentationModes, new PresentationModeRenderer());
         configs.add(presentation);
         presentation.setRequired(true);
-        presentation.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+        presentation.add(new AjaxFormComponentUpdatingBehavior("change") {
 
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
@@ -244,7 +244,7 @@ public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
         defaultValueStrategy = new DropDownChoice<DimensionDefaultValueSetting.Strategy>("strategy",
                strategyModel, defaultValueStrategies, new DefaultValueStrategyRenderer());
         configs.add(defaultValueStrategy);
-        defaultValueStrategy.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+        defaultValueStrategy.add(new AjaxFormComponentUpdatingBehavior("change") {
 
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
@@ -261,7 +261,7 @@ public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
         
         IModel<String> refValueModel = new PropertyModel<String>(model.getObject().getDefaultValue(), "referenceValue");        
         referenceValue = new TextField<String>("referenceValue", refValueModel);
-        referenceValue.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+        referenceValue.add(new AjaxFormComponentUpdatingBehavior("change") {
             
             protected void onUpdate(AjaxRequestTarget target) {
                 refValueValidationMessage.setDefaultModelObject(null);

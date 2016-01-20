@@ -103,7 +103,7 @@ public abstract class AbstractUserPage extends AbstractSecurityPage {
         form.add(new PropertyEditorFormComponent("properties").setEnabled(hasUserGroupStore));
 
         form.add(userGroupPalette = new UserGroupPaletteFormComponent("groups", ugServiceName, user));
-        userGroupPalette.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+        userGroupPalette.add(new AjaxFormComponentUpdatingBehavior("change") {
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
                 updateCalculatedRoles(target);
@@ -120,7 +120,7 @@ public abstract class AbstractUserPage extends AbstractSecurityPage {
         }
         
         form.add(rolePalette = new RolePaletteFormComponent("roles", new ListModel(roles)));
-        rolePalette.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+        rolePalette.add(new AjaxFormComponentUpdatingBehavior("change") {
            @Override
            protected void onUpdate(AjaxRequestTarget target) {
                updateCalculatedRoles(target);

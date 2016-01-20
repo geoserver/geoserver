@@ -61,7 +61,7 @@ public final class PGRasterCoverageStoreEditPanel extends StoreEditPanel {
         IModel<Boolean> enabledModel = new Model<Boolean>(false);
         enabled = new CheckBox("enabled", enabledModel);
         add(enabled);
-        enabled.add(new AjaxFormComponentUpdatingBehavior("onclick") {
+        enabled.add(new AjaxFormComponentUpdatingBehavior("click") {
 
             @Override
             protected void onUpdate(AjaxRequestTarget target) {

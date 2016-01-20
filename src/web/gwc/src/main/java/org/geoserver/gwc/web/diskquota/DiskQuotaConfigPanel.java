@@ -158,7 +158,7 @@ public class DiskQuotaConfigPanel extends Panel {
         jdbcContainer.add(connectionTypeChooser);
         
         // make the JDBC configuration visible only when the user chose a JDBC store
-        quotaStoreChooser.add(new AjaxFormComponentUpdatingBehavior("onChange") {
+        quotaStoreChooser.add(new AjaxFormComponentUpdatingBehavior("change") {
 
 			private static final long serialVersionUID = -6806581935751265393L;
 
@@ -191,7 +191,7 @@ public class DiskQuotaConfigPanel extends Panel {
         connectionTypeContainer.add(privatePoolPanel);
         
         // make the two ways to configure the JDBC store show up as alternatives
-        connectionTypeChooser.add(new AjaxFormComponentUpdatingBehavior("onChange") {
+        connectionTypeChooser.add(new AjaxFormComponentUpdatingBehavior("change") {
 
 			private static final long serialVersionUID = -8286073946292214144L;
 

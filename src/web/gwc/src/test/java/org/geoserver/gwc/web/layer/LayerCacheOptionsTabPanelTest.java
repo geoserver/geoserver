@@ -191,7 +191,7 @@ public class LayerCacheOptionsTabPanelTest extends GeoServerWicketTestSupport {
         FormTester formTester = tester.newFormTester("form");
         formTester.setValue("panel:tileLayerEditor:createTileLayer", false);
 
-        tester.executeAjaxEvent("form:panel:tileLayerEditor:createTileLayer", "onchange");
+        tester.executeAjaxEvent("form:panel:tileLayerEditor:createTileLayer", "change");
         
 
         tester.isInvisible("form:panel:tileLayerEditor:container:configs");

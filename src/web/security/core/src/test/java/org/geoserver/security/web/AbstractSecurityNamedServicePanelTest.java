@@ -225,7 +225,7 @@ public abstract class AbstractSecurityNamedServicePanelTest extends AbstractSecu
             tester.executeAjaxEvent(link, "click");
         }
 //        formTester.select("config.className", index);     
-//        tester.executeAjaxEvent(formTester.getForm().getPageRelativePath()+":config.className", "onchange");
+//        tester.executeAjaxEvent(formTester.getForm().getPageRelativePath()+":config.className", "change");
     }
 
     protected void clickSave() {        

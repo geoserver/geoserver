@@ -118,7 +118,7 @@ public class CRSPanel extends FormComponentPanel<CoordinateReferenceSystem> {
         add( srsTextField );
         srsTextField.setOutputMarkupId( true );
         
-        srsTextField.add(new AjaxFormComponentUpdatingBehavior("onblur") {
+        srsTextField.add(new AjaxFormComponentUpdatingBehavior("blur") {
             
             @Override
             protected void onUpdate(AjaxRequestTarget target) {

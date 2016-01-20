@@ -80,7 +80,7 @@ public class StyleNameInput extends Panel {
                  new PropertyModel<String>(this, "workspace"),
                  workspaces,
                  workspaceRenderer);
-         workspaceChooser.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+         workspaceChooser.add(new AjaxFormComponentUpdatingBehavior("change") {
             
             private static final long serialVersionUID = 1645220914767539957L;
 

@@ -56,7 +56,7 @@ public class ImportTaskAdvancedPage extends GeoServerSecuredPage {
             (ReprojectTransform) item.getTransform().get(ReprojectTransform.class);
 
         reprojectCheckBox = new CheckBox("enableReprojection", new Model(reprojectTx != null));
-        reprojectCheckBox.add(new AjaxFormComponentUpdatingBehavior("onclick") {
+        reprojectCheckBox.add(new AjaxFormComponentUpdatingBehavior("click") {
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
                 reprojectPanel.setEnabled(reprojectCheckBox.getModelObject());
@@ -176,7 +176,7 @@ public class ImportTaskAdvancedPage extends GeoServerSecuredPage {
                     dateFormatTextField.setOutputMarkupId(true);
                     item.add(dateFormatTextField);
 
-                    typeChoice.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+                    typeChoice.add(new AjaxFormComponentUpdatingBehavior("change") {
                         @Override
                         protected void onUpdate(AjaxRequestTarget target) {
                             dateFormatTextField.setEnabled(

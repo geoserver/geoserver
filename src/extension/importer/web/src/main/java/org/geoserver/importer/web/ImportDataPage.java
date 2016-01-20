@@ -127,7 +127,7 @@ public class ImportDataPage extends GeoServerSecuredPage {
         workspaceChoice = new DropDownChoice("workspace", workspace, new WorkspacesModel(), 
             new WorkspaceChoiceRenderer());
         workspaceChoice.setOutputMarkupId(true);
-        workspaceChoice.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+        workspaceChoice.add(new AjaxFormComponentUpdatingBehavior("change") {
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
                 updateTargetStore(target);

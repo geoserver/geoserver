@@ -170,7 +170,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
                 return Styles.handler(object).getName();
             }
         });
-        formatChoice.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+        formatChoice.add(new AjaxFormComponentUpdatingBehavior("change") {
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
                 target.appendJavaScript(String.format(
@@ -208,7 +208,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
         // style generation functionality
         templates = new DropDownChoice("templates", new Model(), new StyleTypeModel(), new StyleTypeChoiceRenderer());
         templates.setOutputMarkupId(true);
-        templates.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+        templates.add(new AjaxFormComponentUpdatingBehavior("change") {
 
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
@@ -225,7 +225,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
         // style copy functionality
         styles = new DropDownChoice("existingStyles", new Model(), new StylesModel(), new StyleChoiceRenderer());
         styles.setOutputMarkupId(true);
-        styles.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+        styles.add(new AjaxFormComponentUpdatingBehavior("change") {
 
             @Override
             protected void onUpdate(AjaxRequestTarget target) {

@@ -86,7 +86,7 @@ public abstract class AbstractConfigPage extends GeoServerSecuredPage {
 
         stores = new DropDownChoice<StoreInfo>("stores",
                 new Model(null), new StoreListModel(), new StoreListChoiceRenderer());
-        stores.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+        stores.add(new AjaxFormComponentUpdatingBehavior("change") {
             
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
@@ -100,7 +100,7 @@ public abstract class AbstractConfigPage extends GeoServerSecuredPage {
         types = new DropDownChoice<String>("types", new Model(null), new TypeListModel(stores.getModel()));
         types.setOutputMarkupId(true);
         sources.add(types);
-        types.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+        types.add(new AjaxFormComponentUpdatingBehavior("change") {
 
             @Override
             protected void onUpdate(AjaxRequestTarget target) {

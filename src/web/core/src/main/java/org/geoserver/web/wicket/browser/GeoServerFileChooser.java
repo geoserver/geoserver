@@ -133,7 +133,7 @@ public class GeoServerFileChooser extends Panel {
         
         // the root chooser
         final DropDownChoice choice = new DropDownChoice("roots", new Model(selectionRoot), new Model(roots), new FileRootsRenderer());
-        choice.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+        choice.add(new AjaxFormComponentUpdatingBehavior("change") {
 
             @Override
             protected void onUpdate(AjaxRequestTarget target) {

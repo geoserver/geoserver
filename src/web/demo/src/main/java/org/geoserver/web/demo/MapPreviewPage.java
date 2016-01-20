@@ -238,7 +238,7 @@ public class MapPreviewPage extends GeoServerBasePage {
           + getMaxFeatures()
           + "&outputFormat=' + this.options[this.selectedIndex].value";
         String choice = "(this.options[this.selectedIndex].parentNode.label == 'WMS') ? " + wmsUrl + " : " + wfsUrl;
-        menu.add(new AttributeAppender("onchange", new Model("window.open("
+        menu.add(new AttributeAppender("change", new Model("window.open("
                 + choice + ");this.selectedIndex=0"), ";"));
         f.add(menu);
         return f;

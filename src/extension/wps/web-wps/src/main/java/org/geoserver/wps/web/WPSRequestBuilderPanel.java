@@ -224,7 +224,7 @@ public class WPSRequestBuilderPanel extends Panel {
         add(feedback);
 
         // the process choice dropdown ajax behavior
-        processChoice.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+        processChoice.add(new AjaxFormComponentUpdatingBehavior("change") {
 
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
@@ -261,7 +261,7 @@ public class WPSRequestBuilderPanel extends Panel {
         userpwdContainer.add(password);
         
         CheckBox checkbox = new CheckBox("authenticate", new PropertyModel(this, "authenticate"));
-        checkbox.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+        checkbox.add(new AjaxFormComponentUpdatingBehavior("change") {
 
             @Override
             protected void onUpdate(AjaxRequestTarget target) {

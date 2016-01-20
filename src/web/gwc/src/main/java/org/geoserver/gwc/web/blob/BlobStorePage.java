@@ -75,7 +75,7 @@ public class BlobStorePage extends GeoServerSecuredPage {
         typeOfBlobStore = new DropDownChoice<BlobStoreType>("typeOfBlobStore",
                 new Model<BlobStoreType>(), BlobStoreTypes.getAll());
         typeOfBlobStore.setOutputMarkupId(true);
-        typeOfBlobStore.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+        typeOfBlobStore.add(new AjaxFormComponentUpdatingBehavior("change") {
             private static final long serialVersionUID = 359589121400814043L;
 
 			@Override

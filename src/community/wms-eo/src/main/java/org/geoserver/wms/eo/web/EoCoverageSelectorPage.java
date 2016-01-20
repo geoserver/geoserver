@@ -117,7 +117,7 @@ public class EoCoverageSelectorPage extends GeoServerSecuredPage {
         coveragesContainer.add(coverages);
 
         // link the store dropdown to the coverages table
-        stores.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+        stores.add(new AjaxFormComponentUpdatingBehavior("change") {
 
             @Override
             protected void onUpdate(AjaxRequestTarget target) {

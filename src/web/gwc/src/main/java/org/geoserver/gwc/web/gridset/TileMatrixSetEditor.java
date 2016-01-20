@@ -280,7 +280,7 @@ public class TileMatrixSetEditor extends FormComponentPanel<List<Grid>> {
                 resolution.setEnabled(isResolutionsPreserved);
                 scale.setEnabled(!isResolutionsPreserved);
 
-                resolution.add(new AjaxFormComponentUpdatingBehavior("onblur") {
+                resolution.add(new AjaxFormComponentUpdatingBehavior("blur") {
                     private static final long serialVersionUID = 1L;
 
                     @Override
@@ -303,7 +303,7 @@ public class TileMatrixSetEditor extends FormComponentPanel<List<Grid>> {
                     }
                 });
 
-                scale.add(new AjaxFormComponentUpdatingBehavior("onblur") {
+                scale.add(new AjaxFormComponentUpdatingBehavior("blur") {
                     private static final long serialVersionUID = 1L;
 
                     @Override

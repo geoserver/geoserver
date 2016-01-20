@@ -153,7 +153,7 @@ public class CssDemoTest extends GeoServerWicketTestSupport {
         FormTester form = tester.newFormTester("main-content:style.editing:style-editor");
         form.setValue("editor:editorContainer:editorParent:editor", "* { stroke: red; }");
 
-        tester.executeAjaxEvent("main-content:style.editing:style-editor:submit", "onclick");
+        tester.executeAjaxEvent("main-content:style.editing:style-editor:submit", "click");
 
         BufferedReader reader = cat.getResourcePool().readStyle(foo);
         String content = IOUtils.toString(reader);

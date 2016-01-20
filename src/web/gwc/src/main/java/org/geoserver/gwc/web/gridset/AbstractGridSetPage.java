@@ -133,7 +133,7 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
         form.add(saveLink);
         add(form);
 
-        tileWidth.getFormComponent().add(new AjaxFormComponentUpdatingBehavior("onblur") {
+        tileWidth.getFormComponent().add(new AjaxFormComponentUpdatingBehavior("blur") {
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -141,7 +141,7 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
                 target.add(tileMatrixSetEditor);
             }
         });
-        tileHeight.getFormComponent().add(new AjaxFormComponentUpdatingBehavior("onblur") {
+        tileHeight.getFormComponent().add(new AjaxFormComponentUpdatingBehavior("blur") {
             private static final long serialVersionUID = 1L;
 
             @Override

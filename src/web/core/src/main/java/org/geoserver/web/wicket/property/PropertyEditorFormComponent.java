@@ -57,12 +57,12 @@ public class PropertyEditorFormComponent extends FormComponentPanel<Properties> 
             @Override
             protected void populateItem(ListItem<Tuple> item) {
                 item.setModel(new CompoundPropertyModel<Tuple>(item.getModelObject()));
-                item.add(new TextField("key").add(new AjaxFormComponentUpdatingBehavior("onblur"){
+                item.add(new TextField("key").add(new AjaxFormComponentUpdatingBehavior("blur"){
                     @Override
                     protected void onUpdate(AjaxRequestTarget target) {
                     }
                 }));
-                item.add(new TextField("value").add(new AjaxFormComponentUpdatingBehavior("onblur") {
+                item.add(new TextField("value").add(new AjaxFormComponentUpdatingBehavior("blur") {
                     @Override
                     protected void onUpdate(AjaxRequestTarget target) {
                     }

@@ -129,7 +129,7 @@ public class CascadedWFSStoredQueryNewPage extends CascadedWFSStoredQueryAbstrac
                 new StoredQueryListModel(), new StoredQueryListRenderer());
 
         dropdown.setRequired(true);
-        dropdown.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+        dropdown.add(new AjaxFormComponentUpdatingBehavior("change") {
 
             /** serialVersionUID */
             private static final long serialVersionUID = -7195159596309736905L;

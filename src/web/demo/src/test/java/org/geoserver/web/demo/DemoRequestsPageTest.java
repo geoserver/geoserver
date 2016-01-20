@@ -96,7 +96,7 @@ public class DemoRequestsPageTest extends GeoServerWicketTestSupport {
         /*
          * There's an AjaxFormSubmitBehavior attached to onchange so force it
          */
-        tester.executeAjaxEvent("demoRequestsForm:demoRequestsList", "onchange");
+        tester.executeAjaxEvent("demoRequestsForm:demoRequestsList", "change");
         
         tester.assertModelValue("demoRequestsForm:demoRequestsList", requestName);
 
@@ -132,7 +132,7 @@ public class DemoRequestsPageTest extends GeoServerWicketTestSupport {
         /*
          * There's an AjaxFormSubmitBehavior attached to onchange so force it
          */
-        tester.executeAjaxEvent("demoRequestsForm:demoRequestsList", "onchange");
+        tester.executeAjaxEvent("demoRequestsForm:demoRequestsList", "change");
         
         
         tester.assertModelValue("demoRequestsForm:demoRequestsList", requestName);
@@ -169,7 +169,7 @@ public class DemoRequestsPageTest extends GeoServerWicketTestSupport {
         /*
          * There's an AjaxFormSubmitBehavior attached to onchange so force it
          */
-        tester.executeAjaxEvent("demoRequestsForm:demoRequestsList", "onchange");
+        tester.executeAjaxEvent("demoRequestsForm:demoRequestsList", "change");
 
         tester.assertModelValue("demoRequestsForm:demoRequestsList", requestName);
 
@@ -209,7 +209,7 @@ public class DemoRequestsPageTest extends GeoServerWicketTestSupport {
             /*
              * There's an AjaxFormSubmitBehavior attached to onchange so force it
              */
-            tester.executeAjaxEvent("demoRequestsForm:demoRequestsList", "onchange");
+            tester.executeAjaxEvent("demoRequestsForm:demoRequestsList", "change");
             tester.assertModelValue("demoRequestsForm:demoRequestsList", requestName);
     
             final boolean isAjax = true;

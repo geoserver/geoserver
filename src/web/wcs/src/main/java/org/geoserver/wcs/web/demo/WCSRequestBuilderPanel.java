@@ -118,7 +118,7 @@ public class WCSRequestBuilderPanel extends Panel {
         add(version);
         
         // the action that will setup the form once the coverage has been chosen
-        version.add(new AjaxFormSubmitBehavior("onchange") {
+        version.add(new AjaxFormSubmitBehavior("change") {
 
             @Override
             protected void onError(AjaxRequestTarget target) {
@@ -149,7 +149,7 @@ public class WCSRequestBuilderPanel extends Panel {
         add(coverage);
 
         // the action that will setup the form once the coverage has been chosen
-        coverage.add(new AjaxFormSubmitBehavior("onchange") {
+        coverage.add(new AjaxFormSubmitBehavior("change") {
 
             @Override
             protected void onError(AjaxRequestTarget target) {
@@ -276,7 +276,7 @@ public class WCSRequestBuilderPanel extends Panel {
         g2w.setVisible(false);
         g2w.setOutputMarkupId(true);
         
-        targetLayoutChooser.add(new AjaxFormSubmitBehavior("onchange") {
+        targetLayoutChooser.add(new AjaxFormSubmitBehavior("change") {
 
             @Override
             protected void onError(AjaxRequestTarget target) {
@@ -319,7 +319,7 @@ public class WCSRequestBuilderPanel extends Panel {
         sourceGridRange.setOutputMarkupId(true);
         
         // the action that will setup the form once the coverage has been chosen
-        manualGrid.add(new AjaxFormSubmitBehavior("onchange") {
+        manualGrid.add(new AjaxFormSubmitBehavior("change") {
 
             @Override
             protected void onError(AjaxRequestTarget target) {

@@ -10,15 +10,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.MarkupContainer;
-import org.apache.wicket.markup.IMarkupFragment;
-import org.apache.wicket.markup.Markup;
 import org.apache.wicket.markup.html.form.TextField;
-import org.apache.wicket.markup.html.panel.AbstractMarkupSourcingStrategy;
-import org.apache.wicket.markup.html.panel.DefaultMarkupSourcingStrategy;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
-import org.apache.wicket.markup.html.panel.IMarkupSourcingStrategy;
-import org.apache.wicket.markup.html.panel.PanelMarkupSourcingStrategy;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.StringResourceModel;
@@ -33,7 +26,6 @@ import org.geoserver.web.FormTestPage;
 import org.junit.After;
 import org.junit.Assume;
 import org.junit.Test;
-import org.springframework.ldap.test.LdapTestUtils;
 
 /**
  * 
@@ -63,7 +55,7 @@ public class LDAPAuthProviderPanelTest extends AbstractSecurityWicketTestSupport
     
     @After
     public void tearDown() throws Exception {
-        LdapTestUtils.shutdownEmbeddedServer();
+        LDAPTestUtils.shutdownEmbeddedServer();
     }
     
     

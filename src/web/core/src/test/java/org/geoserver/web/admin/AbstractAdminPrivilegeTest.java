@@ -191,7 +191,7 @@ public abstract class AbstractAdminPrivilegeTest extends GeoServerWicketTestSupp
         AdminRequest.start(new Object());
 
         DropDownChoice<WorkspaceInfo> wsChoice = (DropDownChoice<WorkspaceInfo>) 
-            tester.getComponentFromLastRenderedPage("dataStoreForm:workspacePanel:border:paramValue");
+            tester.getComponentFromLastRenderedPage("dataStoreForm:workspacePanel:border:border_body:paramValue");
 
         assertEquals(1, wsChoice.getChoices().size());
         assertEquals("cite", wsChoice.getChoices().get(0).getName());

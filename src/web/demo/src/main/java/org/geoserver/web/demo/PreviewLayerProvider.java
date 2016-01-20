@@ -137,7 +137,8 @@ public class PreviewLayerProvider extends GeoServerDataProvider<PreviewLayer> {
 
     private int sizeInternal() {
         Filter filter = getFilter();
-        return getCatalog().count(PublishedInfo.class, filter);
+        int result = getCatalog().count(PublishedInfo.class, filter);
+        return result;
     }
 
     @Override

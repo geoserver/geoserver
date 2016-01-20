@@ -5,25 +5,24 @@
  */
 package org.geoserver.web.demo;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Iterator;
 
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.behavior.Behavior;
-import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.markup.repeater.data.DataView;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.data.test.MockData;
 import org.geoserver.web.GeoServerWicketTestSupport;
+import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.wfs.WFSInfo;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -51,6 +50,8 @@ public class MapPreviewPageTest extends GeoServerWicketTestSupport {
         tester.assertRenderedPage(MapPreviewPage.class);
 
         //move to next page
+        GeoServerTablePanel table = (GeoServerTablePanel) tester.getComponentFromLastRenderedPage("table");
+        System.out.println(table.getDataProvider().size());
         tester.clickLink("table:navigatorBottom:navigator:next", true);
 
         DataView data = 
@@ -60,7 +61,8 @@ public class MapPreviewPageTest extends GeoServerWicketTestSupport {
         for (Iterator it = data.iterator(); it.hasNext(); ) {
             MarkupContainer c = (MarkupContainer) it.next();
             Label l = (Label) c.get("itemProperties:1:component");
-            if ("sf:foo".equals(l.getDefaultModelObjectAsString())) {
+            String model = l.getDefaultModelObjectAsString();
+            if ("sf:foo".equals(model)) {
                 exists = true;
             }
         }

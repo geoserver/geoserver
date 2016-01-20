@@ -27,6 +27,7 @@ import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.protocol.http.servlet.ServletWebRequest;
 import org.apache.wicket.request.IExceptionMapper;
 import org.apache.wicket.request.IRequestHandler;
+import org.apache.wicket.request.IRequestHandlerDelegate;
 import org.apache.wicket.request.IRequestMapper;
 import org.apache.wicket.request.Request;
 import org.apache.wicket.request.Response;
@@ -195,7 +196,6 @@ public class GeoServerApplication extends WebApplication implements ApplicationC
         IRequestMapper cryptoMapper = new CryptoMapper(getRootRequestMapper(), cryptProvider);
         setRootRequestMapper(cryptoMapper);
         
-        getRequestCycleListeners().add(new PageRequestHandlerTracker());
         getRequestCycleListeners().add(new CallbackRequestCycleListener(this));
     }
 
@@ -298,17 +298,30 @@ public class GeoServerApplication extends WebApplication implements ApplicationC
                 callback.onAfterTargetsDetached();
             }
         }
+        
+        @Override
+        public void onRequestHandlerScheduled(RequestCycle cycle, IRequestHandler handler) {
+            processHandler(handler);
+        }
+
+        private void processHandler(IRequestHandler handler) {
+            if(handler instanceof IPageRequestHandler) {
+                IPageRequestHandler pageHandler = (IPageRequestHandler) handler;
+                Class pageClass = pageHandler.getPageClass();
+                for (WicketCallback callback : callbacks) {
+                    callback.onRequestTargetSet(pageClass);
+                }
+            } else if(handler instanceof IRequestHandlerDelegate) {
+                IRequestHandlerDelegate delegator = (IRequestHandlerDelegate) handler;
+                processHandler(delegator.getDelegateHandler());
+            }
+            
+        }
 
         @Override
         public void onRequestHandlerResolved(org.apache.wicket.request.cycle.RequestCycle cycle,
                 IRequestHandler handler) {
-            IPageRequestHandler lastHandler = PageRequestHandlerTracker.getLastHandler(cycle);
-            if(lastHandler != null) {
-                Class pageClass = lastHandler.getPageClass();
-                for (WicketCallback callback : callbacks) {
-                    callback.onRequestTargetSet(pageClass);
-                }
-            }
+            processHandler(handler);
         }
 
         @Override

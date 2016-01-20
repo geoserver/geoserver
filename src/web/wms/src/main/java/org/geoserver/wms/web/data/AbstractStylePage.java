@@ -460,9 +460,9 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
                 attributes.getAjaxCallListeners().add(new AjaxCallListener() {
                     @Override
                     public CharSequence getPrecondition(Component component) {
-                        return "var val = event.view.document.gsEditors ? "
-                                + "event.view.document.gsEditors." + editor.getTextAreaMarkupId() + ".getValue() : "
-                                + "event.view.document.getElementById(\"" + editor.getTextAreaMarkupId() + "\").value; "
+                        return "var val = attrs.event.view.document.gsEditors ? "
+                                + "attrs.event.view.document.gsEditors." + editor.getTextAreaMarkupId() + ".getValue() : "
+                                + "attrs.event.view.document.getElementById(\"" + editor.getTextAreaMarkupId() + "\").value; "
                                 + "if(val != '' &&"
                                 + "!confirm('"
                                 + new ParamResourceModel("confirmOverwrite", AbstractStylePage.this)
@@ -510,9 +510,9 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
                 attributes.getAjaxCallListeners().add(new AjaxCallListener() {
                     @Override
                     public CharSequence getPrecondition(Component component) {
-                        return "var val = event.view.document.gsEditors ? "
-                                + "event.view.document.gsEditors." + editor.getTextAreaMarkupId() + ".getValue() : "
-                                + "event.view.document.getElementById(\"" + editor.getTextAreaMarkupId() + "\").value; "
+                        return "var val = attrs.event.view.document.gsEditors ? "
+                                + "attrs.event.view.document.gsEditors." + editor.getTextAreaMarkupId() + ".getValue() : "
+                                + "attrs.event.view.document.getElementById(\"" + editor.getTextAreaMarkupId() + "\").value; "
                                 + "if(val != '' &&"
                                 + "!confirm('"
                                 + new ParamResourceModel("confirmOverwrite", AbstractStylePage.this)

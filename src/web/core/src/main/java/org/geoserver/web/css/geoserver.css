@@ -957,6 +957,15 @@ display: inline;
 padding-right: 10px;
 }
 
+/* modal */
+
+div.wicket-modal h3.w_captionText {
+  color: #666;
+  font-size: 12px;
+  font-weight: bold;
+  height: 1.4em;
+}
+
 /* Controls underneath native bounding box eg. calculate from data, from CRS */
 .bounding-box-controls {
 margin-bottom: 1em;

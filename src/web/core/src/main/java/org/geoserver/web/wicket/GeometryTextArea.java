@@ -77,7 +77,7 @@ public class GeometryTextArea extends TextArea<Geometry> {
                     // fall through
                 }
 
-                ConversionException ce = new ConversionException((String) null);
+                ConversionException ce = new ConversionException(e.getMessage());
                 ce.setResourceKey(GeometryTextArea.class.getSimpleName() + ".parseError");
                 throw ce;
             }

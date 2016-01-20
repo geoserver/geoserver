@@ -38,7 +38,6 @@
         <descriptors>
           <descriptor>release/ext-authkey.xml</descriptor>
           <descriptor>release/ext-ftp.xml</descriptor>
-          <descriptor>release/ext-python.xml</descriptor>
           <descriptor>release/ext-groovy.xml</descriptor>
           <descriptor>release/ext-javascript.xml</descriptor>
           <descriptor>release/ext-spatialite.xml</descriptor>
@@ -296,12 +295,6 @@
       <id>mbtiles</id>
       <modules>
         <module>mbtiles</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>wfs-notification</id>
-      <modules>
-        <module>wfs-notification</module>
       </modules>
     </profile>
     <profile>

@@ -16,10 +16,10 @@ import org.apache.wicket.validation.ValidationError;
  * @author Andrea Aime - OpenGeo
  */
 @SuppressWarnings("serial")
-public class URIValidator implements IValidator {
+public class URIValidator implements IValidator<String> {
 
     @Override
-    public void validate(IValidatable validatable) {
+    public void validate(IValidatable<String> validatable) {
         String uri = (String) validatable.getValue();
         try {
             new URI(uri);

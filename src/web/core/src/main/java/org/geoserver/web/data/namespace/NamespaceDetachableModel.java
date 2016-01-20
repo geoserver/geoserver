@@ -13,7 +13,7 @@ import org.geoserver.web.GeoServerApplication;
  * Detachable model for a specific namespace 
  */
 @SuppressWarnings("serial")
-public class NamespaceDetachableModel extends LoadableDetachableModel {
+public class NamespaceDetachableModel extends LoadableDetachableModel<NamespaceInfo> {
 
     String id;
     
@@ -22,7 +22,7 @@ public class NamespaceDetachableModel extends LoadableDetachableModel {
     }
     
     @Override
-    protected Object load() {
+    protected NamespaceInfo load() {
         return GeoServerApplication.get().getCatalog().getNamespace( id );
     }
 

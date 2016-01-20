@@ -15,16 +15,17 @@ import org.geoserver.web.GeoServerApplication;
  * TODO: go back using LoadatableDetachableModel once we upgrade to Wicket 1.4, 
  * see http://issues.apache.org/jira/browse/WICKET-27 and http://issues.apache.org/jira/browse/WICKET-2364 
  */
-@SuppressWarnings("serial")
-public class WorkspaceDetachableModel implements IModel {
-    transient WorkspaceInfo workspace;
+public class WorkspaceDetachableModel implements IModel<WorkspaceInfo> {
+	private static final long serialVersionUID = 7805768164289311051L;
+	
+	transient WorkspaceInfo workspace;
     String id;
     
     public WorkspaceDetachableModel( WorkspaceInfo workspace ) {
         setObject(workspace);
     }
     
-    public Object getObject() {
+    public WorkspaceInfo getObject() {
         if(workspace == null) {
             workspace = id != null 
                 ? GeoServerApplication.get().getCatalog().getWorkspace( id ) : null;
@@ -32,7 +33,7 @@ public class WorkspaceDetachableModel implements IModel {
         return workspace;
     }
 
-    public void setObject(Object object) {
+    public void setObject(WorkspaceInfo object) {
         this.workspace = (WorkspaceInfo) object;
         this.id = workspace != null ? workspace.getId() : null;
     }

@@ -17,7 +17,6 @@ import org.apache.wicket.model.IModel;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.web.CatalogIconFactory;
 import org.geoserver.web.ComponentAuthorizer;
-import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.data.SelectionRemovalLink;
 import org.geoserver.web.wicket.*;
@@ -26,9 +25,9 @@ import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 /**
  * Lists available workspaces, links to them, allows for addition and removal
  */
-@SuppressWarnings("serial")
 public class WorkspacePage extends GeoServerSecuredPage {
-    WorkspaceProvider provider = new WorkspaceProvider();
+	private static final long serialVersionUID = 3084639304127909774L;
+	WorkspaceProvider provider = new WorkspaceProvider();
     GeoServerTablePanel<WorkspaceInfo> table;
     GeoServerDialog dialog;
     SelectionRemovalLink removal;
@@ -36,7 +35,9 @@ public class WorkspacePage extends GeoServerSecuredPage {
     public WorkspacePage() {
         // the middle table
         add(table = new GeoServerTablePanel<WorkspaceInfo>("table", provider, true) {
-            @Override
+			private static final long serialVersionUID = 8028081894753417294L;
+
+			@Override
             protected Component getComponentForProperty(String id, IModel<WorkspaceInfo> itemModel,
                     Property<WorkspaceInfo> property) {
                 if ( property == NAME ) {
@@ -68,7 +69,7 @@ public class WorkspacePage extends GeoServerSecuredPage {
         Fragment header = new Fragment(HEADER_PANEL, "header", this);
         
         // the add button
-        header.add(new BookmarkablePageLink("addNew", WorkspaceNewPage.class));
+        header.add(new BookmarkablePageLink<WorkspaceNewPage>("addNew", WorkspaceNewPage.class));
         
         // the removal button
         header.add(removal = new SelectionRemovalLink("removeSelected", table, dialog));
@@ -80,8 +81,8 @@ public class WorkspacePage extends GeoServerSecuredPage {
         return header;
     }
     
-    Component workspaceLink(String id, final IModel itemModel) {
-        IModel nameModel = NAME.getModel(itemModel);
+    Component workspaceLink(String id, final IModel<WorkspaceInfo> itemModel) {
+        IModel<?> nameModel = NAME.getModel(itemModel);
         return new SimpleBookmarkableLink(id, WorkspaceEditPage.class, nameModel,
                 "name", (String) nameModel.getObject());
     }

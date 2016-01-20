@@ -28,18 +28,21 @@ import org.geoserver.web.wicket.XMLNameValidator;
 /**
  * Allows creation of a new workspace
  */
-@SuppressWarnings("serial")
 public class WorkspaceNewPage extends GeoServerSecuredPage {
 
-    Form form;
-    TextField nsUriTextField;
+	private static final long serialVersionUID = -4355978268880701910L;
+	
+	Form<WorkspaceInfo> form;
+    TextField<String> nsUriTextField;
     boolean defaultWs;
     
     public WorkspaceNewPage() {
         WorkspaceInfo ws = getCatalog().getFactory().createWorkspace();
         
-        form = new Form( "form", new CompoundPropertyModel( ws ) ) {
-            @Override
+        form = new Form<WorkspaceInfo>( "form", new CompoundPropertyModel<WorkspaceInfo>(ws) ) {
+			private static final long serialVersionUID = 6088042051374665053L;
+
+			@Override
             protected void onSubmit() {
                 Catalog catalog = getCatalog();
                 
@@ -65,7 +68,9 @@ public class WorkspaceNewPage extends GeoServerSecuredPage {
         nameTextField.add(new XMLNameValidator());
         nameTextField.add(new StringValidator() {
 
-            @Override
+			private static final long serialVersionUID = -5475431734680134780L;
+
+			@Override
             public void validate(IValidatable<String> validatable) {
                 if(CatalogImpl.DEFAULT.equals(validatable.getValue())) {
                     validatable.error(new ValidationError("defaultWsError").addKey("defaultWsError"));
@@ -74,21 +79,23 @@ public class WorkspaceNewPage extends GeoServerSecuredPage {
         });
         form.add( nameTextField.setRequired(true) );
         
-        nsUriTextField = new TextField( "uri", new Model() );
+        nsUriTextField = new TextField<String>( "uri", new Model<String>() );
         // maybe a bit too restrictive, but better than not validation at all
         nsUriTextField.setRequired(true);
         nsUriTextField.add(new URIValidator());
         form.add( nsUriTextField );
         
-        CheckBox defaultChk = new CheckBox("default", new PropertyModel(this, "defaultWs"));
+        CheckBox defaultChk = new CheckBox("default", new PropertyModel<Boolean>(this, "defaultWs"));
         form.add(defaultChk);
         
         SubmitLink submitLink = new SubmitLink( "submit", form );
         form.add( submitLink );
         form.setDefaultButton(submitLink);
         
-        AjaxLink cancelLink = new AjaxLink( "cancel" ) {
-            @Override
+        AjaxLink<Void> cancelLink = new AjaxLink<Void>( "cancel" ) {
+			private static final long serialVersionUID = -1731475076965108576L;
+
+			@Override
             public void onClick(AjaxRequestTarget target) {
                 doReturn(WorkspacePage.class);
             }

@@ -18,15 +18,18 @@ import org.geoserver.web.wicket.GeoServerDataProvider;
 /**
  * {@link GeoServerDataProvider} for the list of workspaces available in the {@link Catalog}
  */
-@SuppressWarnings("serial")
 public class WorkspaceProvider extends GeoServerDataProvider<WorkspaceInfo> {
 
-    public static Property<WorkspaceInfo> NAME = 
+	private static final long serialVersionUID = -2464073552094977958L;
+
+	public static Property<WorkspaceInfo> NAME = 
         new BeanProperty<WorkspaceInfo>( "name", "name" );
     
     public static Property<WorkspaceInfo> DEFAULT = new AbstractProperty<WorkspaceInfo>("default") {
 
-        @Override
+		private static final long serialVersionUID = 7732697329315316826L;
+
+		@Override
         public Object getPropertyValue(WorkspaceInfo item) {
             Catalog catalog = GeoServerApplication.get().getCatalog();
             WorkspaceInfo defaultWorkspace = catalog.getDefaultWorkspace();
@@ -34,7 +37,7 @@ public class WorkspaceProvider extends GeoServerDataProvider<WorkspaceInfo> {
         }
     };
 
-    static List PROPERTIES = Arrays.asList(NAME, DEFAULT);
+    static List<Property<WorkspaceInfo>> PROPERTIES = Arrays.asList(NAME, DEFAULT);
     
     public WorkspaceProvider() {
         setSort(NAME.getName(), SortOrder.ASCENDING);

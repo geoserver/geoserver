@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -31,7 +31,7 @@ public class ShapefileDirectoryStorePageTest extends GeoServerWicketTestSupport 
     /**
      * print page structure?
      */
-    private static final boolean debugMode = false;
+    private static final boolean debugMode = true;
 
     private AbstractDataAccessPage startPage() {
         final String dataStoreFactoryDisplayName = new ShapefileDirectoryFactory().getDisplayName();
@@ -53,18 +53,20 @@ public class ShapefileDirectoryStorePageTest extends GeoServerWicketTestSupport 
 
         WorkspaceInfo defaultWs = getCatalog().getDefaultWorkspace();
 
-        tester.assertModelValue("dataStoreForm:workspacePanel:border:paramValue", defaultWs);
+        tester.assertModelValue("dataStoreForm:workspacePanel:border:border_body:paramValue", defaultWs);
 
         // configure the store
         FormTester ft = tester.newFormTester("dataStoreForm");
-        ft.setValue("dataStoreNamePanel:border:paramValue", "testStore");
-        ft.setValue("parametersPanel:url:border:paramValue", "file://" + new File("./target").getCanonicalPath());
-        ft.select("workspacePanel:border:paramValue", 2);
-        ft.submit();
-        tester.executeAjaxEvent("dataStoreForm:workspacePanel:border:paramValue", "onchange");
+        ft.setValue("dataStoreNamePanel:border:border_body:paramValue", "testStore");
+        ft.setValue("parametersPanel:url:border:border_body:paramValue", "file://" + new File("./target").getCanonicalPath());
+        ft.select("workspacePanel:border:border_body:paramValue", 2);
+        tester.executeAjaxEvent("dataStoreForm:workspacePanel:border:border_body:paramValue", "change");
+
+        ft.setValue("dataStoreNamePanel:border:border_body:paramValue", "testStore");
+        ft.setValue("parametersPanel:url:border:border_body:paramValue", "file://" + new File("./target").getCanonicalPath());
+        ft.select("workspacePanel:border:border_body:paramValue", 2);
         tester.executeAjaxEvent("dataStoreForm:save", "click");
-        
-        
+
         // get the workspace we have just configured in the GUI
         WorkspacesModel wm = new WorkspacesModel();
         List<WorkspaceInfo> wl = (List<WorkspaceInfo>) wm.getObject();

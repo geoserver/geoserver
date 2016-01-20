@@ -23,7 +23,6 @@ import org.geoserver.web.FormTestPage;
 import org.junit.After;
 import org.junit.Assume;
 import org.junit.Test;
-import org.springframework.ldap.test.LdapTestUtils;
 
 /**
  * 
@@ -56,7 +55,7 @@ public class LDAPRoleServicePanelTest extends AbstractSecurityWicketTestSupport 
     
     @After
     public void tearDown() throws Exception {
-        LdapTestUtils.shutdownEmbeddedServer();
+        LDAPTestUtils.shutdownEmbeddedServer();
     }
     
     
@@ -97,11 +96,11 @@ public class LDAPRoleServicePanelTest extends AbstractSecurityWicketTestSupport 
             private static final long serialVersionUID = -4090244876841730821L;
 
             @Override
-            protected void onBeforeRender() {
+            protected void onInitialize() {
                 feedbackPanel = new FeedbackPanel("feedback");
                 feedbackPanel.setOutputMarkupId(true);
                 add(feedbackPanel);
-                super.onBeforeRender();
+                super.onInitialize();
             }
             
         });

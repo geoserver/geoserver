@@ -215,13 +215,15 @@ public abstract class AbstractSecurityNamedServicePanelTest extends AbstractSecu
         ListView list = (ListView) tester.getLastRenderedPage().get("servicesContainer:services");
         int toClick = -1;
         for (int i = 0; i < list.getList().size(); i++) {
-            if (clazz.isInstance(list.getList().get(0))) {
+            if (clazz.isInstance(list.getList().get(i))) {
                 toClick = i;
                 break;
             }
          }
         AjaxLink link = (AjaxLink) ((MarkupContainer)list.get(toClick)).get("link");
-        tester.executeAjaxEvent(link, "click");
+        if(link.isEnabled()) {
+            tester.executeAjaxEvent(link, "click");
+        }
 //        formTester.select("config.className", index);     
 //        tester.executeAjaxEvent(formTester.getForm().getPageRelativePath()+":config.className", "onchange");
     }

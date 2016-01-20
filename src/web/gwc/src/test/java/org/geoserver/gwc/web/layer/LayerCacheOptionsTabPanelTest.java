@@ -5,10 +5,12 @@
  */
 package org.geoserver.gwc.web.layer;
 
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
@@ -17,6 +19,7 @@ import java.util.Arrays;
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
+import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.util.tester.FormTester;
@@ -32,6 +35,7 @@ import org.geoserver.gwc.layer.TileLayerInfoUtil;
 import org.geoserver.web.ComponentBuilder;
 import org.geoserver.web.FormTestPage;
 import org.geoserver.web.GeoServerWicketTestSupport;
+import org.geowebcache.filter.parameters.StringParameterFilter;
 import org.geowebcache.layer.TileLayer;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -284,5 +288,82 @@ public class LayerCacheOptionsTabPanelTest extends GeoServerWicketTestSupport {
         form.submit();
         // Check no exception has been thrown
         tester.assertNoErrorMessage();
+    }
+    
+    @Test
+    public void testRemoveFirstParamFilter() {
+        String layerName = tileLayerModel.getObject().getName();
+        {
+            GeoServerTileLayer tl = (GeoServerTileLayer) GWC.get().getTileLayerByName(layerName);
+            StringParameterFilter pf = new StringParameterFilter();
+            pf.setKey("filter2");
+            pf.setDefaultValue("filter2Default");
+            pf.setValues(Arrays.asList("option1", "option2"));
+            tl.getInfo().addParameterFilter(pf);
+            GWC.get().save(tl);
+        }
+        // Create a form page for the LayerCacheOptionsTabPanel component
+        FormTestPage page = new FormTestPage(new ComponentBuilder() {
+            private static final long serialVersionUID = -5907648151984337786L;
+
+            public Component buildComponent(final String id) {
+                return new LayerCacheOptionsTabPanel(id, layerModel, tileLayerModel);
+            }
+        });
+        // Start the page
+        tester.startPage(page);
+        
+        // Should have two filters
+        tester.assertLabel("form:panel:tileLayerEditor:container:configs:parameterFilters:container:table:filtersForm:parameterFilters:0:key", "STYLES");
+        tester.assertLabel("form:panel:tileLayerEditor:container:configs:parameterFilters:container:table:filtersForm:parameterFilters:1:key", "filter2");
+        
+        ListView<?> lv = (ListView<?>) tester.getComponentFromLastRenderedPage("form:panel:tileLayerEditor:container:configs:parameterFilters:container:table:filtersForm:parameterFilters");
+        assertThat(lv.size(), is(2));
+        
+        // Remove the first
+        tester.clickLink("form:panel:tileLayerEditor:container:configs:parameterFilters:container:table:filtersForm:parameterFilters:0:removeLink");
+        
+        // only entry should now be what used to be the second.
+        lv = (ListView<?>) tester.getComponentFromLastRenderedPage("form:panel:tileLayerEditor:container:configs:parameterFilters:container:table:filtersForm:parameterFilters");
+        assertThat(lv.size(), is(1));
+        tester.assertLabel("form:panel:tileLayerEditor:container:configs:parameterFilters:container:table:filtersForm:parameterFilters:0:key", "filter2");
+    }
+    
+    @Test
+    public void testRemoveLastParamFilter() {
+        String layerName = tileLayerModel.getObject().getName();
+        {
+            GeoServerTileLayer tl = (GeoServerTileLayer) GWC.get().getTileLayerByName(layerName);
+            StringParameterFilter pf = new StringParameterFilter();
+            pf.setKey("filter2");
+            pf.setDefaultValue("filter2Default");
+            pf.setValues(Arrays.asList("option1", "option2"));
+            tl.getInfo().addParameterFilter(pf);
+            GWC.get().save(tl);
+        }
+        // Create a form page for the LayerCacheOptionsTabPanel component
+        FormTestPage page = new FormTestPage(new ComponentBuilder() {
+            private static final long serialVersionUID = -5907648151984337786L;
+
+            public Component buildComponent(final String id) {
+                return new LayerCacheOptionsTabPanel(id, layerModel, tileLayerModel);
+            }
+        });
+        // Start the page
+        tester.startPage(page);
+        
+        // Should have two filters
+        tester.assertLabel("form:panel:tileLayerEditor:container:configs:parameterFilters:container:table:filtersForm:parameterFilters:0:key", "STYLES");
+        tester.assertLabel("form:panel:tileLayerEditor:container:configs:parameterFilters:container:table:filtersForm:parameterFilters:1:key", "filter2");
+        ListView<?> lv = (ListView<?>) tester.getComponentFromLastRenderedPage("form:panel:tileLayerEditor:container:configs:parameterFilters:container:table:filtersForm:parameterFilters");
+        assertThat(lv.size(), is(2));
+        
+        // Remove the second
+        tester.clickLink("form:panel:tileLayerEditor:container:configs:parameterFilters:container:table:filtersForm:parameterFilters:1:removeLink");
+        
+        // only entry should now be what used to be the first.
+        tester.assertLabel("form:panel:tileLayerEditor:container:configs:parameterFilters:container:table:filtersForm:parameterFilters:0:key", "STYLES");
+        lv = (ListView<?>) tester.getComponentFromLastRenderedPage("form:panel:tileLayerEditor:container:configs:parameterFilters:container:table:filtersForm:parameterFilters");
+        assertThat(lv.size(), is(1));
     }
 }

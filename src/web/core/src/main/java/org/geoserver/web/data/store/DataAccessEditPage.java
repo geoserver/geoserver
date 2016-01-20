@@ -50,7 +50,9 @@ public class DataAccessEditPage extends AbstractDataAccessPage implements Serial
         DataStoreInfo dsi = getCatalog().getDataStoreByName(wsName, storeName);
         
         if(dsi == null) {
-            error(new ParamResourceModel("DataAccessEditPage.notFound", this, wsName, storeName).getString());
+            getSession().error(
+                new ParamResourceModel("DataAccessEditPage.notFound", this, wsName, storeName).getString()
+            );
             doReturn(StorePage.class);
             return;
         }

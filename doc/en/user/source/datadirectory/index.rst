@@ -1,26 +1,20 @@
-.. _data_directory:
+.. _datadir:
 
 GeoServer data directory
 ========================
 
-The GeoServer **data directory** is the location in the file system where GeoServer stores its configuration information. 
-The configuration defines things such as what data is served by GeoServer, where it is stored, and how services such as WFS and WMS interact with and serve the data. 
-The data directory also contains a number of support files used by GeoServer for various purposes. 
+The GeoServer **data directory** is the location in the file system where GeoServer stores its configuration information.
 
-For production use, it is a good idea to define an external data directory for GeoServer instances, to make it easier to upgrade.
-To learn how to create a data directory for a GeoServer installation see the :ref:`data_dir_creating` section.  
-:ref:`data_dir_setting` describes how to configure GeoServer to use an existing data directory.  
+The configuration defines what data is served by GeoServer, where it is stored, and how services interact with and serve the data. The data directory also contains a number of support files used by GeoServer for various purposes.
 
-Since GeoServer provides both interactive and programmatic interfaces 
-to manage confiuration information, 
-in general users do not need to know about the internal structure of the data directory.
-As background, an overview is provided in the :ref:`data_dir_structure` section. 
+For production use, it is recommended to define an *external* data directory (outside the application) to make it easier to upgrade. The :ref:`datadir_setting` section describes how to configure GeoServer to use an existing data directory.
+
+.. note:: Since GeoServer provides both an interactive interface (via the :ref:`web admin interface <web_admin>`) and programmatic interface (through the :ref:`REST API <rest>`) to manage configuration, most users do not need to know about the :ref:`internal structure of the data directory <datadir_structure>`, but an overview is provided below.
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
-   data-dir-creating/
-   data-dir-setting/
-   data-dir-structure/
-   migrating/
-   
+   location
+   setting
+   structure
+   migrating

@@ -58,13 +58,13 @@ public class CoverageStoreEditPageTest extends GeoServerWicketTestSupport {
         tester.assertNoErrorMessage();
 
         tester.assertLabel("rasterStoreForm:storeType", "GeoTIFF");
-        tester.assertModelValue("rasterStoreForm:namePanel:border:paramValue", "BlueMarble");
+        tester.assertModelValue("rasterStoreForm:namePanel:border:border_body:paramValue", "BlueMarble");
     }
 
     @Test
     public void testChangeName() {
         FormTester form = tester.newFormTester("rasterStoreForm");
-        form.setValue("namePanel:border:paramValue", "BlueMarbleModified");
+        form.setValue("namePanel:border:border_body:paramValue", "BlueMarbleModified");
         form.submit();
         tester.clickLink("rasterStoreForm:save");
 
@@ -76,7 +76,7 @@ public class CoverageStoreEditPageTest extends GeoServerWicketTestSupport {
     @Test
     public void testNameRequired() {
         FormTester form = tester.newFormTester("rasterStoreForm");
-        form.setValue("namePanel:border:paramValue", null);
+        form.setValue("namePanel:border:border_body:paramValue", null);
         form.submit();
         tester.clickLink("rasterStoreForm:save");
 
@@ -139,7 +139,7 @@ public class CoverageStoreEditPageTest extends GeoServerWicketTestSupport {
         tester.assertNoErrorMessage();
         
         FormTester form = tester.newFormTester("rasterStoreForm");
-        form.setValue("namePanel:border:paramValue", "foo");
+        form.setValue("namePanel:border:border_body:paramValue", "foo");
         form.submit();
         tester.clickLink("rasterStoreForm:save");
         tester.assertNoErrorMessage();

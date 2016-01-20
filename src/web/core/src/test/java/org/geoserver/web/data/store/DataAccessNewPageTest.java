@@ -100,7 +100,7 @@ public class DataAccessNewPageTest extends GeoServerWicketTestSupport {
     public void testDefaultNamespace() {
 
         // final String namespacePath =
-        // "dataStoreForm:parameters:1:parameterPanel:border:paramValue";
+        // "dataStoreForm:parameters:1:parameterPanel:border:border_body:paramValue";
         final String namespacePath = "dataStoreForm:parametersPanel:parameters:1:parameterPanel:paramValue";
 
         startPage();

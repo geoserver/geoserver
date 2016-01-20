@@ -59,7 +59,7 @@ public class DataAccessEditPageTest extends GeoServerWicketTestSupport {
     //        
     // FormTester form = tester.newFormTester("dataStoreForm");
     // prefillForm(form);
-    // form.setValue("dataStoreNamePanel:border:paramValue", "citeModified");
+    // form.setValue("dataStoreNamePanel:border:border_body:paramValue", "citeModified");
     // form.submit();
     // tester.assertNoErrorMessage();
     // tester.clickLink("dataStoreForm:save");
@@ -100,9 +100,9 @@ public class DataAccessEditPageTest extends GeoServerWicketTestSupport {
     public void _testWorkspaceSyncsUpWithNamespace() {
         final FormTester formTester = tester.newFormTester("dataStoreForm");
         print(tester.getLastRenderedPage(), true, true);
-        final String wsDropdownPath = "dataStoreForm:workspacePanel:border:paramValue";
+        final String wsDropdownPath = "dataStoreForm:workspacePanel:border:border_body:paramValue";
         final String namespaceParamPath = "dataStoreForm:parametersPanel:parameters:1:parameterPanel:paramValue";
-        final String directoryParamPath = "dataStoreForm:parametersPanel:parameters:0:parameterPanel:border:paramValue";
+        final String directoryParamPath = "dataStoreForm:parametersPanel:parameters:0:parameterPanel:border:border_body:paramValue";
 
         final Catalog catalog = getCatalog();
         tester.assertModelValue(wsDropdownPath, catalog.getWorkspaceByName(MockData.CITE_PREFIX));
@@ -118,12 +118,12 @@ public class DataAccessEditPageTest extends GeoServerWicketTestSupport {
         NamespaceInfo expectedNamespace = catalog.getNamespaceByPrefix(MockData.CDF_PREFIX);
 
         // select the fifth item in the drop down, which is the cdf workspace
-        formTester.select("workspacePanel:border:paramValue", 4);
+        formTester.select("workspacePanel:border:border_body:paramValue", 4);
         Component wsDropDown = tester.getComponentFromLastRenderedPage(wsDropdownPath);
         tester.executeAjaxEvent(wsDropDown, "onchange");
 
         // final String namespaceParamPath =
-        // "dataStoreForm:parameters:1:parameterPanel:border:paramValue";
+        // "dataStoreForm:parameters:1:parameterPanel:border:border_body:paramValue";
 
         // did the workspace change?
         tester.assertModelValue(wsDropdownPath, expectedWorkspace);

@@ -191,7 +191,7 @@ public class StatusPage extends ServerAdminPage {
         } else {
             values.put(KEY_JAI_MEM_USAGE, "-");
         }
-        values.put(KEY_JAI_MEM_THRESHOLD, Float.toString(100.0f * jaiCache.getMemoryThreshold()));
+        values.put(KEY_JAI_MEM_THRESHOLD, Integer.toString( (int)( 100.0f * jaiCache.getMemoryThreshold()))+"%");
         values.put(KEY_JAI_TILE_THREADS, Integer.toString(jai.getTileScheduler().getParallelism()));
         values.put(KEY_JAI_TILE_THREAD_PRIORITY, Integer.toString(jai.getTileScheduler()
                 .getPriority()));

@@ -36,30 +36,30 @@ public class JAIPage extends ServerAdminPage {
     private static final long serialVersionUID = -1184717232184497578L;
 
     public JAIPage(){
-        final IModel geoServerModel = getGeoServerModel();
+        final IModel<GeoServer> geoServerModel = getGeoServerModel();
         
         // this invokation will trigger a clone of the JAIInfo
         // which will allow the modification proxy seeing changes on the
         // Jai page with respect to the original JAIInfo object
-        final IModel jaiModel = getJAIModel();
+        final IModel<JAIInfo> jaiModel = getJAIModel();
 
         // form and submit
-        Form form = new Form("form", new CompoundPropertyModel(jaiModel));
+        Form<JAIInfo> form = new Form<JAIInfo>("form", new CompoundPropertyModel<JAIInfo>(jaiModel));
         add( form );
 
         // All the fields
         // ... memory capacity and threshold are percentages
-        RangeValidator<Integer> percentageValidator = RangeValidator.range(0, 1);
-        TextField memoryCapacity = new TextField("memoryCapacity");
+        RangeValidator<Double> percentageValidator = RangeValidator.range(0.0, 1.0);
+        TextField<Double> memoryCapacity = new TextField<Double>("memoryCapacity");
         memoryCapacity.add(percentageValidator);
         form.add(memoryCapacity);
-        TextField memoryThreshold = new TextField("memoryThreshold");
+        TextField<Double> memoryThreshold = new TextField<Double>("memoryThreshold");
         memoryThreshold.add(percentageValidator);
         form.add(memoryThreshold);
-        TextField tileThreads = new TextField("tileThreads");
+        TextField<Integer> tileThreads = new TextField<Integer>("tileThreads");
         tileThreads.add(RangeValidator.minimum(0));
         form.add(tileThreads);
-        TextField tilePriority = new TextField("tilePriority");
+        TextField<Integer> tilePriority = new TextField<Integer>("tilePriority");
         tilePriority.add(RangeValidator.minimum(0));
         form.add(tilePriority);
         form.add(new CheckBox("recycling"));
@@ -86,6 +86,7 @@ public class JAIPage extends ServerAdminPage {
         form.add(jaiExtPanel);
 
         Button submit = new Button("submit", new StringResourceModel("submit", this, null)) {
+            private static final long serialVersionUID = -2842881187264147131L;
             @Override
             public void onSubmit() {
                 GeoServer gs = (GeoServer) geoServerModel.getObject();
@@ -98,6 +99,7 @@ public class JAIPage extends ServerAdminPage {
         form.add(submit);
         
         Button cancel = new Button("cancel") {
+            private static final long serialVersionUID = 7917847596581898225L;
             @Override
             public void onSubmit() {
                 doReturn();
@@ -106,34 +108,29 @@ public class JAIPage extends ServerAdminPage {
         form.add(cancel);
     }
 
-    private void addPngEncoderEditor(Form form) {
+    private void addPngEncoderEditor(Form<JAIInfo> form) {
         // get the list of available encoders
-        List<PngEncoderType> encoders = new ArrayList(Arrays.asList(JAIInfo.PngEncoderType.values()));
+        List<PngEncoderType> encoders = new ArrayList<PngEncoderType>(Arrays.asList(JAIInfo.PngEncoderType.values()));
         if(!PackageUtil.isCodecLibAvailable()) {
             encoders.remove(PngEncoderType.NATIVE);
         }
         // create the editor, eventually set a default value
         DropDownChoice<JAIInfo.PngEncoderType> editor = new DropDownChoice<JAIInfo.PngEncoderType>(
-                "pngEncoderType", encoders, new ChoiceRenderer<JAIInfo.PngEncoderType>() {
-                    private static final long serialVersionUID = 1L;
+            "pngEncoderType", encoders, new ChoiceRenderer<JAIInfo.PngEncoderType>() {
+                private static final long serialVersionUID = 1L;
 
-                    @Override
-                    public Object getDisplayValue(PngEncoderType type) {
-                        return new ParamResourceModel("pngEncoder." + type.name(), JAIPage.this)
-                                .getString();
-                    }
+                @Override
+                public Object getDisplayValue(PngEncoderType type) {
+                    return new ParamResourceModel("pngEncoder." + type.name(), JAIPage.this)
+                            .getString();
+                }
 
-                    @Override
-                    public String getIdValue(PngEncoderType type, int index) {
-                        return type.name();
-                    }
-
-                    @Override
-                    public PngEncoderType getObject(String id,
-                            IModel<? extends List<? extends PngEncoderType>> choices) {
-                        return PngEncoderType.valueOf(id);
-                    }
-                });
+                @Override
+                public String getIdValue(PngEncoderType type, int index) {
+                    return type.name();
+                }
+            }
+        );
         form.add(editor);
         if(!encoders.contains(editor.getModelObject())) {
             editor.setModelObject(PngEncoderType.PNGJ);

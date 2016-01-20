@@ -18,8 +18,6 @@ import org.apache.wicket.Page;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
-import org.apache.wicket.util.tester.FormTester;
-import org.geoserver.web.ComponentBuilder;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.junit.Before;
 import org.junit.Test;
@@ -110,28 +108,13 @@ public abstract class AbstractListPageTest<T> extends AbstractSecurityWicketTest
     
     
     protected void doRemove(String pathForLink) throws Exception {
-        
-        
-        GeoserverTablePanelTestPage testPage = 
-         new GeoserverTablePanelTestPage(new ComponentBuilder() {            
-            private static final long serialVersionUID = 1L;
-
-            public Component buildComponent(String id) {
-                try {
-                    return listPage(null);
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        });
-        
-        tester.startPage(testPage);
+        Page testPage = tester.startPage(listPage(null));
                 
-        String selectAllPath = testPage.getWicketPath()+":table:listContainer:selectAllContainer:selectAll";        
+        String selectAllPath = "table:listContainer:selectAllContainer:selectAll";        
         tester.assertComponent(selectAllPath, CheckBox.class);
+        CheckBox selectAllComponent = (CheckBox) tester.getComponentFromLastRenderedPage(selectAllPath);
         
-        FormTester ft = tester.newFormTester(GeoserverTablePanelTestPage.FORM);
-        ft.setValue(testPage.getComponentId()+":table:listContainer:selectAllContainer:selectAll", "true");
+        setFormComponentValue(selectAllComponent, "true");
         tester.executeAjaxEvent(selectAllPath, "click");
         
         ModalWindow w  = (ModalWindow) tester.getLastRenderedPage().get("dialog:dialog");        

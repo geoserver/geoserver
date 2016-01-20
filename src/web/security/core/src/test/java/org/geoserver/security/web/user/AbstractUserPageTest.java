@@ -75,14 +75,19 @@ public abstract class AbstractUserPageTest extends AbstractSecurityWicketTestSup
     
     protected void assignRole(String roleName) throws Exception {
         form.setValue("roles:palette:recorder", gaService.getRoleByName(roleName).getAuthority());
-        tester.executeAjaxEvent("form:roles:palette:recorder", "onchange");
+        form.submit();
+        tester.executeAjaxEvent("form:roles:palette:recorder", "change");
         newFormTester();
+        form.setValue("roles:palette:recorder", gaService.getRoleByName(roleName).getAuthority());
     }
     
     protected void assignGroup(String groupName) throws Exception {
-        form.setValue("groups:palette:recorder", ugService.getGroupByGroupname(groupName).getGroupname());
-        tester.executeAjaxEvent("form:groups:palette:recorder", "onchange");
+        String theName = ugService.getGroupByGroupname(groupName).getGroupname();
+        form.setValue("groups:palette:recorder", theName);
+        form.submit();
+        tester.executeAjaxEvent("form:groups:palette:recorder", "change");
         newFormTester();
+        form.setValue("groups:palette:recorder", theName);
     }
 
     

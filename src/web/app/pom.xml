@@ -263,11 +263,13 @@
         </executions>
       </plugin-->
       <plugin>
-        <groupId>org.mortbay.jetty</groupId>
-        <artifactId>maven-jetty-plugin</artifactId>
-        <version>6.1.22</version>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-maven-plugin</artifactId>
+        <version>${jetty.version}</version>
         <configuration>
-          <contextPath>geoserver</contextPath>
+          <webApp>
+            <contextPath>/geoserver</contextPath>
+          </webApp>
           <connectors>
             <connector implementation="org.mortbay.jetty.nio.SelectChannelConnector">
               <port>${jetty.port}</port>
@@ -276,13 +278,14 @@
           </connectors>
           <stopPort>${jetty.stopPort}</stopPort>
           <stopKey>GEOSERVER_JETTY_STOPKEY</stopKey>
-          <contextPath>geoserver</contextPath>
           <daemon>false</daemon>
           <!-- uncomment following to set a GEOSERVER_DATA_DIR -->
           <!--
             <systemProperties> <systemProperty> <name>GEOSERVER_DATA_DIR</name>
             <value>/home/ak/geoserver_data</value> </systemProperty> </systemProperties>
           -->
+          <!-- Make sure it's not looking for annotations everywhere -->
+          <contextXml>${project.build.testOutputDirectory}/jetty-context.xml</contextXml>
         </configuration>
       </plugin>
 	  <plugin>

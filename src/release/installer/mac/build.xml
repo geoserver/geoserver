@@ -103,6 +103,7 @@
 
       <runtime dir="${env.JAVA_HOME}"/>
 
+      <option value="-Djava.ext.dirs=none"/>
       <option value="-DGEOSERVER_DATA_DIR=data_dir"/>
       <option value="-DSTOP.PORT=8079"/>
       <option value="-DSTOP.KEY=geoserver"/>

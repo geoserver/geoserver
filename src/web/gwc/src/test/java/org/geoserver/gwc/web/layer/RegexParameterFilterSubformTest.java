@@ -68,7 +68,7 @@ public class RegexParameterFilterSubformTest extends GeoServerWicketTestSupport 
         assertThat(defaultValue.getValue(), equalTo(""));
         assertThat(regex.getValue(), equalTo(""));
         assertThat(kase.getValue(), equalTo("NONE"));
-        assertThat(locale.getValue(), equalTo("-1"));
+        assertThat(locale.getValue(), equalTo(""));
     }
     
     @SuppressWarnings("unchecked")

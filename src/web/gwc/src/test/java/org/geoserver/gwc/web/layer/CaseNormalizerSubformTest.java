@@ -67,7 +67,7 @@ public class CaseNormalizerSubformTest extends GeoServerWicketTestSupport {
                 tester.getComponentFromLastRenderedPage("form:panel:locale");
         
         assertThat(kase.getValue(), equalTo("NONE"));
-        assertThat(locale.getValue(), equalTo("-1"));
+        assertThat(locale.getValue(), equalTo(""));
     }
     
     @SuppressWarnings("unchecked")

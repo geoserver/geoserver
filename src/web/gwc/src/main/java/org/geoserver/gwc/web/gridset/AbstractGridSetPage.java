@@ -44,7 +44,9 @@ import org.opengis.referencing.cs.CoordinateSystemAxis;
 
 abstract class AbstractGridSetPage extends GeoServerSecuredPage {
 
-    protected static final Logger LOGGER = Logging.getLogger(AbstractGridSetPage.class);
+	private static final long serialVersionUID = 2977633539319630433L;
+
+	protected static final Logger LOGGER = Logging.getLogger(AbstractGridSetPage.class);
 
     /**
      * Name of the page parameter that determines which gridset to edit
@@ -163,10 +165,10 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
     }
 
     void addZoomLevel(AjaxRequestTarget target) {
-        crs.processInput();
-        bounds.processInput();
-        tileWidth.getFormComponent().processInput();
-        tileHeight.getFormComponent().processInput();
+        //crs.processInput();
+        //bounds.processInput();
+        //tileWidth.getFormComponent().processInput();
+        //tileHeight.getFormComponent().processInput();
 
         ReferencedEnvelope bbox = (ReferencedEnvelope) bounds.getModelObject();
         if (null == bbox) {
@@ -193,7 +195,7 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
             private static final long serialVersionUID = 1L;
 
             @Override
-            protected void onClick(AjaxRequestTarget target, Form form) {
+            protected void onClick(AjaxRequestTarget target, Form<?> form) {
                 computeBounds();
                 target.add(bounds);
                 target.add(tileMatrixSetEditor);
@@ -204,8 +206,8 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
 
     void computeBounds() {
         // perform manual processing of the required fields
-        crs.processInput();
-        bounds.processInput();
+        //crs.processInput();
+        //bounds.processInput();
         CoordinateReferenceSystem coordSys;
         coordSys = (CoordinateReferenceSystem) crs.getModelObject();
         if (coordSys == null) {
@@ -233,7 +235,7 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
                     private static final long serialVersionUID = 1L;
 
                     public UpdateTableBehavior() {
-                        super(form, "onblur");
+                        super(form, "blur");
                     }
 
                     @Override
@@ -241,7 +243,6 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
                         target.add(AbstractGridSetPage.this.tileMatrixSetEditor);
                     }
 
-                    @SuppressWarnings("unchecked")
                     @Override
                     protected void onError(AjaxRequestTarget target) {
                         UpdatingEnvelopePanel.this.setModelObject(null);
@@ -305,7 +306,6 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
 
         private IModel<GridSetInfo> infoModel;
 
-        @SuppressWarnings("serial")
         public GridSetCRSPanel(String id, IModel<GridSetInfo> model) {
             super(id, new PropertyModel<CoordinateReferenceSystem>(model, "crs"));
             this.infoModel = model;
@@ -318,33 +318,20 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
 
             add(units);
             add(metersPerUnit);
-
-            super.srsTextField.add(new AjaxFormComponentUpdatingBehavior("onblur") {
-                @Override
-                protected void onUpdate(AjaxRequestTarget target) {
-                    convertInput();
-
-                    CoordinateReferenceSystem crs = (CoordinateReferenceSystem) getConvertedInput();
-                    if (crs != null) {
-                        setModelObject(crs);
-                        wktLabel.setDefaultModelObject(crs.getName().toString());
-                        wktLink.setEnabled(true);
-                    } else {
-                        wktLabel.setDefaultModelObject(null);
-                        wktLink.setEnabled(false);
-                    }
-                    target.add(wktLink);
-                    target.add(units);
-                    target.add(metersPerUnit);
-                }
-            });
+        }
+        
+        protected void onSRSUpdated(String srs, AjaxRequestTarget target) {
+            target.add(units);
+            target.add(metersPerUnit);
         }
 
         @Override
         protected SRSListPanel srsListPanel() {
             SRSListPanel srsList = new SRSListPanel(popupWindow.getContentId()) {
 
-                @Override
+            	private static final long serialVersionUID = 2869219395676091081L;
+
+				@Override
                 protected void onCodeClicked(AjaxRequestTarget target, String epsgCode) {
                     popupWindow.close(target);
 

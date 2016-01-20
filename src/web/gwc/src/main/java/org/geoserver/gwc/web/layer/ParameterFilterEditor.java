@@ -194,7 +194,8 @@ class ParameterFilterEditor extends FormComponentPanel<Set<ParameterFilter>> {
 
                     @Override
                     protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                        getList().remove((ParameterFilter) getDefaultModelObject());
+                    	removeFilter((ParameterFilter) getDefaultModelObject());
+                    	
                         target.add(container);
                     }
                 };
@@ -210,11 +211,12 @@ class ParameterFilterEditor extends FormComponentPanel<Set<ParameterFilter>> {
         // this is necessary to avoid loosing item contents on edit/validation checks
         filters.setReuseItems(true);
         
-        @SuppressWarnings({ "rawtypes", "unchecked" })
+     /*   @SuppressWarnings({ "rawtypes", "unchecked" })
 		Form<?> filtersForm = new Form("filtersForm", filters.getDefaultModel());
         filtersForm.add(filters);
-        
-        table.add(filtersForm);
+                
+        table.add(filtersForm);*/
+        table.add(filters);
 
         List<String> parameterKeys = new ArrayList<String>(GWC.get().getGridSetBroker().getNames());
         for (ParameterFilter filter : model.getObject()) {
@@ -379,6 +381,10 @@ class ParameterFilterEditor extends FormComponentPanel<Set<ParameterFilter>> {
 
         filters.getModelObject().add(filter);
         return true;
+    }
+    
+    private boolean removeFilter(ParameterFilter filter) {
+    	return filters.getModelObject().remove(filter);
     }
     
     /**

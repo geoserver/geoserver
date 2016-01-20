@@ -281,9 +281,14 @@ public class CRSPanel extends FormComponentPanel<CoordinateReferenceSystem> {
                 target.add( srsTextField );
                 
                 CoordinateReferenceSystem crs = fromSRS( srs );
-                CRSPanel.this.setModelObject(crs );
-                wktLabel.setDefaultModelObject( crs.getName().toString() );
-                wktLink.setEnabled(true);
+                CRSPanel.this.setModelObject(crs );                
+                if (crs != null) {
+                    wktLabel.setDefaultModelObject(crs.getName().toString());
+                    wktLink.setEnabled(true);
+                } else {
+                    wktLabel.setDefaultModelObject(null);
+                    wktLink.setEnabled(false);
+                }
                 target.add( wktLink );
                 
                 onSRSUpdated(srs, target);

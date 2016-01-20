@@ -49,7 +49,7 @@ public class BlobStorePageTest extends GeoServerWicketTestSupport {
         assertEquals(1, typeOfBlobStore.getChoices().size());
         assertEquals("File BlobStore", typeOfBlobStore.getChoices().get(0).toString());
         
-        executeAjaxEventBehavior("selector:typeOfBlobStore", "onchange", "0");
+        executeAjaxEventBehavior("selector:typeOfBlobStore", "change", "0");
                         
         tester.assertVisible("blobConfigContainer:blobStoreForm");        
         tester.assertComponent("blobConfigContainer:blobStoreForm:blobSpecificPanel", FileBlobStorePanel.class);        
@@ -60,7 +60,7 @@ public class BlobStorePageTest extends GeoServerWicketTestSupport {
         BlobStorePage page = new BlobStorePage();
 
         tester.startPage(page);
-        executeAjaxEventBehavior("selector:typeOfBlobStore", "onchange", "0");
+        executeAjaxEventBehavior("selector:typeOfBlobStore", "change", "0");
         
         FormTester formTester = tester.newFormTester("blobConfigContainer:blobStoreForm");
         formTester.setValue("id", "myblobstore");       

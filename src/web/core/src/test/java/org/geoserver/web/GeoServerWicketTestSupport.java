@@ -12,6 +12,7 @@ import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.feedback.IFeedbackMessageFilter;
+import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.util.tester.WicketTester;
 import org.apache.wicket.util.visit.IVisit;
 import org.apache.wicket.util.visit.IVisitor;
@@ -174,5 +175,16 @@ public abstract class GeoServerWicketTestSupport extends GeoServerSecurityTestSu
         String id = ids[ids.length-1];
         tester.getRequest().setParameter(id, value);
         tester.executeAjaxEvent(path, event);
+    }
+    
+    /**
+     * Sets the value of a form component that might not be included in a form (because maybe we 
+     * are using it via Ajax). By itself it just prepares the stage for a subsequent Ajax request 
+     * 
+     * @param component The {@link FormComponent} whose value we are going to set
+     * @param value The form value (as we'd set it in a HTML form)
+     */
+    protected void setFormComponentValue(FormComponent component, String value) {
+        tester.getRequest().getPostParameters().setParameterValue(component.getInputName(), value);
     }
 }

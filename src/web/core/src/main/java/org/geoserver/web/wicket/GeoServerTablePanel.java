@@ -334,13 +334,8 @@ public abstract class GeoServerTablePanel<T> extends Panel {
         CheckBox sa = new CheckBox("selectAll", new PropertyModel<Boolean>(this, "selectAllValue"));
         sa.setOutputMarkupId(true);
         sa.add(new AjaxFormComponentUpdatingBehavior("click") {
-
-            /**
-			 * 
-			 */
-			private static final long serialVersionUID = 1154921156065269691L;
-
-			@Override
+            
+            @Override
             protected void onUpdate(AjaxRequestTarget target) {
                 // select all the checkboxes
                 setSelection(selectAllValue);

@@ -120,31 +120,17 @@ public abstract class AbstractTabbedListPageTest<T> extends AbstractSecurityWick
     
     
     protected void doRemove(String pathForLink) throws Exception {
+        Page testPage = listPage(getServiceName());
         
-        
-        GeoserverTablePanelTestPage testPage = 
-         new GeoserverTablePanelTestPage(new ComponentBuilder() {            
-            private static final long serialVersionUID = 1L;
-
-            public Component buildComponent(String id) {
-                try {
-                    return listPage(getServiceName());
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        });
-        
-        tester.startPage(testPage);
-        
-        String selectAllPath = testPage.getWicketPath()+":"+getTabbedPanelPath()+":panel:table:listContainer:selectAllContainer:selectAll";        
+        String selectAllPath = getTabbedPanelPath()+":panel:table:listContainer:selectAllContainer:selectAll";        
         tester.assertComponent(selectAllPath, CheckBox.class);
+        CheckBox selectAllComponent = (CheckBox) tester.getComponentFromLastRenderedPage(selectAllPath);
         
-        FormTester ft = tester.newFormTester(GeoserverTablePanelTestPage.FORM);
-        ft.setValue(testPage.getComponentId()+":"+getTabbedPanelPath()+":panel:table:listContainer:selectAllContainer:selectAll", "true");
+        // simulate setting a form value, without an actual form around it
+        setFormComponentValue(selectAllComponent, "true");
         tester.executeAjaxEvent(selectAllPath, "click");
 
-        String windowPath=testPage.getWicketPath()+":"+getTabbedPanelPath()+ ":panel:dialog:dialog";       
+        String windowPath=getTabbedPanelPath()+ ":panel:dialog:dialog";       
         ModalWindow w  = (ModalWindow) testPage.get(windowPath);                        
         assertNull(w.getTitle()); // window was not opened
         tester.executeAjaxEvent(pathForLink, "click");

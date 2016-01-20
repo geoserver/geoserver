@@ -122,9 +122,9 @@ public class GZIPResponseWrapper extends HttpServletResponseWrapper {
     }
 
     public void flushBuffer() throws IOException {
-        if(writer!= null && stream != null) {
-            // Ensure AlternativesResponseStream has a chance to add the Content-Encoding header
-            getOutputStream();
+        if(stream!=null) {
+            // Try to make sure Content-Encoding header gets set.
+            stream.getStream();
         }
         getResponse().flushBuffer();
         if (writer!= null){

@@ -179,12 +179,12 @@
       <filter-name>SessionDebugger</filter-name>
       <url-pattern>/*</url-pattern>
     </filter-mapping>
-<!-- 
+
     <filter-mapping>
       <filter-name>GZIP Compression Filter</filter-name>
       <url-pattern>/*</url-pattern>
     </filter-mapping>
-    -->
+    
     <filter-mapping>
       <filter-name>Request Logging Filter</filter-name>
       <url-pattern>/*</url-pattern>

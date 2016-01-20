@@ -93,7 +93,9 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
         WorkspaceInfo wsi = getCatalog().getWorkspaceByName(wsName);
         
         if(wsi == null) {
-            error(new ParamResourceModel("WorkspaceEditPage.notFound", this, wsName).getString());
+            getSession().error(
+                new ParamResourceModel("WorkspaceEditPage.notFound", this, wsName).getString()
+            );
             doReturn(WorkspacePage.class);
             return;
         }

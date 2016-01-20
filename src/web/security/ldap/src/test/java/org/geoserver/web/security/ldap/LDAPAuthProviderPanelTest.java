@@ -10,8 +10,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.wicket.Component;
+import org.apache.wicket.MarkupContainer;
+import org.apache.wicket.markup.IMarkupFragment;
+import org.apache.wicket.markup.Markup;
 import org.apache.wicket.markup.html.form.TextField;
+import org.apache.wicket.markup.html.panel.AbstractMarkupSourcingStrategy;
+import org.apache.wicket.markup.html.panel.DefaultMarkupSourcingStrategy;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
+import org.apache.wicket.markup.html.panel.IMarkupSourcingStrategy;
+import org.apache.wicket.markup.html.panel.PanelMarkupSourcingStrategy;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.StringResourceModel;
@@ -83,26 +90,15 @@ public class LDAPAuthProviderPanelTest extends AbstractSecurityWicketTestSupport
     
     protected void setupPanel(LDAPSecurityServiceConfig theConfig) {
         this.config = theConfig;
-        tester.startPage(new FormTestPage(new ComponentBuilder() {
+        tester.startPage(new LDAPFormTestPage(new ComponentBuilder() {
             private static final long serialVersionUID = 7319919840443122283L;
-
+            
             public Component buildComponent(String id) {
                 
                 return current = new LDAPAuthProviderPanel(id, new Model<LDAPSecurityServiceConfig>(config));
             };
-        }, new CompoundPropertyModel<Object>(config)){
-
-            private static final long serialVersionUID = 3150973967583096118L;
-
-            @Override
-            protected void onBeforeRender() {
-                feedbackPanel = new FeedbackPanel("feedback");
-                feedbackPanel.setOutputMarkupId(true);
-                addOrReplace(feedbackPanel);
-                super.onBeforeRender();
-            }
             
-        });
+        },new CompoundPropertyModel<Object>(config)));
     }
     
     @Test
@@ -174,4 +170,21 @@ public class LDAPAuthProviderPanelTest extends AbstractSecurityWicketTestSupport
         
         tester.clickLink(base+ "testCx:test", true);
     }
+    
+    private class LDAPFormTestPage extends FormTestPage {
+        public LDAPFormTestPage(ComponentBuilder builder, CompoundPropertyModel<Object> model){
+            super(builder,model);
+        }
+        
+        private static final long serialVersionUID = 3150973967583096118L;
+    
+        @Override
+        protected void onBeforeRender() {
+            feedbackPanel = new FeedbackPanel("feedback");
+            feedbackPanel.setOutputMarkupId(true);
+            addOrReplace(feedbackPanel);
+            super.onBeforeRender();
+        }
+    }
 }
+

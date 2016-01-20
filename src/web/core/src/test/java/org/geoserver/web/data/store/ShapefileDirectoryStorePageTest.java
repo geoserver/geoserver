@@ -31,7 +31,7 @@ public class ShapefileDirectoryStorePageTest extends GeoServerWicketTestSupport 
     /**
      * print page structure?
      */
-    private static final boolean debugMode = true;
+    private static final boolean debugMode = false;
 
     private AbstractDataAccessPage startPage() {
         final String dataStoreFactoryDisplayName = new ShapefileDirectoryFactory().getDisplayName();
@@ -65,6 +65,7 @@ public class ShapefileDirectoryStorePageTest extends GeoServerWicketTestSupport 
         ft.setValue("dataStoreNamePanel:border:border_body:paramValue", "testStore");
         ft.setValue("parametersPanel:url:border:border_body:paramValue", "file://" + new File("./target").getCanonicalPath());
         ft.select("workspacePanel:border:border_body:paramValue", 2);
+        ft.submit();
         tester.executeAjaxEvent("dataStoreForm:save", "click");
 
         // get the workspace we have just configured in the GUI

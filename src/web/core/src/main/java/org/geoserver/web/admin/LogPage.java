@@ -118,15 +118,10 @@ public class LogPage extends GeoServerSecuredPage {
                     public String getContentType() {
                         return "text/plain";
                     }
-                };                
-                IRequestHandler handler = new ResourceStreamRequestHandler(stream){
-                    @Override
-                    protected void configure(ResourceStreamResource resource) {
-                        resource.setFileName("geoserver.log");
-                        resource.setContentDisposition(ContentDisposition.ATTACHMENT);
-                        super.configure(resource);
-                    }                    
-                };    
+                };
+                ResourceStreamRequestHandler handler = new ResourceStreamRequestHandler(stream, "geoserver.log");
+                handler.setContentDisposition(ContentDisposition.ATTACHMENT);
+
                 RequestCycle.get().scheduleRequestHandlerAfterCurrent(handler);
             }
         });

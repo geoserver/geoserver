@@ -176,7 +176,7 @@ public class GlobalSettingsPage extends ServerAdminPage {
         @Override
         public ResourceErrorHandling getObject(String id,
                 IModel<? extends List<? extends ResourceErrorHandling>> choices) {
-            return id == null ? null : ResourceErrorHandling.valueOf(id);
+            return id == null || "".equals(id) ? null : ResourceErrorHandling.valueOf(id);
         }
     }
 }

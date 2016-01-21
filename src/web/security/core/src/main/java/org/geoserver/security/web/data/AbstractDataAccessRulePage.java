@@ -153,8 +153,8 @@ public abstract class AbstractDataAccessRulePage extends AbstractSecurityPage {
                 return;
             }
 
-            updateModels();
-            if (rolesFormComponent.getRolesNamesForStoring().isEmpty()) {
+            String roleInputString = rolesFormComponent.getPalette().getRecorderComponent().getInput();
+            if (roleInputString == null || roleInputString.trim().isEmpty()) {
                 form.error(new ParamResourceModel("emptyRoles", getPage()).getString());
             }
         }

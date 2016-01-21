@@ -7,6 +7,7 @@ package org.geoserver.security.web.data;
 
 import static org.junit.Assert.*;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.apache.wicket.extensions.markup.html.form.palette.component.Recorder;
@@ -29,14 +30,22 @@ public class NewDataAccessRulePageTest extends AbstractSecurityWicketTestSupport
     public void init() throws Exception {
         initializeForXML();
         clearServices();
-//        if (gaStore.getRoleByName("ROLE_NEW") != null) {
-//            gaStore.removeRole(gaStore.getRoleByName("ROLE_NEW"));
-//        }
+        // clear the rules
+        DataAccessRuleDAO.get().clear();
     }
 
     @Test
+    public void testFillAndSwitchToNewRolePage() throws Exception {
+        testFill(true);
+    }
+    
+    @Test
     public void testFill() throws Exception {
-        
+        testFill(false);
+    }
+
+
+    private void testFill(boolean testSwitchToNewRole) throws IOException {
         //insertValues();        
         tester.startPage(page=new NewDataAccessRulePage());        
         tester.assertRenderedPage(NewDataAccessRulePage.class);
@@ -67,13 +76,15 @@ public class NewDataAccessRulePageTest extends AbstractSecurityWicketTestSupport
         form.setValue("roles:palette:recorder", gaService.getRoleByName("ROLE_NEW").getAuthority());
         
         // reopen new role dialog again to ensure that the current state is not lost
-        form.submit("roles:addRole");
-        tester.assertRenderedPage(NewRolePage.class);
-        tester.clickLink("form:cancel");
-        tester.assertRenderedPage(NewDataAccessRulePage.class);
-        
+        if(testSwitchToNewRole) {
+            form.submit("roles:addRole");
+            tester.assertRenderedPage(NewRolePage.class);
+            tester.clickLink("form:cancel");
+            tester.assertRenderedPage(NewDataAccessRulePage.class);
+            form = tester.newFormTester("form", false);
+        }
+            
         // now save
-        form=tester.newFormTester("form");
         form.submit("save");
         
         tester.assertErrorMessages(new String[0]);
@@ -90,13 +101,22 @@ public class NewDataAccessRulePageTest extends AbstractSecurityWicketTestSupport
         }
         assertNotNull(foundRule);
         assertEquals(1,foundRule.getRoles().size());
-        assertEquals("ROLE_NEW",foundRule.getRoles().iterator().next());        
+        assertEquals("ROLE_NEW",foundRule.getRoles().iterator().next());
     }
     
     @Test
     public void testDuplicateRule() throws Exception {
         initializeServiceRules();
 
+        addRule();            
+        tester.assertNoErrorMessage();
+        addRule();
+        assertTrue(testErrorMessagesWithRegExp(".*"+MockData.CITE_PREFIX+"\\."+
+                MockData.BRIDGES.getLocalPart()+".*"));
+        tester.assertRenderedPage(NewDataAccessRulePage.class);
+    }
+
+    private void addRule() {
         tester.startPage(page=new NewDataAccessRulePage());
 
         FormTester form = tester.newFormTester("form");
@@ -112,10 +132,7 @@ public class NewDataAccessRulePageTest extends AbstractSecurityWicketTestSupport
         
         form.setValue("roles:palette:recorder", "ROLE_WMS");
                         
-        form.submit("save");                
-        assertTrue(testErrorMessagesWithRegExp(".*"+MockData.CITE_PREFIX+"\\."+
-                MockData.BRIDGES.getLocalPart()+".*"));
-        tester.assertRenderedPage(NewDataAccessRulePage.class);
+        form.submit("save");
     }
     
     @Test

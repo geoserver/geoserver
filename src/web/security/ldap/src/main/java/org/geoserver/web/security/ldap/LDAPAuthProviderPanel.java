@@ -132,14 +132,14 @@ public class LDAPAuthProviderPanel extends AuthenticationProviderPanel<LDAPSecur
         }
     }
 
-    class TestLDAPConnectionPanel extends FormComponentPanel<HashMap<String, Object>> {
+    class TestLDAPConnectionPanel extends FormComponentPanel<HashMap<String, String>> {
 
         private static final long serialVersionUID = 5433983389877706266L;
 
         public TestLDAPConnectionPanel(String id) {
-            super(id, new Model<HashMap<String, Object>>(new HashMap<String, Object>()));
+            super(id, new Model<HashMap<String, String>>(new HashMap<String, String>()));
 
-            add(new TextField<HashMap<String, Object>>("username", new MapModel<HashMap<String, Object>>(getModel().getObject(), "username")));
+            add(new TextField<String>("username", new MapModel<String>(getModel().getObject(), "username")));
             add(new PasswordTextField("password", new MapModel<String>(getModel().getObject(), "password")).setRequired(false));
             add(new AjaxSubmitLink("test") {
 

@@ -50,6 +50,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+
 import org.geoserver.web.util.MapModel;
 
 /**
@@ -194,7 +195,7 @@ public class GeofencePage extends GeoServerSecuredPage {
         updateStatsValues(cacheRuleReader);
 
         for (String key : statsValues.keySet()) {
-            Label label = new Label(key, new MapModel(statsValues, key));
+            Label label = new Label(key, new MapModel<String>(statsValues, key));
             label.setOutputMarkupId(true);
             form.add(label);
             statsLabels.add(label);
@@ -202,9 +203,6 @@ public class GeofencePage extends GeoServerSecuredPage {
 
         form.add(new AjaxSubmitLink("invalidate") {
 
-            /**
-			 * 
-			 */
 			private static final long serialVersionUID = 3847903240475052867L;
 
 			@Override

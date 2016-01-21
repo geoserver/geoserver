@@ -94,7 +94,7 @@ public final class ArcSDECoverageStoreEditPanel extends StoreEditPanel {
             connectionParameters.putAll(existingParameters);
         }
 
-        final IModel<Map<String, Object>> paramsModel = new PropertyModel<Map<String, Object>>(model, "connectionParameters");
+        final IModel<Map<String, String>> paramsModel = new PropertyModel<Map<String, String>>(model, "connectionParameters");
 
         addConnectionPrototypePanel(storeInfo);
 
@@ -148,7 +148,7 @@ public final class ArcSDECoverageStoreEditPanel extends StoreEditPanel {
         });
     }
 
-    private FormComponent<String> addRasterTable(final CoverageStoreInfo storeInfo, final IModel<Map<String, Object>> paramsModel) {
+    private FormComponent<String> addRasterTable(final CoverageStoreInfo storeInfo, final IModel<Map<String, String>> paramsModel) {
 
         //final String resourceKey = RESOURCE_KEY_PREFIX + "." + TABLE_NAME;
 
@@ -164,7 +164,7 @@ public final class ArcSDECoverageStoreEditPanel extends StoreEditPanel {
      * @return a combobox set up to display the list of available raster tables if the StoreInfo is
      *         new, or a non editable text box if we're editing an existing StoreInfo
      */
-    private FormComponent<String> addTableNameComponent(final IModel<Map<String, Object>> paramsModel, final boolean isNew) {
+    private FormComponent<String> addTableNameComponent(final IModel<Map<String, String>> paramsModel, final boolean isNew) {
 
         final FormComponent<String> tableNameComponent;
         final String panelId = "tableNamePanel";
@@ -204,12 +204,12 @@ public final class ArcSDECoverageStoreEditPanel extends StoreEditPanel {
         return tableNameComponent;
     }
 
-    private FormComponent<String> addPasswordPanel(final IModel<Map<String, Object>> paramsModel) {
+    private FormComponent<String> addPasswordPanel(final IModel<Map<String, String>> paramsModel) {
 
         final String paramName = PASSWORD_PARAM.key;
         final String resourceKey = RESOURCE_KEY_PREFIX + "." + paramName;
 
-        final PasswordParamPanel pwdPanel = new PasswordParamPanel(paramName, new MapModel<Object>(
+        final PasswordParamPanel pwdPanel = new PasswordParamPanel(paramName, new MapModel<String>(
                 paramsModel, paramName), new ResourceModel(resourceKey, paramName), true);
         add(pwdPanel);
 
@@ -223,7 +223,7 @@ public final class ArcSDECoverageStoreEditPanel extends StoreEditPanel {
         return pwdPanel.getFormComponent();
     }
 
-    private FormComponent<String> addTextPanel(final IModel<Map<String, Object>> paramsModel, final Param param) {
+    private FormComponent<String> addTextPanel(final IModel<Map<String, String>> paramsModel, final Param param) {
 
         final String paramName = param.key;
         final String resourceKey = getClass().getSimpleName() + "." + paramName;

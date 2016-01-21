@@ -57,13 +57,13 @@ public class AggregateStoreEditPanel extends StoreEditPanel {
         final IModel<?> model = storeEditForm.getModel();
         setDefaultModel(model);
 
-        final IModel<Map<String, Object>> paramsModel = new PropertyModel<Map<String, Object>>(model, "connectionParameters");
-        new MapModel<Object>(paramsModel, CONFIGURATION.key).setObject(null);
+        final IModel<Map<String, String>> paramsModel = new PropertyModel<Map<String, String>>(model, "connectionParameters");
+        new MapModel<String>(paramsModel, CONFIGURATION.key).setObject(null);
 
-        add(new TextParamPanel("parallelism", new MapModel<Object>(paramsModel, PARALLELISM.key),
+        add(new TextParamPanel("parallelism", new MapModel<String>(paramsModel, PARALLELISM.key),
                 new ParamResourceModel("parallelism", this), true));
 
-        add(new CheckBoxParamPanel("tolerateErrors", new MapModel<Object>(paramsModel,
+        add(new CheckBoxParamPanel("tolerateErrors", new MapModel<String>(paramsModel,
                 TOLERATE_CONNECTION_FAILURE.key), new ParamResourceModel("tolerateErrors", this)));
 
         configModel = new ConfigModel(new MapModel<String>(paramsModel, CONFIGURATION_XML.key));

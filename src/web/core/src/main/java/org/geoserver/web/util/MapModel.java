@@ -21,24 +21,22 @@ import org.apache.wicket.model.IModel;
  */
 public class MapModel<T> implements IModel<T>, IChainingModel<T> {
     private static final long serialVersionUID = 3122822158252376260L;
-    IModel<Map<String,Object>> model;
+    IModel<Map<String,T>> model;
     String expression;
     
-    public MapModel( Map<String,Object> map, String expression ) {
-        this(new MapWrappingModel(map), expression);
+    public MapModel( Map<String,T> map, String expression ) {
+        this(new MapWrappingModel<T>(map), expression);
     }
     
-    public MapModel(IModel<Map<String,Object>> model, String expression){
+    public MapModel(IModel<Map<String,T>> model, String expression){
         this.model = model;
         this.expression = expression;
     }
     
-    @SuppressWarnings("unchecked")
     public T getObject() {
-        return (T) model.getObject().get( expression );
+        return model.getObject().get(expression);
     }
 
-    @SuppressWarnings("unchecked")
     public void setObject(T val) {
         model.getObject().put(expression, val);
     }
@@ -47,23 +45,23 @@ public class MapModel<T> implements IModel<T>, IChainingModel<T> {
         model.detach();
     }
     
-    private static class MapWrappingModel implements IModel<Map<String,Object>>{
+    private static class MapWrappingModel<T> implements IModel<Map<String,T>>{
         /**
          * 
          */
         private static final long serialVersionUID = -1474150801738143281L;
         
-        private Map<String,Object> myMap;
+        private Map<String,T> myMap;
         
-        public MapWrappingModel(Map<String,Object> m){
+        public MapWrappingModel(Map<String,T> m){
             myMap = m;
         }
 
-        public Map<String, Object> getObject() {
+        public Map<String, T> getObject() {
             return myMap;
         }
 
-        public void setObject(Map<String,Object> arg0) {
+        public void setObject(Map<String,T> arg0) {
         }
 
         public void detach() {

@@ -75,7 +75,7 @@ public class RasterTableSelectionPanel extends Panel {
 
     private FormComponent<?> passwordComponent;
 
-    public RasterTableSelectionPanel(final String id, final IModel<Map<String, Object>> paramsModel,
+    public RasterTableSelectionPanel(final String id, final IModel<Map<String, String>> paramsModel,
             final Form<?> storeEditForm, FormComponent<?> server, FormComponent<?> port,
             FormComponent<?> instance, FormComponent<?> user, FormComponent<?> password) {
 

@@ -44,10 +44,10 @@ import org.geowebcache.layer.TileLayer;
  */
 public class BlobStorePage extends GeoServerSecuredPage {
 
-	private static final long serialVersionUID = -59024268194792891L;
+    private static final long serialVersionUID = -59024268194792891L;
 
-	@SuppressWarnings("rawtypes")
-	private DropDownChoice<BlobStoreType> typeOfBlobStore;
+    @SuppressWarnings("rawtypes")
+    private DropDownChoice<BlobStoreType> typeOfBlobStore;
 
     private WebMarkupContainer blobConfigContainer;
 

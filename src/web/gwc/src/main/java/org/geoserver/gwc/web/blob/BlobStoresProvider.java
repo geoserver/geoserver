@@ -20,8 +20,9 @@ import org.geowebcache.config.BlobStoreConfig;
  * @author Niels Charlier
  *
  */
-@SuppressWarnings("serial")
 public class BlobStoresProvider extends GeoServerDataProvider<BlobStoreConfig> {
+
+    private static final long serialVersionUID = 4400431816195261839L;
 
     public static final Property<BlobStoreConfig> ID = new BeanProperty<BlobStoreConfig>("id", "id");
 

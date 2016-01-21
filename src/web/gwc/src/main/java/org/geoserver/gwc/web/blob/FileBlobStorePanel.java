@@ -31,8 +31,10 @@ public class FileBlobStorePanel extends Panel {
     }
     
     @SuppressWarnings("unchecked")
-	@Override
+    @Override
     public void onInitialize() {
+        super.onInitialize();
+        
         DirectoryParamPanel paramPanel;
         add(paramPanel = new DirectoryParamPanel("baseDirectory", new PropertyModel<String>(
                 getDefaultModel().getObject(), "baseDirectory"), new ParamResourceModel("baseDirectory",

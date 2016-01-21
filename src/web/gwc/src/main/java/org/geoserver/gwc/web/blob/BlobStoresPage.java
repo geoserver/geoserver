@@ -40,9 +40,9 @@ import org.geowebcache.layer.TileLayer;
  */
 public class BlobStoresPage extends GeoServerSecuredPage {
 
-	private static final long serialVersionUID = 6076989713813458347L;
+    private static final long serialVersionUID = 6076989713813458347L;
 
-	private AjaxLink<Object> remove;
+    private AjaxLink<Object> remove;
 
     private GeoServerTablePanel<BlobStoreConfig> blobStoresPanel;
 

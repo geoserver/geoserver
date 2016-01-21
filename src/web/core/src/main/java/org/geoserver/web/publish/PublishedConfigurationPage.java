@@ -178,7 +178,7 @@ public abstract class PublishedConfigurationPage<T extends PublishedInfo> extend
                             throw new WicketRuntimeException(e);
                             // LOGGER.log(Level.WARNING, "Error creating resource panel", e);
                         }
-                        return tabPanel.setInputEnabled(inputEnabled);
+                        return tabPanel;
                     }
                 });
             }

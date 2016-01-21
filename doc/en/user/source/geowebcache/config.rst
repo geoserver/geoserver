@@ -5,32 +5,32 @@ Configuration
 
 GeoWebCache is automatically configured for use with GeoServer using the most common options, with no setup required. All communication between GeoServer and GeoWebCache happens by passing messages inside the JVM.
 
-By default, all layers served by GeoServer will be known to GeoWebCache. See the :ref:`webadmin_tilecaching_layers` page to test the configuration.
+By default, all layers served by GeoServer will be known to GeoWebCache. See the :ref:`gwc_webadmin_layers` page to test the configuration.
 
 .. note:: Version 2.2.0 of GeoServer introduced changes to the configuration of the integrated GeoWebCache.
 
 Integrated user interface
 -------------------------
 
-GeoWebCache has a full integrated web-based configuration. See the :ref:`webadmin_tilecaching` section in the :ref:`web_admin`.
+GeoWebCache has a full integrated web-based configuration. See the :ref:`gwc_webadmin` section in the :ref:`web_admin`.
 
 Determining tiled layers
 ------------------------
 
 In versions of GeoServer prior to 2.2.0, the GeoWebCache integration was done in a such way that every GeoServer layer and layer group was forced to have an associated GeoWebCache tile layer. In addition, every such tile layer was forcedly published in the EPSG:900913 and EPSG:4326 gridsets with PNG and JPEG output formats.
 
-It is possible to selectively turn caching on or off for any layer served through GeoServer. This setting can be configured in the :ref:`webadmin_tilecaching_layers` section of the :ref:`web_admin`.
+It is possible to selectively turn caching on or off for any layer served through GeoServer. This setting can be configured in the :ref:`gwc_webadmin_layers` section of the :ref:`web_admin`.
 
 Configuration files
 -------------------
 
-It is possible to configure most aspects of cached layers through the :ref:`webadmin_tilecaching` section in the :ref:`web_admin` or the :ref:`gwc_rest`. 
+It is possible to configure most aspects of cached layers through the :ref:`gwc_webadmin` section in the :ref:`web_admin` or the :ref:`gwc_rest`. 
 
-GeoWebCache keeps the configuration for each GeoServer tiled layer separately, inside the :file:`<data_dir>/gwc-layers/` directory. There is one XML file for each tile layer. These files contain a different syntax from the ``<wmsLayer>`` syntax in the standalone version and are *not* meant to be edited by hand. Instead you can configure tile layers on the :ref:`webadmin_tilecaching_layers` page or through the :ref:`gwc_rest`.
+GeoWebCache keeps the configuration for each GeoServer tiled layer separately, inside the :file:`<data_dir>/gwc-layers/` directory. There is one XML file for each tile layer. These files contain a different syntax from the ``<wmsLayer>`` syntax in the standalone version and are *not* meant to be edited by hand. Instead you can configure tile layers on the :ref:`gwc_webadmin_layers` page or through the :ref:`gwc_rest`.
 
 Configuration for the defined gridsets is saved in :file:`<data_dir>/gwc/geowebcache.xml`` so that the integrated GeoWebCache can continue to serve externally-defined tile layers from WMS services outside GeoServer.
 
-If upgrading from a version prior to 2.2.0, a migration process is run which creates a tile layer configuration for all the available layers and layer groups in GeoServer with the old defaults. From that point on, you should configure the tile layers on the :ref:`webadmin_tilecaching_layers` page.
+If upgrading from a version prior to 2.2.0, a migration process is run which creates a tile layer configuration for all the available layers and layer groups in GeoServer with the old defaults. From that point on, you should configure the tile layers on the :ref:`gwc_webadmin_layers` page.
 
 
 Changing the cache directory
@@ -59,7 +59,7 @@ For stability reasons, it is not recommended to use the embedded GeoWebCache wit
 Geoserver Data Security
 -----------------------
 
-GWC Data Security is an option that can be turned on and turned off through the :ref:`webadmin_tilecaching_defaults` page. By default it is turned off. 
+GWC Data Security is an option that can be turned on and turned off through the :ref:`gwc_webadmin_defaults` page. By default it is turned off. 
 
 When turned on, the embedded GWC will do a data security check before calling GeoWebCache, i.e. verify whether the user actually has access to the layer, and reject the request if this is not the case. 
 In the case of WMS-C requests, there is also limited support for data access limit filters, only with respect to geographic boundaries (all other types of data access limits will be ignored).
@@ -74,7 +74,7 @@ from rules associated with the 'GWC' service itself.
 Configuring In Memory Caching
 ------------------------------
 GWC In Memory Caching is a new feature which allows to cache GWC tiles in memory reducing their access time. User can also choose to avoid to store the files on the disk if needed. 
-For enabling/disabling these features the user may see the related section on the TileCaching :ref:`webadmin_tilecaching_defaults` page.  
+For enabling/disabling these features the user may see the related section on the TileCaching :ref:`gwc_webadmin_defaults` page.  
 
 Actually there are only two Caching methods:
 

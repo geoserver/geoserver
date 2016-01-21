@@ -1,4 +1,4 @@
-.. _sec_rolesystem_rolesource:
+.. _security_rolesystem_rolesource:
 
 Role source and role calculation
 ================================
@@ -8,7 +8,7 @@ Different authentication mechanisms provide different possibilities where to loo
 Using a user/group Service
 --------------------------
 
-During configuration of an authentication mechanism, the name of a user group service has to be specified. The used role service is always the role service configured as active role service. The role calculation itself is described here :ref:`sec_rolesystem_interaction`
+During configuration of an authentication mechanism, the name of a user group service has to be specified. The used role service is always the role service configured as active role service. The role calculation itself is described here :ref:`security_rolesystem_interaction`
 
 Using a role service directly
 -----------------------------

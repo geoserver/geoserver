@@ -8,7 +8,7 @@ Layer Groups
 
 A Layer Group is a group of layers that can be referred to by one layer name.  For example, if you put three layers (call them layer_A, layer_B, and layer_C) under the one "Layer Group" layer, then when a user makes a WMS getMap request for that group name, they will get a map of those three layers.
 
-For information on configuring Layer Groups in the Web Administration Interface see :ref:`webadmin_layergroups`
+For information on configuring Layer Groups in the Web Administration Interface see :ref:`data_webadmin_layergroups`
 
 .. _wms_configuration_limits:
 

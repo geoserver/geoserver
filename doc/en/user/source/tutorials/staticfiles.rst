@@ -3,7 +3,7 @@
 Serving Static Files
 ====================
 
-You can place static files in the ``www`` subdirectory of the GeoServer :ref:`data directory <data_dir_structure>`, and they will be served at ``http:/myhost:8080/geoserver/www``.  This means you can deploy HTML, images, or JavaScript, and have GeoServer serve them directly on the web. 
+You can place static files in the ``www`` subdirectory of the GeoServer :ref:`data directory <datadir_structure>`, and they will be served at ``http:/myhost:8080/geoserver/www``.  This means you can deploy HTML, images, or JavaScript, and have GeoServer serve them directly on the web. 
 
 This approach has some limitations:
 

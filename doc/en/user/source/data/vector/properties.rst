@@ -80,5 +80,5 @@ This example ``stations.properties`` defines four features of the feature type (
   * Leave a field empty if you want it to be null; in this case the property will be ignored.
 
 
-Note that in this example ``srid=4326`` sets the spatial reference system (SRS) to ``EPSG:4326``, which is by convention in longitude/latitude order when referred to in the short form. If you request these features in GML 3 you will see that GeoServer correctly translates the geometry to the URN form SRS ``urn:x-ogc:def:crs:EPSG:4326`` in latitude/longitude form. See the :ref:`webadmin_wfs` page for more on SRS axis order options.
+Note that in this example ``srid=4326`` sets the spatial reference system (SRS) to ``EPSG:4326``, which is by convention in longitude/latitude order when referred to in the short form. If you request these features in GML 3 you will see that GeoServer correctly translates the geometry to the URN form SRS ``urn:x-ogc:def:crs:EPSG:4326`` in latitude/longitude form. See the :ref:`services_webadmin_wfs` page for more on SRS axis order options.
 

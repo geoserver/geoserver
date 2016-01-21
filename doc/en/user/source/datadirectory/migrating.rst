@@ -1,4 +1,4 @@
-.. _datadir_migration:
+.. _datadir_migrating:
 
 Migrating a data directory between versions
 ===========================================

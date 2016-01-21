@@ -1,10 +1,10 @@
-.. _sec_tutorials_activedirectory:
+.. _security_tutorials_activedirectory:
 
 Authentication with LDAP against ActiveDirectory 
 ================================================
 
 This tutorial explains how to use GeoServer LDAP support to connect to a Windows Domain using ActiveDirectory as an LDAP server. It is recommended that the 
-:ref:`sec_auth_provider_ldap` section be read before proceeding.
+:ref:`security_auth_provider_ldap` section be read before proceeding.
 
 Windows Server and ActiveDirectory
 ----------------------------------

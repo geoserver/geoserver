@@ -86,12 +86,12 @@ The ``value`` attribute is rewritten to be relative to the ``data`` directory. T
 ``demo``
 --------
 
-The ``demo`` directory contains files which define the sample requests available in the :ref:`Demo Request <webadmin_demos>` page.
+The ``demo`` directory contains files which define the sample requests available in the :ref:`Demo Request <demos>` page.
 
 ``gwc``
 -------
 
-The ``gwc`` directory holds the tile cache created by the embedded :ref:`GeoWebCache <geowebcache>` service.
+The ``gwc`` directory holds the tile cache created by the embedded :ref:`GeoWebCache <gwc>` service.
 
 ``layergroups``
 ---------------

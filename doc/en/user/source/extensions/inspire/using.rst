@@ -6,7 +6,7 @@ Using the INSPIRE extension
 When the INSPIRE extension has been properly installed, there will be two changes to GeoServer.
 
 #. The GeoServer WMS 1.3.0 capabilities document, as well as the WFS 1.1 and 2.0 will contain extra content relevant to INSPIRE.
-#. The :ref:`webadmin_wms` and :ref:`webadmin_wfs` sections of the :ref:`web_admin` will show extra configuration options.
+#. The :ref:`services_webadmin_wms` and :ref:`services_webadmin_wfs` sections of the :ref:`web_admin` will show extra configuration options.
 
 Extended WMS Capabilities
 -------------------------
@@ -47,7 +47,7 @@ The WMS 1.3.0 capabilities document will be extended once the INSPIRE extension 
         </inspire_common:ResponseLanguage>
       </inspire_vs:ExtendedCapabilities>
 
-This information can be changed via the :ref:`webadmin_wms` section of the :ref:`web_admin`.
+This information can be changed via the :ref:`services_webadmin_wms` section of the :ref:`web_admin`.
 
 .. note:: If you do not see this content in the WMS 1.3.0 capabilities document, the INSPIRE extension may not be installed properly.  Reread the section on :ref:`inspire_installing` and verify that the correct file was saved to the correct directory.
 
@@ -55,7 +55,7 @@ This information can be changed via the :ref:`webadmin_wms` section of the :ref:
 Extended WMS configuration
 --------------------------
 
-As with the WMS 1.3.0 capabilities document, the WMS configuration in the :ref:`web_admin` is also extended to allow for changing the above published information.  INSPIRE-specific configuration is accessed on the main :ref:`webadmin_wms` page in the :ref:`web_admin`.  This is accessed by clicking on the :guilabel:`WMS` link on the sidebar.
+As with the WMS 1.3.0 capabilities document, the WMS configuration in the :ref:`web_admin` is also extended to allow for changing the above published information.  INSPIRE-specific configuration is accessed on the main :ref:`services_webadmin_wms` page in the :ref:`web_admin`.  This is accessed by clicking on the :guilabel:`WMS` link on the sidebar.
 
 .. note:: You must be logged in as an administrator to edit WMS configuration.
 
@@ -119,7 +119,7 @@ The WFS 1.1.0 capabilities document will be extended once the INSPIRE extension 
 
 The spatial data identifiers section is mandatory, but cannot be filled by default, it is your duty to provide at least one spatial dataset identifier (see the INSPIRE download service technical guidelines for more information).
 
-This information can be changed via the :ref:`webadmin_wfs` section of the :ref:`web_admin`.
+This information can be changed via the :ref:`services_webadmin_wfs` section of the :ref:`web_admin`.
 
 .. note:: If you do not see this content in the WFS 1.1/2.0 capabilities document, the INSPIRE extension may not be installed properly.  Reread the section on :ref:`inspire_installing` and verify that the correct file was saved to the correct directory.
 
@@ -127,7 +127,7 @@ This information can be changed via the :ref:`webadmin_wfs` section of the :ref:
 Extended WFS configuration
 --------------------------
 
-As with the WFS capabilities document, the WFS configuration in the :ref:`web_admin` is also extended to allow for changing the above published information.  INSPIRE-specific configuration is accessed on the main :ref:`webadmin_wfs` page in the :ref:`web_admin`.  This is accessed by clicking on the :guilabel:`WFS` link on the sidebar.
+As with the WFS capabilities document, the WFS configuration in the :ref:`web_admin` is also extended to allow for changing the above published information.  INSPIRE-specific configuration is accessed on the main :ref:`services_webadmin_wfs` page in the :ref:`web_admin`.  This is accessed by clicking on the :guilabel:`WFS` link on the sidebar.
 
 .. note:: You must be logged in as an administrator to edit WFS configuration.
 

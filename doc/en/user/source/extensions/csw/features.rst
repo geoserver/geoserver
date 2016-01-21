@@ -42,7 +42,7 @@ The Internal Catalog Store supports two metadata schemes:
 Mapping Files
 -------------
 
-Mapping files are located in the ``csw`` directory inside the :ref:`data_directory`. Each mapping file must have the exact name of the record type name combined with the ``.properties`` extension. For example:
+Mapping files are located in the ``csw`` directory inside the :ref:`datadir`. Each mapping file must have the exact name of the record type name combined with the ``.properties`` extension. For example:
 
 * Dublin Core mapping can be found in the file ``csw/Record.properties`` inside the data directory.
 * ISO Metadata mapping can be found in the file ``csw/MD_Metadata.properties`` inside the data directory.

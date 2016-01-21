@@ -4,7 +4,7 @@ Global variables affecting WMS
 ================================
 
 This document details the set of global variables that can affect WMS behaviour.
-Each global variable can be set as an environment variable, as a servlet context variable, or as a Java system property, just like the well known ``GEOSERVER_DATA_DIR`` setting. Refer to :ref:`data_dir_setting` for details on how a global variable can be specified.
+Each global variable can be set as an environment variable, as a servlet context variable, or as a Java system property, just like the well known ``GEOSERVER_DATA_DIR`` setting. Refer to :ref:`datadir_setting` for details on how a global variable can be specified.
 
 MAX_FILTER_RULES
 ----------------

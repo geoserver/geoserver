@@ -12,10 +12,8 @@ GeoServer serves data using standard protocols established by the `Open Geospati
 These services are the primary way that GeoServer supplies geospatial information.
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
    wfs/index
    wms/index
    wcs/index
-   virtual-services
-  

@@ -1,11 +1,11 @@
-.. _sec_tutorials_cas:
+.. _security_tutorials_cas:
 
 Authentication with CAS
 =======================
 
 This tutorial introduces GeoServer CAS support and walks through the process of
 setting up authentication aganist an CAS server. It is recommended that the 
-:ref:`sec_auth_chain` section be read before proceeding.
+:ref:`security_auth_chain` section be read before proceeding.
 
 CAS server certificates
 -----------------------

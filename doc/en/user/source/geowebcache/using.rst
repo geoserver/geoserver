@@ -12,11 +12,11 @@ Direct integration with GeoServer WMS
 
 GeoWebCache can be transparently integrated with the GeoServer WMS, and so requires no special endpoint or custom URL. In this way one can have the simplicity of a standard WMS endpoint with the performance of a tiled client.
 
-Although this direct integration is disabled by default, it can be enabled by going to the :ref:`webadmin_tilecaching_defaults` page in the :ref:`web_admin`.
+Although this direct integration is disabled by default, it can be enabled by going to the :ref:`gwc_webadmin_defaults` page in the :ref:`web_admin`.
 
 When this feature is enabled, GeoServer WMS will cache and retrieve tiles from GeoWebCache (via a GetMap request) only if **all of the following criteria are followed**:
 
-* WMS Direct integration is enabled (you can set this on the :ref:`webadmin_tilecaching_defaults` page)
+* WMS Direct integration is enabled (you can set this on the :ref:`gwc_webadmin_defaults` page)
 * ``tiled=true`` is included in the request
 * The request only references a single layer
 * Caching is enabled for that layer
@@ -106,7 +106,7 @@ Disk quota
 
 GeoWebCache has a built-in disk quota feature to prevent disk space from growing unbounded. You can set the maximum size of the cache directory, poll interval, and what policy of tile removal to use when the quota is exceeded. Tiles can be removed based on usage ("Least Frequently Used" or LFU) or timestamp ("Least Recently Used" or LRU).
 
-Disk quotas are turned off by default, but can be configured on the :ref:`webadmin_tilecaching_diskquotas` page in the :ref:`web_admin`. 
+Disk quotas are turned off by default, but can be configured on the :ref:`gwc_webadmin_diskquotas` page in the :ref:`web_admin`. 
 
 Integration with external mapping sites
 ---------------------------------------
@@ -121,5 +121,5 @@ The version of GeoWebCache that comes embedded in GeoServer automatically config
 * **EPSG:4326** (latitude/longitude)
 * **EPSG:900913** (Spherical Mercator, the projection used in Google Maps)
 
-You can also set a custom CRS from any that GeoServer recognizes. See the :ref:`webadmin_tilecaching_gridsets` page for details. 
+You can also set a custom CRS from any that GeoServer recognizes. See the :ref:`gwc_webadmin_gridsets` page for details. 
 

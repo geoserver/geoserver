@@ -23,6 +23,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
+import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.validation.IValidatable;
 import org.apache.wicket.validation.IValidator;
@@ -172,7 +173,7 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
 
         ReferencedEnvelope bbox = (ReferencedEnvelope) bounds.getModelObject();
         if (null == bbox) {
-            String message = new ResourceModel("AbstractGridSetPage.cantAddZoomLevel").getObject();
+            String message = getString("AbstractGridSetPage.cantAddZoomLevel");
             FeedbackPanel feedback = (FeedbackPanel) form.get("feedback");
             if (feedback != null) {
                 feedback.error(message);
@@ -211,13 +212,13 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
         CoordinateReferenceSystem coordSys;
         coordSys = (CoordinateReferenceSystem) crs.getModelObject();
         if (coordSys == null) {
-            bounds.error(new ResourceModel("AbstractGridsetPage.computeBounds.crsNotSet"));
+            bounds.error(getString("AbstractGridsetPage.computeBounds.crsNotSet"));
             return;
         }
         GWC mediator = GWC.get();
         ReferencedEnvelope aov = mediator.getAreaOfValidity(coordSys);
         if (aov == null) {
-            bounds.error(new ResourceModel("AbstractGridsetPage.computeBounds.aovNotSet"));
+            bounds.error(getString("AbstractGridsetPage.computeBounds.aovNotSet"));
         } else {
             bounds.setModelObject(aov);
         }
@@ -272,14 +273,14 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
 
     private TextParamPanel tileHeight(IModel<GridSetInfo> model) {
         TextParamPanel panel = new TextParamPanel("tileHeight", new PropertyModel<Integer>(model,
-                "tileHeight"), new ResourceModel("AbstractGridSetPage.tileHeight"), true,
+                "tileHeight"), new StringResourceModel("AbstractGridSetPage.tileHeight"), true,
                 new RangeValidator<Integer>(16, 2048));
         return panel;
     }
 
     private TextParamPanel tileWidth(IModel<GridSetInfo> model) {
         TextParamPanel panel = new TextParamPanel("tileWidth", new PropertyModel<Integer>(model,
-                "tileWidth"), new ResourceModel("AbstractGridSetPage.tileWidth"), true,
+                "tileWidth"), new StringResourceModel("AbstractGridSetPage.tileWidth"), true,
                 new RangeValidator<Integer>(16, 2048));
         return panel;
     }
@@ -391,7 +392,7 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
 
     private TextParamPanel name(IModel<GridSetInfo> model) {
         TextParamPanel namePanel = new TextParamPanel("name", new PropertyModel<String>(model,
-                "name"), new ResourceModel("AbstractGridSetPage.name"), true,
+                "name"), new StringResourceModel("AbstractGridSetPage.name"), true,
                 new UniqueNameValidator(model.getObject().getName()));
         return namePanel;
     }

@@ -105,15 +105,16 @@ public interface SettingsInfo extends Info {
     void setSchemaBaseUrl(String schemaBaseUrl);
 
     /**
-     * Verbosity flag.
+     * Sets indent level for XML output, causing output to be more verbose.
      * <p>
-     * When set GeoServer will log extra information it normally would not.
-     * </p>
+     * Then set to false GeoServer will also take step so to strip out some formating and produce more condensed output.
      */
     boolean isVerbose();
 
     /**
-     * Sets verbosity flag.
+     * Sets indent level for XML output, causing output to be more verbose.
+     * <p>
+     * Then set to false GeoServer will also take step so to strip out some formating and produce more condensed output.
      */
     void setVerbose(boolean verbose);
 

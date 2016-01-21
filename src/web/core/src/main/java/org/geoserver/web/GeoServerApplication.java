@@ -187,14 +187,13 @@ public class GeoServerApplication extends WebApplication implements ApplicationC
         getDebugSettings().setAjaxDebugModeEnabled(false);
 
         getApplicationSettings().setPageExpiredErrorPage(GeoServerExpiredPage.class);
-        getSecuritySettings().setCryptFactory(GeoserverWicketEncrypterFactory.get());
+        // generates infinite redirections, commented out for the moment
+        // getSecuritySettings().setCryptFactory(GeoserverWicketEncrypterFactory.get());
 
         // theoretically, this replaces the old GeoServerRequestEncodingStrategy
         // by making the URLs encrypted at will
-        GeoServerCryptProvider cryptProvider = new GeoServerCryptProvider(
-                getBeanOfType(GeoServerSecurityManager.class));
-        IRequestMapper cryptoMapper = new CryptoMapper(getRootRequestMapper(), cryptProvider);
-        setRootRequestMapper(cryptoMapper);
+        GeoServerSecurityManager securityManager = getBeanOfType(GeoServerSecurityManager.class);
+        setRootRequestMapper(new DynamicCryptoMapper(getRootRequestMapper(), securityManager, this));
         
         getRequestCycleListeners().add(new CallbackRequestCycleListener(this));
     }

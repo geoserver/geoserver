@@ -3,6 +3,7 @@
 <body>
 <wicket:extend>
 <form wicket:id="form">
+  <h3><wicket:message key="tileCache">Tile Cache</wicket:message></h3>
   <ul>
     <li>
       <label for="memoryCapacity"><wicket:message key="memoryCapacity">memoryCapacity</wicket:message></label>
@@ -12,6 +13,13 @@
       <label for="memoryThreshold"><wicket:message key="memoryThreshold">memoryThreshold</wicket:message></label>
       <input id="memoryThreshold" class="field text" type="text" wicket:id="memoryThreshold" />
     </li>
+    <li class="choiceItem">
+      <input id="recycling" type="checkbox" wicket:id="recycling" />
+      <label for="recycling"><wicket:message key="recycling">recycling</wicket:message></label>
+    </li>
+  </ul>
+  <h3><wicket:message key="tileScheduler">Tile Scheduler Use</wicket:message></h3>
+  <ul>
     <li>
       <label for="tileThreads"><wicket:message key="tileThreads">tileThreads</wicket:message></label>
       <input id="tileThreads" class="field text" type="text" wicket:id="tileThreads" />
@@ -20,10 +28,9 @@
       <label for="tilePriority"><wicket:message key="tilePriority">tilePriority</wicket:message></label>
       <input id="tilePriority" class="field text" type="text" wicket:id="tilePriority" />
     </li>
-    <li class="choiceItem">
-      <input id="recycling" type="checkbox" wicket:id="recycling" />
-      <label for="recycling"><wicket:message key="recycling">recycling</wicket:message></label>
-    </li>
+  </ul>
+  <h3><wicket:message key="imageEncoding">Image Encoding</wicket:message></h3>
+  <ul>
     <li class="choiceItem">
       <input id="jpegAcceleration" type="checkbox" wicket:id="jpegAcceleration" />
       <label for="jpegAcceleration"><wicket:message key="jpegAcceleration">jpegAcceleration</wicket:message></label>
@@ -32,6 +39,9 @@
       <label for="pngEncoderType"><wicket:message key="pngEncoderType">pngEncoderType</wicket:message></label>
       <select id="pngEncoderType" class="field checkbox" wicket:id="pngEncoderType" ></select>
     </li>
+  </ul>
+  <h3><wicket:message key="imageProcessing">Image Processing</wicket:message></h3>
+  <ul>
     <li class="choiceItem">
       <input id="allowNativeMosaic" type="checkbox" wicket:id="allowNativeMosaic" />
       <label for="allowNativeMosaic"><wicket:message key="allowNativeMosaic">allowNativeMosaic</wicket:message></label>

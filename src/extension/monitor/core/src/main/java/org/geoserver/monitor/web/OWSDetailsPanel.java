@@ -16,7 +16,12 @@ import org.geoserver.monitor.Query.Comparison;
 
 public class OWSDetailsPanel extends OWSSummaryChartBasePanel {
 
-    public OWSDetailsPanel(String id, Monitor monitor, String owsService) {
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 8958233133832178632L;
+
+	public OWSDetailsPanel(String id, Monitor monitor, String owsService) {
         super(id, monitor, owsService);
     }
 
@@ -36,7 +41,7 @@ public class OWSDetailsPanel extends OWSSummaryChartBasePanel {
 
     class DataGatherer implements RequestDataVisitor {
 
-        HashMap<String,Integer> data = new HashMap();
+        HashMap<String,Integer> data = new HashMap<String, Integer>();
         
         public void visit(RequestData req, Object... aggregates) {
             String op = req.getOperation().toLowerCase();

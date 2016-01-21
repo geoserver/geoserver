@@ -14,7 +14,12 @@ import org.jfree.data.time.RegularTimePeriod;
 
 public class MonthlyActivityPanel extends ActivityChartBasePanel {
 
-    public MonthlyActivityPanel(String id, Monitor monitor) {
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 4759510768065522723L;
+
+	public MonthlyActivityPanel(String id, Monitor monitor) {
         super(id, monitor);
     }
 

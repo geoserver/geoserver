@@ -38,7 +38,11 @@ import org.jfree.data.xy.XYDataset;
 
 public abstract class ActivityChartBasePanel extends Panel {
     
-    protected static long PAGE_OFFSET = 1000;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -2436197080363116473L;
+	protected static long PAGE_OFFSET = 1000;
     protected static SimpleDateFormat FORMAT = new SimpleDateFormat("yyyy-MM-dd");
     
     Date from;
@@ -54,28 +58,43 @@ public abstract class ActivityChartBasePanel extends Panel {
         add(chartImage = new NonCachingImage("chart", resource));
         chartImage.setOutputMarkupId(true);
         
-        Form form = new Form("form");
+        Form<?> form = new Form<Void>("form");
         add(form);
         
         from = new Date(range[0].getTime());
         to = new Date(range[1].getTime());
         
         form.add(new DateTimeField("from", new PropertyModel<Date>(this,"from")) {
-            @Override
+            /**
+			 * 
+			 */
+			private static final long serialVersionUID = -6541833048507323265L;
+
+			@Override
             protected boolean use12HourFormat() {
                 return false;
             }
         });
         form.add(new DateTimeField("to", new PropertyModel<Date>(this, "to")) {
-            @Override
+            /**
+			 * 
+			 */
+			private static final long serialVersionUID = 1306927761884039503L;
+
+			@Override
             protected boolean use12HourFormat() {
                 return false;
             }
         });
         
         form.add(new AjaxButton("refresh") {
-            @Override
-            protected void onSubmit(AjaxRequestTarget target, Form form) {
+            /**
+			 * 
+			 */
+			private static final long serialVersionUID = -6954067333262732996L;
+
+			@Override
+            protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
                 Monitor monitor = 
                     ((GeoServerApplication)getApplication()).getBeanOfType(Monitor.class);
                 
@@ -96,7 +115,7 @@ public abstract class ActivityChartBasePanel extends Panel {
         
         HashMap<RegularTimePeriod,Integer> data = gatherer.getData();
         
-        Class timeUnitClass = getTimePeriod(range[0]).getClass();
+        Class<?> timeUnitClass = getTimePeriod(range[0]).getClass();
         TimeSeries series = new TimeSeries("foo", timeUnitClass);
         for (Map.Entry<RegularTimePeriod, Integer> d : data.entrySet()) {
             series.add(new TimeSeriesDataItem(d.getKey(), d.getValue()));

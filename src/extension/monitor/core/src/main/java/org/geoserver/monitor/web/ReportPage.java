@@ -10,8 +10,13 @@ import org.geoserver.web.GeoServerSecuredPage;
 
 public class ReportPage extends GeoServerSecuredPage {
 
-    public ReportPage() {
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -8211624833480293771L;
+
+	public ReportPage() {
         
-        add(new BookmarkablePageLink("owsSummary", OWSSummaryPage.class));
+        add(new BookmarkablePageLink<OWSSummaryPage>("owsSummary", OWSSummaryPage.class));
     }
 }

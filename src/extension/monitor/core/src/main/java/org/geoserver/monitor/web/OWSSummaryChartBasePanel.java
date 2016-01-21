@@ -18,7 +18,11 @@ import org.jfree.data.general.DefaultPieDataset;
 
 public abstract class OWSSummaryChartBasePanel extends Panel {
 
-    protected String owsService;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 8914945614020025223L;
+	protected String owsService;
     
     public OWSSummaryChartBasePanel(String id, Monitor monitor, String owsService) {
         super(id);

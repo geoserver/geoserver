@@ -9,15 +9,18 @@ import java.util.Calendar;
 import java.util.Date;
 
 import org.geoserver.monitor.Monitor;
-import org.jfree.data.time.Hour;
-import org.jfree.data.time.Minute;
 import org.jfree.data.time.RegularTimePeriod;
 import org.jfree.data.time.Second;
 
 
 public class DailyActivityPanel extends ActivityChartBasePanel {
 
-    public DailyActivityPanel(String id, Monitor monitor) {
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -3347402344921524474L;
+
+	public DailyActivityPanel(String id, Monitor monitor) {
         super(id, monitor);
     }
 

@@ -18,7 +18,12 @@ import org.geoserver.web.GeoServerSecuredPage;
 public class MonitorBasePage extends GeoServerSecuredPage {
 
 
-    protected Monitor getMonitor() {
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 5400909938411833603L;
+
+	protected Monitor getMonitor() {
         return getGeoServerApplication().getBeanOfType(Monitor.class);
     }
     

@@ -15,33 +15,58 @@ import org.apache.wicket.model.ResourceModel;
 
 public class ActivityPage extends MonitorBasePage {
 
-    public ActivityPage() {
-        List tabs = new ArrayList();
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 4172665268503474405L;
+
+	public ActivityPage() {
+        List<AbstractTab> tabs = new ArrayList<AbstractTab>();
         tabs.add(new AbstractTab(new ResourceModel("live")) {
-            @Override
+            /**
+			 * 
+			 */
+			private static final long serialVersionUID = 4764386249807182104L;
+
+			@Override
             public Panel getPanel(String panelId) {
                 return new LiveActivityPanel(panelId);
             }
         });
         tabs.add(new AbstractTab(new ResourceModel("daily")) {
-            @Override
+            /**
+			 * 
+			 */
+			private static final long serialVersionUID = 9173511149822486084L;
+
+			@Override
             public Panel getPanel(String panelId) {
                 return new DailyActivityPanel(panelId, getMonitor());
             }
         });
         tabs.add(new AbstractTab(new ResourceModel("weekly")) {
-            @Override
+            /**
+			 * 
+			 */
+			private static final long serialVersionUID = -7578737647862625538L;
+
+			@Override
             public Panel getPanel(String panelId) {
                 return new WeeklyActivityPanel(panelId, getMonitor());
             }
         });
         tabs.add(new AbstractTab(new ResourceModel("monthly")) {
-            @Override
+            /**
+			 * 
+			 */
+			private static final long serialVersionUID = -5620008935388738857L;
+
+			@Override
             public Panel getPanel(String panelId) {
                 return new MonthlyActivityPanel(panelId, getMonitor());
             }
         });
-        add(new TabbedPanel("charts", tabs));
+        add(new TabbedPanel<AbstractTab>("charts", tabs));
         
     }
 }

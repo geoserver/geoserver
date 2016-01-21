@@ -30,12 +30,9 @@ import wicketdnd.theme.WebTheme;
  */
 public class GeofenceServerPage extends GeoServerSecuredPage { 
     
-    /**
-	 * 
-	 */
-	private static final long serialVersionUID = -8258166751239553791L;
+    private static final long serialVersionUID = -8258166751239553791L;
 
-	private GeofenceRulesModel rulesModel;
+    private GeofenceRulesModel rulesModel;
     
     private GeoServerTablePanel<ShortRule> rulesPanel;
     
@@ -45,10 +42,7 @@ public class GeofenceServerPage extends GeoServerSecuredPage {
                 
         // the add button
         add(new AjaxLink<Object>("addNew") {
-            /**
-			 * 
-			 */
-			private static final long serialVersionUID = 8443763075141885559L;
+            private static final long serialVersionUID = 8443763075141885559L;
 
 			@Override
             public void onClick(AjaxRequestTarget target) {
@@ -58,10 +52,7 @@ public class GeofenceServerPage extends GeoServerSecuredPage {
         
         // the removal button
         add(remove = new AjaxLink<Object>("removeSelected") {
-            /**
-			 * 
-			 */
-			private static final long serialVersionUID = 3581476968062788921L;
+            private static final long serialVersionUID = 3581476968062788921L;
 
 			@Override
             public void onClick(AjaxRequestTarget target) {
@@ -76,12 +67,9 @@ public class GeofenceServerPage extends GeoServerSecuredPage {
         add(rulesPanel =  new GeoServerTablePanel<ShortRule>("rulesPanel", 
                 rulesModel = new GeofenceRulesModel(), true) {
 
-            /**
-					 * 
-					 */
-					private static final long serialVersionUID = -8943273843044917552L;
+            private static final long serialVersionUID = -8943273843044917552L;
 
-			@Override
+            @Override
             protected Component getComponentForProperty(String id, IModel<ShortRule> itemModel, Property<ShortRule> property) {
 
                 if (property == GeofenceRulesModel.BUTTONS) {
@@ -100,12 +88,9 @@ public class GeofenceServerPage extends GeoServerSecuredPage {
         rulesPanel.add(new WebTheme());
         rulesPanel.add(new DragSource(Operation.MOVE).drag("tr"));
         rulesPanel.add(new DropTarget(Operation.MOVE) {
-            /**
-			 * 
-			 */
-			private static final long serialVersionUID = 543875667418965337L;
+            private static final long serialVersionUID = 543875667418965337L;
 
-			public void onDrop(AjaxRequestTarget target, Transfer transfer, Location location) {
+            public void onDrop(AjaxRequestTarget target, Transfer transfer, Location location) {
                 if (location == null || !(location.getComponent().getDefaultModel().getObject() instanceof ShortRule)) {
                     return;
                 }
@@ -133,11 +118,8 @@ public class GeofenceServerPage extends GeoServerSecuredPage {
      */
     private class ButtonPanel extends Panel {
         
-        /**
-		 * 
-		 */
-		private static final long serialVersionUID = 833648465957566970L;
-		private ImageAjaxLink<?> upLink;
+        private static final long serialVersionUID = 833648465957566970L;
+	private ImageAjaxLink<?> upLink;
         private ImageAjaxLink<?> downLink;      
         
         public ButtonPanel( String id, final ShortRule rule ) {

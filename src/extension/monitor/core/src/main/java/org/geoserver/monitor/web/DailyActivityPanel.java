@@ -15,12 +15,9 @@ import org.jfree.data.time.Second;
 
 public class DailyActivityPanel extends ActivityChartBasePanel {
 
-    /**
-	 * 
-	 */
-	private static final long serialVersionUID = -3347402344921524474L;
+    private static final long serialVersionUID = -3347402344921524474L;
 
-	public DailyActivityPanel(String id, Monitor monitor) {
+    public DailyActivityPanel(String id, Monitor monitor) {
         super(id, monitor);
     }
 

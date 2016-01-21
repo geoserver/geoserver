@@ -24,17 +24,16 @@ public class GeoSearchPublishedConfigPanel extends PublishedConfigurationPanel<P
 
     private static final long serialVersionUID = 5739568775378997529L;
 
-    @SuppressWarnings("unchecked")
     public GeoSearchPublishedConfigPanel(String id, IModel<? extends PublishedInfo> model) {
         super(id, model);
 
         PropertyModel<MetadataMap> metadataModel;
         metadataModel = new PropertyModel<MetadataMap>(model, "metadata");
 
-        MapModel lastModModel = new MapModel(metadataModel, LAST_MODIFIED);
+        MapModel<Long> lastModModel = new MapModel<Long>(metadataModel, LAST_MODIFIED);
         lastModModel.setObject(Long.valueOf(System.currentTimeMillis()));
 
-        MapModel enableIndexModel = new MapModel(metadataModel, INDEXING_ENABLED);
+        MapModel<Boolean> enableIndexModel = new MapModel<Boolean>(metadataModel, INDEXING_ENABLED);
         CheckBox enable = new CheckBox("geosearch.enable", enableIndexModel);
         add(enable);
     }

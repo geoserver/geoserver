@@ -21,47 +21,46 @@ import org.apache.wicket.model.IModel;
  */
 public class MapModel<T> implements IModel<T>, IChainingModel<T> {
     private static final long serialVersionUID = 3122822158252376260L;
-    IModel<Map<String,T>> model;
+    IModel<? extends Map<String,?>> model;
     String expression;
     
-    public MapModel( Map<String,T> map, String expression ) {
-        this(new MapWrappingModel<T>(map), expression);
+    public MapModel( Map<String,? extends Object> map, String expression ) {
+        this(new MapWrappingModel(map), expression);
     }
     
-    public MapModel(IModel<Map<String,T>> model, String expression){
+    public MapModel(IModel<? extends Map<String,? extends Object>> model, String expression){
         this.model = model;
         this.expression = expression;
     }
     
+    @SuppressWarnings("unchecked")
     public T getObject() {
-        return model.getObject().get(expression);
+        return (T) model.getObject().get(expression);
     }
 
+    @SuppressWarnings("unchecked")
     public void setObject(T val) {
-        model.getObject().put(expression, val);
+        ((Map<String, Object>) model.getObject()).put(expression, val);
     }
 
     public void detach() {
         model.detach();
     }
     
-    private static class MapWrappingModel<T> implements IModel<Map<String,T>>{
-        /**
-         * 
-         */
+    private static class MapWrappingModel implements IModel<Map<String,?>>{
         private static final long serialVersionUID = -1474150801738143281L;
         
-        private Map<String,T> myMap;
+        private Map<String,?> myMap;
         
-        public MapWrappingModel(Map<String,T> m){
+        public MapWrappingModel(Map<String,?> m){
             myMap = m;
         }
 
-        public Map<String, T> getObject() {
+        public Map<String, ?> getObject() {
             return myMap;
         }
 
-        public void setObject(Map<String,T> arg0) {
+        public void setObject(Map<String,?> arg0) {
         }
 
         public void detach() {

@@ -15,53 +15,38 @@ import org.apache.wicket.model.ResourceModel;
 
 public class OWSSummaryPage extends MonitorBasePage {
 
-    /**
-	 * 
-	 */
-	private static final long serialVersionUID = -8012730662519508306L;
+    private static final long serialVersionUID = -8012730662519508306L;
 
-	public OWSSummaryPage() {
+    public OWSSummaryPage() {
         List<AbstractTab> tabs = new ArrayList<AbstractTab>();
         tabs.add(new AbstractTab(new ResourceModel("overview")) {
-            /**
-			 * 
-			 */
-			private static final long serialVersionUID = 1037158550051655148L;
+            private static final long serialVersionUID = 1037158550051655148L;
 
-			@Override
+            @Override
             public Panel getPanel(String panelId) {
                 return new OWSOverviewPanel(panelId, getMonitor(), null);
             }
         });
         tabs.add(new AbstractTab(new ResourceModel("wfs")) {
-            /**
-			 * 
-			 */
-			private static final long serialVersionUID = -3085421260326720801L;
+            private static final long serialVersionUID = -3085421260326720801L;
 
-			@Override
+            @Override
             public Panel getPanel(String panelId) {
                 return new OWSDetailsPanel(panelId, getMonitor(), "WFS");
             }
         });
         tabs.add(new AbstractTab(new ResourceModel("wms")) {
-            /**
-			 * 
-			 */
-			private static final long serialVersionUID = -6494862041051243036L;
+            private static final long serialVersionUID = -6494862041051243036L;
 
-			@Override
+            @Override
             public Panel getPanel(String panelId) {
                 return new OWSDetailsPanel(panelId, getMonitor(), "WMS");
             }
         });
         tabs.add(new AbstractTab(new ResourceModel("wcs")) {
-            /**
-			 * 
-			 */
-			private static final long serialVersionUID = 2330074592986120520L;
+            private static final long serialVersionUID = 2330074592986120520L;
 
-			@Override
+            @Override
             public Panel getPanel(String panelId) {
                 return new OWSDetailsPanel(panelId, getMonitor(), "WCS");
             }

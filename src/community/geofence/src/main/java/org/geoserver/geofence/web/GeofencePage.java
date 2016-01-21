@@ -223,7 +223,7 @@ public class GeofencePage extends GeoServerSecuredPage {
 
     }
 
-    private final Map<String, String> statsValues = new HashMap<String, String>();
+    private final Map<String, Object> statsValues = new HashMap<String, Object>();
     private final Set<Label> statsLabels = new HashSet<Label>();
 
     private static final String KEY_RULE_SIZE = "rule.size";

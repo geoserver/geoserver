@@ -38,11 +38,9 @@ import org.jfree.data.xy.XYDataset;
 
 public abstract class ActivityChartBasePanel extends Panel {
     
-    /**
-	 * 
-	 */
-	private static final long serialVersionUID = -2436197080363116473L;
-	protected static long PAGE_OFFSET = 1000;
+    private static final long serialVersionUID = -2436197080363116473L;
+
+    protected static long PAGE_OFFSET = 1000;
     protected static SimpleDateFormat FORMAT = new SimpleDateFormat("yyyy-MM-dd");
     
     Date from;
@@ -65,10 +63,7 @@ public abstract class ActivityChartBasePanel extends Panel {
         to = new Date(range[1].getTime());
         
         form.add(new DateTimeField("from", new PropertyModel<Date>(this,"from")) {
-            /**
-			 * 
-			 */
-			private static final long serialVersionUID = -6541833048507323265L;
+            private static final long serialVersionUID = -6541833048507323265L;
 
 			@Override
             protected boolean use12HourFormat() {
@@ -76,10 +71,7 @@ public abstract class ActivityChartBasePanel extends Panel {
             }
         });
         form.add(new DateTimeField("to", new PropertyModel<Date>(this, "to")) {
-            /**
-			 * 
-			 */
-			private static final long serialVersionUID = 1306927761884039503L;
+            private static final long serialVersionUID = 1306927761884039503L;
 
 			@Override
             protected boolean use12HourFormat() {
@@ -88,10 +80,7 @@ public abstract class ActivityChartBasePanel extends Panel {
         });
         
         form.add(new AjaxButton("refresh") {
-            /**
-			 * 
-			 */
-			private static final long serialVersionUID = -6954067333262732996L;
+            private static final long serialVersionUID = -6954067333262732996L;
 
 			@Override
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {

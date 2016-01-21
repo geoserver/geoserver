@@ -16,12 +16,9 @@ import org.geoserver.monitor.Query.Comparison;
 
 public class OWSOverviewPanel extends OWSSummaryChartBasePanel {
 
-    /**
-	 * 
-	 */
-	private static final long serialVersionUID = 103552954574455043L;
+    private static final long serialVersionUID = 103552954574455043L;
 
-	public OWSOverviewPanel(String id, Monitor monitor, String owsService) {
+    public OWSOverviewPanel(String id, Monitor monitor, String owsService) {
         super(id, monitor, owsService);
     }
 

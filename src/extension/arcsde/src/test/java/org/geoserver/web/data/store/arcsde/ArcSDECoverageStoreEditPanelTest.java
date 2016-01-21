@@ -50,9 +50,10 @@ public class ArcSDECoverageStoreEditPanelTest extends GeoServerWicketTestSupport
 
     private CoverageStoreInfo storeInfo;
 
-    private Form editForm;
+    private Form<CoverageStoreInfo> editForm;
 
-    private ArcSDECoverageStoreEditPanel startPanelToEditStore() {
+    @SuppressWarnings("unchecked")
+	private ArcSDECoverageStoreEditPanel startPanelToEditStore() {
         final Catalog catalog = getCatalog();
         storeInfo = catalog.getFactory().createCoverageStore();
         storeInfo.setDescription("fake arcsde store");
@@ -70,7 +71,7 @@ public class ArcSDECoverageStoreEditPanelTest extends GeoServerWicketTestSupport
         page = new CoverageStoreEditPage(storeId);
         tester.startPage(page);
 
-        editForm = (Form) tester.getComponentFromLastRenderedPage("rasterStoreForm");
+        editForm = (Form<CoverageStoreInfo>) tester.getComponentFromLastRenderedPage("rasterStoreForm");
 
         ArcSDECoverageStoreEditPanel panel = (ArcSDECoverageStoreEditPanel) tester
                 .getComponentFromLastRenderedPage("rasterStoreForm:parametersPanel");
@@ -78,12 +79,13 @@ public class ArcSDECoverageStoreEditPanelTest extends GeoServerWicketTestSupport
         return panel;
     }
 
-    private ArcSDECoverageStoreEditPanel startPanelForNewStore() {
+    @SuppressWarnings("unchecked")
+	private ArcSDECoverageStoreEditPanel startPanelForNewStore() {
         login();
         page = new CoverageStoreNewPage(ArcSDERasterFormat.getInstance().getName());
         tester.startPage(page);
 
-        editForm = (Form) tester.getComponentFromLastRenderedPage("rasterStoreForm");
+        editForm = (Form<CoverageStoreInfo>) tester.getComponentFromLastRenderedPage("rasterStoreForm");
 
         ArcSDECoverageStoreEditPanel panel = (ArcSDECoverageStoreEditPanel) tester
                 .getComponentFromLastRenderedPage("rasterStoreForm:parametersPanel");
@@ -99,8 +101,8 @@ public class ArcSDECoverageStoreEditPanelTest extends GeoServerWicketTestSupport
         // null... odd.
         storeInfo.setName("test storeInfo Name");
 
-        editForm = new Form("formId");
-        editForm.setModel(new Model(storeInfo));
+        editForm = new Form<CoverageStoreInfo>("formId");
+        editForm.setModel(new Model<CoverageStoreInfo>(storeInfo));
         GeoServerApplication app = getGeoServerApplication();
 
         StoreEditPanel storeEditPanel = StoreExtensionPoints.getStoreEditPanel("id", editForm,
@@ -236,7 +238,7 @@ public class ArcSDECoverageStoreEditPanelTest extends GeoServerWicketTestSupport
             }
         });
         final String dropDownPath = base + "tableNamePanel:border:border_body:rasterTable";
-        final DropDownChoice choice = (DropDownChoice) tester
+        final DropDownChoice<?> choice = (DropDownChoice<?>) tester
                 .getComponentFromLastRenderedPage(dropDownPath);
         assertTrue(choice.getChoices().isEmpty());
 

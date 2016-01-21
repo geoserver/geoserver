@@ -63,21 +63,21 @@ public class RasterTableSelectionPanel extends Panel {
     private static final String RESOURCE_KEY_PREFIX = RasterTableSelectionPanel.class
             .getSimpleName();
 
-    private final DropDownChoice choice;
+    private final DropDownChoice<String> choice;
 
-    private FormComponent serverComponent;
+    private FormComponent<?> serverComponent;
 
-    private FormComponent portComponent;
+    private FormComponent<?> portComponent;
 
-    private FormComponent instanceComponent;
+    private FormComponent<?> instanceComponent;
 
-    private FormComponent userComponent;
+    private FormComponent<?> userComponent;
 
-    private FormComponent passwordComponent;
+    private FormComponent<?> passwordComponent;
 
-    public RasterTableSelectionPanel(final String id, final IModel paramsModel,
-            final Form storeEditForm, FormComponent server, FormComponent port,
-            FormComponent instance, FormComponent user, FormComponent password) {
+    public RasterTableSelectionPanel(final String id, final IModel<Map<String, Object>> paramsModel,
+            final Form<?> storeEditForm, FormComponent<?> server, FormComponent<?> port,
+            FormComponent<?> instance, FormComponent<?> user, FormComponent<?> password) {
 
         super(id);
         this.serverComponent = server;
@@ -86,7 +86,7 @@ public class RasterTableSelectionPanel extends Panel {
         this.userComponent = user;
         this.passwordComponent = password;
 
-        final MapModel tableNameModel = new MapModel(paramsModel, TABLE_NAME);
+        final MapModel<String> tableNameModel = new MapModel<String>(paramsModel, TABLE_NAME);
 
         List<String> choices = new ArrayList<String>();
         if (tableNameModel.getObject() != null) {
@@ -94,7 +94,7 @@ public class RasterTableSelectionPanel extends Panel {
             choices.add(String.valueOf(currentTableName));
         }
 
-        choice = new DropDownChoice("rasterTable", tableNameModel, choices);
+        choice = new DropDownChoice<String>("rasterTable", tableNameModel, choices);
 
         /*
          * Make table name match the option id
@@ -132,12 +132,12 @@ public class RasterTableSelectionPanel extends Panel {
              * the list of connection parameters than at {@link #onSumbit}
              */
             @Override
-            protected void onError(AjaxRequestTarget target, Form form) {
+            protected void onError(AjaxRequestTarget target, Form<?> form) {
                 onSubmit(target, form);
             }
 
             @Override
-            protected void onSubmit(final AjaxRequestTarget target, final Form form) {
+            protected void onSubmit(final AjaxRequestTarget target, final Form<?> form) {
 
                 final String server = serverComponent.getValue();
                 final String port = portComponent.getValue();
@@ -172,7 +172,7 @@ public class RasterTableSelectionPanel extends Panel {
         }
     }
 
-    public DropDownChoice getFormComponent() {
+    public DropDownChoice<String> getFormComponent() {
         return choice;
     }
 

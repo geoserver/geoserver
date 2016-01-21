@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -7,6 +7,7 @@ package org.geoserver.importer.web;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Method;
 import java.net.URLEncoder;
 import java.util.Arrays;
 import java.util.List;
@@ -35,7 +36,6 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.request.resource.PackageResourceReference;
-import org.apache.wicket.request.resource.ResourceReference;
 import org.apache.wicket.util.time.Duration;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.NamespaceInfo;
@@ -78,8 +78,8 @@ public class ImportDataPage extends GeoServerSecuredPage {
     TextField workspaceNameTextField;
     Component statusLabel;
 
-    StoreModel store;
-    DropDownChoice storeChoice;
+    StoreModel<StoreInfo> store;
+    DropDownChoice<StoreInfo> storeChoice;
     
     String storeName;
     
@@ -149,8 +149,8 @@ public class ImportDataPage extends GeoServerSecuredPage {
 
         //store chooser
         WorkspaceInfo ws = (WorkspaceInfo) workspace.getObject();
-        store = new StoreModel(ws != null ? catalog.getDefaultDataStore(ws) : null);
-        storeChoice = new DropDownChoice("store", store, new EnabledStoresModel(workspace),
+        store = new StoreModel<StoreInfo>(ws != null ? catalog.getDefaultDataStore(ws) : null);
+        storeChoice = new DropDownChoice<StoreInfo>("store", store, new EnabledStoresModel(workspace),
             new StoreChoiceRenderer()) {
             protected String getNullValidKey() {
                 return ImportDataPage.class.getSimpleName() + "." + super.getNullValidKey();
@@ -203,7 +203,8 @@ public class ImportDataPage extends GeoServerSecuredPage {
 
                 cancel.setDefaultModelObject(jobid);
                 this.add(new AbstractAjaxTimerBehavior(Duration.seconds(3)) {
-                   protected void onTimer(AjaxRequestTarget target) {
+                    @Override
+                    protected void onTimer(AjaxRequestTarget target) {
                        Importer importer = ImporterWebUtils.importer();
                        Task<ImportContext> t = importer.getTask(jobid);
 
@@ -256,7 +257,17 @@ public class ImportDataPage extends GeoServerSecuredPage {
 
                        statusLabel.setDefaultModelObject(msg);
                        target.add(statusLabel);
-                   }; 
+                   };
+                   
+                   @Override
+                   public boolean canCallListenerInterface(Component component, Method method) {
+                       if(self.equals(component) && 
+                               method.getDeclaringClass().equals(org.apache.wicket.behavior.IBehaviorListener.class) &&
+                               method.getName().equals("onRequest")){
+                           return true;
+                       }
+                       return super.canCallListenerInterface(component, method);
+                   }
                 });
             }
         });
@@ -379,8 +390,7 @@ public class ImportDataPage extends GeoServerSecuredPage {
             }
         }
 
-        StoreInfo targetStore = (StoreInfo) (store.getObject() != null ? store
-                .getObject() : null);
+        StoreInfo targetStore = store.getObject();
 
         Importer importer = ImporterWebUtils.importer();
         return importer.createContextAsync(source, targetWorkspace, targetStore);

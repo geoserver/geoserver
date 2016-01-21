@@ -14,7 +14,7 @@ import java.util.Locale;
 
 import javax.imageio.ImageIO;
 
-import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.apache.wicket.request.IRequestParameters;
 import org.apache.wicket.request.resource.AbstractResource;
 import org.apache.wicket.util.lang.Bytes;
 import org.apache.wicket.util.resource.AbstractResourceStream;
@@ -53,10 +53,10 @@ public class DynamicCrsMapResource extends AbstractResource {
         rsp.setWriteCallback(new WriteCallback() {
             @Override
             public void writeData(Attributes attributes) throws IOException {
-                PageParameters pp = attributes.getParameters();
-                int width = pp.get("WIDTH").toInt(400);
-                int height = pp.get("HEIGHT").toInt(200);
-                String bboxStr = pp.get("BBOX").toOptionalString();
+                IRequestParameters params = attributes.getRequest().getQueryParameters();
+                int width = params.getParameterValue("WIDTH").toInt(400);
+                int height = params.getParameterValue("HEIGHT").toInt(200);
+                String bboxStr = params.getParameterValue("BBOX").toOptionalString();
         
                 ByteArrayOutputStream output = null;
                 if (bboxStr != null) {

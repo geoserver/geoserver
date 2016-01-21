@@ -17,7 +17,6 @@ import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormChoiceComponentUpdatingBehavior;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
-import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
@@ -153,7 +152,8 @@ public class TileMatrixSetEditor extends FormComponentPanel<List<Grid>> {
                 
                 Iterator<Component> iterator = grids.iterator();
                 while (iterator.hasNext()) {
-                    ListItem<Grid> next = (ListItem<Grid>) iterator.next();
+                    @SuppressWarnings("unchecked")
+					ListItem<Grid> next = (ListItem<Grid>) iterator.next();
                     next.get("resolution").setEnabled(useResolutions);
                     next.get("scale").setEnabled(!useResolutions);
                 }
@@ -258,7 +258,7 @@ public class TileMatrixSetEditor extends FormComponentPanel<List<Grid>> {
                 if (TileMatrixSetEditor.this.readOnly) {
                     removeLink = new Label("removeLink", "");
                 } else {
-                    removeLink = new ImageAjaxLink("removeLink", GWCIconFactory.DELETE_ICON) {
+                    removeLink = new ImageAjaxLink<Void>("removeLink", GWCIconFactory.DELETE_ICON) {
                         private static final long serialVersionUID = 1L;
 
                         @Override

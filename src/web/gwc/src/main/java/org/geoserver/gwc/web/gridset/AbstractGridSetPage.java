@@ -22,7 +22,6 @@ import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
-import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.validation.IValidatable;
@@ -83,8 +82,9 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
     protected final TileMatrixSetEditor tileMatrixSetEditor;
 
     protected final Component addLevelLink;
+    
+    protected final FeedbackPanel feedback;
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
     public AbstractGridSetPage(final PageParameters parameters) {
 
         final String gridSetName;
@@ -111,7 +111,7 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
         IModel<GridSetInfo> model = new Model<GridSetInfo>(gridsetInfo);
 
         form = new Form<GridSetInfo>("gridSetForm", model);
-        FeedbackPanel feedback = new FeedbackPanel("feedback");
+        feedback = new FeedbackPanel("feedback");
         feedback.setOutputMarkupId(true);
         form.add(feedback);
 
@@ -127,7 +127,7 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
         form.add(tileMatrixSetEditor = new TileMatrixSetEditor("tileMatrixSetEditor", model));
         tileMatrixSetEditor.setOutputMarkupId(true);
 
-        cancelLink = new BookmarkablePageLink("cancel", GridSetsPage.class);
+        cancelLink = new BookmarkablePageLink<>("cancel", GridSetsPage.class);
         form.add(cancelLink);
 
         saveLink = saveLink(form);
@@ -152,12 +152,18 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
         });
 
         addLevelLink = new GeoServerAjaxFormLink("addZoomLevel", form) {
-            private static final long serialVersionUID = 1L;
+			private static final long serialVersionUID = 1202251941625034786L;
 
-            @Override
-            protected void onClick(AjaxRequestTarget target, Form form) {
+			@Override
+            protected void onClick(AjaxRequestTarget target, Form<?> form) {
+				crs.processInput();
+                bounds.processInput();
+                tileWidth.getFormComponent().processInput();
+                tileHeight.getFormComponent().processInput();
+            	
                 addZoomLevel(target);
                 target.add(tileMatrixSetEditor);
+                target.add(feedback);
             }
         };
 
@@ -166,21 +172,10 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
     }
 
     void addZoomLevel(AjaxRequestTarget target) {
-        //crs.processInput();
-        //bounds.processInput();
-        //tileWidth.getFormComponent().processInput();
-        //tileHeight.getFormComponent().processInput();
-
         ReferencedEnvelope bbox = (ReferencedEnvelope) bounds.getModelObject();
         if (null == bbox) {
-            String message = getString("AbstractGridSetPage.cantAddZoomLevel");
-            FeedbackPanel feedback = (FeedbackPanel) form.get("feedback");
-            if (feedback != null) {
-                feedback.error(message);
-                target.add(feedback);
-            } else {
-                form.error(message);
-            }
+            String message = new StringResourceModel("AbstractGridSetPage.cantAddZoomLevel").getString();
+            feedback.error(message);
             return;
         }
         Integer width = (Integer) tileWidth.getFormComponent().getModelObject();
@@ -197,8 +192,10 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
 
             @Override
             protected void onClick(AjaxRequestTarget target, Form<?> form) {
+            	crs.processInput();
                 computeBounds();
                 target.add(bounds);
+                target.add(feedback);
                 target.add(tileMatrixSetEditor);
             }
         };
@@ -207,18 +204,16 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
 
     void computeBounds() {
         // perform manual processing of the required fields
-        //crs.processInput();
-        //bounds.processInput();
         CoordinateReferenceSystem coordSys;
         coordSys = (CoordinateReferenceSystem) crs.getModelObject();
         if (coordSys == null) {
-            bounds.error(getString("AbstractGridsetPage.computeBounds.crsNotSet"));
+            bounds.error(new StringResourceModel("AbstractGridsetPage.computeBounds.crsNotSet").getString());
             return;
         }
         GWC mediator = GWC.get();
         ReferencedEnvelope aov = mediator.getAreaOfValidity(coordSys);
         if (aov == null) {
-            bounds.error(getString("AbstractGridsetPage.computeBounds.aovNotSet"));
+            bounds.error(new StringResourceModel("AbstractGridsetPage.computeBounds.aovNotSet").getString());
         } else {
             bounds.setModelObject(aov);
         }

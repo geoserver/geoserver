@@ -14,7 +14,9 @@ import org.geowebcache.grid.GridSet;
 
 public class GridSetEditPage extends AbstractGridSetPage {
 
-    private String originalName;
+	private static final long serialVersionUID = 1748616637023642755L;
+	
+	private String originalName;
 
     public GridSetEditPage(PageParameters parameters) {
         super(parameters);

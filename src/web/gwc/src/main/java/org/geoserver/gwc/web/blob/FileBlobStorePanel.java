@@ -28,17 +28,22 @@ public class FileBlobStorePanel extends Panel {
 
     public FileBlobStorePanel(String id, final IModel<FileBlobStoreConfig> configModel) {
         super(id, configModel);
-
+    }
+    
+    @SuppressWarnings("unchecked")
+	@Override
+    public void onInitialize() {
         DirectoryParamPanel paramPanel;
         add(paramPanel = new DirectoryParamPanel("baseDirectory", new PropertyModel<String>(
-                configModel.getObject(), "baseDirectory"), new ParamResourceModel("baseDirectory",
+                getDefaultModel().getObject(), "baseDirectory"), new ParamResourceModel("baseDirectory",
                 this), true));
         paramPanel.add(new AttributeModifier("title", new ResourceModel("baseDirectory.title")));
-        paramPanel.getFormComponent().setModel(paramPanel.getDefaultModel()); // disable filemodel
+        paramPanel.getFormComponent().setModel((IModel<String>) paramPanel.getDefaultModel()); // disable filemodel
         paramPanel.setFileFilter(new Model<DirectoryFileFilter>(
                 (DirectoryFileFilter) DirectoryFileFilter.INSTANCE));
         add(new TextField<Integer>("fileSystemBlockSize").setRequired(true)
                 .add(new AttributeModifier("title", new ResourceModel("fileSystemBlockSize.title"))));
+    	
     }
 
 }

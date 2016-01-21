@@ -7,29 +7,21 @@ package org.geoserver.web.admin;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.LinkedList;
 import java.util.logging.Level;
 
 import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.NumberTextField;
 import org.apache.wicket.markup.html.form.SubmitLink;
 import org.apache.wicket.markup.html.form.TextArea;
-import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.PropertyModel;
-import org.apache.wicket.request.IRequestHandler;
-import org.apache.wicket.request.Response;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.handler.resource.ResourceStreamRequestHandler;
-import org.apache.wicket.request.http.WebResponse;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.request.resource.ContentDisposition;
-import org.apache.wicket.request.resource.ResourceStreamResource;
-import org.apache.wicket.util.io.Streams;
 import org.apache.wicket.util.resource.FileResourceStream;
 import org.apache.wicket.util.resource.IResourceStream;
 import org.apache.wicket.validation.validator.RangeValidator;
@@ -46,12 +38,15 @@ import org.geoserver.web.GeoServerSecuredPage;
  * @author Andrea Aime - OpenGeo
  */
 public class LogPage extends GeoServerSecuredPage {
+    private static final long serialVersionUID = 4742103132576413211L;
+
     static final String LINES = "lines";
 
     int lines = 1000;
 
     File logFile;
 
+    @SuppressWarnings("serial")
     public LogPage(PageParameters params) {
         @SuppressWarnings("rawtypes")
         Form<?> form = new Form("form");
@@ -101,16 +96,16 @@ public class LogPage extends GeoServerSecuredPage {
             }
         });
 
-        TextField lines = new TextField("lines", new PropertyModel(this, "lines"));
+        NumberTextField<Integer> lines = new NumberTextField<Integer>("lines", new PropertyModel<Integer>(this, "lines"));
         lines.add(RangeValidator.minimum(1));
         form.add(lines);
 
-        TextArea logs = new TextArea("logs", new GSLogsModel());
+        TextArea<String> logs = new TextArea<String>("logs", new GSLogsModel());
         logs.setOutputMarkupId(true);
         logs.setMarkupId("logs");
         add(logs);
 
-        add(new Link("download") {
+        add(new Link<Object>("download") {
 
             @Override
             public void onClick() {
@@ -128,10 +123,11 @@ public class LogPage extends GeoServerSecuredPage {
 
     }
 
-    public class GSLogsModel extends LoadableDetachableModel {
+    public class GSLogsModel extends LoadableDetachableModel<String> {
+        private static final long serialVersionUID = 3364442904754424569L;
 
         @Override
-        protected Object load() {
+        protected String load() {
             BufferedReader br = null;
             try {
                 // load the logs line by line, keep only the last 1000 lines
@@ -150,7 +146,7 @@ public class LogPage extends GeoServerSecuredPage {
                 for (String logLine : lineList) {
                     result.append(logLine).append("\n");
                 }
-                return result;
+                return result.toString();
             } catch (Exception e) {
                 error(e);
                 return e.getMessage();

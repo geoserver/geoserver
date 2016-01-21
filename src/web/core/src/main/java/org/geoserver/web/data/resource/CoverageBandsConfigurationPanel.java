@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -81,13 +81,7 @@ public class CoverageBandsConfigurationPanel extends ResourceConfigurationPanel 
            } else if (value.equals("∞")) {
                return new Double(Double.POSITIVE_INFINITY);
            } else {
-               final Number number = parse(value, BigDecimal.valueOf(Double.NEGATIVE_INFINITY), 
-                       BigDecimal.valueOf(Double.POSITIVE_INFINITY), Locale.US);
-               if (number == null) {
-                   return null;
-               }
-
-               return new Double(number.doubleValue());               
+               return super.convertToObject(value, locale);
            }
         }
 

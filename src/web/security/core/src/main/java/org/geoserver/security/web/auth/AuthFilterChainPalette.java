@@ -16,6 +16,7 @@ import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.extensions.markup.html.form.palette.Palette;
 import org.apache.wicket.extensions.markup.html.form.palette.component.Recorder;
+import org.apache.wicket.extensions.markup.html.form.palette.theme.DefaultTheme;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.model.IModel;
@@ -49,6 +50,7 @@ public class AuthFilterChainPalette extends Palette<String> {
                 }
         }, 10, true);
         this.choicesModel=(AvailableAuthFilterNamesModel)choicesModel;
+        add(new DefaultTheme());
     }
 
     public void setChain(VariableFilterChain chain) {

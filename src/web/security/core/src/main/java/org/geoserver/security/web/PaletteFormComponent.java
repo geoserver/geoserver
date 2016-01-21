@@ -14,6 +14,7 @@ import org.apache.wicket.Component;
 import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.extensions.markup.html.form.palette.Palette;
 import org.apache.wicket.extensions.markup.html.form.palette.component.Recorder;
+import org.apache.wicket.extensions.markup.html.form.palette.theme.DefaultTheme;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
@@ -66,6 +67,7 @@ public class PaletteFormComponent<T> extends FormComponentPanel {
                         getAvaliableHeaderPropertyKey()));
             }
         });
+        palette.add(new DefaultTheme());
         palette.setOutputMarkupId(true);
     }
 

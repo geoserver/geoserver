@@ -16,6 +16,7 @@ import org.apache.wicket.ajax.markup.html.form.AjaxCheckBox;
 import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.extensions.markup.html.form.palette.Palette;
 import org.apache.wicket.extensions.markup.html.form.palette.component.Recorder;
+import org.apache.wicket.extensions.markup.html.form.palette.theme.DefaultTheme;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
@@ -79,6 +80,7 @@ public class MimeTypesFormComponent extends FormComponentPanel {
                 return new Label(componentId, new ResourceModel(getAvaliableHeaderPropertyKey()));
             }
         });
+        palette.add(new DefaultTheme());
         palette.setOutputMarkupPlaceholderTag(true);
         //palette.setEnabled(isMimeTypeCheckingEnabled);
         toggleVisibility(isMimeTypeCheckingEnabled);

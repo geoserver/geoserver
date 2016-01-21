@@ -12,6 +12,7 @@ import java.util.List;
 import org.apache.wicket.Component;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.extensions.markup.html.form.palette.Palette;
+import org.apache.wicket.extensions.markup.html.form.palette.theme.DefaultTheme;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.model.IModel;
@@ -47,6 +48,7 @@ public class AuthenticationChainPalette extends Palette<String> {
                      return object.toString();
                 }
         }, 10, true);
+        add(new DefaultTheme());
     }
 
     static class AvailableAuthProviderNamesModel implements IModel<List<String>> {

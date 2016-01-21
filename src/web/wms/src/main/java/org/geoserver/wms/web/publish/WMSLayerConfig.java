@@ -11,6 +11,7 @@ import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.extensions.markup.html.form.palette.Palette;
+import org.apache.wicket.extensions.markup.html.form.palette.theme.DefaultTheme;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
@@ -105,6 +106,7 @@ public class WMSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
                         "ExtraStylesPalette.availableHeader"));
             }
         };
+        extraStyles.add(new DefaultTheme());
         styleContainer.add(extraStyles);
         
         TextField<Integer> renderingBuffer = new TextField<Integer>("renderingBuffer", new MapModel(new PropertyModel(layerModel, "metadata"), LayerInfo.BUFFER), Integer.class);

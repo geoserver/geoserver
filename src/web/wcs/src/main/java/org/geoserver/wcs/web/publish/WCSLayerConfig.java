@@ -11,6 +11,7 @@ import java.util.List;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.extensions.markup.html.form.palette.Palette;
+import org.apache.wicket.extensions.markup.html.form.palette.theme.DefaultTheme;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.DropDownChoice;
@@ -124,6 +125,7 @@ public class WCSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
                         "InterpolationMethodsPalette.availableHeader"));
             }
         };
+        interpolationMethods.add(new DefaultTheme());
         add(interpolationMethods);
 
         // don't allow editing the native format
@@ -154,6 +156,7 @@ public class WCSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
                         "FormatsPalette.availableHeader"));
             }
         };
+        formatPalette.add(new DefaultTheme());
         add(formatPalette);
    }
     

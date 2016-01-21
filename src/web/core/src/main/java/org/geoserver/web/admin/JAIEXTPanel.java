@@ -6,6 +6,7 @@ package org.geoserver.web.admin;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.extensions.markup.html.form.palette.Palette;
+import org.apache.wicket.extensions.markup.html.form.palette.theme.DefaultTheme;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.panel.Panel;
@@ -49,6 +50,7 @@ public class JAIEXTPanel extends Panel {
                 return new Label(componentId, new ResourceModel("JAIEXTPanel.availableHeader"));
             }
         };
+        jaiextSelector.add(new DefaultTheme());
         add(jaiextSelector);
     }
 

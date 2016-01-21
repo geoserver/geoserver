@@ -4,7 +4,16 @@
 <wicket:extend>
 <form wicket:id="form" style="padding-top: 1em;">
   <fieldset>
-    <legend><span><wicket:message key="threadPoolExecutor">Thread Pool Executor Settings</wicket:message></span></legend>
+    <legend><span><wicket:message key="imageio">Memory Use</wicket:message></span></legend>
+    <ul>
+      <li>
+        <label for="imageIOCacheThreshold"><wicket:message key="imageIOCacheThreshold">ImageIO cache threshold</wicket:message></label>
+        <input id="imageIOCacheThreshold" class="field text" type="text" wicket:id="imageIOCacheThreshold" />
+      </li>
+    </ul>
+  </fieldset>
+  <fieldset>
+    <legend><span><wicket:message key="threadPoolExecutor">CPU Use</wicket:message></span></legend>
     <ul>
       <li>
          <label for="corePoolSize"><wicket:message key="corePoolSize">ThreadPoolExecutor Core Pool Size</wicket:message></label>
@@ -22,20 +31,11 @@
         <label><wicket:message key="queueType">Default QueueType</wicket:message></label>
         <select wicket:id="queueType" class="field"/>
       </li>
-   </ul>
-  </fieldset>
-  <fieldset>
-    <legend><span><wicket:message key="imageio">ImageIO Settings</wicket:message></span></legend>
-    <ul>
-      <li>
-        <label for="imageIOCacheThreshold"><wicket:message key="imageIOCacheThreshold">ImageIO cache threshold</wicket:message></label>
-        <input id="imageIOCacheThreshold" class="field text" type="text" wicket:id="imageIOCacheThreshold" />
-      </li>
       <li class="button-group selfclear">
         <button type="submit" wicket:id="submit"><wicket:message key="submit">submit</wicket:message></button>
         <button type="submit" wicket:id="cancel"><wicket:message key="cancel">cancel</wicket:message></button>
       </li>
-    </ul>
+   </ul>
   </fieldset>
   </form>
 </wicket:extend>

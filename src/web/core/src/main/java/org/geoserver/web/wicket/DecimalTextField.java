@@ -65,6 +65,9 @@ public class DecimalTextField extends TextField<Double> {
     
     @Override
     public <C> IConverter<C> getConverter(Class<C> type) {
-        return (IConverter<C>) decimalConverter;
+        if( Double.class.isAssignableFrom(type)){
+            return (IConverter<C>) decimalConverter;
+        }
+        return super.getConverter(type);
     }
 }

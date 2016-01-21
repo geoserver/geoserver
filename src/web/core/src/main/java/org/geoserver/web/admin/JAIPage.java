@@ -18,6 +18,7 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.StringResourceModel;
+import org.apache.wicket.util.convert.IConverter;
 import org.apache.wicket.validation.validator.RangeValidator;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
@@ -25,6 +26,7 @@ import org.geoserver.config.JAIEXTInfo;
 import org.geoserver.config.JAIInfo;
 import org.geoserver.config.JAIInfo.PngEncoderType;
 import org.geoserver.web.wicket.ParamResourceModel;
+import org.geoserver.web.wicket.PercentageTextField;
 import org.geotools.image.ImageWorker;
 
 import com.sun.media.imageioimpl.common.PackageUtil;
@@ -50,10 +52,10 @@ public class JAIPage extends ServerAdminPage {
         // All the fields
         // ... memory capacity and threshold are percentages
         RangeValidator<Double> percentageValidator = RangeValidator.range(0.0, 1.0);
-        TextField<Double> memoryCapacity = new TextField<Double>("memoryCapacity");
+        TextField<Double> memoryCapacity = new PercentageTextField("memoryCapacity");
         memoryCapacity.add(percentageValidator);
         form.add(memoryCapacity);
-        TextField<Double> memoryThreshold = new TextField<Double>("memoryThreshold");
+        TextField<Double> memoryThreshold = new PercentageTextField("memoryThreshold");
         memoryThreshold.add(percentageValidator);
         form.add(memoryThreshold);
         TextField<Integer> tileThreads = new TextField<Integer>("tileThreads");

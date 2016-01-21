@@ -13,6 +13,7 @@ import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.util.tester.FormTester;
+import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.ResourceInfo;
@@ -35,7 +36,7 @@ public class NetCDFOutTabPanelTest extends GeoServerWicketTestSupport {
     private Model<LayerInfo> layerModel;
 
     /** CoverageInfo model */
-    private Model<ResourceInfo> resourceModel;
+    private Model<CoverageInfo> resourceModel;
 
     @Override
     protected void setUpTestData(SystemTestData testData) throws Exception {
@@ -49,7 +50,7 @@ public class NetCDFOutTabPanelTest extends GeoServerWicketTestSupport {
         LayerInfo layerInfo = getCatalog().getLayerByName(getLayerId(MockData.TASMANIA_DEM));
         layerModel = new Model<LayerInfo>(layerInfo);
         ResourceInfo resource = layerInfo.getResource();
-        resourceModel = new Model<ResourceInfo>(resource);
+        resourceModel = new Model<CoverageInfo>((CoverageInfo) resource);
         // Add Element to MetadataMap
         MetadataMap metadata = resource.getMetadata();
         if (!metadata.containsKey(NetCDFSettingsContainer.NETCDFOUT_KEY)) {

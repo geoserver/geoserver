@@ -401,9 +401,8 @@ public class ImportDataPage extends GeoServerSecuredPage {
     }
 
     void updateSourcePanel(Source source, AjaxRequestTarget target) {
-        Panel old = (Panel) sourcePanel.get(0);
-        if (old != null) {
-            sourcePanel.remove(old);
+        if (sourcePanel.size() > 0) {
+            sourcePanel.remove("content");
         }
 
         Panel p = source.createPanel("content");

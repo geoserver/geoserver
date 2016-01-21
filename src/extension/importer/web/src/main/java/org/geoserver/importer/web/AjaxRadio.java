@@ -37,15 +37,6 @@ public abstract class AjaxRadio<T> extends Radio<T> {
                 radioGroup.processInput();
                 onAjaxEvent(target);
             }
-
-            @Override
-            public void renderHead(Component component, IHeaderResponse response) {
-                super.renderHead(component, response);
-                response.render(OnDomReadyHeaderItem.forScript(new AppendingStringBuffer(
-                        "wicketAjaxPost('").append(getCallbackUrl())
-                        .append("', wicketSerialize(Wicket.$('")
-                        .append(AjaxRadio.this.getMarkupId()).append("'))")));
-            }
         });
     }
     

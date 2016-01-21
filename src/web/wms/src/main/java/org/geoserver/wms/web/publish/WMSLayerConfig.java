@@ -67,7 +67,7 @@ public class WMSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
 
         // the wms url is build without qualification to allow usage of global styles,
         // the style name and layer name will be ws qualified instead
-        String wmsURL = RequestCycle.get().getUrlRenderer().renderFullUrl(Url.parse("wms")) + "?";
+        String wmsURL = RequestCycle.get().getUrlRenderer().renderContextRelativeUrl("wms") + "?";
 
         final LegendGraphicAjaxUpdater defaultStyleUpdater;
         defaultStyleUpdater = new LegendGraphicAjaxUpdater(wmsURL, defStyleImg, defaultStyleModel);

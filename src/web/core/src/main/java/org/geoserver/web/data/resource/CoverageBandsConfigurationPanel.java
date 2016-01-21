@@ -73,16 +73,22 @@ public class CoverageBandsConfigurationPanel extends ResourceConfigurationPanel 
      * A Double numbers converter supporting -Infinity and Infinity too.
      */
     static class DoubleInfinityConverter extends DoubleConverter {
-
         @Override
         public Double convertToObject(String value, Locale locale) {
-            final Number number = parse(value, BigDecimal.valueOf(Double.NEGATIVE_INFINITY), 
-                    BigDecimal.valueOf(Double.POSITIVE_INFINITY), Locale.US);
-            if (number == null) {
-                return null;
-            }
+           LOGGER.info(value);
+           if (value.equals("-∞")) {
+               return new Double(Double.NEGATIVE_INFINITY);
+           } else if (value.equals("∞")) {
+               return new Double(Double.POSITIVE_INFINITY);
+           } else {
+               final Number number = parse(value, BigDecimal.valueOf(Double.NEGATIVE_INFINITY), 
+                       BigDecimal.valueOf(Double.POSITIVE_INFINITY), Locale.US);
+               if (number == null) {
+                   return null;
+               }
 
-            return new Double(number.doubleValue());
+               return new Double(number.doubleValue());               
+           }
         }
 
         @Override
@@ -170,7 +176,7 @@ public class CoverageBandsConfigurationPanel extends ResourceConfigurationPanel 
                 }
                 if ("maxRange".equals(property.getName())) {
                     Fragment f = new Fragment(id, "maxRange", CoverageBandsConfigurationPanel.this);
-                    Component max = new DoubleTextField("maxRange", (IModel<Double>) property.getModel(itemModel));
+                    Component max = new DoubleTextField("maxRange", (IModel<Double>) property.getModel(itemModel));                    
                     f.add(max);
                     return f;
                 }

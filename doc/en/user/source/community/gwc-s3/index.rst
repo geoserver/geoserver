@@ -2,7 +2,7 @@
 
 GWC S3 BlobStore plugin
 ========================
-This plugin supports the use of the `AWS <https://aws.amazon.com>`_ Simple Storage Service (`Amazon S3 <https://aws.amazon.com/s3/>`_) as storage medium for :ref:`webadmin_tilecaching`.
+This plugin supports the use of the `AWS <https://aws.amazon.com>`_ Simple Storage Service (`Amazon S3 <https://aws.amazon.com/s3/>`_) as storage medium for :ref:`gwc_webadmin`.
 
 Installing the S3 BlobStore plugin
 ----------------------------------
@@ -16,7 +16,7 @@ Installing the S3 BlobStore plugin
 Configuring the S3 BlobStore plugin
 -----------------------------------
 
-Once the plugin has been installed, one or more S3 BlobStores may be configured through :ref:`webadmin_tilecaching_blobstores`.
+Once the plugin has been installed, one or more S3 BlobStores may be configured through :ref:`gwc_webadmin_blobstores`.
 Afterwards, cached layers can be explicitely assigned to it or one blobstore could be marked as 'default' to use it for all unassigned layers.
 
 .. figure:: img/s3blobstore.png

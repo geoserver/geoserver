@@ -101,7 +101,7 @@ After all GeoServer files and external files have been downloaded and copied, re
 Adding an ArcSDE vector data store
 ----------------------------------
 
-In order to serve vector data layers, it is first necessary to register the ArcSDE instance as a data store in GeoServer.  Navigate to the **New data source** page, accessed from the :ref:`webadmin_stores` page in the :ref:`web_admin`. and an option for **ArcSDE** will be in the list of :guilabel:`Vector Data Stores`.
+In order to serve vector data layers, it is first necessary to register the ArcSDE instance as a data store in GeoServer.  Navigate to the **New data source** page, accessed from the :ref:`data_webadmin_stores` page in the :ref:`web_admin`. and an option for **ArcSDE** will be in the list of :guilabel:`Vector Data Stores`.
 
 .. note:: If ``ArcSDE`` is not an option in the **Feature Data Set Description** drop down box, the extension is not properly installed.  Please see the section on :ref:`arcsde_install`.
 
@@ -164,7 +164,7 @@ The next page contains configuration options for the ArcSDE vector data store.  
      - No
      - Connection pool configuration parameters. See the :ref:`connection_pooling` section for details. 
   
-You may now add featuretypes as you would normally do, by navigating to the :guilabel:`New Layer` page, accessed from the :ref:`webadmin_layers` page in the :ref:`web_admin`.
+You may now add featuretypes as you would normally do, by navigating to the :guilabel:`New Layer` page, accessed from the :ref:`data_webadmin_layers` page in the :ref:`web_admin`.
 
 Configuring an ArcSDE vector data store with Direct Connect
 -----------------------------------------------------------
@@ -195,7 +195,7 @@ Adding an ArcSDE raster coveragestore
 -------------------------------------
 
 In order to serve raster layers (or coverages), it is first necessary to register the ArcSDE instance as a store in GeoServer.
-Navigate to the **Add new store** page, accessed from the :ref:`webadmin_stores` page in the :ref:`web_admin` and an option for 
+Navigate to the **Add new store** page, accessed from the :ref:`data_webadmin_stores` page in the :ref:`web_admin` and an option for 
 **ArcSDE Raster Format** will be in list.
 
 .. note:: If ``ArcSDE Raster Format`` is not an option in the **Coverage Data Set Description** drop down box, the extension is not properly installed.  Please see the section on :ref:`arcsde_install`.
@@ -240,4 +240,4 @@ The next page contains configuration options for the ArcSDE instance.  Fill out 
      - No
      - A description of the coveragestore.
 
-You may now add coverages as you would normally do, by navigating to the **Add new layer** page, accessed from the :ref:`webadmin_layers` page in the :ref:`web_admin`.
+You may now add coverages as you would normally do, by navigating to the **Add new layer** page, accessed from the :ref:`data_webadmin_layers` page in the :ref:`web_admin`.

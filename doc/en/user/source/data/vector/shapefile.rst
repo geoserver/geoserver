@@ -10,7 +10,7 @@ A shapefile is a popular geospatial vector data format.
 Adding a shapefile
 ------------------
 
-A shapefile is actually a collection of files (with the extensions: ``.shp``, ``.dbf``, ``.shx``, ``.prj``, and sometimes others).  All of these files need to be present in the same directory in order for GeoServer to accurately read them.  As with all formats, adding a shapefile to GeoServer involves adding a new store to the existing :ref:`webadmin_stores`  through the :ref:`web_admin`.
+A shapefile is actually a collection of files (with the extensions: ``.shp``, ``.dbf``, ``.shx``, ``.prj``, and sometimes others).  All of these files need to be present in the same directory in order for GeoServer to accurately read them.  As with all formats, adding a shapefile to GeoServer involves adding a new store to the existing :ref:`data_webadmin_stores`  through the :ref:`web_admin`.
 
 .. warning:: The ``.prj`` file, while not mandatory, is strongly recommended when working with GeoServer as it contains valuable projection info.  GeoServer may not be able to load your shapefile without it!
 
@@ -51,4 +51,4 @@ When finished, click :guilabel:`Save`.
 Configuring a shapefile layer
 -----------------------------
 
-Shapefiles contain exactly one layer, which needs to be added as a new layer before it will be able to be served by GeoServer.  See the section on :ref:`webadmin_layers` for how to add and edit a new layer.
+Shapefiles contain exactly one layer, which needs to be added as a new layer before it will be able to be served by GeoServer.  See the section on :ref:`data_webadmin_layers` for how to add and edit a new layer.

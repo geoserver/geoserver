@@ -9,7 +9,7 @@ For example, you might have a single dataset with weather observations collected
 
 The attribute to be used in ``TIME`` requests can be set up through the GeoServer web interface by navigating to :menuselection:`Layers -> [specific layer] -> Dimensions tab`.
 
-.. note:: Read more about how to :ref:`use the web interface to configure an attribute for TIME requests <webadmin_layers_edit_dimensions>`.
+.. note:: Read more about how to :ref:`use the web interface to configure an attribute for TIME requests <data_webadmin_layers_edit_dimensions>`.
 
 Specifying a time
 -----------------

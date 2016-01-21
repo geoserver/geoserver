@@ -16,7 +16,7 @@ The control flow method does not normally reject requests, it just queues up tho
 Rule syntax reference
 ---------------------
 
-The current implementation of the control flow module reads its rules from a ``controlflow.properties`` property file located in the :ref:`GeoServer data directory <data_directory>`.
+The current implementation of the control flow module reads its rules from a ``controlflow.properties`` property file located in the :ref:`datadir`.
 
 Total OWS request count
 .......................

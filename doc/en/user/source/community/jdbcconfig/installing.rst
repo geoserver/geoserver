@@ -9,7 +9,7 @@ To install the JDBCConfig module:
 
 #. Extract this file and place the JARs in ``WEB-INF/lib``.
 
-#. Perform any configuration required by your servlet container, and then restart. On startup, JDBCConfig will create a configuration directory ``jdbcconfig`` in the :ref:`data_directory`.
+#. Perform any configuration required by your servlet container, and then restart. On startup, JDBCConfig will create a configuration directory ``jdbcconfig`` in the :ref:`datadir`.
 
 #. Verify that the configuration directory was created to be sure installation worked then turn off GeoServer.
 

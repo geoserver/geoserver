@@ -291,5 +291,5 @@ method<n> values can be one of the following:
 
 or empty if the default method has to be used for the related layer. 
 
-The parameter allows to override the global WMS Raster Rendering Options setting (see :ref:`WMS Settings<webadmin_wms>` for more info), on a layer by layer basis. 
+The parameter allows to override the global WMS Raster Rendering Options setting (see :ref:`WMS Settings <services_webadmin_wms>` for more info), on a layer by layer basis. 
 

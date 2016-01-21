@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -8,7 +8,6 @@ package org.geoserver.wms.web.publish;
 import java.io.Serializable;
 
 import org.apache.wicket.AttributeModifier;
-import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.model.IModel;
@@ -38,11 +37,7 @@ class LegendGraphicAjaxUpdater implements Serializable {
         this.wmsURL = wmsURL;
         this.image = image;
         this.styleInfoModel = styleInfoModel;
-        this.urlModel = new Model<String>(wmsURL) {
-            public String getObject() {
-                return super.getObject();
-            }
-        };
+        this.urlModel = new Model<String>(wmsURL);
         this.image.add(new AttributeModifier("src", urlModel));
         updateStyleImage(null);
     }

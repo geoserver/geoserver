@@ -44,7 +44,7 @@ Installing native JAI on Windows
 Installing native JAI on Linux
 ``````````````````````````````
 
-#. Go to the `JAI download page <http://download.java.net/media/jai/builds/release/1_1_3/>`_ and download the Linux installer for version 1.1.3, choosing the appropriate architecture:
+#. Go to the `OpenGeo JAI download page <http://data.opengeo.org/suite/jai/>`_ and download the Linux installer for version 1.1.3, choosing the appropriate architecture:
 
    * `i586` for the 32 bit systems
    * `amd64` for the 64 bit ones (even if using Intel processors)
@@ -57,7 +57,7 @@ Installing native JAI on Linux
     # accept license 
     $ sudo rm jai-1_1_3-lib-linux-i586-jdk.bin
   
-#. Go to the `JAI Image I/O download page <http://download.java.net/media/jai-imageio/builds/release/1.1/>`_ and download the Linux installer for version 1.1, choosing the appropriate architecture:
+#. Go to the `OpenGeo JAI Image I/O Download page <http://data.opengeo.org/suite/jai/>`_ and download the Linux installer for version 1.1, choosing the appropriate architecture:
 
    * `i586` for the 32 bit systems
    * `amd64` for the 64 bit ones (even if using Intel processors)

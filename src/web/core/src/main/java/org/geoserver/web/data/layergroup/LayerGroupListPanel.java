@@ -60,9 +60,9 @@ public abstract class LayerGroupListPanel extends GeoServerTablePanel<LayerGroup
         IModel<?> model = property.getModel(itemModel);
         if (NAME == property) {
             return new SimpleAjaxLink<String>(id, (IModel<String>) model) {
-				private static final long serialVersionUID = -5189072047640596694L;
+                private static final long serialVersionUID = -5189072047640596694L;
 
-				@Override
+                @Override
                 protected void onClick(AjaxRequestTarget target) {
                     LayerGroupInfo layerGroup = itemModel.getObject();
                     handleLayerGroup(layerGroup, target);

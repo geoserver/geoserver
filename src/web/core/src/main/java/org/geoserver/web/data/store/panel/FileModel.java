@@ -24,9 +24,9 @@ import org.geotools.util.logging.Logging;
  *
  */
 public class FileModel implements IModel<String> {
-	private static final long serialVersionUID = 3911203737278340528L;
+    private static final long serialVersionUID = 3911203737278340528L;
 
-	static final Logger LOGGER = Logging.getLogger(FileModel.class);
+    static final Logger LOGGER = Logging.getLogger(FileModel.class);
     
     IModel<String> delegate;
     File rootDir;

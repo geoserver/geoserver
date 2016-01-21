@@ -25,9 +25,9 @@ import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 public abstract class StyleListPanel extends GeoServerTablePanel<StyleInfo> {
 
     protected static class StyleListProvider extends GeoServerDataProvider<StyleInfo> {
-		private static final long serialVersionUID = -5061497681708482229L;
+        private static final long serialVersionUID = -5061497681708482229L;
 
-		@Override
+        @Override
         protected List<StyleInfo> getItems() {
             return getCatalog().getStyles();
         }
@@ -63,9 +63,9 @@ public abstract class StyleListPanel extends GeoServerTablePanel<StyleInfo> {
         final StyleInfo style = (StyleInfo) itemModel.getObject();
         if (property == NAME) {
             return new SimpleAjaxLink<String>( id, (IModel<String>) NAME.getModel(itemModel) ) {
-				private static final long serialVersionUID = -2537227506881638001L;
+                private static final long serialVersionUID = -2537227506881638001L;
 
-				@Override
+                @Override
                 public void onClick(AjaxRequestTarget target) {
                     handleStyle(style, target);
                 }

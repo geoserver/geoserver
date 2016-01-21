@@ -14,9 +14,9 @@ import org.geoserver.web.GeoServerApplication;
 
 public class StyleInfoConverter implements IConverter<StyleInfo> {
 
-	private static final long serialVersionUID = -1984255970892520909L;
+    private static final long serialVersionUID = -1984255970892520909L;
 
-	@Override
+    @Override
     public StyleInfo convertToObject(String name, Locale locale) {
         return GeoServerApplication.get().getCatalog().getStyleByName(name);
     }

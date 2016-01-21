@@ -19,12 +19,12 @@ import java.util.*;
 
 public class GeofenceAdminRulesModel extends GeoServerDataProvider<ShortAdminRule> {
 
-	private static final long serialVersionUID = 2987962533487848796L;
+    private static final long serialVersionUID = 2987962533487848796L;
 
-	public static class RuleBeanProperty<T> extends BeanProperty<T> {
-		private static final long serialVersionUID = 3626448043686728925L;
+    public static class RuleBeanProperty<T> extends BeanProperty<T> {
+        private static final long serialVersionUID = 3626448043686728925L;
 
-		public RuleBeanProperty(String key, String propertyPath) {
+        public RuleBeanProperty(String key, String propertyPath) {
             super(key, propertyPath);
         }
 
@@ -36,9 +36,9 @@ public class GeofenceAdminRulesModel extends GeoServerDataProvider<ShortAdminRul
         @SuppressWarnings({ "unchecked", "rawtypes" })
 		public IModel getModel(IModel<T> itemModel) {
             return new PropertyModel<Object>(itemModel, getPropertyPath()) {
-				private static final long serialVersionUID = -3213885135907358752L;
+                private static final long serialVersionUID = -3213885135907358752L;
 
-				@Override
+                @Override
                 public Object getObject() {
                     Object o = super.getObject();
                     return o == null ? "*" : o;

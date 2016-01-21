@@ -24,8 +24,8 @@ import org.geoserver.web.wicket.browser.GeoServerFileChooser;
  */
 public class DirectoryParamPanel extends FileParamPanel {
 
-	private static final long serialVersionUID = -8317791966175845831L;
-	GeoServerDialog gsDialog;
+    private static final long serialVersionUID = -8317791966175845831L;
+    GeoServerDialog gsDialog;
 
     /**
      * 
@@ -51,12 +51,9 @@ public class DirectoryParamPanel extends FileParamPanel {
     protected Component chooserButton(final String windowTitle) {
         AjaxSubmitLink link = new AjaxSubmitLink("chooser") {
 
-            /**
-			 * 
-			 */
-			private static final long serialVersionUID = -2860146532287292092L;
+            private static final long serialVersionUID = -2860146532287292092L;
 
-			@Override
+            @Override
             public boolean getDefaultFormProcessing() {
                 return false;
             }

@@ -26,8 +26,8 @@ import org.geoserver.web.wicket.GeoServerDataProvider.Property;
  * Lists available workspaces, links to them, allows for addition and removal
  */
 public class WorkspacePage extends GeoServerSecuredPage {
-	private static final long serialVersionUID = 3084639304127909774L;
-	WorkspaceProvider provider = new WorkspaceProvider();
+    private static final long serialVersionUID = 3084639304127909774L;
+    WorkspaceProvider provider = new WorkspaceProvider();
     GeoServerTablePanel<WorkspaceInfo> table;
     GeoServerDialog dialog;
     SelectionRemovalLink removal;
@@ -35,9 +35,9 @@ public class WorkspacePage extends GeoServerSecuredPage {
     public WorkspacePage() {
         // the middle table
         add(table = new GeoServerTablePanel<WorkspaceInfo>("table", provider, true) {
-			private static final long serialVersionUID = 8028081894753417294L;
+            private static final long serialVersionUID = 8028081894753417294L;
 
-			@Override
+            @Override
             protected Component getComponentForProperty(String id, IModel<WorkspaceInfo> itemModel,
                     Property<WorkspaceInfo> property) {
                 if ( property == NAME ) {

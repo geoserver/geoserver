@@ -52,9 +52,9 @@ import org.geoserver.web.wicket.GeoServerDataProvider.Property;
  */
 public abstract class GeoServerTablePanel<T> extends Panel {
 
-	private static final long serialVersionUID = -5275268446479549108L;
+    private static final long serialVersionUID = -5275268446479549108L;
 
-	private static final int DEFAULT_ITEMS_PER_PAGE = 25;
+    private static final int DEFAULT_ITEMS_PER_PAGE = 25;
 
     // filter form components
     TextField<String> filter;
@@ -116,9 +116,9 @@ public abstract class GeoServerTablePanel<T> extends Panel {
         filterForm.setOutputMarkupId(true);
         add(filterForm);
         filter = new TextField<String>("filter", new Model<String>()) {
-			private static final long serialVersionUID = -1252520208030081584L;
+            private static final long serialVersionUID = -1252520208030081584L;
 
-			@Override
+            @Override
             protected void onComponentTag(ComponentTag tag) {
                 super.onComponentTag(tag);
                 tag.put("onkeypress", "if(event.keyCode == 13) {document.getElementById('"
@@ -136,9 +136,9 @@ public abstract class GeoServerTablePanel<T> extends Panel {
         listContainer.setOutputMarkupId(true);
         add(listContainer);
         dataView = new DataView<T>("items", dataProvider) {
-			private static final long serialVersionUID = 7201317388415148823L;
+            private static final long serialVersionUID = 7201317388415148823L;
 
-			@Override
+            @Override
             protected Item<T> newItem(String id, int index, IModel<T> model) {
                 OddEvenItem<T> item = new OddEvenItem<T>(id, index, model);
                 item.setOutputMarkupId(true);
@@ -184,9 +184,9 @@ public abstract class GeoServerTablePanel<T> extends Panel {
     protected ListView<Property<T>> buildLinksListView(final GeoServerDataProvider<T> dataProvider) {
         return new ListView<Property<T>>("sortableLinks", dataProvider.getVisibleProperties()) {
 
-			private static final long serialVersionUID = -7565457802398721254L;
+            private static final long serialVersionUID = -7565457802398721254L;
 
-			@Override
+            @Override
             protected void populateItem(ListItem<Property<T>> item) {
                 Property<T> property = (Property<T>) item.getModelObject();
 
@@ -211,9 +211,9 @@ public abstract class GeoServerTablePanel<T> extends Panel {
         // create one component per viewable property
         ListView<Property<T>> items = new ListView<Property<T>>("itemProperties", dataProvider.getVisibleProperties()) {
 
-			private static final long serialVersionUID = -4552413955986008990L;
+            private static final long serialVersionUID = -4552413955986008990L;
 
-			@Override
+            @Override
             protected void populateItem(ListItem<Property<T>> item) {
                 Property<T> property = item.getModelObject();
 
@@ -358,12 +358,9 @@ public abstract class GeoServerTablePanel<T> extends Panel {
         cb.setVisible(selectable);
         cb.add(new AjaxFormComponentUpdatingBehavior("click") {
 
-            /**
-			 * 
-			 */
-			private static final long serialVersionUID = -2419184741329470638L;
+            private static final long serialVersionUID = -2419184741329470638L;
 
-			@Override
+            @Override
             protected void onUpdate(AjaxRequestTarget target) {
                 if(Boolean.FALSE.equals(getComponent().getDefaultModelObject())) {
                     selectAllValue = false;
@@ -436,12 +433,9 @@ public abstract class GeoServerTablePanel<T> extends Panel {
     AjaxButton hiddenSubmit() {
         return new AjaxButton("submit") {
 
-            /**
-			 * 
-			 */
-			private static final long serialVersionUID = 5334592790005438960L;
+            static final long serialVersionUID = 5334592790005438960L;
 
-			@Override
+            @Override
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
                 updateFilter(target, filter.getDefaultModelObjectAsString());
             }
@@ -476,9 +470,9 @@ public abstract class GeoServerTablePanel<T> extends Panel {
     <S> AjaxLink<S> sortLink(final GeoServerDataProvider<T> dataProvider, ListItem<S> item) {
         return new AjaxLink<S>("link", item.getModel()) {
 
-			private static final long serialVersionUID = -6180419488076488737L;
+            private static final long serialVersionUID = -6180419488076488737L;
 
-			@Override
+            @Override
             public void onClick(AjaxRequestTarget target) {
                 SortParam<?> currSort = dataProvider.getSort();
                 @SuppressWarnings("unchecked")
@@ -573,11 +567,8 @@ public abstract class GeoServerTablePanel<T> extends Panel {
     }
 
     protected class PagerDelegate implements Serializable {
-        /**
-		 * 
-		 */
-		private static final long serialVersionUID = -6928477338531850338L;
-		long fullSize, size, first, last;
+        private static final long serialVersionUID = -6928477338531850338L;
+        long fullSize, size, first, last;
         
         public PagerDelegate() {
             updateMatched();
@@ -651,12 +642,9 @@ public abstract class GeoServerTablePanel<T> extends Panel {
      */
     protected class Pager extends Panel {
 
-        /**
-		 * 
-		 */
-		private static final long serialVersionUID = 6128188748404971154L;
+        private static final long serialVersionUID = 6128188748404971154L;
 
-		GeoServerPagingNavigator navigator;
+        GeoServerPagingNavigator navigator;
 
         Label matched;
 
@@ -673,12 +661,9 @@ public abstract class GeoServerTablePanel<T> extends Panel {
          */
         private GeoServerPagingNavigator updatingPagingNavigator() {
             return new GeoServerPagingNavigator("navigator", dataView) {
-                /**
-				 * 
-				 */
-				private static final long serialVersionUID = -1795278469204272385L;
+                private static final long serialVersionUID = -1795278469204272385L;
 
-				@Override
+                @Override
                 protected void onAjaxEvent(AjaxRequestTarget target) {
                     super.onAjaxEvent(target);
                     setSelection(false);
@@ -700,11 +685,8 @@ public abstract class GeoServerTablePanel<T> extends Panel {
     }
     
     public class SelectionModel implements IModel<Boolean> {
-        /**
-		 * 
-		 */
-		private static final long serialVersionUID = 7681891298556441330L;
-		int index;
+        private static final long serialVersionUID = 7681891298556441330L;
+        int index;
         
         public SelectionModel(int index) {
             this.index = index;

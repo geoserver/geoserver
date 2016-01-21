@@ -28,13 +28,13 @@ import org.geowebcache.filter.parameters.FloatParameterFilter;
  */
 public class FloatParameterFilterSubform extends AbstractParameterFilterSubform<FloatParameterFilter> {
 
-	private static final long serialVersionUID = -1715100884515717529L;
+    private static final long serialVersionUID = -1715100884515717529L;
 
-	private static final IConverter<Float> FLOAT = new IConverter<Float>() {
+    private static final IConverter<Float> FLOAT = new IConverter<Float>() {
 
-		private static final long serialVersionUID = 5393727015187736272L;
+        private static final long serialVersionUID = 5393727015187736272L;
 
-		@Override
+        @Override
         public Float convertToObject(String value, Locale locale) {
             if(value==null || value.isEmpty()) return null;
             try {

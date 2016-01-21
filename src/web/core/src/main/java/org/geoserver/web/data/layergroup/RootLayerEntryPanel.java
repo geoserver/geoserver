@@ -37,10 +37,10 @@ public class RootLayerEntryPanel extends Panel {
         setOutputMarkupId(true);
         
         final TextField<LayerInfo> rootLayerField = new TextField<LayerInfo>("rootLayer") {
-			private static final long serialVersionUID = -8033503312874828019L;
+            private static final long serialVersionUID = -8033503312874828019L;
 
-			@SuppressWarnings("unchecked")
-			@Override
+            @SuppressWarnings("unchecked")
+            @Override
             public <C> IConverter<C> getConverter(Class<C> type) { 
             	if (LayerInfo.class.isAssignableFrom(type)) {
             		return (IConverter<C>) new LayerInfoConverter();
@@ -70,10 +70,10 @@ public class RootLayerEntryPanel extends Panel {
         }
         
         DropDownChoice<StyleInfo> styleField = new DropDownChoice<StyleInfo>("rootLayerStyle", styles) {
-			private static final long serialVersionUID = 1190134258726393181L;
+            private static final long serialVersionUID = 1190134258726393181L;
 
-			@SuppressWarnings("unchecked")
-			@Override
+            @SuppressWarnings("unchecked")
+            @Override
             public <C> IConverter<C> getConverter(Class<C> type) { 
                 if (StyleInfo.class.isAssignableFrom(type)) {
                     return (IConverter<C>) new StyleInfoConverter(); 
@@ -88,17 +88,17 @@ public class RootLayerEntryPanel extends Panel {
         final ModalWindow popupWindow = new ModalWindow("popup");
         add(popupWindow);
         add(new AjaxLink<Object>("add") {
-			private static final long serialVersionUID = 723787950130153037L;
+            private static final long serialVersionUID = 723787950130153037L;
 
-			@Override
+            @Override
             public void onClick(AjaxRequestTarget target) {
                 popupWindow.setInitialHeight(375);
                 popupWindow.setInitialWidth(525);
                 popupWindow.setTitle(new ParamResourceModel("chooseLayer", this));
                 popupWindow.setContent(new LayerListPanel(popupWindow.getContentId()) {
-					private static final long serialVersionUID = -650599334132713975L;
+                    private static final long serialVersionUID = -650599334132713975L;
 
-					@Override
+                    @Override
                     protected void handleLayer(LayerInfo layer, AjaxRequestTarget target) {
                         popupWindow.close(target);
                         model.getObject().setRootLayer(layer);

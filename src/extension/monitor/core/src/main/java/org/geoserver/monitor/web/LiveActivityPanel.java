@@ -25,17 +25,17 @@ import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 
 public class LiveActivityPanel extends Panel {
 
-	private static final long serialVersionUID = -2807950039989311964L;
+    private static final long serialVersionUID = -2807950039989311964L;
 
 
-	public LiveActivityPanel(String id) {
+    public LiveActivityPanel(String id) {
         super(id);
         
         GeoServerTablePanel<RequestData> requests = new GeoServerTablePanel<RequestData>("requests",
                 new LiveRequestDataProvider()) {
-			private static final long serialVersionUID = -431473636413825153L;
+            private static final long serialVersionUID = -431473636413825153L;
 
-			@Override
+            @Override
             protected Component getComponentForProperty(String id, IModel<RequestData> itemModel,
                     Property<RequestData> property) {
                 Object prop = ((BeanProperty<RequestData>) property)
@@ -51,9 +51,9 @@ public class LiveActivityPanel extends Panel {
     
     static class LiveRequestDataProvider extends GeoServerDataProvider<RequestData> {
     	
-		private static final long serialVersionUID = -5576324995486786071L;
+        private static final long serialVersionUID = -5576324995486786071L;
 		
-		static final Property<RequestData> ID = new BeanProperty<RequestData>("id", "id");
+        static final Property<RequestData> ID = new BeanProperty<RequestData>("id", "id");
         static final Property<RequestData> PATH = new BeanProperty<RequestData>("path", "path");
         static final Property<RequestData> STATUS = new BeanProperty<RequestData>("status", "status");
         

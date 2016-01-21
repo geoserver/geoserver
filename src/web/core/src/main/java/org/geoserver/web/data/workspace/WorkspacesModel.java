@@ -19,9 +19,9 @@ import org.geoserver.web.GeoServerApplication;
  * Simple detachable model listing all the available workspaces
  */
 public class WorkspacesModel extends LoadableDetachableModel<List<WorkspaceInfo>> {
-	private static final long serialVersionUID = -2014677058862746780L;
+    private static final long serialVersionUID = -2014677058862746780L;
 
-	@Override
+    @Override
     protected List<WorkspaceInfo> load() {
         Catalog catalog = GeoServerApplication.get().getCatalog();
         List<WorkspaceInfo> workspaces = new ArrayList<WorkspaceInfo>(catalog.getWorkspaces());

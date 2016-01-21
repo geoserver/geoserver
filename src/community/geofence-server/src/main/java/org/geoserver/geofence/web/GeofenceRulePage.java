@@ -56,13 +56,13 @@ import org.springframework.dao.DuplicateKeyException;
  */
 public class GeofenceRulePage extends GeoServerSecuredPage {
     
-	private static final long serialVersionUID = -3986495664060319256L;
+    private static final long serialVersionUID = -3986495664060319256L;
+    
+    private class RuleFormData implements Serializable {
 
-	private class RuleFormData implements Serializable {
-
-		private static final long serialVersionUID = 3045099348340468123L;
+        private static final long serialVersionUID = 3045099348340468123L;
 		
-		ShortRule rule;
+	ShortRule rule;
         RuleLimits ruleLimits;
         String allowedArea;
     }
@@ -95,9 +95,9 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
         form.add(roleChoice = new DropDownChoice<>("roleName", ruleFormModel.bind("rule.roleName"), getRoleNames()));
 
         roleChoice.add(new OnChangeAjaxBehavior() {
-			private static final long serialVersionUID = -2880886409750911044L;
-
-			@Override
+            private static final long serialVersionUID = -2880886409750911044L;
+    
+            @Override
             protected void onUpdate(AjaxRequestTarget target) {
                 userChoice.setChoices(getUserNames(roleChoice.getConvertedInput()));
                 form.getModelObject().rule.setUserName(null);
@@ -113,9 +113,9 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
 
         form.add(serviceChoice = new DropDownChoice<>("service", ruleFormModel.bind("rule.service"), getServiceNames()));
         serviceChoice.add(new OnChangeAjaxBehavior() {
-			private static final long serialVersionUID = -5925784823433092831L;
+            private static final long serialVersionUID = -5925784823433092831L;
 
-			@Override
+            @Override
             protected void onUpdate(AjaxRequestTarget target) {
                 requestChoice.setChoices(getOperationNames(serviceChoice.getConvertedInput()));
                 form.getModelObject().rule.setRequest(null);
@@ -133,9 +133,9 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
         form.add(workspaceChoice = new DropDownChoice<>("workspace", ruleFormModel.bind("rule.workspace"),
                 getWorkspaceNames()));
         workspaceChoice.add(new OnChangeAjaxBehavior() {
-			private static final long serialVersionUID = 732177308220189475L;
+            private static final long serialVersionUID = 732177308220189475L;
 
-			@Override
+            @Override
             protected void onUpdate(AjaxRequestTarget target) {
                 layerChoice.setChoices(getLayerNames(workspaceChoice.getConvertedInput()));
                 form.getModelObject().rule.setLayer(null);
@@ -155,9 +155,9 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
 
         grantTypeChoice.add(new OnChangeAjaxBehavior() {
 
-			private static final long serialVersionUID = -4302901248019983282L;
+            private static final long serialVersionUID = -4302901248019983282L;
 
-			@Override
+            @Override
             protected void onUpdate(AjaxRequestTarget target) {
                 if (grantTypeChoice.getConvertedInput().equals(GrantType.LIMIT)) {
                     allowedAreaLabel.setVisible(true);
@@ -186,9 +186,9 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
 
         // build the submit/cancel
         form.add(new SubmitLink("save") {
-			private static final long serialVersionUID = 3735176778941168701L;
+            private static final long serialVersionUID = 3735176778941168701L;
 
-			@Override
+            @Override
             public void onSubmit() {
                 RuleFormData ruleFormData = (RuleFormData) getForm().getModelObject();
                 try {
@@ -357,9 +357,9 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
      * Makes sure we see translated text, by the raw name is used for the model
      */
     protected class GrantTypeRenderer extends ChoiceRenderer<GrantType> {
-		private static final long serialVersionUID = -7478943956804313995L;
+        private static final long serialVersionUID = -7478943956804313995L;
 
-		public Object getDisplayValue(GrantType object) {
+        public Object getDisplayValue(GrantType object) {
             return (String) new ParamResourceModel( object.name(), getPage())
                     .getObject();
         }
@@ -373,9 +373,9 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
      * Makes sure that while rendered in mixed case, is stored in uppercase
      */
     protected class CaseConversionRenderer extends ChoiceRenderer<String> {
-		private static final long serialVersionUID = 4238195087731806209L;
+        private static final long serialVersionUID = 4238195087731806209L;
 
-		public Object getDisplayValue(String object) {
+        public Object getDisplayValue(String object) {
             return object;
         }
 

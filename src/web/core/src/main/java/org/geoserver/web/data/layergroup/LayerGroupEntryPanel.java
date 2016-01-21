@@ -43,9 +43,9 @@ import org.geoserver.web.wicket.UpDownPanel;
  */
 public class LayerGroupEntryPanel extends Panel {
 
-	private static final long serialVersionUID = -5483938812185582866L;
+    private static final long serialVersionUID = -5483938812185582866L;
 
-	public static Property<LayerGroupEntry> LAYER = new PropertyPlaceholder<LayerGroupEntry>(
+    public static Property<LayerGroupEntry> LAYER = new PropertyPlaceholder<LayerGroupEntry>(
             "layer");
 
     public static Property<LayerGroupEntry> DEFAULT_STYLE = new PropertyPlaceholder<LayerGroupEntry>(
@@ -81,9 +81,9 @@ public class LayerGroupEntryPanel extends Panel {
         //layers
         add(layerTable = new ReorderableTablePanel<LayerGroupEntry>("layers", items, PROPERTIES) {
 
-			private static final long serialVersionUID = -3270471094618284639L;
+            private static final long serialVersionUID = -3270471094618284639L;
 
-			@Override
+            @Override
             protected Component getComponentForProperty(String id, IModel<LayerGroupEntry> itemModel,
                     Property<LayerGroupEntry> property) {
                 if (property == LAYER) {
@@ -107,17 +107,17 @@ public class LayerGroupEntryPanel extends Panel {
         layerTable.setOutputMarkupId( true );
         
         add( new AjaxLink<LayerInfo>( "addLayer" ) {
-			private static final long serialVersionUID = -6143440041597461787L;
+            private static final long serialVersionUID = -6143440041597461787L;
 
-			@Override
+            @Override
             public void onClick(AjaxRequestTarget target) {
                 popupWindow.setInitialHeight( 375 );
                 popupWindow.setInitialWidth( 525 );
                 popupWindow.setTitle(new ParamResourceModel("chooseLayer", this));
                 popupWindow.setContent( new LayerListPanel(popupWindow.getContentId()) {
-					private static final long serialVersionUID = -47811496174289699L;
+                    private static final long serialVersionUID = -47811496174289699L;
 
-					@Override
+                    @Override
                     protected void handleLayer(LayerInfo layer, AjaxRequestTarget target) {
                         popupWindow.close( target );
                         
@@ -134,17 +134,17 @@ public class LayerGroupEntryPanel extends Panel {
         });
         
         add( new AjaxLink<LayerGroupInfo>( "addLayerGroup" ) {
-			private static final long serialVersionUID = -6600366636542152188L;
+            private static final long serialVersionUID = -6600366636542152188L;
 
-			@Override
+            @Override
             public void onClick(AjaxRequestTarget target) {
                 popupWindow.setInitialHeight( 375 );
                 popupWindow.setInitialWidth( 525 );
                 popupWindow.setTitle(new ParamResourceModel("chooseLayerGroup", this));
                 popupWindow.setContent( new LayerGroupListPanel(popupWindow.getContentId()) {
-					private static final long serialVersionUID = 4052338807144204692L;
+                    private static final long serialVersionUID = 4052338807144204692L;
 
-					@Override
+                    @Override
                     protected void handleLayerGroup(LayerGroupInfo layerGroup, AjaxRequestTarget target) {
                         popupWindow.close( target );
                         
@@ -175,9 +175,9 @@ public class LayerGroupEntryPanel extends Panel {
         CheckBox ds = new CheckBox("checkbox", new Model<Boolean>(entry.isDefaultStyle()));
         ds.add(new OnChangeAjaxBehavior() {
             
-			private static final long serialVersionUID = 7700386104410665242L;
+            private static final long serialVersionUID = 7700386104410665242L;
 
-			@Override
+            @Override
             protected void onUpdate(AjaxRequestTarget target) {
                 Boolean useDefault = (Boolean) getComponent().getDefaultModelObject();
                 entry.setDefaultStyle(useDefault);
@@ -207,20 +207,17 @@ public class LayerGroupEntryPanel extends Panel {
         // build and returns the link, but disable it if the style is the default
         SimpleAjaxLink<String> link = new SimpleAjaxLink<String>( id, new Model<String>(styleName)) {
 
-			private static final long serialVersionUID = 4677068931971673637L;
+            private static final long serialVersionUID = 4677068931971673637L;
 
-			@Override
+            @Override
             public void onClick(AjaxRequestTarget target) {
                 popupWindow.setInitialHeight( 375 );
                 popupWindow.setInitialWidth( 525 );
                 popupWindow.setTitle(new ParamResourceModel("chooseStyle", this));
                 popupWindow.setContent( new StyleListPanel( popupWindow.getContentId() ) {
-                    /**
-					 * 
-					 */
-					private static final long serialVersionUID = -8463999379475701401L;
+                    private static final long serialVersionUID = -8463999379475701401L;
 
-					@Override
+                    @Override
                     protected void handleStyle(StyleInfo style, AjaxRequestTarget target) {
                         popupWindow.close( target );
                         
@@ -244,9 +241,9 @@ public class LayerGroupEntryPanel extends Panel {
         ImageAjaxLink<Object> link = new ImageAjaxLink<Object>( id, 
         		new PackageResourceReference( getClass(), "../../img/icons/silk/delete.png") ) {
 
-			private static final long serialVersionUID = 4050942811476326745L;
+            private static final long serialVersionUID = 4050942811476326745L;
 
-			@Override
+            @Override
             protected void onClick(AjaxRequestTarget target) {
                 
                 items.remove( entry );

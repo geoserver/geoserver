@@ -33,16 +33,16 @@ import org.geoserver.web.wicket.GeoServerDataProvider;
  */
 public class GeofenceRulesModel extends GeoServerDataProvider<ShortRule> {
             
-	private static final long serialVersionUID = 478867886089304835L;
+    private static final long serialVersionUID = 478867886089304835L;
 
-	/** 
+    /** 
      * Makes columns that are unsortable and display "*" instead of empty when null
      * 
      */
     public static class RuleBeanProperty<T> extends BeanProperty<T> {
-		private static final long serialVersionUID = 483799722644223445L;
+        private static final long serialVersionUID = 483799722644223445L;
 
-		public RuleBeanProperty(String key, String propertyPath) {
+        public RuleBeanProperty(String key, String propertyPath) {
             super(key, propertyPath);
         }
         
@@ -54,9 +54,9 @@ public class GeofenceRulesModel extends GeoServerDataProvider<ShortRule> {
         @SuppressWarnings({ "unchecked", "rawtypes" })
 		public IModel getModel(IModel<T> itemModel) { //replace null by *
             return new PropertyModel<Object>(itemModel, getPropertyPath()) {
-				private static final long serialVersionUID = 1L;
+                private static final long serialVersionUID = 1L;
 
-				@Override
+                @Override
                 public Object getObject() {
                     Object o = super.getObject();
                     return o == null ? "*" : o;

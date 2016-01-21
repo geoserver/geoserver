@@ -27,9 +27,9 @@ import org.geoserver.web.wicket.GeoServerDataProvider.Property;
  */
 public class LayerGroupPage extends GeoServerSecuredPage {
     
-	private static final long serialVersionUID = 5039809655908312633L;
+    private static final long serialVersionUID = 5039809655908312633L;
 	
-	GeoServerTablePanel<LayerGroupInfo> table;
+    GeoServerTablePanel<LayerGroupInfo> table;
     GeoServerDialog dialog;
     SelectionRemovalLink removal;
 
@@ -37,9 +37,9 @@ public class LayerGroupPage extends GeoServerSecuredPage {
         LayerGroupProvider provider = new LayerGroupProvider();
         add(table = new GeoServerTablePanel<LayerGroupInfo>( "table", provider, true ) {
 
-			private static final long serialVersionUID = 714777934301159139L;
+            private static final long serialVersionUID = 714777934301159139L;
 
-			@Override
+            @Override
             protected Component getComponentForProperty(String id, IModel<LayerGroupInfo> itemModel,
                     Property<LayerGroupInfo> property) {
                 

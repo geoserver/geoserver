@@ -39,7 +39,7 @@ public abstract class LayerListPanel extends GeoServerTablePanel<LayerInfo> {
     
     protected static abstract class LayerListProvider extends LayerProvider {
 
-		private static final long serialVersionUID = -4793382279386643262L;
+        private static final long serialVersionUID = -4793382279386643262L;
 
         @Override
         protected List<Property<LayerInfo>> getProperties() {
@@ -61,9 +61,9 @@ public abstract class LayerListPanel extends GeoServerTablePanel<LayerInfo> {
     public LayerListPanel( String id ) {
         this( id, new LayerListProvider(){
 
-        	private static final long serialVersionUID = 426375054014475107L;
+            private static final long serialVersionUID = 426375054014475107L;
 
-			@Override
+            @Override
             public Iterator<LayerInfo> iterator(final long first, final long count) {
                 Iterator<LayerInfo> iterator = filteredItems((int) first, (int) count);
                 if (iterator instanceof CloseableIterator) {
@@ -120,9 +120,9 @@ public abstract class LayerListPanel extends GeoServerTablePanel<LayerInfo> {
         IModel<?> model = property.getModel( itemModel );
         if ( NAME == property ) {
             return new SimpleAjaxLink<String>(id, (IModel<String>) model ) {
-				private static final long serialVersionUID = -2968338284881141281L;
+                private static final long serialVersionUID = -2968338284881141281L;
 
-				@Override
+                @Override
                 protected void onClick(AjaxRequestTarget target) {
                     LayerInfo layer = (LayerInfo) itemModel.getObject();
                     handleLayer( layer, target );

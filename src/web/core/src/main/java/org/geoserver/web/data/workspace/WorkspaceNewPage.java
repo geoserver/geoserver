@@ -30,9 +30,9 @@ import org.geoserver.web.wicket.XMLNameValidator;
  */
 public class WorkspaceNewPage extends GeoServerSecuredPage {
 
-	private static final long serialVersionUID = -4355978268880701910L;
+    private static final long serialVersionUID = -4355978268880701910L;
 	
-	Form<WorkspaceInfo> form;
+    Form<WorkspaceInfo> form;
     TextField<String> nsUriTextField;
     boolean defaultWs;
     
@@ -40,9 +40,9 @@ public class WorkspaceNewPage extends GeoServerSecuredPage {
         WorkspaceInfo ws = getCatalog().getFactory().createWorkspace();
         
         form = new Form<WorkspaceInfo>( "form", new CompoundPropertyModel<WorkspaceInfo>(ws) ) {
-			private static final long serialVersionUID = 6088042051374665053L;
-
-			@Override
+            private static final long serialVersionUID = 6088042051374665053L;
+    
+            @Override
             protected void onSubmit() {
                 Catalog catalog = getCatalog();
                 
@@ -68,9 +68,9 @@ public class WorkspaceNewPage extends GeoServerSecuredPage {
         nameTextField.add(new XMLNameValidator());
         nameTextField.add(new StringValidator() {
 
-			private static final long serialVersionUID = -5475431734680134780L;
+            private static final long serialVersionUID = -5475431734680134780L;
 
-			@Override
+            @Override
             public void validate(IValidatable<String> validatable) {
                 if(CatalogImpl.DEFAULT.equals(validatable.getValue())) {
                     validatable.error(new ValidationError("defaultWsError").addKey("defaultWsError"));
@@ -93,9 +93,9 @@ public class WorkspaceNewPage extends GeoServerSecuredPage {
         form.setDefaultButton(submitLink);
         
         AjaxLink<Void> cancelLink = new AjaxLink<Void>( "cancel" ) {
-			private static final long serialVersionUID = -1731475076965108576L;
+            private static final long serialVersionUID = -1731475076965108576L;
 
-			@Override
+            @Override
             public void onClick(AjaxRequestTarget target) {
                 doReturn(WorkspacePage.class);
             }

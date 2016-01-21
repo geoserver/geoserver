@@ -17,9 +17,9 @@ import org.geoserver.catalog.LayerGroupInfo;
  */
 public class LayerGroupModeModel extends LoadableDetachableModel<List<LayerGroupInfo.Mode>> {
     
-	private static final long serialVersionUID = 1781202562325730121L;
+    private static final long serialVersionUID = 1781202562325730121L;
 
-	@Override
+    @Override
     protected List<LayerGroupInfo.Mode> load() {
         List<LayerGroupInfo.Mode> modes = new ArrayList<LayerGroupInfo.Mode>();
         modes.add(LayerGroupInfo.Mode.SINGLE);

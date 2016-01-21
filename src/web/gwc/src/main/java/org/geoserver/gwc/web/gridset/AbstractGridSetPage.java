@@ -44,9 +44,9 @@ import org.opengis.referencing.cs.CoordinateSystemAxis;
 
 abstract class AbstractGridSetPage extends GeoServerSecuredPage {
 
-	private static final long serialVersionUID = 2977633539319630433L;
+    private static final long serialVersionUID = 2977633539319630433L;
 
-	protected static final Logger LOGGER = Logging.getLogger(AbstractGridSetPage.class);
+    protected static final Logger LOGGER = Logging.getLogger(AbstractGridSetPage.class);
 
     /**
      * Name of the page parameter that determines which gridset to edit
@@ -152,9 +152,9 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
         });
 
         addLevelLink = new GeoServerAjaxFormLink("addZoomLevel", form) {
-			private static final long serialVersionUID = 1202251941625034786L;
+            private static final long serialVersionUID = 1202251941625034786L;
 
-			@Override
+            @Override
             protected void onClick(AjaxRequestTarget target, Form<?> form) {
 				crs.processInput();
                 bounds.processInput();
@@ -325,9 +325,9 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
         protected SRSListPanel srsListPanel() {
             SRSListPanel srsList = new SRSListPanel(popupWindow.getContentId()) {
 
-            	private static final long serialVersionUID = 2869219395676091081L;
+                private static final long serialVersionUID = 2869219395676091081L;
 
-				@Override
+                @Override
                 protected void onCodeClicked(AjaxRequestTarget target, String epsgCode) {
                     popupWindow.close(target);
 

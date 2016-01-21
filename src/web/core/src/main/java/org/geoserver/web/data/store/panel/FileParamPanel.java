@@ -99,9 +99,9 @@ public class FileParamPanel extends Panel implements ParamPanel {
                 }
 
                 GeoServerFileChooser chooser = new GeoServerFileChooser(dialog.getContentId(), new Model<File>(file)) {
-					private static final long serialVersionUID = -7096642192491726498L;
+                    private static final long serialVersionUID = -7096642192491726498L;
 
-					protected void fileClicked(File file, AjaxRequestTarget target) {
+                    protected void fileClicked(File file, AjaxRequestTarget target) {
                       // clear the raw input of the field won't show the new model value
                       textField.clearInput();
                       textField.setModelObject(file.getAbsolutePath());

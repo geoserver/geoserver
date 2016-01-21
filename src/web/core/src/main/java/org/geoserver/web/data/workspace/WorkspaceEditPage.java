@@ -72,9 +72,9 @@ import org.geotools.util.logging.Logging;
  */
 public class WorkspaceEditPage extends GeoServerSecuredPage {
 
-	private static final long serialVersionUID = 4341324830412716976L;
+    private static final long serialVersionUID = 4341324830412716976L;
 
-	private static final Logger LOGGER = Logging.getLogger("org.geoserver.web.data.workspace");
+    private static final Logger LOGGER = Logging.getLogger("org.geoserver.web.data.workspace");
     
     IModel<WorkspaceInfo> wsModel;
     IModel<NamespaceInfo> nsModel;
@@ -116,9 +116,9 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
         nsModel = new NamespaceDetachableModel(ns);
         
         Form<NamespaceInfo> form = new Form<NamespaceInfo>( "form", new CompoundPropertyModel<NamespaceInfo>( nsModel ) ) {
-			private static final long serialVersionUID = 5140757565172795453L;
+            private static final long serialVersionUID = 5140757565172795453L;
 
-			protected void onSubmit() {
+            protected void onSubmit() {
                 try {
                     saveWorkspace();
                 } catch (RuntimeException e) {
@@ -230,9 +230,9 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
      * Data object to hold onto transient settings, and maintain state of enabled for the workspace.
      */
     static class Settings implements Serializable {
-		private static final long serialVersionUID = -5855608735160516252L;
+        private static final long serialVersionUID = -5855608735160516252L;
 
-		/** track selection */
+        /** track selection */
         Boolean enabled;
 
         /** created settings, not yet added to configuration */
@@ -241,8 +241,8 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
 
     static class ExistingSettingsModel extends LoadableDetachableModel<SettingsInfo> {
 
-		private static final long serialVersionUID = -8203239697623788188L;
-		IModel<WorkspaceInfo> wsModel;
+        private static final long serialVersionUID = -8203239697623788188L;
+        IModel<WorkspaceInfo> wsModel;
 
         ExistingSettingsModel(IModel<WorkspaceInfo> wsModel) {
             this.wsModel = wsModel;
@@ -258,8 +258,8 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
 
     static class NewSettingsModel extends Model<SettingsInfo> {
 
-		private static final long serialVersionUID = -4365626821652771933L;
-		IModel<WorkspaceInfo> wsModel;
+        private static final long serialVersionUID = -4365626821652771933L;
+        IModel<WorkspaceInfo> wsModel;
         SettingsInfo info;
 
         NewSettingsModel(IModel<WorkspaceInfo> wsModel) {
@@ -291,9 +291,9 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
 
     class SettingsPanel extends FormComponentPanel<Serializable> {
 
-		private static final long serialVersionUID = -1580928887379954134L;
+        private static final long serialVersionUID = -1580928887379954134L;
 		
-		WebMarkupContainer settingsContainer;
+        WebMarkupContainer settingsContainer;
         ContactPanel contactPanel;
         WebMarkupContainer otherSettingsPanel;
         Settings set;
@@ -310,9 +310,9 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
 
             add(new CheckBox("enabled", new PropertyModel<Boolean>(set, "enabled")).
                 add(new AjaxFormComponentUpdatingBehavior("click") {
-					private static final long serialVersionUID = -7851699665702753119L;
+                    private static final long serialVersionUID = -7851699665702753119L;
 
-					@Override
+                    @Override
                     protected void onUpdate(AjaxRequestTarget target) {
                         contactPanel.setVisible(set.enabled);
                         otherSettingsPanel.setVisible(set.enabled);
@@ -356,12 +356,9 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
      * the workspace.
      */
     static class Service implements Serializable {
-        /**
-		 * 
-		 */
-		private static final long serialVersionUID = 3283857206025172687L;
+        private static final long serialVersionUID = 3283857206025172687L;
 
-		/** track selection */
+        /** track selection */
         Boolean enabled;
 
         /** the admin page for the service */ 
@@ -373,8 +370,8 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
 
     static class NewServiceModel extends Model<ServiceInfo> {
         
-		private static final long serialVersionUID = -3467556623909292282L;
-		IModel<WorkspaceInfo> wsModel;
+        private static final long serialVersionUID = -3467556623909292282L;
+        IModel<WorkspaceInfo> wsModel;
         Class<ServiceInfo> serviceClass;
         ServiceInfo service;
 
@@ -411,8 +408,8 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
 
     static class ExistingServiceModel extends LoadableDetachableModel<ServiceInfo> {
 
-		private static final long serialVersionUID = -2170117760214309321L;
-		IModel<WorkspaceInfo> wsModel;
+        private static final long serialVersionUID = -2170117760214309321L;
+        IModel<WorkspaceInfo> wsModel;
         Class<ServiceInfo> serviceClass;
 
         ExistingServiceModel(IModel<WorkspaceInfo> wsModel, Class<ServiceInfo> serviceClass) {
@@ -428,8 +425,8 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
 
     class ServicesPanel extends FormComponentPanel<Serializable> {
 
-		private static final long serialVersionUID = 7375904545106343626L;
-		List<Service> services;
+        private static final long serialVersionUID = 7375904545106343626L;
+        List<Service> services;
         
         public ServicesPanel(String id, final IModel<WorkspaceInfo> wsModel) {
             super(id, new Model<>());
@@ -437,19 +434,16 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
             services = services(wsModel);
             ListView<Service> serviceList = new ListView<Service>("services", services) {
 
-				private static final long serialVersionUID = -4142739871430618450L;
+                private static final long serialVersionUID = -4142739871430618450L;
 
-				@Override
+                @Override
                 protected void populateItem(ListItem<Service> item) {
                     Service service = item.getModelObject();
 
                     final Link<Service> link = new Link<Service>("link", new Model<Service>(service)) {
-                        /**
-						 * 
-						 */
-						private static final long serialVersionUID = 1111536301891090436L;
+                        private static final long serialVersionUID = 1111536301891090436L;
 
-						@Override
+                        @Override
                         public void onClick() {
                             Service s = getModelObject();
                             Page page = null;
@@ -484,12 +478,9 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
                     
                     AjaxCheckBox enabled = 
                         new AjaxCheckBox("enabled", new PropertyModel<Boolean>(service, "enabled")) {
-                        /**
-							 * 
-							 */
-							private static final long serialVersionUID = 6369730006169869310L;
+                        private static final long serialVersionUID = 6369730006169869310L;
 
-						@Override
+                        @Override
                         protected void onUpdate(AjaxRequestTarget target) {
                             link.setEnabled(getModelObject());
                             target.add(link);

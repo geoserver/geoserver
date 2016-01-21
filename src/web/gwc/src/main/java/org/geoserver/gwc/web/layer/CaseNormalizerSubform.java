@@ -51,9 +51,9 @@ public class CaseNormalizerSubform extends FormComponentPanel<CaseNormalizer> {
         
         localeEntry = new DropDownChoice<>("locale", localeModel, getLocales(), new ChoiceRenderer<Locale>(){
 
-			private static final long serialVersionUID = -2122570049478633429L;
+            private static final long serialVersionUID = -2122570049478633429L;
 
-			@Override
+            @Override
             public Object getDisplayValue(Locale object) {
                 return object.getDisplayName(CaseNormalizerSubform.this.getLocale());
             }
@@ -68,9 +68,9 @@ public class CaseNormalizerSubform extends FormComponentPanel<CaseNormalizer> {
         
         caseEntry = new DropDownChoice<Case>("case", caseModel, Arrays.asList(Case.values()), new ChoiceRenderer<Case>(){
 
-			private static final long serialVersionUID = -129788130907421097L;
+            private static final long serialVersionUID = -129788130907421097L;
 
-			@Override
+            @Override
             public Object getDisplayValue(Case object) {
                 return getLocalizer().getString("case."+object.name(), CaseNormalizerSubform.this);
             }

@@ -16,9 +16,9 @@ import org.geoserver.catalog.LayerGroupInfo.Mode;
  */
 public class LayerGroupModeChoiceRenderer extends ChoiceRenderer<Mode> {
 
-	private static final long serialVersionUID = -4853272187576451891L;
+    private static final long serialVersionUID = -4853272187576451891L;
 
-	@Override
+    @Override
     public Object getDisplayValue(Mode mode) {
         return mode.getName();
     }

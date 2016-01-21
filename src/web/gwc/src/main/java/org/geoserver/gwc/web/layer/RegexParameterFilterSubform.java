@@ -29,9 +29,9 @@ public class RegexParameterFilterSubform
 
     static final private IValidator<String> REGEXP_VALIDATOR = new IValidator<String>() {
 
-		private static final long serialVersionUID = 3753607592277740081L;
+        private static final long serialVersionUID = 3753607592277740081L;
 
-		@Override
+        @Override
         public void validate(IValidatable<String> validatable) {
             final String regex = validatable.getValue();
             try{

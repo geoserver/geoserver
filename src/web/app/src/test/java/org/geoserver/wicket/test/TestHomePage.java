@@ -14,9 +14,9 @@ import org.apache.wicket.markup.html.WebPage;
  */
 public class TestHomePage extends WebPage {
 
-	private static final long serialVersionUID = 2340501554860062526L;
+    private static final long serialVersionUID = 2340501554860062526L;
 	
-	static IComponentFactory componentFactory;
+    static IComponentFactory componentFactory;
 
     /**
      * Constructor that is invoked when page is invoked without a session.

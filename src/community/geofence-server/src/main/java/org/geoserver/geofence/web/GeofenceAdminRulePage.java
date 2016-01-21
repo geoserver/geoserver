@@ -28,8 +28,8 @@ import java.util.logging.Level;
 
 public class GeofenceAdminRulePage extends GeoServerSecuredPage {
 
-	private static final long serialVersionUID = -1652083500548496180L;
-	protected DropDownChoice<String> userChoice, roleChoice, workspaceChoice;
+    private static final long serialVersionUID = -1652083500548496180L;
+    protected DropDownChoice<String> userChoice, roleChoice, workspaceChoice;
     protected DropDownChoice<AdminGrantType> grantTypeChoice;
 
     public GeofenceAdminRulePage(final ShortAdminRule rule, final GeofenceAdminRulesModel rules) {
@@ -42,9 +42,9 @@ public class GeofenceAdminRulePage extends GeoServerSecuredPage {
         form.add(roleChoice = new DropDownChoice<>("roleName", getRoleNames()));
         roleChoice.add(new OnChangeAjaxBehavior() {
 
-			private static final long serialVersionUID = -8846522500239968004L;
+            private static final long serialVersionUID = -8846522500239968004L;
 
-			@Override
+            @Override
             protected void onUpdate(AjaxRequestTarget target) {
                 userChoice.setChoices(getUserNames(roleChoice.getConvertedInput()));
                 form.getModelObject().setUserName(null);
@@ -66,9 +66,9 @@ public class GeofenceAdminRulePage extends GeoServerSecuredPage {
 
         form.add(new SubmitLink("save") {
 
-			private static final long serialVersionUID = -6524151967046867889L;
+            private static final long serialVersionUID = -6524151967046867889L;
 
-			@Override
+            @Override
             public void onSubmit() {
                 ShortAdminRule rule = (ShortAdminRule) getForm().getModelObject();
                 try {
@@ -133,9 +133,9 @@ public class GeofenceAdminRulePage extends GeoServerSecuredPage {
 
     protected class AdminGrantTypeRenderer extends ChoiceRenderer<AdminGrantType> {
 
-		private static final long serialVersionUID = -7146780173551842734L;
+        private static final long serialVersionUID = -7146780173551842734L;
 
-		public Object getDisplayValue(AdminGrantType object) {
+        public Object getDisplayValue(AdminGrantType object) {
             return new ParamResourceModel(object.name(), getPage()).getObject();
         }
 

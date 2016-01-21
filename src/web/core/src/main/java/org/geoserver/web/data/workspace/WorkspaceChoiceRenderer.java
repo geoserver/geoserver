@@ -13,9 +13,9 @@ import org.geoserver.catalog.WorkspaceInfo;
  */
 public class WorkspaceChoiceRenderer extends ChoiceRenderer<WorkspaceInfo> {
 
-	private static final long serialVersionUID = 9065816461497078542L;
+    private static final long serialVersionUID = 9065816461497078542L;
 
-	public Object getDisplayValue(WorkspaceInfo object) {
+    public Object getDisplayValue(WorkspaceInfo object) {
         return object.getName();
     }
 

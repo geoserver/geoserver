@@ -20,9 +20,9 @@ import org.apache.wicket.validation.IValidator;
  */
 public class TextParamPanel<T> extends Panel implements ParamPanel {
 
-	private static final long serialVersionUID = 5498443514886175158L;
+    private static final long serialVersionUID = 5498443514886175158L;
 	
-	private TextField<T> textField;
+    private TextField<T> textField;
     
     /**
      * 

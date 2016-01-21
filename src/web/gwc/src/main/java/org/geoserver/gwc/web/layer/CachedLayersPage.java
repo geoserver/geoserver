@@ -58,9 +58,9 @@ import org.geowebcache.mime.MimeType;
  * @see GWC#removeTileLayers(List)
  */
 public class CachedLayersPage extends GeoServerSecuredPage {
-	private static final long serialVersionUID = -6795610175856538774L;
+    private static final long serialVersionUID = -6795610175856538774L;
 
-	private CachedLayerProvider provider = new CachedLayerProvider();
+    private CachedLayerProvider provider = new CachedLayerProvider();
 
     private GeoServerTablePanel<TileLayer> table;
 

@@ -28,13 +28,13 @@ import org.geowebcache.filter.parameters.IntegerParameterFilter;
  */
 public class IntegerParameterFilterSubform extends AbstractParameterFilterSubform<IntegerParameterFilter> {
 
-	private static final long serialVersionUID = 4625052381807389891L;
+    private static final long serialVersionUID = 4625052381807389891L;
 
-	private static final IConverter<Integer> INTEGER = new IConverter<Integer>() {
+    private static final IConverter<Integer> INTEGER = new IConverter<Integer>() {
 
-    	private static final long serialVersionUID = -998131942023964739L;
+        private static final long serialVersionUID = -998131942023964739L;
 
-		@Override
+        @Override
         public Integer convertToObject(String value, Locale locale) {
             if(value==null || value.isEmpty()) return null;
             try {
@@ -101,10 +101,10 @@ public class IntegerParameterFilterSubform extends AbstractParameterFilterSubfor
         
         final TextArea<List<Integer>> values;
         values = new TextArea<List<Integer>>("values", new PropertyModel<List<Integer>>(model, "values")) {
-			private static final long serialVersionUID = 1397063859210766872L;
+            private static final long serialVersionUID = 1397063859210766872L;
 
-			@SuppressWarnings("unchecked")
-			@Override
+            @SuppressWarnings("unchecked")
+            @Override
             public <S> IConverter<S> getConverter(Class<S> type) {
             	if (List.class.isAssignableFrom(type)) {
             		return (IConverter<S>) CONVERT;
@@ -117,10 +117,10 @@ public class IntegerParameterFilterSubform extends AbstractParameterFilterSubfor
         
         final Component threshold;
         threshold = new TextField<Integer>("threshold", new PropertyModel<Integer>(model, "threshold")) {
-			private static final long serialVersionUID = -3975284862791672686L;
+            private static final long serialVersionUID = -3975284862791672686L;
 
-			@SuppressWarnings("unchecked")
-			@Override
+            @SuppressWarnings("unchecked")
+            @Override
             public <S> IConverter<S> getConverter(Class<S> type) {
             	if (Integer.class.isAssignableFrom(type)) {
             		return (IConverter<S>) INTEGER;

@@ -14,9 +14,9 @@ import org.geoserver.web.GeoServerApplication;
 
 public class LayerInfoConverter implements IConverter<LayerInfo> {
 
-	private static final long serialVersionUID = -3540868744266790608L;
+    private static final long serialVersionUID = -3540868744266790608L;
 
-	@Override
+    @Override
     public LayerInfo convertToObject(String name, Locale locale) {
         return GeoServerApplication.get().getCatalog().getLayerByName(name);
     }

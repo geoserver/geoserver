@@ -44,9 +44,9 @@ import org.geowebcache.layer.TileLayer;
  */
 public class NewCachedLayerPage extends GeoServerSecuredPage {
 
-	private static final long serialVersionUID = 6458510742445385219L;
+    private static final long serialVersionUID = 6458510742445385219L;
 
-	private UnconfiguredCachedLayersProvider provider = new UnconfiguredCachedLayersProvider();
+    private UnconfiguredCachedLayersProvider provider = new UnconfiguredCachedLayersProvider();
 
     private GeoServerTablePanel<TileLayer> table;
 
@@ -60,9 +60,9 @@ public class NewCachedLayerPage extends GeoServerSecuredPage {
 
         table = new GeoServerTablePanel<TileLayer>("table", provider, true) {
 
-			private static final long serialVersionUID = -5260899839139961722L;
+            private static final long serialVersionUID = -5260899839139961722L;
 
-			@Override
+            @Override
             protected Component getComponentForProperty(String id, IModel<TileLayer> itemModel,
                     Property<TileLayer> property) {
 

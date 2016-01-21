@@ -16,9 +16,9 @@ import org.geoserver.web.GeoServerApplication;
  * see http://issues.apache.org/jira/browse/WICKET-27 and http://issues.apache.org/jira/browse/WICKET-2364 
  */
 public class WorkspaceDetachableModel implements IModel<WorkspaceInfo> {
-	private static final long serialVersionUID = 7805768164289311051L;
+    private static final long serialVersionUID = 7805768164289311051L;
 	
-	transient WorkspaceInfo workspace;
+    transient WorkspaceInfo workspace;
     String id;
     
     public WorkspaceDetachableModel( WorkspaceInfo workspace ) {

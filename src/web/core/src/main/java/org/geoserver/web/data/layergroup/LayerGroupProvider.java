@@ -18,9 +18,9 @@ import org.geoserver.web.wicket.GeoServerDataProvider;
  */
 public class LayerGroupProvider extends GeoServerDataProvider<LayerGroupInfo> {
 
-	private static final long serialVersionUID = 4806818198949114395L;
+    private static final long serialVersionUID = 4806818198949114395L;
 
-	public static Property<LayerGroupInfo> NAME = 
+    public static Property<LayerGroupInfo> NAME = 
         new BeanProperty<LayerGroupInfo>( "name", "name" );
 
     public static Property<LayerGroupInfo> WORKSPACE = 

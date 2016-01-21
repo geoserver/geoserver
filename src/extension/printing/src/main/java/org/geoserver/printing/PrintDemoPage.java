@@ -14,9 +14,9 @@ import org.apache.wicket.markup.html.IHeaderContributor;
 import org.geoserver.web.GeoServerBasePage;
 
 public class PrintDemoPage extends GeoServerBasePage implements IHeaderContributor {
-	private static final long serialVersionUID = 2904825847695306563L;
+        private static final long serialVersionUID = 2904825847695306563L;
 
-	public void renderHead(IHeaderResponse response) {
+        public void renderHead(IHeaderResponse response) {
 	    response.render(CssHeaderItem.forCSS("http://extjs.cachefly.net/ext-2.2.1/resources/css/ext-all.css", null));
 	    response.render(CssHeaderItem.forCSS("http://extjs.cachefly.net/ext-2.2.1/examples/shared/examples.css", null));
 	    response.render(OnLoadHeaderItem.forScript("http://extjs.cachefly.net/builds/ext-cdn-771.js"));

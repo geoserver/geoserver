@@ -26,9 +26,9 @@ public class StatusBar extends Panel {
         super(id);
         setOutputMarkupId(true);
         add(new Behavior() {
-			private static final long serialVersionUID = -8058471260136015254L;
+                private static final long serialVersionUID = -8058471260136015254L;
 
-			@Override
+                @Override
         	public void renderHead(Component component, IHeaderResponse response) {
         		response.render(CssHeaderItem.forReference(new PackageResourceReference(StatusBar.class, "statusbar.css")));
         	}

@@ -98,11 +98,11 @@ public class CoverageAccessPage extends ServerAdminPage {
         corePoolSize.setMinimum(1);
         form.add(corePoolSize);
         
-        TextField<String> maxPoolSize = new TextField<String>("maxPoolSize");
+        NumberTextField<Integer> maxPoolSize = new NumberTextField<Integer>("maxPoolSize",Integer.class);
         maxPoolSize.add(RangeValidator.minimum(1));
         form.add(maxPoolSize);
         
-        TextField<String> keepAliveTime = new TextField<String>("keepAliveTime");
+        NumberTextField<Integer> keepAliveTime = new NumberTextField<Integer>("keepAliveTime",Integer.class);
         keepAliveTime.add(RangeValidator.minimum(1));
         form.add(keepAliveTime);
         

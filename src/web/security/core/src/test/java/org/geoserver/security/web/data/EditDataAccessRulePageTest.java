@@ -31,7 +31,8 @@ public class EditDataAccessRulePageTest extends AbstractSecurityWicketTestSuppor
     @Before
     public void init() throws Exception {
         initializeForXML();
-        clearServices();
+        clearServices();        
+        DataAccessRuleDAO.get().clear();
     }
 
     @Test
@@ -60,6 +61,7 @@ public class EditDataAccessRulePageTest extends AbstractSecurityWicketTestSuppor
         tester.assertRenderedPage(EditDataAccessRulePage.class);
 
         form=tester.newFormTester("form");        
+        form.setValue("roles:anyRole", true);
         form.submit("save");
         
         tester.assertErrorMessages(new String[0]);

@@ -15,8 +15,6 @@ import java.util.Locale;
 import javax.imageio.ImageIO;
 
 import org.apache.wicket.request.IRequestParameters;
-import org.apache.wicket.request.Request;
-import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.request.resource.AbstractResource;
 import org.apache.wicket.util.lang.Bytes;
 import org.apache.wicket.util.resource.AbstractResourceStream;

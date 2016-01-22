@@ -14,10 +14,15 @@ import java.util.logging.Logger;
 
 import javax.xml.namespace.QName;
 
+import net.opengis.wfs20.ParameterExpressionType;
+import net.opengis.wfs20.StoredQueryDescriptionType;
+import net.opengis.wfs20.StoredQueryListItemType;
+import net.opengis.wfs20.TitleType;
+
 import org.apache.wicket.Component;
+import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.SubmitLink;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.link.Link;
@@ -41,11 +46,6 @@ import org.geotools.data.wfs.internal.v2_0.storedquery.ParameterMappingDefaultVa
 import org.geotools.data.wfs.internal.v2_0.storedquery.ParameterMappingExpressionValue;
 import org.geotools.data.wfs.internal.v2_0.storedquery.StoredQueryConfiguration;
 import org.geotools.util.logging.Logging;
-
-import net.opengis.wfs20.ParameterExpressionType;
-import net.opengis.wfs20.StoredQueryDescriptionType;
-import net.opengis.wfs20.StoredQueryListItemType;
-import net.opengis.wfs20.TitleType;
 
 
 /**

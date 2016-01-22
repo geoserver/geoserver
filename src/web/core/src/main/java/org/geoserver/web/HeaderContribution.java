@@ -9,7 +9,6 @@ import java.util.logging.Logger;
 
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.request.resource.PackageResourceReference;
-import org.apache.wicket.request.resource.ResourceReference;
 import org.geotools.util.logging.Logging;
 
 /**
@@ -46,14 +45,14 @@ public class HeaderContribution {
     
     static Logger LOGGER = Logging.getLogger( "org.geoserver.web");
     
-    Class scope;
+    Class<?> scope;
     String cssFilename, javaScriptFilename, faviconFilename;
  
-    public Class getScope() {
+    public Class<?> getScope() {
         return scope;
     }
     
-    public void setScope(Class scope) {
+    public void setScope(Class<?> scope) {
         this.scope = scope;
     }
     

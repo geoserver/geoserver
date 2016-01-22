@@ -28,20 +28,24 @@ import org.geoserver.web.wicket.GeoServerDataProvider.PropertyPlaceholder;
  * 
  * @param <T>
  */
-@SuppressWarnings({ "serial", "rawtypes" })
 public abstract class ReorderableTablePanel<T> extends GeoServerTablePanel<T> {
 
+    private static final long serialVersionUID = -6732973402966999112L;
+
     static class ReorderableDataProvider<T> extends GeoServerDataProvider<T> {
+
+        private static final long serialVersionUID = -5792726233183939109L;
 
         private List<T> items;
 
         private List<org.geoserver.web.wicket.GeoServerDataProvider.Property<T>> properties;
 
+        @SuppressWarnings("unchecked")
         public ReorderableDataProvider(List<T> items, List<Property<T>> properties) {
             this.items = items;
             this.properties = new ArrayList<Property<T>>(properties);
-            this.properties.add(0, POSITION);
-            this.properties.add(0, RENDERING_ORDER);
+            this.properties.add(0, (Property<T>) POSITION);
+            this.properties.add(0, (Property<T>) RENDERING_ORDER);
         }
 
         @Override
@@ -60,25 +64,27 @@ public abstract class ReorderableTablePanel<T> extends GeoServerTablePanel<T> {
      * Cannot declare these non static, because they would be initialized too late, and as static,
      * they cannot have the right type argument
      */
-    static Property POSITION = new PropertyPlaceholder("position");
+    static Property<?> POSITION = new PropertyPlaceholder<Object>("position");
 
-    static Property RENDERING_ORDER = new PropertyPlaceholder("order");
+    static Property<?> RENDERING_ORDER = new PropertyPlaceholder<Object>("order");
 
-    private List<T> items;
+    //private List<T> items;
 
     public ReorderableTablePanel(String id, List<T> items, List<Property<T>> properties) {
-        super(id, new ReorderableDataProvider(items, properties));
-        this.items = items;
+        super(id, new ReorderableDataProvider<T>(items, properties));
+        //this.items = items;
     }
 
     @Override
     protected void buildRowListView(GeoServerDataProvider<T> dataProvider, Item<T> item, IModel<T> itemModel) {
         // create one component per viewable property
-        ListView items = new ListView("itemProperties", dataProvider.getVisibleProperties()) {
+        ListView<Property<T>> items = new ListView<Property<T>>("itemProperties", dataProvider.getVisibleProperties()) {
+
+            private static final long serialVersionUID = -7089826211241039856L;
 
             @Override
-            protected void populateItem(ListItem item) {
-                Property<T> property = (Property<T>) item.getModelObject();
+            protected void populateItem(ListItem<Property<T>> item) {
+                Property<T> property = item.getModelObject();
 
                 Component component = null;
                 if (property == POSITION) {
@@ -88,7 +94,7 @@ public abstract class ReorderableTablePanel<T> extends GeoServerTablePanel<T> {
                             dataProvider.getItems(), ReorderableTablePanel.this, upTitle, downTitle);
 
                 } else if (property == RENDERING_ORDER) {
-                    component = new Label("component", new Model());
+                    component = new Label("component", new Model<String>());
                 } else {
                     component = getComponentForProperty("component", itemModel, property);
                 }
@@ -118,9 +124,12 @@ public abstract class ReorderableTablePanel<T> extends GeoServerTablePanel<T> {
     protected void onPopulateItem(Property<T> property, ListItem<Property<T>> item) {
         if (property == RENDERING_ORDER) {
             Label label = (Label) item.get(0);
-            OddEvenItem rowContainer = (OddEvenItem) item.getParent().getParent();
-            label.setDefaultModel(new Model(rowContainer.getIndex() + 1));
+            @SuppressWarnings("unchecked")
+            OddEvenItem<T> rowContainer = (OddEvenItem<T>) item.getParent().getParent();
+            label.setDefaultModel(new Model<Integer>(rowContainer.getIndex() + 1));
             item.add(new Behavior() {
+
+                private static final long serialVersionUID = 8429550827543813897L;
 
                 @Override
                 public void onComponentTag(Component component, ComponentTag tag) {

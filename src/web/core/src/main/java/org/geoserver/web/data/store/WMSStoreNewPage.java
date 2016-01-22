@@ -7,7 +7,6 @@ package org.geoserver.web.data.store;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.Collections;
 import java.util.logging.Level;
 
 import javax.management.RuntimeErrorException;

@@ -14,7 +14,7 @@ import org.springframework.security.core.Authentication;
  */
 public class AllowComponentAuthorizer implements ComponentAuthorizer {
 
-    public boolean isAccessAllowed(Class componentClass, Authentication authentication) {
+    public boolean isAccessAllowed(Class<?> componentClass, Authentication authentication) {
         return true;
     }
 

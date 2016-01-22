@@ -36,7 +36,7 @@ public interface WicketCallback {
      * 
      * @param requestTarget
      */
-    void onRequestTargetSet(Class<IRequestablePage> requestTarget);
+    void onRequestTargetSet(Class<? extends IRequestablePage> requestTarget);
 
     /**
      * Called when a runtime exception is thrown, just before the actual handling of the runtime

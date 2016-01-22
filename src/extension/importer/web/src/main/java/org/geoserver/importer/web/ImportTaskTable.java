@@ -152,8 +152,7 @@ public class ImportTaskTable extends GeoServerTablePanel<ImportTask> {
 
                     @Override
                     protected Component getContents(String id) {
-                        return new NoCRSPanel(id, 
-                            new SRSToCRSModel(new PropertyModel(itemModel, "layer.resource.sRS")));
+                        return new NoCRSPanel(id, itemModel);
                     }
                 });
             }

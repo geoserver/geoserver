@@ -25,25 +25,29 @@ import org.apache.wicket.model.IModel;
  * @author Andrea Aime - OpenGeo
  *
  */
-@SuppressWarnings("serial")
 public abstract class FileBreadcrumbs extends Panel {
-    IModel rootFile;
+    private static final long serialVersionUID = 2821319341957784628L;
+    
+    IModel<File> rootFile;
 
-    public FileBreadcrumbs(String id, IModel rootFile, IModel currentFile) {
+    public FileBreadcrumbs(String id, IModel<File> rootFile, IModel<File> currentFile) {
         super(id, currentFile);
 
         this.rootFile = rootFile;
-        add(new ListView("path", new BreadcrumbModel(rootFile, currentFile)) {
+        add(new ListView<File>("path", new BreadcrumbModel(rootFile, currentFile)) {
+
+            private static final long serialVersionUID = -855582301247703291L;
 
             @Override
-            protected void populateItem(ListItem item) {
-                File file = (File) item.getModelObject();
+            protected void populateItem(ListItem<File> item) {
+                File file = item.getModelObject();
                 boolean last = item.getIndex() == getList().size() - 1;
                 
                 // the link to the current path item
                 Label name = new Label("pathItem", file.getName() + "/");
-                Link link = new IndicatingAjaxFallbackLink("pathItemLink", item
-                        .getModel()) {
+                Link<File> link = new IndicatingAjaxFallbackLink<File>("pathItemLink", item.getModel()) {
+
+                    private static final long serialVersionUID = 4295991386838610752L;
 
                     @Override
                     public void onClick(AjaxRequestTarget target) {
@@ -70,19 +74,21 @@ public abstract class FileBreadcrumbs extends Panel {
     protected abstract void pathItemClicked(File file,
             AjaxRequestTarget target);
 
-    static class BreadcrumbModel implements IModel {
-        IModel rootFileModel;
+    static class BreadcrumbModel implements IModel<List<File>> {
+        private static final long serialVersionUID = -3497123851146725406L;
 
-        IModel currentFileModel;
+        IModel<File> rootFileModel;
 
-        public BreadcrumbModel(IModel rootFileModel, IModel currentFileModel) {
+        IModel<File> currentFileModel;
+
+        public BreadcrumbModel(IModel<File> rootFileModel, IModel<File> currentFileModel) {
             this.rootFileModel = rootFileModel;
             this.currentFileModel = currentFileModel;
         }
 
-        public Object getObject() {
-            File root = (File) rootFileModel.getObject();
-            File current = (File) currentFileModel.getObject();
+        public List<File> getObject() {
+            File root = rootFileModel.getObject();
+            File current = currentFileModel.getObject();
 
             // get all directories between current and root
             List<File> files = new ArrayList<File>();
@@ -99,7 +105,7 @@ public abstract class FileBreadcrumbs extends Panel {
             return files;
         }
 
-        public void setObject(Object object) {
+        public void setObject(List<File> object) {
             throw new UnsupportedOperationException("This model cannot be set!");
         }
 

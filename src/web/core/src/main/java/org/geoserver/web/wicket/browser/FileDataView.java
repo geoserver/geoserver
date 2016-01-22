@@ -11,9 +11,9 @@ import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.Locale;
 
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxFallbackLink;
-import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxFallbackLink;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.OrderByBorder;
 import org.apache.wicket.markup.ComponentTag;
@@ -31,10 +31,9 @@ import org.apache.wicket.util.convert.IConverter;
  */
 @SuppressWarnings("serial")
 public abstract class FileDataView extends Panel {
-    private static final IConverter FILE_NAME_CONVERTER = new StringConverter() {
+    private static final IConverter<File> FILE_NAME_CONVERTER = new StringConverter() {
 
-        public String convertToString(Object value, Locale locale) {
-            File file = (File) value;
+        public String convertToString(File file, Locale locale) {
             if(file.isDirectory()) {
                 return file.getName() + "/";
             } else {
@@ -44,10 +43,9 @@ public abstract class FileDataView extends Panel {
         
     };
     
-    private static final IConverter FILE_LASTMODIFIED_CONVERTER = new StringConverter() {
+    private static final IConverter<File> FILE_LASTMODIFIED_CONVERTER = new StringConverter() {
 
-        public String convertToString(Object value, Locale locale) {
-            File file = (File) value;
+        public String convertToString(File file, Locale locale) {
             long lastModified = file.lastModified();
             if (lastModified == 0L)
                 return null;
@@ -59,13 +57,13 @@ public abstract class FileDataView extends Panel {
         
     };
     
-    private static final IConverter FILE_SIZE_CONVERTER = new StringConverter() {
+    private static final IConverter<File> FILE_SIZE_CONVERTER = new StringConverter() {
         private static final double KBYTE = 1024;
         private static final double MBYTE = KBYTE * 1024;
         private static final double GBYTE = MBYTE * 1024;
 
 
-        public String convertToString(Object value, Locale locale) {
+        public String convertToString(File value, Locale locale) {
             File file = (File) value;
             
             if(!file.isFile())
@@ -106,18 +104,17 @@ public abstract class FileDataView extends Panel {
         table.setOutputMarkupId(true);
         add(table);
         
-        DataView fileTable = new DataView("files", fileProvider) {
+        DataView<File> fileTable = new DataView<File>("files", fileProvider) {
 
             @Override
-            protected void populateItem(final Item item) {
-                File file = (File) item.getModelObject();
+            protected void populateItem(final Item<File> item) {
                 
                 // odd/even alternate style
                 item.add(AttributeModifier.replace("class",
                         item.getIndex() % 2 == 0 ? "even" : "odd"));
                 
                 // navigation/selection links
-                AjaxFallbackLink link = new IndicatingAjaxFallbackLink("nameLink") {
+                AjaxFallbackLink<?> link = new IndicatingAjaxFallbackLink<Void>("nameLink") {
 
                     @Override
                     public void onClick(AjaxRequestTarget target) {
@@ -126,24 +123,27 @@ public abstract class FileDataView extends Panel {
                     
                 };
                 link.add(new Label("name", item.getModel()) {
+                    @SuppressWarnings("unchecked")
                     @Override
-                    public IConverter getConverter(Class type) {
-                        return FILE_NAME_CONVERTER;
+                    public <C> IConverter<C> getConverter(Class<C> type) {
+                        return (IConverter<C>) FILE_NAME_CONVERTER;
                     }
                 });
                 item.add(link);
                 
                 // last modified and size labels
                 item.add(new Label("lastModified", item.getModel()) {
+                    @SuppressWarnings("unchecked")
                     @Override
-                    public IConverter getConverter(Class type) {
-                        return FILE_LASTMODIFIED_CONVERTER;
+                    public <C> IConverter<C> getConverter(Class<C> type) {
+                        return (IConverter<C>) FILE_LASTMODIFIED_CONVERTER;
                     }
                 });
                 item.add(new Label("size", item.getModel()) {
+                    @SuppressWarnings("unchecked")
                     @Override
-                    public IConverter getConverter(Class type) {
-                        return FILE_SIZE_CONVERTER;
+                    public <C> IConverter<C> getConverter(Class<C> type) {
+                        return (IConverter<C>) FILE_SIZE_CONVERTER;
                     }
                 });
             }
@@ -162,16 +162,16 @@ public abstract class FileDataView extends Panel {
         fileContent.add(fileTable);
         
         table.add(fileContent);
-        table.add(new OrderByBorder("nameHeader", FileProvider.NAME, fileProvider));
-        table.add(new OrderByBorder("lastModifiedHeader", FileProvider.LAST_MODIFIED, fileProvider));
-        table.add(new OrderByBorder("sizeHeader", FileProvider.SIZE, fileProvider));
+        table.add(new OrderByBorder<String>("nameHeader", FileProvider.NAME, fileProvider));
+        table.add(new OrderByBorder<String>("lastModifiedHeader", FileProvider.LAST_MODIFIED, fileProvider));
+        table.add(new OrderByBorder<String>("sizeHeader", FileProvider.SIZE, fileProvider));
     }    
     
     protected abstract void linkNameClicked(File file, AjaxRequestTarget target);
     
-    private static abstract class StringConverter implements IConverter {
+    private static abstract class StringConverter implements IConverter<File> {
         
-        public Object convertToObject(String value, Locale locale) {
+        public File convertToObject(String value, Locale locale) {
             throw new UnsupportedOperationException("This converter works only for strings");
         }
     }

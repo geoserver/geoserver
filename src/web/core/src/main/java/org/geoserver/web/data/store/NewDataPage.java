@@ -15,7 +15,6 @@ import java.util.Map;
 
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Page;
-import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.SubmitLink;
@@ -24,6 +23,7 @@ import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
+import org.apache.wicket.request.resource.PackageResourceReference;
 import org.geoserver.web.CatalogIconFactory;
 import org.geoserver.web.ComponentAuthorizer;
 import org.geoserver.web.GeoServerApplication;
@@ -31,6 +31,7 @@ import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geotools.coverage.grid.io.GridFormatFinder;
 import org.geotools.data.DataAccessFactory;
+import org.h2.store.DataPage;
 import org.opengis.coverage.grid.Format;
 import org.vfny.geoserver.util.DataStoreUtils;
 
@@ -59,7 +60,6 @@ public class NewDataPage extends GeoServerSecuredPage {
      * @param workspaceId
      *            the id of the workspace to attach the new resource store to.
      */
-    @SuppressWarnings("serial")
     public NewDataPage() {
 
         final boolean thereAreWorkspaces = !getCatalog().getWorkspaces().isEmpty();

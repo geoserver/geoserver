@@ -136,7 +136,7 @@ public class GeoServerDialog extends Panel {
      *   information dialog content.
      */
     public void showInfo(AjaxRequestTarget target, final IModel<String> heading,
-            final IModel<String>... messages) {
+            @SuppressWarnings("unchecked") final IModel<String>... messages) {
         window.setPageCreator(new ModalWindow.PageCreator() {
             public Page createPage() {
                 return new InfoPage(heading, messages);

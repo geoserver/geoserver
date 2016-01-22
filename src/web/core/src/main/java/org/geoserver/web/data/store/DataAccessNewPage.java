@@ -6,7 +6,6 @@
 package org.geoserver.web.data.store;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.logging.Level;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;

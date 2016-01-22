@@ -111,7 +111,7 @@ public class WicketHierarchyPrinter {
         printComponent(c, level);
         if (c instanceof MarkupContainer) {
             MarkupContainer mc = (MarkupContainer) c;
-            for (Iterator it = mc.iterator(); it.hasNext();) {
+            for (Iterator<?> it = mc.iterator(); it.hasNext();) {
                 walkHierarchy((Component) it.next(), level + 1);
             }
         }

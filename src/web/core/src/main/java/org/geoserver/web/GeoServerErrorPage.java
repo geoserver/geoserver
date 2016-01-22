@@ -8,7 +8,6 @@ package org.geoserver.web;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 
-import org.apache.wicket.Page;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.ExternalLink;

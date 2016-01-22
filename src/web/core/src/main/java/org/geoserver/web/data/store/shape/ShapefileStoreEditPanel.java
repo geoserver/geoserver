@@ -5,7 +5,11 @@
  */
 package org.geoserver.web.data.store.shape;
 
-import static org.geotools.data.shapefile.ShapefileDataStoreFactory.*;
+import static org.geotools.data.shapefile.ShapefileDataStoreFactory.CACHE_MEMORY_MAPS;
+import static org.geotools.data.shapefile.ShapefileDataStoreFactory.CREATE_SPATIAL_INDEX;
+import static org.geotools.data.shapefile.ShapefileDataStoreFactory.DBFCHARSET;
+import static org.geotools.data.shapefile.ShapefileDataStoreFactory.MEMORY_MAPPED;
+import static org.geotools.data.shapefile.ShapefileDataStoreFactory.URLP;
 
 import java.util.logging.Logger;
 
@@ -13,7 +17,6 @@ import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
-import org.apache.wicket.model.ResourceModel;
 import org.geoserver.web.data.store.StoreEditPanel;
 import org.geoserver.web.data.store.panel.CharsetPanel;
 import org.geoserver.web.data.store.panel.CheckBoxParamPanel;

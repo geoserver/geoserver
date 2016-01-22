@@ -50,9 +50,9 @@ import org.geoserver.web.wicket.SRSProvider.SRS;
  * @authos Gabriel Roldan, OpenGeo
  * 
  */
-@SuppressWarnings("serial")
 public abstract class SRSListPanel extends Panel {
     
+    private static final long serialVersionUID = 3777350932084160337L;
     GeoServerTablePanel<SRS> table;
 
     /**
@@ -62,6 +62,8 @@ public abstract class SRSListPanel extends Panel {
         super(id);
 
         table = new GeoServerTablePanel<SRS>("table", new SRSProvider()) {
+
+            private static final long serialVersionUID = 6182776235846912573L;
 
             @Override
             protected Component getComponentForProperty(String id, IModel<SRS> itemModel,
@@ -111,8 +113,11 @@ public abstract class SRSListPanel extends Panel {
      *            The epsg code (integer).
      * 
      */
-    protected Component createLinkForCode(String linkId, IModel itemModel) {
-        return new SimpleAjaxLink(linkId, SRSProvider.CODE.getModel(itemModel)) {
+    @SuppressWarnings("unchecked")
+    protected Component createLinkForCode(String linkId, IModel<SRS> itemModel) {
+        return new SimpleAjaxLink<Object>(linkId, (IModel<Object>) SRSProvider.CODE.getModel(itemModel)) {
+
+            private static final long serialVersionUID = -1330723116026268069L;
 
             @Override
             protected void onClick(AjaxRequestTarget target) {

@@ -5,8 +5,8 @@
  */
 package org.geoserver.web;
 
-import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.security.ResourceAccessManager;
@@ -25,7 +25,7 @@ public class WorkspaceAdminComponentAuthorizer extends AdminComponentAuthorizer 
     private final static Logger LOGGER = Logging.getLogger(WorkspaceAdminComponentAuthorizer.class);
 
     @Override
-    public boolean isAccessAllowed(Class componentClass,
+    public boolean isAccessAllowed(Class<?> componentClass,
             Authentication authentication) {
 
         //if full admin grant access

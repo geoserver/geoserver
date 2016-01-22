@@ -7,7 +7,7 @@ package org.geoserver.web;
 
 import java.io.Serializable;
 
-import org.springframework.security.core.Authentication;;
+import org.springframework.security.core.Authentication;
 
 /**
  * Controls access to a component.
@@ -40,5 +40,5 @@ public interface ComponentAuthorizer extends Serializable {
     /**
      * Determines if access is allowed to the component given the specified credentials.
      */
-    boolean isAccessAllowed(Class componentClass, Authentication authentication);
+    boolean isAccessAllowed(Class<?> componentClass, Authentication authentication);
 }

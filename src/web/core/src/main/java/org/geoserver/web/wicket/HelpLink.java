@@ -77,6 +77,7 @@ public class HelpLink extends AjaxLink<Void> {
         return container != null ? container : getPage();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void onClick(AjaxRequestTarget target) {
         //load the help title

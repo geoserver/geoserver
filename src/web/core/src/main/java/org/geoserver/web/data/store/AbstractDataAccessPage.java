@@ -7,8 +7,6 @@ package org.geoserver.web.data.store;
 
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.logging.Logger;
 
 import org.apache.wicket.Component;
@@ -263,7 +261,6 @@ abstract class AbstractDataAccessPage extends GeoServerSecuredPage {
         });
     }
 
-    @SuppressWarnings("unchecked")
     private NamespacePanel findNamespacePanel(MarkupContainer c) {
         Component child;
         for (Iterator<? extends Component> it = ((MarkupContainer) c).iterator(); it.hasNext();) {

@@ -6,9 +6,7 @@
 package org.geoserver.web;
 
 import org.geoserver.security.GeoServerSecurityManager;
-import org.geoserver.security.impl.GeoServerRole;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 
 /**
  * Authorizer that only allows access to the admin.
@@ -17,7 +15,7 @@ import org.springframework.security.core.GrantedAuthority;
  */
 public class AdminComponentAuthorizer implements ComponentAuthorizer {
 
-    public boolean isAccessAllowed(Class componentClass, Authentication authentication) {
+    public boolean isAccessAllowed(Class<?> componentClass, Authentication authentication) {
         return getSecurityManager().checkAuthenticationForAdminRole(authentication);
     }
 

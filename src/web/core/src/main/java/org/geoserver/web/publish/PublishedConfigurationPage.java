@@ -33,9 +33,7 @@ import org.apache.wicket.model.Model;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.web.ComponentAuthorizer;
 import org.geoserver.web.GeoServerSecuredPage;
-import org.geoserver.web.publish.PublishedConfigurationPanel;
-import org.geoserver.web.publish.PublishedEditTabPanel;
-import org.geoserver.web.publish.PublishedEditTabPanelInfo;
+import org.geoserver.web.data.resource.ResourceConfigurationPanel;
 
 /**
  * Page allowing to configure a layer(group) (and its resource).

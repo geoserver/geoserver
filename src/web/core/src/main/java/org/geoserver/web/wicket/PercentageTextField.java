@@ -4,7 +4,6 @@
  */
 package org.geoserver.web.wicket;
 
-import java.awt.Color;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.Locale;

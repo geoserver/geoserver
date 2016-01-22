@@ -27,6 +27,8 @@ import com.vividsolutions.jts.geom.Envelope;
  */
 public class EnvelopePanel extends FormComponentPanel<ReferencedEnvelope> {
 
+    private static final long serialVersionUID = -2975427786330616705L;
+
     protected Label minXLabel, minYLabel, maxXLabel, maxYLabel, minZLabel, maxZLabel;
 
     protected Double minX,minY,maxX,maxY,minZ,maxZ;
@@ -158,10 +160,11 @@ public class EnvelopePanel extends FormComponentPanel<ReferencedEnvelope> {
         return this;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void convertInput() {
         visitChildren(TextField.class, (component, visit) -> {
-            ((TextField) component).processInput();
+            ((TextField<String>) component).processInput();
         });
 
         if(isCRSFieldVisible()) {
@@ -187,13 +190,14 @@ public class EnvelopePanel extends FormComponentPanel<ReferencedEnvelope> {
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     protected void onModelChanged() {
         // when the client programmatically changed the model, update the fields
         // so that the textfields will change too
         updateFields();
         visitChildren(TextField.class, (component, visit) -> {
-            ((TextField) component).clearInput();
+            ((TextField<String>) component).clearInput();
         });
     }
 

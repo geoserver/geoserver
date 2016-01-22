@@ -5,16 +5,15 @@
  */
 package org.geoserver.web.admin;
 
-import static org.geoserver.web.admin.PreviewFontProvider.*;
+import static org.geoserver.web.admin.PreviewFontProvider.PREVIEW_IMAGE;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.markup.html.image.resource.BufferedDynamicImageResource;
 import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.model.IModel;
-import org.geoserver.web.wicket.GeoServerDataProvider;
-import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
+import org.geoserver.web.wicket.GeoServerTablePanel;
 
 /**
  * Shows a paged list of the fonts that are available to the JVM 

@@ -16,8 +16,8 @@ import javax.swing.filechooser.FileSystemView;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
-import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
+import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
@@ -25,9 +25,9 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.web.wicket.ParamResourceModel;
 
-@SuppressWarnings("serial")
 public class GeoServerFileChooser extends Panel {
 
+    private static final long serialVersionUID = -6246944669686555266L;
     static Boolean HIDE_FS = null;
     static {
         HIDE_FS = Boolean.valueOf(GeoServerExtensions.getProperty("GEOSERVER_FILEBROWSER_HIDEFS"));
@@ -53,9 +53,9 @@ public class GeoServerFileChooser extends Panel {
     FileBreadcrumbs breadcrumbs;
     FileDataView fileTable;
     boolean hideFileSystem = false;
-    IModel file;
+    IModel<File> file;
     
-    public GeoServerFileChooser(String id, IModel file) {
+    public GeoServerFileChooser(String id, IModel<File> file) {
        this(id, file, HIDE_FS);
     }
 
@@ -66,7 +66,7 @@ public class GeoServerFileChooser extends Panel {
      * in the file browser. 
      * </p>
      */
-    public GeoServerFileChooser(String id, IModel file, boolean hideFileSystem) {
+    public GeoServerFileChooser(String id, IModel<File> file, boolean hideFileSystem) {
         super(id, file);
 
         this.file = file;
@@ -115,25 +115,27 @@ public class GeoServerFileChooser extends Panel {
             // and switch back to the data directory
             if(selectionRoot == null) {
                 selectionRoot = dataDirectory;
-                file = new Model(selectionRoot);
+                file = new Model<File>(selectionRoot);
             } else {
                 if(!selection.isDirectory()) {
-                    file = new Model(selection.getParentFile());
+                    file = new Model<File>(selection.getParentFile());
                 } else {
-                    file = new Model(selection);
+                    file = new Model<File>(selection);
                 }
             }
         } else {
             selectionRoot = dataDirectory;
-            file = new Model(selectionRoot);
+            file = new Model<File>(selectionRoot);
         }
         this.file = file;
         setDefaultModel(file);
         
         
         // the root chooser
-        final DropDownChoice choice = new DropDownChoice("roots", new Model(selectionRoot), new Model(roots), new FileRootsRenderer());
+        final DropDownChoice<File> choice = new DropDownChoice<File>("roots", new Model<File>(selectionRoot), new Model<ArrayList<File>>(roots), new FileRootsRenderer());
         choice.add(new AjaxFormComponentUpdatingBehavior("change") {
+
+            private static final long serialVersionUID = -1527567847101388940L;
 
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
@@ -147,7 +149,9 @@ public class GeoServerFileChooser extends Panel {
         add(choice);
         
         // the breadcrumbs
-        breadcrumbs = new FileBreadcrumbs("breadcrumbs", new Model(selectionRoot), file) {
+        breadcrumbs = new FileBreadcrumbs("breadcrumbs", new Model<File>(selectionRoot), file) {
+
+            private static final long serialVersionUID = -6995769189316700797L;
 
             @Override
             protected void pathItemClicked(File file, AjaxRequestTarget target) {
@@ -160,6 +164,8 @@ public class GeoServerFileChooser extends Panel {
         
         // the file tables
         fileTable = new FileDataView("fileTable", new FileProvider(file)) {
+
+            private static final long serialVersionUID = -5481794219862786117L;
 
             @Override
             protected void linkNameClicked(File file, AjaxRequestTarget target) {
@@ -195,7 +201,7 @@ public class GeoServerFileChooser extends Panel {
     protected void directoryClicked(File file, AjaxRequestTarget target) {
         // explicitly change the root model, inform the other components the model has changed
         GeoServerFileChooser.this.file.setObject(file);
-        fileTable.getProvider().setDirectory(new Model(file));
+        fileTable.getProvider().setDirectory(new Model<File>(file));
         breadcrumbs.setSelection(file);
         
         target.add(fileTable);
@@ -255,38 +261,42 @@ public class GeoServerFileChooser extends Panel {
 //        return "file://" + file.getAbsolutePath();
 //    }
 //    
-    class FileRootsRenderer extends ChoiceRenderer {
-
-		public Object getDisplayValue(Object o) {
-			File f = (File) o;
-			
-			if(f == USER_HOME) {
-			    return new ParamResourceModel("userHome", GeoServerFileChooser.this).getString();
-			} else {
-			    GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
-			    
-			    if(f.equals(loader.getBaseDirectory())) {
-			        return new ParamResourceModel("dataDirectory", GeoServerFileChooser.this).getString();
-			    }
-			}
-			
-			try {
-			    final String displayName= FileSystemView.getFileSystemView().getSystemDisplayName(f);
-			    if(displayName!=null&& displayName.length()>0){
-			        return displayName;
-			    }
-			    return FilenameUtils.getPrefix(f.getAbsolutePath());
-			} catch(Exception e) {
-			    // on windows we can get the occasional NPE due to 
-			    // http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6973685
-			}
-                        return f.getName();
-		}
-
-		public String getIdValue(Object o, int count) {
-			File f = (File) o;
-			return "" + count;
-		}
-    	
+    class FileRootsRenderer extends ChoiceRenderer<File> {
+    
+        private static final long serialVersionUID = 1389015915737006638L;
+        
+        public Object getDisplayValue(File f) {
+        
+            if (f == USER_HOME) {
+                return new ParamResourceModel("userHome", GeoServerFileChooser.this)
+                        .getString();
+            } else {
+                GeoServerResourceLoader loader = GeoServerExtensions
+                        .bean(GeoServerResourceLoader.class);
+        
+                if (f.equals(loader.getBaseDirectory())) {
+                    return new ParamResourceModel("dataDirectory",
+                            GeoServerFileChooser.this).getString();
+                }
+            }
+        
+            try {
+                final String displayName = FileSystemView.getFileSystemView()
+                        .getSystemDisplayName(f);
+                if (displayName != null && displayName.length() > 0) {
+                    return displayName;
+                }
+                return FilenameUtils.getPrefix(f.getAbsolutePath());
+            } catch (Exception e) {
+                // on windows we can get the occasional NPE due to
+                // http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6973685
+            }
+            return f.getName();
+        }
+        
+        public String getIdValue(File f, int count) {
+            return "" + count;
+        }
+    
     }
 }

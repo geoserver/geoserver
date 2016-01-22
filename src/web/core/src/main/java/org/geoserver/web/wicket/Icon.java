@@ -6,11 +6,11 @@
 package org.geoserver.web.wicket;
 
 import org.apache.wicket.AttributeModifier;
-import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.request.resource.PackageResourceReference;
 
 /**
  * A simple {@link Image} in a panel. For when you need to add an icon in a repeater without
@@ -33,7 +33,7 @@ public class Icon extends Panel {
      * Constructs an icon from a resource reference for the image and resource model for the "title"
      * attribute to apply to the rendered "&lt;img>" tag.
      */
-    public Icon(String id, PackageResourceReference PackageResourceReference, IModel title) {
+    public Icon(String id, PackageResourceReference PackageResourceReference, IModel<String> title) {
         this(id, new Model<PackageResourceReference>(PackageResourceReference), title);
     }
     

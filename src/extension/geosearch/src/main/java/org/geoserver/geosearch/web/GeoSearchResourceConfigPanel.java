@@ -13,18 +13,18 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.MetadataMap;
-import org.geoserver.catalog.PublishedInfo;
-import org.geoserver.web.publish.PublishedConfigurationPanel;
+import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.web.data.resource.ResourceConfigurationPanel;
 import org.geoserver.web.util.MapModel;
 
 /**
  * Configures a {@link LayerGroupInfo} geo-search related metadata
  */
-public class GeoSearchPublishedConfigPanel extends PublishedConfigurationPanel<PublishedInfo> {
+public class GeoSearchResourceConfigPanel extends ResourceConfigurationPanel {
 
     private static final long serialVersionUID = 5739568775378997529L;
 
-    public GeoSearchPublishedConfigPanel(String id, IModel<? extends PublishedInfo> model) {
+    public GeoSearchResourceConfigPanel(String id, IModel<? extends ResourceInfo> model) {
         super(id, model);
 
         PropertyModel<MetadataMap> metadataModel;

@@ -5,13 +5,16 @@
   <target name="bootstrap">
     <mkdir dir="lib"/>
     <get dest="lib" usetimestamp="true"
-       src="http://repo.boundlessgeo.com/main/com/oracle/appbundler/1.0ea/appbundler-1.0ea.jar"/>
+       src="https://boundless.artifactoryonline.com/boundless/main/com/oracle/appbundler/1.0ea/appbundler-1.0ea.jar"/>
      <get dest="lib" usetimestamp="true"
        src="http://central.maven.org/maven2/ant-contrib/ant-contrib/1.0b3/ant-contrib-1.0b3.jar"/>
   </target>
 
   <target name="clean">
     <delete dir="${work.dir}"/>
+    <delete>
+      <fileset dir="." includes="*.dmg"/>
+    </delete>
   </target>
 
   <target name="init" depends="clean,bootstrap">
@@ -37,7 +40,7 @@
     <!-- extract version number -->
     <property name="gs.bin.file" refid="gs.bin.path"/>
     <propertyregex property="gs.version" input="${gs.bin.file}"
-      regexp="mac/geoserver-(.*)-bin.zip" select="\1"/>
+      regexp="mac/geoserver-([^/]*)-bin.zip" select="\1"/>
 
     <fail unless="gs.version" 
       message="Unable to determine GeoServer version number from bin file."/>
@@ -100,12 +103,12 @@
 
       <runtime dir="${env.JAVA_HOME}"/>
 
+      <option value="-Djava.ext.dirs=none"/>
       <option value="-DGEOSERVER_DATA_DIR=data_dir"/>
       <option value="-DSTOP.PORT=8079"/>
       <option value="-DSTOP.KEY=geoserver"/>
       <option value="-Xms128m"/>
       <option value="-Xmx512m"/>
-      <option value="-XX:MaxPermSize=128m"/>
       <option value="-Dapple.laf.useScreenMenuBar=true"/>
 
       <!-- Workaround since the icon parameter for bundleapp doesn't work -->

@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -7,7 +7,9 @@ package org.geoserver.security.impl;
 
 import static org.easymock.EasyMock.createNiceMock;
 import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.expectLastCall;
 import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.verify;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
@@ -493,6 +495,36 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
     }
 
     @Test
+    public void testCatalogCloseWrappedIterator() throws Exception {
+        // create a mock CloseableIterator that expects to be closed
+        final CloseableIterator<?> mockIterator = createNiceMock(CloseableIterator.class);
+        mockIterator.close();
+        expectLastCall().once();
+        replay(mockIterator);
+
+        // make a catalog that uses the mock CloseableIterator
+        Catalog withLayers = new AbstractCatalogDecorator(catalog) {
+
+            @SuppressWarnings("unchecked")
+            @Override
+            public <T extends CatalogInfo> CloseableIterator<T> list(Class<T> of, Filter filter, Integer offset, Integer count, SortBy sortBy) {
+                return (CloseableIterator<T>) mockIterator;
+            }
+        };
+        this.catalog = withLayers;
+        GeoServerExtensionsHelper.singleton("catalog", catalog, Catalog.class);
+        buildManager("publicRead.properties");
+
+        // get the CloseableIterator from SecureCatalogImpl and close it
+        CloseableIterator<LayerInfo> iterator;
+        iterator = sc.list(LayerInfo.class, Predicates.acceptAll());
+        iterator.close();
+
+        // verify that the mock CloseableIterator was closed
+        verify(mockIterator);
+    }
+
+    @Test
     public void testComplex() throws Exception {
         
         buildManager("complex.properties");
@@ -600,7 +632,7 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
     @Test
     public void testSecurityFilterWideOpen() throws Exception {
         // getting the resourceAccessManager
-        ResourceAccessManager resourceManager = getResourceAccessManager(buildLegacyAccessManager("wideOpen.properties"));
+        ResourceAccessManager resourceManager = getResourceAccessManager(buildAccessManager("wideOpen.properties"));
 
         // Workspace test
         Class<? extends CatalogInfo> clazz = WorkspaceInfo.class;
@@ -656,7 +688,7 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
     @Test
     public void testSecurityFilterLockedDown() throws Exception {
         // getting the resourceAccessManager
-        ResourceAccessManager resourceManager = getResourceAccessManager(buildLegacyAccessManager("lockedDown.properties"));
+        ResourceAccessManager resourceManager = getResourceAccessManager(buildAccessManager("lockedDown.properties"));
 
         // Workspace test
         Class<? extends CatalogInfo> clazz = WorkspaceInfo.class;
@@ -732,7 +764,7 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
     @Test
     public void testSecurityFilterWsLock() throws Exception {
         // getting the resourceAccessManager
-        ResourceAccessManager resourceManager = getResourceAccessManager(buildLegacyAccessManager("wsLock.properties"));
+        ResourceAccessManager resourceManager = getResourceAccessManager(buildAccessManager("wsLock.properties"));
 
         // Workspace test
         Class<? extends CatalogInfo> clazz = WorkspaceInfo.class;
@@ -891,7 +923,7 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
     @Test
     public void testSecurityFilterLayerLock() throws Exception {
         // getting the resourceAccessManager
-        ResourceAccessManager resourceManager = getResourceAccessManager(buildLegacyAccessManager("layerLock.properties"));
+        ResourceAccessManager resourceManager = getResourceAccessManager(buildAccessManager("layerLock.properties"));
 
         // Workspace test
         Class<? extends CatalogInfo> clazz = WorkspaceInfo.class;
@@ -1003,7 +1035,7 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
     @Test
     public void testSecurityFilterComplex() throws Exception {
         // getting the resourceAccessManager
-        ResourceAccessManager resourceManager = getResourceAccessManager(buildLegacyAccessManager("complex.properties"));
+        ResourceAccessManager resourceManager = getResourceAccessManager(buildAccessManager("complex.properties"));
 
         // Workspace test
         Class<? extends CatalogInfo> clazz = WorkspaceInfo.class;

@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -13,9 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
-
 import javax.xml.namespace.QName;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.SystemUtils;
@@ -27,6 +25,7 @@ import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.Keyword;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.LegendInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.ProjectionPolicy;
 import org.geoserver.catalog.PublishedType;
@@ -80,7 +79,7 @@ import org.geotools.util.logging.Logging;
 public class SystemTestData extends CiteTestData {
     
     /** Multiband tiff */
-    private static final QName MULTIBAND = new QName(WCS_URI, "multiband", WCS_PREFIX);
+    public static final QName MULTIBAND = new QName(WCS_URI, "multiband", WCS_PREFIX);
     
     static final Logger LOGGER = Logging.getLogger(SystemTestData.class);
     
@@ -278,6 +277,12 @@ public class SystemTestData extends CiteTestData {
     public void setUpSecurity() throws IOException {
         File secDir = new File(getDataDirectoryRoot(), "security");
         IOUtils.decompress(SystemTestData.class.getResourceAsStream("security.zip"), secDir);
+        String javaVendor = System.getProperty("java.vendor");
+        if (javaVendor.contains("IBM")) {
+            IOUtils.copy(new File(secDir,"geoserver.jceks.ibm"), new File(secDir,"geoserver.jceks"));
+        } else {
+            IOUtils.copy(new File(secDir,"geoserver.jceks.default"), new File(secDir,"geoserver.jceks"));
+        }
     }
 
     protected void createCatalog() throws IOException {
@@ -402,25 +407,38 @@ public class SystemTestData extends CiteTestData {
      * @param scope Class from which to load sld resource from.
      */
     public void addStyle(WorkspaceInfo ws, String name, String filename, Class scope, Catalog catalog) throws IOException {
-        GeoServerDataDirectory dd = new GeoServerDataDirectory(catalog.getResourceLoader());
-        File styles;
-        if(ws==null) {
-            styles=dd.findOrCreateStyleDir();
-        } else {
-            styles = new File(dd.findOrCreateWorkspaceDir(ws), "styles");
-            styles.mkdir();
-        }
-        String target = new File( filename ).getName();
+        addStyle(ws, name, filename, scope, catalog, null);
+    }
+    
+    /**
+     * Adds a style to the test setup.
+     * <p>
+     * To set up the style a file named <tt>filename</tt> is copied from the classpath relative
+     * to the <tt>scope</tt> parameter.
+     * </p>
+     * @param ws The workspace to include the style in.
+     * @param name The name of the style.
+     * @param filename The filename to copy from classpath.
+     * @param scope Class from which to load sld resource.
+     * @param legend The legend for the style.
+     */
+    public void addStyle(WorkspaceInfo ws, String name, String filename, Class scope, Catalog catalog,
+            LegendInfo legend) throws IOException {
         
-        catalog.getResourceLoader().copyFromClassPath(filename, new File(styles, target ), scope);
-
         StyleInfo style = catalog.getStyleByName(ws, name);
         if (style == null) {
             style = catalog.getFactory().createStyle();
             style.setName(name);
             style.setWorkspace(ws);
         }
+        
+        GeoServerDataDirectory data = new GeoServerDataDirectory(this.data);
+        File styles = data.get(style, "").dir();
+        String target = new File( filename ).getName();
+        catalog.getResourceLoader().copyFromClassPath(filename, new File(styles, target ), scope);
+        
         style.setFilename(target);
+        style.setLegend(legend);
         if (style.getId() == null) {
             catalog.add(style);
         }
@@ -703,9 +721,13 @@ public class SystemTestData extends CiteTestData {
 
         //setup the data
         File dir = new File(data, name);
+        FileUtils.deleteQuietly(dir);
         dir.mkdirs();
 
         File file = new File(dir, filename);
+        if (!file.getParentFile().exists()) {
+            file.getParentFile().mkdirs();
+        }
         catalog.getResourceLoader().copyFromClassPath(filename, file, scope);
 
         String ext = FilenameUtils.getExtension(filename);
@@ -947,11 +969,12 @@ public class SystemTestData extends CiteTestData {
     
     @Override
     public void tearDown() throws Exception {
-        if(SystemUtils.IS_OS_WINDOWS && WINDOWS_LENIENCY) {
+        if((SystemUtils.IS_OS_WINDOWS && WINDOWS_LENIENCY) || Boolean.getBoolean("testdata.force.delete")) {
             int MAX_ATTEMPTS = 100;
             for (int i = 0; i < MAX_ATTEMPTS; i++) {
                 try {
-                    FileUtils.deleteDirectory(data);  
+                    FileUtils.deleteDirectory(data);
+                    break;
                 } catch(IOException e) {
                     if(i >= MAX_ATTEMPTS) {
                         throw new IOException("Failed to clean up test data dir after " + MAX_ATTEMPTS  + " attempts", e);

@@ -1,4 +1,4 @@
-/* (c) 2014-2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -27,18 +27,6 @@ import javax.media.jai.InterpolationNearest;
 import javax.media.jai.JAI;
 import javax.media.jai.WarpAffine;
 
-import net.opengis.wcs20.ExtensionItemType;
-import net.opengis.wcs20.ExtensionType;
-import net.opengis.wcs20.GetCoverageType;
-import net.opengis.wcs20.InterpolationAxesType;
-import net.opengis.wcs20.InterpolationAxisType;
-import net.opengis.wcs20.InterpolationMethodType;
-import net.opengis.wcs20.InterpolationType;
-import net.opengis.wcs20.RangeIntervalType;
-import net.opengis.wcs20.RangeItemType;
-import net.opengis.wcs20.RangeSubsetType;
-import net.opengis.wcs20.ScalingType;
-
 import org.eclipse.emf.common.util.EList;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageDimensionCustomizerReader.GridCoverageWrapper;
@@ -52,6 +40,7 @@ import org.geoserver.wcs2_0.exception.WCS20Exception;
 import org.geoserver.wcs2_0.exception.WCS20Exception.WCS20ExceptionCode;
 import org.geoserver.wcs2_0.response.DimensionBean;
 import org.geoserver.wcs2_0.response.GranuleStackImpl;
+import org.geoserver.wcs2_0.response.MIMETypeMapper;
 import org.geoserver.wcs2_0.response.WCSDimensionsSubsetHelper;
 import org.geoserver.wcs2_0.util.EnvelopeAxesLabelsMapper;
 import org.geoserver.wcs2_0.util.NCNameResourceCodec;
@@ -111,6 +100,18 @@ import org.opengis.referencing.operation.TransformException;
 import org.vfny.geoserver.util.WCSUtils;
 import org.vfny.geoserver.wcs.WcsException;
 
+import net.opengis.wcs20.ExtensionItemType;
+import net.opengis.wcs20.ExtensionType;
+import net.opengis.wcs20.GetCoverageType;
+import net.opengis.wcs20.InterpolationAxesType;
+import net.opengis.wcs20.InterpolationAxisType;
+import net.opengis.wcs20.InterpolationMethodType;
+import net.opengis.wcs20.InterpolationType;
+import net.opengis.wcs20.RangeIntervalType;
+import net.opengis.wcs20.RangeItemType;
+import net.opengis.wcs20.RangeSubsetType;
+import net.opengis.wcs20.ScalingType;
+
 /**
  * Implementation of the WCS 2.0.1 GetCoverage request
  * 
@@ -128,9 +129,10 @@ public class GetCoverage {
     private static final CoverageProcessor processor = CoverageProcessor.getInstance(HINTS);
     
     static {
-        //TODO: This one should be pluggable
+        //TODO: This one should be pluggable through Extensions
         mdFormats = new HashSet<String>();
         mdFormats.add("application/x-netcdf");
+        mdFormats.add("application/x-netcdf4");
     }
 
     /** Logger.*/
@@ -152,6 +154,8 @@ public class GetCoverage {
     /** Factory used to create new coverages */
     private GridCoverageFactory gridCoverageFactory;
 
+    private MIMETypeMapper mimeMapper;
+
     public final static String SRS_STARTER="http://www.opengis.net/def/crs/EPSG/0/";
 
     /** Hints to indicate that a scale has been pre-applied, reporting the scaling factors */
@@ -159,10 +163,11 @@ public class GetCoverage {
 
     private static final double EPS = 1e-6;
 
-    public GetCoverage(WCSInfo serviceInfo, Catalog catalog, EnvelopeAxesLabelsMapper envelopeDimensionsMapper) {
+    public GetCoverage(WCSInfo serviceInfo, Catalog catalog, EnvelopeAxesLabelsMapper envelopeDimensionsMapper, MIMETypeMapper mimeMapper) {
         this.wcs = serviceInfo;
         this.catalog = catalog;
         this.envelopeDimensionsMapper=envelopeDimensionsMapper;
+        this.mimeMapper = mimeMapper;
 
         // building the needed URI CRS Factories
         Hints hints = GeoTools.getDefaultHints();
@@ -205,6 +210,16 @@ public class GetCoverage {
         final CoverageInfo cinfo = (CoverageInfo) linfo.getResource();
         if(LOGGER.isLoggable(Level.FINE)){
             LOGGER.fine("Executing GetCoverage request on coverage :"+linfo.toString());
+        }
+        
+        // prepare the default format
+        if(request.getFormat() == null) {
+            try {
+                String nativeFormat = mimeMapper.mapNativeFormat(cinfo);
+                request.setFormat(nativeFormat);
+            } catch(Exception e) {
+                LOGGER.log(Level.WARNING, "Could not compute the native type of the coverage, defaulting to image/tiff", e);
+            }
         }
 
         // === k, now start the execution
@@ -412,6 +427,9 @@ public class GetCoverage {
         if (reader instanceof StructuredGridCoverage2DReader && coverageDimensions != null) {
             // Setting dimensions as properties
             Map map = coverage.getProperties();
+            if (map == null) {
+                map = new HashMap();
+            }
             for (DimensionBean coverageDimension : coverageDimensions) {
                 helper.setCoverageDimensionProperty(map, gridCoverageRequest, coverageDimension);
             }
@@ -752,6 +770,9 @@ public class GetCoverage {
             if (cov == null) {
                 cov = readCoverage(cinfo, request, reader, hints, incrementalInputSize,
                         spatialInterpolation, coverageCRS, readEnvelope, requestedEnvelope, scaling, preAppliedScale);
+                if (cov == null) {
+                    continue;
+                }
                 readCoverages.add(cov);
             }
             Envelope2D covEnvelope = cov.getEnvelope2D();
@@ -773,7 +794,7 @@ public class GetCoverage {
         // leverage GeoTools projection handlers to figure out exactly which areas we should be
         // reading
         ProjectionHandler handler = ProjectionHandlerFinder.getHandler(new ReferencedEnvelope(
-                envelope), readerCRS, false);
+                envelope), readerCRS, true);
         if (handler == null) {
             readEnvelopes.add(new GeneralEnvelope(envelope));
         } else {
@@ -820,9 +841,7 @@ public class GetCoverage {
         GeneralParameterValue[] readParameters = CoverageUtils.getParameters(readParametersDescriptor, cinfo.getParameters());
         readParameters = (readParameters != null ? readParameters : new GeneralParameterValue[0]);
         // work in streaming fashion when JAI is involved
-        readParameters = WCSUtils.replaceParameter(
-                readParameters, 
-                Boolean.FALSE, 
+        readParameters = WCSUtils.replaceParameter(readParameters, Boolean.TRUE,
                 AbstractGridFormat.USE_JAI_IMAGEREAD);
 
         // handle "time"

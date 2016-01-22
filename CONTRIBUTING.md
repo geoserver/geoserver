@@ -58,7 +58,7 @@ The following guidelines are meant to ensure that your pull request is as easy a
 
   Include a test case that shows your patch fixes an issue (or adds new functionality). If you do not include a test case the developer reviewing your work will need to create one.
 
-  [JIRA Issue](http://jira.codehaus.org/browse/GEOS) are used to list your fix in the release notes each release. You can link to the JIRA ticket in your pull request description.
+  [JIRA Issue](https://osgeo-org.atlassian.net/projects/GEOS/issues) are used to list your fix in the release notes each release. You can link to the JIRA ticket in your pull request description.
 
 ## Commit Guidelines
 

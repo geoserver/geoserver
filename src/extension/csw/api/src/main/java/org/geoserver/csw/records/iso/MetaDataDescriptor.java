@@ -10,7 +10,7 @@ import net.opengis.cat.csw20.ElementSetType;
 
 import org.geoserver.csw.records.AbstractRecordDescriptor;
 import org.geoserver.csw.records.CSWRecordDescriptor;
-import org.geoserver.csw.records.RecordFeatureTypeRegistryHelper;
+import org.geoserver.csw.records.RecordFeatureTypeRegistryConfiguration;
 import org.geoserver.csw.records.SpatialFilterChecker;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geotools.csw.CSW;
@@ -82,7 +82,7 @@ public class MetaDataDescriptor extends AbstractRecordDescriptor {
             throw new RuntimeException(e);
         }
 
-        FeatureTypeRegistry featureTypeRegistry = new FeatureTypeRegistry(NAMESPACES, typeFactory, new RecordFeatureTypeRegistryHelper("MD_Metadata_Type"), true);
+        FeatureTypeRegistry featureTypeRegistry = new FeatureTypeRegistry(NAMESPACES, typeFactory, new RecordFeatureTypeRegistryConfiguration("MD_Metadata_Type"), true);
         
         TypeBuilder builder = new TypeBuilder(typeFactory);
         builder.setNamespaceURI(NAMESPACE_GMD);

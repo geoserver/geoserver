@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.apache.commons.lang.StringUtils;
 import org.geoserver.wps.ProcessDismissedException;
 import org.geoserver.wps.ProcessEvent;
 import org.geoserver.wps.ProcessListener;
@@ -56,7 +57,7 @@ public class ProcessListenerNotifier {
     }
 
     public void fireProgress(float progress, String task) {
-        if (progress > status.progress || !task.equals(status.task)) {
+        if (progress > status.progress || StringUtils.equals(task, status.task)) {
             if (status.getPhase() == ProcessState.QUEUED) {
                 status.setPhase(ProcessState.RUNNING);
             }
@@ -167,7 +168,7 @@ public class ProcessListenerNotifier {
         public void progress(float percent) {
             // force process to just exit immediately
             checkDismissed();
-            fireProgress(percent, task.toString());
+            fireProgress(percent, task != null ? task.toString() : null);
         }
 
         @Override

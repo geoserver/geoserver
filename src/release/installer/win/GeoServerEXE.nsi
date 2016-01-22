@@ -2,7 +2,7 @@
 
 ; Define your application name
 !define APPNAME "GeoServer"
-!define VERSION "2.8-SNAPSHOT"
+!define VERSION "2.9-SNAPSHOT"
 ;!define LONGVERSION "2.0.0.0"
 !define APPNAMEANDVERSION "${APPNAME} ${VERSION}"
 
@@ -755,12 +755,14 @@ Section "Main" SectionMain
   CreateDirectory "$INSTDIR"
   SetOutPath "$INSTDIR"
   File /a start.jar
+  File /a start.ini
   File /a GPL.txt
   File /a LICENSE.txt
   File /a README.txt
   File /a RUNNING.txt
   File /r data_dir
   File /r etc
+  File /r modules
   File /r lib
   File /r logs
   File /r resources
@@ -851,7 +853,7 @@ Section -FinishSection
   ${ElseIf} $IsManual == 1 ; manual
 
     FileOpen $9 startup.bat w ; Opens a Empty File and fills it
-    FileWrite $9 'call "$JavaHome\bin\java.exe" -DGEOSERVER_DATA_DIR="$DataDir" -Xmx512m -XX:MaxPermSize=128m -DSTOP.PORT=8079 -DSTOP.KEY=geoserver -Djetty.port=$Port -Djetty.logs="$INSTDIR\logs" -jar "$INSTDIR\start.jar"'
+    FileWrite $9 'call "$JavaHome\bin\java.exe" -DGEOSERVER_DATA_DIR="$DataDir" -Xmx512m -DSTOP.PORT=8079 -DSTOP.KEY=geoserver -Djetty.port=$Port -Djetty.logs="$INSTDIR\logs" -jar "$INSTDIR\start.jar"'
     FileClose $9 ; Closes the file
 
     FileOpen $9 shutdown.bat w ; Opens a Empty File and fills it
@@ -860,6 +862,7 @@ Section -FinishSection
 
   ${EndIf}
 
+  SetOutPath "$INSTDIR"
   CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Start GeoServer.lnk" "$INSTDIR\bin\startup.bat" \
                  "" "$INSTDIR\gs.ico" 0
   CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Stop GeoServer.lnk" "$INSTDIR\bin\shutdown.bat" \
@@ -920,6 +923,7 @@ Section Uninstall
   RMDir /r "$INSTDIR\data_dir"
   RMDir /r "$INSTDIR\bin"
   RMDir /r "$INSTDIR\etc"
+  RMDir /r "$INSTDIR\modules"
   RMDir /r "$INSTDIR\lib"
   RMDir /r "$INSTDIR\logs"
   RMDir /r "$INSTDIR\resources"

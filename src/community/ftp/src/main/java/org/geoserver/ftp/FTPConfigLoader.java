@@ -1,13 +1,10 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.ftp;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -18,7 +15,10 @@ import java.util.Map;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.geoserver.config.util.SecureXStream;
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resources;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.HierarchicalStreamDriver;
@@ -45,13 +45,13 @@ class FTPConfigLoader {
     public FTPConfig load() {
         InputStream in = null;
         try {
-            File configFile = findConfigFile();
-            if (!configFile.exists()) {
+            Resource configFile = findConfigFile();
+            if (!Resources.exists(configFile)) {
                 FTPConfig ftpConfig = new FTPConfig();
                 save(ftpConfig);
                 return ftpConfig;
             }
-            in = new FileInputStream(configFile);
+            in = configFile.in();
             XStream xs = getPersister();
             FTPConfig config = (FTPConfig) xs.fromXML(in);
             return config;
@@ -95,17 +95,18 @@ class FTPConfigLoader {
                         + " Useful when the server is behind a NAT firewall and the client sees a different address than the server is using.");
 
         HierarchicalStreamDriver streamDriver = new CommentingStaxWriter(comments);
-        XStream xStream = new XStream(streamDriver);
+        XStream xStream = new SecureXStream(streamDriver);
         xStream.alias("ftp", FTPConfig.class);
+        xStream.allowTypes(new Class[] { FTPConfig.class });
         return xStream;
     }
 
     public void save(FTPConfig config) {
-        File configFile;
+        Resource configFile;
         OutputStream out = null;
         try {
             configFile = findConfigFile();
-            out = new FileOutputStream(configFile);
+            out = configFile.out();
             XStream xs = getPersister();
             xs.toXML(config, new OutputStreamWriter(out, "UTF-8"));
         } catch (IOException e) {
@@ -121,12 +122,8 @@ class FTPConfigLoader {
         }
     }
 
-    private File findConfigFile() throws IOException {
-        File configFile = resourceLoader.find(CONFIG_FILE_NAME);
-        if (configFile == null) {
-            configFile = new File(resourceLoader.getBaseDirectory(), CONFIG_FILE_NAME);
-        }
-        return configFile;
+    private Resource findConfigFile() throws IOException {
+        return resourceLoader.get(CONFIG_FILE_NAME);
     }
 
     private static final class CommentingStaxWriter extends StaxDriver {

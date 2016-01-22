@@ -1,16 +1,13 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wfs.xslt.config;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -26,11 +23,15 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamSource;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.impl.FeatureTypeInfoImpl;
 import org.geoserver.config.GeoServerDataDirectory;
+import org.geoserver.config.util.SecureXStream;
+import org.geoserver.platform.resource.Paths;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resources;
+import org.geoserver.util.Filter;
 import org.geoserver.wfs.WFSException;
 import org.geotools.util.logging.Logging;
 
@@ -45,7 +46,7 @@ public class TransformRepository {
 
     static final Logger LOGGER = Logging.getLogger(TransformRepository.class);
 
-    static final FilenameFilter CONFIG_NAME_FILTER = new SuffixFileFilter(".xml");
+    static final Filter<Resource> CONFIG_NAME_FILTER = new Resources.ExtensionFilter("XML");
 
     XStream xs;
 
@@ -57,14 +58,14 @@ public class TransformRepository {
     FileItemCache<TransformInfo> infoCache = new FileItemCache<TransformInfo>(100) {
 
         @Override
-        protected TransformInfo loadItem(File file) throws IOException {
-            if(!file.exists()) {
+        protected TransformInfo loadItem(Resource file) throws IOException {
+            if(!Resources.exists(file)) {
                 return null;
             }
             
-            FileInputStream fis = null;
+            InputStream fis = null;
             try {
-                fis = new FileInputStream(file);
+                fis = file.in();
                 TransformInfo info = (TransformInfo) xs.fromXML(fis);
                 info.setName(getTransformName(file));
 
@@ -82,10 +83,10 @@ public class TransformRepository {
     FileItemCache<Templates> transformCache = new FileItemCache<Templates>(100) {
         
         @Override
-        protected Templates loadItem(File file) throws IOException {
+        protected Templates loadItem(Resource file) throws IOException {
             // do not trust StreamSource to do the file closing, reports on the net
             // suggest it might not
-            try (FileInputStream fis = new FileInputStream(file)) {
+            try (InputStream fis = file.in()) {
                 Source xslSource = new StreamSource(fis);
                 
                 TransformerFactory tf = TransformerFactory.newInstance( );
@@ -138,7 +139,8 @@ public class TransformRepository {
      * @param catalog
      */
     private void initXStream(Catalog catalog) {
-        xs = new XStream();
+        xs = new SecureXStream();
+        xs.allowTypes(new Class[] { TransformInfo.class });
         xs.omitField(TransformInfo.class, "name");
         xs.alias("transform", TransformInfo.class);
         xs.registerLocalConverter(TransformInfo.class, "featureType", new ReferenceConverter(
@@ -152,8 +154,8 @@ public class TransformRepository {
      * @param file
      * @return
      */
-    protected String getTransformName(File file) {
-        String name = file.getName();
+    protected String getTransformName(Resource file) {
+        String name = file.name();
         int idx = name.indexOf(".");
         if (idx > 0) {
             return name.substring(0, idx);
@@ -168,15 +170,15 @@ public class TransformRepository {
      * @return
      */
     public List<TransformInfo> getAllTransforms() throws IOException {
-        File root = dataDir.findOrCreateDir("wfs", "transform");
+        Resource root = dataDir.get(Paths.path("wfs", "transform"));
         List<TransformInfo> result = new ArrayList<TransformInfo>();
-        for (File f : root.listFiles(CONFIG_NAME_FILTER)) {
+        for (Resource f : Resources.list(root, CONFIG_NAME_FILTER)) {
             try {
                 TransformInfo tx = infoCache.getItem(f);
                 result.add(tx);
             } catch (Exception e) {
                 LOGGER.log(Level.FINE,
-                        "Failed to load configuration from file " + f.getAbsolutePath(), e);
+                        "Failed to load configuration from file " + f.path(), e);
             }
         }
 
@@ -226,7 +228,7 @@ public class TransformRepository {
      * @return
      */
     public TransformInfo getTransformInfo(String name) throws IOException {
-        File infoFile = getTransformInfoFile(name);
+        Resource infoFile = getTransformInfoFile(name);
         return infoCache.getItem(infoFile);
     }
     
@@ -239,16 +241,16 @@ public class TransformRepository {
      * @throws IOException
      */
     public boolean removeTransformInfo(TransformInfo info) throws IOException {
-         File infoFile = getTransformInfoFile(info.getName());
+         Resource infoFile = getTransformInfoFile(info.getName());
          boolean result = infoFile.delete();
          
-         File xsltFile = getTransformFile(info);
+         Resource xsltFile = getTransformFile(info);
          infoCache.removeItem(infoFile);
          
          boolean shared = false;
-         if(xsltFile.exists()) {
+         if(Resources.exists(xsltFile)) {
              for(TransformInfo ti : getAllTransforms()) {
-                 File curr = getTransformFile(ti);
+                 Resource curr = getTransformFile(ti);
                  if(curr.equals(xsltFile)) {
                      shared = true;
                      break;
@@ -271,7 +273,7 @@ public class TransformRepository {
      * @return
      */
     public Transformer getTransformer(TransformInfo info) throws IOException {
-        File txFile = getTransformFile(info);
+        Resource txFile = getTransformFile(info);
 
         Templates templates = transformCache.getItem(txFile);
         if(templates != null) {
@@ -281,7 +283,7 @@ public class TransformRepository {
                 throw new WFSException("Failed to load XSLT transformation " + info.getXslt(), e);
             }
         } else {
-            throw new IOException("No XLST found at " + txFile.getAbsolutePath());
+            throw new IOException("No XLST found at " + txFile.path());
         }
     }
     
@@ -291,9 +293,9 @@ public class TransformRepository {
      * @throws IOException
      */
     public InputStream getTransformSheet(TransformInfo info) throws IOException {
-        File txFile = getTransformFile(info);
+        Resource txFile = getTransformFile(info);
         
-        return new FileInputStream(txFile);
+        return txFile.in();
     }
 
    
@@ -306,10 +308,10 @@ public class TransformRepository {
      * @throws IOException
      */
     public void putTransformSheet(TransformInfo info, InputStream sheet) throws IOException {
-        File txFile = getTransformFile(info);
-        FileOutputStream fos = null;
+        Resource txFile = getTransformFile(info);
+        OutputStream fos = null;
         try {
-            fos = new FileOutputStream(txFile);
+            fos = txFile.out();
             IOUtils.copy(sheet, fos);
         } finally {
             IOUtils.closeQuietly(sheet);
@@ -328,29 +330,25 @@ public class TransformRepository {
         if (transform.getName() == null) {
             throw new IllegalArgumentException("Transformation does not have a name set");
         }
-        File file = getTransformInfoFile(transform.getName());
+        Resource file = getTransformInfoFile(transform.getName());
 
-        FileOutputStream fos = null;
-        try {
-            fos = new FileOutputStream(file);
+        try (OutputStream fos = file.out()){
             xs.toXML(transform, fos);
-        } finally {
-            IOUtils.closeQuietly(fos);
         }
 
         infoCache.put(transform, file);
     }
 
-    File getTransformInfoFile(String name) throws IOException {
-        File root = dataDir.findOrCreateDir("wfs", "transform");
-        File infoFile = new File(root, name + ".xml");
+    Resource getTransformInfoFile(String name) throws IOException {
+        Resource root = dataDir.get(Paths.path("wfs", "transform"));
+        Resource infoFile = root.get(name + ".xml");
         return infoFile;
     }
     
-    private File getTransformFile(TransformInfo info) throws IOException {
+    private Resource getTransformFile(TransformInfo info) throws IOException {
         String txName = info.getXslt();
-        File root = dataDir.findOrCreateDir("wfs", "transform");
-        File txFile = new File(root, txName);
+        Resource root = dataDir.get(Paths.path("wfs", "transform"));
+        Resource txFile = root.get(txName);
         return txFile;
     }
 

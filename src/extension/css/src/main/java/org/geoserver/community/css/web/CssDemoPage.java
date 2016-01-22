@@ -7,10 +7,9 @@ package org.geoserver.community.css.web;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -44,6 +43,9 @@ import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.Styles;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServerDataDirectory;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resource.Type;
+import org.geoserver.platform.resource.Resources;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.GeoServerDialog.DialogDelegate;
@@ -152,14 +154,10 @@ public class CssDemoPage extends GeoServerSecuredPage {
         }
     }
 
-    public File findStyleFile(StyleInfo style) {
-        try {
-            GeoServerDataDirectory datadir = new GeoServerDataDirectory(getCatalog()
-                    .getResourceLoader());
-            return datadir.findStyleSldFile(style);
-        } catch (IOException ioe) {
-            throw new WicketRuntimeException(ioe);
-        }
+    public Resource findStyleFile(StyleInfo style) {
+        GeoServerDataDirectory datadir = new GeoServerDataDirectory(getCatalog()
+                .getResourceLoader());
+        return datadir.style(style);
     }
 
     public Catalog catalog() {
@@ -204,8 +202,8 @@ public class CssDemoPage extends GeoServerSecuredPage {
                     style.setWorkspace(ws);
                 }
 
-                File sld = findStyleFile(style);
-                if (sld == null || !sld.exists()) {
+                Resource sld = findStyleFile(style);
+                if (sld == null || !Resources.exists(sld)) {
                     catalog.getResourcePool().writeStyle(
                             style,
                             new ByteArrayInputStream(cssText2sldText(defaultStyle, style)
@@ -213,9 +211,9 @@ public class CssDemoPage extends GeoServerSecuredPage {
                     sld = findStyleFile(style);
                 }
 
-                File css = new File(sld.getParent(), name + ".css");
-                if (!css.exists()) {
-                    FileWriter writer = new FileWriter(css);
+                Resource css = sld.parent().get(name + ".css");
+                if (!Resources.exists(css)) {
+                    OutputStreamWriter writer = new OutputStreamWriter(css.out());
                     writer.write(defaultStyle);
                     writer.close();
                 }
@@ -343,11 +341,11 @@ public class CssDemoPage extends GeoServerSecuredPage {
                         StyledLayerDescriptor sld = Styles.sld(style.getStyle());
                         return Styles.string(sld, new SLDHandler(), SLDHandler.VERSION_10, true);
                     } else {
-                        File file = findStyleFile(style);
-                        if (file != null && file.isFile()) {
+                        Resource file = findStyleFile(style);
+                        if (file != null && file.getType() == Type.RESOURCE) {
                             BufferedReader reader = null;
                             try {
-                                reader = new BufferedReader(new FileReader(file));
+                                reader = new BufferedReader(new InputStreamReader(file.in()));
                                 StringBuilder builder = new StringBuilder();
                                 char[] line = new char[4096];
                                 int len = 0;
@@ -405,8 +403,8 @@ public class CssDemoPage extends GeoServerSecuredPage {
             }
         });
 
-        File sldFile = findStyleFile(style);
-        File cssFile = new File(sldFile.getParentFile(), style.getName() + ".css");
+        Resource sldFile = findStyleFile(style);
+        Resource cssFile = sldFile.parent().get(style.getName() + ".css");
 
         mainContent.add(new StylePanel("style.editing", model, CssDemoPage.this, cssFile));
 

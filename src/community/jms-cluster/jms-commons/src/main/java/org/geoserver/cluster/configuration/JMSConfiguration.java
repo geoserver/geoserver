@@ -6,15 +6,17 @@
 package org.geoserver.cluster.configuration;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.List;
 import java.util.Properties;
 import java.util.UUID;
 
 import javax.annotation.PostConstruct;
 
+import org.geoserver.platform.resource.Files;
+import org.geoserver.platform.resource.Resource;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.util.WebUtils;
@@ -29,13 +31,14 @@ import org.springframework.web.util.WebUtils;
 final public class JMSConfiguration {
     public static final String DEFAULT_GROUP = "geoserver-cluster";
 
-	protected static final java.util.logging.Logger LOGGER = Logging.getLogger(JMSConfiguration.class);
+    protected static final java.util.logging.Logger LOGGER = Logging
+            .getLogger(JMSConfiguration.class);
 
     @Autowired
     public List<JMSConfigurationExt> exts;
 
     public static final String INSTANCE_NAME_KEY = "instanceName";
-    
+
     public static final String GROUP_KEY = "group";
 
     /**
@@ -47,13 +50,13 @@ final public class JMSConfiguration {
      * This variable stores the configuration path dir. the default initialization will set this to the webapp temp dir. If you need to store it to a
      * new path use the setter to change it.
      */
-    private static File configPathDir = getTempDir();
+    private static Resource configPathDir = Files.asResource(getTempDir());
 
-    public static void setConfigPathDir(File dir) {
+    public static void setConfigPathDir(Resource dir) {
         configPathDir = dir;
     }
 
-    public static final File getConfigPathDir() {
+    public static final Resource getConfigPathDir() {
         return configPathDir;
     }
 
@@ -115,9 +118,9 @@ final public class JMSConfiguration {
      * @throws IOException
      */
     public void initDefaults() throws IOException {
-    	// set the group
-    	configuration.put(GROUP_KEY, DEFAULT_GROUP);
-    	
+        // set the group
+        configuration.put(GROUP_KEY, DEFAULT_GROUP);
+
         // set the name
         configuration.put(INSTANCE_NAME_KEY, UUID.randomUUID().toString());
         if (exts != null) {
@@ -168,31 +171,23 @@ final public class JMSConfiguration {
     }
 
     public void loadConfig() throws IOException {
-        final File config = new File(configPathDir, CONFIG_FILE_NAME);
-        FileInputStream fis = null;
-        try {
-            fis = new FileInputStream(config);
+        Resource config = configPathDir.get(CONFIG_FILE_NAME);
+        try (InputStream fis = config.in()) {
             this.configuration.load(fis);
-        } finally {
-            if (fis != null)
-                fis.close();
         }
     }
 
     public void storeConfig() throws IOException {
-        final File config = new File(configPathDir, CONFIG_FILE_NAME);
-        FileOutputStream fos = null;
-        try {
-            fos = new FileOutputStream(config);
+        Resource config = configPathDir.get(CONFIG_FILE_NAME);
+        try (OutputStream fos = config.out()) {
             this.configuration.store(fos, "");
-        } finally {
-            if (fos != null)
-                fos.close();
         }
     }
 
     public final static File getTempDir() {
-        String tempPath = ApplicationProperties.getProperty(WebUtils.TEMP_DIR_CONTEXT_ATTRIBUTE);
+        String tempPath = (ApplicationProperties.getProperty(WebUtils.TEMP_DIR_CONTEXT_ATTRIBUTE) != null ? ApplicationProperties
+                .getProperty(WebUtils.TEMP_DIR_CONTEXT_ATTRIBUTE) : System
+                .getProperty("java.io.tmpdir"));
         if (tempPath == null) {
             return null;
         }

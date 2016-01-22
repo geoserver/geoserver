@@ -302,7 +302,7 @@ Uploading a CSV file to PostGIS while transforming it
 A remote sensing tool is generating CSV files with some locations and measurements, that we want to upload
 into PostGIS as a new spatial table. The CSV file looks as follows::
 
-	#AssetID, SampleTime, Lat, Lon, Value
+	AssetID, SampleTime, Lat, Lon, Value
 	1, 2015-01-01T10:00:00, 10.00, 62.00, 15.2
 	1, 2015-01-01T11:00:00, 10.10, 62.11, 30.25
 	1, 2015-01-01T12:00:00, 10.20, 62.22, 41.2
@@ -430,7 +430,7 @@ Then, we are going to POST the GeoTiff file to the tasks list, in order to creat
 
     curl -u admin:geoserver -F name=test -F filedata=@box_gcp_fixed.tif "http://localhost:8080/geoserver/rest/imports/0/tasks"
     
-We are then going to append the transformations to rectify (gdalwarp), retile (gdal_translate) and add overviews (gdaladdo) to it:
+We are then going to append the transformations to rectify (gdalwarp), retile (gdal_translate) and add overviews (gdaladdo) to it::
 
    curl -u admin:geoserver -XPOST -H "Content-type: application/json" -d @warp.json "http://localhost:8080/geoserver/rest/imports/0/tasks/0/transforms"
    curl -u admin:geoserver -XPOST -H "Content-type: application/json" -d @gtx.json "http://localhost:8080/geoserver/rest/imports/0/tasks/0/transforms"
@@ -445,7 +445,7 @@ We are then going to append the transformations to rectify (gdalwarp), retile (g
     }
 
 
-``gtx.json`` is:
+``gtx.json`` is::
 
     {
       "type": "GdalTranslateTransform",
@@ -502,12 +502,12 @@ Where import.json is::
        }
     }
 
-We are then going to append the transformations to harmonize the file with the rest of the mosaic:
+We are then going to append the transformations to harmonize the file with the rest of the mosaic::
 
    curl -u admin:geoserver -XPOST -H "Content-type: application/json" -d @gtx.json "http://localhost:8080/geoserver/rest/imports/0/tasks/0/transforms"
    curl -u admin:geoserver -XPOST -H "Content-type: application/json" -d @gad.json "http://localhost:8080/geoserver/rest/imports/0/tasks/0/transforms"
    
-``gtx.json`` is:
+``gtx.json`` is::
 
     {
       "type": "GdalTranslateTransform",
@@ -516,7 +516,7 @@ We are then going to append the transformations to harmonize the file with the r
 
 ``gad.json`` is::
 
-{
+    {
       "type": "GdalAddoTransform",
       "options": [ "-r", "average"],
       "levels" : [2, 4, 8, 16, 32, 64, 128]
@@ -528,3 +528,98 @@ Now the import is ready to run, and we'll execute it using::
     curl -u admin:geoserver -XPOST "http://localhost:8080/geoserver/rest/imports/0"
 
 The new granule will be ingested into the mosaic, and will thus be available for time based requests.
+
+Asynchronously fetching and importing data from a remote server 
+---------------------------------------------------------------
+
+We assume a remote FTP server contains multiple shapefiles that we need to import in GeoServer
+as new layers. The files are large, and the server has much better bandwith than the client,
+so it's best if GeoServer performs the data fetching on its own.
+
+In this case a asynchronous request using ``remote`` data will be the best fit::
+
+    curl -u admin:geoserver -XPOST -H "Content-type: application/json" -d @import.json "http://localhost:8080/geoserver/rest/imports?async=true"
+
+Where import.json is::
+
+    {
+       "import": {
+          "targetWorkspace": {
+             "workspace": {
+                "name": "topp"
+             }
+          },
+          "data": {
+            "type": "remote",
+            "location": "ftp://myserver/data/bc_shapefiles",
+            "username": "dan",
+            "password": "secret"
+          }
+       }
+    }
+    
+The request will return immediately with an import context in "INIT" state, and it will remain in such
+state until the data is fetched and the tasks created.
+Once the state switches to "PENDING" the import will be ready for execution. Since there is
+a lot of shapefiles to process, also the import run will be done in asynchronous mode::
+
+    curl -u admin:geoserver -XPOST "http://localhost:8080/geoserver/rest/imports/0?async=true"
+    
+The response will return immediately in this case as well, and the progress can be followed as the
+tasks in the import switch state.
+
+
+Importing and optimizing a large image with a single request
+------------------------------------------------------------
+
+A large image appears every now and then on a mounted disk share, the image needs to be
+optimized and imported into GeoServer as a new layer.
+Since the source is large and we need to copy it on the local disk where the data dir resides,
+a "remote" data is the right tool for the job, an asynchronous execution is also recommended
+to avoid waiting on a possibly large command.
+In this case the request will also contains the "exec=true" parameter to force the importer
+an immediate execution of the command.
+
+The request will then look as follows::
+
+    curl -u admin:geoserver -XPOST -H "Content-type: application/json" -d @import.json "http://localhost:8080/geoserver/rest/imports?async=true&exec=true"
+
+Where import.json is::
+
+    {
+      "import": {
+        "targetWorkspace": {
+          "workspace": {
+            "name": "topp"
+          }
+        },
+        "data": {
+          "type": "remote",
+          "location": "\/mnt\/remoteDisk\/bluemarble.tiff"
+        },
+        "transforms": [
+          {
+            "type": "GdalTranslateTransform",
+            "options": [
+              "-co", "TILED=YES",
+              "-co", "COMPRESS=JPEG",
+              "-co", "JPEG_QUALITY=85",
+              "-co", "PHOTOMETRIC=YCBCR"
+            ]
+          },
+          {
+            "type": "GdalAddoTransform",
+            "options": [
+              "-r",
+              "average",
+              "--config", "COMPRESS_OVERVIEW", "JPEG",
+              "--config", "PHOTOMETRIC_OVERVIEW", "YCBCR"
+            ],
+            "levels": [ 2, 4, 8, 16, 32, 64 ]
+          }
+        ]
+      }
+    }
+    
+Given the request is asynchronous, the client will have to poll the server in order to check
+if the initialization and execution have succeded.

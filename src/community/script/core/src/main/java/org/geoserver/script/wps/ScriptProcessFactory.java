@@ -9,7 +9,6 @@ import static org.apache.commons.io.FilenameUtils.getBaseName;
 import static org.apache.commons.io.FilenameUtils.getExtension;
 
 import java.awt.RenderingHints.Key;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Map;
@@ -18,6 +17,9 @@ import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resource.Type;
+import org.geoserver.platform.resource.Resources;
 import org.geoserver.script.ScriptFactory;
 import org.geoserver.script.ScriptManager;
 import org.geotools.data.Parameter;
@@ -53,20 +55,20 @@ public class ScriptProcessFactory extends ScriptFactory implements ProcessFactor
 
     abstract class CollectProcessNames {
 
-        public CollectProcessNames(File directory, ScriptManager scriptMgr, Set<Name> names) {
-            for (File f : directory.listFiles()) {
-                if (f.isHidden() || f.isDirectory()) {
+        public CollectProcessNames(Resource directory, ScriptManager scriptMgr, Set<Name> names) {
+            for (Resource f : directory.list()) {
+                if (Resources.isHidden(f) || f.getType() == Type.DIRECTORY) {
                     continue;
                 }
                 WpsHook hook = scriptMgr.lookupWpsHook(f);
                 if (hook == null) {
-                    LOGGER.fine("Skipping " + f.getName() + ", no hook found");
+                    LOGGER.fine("Skipping " + f.name() + ", no hook found");
                 } else {
                     // the base name is the process name, the namespace depends on the
                     // condition
-                    NameImpl name = new NameImpl(getScriptNamespace(f), getBaseName(f.getName()));
+                    NameImpl name = new NameImpl(getScriptNamespace(f), getBaseName(f.name()));
                     if (names.contains(name)) {
-                        throw new RuntimeException("Script " + f.getAbsolutePath()
+                        throw new RuntimeException("Script " + f.path()
                                 + " conflicts with an already existing process named " + name);
                     }
                     names.add(name);
@@ -74,7 +76,7 @@ public class ScriptProcessFactory extends ScriptFactory implements ProcessFactor
             }
         }
 
-        abstract String getScriptNamespace(File f);
+        abstract String getScriptNamespace(Resource f);
     }
 
     public Set<Name> getNames() {
@@ -85,25 +87,25 @@ public class ScriptProcessFactory extends ScriptFactory implements ProcessFactor
 
         try {
             // load the scripts in the root, the extension is the namespace
-            File wpsRoot = scriptMgr.getWpsRoot();
+            Resource wpsRoot = scriptMgr.wps();
             new CollectProcessNames(wpsRoot, scriptMgr, names) {
 
                 @Override
-                String getScriptNamespace(File f) {
-                    return getExtension(f.getName());
+                String getScriptNamespace(Resource f) {
+                    return getExtension(f.name());
                 }
             };
 
             // go over all directories, the directory name is the namespace instead
-            for (final File directory : wpsRoot.listFiles()) {
-                if (directory.isHidden() || !directory.isDirectory()) {
+            for (final Resource directory : wpsRoot.list()) {
+                if (Resources.isHidden(directory) || directory.getType() != Type.DIRECTORY) {
                     continue;
                 }
                 new CollectProcessNames(directory, scriptMgr, names) {
 
                     @Override
-                    String getScriptNamespace(File f) {
-                        return directory.getName();
+                    String getScriptNamespace(Resource f) {
+                        return directory.name();
                     }
                 };
             }
@@ -193,29 +195,28 @@ public class ScriptProcessFactory extends ScriptFactory implements ProcessFactor
                         // see if the process is a root level one
                         String localName = name.getLocalPart();
                         String namespace = name.getNamespaceURI();
-                        File f = new File(scriptMgr.getWpsRoot(), localName + "." + namespace);
-                        if (!f.exists()) {
+                        Resource f = scriptMgr.wps().get(localName + "." + namespace);
+                        if (!Resources.exists(f)) {
                             // see if it's nested in a directory then
-                            File directory = new File(scriptMgr.getWpsRoot(),
-                                    namespace);
-                            if (!directory.exists()) {
+                            Resource directory = scriptMgr.wps().get(namespace);
+                            if (!Resources.exists(directory)) {
                                 throw new FileNotFoundException("Could not find script file "
-                                        + f.getName() + " nor a directory of scripts named "
-                                        + directory.getName());
+                                        + f.name() + " nor a directory of scripts named "
+                                        + directory.name());
                             }
-                            File script = null;
-                            for (File file : directory.listFiles()) {
-                                if(file.isHidden() || !file.isFile()) {
+                            Resource script = null;
+                            for (Resource file : directory.list()) {
+                                if(Resources.isHidden(file) || file.getType() != Type.RESOURCE) {
                                     continue;
                                 }
-                                if (localName.equals(getBaseName(file.getName()))) {
+                                if (localName.equals(getBaseName(file.name()))) {
                                     script = file;
                                 }
                             }
                             if (script == null) {
                                 throw new FileNotFoundException("Could not find script file "
-                                        + f.getName() + " nor a script named " + localName
-                                        + " in the " + directory.getName() + " sub-directory");
+                                        + f.name() + " nor a script named " + localName
+                                        + " in the " + directory.name() + " sub-directory");
                             }
                             f = script;
                         }

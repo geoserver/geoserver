@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * Copyright (C) 2007-2008-2009 GeoSolutions S.A.S.
  *  http://www.geo-solutions.it
  * This code is licensed under the GPL 2.0 license, available at the root
@@ -20,6 +20,7 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.rest.AbstractCatalogResource;
+import org.geoserver.config.util.SecureXStream;
 import org.geoserver.rest.RestletException;
 import org.geoserver.rest.format.DataFormat;
 import org.geoserver.rest.format.ReflectiveHTMLFormat;
@@ -103,7 +104,7 @@ public class ListAttributesResource extends AbstractCatalogResource {
 			@Override
 			protected void write(Object data, OutputStream output)
 					throws IOException {
-				XStream xstream = new XStream();
+                XStream xstream = new SecureXStream();
 				xstream.setMode(XStream.NO_REFERENCES);
 
 				// Aliases
@@ -111,6 +112,9 @@ public class ListAttributesResource extends AbstractCatalogResource {
 
 				// Converters
 				xstream.registerConverter(new LayerAttributesListConverter());
+
+                xstream.allowTypes(new Class[] { LayerAttributesList.class,
+                        LayerAttributesListConverter.class });
 
 				// Marshalling
 				xstream.toXML(data, output);
@@ -136,7 +140,7 @@ public class ListAttributesResource extends AbstractCatalogResource {
 			@Override
 			protected void write(Object data, OutputStream output)
 					throws IOException {
-				XStream xstream = new XStream(new JettisonMappedXmlDriver());
+                XStream xstream = new SecureXStream(new JettisonMappedXmlDriver());
 				xstream.setMode(XStream.NO_REFERENCES);
 
 				// Aliases
@@ -144,6 +148,9 @@ public class ListAttributesResource extends AbstractCatalogResource {
 
 				// Converters
 				xstream.registerConverter(new LayerAttributesListConverter());
+
+                xstream.allowTypes(new Class[] { LayerAttributesList.class,
+                        LayerAttributesListConverter.class });
 
 				// Marshalling
 				xstream.toXML(data, new OutputStreamWriter(output, "UTF-8"));

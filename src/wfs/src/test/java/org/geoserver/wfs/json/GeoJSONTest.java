@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -9,7 +9,11 @@ package org.geoserver.wfs.json;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.util.Collection;
@@ -18,10 +22,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.xml.namespace.QName;
-
-import net.sf.json.JSONArray;
-import net.sf.json.JSONNull;
-import net.sf.json.JSONObject;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -41,6 +41,10 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
+import net.sf.json.JSONArray;
+import net.sf.json.JSONNull;
+import net.sf.json.JSONObject;
+
 /**
  * 
  * @author carlo cancellieri - GeoSolutions
@@ -51,6 +55,8 @@ public class GeoJSONTest extends WFSTestSupport {
     public static QName LINE3D = new QName(SystemTestData.CITE_URI, "Line3D", SystemTestData.CITE_PREFIX);
     public static QName POINT_LATLON = new QName(SystemTestData.CITE_URI, "PointLatLon", SystemTestData.CITE_PREFIX);
     public static QName POINT_LONLAT = new QName(SystemTestData.CITE_URI, "PointLonLat", SystemTestData.CITE_PREFIX);
+    public static QName MULTI_GEOMETRIES_WITH_NULL = new QName(SystemTestData.CITE_URI, "MultiGeometriesWithNull", SystemTestData.CITE_PREFIX);
+    public static QName POINT_REDUCED = new QName(SystemTestData.CITE_URI, "PointReduced", SystemTestData.CITE_PREFIX);
     
     @Override
     @SuppressWarnings("unchecked")
@@ -79,7 +85,18 @@ public class GeoJSONTest extends WFSTestSupport {
         pointLatLon.setSRS("EPSG:4326");
         pointLatLon.setProjectionPolicy(ProjectionPolicy.FORCE_DECLARED);
         getCatalog().save(pointLonLat);
-
+        
+        // A feature with a constant test setup for testing geometry/geometry_name consistency with null geometries
+        data.addVectorLayer (MULTI_GEOMETRIES_WITH_NULL, Collections.EMPTY_MAP, getClass(), getCatalog());
+        
+        // A feature type with reduced precision
+        data.addVectorLayer (POINT_REDUCED, Collections.EMPTY_MAP, getClass(), getCatalog());
+        FeatureTypeInfo pointReduced = getCatalog().getFeatureTypeByName(POINT_REDUCED.getPrefix(), POINT_REDUCED.getLocalPart());
+        pointReduced.setNativeCRS(crsLatLon);
+        pointReduced.setSRS("EPSG:4326");
+        pointReduced.setProjectionPolicy(ProjectionPolicy.FORCE_DECLARED);
+        pointReduced.setNumDecimals(2);
+        getCatalog().save(pointReduced);
     }
 	
     @Test
@@ -249,7 +266,8 @@ public class GeoJSONTest extends WFSTestSupport {
     	assertEquals(rootObject.get("type"),"FeatureCollection");
     	JSONArray featureCol = rootObject.getJSONArray("features");
     	JSONObject aFeature = featureCol.getJSONObject(1);
-    	JSONObject aGeometry = aFeature.getJSONObject("geometry");
+    	JSONObject aPropeties = aFeature.getJSONObject("properties");
+    	JSONObject aGeometry = aPropeties.getJSONObject("multiCurveProperty");
     	assertEquals(aGeometry.getString("type"),"MultiLineString");
     	JSONArray geomArray = aGeometry.getJSONArray("coordinates");
     	geomArray = geomArray.getJSONArray(0);
@@ -290,7 +308,8 @@ public class GeoJSONTest extends WFSTestSupport {
         assertTrue(aFeature.getString("id").substring(0,19).equalsIgnoreCase("AggregateGeoFeature"));
                
         // Check that a feature has the expected attributes
-        JSONObject aGeometry = aFeature.getJSONObject("geometry");
+        JSONObject aProperties = aFeature.getJSONObject("properties");
+        JSONObject aGeometry = aProperties.getJSONObject("multiCurveProperty");
         //System.out.println(aGeometry.getString("type"));
         assertEquals(aGeometry.getString("type"),"MultiLineString");
     }
@@ -317,27 +336,64 @@ public class GeoJSONTest extends WFSTestSupport {
     }
     
     @Test
-    public void testGetFeatureCount() throws Exception {        
+    public void testGetFeatureCountNoFilter() throws Exception {        
         //request without filter
         String out = getAsString("wfs?request=GetFeature&version=1.0.0&typename=sf:PrimitiveGeoFeature&maxfeatures=10&outputformat="+JSONType.json);
         JSONObject rootObject = JSONObject.fromObject( out );
         assertEquals(rootObject.get("totalFeatures"),5);
+    }
 
+    @Test
+    public void testGetFeatureCountFilter() throws Exception {
         //request with filter (featureid=PrimitiveGeoFeature.f001)
         String out2 = getAsString("wfs?request=GetFeature&version=1.0.0&typename=sf:PrimitiveGeoFeature&maxfeatures=10&outputformat="+JSONType.json+"&featureid=PrimitiveGeoFeature.f001");
         JSONObject rootObject2 = JSONObject.fromObject( out2 );
         assertEquals(rootObject2.get("totalFeatures"),1);
-        
+    }
+    
+    @Test
+    public void testGetFeatureCountMaxFeatures() throws Exception {
         //check if maxFeatures doesn't affect totalFeatureCount; set Filter and maxFeatures
         String out3 = getAsString("wfs?request=GetFeature&version=1.0.0&typename=sf:PrimitiveGeoFeature&maxfeatures=1&outputformat="+JSONType.json+"&featureid=PrimitiveGeoFeature.f001,PrimitiveGeoFeature.f002");
         JSONObject rootObject3 = JSONObject.fromObject( out3 );
         assertEquals(rootObject3.get("totalFeatures"),2);
-        
+    }
+    
+    @Test
+    public void testGetFeatureCountMultipleFeatureTypes() throws Exception {
         //request with multiple featureTypes and Filter
         String out4 = getAsString("wfs?request=GetFeature&version=1.0.0&typename=sf:PrimitiveGeoFeature,sf:AggregateGeoFeature&outputformat="+JSONType.json + "&featureid=PrimitiveGeoFeature.f001,PrimitiveGeoFeature.f002,AggregateGeoFeature.f009");
         JSONObject rootObject4 = JSONObject.fromObject( out4 );
         assertEquals(rootObject4.get("totalFeatures"),3);
+    }
+    
+    @Test
+    public void testGetFeatureCountSpatialFilter() throws Exception {
+        //post with spatial-filter in another projection than layer-projection
+        String xml = "<wfs:GetFeature " + "service=\"WFS\" " + "outputFormat=\""+JSONType.json+"\" "
+                + "version=\"1.1.0\" "
+                + "xmlns:cdf=\"http://www.opengis.net/cite/data\" "
+                + "xmlns:ogc=\"http://www.opengis.net/ogc\" "
+                + "xmlns:wfs=\"http://www.opengis.net/wfs\" " + "> "
+                + "<wfs:Query typeName=\"sf:AggregateGeoFeature\" srsName=\"EPSG:900913\"> "
+                + "<ogc:Filter xmlns:ogc=\"http://www.opengis.net/ogc\"> "
+                + "<ogc:Intersects> "
+                + "<ogc:PropertyName></ogc:PropertyName> "
+                + "<gml:Polygon xmlns:gml=\"http://www.opengis.net/gml\" srsName=\"EPSG:900913\"> "
+                + "<gml:exterior> "
+                + "<gml:LinearRing> "
+                + "<gml:posList>7666573.330932751 3485566.812628661 8010550.557483965 3485566.812628661 8010550.557483965 3788277.001334882 7666573.330932751 3788277.001334882 7666573.330932751 3485566.812628661</gml:posList> "
+                + "</gml:LinearRing> "
+                + "</gml:exterior> "
+                + "</gml:Polygon> "
+                + "</ogc:Intersects> "
+                + "</ogc:Filter> "
+                + "</wfs:Query> " + "</wfs:GetFeature>";
+
+        String out5 = postAsServletResponse( "wfs", xml ).getOutputStreamContent();
         
+        JSONObject rootObject5 = JSONObject.fromObject( out5 );
+        assertEquals(rootObject5.get("totalFeatures"),1);
     }
 
     @Test
@@ -422,6 +478,30 @@ public class GeoJSONTest extends WFSTestSupport {
     }
     
     @Test
+    public void testGetFeatureWhereLayerHasDecimalPointsSet() throws Exception {
+        JSONObject collection = (JSONObject) getAsJSON("wfs?request=GetFeature&version=1.0.0&typename=" + getLayerId(POINT_REDUCED)
+                + "&outputformat=" + JSONType.json);
+        assertThat(collection.getInt("totalFeatures"), is(3));
+
+        JSONArray features = collection.getJSONArray("features");
+        assertThat((Collection<?>)features, Matchers.hasSize(3));
+        JSONObject feature = features.getJSONObject(0);
+        
+        JSONObject geometry = feature.getJSONObject("geometry");
+        assertThat(geometry.getString("type"), is("Point"));
+        
+        JSONArray coords = geometry.getJSONArray("coordinates");
+        assertThat((Iterable<?>)coords, contains((Object)120.12, 0.56));
+        
+        JSONArray bbox = collection.getJSONArray("bbox");
+        assertThat((Iterable<?>)bbox, Matchers.contains((Object)(-170.19), -30.13, 120.12, 45.23));
+        
+        CoordinateReferenceSystem expectedCrs = CRS.decode("EPSG:4326");
+        JSONObject aCRS = collection.getJSONObject("crs");
+        assertThat(aCRS, encodesCRS(expectedCrs));        
+    }
+    
+    @Test
     public void testGetFeatureAxisSwap() throws Exception {
         // Check that a NORTH_EAST source is swapped
         doAxisSwapTest(POINT_LATLON, CRS.AxisOrder.NORTH_EAST);
@@ -441,6 +521,80 @@ public class GeoJSONTest extends WFSTestSupport {
         CoordinateReferenceSystem expectedCrs = getCatalog().getLayerByName(getLayerId(layer)).getResource().getCRS();
         JSONObject aCRS = collection.getJSONObject("crs");
         assertThat(aCRS, encodesCRS(expectedCrs));
+    }
+    
+    /**
+     * Tests if:
+     * <ul>
+     * <li>"geometry_name" is always the attribute name of the default geometry</li>
+     * <li>"geometry" is always the attribute value of the default geometry</li>
+     * <li>the default geometry is never contained within the properties, as duplicate</li>
+     * </ul>
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testGeometryAndGeometryNameConsistency() throws Exception {
+        JSONObject collection = (JSONObject) getAsJSON(
+                "wfs?request=GetFeature&version=1.0.0&typename="
+                        + getLayerId(MULTI_GEOMETRIES_WITH_NULL) + "&outputformat="
+                        + JSONType.json);
+        print(collection);
+        assertEquals(3, collection.getInt("totalFeatures"));
+    
+        JSONArray features = collection.getJSONArray("features");
+        assertEquals(3, features.size());
+    
+        // see MultiGeometriesWithNull.properties
+        // -- MultiGeometriesWithNull.0 -- all geoms present
+        JSONObject feature = features.getJSONObject(0);
+        assertEquals("MultiGeometriesWithNull.0", feature.getString("id"));
+        assertEquals("All geometries present, first geometry must be default",
+                "geom_a", feature.getString("geometry_name"));
+        JSONObject geometry = feature.getJSONObject("geometry");
+        JSONArray coords = geometry.getJSONArray("coordinates");
+        assertEquals("geom_a has coodinate 1", 1, coords.getInt(0));
+        JSONObject properties = feature.getJSONObject("properties");
+        assertFalse("geom_a must not be present, its the default geom",
+                properties.containsKey("geom_a"));
+        JSONObject propertyGeomB = properties.getJSONObject("geom_b");
+        coords = propertyGeomB.getJSONArray("coordinates");
+        assertEquals("geom_b has coodinate 2", 2, coords.getInt(0));
+        JSONObject propertyGeomC = properties.getJSONObject("geom_c");
+        coords = propertyGeomC.getJSONArray("coordinates");
+        assertEquals("geom_c has coodinate 3", 3, coords.getInt(0));
+    
+        // -- MultiGeometriesWithNull.1 --, geom_b and geom_c present
+        feature = features.getJSONObject(1);
+        assertEquals("MultiGeometriesWithNull.1", feature.getString("id"));
+        assertEquals("1st geometry null, still default", "geom_a",
+                feature.getString("geometry_name"));
+        geometry = feature.getJSONObject("geometry");
+        assertTrue(geometry.isNullObject());
+        properties = feature.getJSONObject("properties");
+        assertFalse("geom_a must not be present, its the default geom",
+                properties.containsKey("geom_a"));
+        propertyGeomB = properties.getJSONObject("geom_b");
+        coords = propertyGeomB.getJSONArray("coordinates");
+        assertEquals("geom_b has coodinate 2", 2, coords.getInt(0));
+        propertyGeomC = properties.getJSONObject("geom_c");
+        coords = propertyGeomC.getJSONArray("coordinates");
+        assertEquals("geom_c has coodinate 3", 3, coords.getInt(0));
+    
+        // -- MultiGeometriesWithNull.2 --, all geoms null
+        feature = features.getJSONObject(2);
+        assertEquals("MultiGeometriesWithNull.2", feature.getString("id"));
+        assertEquals("no geometries present, 1st still default", "geom_a",
+                feature.getString("geometry_name"));
+        geometry = feature.getJSONObject("geometry");
+        assertTrue(geometry.isNullObject());
+        properties = feature.getJSONObject("properties");
+        assertFalse("geom_a must not be present, its the default geom",
+                properties.containsKey("geom_a"));
+        propertyGeomB = properties.getJSONObject("geom_b");
+        assertTrue(propertyGeomB.isNullObject());
+        propertyGeomC = properties.getJSONObject("geom_c");
+        assertTrue(propertyGeomC.isNullObject());
     }
     
     private org.hamcrest.Matcher<JSONObject> encodesCRS(final CoordinateReferenceSystem crs) {

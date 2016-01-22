@@ -1,3 +1,8 @@
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2013 OpenPlans
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.wms.featureinfo;
 
 import static org.junit.Assert.assertEquals;
@@ -9,8 +14,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.xml.namespace.QName;
 
@@ -18,6 +21,7 @@ import net.sf.json.JSONObject;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.mutable.MutableDouble;
+import org.geoserver.config.GeoServer;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.ServiceException;
@@ -25,12 +29,14 @@ import org.geoserver.wms.FeatureInfoRequestParameters;
 import org.geoserver.wms.GetFeatureInfoRequest;
 import org.geoserver.wms.GetMapOutputFormat;
 import org.geoserver.wms.GetMapRequest;
+import org.geoserver.wms.GetMapTest;
 import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.MapProducerCapabilities;
+import org.geoserver.wms.WMS;
+import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WMSTestSupport;
 import org.geoserver.wms.WebMap;
-import org.geoserver.wms.featureinfo.VectorRenderingLayerIdentifier.FeatureInfoRenderListener;
 import org.geoserver.wms.map.AbstractMapOutputFormat;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
@@ -40,13 +46,14 @@ import org.junit.Test;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.operation.TransformException;
 
-import com.google.common.util.concurrent.AtomicDouble;
 import com.vividsolutions.jts.geom.Envelope;
 
 public class RenderingBasedFeatureInfoTest extends WMSTestSupport {
 
     public static QName GRID = new QName(MockData.CITE_URI, "grid", MockData.CITE_PREFIX);
     public static QName REPEATED = new QName(MockData.CITE_URI, "repeated", MockData.CITE_PREFIX);
+    public static QName GIANT_POLYGON = new QName(MockData.CITE_URI, "giantPolygon",
+            MockData.CITE_PREFIX);
 
     
     // @Override
@@ -67,6 +74,8 @@ public class RenderingBasedFeatureInfoTest extends WMSTestSupport {
                 RenderingBasedFeatureInfoTest.class, getCatalog());
         testData.addVectorLayer(REPEATED, Collections.EMPTY_MAP, "repeated_lines.properties",
                 RenderingBasedFeatureInfoTest.class, getCatalog());
+        testData.addVectorLayer(GIANT_POLYGON, Collections.EMPTY_MAP, "giantPolygon.properties",
+                GetMapTest.class, getCatalog());
         
         testData.addStyle("ranged", "ranged.sld",this.getClass(), getCatalog());
         testData.addStyle("dynamic", "dynamic.sld",this.getClass(), getCatalog());
@@ -77,12 +86,60 @@ public class RenderingBasedFeatureInfoTest extends WMSTestSupport {
         testData.addStyle("polydash", "polydash.sld", this.getClass(), getCatalog());
         testData.addStyle("doublepoly", "doublepoly.sld", this.getClass(), getCatalog());
         testData.addStyle("pureLabel", "purelabel.sld", this.getClass(), getCatalog());
+        testData.addStyle("transform", "transform.sld", this.getClass(), getCatalog());
     }
     
     @After 
     public void cleanup() {
         VectorRenderingLayerIdentifier.RENDERING_FEATUREINFO_ENABLED = true;
     }
+    
+    /**
+     * Test hitArea does not overflow out of painted area.
+     * @throws Exception
+     */
+    @Test
+    public void  testHitAreaSize()  throws Exception {
+        int mapWidth = 100;
+        int mapHeight = 100;
+        
+        
+        Envelope mapbbox = new Envelope(0.0001955, 0.0002035, 0.000696, 0.000704);
+        
+        VectorRenderingLayerIdentifier vrli = new VectorRenderingLayerIdentifier(getWMS(), null) {
+
+            @Override
+            protected int getBuffer(int userBuffer) {
+                return 3;
+            }
+            
+
+        };
+        
+        GetFeatureInfoRequest request = new GetFeatureInfoRequest();
+        GetMapRequest getMapRequest = new GetMapRequest();
+        List<MapLayerInfo> layers = new ArrayList<MapLayerInfo>();
+        
+        layers.add(new MapLayerInfo(getCatalog().getLayerByName(
+                MockData.BRIDGES.getLocalPart())));
+        getMapRequest.setLayers(layers);
+        getMapRequest.setSRS("EPSG:4326");
+        getMapRequest.setBbox(mapbbox);
+        getMapRequest.setWidth(mapWidth);
+        getMapRequest.setFormat("image/png");
+        
+        getMapRequest.setHeight(mapHeight);
+        request.setGetMapRequest(getMapRequest);
+        request.setQueryLayers(layers);
+        request.setXPixel(50);
+        request.setYPixel(50);
+        
+
+        FeatureInfoRequestParameters params = new FeatureInfoRequestParameters(request);
+        
+        assertEquals(0, vrli.identify(params, 10).size());
+    }
+
     
     @Test
     public void testBoxOffset() throws Exception {
@@ -281,6 +338,56 @@ public class RenderingBasedFeatureInfoTest extends WMSTestSupport {
         assertEquals(1, result.getJSONArray("features").size());
     }
     
+    @Test
+    public void testMapWrapping() throws Exception {
+        GeoServer gs = getGeoServer();
+        WMSInfo wms = gs.getService(WMSInfo.class);
+        Boolean original = wms.getMetadata().get(WMS.MAP_WRAPPING_KEY, Boolean.class);
+        try {
+            // wms.getMetadata().put(WMS.ADVANCED_PROJECTION_KEY, Boolean.TRUE);
+            wms.getMetadata().put(WMS.MAP_WRAPPING_KEY, Boolean.TRUE);
+            gs.save(wms);
+
+            String layer = getLayerId(GIANT_POLYGON);
+            String request = "wms?version=1.1.1&bbox=170,-10,190,10&format=image/png"
+                    + "&request=GetFeatureInfo&layers=" + layer + "&query_layers=" + layer
+                    + "&styles=polygon"
+                    + "&width=100&height=100&x=60&y=0&srs=EPSG:4326&info_format=application/json";
+
+            JSONObject result = (JSONObject) getAsJSON(request);
+            // with wrapping enabled we should get the giant polygon on the other side too
+            assertEquals(1, result.getJSONArray("features").size());
+
+            String disableRequest = request + "&format_options=mapWrapping:false";
+            result = (JSONObject) getAsJSON(disableRequest);
+            // with wrapping disabled we should not get any hits
+            assertEquals(0, result.getJSONArray("features").size());
+
+            String enableRequest = request + "&format_options=mapWrapping:true";
+            result = (JSONObject) getAsJSON(enableRequest);
+            // with wrapping enabled we should get the giant polygon on the other side too
+            assertEquals(1, result.getJSONArray("features").size());
+
+            wms.getMetadata().put(WMS.MAP_WRAPPING_KEY, Boolean.FALSE);
+            gs.save(wms);
+            result = (JSONObject) getAsJSON(request);
+            // with wrapping disabled we should not get any hit
+            assertEquals(0, result.getJSONArray("features").size());
+
+            result = (JSONObject) getAsJSON(disableRequest);
+            // with wrapping disabled in the config, the request param should be ignored
+            assertEquals(0, result.getJSONArray("features").size());
+
+            result = (JSONObject) getAsJSON(enableRequest);
+            // with wrapping disabled in the config, the request param should be ignored
+            assertEquals(0, result.getJSONArray("features").size());
+
+        } finally {
+            wms.getMetadata().put(WMS.MAP_WRAPPING_KEY, original);
+            gs.save(wms);
+        }
+    }
+
     /**
      * Tests GEOS-7020: imprecise scale calculation in StreamingRenderer 
      * with VectorRenderingLayerIdentifier, due to 1 pixel missing
@@ -364,5 +471,18 @@ public class RenderingBasedFeatureInfoTest extends WMSTestSupport {
         // 1% of error tolerance
         assertEquals(originalScale, calculatedScale.doubleValue(), originalScale * 0.01);
         assertEquals(originalOGCScale, calculatedOGCScale.doubleValue(), originalScale * 0.01);
+    }
+    
+    @Test
+    public void testRenderingTransform() throws Exception {
+        String layer = getLayerId(MockData.FORESTS);
+        String request = "wms?version=1.1.1&bbox=-0.002,-0.002,0.002,0.002&format=image/png"
+                + "&request=GetFeatureInfo&layers=" + layer
+                + "&query_layers=" + layer + "&styles=transform&transparent=true&srs=EPSG:4326"
+                + "&width=20&height=20&x=10&y=10" + "&info_format=application/json&feature_count=50";
+        
+        JSONObject result = (JSONObject) getAsJSON(request);
+        
+        assertEquals(1, result.getJSONArray("features").size());
     }
 }

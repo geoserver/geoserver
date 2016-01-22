@@ -18,8 +18,8 @@ import javax.servlet.ServletInputStream;
 public class BufferedRequestStream extends ServletInputStream{
     InputStream myInputStream;
 
-    public BufferedRequestStream(String buff) throws IOException {
-        myInputStream = new ByteArrayInputStream(buff.getBytes());
+    public BufferedRequestStream(byte[] buff) throws IOException {
+        myInputStream = new ByteArrayInputStream(buff);
         myInputStream.mark(16);
         myInputStream.read();
         myInputStream.reset();

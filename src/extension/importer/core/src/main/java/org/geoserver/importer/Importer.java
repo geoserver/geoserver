@@ -1,11 +1,10 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.importer;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,7 +30,10 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.ProjectionPolicy;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.SLDHandler;
 import org.geoserver.catalog.StoreInfo;
+import org.geoserver.catalog.StyleGenerator;
+import org.geoserver.catalog.StyleHandler;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.util.XStreamPersister;
@@ -43,12 +45,16 @@ import org.geoserver.importer.job.JobQueue;
 import org.geoserver.importer.job.ProgressMonitor;
 import org.geoserver.importer.job.Task;
 import org.geoserver.importer.mosaic.Mosaic;
+import org.geoserver.importer.transform.ImportTransform;
 import org.geoserver.importer.transform.RasterTransformChain;
 import org.geoserver.importer.transform.ReprojectTransform;
 import org.geoserver.importer.transform.TransformChain;
 import org.geoserver.importer.transform.VectorTransformChain;
 import org.geoserver.platform.ContextLoadedEvent;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.resource.Paths;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.security.GeoServerSecurityManager;
 import org.geotools.coverage.grid.io.HarvestedSource;
 import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
 import org.geotools.data.DataStore;
@@ -99,6 +105,9 @@ public class Importer implements DisposableBean, ApplicationListener {
 
     /** style generator */
     StyleGenerator styleGen;
+    
+    /** style handler */
+    StyleHandler styleHandler = new SLDHandler();
 
     /** job queue */
     JobQueue jobs = new JobQueue();
@@ -115,6 +124,14 @@ public class Importer implements DisposableBean, ApplicationListener {
      */
     public StyleGenerator getStyleGenerator() {
         return styleGen;
+    }
+    
+    public StyleHandler getStyleHandler() {
+        return styleHandler;
+    }
+    
+    public void setStyleHandler(StyleHandler handler) {
+        styleHandler = handler;
     }
 
     ImportStore createContextStore() {
@@ -248,6 +265,12 @@ public class Importer implements DisposableBean, ApplicationListener {
         return createContext(data, null, null); 
     }
     
+    public ImportContext registerContext(Long id) throws IOException, IllegalArgumentException {
+        ImportContext context = createContext(id);
+        context.setState(org.geoserver.importer.ImportContext.State.INIT);
+        return context;
+    }
+
     /**
      * Create a context with the provided optional id.
      * The provided id must be higher than the current mark.
@@ -316,6 +339,33 @@ public class Importer implements DisposableBean, ApplicationListener {
         });
     }
 
+    /**
+     * Performs an asynchronous initialization of tasks in the specified context, and eventually
+     * saves the result in the {@link ImportStore}
+     * 
+     * @param context
+     * @param prepData
+     * @return
+     */
+    public Long initAsync(final ImportContext context, final boolean prepData) {
+        return jobs.submit(new Job<ImportContext>() {
+            @Override
+            protected ImportContext call(ProgressMonitor monitor) throws Exception {
+                try {
+                    init(context, prepData);
+                } finally {
+                    changed(context);
+                }
+                return context;
+            }
+
+            @Override
+            public String toString() {
+                return "Initializing context " + context.getId();
+            }
+        });
+    }
+
     public void init(ImportContext context) throws IOException {
         init(context, true);
     }
@@ -323,11 +373,33 @@ public class Importer implements DisposableBean, ApplicationListener {
     public void init(ImportContext context, boolean prepData) throws IOException {
         context.reattach(catalog);
 
-        ImportData data = context.getData();
-        if (data != null) {
-            addTasks(context, data, prepData); 
+        try {
+            ImportData data = context.getData();
+            if (data != null) {
+                if (data instanceof RemoteData) {
+
+                    data = ((RemoteData) data).resolve(this);
+                    context.setData(data);
+                }
+
+                addTasks(context, data, prepData);
+            }
+
+            // switch from init to pending as needed
+            context.setState(ImportContext.State.PENDING);
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Failed to init the context ", e);
+
+            // switch to complete to make the error evident, since we
+            // cannot attach it to a task
+            context.setState(ImportContext.State.INIT_ERROR);
+            context.setMessage(e.getMessage());
+            return;
         }
+
     }
+
+
 
     public List<ImportTask> update(ImportContext context, ImportData data) throws IOException {
         List<ImportTask> tasks = addTasks(context, data, true);
@@ -514,6 +586,17 @@ public class Importer implements DisposableBean, ApplicationListener {
                 t.setDirect(direct);
                 t.setStore(targetStore);
 
+                // in case of indirect import against a coverage store with no published
+                // layers, do not use the granule name, but the store name
+                if (!direct && targetStore instanceof CoverageStoreInfo) {
+                    t.getLayer().setName(targetStore.getName());
+                    t.getLayer().getResource().setName(targetStore.getName());
+                    
+                    if (!catalog.getCoveragesByStore((CoverageStoreInfo) targetStore).isEmpty()) {
+                        t.setUpdateMode(UpdateMode.APPEND);
+                    }
+                }
+
                 prep(t);
                 tasks.add(t);
             }
@@ -589,14 +672,14 @@ public class Importer implements DisposableBean, ApplicationListener {
                     FeatureType featureType =
                         (FeatureType) task.getMetadata().get(FeatureType.class);
                     if (featureType != null) {
-                        style = styleGen.createStyle((FeatureTypeInfo) r, featureType);
+                        style = styleGen.createStyle(styleHandler, (FeatureTypeInfo) r, featureType);
                     } else {
                         throw new RuntimeException("Unable to compute style");
                     }
 
                 }
                 else if (r instanceof CoverageInfo) {
-                    style = styleGen.createStyle((CoverageInfo) r);
+                    style = styleGen.createStyle(styleHandler, (CoverageInfo) r);
                 }
                 else {
                     throw new RuntimeException("Unknown resource type :"
@@ -674,6 +757,10 @@ public class Importer implements DisposableBean, ApplicationListener {
     }
     
     public void run(ImportContext context, ImportFilter filter, ProgressMonitor monitor) throws IOException {
+        if (context.getState() == ImportContext.State.INIT) {
+            throw new IllegalStateException("Importer is still initializing, cannot run it");
+        }
+
         context.setProgress(monitor);
         context.setState(ImportContext.State.RUNNING);
         
@@ -711,11 +798,11 @@ public class Importer implements DisposableBean, ApplicationListener {
                 if (context.getData() instanceof Directory) {
                     directory = (Directory) context.getData();
                 } else if ( context.getData() instanceof SpatialFile ) {
-                    directory = new Directory( ((SpatialFile) context.getData()).getFile().getParentFile() );
+                    directory = new Directory( ((SpatialFile) context.getData()).getFile().parent() );
                 }
                 if (directory != null) {
                     if (LOGGER.isLoggable(Level.FINE)) {
-                        LOGGER.fine("Archiving directory " + directory.getFile().getAbsolutePath());
+                        LOGGER.fine("Archiving directory " + directory.getFile().path());
                     }       
                     try {
                         directory.archive(getArchiveFile(context));
@@ -747,11 +834,11 @@ public class Importer implements DisposableBean, ApplicationListener {
 
     }
     
-    public File getArchiveFile(ImportContext context) throws IOException {
+    public Resource getArchiveFile(ImportContext context) throws IOException {
         //String archiveName = "import-" + task.getContext().getId() + "-" + task.getId() + "-" + task.getData().getName() + ".zip";
         String archiveName = "import-" + context.getId() + ".zip";
-        File dir = getCatalog().getResourceLoader().findOrCreateDirectory("uploads","archives");
-        return new File(dir, archiveName);
+        Resource dir = getCatalog().getResourceLoader().get(Paths.path("uploads", "archives"));
+        return dir.get(archiveName);
     }
     
     public void changed(ImportContext context) {
@@ -764,10 +851,13 @@ public class Importer implements DisposableBean, ApplicationListener {
         changed(task.getContext());
     }
 
-    public Long runAsync(final ImportContext context, final ImportFilter filter) {
+    public Long runAsync(final ImportContext context, final ImportFilter filter, final boolean init) {
         return jobs.submit(new Job<ImportContext>() {
             @Override
             protected ImportContext call(ProgressMonitor monitor) throws Exception {
+                if (init) {
+                    init(context, true);
+                }
                 run(context, filter, monitor);
                 return context;
             }
@@ -828,6 +918,13 @@ public class Importer implements DisposableBean, ApplicationListener {
             }
 
             addToCatalog(task);
+            
+            if (task.getLayer().getResource() instanceof FeatureTypeInfo) {
+                FeatureTypeInfo featureType = (FeatureTypeInfo) task.getLayer().getResource();
+                FeatureTypeInfo resource = getCatalog().getResourceByName(
+                        featureType.getQualifiedName(), FeatureTypeInfo.class);
+                calculateBounds(resource);
+            }
 
             // apply post transform
             if (!doPostTransform(task, task.getData(), tx)) {
@@ -882,23 +979,9 @@ public class Importer implements DisposableBean, ApplicationListener {
                     if (task.getUpdateMode() == UpdateMode.CREATE) {
                         addToCatalog(task);
                     }
-    
-                    // verify that the newly created featuretype's resource
-                    // has bounding boxes computed - this might be required
-                    // for csv or other uploads that have a geometry that is
-                    // the result of a transform. there may be another way...
                     FeatureTypeInfo resource = getCatalog().getResourceByName(
                             featureType.getQualifiedName(), FeatureTypeInfo.class);
-                    if (resource.getNativeBoundingBox().isEmpty()
-                            || resource.getMetadata().get("recalculate-bounds") != null) {
-                        // force computation
-                        CatalogBuilder cb = new CatalogBuilder(getCatalog());
-                        ReferencedEnvelope nativeBounds = cb.getNativeBounds(resource);
-                        resource.setNativeBoundingBox(nativeBounds);
-                        resource.setLatLonBoundingBox(cb.getLatLonBounds(nativeBounds,
-                                resource.getCRS()));
-                        getCatalog().save(resource);
-                    }
+                    calculateBounds(resource);
                 }
             }
             catch(Exception e) {
@@ -933,6 +1016,13 @@ public class Importer implements DisposableBean, ApplicationListener {
             StructuredGridCoverage2DReader sr = (StructuredGridCoverage2DReader) reader;
             ImportData data = task.getData();
             harvestImportData(sr, data);
+
+            // check we have a target resource, if not, create it
+            if (task.getUpdateMode() == UpdateMode.CREATE) {
+                if (task.getLayer().getId() == null) {
+                    addToCatalog(task);
+                }
+            }
         }
 
         if (!canceled && !doPostTransform(task, task.getData(), tx)) {
@@ -941,6 +1031,42 @@ public class Importer implements DisposableBean, ApplicationListener {
 
         task.setState(canceled ? ImportTask.State.CANCELED : ImportTask.State.COMPLETE);
 
+    }
+    
+    /**
+     * (Re)calculates the bounds for a FeatureTypeInfo.
+     * Bounds will be calculated if:
+     * <li> The native bounds of the resource are null or empty
+     * <li> The resource has a metadata entry "recalculate-bounds"="true"<br><br>
+     * 
+     * Otherwise, this method has no effect.<br><br>
+     * 
+     * If the metadata entry "recalculate-bounds"="true" exists, 
+     * it will be removed after bounds are calculated.<br><br>
+     * 
+     * This is currently used by csv / kml uploads that have a geometry that may be the result of a 
+     * transform, and by JDBC imports which wait to calculate bounds until after the layers that 
+     * will be imported have been chosen.
+     * 
+     * @param resource The resource to calculate the bounds for
+     */
+    protected void calculateBounds(FeatureTypeInfo resource) throws IOException {
+        if (resource.getNativeBoundingBox() == null || resource.getNativeBoundingBox().isEmpty()
+                || Boolean.TRUE.equals(resource.getMetadata().get("recalculate-bounds"))
+                || "true".equals(resource.getMetadata().get("recalculate-bounds"))) {
+            // force computation
+            CatalogBuilder cb = new CatalogBuilder(getCatalog());
+            ReferencedEnvelope nativeBounds = cb.getNativeBounds(resource);
+            resource.setNativeBoundingBox(nativeBounds);
+            resource.setLatLonBoundingBox(cb.getLatLonBounds(nativeBounds,
+                    resource.getCRS()));
+            getCatalog().save(resource);
+            
+            //Do not re-calculate on subsequent imports
+            if (resource.getMetadata().get("recalculate-bounds") != null) {
+                resource.getMetadata().remove("recalculate-bounds");
+            }
+        }
     }
 
     private void checkSingleHarvest(List<HarvestedSource> harvests) throws IOException {
@@ -963,7 +1089,7 @@ public class Importer implements DisposableBean, ApplicationListener {
             throws IOException {
         if (data instanceof SpatialFile) {
             SpatialFile sf = (SpatialFile) data;
-            List<HarvestedSource> harvests = sr.harvest(sr.getGridCoverageNames()[0], sf.getFile(),
+            List<HarvestedSource> harvests = sr.harvest(null, sf.getFile().file(),
                     null);
             checkSingleHarvest(harvests);
         } else if (data instanceof Directory) {
@@ -1348,21 +1474,12 @@ public class Importer implements DisposableBean, ApplicationListener {
     }
 
     //file location methods
-    public File getImportRoot() {
-        try {
-            return catalog.getResourceLoader().findOrCreateDirectory("imports");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    public Resource getImportRoot() {
+        return catalog.getResourceLoader().get("imports");
     }
 
-    public File getUploadRoot() {
-        try {
-            return catalog.getResourceLoader().findOrCreateDirectory("uploads");
-        }
-        catch(IOException e) {
-            throw new RuntimeException(e);
-        }
+    public Resource getUploadRoot() {
+        return catalog.getResourceLoader().get("uploads");
     }
 
     public void destroy() throws Exception {
@@ -1436,8 +1553,23 @@ public class Importer implements DisposableBean, ApplicationListener {
 
         xs.registerLocalConverter( ReferencedEnvelope.class, "crs", new CRSConverter() );
         xs.registerLocalConverter( GeneralEnvelope.class, "crs", new CRSConverter() );
+
+        GeoServerSecurityManager securityManager = GeoServerExtensions
+                .bean(GeoServerSecurityManager.class);
+        xs.registerLocalConverter(RemoteData.class, "password", new EncryptedFieldConverter(
+                securityManager));
         
+        // security
+        xs.allowTypes(new Class[] { ImportContext.class, ImportTask.class });
+        xs.allowTypeHierarchy(TransformChain.class);
+        xs.allowTypeHierarchy(DataFormat.class);
+        xs.allowTypeHierarchy(ImportData.class);
+        xs.allowTypeHierarchy(ImportTransform.class);
+        xs.allowTypeHierarchy(Resource.class);
+
         return xp;
     }
+
+
 
 }

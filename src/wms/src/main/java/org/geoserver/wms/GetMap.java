@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2014 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -120,6 +120,7 @@ public class GetMap {
             map = fireFinished(map);
             return map;
         } catch (Throwable t) {
+            mapContent.dispose();
             fireFailed(t);
             if(t instanceof RuntimeException) {
                 throw (RuntimeException) t;
@@ -667,7 +668,7 @@ public class GetMap {
             if (layer.getType() == MapLayerInfo.TYPE_REMOTE_VECTOR || layer.getType() == MapLayerInfo.TYPE_RASTER) {
                 combinedList[i] = userRequestedFilter;
             } else if (layer.getType() == MapLayerInfo.TYPE_VECTOR) {
-                layerDefinitionFilter = layer.getFeature().getFilter();
+                layerDefinitionFilter = layer.getFeature().filter();
 
                 // heck, how I wish we use the null objects more
                 if (layerDefinitionFilter == null) {

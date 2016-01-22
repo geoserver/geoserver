@@ -34,6 +34,7 @@ import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.data.util.CoverageStoreUtils;
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Files;
 import org.geotools.coverage.grid.GeneralGridEnvelope;
 import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.data.DataAccess;
@@ -153,7 +154,7 @@ public class LegacyCatalogImporter {
 
             LegacyFeatureTypeInfoReader ftInfoReader = new LegacyFeatureTypeInfoReader();
             try {
-                ftInfoReader.read(ftInfoFile);
+                ftInfoReader.read(Files.asResource(ftInfoFile));
                 FeatureTypeInfo featureType = readFeatureType(ftInfoReader, featureTypeDirectory);
                 if ( featureType == null ) {
                     continue;
@@ -278,7 +279,7 @@ public class LegacyCatalogImporter {
         CatalogFactory factory = catalog.getFactory();
         
         LegacyCatalogReader reader = new LegacyCatalogReader();
-        reader.read(catalogFile);
+        reader.read(Files.asResource(catalogFile));
 
         // build all the catalog objects that can be read from the catalog.xml file
         importNamespaces(factory, reader.namespaces());

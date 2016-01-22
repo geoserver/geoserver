@@ -5,7 +5,7 @@
 package org.geoserver.wps.validator;
 
 import org.geoserver.wps.process.ByteArrayRawData;
-import org.geoserver.wps.process.FileRawData;
+import org.geoserver.wps.process.ResourceRawData;
 import org.geoserver.wps.process.StringRawData;
 
 /**
@@ -24,9 +24,9 @@ public class RawDataSizeEstimator implements ObjectSizeEstimator {
         } else if (object instanceof StringRawData) {
             StringRawData raw = (StringRawData) object;
             return raw.getData().length() * 2;
-        } else if (object instanceof FileRawData) {
-            FileRawData raw = (FileRawData) object;
-            return raw.getFile().length();
+        } else if (object instanceof ResourceRawData) {
+            ResourceRawData raw = (ResourceRawData) object;
+            return raw.getResource().file().length();
         }
 
         return ObjectSizeEstimator.UNKNOWN_SIZE;

@@ -19,6 +19,15 @@
             </div>
         </li>
         <li>
+            <label for="legend"><wicket:message key="legend">Legend</wicket:message></label>
+            <span wicket:id="legendPanel"></span>
+        </li>
+        <li>
+            <label for="name"><wicket:message key="generateNew">GenerateNew</wicket:message></label>
+            <select wicket:id="templates"></select>
+            <a href="#" wicket:id="generate"><wicket:message key="generate">Generate</wicket:message></a>
+        </li>
+        <li>
             <label for="name"><wicket:message key="copyFrom">CopyFrom</wicket:message></label>
             <select wicket:id="existingStyles"></select>
             <a href="#" wicket:id="copy"><wicket:message key="copy">Copy</wicket:message></a>
@@ -47,7 +56,7 @@
     </div>
     <br/>
     <div wicket:id="legendContainer">
-      <img wicket:id="legend"></img>
+      <img wicket:id="legendImg"></img>
     </div>
 
 </wicket:extend>

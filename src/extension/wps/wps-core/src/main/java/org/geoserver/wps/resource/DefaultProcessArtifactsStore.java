@@ -1,10 +1,9 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014-2015 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wps.resource;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +12,6 @@ import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.platform.resource.ResourceStore;
-import org.geoserver.platform.resource.Resources;
 
 /**
  * Default implementation that will store the artifacts on the file system inside
@@ -42,13 +40,6 @@ public class DefaultProcessArtifactsStore implements ProcessArtifactsStore {
         } else {
             result = store.get(Paths.path(executionId, "tmp", name));
         }
-        if (result != null) {
-            // make sure we have the root directory
-            File dir = result.parent().dir();
-            if (!dir.exists()) {
-                dir.mkdirs();
-            }
-        }
 
         return result;
     }
@@ -68,7 +59,7 @@ public class DefaultProcessArtifactsStore implements ProcessArtifactsStore {
     @Override
     public void clearArtifacts(String executionId) throws IOException {
         Resource resource = store.get(executionId);
-        Resources.delete(resource);
+        resource.delete();
     }
 
 }

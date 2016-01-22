@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -12,6 +12,8 @@ import org.geotools.data.wfs.internal.v2_0.storedquery.ParameterMappingDefaultVa
 import org.geotools.data.wfs.internal.v2_0.storedquery.ParameterMappingExpressionValue;
 import org.geotools.data.wfs.internal.v2_0.storedquery.StoredQueryConfiguration;
 
+import com.thoughtworks.xstream.XStream;
+
 /**
  * Configure XStreamPersisters for WFS
  * 
@@ -22,10 +24,14 @@ public class WFSXStreamPersisterInitializer implements
 
 	@Override
 	public void init(XStreamPersister persister) {
-		persister.getXStream().alias("storedQueryConfiguration", StoredQueryConfiguration.class);
-		persister.getXStream().alias("storedQueryParameterMappingExpressionValue", ParameterMappingExpressionValue.class);
-		persister.getXStream().alias("storedQueryParameterMappingDefaultValue", ParameterMappingDefaultValue.class);
-		persister.getXStream().alias("storedQueryParameterMappingBlockValue", ParameterMappingBlockValue.class);
+		XStream xs = persister.getXStream();
+        xs.alias("storedQueryConfiguration", StoredQueryConfiguration.class);
+		xs.alias("storedQueryParameterMappingExpressionValue", ParameterMappingExpressionValue.class);
+		xs.alias("storedQueryParameterMappingDefaultValue", ParameterMappingDefaultValue.class);
+		xs.alias("storedQueryParameterMappingBlockValue", ParameterMappingBlockValue.class);
+        xs.allowTypes(
+                new Class[] { StoredQueryConfiguration.class, ParameterMappingExpressionValue.class,
+                        ParameterMappingDefaultValue.class, ParameterMappingBlockValue.class });
 		
 		persister.registerBreifMapComplexType("storedQueryConfiguration", StoredQueryConfiguration.class);
 	}

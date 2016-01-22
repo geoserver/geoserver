@@ -72,5 +72,5 @@ Disable the GeoServer web administration interface
 In some circumstances, you might want to completely disable the web administration interface.  There are two ways of doing this:
 
 * Set the Java system property GEOSERVER_CONSOLE_DISABLED to true by adding -DGEOSERVER_CONSOLE_DISABLED=true to your container's JVM options
-* Remove all of the web*-.jar files from WEB-INF/lib
+* Remove all of the gs-web*-.jar files from WEB-INF/lib
 

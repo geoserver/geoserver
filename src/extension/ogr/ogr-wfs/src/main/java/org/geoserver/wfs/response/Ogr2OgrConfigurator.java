@@ -1,24 +1,13 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wfs.response;
 
-import java.io.InputStream;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import org.geoserver.platform.GeoServerExtensions;
-import org.geoserver.platform.GeoServerResourceLoader;
-import org.geoserver.platform.resource.Resource;
-import org.geoserver.platform.resource.Resource.Type;
-import org.geoserver.platform.resource.ResourceListener;
-import org.geoserver.platform.resource.ResourceNotification;
-import org.geotools.util.logging.Logging;
-import org.springframework.context.ApplicationListener;
-import org.springframework.context.event.ContextClosedEvent;
+import org.geoserver.ogr.core.AbstractToolConfigurator;
+import org.geoserver.ogr.core.ToolConfiguration;
+import org.geoserver.ogr.core.ToolWrapperFactory;
 
 import com.thoughtworks.xstream.XStream;
 
@@ -29,90 +18,34 @@ import com.thoughtworks.xstream.XStream;
  * @author Administrator
  *
  */
-public class Ogr2OgrConfigurator implements ApplicationListener<ContextClosedEvent> {
-    private static final Logger LOGGER = Logging.getLogger(Ogr2OgrConfigurator.class);
+public class Ogr2OgrConfigurator extends AbstractToolConfigurator {
 
-    public Ogr2OgrOutputFormat of;
-
-    OGRWrapper wrapper;
-
-    Resource configFile;
-
-    // ConfigurationPoller
-    private ResourceListener listener = new ResourceListener() {
-        public void changed(ResourceNotification notify) {
-            loadConfiguration();
-        }
-    };
-
-    public Ogr2OgrConfigurator(Ogr2OgrOutputFormat format) {
-        this.of = format;
-
-        GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
-        configFile = loader.get("ogr2ogr.xml");
-        loadConfiguration();
-        configFile.addListener( listener );
+    public Ogr2OgrConfigurator(Ogr2OgrOutputFormat format, ToolWrapperFactory wrapperFactory) {
+        super(format, wrapperFactory);
     }
 
-    public void loadConfiguration() {
-        // start with the default configuration, override if we can load the file
-        OgrConfiguration configuration = OgrConfiguration.DEFAULT;
-        try {
-            if (configFile.getType() == Type.RESOURCE) {
-                InputStream in = configFile.in();
-                try {
-                    XStream xstream = buildXStream();
-                    configuration = (OgrConfiguration) xstream.fromXML( in);
-                }
-                finally {
-                    in.close();
-                }
-            }
-        } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Error reading the ogr2ogr.xml configuration file", e);
-        }
+    @Override
+    protected String getConfigurationFile() {
+        return "ogr2ogr.xml";
+    }
 
-        if (configuration == null) {
-            LOGGER.log(Level.INFO,
-                            "Could not find/load the ogr2ogr.xml configuration file, using internal defaults");
-        }
-
-        // let's load the configuration
-        OGRWrapper wrapper = new OGRWrapper(configuration.ogr2ogrLocation, configuration.gdalData);
-        Set<String> supported = wrapper.getSupportedFormats();
-        of.setOgrExecutable(configuration.ogr2ogrLocation);
-        of.setGdalData(configuration.gdalData);
-        of.clearFormats();
-        for (OgrFormat format : configuration.formats) {
-            if (supported.contains(format.ogrFormat)) {
-                of.addFormat(format);
-            } else {
-                LOGGER.severe("Skipping '" + format.formatName + "' as its OGR format '"
-                        + format.ogrFormat + "' is not among the ones supported by "
-                        + configuration.ogr2ogrLocation);
-            }
-        }
+    @Override
+    protected ToolConfiguration getDefaultConfiguration() {
+        return OgrConfiguration.DEFAULT;
     }
 
     /**
-     * Builds and configures the XStream used for de-serializing the configuration
-     * @return
+     * Ensures compatibility with old style configuration files.
      */
-    static XStream buildXStream() {
-        XStream xstream = new XStream();
+    @Override
+    protected XStream buildXStream() {
+        XStream xstream = super.buildXStream();
+        // setup OGR-specific aliases
         xstream.alias("OgrConfiguration", OgrConfiguration.class);
         xstream.alias("Format", OgrFormat.class);
-        xstream.addImplicitCollection(OgrFormat.class, "options", "option", String.class);
-        return xstream;
-    }
+	xstream.allowTypes(new Class[] { OgrConfiguration.class, OgrFormat.class });
 
-    /**
-     * Kill all threads on web app context shutdown to avoid permgen leaks
-     */
-    public void onApplicationEvent(ContextClosedEvent event) {
-        if( configFile != null ){
-            configFile.removeListener(listener);
-        }
+        return xstream;
     }
 
 }

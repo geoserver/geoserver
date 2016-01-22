@@ -40,7 +40,8 @@ public class ScriptTransctionPluginTest extends TestCase {
 
     ScriptManager createScriptMgr() throws Exception {
         ScriptManager mgr = createNiceMock(ScriptManager.class);
-        expect(mgr.getWfsTxRoot()).andReturn(Files.createTempDir()).anyTimes();
+        expect(mgr.wfsTx()).andReturn(org.geoserver.platform.resource.Files.asResource(
+                Files.createTempDir())).anyTimes();
         replay(mgr);
         return mgr;
     }

@@ -1,10 +1,11 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wps.gs.download;
 
+import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -33,6 +34,7 @@ import org.geoserver.wps.ppio.WFSPPIO;
 import org.geoserver.wps.ppio.ZipArchivePPIO;
 import org.geoserver.wps.resource.WPSResourceManager;
 import org.geotools.coverage.grid.GridCoverage2D;
+import org.geotools.coverage.grid.GridEnvelope2D;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.shapefile.ShapefileDataStore;
 import org.geotools.data.simple.SimpleFeatureCollection;
@@ -174,6 +176,9 @@ public class DownloadProcessTest extends WPSTestSupport {
                 CRS.decode("EPSG:32615"), // roiCRS
                 roi, // roi
                 false, // cropToGeometry
+                null, // interpolation
+                null, // targetSizeX
+                null, // targetSizeY
                 new NullProgressListener() // progressListener
                 );
 
@@ -234,6 +239,9 @@ public class DownloadProcessTest extends WPSTestSupport {
                 DefaultGeographicCRS.WGS84, // roiCRS
                 roi, // roi
                 true, // cropToGeometry
+                null, // interpolation
+                null, // targetSizeX
+                null, // targetSizeY
                 new NullProgressListener() // progressListener
                 );
 
@@ -287,6 +295,9 @@ public class DownloadProcessTest extends WPSTestSupport {
                 CRS.decode("EPSG:32615"), // roiCRS
                 roi, // roi
                 false, // cropToGeometry
+                null, // interpolation
+                null, // targetSizeX
+                null, // targetSizeY
                 new NullProgressListener() // progressListener
                 );
 
@@ -310,6 +321,9 @@ public class DownloadProcessTest extends WPSTestSupport {
                 CRS.decode("EPSG:32615"), // roiCRS
                 roi, // roi
                 false, // cropToGeometry
+                null, // interpolation
+                null, // targetSizeX
+                null, // targetSizeY
                 new NullProgressListener() // progressListener
                 );
 
@@ -413,6 +427,9 @@ public class DownloadProcessTest extends WPSTestSupport {
                 CRS.decode("EPSG:32615"), // roiCRS
                 roi, // roi
                 false, // cropToGeometry
+                null, // interpolation
+                null, // targetSizeX
+                null, // targetSizeY
                 new NullProgressListener() // progressListener
                 );
         // Final checks on the result
@@ -460,6 +477,9 @@ public class DownloadProcessTest extends WPSTestSupport {
                 CRS.decode("EPSG:4326", true), // roiCRS
                 roi, // roi
                 true, // cropToGeometry
+                null, // interpolation
+                null, // targetSizeX
+                null, // targetSizeY
                 new NullProgressListener() // progressListener
                 );
 
@@ -504,6 +524,9 @@ public class DownloadProcessTest extends WPSTestSupport {
                 CRS.decode("EPSG:900913", true), // roiCRS
                 roiResampled, // roi
                 true, // cropToGeometry
+                null, // interpolation
+                null, // targetSizeX
+                null, // targetSizeY
                 new NullProgressListener() // progressListener
                 );
         // Final checks on the result
@@ -540,6 +563,183 @@ public class DownloadProcessTest extends WPSTestSupport {
     }
 
     /**
+     * Test download of raster data. The output is scaled to fit exactly the provided size.
+     * 
+     * @throws Exception the exception
+     */
+    @Test
+    public void testDownloadScaledRaster() throws Exception {
+        // Estimator process for checking limits
+        DownloadEstimatorProcess limits = new DownloadEstimatorProcess(
+                new StaticDownloadServiceConfiguration(), getGeoServer());
+        final WPSResourceManager resourceManager = getResourceManager();
+        // Creates the new process for the download
+        DownloadProcess downloadProcess = new DownloadProcess(getGeoServer(), limits,
+                resourceManager);
+
+        ///////////////////////////////////////
+        //      test full coverage           //
+        ///////////////////////////////////////
+
+        // Download the coverage as tiff
+        File rasterZip = downloadProcess.execute(getLayerId(MockData.USA_WORLDIMG), // layerName
+                null, // filter
+                "image/tiff", // outputFormat
+                null, // targetCRS
+                CRS.decode("EPSG:4326", true), // roiCRS
+                null, // roi
+                false, // cropToGeometry
+                null, // interpolation
+                80, // targetSizeX
+                80, // targetSizeY
+                new NullProgressListener() // progressListener
+                );
+
+        // Final checks on the result
+        Assert.assertNotNull(rasterZip);
+        GeoTiffReader reader = null;
+        GridCoverage2D gc = null;
+        try {
+            final File[] tiffFiles = extractTIFFFile(rasterZip);
+            Assert.assertNotNull(tiffFiles);
+            Assert.assertTrue(tiffFiles.length > 0);
+            reader = new GeoTiffReader(tiffFiles[0]);
+            gc = reader.read(null);
+
+            Assert.assertNotNull(gc);
+
+            // check coverage size
+            Rectangle2D originalGridRange = (GridEnvelope2D) reader.getOriginalGridRange();
+            Assert.assertEquals(80, Math.round(originalGridRange.getWidth()));
+            Assert.assertEquals(80, Math.round(originalGridRange.getHeight()));
+
+            // check envelope
+            Assert.assertEquals(-130.8866985,
+                    gc.getEnvelope().getLowerCorner().getOrdinate(0), 1E-6);
+            Assert.assertEquals(48.5552613, gc.getEnvelope().getLowerCorner()
+                    .getOrdinate(1), 1E-6);
+            Assert.assertEquals(-123.8830077,
+                    gc.getEnvelope().getUpperCorner().getOrdinate(0), 1E-6);
+            Assert.assertEquals(54.1420339, gc.getEnvelope().getUpperCorner().getOrdinate(1),
+                    1E-6);
+        } finally {
+            if (gc != null) {
+                CoverageCleanerCallback.disposeCoverage(gc);
+            }
+            if (reader != null) {
+                reader.dispose();
+            }
+
+            // clean up process
+            resourceManager.finished(resourceManager.getExecutionId(true));
+        }
+
+        ///////////////////////////////////////
+        //      test partial input           //
+        ///////////////////////////////////////
+
+        // Download the coverage as tiff
+        File largerZip = downloadProcess.execute(getLayerId(MockData.USA_WORLDIMG), // layerName
+                null, // filter
+                "image/tiff", // outputFormat
+                null, // targetCRS
+                CRS.decode("EPSG:4326", true), // roiCRS
+                null, // roi
+                false, // cropToGeometry
+                null, // interpolation
+                160, // targetSizeX
+                null, // targetSizeY not specified, will be calculated based on targetSizeX and aspect ratio of the original image
+                new NullProgressListener() // progressListener
+                );
+
+        // Final checks on the result
+        Assert.assertNotNull(largerZip);
+        try {
+            final File[] tiffFiles = extractTIFFFile(largerZip);
+            Assert.assertNotNull(tiffFiles);
+            Assert.assertTrue(tiffFiles.length > 0);
+            reader = new GeoTiffReader(tiffFiles[0]);
+            gc = reader.read(null);
+
+            Assert.assertNotNull(gc);
+
+            // check coverage size
+            Rectangle2D originalGridRange = (GridEnvelope2D) reader.getOriginalGridRange();
+            Assert.assertEquals(160, Math.round(originalGridRange.getWidth()));
+            Assert.assertEquals(160, Math.round(originalGridRange.getHeight()));
+        } finally {
+            if (gc != null) {
+                CoverageCleanerCallback.disposeCoverage(gc);
+            }
+            if (reader != null) {
+                reader.dispose();
+            }
+
+            // clean up process
+            resourceManager.finished(resourceManager.getExecutionId(true));
+        }
+
+        //////////////////////////////////
+        //      test with ROI           //
+        //////////////////////////////////
+
+        Polygon roi = (Polygon) new WKTReader2()
+                .read("POLYGON (( -127.57473954542964 54.06575021619523, -130.88669845369998 52.00807146727025, -129.50812897394974 49.85372324691927, -130.5300633861675 49.20465679591609, -129.25955033314003 48.60392508062591, -128.00975216684665 50.986137055052474, -125.8623089087404 48.63154492960477, -123.984159178178 50.68231871628503, -126.91186316993704 52.15307567440926, -125.3444367403868 53.54787804784162, -127.57473954542964 54.06575021619523 ))");
+        roi.setSRID(4326);
+
+        // Download the coverage as tiff
+        File resampledZip = downloadProcess.execute(getLayerId(MockData.USA_WORLDIMG), // layerName
+                null, // filter
+                "image/tiff", // outputFormat
+                null, // targetCRS
+                CRS.decode("EPSG:4326", true), // roiCRS
+                roi, // roi
+                true, // cropToGeometry
+                null, // interpolation
+                80, // targetSizeX
+                80, // targetSizeY
+                new NullProgressListener() // progressListener
+                );
+
+        // Final checks on the result
+        Assert.assertNotNull(resampledZip);
+        try {
+            final File[] tiffFiles = extractTIFFFile(resampledZip);
+            Assert.assertNotNull(tiffFiles);
+            Assert.assertTrue(tiffFiles.length > 0);
+            reader = new GeoTiffReader(tiffFiles[0]);
+            gc = reader.read(null);
+
+            Assert.assertNotNull(gc);
+
+            // check coverage size
+            Rectangle2D originalGridRange = (GridEnvelope2D) reader.getOriginalGridRange();
+            Assert.assertEquals(80, Math.round(originalGridRange.getWidth()));
+            Assert.assertEquals(80, Math.round(originalGridRange.getHeight()));
+
+            // check envelope
+            Assert.assertEquals(-130.88669845369998,
+                    gc.getEnvelope().getLowerCorner().getOrdinate(0), 1E-6);
+            Assert.assertEquals(48.611129008700004, gc.getEnvelope().getLowerCorner()
+                    .getOrdinate(1), 1E-6);
+            Assert.assertEquals(-123.95304462109999,
+                    gc.getEnvelope().getUpperCorner().getOrdinate(0), 1E-6);
+            Assert.assertEquals(54.0861661371, gc.getEnvelope().getUpperCorner().getOrdinate(1),
+                    1E-6);
+        } finally {
+            if (gc != null) {
+                CoverageCleanerCallback.disposeCoverage(gc);
+            }
+            if (reader != null) {
+                reader.dispose();
+            }
+
+            // clean up process
+            resourceManager.finished(resourceManager.getExecutionId(true));
+        }
+    }
+
+    /**
      * PPIO Test.
      * 
      * @throws Exception the exception
@@ -567,6 +767,9 @@ public class DownloadProcessTest extends WPSTestSupport {
                 CRS.decode("EPSG:4326"), // roiCRS
                 roi, // roi
                 true, // cropToGeometry
+                null, // interpolation
+                null, // targetSizeX
+                null, // targetSizeY
                 new NullProgressListener() // progressListener
                 );
 
@@ -620,6 +823,9 @@ public class DownloadProcessTest extends WPSTestSupport {
                     CRS.decode("EPSG:4326", true), // roiCRS
                     roi, // roi
                     true, // cropToGeometry
+                    null, // interpolation
+                    null, // targetSizeX
+                    null, // targetSizeY
                     new NullProgressListener() // progressListener
                     );
             Assert.assertFalse(true);
@@ -663,6 +869,9 @@ public class DownloadProcessTest extends WPSTestSupport {
                     CRS.decode("EPSG:4326", true), // roiCRS
                     roi, // roi
                     true, // cropToGeometry
+                    null, // interpolation
+                    null, // targetSizeX
+                    null, // targetSizeY
                     new NullProgressListener() // progressListener
                     );
 
@@ -672,6 +881,134 @@ public class DownloadProcessTest extends WPSTestSupport {
                     "org.geotools.process.ProcessException: java.io.IOException: Download Exceeded the maximum HARD allowed size!: java.io.IOException: Download Exceeded the maximum HARD allowed size!",
                     e.getMessage() + (e.getCause() != null ? ": " + e.getCause().getMessage() : ""));
         }
+    }
+
+    /**
+     * Test download estimator write limits raster for scaled output. Scaled image should exceed the limits, whereas the original raster should not.
+     * 
+     * @throws Exception the exception
+     */
+    @Test
+    public void testDownloadEstimatorWriteLimitsScaledRaster() throws Exception {
+        // Estimator process for checking limits
+        DownloadEstimatorProcess limits = new DownloadEstimatorProcess(
+                new StaticDownloadServiceConfiguration(new DownloadServiceConfiguration(
+                        DownloadServiceConfiguration.NO_LIMIT,
+                        DownloadServiceConfiguration.NO_LIMIT, 921600, 921600, // 900KB
+                        DownloadServiceConfiguration.DEFAULT_COMPRESSION_LEVEL)), getGeoServer());
+
+        final WPSResourceManager resourceManager = getResourceManager();
+        // Creates the new process for the download
+        DownloadProcess downloadProcess = new DownloadProcess(getGeoServer(), limits,
+                resourceManager);
+
+        File nonScaled = downloadProcess.execute(getLayerId(MockData.USA_WORLDIMG), // layerName
+                null, // filter
+                "image/tiff", // outputFormat
+                null, // targetCRS
+                CRS.decode("EPSG:4326", true), // roiCRS
+                null, // roi
+                false, // cropToGeometry
+                null, // interpolation
+                null, // targetSizeX
+                null, // targetSizeY
+                new NullProgressListener() // progressListener
+                );
+
+        Assert.assertNotNull(nonScaled);
+
+        GeoTiffReader reader = null;
+        GridCoverage2D gc = null;
+        try {
+            final File[] tiffFiles = extractTIFFFile(nonScaled);
+            Assert.assertNotNull(tiffFiles);
+            Assert.assertTrue(tiffFiles.length > 0);
+            reader = new GeoTiffReader(tiffFiles[0]);
+            gc = reader.read(null);
+
+            Assert.assertNotNull(gc);
+
+            // ten times the size of the original coverage
+            int targetSizeX = (int) (gc.getGridGeometry().getGridRange2D().getWidth() * 10);
+            int targetSizeY = (int) (gc.getGridGeometry().getGridRange2D().getHeight() * 10);
+            downloadProcess.execute(getLayerId(MockData.USA_WORLDIMG), // layerName
+                    null, // filter
+                    "image/tiff", // outputFormat
+                    null, // targetCRS
+                    CRS.decode("EPSG:4326", true), // roiCRS
+                    null, // roi
+                    false, // cropToGeometry
+                    null, // interpolation
+                    targetSizeX, // targetSizeX
+                    targetSizeY, // targetSizeY
+                    new NullProgressListener() // progressListener
+                    );
+
+            // exception should have been thrown at this stage
+            Assert.assertFalse(true);
+        } catch (ProcessException e) {
+            Assert.assertEquals(
+                    "org.geotools.process.ProcessException: java.io.IOException: Download Exceeded the maximum HARD allowed size!: java.io.IOException: Download Exceeded the maximum HARD allowed size!",
+                    e.getMessage() + (e.getCause() != null ? ": " + e.getCause().getMessage() : ""));
+        } finally {
+            if (gc != null) {
+                CoverageCleanerCallback.disposeCoverage(gc);
+            }
+            if (reader != null) {
+                reader.dispose();
+            }
+
+            // clean up process
+            resourceManager.finished(resourceManager.getExecutionId(true));
+        }
+    }
+
+    /**
+     * Test download estimator for raster data. The result should exceed the integer limits
+     *
+     * @throws Exception the exception
+     */
+    @Test
+    public void testDownloadEstimatorIntegerMaxValueLimitRaster() throws Exception {
+        // Estimator process for checking limits
+        DownloadEstimatorProcess limits = new DownloadEstimatorProcess(
+                new StaticDownloadServiceConfiguration(new DownloadServiceConfiguration(
+                        DownloadServiceConfiguration.NO_LIMIT,
+                        (long) 1E12, // huge number, way above integer limits
+                        DownloadServiceConfiguration.NO_LIMIT,
+                        DownloadServiceConfiguration.NO_LIMIT,
+                        DownloadServiceConfiguration.DEFAULT_COMPRESSION_LEVEL)), getGeoServer());
+
+        final WPSResourceManager resourceManager = getResourceManager();
+        // Creates the new process for the download
+        DownloadProcess downloadProcess = new DownloadProcess(getGeoServer(), limits,
+                resourceManager);
+        // ROI as polygon
+        Polygon roi = (Polygon) new WKTReader2()
+                .read("POLYGON (( -127.57473954542964 54.06575021619523, -130.8545966116691 52.00807146727025, -129.50812897394974 49.85372324691927, -130.5300633861675 49.20465679591609, -129.25955033314003 48.60392508062591, -128.00975216684665 50.986137055052474, -125.8623089087404 48.63154492960477, -123.984159178178 50.68231871628503, -126.91186316993704 52.15307567440926, -125.3444367403868 53.54787804784162, -127.57473954542964 54.06575021619523 ))");
+        roi.setSRID(4326);
+
+        try {
+            // Download the data with ROI. It should throw an exception
+            downloadProcess.execute(getLayerId(MockData.USA_WORLDIMG), // layerName
+                    null, // filter
+                    "image/tiff", // outputFormat
+                    null, // targetCRS
+                    CRS.decode("EPSG:4326", true), // roiCRS
+                    roi, // roi
+                    false, // cropToGeometry
+                    null, // interpolation
+                    100000, // targetSizeX
+                    60000, // targetSizeY
+                    new NullProgressListener() // progressListener
+                    );
+            Assert.fail();
+        } catch (ProcessException e) {
+            Assert.assertEquals(
+                    "java.lang.IllegalArgumentException: Download Limits Exceeded. Unable to proceed!",
+                    e.getMessage());
+        }
+
     }
 
     /**
@@ -701,6 +1038,9 @@ public class DownloadProcessTest extends WPSTestSupport {
                     CRS.decode("EPSG:32615"), // roiCRS
                     roi, // roi
                     false, // cropToGeometry
+                    null, // interpolation
+                    null, // targetSizeX
+                    null, // targetSizeY
                     new NullProgressListener() // progressListener
                     );
 
@@ -747,6 +1087,9 @@ public class DownloadProcessTest extends WPSTestSupport {
                     CRS.decode("EPSG:4326", true), // roiCRS
                     roi, // roi
                     true, // cropToGeometry
+                    null, // interpolation
+                    null, // targetSizeX
+                    null, // targetSizeY
                     listener // progressListener
                     );
         } catch (Exception e) {
@@ -791,6 +1134,9 @@ public class DownloadProcessTest extends WPSTestSupport {
                     CRS.decode("EPSG:32615"), // roiCRS
                     roi, // roi
                     false, // cropToGeometry
+                    null, // interpolation
+                    null, // targetSizeX
+                    null, // targetSizeY
                     listener // progressListener
                     );
 
@@ -840,6 +1186,9 @@ public class DownloadProcessTest extends WPSTestSupport {
                     CRS.decode("EPSG:32615"), // roiCRS
                     roi, // roi
                     false, // cropToGeometry
+                    null, // interpolation
+                    null, // targetSizeX
+                    null, // targetSizeY
                     progressListener // progressListener
                     );
             Assert.assertTrue("We did not get an exception", false);

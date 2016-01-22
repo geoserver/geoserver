@@ -1,24 +1,43 @@
 <?xml version="1.0"?>
-<!DOCTYPE Configure PUBLIC "-//Mort Bay Consulting//DTD Configure//EN" "http://jetty.mortbay.org/configure.dtd">
+<!DOCTYPE Configure PUBLIC "-//Jetty//Configure//EN" "http://www.eclipse.org/jetty/configure_9_0.dtd">
 
-<!-- =============================================================== -->
-<!-- Configure SSL for the Jetty Server                              -->
-<!-- this configuration file should be used in combination with      -->
-<!-- other configuration files.  e.g.                                -->
-<!--    java -jar start.jar etc/jetty.xml etc/jetty-ssl.xml          -->
-<!-- =============================================================== -->
-<Configure id="Server" class="org.mortbay.jetty.Server">
-  <Call name="addConnector">
-    <Arg>
-      <New class="org.mortbay.jetty.security.SslSocketConnector">
-        <Set name="Port">8443</Set>
-        <Set name="maxIdleTime">30000</Set>
-        <Set name="keystore"><SystemProperty name="jetty.home" default="." />/etc/keystore</Set>
-        <Set name="password">OBF:1vny1zlo1x8e1vnw1vn61x8g1zlu1vn4</Set>
-        <Set name="keyPassword">OBF:1u2u1wml1z7s1z7a1wnl1u2g</Set>
-        <Set name="truststore"><SystemProperty name="jetty.home" default="." />/etc/keystore</Set>
-        <Set name="trustPassword">OBF:1vny1zlo1x8e1vnw1vn61x8g1zlu1vn4</Set>
-      </New>
-    </Arg>
-  </Call>
+<!-- ============================================================= -->
+<!-- Configure a TLS (SSL) Context Factory                         -->
+<!-- This configuration must be used in conjunction with jetty.xml -->
+<!-- and either jetty-https.xml or jetty-spdy.xml (but not both)   -->
+<!-- ============================================================= -->
+<Configure id="sslContextFactory" class="org.eclipse.jetty.util.ssl.SslContextFactory">
+  <Set name="KeyStorePath"><Property name="jetty.base" default="." />/<Property name="jetty.keystore" default="etc/keystore"/></Set>
+  <Set name="KeyStorePassword"><Property name="jetty.keystore.password" default="OBF:1vny1zlo1x8e1vnw1vn61x8g1zlu1vn4"/></Set>
+  <Set name="KeyManagerPassword"><Property name="jetty.keymanager.password" default="OBF:1u2u1wml1z7s1z7a1wnl1u2g"/></Set>
+  <Set name="TrustStorePath"><Property name="jetty.base" default="." />/<Property name="jetty.truststore" default="etc/keystore"/></Set>
+  <Set name="TrustStorePassword"><Property name="jetty.truststore.password" default="OBF:1vny1zlo1x8e1vnw1vn61x8g1zlu1vn4"/></Set>
+  <Set name="EndpointIdentificationAlgorithm"></Set>
+  <Set name="NeedClientAuth"><Property name="jetty.ssl.needClientAuth" default="false"/></Set>
+  <Set name="WantClientAuth"><Property name="jetty.ssl.wantClientAuth" default="false"/></Set>
+  <Set name="ExcludeCipherSuites">
+    <Array type="String">
+      <Item>SSL_RSA_WITH_DES_CBC_SHA</Item>
+      <Item>SSL_DHE_RSA_WITH_DES_CBC_SHA</Item>
+      <Item>SSL_DHE_DSS_WITH_DES_CBC_SHA</Item>
+      <Item>SSL_RSA_EXPORT_WITH_RC4_40_MD5</Item>
+      <Item>SSL_RSA_EXPORT_WITH_DES40_CBC_SHA</Item>
+      <Item>SSL_DHE_RSA_EXPORT_WITH_DES40_CBC_SHA</Item>
+      <Item>SSL_DHE_DSS_EXPORT_WITH_DES40_CBC_SHA</Item>
+    </Array>
+  </Set>
+
+  <!-- =========================================================== -->
+  <!-- Create a TLS specific HttpConfiguration based on the        -->
+  <!-- common HttpConfiguration defined in jetty.xml               -->
+  <!-- Add a SecureRequestCustomizer to extract certificate and    -->
+  <!-- session information                                         -->
+  <!-- =========================================================== -->
+  <New id="sslHttpConfig" class="org.eclipse.jetty.server.HttpConfiguration">
+    <Arg><Ref refid="httpConfig"/></Arg>
+    <Call name="addCustomizer">
+      <Arg><New class="org.eclipse.jetty.server.SecureRequestCustomizer"/></Arg>
+    </Call>
+  </New>
+
 </Configure>

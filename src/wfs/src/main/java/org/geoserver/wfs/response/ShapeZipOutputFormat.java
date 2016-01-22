@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -8,29 +8,25 @@ package org.geoserver.wfs.response;
 import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.net.MalformedURLException;
 import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Set;
 import java.util.SimpleTimeZone;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.ZipOutputStream;
 
@@ -44,7 +40,6 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.config.GeoServer;
 import org.geoserver.data.util.IOUtils;
-import org.geoserver.feature.RetypingFeatureCollection;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
 import org.geoserver.ows.URLMangler.URLType;
@@ -53,44 +48,29 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.template.GeoServerTemplateLoader;
 import org.geoserver.wfs.WFSException;
 import org.geoserver.wfs.WFSGetFeatureOutputFormat;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
 import org.geoserver.wfs.request.GetFeatureRequest;
-import org.geotools.data.DataStore;
 import org.geotools.data.DataUtilities;
-import org.geotools.data.FeatureWriter;
-import org.geotools.data.Transaction;
-import org.geotools.data.shapefile.ShapefileDataStore;
+import org.geotools.data.collection.ListFeatureCollection;
+import org.geotools.data.shapefile.ShapefileDumper;
 import org.geotools.data.simple.SimpleFeatureCollection;
-import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.data.simple.SimpleFeatureSource;
-import org.geotools.data.simple.SimpleFeatureStore;
-import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.referencing.CRS;
 import org.geotools.util.logging.Logging;
 import org.geotools.wfs.v1_1.WFS;
 import org.geotools.wfs.v1_1.WFSConfiguration;
 import org.geotools.xml.Encoder;
-import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.feature.type.AttributeDescriptor;
-import org.opengis.feature.type.GeometryDescriptor;
 import org.opengis.referencing.FactoryException;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryCollection;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.MultiLineString;
-import com.vividsolutions.jts.geom.MultiPoint;
-import com.vividsolutions.jts.geom.MultiPolygon;
-import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jts.geom.Polygon;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
@@ -115,18 +95,10 @@ public class ShapeZipOutputFormat extends WFSGetFeatureOutputFormat implements A
     
     private ApplicationContext applicationContext;
     private Catalog catalog;
-	private GeoServerResourceLoader resourceLoader;
+    private GeoServerResourceLoader resourceLoader;
+    private long maxShpSize = Long.getLong("GS_SHP_MAX_SIZE", Integer.MAX_VALUE);
+    private long maxDbfSize = Long.getLong("GS_DBF_MAX_SIZE", Integer.MAX_VALUE);
     
-    /**
-     * Tuple used when fanning out a collection with generic geometry types to multiple outputs 
-     * @author Administrator
-     *
-     */
-    private static class StoreWriter {
-        DataStore dstore;
-        FeatureWriter<SimpleFeatureType, SimpleFeature> writer;
-    }
-
     /**
      * @deprecated use {@link #ShapeZipOutputFormat(GeoServer)}
      */
@@ -184,7 +156,7 @@ public class ShapeZipOutputFormat extends WFSGetFeatureOutputFormat implements A
     @Override
     public String getAttachmentFileName(Object value, Operation operation) {
         SimpleFeatureCollection fc = (SimpleFeatureCollection) ((FeatureCollectionResponse) value).getFeature().get(0);
-        FeatureTypeInfo ftInfo = getFeatureTypeInfo(fc);
+        FeatureTypeInfo ftInfo = getFeatureTypeInfo(fc.getSchema());
         
         String filename = null;
         GetFeatureRequest request = GetFeatureRequest.adapt(operation.getParameters()[0]);
@@ -213,41 +185,48 @@ public class ShapeZipOutputFormat extends WFSGetFeatureOutputFormat implements A
      * @see WFSGetFeatureOutputFormat#write(Object, OutputStream, Operation)
      */
     public void write(List<SimpleFeatureCollection> collections, Charset charset, OutputStream output, 
-        GetFeatureRequest request) throws IOException, ServiceException {
+        final GetFeatureRequest request) throws IOException, ServiceException {
         //We might get multiple featurecollections in our response (multiple queries?) so we need to
         //write out multiple shapefile sets, one for each query response.
-        File tempDir = IOUtils.createTempDirectory("shpziptemp");
+        final File tempDir = IOUtils.createTempDirectory("shpziptemp");
+        ShapefileDumper dumper = new ShapefileDumper(tempDir) {
+
+            @Override
+            protected String getShapeName(SimpleFeatureType schema, String geometryType) {
+                FeatureTypeInfo ftInfo = getFeatureTypeInfo(schema);
+                String fileName = new FileNameSource(getClass()).getShapeName(ftInfo, geometryType);
+                return fileName;
+
+            }
+            
+            @Override
+            protected void shapefileDumped(String fileName, SimpleFeatureType remappedSchema) throws IOException {
+                try {
+                    changeWKTFormatIfFileFormatIsESRI(tempDir, request, fileName,
+                            remappedSchema);
+                } catch (FactoryException e) {
+                    throw new IOException("Failed to write out the ESRI style prj file", e);
+                }
+
+            }
+        };
+        dumper.setMaxDbfSize(maxDbfSize);
+        dumper.setMaxShpSize(maxShpSize);
+        dumper.setCharset(charset);
+        
         
         // target charset
         
         try {
-           // if an empty result out of feature type with unknown geometry is created, the
+            // if an empty result out of feature type with unknown geometry is created, the
             // zip file will be empty and the zip output stream will break
             boolean shapefileCreated = false;
-            for (SimpleFeatureCollection curCollection : collections) {
-                
-                if(curCollection.getSchema().getGeometryDescriptor() == null) {
-                    throw new WFSException(request, "Cannot write geometryless shapefiles, yet " 
-                            + curCollection.getSchema() + " has no geometry field");
-                } 
-                Class geomType = curCollection.getSchema().getGeometryDescriptor().getType().getBinding();
-                if(GeometryCollection.class.equals(geomType) || Geometry.class.equals(geomType)) {
-                    // in this case we fan out the output to multiple shapefiles
-                    shapefileCreated |= writeCollectionToShapefiles(curCollection, tempDir, charset, request);
-                } else {
-                    // simple case, only one and supported type
-                    writeCollectionToShapefile(curCollection, tempDir, charset, request);
-                    shapefileCreated = true;
-                }
-
+            for (SimpleFeatureCollection collection : collections) {
+                shapefileCreated |= dumper.dump(collection);
             }
             
             // take care of the case the output is completely empty
             if(!shapefileCreated) {
-                SimpleFeatureCollection fc;
-                fc = (SimpleFeatureCollection) collections.get(0);
-                fc = remapCollectionSchema(fc, Point.class);
-                writeCollectionToShapefile(fc, tempDir, charset, request);
                 createEmptyZipWarning(tempDir);
             }
             
@@ -258,6 +237,7 @@ public class ShapeZipOutputFormat extends WFSGetFeatureOutputFormat implements A
             final FilenameFilter filter = new FilenameFilter() {
             
                 public boolean accept(File dir, String name) {
+                    name = name.toLowerCase();
                     return name.endsWith(".shp") || name.endsWith(".shx") || name.endsWith(".dbf")
                            || name.endsWith(".prj") || name.endsWith(".cst") || name.endsWith(".txt");
                 }
@@ -291,7 +271,7 @@ public class ShapeZipOutputFormat extends WFSGetFeatureOutputFormat implements A
         }
         
         // build the target file
-        FeatureTypeInfo ftInfo = getFeatureTypeInfo(fc);
+        FeatureTypeInfo ftInfo = getFeatureTypeInfo(fc.getSchema());
         String fileName = new FileNameSource(getClass()).getRequestDumpName(ftInfo) + ".txt";
         File target = new File(tempDir, fileName);
         
@@ -304,7 +284,7 @@ public class ShapeZipOutputFormat extends WFSGetFeatureOutputFormat implements A
                 String mangledUrl = ResponseUtils.buildURL(baseUrl, path, null, URLType.SERVICE);
                 StringBuilder url = new StringBuilder();
                 String parameters = httpRequest.getQueryString();
-				url.append(mangledUrl).append("?").append(parameters);
+                url.append(mangledUrl).append("?").append(parameters);
                 FileUtils.writeStringToFile(target, url.toString());
             } else {
                 org.geotools.xml.Configuration cfg = null;
@@ -338,70 +318,14 @@ public class ShapeZipOutputFormat extends WFSGetFeatureOutputFormat implements A
         PrintWriter pw = null;
         try {
             pw = new PrintWriter(new File(tempDir, "README.TXT"));
-            pw.print("The query result is empty, and the geometric type of the features is unknwon:" +
-            		"an empty point shapefile has been created to fill the zip file");
+            pw.print("The query result is empty, and the geometric type of the features is unknwon:"
+                    + "an empty point shapefile has been created to fill the zip file");
         } finally {
             pw.close();
         }
     }   
 
-    /**
-     * Write one featurecollection to an appropriately named shapefile.
-     * @param c the featurecollection to write
-     * @param tempDir the temp directory into which it should be written
-     */
-    private void writeCollectionToShapefile(SimpleFeatureCollection c, File tempDir, Charset charset, 
-        GetFeatureRequest request) {
-        FeatureTypeInfo ftInfo = getFeatureTypeInfo(c);
-
-        c = remapCollectionSchema(c, null);
-        
-        SimpleFeatureType schema = c.getSchema();
-        String fileName = new FileNameSource(getClass()).getShapeName(ftInfo, null);
-        if(!fileName.equals(schema.getTypeName())) {
-        	// rename the schema to have the proper output file name
-        	SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
-        	tb.init(c.getSchema());
-        	tb.setName(fileName);
-        	SimpleFeatureType renamed = tb.buildFeatureType();
-        	c = new RetypingFeatureCollection(c, renamed);
-        }
-
-        SimpleFeatureStore fstore = null;
-        ShapefileDataStore dstore = null;
-        try {
-            // create attribute name mappings, to be compatible 
-            // with shapefile constraints:
-            //  - geometry field is always named the_geom
-            //  - field names have a max length of 10
-            Map<String,String> attributeMappings=createAttributeMappings(c.getSchema());
-            // wraps the original collection in a remapping wrapper
-            SimpleFeatureCollection remapped = new RemappingFeatureCollection(c,attributeMappings);
-            SimpleFeatureType remappedSchema=(SimpleFeatureType)remapped.getSchema();
-            dstore = buildStore(tempDir, charset,  remappedSchema); 
-            fstore = (SimpleFeatureStore) dstore.getFeatureSource();
-            // we need retyping too, because the shapefile datastore
-            // could have sorted fields in a different order
-            SimpleFeatureCollection retyped = new RetypingFeatureCollection(remapped, fstore.getSchema());
-            fstore.addFeatures(retyped);
-            
-            changeWKTFormatIfFileFormatIsESRI(tempDir, request, fileName,
-					remappedSchema);
-          
-        } catch (FactoryException fe) {
-        	LOGGER.log(Level.WARNING,
-        			"Error while getting EPSG code from FeatureType", fe);
-        	throw new ServiceException(fe);
-        } catch (IOException ioe) {
-            LOGGER.log(Level.WARNING,
-                "Error while writing featuretype '" + schema.getTypeName() + "' to shapefile.", ioe);
-            throw new ServiceException(ioe);
-        } finally {
-            if(dstore != null) {
-                dstore.dispose();
-            }
-        }
-    }
+    
 
     /**
      * Either retrieves the corresponding FeatureTypeInfo from the catalog or fakes one
@@ -409,17 +333,16 @@ public class ShapeZipOutputFormat extends WFSGetFeatureOutputFormat implements A
      * @param c
      * @return
      */
-    private FeatureTypeInfo getFeatureTypeInfo(SimpleFeatureCollection c) {
-        FeatureTypeInfo ftInfo = catalog.getFeatureTypeByName(c.getSchema().getName());
+    private FeatureTypeInfo getFeatureTypeInfo(SimpleFeatureType schema) {
+        FeatureTypeInfo ftInfo = catalog.getFeatureTypeByName(schema.getName());
         if (ftInfo == null) {
             // SG the fc might have been generated by the WPS therefore there is no such a thing
             // inside the GeoServer catalogue
-            final SimpleFeatureSource featureSource = DataUtilities.source(c);
+            final SimpleFeatureSource featureSource = DataUtilities.source(new ListFeatureCollection(schema));
             final CatalogBuilder catalogBuilder = new CatalogBuilder(catalog);
-            catalogBuilder.setStore(catalogBuilder.buildDataStore(c.getSchema().getName()
+            catalogBuilder.setStore(catalogBuilder.buildDataStore(schema.getName()
                     .getLocalPart()));
             ftInfo = catalogBuilder.buildFeatureType(featureSource);
-
         }
         return ftInfo;
     }
@@ -471,13 +394,13 @@ public class ShapeZipOutputFormat extends WFSGetFeatureOutputFormat implements A
             LOGGER.info("Can't find the EPSG code for the shapefile CRS");
             return;
         }
-        File file = resourceLoader.find("user_projections", "esri.properties");
+        Resource file = resourceLoader.get("user_projections/esri.properties");
 
-        if (file != null && file.exists()) {
+        if (file.getType() == Type.RESOURCE) {
             Properties properties = new Properties();
-            FileInputStream fis = null;
+            InputStream fis = null;
             try {
-            	fis = new FileInputStream(file);
+            	fis = file.in();
             	properties.load(fis);
             } finally {
             	org.apache.commons.io.IOUtils.closeQuietly(fis);
@@ -504,240 +427,6 @@ public class ShapeZipOutputFormat extends WFSGetFeatureOutputFormat implements A
             LOGGER.info("Requested shapefile with ESRI WKT .prj format but the esri.properties file does not exist in the user_projections directory");
         }
     }
-    
-    /**
-     * Takes a feature collection with a generic schema and remaps it to one whose schema
-     * respects the limitations of the shapefile format
-     * @param fc
-     * @param targetGeometry
-     * @return
-     */
-    SimpleFeatureCollection remapCollectionSchema(SimpleFeatureCollection fc, Class targetGeometry) {
-        SimpleFeatureType schema = fc.getSchema();
-        
-        // force the proper output type if necessary
-        if(targetGeometry != null) {
-            SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
-            // force generic geometric attributes to the desired geometry type
-            for (AttributeDescriptor ad : schema.getAttributeDescriptors()) {
-                if(!(ad instanceof GeometryDescriptor)) {
-                    tb.add(ad);
-                } else {
-                    Class geomType = ad.getType().getBinding();
-                    if(geomType.equals(Geometry.class) || geomType.equals(GeometryCollection.class)) {
-                        tb.add(ad.getName().getLocalPart(), targetGeometry, 
-                                ((GeometryDescriptor) ad).getCoordinateReferenceSystem());
-                    } else {
-                        tb.add(ad);
-                    }
-                }
-            } 
-            tb.setName(fc.getSchema().getName());
-            SimpleFeatureType retyped = tb.buildFeatureType();
-            fc = new RetypingFeatureCollection(fc, retyped);
-        }
-        
-        // create attribute name mappings, to be compatible 
-        // with shapefile constraints:
-        //  - geometry field is always named the_geom
-        //  - field names have a max length of 10
-        Map<String,String> attributeMappings = createAttributeMappings(schema);
-        return new RemappingFeatureCollection(fc,attributeMappings);
-    }
-    
-    /**
-     * Maps schema attributes to shapefile-compatible attributes.
-     * 
-     * @param schema
-     * @return
-     */
-    private Map<String, String> createAttributeMappings(SimpleFeatureType schema) {
-        Map<String, String> result = new HashMap<String,String>();
-        
-        // track the field names used and reserve "the_geom" for the geometry
-        Set<String> usedFieldNames = new HashSet<String>(); 
-        usedFieldNames.add("the_geom");
-        
-        // scan and remap
-        for(AttributeDescriptor attDesc : schema.getAttributeDescriptors()) {
-            if(attDesc instanceof GeometryDescriptor) {
-                result.put(attDesc.getLocalName(), "the_geom");
-            } else {
-                String name = attDesc.getLocalName();
-                result.put(attDesc.getLocalName(), getShapeCompatibleName(usedFieldNames, name));
-            }
-        }
-        return result;
-    }
-    
-    /**
-     * If necessary remaps the name so that it's less than 10 chars long and 
-     * @param usedFieldNames
-     * @param name
-     * @return
-     */
-    String getShapeCompatibleName(Set<String> usedFieldNames, String name) {
-        // 10 chars limit
-        if(name.length() > 10)
-            name = name.substring(0,10);
-        
-        // don't use an already assigned name, create a new unique name (it might
-        // conflict even if we did not cut it to 10 chars due to remaps of previous long attributes)
-        int counter=0;
-        while(usedFieldNames.contains(name)) {
-            String postfix=(counter++)+"";
-            name = name.substring(0, name.length() - postfix.length()) + postfix;
-        }
-        usedFieldNames.add(name);
-        
-        return name;
-    }
-       
-    /**
-     * Write one featurecollection to a group of appropriately named shapefiles, one per geometry
-     * type. This method assume the features will have a Geometry type and the actual type of each
-     * feature will be discovered during the scan. Each feature will be routed to a shapefile that
-     * contains only a specific geometry type chosen among point, multipoint, polygons and lines.
-     * @param c the featurecollection to write
-     * @param tempDir the temp directory into which it should be written
-     * @param request 
-     * @return true if a shapefile has been created, false otherwise
-     */
-    private boolean writeCollectionToShapefiles(SimpleFeatureCollection c, File tempDir, Charset charset, 
-        GetFeatureRequest request) {
-        FeatureTypeInfo ftInfo = getFeatureTypeInfo(c);
-        c = remapCollectionSchema(c, null);
-        SimpleFeatureType schema = c.getSchema();
-        
-        boolean shapefileCreated = false;
-        
-        Map<Class, StoreWriter> writers = new HashMap<Class, StoreWriter>();
-        SimpleFeatureIterator it;
-        try {
-            it = c.features(); 
-            while(it.hasNext()) {
-                SimpleFeature f = it.next();
-                
-                if(f.getDefaultGeometry() == null) {
-                    LOGGER.warning("Skipping " + f.getID() + " as its geometry is null");
-                    continue;
-                }
-                
-                FeatureWriter<SimpleFeatureType, SimpleFeature> writer = getFeatureWriter(ftInfo, f, writers, tempDir, charset);
-                SimpleFeature fw = writer.next();
-                
-                // we cannot trust attribute order, shapefile changes the location and name of the geometry
-                for (AttributeDescriptor d : fw.getFeatureType().getAttributeDescriptors()) {
-                    fw.setAttribute(d.getLocalName(), f.getAttribute(d.getLocalName()));
-                }
-                fw.setDefaultGeometry(f.getDefaultGeometry());
-                writer.write();
-                shapefileCreated = true;
-                writer.getFeatureType().getName().getLocalPart();
-                String geometryType = (String) getGeometryType((Geometry)f.getDefaultGeometry()).get("geometryType");
-				String fileName = new FileNameSource(getClass()).getShapeName(ftInfo, geometryType);
-                changeWKTFormatIfFileFormatIsESRI(tempDir, request, fileName,
-                		schema);
-            }
-            
-        } catch (FactoryException fe) {
-        	LOGGER.log(Level.WARNING,
-        			"Error while getting EPSG code from FeatureType", fe);
-        	throw new ServiceException(fe);    
-        } catch (IOException ioe) {
-            LOGGER.log(Level.WARNING,
-                "Error while writing featuretype '" + schema.getTypeName() + "' to shapefile.", ioe);
-            throw new ServiceException(ioe);
-        } finally {
-            // close all writers, dispose all datastores, even if an exception occurs
-            // during closeup (shapefile datastore will have to copy the shapefiles, that migh
-            // fail in many ways)
-            IOException stored = null;
-            for (StoreWriter sw : writers.values()) {
-                try {
-                    sw.writer.close();
-                    sw.dstore.dispose();
-                } catch(IOException e) {
-                    stored = e;
-                }
-            }
-            // if an exception occurred make the world aware of it
-            if(stored != null)
-                throw new ServiceException(stored);
-        }
-        
-        return shapefileCreated;
-    }
-    
-    /**
-     * Returns the feature writer for a specific geometry type, creates a new datastore
-     * and a new writer if there are none so far
-     */
-    private FeatureWriter<SimpleFeatureType, SimpleFeature> getFeatureWriter(FeatureTypeInfo ftInfo, SimpleFeature f, 
-            Map<Class, StoreWriter> writers, File tempDir, Charset charset) throws IOException {
-        // get the target class
-    	Map<String, Object> map = getGeometryType((Geometry) f.getDefaultGeometry());
-        Class<?> target = (Class<?>) map.get("target");
-        String geometryType = (String) map.get("geometryType");
-        
-        // see if we already have a cached writer
-        StoreWriter storeWriter = writers.get(target);
-        if(storeWriter == null) {
-            // retype the schema
-            SimpleFeatureType original = f.getFeatureType();
-            SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
-            for (AttributeDescriptor d : original.getAttributeDescriptors()) {
-                if(Geometry.class.isAssignableFrom(d.getType().getBinding())) {
-                    GeometryDescriptor gd = (GeometryDescriptor) d;
-                    builder.add(gd.getLocalName(), target, gd.getCoordinateReferenceSystem());
-                    builder.setDefaultGeometry(gd.getLocalName());
-                } else {
-                    builder.add(d);
-                }
-            }
-            builder.setNamespaceURI(original.getName().getURI());
-            String fileName = new FileNameSource(getClass()).getShapeName(ftInfo, geometryType);
-            builder.setName(fileName);
-            SimpleFeatureType retyped = builder.buildFeatureType();
-            
-            // create the datastore for the current geom type
-            DataStore dstore = buildStore(tempDir, charset, retyped);
-            
-            // cache it
-            storeWriter = new StoreWriter();
-            storeWriter.dstore = dstore;
-            storeWriter.writer = dstore.getFeatureWriter(retyped.getTypeName(), Transaction.AUTO_COMMIT);
-            writers.put(target, storeWriter);
-        }
-        return storeWriter.writer;
-    }
-    
-    private Map<String, Object> getGeometryType(Geometry g) {
-    	Class<?> target;
-        String geometryType = null;
-    	
-        if(g instanceof Point) {
-            target = Point.class;
-            geometryType = "Point";
-        } else if(g instanceof MultiPoint) {
-            target = MultiPoint.class;
-            geometryType = "MPoint";
-        } else if(g instanceof MultiPolygon || g instanceof Polygon) {
-            target = MultiPolygon.class;
-            geometryType = "Polygon";
-        } else if(g instanceof LineString || g instanceof MultiLineString) {
-            target = MultiLineString.class;
-            geometryType = "Line";
-        } else {
-            throw new RuntimeException("This should never happen, " +
-            		"there's a bug in the SHAPE-ZIP output format. I got a geometry of type " + g.getClass());
-        }
-        Map<String, Object> map = new HashMap<String, Object>();
-        map.put("target", target);
-        map.put("geometryType", geometryType);
-        return map;
-    }
-
 
     /**
      * Looks up the charset parameter, either in the GetFeature request or as a global parameter
@@ -760,57 +449,30 @@ public class ShapeZipOutputFormat extends WFSGetFeatureOutputFormat implements A
         return result != null ? result : Charset.forName("ISO-8859-1");
     }
 
-    /**
-     * Creates a shapefile data store for the specified schema 
-     * @param tempDir
-     * @param charset
-     * @param schema
-     * @return
-     * @throws MalformedURLException
-     * @throws FileNotFoundException
-     * @throws IOException
-     */
-    private ShapefileDataStore buildStore(File tempDir,
-            Charset charset, SimpleFeatureType schema) throws MalformedURLException,
-            FileNotFoundException, IOException {
-        File file = new File(tempDir, schema.getTypeName() + ".shp");
-        ShapefileDataStore sfds = new ShapefileDataStore(file.toURL());
-        
-        // handle shapefile encoding
-        // and dump the charset into a .cst file, for debugging and control purposes
-        // (.cst is not a standard extension)
-        sfds.setCharset(charset);
-        File charsetFile = new File(tempDir, schema.getTypeName()+ ".cst");
-        PrintWriter pw = null;
-        try {
-            pw  = new PrintWriter(charsetFile);
-            pw.write(charset.name());
-        } finally {
-            if(pw != null) pw.close();
-        }
-
-        try {
-            sfds.createSchema(schema);
-        } catch (NullPointerException e) {
-            LOGGER.warning(
-                "Error in shapefile schema. It is possible you don't have a geometry set in the output. \n"
-                + "Please specify a <wfs:PropertyName>geom_column_name</wfs:PropertyName> in the request");
-            throw new ServiceException(
-                "Error in shapefile schema. It is possible you don't have a geometry set in the output.");
-        }
-        
-        try {
-            if(schema.getCoordinateReferenceSystem() != null)
-                sfds.forceSchemaCRS(schema.getCoordinateReferenceSystem());
-        } catch(Exception e) {
-            LOGGER.log(Level.WARNING, "Could not properly create the .prj file", e);
-        }
-
-        return sfds;
-    }
-
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
+    }
+    
+    public long getMaxShpSize() {
+        return maxShpSize;
+    }
+
+    /**
+     * Sets the maximum shapefile size (2GB by default)
+     */
+    public void setMaxShpSize(long maxShapefileSize) {
+        this.maxShpSize = maxShapefileSize;
+    }
+
+    public long getMaxDbfSize() {
+        return maxDbfSize;
+    }
+
+    /**
+     * Sets the maximum shapefile size (2GB by default)
+     */
+    public void setMaxDbfSize(long maxDbfSize) {
+        this.maxDbfSize = maxDbfSize;
     }
     
     

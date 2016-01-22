@@ -10,14 +10,24 @@ import java.io.IOException;
 import java.util.Properties;
 
 import org.apache.commons.io.FileUtils;
+import org.geoserver.jdbcloader.JDBCLoaderPropertiesFactoryBean;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geotools.data.DataUtilities;
-import org.hamcrest.CoreMatchers;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 public class JDBCConfigPropertiesTest {
+    
+    protected static final String CONFIG_FILE = "jdbcconfig.properties";
+            
+    protected static final String CONFIG_SYSPROP = "jdbcconfig.properties";
+    
+    protected static final String JDBCURL_SYSPROP = "jdbcconfig.jdbcurl";
+    
+    protected static final String INITDB_SYSPROP = "jdbcconfig.initdb";
+    
+    protected static final String IMPORT_SYSPROP = "jdbcconfig.import";
 
     GeoServerResourceLoader loader;
 
@@ -64,10 +74,9 @@ public class JDBCConfigPropertiesTest {
     public void testLoadFromFile() throws Exception {
         File configFile = createDummyConfigFile();
 
-        System.setProperty(
-            JDBCConfigPropertiesFactoryBean.CONFIG_SYSPROP, configFile.getAbsolutePath());
+        System.setProperty(CONFIG_SYSPROP, configFile.getAbsolutePath());
         try {
-            JDBCConfigPropertiesFactoryBean factory = new JDBCConfigPropertiesFactoryBean(loader);
+            JDBCLoaderPropertiesFactoryBean factory = new JDBCConfigPropertiesFactoryBean(loader);
             JDBCConfigProperties props = (JDBCConfigProperties) factory.createProperties();
 
             assertEquals("bar", props.getProperty("foo"));
@@ -75,7 +84,7 @@ public class JDBCConfigPropertiesTest {
             assertFalse(props.isImport());
         }
         finally {
-            System.clearProperty(JDBCConfigPropertiesFactoryBean.CONFIG_SYSPROP);
+            System.clearProperty(CONFIG_SYSPROP);
         }
     }
 
@@ -83,10 +92,9 @@ public class JDBCConfigPropertiesTest {
     public void testLoadFromURL() throws Exception {
         File configFile = createDummyConfigFile();
 
-        System.setProperty( JDBCConfigPropertiesFactoryBean.CONFIG_SYSPROP, 
-            DataUtilities.fileToURL(configFile).toString());
+        System.setProperty(CONFIG_SYSPROP, DataUtilities.fileToURL(configFile).toString());
         try {
-            JDBCConfigPropertiesFactoryBean factory = new JDBCConfigPropertiesFactoryBean(loader);
+            JDBCLoaderPropertiesFactoryBean factory = new JDBCConfigPropertiesFactoryBean(loader);
             JDBCConfigProperties props = (JDBCConfigProperties) factory.createProperties();
 
             assertEquals("bar", props.getProperty("foo"));
@@ -94,18 +102,18 @@ public class JDBCConfigPropertiesTest {
             assertFalse(props.isImport());
         }
         finally {
-            System.clearProperty(JDBCConfigPropertiesFactoryBean.CONFIG_SYSPROP);
+            System.clearProperty(CONFIG_SYSPROP);
         }
     }
 
     @Test
     public void testLoadFromSysProps() throws Exception {
-        System.setProperty( JDBCConfigPropertiesFactoryBean.JDBCURL_SYSPROP, "jdbc:h2:nofile");
-        System.setProperty( JDBCConfigPropertiesFactoryBean.INITDB_SYSPROP, "false");
-        System.setProperty( JDBCConfigPropertiesFactoryBean.IMPORT_SYSPROP, "false");
+        System.setProperty(JDBCURL_SYSPROP, "jdbc:h2:nofile");
+        System.setProperty(INITDB_SYSPROP, "false");
+        System.setProperty(IMPORT_SYSPROP, "false");
         
         try {
-            JDBCConfigPropertiesFactoryBean factory = new JDBCConfigPropertiesFactoryBean(loader);
+            JDBCLoaderPropertiesFactoryBean factory = new JDBCConfigPropertiesFactoryBean(loader);
             JDBCConfigProperties props = (JDBCConfigProperties) factory.createProperties();
     
             assertEquals("jdbc:h2:nofile", props.getJdbcUrl().get());
@@ -113,9 +121,9 @@ public class JDBCConfigPropertiesTest {
             assertFalse(props.isImport());
         }
         finally {
-            System.clearProperty( JDBCConfigPropertiesFactoryBean.JDBCURL_SYSPROP);
-            System.clearProperty( JDBCConfigPropertiesFactoryBean.INITDB_SYSPROP);
-            System.clearProperty( JDBCConfigPropertiesFactoryBean.IMPORT_SYSPROP);
+            System.clearProperty(JDBCURL_SYSPROP);
+            System.clearProperty(INITDB_SYSPROP);
+            System.clearProperty(IMPORT_SYSPROP);
         }
     }
 

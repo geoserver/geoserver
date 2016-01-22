@@ -25,6 +25,10 @@ import org.geoserver.cluster.JMSPublisher;
 import org.geoserver.cluster.impl.handlers.DocumentFile;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Paths;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resource.Type;
+import org.geoserver.platform.resource.Resources;
 import org.geotools.util.logging.Logging;
 
 /**
@@ -78,12 +82,11 @@ public class JMSCatalogListener extends JMSAbstractGeoServerProducer implements 
             if (info instanceof StyleInfo) {
                 final StyleInfo sInfo=((StyleInfo) info);
                 WorkspaceInfo wInfo =sInfo.getWorkspace();
-                File styleFile=null;
+                Resource styleFile=null;
                 
                 // make sure we work fine with workspace specific styles
                 if(wInfo!=null){
-                    styleFile=new File(
-                            loader.getBaseDirectory()+
+                    styleFile=loader.get(
                             File.separator+
                             "workspaces"+
                             File.separator+
@@ -94,10 +97,10 @@ public class JMSCatalogListener extends JMSAbstractGeoServerProducer implements 
                             sInfo.getFilename());
                     
                 }else{
-                    styleFile=loader.find("styles/" + sInfo.getFilename());
+                    styleFile=loader.get("styles/" + sInfo.getFilename());
                 }
                 // checks
-                if(!styleFile.exists()||!styleFile.canRead()||!styleFile.isFile()){
+                if(!Resources.exists(styleFile)||!Resources.canRead(styleFile)||styleFile.getType() == Type.RESOURCE){
                     throw new IllegalStateException("Unable to find style for event: "+sInfo.toString());
                 }
 
@@ -165,29 +168,20 @@ public class JMSCatalogListener extends JMSAbstractGeoServerProducer implements 
 
         try {
             // check if we may publish also the file
-        	GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
+            GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
             final CatalogInfo info = event.getSource();
             if (info instanceof StyleInfo) {
                 // build local datadir file style path
-                final String canonicalStyleFileName = File.separator + "styles" + File.separator
-                        + ((StyleInfo) info).getFilename();
-                
-                File styleFile = new File(loader.getBaseDirectory().getCanonicalPath(), 
-                		canonicalStyleFileName);
+                Resource styleFile = loader.get("styles").get(((StyleInfo) info).getFilename());
 
-                if ( !styleFile.exists() ) {
-                	final String workspace = ((StyleInfo) info).getWorkspace().getName();
-                	final String styleFileName = File.separator + "workspaces" +
-                			File.separator + workspace +
-                	        File.separator + "styles" + File.separator + 
-                	        ((StyleInfo) info).getFilename();
-                	styleFile =  new File(loader.getBaseDirectory().getCanonicalPath(), 
-                			styleFileName);
+                if (!Resources.exists(styleFile)) {
+                    final String workspace = ((StyleInfo) info).getWorkspace().getName();
+                    styleFile = loader.get(Paths.path("workspaces", workspace, "styles",
+                            ((StyleInfo) info).getFilename()));
                 }
-                
+
                 // publish the style xml document
-                jmsPublisher.publish(getTopic(), getJmsTemplate(), options, new DocumentFile(
-                        styleFile));
+                jmsPublisher.publish(getTopic(), getJmsTemplate(), options, new DocumentFile(styleFile));
             }
 
             // propagate the event

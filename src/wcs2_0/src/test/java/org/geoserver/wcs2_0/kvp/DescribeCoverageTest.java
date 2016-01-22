@@ -35,6 +35,8 @@ public class DescribeCoverageTest extends WCSTestSupport {
     
     protected static QName MULTIDIM = new QName(MockData.SF_URI, "multidim", MockData.SF_PREFIX);
     
+    protected static QName PK50095 = new QName(MockData.SF_URI, "pk50095", MockData.SF_PREFIX);
+    
     @Before
     public void clearDimensions() {
         clearDimensions(getLayerId(WATTEMP));
@@ -50,6 +52,7 @@ public class DescribeCoverageTest extends WCSTestSupport {
         testData.addRasterLayer(WATTEMP, "watertemp.zip", null, null, SystemTestData.class, getCatalog());
         testData.addRasterLayer(TIMERANGES, "timeranges.zip", null, null, SystemTestData.class, getCatalog());
         testData.addRasterLayer(MULTIDIM, "multidim.zip", null, null, SystemTestData.class, getCatalog());
+        testData.addRasterLayer(PK50095, "wi-utm.zip", null, null, SystemTestData.class, getCatalog());
     }
 
     @Test
@@ -77,6 +80,20 @@ public class DescribeCoverageTest extends WCSTestSupport {
         assertXpathEvaluatesTo("1", "count(//wcs:CoverageDescription/gmlcov:rangeType/swe:DataRecord/swe:field)", dom);
         assertXpathEvaluatesTo("rain", "//wcs:CoverageDescription/gmlcov:rangeType//swe:DataRecord/swe:field/@name", dom);
         assertXpathEvaluatesTo("mm", "//wcs:CoverageDescription/gmlcov:rangeType/swe:DataRecord/swe:field/swe:Quantity/swe:uom/@code", dom);
+        assertXpathEvaluatesTo("text/plain", "//wcs:CoverageDescriptions//wcs:CoverageDescription[1]//wcs:ServiceParameters//wcs:nativeFormat", dom);
+    }
+    
+    @Test
+    public void testAxisOrderUtm() throws Exception {
+        Document dom = getAsDOM(DESCRIBE_URL + "&coverageId=sf__pk50095");
+        assertNotNull(dom);
+        print(dom, System.out);
+        
+        checkValidationErrors(dom, WCS20_SCHEMA);
+        assertXpathEvaluatesTo("347660.5162105911 5191763.949937257", "//gml:boundedBy/gml:Envelope/gml:lowerCorner", dom);
+        assertXpathEvaluatesTo("353440.1129425911 5196950.767517257", "//gml:boundedBy/gml:Envelope/gml:upperCorner", dom);
+        assertXpathEvaluatesTo("+1 +2", "//gml:coverageFunction/gml:GridFunction/gml:sequenceRule/@axisOrder", dom);
+        assertXpathEvaluatesTo("347671.1015525911 5196940.182175256", "//gml:domainSet/gml:RectifiedGrid/gml:origin/gml:Point/gml:pos", dom);
     }
 
     @Test
@@ -218,7 +235,7 @@ public class DescribeCoverageTest extends WCSTestSupport {
         assertXpathEvaluatesTo("1", "count(//wcs:CoverageDescription)", dom);        
         assertXpathEvaluatesTo("sf__rain", "//wcs:CoverageDescriptions/wcs:CoverageDescription[1]/@gml:id", dom);
         assertXpathEvaluatesTo("1", "count(//wcs:CoverageDescription[1]//gmlcov:rangeType//swe:DataRecord//swe:field)", dom);
-        assertXpathEvaluatesTo("image/tiff", "//wcs:CoverageDescriptions/wcs:CoverageDescription[1]//wcs:ServiceParameters//wcs:nativeFormat", dom);
+        assertXpathEvaluatesTo("text/plain", "//wcs:CoverageDescriptions/wcs:CoverageDescription[1]//wcs:ServiceParameters//wcs:nativeFormat", dom);
     }
     
     @Test

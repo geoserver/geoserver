@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -9,6 +9,7 @@ import java.io.InputStream;
 
 import javax.xml.namespace.QName;
 
+import org.geoserver.config.util.SecureXStream;
 import org.xml.sax.ContentHandler;
 
 import com.thoughtworks.xstream.XStream;
@@ -47,12 +48,13 @@ public class XStreamPPIO extends XMLPPIO {
      * 
      * @param xstream
      */
-    protected XStream buildXStream() {
-        XStream stream = new XStream() {
+    protected SecureXStream buildXStream() {
+        SecureXStream stream = new SecureXStream() {
             protected MapperWrapper wrapMapper(MapperWrapper next) {
                 return new UppercaseTagMapper(new PackageStrippingMapper(next));
             };
         };
+
         return stream;
     }
 

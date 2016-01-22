@@ -331,6 +331,7 @@
 	<!-- xml request readers -->
     <bean id="wmsCapabilitiesXmlReader" 
     	class="org.geoserver.wms.capabilities.CapabilitiesXmlReader">
+      <constructor-arg ref="entityResolverProvider" />
     </bean>
     
      <bean id="getMapXmlReader" 
@@ -703,7 +704,9 @@
   <bean id="rasterLayerIdentifier" class="org.geoserver.wms.featureinfo.RasterLayerIdentifier">
       <constructor-arg ref="wms"/>
   </bean>
-  <bean id="wmsLayerIdentifier" class="org.geoserver.wms.featureinfo.WMSLayerIdentifier"/>
+  <bean id="wmsLayerIdentifier" class="org.geoserver.wms.featureinfo.WMSLayerIdentifier">
+      <constructor-arg ref="entityResolverProvider" />
+  </bean>
     
     
   <!-- Dimension default value factory -->  
@@ -762,6 +765,10 @@
   <bean id="legendSample" class="org.geoserver.wms.capabilities.LegendSampleImpl" lazy-init="false">
     <constructor-arg ref="catalog"/>
     <constructor-arg ref="resourceLoader"/>
+  </bean>
+  
+  <bean id="UTFGridMapProducer" class="org.geoserver.wms.utfgrid.UTFGridMapOutputFormat">
+    <constructor-arg ref="wms"/>
   </bean>
   
 </beans>

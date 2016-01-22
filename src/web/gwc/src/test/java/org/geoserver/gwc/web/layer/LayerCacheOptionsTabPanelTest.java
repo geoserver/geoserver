@@ -184,16 +184,25 @@ public class LayerCacheOptionsTabPanelTest extends GeoServerWicketTestSupport {
         }));
 
         tester.assertComponent("form:panel", LayerCacheOptionsTabPanel.class);
-
+        
+        tester.isVisible("form:panel:tileLayerEditor:container:configs");
+        
         // Avoid saving the Layer
         FormTester formTester = tester.newFormTester("form");
         formTester.setValue("panel:tileLayerEditor:createTileLayer", false);
 
-        formTester.submit();
+        tester.executeAjaxEvent("form:panel:tileLayerEditor:createTileLayer", "onchange");
+        
 
+        tester.isInvisible("form:panel:tileLayerEditor:container:configs");
+        
         LayerCacheOptionsTabPanel panel = (LayerCacheOptionsTabPanel) tester
                 .getComponentFromLastRenderedPage("form:panel");
-
+        
+        formTester.getForm().onFormSubmitted(); // This is an utter hack but is the only way I could
+                                                // figure out to exercise the validators the same 
+                                                // way that happens in a live GeoServer
+        
         panel.save();
 
         // Ensure the GeoServerTileLayerInfoModel is updated

@@ -10,9 +10,9 @@ The platform-independent binary is a GeoServer web application bundled inside `J
 Installation
 ------------
 
-#. Make sure you have a Java Runtime Environment (JRE) installed on your system. GeoServer requires a **Java 7** environment. The Oracle JRE is preferred, but OpenJDK has been known to work adequately. You can `download JRE 7 from Oracle <http://www.oracle.com/technetwork/java/javase/downloads/>`_.
+#. Make sure you have a Java Runtime Environment (JRE) installed on your system. GeoServer requires a **Java 8** environment. The Oracle JRE is preferred, but OpenJDK has been known to work adequately. You can `download JRE 8 from Oracle <http://www.oracle.com/technetwork/java/javase/downloads/>`_.
 
-   .. note:: Java 8 is not currently supported.
+   .. note:: Java 9 is not currently supported.
 
 #. Select the version of GeoServer that you wish to download.  If you're not sure, select `Stable <http://geoserver.org/release/stable>`_.  
 
@@ -26,29 +26,14 @@ Installation
 
     .. code-block:: bash
     
-       echo "export GEOSERVER_HOME=/usr/local/geoserver" >> ~/.profile
+       echo "export GEOSERVER_HOME=/usr/share/geoserver" >> ~/.profile
        . ~/.profile
 
 #. Make yourself the owner of the ``geoserver`` folder.  Type the following command in the terminal window, replacing ``USER_NAME`` with your own username :
 
     .. code-block:: bash
 
-       sudo chown -R USER_NAME /usr/local/geoserver/
-
-#. Add an environment variable to save the location of GeoServer by typing the following command:
-
-   .. code-block:: bash
-    
-      echo "export GEOSERVER_HOME=/usr/local/geoserver" >> ~/.profile
-      . ~/.profile
-
-#. Make yourself the owner of the ``geoserver`` folder, by typing the following command:
-
-    .. code-block:: bash
-
-       sudo chown -R <USERNAME> /usr/local/geoserver/
-
-   where ``USER_NAME`` is your user name 
+       sudo chown -R USER_NAME /usr/share/geoserver/
 
 #. Start GeoServer by changing into the directory ``geoserver/bin`` and executing the ``startup.sh`` script:
 

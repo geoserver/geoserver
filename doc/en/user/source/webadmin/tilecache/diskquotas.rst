@@ -20,11 +20,6 @@ Enable disk quota
 
 When enabled, the disk quota will be set according to the options listed below. The setting is disabled by default.
 
-Disk block size
----------------
-
-This setting determines how the tile cache calculates disk usage. The value for this setting should be equivalent to the disk block size of the storage medium where the cache is located. The default block size is **4096 bytes**.
-
 Disk quota check frequency
 --------------------------
 

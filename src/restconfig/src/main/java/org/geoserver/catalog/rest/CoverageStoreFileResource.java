@@ -7,7 +7,9 @@ package org.geoserver.catalog.rest;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +20,9 @@ import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.SingleGridCoverage2DReader;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resources;
+import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.rest.RestletException;
 import org.geoserver.rest.format.DataFormat;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
@@ -85,7 +90,10 @@ public class CoverageStoreFileResource extends StoreFileResource {
             GridCoverageReader reader = info.getGridCoverageReader(null, null);
             StructuredGridCoverage2DReader sr = (StructuredGridCoverage2DReader) reader;
             // This method returns a List of the harvested files.
-            final List<File> uploadedFiles = doFileUpload(method, workspace, coveragestore, format);
+            final List<File> uploadedFiles = new ArrayList<File>();
+            for (Resource res : doFileUpload(method, workspace, coveragestore, format)) {
+                uploadedFiles.add(Resources.find(res));
+            }
             // File Harvesting
             sr.harvest(null, uploadedFiles, GeoTools.getDefaultHints());
         } catch(IOException e) {
@@ -104,7 +112,7 @@ public class CoverageStoreFileResource extends StoreFileResource {
         String method = getUploadMethod(request);
         
         // doFileUpload returns a List of File but in the case of a Put operation the list contains only a value
-        final File uploadedFile = doFileUpload(method, workspace, coveragestore, format).get(0);
+        final Resource uploadedFile = doFileUpload(method, workspace, coveragestore, format).get(0);
         
         // /////////////////////////////////////////////////////////////////////
         //
@@ -136,36 +144,41 @@ public class CoverageStoreFileResource extends StoreFileResource {
         }
         
         info.setType(coverageFormat.getName());
-        URL uploadedFileURL = DataUtilities.fileToURL(uploadedFile);
+        URL uploadedFileURL = DataUtilities.fileToURL(Resources.find(uploadedFile));
         if (isInlineUpload(method)) {
             //TODO: create a method to figure out the relative url instead of making assumption
             // about the structure
             
-            String defaultRoot = File.separator + "data" + File.separator + workspace + File.separator + coveragestore;
+            String defaultRoot = "/data/" + workspace + "/" + coveragestore;
             
-            StringBuilder fileBuilder = new StringBuilder(uploadedFile.getAbsolutePath());
+            StringBuilder urlBuilder;
+            try {
+                urlBuilder = new StringBuilder(Resources.find(uploadedFile).toURI().toURL().toString());
+            } catch (MalformedURLException e) {
+                throw new RestletException("Error create building coverage URL", Status.SERVER_ERROR_INTERNAL, e);
+            }
             
             String url;
-            if(uploadedFile.isDirectory() && uploadedFile.getName().equals(coveragestore)) {
+            if(uploadedFile.getType() == Type.DIRECTORY && uploadedFile.name().equals(coveragestore)) {
 
-                int def = fileBuilder.indexOf(defaultRoot);
+                int def = urlBuilder.indexOf(defaultRoot);
                 
                 if(def >= 0){
                     url = "file:data/" + workspace + "/" + coveragestore;
                 }else{
-                    url = fileBuilder.toString();
+                    url = urlBuilder.toString();
                 }
             } else {
 
-                int def = fileBuilder.indexOf(defaultRoot);
+                int def = urlBuilder.indexOf(defaultRoot);
                 
                 if(def >= 0){
                     
-                    String itemPath = fileBuilder.substring(def + defaultRoot.length());
+                    String itemPath = urlBuilder.substring(def + defaultRoot.length());
                     
-                    url = "file:data/" + workspace + "/" + coveragestore + "/" + itemPath;
+                    url = "file:data/" + workspace + "/" + coveragestore + itemPath;
                 }else{
-                    url = fileBuilder.toString();
+                    url = urlBuilder.toString();
                 }
             }
             if (url.contains("+")) {
@@ -206,7 +219,7 @@ public class CoverageStoreFileResource extends StoreFileResource {
         GridCoverage2DReader reader = null;
         try {
             reader = 
-                (GridCoverage2DReader) ((AbstractGridFormat) coverageFormat).getReader(DataUtilities.fileToURL(uploadedFile));
+                (GridCoverage2DReader) ((AbstractGridFormat) coverageFormat).getReader(uploadedFileURL);
             if ( reader == null ) {
                 throw new RestletException( "Could not aquire reader for coverage.", Status.SERVER_ERROR_INTERNAL);
             }
@@ -365,19 +378,19 @@ public class CoverageStoreFileResource extends StoreFileResource {
         }
     }
 
-    protected File findPrimaryFile(File directory, String format) {
+    protected Resource findPrimaryFile(Resource directory, String format) {
         // first check if the format accepts a whole directory
-        if ( ((AbstractGridFormat)coverageFormat).accepts(directory) ) {
+        if ( ((AbstractGridFormat)coverageFormat).accepts(directory.dir()) ) {
             return directory;
         }
-        for ( File f : directory.listFiles() ) {
-            if(f.isDirectory()){
-                File result = findPrimaryFile(f,format);
+        for ( Resource f : directory.list() ) {
+            if(f.getType() == Type.DIRECTORY){
+                Resource result = findPrimaryFile(f,format);
                 if(result!=null){
                     return result;
                 }
             }else{
-                if ( ((AbstractGridFormat)coverageFormat).accepts(f) ) {
+                if ( ((AbstractGridFormat)coverageFormat).accepts(f.file()) ) {
                     return f;
                 }
             }

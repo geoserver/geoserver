@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -21,19 +21,24 @@ import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.catalog.AttributionInfo;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.DataLinkInfo;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.Keyword;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.MetadataLinkInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.ContactInfo;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.wfs.json.JSONType;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSTestSupport;
+import org.geotools.referencing.CRS;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -50,8 +55,7 @@ public class CapabilitiesTest extends WMSTestSupport {
         super.setUpTestData(testData);
         testData.setUpDefaultRasterLayers();        
     }
-    
-    
+
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
@@ -65,8 +69,17 @@ public class CapabilitiesTest extends WMSTestSupport {
         global.getSettings().setProxyBaseUrl("src/test/resources/geoserver");
         getGeoServer().save(global);
         
+        // add a workspace qualified style
+        WorkspaceInfo ws = catalog.getWorkspaceByName(MockData.CITE_PREFIX);
+        testData.addStyle(ws, "Lakes", "Lakes.sld", SystemTestData.class, catalog);
+        testData.addStyle(ws, "tiger_roads", "tiger_roads.sld", SystemTestData.class, catalog);
+        StyleInfo lakesStyle = catalog.getStyleByName(ws, "Lakes");
+        LayerInfo lakesLayer = catalog.getLayerByName(MockData.LAKES.getLocalPart());
+        lakesLayer.setDefaultStyle(lakesStyle);
+        StyleInfo tigerRoadsStyle = catalog.getStyleByName(ws, "tiger_roads");
+        lakesLayer.getStyles().add(tigerRoadsStyle);
+        catalog.save(lakesLayer);
     }
-
 
 
     @Test
@@ -251,6 +264,41 @@ public class CapabilitiesTest extends WMSTestSupport {
         assertXpathEvaluatesTo("1", "count(//Attribution/Title)", doc);
         assertXpathEvaluatesTo("1", "count(//Attribution/LogoURL)", doc);
     }
+    
+
+    @Test
+    public void testLayerGroup() throws Exception {
+        LayerInfo points = getCatalog().getLayerByName(MockData.POINTS.getLocalPart());
+        CatalogBuilder builder = new CatalogBuilder(getCatalog());        
+        
+        //create layergr
+        LayerGroupInfo lg = getCatalog().getFactory().createLayerGroup();
+        //attribution
+        lg.setName("MyLayerGroup");
+        lg.getLayers().add(points);
+        builder.calculateLayerGroupBounds(lg, CRS.decode("EPSG:4326"));
+        lg.setAttribution(getCatalog().getFactory().createAttribution());
+        lg.getAttribution().setTitle("My Attribution");
+        MetadataLinkInfo info = getCatalog().getFactory().createMetadataLink();
+        info.setType("text/html");
+        info.setMetadataType("FGDC");
+        info.setContent("http://my/metadata/link");
+        lg.getMetadataLinks().add(info);
+        getCatalog().add(lg);
+        
+        try {
+            System.out.println(getAsString("wms?service=WMS&request=getCapabilities&version=1.1.1"));
+            Document doc = getAsDOM("wms?service=WMS&request=getCapabilities&version=1.1.1", true);
+            //print(doc);
+            assertXpathEvaluatesTo("1", "count(//Layer[Name='MyLayerGroup']/Attribution)", doc);
+            assertXpathEvaluatesTo("My Attribution", "//Layer[Name='MyLayerGroup']/Attribution/Title", doc);
+            assertXpathEvaluatesTo("1", "count(//Layer[Name='MyLayerGroup']/MetadataURL)", doc);
+            assertXpathEvaluatesTo("http://my/metadata/link", "//Layer[Name='MyLayerGroup']/MetadataURL/OnlineResource/@xlink:href", doc);
+        } finally {
+            //clean up
+            getCatalog().remove(lg);
+        }
+    }
 
     @Test
     public void testAlternateStyles() throws Exception {
@@ -402,7 +450,21 @@ public class CapabilitiesTest extends WMSTestSupport {
         assertTrue(xpath.evaluate("//Exception/Format[1]", doc).equals("application/vnd.ogc.se_xml"));
         assertTrue(xpath.evaluate("//Exception/Format[2]", doc).equals("application/vnd.ogc.se_inimage"));
         assertTrue(xpath.evaluate("//Exception/Format[3]", doc).equals("application/vnd.ogc.se_blank"));
-        assertTrue(xpath.getMatchingNodes("//Exception/Format", doc).getLength() == 3);
+        assertTrue(xpath.evaluate("//Exception/Format[4]", doc).equals("application/json"));
+        assertTrue(xpath.getMatchingNodes("//Exception/Format", doc).getLength() >= 4);
+
+        boolean jsonpOriginal = JSONType.isJsonpEnabled();
+        try {
+            JSONType.setJsonpEnabled(true);
+            doc = getAsDOM("wms?service=WMS&request=getCapabilities&version=1.1.1", true);
+            assertTrue(xpath.evaluate("//Exception/Format[5]", doc).equals("text/javascript"));
+            assertTrue(xpath.getMatchingNodes("//Exception/Format", doc).getLength() == 5);
+            JSONType.setJsonpEnabled(false);
+            doc = getAsDOM("wms?service=WMS&request=getCapabilities&version=1.1.1", true);
+            assertTrue(xpath.getMatchingNodes("//Exception/Format", doc).getLength() == 4);
+        } finally {
+            JSONType.setJsonpEnabled(jsonpOriginal);
+        }
     }
 
     @org.junit.Test 
@@ -452,4 +514,26 @@ public class CapabilitiesTest extends WMSTestSupport {
         
     }
     
+    @Test
+    public void testStyleWorkspaceQualified() throws Exception {
+        Document doc = getAsDOM("wms?service=WMS&request=getCapabilities&version=1.1.1", true);
+
+        // check the style name got prefixed too
+        assertXpathEvaluatesTo("cite:Lakes", "//Layer[Name='cite:Lakes']/Style[1]/Name", doc);
+        assertXpathEvaluatesTo("cite:tiger_roads", "//Layer[Name='cite:Lakes']/Style[2]/Name", doc);
+    }
+
+    // GEOS-7217: Make sure Styles are valid to DTD
+    @Test
+    public void testStyleElementsValidity() throws Exception {
+        Document doc = getAsDOM("wms?service=WMS&request=getCapabilities&version=1.1.1", true);
+
+        assertXpathExists("//Layer[Name='cite:Lakes']/Style[1]/Name", doc);
+        assertXpathExists("//Layer[Name='cite:Lakes']/Style[1]/Title", doc);
+        assertXpathExists("//Layer[Name='cite:Lakes']/Style[1]/LegendURL", doc);
+        
+        assertXpathExists("//Layer[Name='cite:Lakes']/Style[2]/Name", doc);
+        assertXpathExists("//Layer[Name='cite:Lakes']/Style[2]/Title", doc);
+        assertXpathExists("//Layer[Name='cite:Lakes']/Style[2]/LegendURL", doc);
+    }
 }

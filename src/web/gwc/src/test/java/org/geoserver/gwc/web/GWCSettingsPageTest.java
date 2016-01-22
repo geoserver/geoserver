@@ -5,7 +5,6 @@
  */
 package org.geoserver.gwc.web;
 
-import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Sets.newHashSet;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -13,6 +12,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -20,6 +20,7 @@ import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.util.tester.FormTester;
 import org.apache.wicket.util.tester.Result;
+import org.geoserver.catalog.PublishedType;
 import org.geoserver.gwc.ConfigurableLockProvider;
 import org.geoserver.gwc.GWC;
 import org.geoserver.gwc.config.GWCConfig;
@@ -157,18 +158,19 @@ public class GWCSettingsPageTest extends GeoServerWicketTestSupport {
         // print(page, true, true);
         tester.assertRenderedPage(GWCSettingsPage.class);
 
-        final List<String> formats = newArrayList("image/png", "image/png8", "image/jpeg",
-                "image/gif");
+        final List<String> vectorFormats = new ArrayList<>(GWC.getAdvertisedCachedFormats(PublishedType.VECTOR));
+        final List<String> rasterFormats = new ArrayList<>(GWC.getAdvertisedCachedFormats(PublishedType.RASTER));
+        final List<String> groupFormats = new ArrayList<>(GWC.getAdvertisedCachedFormats(PublishedType.GROUP));
 
         tester.assertListView(
                 "form:cachingOptionsPanel:container:configs:vectorFormatsGroup:vectorFromats",
-                formats);
+                vectorFormats);
         tester.assertListView(
                 "form:cachingOptionsPanel:container:configs:rasterFormatsGroup:rasterFromats",
-                formats);
+                rasterFormats);
         tester.assertListView(
                 "form:cachingOptionsPanel:container:configs:otherFormatsGroup:otherFromats",
-                formats);
+                groupFormats);
 
         FormTester form = tester.newFormTester("form");
         final boolean replace = true;// tell selectMultiple to first set all options to false
@@ -183,10 +185,12 @@ public class GWCSettingsPageTest extends GeoServerWicketTestSupport {
 
         tester.assertRenderedPage(GeoServerHomePage.class);
 
-        Set<String> expected = newHashSet(formats.get(1), formats.get(3));
-        assertEquals(expected, gwc.getConfig().getDefaultVectorCacheFormats());
-        assertEquals(expected, gwc.getConfig().getDefaultCoverageCacheFormats());
-        assertEquals(expected, gwc.getConfig().getDefaultOtherCacheFormats());
+        assertEquals(newHashSet(vectorFormats.get(1), vectorFormats.get(3)), gwc.getConfig()
+                .getDefaultVectorCacheFormats());
+        assertEquals(newHashSet(rasterFormats.get(1), rasterFormats.get(3)), gwc.getConfig()
+                .getDefaultCoverageCacheFormats());
+        assertEquals(newHashSet(groupFormats.get(1), groupFormats.get(3)), gwc.getConfig()
+                .getDefaultOtherCacheFormats());
     }
 
     private void testEditCheckboxOption(final String pagePath, final String formPath,
@@ -302,7 +306,7 @@ public class GWCSettingsPageTest extends GeoServerWicketTestSupport {
         tester.assertRenderedPage(GWCSettingsPage.class);
         // Ensure the component blobstores belongs to the BlobStorePanel class
         tester.assertComponent("form:cachingOptionsPanel:container:configs:blobstores",
-                BlobStorePanel.class);
+                InMemoryBlobStorePanel.class);
 
         // Selection of the form tests
         FormTester form = tester.newFormTester("form");

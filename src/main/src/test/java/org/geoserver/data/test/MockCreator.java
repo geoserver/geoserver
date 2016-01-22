@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -11,8 +11,8 @@ import static org.easymock.EasyMock.expectLastCall;
 import static org.easymock.classextension.EasyMock.createMock;
 import static org.easymock.classextension.EasyMock.createNiceMock;
 import static org.easymock.classextension.EasyMock.replay;
-import static org.geoserver.security.SecurityUtils.toBytes;
 import static org.geoserver.data.test.CiteTestData.*;
+import static org.geoserver.security.SecurityUtils.toBytes;
 
 import java.io.File;
 import java.io.IOException;
@@ -38,6 +38,7 @@ import org.geoserver.catalog.impl.CatalogFactoryImpl;
 import org.geoserver.data.test.MockCatalogBuilder.Callback;
 import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Files;
 import org.geoserver.security.GeoServerAuthenticationProvider;
 import org.geoserver.security.GeoServerRoleStore;
 import org.geoserver.security.GeoServerSecurityFilterChain;
@@ -48,7 +49,6 @@ import org.geoserver.security.KeyStoreProviderImpl;
 import org.geoserver.security.MasterPasswordProvider;
 import org.geoserver.security.config.PasswordPolicyConfig;
 import org.geoserver.security.config.SecurityAuthProviderConfig;
-import org.geoserver.security.config.SecurityFilterConfig;
 import org.geoserver.security.config.SecurityInterceptorFilterConfig;
 import org.geoserver.security.config.SecurityUserGroupServiceConfig;
 import org.geoserver.security.filter.GeoServerAnonymousAuthenticationFilter;
@@ -67,6 +67,7 @@ import org.geoserver.security.password.PasswordValidator;
 import org.geoserver.security.validation.PasswordValidatorImpl;
 import org.geoserver.security.xml.XMLRoleService;
 import org.geoserver.security.xml.XMLUserGroupService;
+import org.junit.rules.TemporaryFolder;
 import org.springframework.context.ApplicationContext;
 
 /**
@@ -117,6 +118,7 @@ public class MockCreator implements Callback {
         b.setCallback(this);
     
         b.style(DEFAULT_VECTOR_STYLE);
+        b.style("generic");
     
         createWorkspace(DEFAULT_PREFIX, DEFAULT_URI, null, b);
         createWorkspace(CGF_PREFIX, CGF_URI, CGF_TYPENAMES, b);
@@ -204,6 +206,10 @@ public class MockCreator implements Callback {
         expect(masterPasswdProvider.getName()).andReturn(MasterPasswordProvider.DEFAULT_NAME).anyTimes();
         expect(secMgr.listMasterPasswordProviders()).andReturn(
             new TreeSet<String>(Arrays.asList(MasterPasswordProvider.DEFAULT_NAME))).anyTimes();
+        
+        TemporaryFolder tempFolder = new TemporaryFolder();
+        tempFolder.create();
+        expect(secMgr.masterPasswordProvider()).andReturn(Files.asResource(tempFolder.newFolder())).anyTimes();
     
         //password validators
         PasswordValidator passwdValidator = createNiceMock(PasswordValidator.class);

@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -7,6 +7,7 @@ package org.geoserver.wfs.response;
 
 import static org.junit.Assert.*;
 
+import java.util.Collections;
 import java.util.Set;
 
 import org.junit.Assume;
@@ -20,7 +21,8 @@ public class OGRWrapperTest {
     @Before
     public void setUp() throws Exception {
         Assume.assumeTrue(Ogr2OgrTestUtil.isOgrAvailable());
-        ogr = new OGRWrapper(Ogr2OgrTestUtil.getOgr2Ogr(), Ogr2OgrTestUtil.getGdalData());
+        ogr = new OGRWrapper(Ogr2OgrTestUtil.getOgr2Ogr(), Collections.singletonMap("GDAL_DATA",
+                Ogr2OgrTestUtil.getGdalData()));
     }
     
     @Test

@@ -43,7 +43,7 @@ public class WFSExceptionTest {
     /**
      * Test {@link WFSException#init(Object)} for Exception with a WFS11
      * {@link Delete}-Action.
-     * @see https://jira.codehaus.org/browse/GEOS-5857
+     * @see https://osgeo-org.atlassian.net/browse/GEOS-5857
      */
     @Test
     public void testWFS11Delete() {
@@ -55,7 +55,7 @@ public class WFSExceptionTest {
     /**
      * Test {@link WFSException#init(Object)} for Exception with a WFS20
      * {@link Delete}-Action.
-     * @see https://jira.codehaus.org/browse/GEOS-5857
+     * @see https://osgeo-org.atlassian.net/browse/GEOS-5857
      */
     @Test
     public void testWFS20Delete() {
@@ -66,7 +66,7 @@ public class WFSExceptionTest {
     /**
      * Test {@link WFSException#init(Object)} for Exception with a WFS11
      * {@link GetFeatureRequest}-Action.
-     * @see https://jira.codehaus.org/browse/GEOS-5857
+     * @see https://osgeo-org.atlassian.net/browse/GEOS-5857
      */
     @Test
     public void testWFS11GetFeatureType() {
@@ -78,7 +78,7 @@ public class WFSExceptionTest {
     /**
      * Test {@link WFSException#init(Object)} for Exception with a WFS20
      * {@link GetFeatureRequest}-Action.
-     * @see https://jira.codehaus.org/browse/GEOS-5857
+     * @see https://osgeo-org.atlassian.net/browse/GEOS-5857
      */
     @Test
     public void testWFS20GetFeatureType() {

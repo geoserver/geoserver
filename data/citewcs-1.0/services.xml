@@ -79,11 +79,11 @@ NONE
 <keyword>WMS</keyword>
 <keyword>GEOSERVER</keyword>
 </keywords>
-<onlineResource>http://geoserver.sourceforge.net/html/index.php</onlineResource>
+<onlineResource>http://geoserver.org</onlineResource>
 <fees>NONE</fees>
 <accessConstraints>NONE</accessConstraints>
 <srsXmlStyle value = "false" />
-<maintainer>http://jira.codehaus.org/secure/BrowseProject.jspa?id=10311</maintainer>
+<maintainer>http://geoserver.org/comm</maintainer>
 </service>
 <service type = "WFS" enabled = "true" >
 <!--
@@ -100,13 +100,13 @@ from New York City.</abstract>
 <keyword>NY</keyword>
 <keyword>New York</keyword>
 </keywords>
-<onlineResource>http://www.openplans.org/</onlineResource>
+<onlineResource>http://geoserver.org</onlineResource>
 <fees>NONE</fees>
 <accessConstraints>NONE</accessConstraints>
 <srsXmlStyle value = "true" />
 <serviceLevel value = "31" />
 <citeConformanceHacks>true</citeConformanceHacks>
-<maintainer>The Open Planning Project</maintainer>
+<maintainer>http://geoserver.org/comm</maintainer>
 </service>
 <service type = "WMS" enabled = "true" >
 <!--
@@ -123,11 +123,11 @@ from New York City.</abstract>
 <keyword>NY</keyword>
 <keyword>New York</keyword>
 </keywords>
-<onlineResource>http://www.openplans.org/</onlineResource>
+<onlineResource>http://geoserver.org</onlineResource>
 <fees>NONE</fees>
 <accessConstraints>NONE</accessConstraints>
 <srsXmlStyle value = "false" />
-<maintainer>The Open Planning Project</maintainer>
+<maintainer>http://geoserver.org/comm</maintainer>
 <svgAntiAlias>true</svgAntiAlias>
 </service>
 </services>

@@ -11,7 +11,7 @@
   <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>geoserver</artifactId>
-    <version>2.8-SNAPSHOT</version>
+    <version>2.9-SNAPSHOT</version>
   </parent>
 
   <groupId>org.geoserver</groupId>
@@ -23,6 +23,11 @@
     <dependency>
       <groupId>org.geoserver</groupId>
       <artifactId>gs-platform</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
 
@@ -285,6 +290,36 @@
         <module>importer</module>
       </modules>
     </profile>
+    
+    <profile>
+      <id>grib</id>
+	  <activation>
+        <property><name>grib</name></property>
+      </activation>
+      <modules>
+        <module>grib</module>
+      </modules>
+    </profile>
+
+    <profile>
+      <id>netcdf</id>
+      <activation>
+        <property><name>netcdf</name></property>
+      </activation> 
+      <modules>
+        <module>netcdf</module>
+      </modules>
+    </profile>
+
+    <profile>
+      <id>netcdf-out</id>
+      <activation>
+        <property><name>netcdf-out</name></property>
+      </activation> 
+      <modules>
+        <module>netcdf-out</module>
+      </modules>
+    </profile>
 
     <!-- allExtensions profile, includes all modules -->
     <profile>
@@ -321,6 +356,9 @@
         <module>wcs2_0-eo</module>
         <module>libjpeg-turbo</module>
         <module>importer</module>
+        <module>grib</module>
+        <module>netcdf</module>
+        <module>netcdf-out</module>
       </modules>
     </profile>
 
@@ -359,6 +397,9 @@
         <module>wcs2_0-eo</module>
         <module>libjpeg-turbo</module>
         <module>importer</module>
+        <module>grib</module>
+        <module>netcdf</module>
+        <module>netcdf-out</module>
       </modules>
     </profile>
 

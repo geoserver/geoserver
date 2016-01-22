@@ -36,12 +36,6 @@ import freemarker.template.TemplateModelException;
  * Produces a FeatureInfo response in HTML. Relies on {@link AbstractFeatureInfoResponse} and the
  * feature delegate to do most of the work, just implements an HTML based writeTo method.
  * 
- * <p>
- * In the future James suggested that we allow some sort of template system, so that one can control
- * the formatting of the html output, since now we just hard code some minimal header stuff. See
- * http://jira.codehaus.org/browse/GEOS-196
- * </p>
- * 
  * @author James Macgill, PSU
  * @author Andrea Aime, TOPP
  * @version $Id$
@@ -140,7 +134,7 @@ public class HTMLFeatureInfoOutputFormat extends GetFeatureInfoOutputFormat {
                         content.process(fc, osw);
                     } catch (TemplateException e) {
                         String msg = "Error occured processing content template " + content.getName()
-                                + " for " + request.getQueryLayers().get(i);
+                                + " for " + request.getQueryLayers().get(i).getName();
                         throw (IOException) new IOException(msg).initCause(e);
                     }
                 }
@@ -181,22 +175,21 @@ public class HTMLFeatureInfoOutputFormat extends GetFeatureInfoOutputFormat {
      */
     Template getTemplate(Name name, String templateFileName, Charset charset)
             throws IOException {
-        // setup template subsystem
-        if (templateLoader == null) {
-            templateLoader = new GeoServerTemplateLoader(getClass());
-        }
-
+        ResourceInfo ri = null;
         if (name != null) {
-            ResourceInfo ri = wms.getResourceInfo(name);
-            if (ri != null) {
-                templateLoader.setResource(ri);
-            } else {
+            ri = wms.getResourceInfo(name);
+            if (ri == null) {
                 throw new IllegalArgumentException("Can't find neither a FeatureType nor "
                         + "a CoverageInfo or WMSLayerInfo named " + name);
             }                        
         }
 
         synchronized (templateConfig) {
+            // setup template subsystem
+            if (templateLoader == null) {
+                templateLoader = new GeoServerTemplateLoader(getClass());
+            }
+            templateLoader.setResource(ri);
             templateConfig.setTemplateLoader(templateLoader);
             Template t = templateConfig.getTemplate(templateFileName);
             t.setEncoding(charset.name());

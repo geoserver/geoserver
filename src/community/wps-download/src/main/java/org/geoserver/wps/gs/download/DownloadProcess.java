@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -6,19 +6,23 @@
 package org.geoserver.wps.gs.download;
 
 import java.io.File;
-import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.apache.commons.io.IOUtils;
+import javax.media.jai.Interpolation;
+import javax.media.jai.JAI;
+
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.config.GeoServer;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resources;
 import org.geoserver.wps.ppio.ZipArchivePPIO;
 import org.geoserver.wps.resource.WPSFileResource;
 import org.geoserver.wps.resource.WPSResourceManager;
@@ -27,11 +31,15 @@ import org.geotools.process.factory.DescribeParameter;
 import org.geotools.process.factory.DescribeProcess;
 import org.geotools.process.factory.DescribeResult;
 import org.geotools.process.gs.GSProcess;
+import org.geotools.resources.image.ImageUtilities;
 import org.geotools.util.Utilities;
 import org.geotools.util.logging.Logging;
 import org.opengis.filter.Filter;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.util.ProgressListener;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 
 import com.vividsolutions.jts.geom.Geometry;
 
@@ -47,7 +55,7 @@ import com.vividsolutions.jts.geom.Geometry;
  */
 @SuppressWarnings("deprecation")
 @DescribeProcess(title = "Enterprise Download Process", description = "Downloads Layer Stream and provides a ZIP.")
-public class DownloadProcess implements GSProcess {
+public class DownloadProcess implements GSProcess, ApplicationContextAware {
 
     /** The LOGGER. */
     private static final Logger LOGGER = Logging.getLogger(DownloadProcess.class);
@@ -59,6 +67,8 @@ public class DownloadProcess implements GSProcess {
     private final Catalog catalog;
 
     private WPSResourceManager resourceManager;
+
+    private ApplicationContext context;
 
     /**
      * Instantiates a new download process.
@@ -87,6 +97,9 @@ public class DownloadProcess implements GSProcess {
      * @param roiCRS the roi crs
      * @param roi the roi
      * @param clip the crop to geometry
+     * @param interpolation interpolation method to use when reprojecting / scaling
+     * @param targetSizeX the size of the target image along the X axis
+     * @param targetSizeY the size of the target image along the Y axis
      * @param progressListener the progress listener
      * @return the file
      * @throws ProcessException the process exception
@@ -100,6 +113,9 @@ public class DownloadProcess implements GSProcess {
             @DescribeParameter(name = "RoiCRS", min = 0, description = "Optional Region Of Interest CRS") CoordinateReferenceSystem roiCRS,
             @DescribeParameter(name = "ROI", min = 0, description = "Optional Region Of Interest (Polygon)") Geometry roi,
             @DescribeParameter(name = "cropToROI", min = 0, description = "Crop to ROI") Boolean clip,
+            @DescribeParameter(name = "interpolation", description = "Interpolation function to use when reprojecting / scaling raster data.  Values are NEAREST (default), BILINEAR, BICUBIC2, BICUBIC", min = 0) Interpolation interpolation,
+            @DescribeParameter(name = "targetSizeX", min = 0, minValue = 1, description = "X Size of the Target Image (applies to raster data only)") Integer targetSizeX,
+            @DescribeParameter(name = "targetSizeY", min = 0, minValue = 1, description = "Y Size of the Target Image (applies to raster data only)") Integer targetSizeY,
             final ProgressListener progressListener) throws ProcessException {
 
         try {
@@ -133,14 +149,24 @@ public class DownloadProcess implements GSProcess {
                 roi.setUserData(roiCRS);
             }
 
+            // set default interpolation value
+            if (interpolation == null) {
+                if (LOGGER.isLoggable(Level.FINE)) {
+                    LOGGER.log(Level.FINE,
+                            "Interpolation parameter not specified, using default (Nearest Neighbor)");
+                }
+                interpolation = (Interpolation) ImageUtilities.NN_INTERPOLATION_HINT
+                        .get(JAI.KEY_INTERPOLATION);
+            }
+
             //
             // do we respect limits?
             //
             if (LOGGER.isLoggable(Level.FINE)) {
                 LOGGER.log(Level.FINE, "Running the estimator");
             }
-            if (!estimator.execute(layerName, filter, targetCRS, roiCRS, roi, clip,
-                    progressListener)) {
+            if (!estimator.execute(layerName, filter, targetCRS, roiCRS, roi, clip, targetSizeX,
+                    targetSizeY, progressListener)) {
                 throw new IllegalArgumentException("Download Limits Exceeded. Unable to proceed!");
             }
 
@@ -174,7 +200,7 @@ public class DownloadProcess implements GSProcess {
             }
 
             // CORE CODE
-            File internalOutput = null;
+            Resource internalOutput = null;
             if (resourceInfo instanceof FeatureTypeInfo) {
                 if (LOGGER.isLoggable(Level.FINE)) {
                     LOGGER.log(Level.FINE, "The resource to work on is a vector layer");
@@ -183,7 +209,7 @@ public class DownloadProcess implements GSProcess {
                 // VECTOR
                 //
                 // perform the actual download of vectorial data accordingly to the request inputs
-                internalOutput = new VectorDownload(limits, resourceManager).execute(
+                internalOutput = new VectorDownload(limits, resourceManager, context).execute(
                         (FeatureTypeInfo) resourceInfo, mimeType, roi, clip, filter, targetCRS,
                         progressListener);
 
@@ -196,8 +222,9 @@ public class DownloadProcess implements GSProcess {
                 //
                 CoverageInfo cInfo = (CoverageInfo) resourceInfo;
                 // convert/reproject/crop if needed the coverage
-                internalOutput = new RasterDownload(limits, resourceManager).execute(mimeType,
-                        progressListener, cInfo, roi, targetCRS, clip, filter);
+                internalOutput = new RasterDownload(limits, resourceManager, context).execute(
+                        mimeType, progressListener, cInfo, roi, targetCRS, clip, filter,
+                        interpolation, targetSizeX, targetSizeY);
             } else {
 
                 // wrong type
@@ -216,11 +243,11 @@ public class DownloadProcess implements GSProcess {
                 throw new IllegalStateException(
                         "Could not complete the Download Process, output file is null");
             }
-            if (!internalOutput.exists() || !internalOutput.canRead()) {
+            if (!Resources.exists(internalOutput) || !Resources.canRead(internalOutput)) {
                 // wrong type
                 throw new IllegalStateException(
                         "Could not complete the Download Process, output file invalid! --> "
-                                + internalOutput.getAbsolutePath());
+                                + internalOutput.path());
 
             }
 
@@ -229,26 +256,24 @@ public class DownloadProcess implements GSProcess {
                 LOGGER.log(Level.FINE, "Preparing the result");
             }
             // build output zip
-            final File result = resourceManager.getOutputResource(
-                    resourceManager.getExecutionId(true), resourceInfo.getName() + ".zip").file();
+            final Resource result = resourceManager.getOutputResource(
+                    resourceManager.getExecutionId(true), resourceInfo.getName() + ".zip");
 
-            FileOutputStream os1 = null;
-            try {
-                os1 = new FileOutputStream(result);
-
+            try (OutputStream os1 = result.out()) {
                 if (LOGGER.isLoggable(Level.FINE)) {
                     LOGGER.log(Level.FINE, "Listing files");
                 }
                 // output
                 List<File> filesToDownload = new ArrayList<File>();
-                filesToDownload.add(internalOutput);
+                filesToDownload.add(internalOutput.file());
 
                 if (LOGGER.isLoggable(Level.FINE)) {
                     LOGGER.log(Level.FINE, "Collecting styles");
                 }
                 // add all SLD to zip
-                List<File> styles = DownloadUtilities.collectStyles(layerInfo);
-                filesToDownload.addAll(styles);
+                for (Resource style : DownloadUtilities.collectStyles(layerInfo)) {
+                    filesToDownload.add(style.file());
+                }                
 
                 if (LOGGER.isLoggable(Level.FINE)) {
                     LOGGER.log(Level.FINE, "Zipping files");
@@ -258,9 +283,6 @@ public class DownloadProcess implements GSProcess {
                         .getCompressionLevel()).encode(filesToDownload, os1);
 
             } finally {
-                if (os1 != null) {
-                    IOUtils.closeQuietly(os1);
-                }
                 if (LOGGER.isLoggable(Level.FINE)) {
                     LOGGER.log(Level.FINE, "Prepare the result for deletion");
                 }
@@ -277,7 +299,7 @@ public class DownloadProcess implements GSProcess {
             }
 
             // return
-            return result;
+            return result.file();
         } catch (Throwable e) {
             if (LOGGER.isLoggable(Level.FINE)) {
                 LOGGER.log(Level.FINE, "Download failed");
@@ -291,5 +313,11 @@ public class DownloadProcess implements GSProcess {
             }
             throw processException;
         }
+    }
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.context = applicationContext;
+
     }
 }

@@ -45,15 +45,15 @@ Implementing a GSIP
 -------------------
    
 GSIPs are written up on the 
-`Proposals <https://github.com/geoserver/geoserver.github.io/wiki/Proposals>`_ wiki page.
+`Proposals <https://github.com/geoserver/geoserver/wiki/Proposals>`_ wiki page.
 
 If you have write access login and follow the steps below. If you do not have write access GitHub will automatically create a fork for you as you edit individual pages.
 
 To make a GSIP:
 
-#. Navigate to the wiki: https://github.com/geoserver/geoserver.github.io/wiki
-#. Select and copy the proposal template to your clipboard.
-#. Navigate to the proposals page: https://github.com/geoserver/geoserver.github.io/wiki/Proposals
+#. Navigate to the wiki: https://github.com/geoserver/geoserver/wiki/
+#. Select and copy the proposal template to your clipboard. (Template is available `here <https://github.com/geoserver/geoserver/wiki/GSIP-XXXX>`_)
+#. Navigate to the proposals page: https://github.com/geoserver/geoserver/wiki/Proposals
 #. Edit the page with a new link under *Proposals Under Discussion*:
    
    ```

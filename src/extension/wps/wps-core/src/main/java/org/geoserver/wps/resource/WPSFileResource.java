@@ -9,7 +9,8 @@ import java.io.File;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.io.FileUtils;
+import org.geoserver.platform.resource.Files;
+import org.geoserver.platform.resource.Resource;
 
 /**
  * Tracks and cleans up a set of files and directories
@@ -18,33 +19,33 @@ import org.apache.commons.io.FileUtils;
  * 
  */
 public class WPSFileResource implements WPSResource {
-    List<File> files;
+    List<Resource> files;
 
-    public WPSFileResource(List<File> files) {
+    public WPSFileResource(List<Resource> files) {
         this.files = files;
     }
 
-    public WPSFileResource(File file) {
+    public WPSFileResource(Resource file) {
         this(Collections.singletonList(file));
+    }
+    
+    public WPSFileResource(File file) {
+        this(Files.asResource(file));
     }
 
     public void delete() throws Exception {
-        for (File file : files) {
-            if (file.isDirectory()) {
-                FileUtils.deleteDirectory(file);
-            } else {
-                file.delete();
-            }
+        for (Resource file : files) {
+            file.delete();
         }
     }
 
     public String getName() {
         if (files.size() == 1) {
-            return files.get(0).getPath();
+            return files.get(0).path();
         } else {
             StringBuilder sb = new StringBuilder("Files: ");
-            for (File file : files) {
-                sb.append(file.getPath()).append(" ");
+            for (Resource file : files) {
+                sb.append(file.path()).append(" ");
             }
             sb.setLength(sb.length() - 1);
             return sb.toString();

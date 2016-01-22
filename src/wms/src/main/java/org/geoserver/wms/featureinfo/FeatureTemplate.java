@@ -140,6 +140,26 @@ public class FeatureTemplate {
     }
 
     /**
+     * Executes the link template for a feature writing the results to an
+     * output stream.
+     * <p>
+     * This method is convenience for:
+     * <code>
+     * link( feature, new OutputStreamWriter( output ) );
+     * </code>
+     * </p>
+     *
+     * @param feature The feature to execute the template against.
+     * @param output The output to write the result of the template to.
+     *
+     * @throws IOException Any errors that occur during execution of the template.
+     */
+    public void link(SimpleFeature feature, OutputStream output)
+        throws IOException {
+        link(feature, new OutputStreamWriter(output, Charset.forName("UTF-8")));
+    }
+
+    /**
      * Executes the description template for a feature writing the results to an
      * output stream.
      * <p>
@@ -173,6 +193,19 @@ public class FeatureTemplate {
     }
 
     /**
+     * Executes the link template for a feature writing the results to a
+     * writer.
+     *
+     * @param feature The feature to execute the template against.
+     * @param writer The writer to write the template output to.
+     *
+     * @throws IOException Any errors that occur during execution of the template.
+     */
+    public void link(SimpleFeature feature, Writer writer) throws IOException {
+        execute(feature, feature.getFeatureType(), writer, "link.ftl",null);
+    }
+
+    /**
      * Executes the description template for a feature writing the results to a
      * writer.
      *
@@ -197,6 +230,21 @@ public class FeatureTemplate {
     public String title(SimpleFeature feature) throws IOException {
         caw.reset();
         title(feature, caw);
+
+        return caw.toString();
+    }
+
+    /**
+     * Executes the link template for a feature returning the result as a
+     * string.
+     *
+     * @param feature The feature to execute the template against.
+     *
+     * @throws IOException Any errors that occur during execution of the template.
+     */
+    public String link(SimpleFeature feature) throws IOException {
+        caw.reset();
+        link(feature, caw);
 
         return caw.toString();
     }

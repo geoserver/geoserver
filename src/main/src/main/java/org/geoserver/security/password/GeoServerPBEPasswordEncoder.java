@@ -55,7 +55,7 @@ public class GeoServerPBEPasswordEncoder extends AbstractGeoserverPasswordEncode
                 if (!keystoreProvider.hasUserGroupKey(service.getName())) {
             throw new IOException("No key alias: " +
                 keystoreProvider.aliasForGroupService(service.getName())+ " in key store: " + 
-                keystoreProvider.getFile().getAbsolutePath());
+                keystoreProvider.getResource().path());
         }
 
         keyAliasInKeyStore = keystoreProvider.aliasForGroupService(service.getName());
@@ -152,13 +152,13 @@ public class GeoServerPBEPasswordEncoder extends AbstractGeoserverPasswordEncode
     byte[] lookupPasswordFromKeyStore() {
         try {
             if (!keystoreProvider.containsAlias(getKeyAliasInKeyStore())) {
-                throw new RuntimeException("Keystore: " + keystoreProvider.getFile() + " does not" +
+                throw new RuntimeException("Keystore: " + keystoreProvider.getResource().path() + " does not" +
                     " contain alias: " + getKeyAliasInKeyStore());
             }
             return keystoreProvider.getSecretKey(getKeyAliasInKeyStore()).getEncoded();
         } catch (IOException e) {
             throw new RuntimeException( "Cannot find alias: "+getKeyAliasInKeyStore() +
-                " in "+ keystoreProvider.getFile().getAbsolutePath());
+                " in "+ keystoreProvider.getResource().path());
         }
     }
 

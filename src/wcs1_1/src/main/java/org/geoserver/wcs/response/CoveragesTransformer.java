@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -124,7 +124,7 @@ public class CoveragesTransformer extends TransformerBase {
             start("wcs:Coverage");
             element("ows:Title", ci.getTitle());
             element("ows:Abstract", ci.getDescription());
-            element("ows:Identifier", ci.getName());
+            element("ows:Identifier", ci.prefixedName());
             final AttributesImpl attributes = new AttributesImpl();
             attributes.addAttribute("", "xlink:href", "xlink:href", "", coverageLocation);
             element("ows:Reference", "", attributes);

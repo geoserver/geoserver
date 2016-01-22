@@ -55,6 +55,7 @@
     <constructor-arg value="GetCapabilities" />
     <constructor-arg value="2.0.1" />
     <constructor-arg ref="wcs-2.0.1-configuration" />
+    <constructor-arg ref="entityResolverProvider" />
   </bean>
 
   <bean id="wcs20GetCapabilitiesResponse"
@@ -75,6 +76,7 @@
     <constructor-arg value="DescribeCoverage" />
     <constructor-arg value="2.0.1" />
     <constructor-arg ref="wcs-2.0.1-configuration" />
+    <constructor-arg ref="entityResolverProvider" />
   </bean>
 
   <bean id="wcs20DescribeCoverageResponse"
@@ -114,6 +116,7 @@
     <constructor-arg value="GetCoverage" />
     <constructor-arg value="2.0.1" />
     <constructor-arg ref="wcs-2.0.1-configuration" />
+    <constructor-arg ref="entityResolverProvider" />
   </bean>
 
   <bean id="wcs201GetCoverageResponse" class="org.geoserver.wcs2_0.response.WCS20GetCoverageResponse">
@@ -154,13 +157,8 @@
     <constructor-arg ref="catalog" index="1" />
   </bean>
 
-  <bean id="arcGridWcsMimeMapper" class="org.geoserver.wcs2_0.response.ReaderClassMimeMapper">
-    <constructor-arg index="0" value="org.geotools.gce.arcgrid.ArcGridReader"/>
-    <constructor-arg index="1" value="text/plain" />
-  </bean>
-  
-  <bean id="gtopo30WcsMimeMapper" class="org.geoserver.wcs2_0.response.ReaderClassMimeMapper">
-    <constructor-arg index="0" value="org.geotools.gce.gtopo30.GTopo30Reader"/>
+  <bean id="arcGridWcsMimeMapper" class="org.geoserver.wcs2_0.response.FormatNameMimeMapper">
+    <constructor-arg index="0" value="ArcGrid"/>
     <constructor-arg index="1" value="text/plain" />
   </bean>
   

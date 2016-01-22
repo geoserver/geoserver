@@ -27,6 +27,7 @@ import org.geoserver.csw.records.CSWRecordDescriptor;
 import org.geoserver.csw.records.RecordDescriptor;
 import org.geoserver.csw.store.CatalogStoreCapabilities;
 import org.geoserver.csw.store.RepositoryItem;
+import org.geoserver.platform.resource.Files;
 import org.geotools.csw.CSW;
 import org.geotools.csw.DC;
 import org.geotools.data.Query;
@@ -53,7 +54,7 @@ public class SimpleCatalogStoreTest {
     static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
 
     File root = new File("./src/test/resources/org/geoserver/csw/store/simple");
-    SimpleCatalogStore store = new SimpleCatalogStore(root);
+    SimpleCatalogStore store = new SimpleCatalogStore(Files.asResource(root));
     
     protected void setUp() throws Exception {
         Hints.putSystemDefault(Hints.FORCE_LONGITUDE_FIRST_AXIS_ORDER, true);
@@ -72,19 +73,8 @@ public class SimpleCatalogStoreTest {
     @Test
     public void testCreationExceptions() throws IOException {
         try {
-            new SimpleCatalogStore(new File("./pom.xml"));
+            new SimpleCatalogStore(Files.asResource(new File("./pom.xml")));
             fail("Should have failed, the reference is not a directory");
-        } catch(IllegalArgumentException e) {
-            // fine
-        }
-        
-        File f = new File("./target/notThere");
-        if(f.exists()) {
-            FileUtils.deleteDirectory(f);
-        }
-        try {
-            new SimpleCatalogStore(f);
-            fail("Should have failed, the reference is not there!");
         } catch(IllegalArgumentException e) {
             // fine
         }

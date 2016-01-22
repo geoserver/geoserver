@@ -5,7 +5,6 @@
  */
 package org.geoserver.csw.store.simple;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -13,6 +12,7 @@ import java.util.List;
 import org.geoserver.csw.feature.AbstractFeatureCollection;
 import org.geoserver.csw.feature.MemoryFeatureCollection;
 import org.geoserver.csw.records.CSWRecordDescriptor;
+import org.geoserver.platform.resource.Resource;
 import org.geotools.data.store.FilteringFeatureCollection;
 import org.geotools.feature.FeatureCollection;
 import org.opengis.feature.Feature;
@@ -27,11 +27,11 @@ import org.opengis.filter.sort.SortBy;
  */
 class RecordsFeatureCollection extends AbstractFeatureCollection<FeatureType, Feature> {
 
-    File root;
+    Resource root;
 
     int offset;
 
-    public RecordsFeatureCollection(File root, int offset) {
+    public RecordsFeatureCollection(Resource root, int offset) {
         super(CSWRecordDescriptor.RECORD_TYPE);
         this.root = root;
         this.offset = offset;

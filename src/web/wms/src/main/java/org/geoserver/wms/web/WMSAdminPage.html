@@ -14,9 +14,24 @@
           <li>
             <textarea class="input textarea" rows="10" cols="30" wicket:id="srs"></textarea>
           </li>
+          <li class="choiceItem">
+            <input type="checkbox" wicket:id="bBOXForEachCRS"></input>
+            <label for="bBOXForEachCRS"><wicket:message key="bboxForEachCRS">Output bounding box for each supported CRS</wicket:message></label>
+          </li>
+        </ul>
+      </fieldset>
+    </li>
+    <li>
+      <fieldset>
+        <legend><span><wicket:message key="projectionHandlingOptions">Raster Rendering Options</wicket:message></span></legend>
+        <ul class="choiceList">
           <li>
-            <input class="field checkbox" type="checkbox" wicket:id="bBOXForEachCRS"></input>
-            <label class="choice"><wicket:message key="bboxForEachCRS">Output bounding box for each supported CRS</wicket:message></label>
+            <input type="checkbox" wicket:id="aph.enabled"></input>
+            <label for="aph.enabled"><wicket:message key="aph.enabled">Enabled advanced projection handling</wicket:message></label>
+          </li>
+          <li>
+            <input type="checkbox" wicket:id="aph.wrap"></input>
+            <label for="aph.wrap"><wicket:message key="aph.wrap">Enable continous map wrapping</wicket:message></label>
           </li>
         </ul>
       </fieldset>
@@ -44,13 +59,13 @@
             <label><wicket:message key="superoverlayMode">superoverlay Mode</wicket:message></label>
             <select wicket:id="kml.superoverlayMode"></select>
          </li>
-         <li>
-            <input class="field checkbox" type="checkbox" wicket:id="kml.kmattr"></input>
-            <label class="choice"><wicket:message key="kmattr">Show vector placemarks</wicket:message></label>
+         <li class="choiceItem">
+            <input type="checkbox" wicket:id="kml.kmattr"></input>
+            <label for="kml.kmattr"><wicket:message key="kmattr">Show vector placemarks</wicket:message></label>
          </li>
-         <li>
-            <input class="field checkbox" type="checkbox" wicket:id="kml.kmlplacemark"></input>
-            <label class="choice"><wicket:message key="kmlplacemark">Show raster placemarks</wicket:message></label>
+         <li class="choiceItem">
+            <input type="checkbox" wicket:id="kml.kmlplacemark"></input>
+            <label for="kml.kmlplacemark"><wicket:message key="kmlplacemark">Show raster placemarks</wicket:message></label>
          </li>
          <li>
             <label><wicket:message key="kmScore">Raster/vector threshold (0-100, default 40)</wicket:message></label>
@@ -82,9 +97,9 @@
       <fieldset>
         <legend><span><wicket:message key="watermarkSettings">Watermark Settings</wicket:message></span></legend>
         <ul>
-          <li>
-            <input class="field checkbox" type="checkbox" wicket:id="watermark.enabled"></input>
-            <label class="choice"><wicket:message key="enableWatermark">Enable Watermark</wicket:message></label>
+          <li class="choiceItem">
+            <input type="checkbox" wicket:id="watermark.enabled"></input>
+            <label for="watermark.enabled"><wicket:message key="enableWatermark">Enable Watermark</wicket:message></label>
           </li>
           <li>
             <label><wicket:message key="watermarkUrl">Watermark URL</wicket:message></label>
@@ -144,9 +159,9 @@
             <label><wicket:message key="framesDelay">Frames Delay (ms, default 1s)</wicket:message></label>
             <input class="text" type="text" wicket:id="anim.framesdelay"></input>
           </li>
-          <li>
-            <input class="field checkbox" type="checkbox" wicket:id="anim.loopcontinuously"></input>
-            <label class="choice"><wicket:message key="loopContinuously">Loop Continuously</wicket:message></label>
+          <li class="choiceItem">
+            <input type="checkbox" wicket:id="anim.loopcontinuously"></input>
+            <label for="anim.loopcontinuously"><wicket:message key="loopContinuously">Loop Continuously</wicket:message></label>
           </li>
         </ul>
       </fieldset>
@@ -159,9 +174,9 @@
             <label><wicket:message key="svgProducer">SVG producer</wicket:message></label>
             <select wicket:id="svg.producer"></select>
           </li>
-          <li>
-            <input class="field checkbox" type="checkbox" wicket:id="svg.antialias"></input>
-            <label class="choice"><wicket:message key="enableAntialiasing">Enable antialiasing</wicket:message></label>
+          <li class="choiceItem">
+            <input type="checkbox" wicket:id="svg.antialias"></input>
+            <label for="svg.antialias"><wicket:message key="enableAntialiasing">Enable antialiasing</wicket:message></label>
           </li>
         </ul>
       </fieldset>
@@ -169,10 +184,10 @@
     <li>
       <fieldset>
         <legend><span><wicket:message key="scalehintOptions">Scalehint Options</wicket:message></span></legend>
-        <ul>
+        <ul class="choiceList">
           <li>
-            <input class="field checkbox" type="checkbox" wicket:id="scalehint.mapunitsPixel"></input>
-            <label class="choice"><wicket:message key="scalehintUnitsPixel">Show the Scalehint as units per diagonal pixel in the GetCapability response</wicket:message></label>
+            <input type="checkbox" wicket:id="scalehint.mapunitsPixel"></input>
+            <label for="scalehint.mapunitsPixel"><wicket:message key="scalehintUnitsPixel">Show the Scalehint as units per diagonal pixel in the GetCapability response</wicket:message></label>
           </li>
         </ul>
       </fieldset>      

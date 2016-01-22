@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014-2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2014 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -148,6 +149,8 @@ public class FileSystemResourceStore implements ResourceStore {
      * This implementation is a stateless data object, acting as a simple handle around a File.
      */
     class FileSystemResource implements Resource {
+        private static final long serialVersionUID = 5824101017129479435L;
+
         String path;
 
         File file;
@@ -228,13 +231,16 @@ public class FileSystemResourceStore implements ResourceStore {
                     @Override
                     public void close() throws IOException {
                         delegate.close();
-                        Lock lock = lock();
-                        try {
-                            // no errors, overwrite the original file
-                            Files.move(temp, actualFile);
-                        }
-                        finally {
-                            lock.release();
+                        // if already closed, there should be no exception (see spec Closeable)
+                        if (temp.exists()) {
+                            Lock lock = lock();
+                            try {
+                                // no errors, overwrite the original file
+                                Files.move(temp, actualFile);
+                            }
+                            finally {
+                                lock.release();
+                            }
                         }
                     }
                 
@@ -349,6 +355,26 @@ public class FileSystemResourceStore implements ResourceStore {
         }
 
         @Override
+        public List<Resource> list() {
+            if (!file.exists()) {
+                return Collections.emptyList();
+            }
+            if (file.isFile()) {
+                return Collections.emptyList();
+            }
+            String array[] = file.list();
+            if (array == null) {
+                return Collections.emptyList();
+            }
+            List<Resource> list = new ArrayList<Resource>(array.length);
+            for (String filename : array) {
+                Resource resource = FileSystemResourceStore.this.get(Paths.path(path, filename));
+                list.add(resource);
+            }
+            return list;
+        }
+
+        @Override
         public Resource parent() {
             int split = path.lastIndexOf('/');
             if (split == -1) {
@@ -367,20 +393,6 @@ public class FileSystemResourceStore implements ResourceStore {
                 return this;
             }
             return FileSystemResourceStore.this.get(Paths.path(path, resourcePath));
-        }
-
-        @Override
-        public List<Resource> list() {
-            String array[] = file.list();
-            if (array == null) {
-                return null; // not a directory
-            }
-            List<Resource> list = new ArrayList<Resource>(array.length);
-            for (String filename : array) {
-                Resource resource = FileSystemResourceStore.this.get(Paths.path(path, filename));
-                list.add(resource);
-            }
-            return list;
         }
 
         @Override
@@ -429,7 +441,12 @@ public class FileSystemResourceStore implements ResourceStore {
 
         @Override
         public boolean delete() {
-            return file.delete();
+            Lock lock = lock();
+            try {
+                return Files.delete(file);
+            } finally {
+                lock.release();
+            }
         }
 
         @Override

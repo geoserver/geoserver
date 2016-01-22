@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
- Copyright (C) 2014 - Open Source Geospatial Foundation. All rights reserved.
+ Copyright (C) 2014 - 2015 Open Source Geospatial Foundation. All rights reserved.
  This code is licensed under the GPL 2.0 license, available at the root
  application directory.
  -->
@@ -545,7 +545,7 @@
      <constructor-arg index="1" value="true"/> <!--  force reset instead of reload -->
   </bean>
 
-  <bean id="fontFinder" class="org.geoserver.rest.FontListResource"/>
+  <bean id="fontFinder" class="org.geoserver.rest.FontListResource"  singleton="false"/>
   
   <bean id="catalogLocker" class="org.geoserver.rest.RestConfigurationLockCallback">
     <constructor-arg index="0" ref="configurationLock"/>

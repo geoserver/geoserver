@@ -23,6 +23,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.google.common.collect.Lists;
+
 import org.eclipse.xsd.XSDComplexTypeDefinition;
 import org.eclipse.xsd.XSDCompositor;
 import org.eclipse.xsd.XSDDerivationMethod;
@@ -47,6 +48,8 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.wfs.GMLInfo;
 import org.geoserver.wfs.WFSInfo;
 import org.geotools.feature.NameImpl;
@@ -535,16 +538,11 @@ public abstract class FeatureTypeSchemaBuilder {
         String ds = featureTypeMeta.getStore().getName();
         String name = featureTypeMeta.getName();
 
-        File schemaFile = null;
+        Resource schemaFile = resourceLoader.get("workspaces/" + ws + "/" + ds + "/" + name + "/schema.xsd");
 
-        try {
-            schemaFile = resourceLoader.find("workspaces/" + ws + "/" + ds + "/" + name + "/schema.xsd");
-        } catch (IOException e1) {
-        }
-
-        if (schemaFile != null) {
+        if (schemaFile.getType() == Type.RESOURCE) {
             if (logger.isLoggable(Level.FINE)) {
-                logger.fine("Found customized schema.xsd: " + schemaFile.getAbsolutePath());    
+                logger.fine("Found customized schema.xsd: " + schemaFile.path());    
             }
             
             //schema file found, parse it and lookup the complex type
@@ -563,10 +561,10 @@ public abstract class FeatureTypeSchemaBuilder {
             
             XSDSchema ftSchema = null;
             try {
-                ftSchema = Schemas.parse(schemaFile.getAbsolutePath(), locators, resolvers);
+                ftSchema = Schemas.parse(schemaFile.file().getAbsolutePath(), locators, resolvers);
             } catch (IOException e) {
                 logger.log(Level.WARNING,
-                    "Unable to parse schema: " + schemaFile.getAbsolutePath(), e);
+                    "Unable to parse schema: " + schemaFile.file().getAbsolutePath(), e);
             }
 
             if (ftSchema != null) {

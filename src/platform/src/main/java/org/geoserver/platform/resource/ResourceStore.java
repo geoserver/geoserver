@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014-2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2014 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -68,12 +68,13 @@ public interface ResourceStore {
     /**
      * Remove resource at indicated path (including individual resources or directories).
      * <p>
-     * Returns <code>true</code> if Resource was removed (or was never present). For read-only content (or if a security check) prevents the resource
+     * Returns <code>true</code> if Resource existed and was successfully removed. 
+     * For read-only content (or if a security check) prevents the resource
      * from being removed <code>false</code> is returned.
      * </p>
      * 
      * @param path Path of resource to remove
-     * @return <code>false</code> if unable to remove and resource is still present, <code>true</code> if resource is now UNDEFINED.
+     * @return <code>false</code> if doesn't exist or unable to remove
      */
     boolean remove( String path);
     

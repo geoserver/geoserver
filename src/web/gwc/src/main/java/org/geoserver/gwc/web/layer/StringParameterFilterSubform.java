@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -18,6 +18,7 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.util.convert.IConverter;
+import org.geowebcache.filter.parameters.CaseNormalizer;
 import org.geowebcache.filter.parameters.StringParameterFilter;
 
 /**
@@ -64,6 +65,8 @@ public class StringParameterFilterSubform extends
         
     };
 
+    private Component normalize;
+
     public StringParameterFilterSubform(String id,
             IModel<StringParameterFilter> model) {
         super(id, model);
@@ -84,6 +87,9 @@ public class StringParameterFilterSubform extends
             }
         };
         add(values);
+        
+        normalize = new CaseNormalizerSubform("normalize", new PropertyModel<CaseNormalizer>(model, "normalize"));
+        add(normalize);
     }
 
 }

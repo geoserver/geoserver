@@ -8,8 +8,6 @@ package org.geoserver.wms.kvp;
 import java.awt.image.ColorModel;
 import java.awt.image.DataBuffer;
 import java.awt.image.IndexColorModel;
-import java.io.File;
-import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -26,6 +24,7 @@ import javax.imageio.stream.ImageInputStream;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resources;
 import org.geotools.image.palette.InverseColorMapOp;
 import org.geotools.util.SoftValueHashMap;
 
@@ -93,8 +92,6 @@ public class PaletteManager {
         // users
         // adds the paletteInverter dir with a running Geoserver, we won't find it
         // anymore...
-        // final File root = GeoserverDataDirectory.getGeoserverDataDirectory();
-        // final File paletteDir = GeoserverDataDirectory.findConfigDir(root,"palettes");
         GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
 
         Resource palettes = loader.get("palettes");
@@ -113,17 +110,16 @@ public class PaletteManager {
         // scan the files found (we may have multiple files with different
         // extensions and return the first paletteInverter you find
         for (Resource resource : paletteFiles) {
-            final File file = resource.file();
-            final String fileName = file.getName();
+            final String fileName = resource.name();
             if (fileName.endsWith("pal")) {
-                final IndexColorModel icm = new PALFileLoader(file).getIndexColorModel();
+                final IndexColorModel icm = new PALFileLoader(resource).getIndexColorModel();
 
                 if (icm != null) {
-                    paletteCache.put(name, new PaletteCacheEntry(file, icm));
+                    paletteCache.put(name, new PaletteCacheEntry(resource, icm));
                     return icm;
                 }
             } else {
-                ImageInputStream iis = ImageIO.createImageInputStream(file);
+                ImageInputStream iis = ImageIO.createImageInputStream(resource.in());
                 final Iterator it = ImageIO.getImageReaders(iis);
                 if (it.hasNext()) {
                     final ImageReader reader = (ImageReader) it.next();
@@ -132,7 +128,7 @@ public class PaletteManager {
                             .getColorModel();
                     if (cm instanceof IndexColorModel) {
                         final IndexColorModel icm = (IndexColorModel) cm;
-                        paletteCache.put(name, new PaletteCacheEntry(file, icm));
+                        paletteCache.put(name, new PaletteCacheEntry(resource, icm));
                         return icm;
                     }
                 }
@@ -200,17 +196,17 @@ public class PaletteManager {
 	 * too
 	 */
 	private static class PaletteCacheEntry {
-		File file;
+		Resource file;
 
 		long lastModified;
 
 		IndexColorModel icm;
 
-		public PaletteCacheEntry(File file,
+		public PaletteCacheEntry(Resource file,
 				IndexColorModel icm) {
 			this.file = file;
 			this.icm = icm;
-			this.lastModified = file.lastModified();
+			this.lastModified = file.lastmodified();
 		}
 
 		/**
@@ -220,7 +216,7 @@ public class PaletteManager {
 		 * @return
 		 */
 		public boolean isStale() {
-			return !file.exists() || (file.lastModified() != lastModified);
+			return !Resources.exists(file) || (file.lastmodified() != lastModified);
 		}
 	}
 }

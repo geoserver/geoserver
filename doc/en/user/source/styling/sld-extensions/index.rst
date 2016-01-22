@@ -18,3 +18,4 @@ Although not portable to other applications, these extensions make styling more 
    margins
    randomized
    composite-blend/index
+   z-order/index

@@ -618,6 +618,37 @@ public class TransactionTest extends WFSTestSupport {
     }
     
     @Test
+    public void testInsertLocalNamespaces() throws Exception {
+        String xml = "<Transaction service=\"WFS\" version=\"1.1.0\" "
+            + " xmlns=\"http://www.opengis.net/wfs\" >"
+            + "<Insert>"
+            + " <RoadSegments xmlns=\"http://www.opengis.net/cite\">"
+            + "  <the_geom>"
+            + "<MultiLineString xmlns=\"http://www.opengis.net/gml\""
+            + "    srsName=\"EPSG:4326\">"
+            + " <lineStringMember>"
+            + "                  <LineString>"
+            + "                   <posList>4.2582 52.0643 4.2584 52.0648</posList>"
+            + "                 </LineString>"
+            + "               </lineStringMember>"
+            + "             </MultiLineString>"
+            + "  </the_geom>"
+            + "  <FID>foo</FID>"
+            + "  <NAME>bar</NAME>" 
+            + " </RoadSegments>"
+            + "</Insert>"
+            + "</Transaction>";
+    
+        Document dom = postAsDOM( "cite/Forests/wfs", xml );
+        XMLAssert.assertXpathEvaluatesTo("1", "count(//ows:ExceptionReport)", dom);
+        
+        dom = postAsDOM( "cite/RoadSegments/wfs", xml );
+        assertEquals("wfs:TransactionResponse", dom.getDocumentElement().getNodeName());
+        assertEquals( "1", getFirstElementByTagName(dom, "wfs:totalInserted").getFirstChild().getNodeValue());
+
+    }
+    
+    @Test
     public void testUpdateLayerQualified() throws Exception {
         String xml =
             "<wfs:Transaction service=\"WFS\" version=\"1.1.0\"" + 

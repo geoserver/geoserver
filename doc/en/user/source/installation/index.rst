@@ -9,7 +9,7 @@ If using Windows or OS X, we recommend using the installers.
 
 .. note:: To run GeoServer as part of an existing servlet container such as Tomcat, please see the :ref:`installation_war` section.
 
-.. warning:: GeoServer requires a Java 7 environment (JRE) to be installed on your system. This must be done prior to installation.
+.. warning:: GeoServer requires a Java 8 environment (JRE) to be installed on your system. This must be done prior to installation.
 
 .. toctree::
    :maxdepth: 1

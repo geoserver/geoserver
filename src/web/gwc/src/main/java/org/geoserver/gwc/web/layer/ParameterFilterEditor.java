@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -21,6 +21,7 @@ import java.util.logging.Logger;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.behavior.SimpleAttributeModifier;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
@@ -47,10 +48,10 @@ import org.geoserver.gwc.layer.StyleParameterFilter;
 import org.geoserver.gwc.web.GWCIconFactory;
 import org.geoserver.web.wicket.GeoServerAjaxFormLink;
 import org.geoserver.web.wicket.Icon;
-import org.geoserver.web.wicket.ImageAjaxLink;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geotools.util.logging.Logging;
 import org.geowebcache.filter.parameters.FloatParameterFilter;
+import org.geowebcache.filter.parameters.IntegerParameterFilter;
 import org.geowebcache.filter.parameters.ParameterFilter;
 import org.geowebcache.filter.parameters.RegexParameterFilter;
 import org.geowebcache.filter.parameters.StringParameterFilter;
@@ -187,24 +188,18 @@ class ParameterFilterEditor extends FormComponentPanel<Set<ParameterFilter>> {
                 //final Component subForm = new Label("subform", "Blah");
                 item.add(subForm);
                 
-                final Component removeLink;
+                final AjaxSubmitLink removeLink;
 
-                removeLink = new ImageAjaxLink("removeLink", GWCIconFactory.DELETE_ICON) {
+                removeLink = new AjaxSubmitLink("removeLink") {
                     private static final long serialVersionUID = 1L;
 
                     @Override
-                    protected void onClick(AjaxRequestTarget target) {
-                        List<ParameterFilter> list;
-                        list = new ArrayList<ParameterFilter>(filters.getModelObject());
-                        final ParameterFilter filter = (ParameterFilter) getDefaultModelObject();
-
-                        list.remove(filter);
-                        filters.setModelObject(list);
-                        item.remove();
-
+                    protected void onSubmit(AjaxRequestTarget target, Form form) {
+                        getList().remove((ParameterFilter) getDefaultModelObject());
                         target.addComponent(container);
                     }
                 };
+                removeLink.add(new Icon("removeIcon", GWCIconFactory.DELETE_ICON));
                 removeLink.setDefaultModel(item.getModel());
                 removeLink.add(new AttributeModifier("title", true, new ResourceModel(
                         "ParameterFilterEditor.removeLink")));
@@ -215,7 +210,11 @@ class ParameterFilterEditor extends FormComponentPanel<Set<ParameterFilter>> {
         filters.setOutputMarkupId(true);
         // this is necessary to avoid loosing item contents on edit/validation checks
         filters.setReuseItems(true);
-        table.add(filters);
+        
+        Form filtersForm = new Form("filtersForm", filters.getDefaultModel());
+        filtersForm.add(filters);
+        
+        table.add(filtersForm);
 
         List<String> parameterKeys = new ArrayList<String>(GWC.get().getGridSetBroker().getNames());
         for (ParameterFilter filter : model.getObject()) {
@@ -244,6 +243,7 @@ class ParameterFilterEditor extends FormComponentPanel<Set<ParameterFilter>> {
                 new ArrayList<Class<? extends ParameterFilter>>();
         filterTypes.add(StringParameterFilter.class);
         filterTypes.add(FloatParameterFilter.class);
+        filterTypes.add(IntegerParameterFilter.class);
         filterTypes.add(RegexParameterFilter.class);
         
         
@@ -317,13 +317,7 @@ class ParameterFilterEditor extends FormComponentPanel<Set<ParameterFilter>> {
                         newFilterKey.setModel(Model.of("")); // Reset the key field
                     } catch (NoSuchMethodException ex) {
                         LOGGER.log(Level.WARNING, "No Default Constructor for "+type ,ex);
-                    } catch (InvocationTargetException ex) {
-                        LOGGER.log(Level.WARNING, "Could not execute default Constructor for "+type ,ex);
-                    } catch (SecurityException ex) {
-                        LOGGER.log(Level.WARNING, "Could not execute default Constructor for "+type ,ex);
-                    } catch (InstantiationException ex) {
-                        LOGGER.log(Level.WARNING, "Could not execute default Constructor for "+type ,ex);
-                    } catch (IllegalAccessException ex) {
+                    } catch (InvocationTargetException | SecurityException  | InstantiationException | IllegalAccessException ex) {
                         LOGGER.log(Level.WARNING, "Could not execute default Constructor for "+type ,ex);
                     }
                 }
@@ -353,6 +347,9 @@ class ParameterFilterEditor extends FormComponentPanel<Set<ParameterFilter>> {
         }
         if (model.getObject() instanceof FloatParameterFilter) {
             return new FloatParameterFilterSubform(id, (IModel<FloatParameterFilter>) model);
+        }
+        if (model.getObject() instanceof IntegerParameterFilter) {
+            return new IntegerParameterFilterSubform(id, (IModel<IntegerParameterFilter>) model);
         }
         return new DefaultParameterFilterSubform(id, (IModel<ParameterFilter>) model);
     }

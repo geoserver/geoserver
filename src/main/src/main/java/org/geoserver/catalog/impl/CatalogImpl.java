@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -241,8 +241,8 @@ public class CatalogImpl implements Catalog {
             ws = getDefaultWorkspace();
         }
         
-        if(DataStoreInfo.class == clazz && (name == null || name.equals(Catalog.DEFAULT))) {
-            return (T) getDefaultDataStore(workspace);
+        if(clazz != null && clazz.isAssignableFrom(DataStoreInfo.class) && (name == null || name.equals(Catalog.DEFAULT))) {
+            return (T)getDefaultDataStore(workspace);
         }
         
         T store = facade.getStoreByName(ws, name, clazz);
@@ -254,9 +254,6 @@ public class CatalogImpl implements Catalog {
 
     public <T extends StoreInfo> T getStoreByName(String workspaceName,
            String name, Class<T> clazz) {
-        if (workspaceName == null) {
-            return getStoreByName((WorkspaceInfo)null, name, clazz);
-        }
         
         WorkspaceInfo workspace = getWorkspaceByName(workspaceName);
         if (workspace != null) {
@@ -1289,7 +1286,13 @@ public class CatalogImpl implements Catalog {
             String resource = name.substring(colon + 1);
 
             result = getStyleByName(prefix, resource);
-        } 
+        } else {
+            // search in default workspace first
+            WorkspaceInfo ws = getDefaultWorkspace();
+            if ( ws != null ) {
+                result = getStyleByName(ws, name);
+            }
+        }
         if (result == null) {
             result = facade.getStyleByName(name);
         }

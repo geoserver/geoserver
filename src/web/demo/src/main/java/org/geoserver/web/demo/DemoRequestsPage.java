@@ -9,6 +9,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -39,6 +40,7 @@ import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.web.GeoServerBasePage;
 import org.geoserver.web.wicket.CodeMirrorEditor;
 import org.geotools.util.logging.Logging;
@@ -56,7 +58,7 @@ public class DemoRequestsPage extends GeoServerBasePage {
 
     private static final Logger LOGGER = Logging.getLogger("org.geoserver.web.demo");
 
-    private final File demoDir;
+    private final Resource demoDir;
 
     private TextField urlTextField;
 
@@ -69,8 +71,7 @@ public class DemoRequestsPage extends GeoServerBasePage {
     public DemoRequestsPage() {
         try {
             GeoServerResourceLoader loader = this.getGeoServer().getCatalog().getResourceLoader();
-            Resource demo = loader.get("demo");
-            demoDir = demo.dir(); // find or create
+            demoDir = loader.get("demo");
         } catch (Exception e) {
             throw new WicketRuntimeException("Can't access demo requests directory: "
                     + e.getMessage());
@@ -86,7 +87,7 @@ public class DemoRequestsPage extends GeoServerBasePage {
      * 
      * @param demoDir
      */
-    DemoRequestsPage(final File demoDir) {
+    DemoRequestsPage(final Resource demoDir) {
         this.demoDir = demoDir;
         DemoRequest model = new DemoRequest(demoDir);
         setDefaultModel(new Model(model));
@@ -104,9 +105,9 @@ public class DemoRequestsPage extends GeoServerBasePage {
      *             if an io exception occurs opening or loading the file
      */
     private String getFileContents(final String reqFileName) throws IOException {
-        final File file = new File(demoDir, reqFileName);
+        final Resource file = demoDir.get(reqFileName);
         final StringBuilder sb = new StringBuilder();
-        final BufferedReader reader = new BufferedReader(new FileReader(file));
+        final BufferedReader reader = new BufferedReader(new InputStreamReader(file.in()));
         String line;
         try {
             while ((line = reader.readLine()) != null) {
@@ -119,7 +120,7 @@ public class DemoRequestsPage extends GeoServerBasePage {
         return sb.toString();
     }
 
-    private void setUpDemoRequestsForm(final File demoDir) {
+    private void setUpDemoRequestsForm(final Resource demoDir) {
         final IModel requestModel = getDefaultModel();
 
         final Form demoRequestsForm;
@@ -265,11 +266,11 @@ public class DemoRequestsPage extends GeoServerBasePage {
         });
     }
 
-    private List<String> getDemoList(final File demoDir) {
+    private List<String> getDemoList(final Resource demoDir) {
         final List<String> demoList = new ArrayList<String>();
-        for (File file : demoDir.listFiles()) {
-            if (!file.isDirectory()) {
-                final String name = file.getName();
+        for (Resource file : demoDir.list()) {
+            if (file.getType() != Type.DIRECTORY) {
+                final String name = file.name();
                 if (name.endsWith(".url") || name.endsWith(".xml")) {
                     demoList.add(name);
                 } else {

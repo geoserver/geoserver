@@ -39,7 +39,6 @@ import org.geoserver.ows.HttpServletRequestAware;
 import org.geoserver.ows.KvpRequestReader;
 import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.platform.ServiceException;
-import org.geoserver.util.EntityResolverProvider;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.WMS;
@@ -68,6 +67,7 @@ import org.geotools.styling.StyleFactory;
 import org.geotools.styling.StyledLayer;
 import org.geotools.styling.StyledLayerDescriptor;
 import org.geotools.styling.UserLayer;
+import org.geoserver.util.EntityResolverProvider;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.FeatureType;
@@ -79,6 +79,7 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.vfny.geoserver.util.Requests;
 import org.vfny.geoserver.util.SLDValidator;
 import org.xml.sax.EntityResolver;
+import org.xml.sax.SAXException;
 
 public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServletRequestAware {
 
@@ -178,6 +179,13 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
         return request;
     }
 
+    /**
+     * Returns whether the specified resource must be skipped in the context of the current request.
+     */
+    protected boolean skipResource(Object theResource) {
+        return false;
+    }
+    
     @SuppressWarnings("rawtypes")
     @Override
     public GetMapRequest read(Object request, Map kvp, Map rawKvp) throws Exception {
@@ -227,10 +235,19 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
         String layerParam = (String) rawKvp.get("LAYERS");
         if (layerParam != null) {
             List<String> layerNames = KvpUtils.readFlat(layerParam);
-            requestedLayerInfos.addAll(parseLayers(layerNames, remoteOwsUrl, remoteOwsType));
+            
+            for (Object o : parseLayers(layerNames, remoteOwsUrl, remoteOwsType)) {
+                if (!skipResource(o)) {
+                    requestedLayerInfos.add(o);
+                }
+            }
 
             List<MapLayerInfo> layers = new ArrayList<MapLayerInfo>();
             for (Object o : requestedLayerInfos) {
+                
+                if (skipResource(o))
+                    continue;
+                
                 if (o instanceof LayerInfo) {
                     layers.add(new MapLayerInfo((LayerInfo) o));
                 } else if (o instanceof LayerGroupInfo) {
@@ -320,13 +337,27 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
 
             // JD: GEOS-420, Wrap the sldUrl in getINputStream method in order
             // to do compression
-            InputStream input = Requests.getInputStream(styleUrl);
-
-            try {
+            try(InputStream input = Requests.getInputStream(styleUrl);){
                 StyledLayerDescriptor sld = parseStyle(getMap, input);
                 processSld(getMap, requestedLayerInfos, sld, styleNameList);
-            } finally {
-                input.close();
+            } catch (Exception ex) {
+                final Level l = Level.WARNING;
+                // KMS: Kludge here to allow through certain exceptions without being hidden.
+                if(ex.getCause() instanceof SAXException) {
+                    if(ex.getCause().getMessage().contains("Entity resolution disallowed")) {
+                        throw ex;
+                    }
+                }
+                LOGGER.log(l, "Exception while getting SLD.", ex);
+                // KMS: Replace with a generic exception so it can't be used to port scan the local 
+                // network.
+                if(LOGGER.isLoggable(l)){
+                    throw new ServiceException("Error while getting SLD.  See the log for details.");
+                }
+                else
+                {
+                    throw new ServiceException("Error while getting SLD.");
+                }
             }
 
             // set filter in, we'll check consistency later

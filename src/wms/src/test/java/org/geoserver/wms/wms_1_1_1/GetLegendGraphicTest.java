@@ -10,16 +10,25 @@ import static org.junit.Assert.assertTrue;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.util.Collections;
 
+import javax.imageio.ImageIO;
 import javax.xml.namespace.QName;
 
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.LegendInfo;
+import org.geoserver.catalog.impl.LegendInfoImpl;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.platform.resource.Resource;
 import org.geoserver.wms.WMSTestSupport;
 import org.geotools.util.Converters;
+import org.junit.Ignore;
 import org.junit.Test;
+import org.w3c.dom.Document;
+
+import com.mockrunner.mock.web.MockHttpServletResponse;
 
 public class GetLegendGraphicTest extends WMSTestSupport {
    
@@ -41,6 +50,14 @@ public class GetLegendGraphicTest extends WMSTestSupport {
                 Collections.EMPTY_MAP,"states.properties",
                 getClass(),catalog);
 
+        LegendInfo legend = new LegendInfoImpl();
+        legend.setWidth(22);
+        legend.setHeight(22);
+        legend.setFormat("image/png");
+        legend.setOnlineResource("legend.png");
+        File file = getResourceLoader().createFile("styles","legend.png");        
+        getResourceLoader().copyFromClassPath( "../legend.png", file,  getClass() );
+        testData.addStyle(null, "custom", "point_test.sld", getClass(), catalog, legend);
     }
     
     /**
@@ -75,6 +92,37 @@ public class GetLegendGraphicTest extends WMSTestSupport {
         // specify color explicitly
         image = getAsImage(base + "&env=color:#FF0000", "image/png");
         assertPixel(image, 10, 10, Converters.convert("#FF0000", Color.class));
+    }
+    
+    /**
+     * Tests an custom legend graphic
+     */
+    @Test
+    public void testCustomLegend() throws Exception {
+        String base = "wms?service=WMS&version=1.1.1&request=GetLegendGraphic" +
+                        "&layer=sf:states&style=custom" +
+                        "&format=image/png&width=22&height=22";
+        
+        BufferedImage image = getAsImage(base, "image/png");        
+        Resource resource = getResourceLoader().get("styles/legend.png");
+        BufferedImage expected = ImageIO.read( resource.file() );
+        
+        assertEquals( getPixelColor(expected,10,2).getRGB(), getPixelColor(image,10,2).getRGB() );
+        
+        // test rescale
+        base = "wms?service=WMS&version=1.1.1&request=GetLegendGraphic" +
+                "&layer=sf:states&style=custom" +
+                "&format=image/png&width=16&height=16";
+
+        image = getAsImage(base, "image/png");        
+        
+        Color expectedColor = getPixelColor(expected,11,11);
+        Color actualColor = getPixelColor(image,8,8);
+        assertEquals( "red", expectedColor.getRed(), actualColor.getRed() );
+        assertEquals( "green",expectedColor.getGreen(), actualColor.getGreen() );
+        assertEquals( "blue",expectedColor.getBlue(), actualColor.getBlue() );
+        assertEquals( "alpha",expectedColor.getAlpha(), actualColor.getAlpha() );
+        
     }
     
     /**

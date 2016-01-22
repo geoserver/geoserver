@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -17,6 +17,8 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.StoreInfo;
 import org.geotools.data.FeatureSource;
 import org.geotools.factory.Hints;
+import org.geotools.filter.text.cql2.CQLException;
+import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.measure.Measure;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
@@ -27,7 +29,9 @@ import org.opengis.util.ProgressListener;
 public class FeatureTypeInfoImpl extends ResourceInfoImpl implements
         FeatureTypeInfo {
 
-    protected Filter filter;
+    protected transient Filter filter;
+
+    protected String cqlFilter;
 
     protected int maxFeatures;
     protected int numDecimals;
@@ -77,14 +81,21 @@ public class FeatureTypeInfoImpl extends ResourceInfoImpl implements
         this.attributes = attributes;
     }
     
-    public Filter getFilter() {
+    /*
+     * The filter is computed by current cqlFilter
+     */
+    public Filter filter() {
+        try {
+            if (filter == null && cqlFilter != null && !cqlFilter.isEmpty()) {
+                filter = ECQL.toFilter(cqlFilter);
+            }
+        } catch (CQLException e) {
+            throw new org.geoserver.platform.ServiceException(
+                    "Failed to generate filter from ECQL string " + e.getMessage());
+        }
         return filter;
     }
 
-    public void setFilter(Filter filter) {
-        this.filter = filter;
-    }
-    
     public int getMaxFeatures() {
         return maxFeatures;
     }
@@ -163,13 +174,13 @@ public class FeatureTypeInfoImpl extends ResourceInfoImpl implements
      * not the implementation 
      */
     public boolean equals(Object obj) {
-        if ( !(obj instanceof FeatureTypeInfo ) ) {
+        if (!(obj instanceof FeatureTypeInfo)) {
             return false;
         }
-        if ( !super.equals( obj ) ) {
+        if (!super.equals(obj)) {
             return false;
         }
-        
+
         final FeatureTypeInfo other = (FeatureTypeInfo) obj;
         if (attributes == null) {
             if (other.getAttributes() != null)
@@ -180,11 +191,6 @@ public class FeatureTypeInfoImpl extends ResourceInfoImpl implements
             if (other.getResponseSRS() != null)
                 return false;
         } else if (!responseSRS.equals(other.getResponseSRS()))
-            return false;
-        if (filter == null) {
-            if (other.getFilter() != null)
-                return false;
-        } else if (!filter.equals(other.getFilter()))
             return false;
         if (circularArcPresent != other.isCircularArcPresent())
             return false;
@@ -197,10 +203,16 @@ public class FeatureTypeInfoImpl extends ResourceInfoImpl implements
             return false;
         if (numDecimals != other.getNumDecimals())
             return false;
-        if(overridingServiceSRS != other.isOverridingServiceSRS())
+        if (overridingServiceSRS != other.isOverridingServiceSRS())
             return false;
         if (skipNumberMatched != other.getSkipNumberMatched())
             return false;
+        if (cqlFilter == null) {
+            if (other.getCqlFilter() != null)
+                return false;
+        } else if (!cqlFilter.equals(other.getCqlFilter()))
+            return false;
+        
         return true;
     }
 
@@ -213,6 +225,16 @@ public class FeatureTypeInfoImpl extends ResourceInfoImpl implements
     public void setLinearizationTolerance(Measure tolerance) {
         this.linearizationTolerance = tolerance;
     }
-    
+
+    @Override
+    public String getCqlFilter() {
+        return cqlFilter;
+    }
+
+    @Override
+    public void setCqlFilter(String cqlFilter) {
+        this.cqlFilter = cqlFilter;
+        this.filter = null;
+    }
     
 }

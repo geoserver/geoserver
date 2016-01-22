@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -285,7 +285,13 @@ public class ReflectiveHTMLFormat extends DataFormat {
                 ClassProperties cp = OwsUtils.getClassProperties(clazz); 
                 for ( String p : cp.properties() ) {
                     if ( "Class".equals( p ) ) continue;
-                    Object value = OwsUtils.get(object, p);
+                    Object value = null;
+                    try {
+                        value = OwsUtils.get(object, p);
+                    } catch(Exception e) {
+                        LOGGER.log(Level.WARNING, "Could not resolve property " + p + " of bean " + object, e);
+                        value = "** Failed to retrieve value of property " + p + ". Error message is: " + e.getMessage() + "**";
+                    }
                     if ( value == null ) {
                         value = "null";
                     }

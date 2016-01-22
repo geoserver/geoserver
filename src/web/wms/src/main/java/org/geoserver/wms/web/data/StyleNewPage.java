@@ -9,7 +9,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.logging.Level;
-
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.geoserver.catalog.Catalog;
@@ -52,6 +51,13 @@ public class StyleNewPage extends AbstractStylePage {
         s.setFormat(format);
 
         StyleHandler styleHandler = styleHandler();
+
+        // make sure the legend is null if there is no URL
+        if (null == s.getLegend()
+                || null == s.getLegend().getOnlineResource()
+                || s.getLegend().getOnlineResource().isEmpty()) {
+            s.setLegend(null);
+        }
 
         // write out the SLD before creating the style
         try {

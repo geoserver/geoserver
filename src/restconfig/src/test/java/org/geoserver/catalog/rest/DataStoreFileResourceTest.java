@@ -46,7 +46,7 @@ public class DataStoreFileResourceTest extends CatalogRESTTestSupport {
 
     @Test
     public void testLookupDataStoreFactoryKnownExtension() throws Exception {
-        DataStoreFactorySpi factory = DataStoreFileResource.lookupDataStoreFactory("shp");
+        DataAccessFactory factory = DataStoreFileResource.lookupDataStoreFactory("shp");
         assertEquals("Shapefile", factory.getDisplayName());
     }
 

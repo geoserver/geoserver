@@ -3,7 +3,7 @@
 ## Pre-requisites
 
 * OSX 10.8+
-* JDK 1.7+
+* JDK 1.8+
 * Apache Ant
 * Adobe [64-bit unit types](http://helpx.adobe.com/photoshop/kb/unit-type-conversion-error-applescript.html)
 

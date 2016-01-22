@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -27,24 +27,27 @@ import javax.servlet.http.HttpServletRequestWrapper;
 
 import org.geotools.util.Converters;
 
-public class BufferedRequestWrapper extends HttpServletRequestWrapper{
+public class BufferedRequestWrapper extends HttpServletRequestWrapper {
     protected HttpServletRequest myWrappedRequest;
-    protected String myBuffer;
+
+    protected byte[] myBuffer;
+
+    protected String charset;
     protected ServletInputStream myStream = null;
     protected BufferedReader myReader = null;
 	protected Map myParameterMap;
     protected Logger logger = 
         org.geotools.util.logging.Logging.getLogger("org.geoserver.filters");
 
-    public BufferedRequestWrapper(HttpServletRequest req, String buff){
+    public BufferedRequestWrapper(HttpServletRequest req, String charset, byte[] buff) {
         super(req);
-        myWrappedRequest = req;
-        myBuffer = buff;
-		logger.fine("Created BufferedRequestWrapper with String: \"" + buff + "\" as buffer");
+        this.myWrappedRequest = req;
+        this.myBuffer = buff;
+        this.charset = charset;
     }
 
     public ServletInputStream getInputStream() throws IOException{
-        if (myStream == null){
+        if (myStream == null) {
             if (myReader == null){
                 myStream = new BufferedRequestStream(myBuffer);
             } else {
@@ -58,12 +61,8 @@ public class BufferedRequestWrapper extends HttpServletRequestWrapper{
     public BufferedReader getReader() throws IOException{
         if (myReader == null){
             if (myStream == null){
-
-                myReader = new BufferedReader(
-                        new InputStreamReader(
-                            new BufferedRequestStream(myBuffer) 
-                            )
-                        );
+                myReader = new BufferedReader(new InputStreamReader(new BufferedRequestStream(
+                        myBuffer), charset));
             } else {
                 throw new IOException("Requesting a reader after a stream is already in use!!");
             }
@@ -88,7 +87,7 @@ public class BufferedRequestWrapper extends HttpServletRequestWrapper{
 		while (it.hasNext()){
 			Map.Entry entry = (Map.Entry)it.next();
 			toArrays.put(entry.getKey(), 
-			  (String[])((List)entry.getValue()).toArray(new String[0]));
+			  ((List)entry.getValue()).toArray(new String[0]));
 		}
 
 		return Collections.unmodifiableMap(toArrays);
@@ -109,9 +108,10 @@ public class BufferedRequestWrapper extends HttpServletRequestWrapper{
 
 	protected void parseParameters(){
 		if (myParameterMap != null) return;
-		if (myWrappedRequest.getMethod().equals("POST") &&
-			myWrappedRequest.getContentType().startsWith("application/x-www-form-urlencoded")) {
-			parseFormBody();
+		String contentType = myWrappedRequest.getContentType();
+        if (myWrappedRequest.getMethod().equals("POST") && contentType != null
+                && contentType.startsWith("application/x-www-form-urlencoded")) {
+            parseFormBody();
 		} else {
 			myParameterMap = new HashMap(super.getParameterMap());
 			
@@ -132,7 +132,13 @@ public class BufferedRequestWrapper extends HttpServletRequestWrapper{
 		myParameterMap = new TreeMap();
 		
 		// parse the body
-		String[] pairs = myBuffer.split("\\&");
+        String[] pairs;
+        try {
+            pairs = new String(myBuffer, charset).split("\\&");
+        } catch (UnsupportedEncodingException e) {
+            // should not happen
+            throw new RuntimeException(e);
+        }
 		
 		for (int i = 0; i < pairs.length; i++){
 			parsePair(pairs[i]);

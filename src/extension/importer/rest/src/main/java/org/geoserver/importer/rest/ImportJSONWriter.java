@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -12,6 +12,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -41,6 +42,7 @@ import org.geoserver.importer.ImportContext;
 import org.geoserver.importer.ImportData;
 import org.geoserver.importer.ImportTask;
 import org.geoserver.importer.Importer;
+import org.geoserver.importer.RemoteData;
 import org.geoserver.importer.SpatialFile;
 import org.geoserver.importer.Table;
 import org.geoserver.importer.mosaic.Granule;
@@ -57,6 +59,7 @@ import org.geoserver.importer.transform.IntegerFieldToDateTransform;
 import org.geoserver.importer.transform.ReprojectTransform;
 import org.geoserver.importer.transform.TransformChain;
 import org.geoserver.importer.transform.VectorTransformChain;
+import org.geoserver.platform.resource.Resource;
 import org.geoserver.rest.PageInfo;
 import org.geoserver.rest.RestletException;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -116,6 +119,9 @@ public class ImportJSONWriter {
         json.key("id").value(context.getId());
         json.key("href").value(page.rootURI(pathTo(context)));
         json.key("state").value(context.getState());
+        if (context.getMessage() != null) {
+            json.key("message").value(context.getMessage());
+        }
         
         if (expand > 0) {
             json.key("archive").value(context.isArchive());
@@ -131,6 +137,9 @@ public class ImportJSONWriter {
             if (context.getData() != null) {
                 json.key("data");
                 data(context.getData(), context, expand-1);
+            }
+            if (!context.getDefaultTransforms().isEmpty()) {
+                transforms(context, expand - 1, context.getDefaultTransforms());
             }
             tasks(context.getTasks(), false, expand-1);
         }
@@ -343,15 +352,8 @@ public class ImportJSONWriter {
         json.key("transformChain").object();
         json.key("type").value(txChain instanceof VectorTransformChain ? "vector" : "raster");
 
-        json.key("transforms").array();
-
-        if (txChain != null) {
-            for (int i = 0; i < txChain.getTransforms().size(); i++) {
-                transform(txChain.getTransforms().get(i), i, task, false, expand);
-            }
-        }
-
-        json.endArray();
+        transforms(task, expand, txChain != null ? txChain.getTransforms()
+                : new ArrayList<ImportTransform>());
         json.endObject();
 
         if (top) {
@@ -361,11 +363,22 @@ public class ImportJSONWriter {
         json.flush();
     }
 
-    public void transform(ImportTransform transform, int index, ImportTask task, boolean top, 
+    private void transforms(Object parent, int expand, List<? extends ImportTransform> transforms)
+            throws IOException {
+        json.key("transforms").array();
+
+        for (int i = 0; i < transforms.size(); i++) {
+            transform(transforms.get(i), i, parent, false, expand);
+        }
+
+        json.endArray();
+    }
+
+    public void transform(ImportTransform transform, int index, Object parent, boolean top,
         int expand) throws IOException {
         json.object();
         json.key("type").value(transform.getClass().getSimpleName());
-        json.key("href").value(page.rootURI(pathTo(task)+"/transform/" + index));
+        json.key("href").value(page.rootURI(pathTo(parent) + "/transforms/" + index));
         if (expand > 0) {
             if (transform instanceof DateFormatTransform) {
                 DateFormatTransform df = (DateFormatTransform) transform;
@@ -457,7 +470,29 @@ public class ImportJSONWriter {
             database((Database) data, parent, expand);
         } else if (data instanceof Table) {
             table((Table)data, parent, expand);
+        } else if (data instanceof RemoteData) {
+            remote((RemoteData) data, parent, expand);
         }
+        json.flush();
+    }
+
+    public void remote(RemoteData data, Object parent, int expand) throws IOException {
+
+        json.object();
+
+        json.key("type").value("remote");
+        json.key("location").value(data.getLocation());
+        if (data.getUsername() != null) {
+            json.key("username").value(data.getUsername());
+        }
+        if (data.getPassword() != null) {
+            json.key("password").value(data.getPassword());
+        }
+        if (data.getDomain() != null) {
+            json.key("domain").value(data.getDomain());
+        }
+
+        json.endObject();
         json.flush();
     }
 
@@ -472,7 +507,7 @@ public class ImportJSONWriter {
         }
         
         if (expand > 0) {
-            json.key("location").value(data.getFile().getParentFile().getPath());
+            json.key("location").value(data.getFile().parent().path());
             if (data.getCharsetEncoding() != null) {
                 json.key("charset").value(data.getCharsetEncoding());
             }
@@ -480,7 +515,7 @@ public class ImportJSONWriter {
             message(data);
         }
         else {
-            json.key("file").value(data.getFile().getName());
+            json.key("file").value(data.getFile().name());
         }
 
         json.endObject();
@@ -489,16 +524,16 @@ public class ImportJSONWriter {
 
     void fileContents(FileData data, Object parent, int expand) throws IOException {
         //TODO: we should probably url encode to handle spaces and other chars
-        String filename = data.getFile().getName();
+        String filename = data.getFile().name();
         json.key("file").value(filename);
         json.key("href").value(page.rootURI(pathTo(data, parent)+"/files/"+filename));
         if (expand > 0) {
             if (data instanceof SpatialFile) {
                 SpatialFile sf = (SpatialFile) data;
-                json.key("prj").value(sf.getPrjFile() != null ? sf.getPrjFile().getName() : null);
+                json.key("prj").value(sf.getPrjFile() != null ? sf.getPrjFile().name() : null);
                 json.key("other").array();
-                for (File supp : ((SpatialFile) data).getSuppFiles()) {
-                    json.value(supp.getName());
+                for (Resource supp : ((SpatialFile) data).getSuppFiles()) {
+                    json.value(supp.name());
                 }
                 json.endArray();
     
@@ -531,7 +566,7 @@ public class ImportJSONWriter {
             json.key("format").value(data.getFormat().getName());
         }
 
-        json.key("location").value(data.getFile().getPath());
+        json.key("location").value(data.getFile().path());
         json.key("href").value(page.rootURI(pathTo(data, parent)));
 
         if (expand > 0) {

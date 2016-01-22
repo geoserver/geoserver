@@ -9,7 +9,7 @@
  <parent>
   <groupId>org.geoserver.community</groupId>
   <artifactId>gs-script</artifactId>
-  <version>2.8-SNAPSHOT</version>
+  <version>2.9-SNAPSHOT</version>
  </parent>
  <groupId>org.geoserver.script</groupId>
  <artifactId>gs-script-groovy</artifactId>
@@ -44,7 +44,7 @@
         <plugin>
             <groupId>org.codehaus.groovy</groupId>
             <artifactId>groovy-eclipse-compiler</artifactId>
-            <version>2.9.0-01-SNAPSHOT</version>
+            <version>2.9.2-01</version>
             <extensions>true</extensions>
         </plugin>
 		<plugin>
@@ -53,20 +53,20 @@
 			<configuration>
 				<compilerId>groovy-eclipse-compiler</compilerId>
                 <debug>true</debug>
-                <source>1.6</source>
-                <target>1.6</target>
+                <source>1.8</source>
+                <target>1.8</target>
                 <encoding>UTF-8</encoding>
 			</configuration>
 			<dependencies>
 				<dependency>
 					<groupId>org.codehaus.groovy</groupId>
 					<artifactId>groovy-eclipse-compiler</artifactId>
-					<version>2.9.0-01-SNAPSHOT</version>
+					<version>2.9.2-01</version>
 				</dependency>
 				<dependency>
 					<groupId>org.codehaus.groovy</groupId>
 					<artifactId>groovy-eclipse-batch</artifactId>
-					<version>2.1.5-03</version>
+					<version>2.3.7-01</version>
 				</dependency>
 			</dependencies>
 		</plugin>
@@ -93,14 +93,4 @@
         </plugin>
    </plugins>
  </build>
- <pluginRepositories>
-      <!-- Required for groovy-eclipse-compiler snapshot --> 
-      <pluginRepository>
-          <id>nexus</id>
-          <url>http://nexus.codehaus.org/snapshots/</url>
-          <snapshots>
-            <enabled>true</enabled>
-          </snapshots>
-      </pluginRepository>
- </pluginRepositories>
 </project>

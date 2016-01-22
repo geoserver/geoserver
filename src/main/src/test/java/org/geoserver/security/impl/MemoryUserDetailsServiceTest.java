@@ -176,8 +176,8 @@ public class MemoryUserDetailsServiceTest extends AbstractUserDetailsServiceTest
         getSecurityManager().saveRoleService(roleConfig);        
         getSecurityManager().saveUserGroupService(ugConfig);
         
-        File roleDir= new File(getSecurityManager().getRoleRoot(),serviceName);
-        File ugDir= new File(getSecurityManager().getUserGroupRoot(),serviceName);
+        File roleDir= new File(getSecurityManager().get("security/role").dir(),serviceName);
+        File ugDir= new File(getSecurityManager().get("security/usergroup").dir(),serviceName);
         File roleFile = new File(roleDir,GeoServerSecurityManager.CONFIG_FILENAME);
         File ugFile = new File(ugDir,GeoServerSecurityManager.CONFIG_FILENAME);
         
@@ -235,8 +235,8 @@ public class MemoryUserDetailsServiceTest extends AbstractUserDetailsServiceTest
         getSecurityManager().saveRoleService(roleConfig);        
         getSecurityManager().saveUserGroupService(ugConfig);
         
-        File roleDir= new File(getSecurityManager().getRoleRoot(),serviceName);
-        File ugDir= new File(getSecurityManager().getUserGroupRoot(),serviceName);
+        File roleDir= new File(getSecurityManager().get("security/role").dir(),serviceName);
+        File ugDir= new File(getSecurityManager().get("security/usergroup").dir(),serviceName);
         File roleFile = new File(roleDir,GeoServerSecurityManager.CONFIG_FILENAME);
         File ugFile = new File(ugDir,GeoServerSecurityManager.CONFIG_FILENAME);
         

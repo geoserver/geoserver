@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -19,12 +19,14 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
+import org.geoserver.config.GeoServer;
 import org.geoserver.ows.KvpParser;
 import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.platform.ServiceException;
 import org.geotools.filter.FilterFilter;
 import org.geotools.gml.GMLFilterDocument;
 import org.geotools.gml.GMLFilterGeometry;
+import org.geoserver.util.EntityResolverProvider;
 import org.geotools.xml.Configuration;
 import org.geotools.xml.Parser;
 import org.opengis.filter.Filter;
@@ -44,8 +46,11 @@ import org.xml.sax.helpers.ParserAdapter;
  */
 public abstract class FilterKvpParser extends KvpParser {
 
-    public FilterKvpParser() {
+    private EntityResolverProvider entityResolverProvider;
+
+    public FilterKvpParser(GeoServer geoServer) {
         super("filter", List.class);
+        this.entityResolverProvider = new EntityResolverProvider(geoServer);
     }
 
     /**
@@ -60,6 +65,7 @@ public abstract class FilterKvpParser extends KvpParser {
         // create the parser
         final Configuration configuration = getParserConfiguration();
         final Parser parser = new Parser(configuration);
+        parser.setEntityResolver(entityResolverProvider.getEntityResolver());
 
         // seperate the individual filter strings
         List unparsed = KvpUtils.readFlat(value, KvpUtils.OUTER_DELIMETER);
@@ -121,6 +127,7 @@ public abstract class FilterKvpParser extends KvpParser {
 
         // instantiante parsers and content handlers
         FilterHandlerImpl contentHandler = new FilterHandlerImpl();
+        contentHandler.setEntityResolver(entityResolverProvider.getEntityResolver());
         FilterFilter filterParser = new FilterFilter(contentHandler, null);
         GMLFilterGeometry geometryFilter = new GMLFilterGeometry(filterParser);
         GMLFilterDocument documentFilter = new GMLFilterDocument(geometryFilter);
@@ -130,7 +137,7 @@ public abstract class FilterKvpParser extends KvpParser {
             SAXParserFactory factory = SAXParserFactory.newInstance();
             SAXParser parser = factory.newSAXParser();
             ParserAdapter adapter = new ParserAdapter(parser.getParser());
-
+            adapter.setEntityResolver(entityResolverProvider.getEntityResolver());
             adapter.setContentHandler(documentFilter);
             adapter.parse(requestSource);
             LOGGER.fine("just parsed: " + requestSource);

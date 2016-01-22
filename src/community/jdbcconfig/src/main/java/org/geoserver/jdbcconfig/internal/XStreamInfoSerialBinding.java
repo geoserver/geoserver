@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -26,6 +26,7 @@ public class XStreamInfoSerialBinding {
     public XStreamInfoSerialBinding(final XStreamPersisterFactory xspf) {
         this.xstreamPersister = xspf.createXMLPersister();
         this.xstreamPersister.setLoggingLevel(Level.WARNING);
+        //new JDBCConfigXStreamPersisterInitializer().init(this.xstreamPersister);
     }
 
     public <T extends Info> T entryToObject(InputStream in, Class<T> target) {

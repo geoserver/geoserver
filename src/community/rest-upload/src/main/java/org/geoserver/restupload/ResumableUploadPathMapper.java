@@ -23,6 +23,8 @@ import org.geoserver.rest.util.RESTUtils;
  *
  */
 public class ResumableUploadPathMapper extends RESTUploadPathMapperImpl {
+    
+    private final static String DEFAULT_ROOT_DIRECTORY = "data";
 
     private String sourcePath;
 
@@ -39,10 +41,7 @@ public class ResumableUploadPathMapper extends RESTUploadPathMapperImpl {
         }
         String root = RESTUtils.getRootDirectory(workspace, store, catalog);
         if (root == null || root.isEmpty()) {
-            //GEOSERVER_DATA_DIR/data/
-            GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
-            Resource data = loader.get("data");
-            root = data.dir().getAbsolutePath();
+            root = DEFAULT_ROOT_DIRECTORY;
         }
         String destination = FilenameUtils.concat(root, itemPath.toString());
         itemPath.setLength(0);

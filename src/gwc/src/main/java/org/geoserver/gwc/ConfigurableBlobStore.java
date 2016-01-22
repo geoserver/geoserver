@@ -21,6 +21,7 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geotools.util.logging.Logging;
 import org.geowebcache.storage.BlobStore;
 import org.geowebcache.storage.BlobStoreListener;
+import org.geowebcache.storage.BlobStoreListenerList;
 import org.geowebcache.storage.StorageException;
 import org.geowebcache.storage.TileObject;
 import org.geowebcache.storage.TileRange;
@@ -78,6 +79,11 @@ public class ConfigurableBlobStore extends MemoryBlobStore implements BlobStore 
 
     /** Map containing mapping for {@link CacheProvider}s */
     private Map<String, CacheProvider> cacheProviders;
+
+    /**
+     * Save the listeners to re-apply them to the delegate blobstore upon config changes
+     */
+    private BlobStoreListenerList listeners = new BlobStoreListenerList();
 
     public ConfigurableBlobStore(BlobStore defaultStore, MemoryBlobStore memoryStore,
             NullBlobStore nullStore) {
@@ -267,6 +273,8 @@ public class ConfigurableBlobStore extends MemoryBlobStore implements BlobStore 
 
     @Override
     public void addListener(BlobStoreListener listener) {
+        //save it in case of further config changes
+        this.listeners.addListener(listener);
         // Check if the blobstore has already been configured
         if (configured.get()) {
             // Increment the number of current operations
@@ -286,6 +294,8 @@ public class ConfigurableBlobStore extends MemoryBlobStore implements BlobStore 
 
     @Override
     public boolean removeListener(BlobStoreListener listener) {
+        //remove it from the local backup
+        this.listeners.removeListener(listener);
         // Check if the blobstore has already been configured
         if (configured.get()) {
             // Increment the number of current operations
@@ -533,6 +543,11 @@ public class ConfigurableBlobStore extends MemoryBlobStore implements BlobStore 
             LOGGER.finest("Configuring BlobStore delegate");
         }
         // BlobStore configuration
+
+        //remove listeners from old delegate
+        for (BlobStoreListener listener : listeners.getListeners()) {
+            delegate.removeListener(listener);
+        }
         if (gwcConfig.isInnerCachingEnabled()) {
             memoryStore.setCacheProvider(cache);
             if (!gwcConfig.isPersistenceEnabled()) {
@@ -544,7 +559,11 @@ public class ConfigurableBlobStore extends MemoryBlobStore implements BlobStore 
         } else {
             delegate = defaultStore;
         }
-
+        //apply listeners to new delegate
+        for (BlobStoreListener listener : listeners.getListeners()) {
+            delegate.addListener(listener);
+        }
+        
         // Update the configured parameter
         configured.getAndSet(true);
     }

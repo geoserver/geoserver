@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
- Copyright (C) 2014 - Open Source Geospatial Foundation. All rights reserved.
+ Copyright (C) 2014 - 2015 - Open Source Geospatial Foundation. All rights reserved.
  This code is licensed under the GPL 2.0 license, available at the root
  application directory.
  -->
@@ -117,18 +117,21 @@
         <constructor-arg index="0" value="GetCapabilities" />
         <constructor-arg index="1" value="1.0.0" />
         <constructor-arg index="2" ref="wpsXmlConfiguration-1.0.0" />
+        <constructor-arg index="3" ref="entityResolverProvider" />
     </bean>
     <bean id="wpsDescribeProcessXmlReader-1.0.0"
         class="org.geoserver.wps.xml.v1_0_0.WpsXmlReader">
         <constructor-arg index="0" value="DescribeProcess" />
         <constructor-arg index="1" value="1.0.0" />
         <constructor-arg index="2" ref="wpsXmlConfiguration-1.0.0" />
+        <constructor-arg index="3" ref="entityResolverProvider" />
     </bean>
     <bean id="wpsExecuteXmlReader-1.0.0"
         class="org.geoserver.wps.xml.v1_0_0.WpsXmlReader">
         <constructor-arg index="0" value="Execute" />
         <constructor-arg index="1" value="1.0.0" />
         <constructor-arg index="2" ref="wpsXmlConfiguration-1.0.0" />
+        <constructor-arg index="3" ref="entityResolverProvider" />
     </bean>
  
 
@@ -308,4 +311,6 @@
     <bean id="rasterSizeEstimators" class="org.geoserver.wps.validator.RasterSizeEstimator"/>
     <bean id="rawDataSizeEstimator" class="org.geoserver.wps.validator.RawDataSizeEstimator"/>
     <bean id="geometrySizeEstimator" class="org.geoserver.wps.validator.GeometrySizeEstimator"/>
+    
+    <bean id="processStartupFilter" class="org.geoserver.wps.executor.ProcessStartupFilter"/>
 </beans>

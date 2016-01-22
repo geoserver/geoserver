@@ -207,6 +207,10 @@ public class StoredQuery {
             
             //parse
             Parser p = new Parser(new WFSConfiguration());
+            //"inject" namespace mappings
+            if (catalog != null) {
+                p.getNamespaces().add(new CatalogNamespaceSupport(catalog));
+            }
             try {
                 QueryType compiled = 
                     (QueryType) p.parse(new ByteArrayInputStream(sb.toString().getBytes()));

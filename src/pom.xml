@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!-- 
- Copyright (C) 2014 - Open Source Geospatial Foundation. All rights reserved.
+ Copyright (C) 2015 - Open Source Geospatial Foundation. All rights reserved.
  This code is licensed under the GPL 2.0 license, available at the root
  application directory.
  -->
@@ -13,7 +13,7 @@
  <groupId>org.geoserver</groupId>
  <artifactId>geoserver</artifactId>
  <packaging>pom</packaging>
- <version>2.8-SNAPSHOT</version>
+ <version>2.9-SNAPSHOT</version>
  <name>GeoServer</name>
 
  <scm>
@@ -54,21 +54,26 @@
   <repository>
    <id>boundless</id>
    <name>Boundless Maven Repository</name>
-   <url>http://repo.boundlessgeo.com/main</url>
+   <url>https://repo.boundlessgeo.com/main/</url>
+   <!-- contains snapshot and release (including third-party-dependences)               -->
+   <!-- Restlet maven Repository (http://maven.restlet.org)                             -->
+   <!-- ucar (https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases) -->
+   <!-- geosolutions (http://maven.geo-solutions.it/)                                   -->
    <snapshots>
      <enabled>true</enabled>
    </snapshots>
+   <releases>
+     <enabled>true</enabled>
+   </releases>
   </repository>
   
   <repository>
     <id>osgeo</id>
     <name>Open Source Geospatial Foundation Repository</name>
     <url>http://download.osgeo.org/webdav/geotools/</url>
-    <snapshots>
-      <enabled>true</enabled>
-    </snapshots>
+    <!-- release repository used by geotools (and third-party dependencies) -->
   </repository>
-
+   
   <repository>
     <id>maven-restlet</id>
     <name>Restlet Maven Repository</name>
@@ -87,20 +92,6 @@
     </snapshots>
    </repository>
  </repositories>
-
- <pluginRepositories>
-  <pluginRepository>
-   <id>codehaus-snapshot-plugins</id>
-   <name>codehaus-shapshot-plugins</name>
-   <url>http://snapshots.repository.codehaus.org/</url>
-   <snapshots>
-    <enabled>true</enabled>
-   </snapshots>
-   <releases>
-    <enabled>false</enabled>
-   </releases>
-  </pluginRepository>
- </pluginRepositories>
 
  <dependencyManagement>
   <dependencies>
@@ -595,6 +586,11 @@
     <artifactId>gwc-diskquota-jdbc</artifactId>
     <version>${gwc.version}</version>
    </dependency>
+   <dependency>
+    <groupId>org.geowebcache</groupId>
+    <artifactId>gwc-aws-s3</artifactId>
+    <version>${gwc.version}</version>
+   </dependency>
 
    <!-- ORACLE -->
    <!-- Download and install into your own repo -->
@@ -632,7 +628,7 @@
    <dependency>
     <groupId>org.easymock</groupId>
     <artifactId>easymock</artifactId>
-    <version>2.5.2</version>
+    <version>3.1</version>
    </dependency>
    <dependency>
     <groupId>org.easymock</groupId>
@@ -677,7 +673,7 @@
    <dependency>
     <groupId>javax.servlet</groupId>
     <artifactId>servlet-api</artifactId>
-    <version>2.5</version>
+    <version>2.4</version>
    </dependency>
    <dependency>
     <groupId>oro</groupId>
@@ -745,9 +741,14 @@
     <version>3.1</version>
    </dependency>
    <dependency>
-    <groupId>commons-vfs</groupId>
-    <artifactId>commons-vfs</artifactId>
-    <version>1.0</version>
+    <groupId>commons-dbcp</groupId>
+    <artifactId>commons-dbcp</artifactId>
+    <version>1.4</version>
+   </dependency>
+   <dependency>
+	<groupId>org.apache.commons</groupId>
+	<artifactId>commons-vfs2</artifactId>
+	<version>2.0</version>
    </dependency>
    <dependency>
 	<groupId>org.apache.commons</groupId>
@@ -803,6 +804,11 @@
     <groupId>org.springframework</groupId>
     <artifactId>spring-jms</artifactId>
     <version>${spring.version}</version>
+   </dependency>
+   <dependency>
+    <groupId>org.springframework</groupId>
+    <artifactId>spring-oxm</artifactId>
+    <version>3.0.5.RELEASE</version>
    </dependency>
    <dependency>
     <groupId>org.springframework.security</groupId>
@@ -876,12 +882,12 @@
    <dependency>
      <groupId>org.slf4j</groupId>
      <artifactId>slf4j-api</artifactId>
-     <version>1.6.1</version>
+     <version>${slf4j.version}</version>
    </dependency>
    <dependency>
      <groupId>org.slf4j</groupId>
      <artifactId>slf4j-log4j12</artifactId>
-     <version>1.7.10</version>
+     <version>${slf4j.version}</version>
    </dependency>
    <dependency>
     <groupId>log4j</groupId>
@@ -894,29 +900,29 @@
     <version>2.1.5</version>
    </dependency>
    <dependency>
-    <groupId>org.mortbay.jetty</groupId>
-    <artifactId>jetty</artifactId>
-    <version>6.1.8</version>
+    <groupId>org.eclipse.jetty</groupId>
+    <artifactId>jetty-server</artifactId>
+    <version>${jetty.version}</version>
    </dependency>
    <dependency>
-    <groupId>org.mortbay.jetty</groupId>
-    <artifactId>jetty-naming</artifactId>
-    <version>6.1.8</version>
+    <groupId>org.eclipse.jetty</groupId>
+    <artifactId>jetty-jndi</artifactId>
+    <version>${jetty.version}</version>
    </dependency>
    <dependency>
-    <groupId>org.mortbay.jetty</groupId>
+    <groupId>org.eclipse.jetty</groupId>
     <artifactId>jetty-plus</artifactId>
-    <version>6.1.8</version>
+    <version>${jetty.version}</version>
    </dependency>
    <dependency>
-    <groupId>org.mortbay.jetty</groupId>
+    <groupId>org.eclipse.jetty</groupId>
     <artifactId>jetty-util</artifactId>
-    <version>6.1.8</version>
+    <version>${jetty.version}</version>
    </dependency>
    <dependency>
-    <groupId>org.mortbay.jetty</groupId>
+    <groupId>org.eclipse.jetty</groupId>
     <artifactId>jsp-2.0</artifactId>
-    <version>6.1.8</version>
+    <version>${jetty.version}</version>
     <type>pom</type>
    </dependency>
    <dependency>
@@ -963,6 +969,11 @@
     <groupId>javax.media</groupId>
     <artifactId>jai_imageio</artifactId>
     <version>1.1</version>
+   </dependency>
+   <dependency>
+    <groupId>it.geosolutions.jaiext.concurrent-tile-cache</groupId>
+    <artifactId>jt-concurrent-tile-cache</artifactId>
+    <version>${jaiext.version}</version>
    </dependency>
    <dependency>
     <groupId>org.eclipse.emf</groupId>
@@ -1076,6 +1087,11 @@
       <artifactId>pngj</artifactId>
       <version>2.0.1</version>
     </dependency>
+    <dependency>
+      <groupId>xml-apis</groupId>
+      <artifactId>xml-apis</artifactId>
+      <version>1.4.01</version>
+    </dependency>
         <dependency>
             <groupId>xerces</groupId>
             <artifactId>xercesImpl</artifactId>
@@ -1105,7 +1121,22 @@
 		<artifactId>geoserver-manager</artifactId>
 		<version>1.5.1</version>
 		<scope>test</scope>
-	</dependency>	
+    </dependency>
+    <dependency>
+      <groupId>joda-time</groupId>
+      <artifactId>joda-time</artifactId>
+      <version>2.9.1</version> 
+    </dependency>	
+    <dependency>
+      <groupId>it.geosolutions.imageio-ext</groupId>
+      <artifactId>imageio-ext-png</artifactId>
+      <version>${imageio-ext.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>it.geosolutions.imageio-ext</groupId>
+      <artifactId>imageio-ext-turbojpeg</artifactId>
+      <version>${imageio-ext.version}</version>
+    </dependency>
   </dependencies>
  </dependencyManagement>
 
@@ -1243,14 +1274,10 @@
      <artifactId>maven-compiler-plugin</artifactId>
      <version>2.3.2</version>
      <configuration>
-       <source>1.7</source>
-       <target>1.7</target>
+       <source>1.8</source>
+       <target>1.8</target>
        <debug>true</debug>
        <encoding>UTF-8</encoding>
-       <!-- 
-           On the win32 build box the compiler oom's due to the compiler accumulating
-           too many classes in the permanent generation, similar to GEOT-2462  
-       -->
        <fork>${fork.javac}</fork> 
        <maxmem>${javac.maxHeapSize}</maxmem>
      </configuration>
@@ -1272,8 +1299,8 @@
     <version>2.12.3</version>
     <configuration>
      <runOrder>alphabetical</runOrder>
-     <source>1.7</source>
-     <target>1.7</target>
+     <source>1.8</source>
+     <target>1.8</target>
      <includes>
       <include>**/*Test.java</include>
      </includes>
@@ -1281,7 +1308,7 @@
       <exclude>${test.exclude.pattern}</exclude>
      </excludes>
      <forkMode>once</forkMode>
-     <argLine>-Xmx${test.maxHeapSize} -XX:MaxPermSize=${test.maxPermSize} -enableassertions ${jvm.opts} -Djava.awt.headless=${java.awt.headless} -Dsun.java2d.d3d=${sun.java2d.d3d}-DremoteOwsTests=${remoteOwsTests} -DquietTests=${quietTests} -Dorg.geotools.image.test.enabled=${image.tests} -Dorg.geotools.image.test.interactive=${interactive.image} -Duser.timezone=${user.timezone} -Dwindows.leniency=${windows.leniency}</argLine>
+     <argLine>-Xmx${test.maxHeapSize} -enableassertions ${jvm.opts} -Djava.awt.headless=${java.awt.headless} -Dsun.java2d.d3d=${sun.java2d.d3d}-DremoteOwsTests=${remoteOwsTests} -DquietTests=${quietTests} -Dorg.geotools.image.test.enabled=${image.tests} -Dorg.geotools.image.test.interactive=${interactive.image} -Duser.timezone=${user.timezone} -Dwindows.leniency=${windows.leniency}</argLine>
      <enableAssertions>true</enableAssertions>
      <printSummary>true</printSummary>
      <testFailureIgnore>${allow.test.failure.ignore}</testFailureIgnore>
@@ -1295,7 +1322,6 @@
     <version>2.1</version>
     <configuration>
      <descriptors>
-      <descriptor>release/src.xml</descriptor>
       <descriptor>release/war.xml</descriptor>
       <descriptor>release/javadoc.xml</descriptor>
       <descriptor>release/bin.xml</descriptor>
@@ -1335,8 +1361,11 @@
       <descriptor>release/ext-libjpeg-turbo.xml</descriptor>
       <descriptor>release/ext-importer.xml</descriptor>
       <descriptor>release/ext-importer-bdb.xml</descriptor>
+      <descriptor>release/ext-grib.xml</descriptor>
+      <descriptor>release/ext-netcdf.xml</descriptor>
+      <descriptor>release/ext-netcdf-out.xml</descriptor>
      </descriptors>
-     <finalName>geoserver-2.8-SNAPSHOT</finalName>
+     <finalName>geoserver-2.9-SNAPSHOT</finalName>
      <outputDirectory>${project.build.directory}/release</outputDirectory>
     </configuration>
    </plugin>
@@ -1462,7 +1491,7 @@
     <artifactId>maven-javadoc-plugin</artifactId>
     <version>2.9</version>
     <configuration>
-     <source>1.7</source>
+     <source>1.8</source>
      <version>false</version>
      <noqualifier>all</noqualifier>
      <quiet>true</quiet>
@@ -1573,15 +1602,15 @@
  <distributionManagement>
   <repository>
    <id>boundless</id>
-   <name>Boundless Maven Repository</name>
-   <url>http://repo.boundlessgeo.com/main</url>
+   <name>Boundless Release Repository</name>
+   <url>https://repo.boundlessgeo.com/release/</url>
    <uniqueVersion>false</uniqueVersion>
   </repository>
   <snapshotRepository>
    <id>boundless</id>
-   <name>Boundless Maven Repository</name>
-   <url>http://repo.boundlessgeo.com/main</url>
    <uniqueVersion>false</uniqueVersion>
+   <name>Boundless Snapshot Repository</name>
+   <url>https://repo.boundlessgeo.com/snapshot/</url>
   </snapshotRepository>
  </distributionManagement>
 
@@ -1606,21 +1635,22 @@
 </modules>
 
  <properties>
-  <gs.version>2.8-SNAPSHOT</gs.version>
-  <gt.version>14-SNAPSHOT</gt.version>
-  <gwc.version>1.8-SNAPSHOT</gwc.version>
-  <spring.version>3.1.4.RELEASE</spring.version>
+  <gs.version>2.9-SNAPSHOT</gs.version>
+  <gt.version>15-SNAPSHOT</gt.version>
+  <gwc.version>1.9-SNAPSHOT</gwc.version>
+  <spring.version>3.2.15.RELEASE</spring.version>
   <spring.security.version>3.1.0.RELEASE</spring.security.version> 
+  <jetty.version>9.2.13.v20150730</jetty.version>
   <poi.version>3.8</poi.version>
   <wicket.version>1.4.12</wicket.version>
   <ant.version>1.8.4</ant.version>
-  <imageio-ext.version>1.1.11</imageio-ext.version>
+  <imageio-ext.version>1.1.13</imageio-ext.version>
+  <jaiext.version>1.0.8</jaiext.version>
   <java.awt.headless>true</java.awt.headless>
   <jvm.opts></jvm.opts>
   <jalopy.phase>disabled</jalopy.phase>
   <jalopy.srcExcludesPattern>disabled</jalopy.srcExcludesPattern>
   <test.maxHeapSize>512M</test.maxHeapSize>
-  <test.maxPermSize>128M</test.maxPermSize>
   <test.excludedGroups></test.excludedGroups>
   <test.exclude.pattern>none</test.exclude.pattern>
   <quietTests>true</quietTests>
@@ -1633,11 +1663,12 @@
   <image.tests>true</image.tests>
   <interactive.tests>false</interactive.tests>
   <windows.leniency>true</windows.leniency>
-  <gf.version>3.0-SNAPSHOT</gf.version>
+  <gf.version>3.1-SNAPSHOT</gf.version>
   <hibernate-version>3.6.0.Final</hibernate-version>
   <hibernate-generic-dao-version>1.1.0</hibernate-generic-dao-version>
   <hibernate-spatial-version>1.1.1</hibernate-spatial-version>
   <hibernate-spatial-h2-version>1.1.1</hibernate-spatial-h2-version>
+  <slf4j.version>1.7.10</slf4j.version>
  </properties>
 
  <profiles>

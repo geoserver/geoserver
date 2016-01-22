@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2014 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -32,8 +32,8 @@ import org.apache.wicket.model.util.CollectionModel;
 import org.apache.wicket.model.util.ListModel;
 import org.apache.wicket.validation.validator.MinimumValidator;
 import org.apache.wicket.validation.validator.RangeValidator;
-import org.geoserver.catalog.impl.ModificationProxy;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.web.data.store.panel.FileModel;
 import org.geoserver.web.services.BaseServiceAdminPage;
 import org.geoserver.web.util.MapModel;
 import org.geoserver.web.wicket.FileExistsValidator;
@@ -48,7 +48,6 @@ import org.geoserver.wms.WMSInfo.WMSInterpolation;
 import org.geoserver.wms.WatermarkInfo.Position;
 import org.geoserver.wms.featureinfo.GetFeatureInfoOutputFormat;
 import org.geoserver.wms.web.publish.LayerAuthoritiesAndIdentifiersPanel;
-import org.geoserver.web.data.store.panel.FileModel;
 
 /**
  * Edits the WMS service details 
@@ -108,6 +107,17 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
                     new StringResourceModel("bboxForEachCRSHelp.message",WMSAdminPage.this, null));
             }
         });
+        // advanced projection handling
+        PropertyModel metadataModel = new PropertyModel(info, "metadata");
+        MapModel aphEnabled = defaultedModel(metadataModel, WMS.ADVANCED_PROJECTION_KEY,
+                WMS.ENABLE_ADVANCED_PROJECTION);
+        CheckBox aphEnabledField = new CheckBox("aph.enabled", aphEnabled);
+        form.add(aphEnabledField);
+        MapModel aphWrap = defaultedModel(metadataModel, WMS.MAP_WRAPPING_KEY,
+                WMS.ENABLE_MAP_WRAPPING);
+        CheckBox aphWrapField = new CheckBox("aph.wrap", aphWrap);
+        form.add(aphWrapField);
+
         // general
         form.add(new DropDownChoice("interpolation", Arrays.asList(WMSInfo.WMSInterpolation.values()), new InterpolationRenderer()));
         // resource limits
@@ -132,7 +142,6 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
         form.add(transparency);
     	form.add(new DropDownChoice("watermark.position", Arrays.asList(Position.values()), new WatermarkPositionRenderer()));
     	// svg
-    	PropertyModel metadataModel = new PropertyModel(info, "metadata");
         form.add(new CheckBox("svg.antialias", new MapModel(metadataModel, "svgAntiAlias")));
     	form.add(new DropDownChoice("svg.producer", new MapModel(metadataModel, "svgRenderer"), SVG_RENDERERS, new SVGMethodRenderer()));
     	// png compression levels
@@ -249,7 +258,7 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
             public void onSubmit(AjaxRequestTarget target, Form form) {
                 File file = null;
                 textField.processInput();
-                String input = (String) textField.getConvertedInput();
+                String input = textField.getConvertedInput();
                 if (input != null && !input.equals("")) {
                     file = new File(input);
                 }

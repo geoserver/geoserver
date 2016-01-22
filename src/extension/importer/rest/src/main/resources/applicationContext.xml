@@ -6,49 +6,49 @@
   <!--
    rest bindings
     -->
-  <bean id="importResource" class="org.geoserver.importer.rest.ImportResource">
+  <bean id="importResource" class="org.geoserver.importer.rest.ImportResource" singleton="false">
     <constructor-arg ref="importer"/>
   </bean>
   <bean id="importContextFinder" class="org.geoserver.rest.BeanResourceFinder">
       <constructor-arg value="importResource"/>
   </bean>
 
-  <bean id="importTaskResource" class="org.geoserver.importer.rest.TaskResource">
+  <bean id="importTaskResource" class="org.geoserver.importer.rest.TaskResource" singleton="false">
     <constructor-arg ref="importer"/>
   </bean>
   <bean id="importTaskFinder" class="org.geoserver.rest.BeanResourceFinder">
       <constructor-arg value="importTaskResource"/>
   </bean>
 
-  <bean id="taskTargetResource" class="org.geoserver.importer.rest.TaskTargetResource">
+  <bean id="taskTargetResource" class="org.geoserver.importer.rest.TaskTargetResource" singleton="false">
     <constructor-arg ref="importer"/>
   </bean>
   <bean id="taskTargetFinder" class="org.geoserver.rest.BeanResourceFinder">
     <constructor-arg value="taskTargetResource"/>
   </bean>
 
-  <bean id="layerResource" class="org.geoserver.importer.rest.LayerResource">
+  <bean id="layerResource" class="org.geoserver.importer.rest.LayerResource" singleton="false">
     <constructor-arg ref="importer"/>
   </bean>
   <bean id="layerFinder" class="org.geoserver.rest.BeanResourceFinder">
       <constructor-arg value="layerResource"/>
   </bean>
 
-  <bean id="importDataResource" class="org.geoserver.importer.rest.DataResource">
+  <bean id="importDataResource" class="org.geoserver.importer.rest.DataResource" singleton="false">
     <constructor-arg ref="importer"/>
   </bean>
   <bean id="importDataFinder" class="org.geoserver.rest.BeanResourceFinder">
       <constructor-arg value="importDataResource"/>
   </bean>
 
-  <bean id="dirResource" class="org.geoserver.importer.rest.DirectoryResource">
+  <bean id="dirResource" class="org.geoserver.importer.rest.DirectoryResource" singleton="false">
     <constructor-arg ref="importer"/>
   </bean>
   <bean id="dirFinder" class="org.geoserver.rest.BeanResourceFinder">
       <constructor-arg value="dirResource"/>
   </bean>
 
-  <bean id="txResource" class="org.geoserver.importer.rest.TransformResource">
+  <bean id="txResource" class="org.geoserver.importer.rest.TransformResource" singleton="false">
     <constructor-arg ref="importer"/>
   </bean>
   <bean id="txFinder" class="org.geoserver.rest.BeanResourceFinder">
@@ -94,6 +94,18 @@
             <value>/imports/{import}/data/files/{file}</value>
           </key>
           <value>dirFinder</value>
+        </entry>
+        <entry>
+          <key>
+            <value>/imports/{import}/transforms</value>
+          </key>
+          <value>txFinder</value>
+        </entry>
+        <entry>
+          <key>
+            <value>/imports/{import}/transforms/{transform}</value>
+          </key>
+          <value>txFinder</value>
         </entry>
         <entry>
           <key>

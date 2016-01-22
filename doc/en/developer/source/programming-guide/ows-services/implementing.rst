@@ -16,49 +16,8 @@ The first step in creating our plug-in is setting up a maven project for it. The
 
 #. Add a maven pom called :file:`pom.xml` to the :file:`hello` directory: 
 
-.. code-block:: xml
-
-  <?xml version="1.0" encoding="ISO-8859-1"?>
-  <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-
-    <modelVersion>4.0.0</modelVersion>
-  
-    <!-- set parent pom to community pom -->
-    <parent>
-        <groupId>org.geoserver</groupId>
-        <artifactId>community</artifactId>
-        <version>2.8-SNAPSHOT</version> <!-- change this to the proper GeoServer version -->
-    </parent>  
-  
-    <groupId>org.geoserver</groupId>
-    <artifactId>hello</artifactId>
-    <packaging>jar</packaging>
-    <version>1.0</version>
-    <name>Hello World Service Module</name>
-  
-    <!-- declare depenency on geoserver main -->
-    <dependencies>
-        <dependency>
-            <groupId>org.geoserver</groupId>
-            <artifactId>gs-main</artifactId>
-            <version>2.8-SNAPSHOT</version> <!-- change this to the proper GeoServer version -->
-        </dependency>
-    </dependencies>
-
-    <repositories>
-        <repository>
-            <id>boundless</id>
-            <name>Boundless Maven Repository</name>
-            <url>http://repo.boundlessgeo.com/main</url>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
-
-  </project>
-
+.. literalinclude:: hello/pom.xml
+    :language: xml
 
 #. Create a java source directory, :file:`src/main/java` under the :file:`hello` directory::
 
@@ -75,61 +34,15 @@ A plug-in is a collection of extensions realized as spring beans. In this exampl
 
 #. Create a class called **HelloWorld**: 
 
-.. code-block:: java
-
-  import java.io.IOException;
-  import javax.servlet.ServletException;
-  import javax.servlet.http.HttpServletRequest;
-  import javax.servlet.http.HttpServletResponse;
-
-  public class HelloWorld {
-
-    public HelloWorld() {
-      // Do nothing
-    }
-
-    public void sayHello(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
-      response.getOutputStream().write( "Hello World".getBytes() );
-    }
-  }
+.. literalinclude:: hello/src/main/java/HelloWorld.java
+    :language: java
 
 The service is relatively simple. It provides a method sayHello(..) which takes a HttpServletRequest, and a HttpServletResponse. The parameter list for this function is automatically discovered by the org.geoserver.ows.Dispatcher.
 
 #. Create an :file:`applicationContext.xml` declaring the above class as a bean.
 
-.. code-block:: xml
-
-  <?xml version="1.0" encoding="UTF-8"?>
-  <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
-
-  <beans>
-      <!-- Spring will reference the instance of the HelloWorld class
-             by the id name "helloService" -->
-      <bean id="helloService" class="HelloWorld">
-	  </bean>
-
-      <!-- This creates a Service descriptor, which allows the org.geoserver.ows.Dispatcher
-             to locate it. -->
-	  <bean id="helloService-1.0.0" class="org.geoserver.platform.Service">
-      <!-- used to reference the service in the URL -->
-          <constructor-arg index="0" value="hello"/>
-
-          <!-- our actual service POJO defined previously -->
-          <constructor-arg index="1" ref="helloService"/>
-
-          <!-- a version number for this service -->
-          <constructor-arg index="2" value="1.0.0"/>
-                
-          <!-- a list of functions for this service -->
-          <constructor-arg index="3">
-              <list>
-                  <value>sayHello</value>
-              </list>
-          </constructor-arg>
-                
-	  </bean>
-  </beans>
+.. literalinclude:: hello/src/main/java/applicationContext.xml
+    :language: xml
 
 At this point the hello project should look like the following:
 
@@ -150,44 +63,98 @@ Trying it Out
 
 .. code-block:: sh
 
-  [hello]% mvn install
+    [hello]% mvn install
 
 .. code-block:: sh
 
-  [hello]% mvn install
-
-  [INFO] Scanning for projects...
-  [INFO] ----------------------------------------------------------------------------
-  [INFO] Building Hello World Service Module
-  [INFO]    task-segment: [install]
-  [INFO] ----------------------------------------------------------------------------
-  [INFO] [resources:resources]
-  [INFO] Using default encoding to copy filtered resources.
-  [INFO] [compiler:compile]
-  [INFO] Compiling 1 source file to /home/ak/geoserver/community/hello/target/classes
-  [INFO] [resources:testResources]
-  [INFO] Using default encoding to copy filtered resources.
-  [INFO] [compiler:testCompile]
-  [INFO] No sources to compile
-  [INFO] [surefire:test]
-  [INFO] No tests to run.
-  [INFO] [jar:jar]
-  [INFO] Building jar: /home/ak/geoserver/community/hello/target/hello-1.0.jar
-  [INFO] [jar:test-jar {execution: default}]
-  [WARNING] JAR will be empty - no content was marked for inclusion!
-  [INFO] Building jar: /home/ak/geoserver/community/hello/target/hello-1.0-tests.jar
-  [INFO] [install:install]
-  [INFO] Installing /home/ak/geoserver/community/hello/target/hello-1.0.jar to /home/ak/.m2/repository/org/geoserver/hello/1.0/hello-1.0.jar
-  [INFO] Installing /home/ak/geoserver/community/hello/target/hello-1.0-tests.jar to /home/ak/.m2/repository/org/geoserver/hello/1.0/hello-1.0-tests.jar
-  [INFO] ------------------------------------------------------------------------
-  [INFO] BUILD SUCCESSFUL
-  [INFO] ------------------------------------------------------------------------
-  [INFO] Total time: 6 seconds
-  [INFO] Finished at: Fri Sep 21 14:52:31 EDT 2007
-  [INFO] Final Memory: 27M/178M
-  [INFO] -----------------------------------------------------------------------
+    [INFO] Scanning for projects...
+    [INFO]                                                                         
+    [INFO] ------------------------------------------------------------------------
+    [INFO] Building Hello World Service Module 1.0
+    [INFO] ------------------------------------------------------------------------
+    [INFO] 
+    [INFO] --- maven-clean-plugin:2.5:clean (default-clean) @ hello ---
+    [INFO] Deleting /home/bradh/devel/geoserver/doc/en/developer/source/programming-guide/ows-services/hello/target
+    [INFO] 
+    [INFO] --- cobertura-maven-plugin:2.6:clean (default) @ hello ---
+    [INFO] 
+    [INFO] --- git-commit-id-plugin:2.0.4:revision (default) @ hello ---
+    [INFO] [GitCommitIdMojo] .git directory could not be found, skipping execution
+    [INFO] 
+    [INFO] --- maven-resources-plugin:2.6:resources (default-resources) @ hello ---
+    [INFO] Using 'UTF-8' encoding to copy filtered resources.
+    [INFO] Copying 1 resource
+    [INFO] skip non existing resourceDirectory /home/bradh/devel/geoserver/doc/en/developer/source/programming-guide/ows-services/hello/src/main/resources
+    [INFO] 
+    [INFO] --- maven-compiler-plugin:2.3.2:compile (default-compile) @ hello ---
+    [INFO] Compiling 1 source file to /home/bradh/devel/geoserver/doc/en/developer/source/programming-guide/ows-services/hello/target/classes
+    [INFO] 
+    [INFO] --- maven-resources-plugin:2.6:testResources (default-testResources) @ hello ---
+    [INFO] Using 'UTF-8' encoding to copy filtered resources.
+    [INFO] skip non existing resourceDirectory /home/bradh/devel/geoserver/doc/en/developer/source/programming-guide/ows-services/hello/src/test/java
+    [INFO] skip non existing resourceDirectory /home/bradh/devel/geoserver/doc/en/developer/source/programming-guide/ows-services/hello/src/test/resources
+    [INFO] 
+    [INFO] --- maven-compiler-plugin:2.3.2:testCompile (default-testCompile) @ hello ---
+    [INFO] No sources to compile
+    [INFO] 
+    [INFO] --- maven-surefire-plugin:2.12.3:test (default-test) @ hello ---
+    [INFO] No tests to run.
+    [INFO] 
+    [INFO] --- maven-jar-plugin:2.4:jar (default-jar) @ hello ---
+    [INFO] Building jar: /home/bradh/devel/geoserver/doc/en/developer/source/programming-guide/ows-services/hello/target/hello-1.0.jar
+    [INFO] 
+    [INFO] --- maven-jar-plugin:2.4:test-jar (default) @ hello ---
+    [WARNING] JAR will be empty - no content was marked for inclusion!
+    [INFO] Building jar: /home/bradh/devel/geoserver/doc/en/developer/source/programming-guide/ows-services/hello/target/hello-1.0-tests.jar
+    [INFO] 
+    [INFO] >>> maven-source-plugin:2.2.1:jar (attach-sources) > generate-sources @ hello >>>
+    [INFO] 
+    [INFO] --- git-commit-id-plugin:2.0.4:revision (default) @ hello ---
+    [INFO] [GitCommitIdMojo] .git directory could not be found, skipping execution
+    [INFO] 
+    [INFO] <<< maven-source-plugin:2.2.1:jar (attach-sources) < generate-sources @ hello <<<
+    [INFO] 
+    [INFO] --- maven-source-plugin:2.2.1:jar (attach-sources) @ hello ---
+    [INFO] Building jar: /home/bradh/devel/geoserver/doc/en/developer/source/programming-guide/ows-services/hello/target/hello-1.0-sources.jar
+    [INFO] 
+    [INFO] >>> maven-source-plugin:2.2.1:test-jar (attach-sources) > generate-sources @ hello >>>
+    [INFO] 
+    [INFO] --- git-commit-id-plugin:2.0.4:revision (default) @ hello ---
+    [INFO] [GitCommitIdMojo] .git directory could not be found, skipping execution
+    [INFO] 
+    [INFO] <<< maven-source-plugin:2.2.1:test-jar (attach-sources) < generate-sources @ hello <<<
+    [INFO] 
+    [INFO] --- maven-source-plugin:2.2.1:test-jar (attach-sources) @ hello ---
+    [INFO] No sources in project. Archive not created.
+    [INFO] 
+    [INFO] --- maven-install-plugin:2.4:install (default-install) @ hello ---
+    [INFO] Installing /home/bradh/devel/geoserver/doc/en/developer/source/programming-guide/ows-services/hello/target/hello-1.0.jar to /home/bradh/.m2/repository/org/geoserver/hello/1.0/hello-1.0.jar
+    [INFO] Installing /home/bradh/devel/geoserver/doc/en/developer/source/programming-guide/ows-services/hello/pom.xml to /home/bradh/.m2/repository/org/geoserver/hello/1.0/hello-1.0.pom
+    [INFO] Installing /home/bradh/devel/geoserver/doc/en/developer/source/programming-guide/ows-services/hello/target/hello-1.0-tests.jar to /home/bradh/.m2/repository/org/geoserver/hello/1.0/hello-1.0-tests.jar
+    [INFO] Installing /home/bradh/devel/geoserver/doc/en/developer/source/programming-guide/ows-services/hello/target/hello-1.0-sources.jar to /home/bradh/.m2/repository/org/geoserver/hello/1.0/hello-1.0-sources.jar
+    [INFO] ------------------------------------------------------------------------
+    [INFO] BUILD SUCCESS
+    [INFO] ------------------------------------------------------------------------
+    [INFO] Total time: 2.473 s
+    [INFO] Finished at: 2015-10-20T10:14:16+11:00
+    [INFO] Final Memory: 23M/589M
+    [INFO] ------------------------------------------------------------------------
 
 #. Copy :file:`target/hello-1.0.jar` into the :file:`WEB-INF/lib` directory of your GeoServer install
+   
+   .. note::
+      
+      If running GeoServer from eclipse you can edit the :file:`web-app/pom.xml` with the following dependency:
+      
+      .. code-block:: xml
+      
+         <dependency>
+            <groupId>org.geoserver</groupId>
+            <artifactId>hello</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+      
+      You will need to run `mvn eclipse:eclipse` after editing :file:`web-app/pom.xml` for the change to be reflected in the eclipse configuration.
 
 #. Restart GeoServer
 

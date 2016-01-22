@@ -3,7 +3,7 @@
   <enabled>true</enabled>
   <name>My GeoServer WMS</name>
   <title>My GeoServer WMS</title>
-  <maintainer>http://jira.codehaus.org/secure/BrowseProject.jspa?id=10311</maintainer>
+  <maintainer>http://geoserver.org/comm</maintainer>
   <abstrct>
 This is a description of your Web Map Server.
      </abstrct>

@@ -68,5 +68,59 @@ To add in a layer from GeoServer (if it wasn't set up to be added automatically)
 
    *Adding a new cached layer*
 
+
+Configuring a cached layer
+--------------------------
+
 You have two options for layer configuration. The first option is to load the layer using the default (global) settings. To do this, select the layer you wish to start caching, and click the :guilabel:`Configure selected layers with caching defaults` link. The second option is to configure the caching parameters manually, via the :ref:`layer configuration <webadmin_layers>` pages. To do this, just click the layer name itself.
 
+
+Parameter Filters
+~~~~~~~~~~~~~~~~~
+
+Parameter filters allow GeoWebCache to cache a layer with varying parameters such as ``STYLES``, ``TIME``.  One is needed for each parameter to be cached and it needs to know how to recognize valid values to be cached and which values are the same as other values so they only get cached once. There are several different kinds of filter as a result.
+
+Adding a Filter
+_______________
+
+At the bottom of the filter list in the text box beside :guilabel:`Add filter` specify the name of the parameter.  In the drop down box select the kind of filter you want then click the |add| button.  For a filter that automatically tracks the layers styles in a parameter named ``STYLES`` click the :guilabel:`Add Style Filter` button.
+
+.. |add| image:: img/add.png
+	   
+Removing a Filter
+_________________
+
+To remove a filter, click the |remove| button to the right of the filter's entry in the filter list.
+
+.. |remove| image:: img/remove.png
+
+
+Types of filter
+_______________
+
+All parameter filters take a default parameter that will be used if the parameter was not specified.  Specific types of parameter filter provide different ways of specifying which parameter values are allowed, and which are equivalent to one another and should be cached together.
+
+List of Strings
+:::::::::::::::
+
+The ``stringParameterFilter`` takes a collection of plain text strings.  If the value matches one of the strings, it is valid, otherwise it is not.  Matching can be done in a case sensitive way, or the strings can all be converted to upper or lower case before matching.  As case rules vary between languages, the locale to use for case changes can be specified.
+
+Regular Expression
+::::::::::::::::::
+
+The `regexParameterFilter` takes a regular expression to match strings. This should be used with caution as it potentially allows an arbitrarily large number of caches to be created.  Like the string filter, it can be normalized for case.
+
+List of Numbers
+:::::::::::::::
+
+The ``floatParameterFilter`` is like the string filter in taking a list of values, but it uses floating point numbers rather than arbitrary text strings.  A threshold can be given to pull close numbers to a standard value.
+
+List of Whole Numbers
+:::::::::::::::::::::
+
+The ``integerParameterFilter`` is like the float filter but works with integer/whole number values.
+
+Styles
+::::::
+
+The ``styleParameterFilter`` is connected to the GeoServer catalog and knows what styles are available for the layer and when they change.  You can specify a default distinct from the normal layer default if you wish, and restrict the range of additional styles available if you do not wish to cache all of them.

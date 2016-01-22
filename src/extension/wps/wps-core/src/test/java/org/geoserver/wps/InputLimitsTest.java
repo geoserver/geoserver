@@ -556,7 +556,7 @@ public class InputLimitsTest extends WPSTestSupport {
         String statusLocation = fullStatusLocation.substring(fullStatusLocation.indexOf('?') - 3);
 
         // wait for end, pinging the process to make it fail
-        dom = waitForProcessEnd(statusLocation, 20, new Callable<Void>() {
+        dom = waitForProcessEnd(statusLocation, 60, new Callable<Void>() {
 
             @Override
             public Void call() throws Exception {

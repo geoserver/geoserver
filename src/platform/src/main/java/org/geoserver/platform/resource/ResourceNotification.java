@@ -1,3 +1,8 @@
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2014 OpenPlans
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.platform.resource;
 
 import java.io.File;
@@ -163,6 +168,10 @@ public class ResourceNotification {
     }
     public String getPath() {
         return path;
+    }
+    
+    public long getTimestamp() {
+        return timestamp;
     }
     /**
      * Paths of changed resources.

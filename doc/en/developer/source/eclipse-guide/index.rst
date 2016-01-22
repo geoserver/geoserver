@@ -18,6 +18,15 @@ Running and debugging
 Run or debug the class ``org.geoserver.web.Start`` in the ``web-app`` 
 module. The steps to do so are detailed in the :ref:`quickstart`.
 
+Running GeoServer with Extensions
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+By default, GeoServer will run without any extensions enabled. In order to run GeoServer with extensions, the ``web-app`` module declares a number of profiles used to enable specific extensions when running ``Start``. To enable an extension, re-generate the root eclipse profile with the appropriate maven profile(s) enabled::
+
+  % mvn eclipse:eclipse -P wps
+
+The full list of supported profiles can be found in ``src/web/app/pom.xml``.
+
 Setting the data directory
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -33,9 +42,6 @@ If unset, GeoServer will default to the ``minimal`` directory inside of the
     path of the data directory
 
     .. image:: dd2.jpg
-
-.. note:: If you have checked out with *git svn* you may wish to use a
-   symbolic in web/app correctly reference ''minimal''
 
 Changing the default port for Jetty
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -129,7 +135,7 @@ Eclipse preferences
 Code formatting
 ^^^^^^^^^^^^^^^
 
-#. Download http://svn.osgeo.org/geotools/trunk/build/eclipse/formatter.xml
+#. Download https://github.com/geotools/geotools/blob/master/build/eclipse/formatter.xml
 #. Navigate to ``Java``, ``Code Style``, ``Formatter`` and click ``Import...``
 
    .. image:: code_formatting1.jpg
@@ -139,15 +145,32 @@ Code formatting
 
    .. image:: code_formatting2.jpg
 
+#. We follow "Sun Coding Conventions and a little bit more":
+  
+  * `Code Conventions for the Java Programming Language <http://www.oracle.com/technetwork/java/index-135089.html>`__
+  * but allow for 100 characters in width
+  * developers should use spaces for indentations, not tabulations. The tab width (4 or 8 spaces) is not the same on all editors.
+  
+  For more information see GeoTools `Coding Style <http://docs.geotools.org/latest/developer/conventions/code/style.html>`__ page.
+
 Code templates
 ^^^^^^^^^^^^^^
 
-#. Download http://svn.osgeo.org/geotools/trunk/build/eclipse/codetemplates.xml
+#. Download https://github.com/geotools/geotools/blob/master/build/eclipse/codetemplates.xml
 #. Navigate to ``Java``, ``Code Style``, ``Code Templates`` and click ``Import...``
 
    .. image:: code_templates.jpg
 
 #. Select the ``codetemplates.xml`` file downloaded in step 1
+#. Update the file header:
+   
+   .. code-block::
+   
+      /* (c) ${year} Open Source Geospatial Foundation - all rights reserved
+       * This code is licensed under the GPL 2.0 license, available at the root
+       * application directory.
+       */
+   
 #. Click ``Apply``
 
 Text editors

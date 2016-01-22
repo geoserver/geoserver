@@ -1,17 +1,16 @@
-/* (c) 2014-2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.jai;
 
-import it.geosolutions.jaiext.JAIExt;
-
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
 import javax.media.jai.JAI;
+import javax.media.jai.TileCache;
 
 import org.geoserver.config.ConfigurationListenerAdapter;
 import org.geoserver.config.GeoServer;
@@ -20,9 +19,10 @@ import org.geoserver.config.GeoServerInitializer;
 import org.geoserver.config.JAIEXTInfo;
 import org.geoserver.config.JAIInfo;
 import org.geotools.coverage.processing.CoverageProcessor;
+import org.geotools.image.ImageWorker;
 import org.geotools.image.jai.Registry;
 
-import com.sun.media.jai.util.SunTileCache;
+import it.geosolutions.jaiext.JAIExt;
 
 /**
  * Initializes JAI functionality from configuration.
@@ -50,39 +50,40 @@ public class JAIInitializer implements GeoServerInitializer {
     }
 
     void initJAI(JAIInfo jai) {
-        
+
         JAI jaiDef = JAI.getDefaultInstance();
         jai.setJAI( jaiDef );
-        
+
         // JAIEXT initialization
-        JAIExt.initJAIEXT();
-        if(jai.getJAIEXTInfo() != null){
-            JAIEXTInfo jaiext = jai.getJAIEXTInfo();
-            Set<String> jaiOperations = jaiext.getJAIOperations();
-            Set<String> jaiExtOperations = jaiext.getJAIEXTOperations();
-            if(jaiOperations != null && !jaiOperations.isEmpty()){
-                JAIExt.registerOperations(jaiOperations, false);
-                for(String opName : jaiOperations){
-                    // Remove operations with old descriptors
-                    CoverageProcessor.removeOperationFromProcessors(opName);
-                    JAIExt.setJAIAcceleration(opName, true);
-                }
-            }
-            if(jaiExtOperations != null && !jaiExtOperations.isEmpty()){
-                Set<String> newJai = new TreeSet<String>(jaiExtOperations);
+        if (ImageWorker.isJaiExtEnabled()) {
+            if(jai.getJAIEXTInfo() != null){
+                JAIEXTInfo jaiext = jai.getJAIEXTInfo();
+                Set<String> jaiOperations = jaiext.getJAIOperations();
+                Set<String> jaiExtOperations = jaiext.getJAIEXTOperations();
                 if(jaiOperations != null && !jaiOperations.isEmpty()){
-                    newJai.removeAll(jaiOperations);
-                }
-                for(String opName : newJai){
-                    if(!JAIExt.isJAIExtOperation(opName)){
+                    JAIExt.registerOperations(jaiOperations, false);
+                    for(String opName : jaiOperations){
                         // Remove operations with old descriptors
                         CoverageProcessor.removeOperationFromProcessors(opName);
+                        JAIExt.setJAIAcceleration(opName, true);
                     }
                 }
-                JAIExt.registerOperations(newJai, true);
+                if(jaiExtOperations != null && !jaiExtOperations.isEmpty()){
+                    Set<String> newJai = new TreeSet<String>(jaiExtOperations);
+                    if(jaiOperations != null && !jaiOperations.isEmpty()){
+                        newJai.removeAll(jaiOperations);
+                    }
+                    for(String opName : newJai){
+                        if(!JAIExt.isJAIExtOperation(opName)){
+                            // Remove operations with old descriptors
+                            CoverageProcessor.removeOperationFromProcessors(opName);
+                        }
+                    }
+                    JAIExt.registerOperations(newJai, true);
+                }
+                // Update all the CoverageProcessor instances
+                CoverageProcessor.updateProcessors();
             }
-            // Update all the CoverageProcessor instances
-            CoverageProcessor.updateProcessors();
         }
         
         //
@@ -105,7 +106,7 @@ public class JAIInitializer implements GeoServerInitializer {
         }
         
         // Setting up Cache Capacity
-        SunTileCache jaiCache = (SunTileCache) jaiDef.getTileCache();
+        TileCache jaiCache = jaiDef.getTileCache();
         jai.setTileCache( jaiCache );
         
         long jaiMemory = (long) (jai.getMemoryCapacity() * Runtime.getRuntime().maxMemory());

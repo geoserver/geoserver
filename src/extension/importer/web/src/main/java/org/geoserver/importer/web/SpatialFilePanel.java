@@ -16,6 +16,7 @@ import org.apache.wicket.markup.html.form.SubmitLink;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.Model;
+import org.geoserver.platform.resource.Resources;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geoserver.web.wicket.browser.GeoServerFileChooser;
@@ -47,8 +48,7 @@ public class SpatialFilePanel extends ImportSourcePanel {
     }
 
     public ImportData createImportSource() throws IOException {
-        File file = new File(this.file);
-        return FileData.createFromFile(file);
+        return FileData.createFromFile(Resources.fromPath(file));
     };
     
     Component chooserButton(Form form) {

@@ -86,18 +86,22 @@ public final class AtomUtils {
 
     //TODO: use an html based output format
     public static String getEntryURL(WMS wms, SimpleFeature feature, WMSMapContent context){
-        String nsUri = feature.getType().getName().getNamespaceURI();
-        String nsPrefix = wms.getNameSpacePrefix(nsUri);
+        try {
+            return featureTemplate.link(feature);
+        } catch (IOException ioe){
+            String nsUri = feature.getType().getName().getNamespaceURI();
+            String nsPrefix = wms.getNameSpacePrefix(nsUri);
 
-        HashMap<String,String> params = new HashMap<String,String>();
-        params.put("format", "application/atom+xml");
-        params.put("layers",  nsPrefix + ":" + feature.getType().getTypeName());
-        params.put("featureid", feature.getID());
-        
-        return ResponseUtils.buildURL(context.getRequest().getBaseUrl(),
-             "wms/reflect",
-             params,
-             URLType.SERVICE);
+            HashMap<String,String> params = new HashMap<String,String>();
+            params.put("format", "application/atom+xml");
+            params.put("layers",  nsPrefix + ":" + feature.getType().getTypeName());
+            params.put("featureid", feature.getID());
+         
+            return ResponseUtils.buildURL(context.getRequest().getBaseUrl(),
+                    "wms/reflect",
+                    params,
+                    URLType.SERVICE);
+        }
     }
 
     public static String getEntryURI(WMS wms, SimpleFeature feature, WMSMapContent context){

@@ -125,12 +125,12 @@ public class WCS2GetCoverageRequestBuilder {
      */
     public String asXML(String version) throws IOException{
 	if("1.1.1".equals(version)){
-	    Encoder encoder = new Encoder(new org.geoserver.wcs.xml.v1_1_1.WCSConfiguration());
+	    Encoder encoder = new Encoder(new org.geotools.wcs.v1_1.WCSConfiguration());
 	    encoder.setIndenting(true);
 	    encoder.setOmitXMLDeclaration(true);
 	    //prefix is set to 'null' if we don't declare it explicitly
 	    encoder.getNamespaces().declarePrefix("ows", "http://www.opengis.net/ows/1.1");
-	    return encoder.encodeAsString(wcs111GetCoverage, org.geoserver.wcs.xml.v1_1_1.WCS.GetCoverage);		    
+	    return encoder.encodeAsString(wcs111GetCoverage, org.geotools.wcs.v1_1.WCS.GetCoverage);		    
 	}else{	    
 	    Encoder encoder = new Encoder(new WCSConfiguration());
 	    encoder.setIndenting(true);	

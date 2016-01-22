@@ -1,15 +1,36 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2014 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.catalog;
 
+import java.awt.Color;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Logger;
+
+import javax.xml.transform.TransformerException;
+
+import org.apache.commons.io.IOUtils;
 import org.geoserver.ows.util.RequestUtils;
 import org.geotools.data.DataUtilities;
-import org.geotools.sld.v1_1.*;
 import org.geotools.sld.v1_1.SLD;
-import org.geotools.styling.*;
+import org.geotools.sld.v1_1.SLDConfiguration;
+import org.geotools.styling.DefaultResourceLocator;
+import org.geotools.styling.NamedLayer;
+import org.geotools.styling.ResourceLocator;
+import org.geotools.styling.SLDParser;
+import org.geotools.styling.SLDTransformer;
+import org.geotools.styling.Style;
+import org.geotools.styling.StyledLayerDescriptor;
 import org.geotools.util.Version;
 import org.geotools.util.logging.Logging;
 import org.geotools.xml.Encoder;
@@ -20,12 +41,6 @@ import org.xml.sax.InputSource;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
-
-import javax.xml.transform.TransformerException;
-import java.io.*;
-import java.util.Arrays;
-import java.util.List;
-import java.util.logging.Logger;
 
 /**
  * SLD style handler.
@@ -51,6 +66,24 @@ public class SLDHandler extends StyleHandler {
 
     public static final String MIMETYPE_10 = "application/vnd.ogc.sld+xml";
     public static final String MIMETYPE_11 = "application/vnd.ogc.se+xml";
+    
+    static final Map<StyleType, String> TEMPLATES = new HashMap<StyleType, String>();
+    static {
+        try {
+            TEMPLATES.put(StyleType.POINT, IOUtils.toString(SLDHandler.class
+                    .getResourceAsStream("template_point.sld")));
+            TEMPLATES.put(StyleType.POLYGON, IOUtils.toString(SLDHandler.class
+                    .getResourceAsStream("template_polygon.sld")));
+            TEMPLATES.put(StyleType.LINE, IOUtils.toString(SLDHandler.class
+                    .getResourceAsStream("template_line.sld")));
+            TEMPLATES.put(StyleType.RASTER, IOUtils.toString(SLDHandler.class
+                    .getResourceAsStream("template_raster.sld")));
+            TEMPLATES.put(StyleType.GENERIC, IOUtils.toString(SLDHandler.class
+                    .getResourceAsStream("template_generic.sld")));
+        } catch (IOException e) {
+            throw new RuntimeException("Error loading up the style templates", e);
+        }
+    }
 
     public SLDHandler() {
         super("SLD", FORMAT);
@@ -64,6 +97,16 @@ public class SLDHandler extends StyleHandler {
     @Override
     public String getCodeMirrorEditMode() {
         return "xml";
+    }
+
+    @Override
+    public String getStyle(StyleType type, Color color, String colorName, String layerName) {
+        String template = TEMPLATES.get(type);
+        String colorCode = Integer.toHexString(color.getRGB());
+        colorCode = colorCode.substring(2, colorCode.length());
+        return template.replace("${colorName}", colorName).replace(
+                "${colorCode}", "#" + colorCode).replace("${layerName}", layerName);
+        
     }
 
     @Override
@@ -170,7 +213,11 @@ public class SLDHandler extends StyleHandler {
             sld = new SLDConfiguration();
         }
 
-        return new Parser(sld);
+        Parser parser = new Parser(sld);
+        if (entityResolver != null) {
+            parser.setEntityResolver(entityResolver);
+        }
+        return parser;
     }
 
     @Override
@@ -224,7 +271,7 @@ public class SLDHandler extends StyleHandler {
     }
 
     List<Exception> validate11(Object input, EntityResolver entityResolver) throws IOException {
-        Parser p = createSld11Parser(input, null, null);
+        Parser p = createSld11Parser(input, null, entityResolver);
         try {
             p.validate(toReader(input));
             return p.getValidationErrors();

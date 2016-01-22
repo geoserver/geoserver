@@ -34,7 +34,7 @@ public class MosaicFormat extends GridFormat {
         index.write();
 
         CoverageStoreInfo store = super.createStore(data, workspace, catalog);
-        store.setURL(DataUtilities.fileToURL(index.getFile()).toString());
+        store.setURL(DataUtilities.fileToURL(index.getFile().file()).toString());
         return store;
     }
 

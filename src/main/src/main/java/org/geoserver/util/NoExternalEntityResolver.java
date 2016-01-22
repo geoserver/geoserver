@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -25,6 +25,7 @@ import org.xml.sax.SAXException;
  */
 public class NoExternalEntityResolver implements EntityResolver {
 
+    public static final String ERROR_MESSAGE_BASE = "Entity resolution disallowed for ";
     private static final Logger LOGGER = Logging.getLogger(NoExternalEntityResolver.class);
     
     @Override
@@ -33,12 +34,15 @@ public class NoExternalEntityResolver implements EntityResolver {
             LOGGER.finest("resolveEntity request: publicId=" + publicId + ", systemId=" + systemId);
         }
         
-        // allow schema parsing for validation
-        if (systemId != null && systemId.endsWith(".xsd")) {
+        // allow schema parsing for validation.
+        // http(s) - external schema reference
+        // jar - internal schema reference
+        // vfs - internal schema reference (JBOSS)
+        if (systemId != null && systemId.matches("(?i)(jar:file|http|vfs)[^?#;]*\\.xsd")) {
             return null;
         }
         
         // do not allow external entities
-        return new InputSource();
+        throw new SAXException(ERROR_MESSAGE_BASE + systemId);
     }
 }

@@ -6,7 +6,7 @@ Layer Groups
 A layer group is a container in which layers and other layer groups can be organized in a hierarchical structure. A layer group can be referred to by a single name in WMS requests.  This allows simpler requests, as one layer can be specified instead of multiple individual layers.
 A layer group also provides a consistent, fixed ordering of the layers it contains, and can specify alternate (non-default) styles for layers.
 
-Layer Group Modes
+Layer Group modes
 -----------------
 
 Layer group behaviour can be configured by setting its :guilabel:`mode`. There are 4 available values:
@@ -24,9 +24,9 @@ If a layer is included in any non *single* mode group, it will no longer be list
    *Layer Groups page*
 
 Edit a Layer Group
-----------------
+------------------
 
-To bring up the layer group edit page, click a layer group name. The initial fields allow you to configure the name, title, abstract, workspace, bounds, projection and mode of the layer group. To automatically set the bounding box, select the :guilabel:`Generate Bounds` button. You may also provide your own custom bounding box extents. To select an appropriate projection click the :guilabel:`Find` button.
+To view or edit a layer group, click the layer group name.  A layer group configuration page will be displayed.  The initial fields allow you to configure the name, title, abstract, workspace, bounds, projection and mode of the layer group. To automatically set the bounding box, select the :guilabel:`Generate Bounds` button or the :guilabel:`Generate Bounds From CRS` button to use the bounds defined in the CRS (if available). You may also provide your own custom bounding box extents. To select an appropriate projection click the :guilabel:`Find` button.
 
 .. note:: A layer group can contain layers with dissimilar bounds and projections. GeoServer automatically reprojects all layers to the projection of the layer group.
 
@@ -71,6 +71,8 @@ You can view layer groups in the :ref:`layerpreview` section of the web admin.
 
    *Openlayers preview of the layer group "tasmania"*
 
+.. note:: By default, a layer group is queryable when at least a child layer is queryable. Uncheck "Queryable" box if you want to explicitly indicate that it is not queryable independently of how the child layers are configured.
+
 Add a Layer Group
 -----------------
 
@@ -88,7 +90,7 @@ To add a new layer group, select the "Add a new layer group" button. You will be
 
    *New layer group dialog*
 
-When finished, click :guilabel:`Submit`. You will be redirected to an empty layer group configuration page. Begin by adding layers by clicking the :guilabel:`Add layer...` button (described in the previous section). Once the layers are positioned accordingly, press :guilabel:`Generate Bounds` to automatically generate the bounding box and projection. Press :guilabel:`Save` to save the new layer group.
+When finished, click :guilabel:`Submit`. You will be redirected to an empty layer group configuration page. Begin by adding layers by clicking the :guilabel:`Add layer...` button (described in the previous section). Once the layers are positioned accordingly, press :guilabel:`Generate Bounds` to automatically generate the bounding box and projection. You may also press the :guilabel:`Generate Bounds From CRS` button to use the CRS bounds (if available). Press :guilabel:`Save` to save the new layer group.
 
 .. figure:: ../images/data_layergroups_add_edit.png
    :align: center
@@ -98,7 +100,7 @@ When finished, click :guilabel:`Submit`. You will be redirected to an empty laye
 Remove a Layer Group
 --------------------
 
-To remove a layer group, click the check box next to the layer group. Multiple layer groups can be selected for batch removal. Click the :guilabel:`remove selected layer group(s)` link. You will be asked to confirm or cancel the deletion. Selecting :guilabel:`OK` successfully removes the layer group. 
+To remove a layer group, select it by clicking the checkbox next to the layer group. Multiple layer groups can be selected, or all can be selected by clicking the checkbox in the header.  Click the :guilabel:`Remove selected layer group(s)` link. You will be asked to confirm or cancel the deletion. Selecting :guilabel:`OK` removes the selected layer group(s). 
  
 .. figure:: ../images/data_layergroups_delete.png
    :align: center

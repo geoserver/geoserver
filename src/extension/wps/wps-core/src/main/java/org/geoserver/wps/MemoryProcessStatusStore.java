@@ -103,6 +103,14 @@ public class MemoryProcessStatusStore implements ProcessStatusStore {
                     comparators.add(Collections.reverseOrder(new BeanComparator("creationTime")));
                 } else {
                     String property = sort.getPropertyName().getPropertyName();
+                    //map property to ExecutionStatus values
+                    if("node".equalsIgnoreCase(property)) {
+                        property = "nodeId";
+                    }else if("user".equalsIgnoreCase(property)) {
+                        property = "userName";
+                    }else if("task".equalsIgnoreCase(property)) {
+                        property = "task";
+                    }
                     Comparator<ExecutionStatus> comparator = new BeanComparator(property);
                     if (sort.getSortOrder() == SortOrder.DESCENDING) {
                         comparator = Collections.reverseOrder(comparator);
@@ -147,6 +155,17 @@ public class MemoryProcessStatusStore implements ProcessStatusStore {
         }
 
         return statuses.remove(executionId);
+    }
+
+    @Override
+    public boolean supportsPredicate() {
+        // 
+        return true;
+    }
+
+    @Override
+    public boolean supportsPaging() {
+        return false;
     }
 
 }

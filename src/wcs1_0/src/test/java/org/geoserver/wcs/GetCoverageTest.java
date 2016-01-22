@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -33,6 +33,8 @@ import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.util.EntityResolverProvider;
+import org.geoserver.util.NoExternalEntityResolver;
 import org.geoserver.wcs.kvp.Wcs10GetCoverageRequestReader;
 import org.geoserver.wcs.test.WCSTestSupport;
 import org.geoserver.wcs.xml.v1_0_0.WcsXmlReader;
@@ -75,6 +77,8 @@ public class GetCoverageTest extends WCSTestSupport {
     private Catalog catalog;
     
     private static final QName MOSAIC = new QName(MockData.SF_URI, "rasterFilter", MockData.SF_PREFIX);
+    
+    private static final QName SPATIO_TEMPORAL = new QName(MockData.SF_URI, "spatio-temporal", MockData.SF_PREFIX);
 
     @Before
     public void setUp() {
@@ -82,13 +86,15 @@ public class GetCoverageTest extends WCSTestSupport {
         service = (WebCoverageService100) applicationContext.getBean("wcs100ServiceTarget");
         configuration = new WCSConfiguration();
         catalog=(Catalog)applicationContext.getBean("catalog");
-        xmlReader = new WcsXmlReader("GetCoverage", "1.0.0", configuration);
+        xmlReader = new WcsXmlReader("GetCoverage", "1.0.0", configuration,
+                EntityResolverProvider.RESOLVE_DISABLED_PROVIDER);
     }
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
         testData.addRasterLayer(MOSAIC, "raster-filter-test.zip", null, getCatalog());
+        testData.addRasterLayer(SPATIO_TEMPORAL, "spatio-temporal.zip", null, null, SystemTestData.class, getCatalog());
         // enable dimensions on the water temperature layer
         setupRasterDimension(WATTEMP, ResourceInfo.TIME, DimensionPresentation.LIST, null);
         setupRasterDimension(WATTEMP, ResourceInfo.ELEVATION, DimensionPresentation.LIST, null);
@@ -149,6 +155,23 @@ public class GetCoverageTest extends WCSTestSupport {
         // dispose
         CoverageCleanerCallback.disposeCoverage(baseCoverage);
         CoverageCleanerCallback.disposeCoverage(coverages[0]);
+    }
+    
+    @Test
+    public void testDeferredLoading() throws Exception {
+        Map<String, Object> raw = baseMap();
+        final String getLayerId = getLayerId(SPATIO_TEMPORAL);
+        raw.put("sourcecoverage", getLayerId);
+        raw.put("format", "image/tiff");
+        raw.put("BBox", "-90,-180,90,180");
+        raw.put("crs", "EPSG:4326");
+        raw.put("resx", "0.001");
+        raw.put("resy", "0.001");
+
+
+        GridCoverage[] coverages = executeGetCoverageKvp(raw);
+        assertEquals(1, coverages.length);
+        assertDeferredLoading(coverages[0].getRenderedImage());
     }
     
     @Test
@@ -318,6 +341,43 @@ public class GetCoverageTest extends WCSTestSupport {
         assertEquals(CRS.decode("EPSG:3857"), reader.getOriginalEnvelope().getCoordinateReferenceSystem());
     }
     
+    @Test
+    public void testEntityExpansion() throws Exception {
+        String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+                + "<!DOCTYPE GetCoverage [<!ELEMENT GetCoverage (sourceCoverage) >\n"
+                + "  <!ATTLIST GetCoverage\n" 
+                + "            service CDATA #FIXED \"WCS\"\n" 
+                + "            version CDATA #FIXED \"1.0.0\"\n" 
+                + "            xmlns CDATA #FIXED \"http://www.opengis.net/wcs\">\n"
+                + "  <!ELEMENT sourceCoverage (#PCDATA) >\n"
+                + "  <!ENTITY xxe SYSTEM \"FILE:///file/not/there?.XSD\" >]>\n"
+                + "<GetCoverage version=\"1.0.0\" service=\"WCS\""
+                + " xmlns=\"http://www.opengis.net/wcs\" >\n"
+                + "  <sourceCoverage>&xxe;</sourceCoverage>\n" 
+                + "</GetCoverage>";
+
+        Document dom = postAsDOM("wcs", xml);
+        String error = xpath.evaluate("//ServiceException", dom);
+        assertTrue(error.contains(NoExternalEntityResolver.ERROR_MESSAGE_BASE));
+        
+        xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+                + "<!DOCTYPE GetCoverage [<!ELEMENT GetCoverage (sourceCoverage) >\n"
+                + "  <!ATTLIST GetCoverage\n" 
+                + "            service CDATA #FIXED \"WCS\"\n" 
+                + "            version CDATA #FIXED \"1.0.0\"\n" 
+                + "            xmlns CDATA #FIXED \"http://www.opengis.net/wcs\">\n"
+                + "  <!ELEMENT sourceCoverage (#PCDATA) >\n"
+                + "  <!ENTITY xxe SYSTEM \"jar:file:///file/not/there?.XSD\" >]>\n"
+                + "<GetCoverage version=\"1.0.0\" service=\"WCS\""
+                + " xmlns=\"http://www.opengis.net/wcs\" >\n"
+                + "  <sourceCoverage>&xxe;</sourceCoverage>\n" 
+                + "</GetCoverage>";
+
+        dom = postAsDOM("wcs", xml);
+        error = xpath.evaluate("//ServiceException", dom);
+        assertTrue(error.contains(NoExternalEntityResolver.ERROR_MESSAGE_BASE));
+    }
+
     @Test
     public void testRasterFilterGreen() throws Exception {
         String queryString = "wcs?sourcecoverage=" + getLayerId(MOSAIC) + "&request=getcoverage" +

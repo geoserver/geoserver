@@ -38,12 +38,14 @@ import org.geoserver.catalog.CoverageView.InputCoverageBand;
 import org.geoserver.catalog.DataLinkInfo;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.Info;
 import org.geoserver.catalog.Keyword;
 import org.geoserver.catalog.KeywordInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerGroupInfo.Mode;
 import org.geoserver.catalog.LayerIdentifierInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.LegendInfo;
 import org.geoserver.catalog.MetadataLinkInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.NamespaceInfo;
@@ -68,6 +70,7 @@ import org.geoserver.catalog.impl.FeatureTypeInfoImpl;
 import org.geoserver.catalog.impl.LayerGroupInfoImpl;
 import org.geoserver.catalog.impl.LayerIdentifier;
 import org.geoserver.catalog.impl.LayerInfoImpl;
+import org.geoserver.catalog.impl.LegendInfoImpl;
 import org.geoserver.catalog.impl.MetadataLinkInfoImpl;
 import org.geoserver.catalog.impl.NamespaceInfoImpl;
 import org.geoserver.catalog.impl.ResolvingProxy;
@@ -145,6 +148,7 @@ import com.thoughtworks.xstream.io.HierarchicalStreamDriver;
 import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 import com.thoughtworks.xstream.mapper.ClassAliasingMapper;
+import com.thoughtworks.xstream.mapper.DynamicProxyMapper;
 import com.thoughtworks.xstream.mapper.Mapper;
 import com.vividsolutions.jts.geom.Geometry;
 
@@ -273,10 +277,10 @@ public class XStreamPersister {
         ReflectionProvider reflectionProvider = new CustomReflectionProvider( new FieldDictionary( sorter ) ); 
             //new Sun14ReflectionProvider( new FieldDictionary( sorter  ) ); 
         if ( streamDriver != null ) {
-            xs = new XStream( reflectionProvider, streamDriver );
+            xs = new SecureXStream(reflectionProvider, streamDriver);
         }
         else {
-            xs = new XStream( reflectionProvider );    
+            xs = new SecureXStream(reflectionProvider);
         }
         xs.setMode(XStream.NO_REFERENCES);
         
@@ -314,6 +318,7 @@ public class XStreamPersister {
         xs.alias("wmsStore", WMSStoreInfo.class);
         xs.alias("coverageStore", CoverageStoreInfo.class);
         xs.alias("style",StyleInfo.class);
+        xs.alias( "legend", LegendInfo.class);
         xs.alias( "featureType", FeatureTypeInfo.class);
         xs.alias( "coverage", CoverageInfo.class);
         xs.alias( "wmsLayer", WMSLayerInfo.class);
@@ -458,6 +463,15 @@ public class XStreamPersister {
         registerBreifMapComplexType("dimensionInfo", DimensionInfoImpl.class);
 
         callback = new Callback();
+
+        // setup white list of accepted classes
+        xs.allowTypeHierarchy(Info.class);
+        xs.allowTypeHierarchy(Multimap.class);
+        xs.allowTypeHierarchy(JAIInfo.class);
+        xs.allowTypes(new Class[] {DynamicProxyMapper.DynamicProxy.class});
+        xs.allowTypes(new String[] { "java.util.Collections$SingletonList" });
+        xs.allowTypesByWildcard(new String[] { "org.geoserver.catalog.**" });
+        xs.allowTypesByWildcard(new String[] { "org.geoserver.security.**" });
     }
     
     /**
@@ -470,6 +484,7 @@ public class XStreamPersister {
     public void registerBreifMapComplexType(String typeId, Class clazz) {
         forwardBreifMap.put(typeId, clazz);
         backwardBreifMap.put(clazz, typeId);
+        xs.allowTypes(new Class[] { clazz });
     }
 
     public XStream getXStream() {
@@ -634,6 +649,7 @@ public class XStreamPersister {
         xs.addDefaultImplementation(WMSStoreInfoImpl.class, WMSStoreInfo.class);
         xs.addDefaultImplementation(CoverageStoreInfoImpl.class, CoverageStoreInfo.class);
         xs.addDefaultImplementation(StyleInfoImpl.class, StyleInfo.class);
+        xs.addDefaultImplementation(LegendInfoImpl.class, LegendInfo.class);
         xs.addDefaultImplementation(FeatureTypeInfoImpl.class, FeatureTypeInfo.class );
         xs.addDefaultImplementation(CoverageInfoImpl.class, CoverageInfo.class);
         xs.addDefaultImplementation(WMSLayerInfoImpl.class, WMSLayerInfo.class);
@@ -1034,7 +1050,11 @@ public class XStreamPersister {
                 
                 if ( name != null ) {
                     writer.startNode("name");
-                    writer.setValue( name );
+                    if(wsName == null) {
+                        writer.setValue( name );
+                    } else {
+                        writer.setValue( wsName + ":" + name );
+                    }
                     writer.endNode();
 
                     callback.postEncodeReference( source, name, wsName, writer, context );
@@ -1790,7 +1810,9 @@ public class XStreamPersister {
             // TODO: remove this when resource/publishing split is done
             LayerInfo l = (LayerInfo) source;
             writer.startNode("name");
-            writer.setValue(l.getName());
+            if (l.getName() != null) {
+                writer.setValue(l.getName());
+            }
             writer.endNode();
             
 //            {
@@ -1960,8 +1982,7 @@ public class XStreamPersister {
 
     class VirtualTableConverter implements Converter {
 
-        public void marshal(Object source, HierarchicalStreamWriter writer,
-                MarshallingContext context) {
+        public void marshal(Object source, HierarchicalStreamWriter writer,MarshallingContext context) {
             VirtualTable vt = (VirtualTable) source;
             writer.startNode("name");
             writer.setValue(vt.getName());
@@ -2020,69 +2041,88 @@ public class XStreamPersister {
                 }
             }
         }
-
+        
+        @SuppressWarnings("rawtypes")
         public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {
-            String name = readValue("name", String.class, reader);
-            String sql = readValue("sql", String.class, reader);
-                
-            VirtualTable vt = new VirtualTable(name, sql, false);
+            String name = null;
+            String sql = null;
+            String geomName = null;
+            Class type = null;
+            int srid = -1;
             List<String> primaryKeys = new ArrayList<String>();
-            while(reader.hasMoreChildren()) {
+            List<VirtualTableParameter> params = new ArrayList<VirtualTableParameter>();
+            Boolean escapeSql = false;
+            while (reader.hasMoreChildren()) {
                 reader.moveDown();
-                if(reader.getNodeName().equals("keyColumn")) {
+                if (reader.getNodeName().equals("keyColumn")) {
                     primaryKeys.add(reader.getValue());
-                } else if(reader.getNodeName().equals("geometry")) {
-                    String geomName = readValue("name", String.class, reader);
-                    Geometries geomType = Geometries.getForName(readValue("type", String.class, reader));
-                    Class type = geomType == null ? Geometry.class : geomType.getBinding();
-                    int srid = readValue("srid", Integer.class, reader);
-                    vt.addGeometryMetadatata(geomName, type, srid);
-                } else if(reader.getNodeName().equals("parameter")) {
-                    String pname = readValue("name", String.class, reader);
+                } else if (reader.getNodeName().equals("geometry")) {
+                    while (reader.hasMoreChildren()) {
+                        reader.moveDown();
+                        if (reader.getNodeName().equals("name"))
+                            geomName = reader.getValue();
+                        else if (reader.getNodeName().equals("type")) {
+                            Geometries geomType = Geometries.getForName(reader.getValue());
+                            type = geomType == null ? Geometry.class : geomType.getBinding();
+                        } else if (reader.getNodeName().equals("srid")) {
+                            srid = Converters.convert(reader.getValue(), Integer.class);
+                        }
+                        reader.moveUp();
+                    }
+                } else if (reader.getNodeName().equals("parameter")) {
+                    String pname = null;
                     String defaultValue = null;
                     Validator validator = null;
-                    while(reader.hasMoreChildren()) {
+                    while (reader.hasMoreChildren()) {
                         reader.moveDown();
-                        if(reader.getNodeName().equals("defaultValue")) {
+                        if (reader.getNodeName().equals("name")) {
+                            pname = reader.getValue();
+                        } else if (reader.getNodeName().equals("defaultValue")) {
                             defaultValue = reader.getValue();
-                        } else if(reader.getNodeName().equals("regexpValidator")) {
+                        } else if (reader.getNodeName().equals("regexpValidator")) {
                             validator = new RegexpValidator(reader.getValue());
                         }
                         reader.moveUp();
                     }
-                    
-                    vt.addParameter(new VirtualTableParameter(pname, defaultValue, validator));
-                } else if(reader.getNodeName().equals("escapeSql")) {
-            		vt.setEscapeSql(Boolean.valueOf(reader.getValue()));
+                    if (pname == null) {
+                        throw new IllegalArgumentException(
+                                "Expect name but could not find it in property tag");
+                    }
+                    params.add(new VirtualTableParameter(pname, defaultValue, validator));
+                } else if (reader.getNodeName().equals("escapeSql")) {
+                    escapeSql = Boolean.valueOf(reader.getValue());
+                } else if (reader.getNodeName().equals("name")) {
+                    name = reader.getValue();
+                } else if (reader.getNodeName().equals("sql")) {
+                    sql = reader.getValue();
                 }
                 reader.moveUp();
             }
+            if (name == null) {
+                throw new IllegalArgumentException("Expect name but could not find it");
+            }
+            if (sql == null) {
+                throw new IllegalArgumentException("Expect sql but could not find it");
+            }
+
+            VirtualTable vt = new VirtualTable(name, sql, false);
+
+            if (geomName != null && type != null) {
+                vt.addGeometryMetadatata(geomName, type, srid);
+            }
+            for (VirtualTableParameter p : params) {
+                vt.addParameter(p);
+            }
+            vt.setEscapeSql(escapeSql);
             vt.setPrimaryKeyColumns(primaryKeys);
-            
+
             return vt;
-        }
-        
-        <T> T readValue(String name, Class<T> type, HierarchicalStreamReader reader) {
-           if(!reader.hasMoreChildren()) {
-                throw new IllegalArgumentException("Expected element " + name + " but could not find it");
-           }
-           reader.moveDown();
-           try {
-               if(!name.equals(reader.getNodeName())) {
-                   throw new IllegalArgumentException("Expected element " + name + " but found " + reader.getNodeName() + " instead");
-               }
-               String value = reader.getValue();
-               return Converters.convert(value, type);
-           } finally {
-               reader.moveUp();
-           }
-           
         }
 
         public boolean canConvert(Class type) {
             return VirtualTable.class.isAssignableFrom(type);
         }
-        
+
     }
 
     static class KeywordInfoConverter extends AbstractSingleValueConverter {

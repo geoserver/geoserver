@@ -1,0 +1,41 @@
+<ToolConfiguration>
+    <executable>gdal_translate</executable>
+    <!-- <environment>
+      <variable name="GDAL_DATA" value="/usr/local/share/gdal" />
+    </environment> -->
+    <formats>
+        <Format>
+            <toolFormat>JP2ECW</toolFormat>
+            <geoserverFormat>GDAL-JPEG2000</geoserverFormat>
+            <fileExtension>.jp2</fileExtension>
+            <singleFile>true</singleFile>
+            <mimeType>image/jp2</mimeType>
+            <type>binary</type> <!-- not really required, it’s the default -->
+        </Format>
+        <Format>
+            <toolFormat>PDF</toolFormat>
+            <geoserverFormat>GDAL-PDF</geoserverFormat>
+            <fileExtension>.pdf</fileExtension>
+            <singleFile>true</singleFile>
+            <mimeType>application/pdf</mimeType>
+            <formatAdapters>
+            	<GrayAlphaToRGBA/>
+            	<PalettedToRGB/>
+            </formatAdapters>
+        </Format>
+        <Format>
+            <toolFormat>AAIGrid</toolFormat>
+            <geoserverFormat>GDAL-ArcInfoGrid</geoserverFormat>
+            <fileExtension>.asc</fileExtension>
+            <singleFile>false</singleFile>
+        </Format>
+        <Format>
+            <toolFormat>XYZ</toolFormat>
+            <geoserverFormat>GDAL-XYZ</geoserverFormat>
+            <fileExtension>.txt</fileExtension>
+            <singleFile>true</singleFile>
+            <mimeType>text/plain</mimeType>
+            <type>text</type>
+        </Format>
+    </formats>
+</ToolConfiguration>

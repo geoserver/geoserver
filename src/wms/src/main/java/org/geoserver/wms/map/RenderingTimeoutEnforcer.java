@@ -9,6 +9,7 @@ import java.awt.Graphics;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import org.geoserver.wms.WebMap;
 import org.geotools.renderer.GTRenderer;
 
 /**
@@ -24,11 +25,25 @@ public class RenderingTimeoutEnforcer {
     Graphics graphics;
     Timer timer;
     boolean timedOut = false;
+    boolean saveMap;
+    WebMap map = null;
 
     public RenderingTimeoutEnforcer(long timeout, GTRenderer renderer, Graphics graphics) {
+        this(timeout, renderer, graphics, false);
+    }
+    public RenderingTimeoutEnforcer(long timeout, GTRenderer renderer, Graphics graphics, boolean saveMap) {
         this.timeout = timeout;
         this.renderer = renderer;
         this.graphics = graphics;
+        this.saveMap = saveMap;
+    }
+    
+    public void saveMap() {
+        
+    }
+    
+    public WebMap getMap() {
+        return map;
     }
 
     /**
@@ -70,7 +85,9 @@ public class RenderingTimeoutEnforcer {
         public void run() {
             // mark as timed out
             timedOut = true;
-            
+            if (saveMap) {
+                saveMap();
+            }
             // ask gently...
             renderer.stopRendering();
             // ... but also be rude for extra measure (coverage rendering is

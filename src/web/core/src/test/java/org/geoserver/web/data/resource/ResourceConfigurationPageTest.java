@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -17,8 +17,8 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
 
         login();
         tester.startPage(new ResourceConfigurationPage(layer, false));
-        tester.assertLabel("resourcename", layer.getResource().getPrefixedName());
-        tester.assertComponent("resource:tabs:panel:theList:0:content", BasicResourceConfig.class);
+        tester.assertLabel("publishedinfoname", layer.getResource().getPrefixedName());
+        tester.assertComponent("publishedinfo:tabs:panel:theList:0:content", BasicResourceConfig.class);
     }
     
     // I can't make the last assertion work, my wicket-fu is not good enough or else the

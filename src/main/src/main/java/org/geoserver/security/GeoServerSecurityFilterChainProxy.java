@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -232,9 +232,9 @@ public class GeoServerSecurityFilterChainProxy extends FilterChainProxy
                 patterns.add(singlePattern);
         }
         
-        AntPathRequestMatcher[] matchers=new AntPathRequestMatcher[patterns.size()];
+        RequestMatcher[] matchers=new RequestMatcher[patterns.size()];
         for (int i = 0;i<matchers.length;i++) {
-            matchers[i]=new AntPathRequestMatcher(patterns.get(i));
+            matchers[i] = new IncludeQueryStringAntPathRequestMatcher(patterns.get(i));
         }
         return new GeoServerRequestMatcher(methods,matchers); 
     }

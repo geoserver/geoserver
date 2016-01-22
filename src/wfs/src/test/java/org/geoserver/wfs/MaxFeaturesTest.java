@@ -144,7 +144,7 @@ public class MaxFeaturesTest extends WFSTestSupport {
     
     @Test
     public void testMaxFeaturesBreak() throws Exception {
-        // see http://jira.codehaus.org/browse/GEOS-1489
+        // See https://osgeo-org.atlassian.net/browse/GEOS-1489
         FeatureTypeInfo info = getFeatureTypeInfo(SystemTestData.FIFTEEN);
         info.setMaxFeatures(3);
         getCatalog().save( info );

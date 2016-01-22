@@ -1,9 +1,11 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.importer;
+
+import static org.geoserver.importer.ImporterUtils.resolve;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -11,13 +13,19 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Logger;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.importer.job.ProgressMonitor;
-
-import static org.geoserver.importer.ImporterUtils.*;
+import org.geoserver.importer.transform.ImportTransform;
+import org.geoserver.importer.transform.RasterTransform;
+import org.geoserver.importer.transform.RasterTransformChain;
+import org.geoserver.importer.transform.TransformChain;
+import org.geoserver.importer.transform.VectorTransform;
+import org.geoserver.importer.transform.VectorTransformChain;
+import org.geotools.util.logging.Logging;
 
 /**
  * Maintains state about an import.
@@ -30,8 +38,30 @@ public class ImportContext implements Serializable {
     /** serialVersionUID */
     private static final long serialVersionUID = 8790675013874051197L;
 
+    static final Logger LOGGER = Logging.getLogger(ImportContext.class);
+
     public static enum State {
-        PENDING, RUNNING, COMPLETE;
+        /**
+         * Context is ready to be initialized, but still misses tasks. Used to create a context
+         * while planning for an asynchronous initialization
+         */
+        INIT,
+        /**
+         * Context init failed
+         */
+        INIT_ERROR,
+        /**
+         * Context ready to be started
+         */
+        PENDING,
+        /**
+         * Import is running
+         */
+        RUNNING,
+        /**
+         * Import is complete
+         */
+        COMPLETE;
     }
 
     /** identifier */
@@ -60,6 +90,11 @@ public class ImportContext implements Serializable {
      */
     List<ImportTask> tasks = new ArrayList<ImportTask>();
 
+    /**
+     * The default transformations that will be applied on task creation
+     */
+    List<ImportTransform> defaultTransforms = new ArrayList<>();
+
     /** 
      * id generator for task 
      */
@@ -87,6 +122,11 @@ public class ImportContext implements Serializable {
      * being deleted
      */
     boolean archive = false;
+
+    /**
+     * Used for error messages
+     */
+    String message;
 
     volatile ProgressMonitor progress;
 
@@ -172,6 +212,16 @@ public class ImportContext implements Serializable {
         task.setId(taskid++);
         task.setContext(this);
         this.tasks.add(task);
+
+        // apply the default transformations
+        TransformChain chain = task.getTransform();
+        for (ImportTransform tx : defaultTransforms) {
+            if (chain instanceof RasterTransformChain && tx instanceof RasterTransform) {
+                chain.add(tx);
+            } else if (chain instanceof VectorTransformChain && tx instanceof VectorTransform) {
+                chain.add(tx);
+            }
+        }
     }
 
     public void removeTask(ImportTask task) {
@@ -187,8 +237,27 @@ public class ImportContext implements Serializable {
         return null;
     }
 
+    /**
+     * Returns a live list with the default transform, can be modified directly to add/remove the
+     * default transforms
+     * 
+     * @return
+     */
+    public List<ImportTransform> getDefaultTransforms() {
+        return defaultTransforms;
+    }
+
     private void updateState() {
-        State newState = tasks.isEmpty() ? State.PENDING : State.COMPLETE;
+        State newState;
+        if (tasks.isEmpty()) {
+            if (state == State.INIT) {
+                newState = State.INIT;
+            } else {
+                newState = State.PENDING;
+            }
+        } else {
+            newState = State.COMPLETE;
+        }
      O: for (ImportTask task : tasks) {
             switch(task.getState()) {
             case COMPLETE:
@@ -224,10 +293,12 @@ public class ImportContext implements Serializable {
             data.reattach();
         }
 
-        targetWorkspace = resolve(targetWorkspace, catalog, lookupByName);
+        if (targetWorkspace != null) {
+            targetWorkspace = resolve(targetWorkspace, catalog, lookupByName);
 
-        if (targetStore != null) {
-            targetStore.setWorkspace(targetWorkspace);
+            if (targetStore != null) {
+                targetStore.setWorkspace(targetWorkspace);
+            }
         }
         targetStore = resolve(targetStore, catalog, lookupByName);
 
@@ -275,9 +346,30 @@ public class ImportContext implements Serializable {
 
     private Object readResolve() {
         if (tasks == null) {
-            tasks = new ArrayList();
+            tasks = new ArrayList<>();
+        }
+        if (defaultTransforms == null) {
+            defaultTransforms = new ArrayList<>();
         }
         return this;
+    }
+
+    /**
+     * Returns the current context message, if any
+     * 
+     * @return the message
+     */
+    public String getMessage() {
+        return message;
+    }
+
+    /**
+     * Sets the context message
+     * 
+     * @param message the message to set
+     */
+    public void setMessage(String message) {
+        this.message = message;
     }
 }
     

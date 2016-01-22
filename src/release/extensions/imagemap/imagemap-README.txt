@@ -15,13 +15,13 @@ INSTALLATION
 
 COMPATIBILITY
 
-This jar should work with any version of GeoServer based on GeoTools 13.x  
-Currently this is anything in 2.7.x. 
+This jar should work with any version of GeoServer based on GeoTools 15.x  
+Currently this is anything in 2.9.x. 
 
 For more information see on needed libraries and parameters, see:
 http://docs.geoserver.org/latest/en/user/extensions/imagemap.html
 
-Please report any bugs with jira (http://jira.codehaus.org/browse/GEOS). 
+Please report any bugs with jira (https://osgeo-org.atlassian.net/projects/GEOS).
 
 Any other issues can be discussed on the geoserver-users mailing list
 (http://lists.sourceforge.net/lists/listinfo/geoserver-users).

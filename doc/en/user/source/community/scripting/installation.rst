@@ -3,8 +3,6 @@
 Installing the Scripting Extension
 ==================================
 
-.. note:: The various language runtime libraries increase GeoServer's memory footprint, specifically the "PermGen" (Permanent Generation) space. When installing the scripting extension we recommended that you increase PermGen capacity to 256m. This is done with the option ``-XX:MaxPermSize=256m``. If installing multiple language extensions this size may need to be increased even further.
-
 Python
 ------
 

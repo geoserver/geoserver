@@ -5,9 +5,9 @@
     <div>
       <fieldset><legend><span><wicket:message key="curves">curves</wicket:message></span></legend>
         <ul>
-           <li>
-              <input id="linestrings-are-curves" class="field checkbox" wicket:id="circularArcPresent" type="checkbox"/>
-              <label for="linestrings-are-curves" class="choice"><wicket:message key="linestrings-are-curves">Enabled</wicket:message></label>
+           <li class="choiceItem">
+              <input id="linestrings-are-curves" wicket:id="circularArcPresent" type="checkbox"/>
+              <label for="linestrings-are-curves"><wicket:message key="linestrings-are-curves">Enabled</wicket:message></label>
             </li>
             <li>
               <label for="tolerance"><wicket:message key="tolerance">tolerance</wicket:message></label>
@@ -47,8 +47,12 @@
     </ul>
     </fieldset>
     </div>
-    </wicket:fragment>
+    </wicket:fragment>    
     <div wicket:id="reloadWarningDialog"></div>
+        
+    <label for="cqlFilter"><wicket:message key="cqlFilter">cqlFilter</wicket:message></label>
+    <textarea wicket:id="cqlFilter" style="margin-bottom:10px" class="field textarea" cols="40" rows="10"></textarea>
+    
 </wicket:panel>
 </body>
 </html>

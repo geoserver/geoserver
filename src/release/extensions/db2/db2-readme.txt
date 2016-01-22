@@ -1,10 +1,10 @@
-GEOSERVER 2.7 DATA STORE EXTRAS README
+GEOSERVER 2.9 DATA STORE EXTRAS README
 --------------------------------------
 
 This package contains a DB2 DataStore implementation that is
 distributed as a separate plug-in.
 
-Please report any bugs with jira (http://jira.codehaus.org/browse/GEOS).
+Please report any bugs with jira (https://osgeo-org.atlassian.net/projects/GEOS).
 
 Any other issues can be discussed on the mailing list (http://lists.sourceforge.net/lists/listinfo/geoserver-users).
 
@@ -26,5 +26,5 @@ For more information http://docs.geoserver.org/latest/en/user/data/database/db2.
 
 COMPATIBILITY
 
-This jar should work with any version of GeoServer based on GeoTools 13.x
-Currently this is anything in 2.7.x
+This jar should work with any version of GeoServer based on GeoTools 15.x
+Currently this is anything in 2.9.x

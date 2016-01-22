@@ -158,11 +158,33 @@ The ``security`` directory contains the files used to configure the GeoServer se
 styles
 ------
 
-The ``styles`` directory contains Styled Layer Descriptor (SLD) files which contain styling information used by the GeoServer WMS. For each file in this directory there is a corresponding entry in ``catalog.xml``::
+The ``styles`` directory contains Styled Layer Descriptor (SLD) files which contain styling information used by the GeoServer WMS. See the :ref:`styling` section for more information about styling and SLD.
 
-   <style id="point_style" file="default_point.sld"/>
+For each SLD file in this directory there is a corresponding XML file:
 
-See the :ref:`styling` section for more information about styling and SLD .
+.. code-block:: xml
+   
+   <style>
+     <id>StyleInfoImpl--570ae188:124761b8d78:-7fe1</id>
+     <name>grass</name>
+     <sldVersion>
+       <version>1.0.0</version>
+     </sldVersion>
+     <filename>grass_poly.sld</filename>
+     <legend>
+       <width>32</width>
+       <height>32</height>
+       <format>image/png</format>
+       <onlineResource>grass_fill.png</onlineResource>
+     </legend>
+   </style>
+
+As shown above the ``styles`` directory is also used to host support files referenced during style configuration:
+
+* Legend: By default a style external graphic is dynamically created for use as a legend. You may also use image files (PNG, JPEG, GIF) from the styles directory.
+* Support files: SLD files can reference external graphics stored in the styles directory. This is useful when supplying your own icons in the form of image files or true type font files.
+
+The contents of the styles directory is published allowing clients to access the legends used. When running GeoServer on localhost the file ``grass_fill.png`` can be referenced in a browser using ``http://localhost:8080/geoserver/styles/grass_fill.png``.
 
 templates
 ---------

@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -19,11 +19,13 @@ import java.util.regex.Pattern;
 import org.eclipse.xsd.XSDElementDeclaration;
 import org.eclipse.xsd.impl.XSDElementDeclarationImpl;
 import org.geoserver.config.GeoServer;
+import org.geoserver.feature.FlatteningFeatureCollection;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.WFSGetFeatureOutputFormat;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
 import org.geoserver.wfs.request.GetFeatureRequest;
+import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.feature.type.DateUtil;
@@ -92,9 +94,13 @@ public class CSVOutputFormat extends WFSGetFeatureOutputFormat {
                    
         //get the feature collection
         FeatureCollection<?, ?> fc = 
-            featureCollection.getFeature().get(0);           
+        		featureCollection.getFeature().get(0);           
         
         if (fc.getSchema() instanceof SimpleFeatureType) {
+            // Flatten the collection if necessary (the request was a WFS 2.0 joining GetFeature
+            // one, the features contain other SimpleFeature as attributes)
+            fc = FlatteningFeatureCollection.flatten((SimpleFeatureCollection) fc);
+        	
             //write out the header
             SimpleFeatureType ft = (SimpleFeatureType) fc.getSchema();
             w.write("FID,");

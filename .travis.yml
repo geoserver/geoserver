@@ -3,19 +3,13 @@ cache:
   directories:
     - "$HOME/.m2"
 language: java
-jdk:
-  - oraclejdk8
-  - oraclejdk7
-  - openjdk7
 before_script:
   - cd src
 script:
   - rm -rf /home/travis/.m2/repository/org/apache/xmlgraphics/fop
-  - mvn -B -U -T2 -fae -Prelease clean install
+  - mvn -B -U -T2 -fae -Prelease clean install -Dtest.maxHeapSize=512M -Djava.awt.headless=true
 notifications:
   email:
     on_success: never
     on_failure: never
-branches:
-  only:
-    - master
+jdk: oraclejdk8

@@ -5,13 +5,13 @@
  */
 package org.geoserver.script.web;
 
-import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
@@ -28,6 +28,8 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.PropertyModel;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resources;
 import org.geoserver.script.ScriptManager;
 import org.geoserver.script.ScriptPlugin;
 import org.geoserver.script.ScriptType;
@@ -54,14 +56,13 @@ public class ScriptEditPage extends GeoServerSecuredPage {
 
     public ScriptEditPage(PageParameters parameters) {
         String fileName = parameters.getString("file");
-        File file = new File(fileName);
+        Resource file = Resources.fromPath(fileName);
         Script script = new Script(file);
-        if (script == null) {
+        if (!Resources.exists(file)) {
             error(new ParamResourceModel("ScriptEditPage.notFound", this, script).getString());
             doReturn(ScriptPage.class);
             return;
         }
-
         init(script);
     }
 
@@ -106,7 +107,7 @@ public class ScriptEditPage extends GeoServerSecuredPage {
 
         // Content
         ScriptManager scriptManager = (ScriptManager) GeoServerExtensions.bean("scriptMgr");
-        String mode = scriptManager.lookupPluginEditorMode(script.getFile());
+        String mode = scriptManager.lookupPluginEditorMode(script.getResource().file());
         CodeMirrorEditor content = new CodeMirrorEditor("contents", mode, new PropertyModel(scriptModel, "contents"));
         content.setRequired(true);
         form.add(content);
@@ -123,11 +124,13 @@ public class ScriptEditPage extends GeoServerSecuredPage {
 
     private void saveScript() {
         Script script = (Script) scriptModel.getObject();
-        File file = script.getFile();
+        OutputStream out = script.getResource().out();        
         try {
-            FileUtils.write(file, script.getContents());
+            IOUtils.write(script.getContents(), out);
         } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            IOUtils.closeQuietly(out);
         }
     }
 }

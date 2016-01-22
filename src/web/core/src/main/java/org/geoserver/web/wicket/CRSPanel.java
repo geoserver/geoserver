@@ -284,6 +284,7 @@ public class CRSPanel extends FormComponentPanel {
                 target.addComponent( srsTextField );
                 
                 CoordinateReferenceSystem crs = fromSRS( srs );
+                CRSPanel.this.setModelObject( crs );
                 wktLabel.setDefaultModelObject( crs.getName().toString() );
                 wktLink.setEnabled(true);
                 target.addComponent( wktLink );

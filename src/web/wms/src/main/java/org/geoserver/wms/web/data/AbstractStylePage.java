@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -9,10 +9,11 @@ import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.Reader;
+import java.io.StringReader;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -21,7 +22,6 @@ import java.util.UUID;
 
 import javax.imageio.ImageIO;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.wicket.Component;
 import org.apache.wicket.MarkupContainer;
@@ -43,19 +43,21 @@ import org.apache.wicket.markup.html.form.upload.FileUploadField;
 import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.model.CompoundPropertyModel;
-import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.util.lang.Bytes;
 import org.geoserver.catalog.ResourcePool;
+import org.geoserver.catalog.StyleGenerator;
 import org.geoserver.catalog.StyleHandler;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.StyleType;
 import org.geoserver.catalog.Styles;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.StyleInfoImpl;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.resource.Resource;
 import org.geoserver.web.ComponentAuthorizer;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.data.style.StyleDetachableModel;
@@ -67,6 +69,8 @@ import org.geoserver.web.wicket.ParamResourceModel;
 import org.geoserver.wms.GetLegendGraphicRequest;
 import org.geoserver.wms.legendgraphic.BufferedImageLegendGraphicBuilder;
 import org.geoserver.wms.web.publish.StyleChoiceRenderer;
+import org.geoserver.wms.web.publish.StyleTypeChoiceRenderer;
+import org.geoserver.wms.web.publish.StyleTypeModel;
 import org.geoserver.wms.web.publish.StylesModel;
 import org.geotools.styling.NamedLayer;
 import org.geotools.styling.Style;
@@ -87,11 +91,17 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
 
     protected FileUploadField fileUploadField;
 
+    protected DropDownChoice templates;
+
+    protected AjaxSubmitLink generateLink;
+
     protected DropDownChoice styles;
 
     protected AjaxSubmitLink copyLink;
 
     protected Form uploadForm;
+
+    protected Form generateForm;
 
     protected Form styleForm;
 
@@ -101,7 +111,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
 
     String rawStyle;
 
-    private Image legend;
+    private Image legendImg;
 
     String lastStyle;
 
@@ -117,12 +127,17 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
         initUI(style);
     }
 
-    protected void initUI(final StyleInfo style) {
-        IModel<StyleInfo> styleModel = new CompoundPropertyModel(style != null ? 
+    protected void initUI(StyleInfo style) {
+        CompoundPropertyModel<StyleInfo> styleModel = new CompoundPropertyModel(style != null ? 
             new StyleDetachableModel(style) : getCatalog().getFactory().createStyle());
         
         format = style != null ? style.getFormat() : getCatalog().getFactory().createStyle()
                 .getFormat();
+
+        // Make sure the legend object isn't null
+        if (null == styleModel.getObject().getLegend()) {
+            styleModel.getObject().setLegend(getCatalog().getFactory().createLegend());
+        }
 
         styleForm = new Form("form", styleModel) {
             @Override
@@ -180,6 +195,11 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
         editor.setRequired(true);
         styleForm.add(editor);
 
+        // add the Legend fields        
+        ExternalGraphicPanel legendPanel = new ExternalGraphicPanel("legendPanel", styleModel, styleForm);
+        legendPanel.setOutputMarkupId(true);
+        styleForm.add(legendPanel);
+
         if (style != null) {
             try {
                 setRawStyle(readFile(style));
@@ -188,6 +208,23 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
                 Session.get().error(new ParamResourceModel("styleNotFound", this, style.getFilename()).getString());
             }
         }
+        
+        // style generation functionality
+        templates = new DropDownChoice("templates", new Model(), new StyleTypeModel(), new StyleTypeChoiceRenderer());
+        templates.setOutputMarkupId(true);
+        templates.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                templates.validate();
+                generateLink.setEnabled(templates.getConvertedInput() != null);
+                target.addComponent(generateLink);
+            }
+        });
+        styleForm.add(templates);
+        generateLink = generateLink();
+        generateLink.setEnabled(false);
+        styleForm.add(generateLink);
 
         // style copy functionality
         styles = new DropDownChoice("existingStyles", new Model(), new StylesModel(), new StyleChoiceRenderer());
@@ -229,11 +266,11 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
         legendContainer = new WebMarkupContainer("legendContainer");
         legendContainer.setOutputMarkupId(true);
         add(legendContainer);
-        legend = new Image("legend");
-        legendContainer.add(legend);
-        legend.setVisible(false);
-        legend.setOutputMarkupId(true);
-        legend.setImageResource(new DynamicWebResource() {
+        this.legendImg = new Image("legendImg");
+        legendContainer.add(this.legendImg);
+        this.legendImg.setVisible(false);
+        this.legendImg.setOutputMarkupId(true);
+        this.legendImg.setImageResource(new DynamicWebResource() {
 
             @Override
             protected ResourceState getResourceState() {
@@ -248,23 +285,17 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
                         si.setFilename(styleFileName);
                         si.setName(styleName);
                         si.setWorkspace(wsChoice.getModel().getObject());
-                        File styleFile = null;
+                        Resource styleResource = null;
                         try {
-                            styleFile = dd.findOrCreateStyleSldFile(si);
-                            FileUtils.writeStringToFile(styleFile, lastStyle);
-                            StyledLayerDescriptor sld = styleHandler().parse(styleFile, null, null, null);
-                            if (sld != null && sld.getStyledLayers().length > 0) {
-                                Style style = null;
-                                StyledLayer sl = sld.getStyledLayers()[0];
-                                if (sl instanceof UserLayer) {
-                                    style = ((UserLayer) sl).getUserStyles()[0];
-                                } else {
-                                    style = ((NamedLayer) sl).getStyles()[0];
-                                }
-
+                            styleResource = dd.style(si);
+                            try(OutputStream os = styleResource.out()) {
+                                IOUtils.write(lastStyle, os);
+                            }
+                            Style style = dd.parsedStyle(si);
+                            if (style != null) {
                                 GetLegendGraphicRequest request = new GetLegendGraphicRequest();
-                                request.setStyle(style);
                                 request.setLayer(null);
+                                request.setStyle(style);
                                 request.setStrict(false);
                                 Map<String, String> legendOptions = new HashMap<String, String>();
                                 legendOptions.put("forceLabels", "on");
@@ -285,7 +316,9 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
                         } catch (IOException e) {
                             throw new RuntimeException(e);
                         } finally {
-                            FileUtils.deleteQuietly(styleFile);
+                            if(styleResource != null) {
+                                styleResource.delete();
+                            }
                         }
                     }
 
@@ -367,7 +400,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
                 wsChoice.processInput();
                 lastStyle = editor.getInput();
 
-                legend.setVisible(true);
+                legendImg.setVisible(true);
                 target.addComponent(legendContainer);
             }
 
@@ -400,6 +433,57 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
         } catch( Exception e ) {
             return Arrays.asList( e );
         }
+    }
+
+    AjaxSubmitLink generateLink() {
+        return new AjaxSubmitLink("generate") {
+
+            @Override
+            protected void onSubmit(AjaxRequestTarget target, Form form) {
+                // we need to force validation or the value won't be converted
+                templates.processInput();
+                StyleType template = (StyleType) templates.getConvertedInput();
+                StyleGenerator styleGen = new StyleGenerator(getCatalog());
+                styleGen.setWorkspace(wsChoice.getModel().getObject());
+
+                if (template != null) {
+                    try {
+                        // same here, force validation or the field won't be updated
+                        editor.reset();
+                        setRawStyle(new StringReader(styleGen.generateStyle(styleHandler(), template, nameTextField.getInput())));
+                        target.appendJavascript(String
+                                .format("if (document.gsEditors) { document.gsEditors.editor.setOption('mode', '%s'); }", styleHandler().getCodeMirrorEditMode()));
+
+                    } catch (Exception e) {
+                        error("Errors occurred generating the style");
+                    }
+                    target.addComponent(styleForm);
+                }
+            }
+
+            @Override
+            protected IAjaxCallDecorator getAjaxCallDecorator() {
+                return new AjaxPreprocessingCallDecorator(super.getAjaxCallDecorator()) {
+
+                    @Override
+                    public CharSequence preDecorateScript(CharSequence script) {
+                        return "var val = event.view.document.gsEditors ? "
+                                + "event.view.document.gsEditors." + editor.getTextAreaMarkupId() + ".getValue() : "
+                                + "event.view.document.getElementById(\"" + editor.getTextAreaMarkupId() + "\").value; "
+                                + "if(val != '' &&"
+                                + "!confirm('"
+                                + new ParamResourceModel("confirmOverwrite", AbstractStylePage.this)
+                                        .getString() + "')) return false;" + script;
+                    }
+                };
+            }
+
+            @Override
+            public boolean getDefaultFormProcessing() {
+                return false;
+            }
+
+        };
     }
 
     AjaxSubmitLink copyLink() {

@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -11,8 +11,9 @@ import java.io.StringReader;
 
 import net.opengis.wcs11.DescribeCoverageType;
 
-import org.geoserver.wcs.xml.v1_1_1.WCSConfiguration;
 import org.geoserver.wcs.xml.v1_1_1.WcsXmlReader;
+import org.geotools.wcs.v1_1.WCSConfiguration;
+import org.geoserver.util.EntityResolverProvider;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -25,7 +26,8 @@ public class DescribeCoverageXmlParserTest {
     @Before
     public void setUp() throws Exception {
         configuration = new WCSConfiguration();
-        reader = new WcsXmlReader("DescribeCoverage", "1.1.1", configuration);
+        reader = new WcsXmlReader("DescribeCoverage", "1.1.1", configuration,
+                EntityResolverProvider.RESOLVE_DISABLED_PROVIDER);
     }
 
     @Test

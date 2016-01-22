@@ -5,42 +5,13 @@
  */
 package org.geoserver.wms.map;
 
-import static org.geoserver.data.test.CiteTestData.STREAMS;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-import java.awt.Color;
-import java.awt.geom.NoninvertibleTransformException;
-import java.awt.image.BufferedImage;
-import java.awt.image.RenderedImage;
-import java.io.File;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.imageio.ImageIO;
-import javax.media.jai.Interpolation;
-import javax.media.jai.RenderedOp;
-import javax.xml.namespace.QName;
-
-import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.CoverageInfo;
-import org.geoserver.catalog.FeatureTypeInfo;
-import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.StyleInfo;
+import com.vividsolutions.jts.geom.Envelope;
+import org.geoserver.catalog.*;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
-import org.geoserver.data.test.TestData;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.security.decorators.DecoratingFeatureSource;
-import org.geoserver.wms.GetMapRequest;
-import org.geoserver.wms.WMS;
-import org.geoserver.wms.WMSMapContent;
-import org.geoserver.wms.WMSTestSupport;
+import org.geoserver.wms.*;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.Query;
@@ -51,19 +22,40 @@ import org.geotools.feature.IllegalAttributeException;
 import org.geotools.feature.SchemaException;
 import org.geotools.filter.IllegalFilterException;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.image.test.ImageAssert;
 import org.geotools.map.FeatureLayer;
+import org.geotools.map.Layer;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.resources.coverage.FeatureUtilities;
 import org.geotools.styling.Style;
+import org.geotools.styling.StyleBuilder;
 import org.geotools.util.logging.Logging;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.opengis.parameter.GeneralParameterValue;
 import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.TransformException;
 
-import com.vividsolutions.jts.geom.Envelope;
+import javax.media.jai.Interpolation;
+import javax.media.jai.RenderedOp;
+import javax.xml.namespace.QName;
+import java.awt.*;
+import java.awt.geom.NoninvertibleTransformException;
+import java.awt.image.BufferedImage;
+import java.awt.image.RenderedImage;
+import java.io.File;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import static org.geoserver.data.test.CiteTestData.STREAMS;
+import static org.junit.Assert.*;
 
 public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
 
@@ -78,6 +70,8 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
     public void setRasterMapProducer() throws Exception {
         Logging.getLogger("org.geotools.rendering").setLevel(Level.OFF);
         this.rasterMapProducer = getProducerInstance();
+
+        getTestData().addDefaultRasterLayer(SystemTestData.MULTIBAND, getCatalog());
     }
 
     protected RenderedImageMapOutputFormat getProducerInstance() {
@@ -122,6 +116,105 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
         BufferedImage image = (BufferedImage) imageMap.getImage();
         imageMap.dispose();
         assertNotBlank("testSimpleGetMapQuery", image);
+    }
+
+    /**
+     * Test to make sure the "direct" raster path and the "nondirect" raster path
+     * produce matching results. This test was originally created after fixes to GEOS-7270
+     * where there were issues with images generated during the direct raster path but not
+     * in the normal path, stemming from not setting the background color the same way
+     */
+    @Test
+    public void testDirectVsNonDirectRasterRender() throws Exception {
+        Catalog catalog = getCatalog();
+        CoverageInfo ci = catalog.getCoverageByName(
+                SystemTestData.MULTIBAND.getPrefix(), SystemTestData.MULTIBAND.getLocalPart());
+
+        final Envelope env = ci.boundingBox();
+
+        LOGGER.info("about to create map ctx for BasicPolygons with bounds " + env);
+
+        GetMapRequest request = new GetMapRequest();
+        CoordinateReferenceSystem crs = DefaultGeographicCRS.WGS84;
+        ReferencedEnvelope bbox = new ReferencedEnvelope(
+                new Envelope(-116.90673461649858211,
+                        -114.30988665660261461, 32.07093728218402617, 33.89032847348440214), crs);
+        request.setBbox(bbox);
+        request.setSRS("urn:x-ogc:def:crs:EPSG:4326");
+        request.setFormat("image/png");
+
+        final WMSMapContent map = new WMSMapContent(request);
+        map.setMapWidth(300);
+        map.setMapHeight(300);
+        map.setBgColor(Color.red);
+        map.setTransparent(false);
+        map.getViewport().setBounds(bbox);
+
+        StyleBuilder builder = new StyleBuilder();
+        GridCoverage2DReader reader = (GridCoverage2DReader) ci.getGridCoverageReader(null, null);
+        reader.getCoordinateReferenceSystem();
+        Layer l = new CachedGridReaderLayer(
+                reader,
+                builder.createStyle(builder.createRasterSymbolizer()));
+        map.addLayer(l);
+
+        RenderedImageMap imageMap = this.rasterMapProducer.produceMap(map);
+        ImageAssert.assertEquals(new File(
+                "src/test/resources/org/geoserver/wms/map/direct-raster-expected.tif"), imageMap.getImage(), 0);
+        imageMap.dispose();
+    }
+    
+    @Test
+    public void testTimeoutOption() throws Exception {
+        Catalog catalog = getCatalog();
+        GetMapRequest request = new GetMapRequest();
+        final WMSMapContent map = new WMSMapContent();
+        
+        StyleInfo styleByName = catalog.getStyleByName("Default");
+        Style basicStyle = styleByName.getStyle();
+        
+        //Build up a complex map so that we can reasonably guarantee a 1 ms timout
+        SimpleFeatureSource fs = (SimpleFeatureSource) catalog.getFeatureTypeByName(MockData.BASIC_POLYGONS.getPrefix(),
+                MockData.BASIC_POLYGONS.getLocalPart()).getFeatureSource(null, null);
+        Envelope env = fs.getBounds();
+        SimpleFeatureCollection features = fs.getFeatures();
+        SimpleFeatureCollection delayedCollection = new DelayedFeatureCollection(features, 10);
+        map.addLayer(new FeatureLayer(delayedCollection, basicStyle));
+        
+        LOGGER.info("about to create map ctx for "+map.layers().size()+" layers with bounds " + env);
+        
+        map.getViewport().setBounds(new ReferencedEnvelope(env, DefaultGeographicCRS.WGS84));
+        map.setMapWidth(1000);
+        map.setMapHeight(1000);
+        map.setRequest(request);
+        
+        request.setFormat(getMapFormat());
+        Map formatOptions = new HashMap();
+        //1 ms timeout
+        formatOptions.put("timeout", 1);
+        request.setFormatOptions(formatOptions);
+        try {
+            RenderedImageMap imageMap = this.rasterMapProducer.produceMap(map);
+            fail("Timeout was not reached");
+        } catch (ServiceException e) {
+            assertTrue(e.getMessage().startsWith("This request used more time than allowed"));
+        }
+        
+        //Test partial image exception format
+        Map rawKvp = new HashMap();
+        rawKvp.put("EXCEPTIONS", "PARTIALMAP");
+        request.setRawKvp(rawKvp);
+        
+        try {
+            RenderedImageMap imageMap = this.rasterMapProducer.produceMap(map);
+            fail("Timeout was not reached");
+        } catch (ServiceException e) {
+            assertTrue(e instanceof WMSPartialMapException);
+            assertTrue(e.getCause().getMessage().startsWith("This request used more time than allowed"));
+            RenderedImageMap partialMap = (RenderedImageMap) ((WMSPartialMapException)e).getMap();
+            assertNotNull(partialMap);
+            assertNotNull(partialMap.getImage());
+        }
     }
 
     @Test
@@ -238,9 +331,10 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
         imageMap.dispose();
         assertNotBlank("testInterpolationsBicubic", imageBicubic);
         // test some sample pixels to check rendering is different using different interpolations
-        assertFalse(getPixelColor(imageNearest, 200, 200).getRGB() == getPixelColor(imageBicubic, 200, 200).getRGB());
-        assertFalse(getPixelColor(imageNearest, 100, 100).getRGB() == getPixelColor(imageBicubic, 100, 100).getRGB());
-        assertFalse(getPixelColor(imageNearest, 300, 300).getRGB() == getPixelColor(imageBicubic, 300, 300).getRGB());
+        assertNotEquals(getPixelColor(imageNearest, 200, 200).getRGB(),
+                getPixelColor(imageBicubic, 200, 200).getRGB());
+        assertNotEquals(getPixelColor(imageNearest, 300, 300).getRGB(),
+                getPixelColor(imageBicubic, 300, 300).getRGB());
     }
 
     private void addRasterToMap(final WMSMapContent map, final QName typeName) throws IOException, FactoryRegistryException, TransformException, SchemaException {
@@ -409,5 +503,4 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
             super("image/gif", new String[] { "image/gif" }, wms);
         }
     }
-
 }

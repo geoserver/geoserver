@@ -19,6 +19,8 @@ import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.processing.CoverageProcessor;
 import org.geotools.coverage.processing.operation.Crop;
+import org.geotools.data.ResourceInfo;
+import org.geotools.data.ServiceInfo;
 import org.geotools.factory.Hints;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -142,9 +144,26 @@ public class SecuredGridCoverage2DReader extends DecoratingGridCoverage2DReader 
                 return null;
             }
         }
-            
-
         return grid;
     }
 
+    @Override
+    public ServiceInfo getInfo() {
+        ServiceInfo info = delegate.getInfo();
+        if (info == null) {
+            return null;
+        } else {
+            return (ServiceInfo) SecuredObjects.secure(info, policy);
+        }
+    }
+
+    @Override
+    public ResourceInfo getInfo(String coverageName) {
+        ResourceInfo info = delegate.getInfo(coverageName);
+        if (info == null) {
+            return null;
+        } else {
+            return (ResourceInfo) SecuredObjects.secure(info, policy);
+        }
+    }
 }

@@ -9,11 +9,16 @@
   
   <bean id="gwcAppCtx" class="org.geowebcache.util.ApplicationContextProvider" />
   
+  <bean id="gwcXmlConfigResourceProvider" class="org.geoserver.gwc.config.GeoserverXMLResourceProvider">
+     <constructor-arg value="geowebcache.xml" />
+     <constructor-arg ref="resourceStore" />
+  </bean>
+  
   <!-- The location of a static configuration file for GeoWebCache. 
        By default this lives in WEB-INF/classes/geowebcache.xml -->
   <bean id="gwcXmlConfig" class="org.geowebcache.config.XMLConfiguration">
     <constructor-arg ref="gwcAppCtx" />
-    <constructor-arg ref="gwcDefaultStorageFinder" />
+    <constructor-arg ref="gwcXmlConfigResourceProvider" />
     <property name="template" value="/geowebcache_empty.xml">
       <description>Create an empty geoebcache.xml in data_dir/gwc as template</description>
     </property>
@@ -51,7 +56,7 @@
   </bean-->
   
   <!-- For each configuration bean above, add them below to activate -->
-  <bean id="gwcTLDispatcher" class="org.geowebcache.layer.TileLayerDispatcher">
+  <bean id="gwcTLDispatcher" class="org.geowebcache.layer.TileLayerDispatcher" depends-on="gwcCatalogConfiguration,geoWebCacheExtensions">
     <description>
       TileLayerDispatcher serves up TileLayers from the available Configurations in the application context
     </description>
@@ -62,8 +67,10 @@
   	<constructor-arg ref="gwcAppCtx" />
   </bean>
 
-  <bean id="gwcBlobStore" class="org.geowebcache.storage.blobstore.file.FileBlobStore" destroy-method="destroy">
+  <bean id="gwcBlobStore" class="org.geowebcache.storage.CompositeBlobStore" destroy-method="destroy">
+    <constructor-arg ref="gwcTLDispatcher"/>
     <constructor-arg ref="gwcDefaultStorageFinder" />
+    <constructor-arg ref="gwcXmlConfig"/>
   </bean>
   
   <!-- Static definition of where to put the blobstore. 

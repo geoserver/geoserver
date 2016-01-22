@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -110,7 +111,7 @@ public class ExecuteRequest {
         }
         
         final Map<String, Parameter<?>> parameters = pf.getParameterInfo(processName);
-        Map<String, InputProvider> providers = new HashMap<String, InputProvider>();
+        Map<String, InputProvider> providers = new LinkedHashMap<String, InputProvider>();
 
         // see what output raw data we have that need the user chosen mime type to be
         // sent back to the process as an input

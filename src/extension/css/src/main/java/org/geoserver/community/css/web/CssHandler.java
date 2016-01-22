@@ -1,10 +1,11 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.community.css.web;
 
+import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -12,12 +13,15 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.SLDHandler;
 import org.geoserver.catalog.StyleHandler;
+import org.geoserver.catalog.StyleType;
 import org.geoserver.catalog.Styles;
 import org.geoserver.platform.resource.FileSystemResourceStore;
 import org.geoserver.platform.resource.Resource;
@@ -38,12 +42,39 @@ public class CssHandler extends StyleHandler {
     public static final String FORMAT = "css";
 
     public static final String MIME_TYPE = "application/vnd.geoserver.geocss+css";
+    
+    static final Map<StyleType, String> TEMPLATES = new HashMap<StyleType, String>();
+    static {
+        try {
+            TEMPLATES.put(StyleType.POINT, IOUtils.toString(CssHandler.class
+                    .getResourceAsStream("template_point.css")));
+            TEMPLATES.put(StyleType.POLYGON, IOUtils.toString(CssHandler.class
+                    .getResourceAsStream("template_polygon.css")));
+            TEMPLATES.put(StyleType.LINE, IOUtils.toString(CssHandler.class
+                    .getResourceAsStream("template_line.css")));
+            TEMPLATES.put(StyleType.RASTER, IOUtils.toString(CssHandler.class
+                    .getResourceAsStream("template_raster.css")));
+            TEMPLATES.put(StyleType.GENERIC, IOUtils.toString(CssHandler.class
+                    .getResourceAsStream("template_generic.css")));
+        } catch (IOException e) {
+            throw new RuntimeException("Error loading up the css style templates", e);
+        }
+    }
 
     private SLDHandler sldHandler;
 
     protected CssHandler(SLDHandler sldHandler) {
         super("CSS", FORMAT);
         this.sldHandler = sldHandler;
+    }
+
+    @Override
+    public String getStyle(StyleType type, Color color, String colorName, String layerName) {
+        String template = TEMPLATES.get(type);
+        String colorCode = Integer.toHexString(color.getRGB());
+        colorCode = colorCode.substring(2, colorCode.length());
+        return template.replace("${colorName}", colorName).replace(
+                "${colorCode}", "#" + colorCode).replace("${layerName}", layerName);
     }
 
     @Override

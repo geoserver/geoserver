@@ -9,6 +9,7 @@ import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -41,6 +42,7 @@ import org.geotools.feature.FeatureIterator;
 import org.geotools.filter.text.cql2.CQL;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.referencing.CRS;
 import org.junit.Test;
 import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeature;
@@ -98,6 +100,49 @@ public class ImporterDataTest extends ImporterTestSupport {
         runChecks("archsites");
     }
     
+    @Test
+    public void testImportRemoteDataFromDirectory() throws Exception {
+        File dir = unpack("shape/archsites_epsg_prj.zip");
+
+        ImportContext context = importer.createContext(new RemoteData(dir.getCanonicalPath()));
+        assertEquals(1, context.getTasks().size());
+
+        ImportTask task = context.getTasks().get(0);
+        assertEquals(ImportTask.State.READY, task.getState());
+        assertEquals("archsites", task.getLayer().getResource().getName());
+
+        importer.run(context);
+
+        Catalog cat = getCatalog();
+        assertNotNull(cat.getLayerByName("archsites"));
+
+        assertEquals(ImportTask.State.COMPLETE, task.getState());
+
+        runChecks("archsites");
+    }
+
+    @Test
+    public void testImportRemoteDataFromZip() throws Exception {
+        URL resource = ImporterTestSupport.class
+                .getResource("test-data/shape/archsites_epsg_prj.zip");
+
+        ImportContext context = importer.createContext(new RemoteData(resource.toExternalForm()));
+        assertEquals(1, context.getTasks().size());
+
+        ImportTask task = context.getTasks().get(0);
+        assertEquals(ImportTask.State.READY, task.getState());
+        assertEquals("archsites", task.getLayer().getResource().getName());
+
+        importer.run(context);
+
+        Catalog cat = getCatalog();
+        assertNotNull(cat.getLayerByName("archsites"));
+
+        assertEquals(ImportTask.State.COMPLETE, task.getState());
+
+        runChecks("archsites");
+    }
+
     @Test
     public void testImportShapefileFromDataDir() throws Exception {
         File dataDir = getCatalog().getResourceLoader().getBaseDirectory();
@@ -249,8 +294,7 @@ public class ImporterDataTest extends ImporterTestSupport {
 
         ImportTask task = context.getTasks().get(0);
         assertEquals(ImportTask.State.NO_CRS, task.getState());
-        assertNull(task.getLayer().getResource().getLatLonBoundingBox());
-
+        
         task.getLayer().getResource().setSRS("EPSG:26713");
         importer.changed(task);
 
@@ -260,6 +304,21 @@ public class ImporterDataTest extends ImporterTestSupport {
         assertNotNull(r.getLatLonBoundingBox());
         assertNotNull(r.boundingBox());
         assertNotNull(r.boundingBox().getCoordinateReferenceSystem());
+        
+        assertEquals("EPSG:26713", CRS.toSRS(r.boundingBox().getCoordinateReferenceSystem()));
+        
+        //Do the import, verify the changed CRS is preserved when the bounds are calculated
+        importer.doDirectImport(task);
+        assertEquals(ImportTask.State.COMPLETE, task.getState());
+
+        r = task.getLayer().getResource();
+        assertNotNull(r.getLatLonBoundingBox());
+        assertNotEquals(VectorFormat.EMPTY_BOUNDS, r.getLatLonBoundingBox());
+        assertNotNull(r.boundingBox());
+        assertNotEquals(VectorFormat.EMPTY_BOUNDS, r.boundingBox());
+        assertNotNull(r.boundingBox().getCoordinateReferenceSystem());
+        
+        assertEquals("EPSG:26713", CRS.toSRS(r.boundingBox().getCoordinateReferenceSystem()));
     }
 
     @Test
@@ -942,4 +1001,5 @@ public class ImporterDataTest extends ImporterTestSupport {
         assertEquals("a_1_", task.getLayer().getName());
         assertEquals("a_1_", task.getLayer().getResource().getName());
     }
+
 }

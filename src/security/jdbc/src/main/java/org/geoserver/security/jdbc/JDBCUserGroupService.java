@@ -6,7 +6,6 @@
 package org.geoserver.security.jdbc;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -23,6 +22,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.logging.Logger;
 
+import org.geoserver.platform.resource.Resource;
 import org.geoserver.security.GeoServerUserGroupService;
 import org.geoserver.security.GeoServerUserGroupStore;
 import org.geoserver.security.KeyStoreProvider;
@@ -111,13 +111,13 @@ public  class JDBCUserGroupService extends AbstractJDBCService implements GeoSer
                 (JDBCUserGroupServiceConfig) config;
             
             String fileNameDML =jdbcConfig.getPropertyFileNameDML();
-            File file = checkORCreateJDBCPropertyFile(fileNameDML, getConfigRoot(), DEFAULT_DML_FILE);
-            dmlProps = Util.loadUniversal(new FileInputStream(file));
+            Resource file = checkORCreateJDBCPropertyFile(fileNameDML, getConfigRoot(), DEFAULT_DML_FILE);
+            dmlProps = Util.loadUniversal(file.in());
             
             String fileNameDDL =jdbcConfig.getPropertyFileNameDDL();
             if (fileNameDDL!=null && fileNameDDL.length()> 0 ) {
                 file = checkORCreateJDBCPropertyFile(fileNameDDL, getConfigRoot(), DEFAULT_DDL_FILE);
-                ddlProps = Util.loadUniversal(new FileInputStream(file));
+                ddlProps = Util.loadUniversal(file.in());
                 createTablesIfRequired((JDBCSecurityServiceConfig)config);
             }
             
@@ -488,8 +488,8 @@ public  class JDBCUserGroupService extends AbstractJDBCService implements GeoSer
     /**
      * The root configuration for the user group service.
      */
-    public File getConfigRoot() throws IOException {
-        return new File(getSecurityManager().getUserGroupRoot(), getName());
+    public Resource getConfigRoot() throws IOException {
+        return getSecurityManager().get("security/usergroup").get(getName());
     }
     
     /* (non-Javadoc)

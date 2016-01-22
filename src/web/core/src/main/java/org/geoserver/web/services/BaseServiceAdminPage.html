@@ -20,13 +20,13 @@
       <fieldset>
         <legend><span><wicket:message key="serviceMetadata">Service Metadata</wicket:message></span></legend>
         <ul>
-          <li>
-            <input wicket:id="enabled" type="checkbox" class="field checkbox">
-            <label class="choice"><span wicket:id="service.enabled">enable</span></label>
+          <li class="choiceItem">
+            <input wicket:id="enabled" type="checkbox">
+            <label for="enabled"><span wicket:id="service.enabled">enable</span></label>
           </li>
-          <li>
-            <input wicket:id="citeCompliant" type="checkbox" class="field checkbox">
-            <label class="choice"><wicket:message key="strictCITECompliance">Strict CITE compliance</wicket:message></label>
+          <li class="choiceItem">
+            <input wicket:id="citeCompliant" type="checkbox">
+            <label for="citeCompliant"><wicket:message key="strictCITECompliance">Strict CITE compliance</wicket:message></label>
           </li>
           <li>
             <label><wicket:message key="maintainer">Maintainer</wicket:message></label>

@@ -112,7 +112,7 @@ public class LegacyConfigurationImporter {
         info.setVerboseExceptions( get( global, "verboseExceptions", boolean.class ) );
         info.setNumDecimals( get( global, "numDecimals", int.class, 4 ) );
         info.setCharset( (String) global.get( "charSet" ) );
-        info.setUpdateSequence( get( global, "updateSequence", int.class ) );
+        info.setUpdateSequence( get( global, "updateSequence", int.class ).longValue() );
         info.setOnlineResource( get( global, "onlineResource", String.class ) );
         info.setProxyBaseUrl( get( global, "ProxyBaseUrl", String.class ) );
         

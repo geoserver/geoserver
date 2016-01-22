@@ -1,18 +1,26 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.config.util;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import javax.measure.unit.SI;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -27,17 +35,26 @@ import javax.xml.transform.stream.StreamSource;
 import org.custommonkey.xmlunit.XMLAssert;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogFactory;
+import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
+import org.geoserver.catalog.CoverageView;
+import org.geoserver.catalog.CoverageView.CompositionType;
+import org.geoserver.catalog.CoverageView.CoverageBand;
+import org.geoserver.catalog.CoverageView.InputCoverageBand;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.Keyword;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.CatalogImpl;
+import org.geoserver.catalog.impl.CoverageDimensionImpl;
+import org.geoserver.catalog.impl.MetadataLinkInfoImpl;
 import org.geoserver.catalog.impl.WMSStoreInfoImpl;
 import org.geoserver.config.ContactInfo;
 import org.geoserver.config.GeoServerFactory;
@@ -163,7 +180,7 @@ public class XStreamPersisterTest {
         GeoServerInfo g2 = persister.load( in, GeoServerInfo.class );
         assertEquals( g1, g2 );
     }
-   
+      
     static class MyServiceInfo extends ServiceInfoImpl {
         
         String foo;
@@ -509,6 +526,50 @@ public class XStreamPersisterTest {
     }
     
     @Test
+    public void testCoverage() throws Exception {
+        Catalog catalog = new CatalogImpl();
+        CatalogFactory cFactory = catalog.getFactory();
+
+        WorkspaceInfo ws = cFactory.createWorkspace();
+        ws.setName("foo");
+        catalog.add(ws);
+
+        NamespaceInfo ns = cFactory.createNamespace();
+        ns.setPrefix("acme");
+        ns.setURI("http://acme.org");
+        catalog.add(ns);
+
+        CoverageStoreInfo cs = cFactory.createCoverageStore();
+        cs.setWorkspace(ws);
+        cs.setName("foo");
+        catalog.add(cs);
+
+        CoverageInfo cv = cFactory.createCoverage();
+        cv.setStore(cs);
+        cv.setNamespace(ns);
+        cv.setName("cv");
+        cv.setAbstract("abstract");
+        cv.setSRS("EPSG:4326");
+        cv.setNativeCRS(CRS.decode("EPSG:4326"));
+        cv.getParameters().put("foo", null);
+
+        ByteArrayOutputStream out = out();
+        persister.save(cv, out);
+
+        persister.setCatalog(catalog);
+        cv = persister.load(in(out), CoverageInfo.class);
+        assertNotNull(cv);
+
+        assertEquals("cv", cv.getName());
+        assertEquals(cs, cv.getStore());
+        assertEquals(ns, cv.getNamespace());
+        assertEquals("EPSG:4326", cv.getSRS());
+        assertTrue(cv.getParameters().containsKey("foo"));
+        assertNull(cv.getParameters().get("foo"));
+        assertTrue(CRS.equalsIgnoreMetadata(CRS.decode("EPSG:4326"), cv.getNativeCRS()));
+    }
+
+    @Test
     public void testWMSLayer() throws Exception {
         Catalog catalog = new CatalogImpl();
         CatalogFactory cFactory = catalog.getFactory();
@@ -593,6 +654,7 @@ public class XStreamPersisterTest {
         // l.setName( "layer" );
         l.setResource( ft );
         l.setDefaultStyle( s );
+        l.getStyles().add(s);
         catalog.add( l );
         
         ByteArrayOutputStream out = out();
@@ -604,8 +666,9 @@ public class XStreamPersisterTest {
         assertEquals( l.getResource().getName(), l.getName() );
         assertEquals( ft, l.getResource() );
         assertEquals( s, l.getDefaultStyle() );
-        //assertNotNull( l.getStyles() );
-        
+        assertNotNull(l.getStyles());
+        assertEquals(1, l.getStyles().size());
+        assertTrue(l.getStyles().contains(s));
     }
     
     @Test
@@ -883,6 +946,57 @@ public class XStreamPersisterTest {
                 "/workspace/metadata/entry[@key='banana']/sweetBanana/@name", dom);
     }
 
+    @Test
+    public void testCoverageView() throws Exception {
+        Catalog catalog = new CatalogImpl();
+        CatalogFactory cFactory = catalog.getFactory();
+        CoverageInfo coverage = cFactory.createCoverage();
+        MetadataMap metadata = coverage.getMetadata();
+        coverage.setName("test");
+        coverage.setEnabled(true);
+        coverage.getAlias().add("alias");
+        coverage.getKeywords().add(new Keyword("key"));
+        MetadataLinkInfoImpl metadataLink = new MetadataLinkInfoImpl();
+        metadataLink.setAbout("about");
+        coverage.getMetadataLinks().add(metadataLink);
+        CoverageDimensionImpl coverageDimension = new CoverageDimensionImpl("time");
+        coverageDimension.setNullValues(Collections.singletonList(new Double(0)));
+        coverage.getDimensions().add(coverageDimension);
+        coverage.getInterpolationMethods().add("Bilinear");
+        coverage.getParameters().put("ParameterKey", "ParameterValue");
+        coverage.getSupportedFormats().add("GEOTIFF");
+        coverage.getRequestSRS().add("EPSG:4326");
+        coverage.getResponseSRS().add("EPSG:4326");
+
+        final InputCoverageBand band_u = new InputCoverageBand("u-component_of_current_surface", "0");
+        final CoverageBand outputBand_u = new CoverageBand(Collections.singletonList(band_u),
+                "u-component_of_current_surface@0", 0, CompositionType.BAND_SELECT);
+
+        final InputCoverageBand band_v = new InputCoverageBand("v-component_of_current_surface", "0");
+        final CoverageBand outputBand_v = new CoverageBand(Collections.singletonList(band_v),
+                "v-component_of_current_surface@0", 1, CompositionType.BAND_SELECT);
+        final List<CoverageBand> coverageBands = new ArrayList<CoverageBand>(2);
+        coverageBands.add(outputBand_u);
+        coverageBands.add(outputBand_v);
+        CoverageView coverageView = new CoverageView("regional_currents", coverageBands);
+        metadata.put("COVERAGE_VIEW", coverageView);
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        persister.save(coverage, out);
+
+        CoverageInfo coverage2 = persister.load(in(out), CoverageInfo.class);
+        assertEquals(coverage, coverage2);
+
+    }
+    
+    @Test
+    public void testVirtualTableOrder() throws Exception {
+        FeatureTypeInfo ft = persister.load( getClass().getResourceAsStream("/org/geoserver/config/virtualtable_order_error.xml") , FeatureTypeInfo.class );
+        VirtualTable vtc = (VirtualTable) ft.getMetadata().get(FeatureTypeInfo.JDBC_VIRTUAL_TABLE);                
+        assertEquals(vtc.getSql(),"select * from table\n");        
+        assertEquals(vtc.getName(),"sqlview");
+    }
+
     ByteArrayOutputStream out() {
         return new ByteArrayOutputStream();
     }
@@ -922,4 +1036,5 @@ public class XStreamPersisterTest {
         }
 
     }
+
 }

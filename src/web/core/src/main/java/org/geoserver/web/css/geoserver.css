@@ -382,19 +382,51 @@ padding: 0 0 1px;
 }
 
 label.choice {
-color: #222;
 display: block;
-font-weight: normal;
-font-size: 100%;
-line-height: 1.5em;
 margin: -1.65em 0 0 25px;
 padding: 0.44em 0 0.5em;
 width: 90%;
+line-height: 1.5em;
 }
 
-ul.choiceList>li>label, ul.choiceList>li>input[type=checkbox] {
-display:inline;
+label.choice,ul.choiceList>li label, *.choiceItem label {
+color: #222; 
+font-weight: normal;
+font-size: 100%;
 }
+
+ul.choiceList>li span.fieldname, *.choiceItem span.fieldname {
+margin-left: -2em;
+}
+ul.choiceList>li span.fieldname:dir(rtl), *.choiceItem span.fieldname:dir(rtl) {
+margin-left: 0;
+margin-right: -2em;
+}
+
+
+/* For a "choiceList" create padding down leading side to act as a "hanging indent" then move the checkbox/radio into that padding. This allows the label to remain inline so it doesn't produce clickable whitespace. */
+ul.choiceList>li,*.choiceItem {
+position: relative;
+padding-left: 2em; 
+}
+ul.choiceList>li:dir(rtl),*.choiceItem:dir(rtl){
+padding-left: 0;
+padding-right: 2em;
+}
+ul.choiceList>li label,*.choiceItem label{
+display: inline;
+}
+ul.choiceList>li input[type=checkbox],ul.choiceList>li input[type=radio],*.choiceItem input[type=checkbox],*.choiceItem input[type=radio] {
+display: block;
+position: absolute;
+left: 0;
+}
+ul.choiceList>li:dir(rtl) input[type=checkbox],ul.choiceList>li:dir(rtl) input[type=radio],*.choiceItem:dir(rtl) input[type=checkbox],*.choiceItem:dir(rtl) input[type=radio] {
+left: auto;
+right: 0;
+}
+
+
 
 textarea.small {
 height: 3em;
@@ -925,6 +957,14 @@ display: inline;
 padding-right: 10px;
 }
 
+/* Controls underneath native bounding box eg. calculate from data, from CRS */
+.bounding-box-controls {
+margin-bottom: 1em;
+}
+
+.bounding-box-controls a {
+display: block;
+}
 
 /* Page */
 

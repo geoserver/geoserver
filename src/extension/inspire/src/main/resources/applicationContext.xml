@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
- Copyright (C) 2014 - Open Source Geospatial Foundation. All rights reserved.
+ Copyright (C) 2014 - 2015 Open Source Geospatial Foundation. All rights reserved.
  This code is licensed under the GPL 2.0 license, available at the root
  application directory.
  -->
@@ -13,9 +13,7 @@
   <bean id="inspireWfsExtendedCapsProvider" class="org.geoserver.inspire.wfs.WFSExtendedCapabilitiesProvider">
   </bean>
   
-  <bean id="inspireInitializer" class="org.geoserver.inspire.InspireInitializer">
-    <description>GeoServerInitializer implementation to make sure inspire resources are available. For example, the
-      schemas are copied to a publicly accessible location inside the data directory, etc.</description>
+  <bean id="inspireWcsExtendedCapsProvider" class="org.geoserver.inspire.wcs.WCSExtendedCapabilitiesProvider">
   </bean>
   
   <bean id="inspireWmsAdminPanel" class="org.geoserver.web.services.AdminPagePanelInfo">
@@ -31,5 +29,12 @@
     <property name="titleKey" value="inspire"/>
     <property name="componentClass" value="org.geoserver.inspire.web.InspireAdminPanel"/>
     <property name="serviceClass" value="org.geoserver.wfs.WFSInfo"/>
+  </bean>
+  <bean id="inspireWcsAdminPanel" class="org.geoserver.web.services.AdminPagePanelInfo">
+      <description>This bean adds the necessary form fields to Geoserver admin interface</description>
+    <property name="id" value="inspireWcsAdminPanel"/>
+    <property name="titleKey" value="inspire"/>
+    <property name="componentClass" value="org.geoserver.inspire.web.InspireAdminPanel"/>
+    <property name="serviceClass" value="org.geoserver.wcs.WCSInfo"/>
   </bean>
 </beans>

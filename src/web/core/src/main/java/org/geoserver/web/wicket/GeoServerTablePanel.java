@@ -136,8 +136,9 @@ public abstract class GeoServerTablePanel<T> extends Panel {
 
             @Override
             protected Item newItem(String id, int index, IModel model) {
-                // TODO Auto-generated method stub
-                return new OddEvenItem<T>(id, index, model);
+                OddEvenItem item = new OddEvenItem(id, index, model);
+                item.setOutputMarkupId(true);
+                return item;
             }
             
             @Override

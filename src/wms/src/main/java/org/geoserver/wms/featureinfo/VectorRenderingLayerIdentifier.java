@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -127,7 +127,7 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
     @Override
     public List<FeatureCollection> identify(FeatureInfoRequestParameters params,
             final int maxFeatures) throws Exception {
-        LOGGER.log(Level.FINER, "Appliying rendering based feature info identifier");
+        LOGGER.log(Level.FINER, "Applying rendering based feature info identifier");
         
         // at the moment the new identifier works only with simple features due to a limitation
         // in the StreamingRenderer
@@ -137,7 +137,7 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
         
         final Style style = preprocessStyle(params.getStyle(), params.getLayer().getFeature().getFeatureType());
         final int userBuffer = params.getBuffer() > 0 ? params.getBuffer() : MIN_BUFFER_SIZE;
-        final int buffer = Math.min(userBuffer, wms.getMaxBuffer());
+        final int buffer = getBuffer(userBuffer);
 
         // check the style to see what's active
         final List<Rule> rules = getActiveRules(style, params.getScaleDenominator());
@@ -145,6 +145,7 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
             return null;
         }
         GetMapRequest getMap = params.getGetMapRequest();
+        getMap.getFormatOptions().put("antialias", "NONE");
         WMSMapContent mc = new WMSMapContent(getMap);
         try {
             // prepare the fake web map content
@@ -185,6 +186,9 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
             // and now the listener that will check for painted pixels
             int mid = radius;
             int hitAreaSize = buffer * 2 + 1;
+            if(hitAreaSize > paintAreaSize) {
+                hitAreaSize = paintAreaSize;
+            }
             Rectangle hitArea = new Rectangle(mid - buffer, mid - buffer, hitAreaSize, hitAreaSize);
             final FeatureInfoRenderListener featureInfoListener = new FeatureInfoRenderListener(
                     image, hitArea, maxFeatures, params.getPropertyNames());
@@ -203,6 +207,10 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
         } finally {
             mc.dispose();
         }
+    }
+
+    protected int getBuffer(final int userBuffer) {
+        return Math.min(userBuffer, wms.getMaxBuffer());
     }
 
     protected GetMapOutputFormat createMapOutputFormat(final BufferedImage image,

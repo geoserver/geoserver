@@ -21,6 +21,8 @@ import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.StringResourceModel;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resources;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.GeoServerUserGroupService;
 import org.geoserver.security.impl.GeoServerUser;
@@ -56,31 +58,29 @@ public class SecurityHomePageContentProvider implements
             GeoServerSecurityManager manager = GeoServerApplication.get().getSecurityManager(); 
             
             // warn in case of an existing masterpw.info
-            File mpInfo = null;
+            Resource mpInfo = null;
             Label mpInfoLabel=null;
             try {
-                mpInfo = new File (manager.getSecurityRoot(),
-                        GeoServerSecurityManager.MASTER_PASSWD_INFO_FILENAME);
+                mpInfo = manager.get("security").get(GeoServerSecurityManager.MASTER_PASSWD_INFO_FILENAME);
                 mpInfoLabel=new Label("mpfile", new StringResourceModel("masterPasswordFile", (Component)this, null,
-                        new Object[] {mpInfo.getCanonicalFile()}));
+                        new Object[] {mpInfo.path()}));
                 mpInfoLabel.setEscapeModelStrings(false);
                 add(mpInfoLabel);            
-                mpInfoLabel.setVisible(mpInfo.exists());
+                mpInfoLabel.setVisible(Resources.exists(mpInfo));
             } catch (Exception ex) {
                 throw new RuntimeException (ex);
             }
             
             // warn in case of an existing user.properties.old
-            File userprops = null;
+            Resource userprops = null;
             Label userpropsLabel=null;
             try {
-                userprops = new File (manager.getSecurityRoot(),
-                        "users.properties.old");
+                userprops = manager.get("security").get("users.properties.old");
                 userpropsLabel=new Label("userpropsold", new StringResourceModel("userPropertiesOldFile", (Component)this, null,
-                        new Object[] {userprops.getCanonicalFile()}));
+                        new Object[] {userprops.path()}));
                 userpropsLabel.setEscapeModelStrings(false);
                 add(userpropsLabel);            
-                userpropsLabel.setVisible(userprops.exists());
+                userpropsLabel.setVisible(Resources.exists(userprops));
             } catch (Exception ex) {
                 throw new RuntimeException (ex);
             }

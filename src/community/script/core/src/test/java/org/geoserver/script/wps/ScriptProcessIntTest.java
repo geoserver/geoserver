@@ -1,12 +1,12 @@
 package org.geoserver.script.wps;
 
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+
 import java.io.File;
 
 import org.apache.commons.io.FileUtils;
 import org.geoserver.script.ScriptIntTestSupport;
 import org.w3c.dom.Document;
-
-import static  org.custommonkey.xmlunit.XMLAssert.*;
 
 public abstract class ScriptProcessIntTest extends ScriptIntTestSupport {
 
@@ -14,7 +14,7 @@ public abstract class ScriptProcessIntTest extends ScriptIntTestSupport {
     protected void oneTimeSetUp() throws Exception {
         super.oneTimeSetUp();
 
-        File script = new File(getScriptManager().getWpsRoot(), "map." + getExtension());
+        File script = new File(getScriptManager().wps().dir(), "map." + getExtension());
         FileUtils.copyURLToFile(getClass().getResource(script.getName()), script);
     }
 
@@ -35,6 +35,7 @@ public abstract class ScriptProcessIntTest extends ScriptIntTestSupport {
                  "</wps:Execute>";
           
          Document doc = postAsDOM("wps", xml);
+         //print(doc);
          assertEquals("map", doc.getDocumentElement().getLocalName());
          
          assertXpathEvaluatesTo("widget", "/map/name", doc);

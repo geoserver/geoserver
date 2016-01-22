@@ -89,6 +89,9 @@ class CachedLayerProvider extends GeoServerDataProvider<TileLayer> {
             }
         }
     };
+    
+
+    static final Property<TileLayer> BLOBSTORE = new BeanProperty<TileLayer>("blobstore", "blobStoreId");
 
     static final Property<TileLayer> ENABLED = new BeanProperty<TileLayer>("enabled", "enabled");
 
@@ -132,7 +135,7 @@ class CachedLayerProvider extends GeoServerDataProvider<TileLayer> {
 
     @SuppressWarnings("unchecked")
     static final List<Property<TileLayer>> PROPERTIES = Collections.unmodifiableList(Arrays.asList(
-            TYPE, NAME, QUOTA_LIMIT, QUOTA_USAGE, ENABLED, PREVIEW_LINKS, ACTIONS));
+            TYPE, NAME, QUOTA_LIMIT, QUOTA_USAGE, BLOBSTORE, ENABLED, PREVIEW_LINKS, ACTIONS));
 
     /**
      * @see org.geoserver.web.wicket.GeoServerDataProvider#getItems()

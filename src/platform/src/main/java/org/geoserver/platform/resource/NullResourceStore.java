@@ -8,6 +8,7 @@ package org.geoserver.platform.resource;
 import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -22,6 +23,8 @@ final class NullResourceStore implements ResourceStore {
     @Override
     public Resource get(final String resourcePath) {
         return new Resource() {
+            private static final long serialVersionUID = -8613315438546471004L;
+            
             String path = resourcePath;
 
             @Override
@@ -84,7 +87,7 @@ final class NullResourceStore implements ResourceStore {
 
             @Override
             public List<Resource> list() {
-                return null;
+                return Collections.emptyList();
             }
 
             @Override

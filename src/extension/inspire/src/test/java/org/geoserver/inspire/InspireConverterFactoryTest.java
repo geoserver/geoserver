@@ -1,3 +1,7 @@
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.inspire;
 
 import static org.junit.Assert.*;
@@ -24,6 +28,16 @@ public class InspireConverterFactoryTest {
         ids.add(new UniqueResourceIdentifier("code", "http://www.geoserver.org"));
         String str = Converters.convert(ids, String.class);
         assertEquals("code,http://www.geoserver.org,", str);
+        UniqueResourceIdentifiers ids2 = Converters.convert(str, UniqueResourceIdentifiers.class);
+        assertEquals(ids, ids2);
+    }
+    
+    @Test
+    public void testCodeMetadata() {
+        UniqueResourceIdentifiers ids = new UniqueResourceIdentifiers();
+        ids.add(new UniqueResourceIdentifier("code", null, "http://metadata.geoserver.org/id?code"));
+        String str = Converters.convert(ids, String.class);
+        assertEquals("code,,http://metadata.geoserver.org/id?code", str);
         UniqueResourceIdentifiers ids2 = Converters.convert(str, UniqueResourceIdentifiers.class);
         assertEquals(ids, ids2);
     }

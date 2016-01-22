@@ -19,7 +19,13 @@ public class StyleDetachableModel extends LoadableDetachableModel {
     
     @Override
     protected Object load() {
-        return GeoServerApplication.get().getCatalog().getStyle( id );
+        StyleInfo style = GeoServerApplication.get().getCatalog().getStyle( id );
+
+        // Make sure the legend object isn't null
+        if (null == style.getLegend()) {
+            style.setLegend(GeoServerApplication.get().getCatalog().getFactory().createLegend());
+        }
+        return style;
     }
 
     @Override

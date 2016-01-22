@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -87,6 +87,9 @@ public class WPSXStreamLoader extends XStreamServiceLoader<WPSInfo> {
         xs.alias("rangeValidator", NumberRangeValidator.class);
         xs.registerLocalConverter(NumberRangeValidator.class, "range",
                 new NumberRangeConverter(xs.getMapper(), xs.getReflectionProvider()));
+        
+        xs.allowTypeHierarchy(ProcessGroupInfo.class);
+        xs.allowTypeHierarchy(WPSInputValidator.class);
     }
 
     @Override
@@ -112,7 +115,7 @@ public class WPSXStreamLoader extends XStreamServiceLoader<WPSInfo> {
         }
         if (service.getConnectionTimeout() == 0) {
             // timeout has not yet been specified. Use default
-            ((WPSInfo) service).setConnectionTimeout(WPSInfoImpl.DEFAULT_CONNECTION_TIMEOUT);
+            service.setConnectionTimeout(WPSInfoImpl.DEFAULT_CONNECTION_TIMEOUT);
         }
         if (service.getProcessGroups() == null) {
             ((WPSInfoImpl) service).setProcessGroups(new ArrayList());

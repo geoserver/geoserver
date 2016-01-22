@@ -29,6 +29,7 @@ import org.geoserver.wfs.request.Insert;
 import org.geoserver.wfs.request.Lock;
 import org.geoserver.wfs.request.LockFeatureRequest;
 import org.geoserver.wfs.request.Query;
+import org.geoserver.wfs.request.Replace;
 import org.geoserver.wfs.request.TransactionElement;
 import org.geoserver.wfs.request.TransactionRequest;
 import org.opengis.feature.Feature;
@@ -153,19 +154,38 @@ public class WFSWorkspaceQualifier extends WorkspaceQualifyingCallback {
                     Insert in = (Insert) el;
                     //in the insert case the objects are gt feature types which are not mutable
                     // so we just check them and throw an exception if a name does not match
-                    for (Iterator j = in.getFeatures().iterator(); j.hasNext(); ) {
-                        Feature f = (Feature) j.next();
-                        Name n = f.getType().getName();
-                        if (n.getNamespaceURI() != null && !ns.getURI().equals(n.getNamespaceURI())) {
-                            throw new WFSException(t, "No such feature type " + n);
-                        }
-                    }
+                    List features = in.getFeatures();
+                    ensureFeatureNamespaceUriMatches(features, ns, t);
+                }
+                else if(el instanceof Replace){
+                    Replace rep = (Replace) el;
+                    //in the replace case the objects are gt feature types which are not mutable
+                    // so we just check them and throw an exception if a name does not match
+                    List features = rep.getFeatures();
+                    ensureFeatureNamespaceUriMatches(features, ns, t);                	
                 }
                 else {
                     el.setTypeName(qualifyTypeName(el.getTypeName(), workspace, ns));
                 }
             }
         }
+    }
+
+    /**
+     * Iterates the given features and ensures their namespaceURI matches the given namespace
+     * @param features
+     * @param ns
+     * @param t
+     */
+	private void ensureFeatureNamespaceUriMatches(List features,
+            NamespaceInfo ns, TransactionRequest t) {
+	    for (Iterator j = features.iterator(); j.hasNext(); ) {
+	        Feature f = (Feature) j.next();
+	        Name n = f.getType().getName();
+	        if (n.getNamespaceURI() != null && !ns.getURI().equals(n.getNamespaceURI())) {
+	            throw new WFSException(t, "No such feature type " + n);
+	        }
+	    }
     }
     
     void qualifyTypeNames(List names, WorkspaceInfo ws, NamespaceInfo ns) {

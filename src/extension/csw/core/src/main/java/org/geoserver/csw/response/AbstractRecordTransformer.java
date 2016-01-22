@@ -57,8 +57,10 @@ public abstract class AbstractRecordTransformer extends AbstractCSWTransformer {
             Enumeration declaredPrefixes = ns.getDeclaredPrefixes();
             while (declaredPrefixes.hasMoreElements()) {
                 String prefix = (String) declaredPrefixes.nextElement();
-                String uri = ns.getURI(prefix);
-                addAttribute(attributes, prefix==""? "xmlns" : "xmlns:" + prefix, uri);     
+                if (!"xml".equalsIgnoreCase(prefix)) {
+                    String uri = ns.getURI(prefix);
+                    addAttribute(attributes, prefix==""? "xmlns" : "xmlns:" + prefix, uri);
+                }
             }
             addAttribute(attributes, "xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
 

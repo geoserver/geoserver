@@ -428,7 +428,89 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
             // System.out.println(e);
         }
     }
+    
+    public void testSldConnectionFailure() throws Exception {
+        // Connection for specified external SLD fails while retrieving SLD
+        HashMap kvp = new HashMap();
+        
+        URL url = new URL("http://hostthatdoesnotexist/");
+        
+        kvp.put("sld", URLDecoder.decode(url.toExternalForm(), "UTF-8"));
+        kvp.put("layers",
+                MockData.BASIC_POLYGONS.getPrefix() + ":" + MockData.BASIC_POLYGONS.getLocalPart());
+        kvp.put("styles", "ThisStyleDoesNotExists");
 
+        GetMapRequest request = (GetMapRequest) reader.createRequest();
+        try {
+            reader.setLaxStyleMatchAllowed(false);
+            request = (GetMapRequest) reader.read(request, parseKvp(kvp), caseInsensitiveKvp(kvp));
+            fail("The style looked up, 'ThisStyleDoesNotExists', should not have been found");
+        } catch (ServiceException e) {
+            assertTrue("Exception should not reveal its cause", e.getCause()==null);
+        }
+    }
+    public void testSldNotExist() throws Exception {
+        // Specified external SLD does not exist
+        HashMap kvp = new HashMap();
+        
+        URL url = new URL(GetMapKvpRequestReaderTest.class.getResource(""), "does-not-exist");
+        
+        kvp.put("sld", URLDecoder.decode(url.toExternalForm(), "UTF-8"));
+        kvp.put("layers",
+                MockData.BASIC_POLYGONS.getPrefix() + ":" + MockData.BASIC_POLYGONS.getLocalPart());
+        kvp.put("styles", "ThisStyleDoesNotExists");
+
+        GetMapRequest request = (GetMapRequest) reader.createRequest();
+        try {
+            reader.setLaxStyleMatchAllowed(false);
+            request = (GetMapRequest) reader.read(request, parseKvp(kvp), caseInsensitiveKvp(kvp));
+            fail("The style looked up, 'ThisStyleDoesNotExists', should not have been found");
+        } catch (ServiceException e) {
+            assertTrue("Exception should not reveal its cause", e.getCause()==null);
+        }
+    }
+    
+    public void testSldNotXML() throws Exception {
+        // Specified external SLD is not XML
+        HashMap kvp = new HashMap();
+        
+        URL url = GetMapKvpRequestReaderTest.class.getResource("paletted.tif");
+        
+        kvp.put("sld", URLDecoder.decode(url.toExternalForm(), "UTF-8"));
+        kvp.put("layers",
+                MockData.BASIC_POLYGONS.getPrefix() + ":" + MockData.BASIC_POLYGONS.getLocalPart());
+        kvp.put("styles", "ThisStyleDoesNotExists");
+
+        GetMapRequest request = (GetMapRequest) reader.createRequest();
+        try {
+            reader.setLaxStyleMatchAllowed(false);
+            request = (GetMapRequest) reader.read(request, parseKvp(kvp), caseInsensitiveKvp(kvp));
+            fail("The style looked up, 'ThisStyleDoesNotExists', should not have been found");
+        } catch (ServiceException e) {
+            assertTrue("Exception should not reveal its cause", e.getCause()==null);
+        }
+    }
+    public void testSldNotSld() throws Exception {
+        // Specified external SLD is XML that is not SLD
+        HashMap kvp = new HashMap();
+        
+        URL url = GetMapKvpRequestReaderTest.class.getResource("WMSPostLayerGroupNonDefaultStyle.xml");
+        
+        kvp.put("sld", URLDecoder.decode(url.toExternalForm(), "UTF-8"));
+        kvp.put("layers",
+                MockData.BASIC_POLYGONS.getPrefix() + ":" + MockData.BASIC_POLYGONS.getLocalPart());
+        kvp.put("styles", "ThisStyleDoesNotExists");
+
+        GetMapRequest request = (GetMapRequest) reader.createRequest();
+        try {
+            reader.setLaxStyleMatchAllowed(false);
+            request = (GetMapRequest) reader.read(request, parseKvp(kvp), caseInsensitiveKvp(kvp));
+            fail("The style looked up, 'ThisStyleDoesNotExists', should not have been found");
+        } catch (ServiceException e) {
+            assertTrue("Exception should not reveal its cause", e.getCause()==null);
+        }
+    }
+    
     public void testSldFeatureTypeConstraints() throws Exception {
         // no styles, no layer, the full definition is in the sld
         HashMap kvp = new HashMap();

@@ -11,7 +11,7 @@
  <parent>
   <groupId>org.geoserver</groupId>
   <artifactId>community</artifactId>
-  <version>2.8-SNAPSHOT</version>
+  <version>2.9-SNAPSHOT</version>
  </parent>
  <groupId>org.geoserver.community</groupId>
  <artifactId>gs-release</artifactId>
@@ -30,19 +30,9 @@
    </dependency>   
    <dependency>
      <groupId>org.geoserver.community</groupId>
-     <artifactId>gs-netcdf</artifactId>
-     <version>${project.version}</version>
-   </dependency>
-   <dependency>
-     <groupId>org.geoserver.community</groupId>
      <artifactId>gs-wps-download</artifactId>
      <version>${project.version}</version>
    </dependency>   
-   <dependency>
-     <groupId>org.geoserver.community</groupId>
-     <artifactId>gs-netcdf-out</artifactId>
-     <version>${project.version}</version>
-   </dependency>
    <dependency>
      <groupId>org.geoserver.community</groupId>
      <artifactId>gs-ftp</artifactId>
@@ -103,11 +93,6 @@
      <artifactId>gs-mbtiles</artifactId>
      <version>${project.version}</version>
    </dependency>
-   <dependency>
-     <groupId>org.geoserver.community</groupId>
-     <artifactId>gs-grib</artifactId>
-     <version>${project.version}</version>
-   </dependency>
     <dependency>
      <groupId>org.geoserver.community</groupId>
      <artifactId>gs-dyndimension</artifactId>
@@ -155,6 +140,11 @@
    </dependency>   
    <dependency>
      <groupId>org.geoserver.community</groupId>
+     <artifactId>gs-geofence-server</artifactId>
+     <version>${project.version}</version>
+   </dependency>   
+   <dependency>
+     <groupId>org.geoserver.community</groupId>
      <artifactId>gs-sldservice</artifactId>
      <version>${project.version}</version>
    </dependency>
@@ -166,6 +156,26 @@
    <dependency>
       <groupId>org.geoserver.community</groupId>
       <artifactId>gs-gwc-distributed</artifactId>
+     <version>${project.version}</version>
+   </dependency>  
+   <dependency>
+      <groupId>org.geoserver.community</groupId>
+      <artifactId>gs-gwc-s3</artifactId>
+     <version>${project.version}</version>
+   </dependency>
+   <dependency>
+     <groupId>org.geoserver.community</groupId>
+     <artifactId>gs-gdal-wcs</artifactId>
+     <version>${project.version}</version>
+   </dependency>
+   <dependency>
+     <groupId>org.geoserver.community</groupId>
+     <artifactId>gs-gdal-wps</artifactId>
+     <version>${project.version}</version>
+   </dependency>
+   <dependency>
+     <groupId>org.geoserver.community</groupId>
+     <artifactId>gs-vectortiles</artifactId>
      <version>${project.version}</version>
    </dependency>
 
@@ -192,7 +202,7 @@
       <!-- remove some unwanted dependencies that get pulled over -->
        <tasks>
         <delete>
-         <fileset dir="${project.build.directory}/dependency" includes="servlet-api-2.4.jar,core*.jar"/>
+         <fileset dir="${project.build.directory}/dependency" includes="servlet-api-*.jar,core*.jar"/>
         </delete>
        </tasks>
       </configuration>

@@ -5,12 +5,9 @@
  */
 package org.geoserver.csw.store.simple;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FilenameFilter;
 import java.io.InputStream;
-import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -19,10 +16,10 @@ import net.opengis.cat.csw20.RecordType;
 import net.opengis.cat.csw20.SimpleLiteral;
 import net.opengis.ows10.BoundingBoxType;
 
-import org.apache.commons.io.IOCase;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.geoserver.csw.records.CSWRecordBuilder;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resources;
 import org.geotools.csw.CSWConfiguration;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
@@ -42,11 +39,11 @@ class SimpleRecordIterator implements Iterator<Feature> {
 
     static final Logger LOGGER = Logging.getLogger(SimpleRecordIterator.class);
 
-    Iterator<File> files;
+    Iterator<Resource> files;
 
     RecordType record;
     
-    File lastFile;
+    Resource lastFile;
 
     Parser parser;
 
@@ -54,10 +51,9 @@ class SimpleRecordIterator implements Iterator<Feature> {
 
     int offset;
 
-    public SimpleRecordIterator(File root, int offset) {
-        File[] fileArray = root.listFiles((FilenameFilter) new SuffixFileFilter(".xml",
-                IOCase.INSENSITIVE));
-        files = Arrays.asList(fileArray).iterator();
+    public SimpleRecordIterator(Resource root, int offset) {
+        List<Resource> fileArray = Resources.list(root, new Resources.ExtensionFilter("XML"));
+        files = fileArray.iterator();
         parser = new Parser(new CSWConfiguration());
         this.offset = offset;
     }
@@ -65,18 +61,18 @@ class SimpleRecordIterator implements Iterator<Feature> {
     @Override
     public boolean hasNext() {
         while ((record == null || offset > 0) && files.hasNext()) {
-            File file = files.next();
+            Resource file = files.next();
             lastFile = file;
             InputStream is = null;
             try {
-                is = new FileInputStream(file);
+                is = file.in();
                 record = (RecordType) parser.parse(is);
                 if (offset > 0) {
                     offset--;
                     record = null;
                 }
             } catch (Exception e) {
-                LOGGER.log(Level.INFO, "Failed to parse the contents of " + file.getPath()
+                LOGGER.log(Level.INFO, "Failed to parse the contents of " + file.path()
                         + " as a CSW Record", e);
             } finally {
                 IOUtils.closeQuietly(is);
@@ -139,7 +135,7 @@ class SimpleRecordIterator implements Iterator<Feature> {
         throw new UnsupportedOperationException("This iterator is read only");
     }
     
-    public File getLastFile() {
+    public Resource getLastFile() {
         return lastFile;
     }
 

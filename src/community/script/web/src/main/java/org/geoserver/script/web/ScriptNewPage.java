@@ -6,6 +6,7 @@
 package org.geoserver.script.web;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -22,6 +23,7 @@ import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.PropertyModel;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.rest.util.IOUtils;
 import org.geoserver.script.ScriptManager;
 import org.geoserver.script.ScriptPlugin;
 import org.geoserver.script.ScriptType;
@@ -132,10 +134,13 @@ public class ScriptNewPage extends GeoServerSecuredPage {
 
     private void save() {
         Script s = (Script) form.getModelObject();
+        OutputStream out = s.getResource().out();
         try {
-            FileUtils.write(s.getFile(), s.getContents());
+            IOUtils.write(s.getContents(), out);
         } catch (IOException e) {
             LOGGER.log(Level.WARNING, e.getMessage(), e);
+        } finally {
+            IOUtils.closeQuietly(out);
         }
     }
 }

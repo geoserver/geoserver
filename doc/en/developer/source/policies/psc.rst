@@ -8,16 +8,16 @@ Welcome to the GeoServer organizational system, as with any open source project 
 Summary
 -------
 
-This document describes the role and responsibilities of the to be created Project Steering Committee, as well as the process under which it operates. Much of the definition and inspiration for the GeoServer PSC is taken from the `MapServer Technical Steering Committee <http://mapserver.gis.umn.edu/development/rfc/ms-rfc-1/>`_ and the `Plone foundation <http://plone.org/products/plone/roadmap>`_.
+This document describes the role and responsibilities of the Project Steering Committee, as well as the process under which it operates. Much of the definition and inspiration for the GeoServer PSC is taken from the `MapServer Technical Steering Committee <http://mapserver.gis.umn.edu/development/rfc/ms-rfc-1/>`_ and the `Plone foundation <http://plone.org/products/plone/roadmap>`_.
 
 The committee is made up of individuals based on merit irrespective of organization ties.
 
 Structure
 ---------
 
-The PSC is made up of individuals who are meant to represent the various communities which have a stake in GeoServer. An odd number is chosen to facilitate the voting process and help prevent ties. However, even with an odd number, the voting system may still allow for a tie in some cases. For this reason the PSC has an appointed Chair, whose sole responsibility is to break ties among the PSC.
+The PSC is made up of individuals who are intended to represent the various communities which have a stake in GeoServer. An odd number is chosen to facilitate the voting process and help prevent ties. However, even with an odd number, the voting system may still allow for a tie in some cases. For this reason the PSC has an appointed Chair, whose sole responsibility is to break ties among the PSC.
 
-Turnover is allowed and expected to accommodate people only able to become active on the project in intervals. A PSC member may step down at  any time.
+Turnover is allowed and expected to accommodate people only able to become active on the project in intervals. A PSC member may step down at any time.
 
 Process
 -------
@@ -66,7 +66,7 @@ For minor decisions where feedback might be desired, the course of action to tak
 
 .. note:: Snap Decisions
 
-   For all decisions that are not official GSIP proposals, those 'present' (those in the IRC meeting or who bother to respond to an email within 4 days) are given the power to vote and decide an issue.  The same voting procedures are used, but any vote that meets a -1 from any party present (even a  new user), should go to a GSIP.  
+   For all decisions that are not official GSIP proposals, those 'present' (those in the Skype meeting or who bother to respond to an email within 4 days) are given the power to vote and decide an issue.  The same voting procedures are used, but any vote that meets a -1 from any party present (even a  new user), should go to a GSIP.  
 
 Responsibilities
 ----------------
@@ -81,23 +81,19 @@ Operations
 
 Day to day project management. Duties include:
 
-.. note:: Archive
-
-   Weekly IRC Meeting Attendance
-
-   PSC members are expected to attend one of the weekly IRC meetings. Of course this is not always possible due to various reasons. If known in advance that a member cannot attend a meeting the member should email the developer list. No reason need to be given for not attending the meeting. Meeting absences are subject to the following policies.
-
-  *If a member misses three consecutive meetings without prior notice, they are eligible to be voted off of the PSC.*
-
-  *If a member continuously misses IRC meetings (with or without notice) they may be asked to step down to make way for a potentially more active member.*
-
-  *Illness and vacation are acceptable exceptions to the above policies. However extended absence from the project may lead to the member being temporarily dismissed from the PSC*.
-
 **Mailing List Participation**
 
 PSC members are expected to be active on both user and developer email lists, subject to open-source mailing list etiquette of course.
 
 *It is a requirement that all PSC members maintain good public visibility with respect to activity and management of the project. This cannot happen without a good frequency of email on the mailing lists.*
+
+.. note::
+
+   Biweekly Skype Meeting Attendance
+
+   PSC members are encouraged to attend one of biweekly Skype meetings. Of course this is not always possible due to various reasons. If known in advance that a member cannot attend a meeting it is polite to email the developer list in response to the meeting reminder. No reason need to be given for not attending the meeting.
+   
+   Meetings are a chance to quickly discuss project activities, review difficult pull requests, and cut down on email.
 
 Planning
 ^^^^^^^^
@@ -110,7 +106,7 @@ Long term project management. Duties include:
 
 *The PSC has the right to veto any proposed development efforts.*
 
-*A major development effort which is intended to become part of the core of GeoServer can be proposed by any interested part, PSC, or non PSC. However, the effort must be approved by the PSC before it can begin.*
+*A major development effort which is intended to become part of the core of GeoServer can be proposed by any interested party, PSC, or non PSC. However, the effort must be approved by the PSC before it can begin.*
 
 **Project Policies**
 
@@ -134,17 +130,25 @@ The PSC is responsible for defining project policies and practiced. Examples inc
 Current PSC
 -----------
 
- * Alessio Fabiani
- * Andrea Aime
- * Ben Caradoc-Davies
- * Chris Holmes (Chair)
- * Christian Mueller
- * Gabriel Roldan
- * Jody Garnett
- * Jukka Rahkonen
- * Justin Deoliveira
- * Phil Scadden
- * Simone Giannecchini
+* Alessio Fabiani
+* Andrea Aime
+* Ben Caradoc-Davies
+* Brad Hards
+* Christian Mueller
+* Ian Turton
+* Jody Garnett
+* Jukka Rahkonen
+* Kevin Smith
+* Simone Giannecchini
+
+We would like to thank prior PSC members:
+
+* Rob Atkinson
+* Justin Deoliveira
+* Chris Holmes
+* Brent Owens
+* Gabriel Roldan
+* Phil Scadden
 
 PSC Voting procedure
 --------------------
@@ -156,7 +160,7 @@ First a chair is chosen by the current group of "active" committers. The Chair i
 
 Everyone on the email lists gets 5 votes for PSC,. Once the list is accepted by those nominated, a volunteer will privately gather the votes posting the results. The 7 nominees receiving the most 5 votes will be selected as the PSC.
 
-Future PSC members  
+Future PSC members
 ^^^^^^^^^^^^^^^^^^
 
 A new PSC member can be nominated at any time.  Voting for a new PSC is done by current active PSC members.  There is no hard limit to the number of PSC members, but we want a relatively active PSC.  PSC nominations are generally given in recognition to very significant contributions to the project.  Membership is open to non-technical people, for example if someone is to make huge advances to the documentations or marketing of GeoServer, for example.  
@@ -165,12 +169,14 @@ Since we demand a fairly active PSC we expect turnover may be high compared to o
 
 Nominated PSC members must recieve a majority of +1 vote's from the PSC, and no -1's.  
 
+PSC Chair is nominated following the same procedures as PSC members.
+
 Stepping Down
 -------------
 
 If you find you cannot make meetings for a month or two, by all means step aside. Thank you so much for your time, if you want to groom a successor and then nominate them that is cool, but the nomination process still applies.  
 
-If we do not hear from you for two months we will assume you lost, send out a search party and nominate your replacement.  
+If we do not hear from you for six months we will assume you lost, send out a search party and nominate your replacement.  
 
 That is to say, status on PSC is lost if not active at all in a two month period of time.  Of course you can come back on to the PSC if you become active again, but a new nomination procedure will be needed.  
 

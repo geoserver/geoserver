@@ -7,7 +7,6 @@ package org.geoserver.catalog.rest;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -18,13 +17,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.custommonkey.xmlunit.XMLAssert;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.data.test.MockData;
+import org.geoserver.platform.resource.Files;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resources;
+import org.geoserver.rest.util.IOUtils;
 import org.geoserver.rest.util.RESTUtils;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
@@ -64,7 +66,7 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
     
     @Test
     @Ignore
-    // fixing https://jira.codehaus.org/browse/GEOS-6845, re-enable when a proper fix for spaces in
+    // fixing https://osgeo-org.atlassian.net/browse/GEOS-6845, re-enable when a proper fix for spaces in
     // name has been made
     public void testUploadWithSpaces() throws Exception {
         URL zip = getClass().getResource( "test-data/usa.zip" );
@@ -199,17 +201,16 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
 
         // Harvesting of the Mosaic
         URL zipHarvest = MockData.class.getResource("harvesting.zip");
-        File newZip = new File("./target/harvesting2.zip");
+        Resource newZip = Files.asResource(new File("./target/harvesting2.zip"));
         // Copy the content of the first zip to the second
-        FileUtils.copyInputStreamToFile(zipHarvest.openStream(), newZip);
-        File outputDirectory = new File("./target/harvesting");
-        outputDirectory.mkdir();
+        IOUtils.copyStream(zipHarvest.openStream(), newZip.out(), true, true);
+        Resource outputDirectory = Files.asResource(new File("./target/harvesting"));
         RESTUtils.unzipFile(newZip, outputDirectory);
         // Create the POST request
         MockHttpServletRequest request = createRequest("/rest/workspaces/gs/coveragestores/watertemp3/external.imagemosaic");
         request.setMethod("POST");
         request.setContentType("text/plain");
-        request.setBodyContent("file:///" + outputDirectory.getAbsolutePath());
+        request.setBodyContent("file:///" + outputDirectory.dir().getAbsolutePath());
         request.setHeader("Content-type", "text/plain");
         // Get The response
         response = dispatch(request);
@@ -223,7 +224,7 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
         assertEquals("2008-10-31T00:00:00.000Z,2008-11-01T00:00:00.000Z,2008-11-02T00:00:00.000Z",
                 reader.getMetadataValue(metadataNames[0]));
         // Removal of the temporary directory
-        FileUtils.deleteDirectory(outputDirectory);
+        outputDirectory.delete();
     }
 
     @Test
@@ -237,14 +238,14 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
             }
         }
         // reading of the mosaic directory
-        File mosaic = readMosaic();
+        Resource mosaic = readMosaic();
         // Creation of the builder for building a new CoverageStore
         CatalogBuilder builder = new CatalogBuilder(getCatalog());
         // Definition of the workspace associated to the coverage
         WorkspaceInfo ws = getCatalog().getWorkspaceByName("gs");
         // Creation of a CoverageStore
         CoverageStoreInfo store = builder.buildCoverageStore("watertemp4");
-        store.setURL(DataUtilities.fileToURL(mosaic).toExternalForm());
+        store.setURL(DataUtilities.fileToURL(Resources.find(mosaic)).toExternalForm());
         store.setWorkspace(ws);
         ImageMosaicFormat imageMosaicFormat = new ImageMosaicFormat();
         store.setType((imageMosaicFormat.getName()));
@@ -259,7 +260,7 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
         try {
             // Selection of the reader to use for the mosaic
             reader = imageMosaicFormat.getReader(DataUtilities
-                    .fileToURL(mosaic));
+                    .fileToURL(Resources.find(mosaic)));
 
             // configure the coverage
             configureCoverageInfo(builder, store, reader);
@@ -321,21 +322,18 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
         }
     }
 
-    private File readMosaic() throws NoSuchAuthorityCodeException, FactoryException, IOException {
+    private Resource readMosaic() throws NoSuchAuthorityCodeException, FactoryException, IOException {
         // Select the zip file containing the mosaic
         URL mosaicZip = getClass().getResource("test-data/watertemp2.zip");
-        File zipFile = DataUtilities.urlToFile(mosaicZip);
+        Resource zipFile = Files.asResource(DataUtilities.urlToFile(mosaicZip));
 
         // Creation of another zip file which is a copy of the one before
-        File newZip = new File(zipFile.getParentFile(), "watertemp2_temp.zip");
+        Resource newZip = zipFile.parent().get("watertemp2_temp.zip");
         // Copy the content of the first zip to the second
-        FileUtils.copyFile(zipFile, newZip);
+        IOUtils.copyStream(zipFile.in(), newZip.out(), true, true);
 
-        File mosaic = new File(zipFile.getParentFile(), "mosaic");
-        if (mosaic.exists()) {
-            FileUtils.deleteDirectory(mosaic);
-        }
-        assertTrue(mosaic.mkdirs());
+        Resource mosaic = zipFile.parent().get("mosaic");
+        mosaic.delete();
 
         RESTUtils.unzipFile(newZip, mosaic);
         return mosaic;

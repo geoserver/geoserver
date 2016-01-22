@@ -3,20 +3,21 @@
 <body>
 <form name="theForm">
   <wicket:panel>
+  <h3><wicket:message key="defaultTitle">WMS Settings</wicket:message></h3>
   <ul>
     <li>
       <fieldset>
-        <legend><span><wicket:message key="defaultTitle">Default Title</wicket:message></span></legend>
-        <ul>
+        <legend><span><wicket:message key="layerSettings">Layer Settings</wicket:message></span></legend>
+        <ul class="choiceList">
           <li>
-            <input id="queryableEnabled" class="field checkbox" type="checkbox" wicket:id="queryableEnabled"></input>
-            <label for="queryableEnabled" class="choice"><wicket:message key="queryable">Queryable</wicket:message></label>
+            <input id="queryableEnabled" type="checkbox" wicket:id="queryableEnabled"></input>
+            <label for="queryableEnabled"><wicket:message key="queryable">Queryable</wicket:message></label>
           </li>
         </ul>
-        <ul>
+        <ul class="choiceList">
           <li>
-            <input id="opaqueEnabled" class="field checkbox" type="checkbox" wicket:id="opaqueEnabled"></input>
-            <label for="opaqueEnabled" class="choice"><wicket:message key="opaque">Opaque</wicket:message></label>
+            <input id="opaqueEnabled" type="checkbox" wicket:id="opaqueEnabled"></input>
+            <label for="opaqueEnabled"><wicket:message key="opaque">Opaque</wicket:message></label>
           </li>
         </ul>
         <ul wicket:id="styles">
@@ -44,9 +45,6 @@
         </ul>
       </fieldset>
     </li>   
-    <li>
-      <div wicket:id="authoritiesAndIds"></div>
-    </li>
   </ul>
   </wicket:panel>
 </form>

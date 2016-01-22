@@ -146,9 +146,21 @@ Run GeoServer from Eclipse
       :width: 600
 
 #. After running the first time you can return to the ``Run Configurations`` dialog
-   to fine tune your launch environment (including setting a GEOSERVER_DATA_DIRECTORY).
+   to fine tune your launch environment (including setting a GEOSERVER_DATA_DIR).
 
+.. note::
+   
+   If you already have a server running on localhost:8080 see the :ref:`eclipse_guide` for instructions on changing to a different port.
 
+Run GeoServer with Extensions
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The above instructions assume you want to run GeoServer without any extensions enabled. In cases where you do need certain extensions, the ``web-app`` module declares a number of profiles that will enable specific extensions when running ``Start``. To enable an extension, re-generate the root eclipse profile with the appropriate maven profile(s) enabled::
+
+  % mvn eclipse:eclipse -P wps
+
+The full list of supported profiles can be found in ``src/web/app/pom.xml``.
+   
 Access GeoServer front page
 ---------------------------
 

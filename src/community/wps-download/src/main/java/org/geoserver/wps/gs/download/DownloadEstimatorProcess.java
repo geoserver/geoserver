@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -66,6 +66,8 @@ public class DownloadEstimatorProcess implements GSProcess {
      * @param roiCRS the roi crs
      * @param roi the roi
      * @param clip the crop to geometry
+     * @param targetSizeX the size of the target image along the X axis
+     * @param targetSizeY the size of the target image along the Y axis
      * @param progressListener the progress listener
      * @return the boolean
      * @throws Exception
@@ -78,6 +80,8 @@ public class DownloadEstimatorProcess implements GSProcess {
             @DescribeParameter(name = "RoiCRS", min = 0, description = "Region Of Interest CRS") CoordinateReferenceSystem roiCRS,
             @DescribeParameter(name = "ROI", min = 0, description = "Region Of Interest") Geometry roi,
             @DescribeParameter(name = "cropToROI", min = 0, description = "Crop to ROI") Boolean clip,
+            @DescribeParameter(name = "targetSizeX", min = 0, minValue = 1, description = "X Size of the Target Image (applies to raster data only)") Integer targetSizeX,
+            @DescribeParameter(name = "targetSizeY", min = 0, minValue = 1, description = "Y Size of the Target Image (applies to raster data only)") Integer targetSizeY,
             ProgressListener progressListener) throws Exception {
 
         //
@@ -153,7 +157,7 @@ public class DownloadEstimatorProcess implements GSProcess {
             }
             final CoverageInfo coverage = (CoverageInfo) resourceInfo;
             return new RasterEstimator(limits).execute(progressListener, coverage, roi, targetCRS,
-                    clip, filter);
+                    clip, filter, targetSizeX, targetSizeY);
         }
 
         if (LOGGER.isLoggable(Level.FINE)) {

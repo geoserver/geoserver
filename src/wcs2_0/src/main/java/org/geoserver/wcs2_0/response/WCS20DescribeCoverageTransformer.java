@@ -231,7 +231,7 @@ public class WCS20DescribeCoverageTransformer extends GMLTransformer {
                 }
                 final String srsName = GetCoverage.SRS_STARTER + EPSGCode;
                 // handle axes swap for geographic crs
-                final boolean axisSwap = CRS.getAxisOrder(crs).equals(AxisOrder.EAST_NORTH);
+                final boolean axisSwap = !CRS.getAxisOrder(CRS.decode(srsName)).equals(AxisOrder.EAST_NORTH);
 
                 // encoding ID of the coverage
                 final AttributesImpl coverageAttributes = new AttributesImpl();
@@ -306,10 +306,6 @@ public class WCS20DescribeCoverageTransformer extends GMLTransformer {
             element("wcs:CoverageSubtype", "RectifiedGridCoverage");
             
             String mapNativeFormat = mimemapper.mapNativeFormat(ci);
-            if(mapNativeFormat==null){
-                // fall back on GeoTiff when a native format cannot be determined
-                mapNativeFormat = GeoTIFFCoverageResponseDelegate.GEOTIFF_CONTENT_TYPE;
-            }
             element("wcs:nativeFormat",mapNativeFormat);
             end("wcs:ServiceParameters");
         }

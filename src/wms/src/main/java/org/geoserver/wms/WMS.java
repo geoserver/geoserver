@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2014 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -179,6 +179,26 @@ public class WMS implements ApplicationContextAware {
 
     public static final int KML_KMSCORE_DEFAULT = 40;
     
+    /**
+     * Enable continuous map wrapping (global sys var)
+     */
+    public static Boolean ENABLE_MAP_WRAPPING = null;
+
+    /**
+     * Continuous map wrapping key
+     */
+    public static String MAP_WRAPPING_KEY = "mapWrapping";
+
+    /**
+     * Enable advanced projection handling
+     */
+    public static Boolean ENABLE_ADVANCED_PROJECTION = null;
+
+    /**
+     * Advanced projection key
+     */
+    public static String ADVANCED_PROJECTION_KEY = "advancedProjectionHandling";
+
     /**
      * the WMS Animator animatorExecutor service
      */
@@ -472,6 +492,31 @@ public class WMS implements ApplicationContextAware {
                 JPEG_COMPRESSION_DEFAULT);
     }
 
+    /**
+     * Checks if continuous map wrapping is enabled or not
+     * 
+     * @return
+     */
+    public boolean isContinuousMapWrappingEnabled() {
+        // for backwards compatibility we set the config value to the sys variable one if set, but
+        // once set, the config wins
+        Boolean enabled = getMetadataValue(MAP_WRAPPING_KEY, ENABLE_MAP_WRAPPING, Boolean.class);
+        return enabled;
+    }
+
+    /**
+     * Checks if advanced projection handling is enabled or not
+     * 
+     * @return
+     */
+    public boolean isAdvancedProjectionHandlingEnabled() {
+        // for backwards compatibility we set the config value to the sys variable one if set, but
+        // once set, the config wins
+        Boolean enabled = getMetadataValue(ADVANCED_PROJECTION_KEY, ENABLE_ADVANCED_PROJECTION,
+                Boolean.class);
+        return enabled;
+    }
+
     public int getMaxAllowedFrames() {
     	return getMetadataValue(MAX_ALLOWED_FRAMES, MAX_ALLOWED_FRAMES_DEFAULT, Integer.class);
     }
@@ -726,6 +771,28 @@ public class WMS implements ApplicationContextAware {
         // the highest priority (this allows for plugin overrides)
         defaultDimensionValueFactory = GeoServerExtensions.extensions(
                 DimensionDefaultValueSelectionStrategyFactory.class).get(0);
+
+        // enable/disable map wrapping
+        if (ENABLE_MAP_WRAPPING == null) {
+            String wrapping = GeoServerExtensions.getProperty("ENABLE_MAP_WRAPPING",
+                    applicationContext);
+            // default to true, but allow switching off
+            if (wrapping == null)
+                ENABLE_MAP_WRAPPING = true;
+            else
+                ENABLE_MAP_WRAPPING = Boolean.valueOf(wrapping);
+        }
+
+        // enable/disable advanced reprojection handling
+        if (ENABLE_ADVANCED_PROJECTION == null) {
+            String projection = GeoServerExtensions.getProperty("ENABLE_ADVANCED_PROJECTION",
+                    applicationContext);
+            // default to true, but allow switching off
+            if (projection == null)
+                ENABLE_ADVANCED_PROJECTION = true;
+            else
+                ENABLE_ADVANCED_PROJECTION = Boolean.valueOf(projection);
+        }
     }
 
     /**
@@ -903,18 +970,20 @@ public class WMS implements ApplicationContextAware {
     }
 
     public boolean isQueryable(LayerGroupInfo layerGroup) {
+        
+        if (layerGroup.isQueryDisabled())
+            return false;
+        
+        boolean queryable = false;
+        
         for (PublishedInfo published : layerGroup.getLayers()) {
             if (published instanceof LayerInfo) {
-                if (!isQueryable((LayerInfo) published)) {
-                    return false;
-                }
+                queryable |= isQueryable((LayerInfo) published);
             } else {
-                if (!isQueryable((LayerGroupInfo) published)) {
-                    return false;
-                }
+                queryable |= isQueryable((LayerGroupInfo) published);
             }
         }
-        return true;
+        return queryable;
     }
 
     /**
@@ -1126,23 +1195,12 @@ public class WMS implements ApplicationContextAware {
     }
 
     /**
-     * Returns the current time for the specified type info
-     * 
-     * @param resourceInfo
-     * @return
-     * @deprecated this returns the default value for TIME dimension, which is not always "current"
-     */
-    public Date getCurrentTime(ResourceInfo resourceInfo) {
-      return this.getDefaultTime(resourceInfo);
-    }
-    
-    /**
      * Returns the default value for time dimension.
      * 
      * @param resourceInfo
      * @return
      */
-    public Date getDefaultTime(ResourceInfo resourceInfo) {
+    public Object getDefaultTime(ResourceInfo resourceInfo) {
         // check the time metadata
         DimensionInfo time = resourceInfo.getMetadata().get(ResourceInfo.TIME, DimensionInfo.class);
         if (time == null || !time.isEnabled()) {
@@ -1161,15 +1219,26 @@ public class WMS implements ApplicationContextAware {
      * @param resourceInfo
      * @return
      */
-    public Double getDefaultElevation(ResourceInfo resourceInfo) {
-        DimensionInfo elevation = resourceInfo.getMetadata().get(ResourceInfo.ELEVATION,
-                DimensionInfo.class);
-        if (elevation == null || !elevation.isEnabled()) {
-            throw new ServiceException("Layer " + resourceInfo.prefixedName()
-                    + " does not have elevation support enabled");
-        }
+    public Object getDefaultElevation(ResourceInfo resourceInfo) {
+        DimensionInfo elevation = getDimensionInfo(resourceInfo, ResourceInfo.ELEVATION);
         DimensionDefaultValueSelectionStrategy strategy = this.getDefaultValueStrategy(resourceInfo, ResourceInfo.ELEVATION, elevation);
-        return strategy.getDefaultValue(resourceInfo, ResourceInfo.ELEVATION, elevation, Double.class);               
+        return strategy.getDefaultValue(resourceInfo, ResourceInfo.ELEVATION, elevation, Double.class);
+    }
+
+    /**
+     * Looks up the elevation configuration, throws an exception if not found
+     * @param resourceInfo
+     * @param dimensionName 
+     * @return
+     */
+    public DimensionInfo getDimensionInfo(ResourceInfo resourceInfo, String dimensionName) {
+        DimensionInfo info = resourceInfo.getMetadata().get(dimensionName,
+                DimensionInfo.class);
+        if (info == null || !info.isEnabled()) {
+            throw new ServiceException("Layer " + resourceInfo.prefixedName()
+                    + " does not have " + dimensionName + " support enabled");
+        }
+        return info;
     }
     
     /**
@@ -1189,10 +1258,12 @@ public class WMS implements ApplicationContextAware {
                     + " does not have support enabled for dimension "+dimensionName);
         }
         DimensionDefaultValueSelectionStrategy strategy = this.getDefaultValueStrategy(resourceInfo, ResourceInfo.CUSTOM_DIMENSION_PREFIX+dimensionName, customDim);
-        return strategy.getDefaultValue(resourceInfo, ResourceInfo.CUSTOM_DIMENSION_PREFIX+dimensionName, customDim, clz);
+        // custom dimensions have no range support
+        return (T) strategy.getDefaultValue(resourceInfo, ResourceInfo.CUSTOM_DIMENSION_PREFIX+dimensionName, customDim, clz);
     }
     
-    DimensionDefaultValueSelectionStrategy getDefaultValueStrategy(ResourceInfo resource,
+    
+    public DimensionDefaultValueSelectionStrategy getDefaultValueStrategy(ResourceInfo resource,
             String dimensionName, DimensionInfo dimensionInfo){
         if (defaultDimensionValueFactory != null) {
             return defaultDimensionValueFactory.getStrategy(resource, dimensionName, dimensionInfo);

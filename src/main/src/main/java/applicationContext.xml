@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
- Copyright (C) 2014 - Open Source Geospatial Foundation. All rights reserved.
+ Copyright (C) 2015 - Open Source Geospatial Foundation. All rights reserved.
  This code is licensed under the GPL 2.0 license, available at the root
  application directory.
  -->
@@ -16,9 +16,15 @@
     </bean>
     <bean id="lockProviderInitializer" class="org.geoserver.config.LockProviderInitializer"/>
     
+    <!-- used by alternative resource stores -->
+    <bean id="resourceNotificationDispatcher" class="org.geoserver.platform.resource.SimpleResourceNotificationDispatcher"/>
+    
 	<!-- resources -->
-    <bean id="resourceStore" class="org.geoserver.platform.resource.DataDirectoryResourceStore">
-      <property name="lockProvider" ref="lockProvider"/>
+    <bean id="dataDirectoryResourceStore" class="org.geoserver.platform.resource.DataDirectoryResourceStore">
+        <property name="lockProvider" ref="lockProvider"/>
+    </bean>  
+    <bean id="resourceStore" class="org.geoserver.platform.resource.ResourceStoreProxy">
+        <property name="delegate" ref="dataDirectoryResourceStore"/>
     </bean>
     <bean id="resourceLoader" class="org.geoserver.platform.GeoServerResourceLoader">
 	    <constructor-arg ref="resourceStore"/>
@@ -245,4 +251,9 @@
   
   <!-- WFS Cascaded Stored Query callback  -->
   <bean id="cascadedStoredQueryCallback" class="org.geoserver.catalog.CascadedStoredQueryCallback"/>
+  
+  <!-- Entity resolver provider, to stop xml attacks via system entity resolution -->
+  <bean id="entityResolverProvider" class="org.geoserver.util.EntityResolverProvider">
+    <constructor-arg ref="geoServer"/>
+  </bean>
 </beans>

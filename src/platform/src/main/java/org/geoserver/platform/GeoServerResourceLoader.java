@@ -24,8 +24,8 @@ import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.ResourceStore;
 import org.geoserver.platform.resource.Resources;
-import org.geotools.data.DataUtilities;
 import org.springframework.core.io.DefaultResourceLoader;
+import org.springframework.web.context.ServletContextAware;
 
 /**
  * Access to resources in GeoServer including configuration information and unmanaged cache or log files.
@@ -58,7 +58,7 @@ import org.springframework.core.io.DefaultResourceLoader;
  * @author Justin Deoliveira, The Open Planning Project, jdeolive@openplans.org
  * 
  */
-public class GeoServerResourceLoader extends DefaultResourceLoader implements ResourceStore {
+public class GeoServerResourceLoader extends DefaultResourceLoader implements ResourceStore, ServletContextAware {
     private static final Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.vfny.geoserver.global");
     static {
         LOGGER.setLevel(Level.FINER);
@@ -104,29 +104,24 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Re
      * @param baseDirectory The directory in which
      */
     public GeoServerResourceLoader(ResourceStore resourceStore) {
-        this.baseDirectory = resourceStore.get(Paths.BASE).dir();
         this.resources = resourceStore;
     }
     
-    
-// public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-//        if (baseDirectory == null) {
-//            //lookup the data directory
-//            if (applicationContext instanceof WebApplicationContext) {
-//                String data = lookupGeoServerDataDirectory(
-//                        ((WebApplicationContext)applicationContext).getServletContext());
-//                if (data != null) {
-//                    setBaseDirectory(new File(data)); 
-//                }
-//            }
-//        }
-//        if( resources == Resources.EMPTY ){
-//            // lookup the configuration resources
-//            if( baseDirectory != null ){
-//                resources = new FileSystemResourceStore( baseDirectory );
-//            }
-//        }
-//    }
+    @Override
+    public void setServletContext(ServletContext servletContext) {
+        if (baseDirectory == null) {
+            String data = lookupGeoServerDataDirectory(servletContext);
+            if (data != null) {
+                this.baseDirectory = new File(data);
+            } else {
+                throw new IllegalStateException("Unable to determine data directory");
+            }
+        }
+        if (resources == ResourceStore.EMPTY && baseDirectory != null) {
+            // lookup the configuration resources
+            resources = new FileSystemResourceStore(baseDirectory);
+        }
+    }
     
     /**
      * Adds a location to the path used for resource lookups.
@@ -182,28 +177,50 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Re
     }
     
     /**
-     * Used to look up files in the data directory based on user provided url (or path).
+     * Used to look up resources based on user provided url (or path) using the Data Directory as base directory.
      * 
-     * This method (originally from vfny GeoserverDataDirectory) is used to process a URL provided
-     * by a user: <i>iven a path, tries to interpret it as a file into the data directory, or as an absolute
-     * location, and returns the actual absolute location of the file.</i>
+     * Convenience method for Resources.fromURL(resources.get(Paths.BASE), url)
      * 
-     * Over time this url method has grown in the telling to support:
-     * <ul>
-     * <li>Actual URL to external resoruce using http or ftp protocol - will return null</li>
-     * <li>File URL - will support absolute file references</li>
-     * <li>File URL - will support relative file references</li>
-     * <li>Fake URLs - sde://user:pass@server:port - will return null.</li>
-     * <li>path - user supplied file path (operating specific specific)</li>
-     * </ul>
+     * See {@link Resources#fromURL(Resource, String)}
      * 
-     * @param url File URL or path relative to data directory 
-     * @return File indicated by provided URL
-     * @see Files#url(File, String)
      */
-    public File url(String url) {
-        return Files.url( baseDirectory, url );
+    public Resource fromURL(String url) {
+        return Resources.fromURL(resources.get(Paths.BASE), url);
     }
+    
+    /**
+     * Used to look up resources based on user provided url using the Data Directory as base directory.
+     * 
+     * Convenience method for Resources.fromURL(resources.get(Paths.BASE), url)
+     * 
+     * See {@link Resources#fromURL(Resource, URL)}
+     * 
+     */
+    public Resource fromURL(URL url) {
+        return Resources.fromURL(resources.get(Paths.BASE), url);
+    }
+    
+    /**
+     * Used to look up resources based on user provided path using the Data Directory as base directory.
+     * 
+     * Convenience method for Resources.fromPath(resources.get(Paths.BASE), path)
+     * 
+     * See {@link Resources#fromPath(Resource, String)}
+     * 
+     */
+    public Resource fromPath(String path) {
+       return Resources.fromPath(path, resources.get(Paths.BASE));
+    }
+    
+    /**
+     *
+     * @Deprecated use {@link Resources#fromURL(Resource, String)}
+     */
+    @Deprecated 
+    public File url(String url) {
+        return Files.url(baseDirectory, url);
+    }
+    
     /**
      * Performs file lookup.
      *

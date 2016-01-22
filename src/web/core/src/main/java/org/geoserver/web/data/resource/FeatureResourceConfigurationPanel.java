@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -6,11 +6,15 @@
 package org.geoserver.web.data.resource;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.wicket.Component;
 import org.apache.wicket.Page;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -21,6 +25,7 @@ import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.list.ListItem;
@@ -29,6 +34,9 @@ import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.StringResourceModel;
+import org.apache.wicket.validation.IValidatable;
+import org.apache.wicket.validation.IValidator;
+import org.apache.wicket.validation.ValidationError;
 import org.geoserver.catalog.AttributeTypeInfo;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -39,16 +47,24 @@ import org.geoserver.web.data.layer.SQLViewEditPage;
 import org.geoserver.web.wicket.GeoServerAjaxFormLink;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geotools.data.wfs.internal.v2_0.storedquery.StoredQueryConfiguration;
+import org.geotools.filter.FilterAttributeExtractor;
+import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.jdbc.VirtualTable;
 import org.geotools.measure.Measure;
 import org.geotools.util.logging.Logging;
+import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.FeatureType;
+import org.opengis.filter.Filter;
 
 @SuppressWarnings("serial")
 public class FeatureResourceConfigurationPanel extends ResourceConfigurationPanel {
     static final Logger LOGGER = Logging.getLogger(FeatureResourceConfigurationPanel.class);
 
     ModalWindow reloadWarningDialog;
+
+    ListView attributes;
+
+    private Fragment attributePanel;
     
     public FeatureResourceConfigurationPanel(String id, final IModel model) {
         super(id, model);
@@ -59,7 +75,7 @@ public class FeatureResourceConfigurationPanel extends ResourceConfigurationPane
         TextField<Measure> tolerance = new TextField<Measure>("linearizationTolerance", Measure.class);
         add(tolerance);
 
-        final Fragment attributePanel = new Fragment("attributePanel", "attributePanelFragment", this);
+        attributePanel = new Fragment("attributePanel", "attributePanelFragment", this);
         attributePanel.setOutputMarkupId(true);
         add(attributePanel);
         
@@ -69,7 +85,7 @@ public class FeatureResourceConfigurationPanel extends ResourceConfigurationPane
         // to the ResourcePoool
         
         // just use the direct attributes, this is not editable atm
-        ListView attributes = new ListView("attributes", new AttributeListModel()) {
+        attributes = new ListView("attributes", new AttributeListModel()) {
             @Override
             protected void populateItem(ListItem item) {
                 
@@ -105,6 +121,10 @@ public class FeatureResourceConfigurationPanel extends ResourceConfigurationPane
             
         };
         attributePanel.add(attributes);
+        
+        TextArea<String> cqlFilter = new TextArea<String>("cqlFilter");
+        cqlFilter.add(new CqlFilterValidator(model));
+        add(cqlFilter);
         
         // reload links
         WebMarkupContainer reloadContainer = new WebMarkupContainer("reloadContainer");
@@ -183,9 +203,74 @@ public class FeatureResourceConfigurationPanel extends ResourceConfigurationPane
         cascadedStoredQueryContainer.setVisible(typeInfo.getMetadata().get(FeatureTypeInfo.STORED_QUERY_CONFIGURATION, StoredQueryConfiguration.class) != null);
     }
     
+    @Override
+    public void resourceUpdated(AjaxRequestTarget target) {
+        if (target != null) {
+            // force it to reload the attribute list
+            attributes.getModel().detach();
+            target.addComponent(attributePanel);
+        }
+    }
+
     static class ReloadWarningDialog extends WebPage {
         public ReloadWarningDialog(StringResourceModel message) {
             add(new Label("message", message));
+        }
+    }
+ 
+    /*
+     * Wicket validator to check CQL filter string
+     */
+    private class CqlFilterValidator implements IValidator<String> {
+
+        private FeatureTypeInfo typeInfo;
+
+        public CqlFilterValidator(IModel model) {
+            this.typeInfo = (FeatureTypeInfo) model.getObject();
+        }
+
+        @Override
+        public void validate(IValidatable<String> validatable) {
+            try {
+                validateCqlFilter(typeInfo, validatable.getValue());
+            } catch (Exception e) {
+                ValidationError error = new ValidationError();
+                error.setMessage(e.getMessage());
+                validatable.error(error);
+            }
+
+        }
+
+    }
+
+    /*
+     * Validate that CQL filter syntax is valid, and attribute names used in the CQL filter are actually part of the layer
+     */
+    private void validateCqlFilter(FeatureTypeInfo typeInfo,
+            String cqlFilterString) throws Exception {
+        Filter cqlFilter = null;
+        if (cqlFilterString != null && !cqlFilterString.isEmpty()) {
+            cqlFilter = ECQL.toFilter(cqlFilterString);
+            FeatureType ft = typeInfo.getFeatureType();
+            if (ft instanceof SimpleFeatureType) {
+
+                SimpleFeatureType sft = (SimpleFeatureType) ft;
+                BeanToPropertyValueTransformer transformer = new BeanToPropertyValueTransformer(
+                        "localName");
+                Collection<String> featureAttributesNames = CollectionUtils.collect(
+                        sft.getAttributeDescriptors(), transformer);
+
+                FilterAttributeExtractor filterAttriubtes = new FilterAttributeExtractor(null);
+                cqlFilter.accept(filterAttriubtes, null);
+                Set<String> filterAttributesNames = filterAttriubtes.getAttributeNameSet();
+                for (String filterAttributeName : filterAttributesNames) {
+                    if (!featureAttributesNames.contains(filterAttributeName)) {
+                        throw new ResourceConfigurationException(
+                                ResourceConfigurationException.CQL_ATTRIBUTE_NAME_NOT_FOUND_$1,
+                                new Object[] { filterAttributeName });
+                    }
+                }
+            }
         }
     }
     
@@ -197,7 +282,9 @@ public class FeatureResourceConfigurationPanel extends ResourceConfigurationPane
                 FeatureTypeInfo typeInfo = (FeatureTypeInfo) getDefaultModelObject();
                 Catalog catalog = GeoServerApplication.get().getCatalog();
                 final ResourcePool resourcePool = catalog.getResourcePool();
-                return resourcePool.getAttributes(typeInfo);
+                // using loadAttributes to dodge the ResourcePool caches, the
+                // feature type structure might have been modified (e.g., SQL view editing)
+                return resourcePool.loadAttributes(typeInfo);
             } catch (Exception e) {
                 LOGGER.log(Level.SEVERE, "Grabbing the attribute list failed", e);
                 String error = new ParamResourceModel("attributeListingFailed", FeatureResourceConfigurationPanel.this, e.getMessage()).getString();

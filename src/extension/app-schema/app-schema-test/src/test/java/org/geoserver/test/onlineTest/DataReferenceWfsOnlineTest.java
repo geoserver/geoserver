@@ -23,7 +23,7 @@ import org.geotools.data.complex.MappingFeatureSource;
 import org.geotools.data.complex.config.AppSchemaDataAccessConfigurator;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
-import org.geotools.feature.Types;
+import org.geotools.feature.type.Types;
 import org.geotools.filter.FilterFactoryImplNamespaceAware;
 import org.junit.Test;
 import org.opengis.feature.Feature;

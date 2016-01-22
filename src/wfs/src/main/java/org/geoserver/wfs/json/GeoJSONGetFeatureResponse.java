@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -13,20 +13,10 @@ import java.io.Writer;
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.xml.namespace.QName;
-
-import net.opengis.wfs.GetFeatureType;
-import net.opengis.wfs.QueryType;
-import net.sf.json.JSONException;
-
-import org.eclipse.emf.common.util.EList;
-import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
@@ -36,29 +26,23 @@ import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.WFSGetFeatureOutputFormat;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
-import org.geoserver.wfs.request.GetFeatureRequest;
-import org.geotools.data.FeatureSource;
-import org.geotools.data.Query;
-import org.geotools.factory.Hints;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.gml2.SrsSyntax;
-import org.geotools.gml2.bindings.GML2EncodingUtils;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.NamedIdentifier;
-import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;
-import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.GeometryDescriptor;
-import org.opengis.filter.Filter;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.ReferenceIdentifier;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import com.vividsolutions.jts.geom.Geometry;
+
+import net.sf.json.JSONException;
 
 /**
  * A GetFeatureInfo response handler specialized in producing Json and JsonP data for a GetFeatureInfo request.
@@ -109,6 +93,8 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat {
     protected void write(FeatureCollectionResponse featureCollection, OutputStream output,
             Operation describeFeatureType) throws IOException {
 
+        int numDecimals = getNumDecimals(featureCollection.getFeature(), gs, gs.getCatalog());
+
         if (LOGGER.isLoggable(Level.INFO))
             LOGGER.info("about to encode JSON");
         // Generate bounds for every feature?
@@ -128,20 +114,10 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat {
         boolean hasGeom = false;
 
         // get feature count for request
-        BigInteger featureCount = null;
-        // for WFS 1.0.0 and WFS 1.1.0 a request with the query must be executed
-        if(describeFeatureType != null) {
-            if (describeFeatureType.getParameters()[0] instanceof GetFeatureType) {
-                featureCount = BigInteger.valueOf(getFeatureCountFromWFS11Request(describeFeatureType, wfs));
-            }
-            // for WFS 2.0.0 the total number of features is stored in the featureCollection
-            else if (describeFeatureType.getParameters()[0] instanceof net.opengis.wfs20.GetFeatureType){
-                BigInteger totalNumberOfFeatures = featureCollection.getTotalNumberOfFeatures();
-                featureCount = (totalNumberOfFeatures != null && totalNumberOfFeatures.longValue() < 0)
-                        ? null : totalNumberOfFeatures;
-            }
-        }
-        
+        BigInteger totalNumberOfFeatures = featureCollection.getTotalNumberOfFeatures();
+        BigInteger featureCount = (totalNumberOfFeatures != null && totalNumberOfFeatures.longValue() < 0)
+                ? null : totalNumberOfFeatures;
+
         try {
             osw = new OutputStreamWriter(output, gs.getGlobal().getSettings().getCharset());
             outWriter = new BufferedWriter(osw);
@@ -149,8 +125,9 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat {
             if (jsonp) {
                 outWriter.write(getCallbackFunction() + "(");
             }
-
+            
             final GeoJSONBuilder jsonWriter = new GeoJSONBuilder(outWriter);
+            jsonWriter.setNumberOfDecimals(numDecimals);
             jsonWriter.object().key("type").value("FeatureCollection");
             if(featureCount != null) {
                 jsonWriter.key("totalFeatures").value(featureCount);
@@ -163,7 +140,7 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat {
             // execute should of set all the header information
             // including the lockID
             //
-            // execute should also fail if all of the locks could not be aquired
+            // execute should also fail if all of the locks could not be acquired
             List<FeatureCollection> resultsList = featureCollection.getFeature();
             CoordinateReferenceSystem crs = null;
             for (int i = 0; i < resultsList.size(); i++) {
@@ -208,16 +185,6 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat {
                         jsonWriter.key("geometry");
                         Geometry aGeom = (Geometry) feature.getDefaultGeometry();
 
-                        if (aGeom == null) {
-                            // In case the default geometry is not set, we will
-                            // just use the first geometry we find
-                            for (int j = 0; j < types.size() && aGeom == null; j++) {
-                                Object value = feature.getAttribute(j);
-                                if (value != null && value instanceof Geometry) {
-                                    aGeom = (Geometry) value;
-                                }
-                            }
-                        }
                         // Write the geometry, whether it is a null or not
                         if (aGeom != null) {
                             jsonWriter.writeGeom(aGeom);
@@ -238,30 +205,27 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat {
                             if( id_option != null && id_option.equals(ad.getLocalName()) ){
                             	continue; // skip this value as it is used as the id
                             }
-                            if (value != null) {
-                                if (value instanceof Geometry) {
-                                    // This is an area of the spec where they
-                                    // decided to 'let convention evolve',
-                                    // that is how to handle multiple
-                                    // geometries. My take is to print the
-                                    // geometry here if it's not the default.
-                                    // If it's the default that you already
-                                    // printed above, so you don't need it here.
-                                    if (ad.equals(defaultGeomType)) {
-                                        // Do nothing, we wrote it above
-                                        // jsonWriter.value("geometry_name");
-                                    } else {
-                                        jsonWriter.key(ad.getLocalName());
-                                        jsonWriter.writeGeom((Geometry) value);
-                                    }
+                            if (ad instanceof GeometryDescriptor) {
+                                // This is an area of the spec where they
+                                // decided to 'let convention evolve',
+                                // that is how to handle multiple
+                                // geometries. My take is to print the
+                                // geometry here if it's not the default.
+                                // If it's the default that you already
+                                // printed above, so you don't need it here.
+                                if (ad.equals(defaultGeomType)) {
+                                    // Do nothing, we wrote it above
+                                    // jsonWriter.value("geometry_name");
+                                } else if(value == null){
+                                    jsonWriter.key(ad.getLocalName());
+                                    jsonWriter.value(null);
                                 } else {
                                     jsonWriter.key(ad.getLocalName());
-                                    jsonWriter.value(value);
+                                    jsonWriter.writeGeom((Geometry) value);
                                 }
-
                             } else {
                                 jsonWriter.key(ad.getLocalName());
-                                jsonWriter.value(null);
+                                jsonWriter.value(value);
                             }
                         }
                         // Bounding box for feature in properties
@@ -279,7 +243,7 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat {
             }
             jsonWriter.endArray(); // end features
 
-            // Coordinate Referense System
+            // Coordinate Reference System
             try {
                 if ("true".equals(GeoServerExtensions.getProperty("GEOSERVER_GEOJSON_LEGACY_CRS"))){
                     // This is wrong, but GeoServer used to do it this way.
@@ -357,7 +321,7 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat {
     // Doesn't follow spec, but GeoServer used to do this.
     private void writeCrsLegacy(final GeoJSONBuilder jsonWriter,
             CoordinateReferenceSystem crs) {
-        // Coordinate Referense System, currently only if the namespace is
+        // Coordinate Reference System, currently only if the namespace is
         // EPSG
         if (crs != null) {
             Set<ReferenceIdentifier> ids = crs.getIdentifiers();
@@ -389,60 +353,6 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat {
         return JSONType.getCallbackFunction(request.getKvp());
     }
 
-    
-    /**
-     * getFeatureCountFromWFS11Request
-     * 
-     * Function gets the total number of features from a WFS 1.0.0 or WFS 1.1.0 request and returns it.
-     * 
-     * @param Operation describeFeatureType
-     * @param WFSInfo wfs
-     * @return int featurecount 
-     * @throws IOException
-     */
-    @SuppressWarnings("unchecked")
-    private int getFeatureCountFromWFS11Request(Operation operation, WFSInfo wfs)
-            throws IOException {
-        int totalCount = 0;
-        Catalog catalog = wfs.getGeoServer().getCatalog();
-        
-        GetFeatureType request = (GetFeatureType) operation.getParameters()[0];
-        List<Map<String, String>> viewParams = new GetFeatureRequest.WFS11(request).getViewParams();
-        int idx = 0;
-        for (QueryType query :  (EList<QueryType>) request.getQuery()) {
-            QName typeName = (QName) query.getTypeName().get(0);
-            FeatureTypeInfo meta = catalog.getFeatureTypeByName(typeName.getNamespaceURI(),
-                    typeName.getLocalPart());
-
-            FeatureSource<? extends FeatureType, ? extends Feature> source = meta.getFeatureSource(
-                    null, null);
-            Filter filter = query.getFilter();
-            if (filter == null) {
-                filter = Filter.INCLUDE;
-            }
-            Query countQuery = new Query(typeName.getLocalPart(), filter);
-            Map<String, String> viewParam = viewParams != null && viewParams.size() > idx ? viewParams
-                    .get(idx) : null;
-            if (viewParam != null) {
-                final Hints hints = new Hints();
-                hints.put(Hints.VIRTUAL_TABLE_PARAMETERS, viewParam);
-                countQuery.setHints(hints);
-            }
-            
-            int count = 0;
-            count = source.getCount(countQuery);
-            if (count == -1) {
-                // information was not available in the header!
-                org.geotools.data.Query gtQuery = new org.geotools.data.Query(countQuery);
-                FeatureCollection<? extends FeatureType, ? extends Feature> features = source
-                        .getFeatures(gtQuery);
-                count = features.size();
-            }
-            totalCount +=count;
-        }
-
-        return totalCount;
-    }
     
     @Override
     public String getCharset(Operation operation){

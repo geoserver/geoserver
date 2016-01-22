@@ -4,12 +4,12 @@
 # constants
 GT_GIT_URL=git://github.com/geotools/geotools.git
 GWC_GIT_URL=git://github.com/GeoWebCache/geowebcache.git
-JIRA_REST=http://jira.codehaus.org/rest/api/latest
+JIRA_REST=https://osgeo-org.atlassian.net/rest/api/latest
 JIRA_PROJ=GEOS
 WIN_JENKINS=http://162.209.53.106:8080
 WIN_JENKINS_USER=build
 WIN_JENKINS_KEY=c7df8777ad146449f39272c596e963e4
-MAC_JENKINS=http://199.19.86.219:8080
+MAC_JENKINS=http://208.52.190.11:8080
 MAC_JENKINS_USER=build
 MAC_JENKINS_KEY=7babda1c4cf05ee099baa3d4c6579dab
 SF_HOST=frs.sourceforge.net

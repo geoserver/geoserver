@@ -5,20 +5,20 @@
  */
 package org.geoserver.importer.mosaic;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Properties;
 import java.util.logging.Logger;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resources;
+import org.geoserver.util.Filter;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.FeatureWriter;
 import org.geotools.data.Transaction;
@@ -42,7 +42,6 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterators;
-import com.google.common.io.Files;
 import com.vividsolutions.jts.geom.Polygon;
 
 /**
@@ -60,14 +59,15 @@ public class MosaicIndex {
         this.mosaic = mosaic;
     }
 
-    public File getFile() {
-        return new File(mosaic.getFile(), mosaic.getName() + ".shp");
+    public Resource getFile() {
+        return mosaic.getFile().get(mosaic.getName() + ".shp");
     }
 
     public void delete() throws IOException {
-        for (File f : mosaic.getFile().listFiles(new FilenameFilter() {
+        for (Resource f : Resources.list(mosaic.getFile(), new Filter<Resource>() {
             @Override
-            public boolean accept(File dir, String name) {
+            public boolean accept(Resource obj) {
+                String name = obj.name();
                 if ("sample_image".equalsIgnoreCase(name)) {
                     return true;
                 }
@@ -93,7 +93,7 @@ public class MosaicIndex {
                 // throwing exception here caused sporadic test failures on
                 // windows related to file locking but only in the cleanup
                 // method SystemTestData.tearDown
-                 LOGGER.warning("unable to delete mosaic file " + f.getAbsolutePath());
+                 LOGGER.warning("unable to delete mosaic file " + f.path());
             }
         }
     }
@@ -133,14 +133,14 @@ public class MosaicIndex {
         }
         
         // tell image mosaic to use the index file we are creating
-        File indexerFile = new File(mosaic.getFile(), "indexer.properties");
+        Resource indexerFile = mosaic.getFile().get("indexer.properties");
         Properties indexer = new Properties();
         indexer.put(Utils.Prop.NAME, mosaic.getName());
         indexer.put(Utils.Prop.INDEX_NAME, mosaic.getName());
         indexer.put(Utils.Prop.USE_EXISTING_SCHEMA, "true");
-        FileOutputStream ifos = null;
+        OutputStream ifos = null;
         try {
-            ifos = new FileOutputStream(indexerFile);
+            ifos = indexerFile.out();
             indexer.store(ifos, null);
         } finally {
             IOUtils.closeQuietly(ifos);
@@ -148,7 +148,7 @@ public class MosaicIndex {
 
         //create a new shapefile feature store
         ShapefileDataStoreFactory shpFactory = new ShapefileDataStoreFactory();
-        DirectoryDataStore dir = new DirectoryDataStore(mosaic.getFile(), 
+        DirectoryDataStore dir = new DirectoryDataStore(mosaic.getFile().dir(), 
             new ShapefileDataStoreFactory.ShpFileStoreFactory(shpFactory, new HashMap()));
 
         try {
@@ -160,12 +160,12 @@ public class MosaicIndex {
            try {
                for (Granule g : mosaic.granules()) {
                    if (g.getEnvelope() == null) {
-                       LOGGER.warning("Skipping " + g.getFile().getAbsolutePath() + ", no envelope");
+                       LOGGER.warning("Skipping " + g.getFile().path() + ", no envelope");
                    }
     
                    SimpleFeature f = w.next();
                    f.setDefaultGeometry(JTS.toGeometry((BoundingBox)g.getEnvelope()));
-                   f.setAttribute("location", g.getFile().getName());
+                   f.setAttribute("location", g.getFile().name());
                    if (mosaic.getTimeMode() != TimeMode.NONE) {
                        f.setAttribute("time", g.getTimestamp());
                    }
@@ -186,21 +186,21 @@ public class MosaicIndex {
 
         // have the image mosaic write the property file
         ImageMosaicFormat format = new ImageMosaicFormat();
-        ImageMosaicReader reader = format.getReader(mosaic.getFile());
+        ImageMosaicReader reader = format.getReader(Resources.find(mosaic.getFile()));
         reader.dispose();
         
         // if we have to add the time, do so now
         if (mosaic.getTimeMode() != TimeMode.NONE) {
-            File propertyFile = new File(mosaic.getFile(), mosaic.getName() + ".properties");
-            FileInputStream fis = null;
-            FileOutputStream fos = null;
+            Resource propertyFile = mosaic.getFile().get(mosaic.getName() + ".properties");
+            InputStream fis = null;
+            OutputStream fos = null;
             try {
-                fis = new FileInputStream(propertyFile);
+                fis = propertyFile.in();
                 Properties props = new Properties();
                 props.load(fis);
                 fis.close();
                 props.setProperty("TimeAttribute", "time");
-                fos = new FileOutputStream(propertyFile);
+                fos = propertyFile.out();
                 props.store(fos, null);
             } finally {
                 IOUtils.closeQuietly(fis);

@@ -5,7 +5,6 @@
  */
 package org.geoserver.script.web;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -15,6 +14,8 @@ import java.util.logging.Logger;
 
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.script.ScriptManager;
 import org.geotools.util.logging.Logging;
 
@@ -45,25 +46,25 @@ public class ScriptsModel extends LoadableDetachableModel {
         List<Script> scripts = new ArrayList<Script>();
         ScriptManager scriptManager = (ScriptManager) GeoServerExtensions.bean("scriptMgr");
         try {
-            File[] dirs = { scriptManager.getWpsRoot(), scriptManager.getWfsTxRoot(),
-                    scriptManager.getFunctionRoot(), scriptManager.getAppRoot() };
-            for (File dir : dirs) {
-                File[] files = dir.listFiles();
-                for (File file : files) {
-                    if (dir.getName().equals("apps")) {
-                        if (file.isDirectory()) {
-                            File mainFile = scriptManager.findAppMainScript(file);
+            Resource[] dirs = { scriptManager.wps(), scriptManager.wfsTx(),
+                    scriptManager.function(), scriptManager.app() };
+            for (Resource dir : dirs) {
+                List<Resource> files = dir.list();
+                for (Resource file : files) {
+                    if (dir.name().equals("apps")) {
+                        if (file.getType() == Type.DIRECTORY) {
+                            Resource mainFile = scriptManager.findAppMainScript(file);
                             if (mainFile != null) {
                                 Script script = new Script(mainFile);
                                 scripts.add(script);
                             } else {
-                                LOGGER.info("Could not find main app file in " + file.getAbsolutePath());
+                                LOGGER.info("Could not find main app file in " + file.path());
                             }
                         }
-                    } else if (dir.getName().equals("wps")) {
-                        if (file.isDirectory()) {
-                            File[] fs = file.listFiles();
-                            for(File f: fs) {
+                    } else if (dir.name().equals("wps")) {
+                        if (file.getType() == Type.DIRECTORY) {
+                            List<Resource> fs = file.list();
+                            for(Resource f: fs) {
                                 scripts.add(new Script(f));
                             }
                         } else {

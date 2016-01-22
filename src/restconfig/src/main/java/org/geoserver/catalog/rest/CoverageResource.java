@@ -76,7 +76,7 @@ public class CoverageResource extends AbstractCatalogResource {
             coverage.setStore( ds );
         }
         final boolean isNew = isNewCoverage(coverage);
-        String name = coverage.getName();
+        String name = coverage.getNativeCoverageName();
         CatalogBuilder builder = new CatalogBuilder(catalog);
         CoverageStoreInfo store = coverage.getStore();
         builder.setStore(store);

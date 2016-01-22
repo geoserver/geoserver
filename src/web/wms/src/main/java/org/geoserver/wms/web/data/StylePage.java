@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -19,10 +19,10 @@ import org.geoserver.web.ComponentAuthorizer;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.data.SelectionRemovalLink;
 import org.geoserver.web.data.workspace.WorkspaceEditPage;
+import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.SimpleBookmarkableLink;
-import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 
 /**
  * Page listing all the styles, allows to edit, add, remove styles
@@ -83,7 +83,8 @@ public class StylePage extends GeoServerSecuredPage {
                 if ( StyleInfo.DEFAULT_POINT.equals( s.getName() ) || 
                     StyleInfo.DEFAULT_LINE.equals( s.getName() ) || 
                     StyleInfo.DEFAULT_POLYGON.equals( s.getName() ) || 
-                    StyleInfo.DEFAULT_RASTER.equals( s.getName() ) ) {
+                    StyleInfo.DEFAULT_RASTER.equals(s.getName()) ||
+                    StyleInfo.DEFAULT_GENERIC.equals(s.getName())) {
                     return new StringResourceModel("cantRemoveDefaultStyle", StylePage.this, null );
                 }
                 return null;

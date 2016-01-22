@@ -129,14 +129,14 @@
     </bean>
     
     
-    <bean id="ruleCacheInvalidator" class="org.geoserver.geofence.cache.rest.RuleCacheInvalidator" >
+    <bean id="ruleCacheInvalidator" class="org.geoserver.geofence.cache.rest.RuleCacheInvalidator" scope="prototype">
         <constructor-arg index="0" ref="cachedRuleReader"/>
     </bean>
 
 	<!-- =================================================================== -->
     <!-- Next part is about REST command against accessManager -->
     <!-- =================================================================== -->
-	<bean id="accessManagerMapping" class="org.geoserver.rest.RESTMapping">
+	<bean id="accessManagerMapping" class="org.geoserver.rest.RESTMapping" scope="prototype">
 		<property name="routes">
             <map>
                 <entry>
@@ -149,7 +149,7 @@
         </property>
 	</bean>
 
-	<bean id="geofenceInfo" class="org.geoserver.geofence.rest.GeoFenceInfo" >
+	<bean id="geofenceInfo" class="org.geoserver.geofence.rest.GeoFenceInfo" scope="prototype">
         <constructor-arg index="0" ref="geofenceConfigurationManager"/>
     </bean>
 
@@ -185,4 +185,6 @@
         <property name="descriptionKey" value="GeoFenceAuthProviderPanel.description"/>
     </bean>
 
+    <bean id="geoFenceXStreamInitializer" class="org.geoserver.geoserver.authentication.GeoFenceXStreamPersisterInitializer"  lazy-init="false">
+    </bean>
 </beans>

@@ -13,7 +13,7 @@ Documentation can be found at:
 
 To file a bug report or issue please visit:
 
-  https://jira.codehaus.org/browse/GEOS
+  https://osgeo-org.atlassian.net/projects/GEOS
 
 
 For help and support please email the GeoServer users group:

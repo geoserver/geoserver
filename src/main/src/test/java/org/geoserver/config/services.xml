@@ -69,11 +69,11 @@ This is a description of your Web Coverage Server.
         <keyword>WMS</keyword>
         <keyword>GEOSERVER</keyword>
       </keywords>
-      <onlineResource>http://geoserver.sourceforge.net/html/index.php</onlineResource>
+      <onlineResource>http://geoserver.org</onlineResource>
       <fees>NONE</fees>
       <accessConstraints>NONE</accessConstraints>
       <srsXmlStyle value = "false" />
-      <maintainer>http://jira.codehaus.org/secure/BrowseProject.jspa?id=10311</maintainer>
+      <maintainer>http://geoserver.org/comm</maintainer>
     </service>
     <service type = "WFS" enabled = "true" >
       <!--
@@ -86,7 +86,7 @@ This is a description of your Web Coverage Server.
 This is a description of your Web Feature Server.
 
 The GeoServer is a full transactional Web Feature Server, you may wish to limit
-GeoServer to a Basic service level to prevent modificaiton of your geographic
+GeoServer to a Basic service level to prevent modification of your geographic
 data.
      </abstract>
       <metadataLink >null</metadataLink>
@@ -95,13 +95,13 @@ data.
         <keyword>WMS</keyword>
         <keyword>GEOSERVER</keyword>
       </keywords>
-      <onlineResource>http://geoserver.sourceforge.net/html/index.php</onlineResource>
+      <onlineResource>http://geoserver.org</onlineResource>
       <fees>NONE</fees>
       <accessConstraints>NONE</accessConstraints>
       <srsXmlStyle value = "true" />
       <serviceLevel value = "31" />
       <citeConformanceHacks>false</citeConformanceHacks>
-      <maintainer>http://jira.codehaus.org/secure/BrowseProject.jspa?id=10311</maintainer>
+      <maintainer>http://geoserver.org/comm</maintainer>
     </service>
     <service type = "WMS" enabled = "true" >
       <!--
@@ -119,11 +119,11 @@ This is a description of your Web Map Server.
         <keyword>WMS</keyword>
         <keyword>GEOSERVER</keyword>
       </keywords>
-      <onlineResource>http://geoserver.sourceforge.net/html/index.php</onlineResource>
+      <onlineResource>http://geoserver.org</onlineResource>
       <fees>NONE</fees>
       <accessConstraints>NONE</accessConstraints>
       <srsXmlStyle value = "false" />
-      <maintainer>http://jira.codehaus.org/secure/BrowseProject.jspa?id=10311</maintainer>
+      <maintainer>http://geoserver.org/comm</maintainer>
       <BaseMapGroups >
         <BaseMapGroup baseMapTitle = "tiger-ny" >
           <baseMapLayers>tiger:poly_landmarks,tiger:tiger_roads,tiger:poi</baseMapLayers>

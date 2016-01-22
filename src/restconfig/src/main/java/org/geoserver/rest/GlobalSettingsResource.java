@@ -146,6 +146,8 @@ public class GlobalSettingsResource extends AbstractCatalogResource {
                     properties.put("memoryThreshold", jaiInfo.getMemoryThreshold());
                     properties.put("imageIOCache", jaiInfo.isImageIOCache() ? "true" : "false");
                     properties.put("pngEncoderType", jaiInfo.getPngEncoderType().toString());
+                    properties.put("pngAcceleration", jaiInfo.isPngAcceleration() ? "true"
+                            : "false");
                     properties.put("jpegAcceleration", jaiInfo.isJpegAcceleration() ? "true"
                             : "false");
                     properties.put("allowNativeMosaic", jaiInfo.isAllowNativeMosaic() ? "true"

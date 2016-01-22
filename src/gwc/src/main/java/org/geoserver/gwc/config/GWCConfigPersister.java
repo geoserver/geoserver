@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -7,9 +7,6 @@ package org.geoserver.gwc.config;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -19,8 +16,9 @@ import java.util.logging.Logger;
 
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamPersisterFactory;
-import org.geoserver.data.util.IOUtils;
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Paths;
+import org.geoserver.platform.resource.Resource;
 import org.geotools.util.logging.Logging;
 import org.geowebcache.storage.blobstore.memory.CacheConfiguration;
 
@@ -54,8 +52,8 @@ public class GWCConfigPersister {
      * @return the config file or {@code null} if it does not exist
      * @throws IOException
      */
-    File findConfigFile() throws IOException {
-        final File configFile = resourceLoader.find(GWC_CONFIG_FILE);
+    Resource findConfigFile() throws IOException {
+        final Resource configFile = resourceLoader.get(GWC_CONFIG_FILE);
         return configFile;
     }
 
@@ -71,24 +69,21 @@ public class GWCConfigPersister {
     }
 
     private synchronized void loadConfig() throws IOException {
-        File configFile = findConfigFile();
+        Resource configFile = findConfigFile();
         checkNotNull(configFile, "gwc config file does not exist: ", GWC_CONFIG_FILE);
 
         XStreamPersister xmlPersister = this.persisterFactory.createXMLPersister();
         configureXstream(xmlPersister.getXStream());
         try {
-            InputStream in = new FileInputStream(configFile);
-            try {
+            try (InputStream in = configFile.in()) {
                 this.config = xmlPersister.load(in, GWCConfig.class);
-            } finally {
-                in.close();
             }
             LOGGER.fine("GWC GeoServer specific configuration loaded from " + GWC_CONFIG_FILE);
         } catch (Exception e) {
             LOGGER.log(
                     Level.WARNING,
                     "Error loading GWC GeoServer specific " + "configuration from "
-                            + configFile.getAbsolutePath() + ". Applying defaults.", e);
+                            + configFile.path() + ". Applying defaults.", e);
             this.config = new GWCConfig();
         }
     }
@@ -103,19 +98,19 @@ public class GWCConfigPersister {
      */
     public void save(final GWCConfig config) throws IOException {
         LOGGER.finer("Saving integrated GWC configuration");
-        File tmp = new File(getConfigRoot(), GWC_CONFIG_FILE + ".tmp");
+        Resource tmp = getConfigRoot().get(GWC_CONFIG_FILE + ".tmp");
         XStreamPersister xmlPersister = this.persisterFactory.createXMLPersister();
         configureXstream(xmlPersister.getXStream());
-        OutputStream out = new FileOutputStream(tmp);
+        OutputStream out = tmp.out();
         try {
             xmlPersister.save(config, out);
         } finally {
             out.close();
         }
-        File configFile = new File(getConfigRoot(), GWC_CONFIG_FILE);
-        IOUtils.rename(tmp, configFile);
+        Resource configFile = getConfigRoot().get(GWC_CONFIG_FILE);
+        tmp.renameTo(configFile);
         this.config = config;
-        LOGGER.finer("Integrated GWC configuration saved to " + configFile.getAbsolutePath());
+        LOGGER.finer("Integrated GWC configuration saved to " + configFile.path());
     }
 
     private void configureXstream(XStream xs) {
@@ -125,9 +120,10 @@ public class GWCConfigPersister {
         xs.alias("defaultVectorCacheFormats", HashSet.class);
         xs.alias("defaultOtherCacheFormats", HashSet.class);
         xs.alias("InnerCacheConfiguration", CacheConfiguration.class);
+        xs.allowTypes(new Class[] { GWCConfig.class, CacheConfiguration.class });
     }
 
-    private File getConfigRoot() {
-        return this.resourceLoader.getBaseDirectory();
+    private Resource getConfigRoot() {
+        return this.resourceLoader.get(Paths.BASE);
     }
 }

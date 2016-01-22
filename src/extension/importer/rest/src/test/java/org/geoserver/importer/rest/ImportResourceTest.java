@@ -107,7 +107,7 @@ public class ImportResourceTest extends ImporterTestSupport {
         assertEquals("Shapefile", source.getString("format"));
         
         ImportContext context = importer.getContext(0);
-        assertEquals(((Directory)context.getData()).getFile().getPath(), 
+        assertEquals(((Directory)context.getData()).getFile().path(), 
             source.getString("location"));
         
         JSONArray files = source.getJSONArray("files");
@@ -142,7 +142,7 @@ public class ImportResourceTest extends ImporterTestSupport {
         assertEquals("GeoTIFF", source.getString("format"));
         
         ImportContext context = importer.getContext(1);
-        assertEquals(((SpatialFile)context.getTasks().get(0).getData()).getFile().getParentFile().getPath(), 
+        assertEquals(((SpatialFile)context.getTasks().get(0).getData()).getFile().parent().path(), 
             source.getString("location"));
 
         assertEquals("EmissiveCampania.tif", source.getString("file"));

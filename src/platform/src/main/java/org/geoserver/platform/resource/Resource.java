@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014-2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2014 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -8,6 +8,7 @@ package org.geoserver.platform.resource;
 import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -19,7 +20,7 @@ import java.util.List;
  * Resource creation is handled in a lazy fashion, simply use {@link #file()} or {@link #out()} and the resource will be created as required. In a
  * similar fashion setting up a child resource will create any required parent directories.
  */
-public interface Resource {
+public interface Resource extends Serializable {
     /**
      * Enumeration indicating kind of resource used.
      */
@@ -169,7 +170,7 @@ public interface Resource {
      * The listed files exist (and may be DIRECTORY or RESOURCE items).
      * 
      * @see File#listFiles()
-     * @return List of directory contents, or null if this resource is not a directory
+     * @return List of directory contents, or an empty list for UNDEFINED or RESOURCE 
      */
     List<Resource> list();
 
@@ -184,9 +185,9 @@ public interface Resource {
     Type getType();
     
     /**
-     * Delete the resource.
-     * @see File#delete()
-     * @return
+     * Deletes a resource, if the resource is a directory contents will be recursively deleted.
+     * 
+     * @return <code>true</code> if and only if the file is deleted
      */
     boolean delete();
     

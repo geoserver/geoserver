@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -25,13 +25,12 @@ import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
-import org.geoserver.catalog.DimensionDefaultValueSetting.Strategy;
 import org.geoserver.catalog.util.ReaderDimensionsAccessor;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.util.ISO8601Formatter;
 import org.geoserver.wms.WMS;
+import org.geoserver.wms.dimension.DimensionDefaultValueSelectionStrategy;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
-import org.geotools.feature.type.DateUtil;
 import org.geotools.temporal.object.DefaultPeriodDuration;
 import org.geotools.util.Converters;
 import org.geotools.util.DateRange;
@@ -221,22 +220,25 @@ abstract class DimensionHelper {
     private void handleElevationDimensionRaster(CoverageInfo cvInfo, DimensionInfo elevInfo, ReaderDimensionsAccessor dimensions) throws IOException {
         TreeSet<Object> elevations = dimensions.getElevationDomain();
         String elevationMetadata = getZDomainRepresentation(elevInfo, elevations);
-        Double defaultValue = wms.getDefaultElevation(cvInfo);
-        if (defaultValue == null){
-            defaultValue = Double.valueOf(0d);
-        }
+        String defaultValue = getDefaultValueRepresentation(cvInfo, ResourceInfo.ELEVATION, "0");
         writeElevationDimension(elevations, elevationMetadata, 
-                elevInfo.getUnits(), elevInfo.getUnitSymbol(), defaultValue.doubleValue());
+                elevInfo.getUnits(), elevInfo.getUnitSymbol(), defaultValue);
+    }
+
+    private String getDefaultValueRepresentation(ResourceInfo resource, String dimensionName, String fallback) {
+        DimensionInfo dimensionInfo = wms.getDimensionInfo(resource, dimensionName);
+        DimensionDefaultValueSelectionStrategy strategy = wms.getDefaultValueStrategy(resource, dimensionName, dimensionInfo);
+        String defaultValue = strategy.getCapabilitiesRepresentation(resource, dimensionName, dimensionInfo);
+        if(defaultValue == null) {
+            defaultValue = fallback;
+        } 
+        return defaultValue;
     }
 
     private void handleTimeDimensionRaster(CoverageInfo cvInfo, DimensionInfo timeInfo, ReaderDimensionsAccessor dimension) throws IOException {
         TreeSet<Object> temporalDomain = dimension.getTimeDomain();
         String timeMetadata = getTemporalDomainRepresentation(timeInfo, temporalDomain);
-        Date defaultValue = null;
-        DimensionDefaultValueSetting defaultSetting = timeInfo.getDefaultValue();
-        if ((defaultSetting != null) && !((defaultSetting.getStrategyType() == Strategy.NEAREST) && defaultSetting.getReferenceValue().equalsIgnoreCase(DimensionDefaultValueSetting.TIME_CURRENT))){
-            defaultValue = wms.getDefaultTime(cvInfo);
-        }
+        String defaultValue = getDefaultValueRepresentation(cvInfo, ResourceInfo.TIME, DimensionDefaultValueSetting.TIME_CURRENT);
         writeTimeDimension(timeMetadata, defaultValue);
     }
     
@@ -527,18 +529,14 @@ abstract class DimensionHelper {
         // build the time dim representation
         TreeSet<Date> values = wms.getFeatureTypeTimes(typeInfo);
         String timeMetadata;
-        Date defaultValue = null;
         if (values != null && !values.isEmpty()) {
             DimensionInfo timeInfo = typeInfo.getMetadata().get(ResourceInfo.TIME,
                 DimensionInfo.class);
             timeMetadata = getTemporalDomainRepresentation(timeInfo, values);
-            DimensionDefaultValueSetting defaultSetting = timeInfo.getDefaultValue();
-            if ((defaultSetting != null) && !((defaultSetting.getStrategyType() == Strategy.NEAREST) && defaultSetting.getReferenceValue().equalsIgnoreCase(DimensionDefaultValueSetting.TIME_CURRENT))){
-                defaultValue = wms.getDefaultTime(typeInfo);                
-            }
         } else {
             timeMetadata = "";
         }
+        String defaultValue = getDefaultValueRepresentation(typeInfo, ResourceInfo.TIME, DimensionDefaultValueSetting.TIME_CURRENT);
         writeTimeDimension(timeMetadata, defaultValue);
     }
     
@@ -554,18 +552,14 @@ abstract class DimensionHelper {
         } else {
             elevationMetadata = "";
         }
-        Double defaultValue = wms.getDefaultElevation(typeInfo);
-        if (defaultValue == null){
-            defaultValue = Double.valueOf(0d);
-        }
-        writeElevationDimension(elevations, elevationMetadata, units, unitSymbol, defaultValue.doubleValue());
+        String defaultValue = getDefaultValueRepresentation(typeInfo, ResourceInfo.ELEVATION, "0");
+        writeElevationDimension(elevations, elevationMetadata, units, unitSymbol, defaultValue);
     }
 
-    private void writeTimeDimension(String timeMetadata, Date defaultValue) {
+    private void writeTimeDimension(String timeMetadata, String defaultTimeStr) {
         AttributesImpl timeDim = new AttributesImpl();
-        String defaultTimeStr = DimensionDefaultValueSetting.TIME_CURRENT;
-        if (defaultValue != null){
-            defaultTimeStr = DateUtil.serializeDateTime(defaultValue.getTime(), true);            
+        if(defaultTimeStr == null) {
+            defaultTimeStr = DimensionDefaultValueSetting.TIME_CURRENT;
         }
         if (mode == Mode.WMS11) {
             timeDim.addAttribute("", "name", "name", "", "time");
@@ -580,11 +574,11 @@ abstract class DimensionHelper {
     }
 
     private void writeElevationDimension(TreeSet<? extends Object> elevations, final String elevationMetadata, 
-            final String units, final String unitSymbol, double defaultValue) {      
+            final String units, final String unitSymbol, String defaultValue) {      
         if (mode == Mode.WMS11) {
             AttributesImpl elevDim = new AttributesImpl();
             elevDim.addAttribute("", "name", "name", "", "elevation");
-            elevDim.addAttribute("", "default", "default", "", Double.toString(defaultValue));
+            elevDim.addAttribute("", "default", "default", "", defaultValue);
             element("Extent", elevationMetadata, elevDim);
         } else {
             writeElevationDimensionElement(elevationMetadata, defaultValue, 
@@ -592,7 +586,7 @@ abstract class DimensionHelper {
         }
     }
     
-    private void writeElevationDimensionElement(final String elevationMetadata, final Double defaultValue, 
+    private void writeElevationDimensionElement(final String elevationMetadata, final String defaultValue, 
             final String units, final String unitSymbol) {
         AttributesImpl elevDim = new AttributesImpl();
         String unitsNotNull = units;
@@ -603,7 +597,7 @@ abstract class DimensionHelper {
         }
         elevDim.addAttribute("", "name", "name", "", "elevation");
         if (defaultValue != null) {
-            elevDim.addAttribute("", "default", "default", "", Double.toString(defaultValue));
+            elevDim.addAttribute("", "default", "default", "", defaultValue);
         }
         elevDim.addAttribute("", "units", "units", "", unitsNotNull);
         if (!"".equals(unitsNotNull) && !"".equals(unitSymNotNull)) {

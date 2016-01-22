@@ -26,6 +26,7 @@ import org.geoserver.csw.records.CSWRecordDescriptor;
 import org.geoserver.csw.response.CSWRecordTransformer;
 import org.geoserver.csw.response.CSWRecordsResult;
 import org.geoserver.csw.store.simple.SimpleCatalogStore;
+import org.geoserver.platform.resource.Files;
 import org.geotools.csw.CSW;
 import org.geotools.csw.DC;
 import org.geotools.csw.DCT;
@@ -38,8 +39,8 @@ import org.w3c.dom.Document;
 
 public class CSWRecordResponseTest extends TestCase {
 
-    SimpleCatalogStore store = new SimpleCatalogStore(new File(
-            "./src/test/resources/org/geoserver/csw/records"));
+    SimpleCatalogStore store = new SimpleCatalogStore(
+            Files.asResource(new File("./src/test/resources/org/geoserver/csw/records")));
 
     @Override
     protected void setUp() throws Exception {

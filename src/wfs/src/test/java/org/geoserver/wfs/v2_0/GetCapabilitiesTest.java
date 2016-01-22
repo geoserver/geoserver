@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -22,8 +22,10 @@ import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.MetadataLinkInfo;
+import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.MockTestData;
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.wfs.WFSGetFeatureOutputFormat;
 import org.geoserver.wfs.WFSInfo;
@@ -38,7 +40,15 @@ import org.w3c.dom.NodeList;
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
 public class GetCapabilitiesTest extends WFS20TestSupport {
-       
+
+    @Override
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        super.onSetUp(testData);
+        GeoServerInfo global = getGeoServer().getGlobal();
+        global.getSettings().setProxyBaseUrl("src/test/resources/geoserver");
+        getGeoServer().save(global);
+    }
+
     @Before
     public void revert() throws Exception {
         revertLayer(MockData.MPOLYGONS);
@@ -314,6 +324,23 @@ public class GetCapabilitiesTest extends WFS20TestSupport {
         XpathEngine xpath = XMLUnit.newXpathEngine();
         assertEquals(1, xpath.getMatchingNodes("//wfs:FeatureType[wfs:Name='cgf:MPolygons']/wfs:MetadataURL", doc).getLength());
         assertEquals(1, xpath.getMatchingNodes("//wfs:FeatureType[wfs:Name='cgf:MPolygons']/wfs:MetadataURL[@xlink:href='http://www.geoserver.org']", doc).getLength());
+    }
+
+    @Test
+    public void testMetadataLinksTransormToProxyBaseURL() throws Exception {
+        FeatureTypeInfo mpolys = getCatalog().getFeatureTypeByName(getLayerId(MockTestData.MPOLYGONS));
+        MetadataLinkInfo ml = getCatalog().getFactory().createMetadataLink();
+        ml.setMetadataType("FGDC");
+        ml.setType("text/html");
+        ml.setContent("/metadata?key=value");
+        mpolys.getMetadataLinks().add(ml);
+        getCatalog().save(mpolys);
+
+        String proxyBaseUrl = getGeoServer().getGlobal().getSettings().getProxyBaseUrl();
+        Document doc = getAsDOM("wfs?service=WFS&version=2.0.0&request=getCapabilities");
+        XpathEngine xpath = XMLUnit.newXpathEngine();
+        assertEquals(1, xpath.getMatchingNodes("//wfs:FeatureType[wfs:Name='cgf:MPolygons']/wfs:MetadataURL", doc).getLength());
+        assertEquals(1, xpath.getMatchingNodes("//wfs:FeatureType[wfs:Name='cgf:MPolygons']/wfs:MetadataURL[@xlink:href='" + proxyBaseUrl + "/metadata?key=value']", doc).getLength());
     }
     
     @Test

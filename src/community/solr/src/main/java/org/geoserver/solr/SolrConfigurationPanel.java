@@ -1,12 +1,9 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 
 package org.geoserver.solr;
-
-import java.io.IOException;
-import java.util.logging.Level;
 
 import org.apache.wicket.ajax.AbstractDefaultAjaxBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -22,7 +19,6 @@ import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.data.resource.ResourceConfigurationPage;
 import org.geoserver.web.data.resource.ResourceConfigurationPanel;
 import org.geoserver.web.wicket.ParamResourceModel;
-import org.geotools.data.solr.SolrLayerConfiguration;
 
 /**
  * Resource configuration panel to show a link to open SOLR attribute modal dialog <br>
@@ -49,7 +45,6 @@ public class SolrConfigurationPanel extends ResourceConfigurationPanel {
     public SolrConfigurationPanel(final String panelId, final IModel model) {
         super(panelId, model);
         final FeatureTypeInfo fti = (FeatureTypeInfo) model.getObject();
-        final ResourceConfigurationPanel current = this;
 
         final ModalWindow modal = new ModalWindow("modal");
         modal.setInitialWidth(800);
@@ -75,15 +70,16 @@ public class SolrConfigurationPanel extends ResourceConfigurationPanel {
             }
         });
 
-        if (fti.getMetadata().get(SolrLayerConfiguration.KEY) == null) {
+        if (fti.getId() == null) {
             modal.add(new OpenWindowOnLoadBehavior());
         }
 
         modal.setContent(new SolrConfigurationPage(panelId, model) {
             @Override
-            void done(AjaxRequestTarget target, LayerInfo layerInfo, Boolean isNew) {
-                _layerInfo = layerInfo;
-                _isNew = isNew;
+            void done(AjaxRequestTarget target, ResourceInfo resource) {
+                ResourceConfigurationPage page = (ResourceConfigurationPage) SolrConfigurationPanel.this
+                        .getPage();
+                page.updateResource(resource, target);
                 modal.close(target);
             }
         });
@@ -105,10 +101,15 @@ public class SolrConfigurationPanel extends ResourceConfigurationPanel {
      * Open modal dialog on window load
      */
     private class OpenWindowOnLoadBehavior extends AbstractDefaultAjaxBehavior {
+        boolean first = true;
+
         @Override
         protected void respond(AjaxRequestTarget target) {
-            ModalWindow window = (ModalWindow) getComponent();
-            window.show(target);
+            if (first) {
+                ModalWindow window = (ModalWindow) getComponent();
+                window.show(target);
+                first = false;
+            }
         }
 
         @Override

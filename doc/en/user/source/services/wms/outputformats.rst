@@ -59,3 +59,9 @@ where ``<format>`` is any of the options below.
    * - OpenLayers
      - ``format=application/openlayers``
      - Generates an OpenLayers HTML application.
+
+   * - UTFGrid
+     - ``format=application/json;type=utfgrid``
+     - Generates an `UTFGrid 1.3 <https://github.com/mapbox/utfgrid-spec/blob/master/1.3/utfgrid.md>`_ JSON response. Requires vector output, either from a vector layer, or
+       from a raster layer turned into vectors by a rendering transformation.
+     

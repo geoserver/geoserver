@@ -1,9 +1,11 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wms;
+
+import static org.junit.Assert.assertEquals;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -15,9 +17,11 @@ import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
+import org.geoserver.catalog.DimensionDefaultValueSetting;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.impl.DimensionInfoImpl;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.MockData;
@@ -27,6 +31,9 @@ import org.junit.After;
 import org.junit.Before;
 
 public abstract class WMSDimensionsTestSupport extends WMSTestSupport {
+    
+    protected static final long MILLIS_IN_DAY = 24 * 60 * 60 * 1000;
+    protected static final long MILLIS_IN_MINUTE = 60000;
 
     protected QName V_TIME_ELEVATION = new QName(MockData.SF_URI, "TimeElevation", MockData.SF_PREFIX);
     protected QName V_TIME_ELEVATION_EMPTY = new QName(MockData.SF_URI, "TimeElevationEmpty", MockData.SF_PREFIX);
@@ -145,5 +152,48 @@ public abstract class WMSDimensionsTestSupport extends WMSTestSupport {
         info.getMetadata().put(metadata, di);
         getCatalog().save(info);
     }
+    
+    protected void setupResourceDimensionDefaultValue(QName name, String dimensionName, DimensionDefaultValueSetting defaultValue) {
+        ResourceInfo info = getCatalog().getResourceByName(name.getLocalPart(), ResourceInfo.class);
+        if (info == null){
+            throw new RuntimeException("Unable to get resource by name "+name.getLocalPart());
+        }
+        DimensionInfo di = new DimensionInfoImpl();
+        di.setEnabled(true);
+        di.setPresentation(DimensionPresentation.LIST);
+        di.setDefaultValue(defaultValue);
+        info.getMetadata().put(dimensionName, di);
+        getCatalog().save(info);
+    }
+    
+    protected void setupResourceDimensionDefaultValue(QName name, String dimensionName, DimensionDefaultValueSetting defaultValue, String... startEndAttribute) {
+        ResourceInfo info = getCatalog().getResourceByName(name.getLocalPart(), ResourceInfo.class);
+        if (info == null){
+            throw new RuntimeException("Unable to get resource by name "+name.getLocalPart());
+        }
+        DimensionInfo di = new DimensionInfoImpl();
+        di.setEnabled(true);
+        di.setPresentation(DimensionPresentation.LIST);
+        di.setDefaultValue(defaultValue);
+        if(startEndAttribute != null && startEndAttribute.length > 0) {
+            di.setAttribute(startEndAttribute[0]);
+            if(startEndAttribute.length > 1) {
+                di.setEndAttribute(startEndAttribute[1]);
+            }
+        }
+        info.getMetadata().put(dimensionName, di);
+        getCatalog().save(info);
+    }
+    
+    /**
+     * Checks two dates are the same, within a given tolerance. 
+     * @param d1
+     * @param d2
+     * @param tolerance
+     */
+    protected static void assertDateEquals(java.util.Date d1, java.util.Date d2, long tolerance) {
+        assertEquals(d1.getTime(), d2.getTime(), tolerance);
+    }
+
 
 }

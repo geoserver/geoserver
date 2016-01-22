@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -15,6 +15,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import javax.media.jai.JAI;
+import javax.media.jai.OpImage;
+import javax.media.jai.RenderedOp;
 
 import org.apache.commons.io.IOUtils;
 import org.geoserver.wps.WPSException;
@@ -28,8 +30,11 @@ import org.geotools.coverage.grid.io.imageio.GeoToolsWriteParams;
 import org.geotools.gce.geotiff.GeoTiffFormat;
 import org.geotools.gce.geotiff.GeoTiffReader;
 import org.geotools.gce.geotiff.GeoTiffWriteParams;
+import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.image.ImageWorker;
 import org.geotools.process.ProcessException;
+import org.geotools.resources.image.ImageUtilities;
+import org.opengis.geometry.Envelope;
 import org.opengis.parameter.GeneralParameterValue;
 import org.opengis.parameter.ParameterValueGroup;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -91,28 +96,23 @@ public class GeoTiffPPIO extends BinaryPPIO {
                 
         // did we get lucky and all we need to do is to copy a file over?
         final Object fileSource = coverage.getProperty(AbstractGridCoverage2DReader.FILE_SOURCE_PROPERTY);
-        if (fileSource != null && fileSource instanceof String) {
+        if (fileSource != null && fileSource instanceof String && isUnprocessed(coverage)) {
             File file = new File((String) fileSource);
             if(file.exists()) {
                 GeoTiffReader reader = null;
                 FileInputStream fis = null;
                 try {
-                    // geotiff reader won't read unreferenced tiffs unless we tell it to
-                    if(unreferenced) {
-                        // just check if it has the proper extension for the moment, until
-                        // we get a more reliable way to check if it's a tiff
-                        String name = file.getName().toLowerCase();
-                        if(!name.endsWith(".tiff") && !name.endsWith(".tif")) {
-                            throw new IOException("Not a tiff");
-                        }
-                    } else {
-                        reader = new GeoTiffReader(file);
-                        reader.read(null);
+                    reader = new GeoTiffReader(file);
+                    GeneralEnvelope originalEnvelope = reader.getOriginalEnvelope();
+                    Envelope envelope = coverage.getEnvelope();
+                    if(originalEnvelope.equals(envelope, 1e-9, false)) {  
+                        GridCoverage2D test = reader.read(null);
+                        ImageUtilities.disposeImage(test.getRenderedImage());
+                        // ooh, a geotiff already!
+                        fis = new FileInputStream(file);
+                        IOUtils.copyLarge(fis, os);
+                        return;
                     }
-                    // ooh, a geotiff already!
-                    fis = new FileInputStream(file);
-                    IOUtils.copyLarge(fis, os);
-                    return;
                 } catch(Exception e) {
                     // ok, not a geotiff!
                 } finally {
@@ -177,6 +177,24 @@ public class GeoTiffPPIO extends BinaryPPIO {
         }
     }
     
+    /**
+     * Returns true if the coverage has not been processed in any way since it has been read
+     * 
+     * @param coverage
+     * @return
+     */
+    private boolean isUnprocessed(GridCoverage2D coverage) {
+        RenderedImage ri = coverage.getRenderedImage();
+        if(ri instanceof RenderedOp) {
+            RenderedOp op = (RenderedOp) ri;
+            return op.getOperationName().startsWith("ImageRead");
+        } else if(ri instanceof OpImage) {
+            return ri.getClass().getSimpleName().startsWith("ImageRead");
+        } else {
+            return true;
+        }
+    }
+
     @Override
     public String getFileExtension() {
         return "tiff";

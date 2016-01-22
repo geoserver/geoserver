@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="en">
   <head>
+    <meta charset="UTF-8">
     <link rel="stylesheet" href="${baseUrl}/openlayers3/ol.css" type="text/css">
     <style>
         .ol-zoom {
@@ -305,7 +306,7 @@
         }
         document.getElementById('scale').innerHTML = "Scale = 1 : " + scale;
       });
-      map.getView().fitExtent(bounds, map.getSize());
+      map.getView().fit(bounds, map.getSize());
       map.on('singleclick', function(evt) {
         document.getElementById('nodelist').innerHTML = "Loading... please wait...";
         var view = map.getView();

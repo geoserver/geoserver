@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -54,6 +54,7 @@ import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.GeometryDescriptor;
 import org.opengis.feature.type.Name;
 import org.opengis.feature.type.PropertyDescriptor;
+import org.opengis.geometry.Envelope;
 import org.opengis.metadata.Identifier;
 import org.opengis.parameter.ParameterValueGroup;
 import org.opengis.referencing.FactoryException;
@@ -82,6 +83,9 @@ import com.vividsolutions.jts.geom.Polygon;
 public class CatalogBuilder {
 
     static final Logger LOGGER = Logging.getLogger(CatalogBuilder.class);
+
+    /** Default SRS; will be set on the provided feature type by lookupSRS methods if none was found */
+    public static final String DEFAULT_SRS = "EPSG:404000";
 
     /**
      * the catalog
@@ -658,6 +662,8 @@ public class CatalogBuilder {
             } catch (FactoryException e) {
                 throw (IOException) new IOException().initCause(e);
             }
+        } else {
+            ftinfo.setSRS(DEFAULT_SRS);
         }
     }
 
@@ -1093,7 +1099,7 @@ public class CatalogBuilder {
             if (categories != null) {
                 for (Category cat : categories) {
 
-                    if ((cat != null) && cat.getName().toString().equalsIgnoreCase("no data")) {
+                    if ((cat != null) && cat.getName().toString(Locale.ENGLISH).equalsIgnoreCase("no data")) {
                         double min = cat.getRange().getMinimum();
                         double max = cat.getRange().getMaximum();
 
@@ -1325,9 +1331,11 @@ public class CatalogBuilder {
         } else if (Polygon.class.isAssignableFrom(gtype)
                 || MultiPolygon.class.isAssignableFrom(gtype)) {
             styleName = StyleInfo.DEFAULT_POLYGON;
-        } else {
-            // fall back to point
+        } else if (Point.class.isAssignableFrom(gtype) || MultiPoint.class.isAssignableFrom(gtype)) {
             styleName = StyleInfo.DEFAULT_POINT;
+        } else {
+            // fall back to the generic style
+            styleName = StyleInfo.DEFAULT_GENERIC;
         }
 
         return catalog.getStyleByName(styleName);
@@ -1358,6 +1366,20 @@ public class CatalogBuilder {
             throws Exception {
         LayerGroupHelper helper = new LayerGroupHelper(layerGroup);
         helper.calculateBounds(crs);
+    }
+    
+    /**
+     * Calculate the bounds of a layer group from the CRS defined bounds. 
+     * Relies on the {@link LayerGroupHelper}
+     * 
+     * @param layerGroup
+     * @param crs the CRS who's bounds should be used
+     * @see LayerGroupHelper#calculateBoundsFromCRS(CoordinateReferenceSystem)
+     */
+    public void calculateLayerGroupBoundsFromCRS(
+            LayerGroupInfo layerGroup, CoordinateReferenceSystem crs) {
+        LayerGroupHelper helper = new LayerGroupHelper(layerGroup);
+        helper.calculateBoundsFromCRS(crs);
     }
 
     /**
@@ -1522,5 +1544,42 @@ public class CatalogBuilder {
         }
         
         return attributes;
+    }
+
+    /**
+     * Creates referenced envelope from resource based off the native or declared SRS. This bbox
+     * depends on the projection policy.
+     * 
+     * <ul>
+     *  <li>force declared, reproject native to declared: use the declared SRS bounding box </li>
+     *  <li>keep native: use the native SRS bounding box</li>
+     * <ul>
+     * 
+     * @param resource
+     * @return the new referenced envelope or null if there is no bounding box associated with the 
+     *         CRS
+     */
+    public ReferencedEnvelope getBoundsFromCRS(ResourceInfo resource) {
+        ReferencedEnvelope crsReferencedEnvelope = null;
+        
+        ProjectionPolicy projPolicy = resource.getProjectionPolicy();
+        CoordinateReferenceSystem crs = null;
+        
+        //find the right crs to use based on the projection policy
+        if (projPolicy == ProjectionPolicy.NONE) {
+            crs = resource.getNativeCRS();
+        }
+        else {
+            crs = resource.getCRS();
+        }
+        
+        if (crs != null) {
+            Envelope crsEnvelope = CRS.getEnvelope(crs);
+            if (crsEnvelope != null) {
+                crsReferencedEnvelope = new ReferencedEnvelope(crsEnvelope);    
+            } 
+        }
+        
+        return crsReferencedEnvelope;
     }
 }

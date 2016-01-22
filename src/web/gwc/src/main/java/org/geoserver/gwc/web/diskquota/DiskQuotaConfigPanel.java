@@ -91,8 +91,6 @@ public class DiskQuotaConfigPanel extends Panel {
         
         addDiskQuotaStoreChooser(diskQuotaConfigModel, jdbcQuotaConfigModel);
 
-        addDiskBlockSizeConfig(diskQuotaConfigModel);
-
         addCleanUpFrequencyConfig(diskQuotaConfigModel);
 
         addGlobalQuotaConfig(diskQuotaConfigModel, configQuotaValueModel, configQuotaUnitModel);
@@ -308,16 +306,6 @@ public class DiskQuotaConfigPanel extends Panel {
                     params));
             add(new Label("cleanUpLastRun", lastRunModel));
         }
-    }
-
-    private void addDiskBlockSizeConfig(final IModel<DiskQuotaConfig> diskQuotaModel) {
-        IModel<Integer> blockSizeModel;
-        blockSizeModel = new PropertyModel<Integer>(diskQuotaModel, "diskBlockSize");
-        TextField<Integer> diskBlockSize = new TextField<Integer>("diskBlockSize", blockSizeModel);
-        diskBlockSize.setRequired(true);
-        diskBlockSize.add(new AttributeModifier("title", true, new StringResourceModel(
-                "DiskQuotaConfigPanel.diskBlockSize.title", (Component) null, null)));
-        add(diskBlockSize);
     }
 
     private void addDiskQuotaIntegrationEnablement(IModel<DiskQuotaConfig> diskQuotaModel) {

@@ -1135,7 +1135,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                 element( "ows:AdministrativeArea", contact.getAddressState() );
                 element( "ows:PostalCode", contact.getAddressPostalCode() );
                 element( "ows:Country", contact.getAddressCountry() );
-                element( "ows:ElectronicMailAddress", contact.getAddressElectronicMailAddress() );
+                element( "ows:ElectronicMailAddress", contact.getContactEmail() );
 
                 /* Currently disregarding the maxOccurs for DeliveryPoint and ElectronicMailAddress,
                  * because this can create issues with the XML serializer. */

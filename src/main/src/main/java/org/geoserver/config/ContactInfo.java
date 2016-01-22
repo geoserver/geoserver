@@ -62,11 +62,13 @@ public interface ContactInfo extends Info {
 
     /**
      * @uml.property name="addressElectronicMailAddress"
+     * @deprecated Use {@link #getContactEmail()}
      */
     String getAddressElectronicMailAddress();
 
     /**
      * @uml.property name="addressElectronicMailAddress"
+     * @deprecated Use {@link #setContactEmail(String)}
      */
     void setAddressElectronicMailAddress(String addressElectronicMailAddress);
 

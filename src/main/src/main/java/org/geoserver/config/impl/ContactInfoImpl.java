@@ -19,6 +19,7 @@ public class ContactInfoImpl implements ContactInfo {
 
     String addressDeliveryPoint;
 
+    @Deprecated
     String addressElectronicMailAddress;
 
     String addressPostalCode;
@@ -85,11 +86,19 @@ public class ContactInfoImpl implements ContactInfo {
 
     @Override
     public String getAddressElectronicMailAddress() {
+        if( this.contactEmail != null && !this.contactEmail.isEmpty() ){
+            // this field is deprecate use contactEmail if available
+            return contactEmail;
+        }
         return addressElectronicMailAddress;
     }
 
     @Override
     public void setAddressElectronicMailAddress(String addressElectronicMailAddress) {
+        if( this.contactEmail == null || this.contactEmail.isEmpty() ){
+         // this field is deprecate - migrate value to contactEmail if available
+            this.contactEmail = addressElectronicMailAddress;
+        }
         this.addressElectronicMailAddress = addressElectronicMailAddress;
     }
 
@@ -191,7 +200,6 @@ public class ContactInfoImpl implements ContactInfo {
         result = PRIME * result + ((contactPosition == null) ? 0 : contactPosition.hashCode());
         result = PRIME * result + ((contactVoice == null) ? 0 : contactVoice.hashCode());
         result = PRIME * result + ((onlineResource == null) ? 0 : onlineResource.hashCode());
-        result = PRIME * result + ((addressElectronicMailAddress == null) ? 0 : addressElectronicMailAddress.hashCode());
         result = PRIME * result + ((addressDeliveryPoint == null) ? 0 : addressDeliveryPoint.hashCode());
         return result;
     }
@@ -274,11 +282,6 @@ public class ContactInfoImpl implements ContactInfo {
             if (other.getAddressDeliveryPoint() != null)
                 return false;
         } else if (!addressDeliveryPoint.equals(other.getAddressDeliveryPoint()))
-            return false;
-        if (addressElectronicMailAddress == null) {
-            if (other.getAddressElectronicMailAddress() != null)
-                return false;
-        } else if (!addressElectronicMailAddress.equals(other.getAddressElectronicMailAddress()))
             return false;
         return true;
     }

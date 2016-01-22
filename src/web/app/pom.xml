@@ -1107,7 +1107,7 @@
       <id>pgraster</id>
       <dependencies>
         <dependency>
-          <groupId>org.geoserver.extension</groupId>
+          <groupId>org.geoserver.community</groupId>
           <artifactId>gs-pgraster</artifactId>
           <version>${project.version}</version>
         </dependency>

@@ -106,13 +106,9 @@ public class GeoServerDialog extends Panel {
      */
     public void showOkCancel(AjaxRequestTarget target, final DialogDelegate delegate) {
         // wire up the contents
-        window.setPageCreator(new ModalWindow.PageCreator() {
+        userPanel = delegate.getContents("userPanel");
+        window.setContent(new ContentsPage(userPanel));
 
-            public Page createPage() {
-                userPanel = delegate.getContents("userPanel");
-                return new ContentsPage(userPanel);
-            }
-        });
         // make sure close == cancel behavior wise
         window.setCloseButtonCallback(new ModalWindow.CloseButtonCallback() {
 
@@ -224,9 +220,10 @@ public class GeoServerDialog extends Panel {
      * http://www.nabble.com/Nesting-ModalWindow-td19925848.html for details (ajax submit buttons
      * won't work with a panel)
      */
-    protected class ContentsPage extends WebPage {
+    protected class ContentsPage extends Panel {
 
         public ContentsPage(Component contents) {
+            super("content");
             Form<?> form = new Form<>("form");
             add(form);
             form.add(contents);

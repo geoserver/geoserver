@@ -1,9 +1,9 @@
-.. _community_csw_tutorial:
+.. _csw_tutorial:
 
 Catalog Services for the Web (CSW) tutorial
 ===========================================
 
-This tutorial will show how to use the CSW module. It assumes a fresh installation of GeoServer with the :ref:`CSW module installed <community_csw_installing>`.
+This tutorial will show how to use the CSW module. It assumes a fresh installation of GeoServer with the :ref:`CSW module installed <csw_installing>`.
 
 Configuration
 -------------

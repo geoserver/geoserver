@@ -14,6 +14,8 @@ These services are the primary way that GeoServer supplies geospatial informatio
 .. toctree::
    :maxdepth: 1
 
-   wfs/index
    wms/index
+   wfs/index
    wcs/index
+   wps/index
+   csw/index

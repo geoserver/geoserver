@@ -1,4 +1,4 @@
-.. _community_csw_directdownload:
+.. _csw_directdownload:
 
 DirectDownload
 ==============

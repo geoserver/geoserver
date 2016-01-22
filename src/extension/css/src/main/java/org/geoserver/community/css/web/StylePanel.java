@@ -118,8 +118,8 @@ public class StylePanel extends Panel {
 
                     @Override
                     public CharSequence getBeforeHandler(Component component) {
-                        return "if(event.view.document.gsEditors) { "
-                                + "event.view.document.gsEditors." + editor.getTextAreaMarkupId()
+                        return "if(attrs.event.view.document.gsEditors) { "
+                                + "attrs.event.view.document.gsEditors." + editor.getTextAreaMarkupId()
                                 + ".save(); } \n";
                     }
                 });

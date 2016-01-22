@@ -1,7 +1,7 @@
 .. _wms:
 
-Web Map Service
-===============
+Web Map Service (WMS)
+=====================
 
 This section describes the Web Map Service (WMS).
 

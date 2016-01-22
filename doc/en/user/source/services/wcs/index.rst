@@ -1,7 +1,7 @@
 .. _wcs:
 
-Web Coverage Service
-====================
+Web Coverage Service (WCS)
+==========================
 
 This section describes the Web Coverage Service (WCS).
 

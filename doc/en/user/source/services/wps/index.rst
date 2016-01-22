@@ -1,7 +1,7 @@
 .. _wps:
 
-Web Processing Service
-======================
+Web Processing Service (WPS)
+============================
 
 Web Processing Service (WPS) is an OGC service for the publishing of geospatial processes, algorithms, and calculations.  The WPS service is available as an extension for geoserver providing an execute operation for data processing and geospatial analysis.
 

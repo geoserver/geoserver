@@ -42,8 +42,9 @@ import org.opengis.filter.Filter;
  * 
  * @param <T>
  */
-@SuppressWarnings("serial")
 public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, Object> {
+    private static final long serialVersionUID = -6876929036365601443L;
+
     static final Logger LOGGER = Logging.getLogger(GeoServerDataProvider.class);
 
     /**
@@ -387,8 +388,9 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
      * @param object
      * @return
      */
+    @SuppressWarnings("unchecked")
     protected IModel<T> newModel(T object) {
-        return new Model((Serializable) object);
+        return (IModel<T>) new Model<Serializable>((Serializable) object);
     }
 
     /**
@@ -444,6 +446,7 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
      * the getModel() method
      */
     public abstract static class AbstractProperty<T> implements Property<T> {
+        private static final long serialVersionUID = 6286992721731224988L;
         String name;
         boolean visible;
         
@@ -465,13 +468,12 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
          * not suitable for editable tables, if you need to make one you'll have to
          * roll your own getModel() implementation ( {@link BeanProperty} provides a good example)
          */
-        @SuppressWarnings("unchecked")
-		public IModel<T> getModel(IModel<T> itemModel) {
+        public IModel<?> getModel(IModel<T> itemModel) {
             Object value = getPropertyValue((T) itemModel.getObject());
             if(value instanceof IModel) {
-                return (IModel<T>) value;
+                return (IModel<?>) value;
             } else {
-                return new Model((Serializable) value);
+                return new Model<Serializable>((Serializable) value);
             }
         }
 
@@ -501,6 +503,7 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
      * @param <T>
      */
     public static class BeanProperty<T> extends AbstractProperty<T> {
+        private static final long serialVersionUID = 5532661316457341748L;
         String propertyPath;
 
         public BeanProperty(String key, String propertyPath) {
@@ -556,6 +559,7 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
      * @param <T>
      */
     public static class PropertyPlaceholder<T> implements Property<T> {
+        private static final long serialVersionUID = -6605207892648199453L;
         String name;
 
         public PropertyPlaceholder(String name) {
@@ -607,9 +611,10 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
             this.property = property;
         }
 
+        @SuppressWarnings("unchecked")
         public int compare(T o1, T o2) {
-            Comparable p1 = (Comparable) property.getPropertyValue(o1);
-            Comparable p2 = (Comparable) property.getPropertyValue(o2);
+            Comparable<Object> p1 = (Comparable<Object>) property.getPropertyValue(o1);
+            Comparable<Object> p2 = (Comparable<Object>) property.getPropertyValue(o2);
 
             // what if any property is null? We assume null < (not null)
             if (p1 == null)

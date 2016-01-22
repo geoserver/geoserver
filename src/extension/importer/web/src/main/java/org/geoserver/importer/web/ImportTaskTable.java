@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -407,7 +407,7 @@ public class ImportTaskTable extends GeoServerTablePanel<ImportTask> {
                 }
             }).setNullValid(false).setOutputMarkupId(true));
 
-            add(new ExternalLink("go","#").add(new AttributeModifier("click", 
+            add(new ExternalLink("go","#").add(new AttributeModifier("onclick", 
                 new Model("go(document.getElementById('" + get("links").getMarkupId() + "'));"))));
        }
 

@@ -109,7 +109,7 @@ public class DemoRequestsPageTest extends GeoServerWicketTestSupport {
         assertTrue(model.getObject() instanceof DemoRequest);
         DemoRequest req = (DemoRequest) model.getObject();
 
-        assertEquals(demoDir, req.getDemoDir().dir());
+        assertEquals(demoDir.getPath(), req.getDemoDir());
         String requestFileName = req.getRequestFileName();
         String requestUrl = req.getRequestUrl();
         String requestBody = req.getRequestBody();
@@ -146,7 +146,7 @@ public class DemoRequestsPageTest extends GeoServerWicketTestSupport {
         assertTrue(model.getObject() instanceof DemoRequest);
         DemoRequest req = (DemoRequest) model.getObject();
 
-        assertEquals(demoDir, req.getDemoDir().dir());
+        assertEquals(demoDir.getPath(), req.getDemoDir());
         String requestFileName = req.getRequestFileName();
         String requestUrl = req.getRequestUrl();
         String requestBody = req.getRequestBody();
@@ -221,7 +221,7 @@ public class DemoRequestsPageTest extends GeoServerWicketTestSupport {
             assertTrue(model.getObject() instanceof DemoRequest);
             DemoRequest req = (DemoRequest) model.getObject();
     
-            assertEquals(demoDir, req.getDemoDir().dir());
+            assertEquals(demoDir.getPath(), req.getDemoDir());
             String requestFileName = req.getRequestFileName();
             String requestUrl = req.getRequestUrl();
     

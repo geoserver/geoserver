@@ -77,7 +77,7 @@ public class DemoRequestsPage extends GeoServerBasePage {
             throw new WicketRuntimeException("Can't access demo requests directory: "
                     + e.getMessage());
         }
-        DemoRequest model = new DemoRequest(demoDir);
+        DemoRequest model = new DemoRequest(demoDir.path());
         setDefaultModel(new Model(model));
 
         setUpDemoRequestsForm(demoDir);
@@ -90,7 +90,7 @@ public class DemoRequestsPage extends GeoServerBasePage {
      */
     DemoRequestsPage(final Resource demoDir) {
         this.demoDir = demoDir;
-        DemoRequest model = new DemoRequest(demoDir);
+        DemoRequest model = new DemoRequest(demoDir.path());
         setDefaultModel(new Model(model));
         setUpDemoRequestsForm(demoDir);
     }

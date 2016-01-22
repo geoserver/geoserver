@@ -58,11 +58,6 @@ class SourceTypeProvider extends GeoServerDataProvider<SourceType> {
             this.config = config;
         }
         
-        @Override
-        public IModel<SourceType> getModel(IModel<SourceType> itemModel) {
-            return super.getModel(itemModel);
-        }
-        
         public Comparator<SourceType> getComparator() {
             return null;
         }

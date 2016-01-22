@@ -1,18 +1,28 @@
 .. _config_converageaccess:
 
-Coverage Access Settings
-========================
+Raster Access
+=============
 
 The Coverage Access Settings page in the Server menu in the :ref:`web_admin` provides configuration options to customize thread pool executors and ImageIO caching memory.
 
-.. figure:: img/server_coverageaccess.png
+.. figure:: img/raster_access.png
    
-   Coverage Access Settings
+   Raster Access Settings
    
 .. _Thread_pool_executor_settings:
 
-Thread Pool Executor Settings
------------------------------
+.. _ImageIO_settings:
+
+Memory Use
+----------
+WMS requests usually produce relatively small images whilst WCS requests may frequently deal with bigger datasets. Caching the image in memory before encoding it may be helpful when the size of the image isn't too big. For a huge image (as one produced by a big WCS request) it would be better instead caching through a temporary file with respect to caching in memory. 
+This section allows to specify a threshold image size to let GeoServer decide whether to use a `MemoryCacheImageOutputStream <http://docs.oracle.com/javase/1.5.0/docs/api/javax/imageio/stream/MemoryCacheImageOutputStream.html/>`_ or `FileCacheImageOutputStream <http://docs.oracle.com/javase/1.5.0/docs/api/javax/imageio/stream/FileCacheImageOutputStream.html/>`_ when encoding the images.
+
+**ImageIO Cache Memory Threshold**—Sets the threshold size (expressed in KiloBytes) which will made GeoServer choose between file cache vs memory based cache.
+If the estimated size of the image to be encoded is smaller than the threshold value, a `MemoryCacheImageOutputStream` will be used resulting into caching the image in memory. If the estimated size of the image to be encoded is greater than the threshold value, a `FileCacheImageOutputStream` will be used.
+
+CPU Use
+-------
 The imageMosaic reader may load, in parallel, different files that make up the mosaic by means of a 
 `ThreadPoolExecutor <http://docs.oracle.com/javase/1.5.0/docs/api/java/util/concurrent/ThreadPoolExecutor.html/>`_ .
 A global ThreadPoolExecutor instance is shared by all the readers supporting and using concurrent reads. This section
@@ -32,13 +42,3 @@ Using an `unbounded` queue is recommended which allows to queue all the pending 
 .. note:: If the pool currently has more than `corePoolSize` threads, excess threads will be terminated if they have been idle for more than the `keepAliveTime`.
 .. note:: If a new task is submitted to the list of tasks to be executed and there are more than `corePoolSize` but less than `maximumPoolSize` threads running, a new thread will be created only if the queue is full. This means that when using an `Unbounded` queue, no more threads than `corePoolSize` will be running and `keepAliveTime` has no influence.
 .. note:: If `corePoolSize` and `maximumPoolSize` are the same, a fixed-size thread pool is used.
-
-.. _ImageIO_settings:
-
-ImageIO Settings
-----------------
-WMS requests usually produce relatively small images whilst WCS requests may frequently deal with bigger datasets. Caching the image in memory before encoding it may be helpful when the size of the image isn't too big. For a huge image (as one produced by a big WCS request) it would be better instead caching through a temporary file with respect to caching in memory. 
-This section allows to specify a threshold image size to let GeoServer decide whether to use a `MemoryCacheImageOutputStream <http://docs.oracle.com/javase/1.5.0/docs/api/javax/imageio/stream/MemoryCacheImageOutputStream.html/>`_ or `FileCacheImageOutputStream <http://docs.oracle.com/javase/1.5.0/docs/api/javax/imageio/stream/FileCacheImageOutputStream.html/>`_ when encoding the images.
-
-**ImageIO Cache Memory Threshold**—Sets the threshold size (expressed in KiloBytes) which will made GeoServer choose between file cache vs memory based cache.
-If the estimated size of the image to be encoded is smaller than the threshold value, a `MemoryCacheImageOutputStream` will be used resulting into caching the image in memory. If the estimated size of the image to be encoded is greater than the threshold value, a `FileCacheImageOutputStream` will be used.

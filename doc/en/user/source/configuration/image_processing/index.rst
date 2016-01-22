@@ -1,14 +1,15 @@
 .. _JAI:
 
-JAI
-===
-`Java Advanced Imaging <http://java.sun.com/javase/technologies/desktop/media/jai/>`_ (JAI) is an image manipulation library built by Sun Microsystems and distributed with an open source license.
-`JAI Image I/O Tools <https://jai-imageio.dev.java.net/>`_ provides reader, writer, and stream plug-ins for the standard Java Image I/O Framework. 
-Several JAI parameters, used by both WMS and WCS operations, can be configured in the JAI Settings page. 
+Image Processing
+================
+`Java Advanced Imaging <http://java.sun.com/javase/technologies/desktop/media/jai/>`_ (JAI) is an image processing library built by Sun Microsystems.
+`JAI Image I/O Tools <https://jai-imageio.dev.java.net/>`_ provides reader, writer, and stream plug-ins for the standard Java Image I/O Framework.
 
-.. figure:: img/JAI.png
+Several JAI parameters, used by both WMS and WCS operations, can be configured in the Image Processing page. 
+
+.. figure:: img/image_processing.png
    
-   JAI Settings
+   Image Processing
    
 Memory & Tiling 
 ---------------
@@ -44,9 +45,7 @@ When supporting large images it is efficient to work on image subsets without lo
 JAI-EXT  
 -------
 
-Quoting from `JAI-EXT Project page <https://github.com/geosolutions-it/jai-ext>`_, *JAI-EXT is an open-source project which aims to replace in the long term the JAI project*. 
-
-The main difference between *JAI* and *JAI-EXT* operations is the support for external **ROIs** and image **NoData** in *JAI-EXT*.
+The `JAI-EXT <https://github.com/geosolutions-it/jai-ext>`_ library is open-source project which aims to replace closed source JAI project provided by Sun. The main difference between *JAI* and *JAI-EXT* operations is the support for external **Region of Interests** (ROI) and image **NoData** in *JAI-EXT*.
 
 By default, **JAI-EXT** operations are disabled. Add the following java option to GeoServer startup script and restart GeoServer to have them enabled.
 

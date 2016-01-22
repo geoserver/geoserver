@@ -11,8 +11,8 @@ This page will detail how to set various configuration options in GeoServer as w
    status
    contact
    globalsettings
-   coverageaccess
-   JAI/index
+   image_processing/index
+   raster_access
    REST
    logging
    crshandling/index

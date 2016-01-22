@@ -5,9 +5,17 @@ Global Settings
 
 The Global Setting page configures messaging, logging, character, and proxy settings for the entire server.
 
-.. figure:: img/server_globalsettings.png
+Global Settings are used to configure how OGC Web Services function.
+
+.. figure:: img/global_settings_service.png
    
-   Global Settings Page
+   Global Settings Service Configuration
+
+Global Settings are also used to control the GeoServer application as a whole.
+
+.. figure:: img/global_settings_internal.png
+   
+   Global Settings Internal Configuration
 
 Verbose Messages
 ----------------
@@ -38,7 +46,6 @@ There are two options:
 **OGC_EXCEPTION_REPORT**: This is the default behavior. Any layer errors will show up as Service Exceptions in the capabilities document, making it invalid.
 
 **SKIP_MISCONFIGURED_LAYERS**: With this setting, GeoServer will elect simply to not describe the problem layer at all, removing it from the capabilities document, and preserving the integrity of the rest of the document. Note that having a layer "disappear" may cause other errors in client functionality.
-
 
 Number of Decimals
 ------------------

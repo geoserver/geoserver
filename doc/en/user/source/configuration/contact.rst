@@ -5,7 +5,7 @@ Contact Information
 
 The Contact Information is used in the Capabilities document of the WMS server, and is publicly accessible. Please complete this form with the relevant information.
 
-.. figure:: img/server_contact.png
+.. figure:: img/contact_information.png
    
    Contact Page
 
@@ -23,6 +23,12 @@ Contact Information Fields
      - Name of the organization with which the contact is affiliated 
    * - Position
      - Position of the contact within their organization
+   * - Email
+     - Contact email address   
+   * - Telephone
+     - Contact phone number      
+   * - Fax
+     - Contact Fax number
    * - Address Type
      - Type of address specified, such as postal
    * - Address
@@ -35,10 +41,6 @@ Contact Information Fields
      - Postal code for the address
    * - Country
      - Country of the address     
-   * - Telephone
-     - Contact phone number      
-   * - Fax
-     - Contact Fax number      
-   * - Email
-     - Contact email address      
+      
+   
       

@@ -5,13 +5,7 @@
  */
 package org.geoserver.web.data.layer;
 
-import static org.geoserver.web.data.layer.LayerProvider.ENABLED;
-import static org.geoserver.web.data.layer.LayerProvider.NAME;
-import static org.geoserver.web.data.layer.LayerProvider.SRS;
-import static org.geoserver.web.data.layer.LayerProvider.STORE;
-import static org.geoserver.web.data.layer.LayerProvider.TYPE;
-import static org.geoserver.web.data.layer.LayerProvider.WORKSPACE;
-
+import org.apache.commons.lang.StringUtils;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.basic.Label;
@@ -19,6 +13,7 @@ import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.request.resource.PackageResourceReference;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -37,6 +32,8 @@ import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.SimpleBookmarkableLink;
+
+import static org.geoserver.web.data.layer.LayerProvider.*;
 
 /**
  * Page listing all the available layers. Follows the usual filter/sort/page approach,
@@ -76,10 +73,12 @@ public class LayerPage extends GeoServerSecuredPage {
                     return f;
                 } else if(property == SRS) {
                     return new Label(id, SRS.getModel(itemModel));
+                } else if (property == TITLE) {
+                    return titleLink(id, itemModel);
                 }
                 throw new IllegalArgumentException("Don't know a property named " + property.getName());
             }
-            
+
             @Override
             protected void onSelectionUpdate(AjaxRequestTarget target) {
                 removal.setEnabled(table.getSelection().size() > 0);
@@ -93,7 +92,25 @@ public class LayerPage extends GeoServerSecuredPage {
         add(dialog = new GeoServerDialog("dialog"));
         setHeaderPanel(headerPanel());
     }
-    
+
+    private Component titleLink(String id, IModel<LayerInfo> itemModel) {
+
+        IModel<String> layerNameModel = (IModel<String>) NAME.getModel(itemModel);
+        IModel<String> layerTitleModel = (IModel<String>) TITLE.getModel(itemModel);
+        String layerTitle = layerTitleModel.getObject();
+        String layerName = layerNameModel.getObject();
+
+        IModel linkModel = layerTitleModel;
+        if (StringUtils.isEmpty(layerTitle)) {
+            linkModel = layerNameModel;
+        }
+
+        String wsName = WORKSPACE.getModel(itemModel).getObject().toString();
+
+        return new SimpleBookmarkableLink(id, ResourceConfigurationPage.class, linkModel,
+                ResourceConfigurationPage.NAME, layerName, ResourceConfigurationPage.WORKSPACE, wsName);
+    }
+
     protected Component headerPanel() {
         Fragment header = new Fragment(HEADER_PANEL, "header", this);
         
@@ -112,8 +129,9 @@ public class LayerPage extends GeoServerSecuredPage {
         @SuppressWarnings("unchecked")
         IModel<String> layerNameModel = (IModel<String>) NAME.getModel(model);
         String wsName = WORKSPACE.getModel(model).getObject().toString();
-        String layerName = (String) layerNameModel.getObject();
-        return new SimpleBookmarkableLink(id, ResourceConfigurationPage.class, layerNameModel, 
+        String layerName = layerNameModel.getObject();
+        String linkTitle = wsName + ":" + layerName;
+        return new SimpleBookmarkableLink(id, ResourceConfigurationPage.class, new Model<>(linkTitle),
                 ResourceConfigurationPage.NAME, layerName, ResourceConfigurationPage.WORKSPACE, wsName);
     }
 

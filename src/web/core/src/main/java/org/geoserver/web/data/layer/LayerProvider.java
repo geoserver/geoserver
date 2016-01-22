@@ -1,17 +1,11 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.web.data.layer;
 
-import static org.geoserver.catalog.Predicates.sortBy;
-
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
-
+import com.google.common.collect.Lists;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortParam;
 import org.apache.wicket.model.IModel;
 import org.geoserver.catalog.Catalog;
@@ -23,7 +17,12 @@ import org.geoserver.web.wicket.GeoServerDataProvider;
 import org.opengis.filter.Filter;
 import org.opengis.filter.sort.SortBy;
 
-import com.google.common.collect.Lists;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
+
+import static org.geoserver.catalog.Predicates.sortBy;
 
 /**
  * Provides a filtered, sorted view over the catalog layers.
@@ -47,17 +46,16 @@ import com.google.common.collect.Lists;
  */
 @SuppressWarnings("serial")
 public class LayerProvider extends GeoServerDataProvider<LayerInfo> {
-    static final Property<LayerInfo> TYPE = new BeanProperty<LayerInfo>("type",
+    static final Property<LayerInfo> TYPE = new BeanProperty<>("type",
             "type");
 
-    static final Property<LayerInfo> WORKSPACE = new BeanProperty<LayerInfo>(
-            "workspace", "resource.store.workspace.name");
-
-    static final Property<LayerInfo> STORE = new BeanProperty<LayerInfo>(
+    static final Property<LayerInfo> STORE = new BeanProperty<>(
             "store", "resource.store.name");
 
-    static final Property<LayerInfo> NAME = new BeanProperty<LayerInfo>("name",
+    static final Property<LayerInfo> NAME = new BeanProperty<>("name",
             "name");
+
+    static final Property<LayerInfo> TITLE = new BeanProperty<>("title", "title");
 
     /**
      * A custom property that uses the derived enabled() property instead of isEnabled() to account
@@ -109,8 +107,8 @@ public class LayerProvider extends GeoServerDataProvider<LayerInfo> {
         }
     };
     
-    static final List<Property<LayerInfo>> PROPERTIES = Arrays.asList(TYPE,
-            WORKSPACE, STORE, NAME, ENABLED, SRS);
+    static final List<Property<LayerInfo>> PROPERTIES = Arrays.asList(TYPE, TITLE,
+            NAME, STORE, ENABLED, SRS);
 
     @Override
     protected List<LayerInfo> getItems() {

@@ -1,17 +1,11 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.web.data.layer;
 
-import static org.geoserver.web.data.layer.LayerProvider.ENABLED;
-import static org.geoserver.web.data.layer.LayerProvider.NAME;
-import static org.geoserver.web.data.layer.LayerProvider.SRS;
-import static org.geoserver.web.data.layer.LayerProvider.STORE;
-import static org.geoserver.web.data.layer.LayerProvider.TYPE;
-import static org.geoserver.web.data.layer.LayerProvider.WORKSPACE;
-
+import org.apache.commons.lang.StringUtils;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.basic.Label;
@@ -19,6 +13,7 @@ import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.request.resource.PackageResourceReference;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -32,11 +27,12 @@ import org.geoserver.web.data.resource.ResourceConfigurationPage;
 import org.geoserver.web.data.store.CoverageStoreEditPage;
 import org.geoserver.web.data.store.DataAccessEditPage;
 import org.geoserver.web.data.store.WMSStoreEditPage;
-import org.geoserver.web.data.workspace.WorkspaceEditPage;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.SimpleBookmarkableLink;
+
+import static org.geoserver.web.data.layer.LayerProvider.*;
 
 /**
  * Page listing all the available layers. Follows the usual filter/sort/page approach,
@@ -58,16 +54,14 @@ public class LayerPage extends GeoServerSecuredPage {
                     Property<LayerInfo> property) {
                 if(property == TYPE) {
                     Fragment f = new Fragment(id, "iconFragment", LayerPage.this);
-                    f.add(new Image("layerIcon", icons.getSpecificLayerIcon((LayerInfo) itemModel.getObject())));
+                    f.add(new Image("layerIcon", icons.getSpecificLayerIcon(itemModel.getObject())));
                     return f;
-                } else if(property == WORKSPACE) {
-                    return workspaceLink(id, itemModel);
                 } else if(property == STORE) {
                     return storeLink(id, itemModel);
                 } else if(property == NAME) {
                     return layerLink(id, itemModel);
                 } else if(property == ENABLED) {
-                    LayerInfo layerInfo = (LayerInfo) itemModel.getObject();
+                    LayerInfo layerInfo = itemModel.getObject();
                     // ask for enabled() instead of isEnabled() to account for disabled resource/store
                     boolean enabled = layerInfo.enabled();
                     PackageResourceReference icon = enabled? icons.getEnabledIcon() : icons.getDisabledIcon();
@@ -76,10 +70,12 @@ public class LayerPage extends GeoServerSecuredPage {
                     return f;
                 } else if(property == SRS) {
                     return new Label(id, SRS.getModel(itemModel));
+                } else if (property == TITLE) {
+                    return titleLink(id, itemModel);
                 }
                 throw new IllegalArgumentException("Don't know a property named " + property.getName());
             }
-            
+
             @Override
             protected void onSelectionUpdate(AjaxRequestTarget target) {
                 removal.setEnabled(table.getSelection().size() > 0);
@@ -93,7 +89,24 @@ public class LayerPage extends GeoServerSecuredPage {
         add(dialog = new GeoServerDialog("dialog"));
         setHeaderPanel(headerPanel());
     }
-    
+
+    private Component titleLink(String id, IModel<LayerInfo> itemModel) {
+
+        IModel<String> layerNameModel = (IModel<String>) NAME.getModel(itemModel);
+        IModel<String> layerTitleModel = (IModel<String>) TITLE.getModel(itemModel);
+        String layerTitle = layerTitleModel.getObject();
+        String layerName = layerNameModel.getObject();
+        String wsName = getWorkspaceNameFromLayerInfo(itemModel.getObject());
+
+        IModel linkModel = layerTitleModel;
+        if (StringUtils.isEmpty(layerTitle)) {
+            linkModel = layerNameModel;
+        }
+
+        return new SimpleBookmarkableLink(id, ResourceConfigurationPage.class, linkModel,
+                ResourceConfigurationPage.NAME, layerName, ResourceConfigurationPage.WORKSPACE, wsName);
+    }
+
     protected Component headerPanel() {
         Fragment header = new Fragment(HEADER_PANEL, "header", this);
         
@@ -111,16 +124,17 @@ public class LayerPage extends GeoServerSecuredPage {
     private Component layerLink(String id, final IModel<LayerInfo> model) {
         @SuppressWarnings("unchecked")
         IModel<String> layerNameModel = (IModel<String>) NAME.getModel(model);
-        String wsName = WORKSPACE.getModel(model).getObject().toString();
-        String layerName = (String) layerNameModel.getObject();
-        return new SimpleBookmarkableLink(id, ResourceConfigurationPage.class, layerNameModel, 
+        String wsName = getWorkspaceNameFromLayerInfo(model.getObject());
+        String layerName = layerNameModel.getObject();
+        String linkTitle = wsName + ":" + layerName;
+        return new SimpleBookmarkableLink(id, ResourceConfigurationPage.class, new Model<>(linkTitle),
                 ResourceConfigurationPage.NAME, layerName, ResourceConfigurationPage.WORKSPACE, wsName);
     }
 
     private Component storeLink(String id, final IModel<LayerInfo> model) {
         @SuppressWarnings("unchecked")
         IModel<String> storeModel = (IModel<String>) STORE.getModel(model);
-        String wsName =  WORKSPACE.getModel(model).getObject().toString();
+        String wsName =  getWorkspaceNameFromLayerInfo(model.getObject());
         String storeName = storeModel.getObject();
         LayerInfo layer = model.getObject();
         StoreInfo store = layer.getResource().getStore();
@@ -139,11 +153,13 @@ public class LayerPage extends GeoServerSecuredPage {
         }
     }
 
-    private Component workspaceLink(String id, final IModel<LayerInfo> model) {
-    	@SuppressWarnings("unchecked")
-        IModel<String> nameModel = (IModel<String>) WORKSPACE.getModel(model);
-        return new SimpleBookmarkableLink(id, WorkspaceEditPage.class, nameModel,
-                "name", (String) nameModel.getObject());
+    /**
+     * Helper to grab the workspace name from the layer info
+     * @param li the li
+     * @return the workspace name of the ws the layer belong
+     */
+    private String getWorkspaceNameFromLayerInfo(LayerInfo li) {
+        return li.getResource().getStore().getWorkspace().getName();
     }
 
     @Override

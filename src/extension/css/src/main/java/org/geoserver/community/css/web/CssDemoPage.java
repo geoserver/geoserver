@@ -236,6 +236,7 @@ public class CssDemoPage extends GeoServerSecuredPage {
         final Fragment mainContent = new Fragment("main-content", "normal", this);
 
         final ModalWindow popup = new ModalWindow("popup");
+        popup.showUnloadConfirmation(false);
         mainContent.add(popup);
         final StyleNameModel styleNameModel = new StyleNameModel(style);
         final PropertyModel<String> layerNameModel = new PropertyModel<String>(layer, "prefixedName");
@@ -245,7 +246,6 @@ public class CssDemoPage extends GeoServerSecuredPage {
                     private static final long serialVersionUID = 1276737009163734430L;
 
             public void onClick(AjaxRequestTarget target) {
-                target.appendJavaScript("Wicket.Window.unloadConfirmation = false;");
                 popup.setInitialHeight(200);
                 popup.setInitialWidth(300);
                 popup.setTitle(new Model<String>("Choose name for new style"));
@@ -258,7 +258,6 @@ public class CssDemoPage extends GeoServerSecuredPage {
             private static final long serialVersionUID = -3767935899990478209L;
 
             public void onClick(AjaxRequestTarget target) {
-                target.appendJavaScript("Wicket.Window.unloadConfirmation = false;");
                 popup.setInitialHeight(400);
                 popup.setInitialWidth(600);
                 popup.setTitle(new Model<String>("Choose style to edit"));
@@ -270,7 +269,6 @@ public class CssDemoPage extends GeoServerSecuredPage {
             private static final long serialVersionUID = 7341058018479354596L;
 
             public void onClick(AjaxRequestTarget target) {
-                target.appendJavaScript("Wicket.Window.unloadConfirmation = false;");
                 popup.setInitialHeight(400);
                 popup.setInitialWidth(600);
                 popup.setTitle(new Model<String>("Choose layer to edit"));
@@ -283,7 +281,6 @@ public class CssDemoPage extends GeoServerSecuredPage {
             private static final long serialVersionUID = -5694226354260865370L;
 
             public void onClick(AjaxRequestTarget target) {
-                target.appendJavaScript("Wicket.Window.unloadConfirmation = false;");
                 popup.setInitialHeight(400);
                 popup.setInitialWidth(600);
                 popup.setTitle(new Model<String>("Choose layers to associate"));

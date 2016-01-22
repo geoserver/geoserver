@@ -27,15 +27,19 @@ import org.geoserver.catalog.StyleInfo;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
 import org.geoserver.web.wicket.CodeMirrorEditor;
+import org.geoserver.web.wicket.ResourcePathModel;
 
 public class StylePanel extends Panel {
     private static final long serialVersionUID = -8437128284428556984L;
     
     private String styleBody;
     
+    ResourcePathModel resourcePath;
+    
     public StylePanel(String id, IModel<CssDemoPage> model, final CssDemoPage page,
-            final Resource cssFile) {
+            Resource cssFile) {
         super(id, model);
+        resourcePath = new ResourcePathModel(cssFile);
         if (cssFile != null && Resources.exists(cssFile)) {
             try (InputStream is = cssFile.in()) {
                 setStyleBody(IOUtils.toString(is));
@@ -80,7 +84,7 @@ public class StylePanel extends Panel {
                     } else {
                         // create the sld side car file
                         String sld = page.cssText2sldText(body, info);
-                        Writer writer = new OutputStreamWriter(cssFile.out());
+                        Writer writer = new OutputStreamWriter(resourcePath.getObject().out());
                         writer.write(body);
                         writer.close();
                         page.catalog()

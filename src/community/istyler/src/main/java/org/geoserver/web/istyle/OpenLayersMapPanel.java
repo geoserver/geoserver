@@ -8,6 +8,8 @@ package org.geoserver.web.istyle;
 import java.io.StringWriter;
 import java.util.Random;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptReferenceHeaderItem;
@@ -17,6 +19,8 @@ import org.apache.wicket.markup.html.IHeaderContributor;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.ows.util.ResponseUtils;
+import org.geoserver.web.GeoServerApplication;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 
 import freemarker.template.Configuration;
@@ -68,6 +72,9 @@ public class OpenLayersMapPanel extends Panel implements IHeaderContributor {
             model.put("layers", layer.getName());
             model.put("styles", style.getName());
             
+            HttpServletRequest req = GeoServerApplication.get().servletRequest();
+            model.put("geoserver", ResponseUtils.baseURL(req));
+            
             bbox(layer, model);
             
             //render
@@ -102,6 +109,9 @@ public class OpenLayersMapPanel extends Panel implements IHeaderContributor {
             model.put("ran", rand.nextInt());
             model.put("layerChanged", !layer.equals(this.layer));
             
+            HttpServletRequest req = GeoServerApplication.get().servletRequest();
+            model.put("geoserver", ResponseUtils.baseURL(req));
+            
             target.appendJavaScript(renderTemplate("OL-update.ftl", model));
             
             this.layer = layer;
@@ -129,8 +139,9 @@ public class OpenLayersMapPanel extends Panel implements IHeaderContributor {
         model.put("maxX", bbox.getMaxX());
         model.put("maxY", bbox.getMaxY());
         model.put("srs", srs);
-        model.put("res", Math.max(bbox.getHeight(),bbox.getWidth())/256d);
+        model.put("res", Math.max(bbox.getHeight(),bbox.getWidth())/256d);        
     }
+    
     String renderTemplate(String t, Object model) throws Exception {
         Template template = config.getTemplate(t);
         StringWriter writer = new StringWriter();

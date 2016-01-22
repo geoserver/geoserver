@@ -45,9 +45,9 @@ public class GeoServerResourceStreamLocator extends ResourceStreamLocator {
 
     static Pattern GS_LOCAL_I18N = Pattern.compile("org/geoserver/.*(\\.properties|\\.xml)]");
 
-    @SuppressWarnings( { "unchecked", "serial" })
+    @SuppressWarnings( { "serial" })
     @Override
-    public IResourceStream locate(Class clazz, String path) {
+    public IResourceStream locate(Class<?> clazz, String path) {
         int i = path.lastIndexOf("/");
         if (i != -1) {
             String p = path.substring(i + 1);

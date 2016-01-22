@@ -32,7 +32,7 @@ public class AdminRequestWicketCallback implements WicketCallback {
     }
 
     @Override
-    public void onRequestTargetSet(Class<IRequestablePage> requestTarget) {
+    public void onRequestTargetSet(Class<? extends IRequestablePage> requestTarget) {
         // for non secured page requests we abort the admin request since they are meant to be 
         // accessible anonymously, so we don't consider this an admin request
         if (requestTarget == null || !(GeoServerSecuredPage.class.isAssignableFrom(requestTarget) || 

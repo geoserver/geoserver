@@ -44,16 +44,17 @@ public class GeometryTextArea extends TextArea<Geometry> {
         setType(Geometry.class);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <C> IConverter<C> getConverter(Class<C> type) {
-        return new GeometryConverter();
+        return (IConverter<C>) new GeometryConverter();
     }
     /**
      * Converts between String and Geometry
      * 
      * @author Andrea Aime - GeoSolutions
      */
-    private class GeometryConverter implements IConverter {
+    private class GeometryConverter implements IConverter<Object> {
         private static final long serialVersionUID = 5868644160487841740L;
         
         transient GeometryFactory gf = new GeometryFactory();

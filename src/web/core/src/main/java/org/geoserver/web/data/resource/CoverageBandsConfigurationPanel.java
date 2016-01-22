@@ -5,7 +5,6 @@
  */
 package org.geoserver.web.data.resource;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -34,8 +33,8 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.CoverageDimensionInfo;
 import org.geoserver.catalog.CoverageInfo;
-import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.CoverageView;
+import org.geoserver.catalog.MetadataMap;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.wicket.GeoServerAjaxFormLink;
 import org.geoserver.web.wicket.GeoServerDataProvider;
@@ -76,9 +75,9 @@ public class CoverageBandsConfigurationPanel extends ResourceConfigurationPanel 
         @Override
         public Double convertToObject(String value, Locale locale) {
            LOGGER.info(value);
-           if (value.equals("-∞")) {
+           if (value.equals("-���")) {
                return new Double(Double.NEGATIVE_INFINITY);
-           } else if (value.equals("∞")) {
+           } else if (value.equals("���")) {
                return new Double(Double.POSITIVE_INFINITY);
            } else {
                return super.convertToObject(value, locale);

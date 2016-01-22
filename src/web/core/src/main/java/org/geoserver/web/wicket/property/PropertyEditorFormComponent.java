@@ -35,6 +35,7 @@ import org.springframework.util.StringUtils;
  */
 public class PropertyEditorFormComponent extends FormComponentPanel<Properties> {
 
+    private static final long serialVersionUID = -1960584178014140068L;
     ListView<Tuple> listView;
     List<Tuple> invalidTuples=null;
 
@@ -54,23 +55,31 @@ public class PropertyEditorFormComponent extends FormComponentPanel<Properties> 
         add(container);
 
         listView = new ListView<Tuple>("list") {
+            private static final long serialVersionUID = -7250612551499360015L;
+
             @Override
             protected void populateItem(ListItem<Tuple> item) {
                 item.setModel(new CompoundPropertyModel<Tuple>(item.getModelObject()));
-                item.add(new TextField("key").add(new AjaxFormComponentUpdatingBehavior("blur"){
+                item.add(new TextField<String>("key").add(new AjaxFormComponentUpdatingBehavior("blur"){
+                    private static final long serialVersionUID = 5416373713193788662L;
+
                     @Override
                     protected void onUpdate(AjaxRequestTarget target) {
                     }
                 }));
-                item.add(new TextField("value").add(new AjaxFormComponentUpdatingBehavior("blur") {
+                item.add(new TextField<String>("value").add(new AjaxFormComponentUpdatingBehavior("blur") {
+                    private static final long serialVersionUID = -8679502120189597358L;
+
                     @Override
                     protected void onUpdate(AjaxRequestTarget target) {
                     }
                 }));
                 item.add(new AjaxLink<Tuple>("remove", item.getModel()) {
+                    private static final long serialVersionUID = 3201264868229144613L;
+
                     @Override
                     public void onClick(AjaxRequestTarget target) {
-                        List l = ((List)listView.getDefaultModelObject());
+                        List<Tuple> l = listView.getModelObject();
                         l.remove(getModelObject());
                         target.add(container);
                     }
@@ -80,10 +89,12 @@ public class PropertyEditorFormComponent extends FormComponentPanel<Properties> 
         //listView.setReuseItems(true);
         container.add(listView);
         
-        add(new AjaxLink("add") {
+        add(new AjaxLink<Void>("add") {
+            private static final long serialVersionUID = 4741595573705562351L;
+
             @Override
             public void onClick(AjaxRequestTarget target) {
-                ((List)listView.getDefaultModelObject()).add(new Tuple());
+                listView.getModelObject().add(new Tuple());
                 target.add(container);
             }
         });
@@ -100,7 +111,7 @@ public class PropertyEditorFormComponent extends FormComponentPanel<Properties> 
         }
 
         List<Tuple> tuples = new ArrayList<Tuple>();
-        for (Map.Entry e : props.entrySet()) {
+        for (Map.Entry<Object, Object> e : props.entrySet()) {
             tuples.add(new Tuple((String)e.getKey(), (String)e.getValue()));
         }
 
@@ -116,10 +127,10 @@ public class PropertyEditorFormComponent extends FormComponentPanel<Properties> 
 
     @Override
     public void convertInput() {
-        for (Iterator it = listView.iterator(); it.hasNext();) {
-            ListItem item = (ListItem) it.next();
-            ((FormComponent)item.get("key")).updateModel();
-            ((FormComponent)item.get("value")).updateModel();
+        for (Iterator<?> it = listView.iterator(); it.hasNext();) {
+            ListItem<?> item = (ListItem<?>) it.next();
+            ((FormComponent<?>)item.get("key")).updateModel();
+            ((FormComponent<?>)item.get("value")).updateModel();
         }
 
         Properties props = getModelObject();

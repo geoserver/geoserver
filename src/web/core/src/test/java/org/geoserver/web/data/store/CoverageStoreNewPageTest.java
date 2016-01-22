@@ -9,7 +9,6 @@ import static org.junit.Assert.*;
 
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geoserver.web.data.store.panel.WorkspacePanel;
-import org.geotools.gce.arcgrid.ArcGridFormatFactory;
 import org.geotools.gce.gtopo30.GTopo30FormatFactory;
 import org.junit.Before;
 import org.junit.Test;
@@ -26,7 +25,6 @@ public class CoverageStoreNewPageTest extends GeoServerWicketTestSupport {
 
     String formatDescription;
 
-    @SuppressWarnings("deprecation")
     @Before
     public void init() {
         Format format = new GTopo30FormatFactory().createFormat();

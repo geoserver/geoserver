@@ -50,7 +50,7 @@ public class WicketConfigurationLockCallback implements WicketCallback {
     }
 
     @Override
-    public void onRequestTargetSet(Class<IRequestablePage> requestTarget) {
+    public void onRequestTargetSet(Class<? extends IRequestablePage> requestTarget) {
         // we can have many of these calls per http call, avoid locking multiple times,
         // onEndRequest will be called just once
         LockType type = THREAD_LOCK.get();

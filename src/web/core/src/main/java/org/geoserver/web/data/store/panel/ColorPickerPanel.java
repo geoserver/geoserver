@@ -5,7 +5,6 @@
  */
 package org.geoserver.web.data.store.panel;
 
-import java.awt.Color;
 import java.util.Locale;
 
 import org.apache.wicket.markup.html.basic.Label;
@@ -48,25 +47,29 @@ public class ColorPickerPanel extends Panel {
 		// to use
 		// the converter both ways
 		ColorPickerField textField = new ColorPickerField("paramValue", paramVale) {
-			@Override
-			public IConverter getConverter(Class type) {
-				return new IConverter() {
-
-					public String convertToString(Object value, Locale locale) {
-						String input = (String) value;
-						if (input.startsWith("#"))
-							return input.substring(1);
-						else
-							return input;
-					}
-
-					public Object convertToObject(String value, Locale locale) {
-						if (value.equals(""))
-							return value;
-						return "#" + value;
-					}
-				};
-			}
+                    @SuppressWarnings("unchecked")
+                    @Override
+                    public <C> IConverter<C> getConverter(Class<C> type) {
+                        if (type.isAssignableFrom(String.class)) {
+                            return (IConverter<C>) new IConverter<String>() {            
+                                public String convertToString(String value, Locale locale) {
+                                    String input = (String) value;
+                                    if (input.startsWith("#")) {
+                                        return input.substring(1);
+                                    } else {
+                                        return input;
+                                    }
+                                }
+                
+                                public String convertToObject(String value, Locale locale) {
+                                    if (value.equals(""))
+                                        return value;
+                                    return "#" + value;
+                                }
+                            };
+                        }
+                        return super.getConverter(type);
+                    }
 		};
 		textField.setRequired(required);
 		// set the label to be the paramLabelModel otherwise a validation error

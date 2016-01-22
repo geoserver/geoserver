@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
@@ -24,24 +23,21 @@ import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
-import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.validation.IValidatable;
-import org.apache.wicket.validation.IValidationError;
 import org.apache.wicket.validation.IValidator;
 import org.apache.wicket.validation.ValidationError;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DimensionDefaultValueSetting;
+import org.geoserver.catalog.DimensionDefaultValueSetting.Strategy;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.ResourceInfo;
-import org.geoserver.catalog.DimensionDefaultValueSetting.Strategy;
 import org.geoserver.catalog.impl.DimensionInfoImpl;
 import org.geoserver.ows.kvp.ElevationKvpParser;
-import org.geoserver.ows.kvp.TimeKvpParser;
 import org.geoserver.ows.kvp.TimeParser;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.web.wicket.ParamResourceModel;
@@ -88,7 +84,7 @@ public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
     
     boolean time;
     
-    public DimensionEditor(String id, IModel<DimensionInfo> model, ResourceInfo resource, Class type) {
+    public DimensionEditor(String id, IModel<DimensionInfo> model, ResourceInfo resource, Class<?> type) {
         super(id, model);
 
         // double container dance to get stuff to show up and hide on demand (grrr)
@@ -303,7 +299,7 @@ public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
         }
     }
 
-    private void disableDimension(Class type, final WebMarkupContainer configs,
+    private void disableDimension(Class<?> type, final WebMarkupContainer configs,
             Label noAttributeMessage) {
         // no attributes of the required type, no party
         enabled.setEnabled(false);

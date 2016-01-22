@@ -24,8 +24,8 @@ class ConfigurationListProvider extends GeoServerDataProvider<AggregateTypeConfi
 
         private static final long serialVersionUID = 8445881898430736063L;
 
-        public IModel<AggregateTypeConfiguration> getModel(final IModel<AggregateTypeConfiguration> itemModel) {
-            return new IModel<AggregateTypeConfiguration>() {
+        public IModel<?> getModel(final IModel<AggregateTypeConfiguration> itemModel) {
+            return new IModel<String>() {
 
                 private static final long serialVersionUID = -1612531825990914783L;
 
@@ -35,19 +35,19 @@ class ConfigurationListProvider extends GeoServerDataProvider<AggregateTypeConfi
                 }
 
                 @Override
-                public AggregateTypeConfiguration getObject() {
-                    return (AggregateTypeConfiguration) getPropertyValue( itemModel.getObject());
+                public String getObject() {
+                    return getPropertyValue(itemModel.getObject());
                 }
 
                 @Override
-                public void setObject(AggregateTypeConfiguration object) {
+                public void setObject(String object) {
                     // read only                    
                 }
             };
         };
         
         @Override
-        public Object getPropertyValue(AggregateTypeConfiguration item) {
+        public String getPropertyValue(AggregateTypeConfiguration item) {
             if (item.getSourceTypes() == null || item.getSourceTypes().size() == 0) {
                 return "";
             } else {
@@ -57,7 +57,7 @@ class ConfigurationListProvider extends GeoServerDataProvider<AggregateTypeConfi
                     sb.append(", ");
                 }
                 sb.setLength(sb.length() - 2);
-                return sb;
+                return sb.toString();
             }
         }
     };

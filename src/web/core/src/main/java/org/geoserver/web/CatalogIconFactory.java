@@ -17,9 +17,9 @@ import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.ResourcePool;
 import org.geoserver.catalog.StoreInfo;
-import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.web.data.resource.DataStorePanelInfo;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
@@ -138,11 +138,11 @@ public class CatalogIconFactory implements Serializable {
             return GEOMETRY_ICON;
         } 
         
-        Class geom = gd.getType().getBinding();
+        Class<?> geom = gd.getType().getBinding();
         return getVectorIcon(geom);
     }
 
-    public PackageResourceReference getVectorIcon(Class geom) {
+    public PackageResourceReference getVectorIcon(Class<?> geom) {
         if (Point.class.isAssignableFrom(geom) || MultiPoint.class.isAssignableFrom(geom)) {
             return POINT_ICON;
         } else if (LineString.class.isAssignableFrom(geom)

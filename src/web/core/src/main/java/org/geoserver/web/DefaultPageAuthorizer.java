@@ -5,7 +5,7 @@
  */
 package org.geoserver.web;
 
-import org.springframework.security.core.Authentication;;
+import org.springframework.security.core.Authentication;
 
 
 public class DefaultPageAuthorizer extends AdminComponentAuthorizer implements ComponentAuthorizer {
@@ -16,7 +16,7 @@ public class DefaultPageAuthorizer extends AdminComponentAuthorizer implements C
 
 
     @Override
-    public boolean isAccessAllowed(Class componentClass, Authentication authentication) {
+    public boolean isAccessAllowed(Class<?> componentClass, Authentication authentication) {
         if (GeoServerSecuredPage.class.isAssignableFrom(componentClass)) {
             return super.isAccessAllowed(componentClass, authentication);
         }

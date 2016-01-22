@@ -5,7 +5,7 @@
  */
 package org.geoserver.web.data.store.shape;
 
-import static org.geotools.data.shapefile.ShapefileDataStoreFactory.*;
+import static org.geotools.data.shapefile.ShapefileDataStoreFactory.URLP;
 
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.IModel;

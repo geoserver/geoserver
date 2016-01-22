@@ -1,4 +1,4 @@
-.. _community_csw_features:
+.. _csw_features:
 
 Catalog Services for the Web (CSW) features
 ===========================================
@@ -14,7 +14,7 @@ The following standard CSW operations are currently supported:
 * GetDomain
 * DescribeRecord
 
-(Starting with GeoServer 2.9.x, a new vendor operation has been added: :ref:`DirectDownload <community_csw_directdownload>`) 
+(Starting with GeoServer 2.9.x, a new vendor operation has been added: :ref:`DirectDownload <csw_directdownload>`) 
 
 The Internal Catalog Store supports filtering on both full x-paths as well as the "Queryables" specified in GetCapabilities.
 

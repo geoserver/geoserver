@@ -34,7 +34,6 @@ import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.resource.PackageResourceReference;
-import org.apache.wicket.request.resource.ResourceReference;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.config.GeoServer;
 import org.geoserver.platform.GeoServerExtensions;
@@ -360,7 +359,7 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
                 continue;
             }
             
-            final Class clazz = component.getComponentClass();
+            final Class<?> clazz = component.getComponentClass();
             if(!component.getAuthorizer().isAccessAllowed(clazz, user))
                 continue;
             result.add(component);

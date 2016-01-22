@@ -12,7 +12,6 @@ This section describes most of the extensions available for GeoServer. Other dat
 
    controlflow/index
    css/index
-   csw/index
    dxf/index   
    excel
    grib/grib
@@ -27,6 +26,5 @@ This section describes most of the extensions available for GeoServer. Other dat
    ogr
    printing/index
    querylayer/index
-   wps/index
    xslt/index
    wcs20eo/index

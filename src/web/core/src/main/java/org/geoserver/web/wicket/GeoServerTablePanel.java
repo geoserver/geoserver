@@ -10,12 +10,12 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
-import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortParam;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.WebMarkupContainer;
@@ -335,6 +335,8 @@ public abstract class GeoServerTablePanel<T> extends Panel {
         sa.setOutputMarkupId(true);
         sa.add(new AjaxFormComponentUpdatingBehavior("click") {
             
+            private static final long serialVersionUID = 1154921156065269691L;
+
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
                 // select all the checkboxes

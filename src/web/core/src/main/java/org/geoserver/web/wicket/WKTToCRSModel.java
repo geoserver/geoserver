@@ -18,16 +18,16 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
  * converting it into a {@link CoordinateReferenceSystem} and back)
  */
 @SuppressWarnings("serial")
-public class WKTToCRSModel implements IModel {
+public class WKTToCRSModel implements IModel<CoordinateReferenceSystem> {
     private static final Logger LOGGER = Logging.getLogger(WKTToCRSModel.class);
-    IModel srsModel; 
+    IModel<String> srsModel; 
     
-    public WKTToCRSModel(IModel srsModel) {
+    public WKTToCRSModel(IModel<String> srsModel) {
         this.srsModel = srsModel;
     }
 
-    public Object getObject() {
-        String wkt = (String) srsModel.getObject();
+    public CoordinateReferenceSystem getObject() {
+        String wkt = srsModel.getObject();
         try {
             return CRS.parseWKT(wkt);
         } catch(Exception e) {
@@ -35,7 +35,7 @@ public class WKTToCRSModel implements IModel {
         }
     }
 
-    public void setObject(Object object) {
+    public void setObject(CoordinateReferenceSystem object) {
         CoordinateReferenceSystem crs = (CoordinateReferenceSystem) object;
         try {
             srsModel.setObject(crs.toString());

@@ -1,7 +1,7 @@
 .. _wfs:
 
-Web Feature Service
-===================
+Web Feature Service (WFS)
+=========================
 
 This section describes the Web Feature Service (WFS).
 

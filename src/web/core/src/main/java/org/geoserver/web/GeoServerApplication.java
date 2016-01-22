@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.logging.Logger;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.wicket.Application;
 import org.apache.wicket.ConverterLocator;
 import org.apache.wicket.DefaultExceptionMapper;
@@ -22,17 +24,15 @@ import org.apache.wicket.RuntimeConfigurationType;
 import org.apache.wicket.Session;
 import org.apache.wicket.core.request.handler.IPageRequestHandler;
 import org.apache.wicket.core.request.handler.PageProvider;
-import org.apache.wicket.core.request.mapper.CryptoMapper;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.protocol.http.servlet.ServletWebRequest;
 import org.apache.wicket.request.IExceptionMapper;
 import org.apache.wicket.request.IRequestHandler;
 import org.apache.wicket.request.IRequestHandlerDelegate;
-import org.apache.wicket.request.IRequestMapper;
 import org.apache.wicket.request.Request;
 import org.apache.wicket.request.Response;
+import org.apache.wicket.request.component.IRequestablePage;
 import org.apache.wicket.request.cycle.AbstractRequestCycleListener;
-import org.apache.wicket.request.cycle.PageRequestHandlerTracker;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.resource.loader.IStringResourceLoader;
 import org.apache.wicket.util.IProvider;
@@ -52,8 +52,6 @@ import org.geotools.util.logging.Logging;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * The GeoServer application, the main entry point for any Wicket application. In particular, this one sets up, among the others, custom resource
@@ -306,7 +304,7 @@ public class GeoServerApplication extends WebApplication implements ApplicationC
         private void processHandler(IRequestHandler handler) {
             if(handler instanceof IPageRequestHandler) {
                 IPageRequestHandler pageHandler = (IPageRequestHandler) handler;
-                Class pageClass = pageHandler.getPageClass();
+                Class<? extends IRequestablePage> pageClass = pageHandler.getPageClass();
                 for (WicketCallback callback : callbacks) {
                     callback.onRequestTargetSet(pageClass);
                 }

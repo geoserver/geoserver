@@ -5,7 +5,7 @@
  */
 package org.geoserver.web.data.store;
 
-import static org.geoserver.catalog.Predicates.*;
+import static org.geoserver.catalog.Predicates.sortBy;
 
 import java.io.Serializable;
 import java.util.Arrays;

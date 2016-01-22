@@ -19,8 +19,11 @@ import org.geoserver.web.CatalogIconFactory;
 import org.geoserver.web.ComponentAuthorizer;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.data.SelectionRemovalLink;
-import org.geoserver.web.wicket.*;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
+import org.geoserver.web.wicket.GeoServerDialog;
+import org.geoserver.web.wicket.GeoServerTablePanel;
+import org.geoserver.web.wicket.Icon;
+import org.geoserver.web.wicket.SimpleBookmarkableLink;
 
 /**
  * Lists available workspaces, links to them, allows for addition and removal

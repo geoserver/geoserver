@@ -14,10 +14,10 @@ import org.apache.wicket.model.IModel;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.web.data.style.StyleDetachableModel;
 import org.geoserver.web.wicket.GeoServerDataProvider;
-import org.geoserver.web.wicket.GeoServerTablePanel;
-import org.geoserver.web.wicket.SimpleAjaxLink;
 import org.geoserver.web.wicket.GeoServerDataProvider.BeanProperty;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
+import org.geoserver.web.wicket.GeoServerTablePanel;
+import org.geoserver.web.wicket.SimpleAjaxLink;
 
 /**
  * Base class for style listing table with clickable style names

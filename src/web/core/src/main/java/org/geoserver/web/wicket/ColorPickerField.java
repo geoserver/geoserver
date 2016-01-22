@@ -22,9 +22,9 @@ import org.apache.wicket.request.resource.PackageResourceReference;
  * @author Andrea Aime - OpenGeo
  *
  */
-@SuppressWarnings("serial")
 public class ColorPickerField extends TextField<Color> {
     
+    private static final long serialVersionUID = -5126346882014020980L;
     private static final PackageResourceReference JSCOLOR_JS = new PackageResourceReference(
             ColorPickerField.class, "js/jscolor/jscolor.js");
 
@@ -40,13 +40,15 @@ public class ColorPickerField extends TextField<Color> {
 
     void init() {
         add(new Behavior() {
+            private static final long serialVersionUID = 4269437302317170665L;
+
             @Override
             public void renderHead(Component component, IHeaderResponse response) {
                 super.renderHead(component, response);
                 response.render(JavaScriptHeaderItem.forReference(JSCOLOR_JS));
             }
         });
-        add(new AttributeAppender("class", new Model("color {required:false}"), ","));
+        add(new AttributeAppender("class", new Model<String>("color {required:false}"), ","));
     }
     
 }

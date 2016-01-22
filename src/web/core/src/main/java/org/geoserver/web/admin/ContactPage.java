@@ -12,7 +12,6 @@ import org.apache.wicket.model.IModel;
 import org.geoserver.config.ContactInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
-import org.geoserver.web.GeoServerHomePage;
 
 public class ContactPage extends ServerAdminPage {
     public ContactPage(){

@@ -20,13 +20,12 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.catalog.util.CloseableIteratorAdapter;
-import org.geoserver.web.data.layer.LayerDetachableModel;
 import org.geoserver.web.data.layer.LayerProvider;
 import org.geoserver.web.wicket.GeoServerDataProvider;
-import org.geoserver.web.wicket.GeoServerTablePanel;
-import org.geoserver.web.wicket.SimpleAjaxLink;
 import org.geoserver.web.wicket.GeoServerDataProvider.BeanProperty;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
+import org.geoserver.web.wicket.GeoServerTablePanel;
+import org.geoserver.web.wicket.SimpleAjaxLink;
 import org.opengis.filter.Filter;
 import org.opengis.filter.sort.SortBy;
 

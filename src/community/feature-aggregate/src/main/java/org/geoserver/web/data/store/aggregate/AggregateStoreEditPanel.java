@@ -60,7 +60,7 @@ public class AggregateStoreEditPanel extends StoreEditPanel {
         final IModel<Map<String, Object>> paramsModel = new PropertyModel<Map<String, Object>>(model, "connectionParameters");
         new MapModel<String>(paramsModel, CONFIGURATION.key).setObject(null);
 
-        add(new TextParamPanel("parallelism", new MapModel<String>(paramsModel, PARALLELISM.key),
+        add(new TextParamPanel<String>("parallelism", new MapModel<String>(paramsModel, PARALLELISM.key),
                 new ParamResourceModel("parallelism", this), true));
 
         add(new CheckBoxParamPanel("tolerateErrors", new MapModel<String>(paramsModel,
@@ -136,7 +136,7 @@ public class AggregateStoreEditPanel extends StoreEditPanel {
                     public CharSequence getBeforeHandler(Component component) {
                         String msg = new ParamResourceModel("confirmTypeRemoval", 
                                 AggregateStoreEditPanel.this, entry.getName()).getString();
-                        return "if(!confirm('" + msg +"')) return false;";
+                        return "if(!confirm('" + msg.replaceAll("'", "\\\\'") +"')) return false;";
                     }
                 };
             }

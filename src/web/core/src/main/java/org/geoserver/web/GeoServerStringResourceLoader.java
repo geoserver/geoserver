@@ -6,7 +6,6 @@
 package org.geoserver.web;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.logging.Logger;
@@ -63,7 +62,7 @@ public class GeoServerStringResourceLoader implements IStringResourceLoader
      *            {@link org.apache.wicket.Session})
      * @return The string resource value or null if resource not found
      */
-    public String loadStringResource(Class clazz, final String key, final Locale locale,
+    public String loadStringResource(Class<?> clazz, final String key, final Locale locale,
         final String style, String variation)
     {
         // Load the properties associated with the path
@@ -135,7 +134,7 @@ public class GeoServerStringResourceLoader implements IStringResourceLoader
         // Walk the component hierarchy down from page to the component
         for (int i = containmentStack.size() - 1; (i >= 0) && (string == null); i--)
         {
-            Class clazz = (Class)containmentStack.get(i);
+            Class<?> clazz = (Class<?>)containmentStack.get(i);
 
             // First, try the fully qualified resource name relative to the
             // component on the path from page down.
@@ -146,7 +145,7 @@ public class GeoServerStringResourceLoader implements IStringResourceLoader
         // the user can be found.
         if (string == null)
         {
-            string = loadStringResource((Class) null, key, locale, style, variation);
+            string = loadStringResource((Class<?>) null, key, locale, style, variation);
         }
         
         return string;
@@ -192,7 +191,7 @@ public class GeoServerStringResourceLoader implements IStringResourceLoader
      *            The class to check
      * @return Whether to stop the search
      */
-    protected boolean isStopResourceSearch(final Class clazz)
+    protected boolean isStopResourceSearch(final Class<?> clazz)
     {
         if (clazz == null || clazz.equals(Object.class) || clazz.equals(Application.class))
         {

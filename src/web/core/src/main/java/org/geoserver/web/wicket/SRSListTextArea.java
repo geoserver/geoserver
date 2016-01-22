@@ -32,16 +32,20 @@ public class SRSListTextArea extends TextArea<List<String>> {
         setType(List.class);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public IConverter getConverter(Class type) {
-        return new SRSListConverter();
+    public <C> IConverter<C> getConverter(Class<C> type) {
+        if (type.isAssignableFrom(List.class)) {
+            return (IConverter<C>) new SRSListConverter();
+        }
+        return super.getConverter(type);
     }
 
-    private static class SRSListConverter implements IConverter {
+    private static class SRSListConverter implements IConverter<List<String>> {
+        private static final long serialVersionUID = 6381056789141754260L;
         static final Pattern COMMA_SEPARATED = Pattern.compile("\\s*,\\s*", Pattern.MULTILINE);
 
-        public String convertToString(Object value, Locale locale) {
-            List<String> srsList = (List<String>) value;
+        public String convertToString(List<String> srsList, Locale locale) {
             if (srsList.isEmpty())
                 return "";
 
@@ -53,18 +57,20 @@ public class SRSListTextArea extends TextArea<List<String>> {
             return sb.toString();
         }
 
-        public Object convertToObject(String value, Locale locale) {
+        public List<String> convertToObject(String value, Locale locale) {
             if (value == null || value.trim().equals(""))
                 return Collections.emptyList();
             return new ArrayList<String>(Arrays.asList(COMMA_SEPARATED.split(value)));
         }
     }
 
-    private static class SRSListValidator implements IValidator {
+    private static class SRSListValidator implements IValidator<List<String>> {
+
+        private static final long serialVersionUID = -6376260926391668771L;
 
         @Override
-        public void validate(IValidatable validatable) {
-            List<String> srsList = (List<String>) validatable.getValue();
+        public void validate(IValidatable<List<String>> validatable) {
+            List<String> srsList = validatable.getValue();
             List<String> invalid = new ArrayList<>();
             srsList.stream().forEach((srs) -> {
                 try {

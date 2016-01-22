@@ -6,7 +6,7 @@ var cfg = {
 }
 
 var map = new OpenLayers.Map("${markupId}", cfg);
-map.addLayer(new OpenLayers.Layer.WMS("GeoServer WMS", "../wms", { 
+map.addLayer(new OpenLayers.Layer.WMS("GeoServer WMS", "${geoserver}/wms", { 
      layers: "${layers}",
      styles: "${styles}",
      format: "image/png",

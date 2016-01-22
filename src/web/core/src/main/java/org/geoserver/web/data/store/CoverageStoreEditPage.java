@@ -96,7 +96,6 @@ public class CoverageStoreEditPage extends AbstractCoverageStorePage {
         }
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     protected final void onSave(final CoverageStoreInfo info, final AjaxRequestTarget requestTarget)
             throws IllegalArgumentException {

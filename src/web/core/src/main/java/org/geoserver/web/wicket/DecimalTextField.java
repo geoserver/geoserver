@@ -63,6 +63,7 @@ public class DecimalTextField extends TextField<Double> {
     }
 
     
+    @SuppressWarnings("unchecked")
     @Override
     public <C> IConverter<C> getConverter(Class<C> type) {
         if( Double.class.isAssignableFrom(type)){

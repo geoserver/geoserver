@@ -41,15 +41,16 @@ public class DataDirectoryConverterLocator implements IConverterLocator {
         this.resourceLoader = resourceLoader;
     }
     
-    public IConverter getConverter(Class type) {
+    @SuppressWarnings("unchecked")
+    public <C> IConverter<C> getConverter(Class<C> type) {
         if ( File.class.isAssignableFrom( type ) ) {
-            return new FileLocator();
+            return (IConverter<C>) new FileLocator();
         }
         if ( URL.class.isAssignableFrom( type ) ) {
-            return new URLLocator();
+            return (IConverter<C>) new URLLocator();
         }
         if ( URI.class.isAssignableFrom( type ) ) {
-            return new URILocator();
+            return (IConverter<C>) new URILocator();
         }
         
         return null;

@@ -226,7 +226,7 @@ public class StatusPage extends ServerAdminPage {
         // we directly access the Mlib Image class, if in the classpath it will tell us if
         // the native extensions are available, if not, an Error will be thrown
         try {
-            Class image = Class.forName("com.sun.medialib.mlib.Image");
+            Class<?> image = Class.forName("com.sun.medialib.mlib.Image");
             return (Boolean) image.getMethod("isAvailable").invoke(null);
         } catch(Throwable e) {
             return false;

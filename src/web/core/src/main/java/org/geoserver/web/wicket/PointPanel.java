@@ -41,7 +41,7 @@ public class PointPanel extends FormComponentPanel<Point> {
     }
 
     public PointPanel(String id, Point p) {
-        this(id, new Model(p));
+        this(id, new Model<Point>(p));
     }
 
     public PointPanel(String id, IModel<Point> model) {
@@ -61,8 +61,8 @@ public class PointPanel extends FormComponentPanel<Point> {
         add(xLabel = new Label("xL", new ResourceModel("x")));
         add(yLabel = new Label("yL", new ResourceModel("y")));
 
-        add( xInput = new DecimalTextField( "x", new PropertyModel(this, "x")) );
-        add( yInput = new DecimalTextField( "y", new PropertyModel(this, "y")) );
+        add( xInput = new DecimalTextField( "x", new PropertyModel<Double>(this, "x")) );
+        add( yInput = new DecimalTextField( "y", new PropertyModel<Double>(this, "y")) );
     }
 
     @Override
@@ -90,7 +90,7 @@ public class PointPanel extends FormComponentPanel<Point> {
     @Override
     public void convertInput() {
         visitChildren(TextField.class, (component, visit) -> {
-            ((TextField) component).processInput();
+            ((TextField<?>) component).processInput();
         });
 
         // update the point model
@@ -107,7 +107,7 @@ public class PointPanel extends FormComponentPanel<Point> {
         // so that the textfields will change too
         updateFields();
         visitChildren(TextField.class, (component, visit) -> {
-            ((TextField) component).clearInput();
+            ((TextField<?>) component).clearInput();
         });
     }
 

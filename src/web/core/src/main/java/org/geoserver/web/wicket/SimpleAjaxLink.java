@@ -31,7 +31,7 @@ public abstract class SimpleAjaxLink<T> extends Panel {
         this(id, model, model);
     }
 
-    public SimpleAjaxLink(String id, IModel<T> linkModel, IModel labelModel) {
+    public SimpleAjaxLink(String id, IModel<T> linkModel, IModel<?> labelModel) {
         super(id, linkModel);
         
         add(link = buildAjaxLink(linkModel));

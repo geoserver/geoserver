@@ -17,7 +17,7 @@ import org.springframework.security.core.Authentication;
 public class AuthenticatedComponentAuthorizer implements ComponentAuthorizer {
 
     @Override
-    public boolean isAccessAllowed(Class componentClass, Authentication authentication) {
+    public boolean isAccessAllowed(Class<?> componentClass, Authentication authentication) {
         if (GeoServerSecurityFilterChainProxy.isSecurityEnabledForCurrentRequest()==false)
             return true;
         return authentication != null && authentication.isAuthenticated();

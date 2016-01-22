@@ -17,7 +17,6 @@ import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.Model;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
@@ -25,6 +24,7 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.ProjectionPolicy;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.web.data.layer.LayerPage;
 import org.geoserver.web.publish.PublishedConfigurationPage;
 import org.geoserver.web.publish.PublishedConfigurationPanel;
 import org.geoserver.web.publish.PublishedEditTabPanel;
@@ -35,7 +35,6 @@ import org.geotools.factory.GeoTools;
 import org.geotools.feature.NameImpl;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.opengis.coverage.grid.GridGeometry;
-import org.geoserver.web.data.layer.LayerPage;
 
 /**
  * Page allowing to configure a layer and its resource.

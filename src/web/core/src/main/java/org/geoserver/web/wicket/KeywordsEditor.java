@@ -7,6 +7,7 @@ package org.geoserver.web.wicket;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -28,11 +29,11 @@ import org.geoserver.catalog.KeywordInfo;
  * Form component to edit a List<String> that makes up the keywords field of
  * various catalog objects.
  */
-@SuppressWarnings("serial")
-public class KeywordsEditor extends FormComponentPanel {
+public class KeywordsEditor extends FormComponentPanel<List<KeywordInfo>> {
 
-    ListMultipleChoice choices;
-    TextField newKeyword;
+    private static final long serialVersionUID = 1L;
+    ListMultipleChoice<KeywordInfo> choices;
+    TextField<String> newKeyword;
     TextField<String> vocabTextField;
     DropDownChoice<String> langChoice;
     
@@ -41,13 +42,15 @@ public class KeywordsEditor extends FormComponentPanel {
      * @param id
      * @param keywords The module should return a non null collection of strings.
      */
-    public KeywordsEditor(String id, final IModel keywords) {
+    public KeywordsEditor(String id, final IModel<List<KeywordInfo>> keywords) {
         super(id, keywords);
 
-        choices = new ListMultipleChoice("keywords", new Model(), 
-            new ArrayList((List) keywords.getObject()), new ChoiceRenderer<Keyword>() {
+        choices = new ListMultipleChoice<KeywordInfo>("keywords", new Model<ArrayList<KeywordInfo>>(), 
+            new ArrayList<KeywordInfo>(keywords.getObject()), new ChoiceRenderer<KeywordInfo>() {
+                private static final long serialVersionUID = 1L;
+
                 @Override
-                public Object getDisplayValue(Keyword kw) {
+                public Object getDisplayValue(KeywordInfo kw) {
                     StringBuffer sb = new StringBuffer(kw.getValue());
                     if (kw.getLanguage() != null) {
                         sb.append(" (").append(kw.getLanguage()).append(")");
@@ -61,14 +64,15 @@ public class KeywordsEditor extends FormComponentPanel {
         choices.setOutputMarkupId(true);
         add(choices);
         add(removeKeywordsButton());
-        newKeyword = new TextField("newKeyword", new Model());
+        newKeyword = new TextField<String>("newKeyword", new Model<String>());
         newKeyword.setOutputMarkupId(true);
         add(newKeyword);
 
-        langChoice = new DropDownChoice<String>("lang", new Model(), 
+        langChoice = new DropDownChoice<String>("lang", new Model<String>(), 
             Arrays.asList(Locale.getISOLanguages()), new ChoiceRenderer<String>() {
+            private static final long serialVersionUID = 1L;
             @Override
-            public Object getDisplayValue(String object) {
+            public String getDisplayValue(String object) {
                 return new Locale(object).getDisplayLanguage();
             }
             @Override
@@ -81,7 +85,7 @@ public class KeywordsEditor extends FormComponentPanel {
         langChoice.setOutputMarkupId(true);
         add(langChoice);
 
-        vocabTextField = new TextField<String>("vocab", new Model());
+        vocabTextField = new TextField<String>("vocab", new Model<String>());
         vocabTextField.setOutputMarkupId(true);
             
         add(vocabTextField);
@@ -91,8 +95,10 @@ public class KeywordsEditor extends FormComponentPanel {
 
     private AjaxButton addKeywordsButton() {
         AjaxButton button = new AjaxButton("addKeyword") {
+            private static final long serialVersionUID = 1L;
+
             @Override
-            public void onSubmit(AjaxRequestTarget target, Form form) {
+            public void onSubmit(AjaxRequestTarget target, Form<?> form) {
                 String value = newKeyword.getInput();
                 String lang = langChoice.getInput();
                 String vocab = vocabTextField.getInput();
@@ -105,7 +111,8 @@ public class KeywordsEditor extends FormComponentPanel {
                     keyword.setVocabulary(vocab);
                 }
                 
-                List choiceList = choices.getChoices();
+                @SuppressWarnings("unchecked")
+                List<KeywordInfo> choiceList = (List<KeywordInfo>) choices.getChoices();
                 choiceList.add(keyword);
                 choices.setChoices(choiceList);
                 
@@ -128,11 +135,14 @@ public class KeywordsEditor extends FormComponentPanel {
     private AjaxButton removeKeywordsButton() {
         AjaxButton button = new AjaxButton("removeKeywords") {
             
+            private static final long serialVersionUID = 1L;
+
             @Override
-            public void onSubmit(AjaxRequestTarget target, Form form) {
-                List selection = (List) choices.getModelObject();
-                List keywords = choices.getChoices();
-                for (Iterator it = selection.iterator(); it.hasNext();) {
+            public void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                Collection<KeywordInfo> selection = choices.getModelObject();
+                @SuppressWarnings("unchecked")
+                List<KeywordInfo> keywords = (List<KeywordInfo>) choices.getChoices();
+                for (Iterator<KeywordInfo> it = selection.iterator(); it.hasNext();) {
                     KeywordInfo selected = (KeywordInfo) it.next();
                     keywords.remove(selected);
                 }
@@ -155,8 +165,9 @@ public class KeywordsEditor extends FormComponentPanel {
         choices.setChoices(getModel());
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public void convertInput() {
-        setConvertedInput(choices.getChoices());
+        setConvertedInput((List<KeywordInfo>) choices.getChoices());
     }
 }

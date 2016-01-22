@@ -18,7 +18,6 @@ import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.ResourcePool;
 import org.geoserver.catalog.StoreInfo;
-import org.geoserver.ows.Response;
 import org.geoserver.web.CatalogIconFactory;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.data.resource.DataStorePanelInfo;
@@ -207,8 +206,8 @@ public class StoreExtensionPoints {
             Collections.sort(fallbacks,
                     new Comparator<DataStorePanelInfo>() {
                         public int compare(DataStorePanelInfo o1, DataStorePanelInfo o2) {
-                            Class c1 = o1.getFactoryClass();
-                            Class c2 = o2.getFactoryClass();
+                            Class<?> c1 = o1.getFactoryClass();
+                            Class<?> c2 = o2.getFactoryClass();
 
                             if (c1.equals(c2)) {
                                 return 0;

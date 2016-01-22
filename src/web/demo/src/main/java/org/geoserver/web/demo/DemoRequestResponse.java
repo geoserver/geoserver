@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -55,7 +55,7 @@ public class DemoRequestResponse extends WebPage {
 
         // override the action property of the form to submit to the TestWfsPost
         // servlet
-        form.add(AttributeModifier.replace("action", "../TestWfsPost"));
+        form.add(AttributeModifier.replace("action", "../../TestWfsPost"));
 
         // Set the same markup is as in the html page so wicket does not
         // generates

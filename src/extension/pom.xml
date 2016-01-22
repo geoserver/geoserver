@@ -327,7 +327,6 @@
       <modules>
         <module>app-schema</module>
         <module>arcsde</module>
-        <module>geosearch</module>
         <module>h2</module>
         <module>sqlserver</module>
         <module>oracle</module>

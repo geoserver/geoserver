@@ -15,7 +15,6 @@ This section describes most of the extensions available for GeoServer. Other dat
    csw/index
    dxf/index   
    excel
-   geosearch
    grib/grib
    imagemap
    importer/index

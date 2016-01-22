@@ -8,19 +8,18 @@ package org.geoserver.security.web.role;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.SortedSet;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxCheckBox;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
-import org.geoserver.security.GeoServerRoleService;
 import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.web.GeoServerApplication;
 
@@ -29,17 +28,21 @@ import org.geoserver.web.GeoServerApplication;
  */
 @SuppressWarnings("serial")
 public class RuleRolesFormComponent extends RolePaletteFormComponent {
+    
+    static final Set<String> ANY_ROLE = Collections.singleton("*");
 
     public RuleRolesFormComponent(String id, IModel<Collection<String>> roleNamesModel) {
         super(id, new RolesModel(roleNamesModel), new RuleRolesModel());
 
-        add(new AjaxCheckBox("anyRole", new Model(false)) {
+        boolean anyRolesEnabled = ANY_ROLE.equals(roleNamesModel.getObject());
+        add(new AjaxCheckBox("anyRole", new Model(anyRolesEnabled)) {
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
                 palette.setEnabled(!getModelObject());
                 target.add(palette);
             }
         });
+        palette.setEnabled(!anyRolesEnabled);
     }
 
     public RuleRolesFormComponent setHasAnyRole(boolean hasAny) {

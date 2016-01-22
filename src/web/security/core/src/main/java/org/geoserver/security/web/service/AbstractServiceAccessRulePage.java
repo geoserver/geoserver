@@ -116,9 +116,9 @@ public abstract class AbstractServiceAccessRulePage extends AbstractSecurityPage
             if (form.findSubmittingButton() != form.get("save")) { 
                 return;
             }
-
+            updateModels();
             String roleInputString = rolesFormComponent.getPalette().getRecorderComponent().getInput();
-            if (roleInputString == null || roleInputString.trim().isEmpty()) {
+            if ((roleInputString == null || roleInputString.trim().isEmpty()) && !rolesFormComponent.isHasAnyRole()) {
                 form.error(new ParamResourceModel("emptyRoles", getPage()).getString());
             }
         }
@@ -138,7 +138,7 @@ public abstract class AbstractServiceAccessRulePage extends AbstractSecurityPage
             boolean flag = true;
             for (Service ows : GeoServerExtensions.extensions(Service.class)) {
                 String service = rule.getService();
-                if (service.equals(ows.getId()) && !result.contains(ows.getOperations()) && flag) {
+                if (ows.getId().equals(service) && !result.contains(ows.getOperations()) && flag) {
                     flag = false;
                     result.addAll(ows.getOperations());
                 }

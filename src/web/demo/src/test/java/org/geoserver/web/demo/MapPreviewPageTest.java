@@ -60,7 +60,7 @@ public class MapPreviewPageTest extends GeoServerWicketTestSupport {
         boolean exists = false;
         for (Iterator it = data.iterator(); it.hasNext(); ) {
             MarkupContainer c = (MarkupContainer) it.next();
-            Label l = (Label) c.get("itemProperties:1:component");
+            Label l = (Label) c.get("itemProperties:2:component");
             String model = l.getDefaultModelObjectAsString();
             if ("sf:foo".equals(model)) {
                 exists = true;

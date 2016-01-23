@@ -65,7 +65,7 @@ public class LayerPageTest extends GeoServerWicketTestSupport {
         assertTrue(workspaces.contains("gs"));
         
         // sort on workspace once (top to bottom)
-        String wsSortPath = "table:listContainer:sortableLinks:1:header:link";
+        String wsSortPath = "table:listContainer:sortableLinks:3:header:link";
         tester.clickLink(wsSortPath, true);
         workspaces = getWorkspaces(table);
         assertEquals("cite", workspaces.get(0));

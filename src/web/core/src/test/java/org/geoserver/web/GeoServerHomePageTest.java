@@ -49,7 +49,7 @@ public class GeoServerHomePageTest extends GeoServerWicketTestSupport {
         GeoServerApplication geoServerApplication = getGeoServerApplication();
         String contactEmail = geoServerApplication.getGeoServer().getGlobal().getSettings().getContact().
                 getContactEmail();
-        assertEquals("geoserver@example.org", contactEmail == null ? "geoserver@example.org" : contactEmail);
+        assertEquals("andrea@geoserver.org", contactEmail == null ? "andrea@geoserver.org" : contactEmail);
     }
 
     public static class MockHomePageContentProvider implements GeoServerHomePageContentProvider {

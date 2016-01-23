@@ -35,7 +35,7 @@ public class SRSListTextArea extends TextArea<List<String>> {
     @SuppressWarnings("unchecked")
     @Override
     public <C> IConverter<C> getConverter(Class<C> type) {
-        if (type.isAssignableFrom(List.class)) {
+        if (List.class.isAssignableFrom(type)) {
             return (IConverter<C>) new SRSListConverter();
         }
         return super.getConverter(type);

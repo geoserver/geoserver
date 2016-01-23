@@ -74,10 +74,9 @@ public class CoverageBandsConfigurationPanel extends ResourceConfigurationPanel 
     static class DoubleInfinityConverter extends DoubleConverter {
         @Override
         public Double convertToObject(String value, Locale locale) {
-           LOGGER.info(value);
-           if (value.equals("-���")) {
+           if (value.equals("-\u221E")) {
                return new Double(Double.NEGATIVE_INFINITY);
-           } else if (value.equals("���")) {
+           } else if (value.equals("\u221E")) {
                return new Double(Double.POSITIVE_INFINITY);
            } else {
                return super.convertToObject(value, locale);

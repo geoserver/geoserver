@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -27,19 +27,26 @@ import org.geoserver.web.wicket.ParamResourceModel;
 /**
  * Allows to edit the root layer of a layer group
  */
-@SuppressWarnings("serial")
 public class RootLayerEntryPanel extends Panel {
 
-    @SuppressWarnings({ "rawtypes" })
-    public RootLayerEntryPanel(String id,WorkspaceInfo workspace, final IModel<LayerGroupInfo> model) {
+	private static final long serialVersionUID = 3471204885852128002L;
+
+	public RootLayerEntryPanel(String id,WorkspaceInfo workspace, final IModel<LayerGroupInfo> model) {
         super(id);
         
         setOutputMarkupId(true);
         
         final TextField<LayerInfo> rootLayerField = new TextField<LayerInfo>("rootLayer") {
+            private static final long serialVersionUID = -8033503312874828019L;
+
+            @SuppressWarnings("unchecked")
             @Override
-            public IConverter getConverter(Class<?> type) { 
-                return new LayerInfoConverter();
+            public <C> IConverter<C> getConverter(Class<C> type) { 
+            	if (LayerInfo.class.isAssignableFrom(type)) {
+            		return (IConverter<C>) new LayerInfoConverter();
+            	} else {
+            		return super.getConverter(type);
+            	}
             } 
         };
         rootLayerField.setOutputMarkupId(true);
@@ -63,10 +70,13 @@ public class RootLayerEntryPanel extends Panel {
         }
         
         DropDownChoice<StyleInfo> styleField = new DropDownChoice<StyleInfo>("rootLayerStyle", styles) {
+            private static final long serialVersionUID = 1190134258726393181L;
+
+            @SuppressWarnings("unchecked")
             @Override
-            public IConverter getConverter(Class<?> type) { 
+            public <C> IConverter<C> getConverter(Class<C> type) { 
                 if (StyleInfo.class.isAssignableFrom(type)) {
-                    return new StyleInfoConverter(); 
+                    return (IConverter<C>) new StyleInfoConverter(); 
                 } else {
                     return super.getConverter(type);
                 }
@@ -77,18 +87,22 @@ public class RootLayerEntryPanel extends Panel {
         
         final ModalWindow popupWindow = new ModalWindow("popup");
         add(popupWindow);
-        add(new AjaxLink("add") {
+        add(new AjaxLink<Object>("add") {
+            private static final long serialVersionUID = 723787950130153037L;
+
             @Override
             public void onClick(AjaxRequestTarget target) {
                 popupWindow.setInitialHeight(375);
                 popupWindow.setInitialWidth(525);
                 popupWindow.setTitle(new ParamResourceModel("chooseLayer", this));
                 popupWindow.setContent(new LayerListPanel(popupWindow.getContentId()) {
+                    private static final long serialVersionUID = -650599334132713975L;
+
                     @Override
                     protected void handleLayer(LayerInfo layer, AjaxRequestTarget target) {
                         popupWindow.close(target);
                         model.getObject().setRootLayer(layer);
-                        target.addComponent(rootLayerField);
+                        target.add(rootLayerField);
                     }
                 });
 

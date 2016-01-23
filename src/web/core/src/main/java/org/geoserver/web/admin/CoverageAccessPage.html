@@ -4,40 +4,40 @@
 <wicket:extend>
 <form wicket:id="form" style="padding-top: 1em;">
   <fieldset>
-     <legend><span><wicket:message key="threadPoolExecutor">Thread Pool Executor Settings</wicket:message></span></legend>
-  <ul>
-    <li>
-      <label for="corePoolSize"><wicket:message key="corePoolSize">ThreadPoolExecutor Core Pool Size</wicket:message></label>
-      <input id="corePoolSize" class="field text" type="text" wicket:id="corePoolSize" />
-    </li>
-    <li>
-      <label for="maxPoolSize"><wicket:message key="maxPoolSize">ThreadPoolExecutor Max Pool Size </wicket:message></label>
-      <input id="maxPoolSize" class="field text" type="text" wicket:id="maxPoolSize" />
-    </li>
-    <li>
-      <label for="keepAliveTime"><wicket:message key="keepAliveTime">ThreadPoolExecutor Keep Alive Time (ms)</wicket:message></label>
-      <input id="keepAliveTime" class="field text" type="text" wicket:id="keepAliveTime" />
-    </li>
-    <li>
+    <legend><span><wicket:message key="imageio">Memory Use</wicket:message></span></legend>
+    <ul>
+      <li>
+        <label for="imageIOCacheThreshold"><wicket:message key="imageIOCacheThreshold">ImageIO cache threshold</wicket:message></label>
+        <input id="imageIOCacheThreshold" class="field text" type="text" wicket:id="imageIOCacheThreshold" />
+      </li>
+    </ul>
+  </fieldset>
+  <fieldset>
+    <legend><span><wicket:message key="threadPoolExecutor">CPU Use</wicket:message></span></legend>
+    <ul>
+      <li>
+         <label for="corePoolSize"><wicket:message key="corePoolSize">ThreadPoolExecutor Core Pool Size</wicket:message></label>
+         <input id="corePoolSize" class="field text" type="number" wicket:id="corePoolSize" />
+      </li>
+      <li>
+        <label for="maxPoolSize"><wicket:message key="maxPoolSize">ThreadPoolExecutor Max Pool Size </wicket:message></label>
+        <input id="maxPoolSize" class="field text" type="number" wicket:id="maxPoolSize" />
+      </li>
+      <li>
+        <label for="keepAliveTime"><wicket:message key="keepAliveTime">ThreadPoolExecutor Keep Alive Time (ms)</wicket:message></label>
+        <input id="keepAliveTime" class="field text" type="number" wicket:id="keepAliveTime" />
+      </li>
+      <li>
         <label><wicket:message key="queueType">Default QueueType</wicket:message></label>
         <select wicket:id="queueType" class="field"/>
-    </li>
-  </ul>
- </fieldset>
- <fieldset>
-  <legend><span><wicket:message key="imageio">ImageIO Settings</wicket:message></span></legend>
-  <ul>
-    <li>
-      <label for="imageIOCacheThreshold"><wicket:message key="imageIOCacheThreshold">ImageIO cache threshold</wicket:message></label>
-      <input id="imageIOCacheThreshold" class="field text" type="text" wicket:id="imageIOCacheThreshold" />
-    </li>
-    <li class="button-group selfclear">
-      <button type="submit" wicket:id="submit"><wicket:message key="submit">submit</wicket:message></button>
-      <button type="submit" wicket:id="cancel"><wicket:message key="cancel">cancel</wicket:message></button>
-    </li>
-  </ul>
- </fieldset>
- </form>
+      </li>
+      <li class="button-group selfclear">
+        <button type="submit" wicket:id="submit"><wicket:message key="submit">submit</wicket:message></button>
+        <button type="submit" wicket:id="cancel"><wicket:message key="cancel">cancel</wicket:message></button>
+      </li>
+   </ul>
+  </fieldset>
+  </form>
 </wicket:extend>
 </body>
 </html>

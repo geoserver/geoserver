@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -80,9 +80,10 @@ public class ProcessStatusProvider extends GeoServerDataProvider<ExecutionStatus
 
     static final List<Property<ExecutionStatus>> PROPERTIES = Arrays.asList(TYPE, NODE, USER,
             PROCESS, CREATED, PHASE, PROGRESS, TASK);
-    private int first;
     
-    private int count;
+    private long first;
+    
+    private long count;
 
     @Override
     protected List<ExecutionStatus> getItems() {
@@ -163,8 +164,8 @@ public class ProcessStatusProvider extends GeoServerDataProvider<ExecutionStatus
         ProcessStatusStore store = tracker.getStore();
         Query query = new Query("status", getFilter());
         if(count>0) {
-            query.setStartIndex(first);
-            query.setMaxFeatures(count);
+            query.setStartIndex((int) first);
+            query.setMaxFeatures((int) count);
         }
         SortParam sort = getSort();
         if(sort!=null) {
@@ -184,7 +185,7 @@ public class ProcessStatusProvider extends GeoServerDataProvider<ExecutionStatus
     }
 
     @Override
-    public Iterator<ExecutionStatus> iterator(int first, int count) {
+    public Iterator<ExecutionStatus> iterator(long first, long count) {
         this.first = first;
         this.count = count;
         Iterator<ExecutionStatus> it = super.iterator(first, count);

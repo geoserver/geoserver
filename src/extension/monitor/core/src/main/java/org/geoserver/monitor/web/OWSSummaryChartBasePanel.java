@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -18,6 +18,7 @@ import org.jfree.data.general.DefaultPieDataset;
 
 public abstract class OWSSummaryChartBasePanel extends Panel {
 
+    private static final long serialVersionUID = 8914945614020025223L;
     protected String owsService;
     
     public OWSSummaryChartBasePanel(String id, Monitor monitor, String owsService) {

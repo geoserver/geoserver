@@ -1,9 +1,10 @@
-/* (c) 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2015 - 2016 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.geofence.web;
 
+import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortParam;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
@@ -16,10 +17,13 @@ import org.geoserver.web.wicket.GeoServerDataProvider;
 
 import java.util.*;
 
-@SuppressWarnings("serial")
 public class GeofenceAdminRulesModel extends GeoServerDataProvider<ShortAdminRule> {
 
+    private static final long serialVersionUID = 2987962533487848796L;
+
     public static class RuleBeanProperty<T> extends BeanProperty<T> {
+        private static final long serialVersionUID = 3626448043686728925L;
+
         public RuleBeanProperty(String key, String propertyPath) {
             super(key, propertyPath);
         }
@@ -29,8 +33,11 @@ public class GeofenceAdminRulesModel extends GeoServerDataProvider<ShortAdminRul
             return null;
         }
 
-        public IModel getModel(IModel itemModel) {
+        @SuppressWarnings({ "unchecked", "rawtypes" })
+		public IModel getModel(IModel<T> itemModel) {
             return new PropertyModel<Object>(itemModel, getPropertyPath()) {
+                private static final long serialVersionUID = -3213885135907358752L;
+
                 @Override
                 public Object getObject() {
                     Object o = super.getObject();
@@ -55,16 +62,16 @@ public class GeofenceAdminRulesModel extends GeoServerDataProvider<ShortAdminRul
 
     public GeofenceAdminRulesModel() {
         rules = adminService().getAll();
-        setSort("priority", true);
+        setSort("priority", SortOrder.ASCENDING);
     }
 
     @Override
-    protected Comparator<ShortAdminRule> getComparator(SortParam sort) {
+    protected Comparator<ShortAdminRule> getComparator(SortParam<?> sort) {
         return null;
     }
 
     @Override
-    public void setSort(SortParam param) {
+    public void setSort(SortParam<Object> param) {
         super.setSort(param);
         Collections.sort(rules, super.getComparator(param));
     }

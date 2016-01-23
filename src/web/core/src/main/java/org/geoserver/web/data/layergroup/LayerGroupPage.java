@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -17,17 +17,18 @@ import org.geoserver.web.ComponentAuthorizer;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.data.SelectionRemovalLink;
 import org.geoserver.web.data.workspace.WorkspaceEditPage;
+import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.SimpleBookmarkableLink;
-import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 
 /**
  * Lists layer groups, allows removal and editing
  */
-@SuppressWarnings("serial")
 public class LayerGroupPage extends GeoServerSecuredPage {
     
+    private static final long serialVersionUID = 5039809655908312633L;
+	
     GeoServerTablePanel<LayerGroupInfo> table;
     GeoServerDialog dialog;
     SelectionRemovalLink removal;
@@ -36,8 +37,10 @@ public class LayerGroupPage extends GeoServerSecuredPage {
         LayerGroupProvider provider = new LayerGroupProvider();
         add(table = new GeoServerTablePanel<LayerGroupInfo>( "table", provider, true ) {
 
+            private static final long serialVersionUID = 714777934301159139L;
+
             @Override
-            protected Component getComponentForProperty(String id, IModel itemModel,
+            protected Component getComponentForProperty(String id, IModel<LayerGroupInfo> itemModel,
                     Property<LayerGroupInfo> property) {
                 
                 if ( property == LayerGroupProvider.NAME ) {
@@ -68,7 +71,7 @@ public class LayerGroupPage extends GeoServerSecuredPage {
                 else {
                     removal.setEnabled(false);
                 }
-                target.addComponent(removal);
+                target.add(removal);
             }  
         });
         table.setOutputMarkupId(true);
@@ -83,7 +86,7 @@ public class LayerGroupPage extends GeoServerSecuredPage {
         Fragment header = new Fragment(HEADER_PANEL, "header", this);
         
         // the add button
-        header.add(new BookmarkablePageLink("addNew", LayerGroupEditPage.class));
+        header.add(new BookmarkablePageLink<LayerGroupEditPage>("addNew", LayerGroupEditPage.class));
         
         // the removal button
         header.add(removal = new SelectionRemovalLink("removeSelected", table, dialog));
@@ -93,24 +96,29 @@ public class LayerGroupPage extends GeoServerSecuredPage {
         return header;
     }
     
-    Component layerGroupLink(String id, IModel itemModel) {
-        IModel groupNameModel = LayerGroupProvider.NAME.getModel(itemModel);
-        IModel wsModel = LayerGroupProvider.WORKSPACE.getModel(itemModel);
+    Component layerGroupLink(String id, IModel<LayerGroupInfo> itemModel) {
+        IModel<?> groupNameModel = LayerGroupProvider.NAME.getModel(itemModel);
+        IModel<?> wsModel = LayerGroupProvider.WORKSPACE.getModel(itemModel);
         
         String groupName = (String) groupNameModel.getObject();
         String wsName = (String) wsModel.getObject();
         
-        return new SimpleBookmarkableLink(id, LayerGroupEditPage.class, groupNameModel, 
-            LayerGroupEditPage.GROUP, groupName, LayerGroupEditPage.WORKSPACE, wsName);
+        if (wsName == null) {
+        	return new SimpleBookmarkableLink(id, LayerGroupEditPage.class, groupNameModel, 
+        			LayerGroupEditPage.GROUP, groupName);
+        } else {
+        	return new SimpleBookmarkableLink(id, LayerGroupEditPage.class, groupNameModel, 
+        			LayerGroupEditPage.GROUP, groupName, LayerGroupEditPage.WORKSPACE, wsName);
+        }
     }
    
 
-    Component workspaceLink(String id, IModel itemModel) {
-        IModel wsNameModel = LayerGroupProvider.WORKSPACE.getModel(itemModel);
+    Component workspaceLink(String id, IModel<LayerGroupInfo> itemModel) {
+        IModel<?> wsNameModel = LayerGroupProvider.WORKSPACE.getModel(itemModel);
         String wsName = (String) wsNameModel.getObject();
         if (wsName != null) {
             return new SimpleBookmarkableLink(
-                id, WorkspaceEditPage.class, new Model(wsName), "name", wsName);
+                id, WorkspaceEditPage.class, new Model<String>(wsName), "name", wsName);
         }
         else {
             return new WebMarkupContainer(id);

@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -193,9 +193,10 @@ public interface GeoServerInfo extends Info {
     void setSchemaBaseUrl(String schemaBaseUrl);
 
     /**
-     * Verbosity flag.
+     * Sets indent level for XML output, causing output to be more verbose.
      * <p>
-     * When set GeoServer will log extra information it normally would not.
+     * Then set to false GeoServer will also take step so to strip out some formating and produce more condensed output.
+     *
      * </p>
      * @uml.property name="verbose"
      * @deprecated use {@link #getSettings()}
@@ -203,7 +204,10 @@ public interface GeoServerInfo extends Info {
     boolean isVerbose();
 
     /**
-     * Sets verbosity flag.
+     * Sets indent level for XML output, causing output to be more verbose.
+     * <p>
+     * Then set to false GeoServer will also take step so to strip out some formating and produce more condensed output.
+
      * @uml.property name="verbose"
      * @deprecated use {@link #getSettings()}
      */

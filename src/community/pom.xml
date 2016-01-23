@@ -38,7 +38,6 @@
         <descriptors>
           <descriptor>release/ext-authkey.xml</descriptor>
           <descriptor>release/ext-ftp.xml</descriptor>
-          <descriptor>release/ext-python.xml</descriptor>
           <descriptor>release/ext-groovy.xml</descriptor>
           <descriptor>release/ext-javascript.xml</descriptor>
           <descriptor>release/ext-spatialite.xml</descriptor>
@@ -139,12 +138,6 @@
       <id>gpx</id>
       <modules>
         <module>gpxppio</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>dbconfig</id>
-      <modules>
-        <module>dbconfig</module>
       </modules>
     </profile>
     <profile>
@@ -274,12 +267,6 @@
       </modules>
     </profile>
     <profile>
-      <id>w3ds</id>
-      <modules>
-        <module>w3ds</module>
-      </modules>
-    </profile>
-    <profile>
       <id>wms-eo</id>
       <activation>
         <property><name>wms-eo</name></property>
@@ -308,12 +295,6 @@
       <id>mbtiles</id>
       <modules>
         <module>mbtiles</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>wfs-notification</id>
-      <modules>
-        <module>wfs-notification</module>
       </modules>
     </profile>
     <profile>

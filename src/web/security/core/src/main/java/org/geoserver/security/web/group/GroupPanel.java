@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -59,7 +59,7 @@ public class GroupPanel extends Panel {
         add(groups = new GeoServerTablePanel<GeoServerUserGroup>("table", provider, true) {
 
             @Override
-            protected Component getComponentForProperty(String id, IModel itemModel,
+            protected Component getComponentForProperty(String id, IModel<GeoServerUserGroup> itemModel,
                     Property<GeoServerUserGroup> property) {
                 if (property == GroupListProvider.GROUPNAME) {
                     return editGroupLink(id, itemModel, property);
@@ -75,9 +75,9 @@ public class GroupPanel extends Panel {
             @Override
             protected void onSelectionUpdate(AjaxRequestTarget target) {
                 removal.setEnabled(groups.getSelection().size() > 0);               
-                target.addComponent(removal);
+                target.add(removal);
                 removalWithRoles.setEnabled(groups.getSelection().size() > 0);               
-                target.addComponent(removalWithRoles);
+                target.add(removalWithRoles);
 
             }
 

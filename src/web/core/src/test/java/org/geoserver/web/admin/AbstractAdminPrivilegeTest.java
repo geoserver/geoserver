@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -14,11 +14,15 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Iterator;
 
-import org.apache.wicket.PageParameters;
-import org.apache.wicket.RequestCycle;
+import org.apache.wicket.core.request.handler.PageProvider;
+import org.apache.wicket.core.request.handler.RenderPageRequestHandler;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
+import org.apache.wicket.request.IRequestHandler;
+import org.apache.wicket.request.Response;
+import org.apache.wicket.request.cycle.RequestCycle;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.LayerGroupInfo;
@@ -27,7 +31,6 @@ import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
-import org.geoserver.security.AccessMode;
 import org.geoserver.security.AdminRequest;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geoserver.web.UnauthorizedPage;
@@ -139,7 +142,7 @@ public abstract class AbstractAdminPrivilegeTest extends GeoServerWicketTestSupp
     public void testWorkspaceEditPage() throws Exception {
         loginAsCite();
 
-        tester.startPage(WorkspaceEditPage.class,new PageParameters("name=cite"));
+        tester.startPage(WorkspaceEditPage.class,new PageParameters().add("name", "cite"));
         tester.assertRenderedPage(WorkspaceEditPage.class);
         tester.assertNoErrorMessage();
     }
@@ -147,7 +150,7 @@ public abstract class AbstractAdminPrivilegeTest extends GeoServerWicketTestSupp
     @Test
     public void testWorkspaceEditPageUnauthorized() throws Exception {
         loginAsCite();
-        tester.startPage(WorkspaceEditPage.class,new PageParameters("name=cdf"));
+        tester.startPage(WorkspaceEditPage.class,new PageParameters().add("name", "cdf"));
         tester.assertErrorMessages(new String[]{"Could not find workspace \"cdf\""});
     }
 
@@ -188,7 +191,7 @@ public abstract class AbstractAdminPrivilegeTest extends GeoServerWicketTestSupp
         AdminRequest.start(new Object());
 
         DropDownChoice<WorkspaceInfo> wsChoice = (DropDownChoice<WorkspaceInfo>) 
-            tester.getComponentFromLastRenderedPage("dataStoreForm:workspacePanel:border:paramValue");
+            tester.getComponentFromLastRenderedPage("dataStoreForm:workspacePanel:border:border_body:paramValue");
 
         assertEquals(1, wsChoice.getChoices().size());
         assertEquals("cite", wsChoice.getChoices().get(0).getName());
@@ -198,7 +201,7 @@ public abstract class AbstractAdminPrivilegeTest extends GeoServerWicketTestSupp
     public void testStoreEditPage() throws Exception {
         loginAsCite();
         
-        tester.startPage(DataAccessEditPage.class, new PageParameters("wsName=cite,storeName=cite"));
+        tester.startPage(DataAccessEditPage.class, new PageParameters().add("wsName", "cite").add("storeName", "cite"));
         tester.assertRenderedPage(DataAccessEditPage.class);
         tester.assertNoErrorMessage();
     }
@@ -207,7 +210,7 @@ public abstract class AbstractAdminPrivilegeTest extends GeoServerWicketTestSupp
     public void testStoreEditPageUnauthorized() throws Exception {
         loginAsCite();
         
-        tester.startPage(DataAccessEditPage.class, new PageParameters("wsName=cdf,storeName=cdf"));
+        tester.startPage(DataAccessEditPage.class, new PageParameters().add("wsName", "cdf").add("storeName", "cdf"));
         tester.assertRenderedPage(StorePage.class);
         tester.assertErrorMessages(new String[]{"Could not find data store \"cdf\" in workspace \"cdf\""});
     }
@@ -281,7 +284,7 @@ public abstract class AbstractAdminPrivilegeTest extends GeoServerWicketTestSupp
     public void testLayerGroupEditPageGlobal() throws Exception {
         loginAsCite();
 
-        tester.startPage(LayerGroupEditPage.class, new PageParameters(LayerGroupEditPage.GROUP+"=cite_global"));
+        tester.startPage(LayerGroupEditPage.class, new PageParameters().add(LayerGroupEditPage.GROUP, "cite_global"));
         tester.assertRenderedPage(LayerGroupEditPage.class);
 
         //assert all form components disabled except for cancel
@@ -295,27 +298,33 @@ public abstract class AbstractAdminPrivilegeTest extends GeoServerWicketTestSupp
         loginAsCite();
 
         PageParameters pp = new PageParameters();
-        pp.put(SQLViewNewPage.WORKSPACE, "cite");
+        pp.add(SQLViewNewPage.WORKSPACE, "cite");
 
         //not a jdbc datastore obviously but we don't need one to simply test that the 
         // page will render with worksapce admin privilieges
-        pp.put(SQLViewNewPage.DATASTORE, "cite");
+        pp.add(SQLViewNewPage.DATASTORE, "cite");
 
         new SQLViewNewPage(pp);
-        assertFalse(UnauthorizedPage.class.equals(RequestCycle.get().getResponsePageClass()));
+        
+        RequestCycle cycle = RequestCycle.get();
+        RenderPageRequestHandler handler = (RenderPageRequestHandler) cycle.getRequestHandlerScheduledAfterCurrent();
+        assertFalse(UnauthorizedPage.class.equals( handler.getPageClass() ));
     }
 
     public void testCreateNewFeatureTypePageAsWorkspaceAdmin() throws Exception {
         loginAsCite();
 
         PageParameters pp = new PageParameters();
-        pp.put(NewFeatureTypePage.WORKSPACE, "cite");
+        pp.add(NewFeatureTypePage.WORKSPACE, "cite");
 
         //not a jdbc datastore obviously but we don't need one to simply test that the 
         // page will render with worksapce admin privilieges
-        pp.put(NewFeatureTypePage.DATASTORE, "cite");
+        pp.add(NewFeatureTypePage.DATASTORE, "cite");
 
         new NewFeatureTypePage(pp);
-        assertFalse(UnauthorizedPage.class.equals(RequestCycle.get().getResponsePageClass()));
+        
+        RequestCycle cycle = RequestCycle.get();
+        RenderPageRequestHandler handler = (RenderPageRequestHandler) cycle.getRequestHandlerScheduledAfterCurrent();
+        assertFalse(UnauthorizedPage.class.equals( handler.getPageClass() ));
     }
 }

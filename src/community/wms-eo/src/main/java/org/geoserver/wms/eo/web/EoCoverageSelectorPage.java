@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -43,9 +43,9 @@ import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.data.store.StoreChoiceRenderer;
 import org.geoserver.web.data.store.StoreNameComparator;
 import org.geoserver.web.wicket.GeoServerDataProvider;
-import org.geoserver.web.wicket.ParamResourceModel;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerTablePanel;
+import org.geoserver.web.wicket.ParamResourceModel;
 import org.geoserver.wms.eo.EoLayerType;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.util.logging.Logging;
@@ -99,11 +99,11 @@ public class EoCoverageSelectorPage extends GeoServerSecuredPage {
                 "coverages", new EoCoverageSelectionProvider(selections)) {
 
             @Override
-            protected Component getComponentForProperty(String id, IModel itemModel,
+            protected Component getComponentForProperty(String id, IModel<EoCoverageSelection> itemModel,
                     Property<EoCoverageSelection> property) {
                 if ("type".equals(property.getName())) {
                     DropDownChoice<EoLayerType> layerTypes = new DropDownChoice<EoLayerType>(
-                            "type", property.getModel(itemModel), EoLayerType.getRasterTypes(true), new EoLayerTypeRenderer());
+                            "type", (IModel<EoLayerType>) property.getModel(itemModel), EoLayerType.getRasterTypes(true), new EoLayerTypeRenderer());
                     Fragment fragment = new Fragment(id, "typeFragment",
                             EoCoverageSelectorPage.this);
                     fragment.add(layerTypes);
@@ -117,13 +117,13 @@ public class EoCoverageSelectorPage extends GeoServerSecuredPage {
         coveragesContainer.add(coverages);
 
         // link the store dropdown to the coverages table
-        stores.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+        stores.add(new AjaxFormComponentUpdatingBehavior("change") {
 
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
                 updateCoveragesList(true);
-                target.addComponent(coveragesContainer);
-                target.addComponent(feedbackPanel);
+                target.add(coveragesContainer);
+                target.add(feedbackPanel);
             }
 
         });

@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -66,7 +66,7 @@ public class WMSAdminPageTest extends GeoServerWicketTestSupport {
         ft.submit("submit");
         List errors = tester.getMessages(FeedbackMessage.ERROR);
         assertEquals(1, errors.size());
-        assertTrue(((ValidationErrorFeedback)errors.get(0)).getMessage().contains("bla"));
+        assertTrue(((ValidationErrorFeedback)errors.get(0)).getMessage().toString().contains("bla"));
         tester.assertRenderedPage(WMSAdminPage.class);
     }
 

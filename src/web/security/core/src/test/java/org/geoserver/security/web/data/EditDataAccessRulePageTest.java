@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -31,7 +31,8 @@ public class EditDataAccessRulePageTest extends AbstractSecurityWicketTestSuppor
     @Before
     public void init() throws Exception {
         initializeForXML();
-        clearServices();
+        clearServices();        
+        DataAccessRuleDAO.get().clear();
     }
 
     @Test
@@ -60,6 +61,7 @@ public class EditDataAccessRulePageTest extends AbstractSecurityWicketTestSuppor
         tester.assertRenderedPage(EditDataAccessRulePage.class);
 
         form=tester.newFormTester("form");        
+        form.setValue("roles:anyRole", true);
         form.submit("save");
         
         tester.assertErrorMessages(new String[0]);

@@ -3,7 +3,7 @@
 JDBCConfig configuration
 ========================
 
-The JDBCConfig module is configured in the file ``jdbcconfig/jdbcconfig.properties`` inside the :ref:`data_directory`.
+The JDBCConfig module is configured in the file ``jdbcconfig/jdbcconfig.properties`` inside the :ref:`datadir`.
 The following properties may be set:
 
 - ``enabled``: Use JDBCConfig.  Turn off to use the data directory for all configuration instead.

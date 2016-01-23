@@ -126,10 +126,7 @@ Test if unlimited key length is available
 
 Start or restart GeoServer and login as administrator. The annotated warning should have disappeared.
 
-.. figure:: ../webadmin/security/images/unlimitedkey.png
-   :align: center
-  
-
+.. figure:: ../security/webadmin/images/unlimitedkey.png
 
 Additionally, the GeoServer log file should contain the following line::
 

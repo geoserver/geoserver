@@ -1,29 +1,28 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.web.demo;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Iterator;
 
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.MarkupContainer;
-import org.apache.wicket.behavior.IBehavior;
-import org.apache.wicket.markup.html.WebMarkupContainer;
+import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.markup.repeater.data.DataView;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.data.test.MockData;
 import org.geoserver.web.GeoServerWicketTestSupport;
+import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.wfs.WFSInfo;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -51,6 +50,8 @@ public class MapPreviewPageTest extends GeoServerWicketTestSupport {
         tester.assertRenderedPage(MapPreviewPage.class);
 
         //move to next page
+        GeoServerTablePanel table = (GeoServerTablePanel) tester.getComponentFromLastRenderedPage("table");
+        System.out.println(table.getDataProvider().size());
         tester.clickLink("table:navigatorBottom:navigator:next", true);
 
         DataView data = 
@@ -59,8 +60,9 @@ public class MapPreviewPageTest extends GeoServerWicketTestSupport {
         boolean exists = false;
         for (Iterator it = data.iterator(); it.hasNext(); ) {
             MarkupContainer c = (MarkupContainer) it.next();
-            Label l = (Label) c.get("itemProperties:1:component");
-            if ("sf:foo".equals(l.getDefaultModelObjectAsString())) {
+            Label l = (Label) c.get("itemProperties:2:component");
+            String model = l.getDefaultModelObjectAsString();
+            if ("sf:foo".equals(model)) {
                 exists = true;
             }
         }
@@ -134,8 +136,8 @@ public class MapPreviewPageTest extends GeoServerWicketTestSupport {
 
         Label optionLabel = (Label) tester.getComponentFromLastRenderedPage("table:listContainer:items:4:itemProperties:4:component:menu:wfs:wfsFormats:3");
         assertTrue(optionLabel.getDefaultModelObjectAsString().equals("GML3.2"));
-        for (Iterator<IBehavior> itBehaviors = optionLabel.getBehaviors().iterator(); itBehaviors.hasNext();) {
-            IBehavior b = (IBehavior)(itBehaviors.next());
+        for (Iterator<? extends Behavior> itBehaviors = optionLabel.getBehaviors().iterator(); itBehaviors.hasNext();) {
+            Behavior b = itBehaviors.next();
             if (b instanceof AttributeModifier) {
                 AttributeModifier am = (AttributeModifier)b;
                 String url = am.toString();
@@ -150,8 +152,8 @@ public class MapPreviewPageTest extends GeoServerWicketTestSupport {
         for (Iterator it = data.iterator(); it.hasNext(); ) {
             MarkupContainer c = (MarkupContainer) it.next();
             MarkupContainer list = (MarkupContainer) c.get("itemProperties:4:component:menu");
-            for (Iterator<IBehavior> itBehaviors = list.getBehaviors().iterator(); itBehaviors.hasNext();) {
-                IBehavior b = (IBehavior)(itBehaviors.next());
+            for (Iterator<? extends Behavior> itBehaviors = list.getBehaviors().iterator(); itBehaviors.hasNext();) {
+                Behavior b = itBehaviors.next();
                 if (b instanceof AttributeModifier) {
                     AttributeModifier am = (AttributeModifier)b;
                     String url = am.toString();

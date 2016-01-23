@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -51,7 +51,7 @@ public abstract class AbstractServiceAccessRulePage extends AbstractSecurityPage
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
                 methodChoice.updateModel();
-                target.addComponent(methodChoice);
+                target.add(methodChoice);
             }
         });
         serviceChoice.setRequired(true);
@@ -116,9 +116,9 @@ public abstract class AbstractServiceAccessRulePage extends AbstractSecurityPage
             if (form.findSubmittingButton() != form.get("save")) { 
                 return;
             }
-
-            rolesFormComponent.updateModel();
-            if (rolesFormComponent.getRolesForStoring().isEmpty()) {
+            updateModels();
+            String roleInputString = rolesFormComponent.getPalette().getRecorderComponent().getInput();
+            if ((roleInputString == null || roleInputString.trim().isEmpty()) && !rolesFormComponent.isHasAnyRole()) {
                 form.error(new ParamResourceModel("emptyRoles", getPage()).getString());
             }
         }
@@ -138,7 +138,7 @@ public abstract class AbstractServiceAccessRulePage extends AbstractSecurityPage
             boolean flag = true;
             for (Service ows : GeoServerExtensions.extensions(Service.class)) {
                 String service = rule.getService();
-                if (service.equals(ows.getId()) && !result.contains(ows.getOperations()) && flag) {
+                if (ows.getId().equals(service) && !result.contains(ows.getOperations()) && flag) {
                     flag = false;
                     result.addAll(ows.getOperations());
                 }

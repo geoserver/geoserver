@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -15,8 +15,9 @@ import org.geoserver.web.GeoServerApplication;
  * TODO: go back using LoadatableDetachableModel once we upgrade to Wicket 1.4, 
  * see http://issues.apache.org/jira/browse/WICKET-27 and http://issues.apache.org/jira/browse/WICKET-2364 
  */
-@SuppressWarnings("serial")
-public class WorkspaceDetachableModel implements IModel {
+public class WorkspaceDetachableModel implements IModel<WorkspaceInfo> {
+    private static final long serialVersionUID = 7805768164289311051L;
+	
     transient WorkspaceInfo workspace;
     String id;
     
@@ -24,7 +25,7 @@ public class WorkspaceDetachableModel implements IModel {
         setObject(workspace);
     }
     
-    public Object getObject() {
+    public WorkspaceInfo getObject() {
         if(workspace == null) {
             workspace = id != null 
                 ? GeoServerApplication.get().getCatalog().getWorkspace( id ) : null;
@@ -32,7 +33,7 @@ public class WorkspaceDetachableModel implements IModel {
         return workspace;
     }
 
-    public void setObject(Object object) {
+    public void setObject(WorkspaceInfo object) {
         this.workspace = (WorkspaceInfo) object;
         this.id = workspace != null ? workspace.getId() : null;
     }

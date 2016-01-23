@@ -1,11 +1,14 @@
 .. _wms:
 
-Web Map Service
-===============
+Web Map Service (WMS)
+=====================
+
+This section describes the Web Map Service (WMS).
 
 .. toctree::
    :maxdepth: 2
 
+   webadmin
    basics
    reference
    time
@@ -14,4 +17,6 @@ Web Map Service
    nonstandardautonamespace
    configuration
    global
-   get_legend_graphic/legendgraphic
+   get_legend_graphic/index
+   decoration
+   googleearth/index

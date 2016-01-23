@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -62,7 +62,7 @@ public class HTTPLayerConfigTest extends GeoServerWicketTestSupport {
         FormTester ft = tester.newFormTester("form");
         ft.setValue("panel:cacheAgeMax", "-20");
         ft.submit();
-        assertEquals(1,  page.getSession().getFeedbackMessages().messages(new ErrorLevelFeedbackMessageFilter(FeedbackMessage.ERROR)).size());
+        tester.assertErrorMessages("The value of 'cacheAgeMax' must be between 0 and 9223372036854775807.");
     }
     
     @Test

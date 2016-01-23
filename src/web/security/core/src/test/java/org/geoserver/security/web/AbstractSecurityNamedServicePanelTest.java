@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -12,12 +12,14 @@ import java.util.List;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.MarkupContainer;
+import org.apache.wicket.ajax.AjaxRequestHandler;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.extensions.ajax.markup.html.tabs.AjaxTabbedPanel;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.DropDownChoice;
+import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
@@ -104,9 +106,9 @@ public abstract class AbstractSecurityNamedServicePanelTest extends AbstractSecu
             basePage.get(basePanelId + ":table:listContainer:items");
     }
     
-    protected int countItmes() {
+    protected long countItems() {
         tester.debugComponentTrees();
-        return  getDataView().getItemCount();
+        return getDataView().getItemCount();
     }
     
     protected SecurityNamedServiceConfig getSecurityNamedServiceConfig(String name) {
@@ -138,48 +140,26 @@ public abstract class AbstractSecurityNamedServicePanelTest extends AbstractSecu
        while (it.hasNext()) {
            Item<SecurityNamedServiceConfig> item = it.next();
            if (name.equals(item.getModelObject().getName()))
-               tester.executeAjaxEvent(item.getPageRelativePath()+":"+CHECKBOX_PATH,"onclick");
+               tester.executeAjaxEvent(item.getPageRelativePath()+":"+CHECKBOX_PATH,"click");
        }       
     }
-
     
     protected void doRemove(String pathForLink, String ... serviceNames) throws Exception {
-//        GeoserverTablePanelTestPage testPage = 
-//         new GeoserverTablePanelTestPage(new ComponentBuilder() {            
-//            private static final long serialVersionUID = 1L;
-//
-//            public Component buildComponent(String id) {
-//                try {
-//                    return basePage;
-//                } catch (Exception e) {
-//                    throw new RuntimeException(e);
-//                }
-//            }
-//        });
-//
-//        tester = new WicketTester();
-//        tester.startPage(basePage);
-//        
         AbstractSecurityPage testPage = (AbstractSecurityPage) tester.getLastRenderedPage();
 
-        //form:0:tabbedPanel:panel:table:listContainer:items:5:selectItemContainer:selectItem
         if (serviceNames.length==0) {
             String selectAllPath = basePanelId + ":table:listContainer:selectAllContainer:selectAll";
-            //String selectAllPath = testPage.getWicketPath() + ":" + relId; 
             tester.assertComponent(selectAllPath, CheckBox.class);
 
-            FormTester ft = tester.newFormTester(GeoserverTablePanelTestPage.FORM);
-            //ft.setValue(testPage.getComponentId()+":"+relId, "true");
-            tester.executeAjaxEvent(selectAllPath, "onclick");
+            FormComponent selectAllPathComponent = (FormComponent) tester.getComponentFromLastRenderedPage(selectAllPath);
+            setFormComponentValue(selectAllPathComponent, "true");
+            tester.executeAjaxEvent(selectAllPath, "click");
         } 
         else {
             DataView<SecurityNamedServiceConfig> dataview = (DataView<SecurityNamedServiceConfig>)
                 testPage.get(basePanelId + ":table:listContainer:items");
-                //testPage.get(testPage.getWicketPath() + ":" + basePanelId + ":table:listContainer:items");
-                //testPage.get("form:0:tabbedPanel:panel:");
             List<String> nameList = Arrays.asList(serviceNames);
-            //FormTester ft = tester.newFormTester(GeoserverTablePanelTestPage.FORM);
-            //print(testPage,true,true);
+
             Iterator<Item<SecurityNamedServiceConfig>> it = getDataView().getItems();
             while (it.hasNext()) {
                 Item<SecurityNamedServiceConfig> item = it.next();
@@ -187,9 +167,12 @@ public abstract class AbstractSecurityNamedServicePanelTest extends AbstractSecu
                     String checkBoxPath=item.getPageRelativePath()+":"+CHECKBOX_PATH;
 
                     tester.assertComponent(checkBoxPath, CheckBox.class);
-                    //ft.setValue(testPage.getComponentId()+":"+checkBoxPath.replace("form:0:", ""), true);
+
+                    FormComponent checkBoxPathComponent = (FormComponent) tester.getComponentFromLastRenderedPage(checkBoxPath);
+                    setFormComponentValue(checkBoxPathComponent, "true");
+
                     testPage.get(checkBoxPath).setDefaultModelObject(true);
-                    //tester.executeAjaxEvent(checkBoxPath, "onclick");
+                    tester.executeAjaxEvent(checkBoxPath, "click");
                 }
             }
         }
@@ -205,7 +188,7 @@ public abstract class AbstractSecurityNamedServicePanelTest extends AbstractSecu
         tester.clickLink(basePanelId + ":remove", true);
         assertTrue(w.isShown());
         
-        ((GeoServerDialog)w.getParent()).submit(new AjaxRequestTarget(tester.getLastRenderedPage()));
+        ((GeoServerDialog)w.getParent()).submit(new AjaxRequestHandler(tester.getLastRenderedPage()));
         //simulateDeleteSubmit();        
         //executeModalWindowCloseButtonCallback(w);
     }
@@ -232,15 +215,17 @@ public abstract class AbstractSecurityNamedServicePanelTest extends AbstractSecu
         ListView list = (ListView) tester.getLastRenderedPage().get("servicesContainer:services");
         int toClick = -1;
         for (int i = 0; i < list.getList().size(); i++) {
-            if (clazz.isInstance(list.getList().get(0))) {
+            if (clazz.isInstance(list.getList().get(i))) {
                 toClick = i;
                 break;
             }
          }
         AjaxLink link = (AjaxLink) ((MarkupContainer)list.get(toClick)).get("link");
-        tester.executeAjaxEvent(link, "onclick");
+        if(link.isEnabled()) {
+            tester.executeAjaxEvent(link, "click");
+        }
 //        formTester.select("config.className", index);     
-//        tester.executeAjaxEvent(formTester.getForm().getPageRelativePath()+":config.className", "onchange");
+//        tester.executeAjaxEvent(formTester.getForm().getPageRelativePath()+":config.className", "change");
     }
 
     protected void clickSave() {        

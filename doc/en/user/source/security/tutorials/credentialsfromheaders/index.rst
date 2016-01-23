@@ -1,4 +1,4 @@
-.. _sec_tutorials_credentialsfromheaders:
+.. _security_tutorials_credentialsfromheaders:
 
 Configuring Apache HTTPD Session Integration
 ============================================

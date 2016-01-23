@@ -61,7 +61,7 @@ The following is the full list of custom response headers.  Whenever GeoWebCache
    * - ``geowebcache-tile-bounds``
      - Bounds of the returned tile in the corresponding coordinate reference system (e.g. ``-180,-90,0,90``)
    * - ``geowebcache-gridset``
-     - Name of the gridset the tile belongs to (see :ref:`webadmin_tilecaching_gridsets` for more information)
+     - Name of the gridset the tile belongs to (see :ref:`gwc_webadmin_gridsets` for more information)
    * - ``geowebcache-crs``
      - Coordinate reference system code of the matching gridset (e.g. ``EPSG:900913``, ``EPSG:4326``, etc).
 

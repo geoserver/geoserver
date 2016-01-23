@@ -131,8 +131,7 @@ The supported format options are:
 * ``kmlrefresh`` (values = greater than ``0`` or ``expires``): Force Network Link reload in refresh mode on interval of seconds.  When expires is specified client will refresh whenever the time has elapsed specified in cache expiration headers.  The caching time may be set in the Layer configuration under Publishing tab setting  HTTP Cache Time. This parameter primarily affects Google Earth rendering and is dependent on being respected by the client.  Using a second interval is a more reliable choice.  
 * ``kmlvisible`` (values = ``true``, ``false``): Indicates whether layers selected will default to enabled or not. Default behavior is enabled. This parameter primarily affects Google Earth rendering.
 * ``advancedProjectionHandling`` (values = ``true``, ``false``): Enable \ Disable advanced projection handling, if it is enabled in the GUI. If it is disabled in the GUI, this option has no effect.
-* ``mapWrapping`` (values = ``true``, ``false``): Enable \ Disable continuous map wrapping, if it is enabled in the GUI. If it is disabled in the GUI, this option has no effect. Continuous map
-wrapping will also be disabled if ``advancedProjectionHandling`` is disabled.
+* ``mapWrapping`` (values = ``true``, ``false``): Enable \ Disable continuous map wrapping, if it is enabled in the GUI. If it is disabled in the GUI, this option has no effect. Continuous map wrapping will also be disabled if ``advancedProjectionHandling`` is disabled.
 
 maxFeatures and startIndex
 --------------------------
@@ -292,5 +291,5 @@ method<n> values can be one of the following:
 
 or empty if the default method has to be used for the related layer. 
 
-The parameter allows to override the global WMS Raster Rendering Options setting (see :ref:`WMS Settings<webadmin_wms>` for more info), on a layer by layer basis. 
+The parameter allows to override the global WMS Raster Rendering Options setting (see :ref:`WMS Settings <services_webadmin_wms>` for more info), on a layer by layer basis. 
 

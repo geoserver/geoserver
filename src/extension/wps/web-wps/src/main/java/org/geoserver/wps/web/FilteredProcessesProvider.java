@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -97,7 +97,9 @@ public class FilteredProcessesProvider extends
             ProcessInfo pai = new ProcessInfoImpl();
             pai.setName(getName());
             pai.setEnabled(getEnabled());
-            pai.getRoles().addAll(getRoles());
+            if (getRoles() != null && getRoles().size() > 0) {
+                pai.getRoles().addAll(getRoles());
+            }
             if (validators != null && validators.size() > 0) {
                 pai.getValidators().putAll(validators);
             }

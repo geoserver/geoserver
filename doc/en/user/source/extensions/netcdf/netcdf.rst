@@ -35,10 +35,11 @@ Configuring a NetCDF data store
      -  
    * - ``URL``
      - 
+
 Notes on supported NetCDFs
 --------------------------
-The NetCDF plugin for GeoServer supports gridded NetCDF files having dimensions following the COARDS convention (custom, Time, Elevation, Lat, Lon).
 
+The NetCDF plugin for GeoServer supports gridded NetCDF files having dimensions following the COARDS convention (custom, Time, Elevation, Lat, Lon).
 
 `ToolsUI <ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.6/toolsUI-4.6.jar>`_ is an useful java tool developed by UCAR which can be useful for a preliminary check on your dataset.
 Opening a sample NetCDF using that tool will show an output like this in the Viewer tab:

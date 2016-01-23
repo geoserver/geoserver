@@ -1,4 +1,4 @@
-/* (c) 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2015 - 2016 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -8,7 +8,7 @@ import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
-import org.apache.wicket.validation.validator.MinimumValidator;
+import org.apache.wicket.validation.validator.RangeValidator;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.config.GeoServer;
@@ -42,7 +42,7 @@ public class CSWLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
                     GeoServerExtensions.bean(GeoServer.class).getService(CSWInfo.class)));
 
         }
-        IModel<DirectDownloadSettings> directDownloadModel = new MetadataMapModel(map,
+        IModel<DirectDownloadSettings> directDownloadModel = new MetadataMapModel<DirectDownloadSettings>(map,
                 DirectDownloadSettings.DIRECTDOWNLOAD_KEY,
                 DirectDownloadSettings.class);
 
@@ -52,7 +52,7 @@ public class CSWLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
 
         maxDownloadSize = new TextField<Long>("maxDownloadSize", new PropertyModel<Long>(
                 directDownloadModel, "maxDownloadSize"));
-        maxDownloadSize.add(new MinimumValidator<Long>(0l));
+        maxDownloadSize.add(RangeValidator.minimum(0l));
         add(maxDownloadSize);
     }
 

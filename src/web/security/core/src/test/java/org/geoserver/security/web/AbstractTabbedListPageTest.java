@@ -1,24 +1,24 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.security.web;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.util.Iterator;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.Page;
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.util.tester.FormTester;
-import org.geoserver.data.test.SystemTestData;
 import org.geoserver.web.ComponentBuilder;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -89,10 +89,10 @@ public abstract class AbstractTabbedListPageTest<T> extends AbstractSecurityWick
         MarkupContainer listView = (MarkupContainer) tester.getLastRenderedPage().get(getItemsPath());
         
         @SuppressWarnings("unchecked")
-        Iterator<MarkupContainer> it = (Iterator<MarkupContainer>) listView.iterator();
+        Iterator<Component> it = (Iterator<Component>) listView.iterator();
         
         while (it.hasNext()) {
-            MarkupContainer m = it.next();
+            MarkupContainer m = (MarkupContainer) it.next();
             Component c = m.get(columnPath);
             @SuppressWarnings("unchecked")
             T modelObject = (T) c.getDefaultModelObject();
@@ -120,34 +120,20 @@ public abstract class AbstractTabbedListPageTest<T> extends AbstractSecurityWick
     
     
     protected void doRemove(String pathForLink) throws Exception {
+        Page testPage = listPage(getServiceName());
         
-        
-        GeoserverTablePanelTestPage testPage = 
-         new GeoserverTablePanelTestPage(new ComponentBuilder() {            
-            private static final long serialVersionUID = 1L;
-
-            public Component buildComponent(String id) {
-                try {
-                    return listPage(getServiceName());
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        });
-        
-        tester.startPage(testPage);
-        
-        String selectAllPath = testPage.getWicketPath()+":"+getTabbedPanelPath()+":panel:table:listContainer:selectAllContainer:selectAll";        
+        String selectAllPath = getTabbedPanelPath()+":panel:table:listContainer:selectAllContainer:selectAll";        
         tester.assertComponent(selectAllPath, CheckBox.class);
+        CheckBox selectAllComponent = (CheckBox) tester.getComponentFromLastRenderedPage(selectAllPath);
         
-        FormTester ft = tester.newFormTester(GeoserverTablePanelTestPage.FORM);
-        ft.setValue(testPage.getComponentId()+":"+getTabbedPanelPath()+":panel:table:listContainer:selectAllContainer:selectAll", "true");
-        tester.executeAjaxEvent(selectAllPath, "onclick");
+        // simulate setting a form value, without an actual form around it
+        setFormComponentValue(selectAllComponent, "true");
+        tester.executeAjaxEvent(selectAllPath, "click");
 
-        String windowPath=testPage.getWicketPath()+":"+getTabbedPanelPath()+ ":panel:dialog:dialog";       
+        String windowPath=getTabbedPanelPath()+ ":panel:dialog:dialog";       
         ModalWindow w  = (ModalWindow) testPage.get(windowPath);                        
         assertNull(w.getTitle()); // window was not opened
-        tester.executeAjaxEvent(pathForLink, "onclick");
+        tester.executeAjaxEvent(pathForLink, "click");
         assertNotNull(w.getTitle()); // window was opened        
         simulateDeleteSubmit();        
         executeModalWindowCloseButtonCallback(w);

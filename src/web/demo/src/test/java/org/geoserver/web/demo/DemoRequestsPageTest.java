@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -96,7 +96,7 @@ public class DemoRequestsPageTest extends GeoServerWicketTestSupport {
         /*
          * There's an AjaxFormSubmitBehavior attached to onchange so force it
          */
-        tester.executeAjaxEvent("demoRequestsForm:demoRequestsList", "onchange");
+        tester.executeAjaxEvent("demoRequestsForm:demoRequestsList", "change");
         
         tester.assertModelValue("demoRequestsForm:demoRequestsList", requestName);
 
@@ -109,7 +109,7 @@ public class DemoRequestsPageTest extends GeoServerWicketTestSupport {
         assertTrue(model.getObject() instanceof DemoRequest);
         DemoRequest req = (DemoRequest) model.getObject();
 
-        assertEquals(demoDir, req.getDemoDir().dir());
+        assertEquals(demoDir.getPath(), req.getDemoDir());
         String requestFileName = req.getRequestFileName();
         String requestUrl = req.getRequestUrl();
         String requestBody = req.getRequestBody();
@@ -132,7 +132,7 @@ public class DemoRequestsPageTest extends GeoServerWicketTestSupport {
         /*
          * There's an AjaxFormSubmitBehavior attached to onchange so force it
          */
-        tester.executeAjaxEvent("demoRequestsForm:demoRequestsList", "onchange");
+        tester.executeAjaxEvent("demoRequestsForm:demoRequestsList", "change");
         
         
         tester.assertModelValue("demoRequestsForm:demoRequestsList", requestName);
@@ -146,7 +146,7 @@ public class DemoRequestsPageTest extends GeoServerWicketTestSupport {
         assertTrue(model.getObject() instanceof DemoRequest);
         DemoRequest req = (DemoRequest) model.getObject();
 
-        assertEquals(demoDir, req.getDemoDir().dir());
+        assertEquals(demoDir.getPath(), req.getDemoDir());
         String requestFileName = req.getRequestFileName();
         String requestUrl = req.getRequestUrl();
         String requestBody = req.getRequestBody();
@@ -169,7 +169,7 @@ public class DemoRequestsPageTest extends GeoServerWicketTestSupport {
         /*
          * There's an AjaxFormSubmitBehavior attached to onchange so force it
          */
-        tester.executeAjaxEvent("demoRequestsForm:demoRequestsList", "onchange");
+        tester.executeAjaxEvent("demoRequestsForm:demoRequestsList", "change");
 
         tester.assertModelValue("demoRequestsForm:demoRequestsList", requestName);
 
@@ -209,7 +209,7 @@ public class DemoRequestsPageTest extends GeoServerWicketTestSupport {
             /*
              * There's an AjaxFormSubmitBehavior attached to onchange so force it
              */
-            tester.executeAjaxEvent("demoRequestsForm:demoRequestsList", "onchange");
+            tester.executeAjaxEvent("demoRequestsForm:demoRequestsList", "change");
             tester.assertModelValue("demoRequestsForm:demoRequestsList", requestName);
     
             final boolean isAjax = true;
@@ -221,7 +221,7 @@ public class DemoRequestsPageTest extends GeoServerWicketTestSupport {
             assertTrue(model.getObject() instanceof DemoRequest);
             DemoRequest req = (DemoRequest) model.getObject();
     
-            assertEquals(demoDir, req.getDemoDir().dir());
+            assertEquals(demoDir.getPath(), req.getDemoDir());
             String requestFileName = req.getRequestFileName();
             String requestUrl = req.getRequestUrl();
     

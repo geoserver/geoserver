@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -42,7 +42,7 @@ public class StylePage extends GeoServerSecuredPage {
         add(table = new GeoServerTablePanel<StyleInfo>("table", provider, true) {
 
             @Override
-            protected Component getComponentForProperty(String id, IModel itemModel,
+            protected Component getComponentForProperty(String id, IModel<StyleInfo> itemModel,
                     Property<StyleInfo> property) {
                 
                 if ( property == StyleProvider.NAME ) {
@@ -57,7 +57,7 @@ public class StylePage extends GeoServerSecuredPage {
             @Override
             protected void onSelectionUpdate(AjaxRequestTarget target) {
                 removal.setEnabled(table.getSelection().size() > 0);
-                target.addComponent(removal);
+                target.add(removal);
             }  
             
         });

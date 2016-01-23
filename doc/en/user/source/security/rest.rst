@@ -1,11 +1,11 @@
-.. _sec_rest:
+.. _security_rest:
 
 REST Security
 =============
 
 In addition to providing the ability to secure OWS style services, GeoServer also supports securing RESTful services.
 
-As with layer and service security, RESTful security configuration is based on ``sec_roles``. The mapping of request URI to role is defined in a file named ``rest.properties``, located in the ``security`` directory of the GeoServer data directory.
+As with layer and service security, RESTful security configuration is based on ``security_roles``. The mapping of request URI to role is defined in a file named ``rest.properties``, located in the ``security`` directory of the GeoServer data directory.
 
 Syntax
 ------
@@ -16,7 +16,7 @@ The following syntax defines access control rules for RESTful services (paramete
 
 The parameters are:
 
-* **uriPattern**—:ref:`ant pattern <sec_rest_ant_patterns>` that matches a set of request URIs
+* **uriPattern**—:ref:`ant pattern <security_rest_ant_patterns>` that matches a set of request URIs
 * **method**—HTTP request method, one of ``GET``, ``POST``, ``PUT``, ``POST``, ``DELETE``, or ``HEAD``
 * **role**—Name of a predefined role. The wildcard '* is used to indicate the permission is applied to all users, including anonymous users.
 
@@ -25,14 +25,14 @@ The parameters are:
    * URI patterns should account for the first component of the rest path, usually ``rest`` or ``api``
    * Method and role lists should **not** contain any spaces
 
-.. _sec_rest_ant_patterns:
+.. _security_rest_ant_patterns:
 
 Ant patterns
 ~~~~~~~~~~~~
 
-Ant patterns are commonly used for pattern matching directory and file paths. The :ref:`examples <examples>` section contains some basic instructions. The Apache ant `user manual <http://ant.apache.org/manual/dirtasks.html>`_ contains more sophisticated use cases.
+Ant patterns are commonly used for pattern matching directory and file paths. The :ref:`examples <security_rest_examples>` section contains some basic instructions. The Apache ant `user manual <http://ant.apache.org/manual/dirtasks.html>`_ contains more sophisticated use cases.
 
-.. _examples:
+.. _security_rest_examples:
 
 Examples
 --------

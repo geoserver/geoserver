@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -16,7 +16,7 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.PropertyModel;
-import org.apache.wicket.validation.validator.NumberValidator;
+import org.apache.wicket.validation.validator.RangeValidator;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataMap;
@@ -47,7 +47,7 @@ public class KMLLayerConfigPanel extends PublishedConfigurationPanel<LayerInfo> 
            );
         TextField<Integer> maxFeatures = new TextField<Integer>("kml.regionateFeatureLimit",
                     new MapModel(metadata, "kml.regionateFeatureLimit"), Integer.class);
-        maxFeatures.add(NumberValidator.minimum(1));
+        maxFeatures.add(RangeValidator.minimum(1));
         add(maxFeatures);
     }
     

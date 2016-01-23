@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2007 - 2013 OpenPlans
  * Copyright 2003 Jayson Falkner (jayson@jspinsider.com)
  * This code is from "Servlets and JavaServer pages; the J2EE Web Tier",
@@ -122,6 +122,10 @@ public class GZIPResponseWrapper extends HttpServletResponseWrapper {
     }
 
     public void flushBuffer() throws IOException {
+        if(stream!=null) {
+            // Try to make sure Content-Encoding header gets set.
+            stream.getStream();
+        }
         getResponse().flushBuffer();
         if (writer!= null){
             writer.flush();

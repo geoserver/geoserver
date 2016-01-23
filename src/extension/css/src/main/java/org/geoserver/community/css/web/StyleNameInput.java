@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -8,7 +8,6 @@ package org.geoserver.community.css.web;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
@@ -22,6 +21,7 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.validation.IValidatable;
 import org.apache.wicket.validation.IValidator;
 import org.apache.wicket.validation.ValidationError;
@@ -29,16 +29,19 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 
 public class StyleNameInput extends Panel {
+    private static final long serialVersionUID = 2132602896817040015L;
     String workspace = null;
     String name = "";
 
     public StyleNameInput(String id, final CssDemoPage demo) {
         super(id);
 
-        final Form form = new Form("layer.name.form");
+        final Form<?> form = new Form<Object>("layer.name.form");
 
         IValidator<String> nameValidator =
             new IValidator<String>() {
+                private static final long serialVersionUID = 1558466250290018192L;
+
                 @Override
                 public void validate(IValidatable<String> text) {
                     final String value = text.getValue();
@@ -58,7 +61,9 @@ public class StyleNameInput extends Panel {
          }
          IChoiceRenderer<String> workspaceRenderer = 
            new ChoiceRenderer<String>() {
-               @Override
+            private static final long serialVersionUID = 2319702138663206028L;
+
+            @Override
                public Object getDisplayValue(String value) {
                    return value == null ? "No workspace" : value;
                }
@@ -75,8 +80,10 @@ public class StyleNameInput extends Panel {
                  new PropertyModel<String>(this, "workspace"),
                  workspaces,
                  workspaceRenderer);
-         workspaceChooser.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+         workspaceChooser.add(new AjaxFormComponentUpdatingBehavior("change") {
             
+            private static final long serialVersionUID = 1645220914767539957L;
+
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
                 LayerInfo layer = demo.getLayer();
@@ -85,18 +92,18 @@ public class StyleNameInput extends Panel {
                 if(selected == null || selected.equals(layerWorkspace.getName())) {
                     warning.setVisible(false);
                 } else {
-                    warning.setDefaultModel(new Model("Warning, the layer " 
+                    warning.setDefaultModel(new Model<String>("Warning, the layer " 
                             + layer.getName() + " is in workspace " + layerWorkspace.getName() 
                             + ",  cannot be used with a style in workspace " + selected));
                     warning.setVisible(true);
                 }
-                target.addComponent(warningContainer);
+                target.add(warningContainer);
             }
         });
          form.add(workspaceChooser);
 
-         TextField nameField =
-             new TextField(
+         TextField<String> nameField =
+             new TextField<String>(
                  "layer.name.field",
                  new PropertyModel<String>(this, "name")
              );
@@ -104,8 +111,10 @@ public class StyleNameInput extends Panel {
 
          AjaxButton submitButton =
              new AjaxButton("submit.button", form) {
-                 @Override
-                 public void onSubmit(AjaxRequestTarget target, Form f) {
+                private static final long serialVersionUID = -2701440643314381309L;
+
+                @Override
+                 public void onSubmit(AjaxRequestTarget target, Form<?> f) {
                      if (demo.catalog().getStyleByName(workspace, name) != null) {
                          throw new RuntimeException(
                              "Trying to create style with same name as existing one!"
@@ -115,11 +124,11 @@ public class StyleNameInput extends Panel {
                      demo.createCssTemplate(workspace, name);
 
                      PageParameters params = new PageParameters();
-                     params.put("layer", demo.getLayer().prefixedName());
+                     params.add("layer", demo.getLayer().prefixedName());
                      if (workspace == null) {
-                         params.put("style", name);
+                         params.add("style", name);
                      } else {
-                         params.put("style", workspace + ":" + name);
+                         params.add("style", workspace + ":" + name);
                      }
                      setResponsePage(CssDemoPage.class, params);
                  }

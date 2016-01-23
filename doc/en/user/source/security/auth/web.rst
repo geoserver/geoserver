@@ -1,4 +1,4 @@
-.. _sec_auth_webadmin:
+.. _security_auth_webadmin:
 
 Authenticating to the Web Admin Interface
 =========================================
@@ -34,7 +34,7 @@ In this example the filter chain is made up of the following filters:
 
 The provider chain is made up of two providers:
 
-* **Root**—The :ref:`sec_root` has a special "super user" provider. As this account is rarely used, this provider is rarely invoked.
+* **Root**—The :ref:`security_root` has a special "super user" provider. As this account is rarely used, this provider is rarely invoked.
 * **Username/password**—Performs username/password authentication against a user database.
 
 To following example requests illustrate how the elements of the various chains work. 

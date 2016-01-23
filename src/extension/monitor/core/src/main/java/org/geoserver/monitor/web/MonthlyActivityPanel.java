@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -13,6 +13,8 @@ import org.jfree.data.time.Day;
 import org.jfree.data.time.RegularTimePeriod;
 
 public class MonthlyActivityPanel extends ActivityChartBasePanel {
+
+    private static final long serialVersionUID = 4759510768065522723L;
 
     public MonthlyActivityPanel(String id, Monitor monitor) {
         super(id, monitor);

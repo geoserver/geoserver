@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -19,7 +19,7 @@ import org.apache.wicket.markup.html.form.validation.FormComponentFeedbackBorder
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.StringResourceModel;
-import org.apache.wicket.validation.validator.NumberValidator;
+import org.apache.wicket.validation.validator.RangeValidator;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.web.publish.PublishedConfigurationPanel;
 import org.geoserver.web.wicket.GeoServerDialog;
@@ -37,12 +37,12 @@ public class WFSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
 
         TextField<Integer> maxFeatures = new TextField<Integer>("perReqFeatureLimit", 
                 new PropertyModel<Integer>(model, "resource.maxFeatures"));
-        maxFeatures.add(NumberValidator.minimum(0));
+        maxFeatures.add(RangeValidator.minimum(0));
         Border mfb = new FormComponentFeedbackBorder("perReqFeaturesBorder");
         mfb.add(maxFeatures);
         add(mfb);
         TextField<Integer> maxDecimals = new TextField<Integer>("maxDecimals", new PropertyModel<Integer>(model, "resource.numDecimals"));
-        maxFeatures.add(NumberValidator.minimum(0));
+        maxFeatures.add(RangeValidator.minimum(0));
         Border mdb = new FormComponentFeedbackBorder("maxDecimalsBorder");
         mdb.add(maxDecimals);
         add(mdb);
@@ -58,18 +58,19 @@ public class WFSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
         final WebMarkupContainer otherSrsContainer = new WebMarkupContainer("otherSRSContainer");
         otherSrsContainer.setOutputMarkupId(true);
         add(otherSrsContainer);
-        final TextArea<List<String>> srsList = new SRSListTextArea("srs", LiveCollectionModel.list(new PropertyModel<String>(model, "resource.responseSRS")));
+        final TextArea<List<String>> srsList = new SRSListTextArea("srs", LiveCollectionModel.list(
+                new PropertyModel<List<String>>(model, "resource.responseSRS")));
         srsList.setOutputMarkupId(true);
         srsList.setVisible(Boolean.TRUE.equals(overrideServiceSRSModel.getObject())); 
         otherSrsContainer.add(srsList);
-        overrideServiceSRS.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+        overrideServiceSRS.add(new AjaxFormComponentUpdatingBehavior("change") {
             private static final long serialVersionUID = -6590810763209350915L;
 
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
                 Boolean visible = overrideServiceSRS.getConvertedInput();
                 srsList.setVisible(visible);
-                target.addComponent(otherSrsContainer);
+                target.add(otherSrsContainer);
             }
         });
         add(new AjaxLink<String>("skipNumberMatchedHelp") {

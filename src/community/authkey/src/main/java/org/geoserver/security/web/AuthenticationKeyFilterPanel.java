@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -23,9 +23,7 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.StringResourceModel;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.AuthenticationKeyFilterConfig;
@@ -74,13 +72,13 @@ public class AuthenticationKeyFilterPanel
         
         AuthenticationKeyMapperChoice authenticationKeyMapperChoice = new AuthenticationKeyMapperChoice("authKeyMapperName");
         
-        authenticationKeyMapperChoice.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+        authenticationKeyMapperChoice.add(new AjaxFormComponentUpdatingBehavior("change") {
             protected void onUpdate(AjaxRequestTarget target) {
                 String newSelection = (String) getFormComponent().getConvertedInput();
                 Map<String, String> parameters = getMapperParameters(newSelection);
                 AuthenticationKeyFilterPanel.this.model.getObject().setMapperParameters(parameters);
                 paramsPanel.updateParameters(newSelection, parameters);
-                target.addComponent(paramsPanel);
+                target.add(paramsPanel);
             }
         });
         
@@ -103,14 +101,14 @@ public class AuthenticationKeyFilterPanel
                     mapper.setSecurityManager(getSecurityManager());
                     mapper.setUserGroupServiceName(config.getUserGroupServiceName());
                     int numberOfNewKeys=mapper.synchronize();
-                    info(new StringResourceModel("synchronizeSuccessful",AuthenticationKeyFilterPanel.this, null,new Object[] {numberOfNewKeys}).getObject());
+                    info(new StringResourceModel("synchronizeSuccessful",AuthenticationKeyFilterPanel.this).setParameters(numberOfNewKeys).getObject());
                 }
                 catch(Exception e) {
                     error(e);                    
                     LOGGER.log(Level.WARNING, "Authentication key  error ", e);
                 }
                 finally {
-                    target.addComponent(getPage().get("feedback"));                    
+                    target.add(getPage().get("feedback"));                    
                 }
 
             }
@@ -136,8 +134,6 @@ public class AuthenticationKeyFilterPanel
                            "AuthenticationKeyFilterPanel." + authMapperName + "." + item.getModel().getObject(), this, null)));
                    item.add(new TextField<String>("parameterField", new MapModel(parameters, item.getModel().getObject())));
                 }        
-                
-                
             });
         }
     

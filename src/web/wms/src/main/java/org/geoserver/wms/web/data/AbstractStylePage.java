@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -28,11 +28,10 @@ import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.Session;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.IAjaxCallDecorator;
-import org.apache.wicket.ajax.calldecorator.AjaxPreprocessingCallDecorator;
+import org.apache.wicket.ajax.attributes.AjaxCallListener;
+import org.apache.wicket.ajax.attributes.AjaxRequestAttributes;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
-import org.apache.wicket.markup.html.DynamicWebResource;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.DropDownChoice;
@@ -45,6 +44,7 @@ import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.request.resource.AbstractResource;
 import org.apache.wicket.util.lang.Bytes;
 import org.geoserver.catalog.ResourcePool;
 import org.geoserver.catalog.StyleGenerator;
@@ -72,11 +72,7 @@ import org.geoserver.wms.web.publish.StyleChoiceRenderer;
 import org.geoserver.wms.web.publish.StyleTypeChoiceRenderer;
 import org.geoserver.wms.web.publish.StyleTypeModel;
 import org.geoserver.wms.web.publish.StylesModel;
-import org.geotools.styling.NamedLayer;
 import org.geotools.styling.Style;
-import org.geotools.styling.StyledLayer;
-import org.geotools.styling.StyledLayerDescriptor;
-import org.geotools.styling.UserLayer;
 import org.xml.sax.SAXParseException;
 
 /**
@@ -174,10 +170,10 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
                 return Styles.handler(object).getName();
             }
         });
-        formatChoice.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+        formatChoice.add(new AjaxFormComponentUpdatingBehavior("change") {
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
-                target.appendJavascript(String.format(
+                target.appendJavaScript(String.format(
                     "if (document.gsEditors) { document.gsEditors.editor.setOption('mode', '%s'); }", styleHandler().getCodeMirrorEditMode()));
             }
         });
@@ -212,13 +208,13 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
         // style generation functionality
         templates = new DropDownChoice("templates", new Model(), new StyleTypeModel(), new StyleTypeChoiceRenderer());
         templates.setOutputMarkupId(true);
-        templates.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+        templates.add(new AjaxFormComponentUpdatingBehavior("change") {
 
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
                 templates.validate();
                 generateLink.setEnabled(templates.getConvertedInput() != null);
-                target.addComponent(generateLink);
+                target.add(generateLink);
             }
         });
         styleForm.add(templates);
@@ -229,13 +225,13 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
         // style copy functionality
         styles = new DropDownChoice("existingStyles", new Model(), new StylesModel(), new StyleChoiceRenderer());
         styles.setOutputMarkupId(true);
-        styles.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+        styles.add(new AjaxFormComponentUpdatingBehavior("change") {
 
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
                 styles.validate();
                 copyLink.setEnabled(styles.getConvertedInput() != null);
-                target.addComponent(copyLink);
+                target.add(copyLink);
             }
         });
         styleForm.add(styles);
@@ -266,18 +262,16 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
         legendContainer = new WebMarkupContainer("legendContainer");
         legendContainer.setOutputMarkupId(true);
         add(legendContainer);
-        this.legendImg = new Image("legendImg");
-        legendContainer.add(this.legendImg);
-        this.legendImg.setVisible(false);
-        this.legendImg.setOutputMarkupId(true);
-        this.legendImg.setImageResource(new DynamicWebResource() {
-
+        this.legendImg = new Image("legendImg", new AbstractResource() {
+            
             @Override
-            protected ResourceState getResourceState() {
-                return new ResourceState() {
-
+            protected ResourceResponse newResourceResponse(Attributes attributes) {
+                ResourceResponse rr = new ResourceResponse();
+                rr.setContentType("image/png");
+                rr.setWriteCallback(new WriteCallback() {
+                    
                     @Override
-                    public byte[] getData() {
+                    public void writeData(Attributes attributes) throws IOException {
                         GeoServerDataDirectory dd = GeoServerExtensions.bean(GeoServerDataDirectory.class, getGeoServerApplication().getApplicationContext());
                         StyleInfo si = new StyleInfoImpl(getCatalog());
                         String styleName = "tmp" + UUID.randomUUID().toString();
@@ -306,13 +300,10 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
 
                                 ByteArrayOutputStream bos = new ByteArrayOutputStream();
 
-                                ImageIO.write(image, "PNG", bos);
-                                return bos.toByteArray();
+                                ImageIO.write(image, "PNG", attributes.getResponse().getOutputStream());
                             }
 
                             error("Failed to build legend preview");
-                            return null;
-
                         } catch (IOException e) {
                             throw new RuntimeException(e);
                         } finally {
@@ -320,19 +311,19 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
                                 styleResource.delete();
                             }
                         }
+                        
                     }
-
-                    @Override
-                    public String getContentType() {
-                        return "image/png";
-                    }
-                };
-            }
-        });
+                });
+                return rr;
+            }});
+        legendContainer.add(this.legendImg);
+        this.legendImg.setVisible(false);
+        this.legendImg.setOutputMarkupId(true);
     }
 
     StyleHandler styleHandler() {
-        return Styles.handler(formatChoice.getModelObject());
+        String modelObject = formatChoice.getModelObject();
+        return Styles.handler(modelObject);
     }
 
     Form uploadForm(final Form form) {
@@ -358,8 +349,8 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
                 StyleInfo s = (StyleInfo) form.getModelObject();
                 if (s.getName() == null || "".equals(s.getName().trim())) {
                     // set it
-                    nameTextField.setModelValue(ResponseUtils.stripExtension(upload
-                            .getClientFileName()));
+                    nameTextField.setModelValue(new String[] {ResponseUtils.stripExtension(upload
+                            .getClientFileName())});
                     nameTextField.modelChanged();
                 }
             }
@@ -385,9 +376,10 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
             }
             
             @Override
-            protected IAjaxCallDecorator getAjaxCallDecorator() {
-                return editor.getSaveDecorator();
-            };
+            protected void updateAjaxAttributes(AjaxRequestAttributes attributes) {
+                super.updateAjaxAttributes(attributes);
+                attributes.getAjaxCallListeners().add(editor.getSaveDecorator());
+            }
         };
     }
     
@@ -401,13 +393,14 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
                 lastStyle = editor.getInput();
 
                 legendImg.setVisible(true);
-                target.addComponent(legendContainer);
+                target.add(legendContainer);
             }
 
             @Override
-            protected IAjaxCallDecorator getAjaxCallDecorator() {
-                return editor.getSaveDecorator();
-            };
+            protected void updateAjaxAttributes(AjaxRequestAttributes attributes) {
+                super.updateAjaxAttributes(attributes);
+                attributes.getAjaxCallListeners().add(editor.getSaveDecorator());
+            }
         };
     }
 
@@ -451,31 +444,31 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
                         // same here, force validation or the field won't be updated
                         editor.reset();
                         setRawStyle(new StringReader(styleGen.generateStyle(styleHandler(), template, nameTextField.getInput())));
-                        target.appendJavascript(String
+                        target.appendJavaScript(String
                                 .format("if (document.gsEditors) { document.gsEditors.editor.setOption('mode', '%s'); }", styleHandler().getCodeMirrorEditMode()));
 
                     } catch (Exception e) {
                         error("Errors occurred generating the style");
                     }
-                    target.addComponent(styleForm);
+                    target.add(styleForm);
                 }
             }
-
+            
             @Override
-            protected IAjaxCallDecorator getAjaxCallDecorator() {
-                return new AjaxPreprocessingCallDecorator(super.getAjaxCallDecorator()) {
-
+            protected void updateAjaxAttributes(AjaxRequestAttributes attributes) {
+                super.updateAjaxAttributes(attributes);
+                attributes.getAjaxCallListeners().add(new AjaxCallListener() {
                     @Override
-                    public CharSequence preDecorateScript(CharSequence script) {
-                        return "var val = event.view.document.gsEditors ? "
-                                + "event.view.document.gsEditors." + editor.getTextAreaMarkupId() + ".getValue() : "
-                                + "event.view.document.getElementById(\"" + editor.getTextAreaMarkupId() + "\").value; "
+                    public CharSequence getPrecondition(Component component) {
+                        return "var val = attrs.event.view.document.gsEditors ? "
+                                + "attrs.event.view.document.gsEditors." + editor.getTextAreaMarkupId() + ".getValue() : "
+                                + "attrs.event.view.document.getElementById(\"" + editor.getTextAreaMarkupId() + "\").value; "
                                 + "if(val != '' &&"
                                 + "!confirm('"
                                 + new ParamResourceModel("confirmOverwrite", AbstractStylePage.this)
-                                        .getString() + "')) return false;" + script;
+                                        .getString() + "')) return false;";
                     }
-                };
+                });
             }
 
             @Override
@@ -501,31 +494,31 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
                         editor.reset();
                         setRawStyle(readFile(style));
                         formatChoice.setModelObject(style.getFormat());
-                        target.appendJavascript(String
+                        target.appendJavaScript(String
                                 .format("if (document.gsEditors) { document.gsEditors.editor.setOption('mode', '%s'); }", styleHandler().getCodeMirrorEditMode()));
 
                     } catch (Exception e) {
                         error("Errors occurred loading the '" + style.getName() + "' style");
                     }
-                    target.addComponent(styleForm);
+                    target.add(styleForm);
                 }
             }
-
+            
             @Override
-            protected IAjaxCallDecorator getAjaxCallDecorator() {
-                return new AjaxPreprocessingCallDecorator(super.getAjaxCallDecorator()) {
-
+            protected void updateAjaxAttributes(AjaxRequestAttributes attributes) {
+                super.updateAjaxAttributes(attributes);
+                attributes.getAjaxCallListeners().add(new AjaxCallListener() {
                     @Override
-                    public CharSequence preDecorateScript(CharSequence script) {
-                        return "var val = event.view.document.gsEditors ? "
-                                + "event.view.document.gsEditors." + editor.getTextAreaMarkupId() + ".getValue() : "
-                                + "event.view.document.getElementById(\"" + editor.getTextAreaMarkupId() + "\").value; "
+                    public CharSequence getPrecondition(Component component) {
+                        return "var val = attrs.event.view.document.gsEditors ? "
+                                + "attrs.event.view.document.gsEditors." + editor.getTextAreaMarkupId() + ".getValue() : "
+                                + "attrs.event.view.document.getElementById(\"" + editor.getTextAreaMarkupId() + "\").value; "
                                 + "if(val != '' &&"
                                 + "!confirm('"
                                 + new ParamResourceModel("confirmOverwrite", AbstractStylePage.this)
-                                        .getString() + "')) return false;" + script;
+                                        .getString() + "')) return false;";
                     }
-                };
+                });
             }
 
             @Override

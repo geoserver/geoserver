@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -21,8 +21,6 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.validation.IValidator;
-import org.geoserver.web.util.MapModel;
-import org.geoserver.web.wicket.GeoServerAjaxFormLink;
 import org.geoserver.web.wicket.browser.GeoServerFileChooser;
 
 /**
@@ -30,10 +28,10 @@ import org.geoserver.web.wicket.browser.GeoServerFileChooser;
  * 
  * @author Andrea Aime - GeoSolutions
  */
-@SuppressWarnings("serial")
 public class FileParamPanel extends Panel implements ParamPanel {
 
-    TextField textField;
+	private static final long serialVersionUID = 2630421795437249103L;
+	TextField<String> textField;
     ModalWindow dialog;
     IModel<? extends FileFilter> fileFilter;
     
@@ -47,8 +45,9 @@ public class FileParamPanel extends Panel implements ParamPanel {
      * @param validators
      *            any extra validator that should be added to the input field, or {@code null}
      */
-    public FileParamPanel(final String id, final IModel paramValue, final IModel paramLabelModel,
-            final boolean required, IValidator... validators) {
+    @SafeVarargs
+	public FileParamPanel(final String id, final IModel<String> paramValue, final IModel<String> paramLabelModel,
+            final boolean required, IValidator<? super String>... validators) {
         // make the value of the text field the model of this panel, for easy value retrieval
         super(id, paramValue);
         
@@ -61,7 +60,7 @@ public class FileParamPanel extends Panel implements ParamPanel {
         add(label);
 
         // the text field, with a decorator for validations
-        textField = new TextField("paramValue", new FileModel(paramValue));
+        textField = new TextField<String>("paramValue", new FileModel(paramValue));
         textField.setRequired(required);
         textField.setOutputMarkupId(true);
         // set the label to be the paramLabelModel otherwise a validation error would look like
@@ -69,41 +68,45 @@ public class FileParamPanel extends Panel implements ParamPanel {
         textField.setLabel(paramLabelModel);
 
         if (validators != null) {
-            for (IValidator validator : validators) {
+            for (IValidator<? super String> validator : validators) {
                 textField.add(validator);
             }
         }
         
         FormComponentFeedbackBorder feedback = new FormComponentFeedbackBorder("border");
         feedback.add(textField);
-        feedback.add(chooserButton((String) paramLabelModel.getObject()));
+        feedback.add(chooserButton(paramLabelModel.getObject()));
         add(feedback);
     }
     
     protected Component chooserButton(final String windowTitle) {
         AjaxSubmitLink link = new AjaxSubmitLink("chooser") {
             
-            @Override
+			private static final long serialVersionUID = -6640131658256808053L;
+
+			@Override
             public boolean getDefaultFormProcessing() {
                 return false;
             }
             
             @Override
-            public void onSubmit(AjaxRequestTarget target, Form form) {
+            public void onSubmit(AjaxRequestTarget target, Form<?> form) {
                 File file = null;
                 textField.processInput();
-                String input = (String) textField.getConvertedInput();
+                String input = textField.getConvertedInput();
                 if (input != null && !input.equals("")) {
                     file = new File(input);
                 }
 
-                GeoServerFileChooser chooser = new GeoServerFileChooser(dialog.getContentId(), new Model(file)) {
+                GeoServerFileChooser chooser = new GeoServerFileChooser(dialog.getContentId(), new Model<File>(file)) {
+                    private static final long serialVersionUID = -7096642192491726498L;
+
                     protected void fileClicked(File file, AjaxRequestTarget target) {
                       // clear the raw input of the field won't show the new model value
                       textField.clearInput();
                       textField.setModelObject(file.getAbsolutePath());
 
-                      target.addComponent(textField);
+                      target.add(textField);
                       dialog.close(target);
                     };
                 };
@@ -122,7 +125,7 @@ public class FileParamPanel extends Panel implements ParamPanel {
      * The text field stored inside the panel. 
      * @return
      */
-    public FormComponent getFormComponent() {
+    public FormComponent<String> getFormComponent() {
         return textField;
     }
     

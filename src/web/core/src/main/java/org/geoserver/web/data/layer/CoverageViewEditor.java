@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2014 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -18,7 +18,6 @@ import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
-import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.apache.wicket.markup.html.form.ListMultipleChoice;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
@@ -26,17 +25,17 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.geoserver.catalog.CoverageView;
 import org.geoserver.catalog.CoverageView.CompositionType;
-import org.geoserver.catalog.CoverageView.InputCoverageBand;
 import org.geoserver.catalog.CoverageView.CoverageBand;
+import org.geoserver.catalog.CoverageView.InputCoverageBand;
 
 /**
  *
  */
 @SuppressWarnings("serial")
-public class CoverageViewEditor extends FormComponentPanel {
+public class CoverageViewEditor extends FormComponentPanel<List<String>> {
 
-    IModel coverages;
-    IModel outputBands;
+    IModel<List<String>> coverages;
+    IModel<List<CoverageBand>> outputBands;
     List<String> availableCoverages; 
     List<CoverageBand> currentOutputBands;
     ListMultipleChoice<String> coveragesChoice;
@@ -44,7 +43,7 @@ public class CoverageViewEditor extends FormComponentPanel {
 
     ListMultipleChoice<CoverageBand> outputBandsChoice;
 
-    TextField definition;
+    TextField<String> definition;
     DropDownChoice<CompositionType> compositionChoice;
 
     /**
@@ -53,7 +52,7 @@ public class CoverageViewEditor extends FormComponentPanel {
      * @param id
      * @param The module should return a non null collection of strings.
      */
-    public CoverageViewEditor(String id, final IModel inputCoverages, final IModel bands,
+    public CoverageViewEditor(String id, final IModel<List<String>> inputCoverages, final IModel<List<CoverageBand>> bands,
             List<String> availableCoverages) {
         super(id, inputCoverages);
         this.coverages = inputCoverages;
@@ -61,7 +60,7 @@ public class CoverageViewEditor extends FormComponentPanel {
 
         this.availableCoverages = availableCoverages;
 
-        coveragesChoice = new ListMultipleChoice<String>("coveragesChoice", new Model(),
+        coveragesChoice = new ListMultipleChoice<String>("coveragesChoice", new Model<>(),
                 new ArrayList<String>((List<String>) coverages.getObject()),
                 new ChoiceRenderer<String>() {
                     @Override
@@ -73,8 +72,8 @@ public class CoverageViewEditor extends FormComponentPanel {
         add(coveragesChoice);
 
         new ArrayList<CoverageBand>();
-        outputBandsChoice = new ListMultipleChoice<CoverageBand>("outputBandsChoice", new Model(),
-                new ArrayList<CoverageBand>((List<CoverageBand>) outputBands.getObject()),
+        outputBandsChoice = new ListMultipleChoice<CoverageBand>("outputBandsChoice", new Model<>(),
+                new ArrayList<CoverageBand>(outputBands.getObject()),
                 new ChoiceRenderer<CoverageBand>() {
                     @Override
                     public Object getDisplayValue(CoverageBand vcb) {
@@ -87,7 +86,7 @@ public class CoverageViewEditor extends FormComponentPanel {
         currentOutputBands = new ArrayList<CoverageBand>(outputBandsChoice.getChoices());
 
         add(addBandButton());
-        definition = new TextField("definition", new Model());
+        definition = new TextField<>("definition", new Model<>());
         definition.setOutputMarkupId(true);
 
         // TODO: make this parametric on the CompositionType choice
@@ -95,11 +94,11 @@ public class CoverageViewEditor extends FormComponentPanel {
         // TODO Uncomment this row when it can be used
         //add(definition);
         compositionType = CompositionType.getDefault();
-        compositionChoice = new DropDownChoice("compositionType", new PropertyModel(this,
+        compositionChoice = new DropDownChoice<>("compositionType", new PropertyModel<>(this,
                 "compositionType"), Arrays.asList(CompositionType.BAND_SELECT), new CompositionTypeRenderer());
 
         compositionChoice.setOutputMarkupId(true);
-        compositionChoice.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+        compositionChoice.add(new AjaxFormComponentUpdatingBehavior("change") {
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -107,7 +106,7 @@ public class CoverageViewEditor extends FormComponentPanel {
                 compositionType = compositionChoice.getModelObject();
                 // TODO Uncomment these rows when they can be used
                 //definition.setEnabled(compositionType != CompositionType.BAND_SELECT);
-                //target.addComponent(definition);
+                //target.add(definition);
             }
         });
 
@@ -121,7 +120,7 @@ public class CoverageViewEditor extends FormComponentPanel {
         AjaxButton button = new AjaxButton("addBand") {
 
             @Override
-            public void onSubmit(AjaxRequestTarget target, Form form) {
+            public void onSubmit(AjaxRequestTarget target, Form<?> form) {
                 List<String> selection = (List<String>) coveragesChoice.getModelObject();
                 compositionType = compositionChoice.getModelObject();
                 List<CoverageBand> bandsList = new ArrayList<CoverageBand>();
@@ -149,8 +148,8 @@ public class CoverageViewEditor extends FormComponentPanel {
                 coveragesChoice.modelChanged();
 
                 // TODO: Reset choice
-                target.addComponent(coveragesChoice);
-                target.addComponent(outputBandsChoice);
+                target.add(coveragesChoice);
+                target.add(outputBandsChoice);
             }
         };
         return button;
@@ -160,7 +159,7 @@ public class CoverageViewEditor extends FormComponentPanel {
         AjaxButton button = new AjaxButton("removeAllBands") {
 
             @Override
-            public void onSubmit(AjaxRequestTarget target, Form form) {
+            public void onSubmit(AjaxRequestTarget target, Form<?> form) {
                 List<CoverageBand> outputBands = (List<CoverageBand>) outputBandsChoice
                         .getModelObject();
                 outputBands.clear();
@@ -169,7 +168,7 @@ public class CoverageViewEditor extends FormComponentPanel {
                 outputBandsChoice.modelChanged();
 
                 // TODO: Reset choice
-                target.addComponent(outputBandsChoice);
+                target.add(outputBandsChoice);
             }
         };
         return button;
@@ -179,7 +178,7 @@ public class CoverageViewEditor extends FormComponentPanel {
         AjaxButton button = new AjaxButton("removeBands") {
 
             @Override
-            public void onSubmit(AjaxRequestTarget target, Form form) {
+            public void onSubmit(AjaxRequestTarget target, Form<?> form) {
 
                 List<CoverageBand> removedBands = (List<CoverageBand>) outputBandsChoice
                         .getModel().getObject();
@@ -192,23 +191,20 @@ public class CoverageViewEditor extends FormComponentPanel {
                 outputBandsChoice.modelChanged();
 
                 // TODO: Reset choice
-                target.addComponent(outputBandsChoice);
+                target.add(outputBandsChoice);
             }
         };
         return button;
     }
 
-    private class CompositionTypeRenderer implements IChoiceRenderer {
-
-        public CompositionTypeRenderer() {
+    private class CompositionTypeRenderer extends ChoiceRenderer<CompositionType> {
+    
+        public Object getDisplayValue(CompositionType object) {
+            return object.displayValue();
         }
 
-        public Object getDisplayValue(Object object) {
-            return ((CompositionType) object).displayValue();
-        }
-
-        public String getIdValue(Object object, int index) {
-            return ((CompositionType) object).toValue();
+        public String getIdValue(CompositionType object, int index) {
+            return object.toValue();
         }
     }
 

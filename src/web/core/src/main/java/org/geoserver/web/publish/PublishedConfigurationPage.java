@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -33,9 +33,7 @@ import org.apache.wicket.model.Model;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.web.ComponentAuthorizer;
 import org.geoserver.web.GeoServerSecuredPage;
-import org.geoserver.web.publish.PublishedConfigurationPanel;
-import org.geoserver.web.publish.PublishedEditTabPanel;
-import org.geoserver.web.publish.PublishedEditTabPanelInfo;
+import org.geoserver.web.data.resource.ResourceConfigurationPanel;
 
 /**
  * Page allowing to configure a layer(group) (and its resource).
@@ -178,7 +176,7 @@ public abstract class PublishedConfigurationPage<T extends PublishedInfo> extend
                             throw new WicketRuntimeException(e);
                             // LOGGER.log(Level.WARNING, "Error creating resource panel", e);
                         }
-                        return tabPanel.setInputEnabled(inputEnabled);
+                        return tabPanel;
                     }
                 });
             }

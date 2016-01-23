@@ -1,7 +1,7 @@
 .. _rest:
 
-REST configuration
-==================
+REST
+====
 
 GeoServer provides a `RESTful <http://en.wikipedia.org/wiki/Representational_state_transfer>`_ interface through which clients can retrieve information about an instance and make configuration changes. Using the REST interface's simple HTTP calls, clients can configure GeoServer without needing to use the :ref:`web_admin`.
 

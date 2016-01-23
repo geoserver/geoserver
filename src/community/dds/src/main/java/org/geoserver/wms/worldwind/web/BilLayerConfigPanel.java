@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -8,11 +8,12 @@ import java.nio.ByteOrder;
 import java.util.Arrays;
 import java.util.logging.Logger;
 
+import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.DropDownChoice;
-import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.model.util.ListModel;
 import org.apache.wicket.resource.loader.IStringResourceLoader;
 import org.geoserver.catalog.LayerInfo;
@@ -62,7 +63,7 @@ public class BilLayerConfigPanel extends PublishedConfigurationPanel<LayerInfo>
     /**
      * Renderer to display a localized string for the Byte Order drop down.
      */
-    private class ByteOrderRenderer implements IChoiceRenderer<String>
+    private class ByteOrderRenderer extends ChoiceRenderer<String>
     {
 
         private static final long serialVersionUID = 9198622236589910965L;
@@ -72,13 +73,9 @@ public class BilLayerConfigPanel extends PublishedConfigurationPanel<LayerInfo>
     	    IStringResourceLoader loader = new GeoServerStringResourceLoader();
     	    if (ByteOrder.LITTLE_ENDIAN.toString().equals(str))
         	{
-        		return loader.loadStringResource(BilLayerConfigPanel.this,
-        		        "BilLayerConfigPanel.byteOrderLittleEndian");
-        	}
-        	else if (ByteOrder.BIG_ENDIAN.toString().equals(str))
-        	{
-                return loader.loadStringResource(BilLayerConfigPanel.this,
-                        "BilLayerConfigPanel.byteOrderBigEndian");
+    	            return new StringResourceModel("byteOrderLittleEndian", BilLayerConfigPanel.this).getObject();
+        	} else if (ByteOrder.BIG_ENDIAN.toString().equals(str)) {
+                    return new StringResourceModel("byteOrderBigEndian", BilLayerConfigPanel.this).getObject();
         	}
 
     	    LOGGER.warning("Unknown byte order: " + str);

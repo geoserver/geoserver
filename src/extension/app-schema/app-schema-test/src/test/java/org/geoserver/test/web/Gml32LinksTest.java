@@ -1,4 +1,4 @@
-/* (c) 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2015 - 2016 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -14,7 +14,7 @@ import org.junit.Test;
 public class Gml32LinksTest extends AbstractMapPreviewPageTest {
 
     public Gml32LinksTest() {
-        super(Arrays.asList("../ows?service=WFS&amp;version=1.1.0&amp;request=GetFeature&amp;typeName=gsml:MappedFeature&amp;outputFormat=gml32&amp;maxFeatures=50"));
+        super(Arrays.asList("http://localhost:80/context/ows?service=WFS&amp;version=1.1.0&amp;request=GetFeature&amp;typeName=gsml:MappedFeature&amp;outputFormat=gml32&amp;maxFeatures=50"));
     }
 
     @Override

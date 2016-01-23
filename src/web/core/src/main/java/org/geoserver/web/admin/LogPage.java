@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -7,26 +7,24 @@ package org.geoserver.web.admin;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.LinkedList;
 import java.util.logging.Level;
 
-import org.apache.wicket.IRequestTarget;
-import org.apache.wicket.PageParameters;
-import org.apache.wicket.RequestCycle;
 import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.NumberTextField;
 import org.apache.wicket.markup.html.form.SubmitLink;
 import org.apache.wicket.markup.html.form.TextArea;
-import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.PropertyModel;
-import org.apache.wicket.protocol.http.WebResponse;
-import org.apache.wicket.util.io.Streams;
-import org.apache.wicket.validation.validator.MinimumValidator;
+import org.apache.wicket.request.cycle.RequestCycle;
+import org.apache.wicket.request.handler.resource.ResourceStreamRequestHandler;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.apache.wicket.request.resource.ContentDisposition;
+import org.apache.wicket.util.resource.FileResourceStream;
+import org.apache.wicket.util.resource.IResourceStream;
+import org.apache.wicket.validation.validator.RangeValidator;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.logging.LoggingUtils;
 import org.geoserver.platform.GeoServerExtensions;
@@ -40,14 +38,18 @@ import org.geoserver.web.GeoServerSecuredPage;
  * @author Andrea Aime - OpenGeo
  */
 public class LogPage extends GeoServerSecuredPage {
+    private static final long serialVersionUID = 4742103132576413211L;
+
     static final String LINES = "lines";
 
     int lines = 1000;
 
     File logFile;
 
+    @SuppressWarnings("serial")
     public LogPage(PageParameters params) {
-        Form form = new Form("form");
+        @SuppressWarnings("rawtypes")
+        Form<?> form = new Form("form");
         add(form);
         
         /**
@@ -78,74 +80,54 @@ public class LogPage extends GeoServerSecuredPage {
         }
 
         try {
-            if (params.getKey(LINES) != null) {
-                if (params.getInt(LINES) > 0) {
-                    lines = params.getInt(LINES);
+            if (params.getNamedKeys().contains(LINES)) {
+                if (params.get(LINES).toInt() > 0) {
+                    lines = params.get(LINES).toInt();
                 }
             }
         } catch (Exception e) {
-            LOGGER.log(Level.WARNING, "Error parsing the lines parameter: ", params.getKey(LINES));
+            LOGGER.log(Level.WARNING, "Error parsing the lines parameter: ", params.get(LINES).toString());
         }
 
         form.add(new SubmitLink("refresh") {
             @Override
             public void onSubmit() {
-                setResponsePage(LogPage.class, new PageParameters(LINES + "="
-                        + String.valueOf(lines)));
+                setResponsePage(LogPage.class, new PageParameters().add(LINES, lines));
             }
         });
 
-        TextField lines = new TextField("lines", new PropertyModel(this, "lines"));
-        lines.add(new MinimumValidator(1));
+        NumberTextField<Integer> lines = new NumberTextField<Integer>("lines", new PropertyModel<Integer>(this, "lines"));
+        lines.add(RangeValidator.minimum(1));
         form.add(lines);
 
-        TextArea logs = new TextArea("logs", new GSLogsModel());
+        TextArea<String> logs = new TextArea<String>("logs", new GSLogsModel());
         logs.setOutputMarkupId(true);
         logs.setMarkupId("logs");
         add(logs);
 
-        add(new Link("download") {
+        add(new Link<Object>("download") {
 
             @Override
             public void onClick() {
-                RequestCycle.get().setRequestTarget(new IRequestTarget() {
-
-                    public void detach(RequestCycle requestCycle) {
+                IResourceStream stream = new FileResourceStream(logFile){
+                    public String getContentType() {
+                        return "text/plain";
                     }
+                };
+                ResourceStreamRequestHandler handler = new ResourceStreamRequestHandler(stream, "geoserver.log");
+                handler.setContentDisposition(ContentDisposition.ATTACHMENT);
 
-                    public void respond(RequestCycle requestCycle) {
-
-                        InputStream is = null;
-                        try {
-                            is = new FileInputStream(logFile);
-
-                            WebResponse r = (WebResponse) requestCycle.getResponse();
-                            r.setAttachmentHeader("geoserver.log");
-                            r.setContentType("text/plain");
-                            Streams.copy(is, r.getOutputStream());
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        } finally {
-                            if(is != null) {
-                                try {
-                                    is.close();
-                                } catch (IOException e) {
-                                }
-                            }
-                        }
-                    }
-
-                });
-
+                RequestCycle.get().scheduleRequestHandlerAfterCurrent(handler);
             }
         });
 
     }
 
-    public class GSLogsModel extends LoadableDetachableModel {
+    public class GSLogsModel extends LoadableDetachableModel<String> {
+        private static final long serialVersionUID = 3364442904754424569L;
 
         @Override
-        protected Object load() {
+        protected String load() {
             BufferedReader br = null;
             try {
                 // load the logs line by line, keep only the last 1000 lines
@@ -164,7 +146,7 @@ public class LogPage extends GeoServerSecuredPage {
                 for (String logLine : lineList) {
                     result.append(logLine).append("\n");
                 }
-                return result;
+                return result.toString();
             } catch (Exception e) {
                 error(e);
                 return e.getMessage();

@@ -1,4 +1,4 @@
-/* (c) 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2015 - 2016 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -67,7 +67,7 @@ public class CaseNormalizerSubformTest extends GeoServerWicketTestSupport {
                 tester.getComponentFromLastRenderedPage("form:panel:locale");
         
         assertThat(kase.getValue(), equalTo("NONE"));
-        assertThat(locale.getValue(), equalTo("-1"));
+        assertThat(locale.getValue(), equalTo(""));
     }
     
     @SuppressWarnings("unchecked")

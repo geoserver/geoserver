@@ -1,9 +1,9 @@
-.. _sec_rolesystem_interaction:
+.. _security_rolesystem_interaction:
 
 Interaction between user/group and role services
 ================================================
 
-The following section describes the interaction between the :ref:`sec_rolesystem_usergroupservices` and the :ref:`sec_rolesystem_roleservices`.
+The following section describes the interaction between the :ref:`security_rolesystem_usergroupservices` and the :ref:`security_rolesystem_roleservices`.
 
 Calculating the roles of a user
 -------------------------------
@@ -33,7 +33,7 @@ On fetching an enabled user from a user/group service, the roles(s) assigned to 
 Authentication of user credentials
 ----------------------------------
 
-A user/group service is primarily used during authentication. An authentication provider in the :ref:`sec_auth_chain` may use a user/group service to authenticate user credentials. 
+A user/group service is primarily used during authentication. An authentication provider in the :ref:`security_auth_chain` may use a user/group service to authenticate user credentials. 
 
 .. figure:: images/usergrouprole2.png
    :align: center
@@ -50,6 +50,6 @@ The following diagram illustrates the default user/group service, role service, 
 
    *Default GeoServer security configuration*
 
-Two authentication providers are configured—the *Root* provider and the *Username/password* provider. The *Root* provider authenticates for the GeoServer :ref:`sec_root` and does not use a user/group service. The *Username/password* provider is the default provider and relays username and password credentials to a user/group service.
+Two authentication providers are configured—the *Root* provider and the *Username/password* provider. The *Root* provider authenticates for the GeoServer :ref:`security_root` and does not use a user/group service. The *Username/password* provider is the default provider and relays username and password credentials to a user/group service.
 
 A single user/group service, which persist the user database as XML, is present. The database contains a single user named ``admin`` and no groups. Similarly, the role server persists the role database as XML. By default, this contains a single role named ``ADMIN``, which is associated with the ``admin`` user. The ``ADMIN`` role is mapped to the ``ROLE_ADMINISTRATOR`` role and as a result, the ``admin`` user is associated with system administrator role during role calculation.

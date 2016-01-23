@@ -1,12 +1,12 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.web;
 
-import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.security.ResourceAccessManager;
@@ -25,7 +25,7 @@ public class WorkspaceAdminComponentAuthorizer extends AdminComponentAuthorizer 
     private final static Logger LOGGER = Logging.getLogger(WorkspaceAdminComponentAuthorizer.class);
 
     @Override
-    public boolean isAccessAllowed(Class componentClass,
+    public boolean isAccessAllowed(Class<?> componentClass,
             Authentication authentication) {
 
         //if full admin grant access

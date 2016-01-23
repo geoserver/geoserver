@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -15,7 +15,6 @@ import java.util.Map;
 
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Page;
-import org.apache.wicket.ResourceReference;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.SubmitLink;
@@ -24,6 +23,7 @@ import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
+import org.apache.wicket.request.resource.PackageResourceReference;
 import org.geoserver.web.CatalogIconFactory;
 import org.geoserver.web.ComponentAuthorizer;
 import org.geoserver.web.GeoServerApplication;
@@ -31,6 +31,7 @@ import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geotools.coverage.grid.io.GridFormatFinder;
 import org.geotools.data.DataAccessFactory;
+import org.h2.store.DataPage;
 import org.opengis.coverage.grid.Format;
 import org.vfny.geoserver.util.DataStoreUtils;
 
@@ -59,7 +60,6 @@ public class NewDataPage extends GeoServerSecuredPage {
      * @param workspaceId
      *            the id of the workspace to attach the new resource store to.
      */
-    @SuppressWarnings("serial")
     public NewDataPage() {
 
         final boolean thereAreWorkspaces = !getCatalog().getWorkspaces().isEmpty();
@@ -97,7 +97,7 @@ public class NewDataPage extends GeoServerSecuredPage {
                 item.add(new Label("resourceDescription", description));
                 Image icon = new Image("storeIcon", icons.getStoreIcon(factory.getClass()));
                 // TODO: icons could provide a description too to be used in alt=...
-                icon.add(new AttributeModifier("alt", true, new Model("")));
+                icon.add(new AttributeModifier("alt", new Model("")));
                 item.add(icon);
             }
         };
@@ -126,7 +126,7 @@ public class NewDataPage extends GeoServerSecuredPage {
                 item.add(new Label("resourceDescription", description));
                 Image icon = new Image("storeIcon", icons.getStoreIcon(format.getClass()));
                 // TODO: icons could provide a description too to be used in alt=...
-                icon.add(new AttributeModifier("alt", true, new Model("")));
+                icon.add(new AttributeModifier("alt", new Model("")));
                 item.add(icon);
             }
         };
@@ -150,7 +150,7 @@ public class NewDataPage extends GeoServerSecuredPage {
                 item.add(new Label("resourceDescription", new ParamResourceModel("other." + store.key + ".description", NewDataPage.this)));
                 Image icon = new Image("storeIcon", store.icon);
                 // TODO: icons could provide a description too to be used in alt=...
-                icon.add(new AttributeModifier("alt", true, new Model("")));
+                icon.add(new AttributeModifier("alt", new Model("")));
                 item.add(icon);
             }
         };
@@ -200,7 +200,7 @@ public class NewDataPage extends GeoServerSecuredPage {
     
     private List<OtherStoreDescription> getOtherStores() {
         List<OtherStoreDescription> stores = new ArrayList<OtherStoreDescription>();
-        ResourceReference wmsIcon = new ResourceReference(GeoServerApplication.class, "img/icons/geosilk/server_map.png");
+        PackageResourceReference wmsIcon = new PackageResourceReference(GeoServerApplication.class, "img/icons/geosilk/server_map.png");
         stores.add(new OtherStoreDescription("wms", wmsIcon, WMSStoreNewPage.class));
         
         return stores;
@@ -217,11 +217,11 @@ public class NewDataPage extends GeoServerSecuredPage {
     static class OtherStoreDescription implements Serializable {
         String key;
 
-        ResourceReference icon;
+        PackageResourceReference icon;
 
         Class<? extends Page> configurationPage;
 
-        public OtherStoreDescription(String key, ResourceReference icon,  Class<? extends Page> configurationPage) {
+        public OtherStoreDescription(String key, PackageResourceReference icon,  Class<? extends Page> configurationPage) {
             super();
             this.key = key;
             this.icon = icon;

@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2014 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -13,9 +13,10 @@ import java.util.List;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxCheckBox;
-import org.apache.wicket.behavior.IBehavior;
+import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.extensions.markup.html.form.palette.Palette;
 import org.apache.wicket.extensions.markup.html.form.palette.component.Recorder;
+import org.apache.wicket.extensions.markup.html.form.palette.theme.DefaultTheme;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
@@ -35,7 +36,7 @@ public class MimeTypesFormComponent extends FormComponentPanel {
     /**
      * list of behaviors to add, staged before the palette recorder component is created
      */
-    List<IBehavior> toAdd = new ArrayList<IBehavior>();
+    List<Behavior> toAdd = new ArrayList<Behavior>();
 
     public MimeTypesFormComponent(String id, IModel<List<String>> model,
             IModel<Collection<String>> choicesModel,final boolean isMimeTypeCheckingEnabled) {
@@ -46,7 +47,7 @@ public class MimeTypesFormComponent extends FormComponentPanel {
             protected void onUpdate(AjaxRequestTarget target) {
                 //palette.setEnabled(getModelObject());
                 toggleVisibility(getModelObject());
-                target.addComponent(palette);
+                target.add(palette);
             }
         });
 
@@ -61,7 +62,7 @@ public class MimeTypesFormComponent extends FormComponentPanel {
                 Recorder<String> rec = super.newRecorderComponent();
 
                 // add any behaviors that need to be added
-                rec.add(toAdd.toArray(new IBehavior[toAdd.size()]));
+                rec.add(toAdd.toArray(new Behavior[toAdd.size()]));
                 toAdd.clear();
                 return rec;
             }
@@ -79,6 +80,7 @@ public class MimeTypesFormComponent extends FormComponentPanel {
                 return new Label(componentId, new ResourceModel(getAvaliableHeaderPropertyKey()));
             }
         });
+        palette.add(new DefaultTheme());
         palette.setOutputMarkupPlaceholderTag(true);
         //palette.setEnabled(isMimeTypeCheckingEnabled);
         toggleVisibility(isMimeTypeCheckingEnabled);
@@ -118,7 +120,7 @@ public class MimeTypesFormComponent extends FormComponentPanel {
     }
 
     @Override
-    public Component add(IBehavior... behaviors) {
+    public Component add(Behavior... behaviors) {
         if (palette.getRecorderComponent() == null) {
             // stage for them for later
             toAdd.addAll(Arrays.asList(behaviors));

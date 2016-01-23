@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -12,6 +12,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.Arrays;
 
 import org.apache.wicket.Component;
@@ -34,7 +35,6 @@ import org.geoserver.web.FormTestPage;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geowebcache.layer.TileLayer;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class LayerCacheOptionsTabPanelTest extends GeoServerWicketTestSupport {
@@ -191,7 +191,7 @@ public class LayerCacheOptionsTabPanelTest extends GeoServerWicketTestSupport {
         FormTester formTester = tester.newFormTester("form");
         formTester.setValue("panel:tileLayerEditor:createTileLayer", false);
 
-        tester.executeAjaxEvent("form:panel:tileLayerEditor:createTileLayer", "onchange");
+        tester.executeAjaxEvent("form:panel:tileLayerEditor:createTileLayer", "change");
         
 
         tester.isInvisible("form:panel:tileLayerEditor:container:configs");
@@ -270,16 +270,16 @@ public class LayerCacheOptionsTabPanelTest extends GeoServerWicketTestSupport {
         tester.startPage(page);
         // Ensure the GeoServerTileLayerEditor is rendered
         tester.assertComponent("form:panel:tileLayerEditor", GeoServerTileLayerEditor.class);
-        // Create new form tester for the final submit
-        FormTester form = tester.newFormTester("form");
         // Click on the addFilter button withou setting any filter
         tester.executeAjaxEvent(
                 "form:panel:tileLayerEditor:container:configs:parameterFilters:addFilter",
-                "onclick");
+                "click");
         // Ensure that the Component is rendered again
         tester.assertComponent("form:panel:tileLayerEditor", GeoServerTileLayerEditor.class);
         // Ensure that an Error message has been thrown
-        tester.assertErrorMessages(new String[] { "Filter should not be empty" });
+        tester.assertErrorMessages((Serializable[]) new String[] { "Filter should not be empty" });
+        // Create new form tester for the final submit
+        FormTester form = tester.newFormTester("form");
         // Save the changes
         form.submit();
         // Check no exception has been thrown

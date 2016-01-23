@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -15,7 +15,7 @@ import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponent;
-import org.apache.wicket.markup.html.form.IChoiceRenderer;
+import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.SubmitLink;
 import org.apache.wicket.markup.html.form.validation.AbstractFormValidator;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
@@ -51,13 +51,13 @@ public abstract class AbstractDataAccessRulePage extends AbstractSecurityPage {
         form.add (new EmptyRolesValidator());
         form.add(workspaceChoice = new DropDownChoice<String>("workspace", getWorkspaceNames()));
         workspaceChoice.setRequired(true);
-        workspaceChoice.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+        workspaceChoice.add(new AjaxFormComponentUpdatingBehavior("change") {
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
                 layerChoice.setChoices(new Model<ArrayList<String>>(
                     getLayerNames(workspaceChoice.getConvertedInput())));
                 layerChoice.modelChanged();
-                target.addComponent(layerChoice);
+                target.add(layerChoice);
             }
         });
 
@@ -125,7 +125,7 @@ public abstract class AbstractDataAccessRulePage extends AbstractSecurityPage {
     /**
      * Makes sure we see translated text, by the raw name is used for the model
      */
-    class AccessModeRenderer implements IChoiceRenderer<AccessMode> {
+    class AccessModeRenderer extends ChoiceRenderer<AccessMode> {
 
         public Object getDisplayValue(AccessMode object) {
             return (String) new ParamResourceModel( object.name(), getPage())
@@ -154,7 +154,8 @@ public abstract class AbstractDataAccessRulePage extends AbstractSecurityPage {
             }
 
             updateModels();
-            if (rolesFormComponent.getRolesNamesForStoring().isEmpty()) {
+            String roleInputString = rolesFormComponent.getPalette().getRecorderComponent().getInput();
+            if ((roleInputString == null || roleInputString.trim().isEmpty()) && !rolesFormComponent.isHasAnyRole()) {
                 form.error(new ParamResourceModel("emptyRoles", getPage()).getString());
             }
         }

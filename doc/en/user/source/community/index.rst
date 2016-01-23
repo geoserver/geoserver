@@ -1,7 +1,7 @@
 .. _community:
 
-Community
-=========
+Community modules
+=================
 
 This section is devoted to GeoServer community modules. Community modules are considered "pending" in that they are not
 officially part of the GeoServer releases. They are however built along with the

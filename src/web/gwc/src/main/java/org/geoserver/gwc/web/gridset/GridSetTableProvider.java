@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -14,7 +14,6 @@ import org.apache.wicket.model.IModel;
 import org.geoserver.gwc.GWC;
 import org.geoserver.web.wicket.GeoServerDataProvider;
 import org.geowebcache.diskquota.storage.Quota;
-import org.geowebcache.grid.Grid;
 import org.geowebcache.grid.GridSet;
 
 public abstract class GridSetTableProvider extends GeoServerDataProvider<GridSet> {
@@ -45,9 +44,8 @@ public abstract class GridSetTableProvider extends GeoServerDataProvider<GridSet
         private static final long serialVersionUID = 3155098860179765581L;
 
         @Override
-        public Object getPropertyValue(GridSet item) {
-            Grid[] grids = item.getGridLevels();
-            return grids == null ? Integer.valueOf(0) : Integer.valueOf(grids.length);
+        public Integer getPropertyValue(GridSet item) {
+            return item.getNumLevels(); // this may fail if item.gridLevels is null
         }
     };
 
@@ -77,20 +75,19 @@ public abstract class GridSetTableProvider extends GeoServerDataProvider<GridSet
     @Override
     public abstract List<GridSet> getItems();
 
-    @SuppressWarnings("unchecked")
     @Override
     protected List<Property<GridSet>> getProperties() {
         return Arrays.asList(NAME, EPSG_CODE, TILE_DIMENSION, ZOOM_LEVELS, QUOTA_USED, ACTION_LINK);
     }
 
     @Override
-    protected Comparator<GridSet> getComparator(final SortParam sort) {
+    protected Comparator<GridSet> getComparator(final SortParam<?> sort) {
         return super.getComparator(sort);
     }
 
     @Override
-    public IModel<GridSet> newModel(Object object) {
-        String name = ((GridSet) object).getName();
+    public IModel<GridSet> newModel(GridSet gridset) {
+        String name = gridset.getName();
         return new GridSetDetachableModel(name);
     }
 }

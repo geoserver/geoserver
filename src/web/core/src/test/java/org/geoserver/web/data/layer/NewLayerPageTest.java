@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -46,14 +46,14 @@ public class NewLayerPageTest extends GeoServerWicketTestSupport {
         
         // select the first datastore
         tester.newFormTester("selector").select("storesDropDown", 1);
-        tester.executeAjaxEvent("selector:storesDropDown", "onchange");
+        tester.executeAjaxEvent("selector:storesDropDown", "change");
         
         // now it should be there
         assertNotNull(tester.getComponentFromLastRenderedPage("selectLayersContainer:selectLayers"));
         
         // select "choose one" item (unselect the form)
         tester.newFormTester("selector").setValue("storesDropDown", "");
-        tester.executeAjaxEvent("selector:storesDropDown", "onchange");
+        tester.executeAjaxEvent("selector:storesDropDown", "change");
         
         // now it should be there
         assertNull(tester.getComponentFromLastRenderedPage("selectLayersContainer:selectLayers"));

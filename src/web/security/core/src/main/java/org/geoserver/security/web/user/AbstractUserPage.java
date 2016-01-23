@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -11,13 +11,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.SortedSet;
 import java.util.logging.Level;
 
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
-import org.apache.wicket.ajax.markup.html.form.AjaxCheckBox;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.Form;
@@ -35,7 +33,6 @@ import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.model.util.ListModel;
-import org.apache.wicket.validation.IValidator;
 import org.geoserver.security.GeoServerRoleService;
 import org.geoserver.security.GeoServerUserGroupService;
 import org.geoserver.security.impl.GeoServerRole;
@@ -53,7 +50,6 @@ import org.geoserver.security.web.role.RolePaletteFormComponent;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geoserver.web.wicket.SimpleAjaxLink;
 import org.geoserver.web.wicket.property.PropertyEditorFormComponent;
-import org.geotools.resources.UnmodifiableArrayList;
 
 /**
  * Allows creation of a new user in users.properties
@@ -107,7 +103,7 @@ public abstract class AbstractUserPage extends AbstractSecurityPage {
         form.add(new PropertyEditorFormComponent("properties").setEnabled(hasUserGroupStore));
 
         form.add(userGroupPalette = new UserGroupPaletteFormComponent("groups", ugServiceName, user));
-        userGroupPalette.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+        userGroupPalette.add(new AjaxFormComponentUpdatingBehavior("change") {
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
                 updateCalculatedRoles(target);
@@ -124,7 +120,7 @@ public abstract class AbstractUserPage extends AbstractSecurityPage {
         }
         
         form.add(rolePalette = new RolePaletteFormComponent("roles", new ListModel(roles)));
-        rolePalette.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+        rolePalette.add(new AjaxFormComponentUpdatingBehavior("change") {
            @Override
            protected void onUpdate(AjaxRequestTarget target) {
                updateCalculatedRoles(target);
@@ -233,13 +229,13 @@ public abstract class AbstractUserPage extends AbstractSecurityPage {
 
     void updateCalculatedRoles(AjaxRequestTarget target) {
         calculatedRoles.modelChanged();
-        target.addComponent(calculatedRoles.getParent());
+        target.add(calculatedRoles.getParent());
     }
 
     void updateGroupAdminList(AjaxRequestTarget target) {
         adminGroupChoice.setEnabled(
             rolePalette.getSelectedRoles().contains(GeoServerRole.GROUP_ADMIN_ROLE));
-        target.addComponent(adminGroupChoice);
+        target.add(adminGroupChoice);
     }
 
     void handleSubmitError(Exception e) {

@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -29,8 +29,7 @@ public class RegexParameterFilterSubform
 
     static final private IValidator<String> REGEXP_VALIDATOR = new IValidator<String>() {
 
-        /** serialVersionUID */
-        private static final long serialVersionUID = 1L;
+        private static final long serialVersionUID = 3753607592277740081L;
 
         @Override
         public void validate(IValidatable<String> validatable) {
@@ -40,7 +39,7 @@ public class RegexParameterFilterSubform
             } catch (PatternSyntaxException ex) {
                 ValidationError error = new ValidationError();
                 error.setMessage("Invalid Regular expression");
-                error.addMessageKey(getClass().getSimpleName() + "." + "invalidRegularExpression");
+                error.addKey(getClass().getSimpleName() + "." + "invalidRegularExpression");
                 validatable.error(error);
             }
         }

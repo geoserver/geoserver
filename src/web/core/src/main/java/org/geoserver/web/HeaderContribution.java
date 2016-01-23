@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -7,8 +7,8 @@ package org.geoserver.web;
 
 import java.util.logging.Logger;
 
-import org.apache.wicket.ResourceReference;
 import org.apache.wicket.markup.html.WebPage;
+import org.apache.wicket.request.resource.PackageResourceReference;
 import org.geotools.util.logging.Logging;
 
 /**
@@ -45,14 +45,14 @@ public class HeaderContribution {
     
     static Logger LOGGER = Logging.getLogger( "org.geoserver.web");
     
-    Class scope;
+    Class<?> scope;
     String cssFilename, javaScriptFilename, faviconFilename;
  
-    public Class getScope() {
+    public Class<?> getScope() {
         return scope;
     }
     
-    public void setScope(Class scope) {
+    public void setScope(Class<?> scope) {
         this.scope = scope;
     }
     
@@ -95,9 +95,9 @@ public class HeaderContribution {
      * Returns the resource reference to the css for the header contribution, or 
      * null if there is no css contribution.
      */
-    public ResourceReference getCSS() {
+    public PackageResourceReference getCSS() {
         if (scope != null && cssFilename != null) {
-            return new ResourceReference(scope, cssFilename);
+            return new PackageResourceReference(scope, cssFilename);
         }
         
         return null;
@@ -107,9 +107,9 @@ public class HeaderContribution {
      * Returns the resource reference to the javascript for the header contribution, or 
      * null if there is no javascript contribution.
      */
-    public ResourceReference getJavaScript() {
+    public PackageResourceReference getJavaScript() {
         if ( scope != null && javaScriptFilename != null ) {
-            return new ResourceReference(scope, javaScriptFilename);
+            return new PackageResourceReference(scope, javaScriptFilename);
         }
         
         return null;
@@ -120,9 +120,9 @@ public class HeaderContribution {
      * or null if there is no favicon replacement
      * @return
      */
-    public ResourceReference getFavicon() {
+    public PackageResourceReference getFavicon() {
         if( scope != null && faviconFilename != null) {
-            return new ResourceReference(scope, faviconFilename);
+            return new PackageResourceReference(scope, faviconFilename);
         }
         
         return null;

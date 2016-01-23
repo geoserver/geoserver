@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -24,11 +24,11 @@ import java.util.Map;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
-import org.apache.wicket.behavior.SimpleAttributeModifier;
+import org.apache.wicket.AttributeModifier;
+import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponent;
-import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.apache.wicket.markup.html.form.validation.FormComponentFeedbackBorder;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
@@ -63,21 +63,21 @@ public class RasterTableSelectionPanel extends Panel {
     private static final String RESOURCE_KEY_PREFIX = RasterTableSelectionPanel.class
             .getSimpleName();
 
-    private final DropDownChoice choice;
+    private final DropDownChoice<String> choice;
 
-    private FormComponent serverComponent;
+    private FormComponent<?> serverComponent;
 
-    private FormComponent portComponent;
+    private FormComponent<?> portComponent;
 
-    private FormComponent instanceComponent;
+    private FormComponent<?> instanceComponent;
 
-    private FormComponent userComponent;
+    private FormComponent<?> userComponent;
 
-    private FormComponent passwordComponent;
+    private FormComponent<?> passwordComponent;
 
-    public RasterTableSelectionPanel(final String id, final IModel paramsModel,
-            final Form storeEditForm, FormComponent server, FormComponent port,
-            FormComponent instance, FormComponent user, FormComponent password) {
+    public RasterTableSelectionPanel(final String id, final IModel<Map<String, Object>> paramsModel,
+            final Form<?> storeEditForm, FormComponent<?> server, FormComponent<?> port,
+            FormComponent<?> instance, FormComponent<?> user, FormComponent<?> password) {
 
         super(id);
         this.serverComponent = server;
@@ -86,7 +86,7 @@ public class RasterTableSelectionPanel extends Panel {
         this.userComponent = user;
         this.passwordComponent = password;
 
-        final MapModel tableNameModel = new MapModel(paramsModel, TABLE_NAME);
+        final MapModel<String> tableNameModel = new MapModel<String>(paramsModel, TABLE_NAME);
 
         List<String> choices = new ArrayList<String>();
         if (tableNameModel.getObject() != null) {
@@ -94,19 +94,19 @@ public class RasterTableSelectionPanel extends Panel {
             choices.add(String.valueOf(currentTableName));
         }
 
-        choice = new DropDownChoice("rasterTable", tableNameModel, choices);
+        choice = new DropDownChoice<String>("rasterTable", tableNameModel, choices);
 
         /*
          * Make table name match the option id
          */
-        choice.setChoiceRenderer(new IChoiceRenderer() {
+        choice.setChoiceRenderer(new ChoiceRenderer<String>() {
             private static final long serialVersionUID = 1L;
 
-            public String getIdValue(Object tableName, int index) {
+            public String getIdValue(String tableName, int index) {
                 return tableName.toString();
             }
 
-            public Object getDisplayValue(Object tableName) {
+            public Object getDisplayValue(String tableName) {
                 return tableName;
             }
         });
@@ -121,7 +121,7 @@ public class RasterTableSelectionPanel extends Panel {
             final String titleKey = RESOURCE_KEY_PREFIX + ".tableNameChoice.title";
             ResourceModel titleModel = new ResourceModel(titleKey);
             String title = String.valueOf(titleModel.getObject());
-            choice.add(new SimpleAttributeModifier("title", title));
+            choice.add(AttributeModifier.replace("title", title));
         }
 
         final AjaxSubmitLink refreshTablesLink = new AjaxSubmitLink("refresh", storeEditForm) {
@@ -132,12 +132,12 @@ public class RasterTableSelectionPanel extends Panel {
              * the list of connection parameters than at {@link #onSumbit}
              */
             @Override
-            protected void onError(AjaxRequestTarget target, Form form) {
+            protected void onError(AjaxRequestTarget target, Form<?> form) {
                 onSubmit(target, form);
             }
 
             @Override
-            protected void onSubmit(final AjaxRequestTarget target, final Form form) {
+            protected void onSubmit(final AjaxRequestTarget target, final Form<?> form) {
 
                 final String server = serverComponent.getValue();
                 final String port = portComponent.getValue();
@@ -155,11 +155,11 @@ public class RasterTableSelectionPanel extends Panel {
                     rasterColumns = Collections.emptyList();
                     String message = "Refreshing raster tables list: " + e.getMessage();
                     storeEditForm.error(message);
-                    target.addComponent(storeEditForm);// refresh
+                    target.add(storeEditForm);// refresh
                 }
 
                 choice.setChoices(rasterColumns);
-                target.addComponent(choice);
+                target.add(choice);
                 // do nothing else, so we return to the same page...
             }
         };
@@ -168,11 +168,11 @@ public class RasterTableSelectionPanel extends Panel {
             final String titleKey = RESOURCE_KEY_PREFIX + ".refresh.title";
             ResourceModel titleModel = new ResourceModel(titleKey);
             String title = String.valueOf(titleModel.getObject());
-            refreshTablesLink.add(new SimpleAttributeModifier("title", title));
+            refreshTablesLink.add(AttributeModifier.replace("title", title));
         }
     }
 
-    public DropDownChoice getFormComponent() {
+    public DropDownChoice<String> getFormComponent() {
         return choice;
     }
 

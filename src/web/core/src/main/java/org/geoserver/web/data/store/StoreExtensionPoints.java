@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -18,7 +18,6 @@ import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.ResourcePool;
 import org.geoserver.catalog.StoreInfo;
-import org.geoserver.ows.Response;
 import org.geoserver.web.CatalogIconFactory;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.data.resource.DataStorePanelInfo;
@@ -207,8 +206,8 @@ public class StoreExtensionPoints {
             Collections.sort(fallbacks,
                     new Comparator<DataStorePanelInfo>() {
                         public int compare(DataStorePanelInfo o1, DataStorePanelInfo o2) {
-                            Class c1 = o1.getFactoryClass();
-                            Class c2 = o2.getFactoryClass();
+                            Class<?> c1 = o1.getFactoryClass();
+                            Class<?> c2 = o2.getFactoryClass();
 
                             if (c1.equals(c2)) {
                                 return 0;

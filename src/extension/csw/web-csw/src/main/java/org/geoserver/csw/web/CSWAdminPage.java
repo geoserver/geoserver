@@ -1,17 +1,17 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.csw.web;
 
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
-import org.apache.wicket.validation.validator.MinimumValidator;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.apache.wicket.validation.validator.RangeValidator;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.csw.CSWInfo;
 import org.geoserver.csw.DirectDownloadSettings;
@@ -20,7 +20,8 @@ import org.geoserver.web.util.MetadataMapModel;
 
 public class CSWAdminPage extends BaseServiceAdminPage<CSWInfo> {
 
-    
+    private static final long serialVersionUID = 8779684527875704719L;
+
     public CSWAdminPage() {
         super();
     }
@@ -56,7 +57,7 @@ public class CSWAdminPage extends BaseServiceAdminPage<CSWInfo> {
         form.add(new CheckBox("directDownloadEnabled", new PropertyModel(directDownloadModel, "directDownloadEnabled")));
         TextField maxDownloadSize = new TextField<Integer>("maxDownloadSize", new PropertyModel(
                 directDownloadModel, "maxDownloadSize"));
-        maxDownloadSize.add(new MinimumValidator(0l));
+        maxDownloadSize.add(RangeValidator.minimum(0l));
         form.add(maxDownloadSize);
     }
 

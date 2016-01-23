@@ -3,74 +3,108 @@
 <body>
 <wicket:extend>
 <form wicket:id="form">
-  <ul>
-    <li class="choiceItem">
-      <input id="verbose" type="checkbox" wicket:id="verbose" />
-      <label for="verbose"><wicket:message key="verboseMessaging">Enable Verbose Messaging</wicket:message></label>
-    </li>
-    <li class="choiceItem">
-      <input id="verboseExceptions" type="checkbox" wicket:id="verboseExceptions" />
-      <label for="verboseExceptions"><wicket:message key="verboseExceptions">Enable Verbose Exceptions</wicket:message></label>
-    </li>
-    <li class="choiceItem">
-      <input id="globalServices" type="checkbox" wicket:id="globalServices" />
-      <label for="globalServices"><wicket:message key="globalServices">Enable Global Services</wicket:message></label>
-    </li>
-    <li>
-      <label for="charset"><wicket:message key="resourceErrorHandling">Resource Error Handling</wicket:message></label>
-      <select id="charset" class="field" wicket:id="resourceErrorHandling" />
-    </li>
-    <li>
-      <label for="numDecimals"><wicket:message key="numDecimals">Number of Decimals</wicket:message></label>
-      <input id="numDecimals" class="field text" type="text" wicket:id="numDecimals" />
-    </li>
-    <li>
-      <label for="charset"><wicket:message key="charset">Character Set</wicket:message></label>
-      <select id="charset" class="field" wicket:id="charset" />
-    </li>
-    <li>
-      <label for="proxyBaseUrl"><wicket:message key="proxyBaseUrl">Proxy Base URL</wicket:message></label>
-      <input id="proxyBaseUrl" class="field text" type="text" wicket:id="proxyBaseUrl" />
-    </li>
-    <li>
-      <label for="log4jConfigFile"><wicket:message key="log4jConfigFile">Logging Profile</wicket:message></label>
-      <select id="log4jConfigFile" class="field select" wicket:id="log4jConfigFile" />
-    </li>
-    <li class="choiceItem">
-      <input id="stdOutLogging" type="checkbox" wicket:id="stdOutLogging" />
-      <label for="stdOutLogging"><wicket:message key="stdOutLogging">Enable logging to STDOUT</wicket:message></label>
-    </li>
-    <li>
-      <label for="loggingLocation"><wicket:message key="loggingLocation">Logfile</wicket:message></label>
-      <input id="loggingLocation"class="field text" type="text" wicket:id="loggingLocation" />
-    </li>
-    <li>
-      <label for="xmlPostRequestLogBufferSize"><wicket:message key="xmlPostRequestLogBufferSize">log buffer size for incoming XML POST requests</wicket:message></label>
-      <input id="xmlPostRequestLogBufferSize"class="field text" type="text" wicket:id="xmlPostRequestLogBufferSize" />
-    </li>
-    <li class="choiceItem">
-      <span class="fieldname"><wicket:message key="xmlExternalEntities">XML Entities</wicket:message></span>
-      <input id="xmlExternalEntitiesEnabled" type="checkbox" wicket:id="xmlExternalEntitiesEnabled" />
-      <label for="xmlExternalEntitiesEnabled"><wicket:message key="xmlExternalEntitiesEnabled">Evaluate XML Entities</wicket:message></label>
-    </li>
-    <li>
-      <label for="featureTypeCacheSize"><wicket:message key="featureTypeCacheSize">Feature Type Cache Size</wicket:message></label>
-      <input id="featureTypeCacheSize"class="field text" type="text" wicket:id="featureTypeCacheSize" />
-    </li>
-	<li>
-	   <label><wicket:message key="lockProvider">lockProvider:</wicket:message></label>
-	   <select class="select" id="lockProvider" wicket:id="lockProvider"></select>
-	</li>
-	<li>
-	    <div wicket:id="extensions">
-			 <div wicket:id="content"></div>
-		</div>
-	</li>
-    <li class="button-group selfclear">
-      <button type="submit" wicket:id="submit"><wicket:message key="submit">submit</wicket:message></button>
-      <button type="submit" wicket:id="cancel"><wicket:message key="cancel">cancel</wicket:message></button>
-    </li>
-  </ul>
+  <h3><span><wicket:message key="ogcServices">OGC Services</wicket:message></span></h3>
+  <fieldset>
+    <legend><span><wicket:message key="serviceSettings">Services Settings</wicket:message></span></legend>
+    <ul>
+      <li>
+        <label for="proxyBaseUrl"><wicket:message key="proxyBaseUrl">Proxy Base URL</wicket:message></label>
+        <input id="proxyBaseUrl" class="field text" type="text" wicket:id="proxyBaseUrl" />
+      </li>
+      <li class="choiceItem">
+        <input id="globalServices" type="checkbox" wicket:id="globalServices" />
+        <label for="globalServices"><wicket:message key="globalServices">Enable Global Services</wicket:message></label>
+      </li>
+    </ul>
+  </fieldset>
+  <fieldset>
+    <legend><span><wicket:message key="serviceRequestSettings">Service Request Settings</wicket:message></span></legend>
+    <ul>
+      <li class="choiceItem">
+        <input id="xmlExternalEntitiesEnabled" type="checkbox" wicket:id="xmlExternalEntitiesEnabled" />
+        <label for="xmlExternalEntitiesEnabled"><wicket:message key="xmlExternalEntitiesEnabled">Evaluate XML Entities</wicket:message></label>
+      </li>
+    </ul>
+  </fieldset>
+  <fieldset>
+    <legend><span><wicket:message key="serviceResponseSettings">Service Response Settings</wicket:message></span></legend>
+    <ul>
+      <li>
+        <label for="charset"><wicket:message key="charset">Character Set</wicket:message></label>
+        <select id="charset" class="field" wicket:id="charset" />
+      </li>
+      <li>
+        <label for="numDecimals"><wicket:message key="numDecimals">Number of Decimals</wicket:message></label>
+        <input id="numDecimals" class="field text" type="text" wicket:id="numDecimals" />
+      </li>
+      <li class="choiceItem">
+        <input id="verbose" type="checkbox" wicket:id="verbose" />
+        <label for="verbose"><wicket:message key="verboseMessaging">Verbose XML (Pretty Print)</wicket:message></label>
+      </li>
+    </ul>
+  </fieldset>
+  <fieldset>
+    <legend><span><wicket:message key="serviceErrorSettings">Service Error Settings</wicket:message></span></legend>
+    <ul>
+      <li>
+        <label for="charset"><wicket:message key="resourceErrorHandling">Resource Error Handling</wicket:message></label>
+        <select id="charset" class="field" wicket:id="resourceErrorHandling" />
+      </li>
+      <li class="choiceItem">
+        <input id="verboseExceptions" type="checkbox" wicket:id="verboseExceptions" />
+        <label for="verboseExceptions"><wicket:message key="verboseExceptions">Enable Verbose Exceptions</wicket:message></label>
+      </li>
+    </ul>
+  </fieldset>
+  <h3><span><wicket:message key="internalSettings">Internal Settings</wicket:message></span></h3>
+  <fieldset>
+    <legend><span><wicket:message key="loggingSettings">Logging Settings</wicket:message></span></legend>
+    <ul>
+      <li>
+        <label for="loggingLocation"><wicket:message key="loggingLocation">Logfile</wicket:message></label>
+        <input id="loggingLocation"class="field text" type="text" wicket:id="loggingLocation" />
+      </li>
+      <li>
+        <label for="log4jConfigFile"><wicket:message key="log4jConfigFile">Logging Profile</wicket:message></label>
+        <select id="log4jConfigFile" class="field select" wicket:id="log4jConfigFile" />
+      </li>
+      <li class="choiceItem">
+        <input id="stdOutLogging" type="checkbox" wicket:id="stdOutLogging" />
+        <label for="stdOutLogging"><wicket:message key="stdOutLogging">Enable logging to STDOUT</wicket:message></label>
+      </li>
+      <li>
+        <label for="xmlPostRequestLogBufferSize"><wicket:message key="xmlPostRequestLogBufferSize">Number of characters to log for incoming POST requests</wicket:message></label>
+        <input id="xmlPostRequestLogBufferSize"class="field text" type="text" wicket:id="xmlPostRequestLogBufferSize" />
+      </li>
+    </ul>
+  </fieldset>
+  <fieldset>
+    <legend><span><wicket:message key="catalogSettings">Catalog Settings</wicket:message></span></legend>
+    <ul>
+      <li>
+        <label for="featureTypeCacheSize"><wicket:message key="featureTypeCacheSize">Feature Type Cache Size</wicket:message></label>
+        <input id="featureTypeCacheSize"class="field text" type="text" wicket:id="featureTypeCacheSize" />
+      </li>
+      <li>
+       <label><wicket:message key="lockProvider">lockProvider:</wicket:message></label>
+       <select class="select" id="lockProvider" wicket:id="lockProvider"></select>
+      </li>
+    </ul>
+  </fieldset>
+  <fieldset>
+    <legend><span><wicket:message key="otherSettings">Other Settings</wicket:message></span></legend>
+    <ul>
+      <li>
+        <div wicket:id="extensions">
+             <div wicket:id="content"></div>
+        </div>
+      </li>
+      <li class="button-group selfclear">
+        <button type="submit" wicket:id="submit"><wicket:message key="submit">submit</wicket:message></button>
+        <button type="submit" wicket:id="cancel"><wicket:message key="cancel">cancel</wicket:message></button>
+      </li>
+    </ul>
+  </fieldset>
 </form>
 </wicket:extend>
 </body>

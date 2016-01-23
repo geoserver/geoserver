@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -10,14 +10,15 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.Session;
+import org.apache.wicket.ajax.AjaxRequestHandler;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.gwc.GWC;
 import org.geoserver.web.GeoServerWicketTestSupport;
@@ -30,8 +31,6 @@ import org.geowebcache.grid.BoundingBox;
 import org.geowebcache.grid.GridSet;
 import org.geowebcache.grid.GridSetBroker;
 import org.junit.Test;
-
-import com.google.common.collect.ImmutableMap;
 
 public class GridSetNewPageTest extends GeoServerWicketTestSupport {
 
@@ -60,23 +59,23 @@ public class GridSetNewPageTest extends GeoServerWicketTestSupport {
     @Test
     public void testCreateFromTemplate() {
 
-        PageParameters params = new PageParameters(ImmutableMap.of("template", "EPSG:4326"));
+        PageParameters params = new PageParameters().add("template", "EPSG:4326");
         GridSetNewPage page = new GridSetNewPage(params);
 
         tester.startPage(page);
         // print(page, true, true);
 
-        tester.assertModelValue("gridSetForm:name:border:paramValue", "My_EPSG:4326");
+        tester.assertModelValue("gridSetForm:name:border:border_body:paramValue", "My_EPSG:4326");
 
         FormTester ft = tester.newFormTester("gridSetForm");
-        ft.setValue("name:border:paramValue", "customWGS84");
+        ft.setValue("name:border:border_body:paramValue", "customWGS84");
 
         // add two zoom levels
-        tester.executeAjaxEvent("gridSetForm:addZoomLevel", "onclick");
-        tester.executeAjaxEvent("gridSetForm:addZoomLevel", "onclick");
+        tester.executeAjaxEvent("gridSetForm:addZoomLevel", "click");
+        tester.executeAjaxEvent("gridSetForm:addZoomLevel", "click");
 
         // submit
-        tester.executeAjaxEvent("gridSetForm:save", "onclick");
+        tester.executeAjaxEvent("gridSetForm:save", "click");
 
         GWC mediator = GWC.get();
         GridSetBroker gridSetBroker = mediator.getGridSetBroker();
@@ -99,19 +98,17 @@ public class GridSetNewPageTest extends GeoServerWicketTestSupport {
         final String gridsetName = "fromScratch";
 
         FormTester ft = tester.newFormTester("gridSetForm");
-        ft.setValue("name:border:paramValue", gridsetName);
-        ft.setValue("description", "sample description");
         ft.setValue("crs:srs", "EPSG:3857");
 
         // print(page, true, true);
-        tester.executeAjaxEvent("gridSetForm:crs:srs", "onblur");
+        tester.executeAjaxEvent("gridSetForm:crs:srs", "blur");
         // print(page, true, true);
 
         Component computeBounds = tester
                 .getComponentFromLastRenderedPage("gridSetForm:computeBounds");
         assertTrue(computeBounds.isEnabled());
 
-        // hard to trigger an onclick event for a GeoServerAjaxSubmitLink, to invoking directly
+        // hard to trigger an click event for a GeoServerAjaxSubmitLink, to invoking directly
         page.computeBounds();
         // print(page, true, true);
 
@@ -141,27 +138,27 @@ public class GridSetNewPageTest extends GeoServerWicketTestSupport {
             ft.setValue("bounds:maxY", "1000000");
         }
 
-        ft.setValue("tileWidth:border:paramValue", "512");
-        tester.executeAjaxEvent("gridSetForm:tileWidth:border:paramValue", "onblur");
-
-        ft.setValue("tileHeight:border:paramValue", "512");
-        tester.executeAjaxEvent("gridSetForm:tileHeight:border:paramValue", "onblur");
-
+        ft.setValue("tileWidth:border:border_body:paramValue", "512");
+        
+        ft.setValue("tileHeight:border:border_body:paramValue", "512");
+        
         // add zoom levels
         final int numLevels = 6;
         for (int i = 0; i < numLevels; i++) {
-            // tester.executeAjaxEvent("gridSetForm:addZoomLevel", "onclick");
+            // tester.executeAjaxEvent("gridSetForm:addZoomLevel", "click");
             // tester.clickLink("gridSetForm:addZoomLevel", true);
             // can't get this event to get triggered?
-            AjaxRequestTarget target = new AjaxRequestTarget(page);
+            AjaxRequestTarget target = new AjaxRequestHandler(page);
             page.addZoomLevel(target);
         }
 
         // print(page, true, true);
-
+        
+        ft.setValue("name:border:border_body:paramValue", gridsetName);
+        ft.setValue("description", "sample description");
         // submit
         Session.get().getFeedbackMessages().clear();
-        tester.executeAjaxEvent("gridSetForm:save", "onclick");
+        tester.executeAjaxEvent("gridSetForm:save", "click");
 
         tester.assertNoErrorMessage();
 

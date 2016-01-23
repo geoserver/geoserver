@@ -1,17 +1,15 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.gwc.web.gridset;
 
-import java.util.Collections;
 import java.util.logging.Logger;
 
 import javax.measure.unit.Unit;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.form.AjaxFormSubmitBehavior;
@@ -24,9 +22,11 @@ import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
-import org.apache.wicket.model.ResourceModel;
+import org.apache.wicket.model.StringResourceModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.validation.IValidatable;
-import org.apache.wicket.validation.validator.AbstractValidator;
+import org.apache.wicket.validation.IValidator;
+import org.apache.wicket.validation.ValidationError;
 import org.apache.wicket.validation.validator.RangeValidator;
 import org.geoserver.gwc.GWC;
 import org.geoserver.web.GeoServerSecuredPage;
@@ -43,6 +43,8 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.cs.CoordinateSystemAxis;
 
 abstract class AbstractGridSetPage extends GeoServerSecuredPage {
+
+    private static final long serialVersionUID = 2977633539319630433L;
 
     protected static final Logger LOGGER = Logging.getLogger(AbstractGridSetPage.class);
 
@@ -80,8 +82,9 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
     protected final TileMatrixSetEditor tileMatrixSetEditor;
 
     protected final Component addLevelLink;
+    
+    protected final FeedbackPanel feedback;
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
     public AbstractGridSetPage(final PageParameters parameters) {
 
         final String gridSetName;
@@ -90,8 +93,8 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
             gridSetName = null;
             templateName = null;
         } else {
-            gridSetName = parameters.getString(GRIDSET_NAME);
-            templateName = parameters.getString(GRIDSET_TEMPLATE_NAME);
+            gridSetName = parameters.get(GRIDSET_NAME).toOptionalString();
+            templateName = parameters.get(GRIDSET_TEMPLATE_NAME).toOptionalString();
         }
 
         GridSetInfo gridsetInfo;
@@ -108,7 +111,7 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
         IModel<GridSetInfo> model = new Model<GridSetInfo>(gridsetInfo);
 
         form = new Form<GridSetInfo>("gridSetForm", model);
-        FeedbackPanel feedback = new FeedbackPanel("feedback");
+        feedback = new FeedbackPanel("feedback");
         feedback.setOutputMarkupId(true);
         form.add(feedback);
 
@@ -124,37 +127,43 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
         form.add(tileMatrixSetEditor = new TileMatrixSetEditor("tileMatrixSetEditor", model));
         tileMatrixSetEditor.setOutputMarkupId(true);
 
-        cancelLink = new BookmarkablePageLink("cancel", GridSetsPage.class);
+        cancelLink = new BookmarkablePageLink<>("cancel", GridSetsPage.class);
         form.add(cancelLink);
 
         saveLink = saveLink(form);
         form.add(saveLink);
         add(form);
 
-        tileWidth.getFormComponent().add(new AjaxFormComponentUpdatingBehavior("onblur") {
+        tileWidth.getFormComponent().add(new AjaxFormComponentUpdatingBehavior("blur") {
             private static final long serialVersionUID = 1L;
 
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
-                target.addComponent(tileMatrixSetEditor);
+                target.add(tileMatrixSetEditor);
             }
         });
-        tileHeight.getFormComponent().add(new AjaxFormComponentUpdatingBehavior("onblur") {
+        tileHeight.getFormComponent().add(new AjaxFormComponentUpdatingBehavior("blur") {
             private static final long serialVersionUID = 1L;
 
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
-                target.addComponent(tileMatrixSetEditor);
+                target.add(tileMatrixSetEditor);
             }
         });
 
         addLevelLink = new GeoServerAjaxFormLink("addZoomLevel", form) {
-            private static final long serialVersionUID = 1L;
+            private static final long serialVersionUID = 1202251941625034786L;
 
             @Override
-            protected void onClick(AjaxRequestTarget target, Form form) {
+            protected void onClick(AjaxRequestTarget target, Form<?> form) {
+				crs.processInput();
+                bounds.processInput();
+                tileWidth.getFormComponent().processInput();
+                tileHeight.getFormComponent().processInput();
+            	
                 addZoomLevel(target);
-                target.addComponent(tileMatrixSetEditor);
+                target.add(tileMatrixSetEditor);
+                target.add(feedback);
             }
         };
 
@@ -163,21 +172,10 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
     }
 
     void addZoomLevel(AjaxRequestTarget target) {
-        crs.processInput();
-        bounds.processInput();
-        tileWidth.getFormComponent().processInput();
-        tileHeight.getFormComponent().processInput();
-
         ReferencedEnvelope bbox = (ReferencedEnvelope) bounds.getModelObject();
         if (null == bbox) {
-            String message = new ResourceModel("AbstractGridSetPage.cantAddZoomLevel").getObject();
-            FeedbackPanel feedback = (FeedbackPanel) form.get("feedback");
-            if (feedback != null) {
-                feedback.error(message);
-                target.addComponent(feedback);
-            } else {
-                form.error(message);
-            }
+            String message = new StringResourceModel("AbstractGridSetPage.cantAddZoomLevel").getString();
+            feedback.error(message);
             return;
         }
         Integer width = (Integer) tileWidth.getFormComponent().getModelObject();
@@ -193,10 +191,12 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
             private static final long serialVersionUID = 1L;
 
             @Override
-            protected void onClick(AjaxRequestTarget target, Form form) {
+            protected void onClick(AjaxRequestTarget target, Form<?> form) {
+            	crs.processInput();
                 computeBounds();
-                target.addComponent(bounds);
-                target.addComponent(tileMatrixSetEditor);
+                target.add(bounds);
+                target.add(feedback);
+                target.add(tileMatrixSetEditor);
             }
         };
         return link;
@@ -204,18 +204,16 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
 
     void computeBounds() {
         // perform manual processing of the required fields
-        crs.processInput();
-        bounds.processInput();
         CoordinateReferenceSystem coordSys;
         coordSys = (CoordinateReferenceSystem) crs.getModelObject();
         if (coordSys == null) {
-            bounds.error(new ResourceModel("AbstractGridsetPage.computeBounds.crsNotSet"));
+            bounds.error(new StringResourceModel("AbstractGridsetPage.computeBounds.crsNotSet").getString());
             return;
         }
         GWC mediator = GWC.get();
         ReferencedEnvelope aov = mediator.getAreaOfValidity(coordSys);
         if (aov == null) {
-            bounds.error(new ResourceModel("AbstractGridsetPage.computeBounds.aovNotSet"));
+            bounds.error(new StringResourceModel("AbstractGridsetPage.computeBounds.aovNotSet").getString());
         } else {
             bounds.setModelObject(aov);
         }
@@ -233,19 +231,18 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
                     private static final long serialVersionUID = 1L;
 
                     public UpdateTableBehavior() {
-                        super(form, "onblur");
+                        super(form, "blur");
                     }
 
                     @Override
                     protected void onSubmit(AjaxRequestTarget target) {
-                        target.addComponent(AbstractGridSetPage.this.tileMatrixSetEditor);
+                        target.add(AbstractGridSetPage.this.tileMatrixSetEditor);
                     }
 
-                    @SuppressWarnings("unchecked")
                     @Override
                     protected void onError(AjaxRequestTarget target) {
                         UpdatingEnvelopePanel.this.setModelObject(null);
-                        target.addComponent(AbstractGridSetPage.this.tileMatrixSetEditor);
+                        target.add(AbstractGridSetPage.this.tileMatrixSetEditor);
                     }
                 }
 
@@ -271,14 +268,14 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
 
     private TextParamPanel tileHeight(IModel<GridSetInfo> model) {
         TextParamPanel panel = new TextParamPanel("tileHeight", new PropertyModel<Integer>(model,
-                "tileHeight"), new ResourceModel("AbstractGridSetPage.tileHeight"), true,
+                "tileHeight"), new StringResourceModel("AbstractGridSetPage.tileHeight"), true,
                 new RangeValidator<Integer>(16, 2048));
         return panel;
     }
 
     private TextParamPanel tileWidth(IModel<GridSetInfo> model) {
         TextParamPanel panel = new TextParamPanel("tileWidth", new PropertyModel<Integer>(model,
-                "tileWidth"), new ResourceModel("AbstractGridSetPage.tileWidth"), true,
+                "tileWidth"), new StringResourceModel("AbstractGridSetPage.tileWidth"), true,
                 new RangeValidator<Integer>(16, 2048));
         return panel;
     }
@@ -305,7 +302,6 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
 
         private IModel<GridSetInfo> infoModel;
 
-        @SuppressWarnings("serial")
         public GridSetCRSPanel(String id, IModel<GridSetInfo> model) {
             super(id, new PropertyModel<CoordinateReferenceSystem>(model, "crs"));
             this.infoModel = model;
@@ -318,31 +314,18 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
 
             add(units);
             add(metersPerUnit);
-
-            super.srsTextField.add(new AjaxFormComponentUpdatingBehavior("onblur") {
-                @Override
-                protected void onUpdate(AjaxRequestTarget target) {
-                    convertInput();
-
-                    CoordinateReferenceSystem crs = (CoordinateReferenceSystem) getConvertedInput();
-                    if (crs != null) {
-                        setModelObject(crs);
-                        wktLabel.setDefaultModelObject(crs.getName().toString());
-                        wktLink.setEnabled(true);
-                    } else {
-                        wktLabel.setDefaultModelObject(null);
-                        wktLink.setEnabled(false);
-                    }
-                    target.addComponent(wktLink);
-                    target.addComponent(units);
-                    target.addComponent(metersPerUnit);
-                }
-            });
+        }
+        
+        protected void onSRSUpdated(String srs, AjaxRequestTarget target) {
+            target.add(units);
+            target.add(metersPerUnit);
         }
 
         @Override
         protected SRSListPanel srsListPanel() {
             SRSListPanel srsList = new SRSListPanel(popupWindow.getContentId()) {
+
+                private static final long serialVersionUID = 2869219395676091081L;
 
                 @Override
                 protected void onCodeClicked(AjaxRequestTarget target, String epsgCode) {
@@ -350,15 +333,15 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
 
                     String srs = "EPSG:" + epsgCode;
                     srsTextField.setModelObject(srs);
-                    target.addComponent(srsTextField);
+                    target.add(srsTextField);
 
                     CoordinateReferenceSystem crs = fromSRS(srs);
                     wktLabel.setDefaultModelObject(crs.getName().toString());
                     wktLink.setEnabled(true);
-                    target.addComponent(wktLink);
+                    target.add(wktLink);
                     updateUnits(crs);
-                    target.addComponent(units);
-                    target.addComponent(metersPerUnit);
+                    target.add(units);
+                    target.add(metersPerUnit);
                 }
             };
             srsList.setCompactMode(true);
@@ -366,7 +349,7 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
         }
 
         @Override
-        protected void convertInput() {
+        public void convertInput() {
             try {
                 super.convertInput();
             } finally {
@@ -404,7 +387,7 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
 
     private TextParamPanel name(IModel<GridSetInfo> model) {
         TextParamPanel namePanel = new TextParamPanel("name", new PropertyModel<String>(model,
-                "name"), new ResourceModel("AbstractGridSetPage.name"), true,
+                "name"), new StringResourceModel("AbstractGridSetPage.name"), true,
                 new UniqueNameValidator(model.getObject().getName()));
         return namePanel;
     }
@@ -437,7 +420,7 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
             @Override
             protected void onError(AjaxRequestTarget target, Form<?> form) {
                 super.onError(target, form);
-                target.addComponent(form);
+                target.add(form);
             }
 
             @Override
@@ -450,7 +433,7 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
 
     protected abstract void onSave(AjaxRequestTarget target, Form<?> form);
 
-    private static class UniqueNameValidator extends AbstractValidator<String> {
+    private static class UniqueNameValidator implements IValidator<String> {
         private static final long serialVersionUID = 1L;
 
         private final String previousName;
@@ -465,8 +448,8 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
         }
 
         @Override
-        protected void onValidate(IValidatable<String> validatable) {
-            final String name = validatable.getValue();
+        public void validate(IValidatable<String> iv) {
+            final String name = iv.getValue();
             if (name.equals(previousName)) {
                 return;
             }
@@ -476,8 +459,9 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
             }
             GridSet gridSet = gridSetBroker.get(name);
             if (gridSet != null) {
-                error(validatable, "gridSetAlreadyExists",
-                        Collections.singletonMap("name", (Object) name));
+                ValidationError error = new ValidationError("gridSetAlreadyExists");
+                error.setVariable("name", name);
+                iv.error(error);
             }
         }
     }

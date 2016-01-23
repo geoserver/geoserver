@@ -1,11 +1,11 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.web;
 
-import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.junit.After;
 import org.junit.Test;
@@ -30,6 +30,8 @@ public class GeoServerConsoleFlagTest extends GeoServerSystemTestSupport {
     
     private SimpleUrlHandlerMapping getWebDispatcherMapping(boolean disabled) throws Exception {
         setGeoserverConsoleDisabled(disabled);
+        // tear down the test so that we close down the pre-existing Wicket filter
+        tearDown(getTestData());
         setUp(getTestData());
         
         // Get the list of URL mappings from spring

@@ -1,15 +1,15 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.web.wicket;
 
-import java.util.Collections;
 import java.util.regex.Pattern;
 
 import org.apache.wicket.validation.IValidatable;
-import org.apache.wicket.validation.validator.AbstractValidator;
+import org.apache.wicket.validation.IValidator;
+import org.apache.wicket.validation.ValidationError;
 
 /**
  * Checks a string conforms to the XML Name production as declared at {@link http
@@ -19,7 +19,7 @@ import org.apache.wicket.validation.validator.AbstractValidator;
  * 
  */
 @SuppressWarnings("serial")
-public class XMLNameValidator extends AbstractValidator {
+public class XMLNameValidator implements IValidator<String> {
     private static Pattern XML_NAME_PATTERN;
 
     static {
@@ -40,12 +40,12 @@ public class XMLNameValidator extends AbstractValidator {
     }
 
     @Override
-    protected void onValidate(IValidatable validatable) {
+    public void validate(IValidatable<String> validatable) {
         String value = (String) validatable.getValue();
         if (!XML_NAME_PATTERN.matcher(value).matches()) {
-            error(validatable, "invalidXMLName", Collections.singletonMap("name", value));
+            validatable.error(new ValidationError("invalidXMLName")
+                    .addKey("invalidXMLName").setVariable("name", value));
         }
-
     }
 
 }

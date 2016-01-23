@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -1135,7 +1135,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                 element( "ows:AdministrativeArea", contact.getAddressState() );
                 element( "ows:PostalCode", contact.getAddressPostalCode() );
                 element( "ows:Country", contact.getAddressCountry() );
-                element( "ows:ElectronicMailAddress", contact.getAddressElectronicMailAddress() );
+                element( "ows:ElectronicMailAddress", contact.getContactEmail() );
 
                 /* Currently disregarding the maxOccurs for DeliveryPoint and ElectronicMailAddress,
                  * because this can create issues with the XML serializer. */

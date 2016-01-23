@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2014 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -13,7 +13,6 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
@@ -21,7 +20,7 @@ import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.IChoiceRenderer;
+import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
@@ -30,7 +29,7 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.model.util.CollectionModel;
 import org.apache.wicket.model.util.ListModel;
-import org.apache.wicket.validation.validator.MinimumValidator;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.validation.validator.RangeValidator;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.web.data.store.panel.FileModel;
@@ -122,13 +121,13 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
         form.add(new DropDownChoice("interpolation", Arrays.asList(WMSInfo.WMSInterpolation.values()), new InterpolationRenderer()));
         // resource limits
         TextField<Integer> maxMemory = new TextField<Integer>("maxRequestMemory");
-        maxMemory.add(new MinimumValidator<Integer>(0));
+        maxMemory.add(RangeValidator.minimum(0));
         form.add(maxMemory);
         TextField<Integer> maxTime = new TextField<Integer>("maxRenderingTime");
-        maxTime.add(new MinimumValidator<Integer>(0));
+        maxTime.add(RangeValidator.minimum(0));
         form.add(maxTime);
         TextField<Integer> maxErrors = new TextField<Integer>("maxRenderingErrors");
-        maxErrors.add(new MinimumValidator<Integer>(0));
+        maxErrors.add(RangeValidator.minimum(0));
         form.add(maxErrors);
     	// watermark
     	form.add(new CheckBox("watermark.enabled"));
@@ -269,7 +268,7 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
                       textField.clearInput();
                       textField.setModelObject(file.getAbsolutePath());
 
-                      target.addComponent(textField);
+                      target.add(textField);
                       dialog.close(target);
                     };
                 };
@@ -295,7 +294,7 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
         return "WMS";
     }
     
-    private class WatermarkPositionRenderer implements  IChoiceRenderer {
+    private class WatermarkPositionRenderer extends ChoiceRenderer {
 
         public Object getDisplayValue(Object object) {
             return new StringResourceModel(((Position) object).name(), WMSAdminPage.this, null).getString();
@@ -307,7 +306,7 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
         
     }
     
-    private class InterpolationRenderer implements  IChoiceRenderer {
+    private class InterpolationRenderer extends ChoiceRenderer {
 
         public Object getDisplayValue(Object object) {
             return new StringResourceModel(((WMSInterpolation) object).name(), WMSAdminPage.this, null).getString();
@@ -319,7 +318,7 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
         
     }
     
-    private class SVGMethodRenderer implements  IChoiceRenderer {
+    private class SVGMethodRenderer extends ChoiceRenderer {
 
         public Object getDisplayValue(Object object) {
             return new StringResourceModel("svg." + object, WMSAdminPage.this, null).getString();

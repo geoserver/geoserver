@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -37,7 +37,8 @@ import org.apache.wicket.model.StringResourceModel;
  * @author Justin Deoliveira, OpenGeo
  *
  */
-public class HelpLink extends AjaxLink {
+@SuppressWarnings("serial")
+public class HelpLink extends AjaxLink<Void> {
 
     GeoServerDialog dialog;
     Component container;
@@ -76,6 +77,7 @@ public class HelpLink extends AjaxLink {
         return container != null ? container : getPage();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void onClick(AjaxRequestTarget target) {
         //load the help title

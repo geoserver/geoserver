@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -130,7 +130,7 @@ public class GlobalContactTest extends CatalogRESTTestSupport {
         assertEquals("Chief Geographer", contactInfo.get("contactPosition").toString());
         assertEquals("ContactPerson", contactInfo.get("contactPerson").toString());
         assertEquals("The White House", contactInfo.get("addressDeliveryPoint").toString());
-        assertEquals("info@whitehouse.gov", contactInfo.get("addressElectronicMailAddress").toString());
+        assertEquals("chief.geographer@mail.com", contactInfo.get("addressElectronicMailAddress").toString());
     }
 
 }

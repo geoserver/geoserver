@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -33,7 +33,7 @@ public class NewServiceAccessRulePageTest extends AbstractSecurityWicketTestSupp
         FormTester form = tester.newFormTester("form");
         int index = indexOf(page.serviceChoice.getChoices(),"wms");        
         form.select("service", index);
-        tester.executeAjaxEvent("form:service", "onchange");
+        tester.executeAjaxEvent("form:service", "change");
         form = tester.newFormTester("form");
         index = indexOf(page.methodChoice.getChoices(),"GetStyles");
         form.select("method", index);
@@ -86,7 +86,7 @@ public class NewServiceAccessRulePageTest extends AbstractSecurityWicketTestSupp
         FormTester form = tester.newFormTester("form");
         int index = indexOf(page.serviceChoice.getChoices(),"wms");        
         form.select("service", index);
-        tester.executeAjaxEvent("form:service", "onchange");
+        tester.executeAjaxEvent("form:service", "change");
         form = tester.newFormTester("form");
         index = indexOf(page.methodChoice.getChoices(),"GetMap");
         form.select("method", index);
@@ -106,7 +106,7 @@ public class NewServiceAccessRulePageTest extends AbstractSecurityWicketTestSupp
         FormTester form = tester.newFormTester("form");
         int index = indexOf(page.serviceChoice.getChoices(),"wms");        
         form.select("service", index);
-        tester.executeAjaxEvent("form:service", "onchange");
+        tester.executeAjaxEvent("form:service", "change");
         form = tester.newFormTester("form");
         index = indexOf(page.methodChoice.getChoices(),"GetStyles");
         form.select("method", index);

@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -13,13 +13,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.xml.transform.TransformerException;
 
 import org.apache.wicket.Page;
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.protocol.http.WebRequest;
+import org.apache.wicket.request.http.WebRequest;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.web.GeoServerBasePage;
@@ -48,7 +48,7 @@ public class WPSRequestBuilder extends GeoServerBasePage {
     WPSRequestBuilderPanel builder;
 
     public WPSRequestBuilder(PageParameters parameters) {
-        this(parameters.getString(PARAM_NAME));
+        this(parameters.get(PARAM_NAME).toOptionalString());
     }
 
     public WPSRequestBuilder() {
@@ -78,10 +78,11 @@ public class WPSRequestBuilder extends GeoServerBasePage {
             }
         });
 		
-		// the output response window
+	// the output response window
         responseWindow = new ModalWindow("responseWindow");
         add(responseWindow);
-        responseWindow.setPageMapName("demoResponse");
+        // removed, don't know what it did, but page maps are gone in 1.5...
+        // responseWindow.setPageMapName("demoResponse");
         responseWindow.setCookieName("demoResponse");
 
         responseWindow.setPageCreator(new ModalWindow.PageCreator() {
@@ -89,8 +90,7 @@ public class WPSRequestBuilder extends GeoServerBasePage {
             @SuppressWarnings("unchecked")
             public Page createPage() {
                 DemoRequest request = new DemoRequest(null);
-                HttpServletRequest http = ((WebRequest) WPSRequestBuilder.this.getRequest())
-                        .getHttpServletRequest();
+                HttpServletRequest http = (HttpServletRequest) WPSRequestBuilder.this.getRequest().getContainerRequest();
                 String url = ResponseUtils.buildURL(ResponseUtils.baseURL(http), "ows", Collections
                         .singletonMap("strict", "true"), URLType.SERVICE);
                 request.setRequestUrl(url);
@@ -113,7 +113,7 @@ public class WPSRequestBuilder extends GeoServerBasePage {
             @Override
             protected void onError(AjaxRequestTarget target, Form form) {
                 super.onError(target, form);
-                target.addComponent(builder.getFeedbackPanel());
+                target.add(builder.getFeedbackPanel());
             }
         });
 
@@ -126,13 +126,13 @@ public class WPSRequestBuilder extends GeoServerBasePage {
                     xmlWindow.show(target);
                 } catch (Exception e) {
                     error(e.getMessage());
-                    target.addComponent(getFeedbackPanel());
+                    target.add(getFeedbackPanel());
                 }
             }
 
             @Override
             protected void onError(AjaxRequestTarget target, Form form) {
-                target.addComponent(getFeedbackPanel());
+                target.add(getFeedbackPanel());
             }
         });
     }

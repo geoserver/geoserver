@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -47,7 +47,7 @@ public class ProxyAdminPage extends GeoServerSecuredPage {
         hostnameFilterTable = 
             new GeoServerTablePanel<String>("hostnameTable", hostnameProvider, true) {
             @Override
-            protected Component getComponentForProperty(String id, IModel itemModel,
+            protected Component getComponentForProperty(String id, IModel<String> itemModel,
                     Property<String> property) {
                 return new Label(id, property.getModel(itemModel));
             }
@@ -55,7 +55,7 @@ public class ProxyAdminPage extends GeoServerSecuredPage {
             @Override
             protected void onSelectionUpdate(AjaxRequestTarget target) {
                 hostRemoval.setEnabled(hostnameFilterTable.getSelection().size() > 0);
-                target.addComponent(hostRemoval);
+                target.add(hostRemoval);
             }  
         };
         hostnameFilterTable.setOutputMarkupId(true);
@@ -77,7 +77,7 @@ public class ProxyAdminPage extends GeoServerSecuredPage {
         mimetypeFilterTable = 
             new GeoServerTablePanel<String>("mimetypeTable", mimetypeProvider, true) {
             @Override
-            protected Component getComponentForProperty(String id, IModel itemModel,
+            protected Component getComponentForProperty(String id, IModel<String> itemModel,
                     Property<String> property) {
                 return new Label(id, property.getModel(itemModel));
             }
@@ -85,7 +85,7 @@ public class ProxyAdminPage extends GeoServerSecuredPage {
             @Override
             protected void onSelectionUpdate(AjaxRequestTarget target) {
                 mimetypeRemoval.setEnabled(mimetypeFilterTable.getSelection().size() > 0);
-                target.addComponent(mimetypeRemoval);
+                target.add(mimetypeRemoval);
             }  
         };
         mimetypeFilterTable.setOutputMarkupId(true);
@@ -148,8 +148,8 @@ public class ProxyAdminPage extends GeoServerSecuredPage {
             
             //disable the removal link, since nothing is selected any more
             setEnabled(false);
-            target.addComponent(HostRemovalLink.this);
-            target.addComponent(tableObjects);
+            target.add(HostRemovalLink.this);
+            target.add(tableObjects);
         }
     }
     
@@ -185,8 +185,8 @@ public class ProxyAdminPage extends GeoServerSecuredPage {
             
             //disable the removal link, since nothing is selected any more
             setEnabled(false);
-            target.addComponent(MimetypeRemovalLink.this);
-            target.addComponent(tableObjects);
+            target.add(MimetypeRemovalLink.this);
+            target.add(tableObjects);
         }
     }
 }

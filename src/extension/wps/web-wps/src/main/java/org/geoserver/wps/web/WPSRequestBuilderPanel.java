@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -38,7 +38,6 @@ import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
-import org.apache.wicket.protocol.http.WebRequest;
 import org.geoserver.ows.Ows11Util;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.ows.util.ResponseUtils;
@@ -189,15 +188,14 @@ public class WPSRequestBuilderPanel extends Panel {
         // the output response window
         responseWindow = new ModalWindow("responseWindow");
         add(responseWindow);
-        responseWindow.setPageMapName("demoResponse");
+        // responseWindow.setPageMapName("demoResponse");
         responseWindow.setCookieName("demoResponse");
 
         responseWindow.setPageCreator(new ModalWindow.PageCreator() {
 
             public Page createPage() {
                 DemoRequest request = new DemoRequest(null);
-                HttpServletRequest http = ((WebRequest) WPSRequestBuilderPanel.this.getRequest())
-                        .getHttpServletRequest();
+                HttpServletRequest http = (HttpServletRequest) WPSRequestBuilderPanel.this.getRequest().getContainerRequest();
                 String url = ResponseUtils.buildURL(ResponseUtils.baseURL(http), "ows", Collections
                         .singletonMap("strict", "true"), URLType.SERVICE);
                 request.setRequestUrl(url);
@@ -226,18 +224,18 @@ public class WPSRequestBuilderPanel extends Panel {
         add(feedback);
 
         // the process choice dropdown ajax behavior
-        processChoice.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+        processChoice.add(new AjaxFormComponentUpdatingBehavior("change") {
 
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
                 initProcessView();
-                target.addComponent(WPSRequestBuilderPanel.this);
+                target.add(WPSRequestBuilderPanel.this);
                 
                 // ensure the parent page feedback panel gets refreshed to clear any existing err msg
                 // check for GeoServerBasePage, because parent page can also be a SubProcessBuilder
                 WebPage page = getWebPage();
                 if (page instanceof GeoServerBasePage) {
-                    target.addComponent(((GeoServerBasePage) page).getFeedbackPanel());
+                    target.add(((GeoServerBasePage) page).getFeedbackPanel());
                 }
             }
         });
@@ -263,12 +261,12 @@ public class WPSRequestBuilderPanel extends Panel {
         userpwdContainer.add(password);
         
         CheckBox checkbox = new CheckBox("authenticate", new PropertyModel(this, "authenticate"));
-        checkbox.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+        checkbox.add(new AjaxFormComponentUpdatingBehavior("change") {
 
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
                 userpwdContainer.setVisible(authenticate);
-                target.addComponent(authenticationContainer);                
+                target.add(authenticationContainer);                
             }
             
         });

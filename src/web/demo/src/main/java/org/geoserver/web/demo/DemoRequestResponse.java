@@ -1,12 +1,11 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.web.demo;
 
-import org.apache.wicket.PageMap;
-import org.apache.wicket.behavior.SimpleAttributeModifier;
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.HiddenField;
@@ -42,7 +41,10 @@ public class DemoRequestResponse extends WebPage {
         // this page being in an IFrame needs to grap its own PageMap
         // in order not to share it with the parent page and thus be
         // marked as expired
-        super(PageMap.forName("demoRequestResponse"));
+        // JD: Couldn't find a replacement for PageMap, hopefully this is a non-issue
+        // now, but won't know until we get things up and running with the new version
+        //super(PageMap.forName("demoRequestResponse"));
+        super(model);
 
         Form form = new Form("form");
         add(form);
@@ -53,7 +55,7 @@ public class DemoRequestResponse extends WebPage {
 
         // override the action property of the form to submit to the TestWfsPost
         // servlet
-        form.add(new SimpleAttributeModifier("action", "../TestWfsPost"));
+        form.add(AttributeModifier.replace("action", "../../TestWfsPost"));
 
         // Set the same markup is as in the html page so wicket does not
         // generates

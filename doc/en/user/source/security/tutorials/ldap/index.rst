@@ -1,11 +1,11 @@
-.. _sec_tutorials_ldap:
+.. _security_tutorials_ldap:
 
 Authentication with LDAP
 ========================
 
 This tutorial introduces GeoServer LDAP support and walks through the process of
 setting up authentication aganist an LDAP server. It is recommended that the 
-:ref:`sec_auth_provider_ldap` section be read before proceeding.
+:ref:`security_auth_provider_ldap` section be read before proceeding.
 
 LDAP server setup
 -----------------

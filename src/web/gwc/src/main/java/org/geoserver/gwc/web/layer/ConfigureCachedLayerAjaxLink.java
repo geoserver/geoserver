@@ -1,29 +1,24 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.gwc.web.layer;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.wicket.Page;
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.gwc.layer.GeoServerTileLayer;
 import org.geoserver.web.data.layergroup.LayerGroupEditPage;
 import org.geoserver.web.data.resource.ResourceConfigurationPage;
 import org.geoserver.web.wicket.SimpleAjaxLink;
 import org.geowebcache.layer.TileLayer;
-
-import com.google.common.collect.ImmutableMap;
 
 /**
  * A simple ajax link that links to the edit page for the given {@link GeoServerTileLayer} (that is,
@@ -57,24 +52,23 @@ class ConfigureCachedLayerAjaxLink extends SimpleAjaxLink<TileLayer> {
             return;
         }
         final GeoServerTileLayer geoserverTileLayer = (GeoServerTileLayer) getModelObject();
-        LayerInfo layerInfo = geoserverTileLayer.getLayerInfo();
-        if (layerInfo != null) {
+        PublishedInfo publishedInfo = geoserverTileLayer.getPublishedInfo();
+        if (publishedInfo instanceof LayerInfo) {
             ResourceConfigurationPage resourceConfigPage;
-            resourceConfigPage = new ResourceConfigurationPage(layerInfo, false);
+            resourceConfigPage = new ResourceConfigurationPage((LayerInfo) publishedInfo, false);
             // tell the resource/layer edit page to start up on the tile cache tab
             resourceConfigPage.setSelectedTab(LayerCacheOptionsTabPanel.class);
             if (returnPage != null) {
                 resourceConfigPage.setReturnPage(returnPage);
             }
             setResponsePage(resourceConfigPage);
-        } else {
-            LayerGroupInfo layerGroup = geoserverTileLayer.getLayerGroupInfo();
+        } else if (publishedInfo instanceof LayerGroupInfo) {
+            LayerGroupInfo layerGroup = (LayerGroupInfo) publishedInfo;
             WorkspaceInfo workspace = layerGroup.getWorkspace();
             String wsName = workspace == null ? null : workspace.getName();
-            Map<String, String> params = new HashMap<String, String>();
-            params.put(LayerGroupEditPage.GROUP, layerGroup.getName());
-            params.put(LayerGroupEditPage.WORKSPACE, wsName);
-            PageParameters parameters = new PageParameters(params);
+            PageParameters parameters = new PageParameters();
+            parameters.add(LayerGroupEditPage.GROUP, layerGroup.getName());
+            parameters.add(LayerGroupEditPage.WORKSPACE, wsName);
             LayerGroupEditPage layerGroupEditPage = new LayerGroupEditPage(parameters);
             if (returnPage != null) {
                 layerGroupEditPage.setReturnPage(returnPage);

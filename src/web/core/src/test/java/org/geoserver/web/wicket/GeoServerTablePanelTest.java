@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -74,7 +74,7 @@ public class GeoServerTablePanelTest {
         assertEquals(0, table.getSelection().size());
         FormTester ft = tester.newFormTester("form");
         ft.setValue("panel:listContainer:selectAllContainer:selectAll", "true");
-        tester.executeAjaxEvent(selectAllPath, "onclick");
+        tester.executeAjaxEvent(selectAllPath, "click");
         assertEquals(10, table.getSelection().size());
         assertEquals(new Integer(0), table.getSelection().get(0));
         
@@ -135,7 +135,7 @@ public class GeoServerTablePanelTest {
         }
 
         @Override
-        protected Component getComponentForProperty(String id, IModel itemModel,
+        protected Component getComponentForProperty(String id, IModel<Integer> itemModel,
                 Property<Integer> property) {
             if(property == IntegerProvider.IDX) {
                 return new Label(id, itemModel);
@@ -149,12 +149,12 @@ public class GeoServerTablePanelTest {
         }
         
         @Override
-        IModel showingAllRecords(int first, int last, int size) {
+        IModel showingAllRecords(long first, long last, long size) {
             return new Model(first + " -> " + last + " of " + size);
         }
         
         @Override
-        IModel matchedXOutOfY(int first, int last, int size, int fullSize) {
+        IModel matchedXOutOfY(long first, long last, long size, long fullSize) {
             return new Model(first + " -> " + last + " of " + size + "/" + fullSize);
         }
     }

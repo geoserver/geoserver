@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -86,26 +86,26 @@ public abstract class AbstractConfigPage extends GeoServerSecuredPage {
 
         stores = new DropDownChoice<StoreInfo>("stores",
                 new Model(null), new StoreListModel(), new StoreListChoiceRenderer());
-        stores.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+        stores.add(new AjaxFormComponentUpdatingBehavior("change") {
             
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
                 types.setChoices(new TypeListModel(stores.getModel()));
                 addLink.setEnabled(false);
-                target.addComponent(types);
-                target.addComponent(addLink);
+                target.add(types);
+                target.add(addLink);
             }
         });
         sources.add(stores);
         types = new DropDownChoice<String>("types", new Model(null), new TypeListModel(stores.getModel()));
         types.setOutputMarkupId(true);
         sources.add(types);
-        types.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+        types.add(new AjaxFormComponentUpdatingBehavior("change") {
 
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
                 addLink.setEnabled(stores.getModelObject() != null && types.getModelObject() != null);
-                target.addComponent(addLink);
+                target.add(addLink);
             }
             
         });
@@ -118,7 +118,7 @@ public abstract class AbstractConfigPage extends GeoServerSecuredPage {
                 "sourceTypes", new SourceTypeProvider(configModel)) {
 
             @Override
-            protected Component getComponentForProperty(String id, IModel itemModel,
+            protected Component getComponentForProperty(String id, IModel<SourceType> itemModel,
                     Property<SourceType> property) {
                 if(property.getName().equals("default")) {
                     return new Label(id, property.getModel(itemModel));
@@ -148,7 +148,7 @@ public abstract class AbstractConfigPage extends GeoServerSecuredPage {
                 AggregateTypeConfiguration config = form.getModelObject();
                 config.getSourceTypes().remove(getModelObject());
                 // refresh the whole form (lazy, we could add a container around the table)
-                target.addComponent(sources);
+                target.add(sources);
             }
         };
         return link;
@@ -163,7 +163,7 @@ public abstract class AbstractConfigPage extends GeoServerSecuredPage {
                 AggregateTypeConfiguration config = form.getModelObject();
                 config.setPrimarySourceType((SourceType) getModelObject());
                 // refresh the whole form (lazy, we could add a container around the table)
-                target.addComponent(sources);
+                target.add(sources);
             }
         };
     }
@@ -181,10 +181,10 @@ public abstract class AbstractConfigPage extends GeoServerSecuredPage {
                 config.addSourceType(storeName, typeName);
                 if(name.getModelObject() == null || "".equals(name.getModelObject())) {
                     name.setModelObject(typeName);
-                    target.addComponent(name);
+                    target.add(name);
                 }
                 // refresh the whole table
-                target.addComponent(sources);
+                target.add(sources);
             }
         };
     }

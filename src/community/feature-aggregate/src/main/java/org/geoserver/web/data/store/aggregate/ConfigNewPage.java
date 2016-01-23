@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -9,6 +9,8 @@ import org.geotools.data.aggregate.AggregateTypeConfiguration;
 
 
 public class ConfigNewPage extends AbstractConfigPage {
+
+    private static final long serialVersionUID = 4059243636202134036L;
 
     public ConfigNewPage(AggregateStoreEditPanel master) {
         super(master);

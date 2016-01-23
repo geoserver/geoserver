@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -65,7 +65,7 @@ public class LayerPageTest extends GeoServerWicketTestSupport {
         assertTrue(workspaces.contains("gs"));
         
         // sort on workspace once (top to bottom)
-        String wsSortPath = "table:listContainer:sortableLinks:1:header:link";
+        String wsSortPath = "table:listContainer:sortableLinks:3:header:link";
         tester.clickLink(wsSortPath, true);
         workspaces = getWorkspaces(table);
         assertEquals("cite", workspaces.get(0));
@@ -81,8 +81,8 @@ public class LayerPageTest extends GeoServerWicketTestSupport {
         String checkBoxPath = "table:listContainer:items:6:selectItemContainer:selectItem";
         CheckBox selector = (CheckBox) tester.getComponentFromLastRenderedPage(checkBoxPath);
         // dirty trick, how to set a form component value without a form
-        tester.getServletRequest().setParameter(selector.getInputName(), "true");
-        tester.executeAjaxEvent(selector, "onclick");
+        tester.getRequest().setParameter(selector.getInputName(), "true");
+        tester.executeAjaxEvent(selector, "click");
         assertEquals(1, table.getSelection().size());
         LayerInfo li = (LayerInfo) table.getSelection().get(0);
         assertEquals("cite", li.getResource().getStore().getWorkspace().getName());

@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -10,6 +10,7 @@ import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.apache.wicket.Session;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.markup.html.form.CheckBox;
@@ -22,6 +23,7 @@ import org.geoserver.security.cas.CasAuthenticationFilterConfig;
 import org.geoserver.security.cas.GeoServerCasAuthenticationFilter;
 import org.geoserver.security.cas.GeoServerCasConstants;
 import org.geoserver.security.web.auth.PreAuthenticatedUserNameFilterPanel;
+import org.geoserver.web.GeoServerBasePage;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.HelpLink;
 import org.geotools.util.logging.Logging;
@@ -33,15 +35,11 @@ import org.geotools.util.logging.Logging;
  */
 public class CasAuthFilterPanel 
     extends PreAuthenticatedUserNameFilterPanel<CasAuthenticationFilterConfig>  {
-
     
     private static final long serialVersionUID = 1;
 
     static Logger LOGGER = Logging.getLogger("org.geoserver.security");
     GeoServerDialog dialog;
-
-
-    
 
     public CasAuthFilterPanel(String id, IModel<CasAuthenticationFilterConfig> model) {
         super(id, model);
@@ -66,7 +64,9 @@ public class CasAuthFilterPanel
                     info(new StringResourceModel("casConnectionSuccessful",CasAuthFilterPanel.this, null).getObject());
                 }
                 catch(Exception e) {
+                    //getSession().error(e);
                     error(e);
+                    target.add( ((GeoServerBasePage)getPage()).getFeedbackPanel() ); // to display message
                     LOGGER.log(Level.WARNING, "CAS connection error ", e);
                 }
             }
@@ -83,6 +83,7 @@ public class CasAuthFilterPanel
                 }
                 catch(Exception e) {
                     error(e);
+                    target.add( ((GeoServerBasePage)getPage()).getFeedbackPanel() ); // to display message
                     LOGGER.log(Level.WARNING, "CAS proxy callback  error ", e);
                 }
             }
@@ -101,6 +102,7 @@ public class CasAuthFilterPanel
                 }
                 catch(Exception e) {
                     error(e);
+                    target.add( ((GeoServerBasePage)getPage()).getFeedbackPanel() ); // to display message
                     LOGGER.log(Level.WARNING, "CAs url in logout page error ", e);
                 }
             }
@@ -110,7 +112,7 @@ public class CasAuthFilterPanel
     }
 
     public void testURL(String wicketId, String uri) throws Exception {
-        //since this wasn't a regular form submission, we need to manually update component
+        // since this wasn't a regular form submission, we need to manually update component
         // models
         ((FormComponent)get(wicketId)).processInput();
         String urlString = get(wicketId).getDefaultModelObjectAsString();

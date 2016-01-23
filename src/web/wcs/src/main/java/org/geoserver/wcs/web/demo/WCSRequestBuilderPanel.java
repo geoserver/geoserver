@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -23,13 +23,12 @@ import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.IChoiceRenderer;
+import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.StringResourceModel;
-import org.apache.wicket.protocol.http.WebRequest;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.ows.URLMangler.URLType;
@@ -119,7 +118,7 @@ public class WCSRequestBuilderPanel extends Panel {
         add(version);
         
         // the action that will setup the form once the coverage has been chosen
-        version.add(new AjaxFormSubmitBehavior("onchange") {
+        version.add(new AjaxFormSubmitBehavior("change") {
 
             @Override
             protected void onError(AjaxRequestTarget target) {
@@ -140,7 +139,7 @@ public class WCSRequestBuilderPanel extends Panel {
                     g2w.setModelObject(null);
                     g2w.setVisible(false);
                 }
-                target.addComponent(WCSRequestBuilderPanel.this);
+                target.add(WCSRequestBuilderPanel.this);
             }
         });
 
@@ -150,7 +149,7 @@ public class WCSRequestBuilderPanel extends Panel {
         add(coverage);
 
         // the action that will setup the form once the coverage has been chosen
-        coverage.add(new AjaxFormSubmitBehavior("onchange") {
+        coverage.add(new AjaxFormSubmitBehavior("change") {
 
             @Override
             protected void onError(AjaxRequestTarget target) {
@@ -169,7 +168,7 @@ public class WCSRequestBuilderPanel extends Panel {
                 gc.targetCRS = ri.getCoordinateReferenceSystem();
                 gc.sourceGridRange = null;
                 describeLink.setEnabled(true);
-                target.addComponent(WCSRequestBuilderPanel.this);
+                target.add(WCSRequestBuilderPanel.this);
             }
         });
 
@@ -208,8 +207,7 @@ public class WCSRequestBuilderPanel extends Panel {
 
             public Page createPage() {
                 DemoRequest request = new DemoRequest(null);
-                HttpServletRequest http = ((WebRequest) WCSRequestBuilderPanel.this.getRequest())
-                        .getHttpServletRequest();
+                HttpServletRequest http = GeoServerApplication.get().servletRequest(getRequest());
                 String url = ResponseUtils.buildURL(ResponseUtils.baseURL(http), "ows", Collections
                         .singletonMap("strict", "true"), URLType.SERVICE);
                 request.setRequestUrl(url);
@@ -278,7 +276,7 @@ public class WCSRequestBuilderPanel extends Panel {
         g2w.setVisible(false);
         g2w.setOutputMarkupId(true);
         
-        targetLayoutChooser.add(new AjaxFormSubmitBehavior("onchange") {
+        targetLayoutChooser.add(new AjaxFormSubmitBehavior("change") {
 
             @Override
             protected void onError(AjaxRequestTarget target) {
@@ -301,7 +299,7 @@ public class WCSRequestBuilderPanel extends Panel {
                     g2w.setModelObject(null);
                     g2w.setVisible(false);
                 }
-                target.addComponent(WCSRequestBuilderPanel.this);
+                target.add(WCSRequestBuilderPanel.this);
                 
             }
         });
@@ -321,7 +319,7 @@ public class WCSRequestBuilderPanel extends Panel {
         sourceGridRange.setOutputMarkupId(true);
         
         // the action that will setup the form once the coverage has been chosen
-        manualGrid.add(new AjaxFormSubmitBehavior("onchange") {
+        manualGrid.add(new AjaxFormSubmitBehavior("change") {
 
             @Override
             protected void onError(AjaxRequestTarget target) {
@@ -340,7 +338,7 @@ public class WCSRequestBuilderPanel extends Panel {
                     sourceGridRange.setModelObject(null);
                     sourceGridRange.setVisible(false);
                 }
-                target.addComponent(WCSRequestBuilderPanel.this);
+                target.add(WCSRequestBuilderPanel.this);
                 
             }
 
@@ -419,7 +417,7 @@ public class WCSRequestBuilderPanel extends Panel {
         }
     }
     
-    class TargetLayoutRenderer implements IChoiceRenderer {
+    class TargetLayoutRenderer extends ChoiceRenderer {
 
         public Object getDisplayValue(Object object) {
             final String name = ((TargetLayout) object).name();

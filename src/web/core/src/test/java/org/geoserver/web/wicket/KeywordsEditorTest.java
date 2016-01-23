@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -46,7 +46,7 @@ public class KeywordsEditorTest {
         // WicketHierarchyPrinter.print(tester.getLastRenderedPage(), true, false);
         FormTester ft = tester.newFormTester("form");
         ft.selectMultiple("panel:keywords", new int[] {0, 2});
-        tester.executeAjaxEvent("form:panel:removeKeywords", "onclick");
+        tester.executeAjaxEvent("form:panel:removeKeywords", "click");
         
         assertEquals(1, keywords.size());
         assertEquals("two", keywords.get(0).getValue());
@@ -59,7 +59,7 @@ public class KeywordsEditorTest {
         ft.setValue("panel:newKeyword", "four");
         ft.setValue("panel:lang", "en");
         ft.setValue("panel:vocab", "foobar");
-        tester.executeAjaxEvent("form:panel:addKeyword", "onclick");
+        tester.executeAjaxEvent("form:panel:addKeyword", "click");
         
         assertEquals(4, keywords.size());
         assertEquals("four", keywords.get(3).getValue());

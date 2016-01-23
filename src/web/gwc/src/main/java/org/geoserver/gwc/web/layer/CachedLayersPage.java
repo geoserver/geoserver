@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -23,7 +23,7 @@ import java.util.TreeSet;
 
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
-import org.apache.wicket.ResourceReference;
+import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.behavior.AttributeAppender;
@@ -41,6 +41,7 @@ import org.apache.wicket.model.StringResourceModel;
 import org.geoserver.gwc.GWC;
 import org.geoserver.gwc.layer.GeoServerTileLayer;
 import org.geoserver.gwc.web.GWCIconFactory;
+import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerDialog;
@@ -57,6 +58,8 @@ import org.geowebcache.mime.MimeType;
  * @see GWC#removeTileLayers(List)
  */
 public class CachedLayersPage extends GeoServerSecuredPage {
+    private static final long serialVersionUID = -6795610175856538774L;
+
     private CachedLayerProvider provider = new CachedLayerProvider();
 
     private GeoServerTablePanel<TileLayer> table;
@@ -70,30 +73,30 @@ public class CachedLayersPage extends GeoServerSecuredPage {
         table = new GeoServerTablePanel<TileLayer>("table", provider, true) {
             private static final long serialVersionUID = 1L;
 
-            @SuppressWarnings({ "rawtypes", "unchecked" })
+            @SuppressWarnings({ "unchecked" })
             @Override
-            protected Component getComponentForProperty(String id, IModel itemModel,
+            protected Component getComponentForProperty(String id, IModel<TileLayer> itemModel,
                     Property<TileLayer> property) {
 
                 if (property == TYPE) {
                     Fragment f = new Fragment(id, "iconFragment", CachedLayersPage.this);
-                    ResourceReference layerIcon;
+                    PackageResourceReference layerIcon;
                     TileLayer layer = (TileLayer) itemModel.getObject();
-                    layerIcon = (ResourceReference) property.getPropertyValue(layer);
+                    layerIcon = (PackageResourceReference) property.getPropertyValue(layer);
                     f.add(new Image("layerIcon", layerIcon));
                     return f;
                 } else if (property == NAME) {
                     return nameLink(id, itemModel);
                 } else if (property == QUOTA_LIMIT) {
-                    IModel<Quota> quotaLimitModel = property.getModel(itemModel);
+                    IModel<Quota> quotaLimitModel = (IModel<Quota>) property.getModel(itemModel);
                     return quotaLink(id, quotaLimitModel);
                 } else if (property == QUOTA_USAGE) {
-                    IModel<Quota> quotaUsageModel = property.getModel(itemModel);
+                    IModel<Quota> quotaUsageModel =  (IModel<Quota>) property.getModel(itemModel);
                     return quotaLink(id, quotaUsageModel);
                 } else if (property == ENABLED) {
                     TileLayer layerInfo = (TileLayer) itemModel.getObject();
                     boolean enabled = layerInfo.isEnabled();
-                    ResourceReference icon;
+                    PackageResourceReference icon;
                     if (enabled) {
                         icon = GWCIconFactory.getEnabledIcon();
                     } else {
@@ -117,7 +120,7 @@ public class CachedLayersPage extends GeoServerSecuredPage {
             @Override
             protected void onSelectionUpdate(AjaxRequestTarget target) {
                 removal.setEnabled(table.getSelection().size() > 0);
-                target.addComponent(removal);
+                target.add(removal);
             }
 
         };
@@ -167,7 +170,8 @@ public class CachedLayersPage extends GeoServerSecuredPage {
 
     private Component actionsLinks(String id, IModel<TileLayer> tileLayerNameModel) {
         final String name = tileLayerNameModel.getObject().getName();
-        final String href = "../gwc/rest/seed/" + name;
+        final String href = ResponseUtils.baseURL(getGeoServerApplication().servletRequest())
+        		+ "gwc/rest/seed/" + name;
 
         // openlayers preview
         Fragment f = new Fragment(id, "actionsFragment", CachedLayersPage.this);
@@ -229,7 +233,7 @@ public class CachedLayersPage extends GeoServerSecuredPage {
 
                     @Override
                     public void onClose(final AjaxRequestTarget target) {
-                        target.addComponent(table);
+                        target.add(table);
                     }
                 });
             }
@@ -266,14 +270,15 @@ public class CachedLayersPage extends GeoServerSecuredPage {
                 // build option with text and value
                 Label format = new Label(String.valueOf(i++), label);
                 String value = "gridSet=" + gridSetId + "&format=" + mimeType.getFormat();
-                format.add(new AttributeModifier("value", true, new Model<String>(value)));
+                format.add(new AttributeModifier("value", new Model<String>(value)));
                 previewLinks.add(format);
             }
         }
         menu.add(previewLinks);
 
         // build the wms request, redirect to it in a new window, reset the selection
-        String demoUrl = "'../gwc/demo/" + layer.getName()
+        String demoUrl = "'" + ResponseUtils.baseURL(getGeoServerApplication().servletRequest())
+        		+ "gwc/demo/" + layer.getName()
                 + "?' + this.options[this.selectedIndex].value";
         menu.add(new AttributeAppender("onchange", new Model<String>("window.open(" + demoUrl
                 + ");this.selectedIndex=0"), ";"));
@@ -337,9 +342,9 @@ public class CachedLayersPage extends GeoServerSecuredPage {
                     final String usedQuotaStr = totalQuota.toNiceString();
                     final Integer selectedLayerCount = selectedNames.size();
 
-                    IModel<String> model = new StringResourceModel(
-                            "CachedLayersPage.confirmSelectionRemoval",
-                            CachedLayerSelectionRemovalLink.this, null, new Object[] {
+                    IModel<String> model = new StringResourceModel
+                            ("CachedLayersPage.confirmSelectionRemoval",
+                            CachedLayerSelectionRemovalLink.this).setParameters(new Object[] {
                                     selectedLayerCount.toString(), usedQuotaStr });
                     Label confirmLabel = new Label(id, model);
                     confirmLabel.setEscapeModelStrings(false);// allow some html inside, like
@@ -362,8 +367,8 @@ public class CachedLayersPage extends GeoServerSecuredPage {
                     List<TileLayer> selection = table.getSelection();
                     if (selection.isEmpty()) {
                         setEnabled(false);
-                        target.addComponent(CachedLayerSelectionRemovalLink.this);
-                        target.addComponent(table);
+                        target.add(CachedLayerSelectionRemovalLink.this);
+                        target.add(table);
                     }
                 }
             });

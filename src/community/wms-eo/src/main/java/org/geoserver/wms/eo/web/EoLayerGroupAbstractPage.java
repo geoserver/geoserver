@@ -1,11 +1,10 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wms.eo.web;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 
@@ -25,7 +24,8 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.util.convert.IConverter;
 import org.apache.wicket.validation.IValidatable;
-import org.apache.wicket.validation.validator.AbstractValidator;
+import org.apache.wicket.validation.IValidator;
+import org.apache.wicket.validation.ValidationError;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
@@ -89,14 +89,14 @@ public abstract class EoLayerGroupAbstractPage extends GeoServerSecuredPage {
 
         Form form = new Form( "form", new CompoundPropertyModel( lgModel ) ) {
             @Override
-            public IConverter getConverter(Class<?> type) {
+            public <C> IConverter<C> getConverter(Class<C> type) {
                 if (LayerInfo.class.isAssignableFrom(type)) {
-                    return new LayerInfoConverter();
+                    return (IConverter<C>) new LayerInfoConverter();
                 } else if (StyleInfo.class.isAssignableFrom(type)) {
-                    return new StyleInfoConverter(); 
+                    return (IConverter<C>) new StyleInfoConverter(); 
                 } else {
                     return super.getConverter(type);
-                }
+                }            
             }
         };
         
@@ -151,7 +151,7 @@ public abstract class EoLayerGroupAbstractPage extends GeoServerSecuredPage {
                     }
                     
                     envelopePanel.setModelObject( lg.getBounds() );
-                    target.addComponent( envelopePanel );
+                    target.add( envelopePanel );
                     
                 } 
                 catch (Exception e) {
@@ -222,9 +222,9 @@ public abstract class EoLayerGroupAbstractPage extends GeoServerSecuredPage {
                         lgEntryPanel.entryProvider.getItems().add(
                             new EoLayerGroupEntry( layer, layer.getDefaultStyle(), groupName));
                         
-                        target.addComponent(lgEntryPanel);
+                        target.add(lgEntryPanel);
                         layerTypes.setDefaultModelObject(layerTypes.getDefaultModelObject());
-                        target.addComponent(layerTypes);
+                        target.add(layerTypes);
                     }
                 });
                 
@@ -240,7 +240,7 @@ public abstract class EoLayerGroupAbstractPage extends GeoServerSecuredPage {
         outlinesEntryChooser.setEnabled(!outlinesPresent(lgEntryPanel.items));
         form.add(outlinesEntryChooser);
         
-        outlinesEntryChooser.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+        outlinesEntryChooser.add(new AjaxFormComponentUpdatingBehavior("change") {
 
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
@@ -263,26 +263,26 @@ public abstract class EoLayerGroupAbstractPage extends GeoServerSecuredPage {
                 } finally {
                     outlinesEntryChooser.setDefaultModelObject(null);
                 }
-                target.addComponent(lgEntryPanel);
-                target.addComponent(getFeedbackPanel());
-                target.addComponent(outlinesEntryChooser);
+                target.add(lgEntryPanel);
+                target.add(getFeedbackPanel());
+                target.add(outlinesEntryChooser);
             }
             
         });
         
-        layerTypes.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+        layerTypes.add(new AjaxFormComponentUpdatingBehavior("change") {
 
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
                 layerTypes.processInput();
                 boolean input = layerTypes.getModelObject() != null;
                 addLayerLink.setEnabled(input);
-                target.addComponent(addLayerLink);
+                target.add(addLayerLink);
             }
             
         });
         
-        name.add(new AjaxFormComponentUpdatingBehavior("onblur") {
+        name.add(new AjaxFormComponentUpdatingBehavior("blur") {
 
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
@@ -296,9 +296,9 @@ public abstract class EoLayerGroupAbstractPage extends GeoServerSecuredPage {
                         info (new ParamResourceModel("layerRenameWarning", EoLayerGroupAbstractPage.this, groupName).getString());
                     }
                 }
-                target.addComponent(createStoreLink);
-                target.addComponent(addFromStoreLink);
-                target.addComponent(getFeedbackPanel());
+                target.add(createStoreLink);
+                target.add(addFromStoreLink);
+                target.add(getFeedbackPanel());
             }
             
         });
@@ -501,14 +501,14 @@ public abstract class EoLayerGroupAbstractPage extends GeoServerSecuredPage {
      */
     protected abstract void onSubmit(LayerGroupInfo lg);
     
-    class GroupNameValidator extends AbstractValidator {
+    class GroupNameValidator implements IValidator<String> {
 
         @Override
-        protected void onValidate(IValidatable validatable) {
-            String name = (String) validatable.getValue();
+        public void validate(IValidatable<String> iv) {
+            String name = (String) iv.getValue();
             LayerGroupInfo other = getCatalog().getLayerGroupByName(name);
             if(other != null && (layerGroupId == null || !other.getId().equals(layerGroupId))) {
-                error(validatable, "duplicateGroupNameError", Collections.singletonMap("name", name));
+                iv.error(new ValidationError("duplicateGroupNameError").setVariable("name", name));
             }
         }
         

@@ -375,8 +375,8 @@ label, span.fieldname {
 border: medium none;
 color: #222;
 display: block;
+font-weight: normal;
 font-size: 0.95em;
-font-weight: bold;
 line-height: 1.5em;
 padding: 0 0 1px;
 }
@@ -604,12 +604,12 @@ margin-right: 5px;
 }
 
 .button-group .button-login div {
-background-image: url(../img/icons/silk/door_in.png);
+background-image: url(../img/icons/silk/door-in.png);
 padding-left: 25px;
 }
 
 .button-group .button-logout span {
-background: url(../img/icons/silk/door_out.png) no-repeat;
+background: url(../img/icons/silk/door-out.png) no-repeat;
 display: block;
 margin: 5px;
 padding-left: 25px;
@@ -955,6 +955,15 @@ display: inline;
 
 .date li:nth-child(3){ 
 padding-right: 10px;
+}
+
+/* modal */
+
+div.wicket-modal h3.w_captionText {
+  color: #666;
+  font-size: 12px;
+  font-weight: bold;
+  height: 1.4em;
 }
 
 /* Controls underneath native bounding box eg. calculate from data, from CRS */

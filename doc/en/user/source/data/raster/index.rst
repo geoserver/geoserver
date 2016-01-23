@@ -1,7 +1,7 @@
 .. _data_raster:
 
-Working with Raster Data
-========================
+Raster data
+===========
 
 This section discusses the raster (coverage) data sources that GeoServer can access.
 

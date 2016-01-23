@@ -1,4 +1,3 @@
-<style type="text/css">
  div#${id} {
    border: 2px groove black;
    height: 300px;
@@ -17,4 +16,3 @@
    padding: 3px;
    right: 0px;
  }
-</style>

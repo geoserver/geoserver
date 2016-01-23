@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -73,7 +73,7 @@ public  class PasswordPolicyDetailsPanelTest extends AbstractSecurityNamedServic
     
     protected void setUnlimted(boolean value){
         formTester.setValue("panel:content:unlimitedMaxLength", value);
-        tester.executeAjaxEvent("form:panel:content:unlimitedMaxLength","onclick");
+        tester.executeAjaxEvent("form:panel:content:unlimitedMaxLength","click");
                                  
     }
     
@@ -104,7 +104,7 @@ public  class PasswordPolicyDetailsPanelTest extends AbstractSecurityNamedServic
         
         activatePanel();
         
-        assertEquals(2, countItmes());
+        assertEquals(2, countItems());
         assertNotNull(getSecurityNamedServiceConfig("default"));
         assertNull(getSecurityNamedServiceConfig("xxxxxxxx"));
         
@@ -122,7 +122,7 @@ public  class PasswordPolicyDetailsPanelTest extends AbstractSecurityNamedServic
         clickCancel();
         
         tester.assertRenderedPage(basePage.getClass());
-        assertEquals(2, countItmes());
+        assertEquals(2, countItems());
         assertNotNull(getSecurityNamedServiceConfig("default"));
         assertNotNull(getSecurityNamedServiceConfig("master"));
         
@@ -144,7 +144,7 @@ public  class PasswordPolicyDetailsPanelTest extends AbstractSecurityNamedServic
         
         tester.assertRenderedPage(basePage.getClass());
 
-        assertEquals(3, countItmes());        
+        assertEquals(3, countItems());        
         assertNotNull(getSecurityNamedServiceConfig("default"));
         assertNotNull(getSecurityNamedServiceConfig("master"));
         PasswordPolicyConfig pwConfig=
@@ -205,7 +205,7 @@ public  class PasswordPolicyDetailsPanelTest extends AbstractSecurityNamedServic
         newFormTester("panel:panel:form");
         //setUnlimted(true);
         formTester.setValue("panel:unlimitedMaxLength", true);
-        tester.executeAjaxEvent("panel:panel:form:panel:unlimitedMaxLength","onclick");
+        tester.executeAjaxEvent("panel:panel:form:panel:unlimitedMaxLength","click");
         tester.assertInvisible("panel:panel:form:panel:maxLength:maxLength");
         newFormTester("panel:panel:form");
         //setDigitRequired(false);

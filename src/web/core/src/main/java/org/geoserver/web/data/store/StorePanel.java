@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -10,13 +10,13 @@ import static org.geoserver.web.data.store.StoreProvider.NAME;
 import static org.geoserver.web.data.store.StoreProvider.WORKSPACE;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.ResourceReference;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
+import org.apache.wicket.request.resource.PackageResourceReference;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.DataStoreInfo;
@@ -61,7 +61,7 @@ public class StorePanel extends GeoServerTablePanel<StoreInfo> {
     }
 
     @Override
-    protected Component getComponentForProperty(String id, IModel itemModel,
+    protected Component getComponentForProperty(String id, IModel<StoreInfo> itemModel,
             Property<StoreInfo> property) {
 
         final CatalogIconFactory icons = CatalogIconFactory.get();
@@ -69,7 +69,7 @@ public class StorePanel extends GeoServerTablePanel<StoreInfo> {
         if (property == StoreProvider.DATA_TYPE) {
             final StoreInfo storeInfo = (StoreInfo) itemModel.getObject();
 
-            ResourceReference storeIcon = icons.getStoreIcon(storeInfo);
+            PackageResourceReference storeIcon = icons.getStoreIcon(storeInfo);
 
             Fragment f = new Fragment(id, "iconFragment", StorePanel.this);
             f.add(new Image("storeIcon", storeIcon));
@@ -81,7 +81,7 @@ public class StorePanel extends GeoServerTablePanel<StoreInfo> {
             return storeNameLink(id, itemModel);
         } else if (property == ENABLED) {
             final StoreInfo storeInfo = (StoreInfo) itemModel.getObject();
-            ResourceReference enabledIcon;
+            PackageResourceReference enabledIcon;
             if (storeInfo.isEnabled()) {
                 enabledIcon = icons.getEnabledIcon();
             } else {
@@ -133,7 +133,7 @@ public class StorePanel extends GeoServerTablePanel<StoreInfo> {
         SimpleAjaxLink linkPanel = new ConfirmationAjaxLink(id, null, resRemove, confirmRemove) {
             public void onClick(AjaxRequestTarget target) {
                 getCatalog().remove((StoreInfo) itemModel.getObject());
-                target.addComponent(StorePanel.this);
+                target.add(StorePanel.this);
             }
         };
         return linkPanel;

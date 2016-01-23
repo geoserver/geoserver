@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -16,7 +16,6 @@ import org.geoserver.web.wicket.GeoServerDataProvider.AbstractProperty;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.importer.ImportContext;
-import org.geoserver.importer.Importer;
 import org.geoserver.importer.job.Task;
 
 public class JobQueueTable extends GeoServerTablePanel<Task<ImportContext>> {
@@ -58,8 +57,8 @@ public class JobQueueTable extends GeoServerTablePanel<Task<ImportContext>> {
             }
 
             @Override
-            protected IModel newModel(Object object) {
-                return new JobModel((Task)object);
+            protected IModel<Task<ImportContext>> newModel(Task<ImportContext> object) {
+                return new JobModel(object);
             }
         });
 
@@ -69,8 +68,7 @@ public class JobQueueTable extends GeoServerTablePanel<Task<ImportContext>> {
     }
 
     @Override
-    protected Component getComponentForProperty(String id, IModel itemModel,
-            Property<Task<ImportContext>> property) {
+    protected Component getComponentForProperty(String id, IModel<Task<ImportContext>> itemModel, Property<Task<ImportContext>> property) {
         return new Label(id, property.getModel(itemModel));
     }
 

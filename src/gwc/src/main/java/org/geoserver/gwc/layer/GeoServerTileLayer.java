@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -298,7 +298,7 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
         return null;
     }
 
-    private PublishedInfo getPublishedInfo() {
+    public PublishedInfo getPublishedInfo() {
         if (publishedInfo == null) {
             synchronized (this) {
                 if(publishedInfo == null) {

@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -45,12 +45,11 @@ class MasterPasswordInfoPage extends AbstractSecurityPage {
                 }                                    
                 try {
                     if (dumpMasterPassword()) {                        
-                        info (new StringResourceModel("dumpInfo", this,null,
-                                new Object[] {new File(fileName).getCanonicalFile()}).getString());
+                        info (new StringResourceModel("dumpInfo", this).setParameters(new File(fileName).getCanonicalFile()).getString());
                     }
                         
                     else 
-                        error(new StringResourceModel("unauthorized", this,null).getString());   
+                        error(new StringResourceModel("unauthorized", this).getString());   
                 } catch (Exception e) {
                     error(e);
                 }

@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -34,9 +34,6 @@ import org.geoserver.web.GeoServerApplication;
 import org.geotools.util.logging.Logging;
 import org.opengis.filter.Filter;
 
-import com.google.common.collect.Iterators;
-import com.google.common.collect.Lists;
-
 /**
  * GeoServer specific data provider. In addition to the services provided by a SortableDataProvider
  * it can perform keyword based filtering, enum the model properties used for display and sorting.
@@ -45,8 +42,9 @@ import com.google.common.collect.Lists;
  * 
  * @param <T>
  */
-@SuppressWarnings("serial")
-public abstract class GeoServerDataProvider<T> extends SortableDataProvider {
+public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, Object> {
+    private static final long serialVersionUID = -6876929036365601443L;
+
     static final Logger LOGGER = Logging.getLogger(GeoServerDataProvider.class);
 
     /**
@@ -63,7 +61,7 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider {
      * A cache used to avoid recreating models over and over, this make it possible
      * to make {@link GeoServerTablePanel} editable
      */
-    Map<T, IModel> modelCache = new IdentityHashMap<T, IModel>();
+    Map<T, IModel<T>> modelCache = new IdentityHashMap<>();
     
     /**
      * Sets the data provider as editable, in that case the models should be preserved
@@ -189,7 +187,7 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider {
      * @see org.apache.wicket.markup.repeater.data.IDataProvider#iterator(int, int)
      */
     @Override
-    public Iterator<T> iterator(int first, int count) {
+    public Iterator<T> iterator(long first, long count) {
         List<T> items = getFilteredItems();
 
         // global sorting
@@ -202,10 +200,10 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider {
             return items.iterator();
         }
         // in memory paging
-        int last = first + count;
+        long last = first + count;
         if (last > items.size())
             last = items.size();
-        return items.subList(first, last).iterator();
+        return items.subList((int) first, (int) last).iterator();
     }
 
     /**
@@ -232,7 +230,7 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider {
      * @see org.apache.wicket.markup.repeater.data.IDataProvider#size()
      */
     @Override
-    public int size() {
+    public long size() {
         return getFilteredItems().size();
     }
 
@@ -310,7 +308,7 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider {
      * @param sort
      * @return
      */
-    protected Comparator<T> getComparator(SortParam sort) {
+    protected Comparator<T> getComparator(SortParam<?> sort) {
         if(sort == null) {
             return null;
         }
@@ -330,7 +328,7 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider {
         return null;
     }
     
-    protected Property<T> getProperty(SortParam sort){
+    protected Property<T> getProperty(SortParam<?> sort){
         if (sort == null || sort.getProperty() == null)
             return null;
 
@@ -348,9 +346,9 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider {
      * @see org.apache.wicket.markup.repeater.data.IDataProvider#model(java.lang.Object)
      */
     @Override
-    public final IModel model(Object object) {
+    public final IModel<T> model(T object) {
         if(editable) {
-            IModel result = modelCache.get((T) object);
+            IModel<T> result = modelCache.get(object);
             if(result == null) {
                 result = newModel(object);
                 modelCache.put((T) object, result);
@@ -390,8 +388,9 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider {
      * @param object
      * @return
      */
-    protected IModel newModel(Object object) {
-        return new Model((Serializable) object);
+    @SuppressWarnings("unchecked")
+    protected IModel<T> newModel(T object) {
+        return (IModel<T>) new Model<Serializable>((Serializable) object);
     }
 
     /**
@@ -420,7 +419,7 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider {
          * @param itemModel
          * @return
          */
-        public IModel getModel(IModel itemModel);
+        public IModel<?> getModel(IModel<T> itemModel);
 
         /**
          * Allows for sorting the property
@@ -447,6 +446,7 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider {
      * the getModel() method
      */
     public abstract static class AbstractProperty<T> implements Property<T> {
+        private static final long serialVersionUID = 6286992721731224988L;
         String name;
         boolean visible;
         
@@ -468,12 +468,13 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider {
          * not suitable for editable tables, if you need to make one you'll have to
          * roll your own getModel() implementation ( {@link BeanProperty} provides a good example)
          */
-        public IModel getModel(IModel itemModel) {
+        public IModel<?> getModel(IModel<T> itemModel) {
             Object value = getPropertyValue((T) itemModel.getObject());
-            if(value instanceof IModel)
-                return (IModel) value;
-            else
-                return new Model((Serializable) value);
+            if(value instanceof IModel) {
+                return (IModel<?>) value;
+            } else {
+                return new Model<Serializable>((Serializable) value);
+            }
         }
 
         public String getName() {
@@ -502,6 +503,7 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider {
      * @param <T>
      */
     public static class BeanProperty<T> extends AbstractProperty<T> {
+        private static final long serialVersionUID = 5532661316457341748L;
         String propertyPath;
 
         public BeanProperty(String key, String propertyPath) {
@@ -522,8 +524,8 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider {
          * tables: uses a property model against the bean so that writes will hit the
          * bean instead of the possibly immutable values contained in it (think a String property)
          */
-        public IModel getModel(IModel itemModel) {
-            return new PropertyModel(itemModel, propertyPath);
+        public IModel<T> getModel(IModel<T> itemModel) {
+            return new PropertyModel<T>(itemModel, propertyPath);
         }
 
         public Object getPropertyValue(T bean) {
@@ -557,6 +559,7 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider {
      * @param <T>
      */
     public static class PropertyPlaceholder<T> implements Property<T> {
+        private static final long serialVersionUID = -6605207892648199453L;
         String name;
 
         public PropertyPlaceholder(String name) {
@@ -567,7 +570,7 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider {
             return null;
         }
 
-        public IModel getModel(IModel itemModel) {
+        public IModel<T> getModel(IModel<T> itemModel) {
             return itemModel;
         }
 
@@ -608,9 +611,10 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider {
             this.property = property;
         }
 
+        @SuppressWarnings("unchecked")
         public int compare(T o1, T o2) {
-            Comparable p1 = (Comparable) property.getPropertyValue(o1);
-            Comparable p2 = (Comparable) property.getPropertyValue(o2);
+            Comparable<Object> p1 = (Comparable<Object>) property.getPropertyValue(o1);
+            Comparable<Object> p2 = (Comparable<Object>) property.getPropertyValue(o2);
 
             // what if any property is null? We assume null < (not null)
             if (p1 == null)

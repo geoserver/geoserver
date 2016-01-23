@@ -149,7 +149,7 @@ public class StatusPage extends ServerAdminPage {
                     LOGGER.log(Level.SEVERE, "Error resetting resource caches", t);
                     error(t);
                 }
-                target.addComponent(feedbackPanel);
+                target.add(feedbackPanel);
             }
         });
         
@@ -163,7 +163,7 @@ public class StatusPage extends ServerAdminPage {
                     LOGGER.log(Level.SEVERE, "An error occurred while reloading the catalog", t);
                     error(t);
                 }
-                target.addComponent(feedbackPanel);
+                target.add(feedbackPanel);
             }
         });
     }
@@ -191,7 +191,7 @@ public class StatusPage extends ServerAdminPage {
         } else {
             values.put(KEY_JAI_MEM_USAGE, "-");
         }
-        values.put(KEY_JAI_MEM_THRESHOLD, Float.toString(100.0f * jaiCache.getMemoryThreshold()));
+        values.put(KEY_JAI_MEM_THRESHOLD, Integer.toString( (int)( 100.0f * jaiCache.getMemoryThreshold()))+"%");
         values.put(KEY_JAI_TILE_THREADS, Integer.toString(jai.getTileScheduler().getParallelism()));
         values.put(KEY_JAI_TILE_THREAD_PRIORITY, Integer.toString(jai.getTileScheduler()
                 .getPriority()));
@@ -226,7 +226,7 @@ public class StatusPage extends ServerAdminPage {
         // we directly access the Mlib Image class, if in the classpath it will tell us if
         // the native extensions are available, if not, an Error will be thrown
         try {
-            Class image = Class.forName("com.sun.medialib.mlib.Image");
+            Class<?> image = Class.forName("com.sun.medialib.mlib.Image");
             return (Boolean) image.getMethod("isAvailable").invoke(null);
         } catch(Throwable e) {
             return false;

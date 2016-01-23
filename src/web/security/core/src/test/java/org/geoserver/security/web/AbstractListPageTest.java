@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -6,18 +6,18 @@
 package org.geoserver.security.web;
 
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Iterator;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.Page;
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.form.CheckBox;
-import org.apache.wicket.util.tester.FormTester;
-import org.geoserver.web.ComponentBuilder;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.junit.Before;
 import org.junit.Test;
@@ -74,11 +74,11 @@ public abstract class AbstractListPageTest<T> extends AbstractSecurityWicketTest
         MarkupContainer listView = (MarkupContainer) tester.getLastRenderedPage().get(ITEMS_PATH);
         
         @SuppressWarnings("unchecked")
-        Iterator<MarkupContainer> it = (Iterator<MarkupContainer>) listView.iterator();
+        Iterator<Component> it = (Iterator<Component>) listView.iterator();
         
         while (it.hasNext()) {
-            MarkupContainer m = it.next();
-            Component c = m.get(columnPath);
+            Component container = it.next();
+            Component c = container.get(columnPath);
             @SuppressWarnings("unchecked")
             T modelObject = (T) c.getDefaultModelObject();
             if (columnValue.equals(property.getPropertyValue(modelObject)))
@@ -108,33 +108,18 @@ public abstract class AbstractListPageTest<T> extends AbstractSecurityWicketTest
     
     
     protected void doRemove(String pathForLink) throws Exception {
-        
-        
-        GeoserverTablePanelTestPage testPage = 
-         new GeoserverTablePanelTestPage(new ComponentBuilder() {            
-            private static final long serialVersionUID = 1L;
-
-            public Component buildComponent(String id) {
-                try {
-                    return listPage(null);
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        });
-        
-        tester.startPage(testPage);
+        Page testPage = tester.startPage(listPage(null));
                 
-        String selectAllPath = testPage.getWicketPath()+":table:listContainer:selectAllContainer:selectAll";        
+        String selectAllPath = "table:listContainer:selectAllContainer:selectAll";        
         tester.assertComponent(selectAllPath, CheckBox.class);
+        CheckBox selectAllComponent = (CheckBox) tester.getComponentFromLastRenderedPage(selectAllPath);
         
-        FormTester ft = tester.newFormTester(GeoserverTablePanelTestPage.FORM);
-        ft.setValue(testPage.getComponentId()+":table:listContainer:selectAllContainer:selectAll", "true");
-        tester.executeAjaxEvent(selectAllPath, "onclick");
+        setFormComponentValue(selectAllComponent, "true");
+        tester.executeAjaxEvent(selectAllPath, "click");
         
         ModalWindow w  = (ModalWindow) tester.getLastRenderedPage().get("dialog:dialog");        
         assertNull(w.getTitle()); // window was not opened
-        tester.executeAjaxEvent(pathForLink, "onclick");
+        tester.executeAjaxEvent(pathForLink, "click");
         assertNotNull(w.getTitle()); // window was opened        
         simulateDeleteSubmit();        
         executeModalWindowCloseButtonCallback(w);

@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -15,9 +15,9 @@ import org.apache.wicket.model.IModel;
  * avoid some boilerplate code in case the link is really just a link with 
  * a label inside
  */
-@SuppressWarnings("serial")
 public class SimpleExternalLink extends Panel {
 
+    private static final long serialVersionUID = -5857914940426458362L;
     ExternalLink link;
     Label label;
 
@@ -33,11 +33,11 @@ public class SimpleExternalLink extends Panel {
         this(id, null);
     }
     
-    public SimpleExternalLink(String id, IModel model) {
+    public SimpleExternalLink(String id, IModel<String> model) {
         this(id, model, model);
     }
 
-    public SimpleExternalLink(String id, IModel linkModel, IModel labelModel) {
+    public SimpleExternalLink(String id, IModel<String> linkModel, IModel<?> labelModel) {
         super(id, linkModel);
         
         add(link = new ExternalLink("link", linkModel));

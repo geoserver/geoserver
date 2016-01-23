@@ -11,9 +11,9 @@ import java.io.UnsupportedEncodingException;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.extensions.ajax.markup.html.tabs.AjaxTabbedPanel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.StyleInfo;
@@ -102,8 +102,8 @@ public class CssDemoTest extends GeoServerWicketTestSupport {
         login();
         PageParameters pp = new PageParameters();
         String prefixedName = getLayerId(MockData.BASIC_POLYGONS);
-        pp.put("layer", prefixedName);
-        pp.put("style", prefixedName);
+        pp.add("layer", prefixedName);
+        pp.add("style", prefixedName);
         tester.startPage(CssDemoPage.class, pp);
         // print(tester.getLastRenderedPage(), true, true);
         tester.assertRenderedPage(CssDemoPage.class);
@@ -141,8 +141,8 @@ public class CssDemoTest extends GeoServerWicketTestSupport {
         login();
         PageParameters pp = new PageParameters();
         String prefixedName = getLayerId(MockData.BASIC_POLYGONS);
-        pp.put("layer", prefixedName);
-        pp.put("style", "foo");
+        pp.add("layer", prefixedName);
+        pp.add("style", "foo");
         tester.startPage(CssDemoPage.class, pp);
         // print(tester.getLastRenderedPage(), true, true);
         tester.assertRenderedPage(CssDemoPage.class);
@@ -153,7 +153,7 @@ public class CssDemoTest extends GeoServerWicketTestSupport {
         FormTester form = tester.newFormTester("main-content:style.editing:style-editor");
         form.setValue("editor:editorContainer:editorParent:editor", "* { stroke: red; }");
 
-        tester.executeAjaxEvent("main-content:style.editing:style-editor:submit", "onclick");
+        tester.executeAjaxEvent("main-content:style.editing:style-editor:submit", "click");
 
         BufferedReader reader = cat.getResourcePool().readStyle(foo);
         String content = IOUtils.toString(reader);

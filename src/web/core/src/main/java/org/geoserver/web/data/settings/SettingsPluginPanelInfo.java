@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2014 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -28,7 +28,7 @@ import org.geoserver.web.data.workspace.WorkspaceEditPage;
  */
 public class SettingsPluginPanelInfo extends ComponentInfo<SettingsPluginPanel> implements
         ExtensionPriority {
-
+    private static final long serialVersionUID = 3630664243092125954L;
     private int priority = 50;
 
     public SettingsPluginPanel getPluginPanel(String id, IModel<SettingsInfo> model)
@@ -61,13 +61,18 @@ public class SettingsPluginPanelInfo extends ComponentInfo<SettingsPluginPanel> 
      * @param application
      * @return
      */
-    public static ListView createExtensions(String id, final IModel<SettingsInfo> model,
+    public static ListView<SettingsPluginPanelInfo> createExtensions(String id, final IModel<SettingsInfo> model,
             GeoServerApplication application) {
         // List of all the pluggable components
         List<SettingsPluginPanelInfo> panels = application
                 .getBeansOfType(SettingsPluginPanelInfo.class);
 
         return new ListView<SettingsPluginPanelInfo>(id, panels) {
+
+            /**
+             * 
+             */
+            private static final long serialVersionUID = 3967381810650109343L;
 
             @Override
             protected void populateItem(ListItem<SettingsPluginPanelInfo> item) {

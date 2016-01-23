@@ -1,9 +1,9 @@
-.. _sec_auth_owsrest:
+.. _security_auth_owsrest:
 
 Authentication to OWS and REST services
 =======================================
 
-OWS and REST services are stateless and have no inherent awareness of "session", so the authentication scheme for these services requires the client to supply credentials on every request. That said, "session integration" is supported, meaning that if a session already exists on the server (from a concurrent :ref:`authenticated web admin session <sec_auth_webadmin>`) it will be used for authentication. This scheme allows GeoServer to avoid the overhead of session creation for OWS and REST services.
+OWS and REST services are stateless and have no inherent awareness of "session", so the authentication scheme for these services requires the client to supply credentials on every request. That said, "session integration" is supported, meaning that if a session already exists on the server (from a concurrent :ref:`authenticated web admin session <security_auth_webadmin>`) it will be used for authentication. This scheme allows GeoServer to avoid the overhead of session creation for OWS and REST services.
 
 The default GeoServer configuration ships with support for `HTTP Basic authentication <http://en.wikipedia.org/wiki/Basic_access_authentication>`_  for services.
 
@@ -38,7 +38,7 @@ In this example the filter chain consists of three filters:
 
 The provider chain is made up of two providers:
 
-* **Root**—:ref:`sec_root` has a special "super user" provider. As this account is rarely used, this provider is rarely invoked.
+* **Root**—:ref:`security_root` has a special "super user" provider. As this account is rarely used, this provider is rarely invoked.
 * **Username/password**—Performs username/password authentication against a user database
 
 To illustrate how the elements of the various chains work, here are some example OWS requests. 

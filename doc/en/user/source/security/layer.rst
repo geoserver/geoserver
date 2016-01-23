@@ -1,13 +1,13 @@
-.. _sec_layer:
+.. _security_layer:
 
 Layer security
 ==============
 
 GeoServer allows access to be determined on a per-layer basis.
 
-.. note::  Layer security and :ref:`sec_service` cannot be combined. For example, it is not possible to specify access to a specific OWS service, only for one specific layer.
+.. note::  Layer security and :ref:`security_service` cannot be combined. For example, it is not possible to specify access to a specific OWS service, only for one specific layer.
 
-Providing access to layers is linked to :ref:`roles <sec_rolesystem_roles>`. Layers and roles are linked in a file called ``layers.properties``, which is located in the ``security`` directory in your GeoServer data directory. The file contains the rules that control access to workspaces and layers.
+Providing access to layers is linked to :ref:`roles <security_rolesystem_roles>`. Layers and roles are linked in a file called ``layers.properties``, which is located in the ``security`` directory in your GeoServer data directory. The file contains the rules that control access to workspaces and layers.
 
 Rules
 -----
@@ -52,9 +52,10 @@ The syntax is::
 
 .. list-table::
    :widths: 20 80
+   :header-rows: 1
 
-   * - **Option**
-     - **Description**
+   * - Option
+     - Description
    * - ``hide``
      - *(Default)* Hides layers that the user does not have read access to, and behaves as if a layer is read only if the user does not have write permissions. The capabilities documents will not contain the layers the current user cannot access. This is the highest security mode. As a result, it may not work very well with clients such as uDig or Google Earth.
    * - ``challenge``

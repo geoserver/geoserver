@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -26,11 +26,12 @@ import org.geoserver.wps.executor.WPSExecutionManager;
  * 
  * @author Andrea Aime - GeoSolutions
  */
+@SuppressWarnings("serial")
 public class ProcessStatusPage extends GeoServerSecuredPage {
 
     private GeoServerTablePanel<ExecutionStatus> table;
 
-    private AjaxLink dismissSelected;
+    private AjaxLink<Void> dismissSelected;
 
     private GeoServerDialog dialog;
 
@@ -40,7 +41,7 @@ public class ProcessStatusPage extends GeoServerSecuredPage {
         table = new GeoServerTablePanel<ExecutionStatus>("table", provider, true) {
 
             @Override
-            protected Component getComponentForProperty(String id, IModel itemModel,
+            protected Component getComponentForProperty(String id, IModel<ExecutionStatus> itemModel,
                     Property<ExecutionStatus> property) {
                 // have the base class create a label for us
                 return null;
@@ -49,7 +50,7 @@ public class ProcessStatusPage extends GeoServerSecuredPage {
             @Override
             protected void onSelectionUpdate(AjaxRequestTarget target) {
                 dismissSelected.setEnabled(table.getSelection().size() > 0);
-                target.addComponent(dismissSelected);
+                target.add(dismissSelected);
             }
 
         };
@@ -73,7 +74,8 @@ public class ProcessStatusPage extends GeoServerSecuredPage {
         return header;
     }
 
-    protected final class ProcessDismissLink extends AjaxLink {
+    protected final class ProcessDismissLink extends AjaxLink<Void> {
+        
         protected ProcessDismissLink(String id) {
             super(id);
         }
@@ -119,8 +121,8 @@ public class ProcessStatusPage extends GeoServerSecuredPage {
                     // occurred, so refresh the table
                     if (table.getSelection().size() == 0) {
                         setEnabled(false);
-                        target.addComponent(ProcessDismissLink.this);
-                        target.addComponent(table);
+                        target.add(ProcessDismissLink.this);
+                        target.add(table);
                     }
                 }
                 

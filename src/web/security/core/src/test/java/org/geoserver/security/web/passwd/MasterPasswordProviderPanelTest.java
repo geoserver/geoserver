@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -67,7 +67,7 @@ public class MasterPasswordProviderPanelTest extends AbstractSecurityNamedServic
         
         activatePanel();
         
-        assertEquals(1, countItmes());
+        assertEquals(1, countItems());
         assertNotNull(getSecurityNamedServiceConfig("default"));
         
         assertNull(getSecurityNamedServiceConfig("xxxxxxxx"));
@@ -84,7 +84,7 @@ public class MasterPasswordProviderPanelTest extends AbstractSecurityNamedServic
         clickCancel();
         
         tester.assertRenderedPage(basePage.getClass());
-        assertEquals(1, countItmes());
+        assertEquals(1, countItems());
         assertNotNull(getSecurityNamedServiceConfig("default"));
         assertNull(getSecurityNamedServiceConfig("default2"));
 
@@ -97,7 +97,7 @@ public class MasterPasswordProviderPanelTest extends AbstractSecurityNamedServic
         clickSave();
 
         tester.assertRenderedPage(basePage.getClass());
-        assertEquals(2, countItmes());
+        assertEquals(2, countItems());
         assertNotNull(getSecurityNamedServiceConfig("default"));
         assertNotNull(getSecurityNamedServiceConfig("default2"));
         
@@ -152,11 +152,11 @@ public class MasterPasswordProviderPanelTest extends AbstractSecurityNamedServic
         getSecurityManager().saveMasterPasswordProviderConfig(config);
         activatePanel();
 
-        assertEquals(2, countItmes());
+        assertEquals(2, countItems());
         
         doRemove(null, "default2");
         assertNull(getSecurityManager().loadMasterPassswordProviderConfig("default2"));
-        assertEquals(1, countItmes());
+        assertEquals(1, countItems());
     }
 
 }

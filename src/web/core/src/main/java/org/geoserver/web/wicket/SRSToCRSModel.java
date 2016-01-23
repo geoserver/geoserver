@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -17,16 +17,16 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
  * A model allowing to edit an SRS property with the CRSPanel (by dynamically
  * converting it into a {@link CoordinateReferenceSystem} and back)
  */
-@SuppressWarnings("serial")
-public class SRSToCRSModel implements IModel {
+public class SRSToCRSModel implements IModel<CoordinateReferenceSystem> {
+    private static final long serialVersionUID = 1887687559796645124L;
     private static final Logger LOGGER = Logging.getLogger(SRSToCRSModel.class);
-    IModel srsModel; 
+    IModel<String> srsModel; 
     
-    public SRSToCRSModel(IModel srsModel) {
+    public SRSToCRSModel(IModel<String> srsModel) {
         this.srsModel = srsModel;
     }
 
-    public Object getObject() {
+    public CoordinateReferenceSystem getObject() {
         String srs = (String) srsModel.getObject();
         if(srs == null || "UNKNOWN".equals(srs))
             return null;
@@ -37,7 +37,7 @@ public class SRSToCRSModel implements IModel {
         }
     }
 
-    public void setObject(Object object) {
+    public void setObject(CoordinateReferenceSystem object) {
         CoordinateReferenceSystem crs = (CoordinateReferenceSystem) object;
         try {
             Integer epsgCode = CRS.lookupEpsgCode(crs, false);

@@ -1,4 +1,4 @@
-/* (c) 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2015-2016 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -9,7 +9,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.ResourceReference;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
@@ -24,9 +23,9 @@ import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
-import org.apache.wicket.validation.IValidatable;
-import org.apache.wicket.validation.ValidationError;
-import org.apache.wicket.validation.validator.AbstractValidator;
+import org.apache.wicket.request.resource.PackageResourceReference;
+import org.apache.wicket.util.visit.IVisit;
+import org.apache.wicket.validation.validator.RangeValidator;
 import org.geoserver.web.GeoServerBasePage;
 import org.geoserver.web.netcdf.NetCDFSettingsContainer.GlobalAttribute;
 import org.geoserver.web.wicket.GeoServerAjaxFormLink;
@@ -43,10 +42,10 @@ public class NetCDFPanel<T extends NetCDFSettingsContainer> extends FormComponen
 
     protected final TextField<Integer> compressionLevel;
 
-    public static final ResourceReference ADD_ICON = new ResourceReference(GeoServerBasePage.class,
-            "img/icons/silk/add.png");
+    public static final PackageResourceReference ADD_ICON = new PackageResourceReference(
+            GeoServerBasePage.class, "img/icons/silk/add.png");
 
-    public static final ResourceReference DELETE_ICON = new ResourceReference(
+    public static final PackageResourceReference DELETE_ICON = new PackageResourceReference(
             GeoServerBasePage.class, "img/icons/silk/delete.png");
 
     protected final DropDownChoice<DataPacking> dataPacking;
@@ -77,31 +76,7 @@ public class NetCDFPanel<T extends NetCDFSettingsContainer> extends FormComponen
         dataPacking.setOutputMarkupId(true);
         container.add(dataPacking);        
 
-        compressionLevel.add(new AbstractValidator<Integer>() {
-
-            @Override
-            public boolean validateOnNullValue() {
-                return true;
-            }
-
-            @Override
-            protected void onValidate(IValidatable<Integer> validatable) {
-                if (validatable != null && validatable.getValue() != null) {
-                    Integer value = validatable.getValue();
-                    if (value < 0) {
-                        ValidationError error = new ValidationError();
-                        error.setMessage(new ParamResourceModel(
-                                "NetCDFOutSettingsPanel.lowCompression", null, "").getObject());
-                        validatable.error(error);
-                    } else if (value > 9) {
-                        ValidationError error = new ValidationError();
-                        error.setMessage(new ParamResourceModel(
-                                "NetCDFOutSettingsPanel.highCompression", null, "").getObject());
-                        validatable.error(error);
-                    }
-                }
-            }
-        });
+        compressionLevel.add(new RangeValidator(0, 9));
         container.add(compressionLevel);
 
         IModel<List<GlobalAttribute>> attributeModel = new PropertyModel(netcdfModel,
@@ -137,8 +112,8 @@ public class NetCDFPanel<T extends NetCDFSettingsContainer> extends FormComponen
                         list.remove(attribute);
                         globalAttributes.setModelObject(list);
                         item.remove();
-
-                        target.addComponent(container);
+                        
+                        target.add(container);
                     }
                 };
                 removeLink.setDefaultModel(item.getModel());
@@ -179,7 +154,7 @@ public class NetCDFPanel<T extends NetCDFSettingsContainer> extends FormComponen
                     newKey.setModel(Model.of("")); // Reset the key field
                     newValue.setModel(Model.of("")); // Reset the Value field
 
-                    target.addComponent(container);
+                    target.add(container);
                 }
             }
         };
@@ -192,16 +167,11 @@ public class NetCDFPanel<T extends NetCDFSettingsContainer> extends FormComponen
     }
 
     @Override
-    protected void convertInput() {
-        globalAttributes.visitChildren(new Component.IVisitor<Component>() {
-
-            @Override
-            public Object component(Component component) {
-                if (component instanceof FormComponent) {
-                    FormComponent<?> formComponent = (FormComponent<?>) component;
-                    formComponent.processInput();
-                }
-                return Component.IVisitor.CONTINUE_TRAVERSAL;
+    public void convertInput() {
+        globalAttributes.visitChildren((component, visit) -> {
+            if (component instanceof FormComponent) {
+                FormComponent<?> formComponent = (FormComponent<?>) component;
+                formComponent.processInput();
             }
         });
         compressionLevel.processInput();

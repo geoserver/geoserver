@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -81,12 +81,12 @@ public class ComplexInputPanel extends Panel {
 
         updateEditor();
 
-        typeChoice.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+        typeChoice.add(new AjaxFormComponentUpdatingBehavior("change") {
 
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
                 updateEditor();
-                target.addComponent(ComplexInputPanel.this);
+                target.add(ComplexInputPanel.this);
             }
 
         });
@@ -139,7 +139,7 @@ public class ComplexInputPanel extends Panel {
 
             // we need to update the raster own bounding box as wcs requests
             // mandate a spatial extent (why oh why???)
-            layer.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+            layer.add(new AjaxFormComponentUpdatingBehavior("change") {
 
                 @Override
                 protected void onUpdate(AjaxRequestTarget target) {
@@ -176,14 +176,14 @@ public class ComplexInputPanel extends Panel {
             bodyContainer.add(body);
             bodyContainer.setVisible(false);
 
-            method.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+            method.add(new AjaxFormComponentUpdatingBehavior("change") {
 
                 @Override
                 protected void onUpdate(AjaxRequestTarget target) {
                     boolean post = method.getModelObject() == ReferenceConfiguration.Method.POST;
                     bodyContainer.setVisible(post);
                     body.setRequired(post);
-                    target.addComponent(ComplexInputPanel.this);
+                    target.add(ComplexInputPanel.this);
                 }
             });
 
@@ -222,7 +222,7 @@ public class ComplexInputPanel extends Panel {
                     // turn the GUI request into an actual WPS request
                     xml.setModelObject(getExecuteXML());
 
-                    target.addComponent(xml);
+                    target.add(xml);
                 }
 
             });

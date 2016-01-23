@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -18,10 +18,11 @@ import org.apache.wicket.validation.IValidator;
  * 
  * @author Gabriel Roldan
  */
-@SuppressWarnings("serial")
-public class TextParamPanel extends Panel implements ParamPanel {
+public class TextParamPanel<T> extends Panel implements ParamPanel {
 
-    private TextField textField;
+    private static final long serialVersionUID = 5498443514886175158L;
+	
+    private TextField<T> textField;
     
     /**
      * 
@@ -33,8 +34,9 @@ public class TextParamPanel extends Panel implements ParamPanel {
      * @param validators
      *            any extra validator that should be added to the input field, or {@code null}
      */
-    public TextParamPanel(final String id, final IModel paramValue, final IModel paramLabelModel,
-            final boolean required, IValidator... validators) {
+    @SafeVarargs
+	public TextParamPanel(final String id, final IModel<T> paramValue, final IModel<String> paramLabelModel,
+            final boolean required, IValidator<T>... validators) {
         // make the value of the text field the model of this panel, for easy value retrieval
         super(id, paramValue);
 
@@ -44,14 +46,14 @@ public class TextParamPanel extends Panel implements ParamPanel {
         add(label);
 
         // the text field, with a decorator for validations
-        textField = new TextField("paramValue", paramValue);
+        textField = new TextField<T>("paramValue", paramValue);
         textField.setRequired(required);
         // set the label to be the paramLabelModel otherwise a validation error would look like
         // "Parameter 'paramValue' is required"
         textField.setLabel(paramLabelModel);
 
         if (validators != null) {
-            for (IValidator validator : validators) {
+            for (IValidator<T> validator : validators) {
                 textField.add(validator);
             }
         }
@@ -64,7 +66,7 @@ public class TextParamPanel extends Panel implements ParamPanel {
      * The text field stored inside the panel. 
      * @return
      */
-    public FormComponent getFormComponent() {
+    public FormComponent<T> getFormComponent() {
         return textField;
     }
 }

@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -63,17 +63,17 @@ public class IStylePanel extends Panel {
                     return ((LayerInfo)object).getName();
                 }
         }));
-        layerChoice.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+        layerChoice.add(new AjaxFormComponentUpdatingBehavior("change") {
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
                 LayerInfo l = (LayerInfo) layerChoice.getModelObject();
                 mapPanel.update(l, null, target);
 
                 updateStyles(l);
-                target.addComponent(styleChoice);
+                target.add(styleChoice);
                 
                 updateSLD();
-                target.addComponent(sldTextArea);
+                target.add(sldTextArea);
             }
         });
         layerChoice.setModelObject(layer);
@@ -86,14 +86,14 @@ public class IStylePanel extends Panel {
                     return ((StyleInfo)object).getName();
                 }
         }));
-        styleChoice.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+        styleChoice.add(new AjaxFormComponentUpdatingBehavior("change") {
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
                 StyleInfo s = (StyleInfo) styleChoice.getModelObject();
                 mapPanel.update(null,s,target);
                 
                 updateSLD();
-                target.addComponent(sldTextArea);
+                target.add(sldTextArea);
             }
         });
         updateStyles(layer);

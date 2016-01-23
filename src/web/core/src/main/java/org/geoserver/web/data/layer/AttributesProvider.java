@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -12,6 +12,9 @@ import java.util.List;
 import org.geoserver.web.wicket.GeoServerDataProvider;
 
 class AttributesProvider extends GeoServerDataProvider<AttributeDescription> {
+
+    /** serialVersionUID */
+    private static final long serialVersionUID = -1478240785822735763L;
 
     List<AttributeDescription> attributes = new ArrayList<AttributeDescription>();
 

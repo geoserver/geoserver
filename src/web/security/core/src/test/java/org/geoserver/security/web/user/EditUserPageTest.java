@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -129,7 +129,6 @@ public class EditUserPageTest extends AbstractUserPageTest {
         
         newFormTester();
         assignRole(GeoServerRole.ADMIN_ROLE.getAuthority());
-        newFormTester();        
         form.submit("save");
         
         SortedSet<GeoServerRole> roleList = gaService.getRolesForUser("user1");

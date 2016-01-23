@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -57,9 +57,9 @@ public class UserPanel extends Panel {
             @Override
             protected void onSelectionUpdate(AjaxRequestTarget target) {
                 removal.setEnabled(users.getSelection().size() > 0);
-                target.addComponent(removal);
+                target.add(removal);
                 removalWithRoles.setEnabled(users.getSelection().size() > 0);
-                target.addComponent(removalWithRoles);
+                target.add(removalWithRoles);
             }
         });
         users.setOutputMarkupId(true);

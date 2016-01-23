@@ -130,7 +130,7 @@ public class GlobalContactTest extends CatalogRESTTestSupport {
         assertEquals("Chief Geographer", contactInfo.get("contactPosition").toString());
         assertEquals("ContactPerson", contactInfo.get("contactPerson").toString());
         assertEquals("The White House", contactInfo.get("addressDeliveryPoint").toString());
-        assertEquals("info@whitehouse.gov", contactInfo.get("addressElectronicMailAddress").toString());
+        assertEquals("chief.geographer@mail.com", contactInfo.get("addressElectronicMailAddress").toString());
     }
 
 }

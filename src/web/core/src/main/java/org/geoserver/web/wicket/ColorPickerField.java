@@ -5,8 +5,6 @@
  */
 package org.geoserver.web.wicket;
 
-import java.awt.Color;
-
 import org.apache.wicket.Component;
 import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.behavior.Behavior;

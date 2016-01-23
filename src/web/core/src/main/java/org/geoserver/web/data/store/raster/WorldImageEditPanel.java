@@ -10,7 +10,7 @@ import org.apache.wicket.markup.html.form.Form;
 @SuppressWarnings("serial")
 public class WorldImageEditPanel extends AbstractRasterFileEditPanel {
 
-    public WorldImageEditPanel(String componentId, Form storeEditForm) {
+    public WorldImageEditPanel(String componentId, Form<?> storeEditForm) {
         super(componentId, storeEditForm, new String[] { ".png", ".tiff", ".tif", ".jpeg", ".jpg", ".gif" });
     }
 

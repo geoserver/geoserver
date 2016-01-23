@@ -45,9 +45,6 @@ public class ColorPickerPanel extends Panel {
 
 		// the color picker. Notice that we need to convert between RRGGBB and
 		// #RRGGBB,
-		// passing in a Color.class param is just a trick to force the component
-		// to use
-		// the converter both ways
 		ColorPickerField textField = new ColorPickerField("paramValue", paramVale) {
                     private static final long serialVersionUID = 4185457152965032989L;
 

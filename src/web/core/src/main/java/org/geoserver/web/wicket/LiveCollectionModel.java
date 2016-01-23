@@ -19,22 +19,23 @@ import org.apache.wicket.model.IModel;
  * "live collection", that is, a list that is supposed to be modified directly,
  * as opposed thru setting it again with a property setter
  */
-@SuppressWarnings("serial")
-public abstract class LiveCollectionModel implements IModel {
-    IModel wrapped;
+public abstract class LiveCollectionModel<S, T extends Collection<S>> implements IModel<T> {
+    private static final long serialVersionUID = 3505518156788420409L;
+    
+    IModel<? extends Collection<S>> wrapped;
 
-    public LiveCollectionModel(IModel wrapped) {
+    public LiveCollectionModel(IModel<? extends Collection<S>> wrapped) {
         if (wrapped == null)
             throw new NullPointerException(
                     "Live list model cannot wrap a null model");
         this.wrapped = wrapped;
     }
 
-    public void setObject(Object object) {
-        Collection collection = (Collection) wrapped.getObject();
+    public void setObject(T object) {
+        Collection<S> collection = wrapped.getObject();
         collection.clear();
         if(object != null) {
-            collection.addAll((Collection) object);
+            collection.addAll(object);
         }
     }
 
@@ -45,11 +46,13 @@ public abstract class LiveCollectionModel implements IModel {
     /**
      * Returns a model for live lists
      */
-    public static LiveCollectionModel list(IModel wrapped) {
-        return new LiveCollectionModel(wrapped) {
+    public static <S> LiveCollectionModel<S, List<S>> list(IModel<? extends Collection<S>> wrapped) {
+        return new LiveCollectionModel<S, List<S>>(wrapped) {
 
-            public Object getObject() {
-                return new ArrayList((List) wrapped.getObject());
+            private static final long serialVersionUID = 3182237972594668864L;
+
+            public List<S> getObject() {
+                return new ArrayList<S>(wrapped.getObject());
             }
             
         };
@@ -58,11 +61,13 @@ public abstract class LiveCollectionModel implements IModel {
     /**
      * Returns a model for live sets
      */
-    public static LiveCollectionModel set(IModel wrapped) {
-        return new LiveCollectionModel(wrapped) {
+    public static <S> LiveCollectionModel<S, Set<S>> set(IModel<? extends Collection<S>> wrapped) {
+        return new LiveCollectionModel<S, Set<S>>(wrapped) {
 
-            public Object getObject() {
-                return new HashSet((Set) wrapped.getObject());
+            private static final long serialVersionUID = 7638792616781214296L;
+
+            public Set<S> getObject() {
+                return new HashSet<S>(wrapped.getObject());
             }
             
         };

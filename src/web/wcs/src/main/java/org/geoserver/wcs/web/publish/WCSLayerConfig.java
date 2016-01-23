@@ -103,7 +103,7 @@ public class WCSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
                 new WCSInterpolationModel()));
  
         Palette<String> interpolationMethods = new Palette<String>("interpolationMethods", LiveCollectionModel
-                .list(new PropertyModel<String>(coverage, "interpolationMethods")),
+                .list(new PropertyModel<List<String>>(coverage, "interpolationMethods")),
                 new WCSInterpolationModel(), new SimpleChoiceRenderer(), 7, false) {
             private static final long serialVersionUID = 6815545819673802290L;
 
@@ -134,7 +134,7 @@ public class WCSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
         add(nativeFormat);
 
         Palette<String> formatPalette = new Palette<String>("formatPalette", LiveCollectionModel
-                .list(new PropertyModel<String>(coverage, "supportedFormats")), new WCSFormatsModel(),
+                .list(new PropertyModel<List<String>>(coverage, "supportedFormats")), new WCSFormatsModel(),
                 new SimpleChoiceRenderer(), 10, false) {
             private static final long serialVersionUID = -2463012775305597908L;
 

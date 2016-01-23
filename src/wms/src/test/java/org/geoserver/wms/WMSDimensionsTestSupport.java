@@ -5,8 +5,6 @@
  */
 package org.geoserver.wms;
 
-import static org.junit.Assert.assertEquals;
-
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
@@ -192,7 +190,8 @@ public abstract class WMSDimensionsTestSupport extends WMSTestSupport {
      * @param tolerance
      */
     protected static void assertDateEquals(java.util.Date d1, java.util.Date d2, long tolerance) {
-        assertEquals(d1.getTime(), d2.getTime(), tolerance);
+        long difference = Math.abs(d1.getTime() - d2.getTime());
+        assert(difference <= tolerance);
     }
 
 

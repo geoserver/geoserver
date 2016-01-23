@@ -5,6 +5,7 @@
  */
 package org.geoserver.web.data.store.panel;
 
+import java.awt.Color;
 import java.util.Locale;
 
 import org.apache.wicket.markup.html.basic.Label;
@@ -20,10 +21,11 @@ import org.geoserver.web.wicket.ColorPickerField;
  * 
  * @author Gabriel Roldan
  */
-@SuppressWarnings("serial")
 public class ColorPickerPanel extends Panel {
 
-	/**
+	private static final long serialVersionUID = 6661147317307298452L;
+
+        /**
 	 * 
 	 * @param validators
 	 *            any extra validator that should be added to the input field,
@@ -47,13 +49,16 @@ public class ColorPickerPanel extends Panel {
 		// to use
 		// the converter both ways
 		ColorPickerField textField = new ColorPickerField("paramValue", paramVale) {
+                    private static final long serialVersionUID = 4185457152965032989L;
+
                     @SuppressWarnings("unchecked")
                     @Override
                     public <C> IConverter<C> getConverter(Class<C> type) {
                         if (type.isAssignableFrom(String.class)) {
                             return (IConverter<C>) new IConverter<String>() {            
-                                public String convertToString(String value, Locale locale) {
-                                    String input = (String) value;
+                                private static final long serialVersionUID = 4343895199315509104L;
+
+                                public String convertToString(String input, Locale locale) {
                                     if (input.startsWith("#")) {
                                         return input.substring(1);
                                     } else {

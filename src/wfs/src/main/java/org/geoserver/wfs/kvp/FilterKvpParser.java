@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringReader;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -81,7 +82,9 @@ public abstract class FilterKvpParser extends KvpParser {
                 InputStream input = new ByteArrayInputStream(string.getBytes());
 
                 try {
-                    Filter filter = (Filter) parser.parse(input);
+                    InputSource inputSource = new InputSource(input);
+                    inputSource.setEncoding(Charset.defaultCharset().name());
+                    Filter filter = (Filter) parser.parse(inputSource);
 
                     if (filter == null) {
                         throw new NullPointerException();

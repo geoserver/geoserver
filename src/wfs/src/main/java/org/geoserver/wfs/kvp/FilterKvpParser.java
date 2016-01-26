@@ -1,13 +1,11 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wfs.kvp;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -23,10 +21,10 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.ows.KvpParser;
 import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.platform.ServiceException;
+import org.geoserver.util.EntityResolverProvider;
 import org.geotools.filter.FilterFilter;
 import org.geotools.gml.GMLFilterDocument;
 import org.geotools.gml.GMLFilterGeometry;
-import org.geoserver.util.EntityResolverProvider;
 import org.geotools.xml.Configuration;
 import org.geotools.xml.Parser;
 import org.opengis.filter.Filter;
@@ -78,10 +76,8 @@ public abstract class FilterKvpParser extends KvpParser {
             if ("".equals(string.trim())) {
                 filters.add(Filter.INCLUDE);
             } else {
-                InputStream input = new ByteArrayInputStream(string.getBytes());
-
                 try {
-                    Filter filter = (Filter) parser.parse(input);
+                    Filter filter = (Filter) parser.parse(new StringReader(string));
 
                     if (filter == null) {
                         throw new NullPointerException();

@@ -1127,11 +1127,13 @@
 		<version>1.5.1</version>
 		<scope>test</scope>
     </dependency>
+    <!-- Pinned transitive dependency of gs-gwc-s3 via gwc-aws-s3 via aws-java-sdk-core. -->
+    <!-- Other code should use Java 8 JSR 310 java.time instead of joda-time. -->
     <dependency>
       <groupId>joda-time</groupId>
       <artifactId>joda-time</artifactId>
-      <version>2.9.1</version> 
-    </dependency>	
+      <version>${joda-time.version}</version> 
+    </dependency>
     <dependency>
       <groupId>it.geosolutions.imageio-ext</groupId>
       <artifactId>imageio-ext-png</artifactId>
@@ -1674,6 +1676,7 @@
   <hibernate-spatial-version>1.1.1</hibernate-spatial-version>
   <hibernate-spatial-h2-version>1.1.1</hibernate-spatial-h2-version>
   <slf4j.version>1.7.10</slf4j.version>
+  <joda-time.version>2.8.1</joda-time.version>
  </properties>
 
  <profiles>

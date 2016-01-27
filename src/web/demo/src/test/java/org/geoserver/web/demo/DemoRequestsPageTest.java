@@ -221,7 +221,7 @@ public class DemoRequestsPageTest extends GeoServerWicketTestSupport {
             assertTrue(model.getObject() instanceof DemoRequest);
             DemoRequest req = (DemoRequest) model.getObject();
     
-            assertEquals(demoDir.getPath(), req.getDemoDir());
+            assertEquals(Files.asResource(demoDir).path(), req.getDemoDir());
             String requestFileName = req.getRequestFileName();
             String requestUrl = req.getRequestUrl();
     

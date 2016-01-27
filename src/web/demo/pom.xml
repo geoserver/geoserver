@@ -22,7 +22,7 @@
   <artifactId>gs-web-demo</artifactId>
   <packaging>jar</packaging>
   <version>2.9-SNAPSHOT</version>
-  <name>Demoes Module</name>
+  <name>Demos Module</name>
   
   <dependencies>
     <dependency>

@@ -30,6 +30,8 @@ Once on the WMS configuration page, there will be a block titled :guilabel:`INSP
 
 After clicking :guilabel:`Submit` on this page, any changes will be immediately reflected in the WMS 1.3.0 capabilities document.
 
+.. note:: At the time of writing the `INSPIRE Schemas <http://inspire.ec.europa.eu/schemas/common/1.0/common.xsd>`_ only allow 23 choices for :guilabel:`Language`. The GeoServer INSPIRE extension allows some other languages to be chosen. If you choose one of these your capabilities document won't be Schema valid but, as discussed in :geos:`issue 7388 <7388>`, the INSPIRE Schemas seem to be at fault. If you have some other language you want adding to the list then please :ref:`raise the issue <getting_involved>`.
+
 .. note:: The :guilabel:`Service Metadata URL` field is mandatory so you will not be allowed to submit a blank value.
 
 .. note:: The :guilabel:`Service Metadata Type` combo box only allows to select the appropriate MIME type for a CSW response or standalone metadata file or to omit a value altogether. If you think other values would be useful you could raise the issue on the :ref:`GeoServer mailing list <getting_involved>`. In the meantime it is possible to manually edit the created configuration files as a workaround.
@@ -91,6 +93,8 @@ Once on the WFS or WCS configuration page, there will be a block titled :guilabe
    *INSPIRE-related options*
 
 After clicking :guilabel:`Submit` on this page, any changes will be immediately reflected in the WFS 1.1 and WFS 2.0 or WCS 2.0 capabilities documents as appropriate.
+
+.. note:: At the time of writing the `INSPIRE Schemas <http://inspire.ec.europa.eu/schemas/common/1.0/common.xsd>`_ only allow 23 choices for :guilabel:`Language`. The GeoServer INSPIRE extension allows some other languages to be chosen. If you choose one of these your capabilities document won't be Schema valid but, as discussed in :geos:`issue 7388 <7388>`, the INSPIRE Schemas seem to be at fault. If you have some other language you want adding to the list then please :ref:`raise the issue <getting_involved>`.
 
 .. note:: The :guilabel:`Service Metadata URL` field and at least one :guilabel:`Spatial dataset identifers` entry are mandatory so you will not be allowed to submit the page without these.
 

@@ -1,0 +1,22 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+  <body>
+    <wicket:panel>
+    <fieldset>
+      <legend><span><wicket:message key="connectionParameters">Connection Parameters</wicket:message></span></legend>
+    	<div>
+        <label for="geogig_repository">Repository</label>
+      	<select wicket:id="geogig_repository" id="geogig_repository" class="text" style="width:50%"></select>
+      </div>
+		  <div>
+		    <ul>
+		      <li><a class="add-link" href="#" wicket:id="importExisting"><wicket:message key="RepositoriesPage.importExisting"/></a></li>
+		      <li><a class="add-link" href="#" wicket:id="addNew"><wicket:message key="RepositoriesPage.addNew"/></a></li>
+		    </ul>
+		  </div>
+      
+      <div><span wicket:id="branch"></span></div>
+			<div wicket:id="modalWindow"></div>
+    </fieldset>
+    </wicket:panel>
+  </body>
+</html>

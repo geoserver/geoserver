@@ -1,0 +1,38 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<head></head>
+<body>
+<wicket:panel>
+  <h3><wicket:message key="RemoteEditPanel.title">Remote Repository Configuration</wicket:message></h3>
+  <form wicket:id="form">
+  	<ul>
+  		<li>
+    		<fieldset>
+          <legend><span><wicket:message key="connectionInfo">Connection Info</wicket:message></span></legend>
+          <label for="name"><wicket:message key="name">Name</wicket:message></label>
+          <input id="name" class="text" type="text" wicket:id="name"></input>
+          <label for="url"><wicket:message key="url">Location</wicket:message></label>
+          <input id="url" class="text" type="text" wicket:id="url"></input>
+    		</fieldset>
+			</li>
+			<li>
+    		<fieldset>
+          <legend><span><wicket:message key="basicAuth">Auth settings</wicket:message></span></legend>
+  				<wicket:message key="basicAuth.description"/>
+          <label for="user"><wicket:message key="user">user</wicket:message></label>
+          <input id="user" class="text" type="text" wicket:id="user"></input>
+          <label for="password"><wicket:message key="password">pwd</wicket:message></label>
+          <input id="password" class="text" type="password" wicket:id="password"></input>
+    		</fieldset>
+			</li>
+			<li>
+        <div wicket:id="feedback"></div>
+		    <div class="button-group selfclear">
+		      <a href="#" wicket:id="submit"><wicket:message key="save">Save</wicket:message></a>
+		      <a href="#" wicket:id="cancel"><wicket:message key="cancel">Cancel</wicket:message></a>
+		    </div>
+			</li>
+		</ul>
+  </form>
+</wicket:panel>
+</body>
+</html>

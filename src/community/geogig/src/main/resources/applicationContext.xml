@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+
+  <bean id="geogigConfigStore" class="org.geogig.geoserver.config.ConfigStore">
+    <constructor-arg ref="resourceLoader"/>
+  </bean>
+  
+  <bean id="geogigInitializer" class="org.geogig.geoserver.config.GeoGigInitializer">
+    <constructor-arg ref="geogigConfigStore"/>
+  </bean>
+  
+  <bean id="geogigRepoManager" class="org.geogig.geoserver.config.RepositoryManager">
+    <constructor-arg ref="geogigConfigStore"/>
+  </bean>
+
+  <bean id="geoGigGeoServerLifeCycleListener" class="org.geogig.geoserver.config.GeoGigGeoServerLifeCycleListener">
+  </bean>
+
+  <bean id="geogigSecurityLogStore" class="org.geogig.geoserver.config.LogStore">
+    <constructor-arg ref="resourceLoader"/>
+  </bean>
+
+  <bean id="geogigSecurityLogger" class="org.geogig.geoserver.security.SecurityLogger">
+    <constructor-arg ref="geogigSecurityLogStore"/>
+  </bean>
+
+  <!--  REST  -->
+
+  <bean id="geogigDispatcherMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+    <property name="alwaysUseFullPath" value="true" />
+    <property name="mappings">
+      <props>
+        <prop key="/geogig">geogigDispatcher</prop>
+        <prop key="/geogig/**">geogigDispatcher</prop>
+      </props>
+    </property>
+  </bean>
+
+  <bean id="geogigDispatcher" class="org.geogig.geoserver.rest.GeogigDispatcher" >
+  </bean>
+
+  <bean id="GeogigLayerIntegrationListener" class="org.geogig.geoserver.wms.GeogigLayerIntegrationListener" >
+    <constructor-arg ref="geoServer"/>
+  </bean>
+
+  <!-- WEB UI -->
+
+  <bean id="geogigDataStorePanel" class="org.geoserver.web.data.resource.DataStorePanelInfo">
+    <property name="id" value="geogig"/>
+    <property name="factoryClass" value="org.locationtech.geogig.geotools.data.GeoGigDataStoreFactory"/>
+    <property name="iconBase" value="org.geoserver.web.GeoServerApplication"/>
+    <property name="icon" value="img/icons/geosilk/database_vector.png"/>
+    <property name="componentClass" value="org.geogig.geoserver.web.data.store.geogig.GeoGigDataStoreEditPanel"/>
+  </bean>
+  
+  <bean id="geogigCategory" class="org.geoserver.web.Category">
+    <property name="nameKey" value="category.geogig" />
+    <property name="order" value="190" />
+  </bean>
+  
+  <bean id="geogigRepositoriesPage" class="org.geoserver.web.MenuPageInfo">
+    <property name="id" value="geogigRepoConfig"/>
+    <property name="titleKey" value="RepositoriesPage.title"/>
+    <property name="descriptionKey" value="RepositoriesPage.description"/>
+    <property name="componentClass" value="org.geogig.geoserver.web.RepositoriesPage"/>
+    <property name="category" ref="geogigCategory"/>
+    <property name="icon" value="geogig_16x16_darkblue.png"/>
+    <property name="order" value="10"/>
+  </bean>
+
+  <bean id="geogigRemotesPage" class="org.geoserver.web.MenuPageInfo">
+    <property name="id" value="geogigRemotesSecurityConfig"/>
+    <property name="titleKey" value="RemotesPage.title"/>
+    <property name="descriptionKey" value="RemotesPage.description"/>
+    <property name="componentClass" value="org.geogig.geoserver.web.RemotesPage"/>
+    <property name="category" ref="geogigCategory"/>
+    <property name="icon" value="geogig_16x16_darkblue.png"/>
+    <property name="order" value="11"/>
+  </bean>
+</beans>

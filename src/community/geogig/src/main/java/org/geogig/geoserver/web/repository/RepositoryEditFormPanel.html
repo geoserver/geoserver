@@ -1,0 +1,25 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<head>
+<title><wicket:message key="title">Repositories</wicket:message></title>
+</head>
+<body>
+<wicket:panel>
+		<form wicket:id="repoForm">
+
+			<div wicket:id="repo"></div>
+	
+			<fieldset>
+	  		<legend><span>Remotes Configuration</span></legend>
+				<a class="add-link" href="#" wicket:id="addRemote"><wicket:message key="addRemote">Add remote</wicket:message></a>
+				<div wicket:id="remotes"></div>
+			</fieldset>
+	    <div class="button-group selfclear">
+	      <a href="#" wicket:id="save"><wicket:message key="save">Save</wicket:message></a>
+	      <a href="#" wicket:id="cancel"><wicket:message key="cancel">Cancel</wicket:message></a>
+	    </div>			
+		  <div wicket:id="feedback"/>
+		</form>
+    <div wicket:id="popupWindow"></div>
+</wicket:panel>
+</body>
+</html>

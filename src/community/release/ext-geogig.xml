@@ -1,0 +1,71 @@
+<assembly xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.3"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.3 http://maven.apache.org/xsd/assembly-1.1.3.xsd">
+  <id>geogig</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <fileSets>
+    <fileSet>
+      <directory>geogig/target</directory>
+      <outputDirectory></outputDirectory>
+      <includes>
+        <include>gs-web-geogig*.jar</include>
+      </includes>
+      <excludes>
+          <exclude>*test*</exclude>
+          <exclude>*sources*</exclude>
+          <exclude>*shaded*</exclude>
+      </excludes>
+    </fileSet>
+    <fileSet>
+        <directory>geogig/target/dependency</directory>
+        <outputDirectory></outputDirectory>
+        <includes>
+            <!-- GeoGig jars -->
+            <include>geogig-*.jar</include>
+            <!-- GeoGig uses SQLite JDBC drivers by default -->
+            <include>sqlite-jdbc-*.jar</include>
+            <!-- Hikari DB connection pool libs -->
+            <include>HikariCP-*.jar</include>
+            <!-- the plugin uses Logback for LogStore -->
+            <include>logback*.jar</include>
+            <!-- Guice injection libs -->
+            <include>guice-*.jar</include>
+            <include>javax.inject-*.jar</include>
+            <!-- LZW compression libs -->
+            <include>compress-lzf-*.jar</include>
+            <!-- BerkleyDB JE libs. NOTE: this should be removed once BDB is purged -->
+            <include>je-*.jar</include>
+            <!-- MapDB libs. NOTE: this should be removed once MapDB is purged -->
+            <include>mapdb-*.jar</include>
+            <!-- Eclipse annotations -->
+            <include>org.eclipse.jdt.annotation-*.jar</include>
+            <!-- OSM libs -->
+            <include>osmosis-*.jar</include>
+            <include>stax2-api-*.jar</include>
+            <include>xz-*.jar</include>
+            <include>protobuf-java-*.jar</include>
+            <include>commons-compress-*.jar</include>
+            <include>woodstox-core-asl-*.jar</include>
+            <!-- Google GSON libs -->
+            <include>gson-*.jar</include>
+            <!-- JCommander libs -->
+            <include>jcommander-*.jar</include>
+            <!-- jansi libs -->
+            <include>jansi-*.jar</include>
+            <!-- BoneCP libs. Maybe replace this with HikariCP? -->
+            <include>bonecp-*.jar</include>
+            <!-- jline libs -->
+            <include>jline-*.jar</include>
+            <!-- py4j libs -->
+            <include>py4j-*.jar</include>
+        </includes>
+        <excludes>
+            <exclude>*test*</exclude>
+            <exclude>*sources*</exclude>
+        </excludes>
+    </fileSet>
+  </fileSets>
+</assembly>

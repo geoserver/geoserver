@@ -1,0 +1,31 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<head>
+<title>Remotes</title>
+</head>
+<body>
+<wicket:extend>
+	<!--
+	<legend> Global Remote Configuration </legend>
+	<fieldset>
+		<div> <input type="checkbox"></input> <span> Log Remote Security Events </span> </div>
+		<div> <input type="checkbox"></input> <span> Use Whitelist to Restrict remotes </span> </div>
+	</fieldset>
+	-->
+	<legend> Remote Filters </legend>
+	<span>Use the table bellow to configure a white list of IP addresses or domain names 
+	to establish which remotes are allowed to interact with the repositories in this server. </span>
+	<fieldset>
+		<a class="add-link" href="#" wicket:id="whitelist.add">Add remote filter</a>
+		<div wicket:id="whitelist.rules"> </div>
+	</fieldset>
+	<fieldset>
+			<legend> Remote Security Events </legend>
+			<span>Event log for interactions with remote repositories.</span>
+			<span>Whenever a GeoServer managed repository tries to pull or push data to a remote, or viceversa,
+			a pair of events are logged. One when the command is about to be executed, and a second one with the success or error message.</span>
+			<div wicket:id="securityLogsPanel"></div>
+	</fieldset>
+	<div wicket:id="popup"></div>
+</wicket:extend>
+</body>
+</html>

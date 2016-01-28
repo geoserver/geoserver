@@ -1,0 +1,6 @@
+# (c) 2016 Open Source Geospatial Foundation - all rights reserved
+# This code is licensed under the GPL 2.0 license, available at the root
+# application directory.
+org.geogig.geoserver.gwc.TruncateTilesOnUpdateRefHook
+org.geogig.geoserver.security.NetworkSecurityHook
+org.geogig.geoserver.security.SecurityLogHook

@@ -1,0 +1,365 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.geoserver</groupId>
+    <artifactId>community</artifactId>
+    <version>2.8-SNAPSHOT</version>
+  </parent>
+
+  <groupId>org.geoserver.community</groupId>
+  <artifactId>gs-web-geogig</artifactId>
+  <packaging>jar</packaging>
+  <name>GeoGig GeoServer integration</name>
+
+  <properties>
+    <geogig.version>1.0-SNAPSHOT</geogig.version>
+    <jline.version>2.12</jline.version>
+    <mockito.version>1.8.5</mockito.version>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.locationtech.geogig</groupId>
+      <artifactId>geogig-geotools</artifactId>
+      <version>${geogig.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.locationtech.geogig</groupId>
+      <artifactId>geogig-web-api</artifactId>
+      <version>${geogig.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.locationtech.geogig</groupId>
+      <artifactId>geogig-osm</artifactId>
+      <version>${geogig.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+    </dependency>
+	<dependency>
+  		<groupId>jline</groupId>
+  		<artifactId>jline</artifactId>
+  		<version>${jline.version}</version>
+	</dependency>
+
+    <!-- 
+      The following are geotools dependencies that geogig uses but we declare explicitly
+      here with a provided scope, since we excluded all geotools transitive dependencies
+      in the geogig entries above in order to avoid having duplicates when geogig is tied
+      to a different geotools version than this project.
+     -->
+    <dependency>
+      <groupId>org.geotools</groupId>
+      <artifactId>gt-geojson</artifactId>
+      <version>${gt.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.geotools.jdbc</groupId>
+      <artifactId>gt-jdbc-postgis</artifactId>
+      <version>${gt.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.geotools.jdbc</groupId>
+      <artifactId>gt-jdbc-sqlserver</artifactId>
+      <version>${gt.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.geotools.jdbc</groupId>
+      <artifactId>gt-jdbc-oracle</artifactId>
+      <version>${gt.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.geotools</groupId>
+      <artifactId>gt-referencing</artifactId>
+      <version>${gt.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.geotools</groupId>
+      <artifactId>gt-main</artifactId>
+      <version>${gt.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.geotools</groupId>
+      <artifactId>gt-cql</artifactId>
+      <version>${gt.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.geotools</groupId>
+      <artifactId>gt-epsg-hsql</artifactId>
+      <version>${gt.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.geotools.jdbc</groupId>
+      <artifactId>gt-jdbc-spatialite</artifactId>
+      <version>${gt.version}</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>gs-main</artifactId>
+      <version>${gs.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver.web</groupId>
+      <artifactId>gs-web-core</artifactId>
+      <version>${gs.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>gs-ows</artifactId>
+      <version>${gs.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>gs-rest</artifactId>
+      <version>${gs.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>gs-wfs</artifactId>
+      <version>${gs.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>gs-gwc</artifactId>
+      <version>${gs.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>gs-restconfig</artifactId>
+      <version>${gs.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.jolbox</groupId>
+      <artifactId>bonecp</artifactId>
+      <version>0.8.0.RELEASE</version>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.hamcrest</groupId>
+      <artifactId>hamcrest-core</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.hamcrest</groupId>
+      <artifactId>hamcrest-library</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.locationtech.geogig</groupId>
+      <artifactId>geogig-core</artifactId>
+      <version>${geogig.version}</version>
+      <classifier>tests</classifier>
+      <exclusions>
+          <exclusion>
+              <groupId>ch.qos.logback</groupId>
+              <artifactId>*</artifactId>
+          </exclusion>
+      </exclusions>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver.web</groupId>
+      <artifactId>gs-web-core</artifactId>
+      <version>${gs.version}</version>
+      <classifier>tests</classifier>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.locationtech.geogig</groupId>
+      <artifactId>geogig-cli</artifactId>
+      <version>${geogig.version}</version>
+      <classifier>tests</classifier>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>gs-main</artifactId>
+      <version>${gs.version}</version>
+      <type>test-jar</type>
+      <classifier>tests</classifier>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>gs-wfs</artifactId>
+      <version>${gs.version}</version>
+      <type>test-jar</type>
+      <classifier>tests</classifier>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>gs-restconfig</artifactId>
+      <version>${gs.version}</version>
+      <type>test-jar</type>
+      <classifier>tests</classifier>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>xmlunit</groupId>
+      <artifactId>xmlunit</artifactId>
+      <scope>test</scope>
+    </dependency>    
+    <dependency>
+      <groupId>com.mockrunner</groupId>
+      <artifactId>mockrunner</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-all</artifactId>
+      <version>${mockito.version}</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>2.4.3</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <!-- exclude non used classes? -->
+              <minimizeJar>false</minimizeJar> <!-- disabled, it misses classes nonetheless -->
+              <filters>
+                <filter>
+                   <!-- 
+                    This filter tells the shade plugin to include all geogig classes,
+                    so that "minimizeJar" above doesn't miss anything when removing unused classes.
+                    -->
+                   <artifact>org.locationtech.geogig:*</artifact>
+                   <includes>
+                       <include>**</include>
+                   </includes>
+                </filter>
+              </filters>
+              <shadedArtifactAttached>true</shadedArtifactAttached>
+              <shadedClassifierName>shaded-plugin</shadedClassifierName> <!-- Any name that makes sense -->
+              <transformers>
+                <!-- 
+                  Merge the contents of META-INF/services files named the same from different jars
+                 -->
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+              </transformers>
+              <artifactSet>
+                <includes>
+                  <include>org.locationtech.geogig:*</include>
+                  <include>org.locationtech.geogig:geogig-mongodb</include>
+                  <include>org.locationtech.geogig:geogig-sqlite-xerial</include>
+                  <include>org.locationtech.geogig:geogig-sqlite-core</include>
+                  <include>net.sf.py4j:py4j</include>
+                  
+                  <include>com.beust:jcommander</include>
+                  <include>com.google.code.gson:gson</include>
+                  <include>com.googlecode.json-simple:json-simple</include>
+                  <!--include>com.google.guava:guava</include> now geoserver is on guava-17 just like geogig-->
+                  <include>com.google.inject.extensions:guice-multibindings</include>
+                  <include>com.google.inject:guice</include>
+                  <include>com.ning:compress-lzf</include>
+                  <!--<include>com.sleepycat:je</include>-->
+                  <!--<include>javax.inject:javax.inject</include>-->
+                  <include>jline:jline</include>
+                  <!--<include>org.mongodb:mongo-java-driver</include>-->
+                  <!--include>org.xerial:spatialite-jdbc</include-->
+                  <include>org.xerial:sqlite-jdbc</include>
+                  <include>com.zaxxer:HikariCP</include>
+                  
+                  <!--include>org.geotools.jdbc:gt-jdbc-spatialite</include-->
+                  <!--include>org.geotools:gt-geojson</include-->
+                  
+                  <include>ch.qos.logback:logback-core</include>
+                  <include>ch.qos.logback:logback-classic</include>
+                  <include>org.slf4j:slf4j-api</include>
+                  
+                  <include>com.jolbox:bonecp</include>
+                  
+                  <!-- Ignore these, lets use geoserver's logging mechanism
+                  <include>org.slf4j:slf4j-api</include>
+                  <include>org.slf4j:jul-to-slf4j</include>
+                   -->
+                   
+                   <!-- geogig-osm deps -->
+                   <!-- 
+[INFO] +- org.openstreetmap.osmosis:osmosis-core:jar:0.43.1:compile
+[INFO] |  +- org.codehaus.woodstox:stax2-api:jar:3.1.1:compile
+[INFO] |  +- xerces:xercesImpl:jar:2.9.1:compile
+[INFO] |  +- org.codehaus.woodstox:woodstox-core-lgpl:jar:4.1.4:compile
+[INFO] |  +- net.sf.jpf:jpf:jar:1.5:compile
+[INFO] |  |  \- commons-logging:commons-logging:jar:1.0.4:compile
+[INFO] |  \- org.apache.commons:commons-compress:jar:1.4.1:compile
+[INFO] |     \- org.tukaani:xz:jar:1.0:compile
+[INFO] +- org.openstreetmap.osmosis:osmosis-xml:jar:0.43.1:compile
+[INFO] |  \- commons-codec:commons-codec:jar:1.7:compile
+[INFO] +- org.openstreetmap.osmosis:osmosis-pbf:jar:0.43.1:compile
+[INFO] |  +- org.openstreetmap.osmosis:osmosis-osm-binary:jar:0.43.1:compile
+[INFO] |  \- com.google.protobuf:protobuf-java:jar:2.4.1:compile                   
+                    -->
+                   <include>org.openstreetmap.osmosis:*</include>
+                   <include>org.codehaus.woodstox:stax2-api</include>
+                   <include>xerces:xercesImpl</include>
+                   <include>org.codehaus.woodstox:woodstox-core-lgpl</include>
+                   <include>net.sf.jpf:jpf</include>
+                   <include>commons-logging:commons-logging</include>
+                   <include>org.apache.commons:commons-compress</include>
+                   <include>org.tukaani:xz:jar</include>
+                   <include>commons-codec:commons-codec</include>
+                   <include>com.google.protobuf:protobuf-java</include>               
+                </includes>
+              </artifactSet>
+              <relocations>
+                <relocation>
+                  <pattern>org.slf4j</pattern>
+                  <shadedPattern>shaded.org.slf4j</shadedPattern>
+                </relocation>
+                <!-- relocation>
+                    rename the guava package. Remove this relocation and add an exclude 
+                    once geoserver adopts the same guava version than geogig
+                  <pattern>com.google.common</pattern>
+                  <shadedPattern>shaded.com.google.common</shadedPattern>
+                </relocation-->
+              </relocations>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>

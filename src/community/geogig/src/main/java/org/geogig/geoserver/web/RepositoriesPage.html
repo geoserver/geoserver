@@ -1,0 +1,23 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<head>
+<title><wicket:message key="title">Repositories</wicket:message></title>
+</head>
+<body>
+<wicket:extend>
+	<div wicket:id="table"></div>
+    
+    <wicket:fragment wicket:id="header">
+      <ul>
+        <li>
+        	<form wicket:id="chooseRepoForm">
+        		<a class="add-link" href="#" wicket:id="importExisting"><wicket:message key="importExisting"/></a>
+        	</form>
+        </li>
+        <li><a class="add-link" href="#" wicket:id="addNew"><wicket:message key="addNew" /></a></li>
+      </ul>
+    </wicket:fragment>
+    
+    <div wicket:id="modalWindow"></div>
+</wicket:extend>
+</body>
+</html>

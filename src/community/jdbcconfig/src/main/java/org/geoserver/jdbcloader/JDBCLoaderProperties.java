@@ -1,18 +1,19 @@
+/* (c) 2016 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.jdbcloader;
 
+import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resources;
+
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.LinkedHashSet;
 import java.util.Properties;
-
-import org.geoserver.jdbcloader.JDBCLoaderPropertiesFactoryBean;
-import org.geoserver.platform.resource.Resource;
-import org.geoserver.platform.resource.Resources;
-
-import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
 
 public class JDBCLoaderProperties extends Properties {
     
@@ -62,7 +63,7 @@ public class JDBCLoaderProperties extends Properties {
     }
     
     public Resource getInitScript() {
-        String initScript = getProperty("initScript");
+        String initScript = fillInPlaceholders(getProperty("initScript"));
         if (initScript == null) {
             return null;
         }

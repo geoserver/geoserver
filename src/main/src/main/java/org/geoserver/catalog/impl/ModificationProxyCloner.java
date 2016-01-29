@@ -195,7 +195,13 @@ class ModificationProxyCloner {
             // nothing to copy
             return null;
         }
-        Collection<T> copy = source.getClass().newInstance();
+        Collection<T> copy;
+        try {
+            copy = source.getClass().newInstance();
+        } catch (InstantiationException e) {
+            //we'll just pick something
+            copy = new ArrayList<T>();
+        }
         if (deepCopy) {
             for (T object : source) {
                 T objectCopy = clone(object);

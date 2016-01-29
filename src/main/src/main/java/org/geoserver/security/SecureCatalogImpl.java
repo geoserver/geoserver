@@ -44,6 +44,7 @@ import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.security.decorators.DecoratingCatalogFactory;
 import org.geoserver.security.decorators.SecuredCoverageInfo;
 import org.geoserver.security.decorators.SecuredCoverageStoreInfo;
 import org.geoserver.security.decorators.SecuredDataStoreInfo;
@@ -609,41 +610,26 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
         if(policy.level == AccessLevel.HIDDEN) {
             return null;
         }
-
-        boolean needsWrapping = false;
         
         LayerInfo rootLayer = group.getRootLayer();
         if (LayerGroupInfo.Mode.EO.equals(group.getMode())) {
-            LayerInfo checked = checkAccess(user, rootLayer);
-            if (checked != null) {
-                if (checked != rootLayer) {
-                    needsWrapping = true;
-                    rootLayer = checked;
-                }
-            } else {
+            rootLayer = checkAccess(user, rootLayer);
+            if (rootLayer == null) {
                 return null;
             }
         }
         
-        // scan thru the layers
         final List<PublishedInfo> layers = group.getLayers();
         ArrayList<PublishedInfo> wrapped = new ArrayList<PublishedInfo>(layers.size());        
         for (PublishedInfo layer : layers) {
             PublishedInfo checked = checkAccess(user, layer);
             if (checked != null) {
-                if (checked != layer) {
-                    needsWrapping = true;
-                }
                 wrapped.add(checked);
-            } else {
-                needsWrapping = true; 
             }
         }
         
-        if(needsWrapping)
-            return new SecuredLayerGroupInfo(group, rootLayer, wrapped);
-        else
-            return group;            
+        //always wrap layergroups (secured layers could be added later)
+        return new SecuredLayerGroupInfo(group, rootLayer, wrapped);            
     }
 
     /**
@@ -1214,7 +1200,15 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
     }
     
     public CatalogFactory getFactory() {
-        return delegate.getFactory();
+        return new DecoratingCatalogFactory (delegate.getFactory()) {
+            
+            @Override 
+            public LayerGroupInfo createLayerGroup() {
+                //always wrap layergroups (secured layers could be added later)
+                return new SecuredLayerGroupInfo(delegate.createLayerGroup(), null, new ArrayList<PublishedInfo>());
+            }
+            
+        };
     }
 
     public Collection<CatalogListener> getListeners() {

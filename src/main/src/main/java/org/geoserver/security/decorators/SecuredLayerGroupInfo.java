@@ -5,11 +5,13 @@
  */
 package org.geoserver.security.decorators;
 
+import java.util.AbstractList;
 import java.util.List;
 
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.PublishedInfo;
+import org.geoserver.catalog.impl.AbstractDecorator;
 
 public class SecuredLayerGroupInfo extends DecoratingLayerGroupInfo {
 
@@ -35,8 +37,54 @@ public class SecuredLayerGroupInfo extends DecoratingLayerGroupInfo {
         return rootLayer;
     }
     
+    @Override 
+    public void setRootLayer(LayerInfo rootLayer) {
+        //keep synchronised
+        this.rootLayer = rootLayer;
+        delegate.setRootLayer((LayerInfo) unwrap(rootLayer));
+    }
+    
     @Override
-    public List<PublishedInfo> getLayers() {
-        return layers;
+    public List<PublishedInfo> getLayers() {        
+        // keep synchronised
+        return new AbstractList<PublishedInfo>() {
+            @Override
+            public PublishedInfo get(int index) {
+                return layers.get(index);
+            }
+
+            @Override
+            public int size() {
+                return layers.size();
+            }
+
+            @Override
+            public void add(int index, PublishedInfo element) {
+                delegate.getLayers().add(index, unwrap(element));
+                layers.add(index, element);
+            }
+
+            public PublishedInfo set(int index, PublishedInfo element) {
+                delegate.getLayers().set(index, unwrap(element));
+                return layers.set(index, element);                
+            }
+
+            public PublishedInfo remove(int index) {
+                delegate.getLayers().remove(index);
+                return layers.remove(index);
+            }
+
+        };
+    }
+    
+    private static PublishedInfo unwrap(PublishedInfo pi) {
+        if (pi instanceof SecuredLayerInfo || pi instanceof SecuredLayerGroupInfo) {
+            @SuppressWarnings("unchecked")
+            AbstractDecorator<? extends PublishedInfo> decorator = (AbstractDecorator<? extends PublishedInfo>) pi;
+
+            return decorator.unwrap(PublishedInfo.class);
+        } else {
+            return pi;
+        }
     }
 }

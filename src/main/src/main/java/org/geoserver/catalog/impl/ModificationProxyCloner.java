@@ -22,6 +22,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.beanutils.ConstructorUtils;
+import org.apache.commons.lang.ClassUtils;
 import org.apache.commons.lang.SerializationUtils;
 import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.config.util.XStreamPersister;
@@ -140,7 +141,7 @@ class ModificationProxyCloner {
         Class<? extends CatalogInfo> sourceClass = object.getClass();
         Class result = CATALOGINFO_INTERFACE_CACHE.get(sourceClass);
         if(result == null) {
-            Class[] interfaces = sourceClass.getInterfaces();
+            List<Class<?>> interfaces = ClassUtils.getAllInterfaces(sourceClass);
             // collect only CatalogInfo related interfaces
             List<Class> cis = new ArrayList<Class>();
             for (Class clazz : interfaces) {

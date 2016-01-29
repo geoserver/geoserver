@@ -489,7 +489,7 @@ public class CatalogConfiguration implements Configuration {
                     + "' already exists");
             if (pendingDeletes.remove(info.getId())) {
                 LOGGER.finer("Adding a new layer " + info.getName()
-                        + " before saving the deleted one with the same name");
+                        + " before saving the deleted one with the same id");
             }
             pendingModications.put(info.getId(), info);
         } finally {
@@ -541,6 +541,17 @@ public class CatalogConfiguration implements Configuration {
             if (tileLayerInfo != null) {
                 final String layerId = tileLayerInfo.getId();
                 pendingModications.remove(layerId);
+                // cache removal must occur before layerId is added to pendingDeletes
+                // otherwise brokers and blob stores will not be able to obtain
+                // the tile layer information they need to perform cache removal
+                // because the CatalogConfiguration will treat the layer as if
+                // it no longer exists
+                try {
+                    GWC.get().layerRemoved(tileLayerInfo.getName());
+                } catch (RuntimeException e) {
+                    LOGGER.log(Level.SEVERE, "Error deleting tile layer '" + tileLayerInfo.getName()
+                            + "' from cache", e);
+                }
                 pendingDeletes.add(layerId);
                 layerCache.invalidate(layerId);
                 return true;
@@ -565,7 +576,6 @@ public class CatalogConfiguration implements Configuration {
 
         final GWC mediator = GWC.get();
 
-        final Set<String/* name */> deletedNames = Sets.newHashSet();
         final List<GeoServerTileLayerInfo[/* old, new */]> modifications = Lists.newLinkedList();
 
         lock.acquireWriteLock();
@@ -575,13 +585,10 @@ public class CatalogConfiguration implements Configuration {
         try {
             for (String deletedId : pendingDeletes) {
                 try {
-                    GeoServerTileLayerInfo info = tileLayerCatalog.delete(deletedId);
-                    if (info != null) {
-                        // remove it from stack copy to avoid notifying its deletion
-                        deletedNames.add(info.getName());
-                    }
+                    tileLayerCatalog.delete(deletedId);
                 } catch (RuntimeException e) {
-                    LOGGER.log(Level.SEVERE, "Error deleting tile layer '" + deletedId + "'", e);
+                    LOGGER.log(Level.SEVERE,
+                            "Error deleting tile layer '" + deletedId + "' from catalog", e);
                 }
             }
 
@@ -602,16 +609,6 @@ public class CatalogConfiguration implements Configuration {
             lock.downgradeToReadLock();
             try {
                 // issue notifications
-                for (String deletedLayerName : deletedNames) {
-                    try {
-                        // let the mediator deal with gwc to get rid of all the caches
-                        mediator.layerRemoved(deletedLayerName);
-                    } catch (RuntimeException e) {
-                        LOGGER.log(Level.SEVERE, "Error deleting tile layer '" + deletedLayerName
-                                + "'", e);
-                    }
-                }
-
                 for (GeoServerTileLayerInfo[] oldNew : modifications) {
                     final GeoServerTileLayerInfo old = oldNew[0];
                     final GeoServerTileLayerInfo modified = oldNew[1];

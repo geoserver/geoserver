@@ -364,7 +364,7 @@ public class CatalogConfigurationTest {
         doThrow(new IllegalArgumentException("failedSave")).when(tileLayerCatalog).save(
                 eq(forceState2));
 
-        verify(mockMediator, never()).layerRemoved(anyString());
+        verify(mockMediator, times(1)).layerRemoved(layerInfo2.getName());
         verify(mockMediator, never()).layerRenamed(anyString(), anyString());
 
         GeoServerTileLayerInfo addedState1 = TileLayerInfoUtil.loadOrCreate(layerWithNoTileLayer,

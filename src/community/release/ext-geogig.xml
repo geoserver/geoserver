@@ -28,7 +28,7 @@
             <!-- GeoGig uses SQLite JDBC drivers by default -->
             <include>sqlite-jdbc-*.jar</include>
             <!-- Hikari DB connection pool libs -->
-            <include>HikariCP-*.jar</include>
+            <!--include>HikariCP-*.jar</include-->
             <!-- the plugin uses Logback for LogStore -->
             <include>logback*.jar</include>
             <!-- Guice injection libs -->
@@ -44,7 +44,6 @@
             <include>org.eclipse.jdt.annotation-*.jar</include>
             <!-- OSM libs -->
             <include>osmosis-*.jar</include>
-            <include>stax2-api-*.jar</include>
             <include>xz-*.jar</include>
             <include>protobuf-java-*.jar</include>
             <include>commons-compress-*.jar</include>
@@ -57,10 +56,6 @@
             <include>jansi-*.jar</include>
             <!-- BoneCP libs. Maybe replace this with HikariCP? -->
             <include>bonecp-*.jar</include>
-            <!-- jline libs -->
-            <include>jline-*.jar</include>
-            <!-- py4j libs -->
-            <include>py4j-*.jar</include>
         </includes>
         <excludes>
             <exclude>*test*</exclude>

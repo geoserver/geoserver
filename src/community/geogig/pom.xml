@@ -10,12 +10,12 @@
   </parent>
 
   <groupId>org.geoserver.community</groupId>
-  <artifactId>gs-web-geogig</artifactId>
+  <artifactId>gs-geogig</artifactId>
   <packaging>jar</packaging>
   <name>GeoGig GeoServer integration</name>
 
   <properties>
-    <geogig.version>1.0-SNAPSHOT</geogig.version>
+    <geogig.version>1.0-RC1</geogig.version>
     <jline.version>2.12</jline.version>
     <mockito.version>1.8.5</mockito.version>
   </properties>

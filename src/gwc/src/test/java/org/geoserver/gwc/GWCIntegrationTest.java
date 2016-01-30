@@ -45,6 +45,7 @@ import org.geoserver.gwc.layer.CatalogConfiguration;
 import org.geoserver.gwc.layer.GeoServerTileLayer;
 import org.geoserver.gwc.layer.GeoServerTileLayerInfo;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.test.TestSetup;
 import org.geoserver.test.TestSetupFrequency;
@@ -880,4 +881,42 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
             }
         }
     }
+
+    /**
+     * Test that removing a layer from the catalog also removes its tile cache.
+     */
+    @Test
+    public void testRemoveCachedLayer() throws Exception {
+        // the prefixed name of the layer under test
+        String layerName = getLayerId(MockData.BASIC_POLYGONS);
+        assertEquals("cite:BasicPolygons", layerName);
+        // resource path to cache directory (FileBlobStore)
+        String cacheDirectory = "gwc/cite_BasicPolygons";
+        // resource path to cached tile (FileBlobStore)
+        String cachedTile = "gwc/cite_BasicPolygons/EPSG_4326_00/0_0/00_00.png";
+        GeoServerResourceLoader loader = getResourceLoader();
+        // cache directory and cached tile should not yet exist
+        assertNull("Unexpected cache directory " + cacheDirectory, loader.find(cacheDirectory));
+        assertNull("Unexpected cached tile " + cachedTile, loader.find(cachedTile));
+        // trigger tile caching with a WMTS request
+        MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts" //
+                + "?request=GetTile" //
+                + "&layer=" + layerName //
+                + "&format=image/png" //
+                + "&tilematrixset=EPSG:4326" //
+                + "&tilematrix=EPSG:4326:0" //
+                + "&tilerow=0" //
+                + "&tilecol=0");
+        assertEquals(200, response.getErrorCode());
+        assertEquals("image/png", response.getContentType());
+        // cache directory and cached tile should now be present
+        assertNotNull("Missing cache directory " + cacheDirectory, loader.find(cacheDirectory));
+        assertNotNull("Missing cached tile " + cachedTile, loader.find(cachedTile));
+        // remove layer from the catalog, which should also remove cache directory and thus cached tile
+        getCatalog().remove(getCatalog().getLayerByName(layerName));
+        // cache directory and cached tile should now not exist
+        assertNull("Unexpected cache directory " + cacheDirectory, loader.find(cacheDirectory));
+        assertNull("Unexpected cached tile " + cachedTile, loader.find(cachedTile));
+    }
+
 }

@@ -29,6 +29,7 @@ import org.mockito.ArgumentCaptor;
 
 public class SecurityLoggerTest {
 
+    @SuppressWarnings("unused")
     private SecurityLogger logger;
 
     private LogStore mockStore;
@@ -37,6 +38,7 @@ public class SecurityLoggerTest {
     public void before() throws Exception {
         mockStore = mock(LogStore.class);
         logger = new SecurityLogger(mockStore);
+        logger.afterPropertiesSet();
     }
 
     @Test

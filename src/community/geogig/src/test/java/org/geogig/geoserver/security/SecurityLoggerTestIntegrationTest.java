@@ -72,6 +72,9 @@ public class SecurityLoggerTestIntegrationTest extends GeoServerSystemTestSuppor
 
         logStore = GeoServerExtensions.bean(LogStore.class);
         assertNotNull(logStore);
+
+        SecurityLogger logger = GeoServerExtensions.bean(SecurityLogger.class);
+        assertNotNull(logger);
     }
 
     private void login() throws Exception {
@@ -135,6 +138,7 @@ public class SecurityLoggerTestIntegrationTest extends GeoServerSystemTestSuppor
         String remoteURL = "http://example.com/geogig/upstream";
         final String url = BASE_URL + "/remote?remoteName=upstream&remoteURL=" + remoteURL;
         Document dom = getAsDOM(url);
+        print(dom);
         assertXpathEvaluatesTo("true", "/response/success", dom);
 
         List<LogEvent> entries = new ArrayList<>(logStore.getLogEntries(0, 10));

@@ -31,12 +31,13 @@ import org.locationtech.geogig.api.porcelain.TransferSummary;
 import org.locationtech.geogig.api.porcelain.TransferSummary.ChangedRef;
 import org.locationtech.geogig.api.porcelain.TransferSummary.ChangedRef.ChangeTypes;
 import org.locationtech.geogig.repository.Repository;
+import org.springframework.beans.factory.InitializingBean;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 
-public class SecurityLogger {
+public class SecurityLogger implements InitializingBean {
 
     private static final Map<Class<? extends AbstractGeoGigOp<?>>, MessageBuilder<?>> WATCHED_COMMANDS;
     static {
@@ -59,6 +60,10 @@ public class SecurityLogger {
 
     public SecurityLogger(LogStore logStore) {
         this.logStore = logStore;
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
         INSTANCE = this;
     }
 

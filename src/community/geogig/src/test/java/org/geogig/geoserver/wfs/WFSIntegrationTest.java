@@ -63,25 +63,31 @@ public class WFSIntegrationTest extends WFSTestSupport {
 
     private static final String STORE = "geogigstore";
 
-    private RepositoryTestCase helper;
+    private TestHelper helper;
+
+    private class TestHelper extends RepositoryTestCase {
+        @Override
+        protected Context createInjector() {
+            TestPlatform testPlatform = (TestPlatform) createPlatform();
+            GlobalContextBuilder.builder = new CLITestContextBuilder(testPlatform);
+            return GlobalContextBuilder.builder.build();
+        }
+
+        @Override
+        protected void setUpInternal() throws Exception {
+            configureGeogigDataStore();
+        }
+
+        File getRepositoryDirectory() {
+            return super.repositoryDirectory;
+        }
+
+    }
 
     @Override
     protected void setUpInternal(SystemTestData testData) throws Exception {
 
-        helper = new RepositoryTestCase() {
-
-            @Override
-            protected Context createInjector() {
-                TestPlatform testPlatform = (TestPlatform) createPlatform();
-                GlobalContextBuilder.builder = new CLITestContextBuilder(testPlatform);
-                return GlobalContextBuilder.builder.build();
-            }
-
-            @Override
-            protected void setUpInternal() throws Exception {
-                configureGeogigDataStore();
-            }
-        };
+        helper = new TestHelper();
         helper.repositoryTempFolder.create();
         helper.setUp();
     }
@@ -376,7 +382,7 @@ public class WFSIntegrationTest extends WFSTestSupport {
 
         List<RevCommit> expected = ImmutableList.copyOf(geogig.command(LogOp.class).call());
 
-        File repoDir = new File(helper.repositoryTempFolder.getRoot(), "repo");
+        File repoDir = helper.getRepositoryDirectory();
         assertTrue(repoDir.exists() && repoDir.isDirectory());
         // shut down server
         destroyGeoServer();

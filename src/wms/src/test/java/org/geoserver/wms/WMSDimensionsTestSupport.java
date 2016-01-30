@@ -5,21 +5,9 @@
  */
 package org.geoserver.wms;
 
-import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.xml.namespace.QName;
-
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
-import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.CoverageInfo;
-import org.geoserver.catalog.DimensionDefaultValueSetting;
-import org.geoserver.catalog.DimensionInfo;
-import org.geoserver.catalog.DimensionPresentation;
-import org.geoserver.catalog.FeatureTypeInfo;
-import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.*;
 import org.geoserver.catalog.impl.DimensionInfoImpl;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.MockData;
@@ -27,6 +15,13 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.SystemTestData.LayerProperty;
 import org.junit.After;
 import org.junit.Before;
+
+import javax.xml.namespace.QName;
+import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.junit.Assert.assertTrue;
 
 public abstract class WMSDimensionsTestSupport extends WMSTestSupport {
     
@@ -191,7 +186,7 @@ public abstract class WMSDimensionsTestSupport extends WMSTestSupport {
      */
     protected static void assertDateEquals(java.util.Date d1, java.util.Date d2, long tolerance) {
         long difference = Math.abs(d1.getTime() - d2.getTime());
-        assert(difference <= tolerance);
+        assertTrue(difference <= tolerance);
     }
 
 

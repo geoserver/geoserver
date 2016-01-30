@@ -5,8 +5,8 @@ import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 
 import java.util.Arrays;
 
+import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.PublishedInfo;
-import org.geoserver.catalog.impl.LayerGroupInfoImpl;
 import org.geoserver.data.test.SystemTestData;
 import org.geotools.csw.CSWConfiguration;
 import org.junit.Test;
@@ -18,29 +18,30 @@ import org.w3c.dom.Document;
  * 
  */
 public class LayerGroupTest extends CSWInternalTestSupport {
-    
-    private static String ID_FORESTSANDSTREAMS = "forestsandstreams";
-    private static String ID_BUILDINGSANDBRIDGES = "buildingsandbridges";
+        
     private static String NAME_FORESTSANDSTREAMS = "Forests and Streams";
     private static String NAME_BUILDINGSANDBRIDGES = "Buildings and Bridges";
     
     
-    private void addLayerGroup(String id, String name, PublishedInfo... publisheds) {
-        LayerGroupInfoImpl group = (LayerGroupInfoImpl) getCatalog().getFactory().createLayerGroup();
-        group.setId(id);
+    private String id_forestsandstreams;
+    private String id_buildingsandbridges;
+    
+    private String addLayerGroup(String name, PublishedInfo... publisheds) {
+        LayerGroupInfo group = (LayerGroupInfo) getCatalog().getFactory().createLayerGroup();
         group.setName(name);
         group.setTitle(name);
         group.getLayers().addAll(Arrays.asList(publisheds));
         
-        getCatalog().add(group);    
+        getCatalog().add(group);  
+        return group.getId();
     }
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
-        addLayerGroup(ID_FORESTSANDSTREAMS, NAME_FORESTSANDSTREAMS, 
+        id_forestsandstreams = addLayerGroup(NAME_FORESTSANDSTREAMS, 
                 getCatalog().getLayerByName("Forests"), 
                 getCatalog().getLayerByName("Streams") );
-        addLayerGroup(ID_BUILDINGSANDBRIDGES, NAME_BUILDINGSANDBRIDGES, 
+        id_buildingsandbridges = addLayerGroup(NAME_BUILDINGSANDBRIDGES, 
                 getCatalog().getLayerByName("Buildings"), 
                 getCatalog().getLayerByName("Bridges") );
     }
@@ -61,7 +62,7 @@ public class LayerGroupTest extends CSWInternalTestSupport {
     
     @Test
     public void testRecordById() throws Exception {
-        String request = "csw?service=CSW&version=2.0.2&request=GetRecordById&typeNames=csw:Record&id=" + ID_FORESTSANDSTREAMS;
+        String request = "csw?service=CSW&version=2.0.2&request=GetRecordById&typeNames=csw:Record&id=" + id_forestsandstreams;
         Document d = getAsDOM(request);
         //print(d);
         checkValidationErrors(d);

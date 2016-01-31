@@ -32,6 +32,8 @@ public class NewDataAccessRulePageTest extends AbstractSecurityWicketTestSupport
         clearServices();
         // clear the rules
         DataAccessRuleDAO.get().clear();
+        // ensure cleared rules survive reload
+        DataAccessRuleDAO.get().storeRules();
     }
 
     @Test

@@ -11,7 +11,7 @@
       <directory>geogig/target</directory>
       <outputDirectory></outputDirectory>
       <includes>
-        <include>gs-web-geogig*.jar</include>
+        <include>gs-geogig-*.jar</include>
       </includes>
       <excludes>
           <exclude>*test*</exclude>

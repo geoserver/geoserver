@@ -38,7 +38,7 @@ public class GeoserverXMLResourceProvider implements ConfigurationResourceProvid
     private final String configFileName;
     
     private String templateLocation;
-    
+
     public GeoserverXMLResourceProvider(final String configFileDirectory,
             final String configFileName,
             final ResourceStore resourceStore) throws ConfigurationException {
@@ -111,13 +111,13 @@ public class GeoserverXMLResourceProvider implements ConfigurationResourceProvid
                     + getClass().getResource(templateLocation).toExternalForm());
             // grab template from classpath
             try {
-                 IOUtils.copy(getClass().getResourceAsStream(templateLocation), 
+                IOUtils.copy(getClass().getResourceAsStream(templateLocation), 
                         xmlFile.out());
             } catch (IOException e) {
                 throw new IOException("Error copying template config to "
                         + xmlFile.path(), e);
             }
-        } 
+        }
 
         return xmlFile;
     }
@@ -165,7 +165,11 @@ public class GeoserverXMLResourceProvider implements ConfigurationResourceProvid
 
     @Override
     public boolean hasInput() {
-        return true;
+        try {
+            return Resources.exists(findOrCreateConfFile());
+        } catch (IOException e) {
+            return false;
+        }
     }
 
     @Override

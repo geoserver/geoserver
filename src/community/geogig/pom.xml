@@ -15,7 +15,7 @@
   <name>GeoGig GeoServer integration</name>
 
   <properties>
-    <geogig.version>1.0-RC1</geogig.version>
+    <geogig.version>1.0-RC1a</geogig.version>
     <jline.version>2.12</jline.version>
     <mockito.version>1.8.5</mockito.version>
   </properties>

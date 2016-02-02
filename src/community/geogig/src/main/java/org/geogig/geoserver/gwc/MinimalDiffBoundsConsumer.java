@@ -11,12 +11,12 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.Nullable;
-
 import org.geotools.geometry.jts.JTS;
 import org.locationtech.geogig.api.Bounded;
 import org.locationtech.geogig.api.Bucket;
 import org.locationtech.geogig.api.NodeRef;
 import org.locationtech.geogig.api.plumbing.diff.PreOrderDiffWalk;
+import org.locationtech.geogig.api.plumbing.diff.PreOrderDiffWalk.BucketIndex;
 
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
@@ -100,8 +100,7 @@ class MinimalDiffBoundsConsumer implements PreOrderDiffWalk.Consumer {
 
     @Override
     public boolean bucket(final NodeRef leftParent, final NodeRef rightParent,
-                final int bucketIndex, final int bucketDepth, @Nullable final Bucket left,
-                @Nullable final Bucket right) {
+            final BucketIndex bucketIndex, @Nullable final Bucket left, @Nullable final Bucket right) {
         if (left == null) {
             addEnv(right);
             return false;
@@ -156,9 +155,8 @@ class MinimalDiffBoundsConsumer implements PreOrderDiffWalk.Consumer {
     }
 
     @Override
-    public void endBucket(NodeRef leftParent, NodeRef rightParent, 
-        final int bucketIndex, final int bucketDepth, @Nullable final Bucket left,
-        @Nullable final Bucket right) {
+    public void endBucket(NodeRef leftParent, NodeRef rightParent, final BucketIndex bucketIndex,
+            @Nullable final Bucket left, @Nullable final Bucket right) {
         // nothing to do, intentionally blank
     }
 }

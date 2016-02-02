@@ -17,6 +17,7 @@ import org.geotools.util.logging.Logging;
 import org.locationtech.geogig.rest.RestletException;
 import org.locationtech.geogig.rest.TaskStatusResource;
 import org.locationtech.geogig.rest.osm.OSMRouter;
+import org.locationtech.geogig.rest.postgis.PGRouter;
 import org.locationtech.geogig.rest.repository.CommandResource;
 import org.locationtech.geogig.rest.repository.FixedEncoder;
 import org.locationtech.geogig.rest.repository.RepositoryProvider;
@@ -105,6 +106,9 @@ public class GeogigDispatcher extends AbstractController {
 
         Router osm = new OSMRouter();
         router.attach("/{repository}/osm", osm);
+
+        Router postgis = new PGRouter();
+        router.attach("/{repository}/postgis", postgis);
 
         router.attach("/{repository}.{extension}", RepositoryResource.class);
         router.attach("/{repository}", RepositoryResource.class);

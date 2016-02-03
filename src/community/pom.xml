@@ -204,7 +204,7 @@
 	<module>gwc-distributed</module>
 	<module>gdal</module>
 	<module>gwc-s3</module>
-    <module>geogig</module>
+	<module>geogig</module>
       </modules>
     </profile>
     <profile>

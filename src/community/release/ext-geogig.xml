@@ -8,21 +8,11 @@
   <includeBaseDirectory>false</includeBaseDirectory>
   <fileSets>
     <fileSet>
-      <directory>geogig/target</directory>
+      <directory>release/target/dependency</directory>
       <outputDirectory></outputDirectory>
       <includes>
-        <include>gs-geogig-*.jar</include>
-      </includes>
-      <excludes>
-          <exclude>*test*</exclude>
-          <exclude>*sources*</exclude>
-          <exclude>*shaded*</exclude>
-      </excludes>
-    </fileSet>
-    <fileSet>
-        <directory>geogig/target/dependency</directory>
-        <outputDirectory></outputDirectory>
-        <includes>
+            <!-- GeoGig plugin itself -->
+            <include>gs-geogig-*.jar</include>
             <!-- GeoGig jars -->
             <include>geogig-*.jar</include>
             <!-- GeoGig uses SQLite JDBC drivers by default -->

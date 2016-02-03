@@ -4,6 +4,7 @@
  */
 package org.geoserver.platform.resource;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -123,7 +124,7 @@ public abstract class AbstractResourceWatcherTest {
         watcher.changed(new ResourceNotification("DirA/DirC/FileC1", Kind.ENTRY_MODIFY, System.currentTimeMillis(), events));
         
         //test that listeners received events
-        assertTrue(chkDirA.isChecked());
+        assertFalse(chkDirA.isChecked());
         assertTrue(chkDirC.isChecked());
         assertTrue(chkFileC1.isChecked());
         
@@ -152,7 +153,7 @@ public abstract class AbstractResourceWatcherTest {
         watcher.changed(new ResourceNotification("DirA/DirC/DirD/FileQ", Kind.ENTRY_CREATE, System.currentTimeMillis(), events));
         
         //test that listeners received events
-        assertTrue(chkDirA.isChecked());
+        assertFalse(chkDirA.isChecked());
         assertTrue(chkDirC.isChecked());
         assertTrue(chkDirD.isChecked());        
         assertTrue(chkFileQ.isChecked());

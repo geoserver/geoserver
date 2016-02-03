@@ -78,27 +78,20 @@ public interface Resource extends Serializable {
     Lock lock();
     
     /**
-     * Listen for changes to ResourceStore content.
-     * <p>
-     * Listeners can be configured to check for changes to individual files or directory contents.
-     * </p>
-     * <ul>
-     * <li>styles: listener receives events for any change to the contents of the styles directory</li>
-     * <li>user_projections/epsg.properties: listener notified for any change to the epsg.properties resource</li>
-     * </ul>
-     * <p>
-     * Notification is course grained, often just based on change of last modified time stamp, as such they are issued after the change has been
-     * performed.
-     * </p>
      * 
-     * @param listener Listener to receive change notification
+     * Registers listener with ResourceNotificationDispatcher.
+     * 
+     * @See ResourceNotificationDispatcher.addListener
+     * 
      */
     void addListener( ResourceListener listener);
     
     /**
-     * Remove resource store content listener.
-     * @param path
-     * @param listener
+     * 
+     * Removes listener from ResourceNotificationDispatcher.
+     * 
+     * @See ResourceNotificationDispatcher.addListener.addListener
+     *      
      */
     void removeListener( ResourceListener listener);
     

@@ -75,7 +75,7 @@ public class SimpleResourceNotificationDispatcher implements ResourceNotificatio
             }
         }
         
-        //if create, propage CREATE events to its created parents, which can be found in the events (see {@link createEvents}) 
+        //if create, propagate CREATE events to its created parents, which can be found in the events (see {@link createEvents}) 
         Set<String> createdParents = new HashSet<String>();
         if (notification.getKind() == Kind.ENTRY_CREATE) {
             for (Event event : notification.events()) {
@@ -85,14 +85,16 @@ public class SimpleResourceNotificationDispatcher implements ResourceNotificatio
             }
         }                       
         
-        //propagate ANY event to its parents (as MODIFY if not a created parent)
-        String path = Paths.parent(notification.getPath());        
+        //propagate any event to its direct parent (as MODIFY if not a created parent)
+        String path = Paths.parent(notification.getPath());
         while (path != null) {
+            boolean isCreate = createdParents.contains(path);
             changedInternal(new ResourceNotification(path, 
-                            createdParents.contains(path) ? Kind.ENTRY_CREATE : Kind.ENTRY_MODIFY, 
+                            isCreate ? Kind.ENTRY_CREATE : Kind.ENTRY_MODIFY, 
                             notification.getTimestamp(), notification.events()));             
             
-            path = Paths.parent(path);
+            //stop propagating after first modify
+            path = isCreate ? Paths.parent(path) : null;
         }
 
     }

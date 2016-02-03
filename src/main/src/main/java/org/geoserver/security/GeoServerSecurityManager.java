@@ -60,6 +60,7 @@ import org.geoserver.platform.resource.Files;
 import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
+import org.geoserver.platform.resource.ResourceNotificationDispatcher;
 import org.geoserver.platform.resource.ResourceStore;
 import org.geoserver.platform.resource.Resources;
 import org.geoserver.security.auth.AuthenticationCache;
@@ -3638,5 +3639,10 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
     	allRoles.add(GeoServerRole.AUTHENTICATED_ROLE);
     	allRoles.add(GeoServerRole.ANONYMOUS_ROLE);
     	return allRoles;
+    }
+
+    @Override
+    public ResourceNotificationDispatcher getResourceNotificationDispatcher() {
+        return dataDir.getResourceNotificationDispatcher();
     }
 }

@@ -66,11 +66,11 @@ public final class Files {
         }
         @Override
         public void addListener(ResourceListener listener) {
-            watcher.addListener( file, path(), listener );
+            watcher.addListener(path(), listener);
         }
         @Override
         public void removeListener(ResourceListener listener) {
-            watcher.removeListener( file, path(), listener );
+            watcher.removeListener(path(), listener);
         }
 
         @Override

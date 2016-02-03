@@ -47,7 +47,7 @@ public class JDBCResourceStore implements ResourceStore {
     /** LockProvider used to secure resources for exclusive access */
     protected LockProvider lockProvider = new NullLockProvider();
     
-    protected ResourceNotificationDispatcher resourceWatcher = new SimpleResourceNotificationDispatcher();
+    protected ResourceNotificationDispatcher resourceNotificationDispatcher = new SimpleResourceNotificationDispatcher();
             
     protected JDBCDirectoryStructure dir;    
     protected ResourceCache cache;
@@ -77,7 +77,7 @@ public class JDBCResourceStore implements ResourceStore {
      * @param resourceWatcher
      */
     public void setResourceWatcher(ResourceNotificationDispatcher resourceWatcher) {
-        this.resourceWatcher = resourceWatcher;
+        this.resourceNotificationDispatcher = resourceWatcher;
     }
     
     public JDBCResourceStore(JDBCDirectoryStructure dir) {
@@ -180,7 +180,7 @@ public class JDBCResourceStore implements ResourceStore {
             List<ResourceNotification.Event> events = SimpleResourceNotificationDispatcher.createEvents(this,
                     ResourceNotification.Kind.ENTRY_CREATE);
             if (entry.createResource()) {
-                resourceWatcher.changed(new ResourceNotification(path(), ResourceNotification.Kind.ENTRY_CREATE, 
+                resourceNotificationDispatcher.changed(new ResourceNotification(path(), ResourceNotification.Kind.ENTRY_CREATE, 
                         System.currentTimeMillis(), events));
             }
             try {
@@ -286,7 +286,7 @@ public class JDBCResourceStore implements ResourceStore {
                 List<ResourceNotification.Event> events = SimpleResourceNotificationDispatcher.createEvents(this,
                         ResourceNotification.Kind.ENTRY_DELETE);
                 if (entry.delete()) {
-                    resourceWatcher.changed(new ResourceNotification(path(), ResourceNotification.Kind.ENTRY_DELETE, 
+                    resourceNotificationDispatcher.changed(new ResourceNotification(path(), ResourceNotification.Kind.ENTRY_DELETE, 
                         System.currentTimeMillis(), events));
                     return true;
                 } else {
@@ -318,9 +318,9 @@ public class JDBCResourceStore implements ResourceStore {
                 result = Resources.renameByCopy(this, dest);            
             }
             if (result) {
-                resourceWatcher.changed(new ResourceNotification(path(), ResourceNotification.Kind.ENTRY_DELETE, 
+                resourceNotificationDispatcher.changed(new ResourceNotification(path(), ResourceNotification.Kind.ENTRY_DELETE, 
                     System.currentTimeMillis(), eventsDelete));
-                resourceWatcher.changed(new ResourceNotification(path(), eventsRename.get(0).getKind(), 
+                resourceNotificationDispatcher.changed(new ResourceNotification(path(), eventsRename.get(0).getKind(), 
                     System.currentTimeMillis(), eventsRename));
             }
             return result;
@@ -333,12 +333,12 @@ public class JDBCResourceStore implements ResourceStore {
 
         @Override
         public void addListener(ResourceListener listener) {
-            resourceWatcher.addListener(path(), listener);
+            resourceNotificationDispatcher.addListener(path(), listener);
         }
 
         @Override
         public void removeListener(ResourceListener listener) {
-            resourceWatcher.removeListener(path(), listener);
+            resourceNotificationDispatcher.removeListener(path(), listener);
         }
         
 
@@ -363,13 +363,18 @@ public class JDBCResourceStore implements ResourceStore {
                     
                     entry.setContent(new FileInputStream(tempFile));
                     
-                    resourceWatcher.changed(new ResourceNotification(path(), ResourceNotification.Kind.ENTRY_MODIFY, 
+                    resourceNotificationDispatcher.changed(new ResourceNotification(path(), ResourceNotification.Kind.ENTRY_MODIFY, 
                             System.currentTimeMillis(), events));
                 } finally {
                     lock.release();
                 }                
             }
         }
+    }
+
+    @Override
+    public ResourceNotificationDispatcher getResourceNotificationDispatcher() {
+        return resourceNotificationDispatcher;
     }
 
 }

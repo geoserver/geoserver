@@ -19,7 +19,7 @@ import org.junit.Test;
  * @author Niels Charlier
  *
  */
-public class SimpleResourceWatcherTest extends AbstractResourceWatcherTest {       
+public class SimpleResourceNotificationDispatcherTest extends AbstractResourceWatcherTest {       
     
     @Override
     protected ResourceNotificationDispatcher initWatcher() {

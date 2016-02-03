@@ -151,4 +151,9 @@ final class NullResourceStore implements ResourceStore {
         return false; // unable to move empty resource
     }
 
+    @Override
+    public ResourceNotificationDispatcher getResourceNotificationDispatcher() {
+        return null;
+    }
+
 }

@@ -42,6 +42,7 @@ import org.geoserver.platform.resource.Files;
 import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
+import org.geoserver.platform.resource.ResourceNotificationDispatcher;
 import org.geoserver.platform.resource.ResourceStore;
 import org.geoserver.platform.resource.Resources;
 import org.geotools.data.DataUtilities;
@@ -1391,6 +1392,11 @@ public class GeoServerDataDirectory implements ResourceStore {
                 return null;
             }
         }
+    }
+
+    @Override
+    public ResourceNotificationDispatcher getResourceNotificationDispatcher() {
+        return resourceLoader.getResourceNotificationDispatcher();
     }
 
 }

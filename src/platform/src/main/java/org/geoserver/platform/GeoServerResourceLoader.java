@@ -22,6 +22,7 @@ import org.geoserver.platform.resource.FileSystemResourceStore;
 import org.geoserver.platform.resource.Files;
 import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.ResourceNotificationDispatcher;
 import org.geoserver.platform.resource.ResourceStore;
 import org.geoserver.platform.resource.Resources;
 import org.springframework.core.io.DefaultResourceLoader;
@@ -672,6 +673,11 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Re
         }
         
         return dataDirStr;
+    }
+
+    @Override
+    public ResourceNotificationDispatcher getResourceNotificationDispatcher() {
+        return resources.getResourceNotificationDispatcher();
     }
 
 }

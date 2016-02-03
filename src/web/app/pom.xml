@@ -929,6 +929,16 @@
       </dependencies>
     </profile>
     <profile>
+      <id>jdbcstore</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-jdbcstore</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
       <id>script-py</id>
       <activation>
         <property><name>script</name></property>

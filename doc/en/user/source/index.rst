@@ -30,6 +30,7 @@ This User Manual is a comprehensive guide to all aspects of using GeoServer. Whe
    extensions/index
    tutorials/index
    community/index
+   params-extractor/index
 
 
 

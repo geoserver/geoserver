@@ -21,7 +21,7 @@ import org.junit.rules.TemporaryFolder;
  * @author Niels Charlier
  *
  */
-public abstract class AbstractResourceWatcherTest {
+public abstract class AbstractResourceNotificationDispatcherTest {
         
     protected FileSystemResourceStore store;
     protected ResourceNotificationDispatcher watcher;

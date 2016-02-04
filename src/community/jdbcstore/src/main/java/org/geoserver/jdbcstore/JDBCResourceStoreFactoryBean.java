@@ -58,9 +58,9 @@ public class JDBCResourceStoreFactoryBean implements FactoryBean<ResourceStore>,
      * 
      * @param resourceWatcher
      */
-    public void setResourceWatcher(ResourceNotificationDispatcher resourceWatcher) {
+    public void setResourceNotificationDispatcher(ResourceNotificationDispatcher resourceWatcher) {
         if (resourceStore instanceof JDBCResourceStore) {
-            ((JDBCResourceStore) resourceStore).setResourceWatcher(resourceWatcher);
+            ((JDBCResourceStore) resourceStore).setResourceNotificationDispatcher(resourceWatcher);
         }
     }
     

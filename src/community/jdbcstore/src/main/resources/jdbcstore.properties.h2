@@ -11,7 +11,7 @@
 enabled=true
 
 initdb=true
-initScript=${GEOSERVER_DATA_DIR}/jdbcstore/scripts/init.h2.sql
+initScript=jdbcstore/scripts/init.h2.sql
 import=true
 
 jdbcUrl=jdbc:h2:file:${GEOSERVER_DATA_DIR}/jdbcstore/store;AUTO_SERVER=TRUE

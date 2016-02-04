@@ -229,7 +229,7 @@ public abstract class JDBCLoaderPropertiesFactoryBean extends PropertiesFactoryB
         }
     }
     
-    protected String getDataDir() {
+    protected String getDataDirStr() {
         if (dataDirectory == null) {
             if (resourceStore instanceof GeoServerResourceLoader) {
                 dataDirectory = ((GeoServerResourceLoader) resourceStore).getBaseDirectory().getAbsolutePath();
@@ -238,6 +238,10 @@ public abstract class JDBCLoaderPropertiesFactoryBean extends PropertiesFactoryB
             }
         }
         return dataDirectory;
+    }
+    
+    protected Resource getDataDir() {
+        return resourceStore.get("");
     }
 
     protected Resource getBaseDir() {

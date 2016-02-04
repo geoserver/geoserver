@@ -76,7 +76,7 @@ public class JDBCResourceStore implements ResourceStore {
      * 
      * @param resourceWatcher
      */
-    public void setResourceWatcher(ResourceNotificationDispatcher resourceWatcher) {
+    public void setResourceNotificationDispatcher(ResourceNotificationDispatcher resourceWatcher) {
         this.resourceNotificationDispatcher = resourceWatcher;
     }
     

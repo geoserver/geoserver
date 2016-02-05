@@ -1,13 +1,11 @@
 package org.geoserver.cluster.hazelcast;
 
 import java.util.logging.Logger;
+
 import org.geoserver.platform.resource.ResourceNotification;
 import org.geoserver.platform.resource.ResourceNotificationDispatcher;
 import org.geoserver.platform.resource.SimpleResourceNotificationDispatcher;
 import org.geotools.util.logging.Logging;
-import org.springframework.beans.factory.InitializingBean;
-
-import com.google.common.base.Preconditions;
 import com.hazelcast.core.ITopic;
 import com.hazelcast.core.Message;
 import com.hazelcast.core.MessageListener;
@@ -19,34 +17,42 @@ import com.hazelcast.core.MessageListener;
  * spring configuration file in order for {@link ResourceStore} to find it.
  * 
  */
-public class HzResourceNotificationDispatcher extends SimpleResourceNotificationDispatcher implements InitializingBean, MessageListener<ResourceNotification> {
+public class HzResourceNotificationDispatcher extends SimpleResourceNotificationDispatcher implements MessageListener<ResourceNotification> {
     
     static final String TOPIC_NAME = "resourceWatcher";
     
     private static final Logger LOGGER = Logging.getLogger(HzResourceNotificationDispatcher.class);
         
-    private HzCluster cluster;  
+    private HzCluster cluster; 
     
-    private ITopic<ResourceNotification> topic() {
-        return cluster.getHz().getTopic(TOPIC_NAME);
+    public HzResourceNotificationDispatcher() {
+        //lazy loaded cluster
     }
     
-    /**
-     * {@code cluster} property to be set in {@code applicationContext.xml}
-     */
-    public void setCluster(HzCluster cluster) {
+    public HzResourceNotificationDispatcher(HzCluster cluster) {
         this.cluster = cluster;
-    }
-
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        Preconditions.checkNotNull(cluster, "HzCluster is not set");
         topic().addMessageListener(this);
+    }
+     
+    private ITopic<ResourceNotification> topic() {   
+        if (cluster == null) {
+            cluster = HzCluster.getInstanceIfAvailable().orNull();
+            if (cluster != null) {
+                topic().addMessageListener(this);
+            }
+        }
+        return cluster == null ? null : cluster.getHz().getTopic(TOPIC_NAME);
     }
 
     @Override
     public void changed(ResourceNotification event) {
-        topic().publish(event);
+        ITopic<ResourceNotification> topic = topic();
+        if (topic != null) {
+            topic.publish(event);
+        } else {
+            LOGGER.warning("Failed to publish resource notification, cluster not initialized (yet).");
+            super.changed(event); 
+        }
     }
 
     @Override

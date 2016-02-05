@@ -23,8 +23,8 @@ enabled=true
 # Initialize an empty database.  Should be set to false and done manually before starting GeoServer 
 # when using Postgres
 #
-initdb=false
-initScript=${GEOSERVER_DATA_DIR}/jdbcstore/scripts/init.postgres.sql
+initdb=true
+initScript=jdbcstore/scripts/init.postgres.sql
 
 #
 # Import the data directory into a new database.  Should only be used on the first run.

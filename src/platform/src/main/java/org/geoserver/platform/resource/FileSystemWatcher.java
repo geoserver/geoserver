@@ -33,7 +33,13 @@ import org.springframework.scheduling.concurrent.CustomizableThreadFactory;
  * 
  * @author Jody Garnett (Boundless)
  */
-public class FileSystemWatcher implements DisposableBean {
+public class FileSystemWatcher implements ResourceNotificationDispatcher, DisposableBean {
+    
+    interface FileExtractor {
+        public File getFile(String path);
+    }
+    
+    
     /**
      * Change to file system
      */
@@ -56,7 +62,6 @@ public class FileSystemWatcher implements DisposableBean {
             this.modified = null;
         }
 
-        @SuppressWarnings("unchecked")
         public Delta(File context, Kind kind, List<File> created, List<File> removed,
                 List<File> modified) {
             this.context = context;
@@ -98,7 +103,7 @@ public class FileSystemWatcher implements DisposableBean {
             this.file = file;
             this.path = path;
             this.exsists = file.exists();
-            this.last = exsists ? file.lastModified() : 0;            
+            this.last = exsists ? file.lastModified() : 0;
             if (file.isDirectory()) {
                 contents = file.listFiles();
             }
@@ -275,7 +280,7 @@ public class FileSystemWatcher implements DisposableBean {
 
     private ScheduledExecutorService pool;
 
-    //private FileSystemResourceStore store;
+    private FileExtractor fileExtractor;
 
     protected long lastmodified;
 
@@ -337,10 +342,20 @@ public class FileSystemWatcher implements DisposableBean {
      * <p>
      * Internally a single threaded schedule executor is used to monitor files.
      */
-    FileSystemWatcher() {
+    FileSystemWatcher(FileExtractor fileExtractor) {
         this.pool = Executors.newSingleThreadScheduledExecutor(tFactory);
+        this.fileExtractor = fileExtractor;
     }
     
+    FileSystemWatcher() {
+        this (new FileExtractor() {
+            @Override
+            public File getFile(String path) {
+                return new File(path.replace('/', File.separatorChar));
+            }            
+        });
+    }
+
     private Watch watch(File file, String path ){
         if( file == null || path == null ){
             return null;
@@ -352,7 +367,8 @@ public class FileSystemWatcher implements DisposableBean {
         }
         return null; // not found
     }
-    public synchronized void addListener(File file, String path, ResourceListener listener) {
+    public synchronized void addListener(String path, ResourceListener listener) {
+        File file = fileExtractor.getFile(path);
         if( file == null ){
             throw new NullPointerException("File to watch is required");
         }
@@ -370,7 +386,8 @@ public class FileSystemWatcher implements DisposableBean {
         watch.addListener(listener);
     }
 
-    public synchronized void removeListener(File file, String path, ResourceListener listener) {
+    public synchronized boolean removeListener(String path, ResourceListener listener) {
+        File file = fileExtractor.getFile(path);
         if( file == null ){
             throw new NullPointerException("File to watch is required");
         }
@@ -391,6 +408,7 @@ public class FileSystemWatcher implements DisposableBean {
                 monitor = null;
             }
         }
+        return removed;
     }
 
     /**
@@ -411,5 +429,10 @@ public class FileSystemWatcher implements DisposableBean {
     @Override
     public void destroy() throws Exception {
         pool.shutdown();
+    }
+
+    @Override
+    public void changed(ResourceNotification notification) {
+        throw new UnsupportedOperationException();        
     }
 }

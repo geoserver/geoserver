@@ -315,13 +315,12 @@ public abstract class AbstractJDBCResourceStoreTest {
         
         ResourceStore store = new JDBCResourceStore(support.getDataSource(), getConfig(false, false));        
         Resource fileA = store.get("FileA");
-        Resource fileB = store.get("FileB");
         Resource fileD = store.get("DirC/FileD");
         
         TestResourceListener listener = new TestResourceListener();
-        store.get(Paths.BASE).addListener(listener);
+        store.get("DirC").addListener(listener);
         
-        long before = fileB.lastmodified();
+        long before = fileD.lastmodified();
         try (OutputStream out = fileD.out()) {
             out.write(1234);
         }
@@ -331,7 +330,7 @@ public abstract class AbstractJDBCResourceStoreTest {
         assertNotNull(listener.getNotify());
         assertEquals(Kind.ENTRY_MODIFY, listener.getNotify().getKind());
         assertEquals(1, listener.getNotify().events().size());
-        assertEquals(Paths.BASE, listener.getNotify().getPath());
+        assertEquals("DirC", listener.getNotify().getPath());
         long timeStamp = listener.getNotify().getTimestamp();
         assertTrue(timeStamp > before);
         Event e = listener.getNotify().events().get(0);
@@ -339,6 +338,10 @@ public abstract class AbstractJDBCResourceStoreTest {
         assertEquals("DirC/FileD", e.getPath());
         
         listener.reset();
+        store.get("DirC").removeListener(listener);
+        
+        store.get(Paths.BASE).addListener(listener);        
+        
         fileA.delete();
 
         assertNotNull(listener.getNotify());

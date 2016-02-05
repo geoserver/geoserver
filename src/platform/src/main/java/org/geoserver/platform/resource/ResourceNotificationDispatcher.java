@@ -14,22 +14,34 @@ package org.geoserver.platform.resource;
 public interface ResourceNotificationDispatcher {
     
     /**
-     * Add resource listener to this watcher.
+     * Listen for changes to ResourceStore content.
+     * <p>
+     * Listeners can be configured to check for changes to individual files or directory contents.
+     * </p>
+     * <ul>
+     * <li>styles: listener receives events for any change to the contents of the styles directory</li>
+     * <li>user_projections/epsg.properties: listener notified for any change to the epsg.properties resource</li>
+     * </ul>
+     * <p>
+     * Notification is course grained, often just based on change of last modified time stamp, as such they are issued after the change has been
+     * performed.
+     * </p>
      * 
-     * @param resource the resource to listen to
-     * @param listener the resource listener
-     * @return true iff successful 
+     * @param resource path to resource to listen to
+     * @param listener Listener to receive change notification
      */
-    public void addListener(Resource resource, ResourceListener listener);
+    public void addListener(String resource, ResourceListener listener);
     
     /**
-     * Remove resource listener from this watcher.
+     * Remove resource store content listener.
+     * @param path
+     * @param listener
      * 
-     * @param resource the resource to listen to
-     * @param listener the resource listener
+     * @param resource path to resource to listen to
+     * @param listener Listener to stop receiving change notification
      * @return true iff successful 
      */
-    public boolean removeListener(Resource resource, ResourceListener listener);
+    public boolean removeListener(String resource, ResourceListener listener);
     
     /**
      * Send notification.

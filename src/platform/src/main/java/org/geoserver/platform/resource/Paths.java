@@ -354,11 +354,10 @@ public class Paths {
     }
 
     /**
-     * Convert a filePath to resource path (relative to base directory), this method does not support absolute file paths.
+     * Convert a filePath to resource path (supports absolute paths).
      * 
      * This method converts file paths (using {@link File#separator}) to the URL style paths used for {@link ResourceStore#get(String)}.
      * 
-     * @param directory directory used to resolve relative reference lookup
      * @param filePath File path using {@link File#separator}
      * @return Resource path suitable for use with {@link ResourceStore#get(String)} or null for absolute path
      */

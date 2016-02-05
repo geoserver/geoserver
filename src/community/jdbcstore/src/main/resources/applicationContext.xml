@@ -31,7 +31,7 @@
     <constructor-arg ref="jdbcStoreProperties" />
     <property name="cache" ref="resourceCache" />
     <property name="lockProvider" ref="lockProvider"/>
-    <property name="resourceWatcher" ref="resourceWatcher"/>
+    <property name="resourceNotificationDispatcher" ref="resourceNotificationDispatcher"/>
   </bean>
 
    <bean id="resourceStore" class="org.geoserver.platform.resource.ResourceStoreProxy">

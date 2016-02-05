@@ -14,7 +14,7 @@
    </bean>
    <bean id="hzCluster" 
          class="org.geoserver.cluster.hazelcast.HzCluster">
-      <property name="dataDirectory" ref="dataDirectory"/>
+      <property name="resourceStore" ref="resourceStore"/>
       <property name="rawCatalog" ref="rawCatalog"/>
    </bean>
 
@@ -30,8 +30,5 @@
    </bean>
    
    <!-- override the default one -->
-   <!--  TODO Re-enable once GSIP:136 passes -->
-   <!--<bean id="resourceWatcher" class="org.geoserver.cluster.hazelcast.HzResourceWatcher">
-      <property name="cluster" ref="hzCluster"/>
-   </bean>-->
+   <bean id="resourceNotificationDispatcher" class="org.geoserver.cluster.hazelcast.HzResourceNotificationDispatcher" />
 </beans>

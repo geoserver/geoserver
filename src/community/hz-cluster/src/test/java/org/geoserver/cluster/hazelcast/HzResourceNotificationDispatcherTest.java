@@ -13,7 +13,7 @@ import static org.easymock.EasyMock.replay;
 import org.easymock.Capture;
 import org.easymock.EasyMock;
 import org.easymock.IAnswer;
-import org.geoserver.platform.resource.AbstractResourceWatcherTest;
+import org.geoserver.platform.resource.AbstractResourceNotificationDispatcherTest;
 import org.geoserver.platform.resource.ResourceNotification;
 import org.geoserver.platform.resource.ResourceNotificationDispatcher;
 
@@ -28,9 +28,7 @@ import com.hazelcast.core.MessageListener;
  * @author Niels Charlier
  *
  */
-public class HzResourceWatcherTest extends AbstractResourceWatcherTest {
-
-    private HzResourceNotificationDispatcher resourceWatcher;
+public class HzResourceNotificationDispatcherTest extends AbstractResourceNotificationDispatcherTest {
 
     @Override
     protected ResourceNotificationDispatcher initWatcher() throws Exception {
@@ -66,10 +64,7 @@ public class HzResourceWatcherTest extends AbstractResourceWatcherTest {
         
         replay(cluster, topic, hz, hzCluster);
 
-        resourceWatcher = new HzResourceNotificationDispatcher();
-        resourceWatcher.setCluster(hzCluster);
-        resourceWatcher.afterPropertiesSet();
-        return resourceWatcher;
+        return new HzResourceNotificationDispatcher(hzCluster);
     }
 
 }

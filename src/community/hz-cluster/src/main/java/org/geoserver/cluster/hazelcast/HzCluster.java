@@ -12,10 +12,9 @@ import java.util.logging.Logger;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.cluster.ClusterConfig;
 import org.geoserver.cluster.ClusterConfigWatcher;
-import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.data.util.IOUtils;
-import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.ResourceStore;
 import org.geoserver.platform.resource.Resources;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.factory.DisposableBean;
@@ -41,7 +40,7 @@ public class HzCluster implements DisposableBean, InitializingBean {
     static final String HAZELCAST_FILENAME = "hazelcast.xml";
     
     HazelcastInstance hz;
-    GeoServerResourceLoader rl;
+    ResourceStore rl;
     ClusterConfigWatcher watcher;
 
     private Catalog rawCatalog;
@@ -120,7 +119,7 @@ public class HzCluster implements DisposableBean, InitializingBean {
     public void afterPropertiesSet() throws Exception {
         watcher = loadConfig();
         if(watcher.get().isEnabled()){
-            hz = Hazelcast.newHazelcastInstance(loadHazelcastConfig(rl));
+            hz = Hazelcast.newHazelcastInstance(loadHazelcastConfig());
             CLUSTER = this;
         }
     }
@@ -136,7 +135,7 @@ public class HzCluster implements DisposableBean, InitializingBean {
         }
     }
     
-    private Config loadHazelcastConfig(GeoServerResourceLoader rl) throws IOException{
+    private Config loadHazelcastConfig() throws IOException{
         Resource hzf = getConfigFile(HAZELCAST_FILENAME, HzCluster.class);
         try (InputStream hzIn = hzf.in()) {
             return new XmlConfigBuilder(hzIn).build();
@@ -148,8 +147,8 @@ public class HzCluster implements DisposableBean, InitializingBean {
      * @param dd
      * @throws IOException
      */
-    public void setDataDirectory(GeoServerDataDirectory dd) throws IOException {
-        rl=dd.getResourceLoader();
+    public void setResourceStore(ResourceStore dd) throws IOException {
+        rl=dd;
     }
     
     /**

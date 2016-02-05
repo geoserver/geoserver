@@ -1,0 +1,43 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:wicket="http://wicket.apache.org/">
+<body>
+<wicket:extend>
+    <wicket:fragment wicket:id="header">
+        <ul>
+            <li><a class="add-link" href="#" wicket:id="addNew">
+                <wicket:message key="addNew"/>
+            </a></li>
+            <li><a class="remove-link" href="#" wicket:id="removeSelected">
+                <wicket:message key="removeSelected"/>
+            </a></li>
+        </ul>
+    </wicket:fragment>
+    <div wicket:id="rulesPanel"></div>
+    <form wicket:id="form">
+        <ul style="padding-top:50px;">
+            <li>
+                <fieldset>
+                    <legend><span><wicket:message key="testRules"></wicket:message></span></legend>
+                    <ul>
+                        <li>
+                            <label for="input"><wicket:message key="input"></wicket:message>
+                            </label>
+                            <textarea wicket:id="input" id="input" style="width: 80%; height:50px;"></textarea>
+                        </li>
+                        <li>
+                            <label for="output"><wicket:message key="output"></wicket:message>
+                            </label>
+                            <textarea wicket:id="output" id="output" style="width: 80%; height:50px;"></textarea>
+                        </li>
+                    </ul>
+                </fieldset>
+            </li>
+        </ul>
+        <div class="button-group selfclear">
+            <a href="#" wicket:id="test"><wicket:message key="test"></wicket:message></a>
+        </div>
+    </form>
+</wicket:extend>
+</body>
+</html>

@@ -62,6 +62,7 @@
           <descriptor>release/ext-geofence-server.xml</descriptor>
           <descriptor>release/ext-gwc-s3.xml</descriptor>	
           <descriptor>release/ext-vectortiles.xml</descriptor>
+          <descriptor>release/ext-params-extractor.xml</descriptor>
 	  <descriptor>release/ext-gdal-wcs.xml</descriptor>
 	  <descriptor>release/ext-gdal-wps.xml</descriptor>
 	  <descriptor>release/ext-geogig.xml</descriptor>
@@ -200,6 +201,7 @@
         <module>geofence</module>
         <module>geofence-server</module>
         <module>sldService</module>
+        <module>params-extractor</module>
         <module>release</module>
 	<module>gwc-distributed</module>
 	<module>gdal</module>
@@ -447,6 +449,12 @@
       <id>community-release-module</id>
       <modules>
         <module>release</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>params-extractor</id>
+      <modules>
+        <module>params-extractor</module>
       </modules>
     </profile>
   </profiles>

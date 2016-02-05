@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+(c) 2016 Open Source Geospatial Foundation - all rights reserved
+This code is licensed under the GPL 2.0 license, available at the root
+application directory.
+-->
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+    <bean id="paramsExtractorFilter" class="org.geoserver.params.extractor.Filter">
+        <constructor-arg ref="dataDirectory"/>
+    </bean>
+    <bean id="paramsExtractorConfigPage" class="org.geoserver.web.MenuPageInfo">
+        <property name="id" value="paramsExtractorConfigPage"/>
+        <property name="titleKey" value="ParamsExtractorConfigPage.page.title"/>
+        <property name="descriptionKey" value="ParamsExtractorConfigPage.page.description"/>
+        <property name="componentClass" value="org.geoserver.params.extractor.web.ParamsExtractorConfigPage"/>
+        <property name="category" ref="settingsCategory" />
+        <property name="order" value="100" />
+        <property name="icon" value="img/direction-pencil.png" />
+    </bean>
+    <bean id="paramsExtractorUrlMangler" class="org.geoserver.params.extractor.ParamsExtractorUrlMangler"/>
+</beans>

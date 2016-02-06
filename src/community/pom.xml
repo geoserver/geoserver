@@ -60,7 +60,7 @@
           <descriptor>release/ext-solr.xml</descriptor>		  
           <descriptor>release/ext-geofence.xml</descriptor>
           <descriptor>release/ext-sldservice.xml</descriptor>
-          <!--descriptor>release/ext-params-extractor.xml</descriptor-->
+          <descriptor>release/ext-params-extractor.xml</descriptor>
         </descriptors>
       </configuration>
      </plugin>
@@ -185,7 +185,7 @@
         <module>solr</module>
         <module>geofence</module>
         <module>sldService</module>
-        <!--module>params-extractor</module-->
+        <module>params-extractor</module>
         <module>release</module>
       </modules>
     </profile>
@@ -406,11 +406,11 @@
         <module>release</module>
       </modules>
     </profile>
-    <!--profile>
+    <profile>
       <id>params-extractor</id>
       <modules>
         <module>params-extractor</module>
       </modules>
-    </profile-->
+    </profile>
   </profiles>
 </project>

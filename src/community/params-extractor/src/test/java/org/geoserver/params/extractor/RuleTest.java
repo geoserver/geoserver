@@ -7,6 +7,7 @@ package org.geoserver.params.extractor;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
 public class RuleTest {
@@ -26,11 +27,15 @@ public class RuleTest {
                 .build();
         UrlTransform urlTransform = new UrlTransform("/geoserver/tiger/wms/H11/D68", Utils.parseParameters("REQUEST=GetMap"));
         ruleA.apply(urlTransform);
-        assertThat(urlTransform.toString(),
-                is("/geoserver/tiger/wms/D68?REQUEST=GetMap&CQL_FILTER=CFCC%3D%27H11%27"));
+        checkParamatersSize(urlTransform, 2);
+        checkParamaterWithValue(urlTransform, "REQUEST", "GetMap");
+        checkParamaterWithValue(urlTransform, "CQL_FILTER", "CFCC='H11'");
+        assertThat(urlTransform.getRequestUri(), is("/geoserver/tiger/wms/D68"));
         ruleB.apply(urlTransform);
-        assertThat(urlTransform.toString(),
-                is("/geoserver/tiger/wms?REQUEST=GetMap&CQL_FILTER=CFCC%3D%27H11%27+AND+CFCC%3D%27D68%27"));
+        checkParamatersSize(urlTransform, 2);
+        checkParamaterWithValue(urlTransform, "REQUEST", "GetMap");
+        checkParamaterWithValue(urlTransform, "CQL_FILTER", "CFCC='H11' AND CFCC='D68'");
+        assertThat(urlTransform.getRequestUri(), is("/geoserver/tiger/wms"));
     }
 
     @Test
@@ -42,8 +47,10 @@ public class RuleTest {
                 .build();
         UrlTransform urlTransform = new UrlTransform("/geoserver/tiger/wms/H11/D68", Utils.parseParameters("REQUEST=GetMap"));
         rule.apply(urlTransform);
-        assertThat(urlTransform.toString(),
-                is("/geoserver/tiger/wms?REQUEST=GetMap&CQL_FILTER=CFCC%3D%27H11%27+AND+CFCC%3D%27D68%27"));
+        checkParamatersSize(urlTransform, 2);
+        checkParamaterWithValue(urlTransform, "REQUEST", "GetMap");
+        checkParamaterWithValue(urlTransform, "CQL_FILTER", "CFCC='H11' AND CFCC='D68'");
+        assertThat(urlTransform.getRequestUri(), is("/geoserver/tiger/wms"));
     }
 
     @Test
@@ -57,8 +64,10 @@ public class RuleTest {
         UrlTransform urlTransform = new UrlTransform("/geoserver/tiger/wms/H11/D68",
                 Utils.parseParameters("REQUEST=GetMap&CQL_FILTER=CFCC%3D%27Y56%27"));
         rule.apply(urlTransform);
-        assertThat(urlTransform.toString(),
-                is("/geoserver/tiger/wms?REQUEST=GetMap&CQL_FILTER=CFCC%3D%27Y56%27+OR+%28CFCC%3D%27H11%27+AND+CFCC%3D%27D68%27%29"));
+        checkParamatersSize(urlTransform, 2);
+        checkParamaterWithValue(urlTransform, "REQUEST", "GetMap");
+        checkParamaterWithValue(urlTransform, "CQL_FILTER", "CFCC='Y56' OR (CFCC='H11' AND CFCC='D68')");
+        assertThat(urlTransform.getRequestUri(), is("/geoserver/tiger/wms"));
     }
 
     @Test
@@ -72,7 +81,19 @@ public class RuleTest {
         UrlTransform urlTransform = new UrlTransform("/geoserver/tiger/wms/H11/D68",
                 Utils.parseParameters("REQUEST=GetMap&cql_filter=CFCC%3D%27Y56%27"));
         rule.apply(urlTransform);
-        assertThat(urlTransform.toString(),
-                is("/geoserver/tiger/wms?REQUEST=GetMap&cql_filter=CFCC%3D%27Y56%27+OR+%28CFCC%3D%27H11%27+AND+CFCC%3D%27D68%27%29"));
+        checkParamatersSize(urlTransform, 2);
+        checkParamaterWithValue(urlTransform, "REQUEST", "GetMap");
+        checkParamaterWithValue(urlTransform, "cql_filter", "CFCC='Y56' OR (CFCC='H11' AND CFCC='D68')");
+        assertThat(urlTransform.getRequestUri(), is("/geoserver/tiger/wms"));
+    }
+
+    private void checkParamatersSize(UrlTransform urlTransform, int expectedSize) {
+        assertThat(urlTransform.getParameters().size(), is(expectedSize));
+    }
+
+    private void checkParamaterWithValue(UrlTransform urlTransform, String name, String value) {
+        String[] foundValue = urlTransform.getParameters().get(name);
+        assertThat(foundValue, notNullValue());
+        assertThat(foundValue[0], is(value));
     }
 }

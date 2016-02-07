@@ -7,7 +7,6 @@ package org.geoserver.params.extractor;
 import org.geotools.util.logging.Logging;
 
 import java.net.URLDecoder;
-import java.util.Optional;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

@@ -187,7 +187,7 @@
      <groupId>org.geoserver.community</groupId>
      <artifactId>gs-params-extractor</artifactId>
      <version>${project.version}</version>
-   </dependency>  
+   </dependency>     
  </dependencies>
  <build>
   <plugins>

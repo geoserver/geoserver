@@ -1,3 +1,8 @@
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2013 OpenPlans
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.wms.featureinfo;
 
 import static org.junit.Assert.assertEquals;
@@ -78,6 +83,7 @@ public class RenderingBasedFeatureInfoTest extends WMSTestSupport {
         testData.addStyle("two-rules", "two-rules.sld", this.getClass(), getCatalog());
         testData.addStyle("two-fts", "two-fts.sld", this.getClass(), getCatalog());
         testData.addStyle("dashed", "dashed.sld",this.getClass(), getCatalog());
+        testData.addStyle("dashed-exp", "dashed-exp.sld",this.getClass(), getCatalog());
         testData.addStyle("polydash", "polydash.sld", this.getClass(), getCatalog());
         testData.addStyle("doublepoly", "doublepoly.sld", this.getClass(), getCatalog());
         testData.addStyle("pureLabel", "purelabel.sld", this.getClass(), getCatalog());
@@ -273,6 +279,16 @@ public class RenderingBasedFeatureInfoTest extends WMSTestSupport {
     			+ "&WIDTH=397&HEIGHT=512&format=image%2Fpng&styles=dashed&srs=EPSG%3A4326&version=1.1.1&x=182&y=241";
         JSONObject result = (JSONObject) getAsJSON(request);
         // we used to get no results 
+        assertEquals(1, result.getJSONArray("features").size());
+    }
+
+    @Test
+    public void testDashedWithExpressions() throws Exception {
+        String layer = getLayerId(MockData.GENERICENTITY);
+        String request = "wms?REQUEST=GetFeatureInfo&&BBOX=0.778809%2C45.421875%2C12.021973%2C59.921875&SERVICE=WMS"
+                + "&INFO_FORMAT=application/json&QUERY_LAYERS=" + layer + "&Layers=" + layer
+                + "&WIDTH=397&HEIGHT=512&format=image%2Fpng&styles=dashed-exp&srs=EPSG%3A4326&version=1.1.1&x=182&y=241";
+        JSONObject result = (JSONObject) getAsJSON(request);
         assertEquals(1, result.getJSONArray("features").size());
     }
 

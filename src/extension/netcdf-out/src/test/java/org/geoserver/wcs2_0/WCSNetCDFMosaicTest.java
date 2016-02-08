@@ -75,6 +75,7 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
     public static QName DUMMYMOSAIC = new QName(CiteTestData.WCS_URI, "DummyCoverage", CiteTestData.WCS_PREFIX);
     public static QName VISIBILITYCF = new QName(CiteTestData.WCS_URI, "visibilityCF", CiteTestData.WCS_PREFIX);
     public static QName VISIBILITYPACKED = new QName(CiteTestData.WCS_URI, "visibilityPacked", CiteTestData.WCS_PREFIX);
+    public static QName VISIBILITYCOMPRESSED = new QName(CiteTestData.WCS_URI, "visibilityCompressed", CiteTestData.WCS_PREFIX);
     public static QName VISIBILITYCFPACKED = new QName(CiteTestData.WCS_URI, "visibilityCFPacked", CiteTestData.WCS_PREFIX);
 
     private final static String STANDARD_NAME = "visibility_in_air";
@@ -142,6 +143,9 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
 
         testData.addRasterLayer(VISIBILITYCFPACKED, "visibility.zip", null, null, this.getClass(), getCatalog());
         setupNetCDFoutSettings(VISIBILITYCFPACKED);
+
+        testData.addRasterLayer(VISIBILITYCOMPRESSED, "visibility.zip", null, null, this.getClass(), getCatalog());
+        setupNetCDFoutSettings(VISIBILITYCOMPRESSED);
     }
 
     private void setupNetCDFoutSettings(QName name) {
@@ -154,6 +158,7 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
         String layerName = name.getLocalPart().toUpperCase();
         boolean isPackedLayer = layerName.contains("PACKED");
         boolean isCF = layerName.contains("CF");
+        boolean isCompressed = layerName.contains("COMPRESSED");
         // Update the UnitOfMeasure to km and noData to -9999
         CoverageDimensionInfo dimension = info.getDimensions().get(0);
         String originalUnit = ORIGINAL_UNIT; 
@@ -166,7 +171,7 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
         }
 
         NetCDFLayerSettingsContainer container = new NetCDFLayerSettingsContainer();
-        container.setCompressionLevel(0);
+        container.setCompressionLevel(isCompressed ? 9 : 0);
         container.setShuffle(true);
         container.setDataPacking(isPackedLayer ? DataPacking.SHORT : DataPacking.NONE);
 
@@ -307,7 +312,7 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
         Array readData = var.read(NETCDF_SECTION);
         assertEquals(DataType.FLOAT, readData.getDataType());
         float data = readData.getFloat(0);
-        System.out.println("CF:" + data);
+
         // Data have been converted to canonical unit (m) from km.
         // Data value is bigger
         assertEquals(data, (ORIGINAL_PIXEL_VALUE) * 1000, DELTA);
@@ -325,6 +330,40 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
         assertEquals("testing WCS", attribute.getStringValue());
 
         dataset.close();
+    }
+
+    @Test
+    public void testRequestNetCDFCompression() throws Exception {
+        boolean isNC4Available = NetCDFUtilities.isNC4CAvailable();
+        if (!isNC4Available && LOGGER.isLoggable(Level.INFO)) {
+            LOGGER.info("NetCDF C library not found. NetCDF4 output will not be created");
+        }
+
+        // http response from the request inside the string
+        MockHttpServletResponse response = getAsServletResponse("ows?request=GetCoverage&service=WCS&version=2.0.1" +
+                "&coverageId=wcs__visibilityCompressed&format=application/x-netcdf4");
+        assertNotNull(response);
+
+        assertEquals((isNC4Available ? "application/x-netcdf4" : "application/xml"),
+                response.getContentType());
+
+        if (isNC4Available) {
+            byte[] netcdfOut = getBinary(response);
+            File file = File.createTempFile("netcdf", "outCompressed.nc", new File("./target"));
+            FileUtils.writeByteArrayToFile(file, netcdfOut);
+
+            NetcdfDataset dataset = NetcdfDataset.openDataset(file.getAbsolutePath());
+            assertNotNull(dataset);
+
+            Variable var = dataset.findVariable(STANDARD_NAME);
+            assertNotNull(var);
+            final long varByteSize = var.getSize() * var.getDataType().getSize();
+
+            // The output file is smaller than the size of the underlying variable.
+            // Compression successfully occurred
+            assertTrue(netcdfOut.length < varByteSize);
+            dataset.close();
+        }
     }
 
     @Test

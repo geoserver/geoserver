@@ -1,3 +1,8 @@
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.security.decorators;
 
 import org.geoserver.catalog.AttributeTypeInfo;
@@ -21,6 +26,14 @@ import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.AbstractDecorator;
 
+/**
+ * 
+ * Delegates all methods to the provided delegate. Suclasses will override
+ * methods in order to perform their decoration work
+ * 
+ * @author Niels Charlier
+ *
+ */
 public class DecoratingCatalogFactory extends AbstractDecorator<CatalogFactory> implements CatalogFactory {
 
     public DecoratingCatalogFactory(CatalogFactory delegate) {

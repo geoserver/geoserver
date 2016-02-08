@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -15,8 +15,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -200,7 +202,11 @@ class ModificationProxyCloner {
             copy = source.getClass().newInstance();
         } catch (InstantiationException e) {
             //we'll just pick something
-            copy = new ArrayList<T>();
+            if (source instanceof Set) {
+                copy = new HashSet<T>();
+            } else {
+                copy = new ArrayList<T>();
+            }
         }
         if (deepCopy) {
             for (T object : source) {

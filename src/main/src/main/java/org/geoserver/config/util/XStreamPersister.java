@@ -2046,17 +2046,21 @@ public class XStreamPersister {
         public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {
             String name = null;
             String sql = null;
-            String geomName = null;
-            Class type = null;
-            int srid = -1;
             List<String> primaryKeys = new ArrayList<String>();
             List<VirtualTableParameter> params = new ArrayList<VirtualTableParameter>();
+            List<String> geomNames=new ArrayList<String>();
+            List<Class> types=new ArrayList<Class>();
+            List<Integer> srids= new ArrayList<Integer>();
+            
             Boolean escapeSql = false;
             while (reader.hasMoreChildren()) {
                 reader.moveDown();
                 if (reader.getNodeName().equals("keyColumn")) {
                     primaryKeys.add(reader.getValue());
                 } else if (reader.getNodeName().equals("geometry")) {
+                    String geomName = null;
+                    Class type = null;
+                    int srid = -1;                    
                     while (reader.hasMoreChildren()) {
                         reader.moveDown();
                         if (reader.getNodeName().equals("name"))
@@ -2068,7 +2072,10 @@ public class XStreamPersister {
                             srid = Converters.convert(reader.getValue(), Integer.class);
                         }
                         reader.moveUp();
-                    }
+                    }                    
+                    geomNames.add(geomName);
+                    types.add(type);
+                    srids.add(srid);                    
                 } else if (reader.getNodeName().equals("parameter")) {
                     String pname = null;
                     String defaultValue = null;
@@ -2107,8 +2114,8 @@ public class XStreamPersister {
 
             VirtualTable vt = new VirtualTable(name, sql, false);
 
-            if (geomName != null && type != null) {
-                vt.addGeometryMetadatata(geomName, type, srid);
+            for(int i=0; i<geomNames.size();i++){
+                vt.addGeometryMetadatata(geomNames.get(i), types.get(i), srids.get(i));
             }
             for (VirtualTableParameter p : params) {
                 vt.addParameter(p);

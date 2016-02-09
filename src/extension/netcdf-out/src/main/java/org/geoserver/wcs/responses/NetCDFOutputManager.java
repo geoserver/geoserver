@@ -1,4 +1,4 @@
-/* (c) 2014-2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -12,7 +12,6 @@ import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -54,13 +53,11 @@ import org.geotools.coverage.io.netcdf.cf.Entry;
 import org.geotools.coverage.io.netcdf.cf.NetCDFCFParser;
 import org.geotools.coverage.io.util.DateRangeComparator;
 import org.geotools.coverage.io.util.NumberRangeComparator;
-import org.geotools.coverage.processing.CoverageProcessor;
 import org.geotools.image.ImageWorker;
 import org.geotools.imageio.netcdf.utilities.NetCDFUtilities;
 import org.geotools.referencing.operation.matrix.XAffineTransform;
 import org.geotools.resources.coverage.CoverageUtilities;
 import org.geotools.util.logging.Logging;
-import org.opengis.parameter.ParameterValueGroup;
 
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
@@ -102,8 +99,6 @@ public class NetCDFOutputManager {
     public static final Logger LOGGER = Logging.getLogger("org.geoserver.wcs.responses.NetCDFOutputManager");
 
     private static final double EQUALITY_DELTA = 1E-10; //Consider customizing it depending on the noData magnitude
-
-    private static final CoverageProcessor PROCESSOR = CoverageProcessor.getInstance();
 
     /** 
      * A dimension mapping between dimension names and dimension manager instances
@@ -185,8 +180,8 @@ public class NetCDFOutputManager {
     public NetCDFOutputManager(GranuleStack granuleStack, File file,
             Map<String, String> encodingParameters, String outputFormat) throws IOException {
         this.granuleStack = granuleStack;
-        this.writer = getWriter(file, outputFormat);
         parseParams(encodingParameters);
+        this.writer = getWriter(file, outputFormat);
         collectCoverageDimensions();
         initializeNetCDF();
     }

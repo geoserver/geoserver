@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -582,7 +582,6 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
         assertSame(states, sc.getFeatureTypeByName("topp:states"));
         assertSame(roads, sc.getFeatureTypeByName("topp:roads"));
         LayerGroupInfo layerGroup = sc.getLayerGroupByName("topp", "layerGroupWithSomeLockedLayer");        
-        assertSame(layerGroupWithSomeLockedLayer, layerGroup);
         assertEquals(2, layerGroup.getLayers().size());
         
         // try with read-only user, not empty LayerGroup should be returned

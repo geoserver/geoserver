@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -25,6 +25,7 @@ import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerExtensionsHelper;
+import org.geoserver.security.decorators.SecuredLayerGroupInfo;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.test.SystemTest;
 import org.geoserver.test.TestSetup;
@@ -182,6 +183,9 @@ public class CatalogIntegrationTest extends GeoServerSystemTestSupport {
         catalog.add(lg);
         // ... make sure we get a proxy
         lg = catalog.getLayerGroupByName("test-lg");
+        if (lg instanceof SecuredLayerGroupInfo) {
+            lg = ((SecuredLayerGroupInfo) lg).unwrap(LayerGroupInfo.class);
+        }
         LayerGroupInfo lg2 = serialize(lg);
         assertSame(ModificationProxy.unwrap(lg), ModificationProxy.unwrap(lg2));
         assertSame(ModificationProxy.unwrap(lg.getLayers().get(0)), ModificationProxy.unwrap(lg2.getLayers().get(0)));

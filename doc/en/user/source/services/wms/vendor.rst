@@ -66,7 +66,7 @@ The syntax is::
 
 An example of a simple CQL filter is::
 
-   cql_filter=INTERSECT(the_geom,%20POINT%20(-74.817265%2040.5296504))
+   cql_filter=INTERSECTS(the_geom,%20POINT%20(-74.817265%2040.5296504))
    
 
 env

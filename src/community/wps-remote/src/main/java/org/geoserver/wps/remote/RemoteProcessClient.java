@@ -25,6 +25,7 @@ import org.geoserver.importer.ImportContext;
 import org.geoserver.importer.ImportTask;
 import org.geoserver.importer.Importer;
 import org.geoserver.importer.SpatialFile;
+import org.geoserver.platform.ExtensionPriority;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.wps.remote.plugin.XMPPClient;
@@ -39,7 +40,7 @@ import org.springframework.beans.factory.DisposableBean;
  * @author Alessio Fabiani, GeoSolutions
  * 
  */
-public abstract class RemoteProcessClient implements DisposableBean {
+public abstract class RemoteProcessClient implements DisposableBean, ExtensionPriority {
 
     /** The LOGGER */
     public static final Logger LOGGER = Logging.getLogger(XMPPClient.class.getPackage().getName());

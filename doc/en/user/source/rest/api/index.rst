@@ -27,4 +27,5 @@ This section describes the GeoServer REST configuration API.
    manifests
    masterpassword
    accesscontrol
-   
+   resources
+

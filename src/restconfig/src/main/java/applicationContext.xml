@@ -511,6 +511,10 @@
         <entry>
             <key><value>/workspaces/{workspace}/coveragestores/{coveragestore}/coverages/{coverage}/index/granules/{granule}</value></key>
             <value>structuredCoverageFinder</value>
+        </entry>        
+        <entry>
+            <key><value>/resource</value></key>
+            <value>resourceFinder</value>
         </entry>
   </map>
 </property>
@@ -522,6 +526,9 @@
     <constructor-arg ref="catalog"/>
   </bean>
   
+  <bean id="resourceFinder" class="org.geoserver.rest.resources.ResourceFinder" >
+     <constructor-arg ref="resourceStore"/>
+  </bean>
   <bean id="workspaceFinder" class="org.geoserver.catalog.rest.WorkspaceFinder" parent="abstractCatalogFinder"/>
   <bean id="namespaceFinder" class="org.geoserver.catalog.rest.NamespaceFinder" parent="abstractCatalogFinder"/>
   <bean id="dataStoreFinder" class="org.geoserver.catalog.rest.DataStoreFinder" parent="abstractCatalogFinder"/>

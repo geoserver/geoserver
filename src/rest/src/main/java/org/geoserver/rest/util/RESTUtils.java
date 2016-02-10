@@ -26,7 +26,6 @@ import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Files;
 import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
-import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.platform.resource.Resources;
 import org.apache.commons.io.FilenameUtils;
 import org.geoserver.catalog.Catalog;
@@ -40,10 +39,13 @@ import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.SettingsInfo;
 import org.geoserver.rest.RestletException;
 import org.geotools.util.logging.Logging;
+import org.restlet.data.Form;
 import org.restlet.data.MediaType;
+import org.restlet.data.Message;
 import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Status;
+import org.restlet.resource.Representation;
 import org.vfny.geoserver.global.ConfigurationException;
 
 import com.noelios.restlet.ext.servlet.ServletCall;
@@ -599,4 +601,35 @@ public class RESTUtils {
             IOUtils.closeQuietly(zin);
         }
     }
+
+    /**
+     *
+     * Use this to read or manipulate custom headers in a request or response
+     *
+     * @return headers form
+     */
+    public static Form getHeaders(Message message) {
+        Form headers = (Form) message.getAttributes().get("org.restlet.http.headers");
+        if (headers == null) {
+            headers = new Form();
+            message.getAttributes().put("org.restlet.http.headers", headers);
+        }
+        return headers;
+    }
+
+    /**
+     *
+     * Create an empty response body for HEAD requests
+     *
+     * @return empty representation.
+     */
+    public static Representation emptyBody() {
+        return new Representation() { //empty
+            @Override public ReadableByteChannel getChannel() throws IOException { return null; }
+            @Override public InputStream getStream() throws IOException { return null; }
+            @Override public void write(OutputStream outputStream) throws IOException {}
+            @Override public void write(WritableByteChannel writableChannel) throws IOException {}
+        };
+    }
+
 }

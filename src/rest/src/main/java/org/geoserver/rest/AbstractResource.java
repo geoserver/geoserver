@@ -16,6 +16,7 @@ import org.geoserver.rest.format.MediaTypes;
 import org.geoserver.rest.util.RESTUtils;
 import org.geotools.util.Converters;
 import org.restlet.Context;
+import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Preference;
 import org.restlet.data.Request;
@@ -83,8 +84,11 @@ public abstract class AbstractResource extends Resource {
      * set the default format is used, ie the first format returned from 
      * {@link #createSupportedFormats(Request, Response)}.  
      * </p>
+     *
+     * @param includeFileExtension use file extension such as .xml or .html as hint
+     * 
      */
-    protected DataFormat getFormatGet() {
+    protected DataFormat getFormatGet(boolean includeFileExtension) {
         DataFormat df = null;
         
         //check if the client specified an extension
@@ -92,7 +96,7 @@ public abstract class AbstractResource extends Resource {
         if ( ext == null ) {
             ext = (String) getRequest().getAttributes().get( "type" );
         }
-        if ( ext == null ) {
+        if ( ext == null && includeFileExtension) {
             //try from the resource uri
             String uri = getRequest().getResourceRef() != null ? 
                 getRequest().getResourceRef().getLastSegment() : null;
@@ -136,6 +140,21 @@ public abstract class AbstractResource extends Resource {
         }
         
         return df;
+    }
+    
+    /**
+     * Returns the format to use to serialize during a GET request.
+     * <p>
+     * To determine the format first the "Accepts" header is checked. If not set then the 
+     * "extension" of the resource being requested is used, which originates from the route
+     * template under the {format} or {type} variable. IF neither the header or extension is
+     * set the default format is used, ie the first format returned from 
+     * {@link #createSupportedFormats(Request, Response)}.  
+     * </p>
+     *
+     */
+    protected DataFormat getFormatGet() {
+        return getFormatGet(true);
     }
 
     /**
@@ -308,5 +327,25 @@ public abstract class AbstractResource extends Resource {
         }
 
         return defalt;
+    }
+
+    /**
+     *
+     * Request headers
+     *
+     * @return request headers form
+     */
+    protected Form getRequestHeaders() {
+        return RESTUtils.getHeaders(getRequest());
+    }
+
+    /**
+     *
+     * Response headers
+     *
+     * @return response headers form
+     */
+    protected Form getResponseHeaders() {
+        return RESTUtils.getHeaders(getResponse());
     }
 }

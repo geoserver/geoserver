@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+ Copyright (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved.
+ This code is licensed under the GPL 2.0 license, available at the root
+ application directory.
+ -->
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+
+    <!--
+		====================================================================
+	-->
+	<!-- Property config files -->
+	<!-- Any customization should go in the property file -->
+	<!--
+		====================================================================
+	-->
+    <bean id="remoteProcessFactoryConfigurationWatcher" 
+		class="org.geoserver.wps.remote.RemoteProcessFactoryConfigurationWatcher" destroy-method="stop"/>
+    
+    <!--
+    	Factory for remote processes 
+    -->
+	<bean id="xmppRemoteProcessClient" class="org.geoserver.wps.remote.plugin.XMPPClient">
+	    <constructor-arg index="0" ref="remoteProcessFactoryConfigurationWatcher"/>
+	    <constructor-arg index="1" value="true"/>
+	    <constructor-arg index="2" value="1"/>
+	</bean>
+
+	<!-- REGISTER Signal -->
+	<bean id="xmppRegisterMessage" class="org.geoserver.wps.remote.plugin.XMPPRegisterMessage" />
+
+	<!-- UNREGISTER Signal -->
+	<bean id="xmppUnRegisterMessage" class="org.geoserver.wps.remote.plugin.XMPPUnRegisterMessage" />
+
+	<!-- PROGRESS Signal -->
+	<bean id="xmppProgressMessage" class="org.geoserver.wps.remote.plugin.XMPPProgressMessage" />
+
+	<!-- COMPLETED Signal -->
+	<bean id="xmppCompletedMessage" class="org.geoserver.wps.remote.plugin.XMPPCompletedMessage" />
+
+	<!-- ERROR Signal -->
+	<bean id="xmppErrorMessage" class="org.geoserver.wps.remote.plugin.XMPPErrorMessage" />
+	
+	<!-- LOG Signal -->
+	<bean id="xmppLogMessage" class="org.geoserver.wps.remote.plugin.XMPPLogMessage" />
+	
+</beans>

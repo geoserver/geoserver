@@ -1,0 +1,23 @@
+<assembly>
+  <id>wps-remote-plugin</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <fileSets>
+    <fileSet>
+      <directory>release/target/dependency</directory>
+      <outputDirectory></outputDirectory>
+      <includes>
+        <include>gs-wps-remote*.jar</include>
+        <include>*importer*.jar</include>
+        <include>*smack*.jar</include>
+        <include>*pyrolite*.jar</include>
+        <include>*spark*.jar</include>
+        <include>*vysper*.jar</include>
+        <include>*xep*.jar</include>
+        <include>*xmpp*.jar</include>
+      </includes>
+    </fileSet>
+  </fileSets>
+</assembly>

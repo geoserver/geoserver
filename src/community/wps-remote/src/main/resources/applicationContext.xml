@@ -24,7 +24,7 @@
 	<bean id="xmppRemoteProcessClient" class="org.geoserver.wps.remote.plugin.XMPPClient">
 	    <constructor-arg index="0" ref="remoteProcessFactoryConfigurationWatcher"/>
 	    <constructor-arg index="1" value="true"/>
-	    <constructor-arg index="2" value="1"/>
+	    <constructor-arg index="2" value="50"/>
 	</bean>
 
 	<!-- REGISTER Signal -->

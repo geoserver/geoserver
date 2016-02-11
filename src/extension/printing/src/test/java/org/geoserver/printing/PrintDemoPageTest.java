@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2014 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -20,15 +20,17 @@ public class PrintDemoPageTest extends GeoServerWicketTestSupport  {
     public void testCSS() {
         tester.startPage(PrintDemoPage.class);
         tester.assertRenderedPage(PrintDemoPage.class);
-        tester.assertContains("ext-all.css");
-        tester.assertContains("examples.css");
+        tester.assertContains("http://extjs.cachefly.net/ext-2.2.1/resources/css/ext-all.css");
+        tester.assertContains("http://extjs.cachefly.net/ext-2.2.1/examples/shared/examples.css");
     }
 	
+	@Test
 	public void testJavascript() {
         tester.startPage(PrintDemoPage.class);
         tester.assertRenderedPage(PrintDemoPage.class);
-        tester.assertContains("OpenLayers.js");
-        tester.assertContains("GeoExt.js");
-        tester.assertContains("GeoExtPrinting.js");
+        tester.assertContains("http://openlayers.org/api/2.8/OpenLayers.js");
+        tester.assertContains("org.geoserver.printing.PrintDemoPage/GeoExt");
+        tester.assertContains("org.geoserver.printing.PrintDemoPage/GeoExtPrinting");
+        tester.assertContains("org.geoserver.printing.PrintDemoPage/Printing");
     }
 }

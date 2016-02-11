@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -125,7 +125,7 @@ public abstract class ProcessParameterIO {
     public static ProcessParameterIO find(Parameter<?> p, ApplicationContext context, String mime) {
         // enum special treatment
         if (p.type.isEnum()) {
-            return new LiteralPPIO(p.type);
+            return new EnumPPIO(p.type);
         }
 
         // TODO: come up with some way to flag one as "default"
@@ -171,7 +171,7 @@ public abstract class ProcessParameterIO {
         // enum special treatment
         if (p.type.isEnum()) {
             List<ProcessParameterIO> result = new ArrayList<ProcessParameterIO>();
-            result.add(new LiteralPPIO(p.type));
+            result.add(new EnumPPIO(p.type));
             return result;
         }
 

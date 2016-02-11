@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -25,6 +25,7 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.importer.ImportTask.State;
 import org.geoserver.importer.transform.AbstractInlineVectorTransform;
@@ -43,6 +44,8 @@ import org.geotools.filter.text.cql2.CQL;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
+import org.geotools.styling.Style;
+import org.geotools.styling.StyleAttributeExtractor;
 import org.junit.Test;
 import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeature;
@@ -1002,4 +1005,60 @@ public class ImporterDataTest extends ImporterTestSupport {
         assertEquals("a_1_", task.getLayer().getResource().getName());
     }
 
+    @Test
+    public void testImportArchiveWithStyleFile() throws Exception {
+        File dir = unpack("shape/archsites_epsg_prj.zip");
+        
+        // add an sld file
+        String sld = 
+            "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+            "<StyledLayerDescriptor version=\"1.0.0\" " +
+            " xsi:schemaLocation=\"http://www.opengis.net/sld StyledLayerDescriptor.xsd\" " +
+            " xmlns:ogc=\"http://www.opengis.net/ogc\" " +
+            " xmlns=\"http://www.opengis.net/sld\" " +
+            " xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+            "  <!-- a Named Layer is the basic building block of an SLD document -->" +
+            "  <NamedLayer>" +
+            "    <UserStyle>" +
+            "      <FeatureTypeStyle>" +
+            "        <Rule>" +
+            "            <PointSymbolizer>" +
+            "              <Graphic>" +
+            "                <Mark>" +
+            "                  <WellKnownName>square</WellKnownName>" +
+            "                  <Fill>" +
+            "                    <CssParameter name=\"fill\">#FF0000</CssParameter>" +
+            "                  </Fill>" +
+            "                </Mark>" +
+            "              <Size>6</Size>" +
+            "            </Graphic>" +
+            "          </PointSymbolizer>" +
+            "          <TextSymbolizer>" +
+            "            <Label>" +
+            "             <ogc:PropertyName>CAT_ID</ogc:PropertyName>" +
+            "           </Label>" +
+            "          </TextSymbolizer>" +
+            "        </Rule>" +
+            "      </FeatureTypeStyle>" +
+            "    </UserStyle>" +
+            "  </NamedLayer>" +
+            "</StyledLayerDescriptor>";
+
+        FileUtils.write(new File(dir, "archsites.sld"), sld);
+
+        ImportContext imp = importer.createContext(new Directory(dir));
+        importer.run(imp);
+
+        assertEquals(ImportContext.State.COMPLETE, imp.getState());
+        checkNoErrors(imp);
+
+        StyleInfo info = 
+            getCatalog().getStyle(imp.getTasks().get(0).getLayer().getDefaultStyle().getId());
+        Style style = info.getStyle();
+
+        StyleAttributeExtractor atts = new StyleAttributeExtractor();
+        style.accept(atts);
+
+        assertTrue(atts.getAttributeNameSet().contains("CAT_ID"));
+    }
 }

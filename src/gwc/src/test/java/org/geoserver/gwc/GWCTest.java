@@ -207,7 +207,7 @@ public class GWCTest {
         jdbcStorage = mock(JDBCConfigurationStorage.class);
 
         mediator = new GWC(gwcConfigPersister, storageBroker, tld, gridSetBroker, tileBreeder,
-                diskQuotaMonitor, owsDispatcher, catalog, storageFinder, jdbcStorage);
+                diskQuotaMonitor, owsDispatcher, catalog, catalog, storageFinder, jdbcStorage);
 
         xmlConfig = mock(XMLConfiguration.class);
         mediator = spy(mediator);

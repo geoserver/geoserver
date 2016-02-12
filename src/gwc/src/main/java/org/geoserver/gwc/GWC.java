@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -15,6 +15,7 @@ import static org.geowebcache.seed.GWCTask.TYPE.TRUNCATE;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -50,6 +51,7 @@ import org.geoserver.gwc.layer.GeoServerTileLayer;
 import org.geoserver.gwc.layer.GeoServerTileLayerInfo;
 import org.geoserver.gwc.layer.GeoServerTileLayerInfoImpl;
 import org.geoserver.ows.Dispatcher;
+import org.geoserver.ows.LocalWorkspace;
 import org.geoserver.ows.Response;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.Operation;
@@ -181,7 +183,15 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
 
     private CatalogStyleChangeListener catalogStyleChangeListener;
 
-    private final Catalog rawCatalog;
+    /**
+     * The catalog, secured and filtered
+     */
+    private final Catalog catalog;
+    
+    /**
+     * The raw catalog, non secured. Use with extreme caution!
+     */
+    private Catalog rawCatalog;
 
     private ConfigurableLockProvider lockProvider;
     
@@ -195,10 +205,11 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
     
     private FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2();
     
+    
     public GWC(final GWCConfigPersister gwcConfigPersister, final StorageBroker sb,
             final TileLayerDispatcher tld, final GridSetBroker gridSetBroker,
             final TileBreeder tileBreeder, final DiskQuotaMonitor monitor, 
-            final Dispatcher owsDispatcher, final Catalog rawCatalog,
+            final Dispatcher owsDispatcher, final Catalog catalog, final Catalog rawCatalog,
             final DefaultStorageFinder storageFinder,
             final JDBCConfigurationStorage jdbcConfigurationStorage) {
         
@@ -209,13 +220,14 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         this.tileBreeder = tileBreeder;
         this.monitor = monitor;
         this.owsDispatcher = owsDispatcher;
+        this.catalog = catalog;
         this.rawCatalog = rawCatalog;
         this.storageFinder = storageFinder;
 
-        catalogLayerEventListener = new CatalogLayerEventListener(this, rawCatalog);
-        catalogStyleChangeListener = new CatalogStyleChangeListener(this, rawCatalog);
-        this.rawCatalog.addListener(catalogLayerEventListener);
-        this.rawCatalog.addListener(catalogStyleChangeListener);
+        catalogLayerEventListener = new CatalogLayerEventListener(this, catalog);
+        catalogStyleChangeListener = new CatalogStyleChangeListener(this, catalog);
+        this.catalog.addListener(catalogLayerEventListener);
+        this.catalog.addListener(catalogStyleChangeListener);
         
         this.lockProvider = new ConfigurableLockProvider();
         updateLockProvider(getConfig().getLockProviderName());
@@ -292,7 +304,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
     }
 
     public Catalog getCatalog() {
-        return rawCatalog;
+        return catalog;
     }
 
     public GWCConfig getConfig() {
@@ -1273,7 +1285,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
     public LayerGroupInfo getLayerGroupByName(String layerName) {
         return getCatalog().getLayerGroupByName(layerName);
     }
-
+    
     public LayerGroupInfo getLayerGroupById(String id) {
         return getCatalog().getLayerGroup(id);
     }
@@ -2040,59 +2052,91 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
      * @throws ServiceException 
      */
     public void verifyAccessLayer(String layerName, ReferencedEnvelope boundingBox) throws ServiceException {
-        LayerInfo layerInfo =  getLayerInfoByName(layerName); 
-        if (layerInfo == null) {
-            throw new ServiceException("Could not find layer " + layerName, "LayerNotDefined");
-        }
-        if (layerInfo instanceof SecuredLayerInfo && boundingBox != null) {
-            //test layer bbox limits
-            SecuredLayerInfo securedLayerInfo = (SecuredLayerInfo) layerInfo;
-            WrapperPolicy policy = securedLayerInfo.getWrapperPolicy();
-            AccessLimits limits = policy.getLimits();
-                        
-            if (limits instanceof DataAccessLimits) {
-                //ensure we are all using the same CRS
-                CoordinateReferenceSystem dataCrs = layerInfo.getResource().getCRS();  
-                if (boundingBox.getCoordinateReferenceSystem()!=null && !CRS.equalsIgnoreMetadata(dataCrs, boundingBox.getCoordinateReferenceSystem())) {
-                    try {
-                        boundingBox = boundingBox.transform(dataCrs,true);
-                    } catch (Exception e) {
-                        //bboxes not compatible? deny access for all certainty.
-                        boundingBox = null;
-                    }
-                }
-                Envelope limitBox = new ReferencedEnvelope(ReferencedEnvelope.EVERYTHING, dataCrs); 
-                
-                Filter filter = ((DataAccessLimits) limits).getReadFilter();
-                if (filter != null) {
-                    //extract filter envelope from filter
-                    Envelope box = (Envelope) filter.accept(ExtractBoundsFilterVisitor.BOUNDS_VISITOR, null);
-                    if (box != null) {
-                        limitBox = new ReferencedEnvelope(limitBox.intersection(box), dataCrs);                        
-                    }
-                }
-                if (limits instanceof CoverageAccessLimits) {
-                    if (((CoverageAccessLimits) limits).getRasterFilter() != null) {
-                        Envelope box = ((CoverageAccessLimits) limits).getRasterFilter().getEnvelopeInternal();
-                        if (box != null) {
-                            limitBox = new ReferencedEnvelope(limitBox.intersection(box), dataCrs);                        
-                        }
-                    }
-                }
-                if (limits instanceof WMSAccessLimits) {
-                    if (((WMSAccessLimits) limits).getRasterFilter() != null) {
-                        Envelope box = ((WMSAccessLimits) limits).getRasterFilter().getEnvelopeInternal();
-                        if (box != null) {
-                            limitBox = new ReferencedEnvelope(limitBox.intersection(box), dataCrs);                        
-                        }
-                    }
-                }                
-                
-                if (!limitBox.covers(ReferencedEnvelope.EVERYTHING) && (boundingBox==null || !limitBox.contains(boundingBox))) {
-                    throw new ServiceException("Access denied to bounding box on layer " + layerName, "AccessDenied");
+        // get the list of internal layers corresponding to the advertised layer
+        List<LayerInfo> layerInfos = null;
+        LayerInfo li = getCatalog().getLayerByName(layerName);
+        if(li != null) {
+            layerInfos = Arrays.asList(li);
+        }  else {
+            // tricky here, first we need to flatten the group, and we also need
+            // to make sure we are getting the full layer group, not just part of it
+            // otherwise we are going to cache different views for different users
+            LayerGroupInfo group = getCatalog().getLayerGroupByName(layerName);
+            if(group != null) {
+                // use the prefixed name to avoid clashes because the raw catalog is not workspace-filtered
+                LayerGroupInfo rawGroup = rawCatalog.getLayerGroupByName(group.prefixedName());
+                if(rawGroup.layers().size() == group.layers().size()) {
+                    layerInfos = group.layers();
                 }
             }
-            
+        }
+         
+        if (layerInfos == null || layerInfos.isEmpty()) {
+            throw new ServiceException("Could not find layer " + layerName, "LayerNotDefined");
+        }
+        if (boundingBox != null) {
+            for (LayerInfo layerInfo : layerInfos) {
+                if(layerInfo instanceof SecuredLayerInfo) {
+                    // test layer bbox limits
+                    SecuredLayerInfo securedLayerInfo = (SecuredLayerInfo) layerInfo;
+                    WrapperPolicy policy = securedLayerInfo.getWrapperPolicy();
+                    AccessLimits limits = policy.getLimits();
+    
+                    if (limits instanceof DataAccessLimits) {
+                        // ensure we are all using the same CRS
+                        CoordinateReferenceSystem dataCrs = layerInfo.getResource().getCRS();
+                        if (boundingBox.getCoordinateReferenceSystem() != null
+                                && !CRS.equalsIgnoreMetadata(dataCrs,
+                                        boundingBox.getCoordinateReferenceSystem())) {
+                            try {
+                                boundingBox = boundingBox.transform(dataCrs, true);
+                            } catch (Exception e) {
+                                // bboxes not compatible? deny access for all certainty.
+                                boundingBox = null;
+                            }
+                        }
+                        Envelope limitBox = new ReferencedEnvelope(ReferencedEnvelope.EVERYTHING,
+                                dataCrs);
+    
+                        Filter filter = ((DataAccessLimits) limits).getReadFilter();
+                        if (filter != null) {
+                            // extract filter envelope from filter
+                            Envelope box = (Envelope) filter
+                                    .accept(ExtractBoundsFilterVisitor.BOUNDS_VISITOR, null);
+                            if (box != null) {
+                                limitBox = new ReferencedEnvelope(limitBox.intersection(box), dataCrs);
+                            }
+                        }
+                        if (limits instanceof CoverageAccessLimits) {
+                            if (((CoverageAccessLimits) limits).getRasterFilter() != null) {
+                                Envelope box = ((CoverageAccessLimits) limits).getRasterFilter()
+                                        .getEnvelopeInternal();
+                                if (box != null) {
+                                    limitBox = new ReferencedEnvelope(limitBox.intersection(box),
+                                            dataCrs);
+                                }
+                            }
+                        }
+                        if (limits instanceof WMSAccessLimits) {
+                            if (((WMSAccessLimits) limits).getRasterFilter() != null) {
+                                Envelope box = ((WMSAccessLimits) limits).getRasterFilter()
+                                        .getEnvelopeInternal();
+                                if (box != null) {
+                                    limitBox = new ReferencedEnvelope(limitBox.intersection(box),
+                                            dataCrs);
+                                }
+                            }
+                        }
+    
+                        if (!limitBox.covers(ReferencedEnvelope.EVERYTHING)
+                                && (boundingBox == null || !limitBox.contains(boundingBox))) {
+                            throw new ServiceException(
+                                    "Access denied to bounding box on layer " + layerName,
+                                    "AccessDenied");
+                        }
+                    }
+                }
+            }
         }
     }
 

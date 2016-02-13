@@ -278,15 +278,6 @@
       </modules>
     </profile>	
     <profile>
-      <id>kml-old</id>
-      <activation>
-        <property><name>kml-old</name></property>
-      </activation> 	  
-      <modules>
-        <module>kml-old</module>
-      </modules>
-    </profile>
-    <profile>
       <id>geopkg</id>
       <modules>
         <module>mbtiles</module>

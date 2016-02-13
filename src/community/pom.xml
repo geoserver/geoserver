@@ -134,12 +134,6 @@
         <module>gpxppio</module>
       </modules>
     </profile>
-    <profile>
-      <id>istyler</id>
-      <modules>
-        <module>istyler</module>
-      </modules>
-    </profile>    
     <profile>      
       <id>webservice</id>
       <modules>

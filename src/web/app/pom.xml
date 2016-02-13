@@ -473,16 +473,6 @@
      </dependencies>
     </profile>
     <profile>
-     <id>validation</id>
-     <dependencies>
-      <dependency>
-        <groupId>org.geoserver.community</groupId>
-        <artifactId>gs-validation</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-     </dependencies>
-    </profile>
-    <profile>
       <id>app-schema</id>
       <dependencies>
         <dependency>

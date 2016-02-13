@@ -300,12 +300,6 @@
         <module>rest-ext</module>
       </modules>
     </profile>
-    <profile>
-      <id>validation</id>
-      <modules>
-        <module>validation</module>
-      </modules>
-    </profile>
     <profile>      
       <id>kmlppio</id>
       <modules>

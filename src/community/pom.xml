@@ -37,7 +37,6 @@
       <configuration>
         <descriptors>
           <descriptor>release/ext-authkey.xml</descriptor>
-          <descriptor>release/ext-ftp.xml</descriptor>
           <descriptor>release/ext-groovy.xml</descriptor>
           <descriptor>release/ext-javascript.xml</descriptor>
           <descriptor>release/ext-spatialite.xml</descriptor>
@@ -163,7 +162,6 @@
       <modules>
         <module>authkey</module>
         <module>dds</module>
-        <module>ftp</module>
         <module>spatialite</module>
         <module>jdbcconfig</module>
         <module>feature-aggregate</module>
@@ -191,12 +189,6 @@
 	<module>jdbcstore</module>
 	<module>gdal</module>
 	<module>gwc-s3</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>ftp</id>
-      <modules>
-        <module>ftp</module>
       </modules>
     </profile>
     <profile>

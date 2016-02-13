@@ -789,16 +789,6 @@
       </dependencies>
     </profile>
     <profile>
-      <id>sfs</id>
-      <dependencies>
-        <dependency>
-          <groupId>org.geoserver.community</groupId>
-          <artifactId>gs-simpleFeatureService</artifactId>
-          <version>${project.version}</version>
-        </dependency>
-      </dependencies>
-    </profile>
-    <profile>
       <id>sfs-store</id>
       <dependencies>
         <dependency>

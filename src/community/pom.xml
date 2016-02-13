@@ -42,7 +42,6 @@
           <descriptor>release/ext-javascript.xml</descriptor>
           <descriptor>release/ext-spatialite.xml</descriptor>
           <descriptor>release/ext-jdbcconfig.xml</descriptor>
-          <descriptor>release/ext-sfs.xml</descriptor>
           <descriptor>release/ext-dds.xml</descriptor>
           <descriptor>release/ext-aggregate.xml</descriptor>
           <descriptor>release/ext-wms-eo.xml</descriptor>
@@ -173,7 +172,6 @@
         <module>ftp</module>
         <module>spatialite</module>
         <module>jdbcconfig</module>
-        <module>sfs</module>
         <module>feature-aggregate</module>
         <module>script</module>
         <module>wms-eo</module>
@@ -217,12 +215,6 @@
       <id>sextante</id>
       <modules>
         <module>wps-sextante</module>
-      </modules>
-    </profile>
-    <profile>      
-      <id>sfs</id>
-      <modules>
-        <module>sfs</module>
       </modules>
     </profile>
     <profile>      

@@ -1094,16 +1094,6 @@
       </dependencies>
     </profile>
     <profile>
-      <id>geoserver-sync</id>
-      <dependencies>
-        <dependency>
-	  <groupId>org.geoserver.community</groupId>
-          <artifactId>geoserver-sync-server</artifactId>
-          <version>${project.version}</version>
-        </dependency>
-      </dependencies>
-    </profile>
-    <profile>
       <id>colormap</id>
       <dependencies>
        <dependency>

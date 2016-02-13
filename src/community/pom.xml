@@ -271,12 +271,6 @@
       </modules>
     </profile>
     <profile>
-      <id>geoserver-sync</id>
-      <modules>
-        <module>geoserver-sync</module>
-      </modules>
-    </profile>
-    <profile>
       <id>dyndimension</id>
 	  <activation>
         <property><name>dyndimension</name></property>

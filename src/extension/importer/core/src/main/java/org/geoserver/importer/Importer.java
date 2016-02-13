@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -6,6 +6,7 @@
 package org.geoserver.importer;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -20,6 +21,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.apache.commons.io.FilenameUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.CoverageInfo;
@@ -35,7 +37,9 @@ import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.StyleGenerator;
 import org.geoserver.catalog.StyleHandler;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.Styles;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.config.GeoServer;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamPersister.CRSConverter;
 import org.geoserver.config.util.XStreamPersisterFactory;
@@ -55,6 +59,7 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.security.GeoServerSecurityManager;
+import org.geoserver.util.EntityResolverProvider;
 import org.geotools.coverage.grid.io.HarvestedSource;
 import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
 import org.geotools.data.DataStore;
@@ -70,6 +75,8 @@ import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.jdbc.JDBCDataStore;
 import org.geotools.referencing.CRS;
+import org.geotools.styling.Style;
+import org.geotools.styling.StyledLayerDescriptor;
 import org.geotools.util.logging.Logging;
 import org.opengis.coverage.grid.GridCoverageReader;
 import org.opengis.feature.simple.SimpleFeature;
@@ -184,6 +191,10 @@ public class Importer implements DisposableBean, ApplicationListener {
 
     public Catalog getCatalog() {
         return catalog;
+    }
+
+    public GeoServer getGeoServer() {
+        return GeoServerExtensions.bean(GeoServer.class);
     }
 
     public ImportContext getContext(long id) {
@@ -665,25 +676,34 @@ public class Importer implements DisposableBean, ApplicationListener {
         if (l.getDefaultStyle() == null) {
             try {
                 StyleInfo style = null;
-                if (r instanceof FeatureTypeInfo) {
-                    //since this resource is still detached from the catalog we can't call
-                    // through to get it's underlying resource, so we depend on the "native"
-                    // type provided from the format
-                    FeatureType featureType =
-                        (FeatureType) task.getMetadata().get(FeatureType.class);
-                    if (featureType != null) {
-                        style = styleGen.createStyle(styleHandler, (FeatureTypeInfo) r, featureType);
-                    } else {
-                        throw new RuntimeException("Unable to compute style");
-                    }
 
+                // first check the case of a style file being uploaded via zip along with rest of files 
+                if (task.getData() instanceof SpatialFile) {
+                    SpatialFile file = (SpatialFile) task.getData();
+                    if (file.getStyleFile() != null) {
+                        style = createStyleFromFile(file.getStyleFile(), task);
+                    }
                 }
-                else if (r instanceof CoverageInfo) {
-                    style = styleGen.createStyle(styleHandler, (CoverageInfo) r);
-                }
-                else {
-                    throw new RuntimeException("Unknown resource type :"
-                            + r.getClass());
+
+                if (style == null) {
+                    if (r instanceof FeatureTypeInfo) {
+                        //since this resource is still detached from the catalog we can't call
+                        // through to get it's underlying resource, so we depend on the "native"
+                        // type provided from the format
+                        FeatureType featureType =
+                                (FeatureType) task.getMetadata().get(FeatureType.class);
+                        if (featureType != null) {
+                            style = styleGen.createStyle(styleHandler, (FeatureTypeInfo) r, featureType);
+                        } else {
+                            throw new RuntimeException("Unable to compute style");
+                        }
+
+                    } else if (r instanceof CoverageInfo) {
+                        style = styleGen.createStyle(styleHandler, (CoverageInfo) r);
+                    } else {
+                        throw new RuntimeException("Unknown resource type :"
+                                + r.getClass());
+                    }
                 }
                 l.setDefaultStyle(style);
             }
@@ -1570,6 +1590,50 @@ public class Importer implements DisposableBean, ApplicationListener {
         return xp;
     }
 
+    /**
+     * Creates a style for the layer being imported from a resource that was included in the 
+     * directory or archive that the data is being imported from.
+     */
+    StyleInfo createStyleFromFile(Resource styleFile, ImportTask task) {
+        String ext = FilenameUtils.getExtension(styleFile.name());
+        if (ext != null) {
+            StyleHandler styleHandler = Styles.handler(ext);
+            if (styleHandler != null) {
+                try {
+                    StyledLayerDescriptor sld = styleHandler.parse(styleFile, null, null,
+                            new EntityResolverProvider(getGeoServer()).getEntityResolver());
+
+                    Style style = Styles.style(sld);
+                    if (style != null) {
+                        StyleInfo info = catalog.getFactory().createStyle();
+
+                        String styleName = styleGen.generateUniqueStyleName(task.getLayer().getResource());
+                        info.setName(styleName);
+                        
+                        info.setFilename(styleName + "." +ext);
+                        info.setFormat(styleHandler.getFormat());
+                        info.setWorkspace(task.getStore().getWorkspace());
+
+                        try (InputStream in = styleFile.in()) {
+                            catalog.getResourcePool().writeStyle(info, in);
+                        }
+                        return info;
+                    }
+                    else {
+                        LOGGER.warning("Style file contained no styling: " + styleFile.path());
+                    }
+                }
+                catch(Exception e) {
+                    LOGGER.log(Level.WARNING, "Error parsing style: " + styleFile.path(), e);
+                }
+            }
+            else {
+                LOGGER.warning("Unable to find style handler for file extension: " + ext);
+            }
+        }
+
+        return null;
+    }
 
 
 }

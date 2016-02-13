@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -167,10 +167,17 @@ public class StyleGenerator {
         }
     }
 
+    /**
+     * Generates a unique style name for the specified resource.
+     */
+    public String generateUniqueStyleName(ResourceInfo resource) {
+        return workspace != null ?
+            findUniqueStyleName(resource, workspace) : findUniqueStyleName(resource);
+    }
+
     StyleInfo doCreateStyle(StyleHandler handler, StyleType styleType, ResourceInfo resource) throws IOException {
         // find a new style name
-        String styleName = workspace != null ?
-            findUniqueStyleName(resource, workspace) : findUniqueStyleName(resource);
+        String styleName = generateUniqueStyleName(resource);
 
         // variable replacement
         String styleData = generateStyle(handler, styleType, styleName);

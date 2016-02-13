@@ -1,6 +1,0 @@
-<gss:GetCentralRevision xmlns:gss="http://geoserver.org/gss"
-   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-   xmlns:sf="http://www.openplans.org/spearfish"
-   xsi:schemaLocation="http://geoserver.org/gss ../gss.xsd" service="GSS" version="1.0.0" >
-      <gss:TypeName>sf:archsites</gss:TypeName>
-</gss:GetCentralRevision> 

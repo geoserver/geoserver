@@ -73,7 +73,7 @@
         </descriptors>
       </configuration>
      </plugin>
-	<plugin>
+     <plugin>
 		<artifactId>maven-jar-plugin</artifactId>
 		<executions>
 			<execution>
@@ -205,12 +205,6 @@
 	<module>jdbcstore</module>
 	<module>gdal</module>
 	<module>gwc-s3</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>gss</id>
-      <modules>
-        <module>gss</module>
       </modules>
     </profile>
     <profile>

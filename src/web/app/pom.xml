@@ -673,16 +673,6 @@
       </dependencies>
     </profile>
     <profile>
-      <id>gss</id>
-      <dependencies>
-        <dependency>
-          <groupId>org.geoserver.community</groupId>
-          <artifactId>gs-gss</artifactId>
-          <version>${project.version}</version>
-        </dependency>
-      </dependencies>
-    </profile>
-    <profile>
       <id>ftp</id>
       <dependencies>
         <dependency>

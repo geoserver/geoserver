@@ -106,12 +106,6 @@
   <!-- profiles for individual modules -->
   <profiles>
     <profile>
-      <id>proxy</id>
-      <modules>
-        <module>proxy</module>
-      </modules>
-    </profile>
-    <profile>
       <id>colormap</id>
       <modules> 
         <module>colormap</module>

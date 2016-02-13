@@ -588,16 +588,6 @@
       </dependencies>
     </profile>
     <profile>
-      <id>proxy</id>
-      <dependencies>
-        <dependency>
-          <groupId>org.geoserver.community</groupId>
-          <artifactId>gs-proxy</artifactId>
-          <version>${project.version}</version>
-        </dependency>
-      </dependencies>
-    </profile>
-    <profile>
       <id>control-flow</id>
       <dependencies>
         <dependency>

@@ -14,14 +14,13 @@ import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 import java.util.logging.Logger;
 
 public final class Filter implements GeoServerFilter, ExtensionPriority {
 
     private static final Logger LOGGER = Logging.getLogger(Filter.class);
 
-    private static List<Rule> rules;
+    private List<Rule> rules;
 
     public Filter(ResourceStore dataDirectory) {
         Resource resource = dataDirectory.get(RulesDao.getRulesPath());

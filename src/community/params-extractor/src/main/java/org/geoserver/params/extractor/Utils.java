@@ -90,4 +90,13 @@ public final class Utils {
         }
         return parameters;
     }
+
+    public static Map.Entry caseInsensitiveSearch(String key, Map<?, ?> map) {
+        for (Map.Entry entry : map.entrySet()) {
+            if (entry.getKey() instanceof String && ((String) entry.getKey()).toLowerCase().equals(key.toLowerCase())) {
+                return entry;
+            }
+        }
+        return null;
+    }
 }

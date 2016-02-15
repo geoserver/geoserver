@@ -22,7 +22,7 @@ public final class Filter implements GeoServerFilter, ExtensionPriority {
 
     private static final Logger LOGGER = Logging.getLogger(Filter.class);
 
-    private static List<Rule> rules;
+    private List<Rule> rules;
 
     public Filter(ResourceStore dataDirectory) {
         final Resource resource = dataDirectory.get(RulesDao.getRulesPath());

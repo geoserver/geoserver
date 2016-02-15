@@ -16,6 +16,7 @@ public final class Rule {
     private static final Logger LOGGER = Logging.getLogger(Rule.class);
 
     private final String id;
+    private final Boolean activated;
     private final Integer position;
     private final String match;
     private final String activation;
@@ -27,9 +28,10 @@ public final class Rule {
     private final Pattern matchPattern;
     private final Pattern activationPattern;
 
-    public Rule(String id, Integer position, String match, String activation, String parameter,
+    public Rule(String id, Boolean activated, Integer position, String match, String activation, String parameter,
                 String transform, Integer remove, String combine, Pattern matchPattern, Pattern activationPattern) {
         this.id = id;
+        this.activated = activated;
         this.position = position;
         this.match = match;
         this.activation = activation;
@@ -42,6 +44,10 @@ public final class Rule {
     }
 
     public UrlTransform apply(UrlTransform urlTransform) {
+        if (!activated) {
+            Utils.debug(LOGGER, "Rule %s is deactivated.", id, urlTransform);
+            return urlTransform;
+        }
         Utils.debug(LOGGER, "Start applying rule %s to URL '%s'.", id, urlTransform);
         if (activationPattern != null) {
             if (!activationPattern.matcher(urlTransform.getOriginalRequestUri()).matches()) {
@@ -61,6 +67,10 @@ public final class Rule {
 
     public String getId() {
         return id;
+    }
+
+    public Boolean getActivated() {
+        return activated;
     }
 
     public Integer getPosition() {

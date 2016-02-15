@@ -9,6 +9,7 @@ import java.util.regex.Pattern;
 public final class RuleBuilder {
 
     private String id;
+    private Boolean activated;
     private Integer position;
     private String match;
     private String parameter;
@@ -22,6 +23,11 @@ public final class RuleBuilder {
 
     public RuleBuilder withId(String id) {
         this.id = id;
+        return this;
+    }
+
+    public RuleBuilder withActivated(Boolean activated) {
+        this.activated = activated;
         return this;
     }
 
@@ -75,6 +81,7 @@ public final class RuleBuilder {
         Utils.checkCondition(matchPattern != null, "Both attributes position or match cannot be NULL.");
         Utils.checkCondition(parameter != null && !parameter.isEmpty(), "Parameter attribute is mandatory it cannot be NULL or EMPTY.");
         Utils.checkCondition(transform != null && !transform.isEmpty(), "Transform attribute is mandatory it cannot be NULL or EMPTY.");
-        return new Rule(id, position, match, activation, parameter, transform, remove, combine, matchPattern, activationPattern);
+        return new Rule(id, Utils.withDefault(activated, true), position, match, activation, parameter,
+                transform, remove, combine, matchPattern, activationPattern);
     }
 }

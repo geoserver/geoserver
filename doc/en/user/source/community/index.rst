@@ -37,3 +37,4 @@ officially part of the GeoServer releases. They are however built along with the
    gdal/index
    gwc-s3/index
    params-extractor/index
+   remote-wps/index

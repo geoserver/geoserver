@@ -2,6 +2,7 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
+
 package org.geoserver.rest;
 
 import com.thoughtworks.xstream.XStream;
@@ -18,27 +19,29 @@ public class AtomLink {
 
     @SuppressWarnings("unused")
     private final String NAMESPACE = "http://www.w3.org/2005/Atom";
-    
-    private String href, rel, type;
-    
+
+    private String href;
+    private String rel;
+    private String type;
+
     public AtomLink(String href, String rel, String type) {
         this.href = href;
         this.rel = rel;
         this.type = type;
     }
-    
+
     public String getHref() {
         return href;
     }
-    
+
     public String getRel() {
         return rel;
     }
-    
+
     public String getType() {
         return type;
     }
-    
+
     /**
      *
      * Configure x-stream for XML encoding of link
@@ -52,7 +55,7 @@ public class AtomLink {
         xStream.useAttributeFor(AtomLink.class, "type");
         xStream.aliasAttribute(AtomLink.class, "NAMESPACE", "xmlns:atom");
     }
-    
+
     /**
      *
      * Configure x-stream for JSON encoding of link

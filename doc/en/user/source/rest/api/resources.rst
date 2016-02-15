@@ -59,13 +59,13 @@ Headers
 
    * - Header
      - Description
-   * - Last-modified
+   * - Last-Modified
      - When resource was last modified.
-   * - Content-type
+   * - Content-Type
      - Will guess mime-type from extension or content.
-   * - Resource-type (custom)
+   * - Resource-Type (custom)
      - directory | resource
-   * - Resource-parent (custom)
+   * - Resource-Parent (custom)
      - Path to parent
 
 Format

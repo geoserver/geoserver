@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -98,7 +98,7 @@ public class ReflectiveHTMLFormat extends DataFormat {
     /**
      * The class used for reflection
      */
-    protected Class clazz;
+    protected Class<?> clazz;
 
     /**
      * Creates a new instance of the format.
@@ -114,7 +114,7 @@ public class ReflectiveHTMLFormat extends DataFormat {
      * to the concrete class of object being serialized. 
      * </p>
      */
-    public ReflectiveHTMLFormat( Class clazz, Request request,Response response, Resource resource ) {
+    public ReflectiveHTMLFormat( Class<?> clazz, Request request,Response response, Resource resource ) {
         super( MediaType.TEXT_HTML );
         this.clazz = clazz;
         this.request = request;
@@ -124,7 +124,7 @@ public class ReflectiveHTMLFormat extends DataFormat {
     @Override
     public Representation toRepresentation(Object object) {
    
-        Class clazz = this.clazz != null ? this.clazz : object.getClass();
+        Class<?> clazz = this.clazz != null ? this.clazz : object.getClass();
         Configuration configuration = createConfiguration(object, clazz);
         final ObjectWrapper wrapper = configuration.getObjectWrapper();
         configuration.setObjectWrapper(new ObjectWrapper() {
@@ -172,7 +172,7 @@ public class ReflectiveHTMLFormat extends DataFormat {
         while( template == null && clazz != null ) {
             template = tryLoadTemplate(configuration, clazz.getSimpleName() + ".ftl");
             if(template == null) {
-                for ( Class interfaze : clazz.getInterfaces() ) {
+                for (Class<?> interfaze : clazz.getInterfaces()) {
                     template = tryLoadTemplate(configuration, interfaze.getSimpleName() + ".ftl" );
                     if(template != null)
                         break;
@@ -215,7 +215,8 @@ public class ReflectiveHTMLFormat extends DataFormat {
         }
     }
 
-    protected Configuration createConfiguration(Object data, Class clazz) {
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    protected Configuration createConfiguration(Object data, Class<?> clazz) {
         Configuration cfg = new Configuration( );
         cfg.setObjectWrapper( new ObjectToMapWrapper( clazz ));
         cfg.setClassForTemplateLoading(ReflectiveHTMLFormat.class,"");
@@ -260,10 +261,11 @@ public class ReflectiveHTMLFormat extends DataFormat {
             this.clazz = clazz;
         }
 
+        @SuppressWarnings("unchecked")
         @Override
         public TemplateModel wrap(Object object) throws TemplateModelException {
             if ( object instanceof Collection ) {
-                Collection c = (Collection) object;
+                Collection<?> c = (Collection<?>) object;
                 if (c.isEmpty()) {
                     SimpleHash hash = new SimpleHash();
                     hash.put( "values", new CollectionModel( c, this ) );
@@ -280,7 +282,7 @@ public class ReflectiveHTMLFormat extends DataFormat {
             }
             
             if ( object != null && clazz.isAssignableFrom( object.getClass() ) ) {
-                HashMap map = new HashMap();
+                HashMap<String, Object> map = new HashMap<String, Object>();
                 
                 ClassProperties cp = OwsUtils.getClassProperties(clazz); 
                 for ( String p : cp.properties() ) {
@@ -319,7 +321,7 @@ public class ReflectiveHTMLFormat extends DataFormat {
          * @param model The resulting template model.
          * @param object The object being serialized.
          */
-        protected void wrapInternal(Map properties, SimpleHash model, T object ) {
+        protected void wrapInternal(Map<String, Object> properties, SimpleHash model, T object ) {
         }
 
     }

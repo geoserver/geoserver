@@ -20,6 +20,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.StringReader;
 import java.lang.reflect.Field;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -1406,16 +1407,10 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         throws Exception {
         MockHttpServletResponse response = null;
         if (charset == null) {
-            response = new MockHttpServletResponse() {
-                public void setCharacterEncoding( String encoding ) {
-                        
-                }
-            };
+            charset = Charset.defaultCharset().name();
         }
-        else {
-            response = new MockHttpServletResponse();
-            response.setCharacterEncoding(charset);
-        }
+        response = new MockHttpServletResponse();
+        response.setCharacterEncoding(charset);
 
         dispatch(request, response);
         return response;

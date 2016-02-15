@@ -1,5 +1,5 @@
 /* (c) 2014 Open Source Geospatial Foundation - all rights reserved
- * (c) 2001 - 2013 OpenPlans
+ * (c) 2001 - 2016 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -96,7 +96,7 @@ public abstract class AbstractResource extends Resource {
         if ( ext == null ) {
             ext = (String) getRequest().getAttributes().get( "type" );
         }
-        if ( ext == null && includeFileExtension) {
+        if (ext == null && includeFileExtension) {
             //try from the resource uri
             String uri = getRequest().getResourceRef() != null ? 
                 getRequest().getResourceRef().getLastSegment() : null;

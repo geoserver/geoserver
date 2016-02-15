@@ -12,6 +12,8 @@ import org.restlet.data.Response;
 import org.restlet.resource.Resource;
 
 /**
+ * 
+ * Restlet that handle calls to the "resource" endpoint and returns the appropriate "ResourceResource".
  *
  * @author Niels Charlier
  *

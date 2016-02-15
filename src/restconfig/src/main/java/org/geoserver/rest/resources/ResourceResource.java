@@ -43,14 +43,17 @@ import freemarker.template.SimpleHash;
 
 /**
  *
+ * A Restlet Resource that provides CRUD access to a GeoServer Resource.
  *
  * @author Niels Charlier
  *
  */
 public class ResourceResource extends AbstractResource {
-    
-    public enum Operation {DEFAULT, METADATA, MOVE, COPY};
-           
+
+    public enum Operation {
+        DEFAULT, METADATA, MOVE, COPY
+    };
+
     /**
      *
      * XML/Json object for resource reference.
@@ -75,7 +78,7 @@ public class ResourceResource extends AbstractResource {
             return link;
         }
     }
-    
+
     /**
      * 
      * XML/Json object for resource child of directory.
@@ -101,7 +104,7 @@ public class ResourceResource extends AbstractResource {
             return link;
         }
     }
-    
+
     /**
      *
      * XML/Json object for resource metadata.
@@ -115,7 +118,8 @@ public class ResourceResource extends AbstractResource {
         private Date lastModified;
         private String type;
                
-        public ResourceMetadata(String name, ResourceReference parent, Date lastModified, String type) {
+        public ResourceMetadata(String name, ResourceReference parent, 
+                Date lastModified, String type) {
             this.name = name;
             this.parent = parent;
             this.lastModified = lastModified;
@@ -127,7 +131,7 @@ public class ResourceResource extends AbstractResource {
          * The class must be static for serialization, but output is request dependent so passing on self.
          */
         protected ResourceMetadata(Resource resource, ResourceResource self, boolean isDir) {
-            if (!"".equals(resource.path())) {
+            if (!resource.path().isEmpty()) {
                 parent = new ResourceReference("/" + resource.parent().path(),
                         new AtomLink(self.href(resource.parent().path(), true), "alternate", 
                                      self.getFormatGet(false).getMediaType().getName()));
@@ -157,7 +161,7 @@ public class ResourceResource extends AbstractResource {
             return name;
         }
     }
-    
+
     /**
      * 
      * XML/Json object for resource directory.
@@ -170,7 +174,8 @@ public class ResourceResource extends AbstractResource {
         
         private List<ResourceChild> children = new ArrayList<ResourceChild>();
 
-        public ResourceDirectory(String name, ResourceReference parent, Date lastModified, String type) {
+        public ResourceDirectory(String name, ResourceReference parent, Date lastModified, 
+                String type) {
             super(name, parent, lastModified, type);
         }
         
@@ -186,25 +191,25 @@ public class ResourceResource extends AbstractResource {
                                 "alternate", self.getMediaType(child).getName())));
             }
         }
-                
-        
+
+
         public List<ResourceChild> getChildren() {
             return children;
         }
     }
-    
+
     private ResourceStore store;
     private Resource resource;
     private Operation operation;
-    
-    public ResourceResource(Context context, Request request, Response response, Resource resource, Operation operation,
-            ResourceStore store) {
+
+    public ResourceResource(Context context, Request request, Response response, Resource resource, 
+            Operation operation, ResourceStore store) {
         super(context, request, response);
         this.resource = resource;
         this.operation = operation;
         this.store = store;
     }
-    
+
     public Resource getResource() {
         return resource;
     }
@@ -212,7 +217,7 @@ public class ResourceResource extends AbstractResource {
     public Operation getOperation() {
         return operation;
     }
-        
+
     private String href(String path, boolean isDir) {
         String href = getPageInfo().rootURI("resources/" + path);
         if (isDir) {
@@ -223,7 +228,7 @@ public class ResourceResource extends AbstractResource {
         }
         return href;
     }
-    
+
     public String formatHtmlLink(String link) {
         return link.replaceAll("&", "&amp;");
     }
@@ -246,42 +251,53 @@ public class ResourceResource extends AbstractResource {
             return null;
         }
     }
-    
+
     @Override
     protected List<DataFormat> createSupportedFormats(Request request, Response response) {
         List<DataFormat> formats = new ArrayList<DataFormat>();
         
         //HTML
         if (operation == Operation.METADATA || resource.getType() == Type.DIRECTORY) {
-            formats.add(new ReflectiveHTMLFormat(request,response,this) {   
+            formats.add(new ReflectiveHTMLFormat(request,response,this) {
                 @Override
-                protected Configuration createConfiguration(Object data, Class clazz) {
+                protected Configuration createConfiguration(Object data, Class<?> clazz) {
                     Configuration cfg = super.createConfiguration(data, clazz);
                     cfg.setClassForTemplateLoading(ResourceResource.class, "");
-                    cfg.setObjectWrapper(new ObjectToMapWrapper<ResourceMetadata>(ResourceMetadata.class) {
+                    cfg.setObjectWrapper(
+                            new ObjectToMapWrapper<ResourceMetadata>(ResourceMetadata.class) {
                         @Override
-                        protected void wrapInternal(Map properties, SimpleHash model, ResourceMetadata object) {
+                        protected void wrapInternal(Map<String, Object> properties, SimpleHash model, 
+                                ResourceMetadata object) {
                             super.wrapInternal(properties, model, object);
-                            properties.put("path", object.getParent() == null ? "/" :
-                                Paths.get(object.getParent().getPath(), object.getName()) ); 
-                            properties.put("parent_path", object.getParent() == null ? "" : object.getParent().getPath());
-                            properties.put("parent_href", object.getParent() == null ? "" : 
-                                formatHtmlLink(object.getParent().getLink().getHref()));
+                            properties.put(
+                                    "path", 
+                                    object.getParent() == null ? "/" :  
+                                        Paths.get(object.getParent().getPath(),
+                                    object.getName()));
+                            properties.put("parent_path", 
+                                    object.getParent() == null ? "" : 
+                                        object.getParent().getPath());
+                            properties.put("parent_href", 
+                                    object.getParent() == null ? "" : 
+                                        formatHtmlLink(object.getParent().getLink().getHref()));
                             if (object instanceof ResourceDirectory) {
-                                properties.put("children", new CollectionModel(((ResourceDirectory) object).getChildren(),
+                                properties.put("children", new CollectionModel(
+                                        ((ResourceDirectory) object).getChildren(),
                                         new ObjectToMapWrapper<ResourceChild>(ResourceChild.class) {
                                             @Override
-                                            protected void wrapInternal(Map properties, SimpleHash model, ResourceChild object) {
+                                            protected void wrapInternal(Map<String, Object> properties,
+                                                    SimpleHash model, ResourceChild object) {
                                                 super.wrapInternal(properties, model, object);
-                                                properties.put("href", formatHtmlLink(object.getLink().getHref()));
+                                                properties.put("href", 
+                                                        formatHtmlLink(object.getLink().getHref()));
                                             }
-                                }));
+                                        }));
                             }
                         }
                     });
                     return cfg;
                 }
-                
+
                 @Override protected String getTemplateName(Object data) {
                     if (operation == Operation.METADATA) {
                         return "resourceMetadata";
@@ -291,7 +307,7 @@ public class ResourceResource extends AbstractResource {
                 }
             });
         } 
-        
+
         //XML        
         ReflectiveXMLFormat xmlFormat = new ReflectiveXMLFormat();
         AtomLink.configureXML(xmlFormat.getXStream());
@@ -301,7 +317,7 @@ public class ResourceResource extends AbstractResource {
         xmlFormat.getXStream().aliasField("atom:link", ResourceReference.class, "link");
         xmlFormat.getXStream().aliasField("atom:link", ResourceChild.class, "link");
         formats.add(xmlFormat);
-        
+
         //JSON
         ReflectiveJSONFormat jsonFormat = new ReflectiveJSONFormat();
         AtomLink.configureJSON(jsonFormat.getXStream());
@@ -309,7 +325,7 @@ public class ResourceResource extends AbstractResource {
         jsonFormat.getXStream().processAnnotations(ResourceMetadata.class);
         jsonFormat.getXStream().processAnnotations(ResourceDirectory.class);
         formats.add(jsonFormat);
-        
+
         return formats;
     }  
 
@@ -335,42 +351,46 @@ public class ResourceResource extends AbstractResource {
                 getVariants().add(rep);
 
                 if (!"".equals(resource.path())) {
-                    getResponseHeaders().add("Resource-parent", "/" + resource.parent().path());
+                    getResponseHeaders().add("Resource-Parent", "/" + resource.parent().path());
                 }
-                getResponseHeaders().add("Resource-type", resource.getType().toString().toLowerCase());
+                getResponseHeaders().add("Resource-Type", resource.getType().toString().toLowerCase());
             }
         }
 
         super.handleGet();
     }
-    
+
     @Override
     public boolean allowPut() {        
         return true;        
     }
-    
+
     @Override
     public void handlePut() {
         if (resource.getType() == Type.DIRECTORY) {
-            throw new RestletException("Attempting to write data to a directory.", Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
+            throw new RestletException("Attempting to write data to a directory.",
+                    Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
         } else {
             try {
                 boolean isNew = resource.getType() == Type.UNDEFINED;
                 
                 if (operation == Operation.COPY || operation == Operation.MOVE) {                    
                     try (InputStream is = getRequest().getEntity().getStream()) {
-                        Resource source = store.get(IOUtils.toString(is, "UTF-8"));
+                        Resource source = store.get(IOUtils.toString(is));
                         if (source.getType() == Type.UNDEFINED) {
-                            throw new RestletException("Undefined source path.", Status.CLIENT_ERROR_NOT_FOUND);
+                            throw new RestletException("Undefined source path.", 
+                                    Status.CLIENT_ERROR_NOT_FOUND);
                         }
                         try {
                             if (operation == Operation.MOVE) {
                                 if (!source.renameTo(resource)) {
-                                    throw new RestletException("Rename operation failed.", Status.SERVER_ERROR_INTERNAL);
+                                    throw new RestletException("Rename operation failed.", 
+                                            Status.SERVER_ERROR_INTERNAL);
                                 }
                             } else {
                                 if (source.getType() == Type.DIRECTORY) {
-                                    throw new RestletException("Cannot copy directory.", Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
+                                    throw new RestletException("Cannot copy directory.", 
+                                            Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
                                 }
                                 IOUtils.copyStream(source.in(), resource.out(), true, true);
                             }
@@ -390,12 +410,12 @@ public class ResourceResource extends AbstractResource {
             }
         }
     }    
-    
+
     @Override
     public boolean allowDelete() {        
         return true;
     }
-    
+
     @Override
     public void handleDelete() {
         if (resource.getType() == Type.UNDEFINED) {

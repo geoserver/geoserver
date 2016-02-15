@@ -40,6 +40,9 @@ import com.mockrunner.mock.web.MockHttpServletResponse;
  */
 public class ResourceTest extends GeoServerSystemTestSupport {
     
+    private static final String STR_MY_TEST = "This is my test. é ö";
+    private static final String STR_MY_NEW_TEST = "This is my new test. € è";
+
     private final NamespaceContext NS_XML, NS_HTML;
     private final DateFormat FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S z");
     private final DateFormat FORMAT_HEADER = new SimpleDateFormat("E, dd MMM yyyy HH:mm:ss z");
@@ -58,14 +61,19 @@ public class ResourceTest extends GeoServerSystemTestSupport {
     }          
     
     @Before
-    public void initialise() throws IOException {                
+    public void initialise() throws IOException {
+
         myRes = getDataDirectory().get("/mydir/myres");
         try (OutputStreamWriter os = new OutputStreamWriter(myRes.out())) {
-            os.append("This is my test.");
+            os.append(STR_MY_TEST);
         }
-        
+
         try (OutputStreamWriter os = new OutputStreamWriter(getDataDirectory().get("/mydir2/fake.png").out())) {
             os.append("This is not a real png file.");
+        }
+
+        try (OutputStreamWriter os = new OutputStreamWriter(getDataDirectory().get("/poëzie/café").out())) {
+            os.append("The content of this file is irrelevant.");
         }
 
         IOUtils.copyStream(getClass().getResourceAsStream("testimage.png"),
@@ -74,14 +82,14 @@ public class ResourceTest extends GeoServerSystemTestSupport {
     
     @Test
     public void testResource() throws Exception {
-        String str = getAsString("/rest/resource/mydir/myres");
-        Assert.assertEquals("This is my test.\n", str);
+        String str = getAsString("/rest/resource/mydir/myres").trim();
+        Assert.assertEquals(STR_MY_TEST, str);
     }
     
     @Test
     public void testResourceMetadataXML() throws Exception {
         XMLUnit.setXpathNamespaceContext(NS_XML);
-        Document doc = getAsDOM("/rest/resource/mydir/myres?operation=metadata&format=xml");
+        Document doc = getAsDOM("/rest/resource/mydir/myres?operation=mEtAdATa&format=xml");
         //print(doc);
         XMLAssert.assertXpathEvaluatesTo("myres", "/ResourceMetadata/name", doc);
         XMLAssert.assertXpathEvaluatesTo("/mydir", "/ResourceMetadata/parent/path", doc);
@@ -115,7 +123,7 @@ public class ResourceTest extends GeoServerSystemTestSupport {
     public void testResourceMetadataHTML() throws Exception {
         XMLUnit.setXpathNamespaceContext(NS_HTML);
         Document doc = getAsDOM("/rest/resource/mydir/myres?operation=metadata&format=html");
-        print(doc);
+        //print(doc);
         XMLAssert.assertXpathEvaluatesTo("Name: 'myres'", "/x:html/x:body/x:ul/x:li[1]", doc);
         XMLAssert.assertXpathEvaluatesTo("http://localhost:8080/geoserver/rest/resources/mydir?format=html", 
                 "/x:html/x:body/x:ul/x:li[2]/x:a/@href", doc);
@@ -127,10 +135,18 @@ public class ResourceTest extends GeoServerSystemTestSupport {
     @Test
     public void testResourceHeaders() throws Exception {
         MockHttpServletResponse response = getAsServletResponse("/rest/resource/mydir2/fake.png");
-        Assert.assertEquals(FORMAT_HEADER.format(myRes.lastmodified()), response.getHeader("Last-modified"));
-        Assert.assertEquals("/mydir2", response.getHeader("Resource-parent"));
-        Assert.assertEquals("resource", response.getHeader("Resource-type"));
-        Assert.assertEquals("image/png", response.getHeader("Content-type"));
+        Assert.assertEquals(FORMAT_HEADER.format(myRes.lastmodified()), response.getHeader("Last-Modified"));
+        Assert.assertEquals("/mydir2", response.getHeader("Resource-Parent"));
+        Assert.assertEquals("resource", response.getHeader("Resource-Type"));
+        Assert.assertEquals("image/png", response.getHeader("Content-Type"));
+    }
+
+    @Test
+    public void testSpecialCharacterNames() throws Exception {
+        MockHttpServletResponse response = getAsServletResponse("/rest/resource/poëzie/café");
+        Assert.assertEquals(200, response.getStatusCode());
+        Assert.assertEquals("resource", response.getHeader("Resource-Type"));
+        Assert.assertEquals("/poëzie", response.getHeader("Resource-Parent"));
     }
     
     @Test
@@ -193,10 +209,10 @@ public class ResourceTest extends GeoServerSystemTestSupport {
     @Test
     public void testDirectoryHeaders() throws Exception {
         MockHttpServletResponse response = getAsServletResponse("/rest/resource/mydir?format=xml");
-        Assert.assertEquals(FORMAT_HEADER.format(myRes.lastmodified()), response.getHeader("Last-modified"));
-        Assert.assertEquals("/", response.getHeader("Resource-parent"));
-        Assert.assertEquals("directory", response.getHeader("Resource-type"));
-        Assert.assertEquals("application/xml", response.getHeader("Content-type"));
+        Assert.assertEquals(FORMAT_HEADER.format(myRes.lastmodified()), response.getHeader("Last-Modified"));
+        Assert.assertEquals("/", response.getHeader("Resource-Parent"));
+        Assert.assertEquals("directory", response.getHeader("Resource-Type"));
+        Assert.assertEquals("application/xml", response.getHeader("Content-Type"));
     }
     
     @Test
@@ -210,11 +226,11 @@ public class ResourceTest extends GeoServerSystemTestSupport {
         
     @Test
     public void testUpload() throws Exception {
-        put("/rest/resource/mydir/mynewres", "This is my new test.");
+        put("/rest/resource/mydir/mynewres", STR_MY_NEW_TEST);
         
         Resource newRes = getDataDirectory().get("/mydir/mynewres");
         try (InputStream is = newRes.in()) {
-            Assert.assertEquals("This is my new test.", IOUtils.toString(is));
+            Assert.assertEquals(STR_MY_NEW_TEST, IOUtils.toString(is));
         }
         
         newRes.delete();
@@ -222,13 +238,13 @@ public class ResourceTest extends GeoServerSystemTestSupport {
     
     @Test
     public void testCopy() throws Exception {
-        put("/rest/resource/mydir/mynewres?operation=copy", "/mydir/myres");
+        put("/rest/resource/mydir/mynewres?operation=cOpY", "/mydir/myres");
         
         Resource newRes = getDataDirectory().get("/mydir/mynewres");
         Assert.assertTrue(Resources.exists(myRes));
         Assert.assertTrue(Resources.exists(newRes));    
         try (InputStream is = newRes.in()) {
-            Assert.assertEquals("This is my test.", IOUtils.toString(is));
+            Assert.assertEquals(STR_MY_TEST, IOUtils.toString(is));
         }
         
         newRes.delete();
@@ -242,7 +258,7 @@ public class ResourceTest extends GeoServerSystemTestSupport {
         Assert.assertFalse(Resources.exists(myRes));
         Assert.assertTrue(Resources.exists(newRes));        
         try (InputStream is = newRes.in()) {
-            Assert.assertEquals("This is my test.", IOUtils.toString(is));
+            Assert.assertEquals(STR_MY_TEST, IOUtils.toString(is));
         }
         
         newRes.renameTo(myRes);
@@ -290,7 +306,7 @@ public class ResourceTest extends GeoServerSystemTestSupport {
         Assert.assertEquals(405, response.getStatusCode());
 
         //copy dir
-        response = putAsServletResponse("/rest/resource/mynewdir?operation=copy", "/rest/resource/mydir", "text/plain");
+        response = putAsServletResponse("/rest/resource/mynewdir?operation=copy", "/mydir", "text/plain");
         Assert.assertEquals(405, response.getStatusCode());
 
         //copy resource that doesn't exist

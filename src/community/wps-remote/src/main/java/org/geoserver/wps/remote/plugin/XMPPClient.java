@@ -1033,6 +1033,16 @@ public class XMPPClient extends RemoteProcessClient {
                         ".tif" });
 
         // ----
+        PRIMITIVE_NAME_TYPE_MAP.put("application/zip",
+                new Object[] { RawData.class, CType.COMPLEX,
+                        new ResourceRawData(null, "application/zip", "zip"),
+                        "application/zip", ".zip" });
+        PRIMITIVE_NAME_TYPE_MAP.put("application/zip;stream",
+                new Object[] { RawData.class, CType.COMPLEX,
+                        new StreamRawData("application/zip", null, "zip"), "application/zip",
+                        ".zip" });
+        
+        // ----
         PRIMITIVE_NAME_TYPE_MAP.put("application/x-netcdf",
                 new Object[] { RawData.class, CType.COMPLEX,
                         new ResourceRawData(null, "application/x-netcdf", "nc"),

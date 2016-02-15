@@ -10,7 +10,9 @@ import org.geoserver.wps.remote.plugin.XMPPClient;
 import org.geotools.util.logging.Logging;
 
 /**
- * @author Alessio
+ * Actual implementation of a STRING Output Type
+ * 
+ * @author Alessio Fabiani, GeoSolutions
  *
  */
 public class XMPPTextualOutput implements XMPPOutputType {

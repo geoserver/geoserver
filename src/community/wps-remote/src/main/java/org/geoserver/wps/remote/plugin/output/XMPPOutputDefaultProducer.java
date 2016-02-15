@@ -7,7 +7,10 @@ package org.geoserver.wps.remote.plugin.output;
 import org.geoserver.wps.remote.plugin.XMPPClient;
 
 /**
- * @author Alessio
+ * Output Type Producer Base Class.
+ * 
+ * 
+ * @author Alessio Fabiani, GeoSolutions
  * 
  */
 public class XMPPOutputDefaultProducer {

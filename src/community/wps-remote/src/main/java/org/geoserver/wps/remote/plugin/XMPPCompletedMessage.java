@@ -23,7 +23,7 @@ import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Packet;
 
 /**
- * 
+ * Listens for "COMPLETE" messages from XMPP service channels and takes action accordingly.
  * 
  * @author Alessio Fabiani, GeoSolutions
  * 

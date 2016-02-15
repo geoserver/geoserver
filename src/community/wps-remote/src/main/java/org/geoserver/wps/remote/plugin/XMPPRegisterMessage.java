@@ -28,7 +28,7 @@ import org.opengis.feature.type.Name;
 import org.opengis.util.InternationalString;
 
 /**
- * 
+ * Listens for "REGISTER" messages from XMPP service channels and takes action accordingly.
  * 
  * @author Alessio Fabiani, GeoSolutions
  * 

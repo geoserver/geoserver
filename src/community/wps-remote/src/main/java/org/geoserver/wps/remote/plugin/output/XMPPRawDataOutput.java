@@ -48,7 +48,9 @@ import freemarker.template.Configuration;
 import freemarker.template.Template;
 
 /**
- * @author Alessio
+ * Actual implementation of a RAW DATA Output Type
+ * 
+ * @author Alessio Fabiani, GeoSolutions
  *
  */
 public class XMPPRawDataOutput implements XMPPOutputType {

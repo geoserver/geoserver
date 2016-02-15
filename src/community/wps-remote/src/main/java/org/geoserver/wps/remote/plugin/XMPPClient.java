@@ -24,12 +24,6 @@ import java.util.logging.Logger;
 
 import javax.net.ssl.SSLContext;
 
-import net.razorvine.pickle.Opcodes;
-import net.razorvine.pickle.PickleException;
-import net.razorvine.pickle.PickleUtils;
-import net.razorvine.pickle.Pickler;
-import net.razorvine.pickle.Unpickler;
-
 import org.apache.commons.io.IOUtils;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
@@ -73,6 +67,12 @@ import org.jivesoftware.smackx.muc.DiscussionHistory;
 import org.jivesoftware.smackx.muc.MultiUserChat;
 import org.opengis.feature.type.Name;
 import org.opengis.util.ProgressListener;
+
+import net.razorvine.pickle.Opcodes;
+import net.razorvine.pickle.PickleException;
+import net.razorvine.pickle.PickleUtils;
+import net.razorvine.pickle.Pickler;
+import net.razorvine.pickle.Unpickler;
 
 /**
  * XMPP implementation of the {@link RemoteProcessClient}
@@ -133,6 +133,116 @@ public class XMPPClient extends RemoteProcessClient {
 
     protected MultiUserChat mucManagementChannel;
 
+    /** Primitive type name -> class map. */
+    public static final Map<String, Object> PRIMITIVE_NAME_TYPE_MAP = new HashMap<String, Object>();
+
+    /** Setup the primitives map. */
+    static enum CType {
+        SIMPLE, COMPLEX
+    }
+    
+    /**
+     * 
+     * STATIC MAP of the available mime-types.
+     * 
+     * Those are the available key-strigns which the remote client can specify on the XMPP message in order
+     * to declare which kind of output objects it is able to produce.
+     * 
+     * 
+     */
+    
+    static {
+        // ----
+        PRIMITIVE_NAME_TYPE_MAP.put("string",
+                new Object[] { String.class, CType.SIMPLE, null, "text/plain" });
+        PRIMITIVE_NAME_TYPE_MAP.put("url",
+                new Object[] { String.class, CType.SIMPLE, null, "text/plain" });
+        PRIMITIVE_NAME_TYPE_MAP.put("boolean",
+                new Object[] { Boolean.TYPE, CType.SIMPLE, Boolean.TRUE, "" });
+        PRIMITIVE_NAME_TYPE_MAP.put("byte", new Object[] { Byte.TYPE, CType.SIMPLE, null, "" });
+        PRIMITIVE_NAME_TYPE_MAP.put("char",
+                new Object[] { Character.TYPE, CType.SIMPLE, null, "text/plain" });
+        PRIMITIVE_NAME_TYPE_MAP.put("short", new Object[] { Short.TYPE, CType.SIMPLE, null, "" });
+        PRIMITIVE_NAME_TYPE_MAP.put("int", new Object[] { Integer.TYPE, CType.SIMPLE, null, "" });
+        PRIMITIVE_NAME_TYPE_MAP.put("long", new Object[] { Long.TYPE, CType.SIMPLE, null, "" });
+        PRIMITIVE_NAME_TYPE_MAP.put("float", new Object[] { Float.TYPE, CType.SIMPLE, null, "" });
+        PRIMITIVE_NAME_TYPE_MAP.put("double", new Object[] { Double.TYPE, CType.SIMPLE, null, "" });
+        PRIMITIVE_NAME_TYPE_MAP.put("datetime",
+                new Object[] { Date.class, CType.SIMPLE, null, "" });
+
+        // Complex and Raw data types
+        // ----
+        PRIMITIVE_NAME_TYPE_MAP.put("application/xml",
+                new Object[] { RawData.class, CType.COMPLEX,
+                        new StringRawData("", "application/xml"), "application/xml,text/xml",
+                        ".xml" });
+        PRIMITIVE_NAME_TYPE_MAP.put("text/xml", new Object[] { RawData.class, CType.COMPLEX,
+                new StringRawData("", "text/xml"), "application/xml,text/xml", ".xml" });
+
+        // ----
+        PRIMITIVE_NAME_TYPE_MAP.put("text/xml;subtype",
+                new Object[] { RawData.class, CType.COMPLEX,
+                        new StringRawData("", "application/gml-3.1.1"),
+                        "application/xml,application/gml-3.1.1,application/gml-2.1.2,text/xml; subtype=gml/3.1.1,text/xml; subtype=gml/2.1.2",
+                        ".xml" });
+        PRIMITIVE_NAME_TYPE_MAP.put("text/xml;subtype=gml/3.1.1",
+                PRIMITIVE_NAME_TYPE_MAP.get("text/xml;subtype"));
+        PRIMITIVE_NAME_TYPE_MAP.put("text/xml;subtype=gml/2.1.2",
+                PRIMITIVE_NAME_TYPE_MAP.get("text/xml;subtype"));
+        PRIMITIVE_NAME_TYPE_MAP.put("application/gml-3.1.1",
+                PRIMITIVE_NAME_TYPE_MAP.get("text/xml;subtype"));
+        PRIMITIVE_NAME_TYPE_MAP.put("application/gml-2.1.2",
+                PRIMITIVE_NAME_TYPE_MAP.get("text/xml;subtype"));
+
+        // ----
+        PRIMITIVE_NAME_TYPE_MAP.put("application/json",
+                new Object[] { RawData.class, CType.COMPLEX,
+                        new StringRawData("", "application/json"), "application/json,text/plain",
+                        ".json" });
+
+        // ----
+        PRIMITIVE_NAME_TYPE_MAP.put("application/owc",
+                new Object[] { RawData.class, CType.COMPLEX,
+                        new StringRawData("", "application/json"), "application/json,text/plain",
+                        ".json" });
+
+        // ----
+        PRIMITIVE_NAME_TYPE_MAP.put("image/geotiff",
+                new Object[] { RawData.class, CType.COMPLEX,
+                        new ResourceRawData(null, "image/geotiff", "tif"),
+                        "image/geotiff,image/tiff", ".tif" });
+        PRIMITIVE_NAME_TYPE_MAP.put("image/geotiff;stream",
+                new Object[] { RawData.class, CType.COMPLEX,
+                        new StreamRawData("image/geotiff", null, "tif"), "image/geotiff,image/tiff",
+                        ".tif" });
+
+        // ----
+        PRIMITIVE_NAME_TYPE_MAP.put("application/zip",
+                new Object[] { RawData.class, CType.COMPLEX,
+                        new ResourceRawData(null, "application/zip", "zip"),
+                        "application/zip", ".zip" });
+        PRIMITIVE_NAME_TYPE_MAP.put("application/zip;stream",
+                new Object[] { RawData.class, CType.COMPLEX,
+                        new StreamRawData("application/zip", null, "zip"), "application/zip",
+                        ".zip" });
+        
+        // ----
+        PRIMITIVE_NAME_TYPE_MAP.put("application/x-netcdf",
+                new Object[] { RawData.class, CType.COMPLEX,
+                        new ResourceRawData(null, "application/x-netcdf", "nc"),
+                        "application/x-netcdf", ".nc" });
+        PRIMITIVE_NAME_TYPE_MAP.put("application/x-netcdf;stream",
+                new Object[] { RawData.class, CType.COMPLEX,
+                        new StreamRawData("application/x-netcdf", null, "nc"),
+                        "application/x-netcdf", ".nc" });
+
+        // ----
+        PRIMITIVE_NAME_TYPE_MAP.put("video/mp4", new Object[] { RawData.class, CType.COMPLEX,
+                new ResourceRawData(null, "video/mp4", "mp4"), "video/mp4", ".mp4" });
+        PRIMITIVE_NAME_TYPE_MAP.put("video/mp4;stream", new Object[] { RawData.class, CType.COMPLEX,
+                new StreamRawData("video/mp4", null, "mp4"), "video/mp4", ".mp4" });
+    }
+    
     /**
      * Default Constructor
      * 
@@ -183,27 +293,28 @@ public class XMPPClient extends RemoteProcessClient {
             config.setSecurityMode(SecurityMode.disabled);
         }
 
+        // Actually performs the connection to the XMPP Server
         connection = new XMPPTCPConnection(config);
         connection.connect();
 
         LOGGER.info("Connected: " + connection.isConnected());
 
-        // check if the connection to the XMPP server is successful; the login and registration is not yet performed at this time
+        // Check if the connection to the XMPP server is successful; the login and registration is not yet performed at this time
         if (connection.isConnected()) {
             chatManager = ChatManager.getInstanceFor(connection);
             discoStu = ServiceDiscoveryManager.getInstanceFor(connection);
 
-            //
+            // Add features to our XMPP client
             discoProperties();
 
-            //
+            // Performs login with "admin" user credentials
             performLogin(getConfiguration().get("xmpp_manager_username"),
                     getConfiguration().get("xmpp_manager_password"));
 
-            //
+            // Start "ping" task in order to maintain alive the connection
             startPingTask();
 
-            //
+            // Send invitation to the registered endpoints
             sendInvitations();
         } else {
             setEnabled(false);
@@ -221,17 +332,21 @@ public class XMPPClient extends RemoteProcessClient {
                 + serviceJID + "]");
 
         if (metadata != null && serviceJID != null) {
+        	
             // Extract the PID
             metadata.put("serviceJID", serviceJID);
 
+            // Extract the process inputs
             final Object fixedInputs = getFixedInputs(input);
 
             LOGGER.info("XMPPClient::execute - extracting the PID for the service JID ["
                     + serviceJID + "] with inputs [" + fixedInputs + "]");
 
+            // Generate a unique pID to be used to identify the endpoint
             final String pid = md5Java(
                     serviceJID + System.nanoTime() + byteArrayToURLString(pickle(fixedInputs)));
 
+            // Try to retrieve the base URL from the request and send to the endpoint as parameter
             Request request = Dispatcher.REQUEST.get();
             metadata.put("request", request);
             String baseURL = getGeoServer().getGlobal().getSettings().getProxyBaseUrl();
@@ -245,6 +360,14 @@ public class XMPPClient extends RemoteProcessClient {
             } catch (Exception e) {
                 LOGGER.warning("Could not acquire the GeoServer Base URL!");
             }
+            
+            // Build and send the REUQEST message
+            /**
+             * topic = request
+             * id = pid
+             * baseURL = geoserver url
+             * message = <pickled WPS inputs>
+             */
             String msg = "topic=request&id=" + pid + "&baseURL=" + baseURL + "&message="
                     + byteArrayToURLString(pickle(fixedInputs));
             sendMessage(serviceJID, msg);
@@ -256,6 +379,7 @@ public class XMPPClient extends RemoteProcessClient {
     }
 
     /**
+     * Utility method to extract the process inputs accordingly to whatever declared from the endpoint.
      * 
      * @param input
      * @return
@@ -290,7 +414,7 @@ public class XMPPClient extends RemoteProcessClient {
         return fixedInputs;
     }
 
-    /*
+    /**
      * Add features to our XMPP client We do support Data forms, XHTML-IM, Service Discovery
      */
     private void discoProperties() {
@@ -472,7 +596,9 @@ public class XMPPClient extends RemoteProcessClient {
         connection.disconnect();
     }
 
-    /*
+    /**
+     * Utility method to extract the Service Name from the XMPP JID
+     * 
      * @param person
      * 
      * @return
@@ -495,7 +621,7 @@ public class XMPPClient extends RemoteProcessClient {
         }
     }
 
-    /*
+    /**
      * Send an invitation to the new logged in member
      * 
      * @throws Exception
@@ -521,7 +647,7 @@ public class XMPPClient extends RemoteProcessClient {
         }
     }
 
-    /*
+    /**
      * A new member joined one of the service chat-rooms; send an invitation and see if it is a remote service. If so, register it
      * 
      * @param p
@@ -547,7 +673,7 @@ public class XMPPClient extends RemoteProcessClient {
         }
     }
 
-    /*
+    /**
      * A member leaved one of the service chat-rooms; lets remove the service declaration and de-register it
      * 
      * @param p
@@ -567,7 +693,7 @@ public class XMPPClient extends RemoteProcessClient {
         }
     }
 
-    /*
+    /**
      * Find the service by name with the smallest amount of processes running, channel is decoded in service name
      * 
      * e.g. debug.foo@bar/service@localhost
@@ -825,7 +951,22 @@ public class XMPPClient extends RemoteProcessClient {
         }
     }
 
+
     /**
+     * Utility method to "pickle" (compress) the input parameters to be attached to the XMPP message
+     * 
+     * @param unpickled
+     * @return
+     * @throws PickleException
+     * @throws IOException
+     */
+    static byte[] pickle(Object unpickled) throws PickleException, IOException {
+        Pickler p = new Pickler();
+        return p.dumps(unpickled);
+    }
+    
+    /**
+     * Utility method to "un-pickle" (decompress) the input parameters attached to the XMPP message
      * 
      * @param strdata
      * @return
@@ -837,6 +978,7 @@ public class XMPPClient extends RemoteProcessClient {
     }
 
     /**
+     * Utility method to "un-pickle" (decompress) the input parameters attached to the XMPP message
      * 
      * @param data
      * @return
@@ -851,6 +993,7 @@ public class XMPPClient extends RemoteProcessClient {
     }
 
     /**
+     * Utility method to get bytes out of a String
      * 
      * @param s
      * @return
@@ -872,6 +1015,7 @@ public class XMPPClient extends RemoteProcessClient {
     }
 
     /**
+     * Utility method to get bytes out of a short array
      * 
      * @param shorts
      * @return
@@ -887,12 +1031,8 @@ public class XMPPClient extends RemoteProcessClient {
         return result;
     }
 
-    static byte[] pickle(Object unpickled) throws PickleException, IOException {
-        Pickler p = new Pickler();
-        return p.dumps(unpickled);
-    }
-
     /**
+     * Utility method to generate a unique md5
      * 
      * @param message
      * @return
@@ -957,106 +1097,6 @@ public class XMPPClient extends RemoteProcessClient {
         String rslt = new String(out);
 
         return rslt;
-    }
-
-    /** Primitive type name -> class map. */
-    public static final Map<String, Object> PRIMITIVE_NAME_TYPE_MAP = new HashMap<String, Object>();
-
-    /** Setup the primitives map. */
-    static enum CType {
-        SIMPLE, COMPLEX
-    }
-
-    static {
-        // ----
-        PRIMITIVE_NAME_TYPE_MAP.put("string",
-                new Object[] { String.class, CType.SIMPLE, null, "text/plain" });
-        PRIMITIVE_NAME_TYPE_MAP.put("url",
-                new Object[] { String.class, CType.SIMPLE, null, "text/plain" });
-        PRIMITIVE_NAME_TYPE_MAP.put("boolean",
-                new Object[] { Boolean.TYPE, CType.SIMPLE, Boolean.TRUE, "" });
-        PRIMITIVE_NAME_TYPE_MAP.put("byte", new Object[] { Byte.TYPE, CType.SIMPLE, null, "" });
-        PRIMITIVE_NAME_TYPE_MAP.put("char",
-                new Object[] { Character.TYPE, CType.SIMPLE, null, "text/plain" });
-        PRIMITIVE_NAME_TYPE_MAP.put("short", new Object[] { Short.TYPE, CType.SIMPLE, null, "" });
-        PRIMITIVE_NAME_TYPE_MAP.put("int", new Object[] { Integer.TYPE, CType.SIMPLE, null, "" });
-        PRIMITIVE_NAME_TYPE_MAP.put("long", new Object[] { Long.TYPE, CType.SIMPLE, null, "" });
-        PRIMITIVE_NAME_TYPE_MAP.put("float", new Object[] { Float.TYPE, CType.SIMPLE, null, "" });
-        PRIMITIVE_NAME_TYPE_MAP.put("double", new Object[] { Double.TYPE, CType.SIMPLE, null, "" });
-        PRIMITIVE_NAME_TYPE_MAP.put("datetime",
-                new Object[] { Date.class, CType.SIMPLE, null, "" });
-
-        // Complex and Raw data types
-        // ----
-        PRIMITIVE_NAME_TYPE_MAP.put("application/xml",
-                new Object[] { RawData.class, CType.COMPLEX,
-                        new StringRawData("", "application/xml"), "application/xml,text/xml",
-                        ".xml" });
-        PRIMITIVE_NAME_TYPE_MAP.put("text/xml", new Object[] { RawData.class, CType.COMPLEX,
-                new StringRawData("", "text/xml"), "application/xml,text/xml", ".xml" });
-
-        // ----
-        PRIMITIVE_NAME_TYPE_MAP.put("text/xml;subtype",
-                new Object[] { RawData.class, CType.COMPLEX,
-                        new StringRawData("", "application/gml-3.1.1"),
-                        "application/xml,application/gml-3.1.1,application/gml-2.1.2,text/xml; subtype=gml/3.1.1,text/xml; subtype=gml/2.1.2",
-                        ".xml" });
-        PRIMITIVE_NAME_TYPE_MAP.put("text/xml;subtype=gml/3.1.1",
-                PRIMITIVE_NAME_TYPE_MAP.get("text/xml;subtype"));
-        PRIMITIVE_NAME_TYPE_MAP.put("text/xml;subtype=gml/2.1.2",
-                PRIMITIVE_NAME_TYPE_MAP.get("text/xml;subtype"));
-        PRIMITIVE_NAME_TYPE_MAP.put("application/gml-3.1.1",
-                PRIMITIVE_NAME_TYPE_MAP.get("text/xml;subtype"));
-        PRIMITIVE_NAME_TYPE_MAP.put("application/gml-2.1.2",
-                PRIMITIVE_NAME_TYPE_MAP.get("text/xml;subtype"));
-
-        // ----
-        PRIMITIVE_NAME_TYPE_MAP.put("application/json",
-                new Object[] { RawData.class, CType.COMPLEX,
-                        new StringRawData("", "application/json"), "application/json,text/plain",
-                        ".json" });
-
-        // ----
-        PRIMITIVE_NAME_TYPE_MAP.put("application/owc",
-                new Object[] { RawData.class, CType.COMPLEX,
-                        new StringRawData("", "application/json"), "application/json,text/plain",
-                        ".json" });
-
-        // ----
-        PRIMITIVE_NAME_TYPE_MAP.put("image/geotiff",
-                new Object[] { RawData.class, CType.COMPLEX,
-                        new ResourceRawData(null, "image/geotiff", "tif"),
-                        "image/geotiff,image/tiff", ".tif" });
-        PRIMITIVE_NAME_TYPE_MAP.put("image/geotiff;stream",
-                new Object[] { RawData.class, CType.COMPLEX,
-                        new StreamRawData("image/geotiff", null, "tif"), "image/geotiff,image/tiff",
-                        ".tif" });
-
-        // ----
-        PRIMITIVE_NAME_TYPE_MAP.put("application/zip",
-                new Object[] { RawData.class, CType.COMPLEX,
-                        new ResourceRawData(null, "application/zip", "zip"),
-                        "application/zip", ".zip" });
-        PRIMITIVE_NAME_TYPE_MAP.put("application/zip;stream",
-                new Object[] { RawData.class, CType.COMPLEX,
-                        new StreamRawData("application/zip", null, "zip"), "application/zip",
-                        ".zip" });
-        
-        // ----
-        PRIMITIVE_NAME_TYPE_MAP.put("application/x-netcdf",
-                new Object[] { RawData.class, CType.COMPLEX,
-                        new ResourceRawData(null, "application/x-netcdf", "nc"),
-                        "application/x-netcdf", ".nc" });
-        PRIMITIVE_NAME_TYPE_MAP.put("application/x-netcdf;stream",
-                new Object[] { RawData.class, CType.COMPLEX,
-                        new StreamRawData("application/x-netcdf", null, "nc"),
-                        "application/x-netcdf", ".nc" });
-
-        // ----
-        PRIMITIVE_NAME_TYPE_MAP.put("video/mp4", new Object[] { RawData.class, CType.COMPLEX,
-                new ResourceRawData(null, "video/mp4", "mp4"), "video/mp4", ".mp4" });
-        PRIMITIVE_NAME_TYPE_MAP.put("video/mp4;stream", new Object[] { RawData.class, CType.COMPLEX,
-                new StreamRawData("video/mp4", null, "mp4"), "video/mp4", ".mp4" });
     }
 
     /**
@@ -1147,7 +1187,10 @@ public class XMPPClient extends RemoteProcessClient {
 }
 
 /**
+ * Actual implementation of a "PacketListener".
  * 
+ * Listen to the service channels and handles the "registration" and "de-registration" of the 
+ * available services (alias available WPS Processes)
  * 
  * @author Alessio Fabiani, GeoSolutions
  * 
@@ -1259,7 +1302,7 @@ class XMPPPacketListener implements PacketListener {
 }
 
 /**
- * 
+ * Just an utility class helping us to convert a parameter to a Java class.
  * 
  * @author Alessio Fabiani, GeoSolutions
  * 

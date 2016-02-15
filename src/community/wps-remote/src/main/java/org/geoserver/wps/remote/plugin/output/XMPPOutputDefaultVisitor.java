@@ -7,7 +7,11 @@ package org.geoserver.wps.remote.plugin.output;
 import org.geoserver.wps.remote.plugin.XMPPClient;
 
 /**
- * @author Alessio
+ * Default Output Type visitor pattern implementation.
+ * 
+ * By default we can have RAW DATA or STRING Output Types.
+ * 
+ * @author Alessio Fabiani, GeoSolutions
  * 
  */
 public class XMPPOutputDefaultVisitor implements XMPPOutputVisitor {

@@ -7,7 +7,9 @@ package org.geoserver.wps.remote.plugin.output;
 import org.geoserver.wps.remote.plugin.XMPPClient;
 
 /**
- * @author Alessio
+ * Visitor Pattern interface for Output types
+ * 
+ * @author Alessio Fabiani, GeoSolutions
  *
  */
 public interface XMPPOutputVisitor {

@@ -16,7 +16,7 @@ import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Packet;
 
 /**
- * 
+ * Listens for "ERROR" messages from XMPP service channels and takes action accordingly.
  * 
  * @author Alessio Fabiani, GeoSolutions
  * 
@@ -48,7 +48,7 @@ public class XMPPErrorMessage implements XMPPMessage {
         }
         final String pID = (signalArgs != null ? signalArgs.get("id") : null);
 
-        // NOTIFY SERVICE
+        // NOTIFY SERVICE for aborting the computation as soon as possible
         final String serviceJID = message.getFrom();
         xmppClient.sendMessage(serviceJID, "topic=abort");
 

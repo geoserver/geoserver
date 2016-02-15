@@ -10,7 +10,7 @@ import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Packet;
 
 /**
- * 
+ * Base interface for XMPP Service Messages sent by remote processes.
  * 
  * @author Alessio Fabiani, GeoSolutions
  * 

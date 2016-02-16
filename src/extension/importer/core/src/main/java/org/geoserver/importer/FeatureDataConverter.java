@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2013 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -185,16 +185,16 @@ public class FeatureDataConverter {
             name = convertAttributeName(name);
             return name.length() > 10 ? name.substring(0,10) : name;
         }
-    };
-
-    private static boolean containsAttribute(SimpleFeature ft, String attName) {
-        for (AttributeDescriptor att : ft.getType().getAttributeDescriptors()) {
-            if (att.getLocalName().equals(attName)) {
-                return true;
+        
+        private boolean containsAttribute(SimpleFeature ft, String attName) {
+            for (AttributeDescriptor att : ft.getType().getAttributeDescriptors()) {
+                if (att.getLocalName().equals(attName)) {
+                    return true;
+                }
             }
+            return false;
         }
-        return false;
-    }
+    };
     
     public static final FeatureDataConverter TO_POSTGIS = new FeatureDataConverter() {
 

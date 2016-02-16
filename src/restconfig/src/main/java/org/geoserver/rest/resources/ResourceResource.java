@@ -258,7 +258,7 @@ public class ResourceResource extends AbstractResource {
         
         //HTML
         if (operation == Operation.METADATA || resource.getType() == Type.DIRECTORY) {
-            formats.add(new ReflectiveHTMLFormat(request,response,this) {
+            formats.add(new ReflectiveHTMLFormat("UTF-8", request, response, this) {
                 @Override
                 protected Configuration createConfiguration(Object data, Class<?> clazz) {
                     Configuration cfg = super.createConfiguration(data, clazz);

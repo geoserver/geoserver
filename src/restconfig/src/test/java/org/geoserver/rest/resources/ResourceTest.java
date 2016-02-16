@@ -7,6 +7,8 @@ package org.geoserver.rest.resources;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetEncoder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -40,16 +42,26 @@ import com.mockrunner.mock.web.MockHttpServletResponse;
  */
 public class ResourceTest extends GeoServerSystemTestSupport {
     
-    private static final String STR_MY_TEST = "This is my test. é ö";
-    private static final String STR_MY_NEW_TEST = "This is my new test. € è";
-
+    private final String STR_MY_TEST;
+    private final String STR_MY_NEW_TEST;
     private final NamespaceContext NS_XML, NS_HTML;
     private final DateFormat FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S z");
     private final DateFormat FORMAT_HEADER = new SimpleDateFormat("E, dd MMM yyyy HH:mm:ss z");
     
     private Resource myRes; 
-    
     public ResourceTest() {
+        CharsetEncoder encoder = Charset.defaultCharset().newEncoder();
+        if (encoder.canEncode("éö")) {
+            STR_MY_TEST = "This is my test. é ö";
+        } else {
+            STR_MY_TEST = "This is my test.";
+        }
+        if (encoder.canEncode("€è")) {
+            STR_MY_NEW_TEST = "This is my new test. € è";
+        } else {
+            STR_MY_NEW_TEST = "This is my new test.";
+        }
+
         FORMAT.setTimeZone(TimeZone.getTimeZone("UTC"));
         FORMAT_HEADER.setTimeZone(TimeZone.getTimeZone("GMT"));
         Map<String, String> mapXML = new HashMap<String, String>();

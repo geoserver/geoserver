@@ -101,10 +101,22 @@ public class ReflectiveHTMLFormat extends DataFormat {
     protected Class<?> clazz;
 
     /**
+     * Encoding (null for default)
+     */
+    protected String encoding;
+
+    /**
      * Creates a new instance of the format.
      */
     public ReflectiveHTMLFormat(Request request,Response response,Resource resource) {
-        this(null,request,response,resource);
+        this(null, null, request, response, resource);
+    }
+
+    /**
+     * Creates a new instance of the format.
+     */
+    public ReflectiveHTMLFormat(String encoding, Request request, Response response, Resource resource) {
+        this(null, encoding, request, response, resource);
     }
 
     /**
@@ -114,8 +126,20 @@ public class ReflectiveHTMLFormat extends DataFormat {
      * to the concrete class of object being serialized. 
      * </p>
      */
-    public ReflectiveHTMLFormat( Class<?> clazz, Request request,Response response, Resource resource ) {
+    public ReflectiveHTMLFormat(Class<?> clazz, Request request, Response response, Resource resource) {
+        this(clazz, null, request, response, resource);
+    }
+
+    /**
+     * Creates a new instance of the format specifying the type of object being serialized.
+     * <p>
+     * This constructor is useful when reflection should be executed against an interface as opposed
+     * to the concrete class of object being serialized. 
+     * </p>
+     */
+    public ReflectiveHTMLFormat(Class<?> clazz, String encoding, Request request, Response response, Resource resource) {
         super( MediaType.TEXT_HTML );
+        this.encoding = encoding;
         this.clazz = clazz;
         this.request = request;
         this.resource = resource;
@@ -220,7 +244,9 @@ public class ReflectiveHTMLFormat extends DataFormat {
         Configuration cfg = new Configuration( );
         cfg.setObjectWrapper( new ObjectToMapWrapper( clazz ));
         cfg.setClassForTemplateLoading(ReflectiveHTMLFormat.class,"");
-        
+        if (encoding != null) {
+            cfg.setDefaultEncoding(encoding);
+        }
         return cfg;
     }
 

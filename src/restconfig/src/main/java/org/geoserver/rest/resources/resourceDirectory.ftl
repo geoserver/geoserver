@@ -3,7 +3,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
     <title>GeoServer Resource Directory</title>
-    <meta name="ROBOTS" content="NOINDEX, NOFOLLOW" charset="UTF-8" />
+    <meta name="ROBOTS" content="NOINDEX, NOFOLLOW" />
+    <meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
 </head>
 <body>
 <h1>Resource Directory '${properties.path}'</h1>

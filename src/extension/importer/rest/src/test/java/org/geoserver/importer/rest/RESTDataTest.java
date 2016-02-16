@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -18,10 +18,6 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import net.sf.json.JSON;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.multipart.FilePart;
 import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
@@ -34,13 +30,16 @@ import org.geoserver.importer.Directory;
 import org.geoserver.importer.ImportContext;
 import org.geoserver.importer.ImporterTestSupport;
 import org.geotools.data.DataStore;
-import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.junit.Test;
 import org.restlet.data.MediaType;
 
 import com.google.common.collect.Lists;
 import com.mockrunner.mock.web.MockHttpServletRequest;
 import com.mockrunner.mock.web.MockHttpServletResponse;
+
+import net.sf.json.JSON;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 public class RESTDataTest extends ImporterTestSupport {
 
@@ -448,8 +447,11 @@ public class RESTDataTest extends ImporterTestSupport {
         File zip = file(data);
         byte[] payload = new byte[ (int) zip.length()];
         FileInputStream fis = new FileInputStream(zip);
-        fis.read(payload);
-        fis.close();
+        try {
+            fis.read(payload);
+        } finally {
+            fis.close();
+        }
 
         MockHttpServletRequest req = createRequest("/rest/imports/" + imp + "/tasks/" + new File(data).getName());
         req.setHeader("Content-Type", MediaType.APPLICATION_ZIP.toString());

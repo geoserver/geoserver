@@ -418,7 +418,7 @@ public class Importer implements DisposableBean, ApplicationListener {
             data.prepare(context.progress());
         }
 
-        if (data instanceof FileData) {
+        if (data instanceof FileData && ((FileData) data).getFile() != null) {
             if (data instanceof Mosaic) {
                 return initForMosaic(context, (Mosaic)data);
             }
@@ -426,7 +426,7 @@ public class Importer implements DisposableBean, ApplicationListener {
                 return initForDirectory(context, (Directory)data);
             }
             else {
-                return initForFile(context, (FileData)data);
+                return initForFile(context, (FileData) data);
             }
         }
         else if (data instanceof Table) {

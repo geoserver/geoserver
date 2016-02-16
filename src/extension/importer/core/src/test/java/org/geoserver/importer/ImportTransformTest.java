@@ -63,6 +63,7 @@ public class ImportTransformTest extends ImporterTestSupport {
         store.accept(visitor);
     }
     
+    @Test
     public void testNumberFormatTransform() throws Exception {
         Catalog cat = getCatalog();
 

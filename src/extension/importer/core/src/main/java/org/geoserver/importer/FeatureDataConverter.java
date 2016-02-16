@@ -80,7 +80,7 @@ public class FeatureDataConverter {
         ImportData data, ImportTask task) {
 
         SimpleFeatureTypeBuilder typeBuilder = new SimpleFeatureTypeBuilder();
-        typeBuilder.setName(convertTypeName(featureType.getTypeName()));
+        typeBuilder.setName(convertTypeName(task != null && task.getLayer().getName() != null ? task.getLayer().getName() : featureType.getTypeName()));
 
         AttributeTypeBuilder attBuilder = new AttributeTypeBuilder();
         for (AttributeDescriptor att : featureType.getAttributeDescriptors()) {
@@ -175,7 +175,7 @@ public class FeatureDataConverter {
                 if (att instanceof GeometryDescriptor) {
                     to.setDefaultGeometry(obj);
                 }
-                else {
+                else if (containsAttribute(to, attName(att.getLocalName()))) {
                     to.setAttribute(attName(att.getLocalName()), obj);
                 }
             }
@@ -187,6 +187,15 @@ public class FeatureDataConverter {
         }
     };
 
+    private static boolean containsAttribute(SimpleFeature ft, String attName) {
+        for (AttributeDescriptor att : ft.getType().getAttributeDescriptors()) {
+            if (att.getLocalName().equals(attName)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
     public static final FeatureDataConverter TO_POSTGIS = new FeatureDataConverter() {
 
         @Override

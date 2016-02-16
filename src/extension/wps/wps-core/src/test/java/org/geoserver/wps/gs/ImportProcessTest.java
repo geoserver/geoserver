@@ -123,7 +123,7 @@ public class ImportProcessTest extends WPSTestSupport {
             }
         };
 
-        ImportProcess importer = new ImportProcess(getCatalog());
+        final ImportProcess importer = new ImportProcess(getCatalog());
         final DefaultProgressListener listener = new DefaultProgressListener();
         ExecutorService executor = Executors.newCachedThreadPool();
         try {

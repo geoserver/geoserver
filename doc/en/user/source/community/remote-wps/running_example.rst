@@ -3,7 +3,7 @@
 A Remote "Gdal Contour" Process Binding Example
 ===============================================
 
-Before continue reading this section, please be sure to have fully undesrtood and succesfully completed all the passages at sections:
+Before continue reading this section, please be sure to have fully understood and successfully completed all the passages at sections:
 
 - :ref:`extensions_wps_remote_install_geoserver`
 - :ref:`extensions_wps_remote_install_xmpp`

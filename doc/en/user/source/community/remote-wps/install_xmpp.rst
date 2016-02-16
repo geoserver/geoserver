@@ -7,7 +7,7 @@ The following commands will prepare a CentOS 7 Minimal ISO machine for the deplo
 
 * Openfire XMPP Server
 
-* NFS shared filesystem
+* NFS shared file-system
 
 .. note:: Prerequisite to this section, is the basic preparation of the CentOS machine as described on the section :ref:`extensions_wps_remote_install_geoserver`.
 
@@ -39,7 +39,7 @@ For the purposes of running a private XMPP communication platform, we can safely
   
   $> systemctl start postgresql.service
   
-Postgres installation is now up and running, let’s proceed with setting up the specific database and the dedicated user for OpenFire, together with authentication method and administration password.
+Postgres installation is now up and running, lets proceed with setting up the specific database and the dedicated user for OpenFire, together with authentication method and administration password.
 
 For full administration access, switch to postgres user.
 
@@ -52,13 +52,13 @@ For full administration access, switch to postgres user.
   $> createdb openfire
   $> createuser -P openfire
 
-  # The ‘-P’ parameter ensures that the shell will explicitly ask for user’s password and you will need to type it in. Enter the password twice
+  # The '-P' parameter ensures that the shell will explicitly ask for user's password and you will need to type it in. Enter the password twice
 
      R3m0T3wP5
 
   $> psql -U postgres -d postgres -c "ALTER USER postgres WITH PASSWORD 'R3m0T3wP5';"
   
-Postgres user is secured with the new password. Let’s put authentication methods in practise and force every application or shell login to promt for these passwords.
+Postgres user is secured with the new password. Lets put authentication methods in practice and force every application or shell login to prompt for these passwords.
 
 .. code-block:: shell
 
@@ -156,7 +156,7 @@ The password for the user ``openfire`` is the same provided in the PostgreSQL DB
 
 .. note:: Be sure the ``openfire`` database and user have been correctly created on PostgreSQL and the passwords provided (see above for instructions).
     
-If there are no connection issues, choose ``Default`` value on the users’ profile settings section.
+If there are no connection issues, choose ``Default`` value on the users profile settings section.
 
   .. figure:: images/openfire005.jpg
     :align: center
@@ -188,7 +188,7 @@ Make sure that the self-signed certificates have been correctly generated and cl
   .. figure:: images/openfire010.jpg
     :align: center
 
-The same section now shows the server certificates and won’t ask for another restart unless the certificates are generated again.
+The same section now shows the server certificates and won't ask for another restart unless the certificates are generated again.
 
 Update the ``Security Settings`` in order to allow the server accepting self-signed certificates on secured connections.
 
@@ -289,7 +289,7 @@ Shared Folder through the NFS protocol
 
 The next steps describe how to setup the system in order to expose a Shared Network Folder which will be used to store the outcomes of the remote processing.
 
-The following procedures are not mandatory and the final deployment on the production system may be configured to use different protocols and frameworks to expose shared filesystems.
+The following procedures are not mandatory and the final deployment on the production system may be configured to use different protocols and frameworks to expose shared file-systems.
 
 The setup and initial configuration of the NFS packages can be done by following the next procedure:
 

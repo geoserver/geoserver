@@ -203,6 +203,7 @@
     <bean id="pagedUniquePPIO" class="org.geoserver.wps.gs.PagedUniqueProcessPPIO"/>
 
     <bean id="aggregateProcessResultPPIO" class="org.geoserver.wps.gs.AggregateProcessPPIO"/>
+    <bean id="aggregateProcessResultJSONPPIO" class="org.geoserver.wps.gs.AggregateProcessJSONPPIO"/>
 
     <bean id="storeCoverageProcess" class="org.geoserver.wps.gs.StoreCoverage" >
       <constructor-arg index="0" ref="wpsResourceManager"></constructor-arg>

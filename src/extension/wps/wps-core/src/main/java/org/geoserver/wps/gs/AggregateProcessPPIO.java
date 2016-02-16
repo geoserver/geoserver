@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -12,6 +12,10 @@ import org.geoserver.wps.ppio.XStreamPPIO;
 import org.geotools.process.vector.AggregateProcess;
 
 import com.thoughtworks.xstream.mapper.MapperWrapper;
+
+import java.util.EnumMap;
+import java.util.List;
+import java.util.Set;
 
 /**
  * A PPIO to generate good looking xml for the aggreagate process results
@@ -33,6 +37,10 @@ public class AggregateProcessPPIO extends XStreamPPIO {
             };
         };
         xstream.allowTypes(new Class[] { AggregateProcess.Results.class });
+        xstream.omitField(AggregateProcess.Results.class, "aggregateAttribute");
+        xstream.omitField(AggregateProcess.Results.class, "functions");
+        xstream.omitField(AggregateProcess.Results.class, "groupByAttributes");
+        xstream.omitField(AggregateProcess.Results.class, "results");
         xstream.alias(AggregationResults.getLocalPart(), AggregateProcess.Results.class);
         return xstream;
     }

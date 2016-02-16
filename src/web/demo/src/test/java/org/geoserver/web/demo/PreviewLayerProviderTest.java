@@ -136,7 +136,7 @@ public class PreviewLayerProviderTest extends GeoServerWicketTestSupport {
         PreviewLayerProvider provider = new PreviewLayerProvider();
         provider.getItems();
     }
-
+    
     private PreviewLayer getPreviewLayer(PreviewLayerProvider provider, String prefixedName) {
         for (PreviewLayer pl : Lists.newArrayList(provider.iterator(0, Integer.MAX_VALUE))) {
             if(pl.getName().equals(prefixedName)) {

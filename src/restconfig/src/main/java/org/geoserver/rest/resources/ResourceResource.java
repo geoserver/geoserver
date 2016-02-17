@@ -8,12 +8,12 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLConnection;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.platform.resource.ResourceStore;
@@ -272,7 +272,7 @@ public class ResourceResource extends AbstractResource {
                             properties.put(
                                     "path", 
                                     object.getParent() == null ? "/" :  
-                                        Paths.get(object.getParent().getPath(),
+                                        Paths.path(object.getParent().getPath(),
                                     object.getName()));
                             properties.put("parent_path", 
                                     object.getParent() == null ? "" : 

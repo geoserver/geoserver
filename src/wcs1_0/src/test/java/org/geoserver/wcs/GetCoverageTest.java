@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -7,6 +7,7 @@ package org.geoserver.wcs;
 
 import static org.geoserver.data.test.MockData.TASMANIA_BM;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.awt.image.RenderedImage;
@@ -28,6 +29,7 @@ import net.opengis.wcs10.GetCoverageType;
 import org.apache.commons.io.IOUtils;
 import org.custommonkey.xmlunit.XMLAssert;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.config.GeoServer;
@@ -41,6 +43,7 @@ import org.geoserver.wcs.xml.v1_0_0.WcsXmlReader;
 import org.geotools.coverage.grid.GeneralGridEnvelope;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
+import org.geotools.coverage.processing.operation.MultiplyConst;
 import org.geotools.data.DataSourceException;
 import org.geotools.gce.geotiff.GeoTiffFormat;
 import org.geotools.gce.geotiff.GeoTiffReader;
@@ -53,6 +56,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.opengis.coverage.grid.GridCoverage;
 import org.opengis.coverage.grid.GridEnvelope;
+import org.opengis.parameter.ParameterValueGroup;
 import org.opengis.referencing.datum.PixelInCell;
 import org.opengis.referencing.operation.MathTransform;
 import org.w3c.dom.Document;
@@ -95,6 +99,7 @@ public class GetCoverageTest extends WCSTestSupport {
         super.onSetUp(testData);
         testData.addRasterLayer(MOSAIC, "raster-filter-test.zip", null, getCatalog());
         testData.addRasterLayer(SPATIO_TEMPORAL, "spatio-temporal.zip", null, null, SystemTestData.class, getCatalog());
+        testData.addRasterLayer(new QName(MockData.WCS_URI, "category", MockData.WCS_PREFIX), "category.tiff", null, getCatalog());
         // enable dimensions on the water temperature layer
         setupRasterDimension(WATTEMP, ResourceInfo.TIME, DimensionPresentation.LIST, null);
         setupRasterDimension(WATTEMP, ResourceInfo.ELEVATION, DimensionPresentation.LIST, null);
@@ -626,6 +631,24 @@ public class GetCoverageTest extends WCSTestSupport {
         assertEquals(255, pixel[0]);
         assertEquals(0, pixel[1]);
         assertEquals(0, pixel[2]);
+    }
+
+    @Test
+    public void testCategoriesToArray() throws Exception {
+        CoverageInfo myCoverage = getCatalog().getCoverageByName("category");
+        GridCoverage gridCoverage = myCoverage.getGridCoverage(null, null);
+        MultiplyConst op = new MultiplyConst();
+        final ParameterValueGroup param = op.getParameters();
+
+        param.parameter("Source").setValue(gridCoverage);
+        param.parameter("constants").setValue(new double[] { 0.1 });
+        boolean exception = false;
+        try {
+            op.doOperation(param, null);
+        } catch (Exception e) {
+            exception = true;
+        }
+        assertFalse(exception);
     }
 
     private void setInputLimit(int kbytes) {

@@ -1026,3 +1026,54 @@ The examples above represents all the possible types of Outputs currently suppor
     * **publish_target_workspace**; The default workspace to use when publishing the Layer.
     
     * **publish_layer_name**; The default name to use when publishing the Layer.
+    
+Logging Section
++++++++++++++++
+
+.. code-block:: shell
+
+  # ########################################### #
+  # Logging RegEx and Levels                    #
+  # ########################################### #
+  
+  [Logging]
+  stdout_parser = [.*\[DEBUG\](.*), .*\[INFO\] ProgressInfo\:([-+]?[0-9]*\.?[0-9]*)\%, .*\[(INFO)\](.*), .*\[(WARN)\](.*), .*\[(ERROR)\](.*), .*\[(CRITICAL)\](.*)]
+  stdout_action = [ignore,          progress,                                          log,              log,              log,               abort]
+
+* **stdout_parser**
+
+    This property must contain a *list* of regular expressions matching the possible executable ``STDOUT`` logging messages the user wants to forward to GeoServer.
+    
+    As an instance
+    
+    .. code-block:: json
+    
+      .*\[DEBUG\](.*)
+      
+    Matches all the messages containing the keyword ``[DEBUG]`` and forwards to the corresponding **stdout_action** (*see below*) the content of the first matching group ``(.*)``
+    
+    In this case everything after ``[DEBUG]`` is forwarded to the action.
+    
+    Another example
+    
+    .. code-block:: json
+    
+      .*\[INFO\] ProgressInfo\:([-+]?[0-9]*\.?[0-9]*)\%
+      
+    Matches all the messages containing the keyword ``[INFO] ProgressInfo:<any_number>%`` and forwards to the corresponding **stdout_action** (*see below*) the content of the first matching group ``([-+]?[0-9]*\.?[0-9]*)``
+    
+    In this case the expression extracts a float number form the text along with the sign ``[-+]``
+    
+* **stdout_action**
+
+    This property must contain a *list* of keywords associated to a *particular action* which will take the content of the corresponding regular expression and forwards it to GeoServer packaged ad a specific XMPP message.
+    
+    As an instance
+    
+    * *progress*; gets the content of the match and sends a **PROGRESS** XMPP message to GeoServer. The **PROGRESS** messgae must always contain a number.
+    
+    * *abort*; gets the content of the match and sends a **ABORT** XMPP message to GeoServer. This will cause GeoServer to mark the WPS Process as **FAILED**.
+    
+    * *ignore*; simply throws out everything matching the corresponding regular expression.
+    
+    * *log*; sends a **LOG** message to GeoServer with the content of the match. This will appear into the GeoServer Log file.

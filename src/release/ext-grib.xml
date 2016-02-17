@@ -25,7 +25,6 @@
         <include>gt-jdbc-h2*.jar</include>
         <include>hatbox*.jar</include>
         <include>geodb*.jar</include>
-        <include>log4j-over-slf4j*.jar</include>
         <include>bufr*.jar</include>
         <include>protobuf-java*.jar</include>
         <include>c3p0*.jar</include>
@@ -40,6 +39,7 @@
       <excludes>
         <exclude>gs-netcdf-out*.jar</exclude>
         <exclude>jettison*.jar</exclude>
+        <exclude>log4j-over-slf4j*.jar</exclude>
       </excludes>
     </fileSet>
   </fileSets>

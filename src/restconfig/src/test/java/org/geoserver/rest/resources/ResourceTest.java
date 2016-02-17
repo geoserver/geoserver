@@ -135,7 +135,6 @@ public class ResourceTest extends GeoServerSystemTestSupport {
     @Test
     public void testResourceMetadataHTML() throws Exception {
         XMLUnit.setXpathNamespaceContext(NS_HTML);
-        System.err.println("testResourceMetadataHTML response: " + getAsString("/rest/resource/mydir/myres?operation=metadata&format=html"));
         Document doc = getAsDOM("/rest/resource/mydir/myres?operation=metadata&format=html");
         //print(doc);
         XMLAssert.assertXpathEvaluatesTo("Name: 'myres'", "/x:html/x:body/x:ul/x:li[1]", doc);
@@ -209,7 +208,6 @@ public class ResourceTest extends GeoServerSystemTestSupport {
     @Test
     public void testDirectoryHTML() throws Exception {
         XMLUnit.setXpathNamespaceContext(NS_HTML);
-        System.err.println("testDirectoryHTML response: " + getAsString("/rest/resource/mydir?format=html"));
         Document doc = getAsDOM("/rest/resource/mydir?format=html");
         //print(doc);
         XMLAssert.assertXpathEvaluatesTo("Name: 'mydir'", "/x:html/x:body/x:ul/x:li[1]", doc);

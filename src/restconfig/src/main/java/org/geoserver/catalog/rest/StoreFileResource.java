@@ -26,7 +26,6 @@ import org.geoserver.rest.util.RESTUploadPathMapper;
 import org.geoserver.rest.util.RESTUtils;
 import org.geotools.data.DataUtilities;
 import org.geotools.util.logging.Logging;
-import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Request;
@@ -178,15 +177,7 @@ public abstract class StoreFileResource extends Resource {
         try {
             String method = (String) getRequest().getResourceRef().getLastSegment();
             if (method != null && method.toLowerCase().startsWith("file.")) {
-                // we want to delete the previous dir contents only in case of PUT, not
-                // in case of POST (harvest, available only for raster data)
-                boolean cleanPreviousContents = getRequest().getMethod() == Method.PUT ;
-                Form form = getRequest().getResourceRef().getQueryAsForm();
-                String filename = form.getFirstValue("filename", true);
-                if(filename == null) {
-                    filename = store + "." + format;
-                }
-                uploadedFile = RESTUtils.handleBinUpload(filename, directory, cleanPreviousContents, getRequest(), workspace);
+                uploadedFile = RESTUtils.handleBinUpload(store + "." + format, workspace, directory, getRequest());
             }
             else if (method != null && method.toLowerCase().startsWith("url.")) {
                 uploadedFile = RESTUtils.handleURLUpload(store + "." + format, workspace, directory, getRequest());

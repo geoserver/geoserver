@@ -1,13 +1,11 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.catalog.rest;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -16,6 +14,8 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -31,6 +31,7 @@ import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
 import org.geotools.data.DataUtilities;
 import org.geotools.factory.GeoTools;
 import org.geotools.gce.imagemosaic.ImageMosaicFormat;
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.opengis.coverage.grid.GridCoverageReader;
@@ -43,6 +44,15 @@ import com.mockrunner.mock.web.MockHttpServletResponse;
 
 public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
 
+    @Before
+    public void cleanup() {
+        // wipe out everything under "mosaic"
+        CoverageInfo coverage = getCatalog().getResourceByName("mosaic", CoverageInfo.class);
+        if(coverage != null) {
+            removeStore(coverage.getStore().getWorkspace().getName(), coverage.getStore().getName());
+        }
+    }
+    
     @Test
     public void testWorldImageUploadZipped() throws Exception {
         URL zip = getClass().getResource( "test-data/usa.zip" );
@@ -319,6 +329,114 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
                 }
             }
         }
+    }
+    
+    @Test
+    public void testReHarvestSingleTiff() throws Exception {
+        // Check if an already existing directory called "mosaic" is present
+        URL resource = getClass().getResource("test-data/mosaic");
+        if (resource != null) {
+            File oldDir = DataUtilities.urlToFile(resource);
+            if (oldDir.exists()) {
+                FileUtils.deleteDirectory(oldDir);
+            }
+        }
+        // reading of the mosaic directory
+        File mosaic = readMosaic();
+        // Creation of the builder for building a new CoverageStore
+        CatalogBuilder builder = new CatalogBuilder(getCatalog());
+        // Definition of the workspace associated to the coverage
+        WorkspaceInfo ws = getCatalog().getWorkspaceByName("gs");
+        // Creation of a CoverageStore
+        CoverageStoreInfo store = builder.buildCoverageStore("watertemp5");
+        store.setURL(DataUtilities.fileToURL(mosaic).toExternalForm());
+        store.setWorkspace(ws);
+        ImageMosaicFormat imageMosaicFormat = new ImageMosaicFormat();
+        store.setType((imageMosaicFormat.getName()));
+        // Addition to the catalog
+        getCatalog().add(store);
+        builder.setStore(store);
+        // Input reader used for reading the mosaic folder
+        GridCoverage2DReader reader = null;
+        // Reader used for checking if the mosaic has been configured correctly
+        StructuredGridCoverage2DReader reader2 = null;
+
+        try {
+            // Selection of the reader to use for the mosaic
+            reader = imageMosaicFormat.getReader(DataUtilities
+                    .fileToURL(mosaic));
+
+            // configure the coverage
+            configureCoverageInfo(builder, store, reader);
+
+            // check the coverage is actually there
+            CoverageStoreInfo storeInfo = getCatalog().getCoverageStoreByName("watertemp5");
+            assertNotNull(storeInfo);
+            CoverageInfo ci = getCatalog().getCoverageByName("mosaic");
+            assertNotNull(ci);
+            assertEquals(storeInfo, ci.getStore());
+
+            // Harvesting of the Mosaic
+            URL zipHarvest = MockData.class.getResource("harvesting.zip");
+            // Extract the first file as payload (the tiff)
+            byte[] bytes = null;
+            try(ZipInputStream zis = new ZipInputStream(zipHarvest.openStream())) {
+                ZipEntry entry = null;
+                while((entry = zis.getNextEntry()) != null) {
+                    if("NCOM_wattemp_000_20081102T0000000_12.tiff".equals(entry.getName())) {
+                        bytes = IOUtils.toByteArray(zis);
+                    }
+                }
+                if(bytes == null) {
+                    fail("Could not find the expected zip entry NCOM_wattemp_000_20081102T0000000_12.tiff");
+                }
+            } 
+            reader2 = uploadGeotiffAndCheck(storeInfo, bytes, "NCOM_wattemp_000_20081102T0000000_12.tiff");
+            // now re-upload, used to blow up
+            reader2 = uploadGeotiffAndCheck(storeInfo, bytes, "NCOM_wattemp_000_20081102T0000000_12.tiff");
+            // Removal of all the data associated to the mosaic
+            reader2.delete(true);
+        } finally {
+            // Reader disposal
+            if (reader != null) {
+                try {
+                    reader.dispose();
+                } catch (Throwable t) {
+                    // Does nothing
+                }
+            }
+            if (reader2 != null) {
+                try {
+                    reader2.dispose();
+                } catch (Throwable t) {
+                    // Does nothing
+                }
+            }
+        }
+    }
+
+    private StructuredGridCoverage2DReader uploadGeotiffAndCheck(CoverageStoreInfo storeInfo,
+            byte[] bytes, String filename) throws Exception, IOException {
+        StructuredGridCoverage2DReader reader2;
+        // Create the POST request
+        MockHttpServletRequest request = createRequest("/rest/workspaces/gs/coveragestores/watertemp5/file.imagemosaic?filename=" + filename);
+        request.setMethod("POST");
+        request.setContentType("image/tiff");
+        request.setBodyContent(bytes);
+        request.setHeader("Content-type", "image/tiff");
+        // Get The response
+        assertEquals(202, dispatch(request).getStatusCode());
+        // Get the Mosaic Reader
+        reader2 = (StructuredGridCoverage2DReader) storeInfo.getGridCoverageReader(null,
+                GeoTools.getDefaultHints());
+        // Test if all the TIME DOMAINS are present
+        String[] metadataNames = reader2.getMetadataNames();
+        assertNotNull(metadataNames);
+        assertEquals("true", reader2.getMetadataValue("HAS_TIME_DOMAIN"));
+        assertEquals(
+                "2008-10-31T00:00:00.000Z,2008-11-01T00:00:00.000Z,2008-11-02T00:00:00.000Z",
+                reader2.getMetadataValue(metadataNames[0]));
+        return reader2;
     }
 
     private File readMosaic() throws NoSuchAuthorityCodeException, FactoryException, IOException {

@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -99,43 +99,6 @@ public class RESTUtils {
         } else {
             return ref.getParentRef().getIdentifier();
         }
-    }
-    
-    /**
-     * This function gets the stream of the request to copy it into a file.
-     * 
-     * This method will create a "data" folder in GEOSERVER_DATA_DIRECTORY if needed.
-     * 
-     * @deprecated use {@link #handleBinUpload(String, File, Request)}.
-     */
-    public static File handleBinUpload(String datasetName, String extension,
-            Request request) throws IOException, ConfigurationException {
-        GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
-        Resource data = loader.get("data");
-        
-        final File dir = data.dir(); // find or create
-        return handleBinUpload( datasetName + "." + extension, null, dir, request );
-    }
-
-    /**
-     * Reads content from the body of a request and writes it to a file in the given directory.
-     * 
-     * If the file already exists, the directory content will be deleted recursively 
-     * before creating the new file.
-     * 
-     * @param fileName The name of the file to write out.
-     * @param directory The directory to write the file to
-     * @param request The request.
-     * 
-     * @return The file object representing the newly written file.
-     * 
-     * @throws IOException Any I/O errors that occur.
-     * 
-     * @deprecated use {@link #handleBinUpload(String, File, boolean, Request)}.
-     */
-    public static File handleBinUpload(String fileName, String workSpace, File directory, Request request)
-            throws IOException {
-        return handleBinUpload(fileName, directory, true, request, workSpace);
     }
     
     /**

@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- Copyright (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved. 
+	This code is licensed under the GPL 2.0 license, available at the root application 
+	directory. -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>org.geoserver</groupId>
+		<artifactId>community</artifactId>
+		<version>2.9-SNAPSHOT</version>
+	</parent>
+
+	<groupId>org.geoserver.community</groupId>
+	<artifactId>gs-wps-remote</artifactId>
+	<name>Web Processing Service - Remote processes invocation</name>
+
+	<properties>
+		<smack.version>4.0.3</smack.version>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.geoserver.extension</groupId>
+			<artifactId>gs-wps-core</artifactId>
+			<version>${gs.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.geoserver.importer</groupId>
+			<artifactId>gs-importer-core</artifactId>
+			<version>${gs.version}</version>
+		</dependency>
+		
+		<!-- XMPP APIs -->
+		<dependency>
+			<groupId>org.igniterealtime.smack</groupId>
+			<artifactId>smack-core</artifactId>
+			<version>${smack.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.igniterealtime.smack</groupId>
+			<artifactId>smack-extensions</artifactId>
+			<version>${smack.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.igniterealtime.smack</groupId>
+			<artifactId>smack-tcp</artifactId>
+			<version>${smack.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.igniterealtime.smack</groupId>
+			<artifactId>smack-jingle</artifactId>
+			<version>${smack.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.igniterealtime.smack</groupId>
+			<artifactId>smack-bosh</artifactId>
+			<version>${smack.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.igniterealtime.smack</groupId>
+			<artifactId>smack-compression-jzlib</artifactId>
+			<version>${smack.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.igniterealtime.smack</groupId>
+			<artifactId>smack-legacy</artifactId>
+			<version>${smack.version}</version>
+		</dependency>
+		<!-- dependency> <groupId>org.igniterealtime.smack</groupId> <artifactId>smack-resolver-dnsjava</artifactId> 
+			<version>${smack.version}</version> </dependency> <dependency> <groupId>org.igniterealtime.smack</groupId> 
+			<artifactId>smack-resolver-javax</artifactId> <version>${smack.version}</version> 
+			</dependency> <dependency> <groupId>org.igniterealtime.smack</groupId> <artifactId>smack-resolver-minidns</artifactId> 
+			<version>${smack.version}</version> </dependency -->
+
+		<!-- Python Serializer (Pickler) -->
+		<dependency>
+			<groupId>org.spark-project</groupId>
+			<artifactId>pyrolite</artifactId>
+			<version>2.0.1</version>
+		</dependency>
+
+		<!-- test dependencies -->
+
+		<!-- embedded XMPP server -->
+		<dependency>
+			<groupId>org.apache.vysper</groupId>
+			<artifactId>vysper-core</artifactId>
+			<version>0.7</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.vysper.extensions</groupId>
+			<artifactId>xep0045-muc</artifactId>
+			<version>0.7</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.vysper.extensions</groupId>
+			<artifactId>xep0060-pubsub</artifactId>
+			<version>0.7</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.vysper.extensions</groupId>
+			<artifactId>xep0124-xep0206-bosh</artifactId>
+			<version>0.7</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.vysper.extensions</groupId>
+			<artifactId>vysper-websockets</artifactId>
+			<version>0.7</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>1.4.2</version>
+			<scope>test</scope>
+		</dependency>
+
+
+		<dependency>
+			<groupId>xmlunit</groupId>
+			<artifactId>xmlunit</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.mockrunner</groupId>
+			<artifactId>mockrunner</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.geoserver</groupId>
+			<artifactId>gs-main</artifactId>
+			<version>${gs.version}</version>
+			<classifier>tests</classifier>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.geoserver.extension</groupId>
+			<artifactId>gs-wps-core</artifactId>
+			<version>${gs.version}</version>
+			<classifier>tests</classifier>
+			<scope>test</scope>
+		</dependency>
+
+	</dependencies>
+</project>

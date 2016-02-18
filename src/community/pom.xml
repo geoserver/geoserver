@@ -68,6 +68,7 @@
           <descriptor>release/ext-wps-jdbc.xml</descriptor>
           <descriptor>release/ext-vectortiles.xml</descriptor>
           <descriptor>release/ext-params-extractor.xml</descriptor>
+          <descriptor>release/ext-wps-remote.xml</descriptor>
         </descriptors>
       </configuration>
      </plugin>
@@ -179,11 +180,12 @@
         <module>jms-cluster</module>
         <module>hz-cluster</module>
         <module>solr</module>
-	<module>rest-upload</module>
+        <module>rest-upload</module>
         <module>geofence</module>
         <module>geofence-server</module>
         <module>sldService</module>
         <module>params-extractor</module>
+        <module>wps-remote</module>
         <module>release</module>
 	<module>gwc-distributed</module>
 	<module>jdbcstore</module>
@@ -394,6 +396,12 @@
       <id>community-release-module</id>
       <modules>
         <module>release</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>wps-remote</id>
+      <modules>
+        <module>wps-remote</module>
       </modules>
     </profile>
   </profiles>

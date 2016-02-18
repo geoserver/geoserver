@@ -10,7 +10,7 @@ The Remote WPS Python framework source code is available on a public GitHub Repo
 
 The users can clone the repository at the following address:
 
-  https://github.com/geosolutions-it/wps-remote-backend-XMPP
+  https://github.com/geosolutions-it/wps-remote
 
 The source code is available on the **master** branch.
 
@@ -221,7 +221,7 @@ Clone the RemoteWPS Python Framework into a working folder, e.g.:
 
     $> cd C:\work
 
-    $> git clone https://github.com/geosolutions-it/wps-remote-backend-XMPP RemoteWPS
+    $> git clone https://github.com/geosolutions-it/wps-remote RemoteWPS
 
 **Setting Up The** ``remote.config``
 

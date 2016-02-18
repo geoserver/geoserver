@@ -12,7 +12,7 @@ The only constraint is to have a remote component able to handle few RPCs, like 
 On GeoServer side the module manages the same RPCs in order to perform the integration with the WPS.
 All the communications and command take place over the XMPP protocol, as a suitable cross-language communication system
 
-A reference implementation of the remote end is available at https://github.com/geosolutions-it/wps-remote-backend-XMPP, a configurable Python/XMPP wrapper for remote commands.
+A reference implementation of the remote end is available at https://github.com/geosolutions-it/wps-remote, a configurable Python/XMPP wrapper for remote commands.
 The Python XMPP wrapper resides into the remote machine and is able to send a presentation of the remote process through an XMPP message by JSON-encoding 
 into the body the process inputs/outputs parameter descriptors along with their type. 
 On the GeoServer side the WPS Remote module automatically recognizes and load and XMPP implementation of the RemoteClient. 

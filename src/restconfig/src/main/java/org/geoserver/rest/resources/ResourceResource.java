@@ -7,6 +7,7 @@ package org.geoserver.rest.resources;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Date;
@@ -219,7 +220,7 @@ public class ResourceResource extends AbstractResource {
     }
 
     private String href(String path, boolean isDir) {
-        String href = getPageInfo().rootURI("resources/" + path);
+        String href = getPageInfo().rootURI("resource/" + formatPathURL(path));
         if (isDir) {
             String format = (String) getRequest().getAttributes().get("format");
             if (format != null) {
@@ -229,8 +230,25 @@ public class ResourceResource extends AbstractResource {
         return href;
     }
 
-    public String formatHtmlLink(String link) {
+    private static String formatHtmlLink(String link) {
         return link.replaceAll("&", "&amp;");
+    }
+
+    private static String formatPathURL(String input) {
+        StringBuilder resultStr = new StringBuilder();
+        for (char ch : input.toCharArray()) {
+            //do not escape path slash, it is part of the URL!
+            if (ch > 128 || ch < 0 || " %$&+,:;=?@<>#%".indexOf(ch) >= 0) {
+                try {
+                    for (byte enc : Character.toString(ch).getBytes("UTF-8")) {
+                        resultStr.append(String.format("%%%02x", enc));
+                    }
+                } catch (UnsupportedEncodingException e) { /* cannot happen¸ UTF-8 is always supported */ }
+            } else {
+                resultStr.append(ch);
+            }
+        }
+        return resultStr.toString();
     }
 
     private MediaType getMediaType(Resource resource) {
@@ -351,7 +369,7 @@ public class ResourceResource extends AbstractResource {
                 getVariants().add(rep);
 
                 if (!"".equals(resource.path())) {
-                    getResponseHeaders().add("Resource-Parent", "/" + resource.parent().path());
+                    getResponseHeaders().add("Resource-Parent", href(resource.parent().path(), true));
                 }
                 getResponseHeaders().add("Resource-Type", resource.getType().toString().toLowerCase());
             }

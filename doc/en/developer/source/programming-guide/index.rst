@@ -13,7 +13,6 @@ Programming Guide
    extension-points/index.rst
    wps-services/index.rst
    testing/index.rst
-   versioning/index.rst
    security/index.rst   
    app-schema/index.rst
 

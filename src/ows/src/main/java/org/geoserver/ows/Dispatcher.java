@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -309,8 +309,8 @@ public class Dispatcher extends AbstractController {
         for ( DispatcherCallback cb : callbacks ) {
             try {
                 cb.finished( req );
-            } catch (Exception e) {
-                logger.log(Level.WARNING, "Error firing finished callback for "+cb.getClass(), e);
+            } catch (Throwable t) {
+                logger.log(Level.WARNING, "Error firing finished callback for "+cb.getClass(), t);
             }
         }
     }

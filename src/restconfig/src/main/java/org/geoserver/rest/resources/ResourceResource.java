@@ -14,6 +14,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.geoserver.ows.URLMangler.URLType;
+import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
@@ -134,7 +136,7 @@ public class ResourceResource extends AbstractResource {
         protected ResourceMetadata(Resource resource, ResourceResource self, boolean isDir) {
             if (!resource.path().isEmpty()) {
                 parent = new ResourceReference("/" + resource.parent().path(),
-                        new AtomLink(self.href(resource.parent().path(), true), "alternate", 
+                        new AtomLink(self.href(resource.parent().path()), "alternate", 
                                      self.getFormatGet(false).getMediaType().getName()));
             }            
             lastModified = new Date(resource.lastmodified());
@@ -188,8 +190,8 @@ public class ResourceResource extends AbstractResource {
             super(resource, self, true);
             for (Resource child : resource.list()) {
                 children.add(new ResourceChild(child.name(), 
-                        new AtomLink(self.href(child.path(), child.getType() == Type.DIRECTORY), 
-                                "alternate", self.getMediaType(child).getName())));
+                        new AtomLink(self.href(child.path()), "alternate", 
+                                self.getMediaType(child).getName())));
             }
         }
 
@@ -219,15 +221,8 @@ public class ResourceResource extends AbstractResource {
         return operation;
     }
 
-    private String href(String path, boolean isDir) {
-        String href = getPageInfo().rootURI("resource/" + formatPathURL(path));
-        if (isDir) {
-            String format = (String) getRequest().getAttributes().get("format");
-            if (format != null) {
-                href += "?format=" + format;
-            }
-        }
-        return href;
+    private String href(String path) {
+        return ResponseUtils.buildURL(getPageInfo().rootURI("resource/"), formatPathURL(path), null, URLType.RESOURCE);
     }
 
     private static String formatHtmlLink(String link) {
@@ -236,16 +231,20 @@ public class ResourceResource extends AbstractResource {
 
     private static String formatPathURL(String input) {
         StringBuilder resultStr = new StringBuilder();
-        for (char ch : input.toCharArray()) {
-            //do not escape path slash, it is part of the URL!
-            if (ch > 128 || ch < 0 || " %$&+,:;=?@<>#%".indexOf(ch) >= 0) {
-                try {
-                    for (byte enc : Character.toString(ch).getBytes("UTF-8")) {
-                        resultStr.append(String.format("%%%02x", enc));
-                    }
-                } catch (UnsupportedEncodingException e) { /* cannot happen¸ UTF-8 is always supported */ }
+        byte[] encArray;
+        try {
+            encArray = input.getBytes("UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e); /* should not happen¸ UTF-8 is always supported */
+        }
+        for (byte enc : encArray) {
+            if (enc >= 'A' && enc <= 'Z' || enc >= 'a' && enc <= 'z' 
+                    || enc >= '0' && enc <= '9'
+                    || enc == '-' || enc == '_' || enc == '.' || enc == '~' 
+                    || enc == '/') { // do not escape path slash, it is part of the URL!
+                resultStr.append((char) enc);
             } else {
-                resultStr.append(ch);
+                resultStr.append(String.format("%%%02x", enc));
             }
         }
         return resultStr.toString();
@@ -369,7 +368,7 @@ public class ResourceResource extends AbstractResource {
                 getVariants().add(rep);
 
                 if (!"".equals(resource.path())) {
-                    getResponseHeaders().add("Resource-Parent", href(resource.parent().path(), true));
+                    getResponseHeaders().add("Resource-Parent", href(resource.parent().path()));
                 }
                 getResponseHeaders().add("Resource-Type", resource.getType().toString().toLowerCase());
             }

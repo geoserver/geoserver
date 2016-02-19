@@ -459,14 +459,14 @@ public class ResponseUtils {
     }
     
     /**
-     * URL encodes the value towards the ISO-8859-1 charset
+     * URL encodes the value towards the UTF-8 charset
      * @param value
      */
     public static String urlEncode(String value) {
         try {
             // TODO: URLEncoder also encodes ( and ) which are considered safe chars,
             // see also http://www.w3.org/International/O-URL-code.html
-            return URLEncoder.encode(value, "ISO-8859-1"); 
+            return URLEncoder.encode(value, "UTF-8"); 
         } catch(UnsupportedEncodingException e) {
             throw new RuntimeException("This is unexpected", e);
         }
@@ -479,7 +479,7 @@ public class ResponseUtils {
      */
     public static String urlDecode(String value) {
         try {
-            return URLDecoder.decode(value, "ISO-8859-1");
+            return URLDecoder.decode(value, "UTF-8");
         } catch(UnsupportedEncodingException e) {
             throw new RuntimeException("This is unexpected", e);
         }

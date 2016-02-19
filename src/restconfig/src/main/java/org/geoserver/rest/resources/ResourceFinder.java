@@ -4,9 +4,7 @@
  */
 package org.geoserver.rest.resources;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-
+import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.resource.ResourceStore;
 import org.geoserver.rest.util.RESTUtils;
 import org.restlet.Finder;
@@ -32,10 +30,7 @@ public class ResourceFinder extends Finder {
     
     @Override
     public Resource findTarget(Request request, Response response) {        
-        String path = request.getResourceRef().getRelativeRef().getPath();
-        try {
-            path = URLDecoder.decode(path, "UTF-8");
-        } catch (UnsupportedEncodingException e) { /* cannot happen¸ UTF-8 is always supported */ }
+        String path = ResponseUtils.urlDecode(request.getResourceRef().getRelativeRef().getPath());
         if (".".equals(path)) { //root
             path = "/";
         }

@@ -106,7 +106,7 @@ public class ResourceTest extends GeoServerSystemTestSupport {
         //print(doc);
         XMLAssert.assertXpathEvaluatesTo("myres", "/ResourceMetadata/name", doc);
         XMLAssert.assertXpathEvaluatesTo("/mydir", "/ResourceMetadata/parent/path", doc);
-        XMLAssert.assertXpathEvaluatesTo("http://localhost:8080/geoserver/rest/resource/mydir?format=xml", 
+        XMLAssert.assertXpathEvaluatesTo("http://localhost:8080/geoserver/rest/resource/mydir", 
                 "/ResourceMetadata/parent/atom:link/@href", doc);
         XMLAssert.assertXpathEvaluatesTo(FORMAT.format(myRes.lastmodified()),
                 "/ResourceMetadata/lastModified", doc);
@@ -121,7 +121,7 @@ public class ResourceTest extends GeoServerSystemTestSupport {
                 + "  \"parent\":   {"
                 + "    \"path\": \"/mydir\","
                 + "    \"link\": {"
-                + "       \"href\": \"http://localhost:8080/geoserver/rest/resource/mydir?format=json\","
+                + "       \"href\": \"http://localhost:8080/geoserver/rest/resource/mydir\","
                 + "       \"rel\": \"alternate\",                "
                 + "       \"type\": \"application/json\""
                 + "     }"
@@ -138,7 +138,7 @@ public class ResourceTest extends GeoServerSystemTestSupport {
         Document doc = getAsDOM("/rest/resource/mydir/myres?operation=metadata&format=html");
         //print(doc);
         XMLAssert.assertXpathEvaluatesTo("Name: 'myres'", "/x:html/x:body/x:ul/x:li[1]", doc);
-        XMLAssert.assertXpathEvaluatesTo("http://localhost:8080/geoserver/rest/resource/mydir?format=html", 
+        XMLAssert.assertXpathEvaluatesTo("http://localhost:8080/geoserver/rest/resource/mydir", 
                 "/x:html/x:body/x:ul/x:li[2]/x:a/@href", doc);
         XMLAssert.assertXpathEvaluatesTo("Type: resource", "/x:html/x:body/x:ul/x:li[3]", doc);
         XMLAssert.assertXpathEvaluatesTo("Last modified: " + new Date(myRes.lastmodified()).toString(), 
@@ -162,7 +162,7 @@ public class ResourceTest extends GeoServerSystemTestSupport {
         XMLAssert.assertXpathEvaluatesTo("http://localhost:8080/geoserver/rest/resource/po%c3%abzie/caf%c3%a9", 
                 "/ResourceDirectory/children/child/atom:link/@href", doc);
 
-        MockHttpServletResponse response = getAsServletResponse("/rest/resource/po%c3%abzie/caf%c3%a9");
+        MockHttpServletResponse response = getAsServletResponse("/rest/resource/po%c3%abzie/caf%c3%a9?format=xml");
         Assert.assertEquals(200, response.getStatusCode());
         Assert.assertEquals("resource", response.getHeader("Resource-Type"));
         Assert.assertEquals("http://localhost:8080/geoserver/rest/resource/po%c3%abzie", 
@@ -176,7 +176,7 @@ public class ResourceTest extends GeoServerSystemTestSupport {
         //print(doc);
         XMLAssert.assertXpathEvaluatesTo("mydir", "/ResourceDirectory/name", doc);
         XMLAssert.assertXpathEvaluatesTo("/", "/ResourceDirectory/parent/path", doc);
-        XMLAssert.assertXpathEvaluatesTo("http://localhost:8080/geoserver/rest/resource/?format=xml", 
+        XMLAssert.assertXpathEvaluatesTo("http://localhost:8080/geoserver/rest/resource/", 
                 "/ResourceDirectory/parent/atom:link/@href", doc);
         XMLAssert.assertXpathEvaluatesTo(FORMAT.format(myRes.lastmodified()),
                 "/ResourceDirectory/lastModified", doc);
@@ -194,7 +194,7 @@ public class ResourceTest extends GeoServerSystemTestSupport {
                 + "\"parent\":   {"
                 + "  \"path\": \"/\","
                 + "    \"link\":     {"
-                + "      \"href\": \"http://localhost:8080/geoserver/rest/resource/?format=json\","
+                + "      \"href\": \"http://localhost:8080/geoserver/rest/resource/\","
                 + "      \"rel\": \"alternate\","
                 + "      \"type\": \"application/json\""
                 + "  }"
@@ -218,7 +218,7 @@ public class ResourceTest extends GeoServerSystemTestSupport {
         Document doc = getAsDOM("/rest/resource/mydir?format=html");
         //print(doc);
         XMLAssert.assertXpathEvaluatesTo("Name: 'mydir'", "/x:html/x:body/x:ul/x:li[1]", doc);
-        XMLAssert.assertXpathEvaluatesTo("http://localhost:8080/geoserver/rest/resource/?format=html", 
+        XMLAssert.assertXpathEvaluatesTo("http://localhost:8080/geoserver/rest/resource/", 
                 "/x:html/x:body/x:ul/x:li[2]/x:a/@href", doc);
         XMLAssert.assertXpathEvaluatesTo("Last modified: " + new Date(myRes.lastmodified()).toString(), 
                 "/x:html/x:body/x:ul/x:li[3]", doc);
@@ -230,7 +230,7 @@ public class ResourceTest extends GeoServerSystemTestSupport {
     public void testDirectoryHeaders() throws Exception {
         MockHttpServletResponse response = getAsServletResponse("/rest/resource/mydir?format=xml");
         Assert.assertEquals(FORMAT_HEADER.format(myRes.lastmodified()), response.getHeader("Last-Modified"));
-        Assert.assertEquals("http://localhost:8080/geoserver/rest/resource/?format=xml", response.getHeader("Resource-Parent"));
+        Assert.assertEquals("http://localhost:8080/geoserver/rest/resource/", response.getHeader("Resource-Parent"));
         Assert.assertEquals("directory", response.getHeader("Resource-Type"));
         Assert.assertEquals("application/xml", response.getHeader("Content-Type"));
     }

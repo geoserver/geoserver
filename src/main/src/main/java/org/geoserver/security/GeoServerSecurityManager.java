@@ -1,52 +1,17 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2014 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.security;
 
-import static org.geoserver.data.util.IOUtils.xStreamPersist;
-
-import java.io.File;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Modifier;
-import java.net.URL;
-import java.rmi.server.UID;
-import java.security.InvalidKeyException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Properties;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.StringTokenizer;
-import java.util.TreeSet;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.crypto.Cipher;
-import javax.crypto.KeyGenerator;
-import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
-import javax.servlet.http.HttpServletRequest;
-
+import com.thoughtworks.xstream.converters.Converter;
+import com.thoughtworks.xstream.converters.MarshallingContext;
+import com.thoughtworks.xstream.converters.UnmarshallingContext;
+import com.thoughtworks.xstream.converters.collections.AbstractCollectionConverter;
+import com.thoughtworks.xstream.io.HierarchicalStreamReader;
+import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
+import com.thoughtworks.xstream.mapper.Mapper;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.StoreInfo;
@@ -60,8 +25,6 @@ import org.geoserver.platform.resource.Files;
 import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
-import org.geoserver.platform.resource.ResourceNotificationDispatcher;
-import org.geoserver.platform.resource.ResourceStore;
 import org.geoserver.platform.resource.Resources;
 import org.geoserver.security.auth.AuthenticationCache;
 import org.geoserver.security.auth.GeoServerRootAuthenticationProvider;
@@ -70,78 +33,19 @@ import org.geoserver.security.auth.UsernamePasswordAuthenticationProvider;
 import org.geoserver.security.concurrent.LockingKeyStoreProvider;
 import org.geoserver.security.concurrent.LockingRoleService;
 import org.geoserver.security.concurrent.LockingUserGroupService;
-import org.geoserver.security.config.AnonymousAuthenticationFilterConfig;
-import org.geoserver.security.config.BasicAuthenticationFilterConfig;
-import org.geoserver.security.config.ExceptionTranslationFilterConfig;
-import org.geoserver.security.config.FileBasedSecurityServiceConfig;
-import org.geoserver.security.config.J2eeAuthenticationBaseFilterConfig;
+import org.geoserver.security.config.*;
 import org.geoserver.security.config.J2eeAuthenticationBaseFilterConfig.J2EERoleSource;
-import org.geoserver.security.config.LogoutFilterConfig;
-import org.geoserver.security.config.PasswordPolicyConfig;
-import org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig;
 import org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig.PreAuthenticatedUserNameRoleSource;
-import org.geoserver.security.config.RememberMeAuthenticationFilterConfig;
-import org.geoserver.security.config.RoleFilterConfig;
-import org.geoserver.security.config.RoleSource;
-import org.geoserver.security.config.SSLFilterConfig;
-import org.geoserver.security.config.SecurityAuthProviderConfig;
-import org.geoserver.security.config.SecurityConfig;
-import org.geoserver.security.config.SecurityContextPersistenceFilterConfig;
-import org.geoserver.security.config.SecurityFilterConfig;
-import org.geoserver.security.config.SecurityInterceptorFilterConfig;
-import org.geoserver.security.config.SecurityManagerConfig;
-import org.geoserver.security.config.SecurityNamedServiceConfig;
-import org.geoserver.security.config.SecurityRoleServiceConfig;
-import org.geoserver.security.config.SecurityUserGroupServiceConfig;
-import org.geoserver.security.config.UsernamePasswordAuthenticationFilterConfig;
-import org.geoserver.security.config.UsernamePasswordAuthenticationProviderConfig;
 import org.geoserver.security.file.FileWatcher;
 import org.geoserver.security.file.RoleFileWatcher;
 import org.geoserver.security.file.UserGroupFileWatcher;
-import org.geoserver.security.filter.GeoServerAnonymousAuthenticationFilter;
-import org.geoserver.security.filter.GeoServerBasicAuthenticationFilter;
-import org.geoserver.security.filter.GeoServerExceptionTranslationFilter;
-import org.geoserver.security.filter.GeoServerLogoutFilter;
-import org.geoserver.security.filter.GeoServerRememberMeAuthenticationFilter;
-import org.geoserver.security.filter.GeoServerRoleFilter;
-import org.geoserver.security.filter.GeoServerSSLFilter;
-import org.geoserver.security.filter.GeoServerSecurityContextPersistenceFilter;
-import org.geoserver.security.filter.GeoServerSecurityFilter;
-import org.geoserver.security.filter.GeoServerSecurityInterceptorFilter;
-import org.geoserver.security.filter.GeoServerUserNamePasswordAuthenticationFilter;
-import org.geoserver.security.impl.DataAccessRuleDAO;
-import org.geoserver.security.impl.GeoServerRole;
-import org.geoserver.security.impl.GeoServerUser;
-import org.geoserver.security.impl.GeoServerUserGroup;
-import org.geoserver.security.impl.GroupAdminProperty;
-import org.geoserver.security.impl.RESTAccessRuleDAO;
-import org.geoserver.security.impl.ServiceAccessRuleDAO;
-import org.geoserver.security.impl.Util;
-import org.geoserver.security.password.ConfigurationPasswordEncryptionHelper;
-import org.geoserver.security.password.GeoServerDigestPasswordEncoder;
-import org.geoserver.security.password.GeoServerPBEPasswordEncoder;
-import org.geoserver.security.password.GeoServerPasswordEncoder;
-import org.geoserver.security.password.MasterPasswordChangeRequest;
-import org.geoserver.security.password.MasterPasswordConfig;
-import org.geoserver.security.password.MasterPasswordProviderConfig;
-import org.geoserver.security.password.PasswordValidator;
-import org.geoserver.security.password.RandomPasswordProvider;
-import org.geoserver.security.password.URLMasterPasswordProvider;
-import org.geoserver.security.password.URLMasterPasswordProviderConfig;
+import org.geoserver.security.filter.*;
+import org.geoserver.security.impl.*;
+import org.geoserver.security.password.*;
 import org.geoserver.security.rememberme.GeoServerTokenBasedRememberMeServices;
 import org.geoserver.security.rememberme.RememberMeServicesConfig;
-import org.geoserver.security.validation.MasterPasswordChangeException;
-import org.geoserver.security.validation.MasterPasswordChangeValidator;
-import org.geoserver.security.validation.MasterPasswordConfigValidator;
-import org.geoserver.security.validation.PasswordPolicyException;
-import org.geoserver.security.validation.PasswordValidatorImpl;
-import org.geoserver.security.validation.SecurityConfigException;
-import org.geoserver.security.validation.SecurityConfigValidator;
-import org.geoserver.security.xml.XMLConstants;
-import org.geoserver.security.xml.XMLRoleService;
-import org.geoserver.security.xml.XMLRoleServiceConfig;
-import org.geoserver.security.xml.XMLUserGroupService;
-import org.geoserver.security.xml.XMLUserGroupServiceConfig;
+import org.geoserver.security.validation.*;
+import org.geoserver.security.xml.*;
 import org.geotools.util.Version;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.BeansException;
@@ -164,13 +68,26 @@ import org.springframework.security.core.userdetails.memory.UserAttributeEditor;
 import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.util.StringUtils;
 
-import com.thoughtworks.xstream.converters.Converter;
-import com.thoughtworks.xstream.converters.MarshallingContext;
-import com.thoughtworks.xstream.converters.UnmarshallingContext;
-import com.thoughtworks.xstream.converters.collections.AbstractCollectionConverter;
-import com.thoughtworks.xstream.io.HierarchicalStreamReader;
-import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
-import com.thoughtworks.xstream.mapper.Mapper;
+import javax.crypto.Cipher;
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
+import javax.servlet.http.HttpServletRequest;
+import java.io.*;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Modifier;
+import java.net.URL;
+import java.rmi.server.UID;
+import java.security.InvalidKeyException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import static org.geoserver.data.util.IOUtils.xStreamPersist;
 
 /**
  * Top level singleton/facade/dao for the security authentication/authorization subsystem.  
@@ -180,7 +97,7 @@ import com.thoughtworks.xstream.mapper.Mapper;
  *
  */
 public class GeoServerSecurityManager extends ProviderManager implements ApplicationContextAware, 
-    ApplicationListener, ResourceStore {
+    ApplicationListener {
 
     private static final String VERSION_PROPERTIES = "version.properties";
 
@@ -378,7 +295,7 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
             try {
                 // check for an outstanding masster password change
                 keyStoreProvider.commitMasterPasswordChange();
-                // check if there is an outstanding master password change in case of SPrin injection                 
+                // check if there is an outstanding master password change in case of SPrin injection
                 init();
                 for (GeoServerSecurityProvider securityProvider 
                         : GeoServerExtensions.extensions(GeoServerSecurityProvider.class))
@@ -721,18 +638,15 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
     public boolean isInitialized() {
         return initialized;
     }
-    
-    @Override
+
     public Resource get(String path) {
         return dataDir.get(path);
     }
 
-    @Override
     public boolean remove(String path) {
         return dataDir.remove(path);
     }
 
-    @Override
     public boolean move(String path, String target) {
         return dataDir.move(path, target);
     }
@@ -1183,7 +1097,7 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
      */
     public void removeRoleService(SecurityRoleServiceConfig config) throws IOException,SecurityConfigException {
 
-        
+
         SecurityConfigValidator validator = 
                 SecurityConfigValidator.getConfigurationValiator(
                         GeoServerRoleService.class,
@@ -1583,7 +1497,7 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
      * 
      * @param name The  authentication provider configuration.
      */
-    public void removeAuthenticationProvider(SecurityAuthProviderConfig config) throws IOException,SecurityConfigException {        
+    public void removeAuthenticationProvider(SecurityAuthProviderConfig config) throws IOException,SecurityConfigException {
         SecurityConfigValidator validator = 
                 SecurityConfigValidator.getConfigurationValiator(GeoServerAuthenticationProvider.class,
                         config.getClassName());
@@ -3639,10 +3553,5 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
     	allRoles.add(GeoServerRole.AUTHENTICATED_ROLE);
     	allRoles.add(GeoServerRole.ANONYMOUS_ROLE);
     	return allRoles;
-    }
-
-    @Override
-    public ResourceNotificationDispatcher getResourceNotificationDispatcher() {
-        return dataDir.getResourceNotificationDispatcher();
     }
 }

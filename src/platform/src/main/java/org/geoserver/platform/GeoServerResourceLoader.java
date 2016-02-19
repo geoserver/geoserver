@@ -5,28 +5,16 @@
  */
 package org.geoserver.platform;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import org.geoserver.platform.resource.*;
+import org.springframework.core.io.DefaultResourceLoader;
+import org.springframework.web.context.ServletContextAware;
+
+import javax.servlet.ServletContext;
+import java.io.*;
 import java.net.URL;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import javax.servlet.ServletContext;
-
-import org.geoserver.platform.resource.FileSystemResourceStore;
-import org.geoserver.platform.resource.Files;
-import org.geoserver.platform.resource.Paths;
-import org.geoserver.platform.resource.Resource;
-import org.geoserver.platform.resource.ResourceNotificationDispatcher;
-import org.geoserver.platform.resource.ResourceStore;
-import org.geoserver.platform.resource.Resources;
-import org.springframework.core.io.DefaultResourceLoader;
-import org.springframework.web.context.ServletContextAware;
 
 /**
  * Access to resources in GeoServer including configuration information and unmanaged cache or log files.
@@ -59,7 +47,7 @@ import org.springframework.web.context.ServletContextAware;
  * @author Justin Deoliveira, The Open Planning Project, jdeolive@openplans.org
  * 
  */
-public class GeoServerResourceLoader extends DefaultResourceLoader implements ResourceStore, ServletContextAware {
+public class GeoServerResourceLoader extends DefaultResourceLoader implements ServletContextAware {
     private static final Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.vfny.geoserver.global");
     static {
         LOGGER.setLevel(Level.FINER);
@@ -164,15 +152,14 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Re
         this.resources = new FileSystemResourceStore( baseDirectory );
     }
 
-    @Override
     public Resource get(String path) {
         return resources.get(path);
     }
-    @Override
+
     public boolean move(String path, String target) {
         return resources.move(path, target);
     }
-    @Override
+
     public boolean remove(String path) {
         return resources.remove( path );
     }
@@ -675,9 +662,7 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Re
         return dataDirStr;
     }
 
-    @Override
-    public ResourceNotificationDispatcher getResourceNotificationDispatcher() {
-        return resources.getResourceNotificationDispatcher();
+    public ResourceStore getResourceStore() {
+        return resources;
     }
-
 }

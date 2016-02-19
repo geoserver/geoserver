@@ -1,58 +1,31 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.config;
 
+import org.apache.commons.io.FileUtils;
+import org.geoserver.catalog.*;
+import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Paths;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resource.Type;
+import org.geoserver.platform.resource.ResourceStore;
+import org.geoserver.platform.resource.Resources;
+import org.geotools.data.DataUtilities;
+import org.geotools.styling.*;
+
+import javax.annotation.Nonnull;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URL;
-import java.net.URLConnection;
-import java.net.URLStreamHandler;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
-import org.apache.commons.io.FileUtils;
-import org.geoserver.catalog.CoverageInfo;
-import org.geoserver.catalog.CoverageStoreInfo;
-import org.geoserver.catalog.DataStoreInfo;
-import org.geoserver.catalog.FeatureTypeInfo;
-import org.geoserver.catalog.LayerGroupInfo;
-import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.NamespaceInfo;
-import org.geoserver.catalog.ResourceInfo;
-import org.geoserver.catalog.StoreInfo;
-import org.geoserver.catalog.StyleInfo;
-import org.geoserver.catalog.Styles;
-import org.geoserver.catalog.WMSLayerInfo;
-import org.geoserver.catalog.WMSStoreInfo;
-import org.geoserver.catalog.WorkspaceInfo;
-import org.geoserver.platform.GeoServerResourceLoader;
-import org.geoserver.platform.resource.Files;
-import org.geoserver.platform.resource.Paths;
-import org.geoserver.platform.resource.Resource;
-import org.geoserver.platform.resource.Resource.Type;
-import org.geoserver.platform.resource.ResourceNotificationDispatcher;
-import org.geoserver.platform.resource.ResourceStore;
-import org.geoserver.platform.resource.Resources;
-import org.geotools.data.DataUtilities;
-import org.geotools.styling.AbstractStyleVisitor;
-import org.geotools.styling.ChannelSelection;
-import org.geotools.styling.DefaultResourceLocator;
-import org.geotools.styling.ExternalGraphic;
-import org.geotools.styling.SelectedChannelType;
-import org.geotools.styling.Style;
-import org.geotools.styling.StyledLayerDescriptor;
 
 /**
  * File or Resource access to GeoServer data directory. In addition to paths Catalog obhjects such as workspace or FeatureTypeInfo can be used to
@@ -81,7 +54,7 @@ import org.geotools.styling.StyledLayerDescriptor;
  * @author Justin Deoliveira, OpenGeo
  */
 @SuppressWarnings("unused")
-public class GeoServerDataDirectory implements ResourceStore {
+public class GeoServerDataDirectory {
 
     /**
      * resource loader
@@ -109,17 +82,14 @@ public class GeoServerDataDirectory implements ResourceStore {
         return resourceLoader;
     }
 
-    @Override
     public Resource get(String path) {
         return resourceLoader.get(path);
     }
 
-    @Override
     public boolean move(String path, String target) {
         return resourceLoader.move(path, target);
     }
 
-    @Override
     public boolean remove(String path) {
         return resourceLoader.remove(path);
     }
@@ -1394,9 +1364,7 @@ public class GeoServerDataDirectory implements ResourceStore {
         }
     }
 
-    @Override
-    public ResourceNotificationDispatcher getResourceNotificationDispatcher() {
-        return resourceLoader.getResourceNotificationDispatcher();
+    public ResourceStore getResourceStore() {
+        return resourceLoader.getResourceStore();
     }
-
 }

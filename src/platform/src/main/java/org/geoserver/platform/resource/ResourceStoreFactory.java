@@ -1,39 +1,41 @@
-/* (c) 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2015 - 2016 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.platform.resource;
 
-public class ResourceStoreProxy implements ResourceStore {
-    
-    private ResourceStore delegate;
-    
-    public ResourceStore getDelegate() {
-        return delegate;
+import org.geoserver.platform.GeoServerExtensions;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.FactoryBean;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+
+public class ResourceStoreFactory implements FactoryBean<ResourceStore>, ApplicationContextAware {
+
+    private ApplicationContext applicationContext;
+
+    @Override public ResourceStore getObject() throws Exception {
+
+        ResourceStore resourceStore = (ResourceStore) GeoServerExtensions.bean(
+                "resourceStoreImpl", applicationContext);
+        if (resourceStore == null) {
+            resourceStore = GeoServerExtensions.bean(
+                    DataDirectoryResourceStore.class, applicationContext);
+        }
+
+        return resourceStore;
     }
 
-    public void setDelegate(ResourceStore delegate) {
-        this.delegate = delegate;
+    @Override public Class<?> getObjectType() {
+        return null;
     }
 
-    @Override
-    public Resource get(String path) {
-        return delegate.get(path);
+    @Override public boolean isSingleton() {
+        return true;
     }
 
-    @Override
-    public boolean remove(String path) {
-        return delegate.remove(path);
+    @Override public void setApplicationContext(ApplicationContext applicationContext)
+            throws BeansException {
+        this.applicationContext = applicationContext;
     }
-
-    @Override
-    public boolean move(String path, String target) {
-        return delegate.move(path, target);
-    }
-
-    @Override
-    public ResourceNotificationDispatcher getResourceNotificationDispatcher() {
-        return delegate.getResourceNotificationDispatcher();
-    }
-
 }

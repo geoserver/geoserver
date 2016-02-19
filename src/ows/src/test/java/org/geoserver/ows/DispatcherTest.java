@@ -680,39 +680,38 @@ public class DispatcherTest extends TestCase {
     public void testDispatcherCallbackFailFinished() throws Exception {
         URL url = getClass().getResource("applicationContext.xml");
 
-        try(FileSystemXmlApplicationContext context = new FileSystemXmlApplicationContext(url.toString())) {
-            Dispatcher dispatcher = (Dispatcher) context.getBean("dispatcher");
-            final AtomicBoolean firedCallback = new AtomicBoolean(false);
-            TestDispatcherCallback callback1 = new TestDispatcherCallback();
-            TestDispatcherCallback callback2 = new TestDispatcherCallback() {
-                @Override
-                public void finished(Request request) {
-                    firedCallback.set(true);
-                    super.finished(request);
-                }
-            };
-            TestDispatcherCallback callbackFail = new TestDispatcherCallback() {
-                @Override
-                public void finished(Request request) {
-                    dispatcherStatus.set(Status.FINISHED);
-                    // cleanups must continue even if an error was thrown
-                    throw new Error("TestDispatcherCallbackFailFinished");
-                }
-            };
-            
-            MockHttpServletRequest request = setupRequest();
-            MockHttpServletResponse response = new MockHttpServletResponse();
-    
-            dispatcher.callbacks.add(callback1);
-            dispatcher.callbacks.add(callbackFail);
-            dispatcher.callbacks.add(callback2);
-            
-            dispatcher.handleRequest(request, response);
-            assertEquals("Hello world!", response.getOutputStreamContent());
-            assertTrue(firedCallback.get());
-            assertEquals(TestDispatcherCallback.Status.FINISHED, callback1.dispatcherStatus.get());
-            assertEquals(TestDispatcherCallback.Status.FINISHED, callback2.dispatcherStatus.get());
-        }
+        FileSystemXmlApplicationContext context = new FileSystemXmlApplicationContext(url.toString());
+        Dispatcher dispatcher = (Dispatcher) context.getBean("dispatcher");
+        final AtomicBoolean firedCallback = new AtomicBoolean(false);
+        TestDispatcherCallback callback1 = new TestDispatcherCallback();
+        TestDispatcherCallback callback2 = new TestDispatcherCallback() {
+            @Override
+            public void finished(Request request) {
+                firedCallback.set(true);
+                super.finished(request);
+            }
+        };
+        TestDispatcherCallback callbackFail = new TestDispatcherCallback() {
+            @Override
+            public void finished(Request request) {
+                dispatcherStatus.set(Status.FINISHED);
+                // cleanups must continue even if an error was thrown
+                throw new Error("TestDispatcherCallbackFailFinished");
+            }
+        };
+        
+        MockHttpServletRequest request = setupRequest();
+        MockHttpServletResponse response = new MockHttpServletResponse();
+
+        dispatcher.callbacks.add(callback1);
+        dispatcher.callbacks.add(callbackFail);
+        dispatcher.callbacks.add(callback2);
+        
+        dispatcher.handleRequest(request, response);
+        assertEquals("Hello world!", response.getOutputStreamContent());
+        assertTrue(firedCallback.get());
+        assertEquals(TestDispatcherCallback.Status.FINISHED, callback1.dispatcherStatus.get());
+        assertEquals(TestDispatcherCallback.Status.FINISHED, callback2.dispatcherStatus.get());
     }
 
     public void testErrorSavedOnRequestOnGenericException() throws Exception {

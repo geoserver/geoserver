@@ -19,6 +19,7 @@ import net.opengis.wfs.TransactionResponseType;
 import net.opengis.wfs.TransactionType;
 import net.opengis.wfs.UpdateElementType;
 
+import org.geoserver.platform.resource.Resource;
 import org.geoserver.script.ScriptFileWatcher;
 import org.geoserver.script.ScriptManager;
 import org.geoserver.wfs.TransactionEvent;
@@ -34,7 +35,13 @@ public class ScriptTxDelegate {
 
     WfsTxHook hook;
     ScriptFileWatcher fw;
+    
+    public ScriptTxDelegate(Resource script, ScriptManager scriptMgr) {
+        this.hook = scriptMgr.lookupWfsTxHook(script);
+        this.fw = new ScriptFileWatcher(script, scriptMgr);
+    }
 
+    @Deprecated
     public ScriptTxDelegate(File script, ScriptManager scriptMgr) {
         this.hook = scriptMgr.lookupWfsTxHook(script);
         this.fw = new ScriptFileWatcher(script, scriptMgr);

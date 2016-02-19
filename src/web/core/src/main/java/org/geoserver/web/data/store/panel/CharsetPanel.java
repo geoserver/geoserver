@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -21,10 +21,10 @@ import org.apache.wicket.model.IModel;
 @SuppressWarnings("serial")
 public class CharsetPanel extends Panel implements ParamPanel {
 
-    private DropDownChoice choice;
+    private DropDownChoice<String> choice;
     
-    public CharsetPanel(final String id, final IModel charsetModel,
-            final IModel paramLabelModel, final boolean required) {
+    public CharsetPanel(final String id, final IModel<String> charsetModel,
+            final IModel<String> paramLabelModel, final boolean required) {
         // make the value of the combo field the model of this panel, for easy
         // value retriaval
         super(id, charsetModel);
@@ -35,8 +35,8 @@ public class CharsetPanel extends Panel implements ParamPanel {
         add(label);
 
         // the drop down field, with a decorator for validations
-        final ArrayList charsets = new ArrayList(Charset.availableCharsets().keySet());
-        choice = new DropDownChoice("paramValue", charsetModel, charsets);
+        final ArrayList<String> charsets = new ArrayList<String>(Charset.availableCharsets().keySet());
+        choice = new DropDownChoice<String>("paramValue", charsetModel, charsets);
         choice.setRequired(required);
         // set the label to be the paramLabelModel otherwise a validation error would look like
         // "Parameter 'paramValue' is required"
@@ -53,7 +53,7 @@ public class CharsetPanel extends Panel implements ParamPanel {
      * 
      * @return
      */
-    public FormComponent getFormComponent() {
+    public FormComponent<String> getFormComponent() {
         return choice;
     }
     

@@ -17,7 +17,7 @@ or to extend the server style catalog using **library mode**.
 Catalog Styles
 ^^^^^^^^^^^^^^
 
-Styles in the catalog can be viewed, edited and validated via the :ref:`webadmin_styles` menu of the :ref:`web_admin`. 
+Styles in the catalog can be viewed, edited and validated via the :ref:`data_webadmin_styles` menu of the :ref:`web_admin`. 
 They may also be created and accessed via the REST :ref:`rest_api_styles` API.
 
 Catalog styles consist of a :ref:`sld_reference_sld` document 
@@ -30,7 +30,7 @@ which is the default style for rendering the layer.
 Any number of additional styles can be associated with a layer.
 This allows layers to have appropriate styles advertised in the WMS ``GetCapabilities`` document.
 A layer's styles can be changed 
-using the :ref:`webadmin_layers` page of the :ref:`web_admin`.  
+using the :ref:`data_webadmin_layers` page of the :ref:`web_admin`.  
 
 .. note:: When adding a layer and a style for it to GeoServer at the same time, the style should be added first, 
           so that the new layer can be associated with the style immediately. 
@@ -103,7 +103,7 @@ Alternate styles can be viewed by specifying them in the ``styles`` WMS request 
 
 To view the effect of compositing multiple styled layers, several approaches are available:
 
-* Create a **layer group** for the desired layers using the :ref:`webadmin_layergroups` page, and preview it.  
+* Create a **layer group** for the desired layers using the :ref:`data_webadmin_layergroups` page, and preview it.  
   Non-default styles can be specified for layers if required.
 * Submit a WMS :ref:`wms_getmap` GET request specifying multiple layers in the ``layers`` parameter, 
   and the corresponding styles in the ``styles`` parameter (if non-default styles are required).

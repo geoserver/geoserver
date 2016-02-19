@@ -37,7 +37,7 @@ export GEOSERVER_HOME=$GEOSERVER_HOME
 
 # Java configuration section
 JAVA_HOME=/home/geoserver/jre
-JAVA_OPTS="-Xms256m -Xmx2048m -XX:MaxPermSize=512m -XX:+UseParallelGC -XX:+UseParallelOldGC"
+JAVA_OPTS="-Xms256m -Xmx2048m -XX:+UseParallelGC -XX:+UseParallelOldGC"
 CATALINA_PID=/var/run/geoserver$INSTANCE.pid
 
 export JAVA_HOME=$JAVA_HOME

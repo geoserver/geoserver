@@ -5,7 +5,12 @@
  */
 package org.geoserver.config.util;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -15,7 +20,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.measure.unit.SI;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -79,6 +86,7 @@ import org.xml.sax.SAXException;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import com.thoughtworks.xstream.XStream;
+import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LineString;
 
 public class XStreamPersisterTest {
@@ -175,7 +183,7 @@ public class XStreamPersisterTest {
         GeoServerInfo g2 = persister.load( in, GeoServerInfo.class );
         assertEquals( g1, g2 );
     }
-   
+      
     static class MyServiceInfo extends ServiceInfoImpl {
         
         String foo;
@@ -983,6 +991,51 @@ public class XStreamPersisterTest {
         assertEquals(coverage, coverage2);
 
     }
+    
+    @Test
+    public void testVirtualTableOrder() throws Exception {
+        FeatureTypeInfo ft = persister.load( getClass().getResourceAsStream("/org/geoserver/config/virtualtable_order_error.xml") , FeatureTypeInfo.class );
+        VirtualTable vtc = (VirtualTable) ft.getMetadata().get(FeatureTypeInfo.JDBC_VIRTUAL_TABLE);                
+        assertEquals(vtc.getSql(),"select * from table\n");        
+        assertEquals(vtc.getName(),"sqlview");
+    }
+    
+    @SuppressWarnings("serial")
+    @Test
+    public void testVirtualTableMultipleGeoms() throws IOException{
+        Map<String,String> types=new HashMap<String, String>(){{
+            put("southernmost_point","com.vividsolutions.jts.geom.Geometry");
+            put("location_polygon","com.vividsolutions.jts.geom.Geometry");
+            put("centroid","com.vividsolutions.jts.geom.Geometry");
+            put("northernmost_point","com.vividsolutions.jts.geom.Geometry");
+            put("easternmost_point","com.vividsolutions.jts.geom.Geometry");
+            put("location","com.vividsolutions.jts.geom.Geometry");
+            put("location_original","com.vividsolutions.jts.geom.Geometry");
+            put("westernmost_point","com.vividsolutions.jts.geom.Geometry");       
+        }};
+    
+        Map<String,Integer> srids=new HashMap<String, Integer>(){{
+            put("southernmost_point",4326);
+            put("location_polygon",3003);
+            put("centroid",3004);
+            put("northernmost_point",3857);
+            put("easternmost_point",4326);
+            put("location",3003);
+            put("location_original",3004);
+            put("westernmost_point",3857);              
+        }};
+
+        FeatureTypeInfo ft = persister.load( getClass().getResourceAsStream("/org/geoserver/config/virtualtable_error_GEOS-7400.xml") , FeatureTypeInfo.class );
+        VirtualTable vt3 = (VirtualTable) ft.getMetadata().get(FeatureTypeInfo.JDBC_VIRTUAL_TABLE);
+                
+        assertEquals(8, vt3.getGeometries().size());
+    
+        for(String g:vt3.getGeometries()){          
+                Class<? extends Geometry> geom = vt3.getGeometryType(g);
+                assertEquals(srids.get(g).intValue(), vt3.getNativeSrid(g));
+                assertEquals(types.get(g), geom.getName());
+        }        
+    }
 
     ByteArrayOutputStream out() {
         return new ByteArrayOutputStream();
@@ -1023,4 +1076,5 @@ public class XStreamPersisterTest {
         }
 
     }
+
 }

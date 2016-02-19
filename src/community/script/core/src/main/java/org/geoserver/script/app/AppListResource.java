@@ -5,13 +5,11 @@
  */
 package org.geoserver.script.app;
 
-import java.io.File;
-import java.io.FileFilter;
-import java.io.IOException;
+import java.util.List;
 
 import net.sf.json.JSONArray;
 
-import org.geoserver.rest.RestletException;
+import org.geoserver.platform.resource.Resources;
 import org.geoserver.script.ScriptManager;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
@@ -35,23 +33,13 @@ public class AppListResource extends Resource {
     }
 
     public void handleGet() {
-        File appRoot;
-        try {
-            appRoot = scriptMgr.getAppRoot();
-        } catch (IOException e) {
-            throw new RestletException("Error looking up apps", Status.SERVER_ERROR_INTERNAL, e);
-        }
+        org.geoserver.platform.resource.Resource appRoot = scriptMgr.app();
 
-        File[] apps = appRoot.listFiles(new FileFilter() {
-            @Override
-            public boolean accept(File pathname) {
-                return pathname.isDirectory();
-            }
-        });
+        List<org.geoserver.platform.resource.Resource> apps = Resources.list(appRoot, Resources.DirectoryFilter.INSTANCE);
 
         JSONArray array = new JSONArray();
-        for (File f : apps) {
-            array.add(f.getName());
+        for (org.geoserver.platform.resource.Resource f : apps) {
+            array.add(f.name());
         }
 
         getResponse().setEntity(new StringRepresentation(array.toString(), MediaType.APPLICATION_JSON));

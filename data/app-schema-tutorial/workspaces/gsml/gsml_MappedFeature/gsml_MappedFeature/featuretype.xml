@@ -5,8 +5,8 @@
     <namespace>
         <id>gsml_namespace</id>
     </namespace>
-    <title>... TITLE ...</title>
-    <abstract>... ABSTRACT ...</abstract>
+    <title>GeoSciML 2 MappedFeature Example</title>
+    <abstract>Example of the GeoSciML 2 MappedFeature feature type, from the app-schema tutorial</abstract>
     <srs>EPSG:4326</srs>
     <latLonBoundingBox>
         <minx>-180</minx>

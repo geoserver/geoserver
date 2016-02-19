@@ -9,7 +9,7 @@ environment can be set up.
 Java
 ----
 
-Developing with GeoServer requires a Java Development Kit (JDK) 7 or greater, available from `Oracle <http://www.oracle.com/technetwork/java/javase/downloads/index.html>`_ or `OpenJDK <http://openjdk.java.net>`_
+Developing with GeoServer requires a Java Development Kit (JDK) 8 or greater, available from `Oracle <http://www.oracle.com/technetwork/java/javase/downloads/>`_ or `OpenJDK <http://openjdk.java.net>`_
 
 Maven
 -----

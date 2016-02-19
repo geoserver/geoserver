@@ -1,4 +1,4 @@
-GeoServer 2.7 CAS Extension
+GeoServer 2.9 CAS Extension
 ---------------------------
 
 This package contains a CAS Security implementation that is 

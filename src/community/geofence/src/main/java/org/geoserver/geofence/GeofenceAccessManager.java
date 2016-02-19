@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2007 - 2014 GeoSolutions S.A.S.
+ *  Copyright (C) 2007 - 2016 GeoSolutions S.A.S.
  *  http://www.geo-solutions.it
  *
  *  GPLv3 + Classpath exception
@@ -21,6 +21,7 @@ package org.geoserver.geofence;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -30,6 +31,7 @@ import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.lowagie.text.Paragraph;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.CoverageInfo;
@@ -70,10 +72,8 @@ import org.geoserver.security.VectorAccessLimits;
 import org.geoserver.security.WMSAccessLimits;
 import org.geoserver.security.WorkspaceAccessLimits;
 import org.geoserver.security.impl.GeoServerRole;
-import org.geoserver.wms.GetFeatureInfoRequest;
-import org.geoserver.wms.GetLegendGraphicRequest;
-import org.geoserver.wms.GetMapRequest;
-import org.geoserver.wms.MapLayerInfo;
+import org.geoserver.wms.*;
+import org.geoserver.wms.map.GetMapKvpRequestReader;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.filter.text.ecql.ECQL;
@@ -104,6 +104,7 @@ import com.vividsolutions.jts.io.WKTReader;
  * Makes GeoServer use the Geofence to assess data access rules
  *
  * @author Andrea Aime - GeoSolutions
+ * @author Emanuele Tajariol- GeoSolutions
  */
 public class GeofenceAccessManager implements ResourceAccessManager, DispatcherCallback
 {
@@ -157,7 +158,8 @@ public class GeofenceAccessManager implements ResourceAccessManager, DispatcherC
     }
 
     @Override
-    public WorkspaceAccessLimits getAccessLimits(Authentication user, WorkspaceInfo workspace) {
+    public WorkspaceAccessLimits getAccessLimits(Authentication user, WorkspaceInfo workspace)
+    {
         LOGGER.log(Level.FINE, "Getting access limits for workspace {0}", workspace.getName());
 
         if ((user != null) && !(user instanceof AnonymousAuthenticationToken)) {
@@ -168,11 +170,48 @@ public class GeofenceAccessManager implements ResourceAccessManager, DispatcherC
 
                 return new WorkspaceAccessLimits(DEFAULT_CATALOG_MODE, true, true);
             }
-            return new WorkspaceAccessLimits(DEFAULT_CATALOG_MODE, true, configurationManager.getConfiguration().isGrantWriteToWorkspacesToAuthenticatedUsers());
+
+            boolean canWrite = configurationManager.getConfiguration().isGrantWriteToWorkspacesToAuthenticatedUsers();
+            boolean canAdmin = isWorkspaceAdmin(user, workspace.getName());
+
+            return new WorkspaceAccessLimits(DEFAULT_CATALOG_MODE, true, canWrite, canAdmin);
         }
 
         // further logic disabled because of https://github.com/geosolutions-it/geofence/issues/6
         return new WorkspaceAccessLimits(DEFAULT_CATALOG_MODE, true, false);
+    }
+
+    /**
+     * We expect the user not to be null and not to be admin
+     */
+    private boolean isWorkspaceAdmin(Authentication user, String workspaceName)
+    {
+        LOGGER.log(Level.FINE, "Getting admin auth for Workspace {0}", workspaceName);
+
+        // get the request infos
+        RuleFilter ruleFilter = new RuleFilter(RuleFilter.SpecialFilterType.ANY);
+
+        ruleFilter.setInstance(configurationManager.getConfiguration().getInstanceName());
+        ruleFilter.setWorkspace(workspaceName);
+        ruleFilter.setUser(user.getName());
+
+        String sourceAddress = retrieveCallerIpAddress();
+        if(sourceAddress != null) {
+            ruleFilter.setSourceAddress(sourceAddress);
+        } else {
+            LOGGER.log(Level.WARNING, "No source IP address found");
+            ruleFilter.setSourceAddress(RuleFilter.SpecialFilterType.DEFAULT);
+        }
+
+        if(LOGGER.isLoggable(Level.FINE)) {
+            LOGGER.log(Level.FINE, "AdminAuth filter: {0}", ruleFilter);
+        }
+
+        AccessInfo auth = rules.getAdminAuthorization(ruleFilter);
+
+        LOGGER.log(Level.FINE, "Admin auth for User:{0} Workspace:{1}: {2}", new Object[]{user.getName(), workspaceName, auth.getAdminRights()});
+
+        return auth.getAdminRights();
     }
 
     String getSourceAddress(HttpServletRequest http) {
@@ -220,13 +259,13 @@ public class GeofenceAccessManager implements ResourceAccessManager, DispatcherC
     }
 
 
-    private WorkspaceAccessLimits buildAccessLimits(WorkspaceInfo workspace, AccessInfo rule) {
-        if (rule == null) {
-            return new WorkspaceAccessLimits(DEFAULT_CATALOG_MODE, true, true);
-        } else {
-            return new WorkspaceAccessLimits(DEFAULT_CATALOG_MODE, rule.getGrant() == GrantType.ALLOW, rule.getGrant() == GrantType.ALLOW);
-        }
-    }
+//    private WorkspaceAccessLimits buildAccessLimits(WorkspaceInfo workspace, AccessInfo rule) {
+//        if (rule == null) {
+//            return new WorkspaceAccessLimits(DEFAULT_CATALOG_MODE, true, true);
+//        } else {
+//            return new WorkspaceAccessLimits(DEFAULT_CATALOG_MODE, rule.getGrant() == GrantType.ALLOW, rule.getGrant() == GrantType.ALLOW);
+//        }
+//    }
 
     @Override
     public StyleAccessLimits getAccessLimits(Authentication user, StyleInfo style)
@@ -683,7 +722,7 @@ public class GeofenceAccessManager implements ResourceAccessManager, DispatcherC
         }
     }
 
-    private void overrideGetMapRequest(Request gsRequest, String service, String request, 
+    void overrideGetMapRequest(Request gsRequest, String service, String request,
     		Authentication user, GetMapRequest getMap)
     {
 		if (gsRequest.getKvp().get("layers") == null
@@ -702,12 +741,7 @@ public class GeofenceAccessManager implements ResourceAccessManager, DispatcherC
         // parse the styles param like the kvp parser would (since we have no way,
         // to know if a certain style was requested explicitly or defaulted, and
         // we need to tell apart the default case from the explicit request case
-        String stylesParam = (String) gsRequest.getRawKvp().get("STYLES");
-        List<String> styleNameList = new ArrayList<String>();
-        if (stylesParam != null)
-        {
-            styleNameList.addAll(KvpUtils.readFlat(stylesParam));
-        }
+        List<String> styleNameList = getRequestedStyles(gsRequest, getMap);
 
         // apply the override/security check for each layer in the request
         List<MapLayerInfo> layers = getMap.getLayers();
@@ -742,7 +776,7 @@ public class GeofenceAccessManager implements ResourceAccessManager, DispatcherC
             AccessInfo rule = rules.getAccessInfo(ruleFilter);
 
             // get the requested style name
-            String styleName = (styleNameList.size() > 0) ? styleNameList.get(i) : null;
+            String styleName = styleNameList.get(i);
 
             // if default use geofence default
             if (styleName != null) {
@@ -837,6 +871,67 @@ public class GeofenceAccessManager implements ResourceAccessManager, DispatcherC
         return service;
     }
 
-    
- 
+    /**
+     * Returns a list that contains the request styles that will correspond to the GetMap.getLayers().
+     * Layer groups are expanded in layers and the associated styles are set to null (layers
+     * groups can't use dynamic styles).
+     */
+    private List<String> getRequestedStyles(Request gsRequest, GetMapRequest getMap) {
+        List<String> requestedStyles = new ArrayList<>();
+        int styleIndex = 0;
+        List<String> parsedStyles = parseStylesParameter(gsRequest);
+        for(Object layer : parseLayersParameter(gsRequest, getMap)) {
+            if (layer  instanceof LayerGroupInfo) {
+                // a LayerGroup don't have styles so we just add null
+                for (int i = 0; i < ((LayerGroupInfo) layer).getLayers().size(); i++) {
+                    requestedStyles.add(null);
+                }
+            } else {
+                // the layer is a LayerInfo or MapLayerInfo (if it is a remote layer)
+                if(styleIndex >= parsedStyles.size()) {
+                    requestedStyles.add(null);
+                }
+                else {
+                    requestedStyles.add(parsedStyles.get(styleIndex));
+                }
+            }
+            styleIndex++;
+        }
+        return requestedStyles;
+    }
+
+    private List<Object> parseLayersParameter(Request gsRequest, GetMapRequest getMap) {
+        String rawLayersParameter = (String) gsRequest.getRawKvp().get("LAYERS");
+        if (rawLayersParameter != null) {
+            List<String> layersNames = KvpUtils.readFlat(rawLayersParameter);
+            return new LayersParser().parseLayers(layersNames, getMap.getRemoteOwsURL(), getMap.getRemoteOwsType());
+        }
+        return new ArrayList<>();
+    }
+
+    private List<String> parseStylesParameter(Request gsRequest) {
+        String rawStylesParameter = (String) gsRequest.getRawKvp().get("STYLES");
+        if (rawStylesParameter != null) {
+            return KvpUtils.readFlat(rawStylesParameter);
+        }
+        return new ArrayList<>();
+    }
+
+    /**
+     * An helper that avoids duplicating the code to parse the layers parameter
+     */
+    static final class LayersParser extends GetMapKvpRequestReader {
+
+        public LayersParser() {
+            super(WMS.get());
+        }
+
+        public List parseLayers(List<String> requestedLayerNames, URL remoteOwsUrl, String remoteOwsType) {
+            try {
+                return super.parseLayers(requestedLayerNames, remoteOwsUrl, remoteOwsType);
+            } catch (Exception exception) {
+                throw new ServiceException("Error parsing requested layers.", exception);
+            }
+        }
+    }
 }

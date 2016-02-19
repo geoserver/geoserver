@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -101,7 +101,7 @@ public  class XMLRoleConfigDetailsPanelTest extends AbstractSecurityNamedService
         
         activatePanel();
                 
-        assertEquals(2, countItmes());
+        assertEquals(2, countItems());
         assertNotNull(getSecurityNamedServiceConfig("default"));
         assertNotNull(getSecurityNamedServiceConfig("test"));
         assertNull(getSecurityNamedServiceConfig("xxxxxxxx"));
@@ -121,7 +121,7 @@ public  class XMLRoleConfigDetailsPanelTest extends AbstractSecurityNamedService
         clickCancel();
         
         tester.assertRenderedPage(basePage.getClass());
-        assertEquals(2, countItmes());
+        assertEquals(2, countItems());
         assertNotNull(getSecurityNamedServiceConfig("default"));
         
         clickAddNew();
@@ -136,7 +136,7 @@ public  class XMLRoleConfigDetailsPanelTest extends AbstractSecurityNamedService
         clickSave();
         
         tester.assertRenderedPage(basePage.getClass());
-        assertEquals(3, countItmes());        
+        assertEquals(3, countItems());        
         assertNotNull(getSecurityNamedServiceConfig("default"));
         
         XMLRoleServiceConfig xmlConfig=

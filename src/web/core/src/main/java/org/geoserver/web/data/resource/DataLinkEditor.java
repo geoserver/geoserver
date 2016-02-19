@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -7,13 +7,12 @@ package org.geoserver.web.data.resource;
 
 import java.util.List;
 
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
-import org.apache.wicket.behavior.SimpleAttributeModifier;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.form.validation.FormComponentFeedbackBorder;
@@ -24,7 +23,9 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.validation.IValidatable;
-import org.apache.wicket.validation.validator.AbstractValidator;
+import org.apache.wicket.validation.IValidationError;
+import org.apache.wicket.validation.IValidator;
+import org.apache.wicket.validation.ValidationError;
 import org.geoserver.catalog.DataLinkInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.impl.DataLinkInfoImpl;
@@ -65,7 +66,7 @@ public class DataLinkEditor extends Panel {
             protected void populateItem(ListItem<DataLinkInfo> item) {
                 
                 // odd/even style
-                item.add(new SimpleAttributeModifier("class",
+                item.add(AttributeModifier.replace("class",
                         item.getIndex() % 2 == 0 ? "even" : "odd"));
 
                 // link info
@@ -88,7 +89,7 @@ public class DataLinkEditor extends Panel {
                         ResourceInfo ri = (ResourceInfo) resourceModel.getObject();
                         ri.getDataLinks().remove(getModelObject());
                         updateLinksVisibility();
-                        target.addComponent(container);
+                        target.add(container);
                     }
                     
                 };
@@ -115,7 +116,7 @@ public class DataLinkEditor extends Panel {
                 ri.getDataLinks().add(link);
                 updateLinksVisibility();
                 
-                target.addComponent(container);
+                target.add(container);
             }
             
         };
@@ -129,16 +130,19 @@ public class DataLinkEditor extends Panel {
         noData.setVisible(!anyLink);
     }
     
-    public class UrlValidator extends AbstractValidator<String>{
+    public class UrlValidator implements IValidator<String> {
+
         @Override
-        protected void onValidate(IValidatable<String> validatable) {
+        public void validate(IValidatable<String> validatable) {
             String url = validatable.getValue();
             if (url != null )
             {
                 try {
                     DataLinkInfoImpl.validate(url);
                 } catch (IllegalArgumentException ex) {
-                    error(validatable);
+                    IValidationError err = new ValidationError("invalidDataLinkURL")
+                            .addKey("invalidDataLinkURL").setVariable("url", url);
+                    validatable.error(err);
                 }
             }
         }

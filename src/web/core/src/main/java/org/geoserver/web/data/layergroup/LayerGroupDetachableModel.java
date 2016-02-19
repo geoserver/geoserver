@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -12,9 +12,10 @@ import org.geoserver.web.GeoServerApplication;
 /**
  * Model for layer groups
  */
-@SuppressWarnings("serial")
 public class LayerGroupDetachableModel extends LoadableDetachableModel<LayerGroupInfo> {
 
+    private static final long serialVersionUID = 1945014162826151239L;
+	
     String id;
     LayerGroupInfo layerGroup;
     

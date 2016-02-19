@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -9,6 +9,7 @@ import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.Predicates;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.security.SecureCatalogImpl.MixedModeBehavior;
 import org.geotools.filter.expression.InternalVolatileFunction;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory;
@@ -66,7 +67,7 @@ public class InMemorySecurityFilter extends InternalVolatileFunction {
             info = getCatalog().getWorkspaceByName(((NamespaceInfo) info).getPrefix());
         }
         WrapperPolicy policy = getSecurityWrapper().buildWrapperPolicy(resourceAccesssManager,
-                user, info);
+                user, info, MixedModeBehavior.HIDE);
         AccessLevel accessLevel = policy.getAccessLevel();
         boolean visible = !AccessLevel.HIDDEN.equals(accessLevel);
         return Boolean.valueOf(visible);

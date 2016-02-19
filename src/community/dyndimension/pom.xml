@@ -25,7 +25,6 @@
       <artifactId>gs-web-core</artifactId>
       <version>${project.version}</version>
     </dependency>    
-          
     <dependency>
       <groupId>org.geoserver</groupId>
       <artifactId>gs-main</artifactId>

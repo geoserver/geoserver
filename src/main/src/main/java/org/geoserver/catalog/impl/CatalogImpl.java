@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -1286,7 +1286,13 @@ public class CatalogImpl implements Catalog {
             String resource = name.substring(colon + 1);
 
             result = getStyleByName(prefix, resource);
-        } 
+        } else {
+            // search in default workspace first
+            WorkspaceInfo ws = getDefaultWorkspace();
+            if ( ws != null ) {
+                result = getStyleByName(ws, name);
+            }
+        }
         if (result == null) {
             result = facade.getStyleByName(name);
         }

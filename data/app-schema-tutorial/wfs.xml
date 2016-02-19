@@ -31,20 +31,30 @@ data.</abstrct>
   <onlineResource>http://geoserver.org</onlineResource>
   <schemaBaseURL>http://schemas.opengis.net</schemaBaseURL>
   <verbose>false</verbose>
+  <metadata>
+    <entry key="SHAPE-ZIP_DEFAULT_PRJ_IS_ESRI">false</entry>
+  </metadata>
   <gml>
     <entry>
-      <org.geoserver.wfs.WFSInfo_-Version>V_11</org.geoserver.wfs.WFSInfo_-Version>
-      <org.geoserver.wfs.GMLInfoImpl>
-        <srsNameStyle>URN</srsNameStyle>
+      <version>V_11</version>
+      <gml>
+        <srsNameStyle>URL</srsNameStyle>
         <overrideGMLAttributes>false</overrideGMLAttributes>
-      </org.geoserver.wfs.GMLInfoImpl>
+      </gml>
     </entry>
     <entry>
-      <org.geoserver.wfs.WFSInfo_-Version>V_10</org.geoserver.wfs.WFSInfo_-Version>
-      <org.geoserver.wfs.GMLInfoImpl>
+      <version>V_20</version>
+      <gml>
+        <srsNameStyle>URL</srsNameStyle>
+        <overrideGMLAttributes>false</overrideGMLAttributes>
+      </gml>
+    </entry>
+    <entry>
+      <version>V_10</version>
+      <gml>
         <srsNameStyle>XML</srsNameStyle>
         <overrideGMLAttributes>false</overrideGMLAttributes>
-      </org.geoserver.wfs.GMLInfoImpl>
+      </gml>
     </entry>
   </gml>
   <serviceLevel>BASIC</serviceLevel>
@@ -52,4 +62,5 @@ data.</abstrct>
   <featureBounding>false</featureBounding>
   <canonicalSchemaLocation>true</canonicalSchemaLocation>
   <encodeFeatureMember>true</encodeFeatureMember>
+  <hitsIgnoreMaxFeatures>false</hitsIgnoreMaxFeatures>
 </wfs>

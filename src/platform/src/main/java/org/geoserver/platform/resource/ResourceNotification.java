@@ -169,6 +169,10 @@ public class ResourceNotification {
     public String getPath() {
         return path;
     }
+    
+    public long getTimestamp() {
+        return timestamp;
+    }
     /**
      * Paths of changed resources.
      * <p>

@@ -12,6 +12,7 @@ import javax.sql.DataSource;
 
 import org.apache.commons.dbcp.BasicDataSource;
 import org.easymock.classextension.EasyMock;
+import org.geoserver.jdbcloader.DataSourceFactoryBean;
 import org.junit.Test;
 
 import com.google.common.base.Optional;

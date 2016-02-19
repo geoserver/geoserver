@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -14,8 +14,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
-import org.apache.wicket.behavior.SimpleAttributeModifier;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.list.ListItem;
@@ -126,7 +126,7 @@ public class DefaultDataStoreEditPanel extends StoreEditPanel {
 
                 String description = paramMetadata.getTitle();
                 if (description != null) {
-                    inputComponent.add(new SimpleAttributeModifier("title", description));
+                    inputComponent.add(AttributeModifier.replace("title", description));
                 }
                 item.add(inputComponent);
             }

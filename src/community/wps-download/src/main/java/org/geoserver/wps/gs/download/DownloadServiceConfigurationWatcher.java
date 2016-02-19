@@ -5,9 +5,8 @@
  */
 package org.geoserver.wps.gs.download;
 
-import java.io.File;
 import java.io.IOException;
-import java.net.URL;
+import java.io.InputStream;
 import java.util.Properties;
 import java.util.Set;
 import java.util.Timer;
@@ -15,9 +14,12 @@ import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.geoserver.data.util.IOUtils;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resources;
 import org.geoserver.security.PropertyFileWatcher;
 import org.geotools.util.Utilities;
 import org.geotools.util.logging.Logging;
@@ -35,8 +37,8 @@ public class DownloadServiceConfigurationWatcher extends TimerTask implements
 
     public static final String PROPERTYFILENAME = "download.properties";
 
-    public final static String DEFAULT_PROPERTY_PATH = DOWNLOAD_PROCESS_DIR + File.separator
-            + PROPERTYFILENAME;
+    public final static String DEFAULT_PROPERTY_PATH = Paths.path(DOWNLOAD_PROCESS_DIR,         
+            PROPERTYFILENAME);
 
     public final static Logger LOGGER = Logging
             .getLogger(DownloadServiceConfigurationWatcher.class);
@@ -74,16 +76,9 @@ public class DownloadServiceConfigurationWatcher extends TimerTask implements
         if (LOGGER.isLoggable(Level.FINE)) {
             LOGGER.log(Level.FINE, "Checking properties file");
         }
-        File properties = null;
-        try {
-            properties = loader.find(PROPERTYFILENAME);
-        } catch (IOException e) {
-            if (LOGGER.isLoggable(Level.WARNING)) {
-                LOGGER.log(Level.WARNING, e.getMessage(), e);
-            }
-        }
+        Resource properties = loader.get(PROPERTYFILENAME);
         // Properties file not found. A new one is copied into the GeoServer data directory
-        if (properties == null || !properties.exists()) {
+        if (properties == null || !Resources.exists(properties)) {
             if (LOGGER.isLoggable(Level.FINE)) {
                 LOGGER.log(Level.FINE, "Properties file not found");
             }
@@ -93,12 +88,10 @@ public class DownloadServiceConfigurationWatcher extends TimerTask implements
                             "Copying the default properties file inside the data directory");
                 }
                 // Copy the default property file into the data directory
-                URL url = DownloadServiceConfigurationWatcher.class
-                        .getResource(DEFAULT_PROPERTY_PATH);
-                if (url != null) {
-                    properties = loader.createFile(PROPERTYFILENAME);
-                    loader.copyFromClassPath(DEFAULT_PROPERTY_PATH, properties,
-                            DownloadServiceConfigurationWatcher.class);
+                InputStream is = DownloadServiceConfigurationWatcher.class
+                        .getResourceAsStream(DEFAULT_PROPERTY_PATH);
+                if (is != null) {
+                    IOUtils.copy(is, properties.out());
                 }
             } catch (IOException e) {
                 if (LOGGER.isLoggable(Level.WARNING)) {
@@ -148,10 +141,10 @@ public class DownloadServiceConfigurationWatcher extends TimerTask implements
      */
     private DownloadServiceConfiguration loadConfiguration() {
         // load download Process Properties
-        final File file = watcher.getFile();
+        final Resource file = watcher.getResource();
         DownloadServiceConfiguration newConfiguration = null;
         try {
-            if (file.exists() && file.canRead()) {
+            if (Resources.exists(file) && Resources.canRead(file)) {
                 // load contents
                 Properties properties = watcher.getProperties();
 
@@ -160,7 +153,7 @@ public class DownloadServiceConfigurationWatcher extends TimerTask implements
             } else {
                 if (LOGGER.isLoggable(Level.INFO)) {
                     LOGGER.info("Unable to read confguration file for download service: "
-                            + file.getAbsolutePath()
+                            + file.path()
                             + " continuing with default configuration-->\n" + configuration);
                 }
             }
@@ -170,7 +163,7 @@ public class DownloadServiceConfigurationWatcher extends TimerTask implements
             }
             if (LOGGER.isLoggable(Level.INFO)) {
                 LOGGER.info("Unable to read confguration file for download service: "
-                        + file.getAbsolutePath() + " continuing with default configuration-->\n"
+                        + file.path() + " continuing with default configuration-->\n"
                         + configuration);
             }
         }

@@ -29,6 +29,11 @@ public class RoleFileWatcher extends FileWatcher implements RoleLoadedListener{
         this.service=service;
         checkAndConfigure();
     }
+    
+    /**
+     * 
+     * @deprecated Use Resource instead of File
+     */
     public RoleFileWatcher(File file, GeoServerRoleService service) {
         super(file);        
         this.service=service;
@@ -40,6 +45,11 @@ public class RoleFileWatcher extends FileWatcher implements RoleLoadedListener{
         this.lastModified=lastModified;
         checkAndConfigure();
     }
+    
+    /**
+     * 
+     * @deprecated Use Resource instead of File
+     */
     public RoleFileWatcher(File file, GeoServerRoleService service, long lastModified) {
         super(file);
         this.service=service;

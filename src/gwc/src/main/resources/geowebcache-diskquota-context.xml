@@ -2,10 +2,21 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 <beans>
 
+
+  <bean id="DiskQuotaConfigResourceProvider" class="org.geoserver.gwc.config.GeoserverXMLResourceProvider">
+     <constructor-arg value="geowebcache-diskquota.xml" />
+     <constructor-arg ref="resourceStore" />
+  </bean>
+  
+  <bean id="jdbcDiskQuotaConfigResourceProvider" class="org.geoserver.gwc.config.GeoserverXMLResourceProvider">
+     <constructor-arg value="geowebcache-diskquota-jdbc.xml" />
+     <constructor-arg ref="resourceStore" />
+  </bean>
+  
   <!-- the config loader depends on the metastore remover because in case of migration we need to drop the disk quota subsystem -->
   <bean id="DiskQuotaConfigLoader" class="org.geowebcache.diskquota.ConfigLoader" depends-on="metastoreRemover">
+    <constructor-arg ref="DiskQuotaConfigResourceProvider" />
     <constructor-arg ref="gwcDefaultStorageFinder" />
-    <constructor-arg ref="gwcAppCtx" />
     <constructor-arg ref="gwcTLDispatcher" />
   </bean>
 
@@ -58,7 +69,9 @@
     </property>
   </bean>
 
-  <bean id="jdbcQuotaStoreFactory" class="org.geowebcache.diskquota.jdbc.JDBCQuotaStoreFactory"/>
+  <bean id="jdbcQuotaStoreFactory" class="org.geowebcache.diskquota.jdbc.JDBCQuotaStoreFactory">
+   <constructor-arg ref="jdbcDiskQuotaConfigResourceProvider" />
+  </bean>
   
     <!-- The SQL dialects -->
   <bean id="H2QuotaDialect" class="org.geowebcache.diskquota.jdbc.H2Dialect"/>

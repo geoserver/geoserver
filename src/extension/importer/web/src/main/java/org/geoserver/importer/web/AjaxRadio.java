@@ -1,13 +1,16 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.importer.web;
 
+import org.apache.wicket.Component;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.head.OnDomReadyHeaderItem;
 import org.apache.wicket.markup.html.form.Radio;
 import org.apache.wicket.markup.html.form.RadioGroup;
 import org.apache.wicket.model.IModel;
@@ -26,20 +29,13 @@ public abstract class AjaxRadio<T> extends Radio<T> {
     }
     
     private void addAjaxBehavior() {
-        add(new AjaxEventBehavior("onclick") {
+        add(new AjaxEventBehavior("click") {
             private static final long serialVersionUID = 1L;
     
             protected void onEvent(final AjaxRequestTarget target) {
                 RadioGroup<T> radioGroup = getEnclosingRadioGroup();
                 radioGroup.processInput();
                 onAjaxEvent(target);
-            }
-    
-            protected final CharSequence getEventHandler() {
-                return generateCallbackScript(new AppendingStringBuffer(
-                        "wicketAjaxPost('").append(getCallbackUrl())
-                        .append("', wicketSerialize(Wicket.$('")
-                        .append(AjaxRadio.this.getMarkupId()).append("'))"));
             }
         });
     }

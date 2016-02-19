@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -16,6 +16,8 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.config.GeoServer;
+import org.geoserver.config.SettingsInfo;
 import org.geoserver.ows.LocalWorkspace;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.junit.Before;
@@ -59,6 +61,16 @@ public class LocalWorkspaceLayersTest extends GeoServerSystemTestSupport {
         assertNotNull(catalog.getLayerGroupByName("localGroup"));
         assertEquals(1, catalog.getLayerGroups().size());
         assertEquals("localGroup", catalog.getLayerGroupByName("localGroup").prefixedName());
+        
+        GeoServer gs = getGeoServer();
+        SettingsInfo settings = gs.getFactory().createSettings();
+        settings.setLocalWorkspaceIncludesPrefix(true);
+        settings.setWorkspace(workspace);
+        gs.add(settings);
+        assertEquals("sf:localGroup", catalog.getLayerGroupByName("localGroup").prefixedName());
+        assertEquals("sf:localGroup", catalog.getLayerGroups().get(0).prefixedName());
+        gs.remove(settings);
+        
         LocalWorkspace.remove();
     }
 

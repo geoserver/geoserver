@@ -33,7 +33,7 @@ public enum TimeMode {
             public Date computeTimestamp(Granule g) {
                 switch(TimeMode.this) {
                 case AUTO:
-                    return Dates.matchAndParse(g.getFile().getName());
+                    return Dates.matchAndParse(g.getFile().name());
                 case MANUAL:
                     return g.getTimestamp();
                 }

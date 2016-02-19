@@ -1,7 +1,7 @@
 .. _filtering:
 
-Filtering in GeoServer
-======================
+Filtering
+=========
 
 Filtering allows selecting features that satisfy a specific set of conditions. 
 Filters can be used in several contexts in GeoServer:

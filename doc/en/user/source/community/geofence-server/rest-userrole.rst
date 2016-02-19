@@ -17,25 +17,25 @@ Both XML and JSON are supported for transfer of data objects. The default is XML
 
 Encoding of a user in XML::
 
-	<User>
-		<username>..</username>
+	<user>
+		<userName>..</userName>
 		<password>..</password>
 		<enabled>true/false</enabled>
-	</User>
+	</user>
 
 Encoding of a user in JSON::
 
-	{"username": "..", "password": "..", enabled: true/false}
+	{"userName": "..", "password": "..", enabled: true/false}
 
 Passwords are left out in results of reading requests.
 
 Encoding of a list of users in XML::
 
-	<Users>
-		<User> ... </User>
-		<User> ... </User>
+	<users>
+		<user> ... </user>
+		<user> ... </user>
 		...		
-	</Users>
+	</users>
 
 Encoding of a list of users in JSON::
 
@@ -43,11 +43,11 @@ Encoding of a list of users in JSON::
 
 Encoding of a list of groups in XML::
 
-	<Groups>
-		<Group> agroupname </Group>
-		<Group> bgroupname </Group>
+	<groups>
+		<group> agroupname </group>
+		<group> bgroupname </group>
 		...		
-	</Groups>
+	</groups>
 
 Encoding of a list of groups in JSON::
 
@@ -56,11 +56,11 @@ Encoding of a list of groups in JSON::
 
 Encoding of a list of roles::
 
-	<Roles>
-		<Role> arolename </Role>
-		<Role> brolename </Role>
+	<roles>
+		<role> arolename </role>
+		<role> brolename </role>
 		...		
-	</Roles>
+	</roles>
 
 Encoding of a list of roles in JSON::
 
@@ -71,16 +71,17 @@ Configuration
 
 The default user/group service is by default the service named "default". This can be 
 altered in the following manner: 
- #. Edit or create the file '/geofence/geofence-server.properties' in the geoserver data directory.
- #. Modify or add the following line::
 
-	defaultUserGroupServiceName= ..
+    #. Edit or create the file '/geofence/geofence-server.properties' in the geoserver data directory.
+    #. Modify or add the following line::
+
+        defaultUserGroupServiceName= ..
 
 Requests
 --------
 
 ``/rest/usergroup/[service/<serviceName>/]users/``
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Query all users or add a new user in a particular or the default user/group service.
 
@@ -100,7 +101,7 @@ Query all users or add a new user in a particular or the default user/group serv
 
 
 ``/rest/usergroup/[service/<serviceName>/]<user>``
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Query, modify or delete a specific user in a particular or the default user/group service.
 
@@ -122,7 +123,7 @@ Query, modify or delete a specific user in a particular or the default user/grou
      - 200 OK.
 
 ``/rest/usergroup/[service/<serviceName>/]groups/``
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Query all groups in a particular user/group or the default service.
 
@@ -139,7 +140,7 @@ Query all groups in a particular user/group or the default service.
 
 
 ``/rest/usergroup/[service/<serviceName>/]group/<group>``
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Add or delete a specific group in a particular or the default user/group service.
 
@@ -159,7 +160,7 @@ Add or delete a specific group in a particular or the default user/group service
 
 
 ``/rest/usergroup/[service/<serviceName>/]user/<user>/groups``
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Query all groups associated with a user in a particular or the default user/group service.
 
@@ -175,7 +176,7 @@ Query all groups associated with a user in a particular or the default user/grou
      - 200 OK. List of groups in XML.
 
 ``/rest/usergroup/[service/<serviceName>/]group/<group>/users``
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Query all users associated with a group in a particular or the default user/group service.
 
@@ -191,7 +192,7 @@ Query all users associated with a group in a particular or the default user/grou
      - 200 OK. List of groups in XML.
 
 ``/rest/usergroup/[service/<serviceName>/]<user>/group/<group>``
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Associate or disassociate a specific user with a specific group in a particular or the default user/group service.
 
@@ -212,7 +213,7 @@ Associate or disassociate a specific user with a specific group in a particular 
 
 
 ``rest/roles/[service/{serviceName}/]``
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Query all roles in a particular role service or the active role service.
 
@@ -229,7 +230,7 @@ Query all roles in a particular role service or the active role service.
 
 
 ``/rest/roles/[service/<serviceName>/]role/<role>``
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Add or delete a specific role in a particular role service or the active role service.
 
@@ -249,7 +250,7 @@ Add or delete a specific role in a particular role service or the active role se
 
 
 ``/rest/roles/[service/<serviceName>/]<serviceName>/user/<user>/roles``
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Query all roles associated with a user in a particular role service or the active role service.
 
@@ -266,7 +267,7 @@ Query all roles associated with a user in a particular role service or the activ
 
 
 ``/rest/roles/[service/<serviceName>/]role/<role>/user/<user>/``
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
 Associate or disassociate a specific user with a specific role in a particular role service or the active role service.

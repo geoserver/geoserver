@@ -54,10 +54,18 @@ public final class IOUtils {
      * @throws IOException
      */
     public static void copy(InputStream from, File to) throws IOException {
-        OutputStream out = null;
-        try {
-            out = new FileOutputStream(to);
-
+        copy(from, new FileOutputStream(to));
+    }
+    
+    /**
+     * Copies the provided input stream onto an outputstream
+     * 
+     * @param from
+     * @param to
+     * @throws IOException
+     */
+    public static void copy(InputStream from, OutputStream out) throws IOException {
+        try {        
             byte[] buffer = new byte[1024 * 16];
             int bytes = 0;
             while ((bytes = from.read(buffer)) != -1)

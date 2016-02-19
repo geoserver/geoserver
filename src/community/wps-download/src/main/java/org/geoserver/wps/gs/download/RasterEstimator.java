@@ -1,24 +1,22 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wps.gs.download;
 
-import java.awt.geom.Rectangle2D;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.geoserver.catalog.CoverageInfo;
-import org.geotools.coverage.grid.GridEnvelope2D;
+import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.geometry.jts.JTS;
-import org.geotools.referencing.operation.transform.AffineTransform2D;
+import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.resources.coverage.FeatureUtilities;
 import org.geotools.util.logging.Logging;
 import org.opengis.filter.Filter;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.datum.PixelInCell;
 import org.opengis.util.ProgressListener;
 
 import com.vividsolutions.jts.geom.Geometry;
@@ -59,11 +57,13 @@ class RasterEstimator {
      * @param targetCRS the reproject {@link CoordinateReferenceSystem} (useless for the moment)
      * @param clip whether or not to clip the resulting data (useless for the moment)
      * @param filter the {@link Filter} to load the data
+     * @param targetSizeX the size of the target image along the X axis
+     * @param targetSizeY the size of the target image along the Y axis
      * @return
      */
     public boolean execute(final ProgressListener progressListener, CoverageInfo coverageInfo,
-            Geometry roi, CoordinateReferenceSystem targetCRS, boolean clip, Filter filter)
-            throws Exception {
+            Geometry roi, CoordinateReferenceSystem targetCRS, boolean clip, Filter filter,
+            Integer targetSizeX, Integer targetSizeY) throws Exception {
 
         //
         // Do we need to do anything?
@@ -109,9 +109,11 @@ class RasterEstimator {
                 .getGridCoverageReader(null, null);
 
         // Area to read in pixel
-        final double areaRead;
-        // If ROI is present, then the coverage BBOX is cropped with the ROI geometry
+        final long areaRead;
+        // take scaling into account
+        ScaleToTarget scaling = null;
         if (roi != null) {
+            // If ROI is present, then the coverage BBOX is cropped with the ROI geometry
             if (LOGGER.isLoggable(Level.FINE)) {
                 LOGGER.log(Level.FINE, "Reprojecting ROI");
             }
@@ -126,29 +128,44 @@ class RasterEstimator {
                 }
                 return true; // EMPTY Intersection
             }
-            // world to grid transform
-            final AffineTransform2D w2G = (AffineTransform2D) reader.getOriginalGridToWorld(
-                    PixelInCell.CELL_CORNER).inverse();
-            final Geometry rasterGeometry = JTS.transform(roiInNativeCRS_, w2G);
 
             // try to make an estimate of the area we need to read
             // NOTE I use the envelope since in the end I can only pass down
             // a rectangular source region to the ImageIO-Ext reader, but in the end I am only going
             // to read the tile I will need during processing as in this case I am going to perform
             // deferred reads
-            areaRead = rasterGeometry.getEnvelope().getArea();
-            // TODO investigate on improved precision taking into account tiling on raster geometry
+            ReferencedEnvelope refEnvelope = JTS.toEnvelope(roiInNativeCRS_.getEnvelope());
+            scaling = new ScaleToTarget(reader, refEnvelope);
 
+            // TODO investigate on improved precision taking into account tiling on raster geometry
         } else {
             // No ROI, we are trying to read the entire coverage
-            final Rectangle2D originalGridRange = (GridEnvelope2D) reader.getOriginalGridRange();
-            areaRead = originalGridRange.getWidth() * originalGridRange.getHeight();
-
+            scaling = new ScaleToTarget(reader);
         }
+        scaling.setTargetSize(targetSizeX, targetSizeY);
+        GridGeometry2D gg = scaling.getGridGeometry();
+
+        areaRead = (long) gg.getGridRange2D().width * gg.getGridRange2D().height;
+
         // checks on the area we want to download
         if (LOGGER.isLoggable(Level.FINE)) {
             LOGGER.fine("Area to read in pixels: " + areaRead);
         }
+
+        // If the area to read or the target image size are above Integer.MAX_VALUE, false is returned,
+        // as raster processing operations (e.g. Crop, Scale) may fail if image size exceeds integer limits
+        long targetArea = 1L;
+        Integer[] targetSize = scaling.getTargetSize();
+        if (targetSize[0] != null && targetSize[1] != null) {
+            targetArea = (long) targetSize[0] * targetSize[1];
+        }
+        if (areaRead >= Integer.MAX_VALUE || targetArea >= Integer.MAX_VALUE) {
+            if (LOGGER.isLoggable(Level.FINE)) {
+                LOGGER.log(Level.FINE, "Area to read or target image size exceed maximum integer value: " + Integer.MAX_VALUE);
+            }
+            return false;
+        }
+
         // If the area exceeds the limits, false is returned
         if (areaRead > rasterSizeLimits) {
             if (LOGGER.isLoggable(Level.FINE)) {
@@ -162,4 +179,6 @@ class RasterEstimator {
         return true;
 
     }
+
+
 }

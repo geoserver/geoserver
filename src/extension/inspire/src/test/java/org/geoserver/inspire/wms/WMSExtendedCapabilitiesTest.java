@@ -87,6 +87,23 @@ public class WMSExtendedCapabilitiesTest extends GeoServerSystemTestSupport {
 
     }
 
+    @Test
+    public void testReloadSettings() throws Exception {
+        final ServiceInfo serviceInfo = getGeoServer().getService(WMSInfo.class);
+        final MetadataMap metadata = serviceInfo.getMetadata();
+        clearInspireMetadata(metadata);
+        metadata.put(CREATE_EXTENDED_CAPABILITIES.key, true);
+        metadata.put(SERVICE_METADATA_URL.key, "http://foo.com?bar=baz");
+        metadata.put(SERVICE_METADATA_TYPE.key, "application/vnd.iso.19139+xml");
+        metadata.put(LANGUAGE.key, "fre");
+        getGeoServer().save(serviceInfo);
+        getGeoServer().reload();
+        final Document dom = getAsDOM(WMS_1_3_0_GETCAPREQUEST);
+        
+        NodeList nodeList = dom.getElementsByTagNameNS(VS_NAMESPACE, "ExtendedCapabilities");
+        assertEquals("Number of INSPIRE ExtendedCapabilities elements after settings reload", 1, nodeList.getLength());
+    }
+
     /* There is an INSPIRE DTD for WMS 1.1.1 but not implementing this */
     @Test
     public void testExtCaps111WithFullSettings() throws Exception {

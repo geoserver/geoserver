@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -27,14 +27,14 @@ import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.markup.repeater.ReuseIfModelsEqualStrategy;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.util.convert.IConverter;
-import org.apache.wicket.util.convert.converters.DoubleConverter;
+import org.apache.wicket.util.convert.converter.DoubleConverter;
 import org.apache.wicket.util.string.Strings;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.CoverageDimensionInfo;
 import org.geoserver.catalog.CoverageInfo;
-import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.CoverageView;
+import org.geoserver.catalog.MetadataMap;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.wicket.GeoServerAjaxFormLink;
 import org.geoserver.web.wicket.GeoServerDataProvider;
@@ -63,8 +63,8 @@ public class CoverageBandsConfigurationPanel extends ResourceConfigurationPanel 
         }
 
         @Override
-        public IConverter getConverter(Class<?> type) {
-            return new DoubleInfinityConverter();
+        public <C> IConverter<C> getConverter(Class<C> type) {
+            return (IConverter<C>) new DoubleInfinityConverter();
         }
     }
 
@@ -72,19 +72,19 @@ public class CoverageBandsConfigurationPanel extends ResourceConfigurationPanel 
      * A Double numbers converter supporting -Infinity and Infinity too.
      */
     static class DoubleInfinityConverter extends DoubleConverter {
-
         @Override
         public Double convertToObject(String value, Locale locale) {
-            final Number number = parse(value, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, Locale.US);
-            if (number == null) {
-                return null;
-            }
-
-            return new Double(number.doubleValue());
+           if (value.equals("-\u221E")) {
+               return new Double(Double.NEGATIVE_INFINITY);
+           } else if (value.equals("\u221E")) {
+               return new Double(Double.POSITIVE_INFINITY);
+           } else {
+               return super.convertToObject(value, locale);
+           }
         }
 
         @Override
-        public String convertToString(Object value, Locale locale) {
+        public String convertToString(Double value, Locale locale) {
             return super.convertToString(value, Locale.US);
         }
     }
@@ -140,11 +140,11 @@ public class CoverageBandsConfigurationPanel extends ResourceConfigurationPanel 
                 new CoverageDimensionsProvider(), true) {
 
             @Override
-            protected Component getComponentForProperty(String id, IModel itemModel,
-                    Property<CoverageDimensionInfo> property) {
+            protected Component getComponentForProperty(String id, IModel<CoverageDimensionInfo> itemModel, 
+                Property<CoverageDimensionInfo> property) {
                 if ("band".equals(property.getName())) {
                     Fragment f = new Fragment(id, "bandtext", CoverageBandsConfigurationPanel.this);
-                    Component text = new TextField<String>("bandtext", property.getModel(itemModel));
+                    Component text = new TextField<>("bandtext", (IModel<String>) property.getModel(itemModel));
                     f.add(text);
                     return f;
                 }
@@ -162,13 +162,13 @@ public class CoverageBandsConfigurationPanel extends ResourceConfigurationPanel 
                 }
                if ("minRange".equals(property.getName())) {
                     Fragment f = new Fragment(id, "minRange", CoverageBandsConfigurationPanel.this);
-                    Component min = new DoubleTextField("minRange", property.getModel(itemModel));
+                    Component min = new DoubleTextField("minRange", (IModel<Double>) property.getModel(itemModel));
                     f.add(min);
                     return f;
                 }
                 if ("maxRange".equals(property.getName())) {
                     Fragment f = new Fragment(id, "maxRange", CoverageBandsConfigurationPanel.this);
-                    Component max = new DoubleTextField("maxRange", property.getModel(itemModel));
+                    Component max = new DoubleTextField("maxRange", (IModel<Double>) property.getModel(itemModel));                    
                     f.add(max);
                     return f;
                 }
@@ -208,7 +208,7 @@ public class CoverageBandsConfigurationPanel extends ResourceConfigurationPanel 
                     }
                     ci.getDimensions().clear();
                     ci.getDimensions().addAll(rebuilt.getDimensions());
-                    target.addComponent(bands);
+                    target.add(bands);
                 } catch (Exception e) {
                     LOGGER.log(Level.SEVERE, "Failure updating the bands list", e);
                     error(e.toString());

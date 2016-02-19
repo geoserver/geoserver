@@ -31,4 +31,9 @@ public class ResourceStoreProxy implements ResourceStore {
         return delegate.move(path, target);
     }
 
+    @Override
+    public ResourceNotificationDispatcher getResourceNotificationDispatcher() {
+        return delegate.getResourceNotificationDispatcher();
+    }
+
 }

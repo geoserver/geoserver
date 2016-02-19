@@ -140,9 +140,8 @@ public abstract class IconProperties {
                                    .bean("dataDirectory");
                            // we grab the canonical path to make sure we can compare them, no
                            // relative parts in them and so on
-                           styles = dataDir.findOrCreateStyleDir().getCanonicalFile();
-                           graphicFile = file.getCanonicalFile();
-                           file = graphicFile;
+                           styles = dataDir.getStyles().dir().getCanonicalFile();
+                           file = graphicFile = file.getCanonicalFile();
                            if (file.getAbsolutePath().startsWith(styles.getAbsolutePath())) {
                                // ok, part of the styles directory, extract only the relative path
                                file = new File(file.getAbsolutePath().substring(

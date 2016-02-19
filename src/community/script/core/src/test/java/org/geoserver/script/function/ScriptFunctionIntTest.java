@@ -23,10 +23,10 @@ public class ScriptFunctionIntTest extends ScriptIntTestSupport {
     protected void setUpInternal() throws Exception {
         super.setUpInternal();
 
-        File script = new File(getScriptManager().getFunctionRoot(), "wfs.js");
+        File script = new File(getScriptManager().function().dir(), "wfs.js");
         FileUtils.copyURLToFile(getClass().getResource(script.getName()), script);
         
-        script = new File(getScriptManager().getFunctionRoot(), "sld.js");
+        script = new File(getScriptManager().function().dir(), "sld.js");
         FileUtils.copyURLToFile(getClass().getResource(script.getName()), script);
     }
 

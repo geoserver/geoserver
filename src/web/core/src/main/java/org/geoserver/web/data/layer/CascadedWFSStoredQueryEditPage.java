@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -20,6 +20,9 @@ import org.geotools.data.wfs.internal.v2_0.storedquery.StoredQueryConfiguration;
 
 public class CascadedWFSStoredQueryEditPage extends
         CascadedWFSStoredQueryAbstractPage {
+
+    /** serialVersionUID */
+    private static final long serialVersionUID = 7254877970765799559L;
 
     private ResourceConfigurationPage previousPage;
 

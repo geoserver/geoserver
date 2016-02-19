@@ -146,7 +146,7 @@ public class LegendUtils {
 	 */
 	public static Font getLabelFont(final GetLegendGraphicRequest req) {
 		ensureNotNull(req, "GetLegendGraphicRequestre");
-		final Map legendOptions = req.getLegendOptions();
+		final Map<String,Object> legendOptions = req.getLegendOptions();
 		if(legendOptions==null)
 			return DEFAULT_FONT;
 		String legendFontName=LegendUtils.DEFAULT_FONT_NAME;
@@ -203,7 +203,7 @@ public class LegendUtils {
 	 */
 	public static Color getLabelFontColor(final GetLegendGraphicRequest req) {
 		ensureNotNull(req, "GetLegendGraphicRequestre");
-		final Map legendOptions = req.getLegendOptions();
+		final Map<String,Object> legendOptions = req.getLegendOptions();
 		final String color = legendOptions!=null?(String) legendOptions.get("fontColor"):null;
 		if (color == null) {
 			// return the default
@@ -251,7 +251,7 @@ public class LegendUtils {
 	 */
 	public static Color getBackgroundColor(final GetLegendGraphicRequest req) {
 		ensureNotNull(req, "GetLegendGraphicRequestre");
-		final Map legendOptions = req.getLegendOptions();
+		final Map<String,Object> legendOptions = req.getLegendOptions();
 		if(legendOptions==null)
 			return DEFAULT_BG_COLOR;
 		Object clr = legendOptions.get("bgColor");

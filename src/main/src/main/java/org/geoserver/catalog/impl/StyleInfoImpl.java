@@ -28,6 +28,8 @@ public class StyleInfoImpl implements StyleInfo {
     protected Version languageVersion = SLDHandler.VERSION_10;
 
     protected String filename;
+    
+    protected LegendInfo legend;
 
     protected transient Catalog catalog;
 
@@ -100,6 +102,14 @@ public class StyleInfoImpl implements StyleInfo {
 
     public Style getStyle() throws IOException {
         return catalog.getResourcePool().getStyle( this );
+    }
+    
+    public LegendInfo getLegend() {
+        return legend;
+    }
+    
+    public void setLegend(LegendInfo legend) {
+        this.legend = legend;
     }
 
     public void accept(CatalogVisitor visitor) {

@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2014 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -19,10 +19,9 @@ import org.apache.wicket.Component;
 import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
-import org.apache.wicket.behavior.AbstractBehavior;
+import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.form.DropDownChoice;
-import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
 import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.list.ListItem;
@@ -36,6 +35,7 @@ import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.web.publish.PublishedEditTabPanel;
 import org.geoserver.web.util.MetadataMapModel;
 import org.geoserver.web.wicket.EnumChoiceRenderer;
 import org.geoserver.web.wicket.GeoServerDataProvider.BeanProperty;
@@ -51,8 +51,9 @@ import org.geoserver.wms.dimension.DefaultValueConfigurations;
  * 
  * @author Andrea Aime - GeoSolutions
  */
-@SuppressWarnings({"serial", "rawtypes"})
-public class DynamicDimensionsTabPanel extends LayerEditTabPanel {
+public class DynamicDimensionsTabPanel extends PublishedEditTabPanel<LayerInfo> {
+
+    private static final long serialVersionUID = -5736472115970942723L;
 
     Property<DefaultValueConfiguration> DIMENSION = new BeanProperty<DefaultValueConfiguration>(
             "dimension", "dimension");
@@ -67,15 +68,15 @@ public class DynamicDimensionsTabPanel extends LayerEditTabPanel {
 
     List<DefaultValueConfiguration> configurations;
 
-    IModel model;
+    IModel<LayerInfo> model;
 
-    public DynamicDimensionsTabPanel(String id, IModel model) {
+    public DynamicDimensionsTabPanel(String id, IModel<LayerInfo> model) {
         super(id, model);
 
         MetadataMapModel configsModel = new MetadataMapModel(new PropertyModel<MetadataMap>(model,
                 "resource.metadata"), DefaultValueConfigurations.KEY,
                 DefaultValueConfigurations.class);
-        final LayerInfo layer = (LayerInfo) model.getObject();
+        final LayerInfo layer = model.getObject();
         configurations = getConfigurations(model, configsModel);
         Editor editor = new Editor("editor", getEnabledDimensionNames(layer), configsModel);
         add(editor);
@@ -100,8 +101,8 @@ public class DynamicDimensionsTabPanel extends LayerEditTabPanel {
         }
 
         // remove unknown ones
-        for (Iterator it = result.iterator(); it.hasNext();) {
-            DefaultValueConfiguration config = (DefaultValueConfiguration) it.next();
+        for (Iterator<DefaultValueConfiguration> it = result.iterator(); it.hasNext();) {
+            DefaultValueConfiguration config = it.next();
             if (!dimensionNames.contains(config.getDimension())) {
                 it.remove();
             }
@@ -152,6 +153,8 @@ public class DynamicDimensionsTabPanel extends LayerEditTabPanel {
 
     class Editor extends FormComponentPanel<DefaultValueConfigurations> {
 
+        private static final long serialVersionUID = -1339941470144600565L;
+
         public Editor(String id, final Collection<String> enabledDimensionNames,
                 IModel<DefaultValueConfigurations> model) {
             super(id, model);
@@ -161,8 +164,10 @@ public class DynamicDimensionsTabPanel extends LayerEditTabPanel {
             table = new ReorderableTablePanel<DefaultValueConfiguration>("defaultConfigs",
                     configurations, properties) {
 
+                private static final long serialVersionUID = 8562909315041926320L;
+
                 @Override
-                protected Component getComponentForProperty(String id, final IModel itemModel,
+                protected Component getComponentForProperty(String id, final IModel<DefaultValueConfiguration> itemModel,
                         Property<DefaultValueConfiguration> property) {
                     if (DEFAULT_VALUE_EXPRESSION.equals(property)) {
                         Fragment f = new Fragment(id, "ecqlEditor", DynamicDimensionsTabPanel.this);
@@ -173,7 +178,7 @@ public class DynamicDimensionsTabPanel extends LayerEditTabPanel {
                                 .getObject()).getDimension();
                         otherDimensions.remove(currentDimension);
                         ta.add(new ECQLValidator().setValidAttributes(otherDimensions));
-                        ta.setModel(property.getModel(itemModel));
+                        ta.setModel((IModel<String>) property.getModel(itemModel));
                         ta.setOutputMarkupId(true);
                         Object currentPolicy = POLICY.getModel(itemModel).getObject();
                         ta.setVisible(DefaultValuePolicy.EXPRESSION.equals(currentPolicy));
@@ -185,42 +190,46 @@ public class DynamicDimensionsTabPanel extends LayerEditTabPanel {
                         final DropDownChoice<DefaultValuePolicy> dd = new DropDownChoice<DefaultValueConfiguration.DefaultValuePolicy>(
                                 "choice", Arrays.asList(DefaultValuePolicy.values()));
                         dd.setChoiceRenderer(new EnumChoiceRenderer(DynamicDimensionsTabPanel.this));
-                        dd.setModel(property.getModel(itemModel));
+                        dd.setModel((IModel<DefaultValuePolicy>) property.getModel(itemModel));
                         f.add(dd);
                         return f;
                     }
 
                     return null;
                 }
+                
 
                 @Override
                 protected void onPopulateItem(final Property<DefaultValueConfiguration> property,
-                        final ListItem item) {
+                        final ListItem<Property<DefaultValueConfiguration>> item) {
                     super.onPopulateItem(property, item);
 
                     // assuming that if we got here, everything before it has been populated
                     if (property == DEFAULT_VALUE_EXPRESSION) {
                         MarkupContainer parent = item.getParent();
                         // drill down into the containers to get the actual form components we want
-                        final DropDownChoice dd = (DropDownChoice) ((Fragment) ((ListItem) parent
+                        final DropDownChoice<?> dd = (DropDownChoice<?>) ((Fragment) ((ListItem<?>) parent
                                 .get(3))
                                 .get(0)).get(0);
-                        final TextArea ta = (TextArea) ((Fragment) ((ListItem) parent.get(4))
-                                .get(0)).get(0);
+                        final TextArea<?> ta = (TextArea<?>)((Fragment) ((ListItem<?>) parent.get(4)).get(0)).get(0);
                         dd.add(new OnChangeAjaxBehavior() {
+
+                            private static final long serialVersionUID = -6159626785706793328L;
 
                             @Override
                             protected void onUpdate(AjaxRequestTarget target) {
                                 DefaultValuePolicy currentPolicy = (DefaultValuePolicy) dd
                                         .getConvertedInput();
                                 ta.setVisible(DefaultValuePolicy.EXPRESSION.equals(currentPolicy));
-                                target.addComponent(ta);
-                                target.addComponent(table);
+                                target.add(ta);
+                                target.add(table);
                             }
                         });
                     }
 
-                    item.add(new AbstractBehavior() {
+                    item.add(new Behavior() {
+
+                        private static final long serialVersionUID = 685833036040462732L;
 
                         public void onComponentTag(Component component, ComponentTag tag) {
                             if (property == DEFAULT_VALUE_EXPRESSION) {
@@ -244,6 +253,8 @@ public class DynamicDimensionsTabPanel extends LayerEditTabPanel {
 
             add(new IValidator<DefaultValueConfigurations>() {
 
+                private static final long serialVersionUID = 530635923236054192L;
+
                 @Override
                 public void validate(IValidatable<DefaultValueConfigurations> validatable) {
                     DefaultValueConfigurations configurations = validatable.getValue();
@@ -261,11 +272,11 @@ public class DynamicDimensionsTabPanel extends LayerEditTabPanel {
         }
 
         @Override
-        protected void convertInput() {
-            visitChildren(TextArea.class, new org.apache.wicket.Component.IVisitor() {
-                public Object component(Component component) {
-                    ((FormComponent) component).updateModel();
-                    return null;
+        public void convertInput() {
+            visitChildren(TextArea.class, (component, visit) -> {
+                if (component instanceof TextArea) {
+                    TextArea textArea = (TextArea) component;
+                    textArea.updateModel();
                 }
             });
             setConvertedInput(new DefaultValueConfigurations(configurations));

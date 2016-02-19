@@ -1,4 +1,4 @@
-/* (c) 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2015-2016 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -9,11 +9,10 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
-import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
-import org.apache.wicket.markup.html.form.IChoiceRenderer;
+import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.geowebcache.filter.parameters.CaseNormalizer;
@@ -50,8 +49,10 @@ public class CaseNormalizerSubform extends FormComponentPanel<CaseNormalizer> {
         final IModel<Case> caseModel = new PropertyModel<Case>(model, "case");
         final IModel<Locale> localeModel = new PropertyModel<Locale>(model, "configuredLocale");
         
-        localeEntry = new DropDownChoice<>("locale", localeModel, getLocales(), new IChoiceRenderer<Locale>(){
-            
+        localeEntry = new DropDownChoice<>("locale", localeModel, getLocales(), new ChoiceRenderer<Locale>(){
+
+            private static final long serialVersionUID = -2122570049478633429L;
+
             @Override
             public Object getDisplayValue(Locale object) {
                 return object.getDisplayName(CaseNormalizerSubform.this.getLocale());
@@ -65,11 +66,10 @@ public class CaseNormalizerSubform extends FormComponentPanel<CaseNormalizer> {
         });
         localeEntry.setNullValid(true);
         
-        caseEntry = new DropDownChoice<Case>("case", caseModel, Arrays.asList(Case.values()), new IChoiceRenderer<Case>(){
-            
-            /** serialVersionUID */
-            private static final long serialVersionUID = 1L;
-            
+        caseEntry = new DropDownChoice<Case>("case", caseModel, Arrays.asList(Case.values()), new ChoiceRenderer<Case>(){
+
+            private static final long serialVersionUID = -129788130907421097L;
+
             @Override
             public Object getDisplayValue(Case object) {
                 return getLocalizer().getString("case."+object.name(), CaseNormalizerSubform.this);
@@ -87,16 +87,11 @@ public class CaseNormalizerSubform extends FormComponentPanel<CaseNormalizer> {
     }
     
     @Override
-    protected void convertInput() {
-        visitChildren(new Component.IVisitor<Component>() {
-            
-            @Override
-            public Object component(Component component) {
-                if (component instanceof FormComponent) {
-                    FormComponent<?> formComponent = (FormComponent<?>) component;
-                    formComponent.processInput();
-                }
-                return Component.IVisitor.CONTINUE_TRAVERSAL;
+    public void convertInput() {
+        visitChildren((component, visit) -> {
+            if (component instanceof FormComponent) {
+                FormComponent<?> formComponent = (FormComponent<?>) component;
+                formComponent.processInput();
             }
         });
         CaseNormalizer filter = getModelObject();

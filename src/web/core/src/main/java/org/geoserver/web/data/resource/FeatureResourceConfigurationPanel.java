@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -15,10 +15,10 @@ import java.util.logging.Logger;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.Page;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.behavior.SimpleAttributeModifier;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.WebPage;
@@ -90,7 +90,7 @@ public class FeatureResourceConfigurationPanel extends ResourceConfigurationPane
             protected void populateItem(ListItem item) {
                 
                 // odd/even style
-                item.add(new SimpleAttributeModifier("class",
+                item.add(AttributeModifier.replace("class",
                         item.getIndex() % 2 == 0 ? "even" : "odd"));
 
                 // dump the attribute information we have
@@ -137,7 +137,7 @@ public class FeatureResourceConfigurationPanel extends ResourceConfigurationPane
                 FeatureTypeInfo ft = (FeatureTypeInfo)getResourceInfo();
                 app.getCatalog().getResourcePool().clear(ft);
                 app.getCatalog().getResourcePool().clear(ft.getStore());
-                target.addComponent(attributePanel);
+                target.add(attributePanel);
             }
         };
         reloadContainer.add(reload);
@@ -205,7 +205,11 @@ public class FeatureResourceConfigurationPanel extends ResourceConfigurationPane
     
     @Override
     public void resourceUpdated(AjaxRequestTarget target) {
-        target.addComponent(attributePanel);
+        if (target != null) {
+            // force it to reload the attribute list
+            attributes.getModel().detach();
+            target.add(attributePanel);
+        }
     }
 
     static class ReloadWarningDialog extends WebPage {
@@ -278,7 +282,9 @@ public class FeatureResourceConfigurationPanel extends ResourceConfigurationPane
                 FeatureTypeInfo typeInfo = (FeatureTypeInfo) getDefaultModelObject();
                 Catalog catalog = GeoServerApplication.get().getCatalog();
                 final ResourcePool resourcePool = catalog.getResourcePool();
-                return resourcePool.getAttributes(typeInfo);
+                // using loadAttributes to dodge the ResourcePool caches, the
+                // feature type structure might have been modified (e.g., SQL view editing)
+                return resourcePool.loadAttributes(typeInfo);
             } catch (Exception e) {
                 LOGGER.log(Level.SEVERE, "Grabbing the attribute list failed", e);
                 String error = new ParamResourceModel("attributeListingFailed", FeatureResourceConfigurationPanel.this, e.getMessage()).getString();

@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -83,12 +83,12 @@ public class SQLViewAttributeProvider extends
     }
 
     @Override
-    protected List getItems() {
+    protected List<SQLViewAttribute> getItems() {
         return attributes;
     }
 
     @Override
-    protected List getProperties() {
+    protected List<Property<SQLViewAttribute>> getProperties() {
         return Arrays.asList(NAME, TYPE, SRID, PK);
     }
 
@@ -96,14 +96,15 @@ public class SQLViewAttributeProvider extends
      * Sets the geometries details and the primary key columns into the virtual table
      * @param vt
      */
+    @SuppressWarnings("unchecked")
     public void fillVirtualTable(VirtualTable vt) {
         List<String> pks = new ArrayList<String>();
         for(SQLViewAttribute att : attributes) {
             if(Geometry.class.isAssignableFrom(att.getType())) {
                 if(att.getSrid() == null) {
-                    vt.addGeometryMetadatata(att.getName(), att.getType(), 4326);
+                    vt.addGeometryMetadatata(att.getName(), (Class<? extends Geometry>) att.getType(), 4326);
                 } else {
-                    vt.addGeometryMetadatata(att.getName(), att.getType(), att.getSrid());
+                    vt.addGeometryMetadatata(att.getName(), (Class<? extends Geometry>) att.getType(), att.getSrid());
                 }
                 
             }

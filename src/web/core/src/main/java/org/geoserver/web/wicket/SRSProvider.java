@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -16,8 +16,6 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
 
-import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.Model;
 import org.geotools.factory.Hints;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.ReferencingFactoryFinder;
@@ -139,7 +137,6 @@ public class SRSProvider extends GeoServerDataProvider<SRSProvider.SRS> {
 
     };
 
-    @SuppressWarnings("unchecked")
     private static final ArrayList<Property<SRS>> PROPERTIES = new ArrayList<Property<SRS>>(Arrays
             .asList(CODE, DESCRIPTION));
 
@@ -163,7 +160,7 @@ public class SRSProvider extends GeoServerDataProvider<SRSProvider.SRS> {
     }
 
     static List<SRS> buildCodeList() {
-        long t = System.currentTimeMillis();
+        //long t = System.currentTimeMillis();
         Set<String> codes = CRS.getSupportedCodes("EPSG");
 
         try {

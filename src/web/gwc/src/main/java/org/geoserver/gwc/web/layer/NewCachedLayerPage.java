@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.ResourceReference;
+import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.basic.Label;
@@ -44,6 +44,8 @@ import org.geowebcache.layer.TileLayer;
  */
 public class NewCachedLayerPage extends GeoServerSecuredPage {
 
+    private static final long serialVersionUID = 6458510742445385219L;
+
     private UnconfiguredCachedLayersProvider provider = new UnconfiguredCachedLayersProvider();
 
     private GeoServerTablePanel<TileLayer> table;
@@ -57,17 +59,17 @@ public class NewCachedLayerPage extends GeoServerSecuredPage {
     public NewCachedLayerPage() {
 
         table = new GeoServerTablePanel<TileLayer>("table", provider, true) {
-            private static final long serialVersionUID = 1L;
 
-            @SuppressWarnings({ "rawtypes", "unchecked" })
+            private static final long serialVersionUID = -5260899839139961722L;
+
             @Override
-            protected Component getComponentForProperty(String id, IModel itemModel,
+            protected Component getComponentForProperty(String id, IModel<TileLayer> itemModel,
                     Property<TileLayer> property) {
 
                 if (property == TYPE) {
                     Fragment f = new Fragment(id, "iconFragment", NewCachedLayerPage.this);
                     TileLayer layer = (TileLayer) itemModel.getObject();
-                    ResourceReference layerIcon = (ResourceReference) property
+                    PackageResourceReference layerIcon = (PackageResourceReference) property
                             .getPropertyValue(layer);
                     f.add(new Image("layerIcon", layerIcon));
                     return f;
@@ -76,7 +78,7 @@ public class NewCachedLayerPage extends GeoServerSecuredPage {
                 } else if (property == ENABLED) {
                     TileLayer layerInfo = (TileLayer) itemModel.getObject();
                     boolean enabled = layerInfo.isEnabled();
-                    ResourceReference icon;
+                    PackageResourceReference icon;
                     if (enabled) {
                         icon = GWCIconFactory.getEnabledIcon();
                     } else {
@@ -93,7 +95,7 @@ public class NewCachedLayerPage extends GeoServerSecuredPage {
             @Override
             protected void onSelectionUpdate(AjaxRequestTarget target) {
                 updateBulkConfigLink();
-                target.addComponent(bulkConfig);
+                target.add(bulkConfig);
             }
         };
         table.setOutputMarkupId(true);
@@ -183,8 +185,8 @@ public class NewCachedLayerPage extends GeoServerSecuredPage {
 
                     IModel<String> model = new StringResourceModel(
                             "NewCachedLayerPage.confirmBulkConfig.message",
-                            BulkCachedLayerConfigurationLink.this, null,
-                            new Object[] { selectedLayerCount.toString() });
+                            BulkCachedLayerConfigurationLink.this).setParameters(
+                            		new Object[] { selectedLayerCount.toString() });
                     Label confirmLabel = new Label(id, model);
                     confirmLabel.setEscapeModelStrings(false);// allow some html inside, like
                                                               // <b></b>, etc
@@ -208,8 +210,8 @@ public class NewCachedLayerPage extends GeoServerSecuredPage {
                     List<TileLayer> selection = table.getSelection();
                     if (selection.isEmpty()) {
                         updateBulkConfigLink();
-                        target.addComponent(BulkCachedLayerConfigurationLink.this);
-                        target.addComponent(table);
+                        target.add(BulkCachedLayerConfigurationLink.this);
+                        target.add(table);
                     }
                 }
             });

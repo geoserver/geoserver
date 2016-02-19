@@ -20,18 +20,18 @@
             <Label>
               <ogc:PropertyName>name</ogc:PropertyName>
             </Label>
-            <LabelPlacement>
-              <LinePlacement />
-            </LabelPlacement>
-            <Fill>
-              <CssParameter name="fill">#000000</CssParameter>
-            </Fill>
             <Font>
               <CssParameter name="font-family">Arial</CssParameter>
               <CssParameter name="font-size">10</CssParameter>
               <CssParameter name="font-style">normal</CssParameter>
               <CssParameter name="font-weight">bold</CssParameter>
             </Font>
+            <LabelPlacement>
+              <LinePlacement />
+            </LabelPlacement>
+            <Fill>
+              <CssParameter name="fill">#000000</CssParameter>
+            </Fill>
             <VendorOption name="followLine">true</VendorOption>
             <VendorOption name="maxAngleDelta">90</VendorOption>
             <VendorOption name="maxDisplacement">400</VendorOption>

@@ -29,6 +29,8 @@ import org.geoserver.gwc.layer.GeoServerTileLayerInfoImpl;
 import org.geoserver.gwc.layer.LegacyTileLayerInfoLoader;
 import org.geoserver.gwc.layer.TileLayerCatalog;
 import org.geoserver.gwc.layer.TileLayerInfoUtil;
+import org.geoserver.platform.resource.Files;
+import org.geoserver.platform.resource.Resource;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSInfoImpl;
 import org.junit.Before;
@@ -122,7 +124,7 @@ public class GWCInitializerTest {
     @Test
     public void testUpgradeFromTileLayerInfosToTileLayerCatalog() throws Exception {
         // do have gwc-gs.xml, so it doesn't go through the createDefaultTileLayerInfos path
-        File fakeConfig = new File("target", "gwc-gs.xml");
+        Resource fakeConfig = Files.asResource(new File("target", "gwc-gs.xml"));
         when(configPersister.findConfigFile()).thenReturn(fakeConfig);
 
         GWCConfig defaults = GWCConfig.getOldDefaults();

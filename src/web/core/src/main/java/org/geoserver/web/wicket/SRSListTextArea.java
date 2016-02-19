@@ -1,3 +1,8 @@
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2013 OpenPlans
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.web.wicket;
 
 import java.util.ArrayList;
@@ -11,7 +16,9 @@ import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.util.convert.IConverter;
 import org.apache.wicket.validation.IValidatable;
-import org.apache.wicket.validation.validator.AbstractValidator;
+import org.apache.wicket.validation.IValidationError;
+import org.apache.wicket.validation.IValidator;
+import org.apache.wicket.validation.ValidationError;
 import org.geotools.referencing.CRS;
 
 public class SRSListTextArea extends TextArea<List<String>> {
@@ -25,16 +32,20 @@ public class SRSListTextArea extends TextArea<List<String>> {
         setType(List.class);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public IConverter getConverter(Class type) {
-        return new SRSListConverter();
+    public <C> IConverter<C> getConverter(Class<C> type) {
+        if (List.class.isAssignableFrom(type)) {
+            return (IConverter<C>) new SRSListConverter();
+        }
+        return super.getConverter(type);
     }
 
-    private static class SRSListConverter implements IConverter {
+    private static class SRSListConverter implements IConverter<List<String>> {
+        private static final long serialVersionUID = 6381056789141754260L;
         static final Pattern COMMA_SEPARATED = Pattern.compile("\\s*,\\s*", Pattern.MULTILINE);
 
-        public String convertToString(Object value, Locale locale) {
-            List<String> srsList = (List<String>) value;
+        public String convertToString(List<String> srsList, Locale locale) {
             if (srsList.isEmpty())
                 return "";
 
@@ -46,31 +57,35 @@ public class SRSListTextArea extends TextArea<List<String>> {
             return sb.toString();
         }
 
-        public Object convertToObject(String value, Locale locale) {
+        public List<String> convertToObject(String value, Locale locale) {
             if (value == null || value.trim().equals(""))
                 return Collections.emptyList();
             return new ArrayList<String>(Arrays.asList(COMMA_SEPARATED.split(value)));
         }
     }
 
-    private static class SRSListValidator extends AbstractValidator {
+    private static class SRSListValidator implements IValidator<List<String>> {
+
+        private static final long serialVersionUID = -6376260926391668771L;
 
         @Override
-        protected void onValidate(IValidatable validatable) {
-            List<String> srsList = (List<String>) validatable.getValue();
-            List<String> invalid = new ArrayList<String>();
-            for (String srs : srsList) {
+        public void validate(IValidatable<List<String>> validatable) {
+            List<String> srsList = validatable.getValue();
+            List<String> invalid = new ArrayList<>();
+            srsList.stream().forEach((srs) -> {
                 try {
                     CRS.decode("EPSG:" + srs);
                 } catch (Exception e) {
                     invalid.add(srs);
                 }
+            });
+
+            if (invalid.size() > 0) {
+                IValidationError err = new ValidationError("SRSListTextArea.unknownEPSGCodes")
+                        .addKey("SRSListTextArea.unknownEPSGCodes")
+                        .setVariable("codes", invalid.toString());
+                validatable.error(err);
             }
-
-            if (invalid.size() > 0)
-                error(validatable, "SRSListTextArea.unknownEPSGCodes",
-                        Collections.singletonMap("codes", invalid.toString()));
-
         }
 
     }

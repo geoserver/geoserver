@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -9,6 +9,7 @@ import static org.junit.Assert.*;
 
 import java.util.Iterator;
 
+import org.apache.wicket.Component;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.list.ListView;
@@ -71,14 +72,14 @@ public class PropertyEditorFormComponentTest extends GeoServerWicketTestSupport 
         try {
             tester.assertComponent("form:props:container:list:3:remove",AjaxLink.class);
             fail();
-        } catch(Exception e) {}
+        } catch(AssertionError e) {}
 
         ListView list = 
             (ListView) tester.getComponentFromLastRenderedPage("form:props:container:list");
         assertNotNull(list);
 
         int i = 0;
-        for (Iterator<ListItem> it = list.iterator(); it.hasNext(); i++) {
+        for (Iterator<Component> it = list.iterator(); it.hasNext(); i++) {
             if ("baz".equals(it.next().get("key").getDefaultModelObjectAsString())) {
                 break;
             }

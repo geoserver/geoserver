@@ -14,6 +14,7 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
@@ -24,6 +25,7 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.Keyword;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.ProjectionPolicy;
 import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.TestHttpClientProvider;
 import org.geoserver.catalog.WMSLayerInfo;
@@ -79,8 +81,8 @@ public class CatalogBuilderTest extends GeoServerMockTestSupport {
         cb.setStore(cat.getDataStoreByName(MockData.BRIDGES.getPrefix()));
         FeatureTypeInfo fti = cb.buildFeatureType(toName(MockData.BRIDGES));
 
-        // perform basic checks, this has no srs so no lat/lon bbox computation possible
-        assertNull(fti.getSRS());
+        // perform basic checks, this has no srs, so default one will be set
+        assertEquals(CatalogBuilder.DEFAULT_SRS, fti.getSRS());
         assertNull(fti.getNativeCRS());
         assertNull(fti.getNativeBoundingBox());
         assertNull(fti.getLatLonBoundingBox());
@@ -89,7 +91,45 @@ public class CatalogBuilderTest extends GeoServerMockTestSupport {
         cb.setupBounds(fti);
         assertNotNull(fti.getNativeBoundingBox());
         assertNull(fti.getNativeBoundingBox().getCoordinateReferenceSystem());
-        assertNull(fti.getLatLonBoundingBox());
+        assertNotNull(fti.getLatLonBoundingBox());
+    }
+    
+    @Test
+    public void testGetBoundsFromCRS() throws Exception {
+        Catalog cat = getCatalog();
+        CatalogBuilder cb = new CatalogBuilder(cat);
+        cb.setStore(cat.getDataStoreByName(MockData.LINES.getPrefix()));
+        FeatureTypeInfo fti = cb.buildFeatureType(toName(MockData.LINES));
+        
+        CoordinateReferenceSystem resourceCRS = fti.getCRS();
+        assertNotNull(resourceCRS);
+        
+        //make sure the srs is as expected, otherwise the rest of the tests don't make sense
+        assertEquals("EPSG:32615", fti.getSRS());
+        ReferencedEnvelope crsBounds = cb.getBoundsFromCRS(fti);
+        assertNotNull(crsBounds);
+        
+        CoordinateReferenceSystem exptectedCRS = CRS.decode("EPSG:32615");
+        assertEquals(new ReferencedEnvelope(CRS.getEnvelope(exptectedCRS)), crsBounds);
+        
+        //if we change the srs when there's no reproject policy, should still be the same bounding
+        //box
+        fti.setSRS("EPSG:4326");
+        fti.setProjectionPolicy(ProjectionPolicy.NONE);
+        crsBounds = cb.getBoundsFromCRS(fti);
+        assertEquals(new ReferencedEnvelope(CRS.getEnvelope(exptectedCRS)), crsBounds);
+        
+        //if we use reproject policy, bounds should now be different
+        fti.setProjectionPolicy(ProjectionPolicy.FORCE_DECLARED);
+        crsBounds = cb.getBoundsFromCRS(fti);
+        assertNotEquals(new ReferencedEnvelope(CRS.getEnvelope(exptectedCRS)), crsBounds);
+        
+        //should now be 4326 bounds
+        CoordinateReferenceSystem crs4326 = CRS.decode("EPSG:4326");
+        assertEquals(new ReferencedEnvelope(CRS.getEnvelope(crs4326)), crsBounds);
+        
+        fti.setProjectionPolicy(ProjectionPolicy.REPROJECT_TO_DECLARED);
+        assertEquals(new ReferencedEnvelope(CRS.getEnvelope(crs4326)), crsBounds);
     }
 
     
@@ -141,10 +181,11 @@ public class CatalogBuilderTest extends GeoServerMockTestSupport {
         cb.setupBounds(fti);
 
         // perform basic checks
-        assertNull(fti.getCRS());
-        // ... not so sure about this one, null would seem more natural
+        assertEquals(CatalogBuilder.DEFAULT_SRS, fti.getSRS());
+        assertNotNull(fti.getNativeBoundingBox());
         assertTrue(fti.getNativeBoundingBox().isEmpty());
-        assertNull(fti.getLatLonBoundingBox());
+        assertNotNull(fti.getLatLonBoundingBox());
+        assertFalse(fti.getLatLonBoundingBox().isEmpty());
         assertNull(layer.getDefaultStyle());
     }
 
@@ -178,6 +219,16 @@ public class CatalogBuilderTest extends GeoServerMockTestSupport {
         assertNull(dimension.getUnit());
     }
     
+    @Test
+    public void testSingleBandedCoverage_GEOS7311() throws Exception {
+        Locale defaultLocale = Locale.getDefault();
+        Locale.setDefault(new Locale("es", "ES"));
+        testSingleBandedCoverage();
+        Locale.setDefault(new Locale("fr", "FR"));
+        testSingleBandedCoverage();
+        Locale.setDefault(defaultLocale);
+    }
+ 
     @Test
     public void testMultiBandCoverage() throws Exception {
         Catalog cat = getCatalog();

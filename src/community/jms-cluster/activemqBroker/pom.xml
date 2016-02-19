@@ -25,24 +25,6 @@
 
 	<build>
 		<plugins>
-			<!-- ======================================================= -->
-			<!-- Compilation. -->
-			<!-- ======================================================= -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>2.0.2</version>
-				<configuration>
-					<source>1.7</source>
-					<!-- The -source argument for the Java compiler. -->
-					<target>1.7</target>
-					<!-- The -target argument for the Java compiler. -->
-					<debug>true</debug>
-					<!-- Whether to include debugging information. -->
-					<encoding>UTF-8</encoding>
-					<!-- The -encoding argument for the Java compiler. -->
-				</configuration>
-			</plugin>
 			<!-- eclipse ide integration -->
 			<plugin>
 				<artifactId>maven-eclipse-plugin</artifactId>
@@ -144,17 +126,6 @@
 			</dependency>
 
 			<dependency>
-				<groupId>org.slf4j</groupId>
-				<artifactId>slf4j-api</artifactId>
-				<version>1.5.11</version>
-			</dependency>
-			<dependency>
-				<groupId>org.slf4j</groupId>
-				<artifactId>slf4j-log4j12</artifactId>
-				<version>1.5.11</version>
-			</dependency>
-
-			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-core</artifactId>
 				<version>${spring.version}</version>
@@ -195,25 +166,6 @@
 					</exclusion> </exclusions -->
 			</dependency>
 
-
-			<dependency>
-				<groupId>org.mortbay.jetty</groupId>
-				<artifactId>jetty</artifactId>
-				<scope>test</scope>
-				<version>6.1.8</version>
-			</dependency>
-			<dependency>
-				<groupId>org.mortbay.jetty</groupId>
-				<artifactId>jetty-naming</artifactId>
-				<scope>test</scope>
-				<version>6.1.8</version>
-			</dependency>
-			<dependency>
-				<groupId>org.mortbay.jetty</groupId>
-				<artifactId>jetty-plus</artifactId>
-				<scope>test</scope>
-				<version>6.1.8</version>
-			</dependency>
 			<dependency>
 				<groupId>org.bouncycastle</groupId>
 				<artifactId>bcprov-jdk14</artifactId>
@@ -290,17 +242,17 @@
 		</dependency>
 		<!-- TESTS -->
 		<dependency>
-			<groupId>org.mortbay.jetty</groupId>
-			<artifactId>jetty</artifactId>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-server</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.mortbay.jetty</groupId>
-			<artifactId>jetty-naming</artifactId>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-jndi</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.mortbay.jetty</groupId>
+			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-plus</artifactId>
 			<scope>test</scope>
 		</dependency>

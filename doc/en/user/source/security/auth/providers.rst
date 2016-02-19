@@ -1,25 +1,25 @@
-.. _sec_auth_providers:
+.. _security_auth_providers:
 
 Authentication providers
 ========================
 
 The following authentication providers are available in GeoServer:
  
-* Authentication of a username/password against a :ref:`user/group service <sec_rolesystem_usergroupservices>`
+* Authentication of a username/password against a :ref:`user/group service <security_rolesystem_usergroupservices>`
 * Authentication against an LDAP server
 * Authentication by connecting to a database through JDBC
 
 
-.. _sec_auth_provider_userpasswd:
+.. _security_auth_provider_userpasswd:
 
 Username/password authentication
 --------------------------------
 
-Username and password authentication is the default authentication provider. It uses a :ref:`user/group service <sec_rolesystem_usergroupservices>` to authenticate.
+Username and password authentication is the default authentication provider. It uses a :ref:`user/group service <security_rolesystem_usergroupservices>` to authenticate.
 
 The provider simply takes the username/password from an incoming request (such as a Basic Authentication request), then loads the user information from the user/group service and verifies the credentials.
 
-.. _sec_auth_provider_ldap:
+.. _security_auth_provider_ldap:
 
 LDAP authentication
 -------------------
@@ -59,9 +59,9 @@ The above scenario defines a user with the ``uid`` of ``bob``, and a ``group`` n
 
 .. note:: When the LDAP server doesn't allow searching in an anoymous context, the bindBeforeGroupSearch option should be enabled to avoid errors.
 
-In the case of using a :ref:`user/group service <sec_rolesystem_usergroupservices>`, the user/group service is queried for the user following authentication, and the role assignment is performed by both the user/group service and the active :ref:`role service <sec_rolesystem_roleservices>`. When using this option, any password defined for the user in the user/group service database is ignored.
+In the case of using a :ref:`user/group service <security_rolesystem_usergroupservices>`, the user/group service is queried for the user following authentication, and the role assignment is performed by both the user/group service and the active :ref:`role service <security_rolesystem_roleservices>`. When using this option, any password defined for the user in the user/group service database is ignored.
 
-.. _sec_auth_provider_ldap_secure:
+.. _security_auth_provider_ldap_secure:
 
 Secure LDAP connections
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -73,14 +73,14 @@ The second method involves using **STARTTLS** (Transport Layer Security) to nego
 .. warning::  Using TLS for connections will prevent GeoServer from being able to pool LDAP connections. This means a new LDAP connection will be created and destroyed for each authentication, resulting in loss of performance.
 
 
-.. _sec_auth_provider_jdbc:
+.. _security_auth_provider_jdbc:
 
 JDBC authentication
 -------------------
 
 The JDBC authentication provider authenticates by connecting to a database over `JDBC <http://en.wikipedia.org/wiki/Java_Database_Connectivity>`_.
 
-The provider takes the username/password from the incoming request and attempts to create a database connection using those credentials. Optionally the provider may use a :ref:`user/group service <sec_rolesystem_usergroupservices>` to load user information after a successful authentication. In this context the user/group service will not be used for password verification, only for role assignment.
+The provider takes the username/password from the incoming request and attempts to create a database connection using those credentials. Optionally the provider may use a :ref:`user/group service <security_rolesystem_usergroupservices>` to load user information after a successful authentication. In this context the user/group service will not be used for password verification, only for role assignment.
 
-.. note:: To use the user/group service for password verification, please see the section on :ref:`sec_auth_provider_userpasswd`.
+.. note:: To use the user/group service for password verification, please see the section on :ref:`security_auth_provider_userpasswd`.
 

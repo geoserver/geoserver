@@ -8,7 +8,7 @@ PostGIS
 Adding a PostGIS database
 -------------------------
 
-As with all formats, adding a shapefile to GeoServer involves adding a new store to the existing :ref:`webadmin_stores`  through the :ref:`web_admin`.
+As with all formats, adding a shapefile to GeoServer involves adding a new store to the existing :ref:`data_webadmin_stores`  through the :ref:`web_admin`.
 
 Using default connection
 ````````````````````````
@@ -105,7 +105,7 @@ When finished, click :guilabel:`Save`.
 Configuring PostGIS layers
 --------------------------
 
-When properly loaded, all tables in the database will be visible to GeoServer, but they will need to be individually configured before being served by GeoServer.  See the section on :ref:`webadmin_layers` for how to add and edit new layers.
+When properly loaded, all tables in the database will be visible to GeoServer, but they will need to be individually configured before being served by GeoServer.  See the section on :ref:`data_webadmin_layers` for how to add and edit new layers.
 
 .. _postgis_loose_bbox:
 

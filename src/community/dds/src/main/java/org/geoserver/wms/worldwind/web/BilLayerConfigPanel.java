@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -8,15 +8,17 @@ import java.nio.ByteOrder;
 import java.util.Arrays;
 import java.util.logging.Logger;
 
+import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.DropDownChoice;
-import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.model.util.ListModel;
 import org.apache.wicket.resource.loader.IStringResourceLoader;
+import org.geoserver.catalog.LayerInfo;
 import org.geoserver.web.GeoServerStringResourceLoader;
-import org.geoserver.web.publish.LayerConfigurationPanel;
+import org.geoserver.web.publish.PublishedConfigurationPanel;
 import org.geoserver.web.util.MapModel;
 import org.geoserver.wms.worldwind.BilConfig;
 import org.geotools.util.logging.Logging;
@@ -27,13 +29,13 @@ import org.geotools.util.logging.Logging;
  * 
  * @author Parker Abercrombie
  */
-@SuppressWarnings("serial")
-public class BilLayerConfigPanel extends LayerConfigurationPanel
+public class BilLayerConfigPanel extends PublishedConfigurationPanel<LayerInfo>
 {
+    private static final long serialVersionUID = -7082211085566621848L;
+    
     private static final Logger LOGGER = Logging.getLogger(BilLayerConfigPanel.class);
 
-    @SuppressWarnings("unchecked")
-    public BilLayerConfigPanel(String id, IModel<org.geoserver.catalog.LayerInfo> model)
+    public BilLayerConfigPanel(String id, IModel<LayerInfo> model)
     {
         super(id, model);
 
@@ -61,21 +63,19 @@ public class BilLayerConfigPanel extends LayerConfigurationPanel
     /**
      * Renderer to display a localized string for the Byte Order drop down.
      */
-    private class ByteOrderRenderer implements IChoiceRenderer<String>
+    private class ByteOrderRenderer extends ChoiceRenderer<String>
     {
 
-    	public Object getDisplayValue(String str)
+        private static final long serialVersionUID = 9198622236589910965L;
+
+        public Object getDisplayValue(String str)
     	{
     	    IStringResourceLoader loader = new GeoServerStringResourceLoader();
     	    if (ByteOrder.LITTLE_ENDIAN.toString().equals(str))
         	{
-        		return loader.loadStringResource(BilLayerConfigPanel.this,
-        		        "BilLayerConfigPanel.byteOrderLittleEndian");
-        	}
-        	else if (ByteOrder.BIG_ENDIAN.toString().equals(str))
-        	{
-                return loader.loadStringResource(BilLayerConfigPanel.this,
-                        "BilLayerConfigPanel.byteOrderBigEndian");
+    	            return new StringResourceModel("byteOrderLittleEndian", BilLayerConfigPanel.this).getObject();
+        	} else if (ByteOrder.BIG_ENDIAN.toString().equals(str)) {
+                    return new StringResourceModel("byteOrderBigEndian", BilLayerConfigPanel.this).getObject();
         	}
 
     	    LOGGER.warning("Unknown byte order: " + str);

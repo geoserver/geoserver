@@ -1,31 +1,26 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.web;
 
-import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.apache.wicket.Application;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.Page;
-import org.apache.wicket.RequestCycle;
-import org.apache.wicket.ResourceReference;
+import org.apache.wicket.RuntimeConfigurationType;
 import org.apache.wicket.ajax.IAjaxIndicatorAware;
-import org.apache.wicket.behavior.AttributeAppender;
-import org.apache.wicket.behavior.HeaderContributor;
+import org.apache.wicket.markup.head.CssReferenceHeaderItem;
+import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
@@ -36,15 +31,12 @@ import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.LoadableDetachableModel;
-import org.apache.wicket.model.Model;
 import org.apache.wicket.model.StringResourceModel;
-import org.apache.wicket.protocol.http.WebResponse;
+import org.apache.wicket.request.cycle.RequestCycle;
+import org.apache.wicket.request.resource.PackageResourceReference;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.config.GeoServer;
-import org.geoserver.ows.util.CaseInsensitiveMap;
-import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.platform.GeoServerExtensions;
-import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.web.spring.security.GeoServerSession;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geotools.util.logging.Logging;
@@ -91,39 +83,28 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
 
 	@SuppressWarnings("serial")
     public GeoServerBasePage() {
-        //add css and javascript header contributions
-	    ResourceReference faviconReference = null;
+        // lookup for a pluggable favicon
+        PackageResourceReference faviconReference = null;
         List<HeaderContribution> cssContribs = 
             getGeoServerApplication().getBeansOfType(HeaderContribution.class);
         for (HeaderContribution csscontrib : cssContribs) {
             try {
                 if (csscontrib.appliesTo(this)) {
-                    ResourceReference ref = csscontrib.getCSS();
-                    if (ref != null) {
-                        add(HeaderContributor.forCss(ref));
-                    }
-                    
-                    ref = csscontrib.getJavaScript();
-                    if (ref != null) {
-                        add(HeaderContributor.forJavaScript(ref));
-                    }
-                    
-                    ref = csscontrib.getFavicon();
+                    PackageResourceReference ref = csscontrib.getFavicon();
                     if(ref != null) {
                         faviconReference = ref;
                     }
                 }
-            }
-            catch( Throwable t ) {
+            } catch( Throwable t ) {
                 LOGGER.log(Level.WARNING, "Problem adding header contribution", t );
             }
         }
         
         // favicon
         if(faviconReference == null) {
-            faviconReference = new ResourceReference(GeoServerBasePage.class, "favicon.ico");
+            faviconReference = new PackageResourceReference(GeoServerBasePage.class, "favicon.ico");
         }
-        String faviconUrl = RequestCycle.get().urlFor(faviconReference).toString();
+        String faviconUrl = RequestCycle.get().urlFor(faviconReference, null).toString();
         add(new ExternalLink("faviconLink", faviconUrl, null));
 	    
 	    // page title
@@ -149,7 +130,7 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
         // dev buttons
         DeveloperToolbar devToolbar = new DeveloperToolbar("devButtons");
         add(devToolbar);
-        devToolbar.setVisible(Application.DEVELOPMENT.equalsIgnoreCase(
+        devToolbar.setVisible(RuntimeConfigurationType.DEVELOPMENT.equals(
                 getApplication().getConfigurationType()));
         
         final Map<Category,List<MenuPageInfo>> links = splitByCategory(
@@ -161,26 +142,26 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
             : new ArrayList<MenuPageInfo>();
         links.remove(null);
 
-        List<Category> categories = new ArrayList(links.keySet());
+        List<Category> categories = new ArrayList<>(links.keySet());
         Collections.sort(categories);
 
-        add(new ListView("category", categories){
-            public void populateItem(ListItem item){
-                Category category = (Category)item.getModelObject();
+        add(new ListView<Category>("category", categories){
+            public void populateItem(ListItem<Category> item){
+                Category category = item.getModelObject();
                 item.add(new Label("category.header", new StringResourceModel(category.getNameKey(), (Component) null, null)));
-                item.add(new ListView("category.links", links.get(category)){
-                    public void populateItem(ListItem item){
-                        MenuPageInfo info = (MenuPageInfo)item.getModelObject();
-                        BookmarkablePageLink link = new BookmarkablePageLink("link", info.getComponentClass());
-                        link.add(new AttributeModifier("title", true, new StringResourceModel(info.getDescriptionKey(), (Component) null, null)));
+                item.add(new ListView<MenuPageInfo>("category.links", links.get(category)){
+                    public void populateItem(ListItem<MenuPageInfo> item){
+                        MenuPageInfo info = item.getModelObject();
+                        BookmarkablePageLink<Page> link = new BookmarkablePageLink<>("link", info.getComponentClass());
+                        link.add(AttributeModifier.replace("title", new StringResourceModel(info.getDescriptionKey(), (Component) null, null)));
                         link.add(new Label("link.label", new StringResourceModel(info.getTitleKey(), (Component) null, null)));
                         Image image;
                         if(info.getIcon() != null) {
-                            image = new Image("link.icon", new ResourceReference(info.getComponentClass(), info.getIcon()));
+                            image = new Image("link.icon", new PackageResourceReference(info.getComponentClass(), info.getIcon()));
                         } else {
-                            image = new Image("link.icon", new ResourceReference(GeoServerBasePage.class, "img/icons/silk/wrench.png"));
+                            image = new Image("link.icon", new PackageResourceReference(GeoServerBasePage.class, "img/icons/silk/wrench.png"));
                         }
-                        image.add(new AttributeModifier("alt", true, new ParamResourceModel(info.getTitleKey(), null)));
+                        image.add(AttributeModifier.replace("alt", new ParamResourceModel(info.getTitleKey(), null)));
                         link.add(image);
                         item.add(link);
                     }
@@ -188,24 +169,26 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
             }
         });
 
-        add(new ListView("standalone", standalone){
-                    public void populateItem(ListItem item){
-                        MenuPageInfo info = (MenuPageInfo)item.getModelObject();
-                        BookmarkablePageLink link = new BookmarkablePageLink("link", info.getComponentClass());
-                        link.add(new AttributeModifier("title", true, new StringResourceModel(info.getDescriptionKey(), (Component) null, null)));
-                        link.add(new Label("link.label", new StringResourceModel(info.getTitleKey(), (Component) null, null)));
-                        item.add(link);
-                        
-                    }
-                }
-        );
+        add(new ListView<MenuPageInfo>("standalone", standalone) {
+            public void populateItem(ListItem<MenuPageInfo> item) {
+                MenuPageInfo info = item.getModelObject();
+                BookmarkablePageLink<Page> link = new BookmarkablePageLink<>("link",
+                        info.getComponentClass());
+                link.add(AttributeModifier.replace("title",
+                        new StringResourceModel(info.getDescriptionKey(), (Component) null, null)));
+                link.add(new Label("link.label",
+                        new StringResourceModel(info.getTitleKey(), (Component) null, null)));
+                item.add(link);
+
+            }
+        });
 
         add(feedbackPanel = new FeedbackPanel("feedback"));
         feedbackPanel.setOutputMarkupId( true );
         
         // ajax feedback image
         add(new Image("ajaxFeedbackImage", 
-                new ResourceReference(GeoServerBasePage.class, "img/ajax-loader.gif")));
+                new PackageResourceReference(GeoServerBasePage.class, "img/ajax-loader.gif")));
         
         add(new WebMarkupContainer(HEADER_PANEL));
         
@@ -235,6 +218,32 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
         NODE_INFO.customize(container);     
         if(id == null) {
             container.setVisible(false);
+        }
+    }
+
+    @Override
+    public void renderHead(IHeaderResponse response) {
+        List<HeaderContribution> cssContribs = getGeoServerApplication()
+                .getBeansOfType(HeaderContribution.class);
+        for (HeaderContribution csscontrib : cssContribs) {
+            try {
+                if (csscontrib.appliesTo(this)) {
+                    PackageResourceReference ref = csscontrib.getCSS();
+                    if (ref != null) {
+                        response.render(CssReferenceHeaderItem.forReference(ref));
+                    }
+
+                    ref = csscontrib.getJavaScript();
+                    if (ref != null) {
+                        response.render(JavaScriptHeaderItem.forReference(ref));
+                    }
+
+                    ref = csscontrib.getFavicon();
+
+                }
+            } catch (Throwable t) {
+                LOGGER.log(Level.WARNING, "Problem adding header contribution", t);
+            }
         }
     }
 
@@ -350,20 +359,12 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
                 continue;
             }
             
-            final Class clazz = component.getComponentClass();
+            final Class<?> clazz = component.getComponentClass();
             if(!component.getAuthorizer().isAccessAllowed(clazz, user))
                 continue;
             result.add(component);
         }
         return result;
-    }
-    @Override
-    protected void configureResponse() {
-        super.configureResponse();
-
-        // this is to avoid https://issues.apache.org/jira/browse/WICKET-923 in Firefox
-        final WebResponse response = getWebRequestCycle().getWebResponse();
-        response.setHeader("Cache-Control", "no-cache, max-age=0, must-revalidate, no-store");
     }
     
    

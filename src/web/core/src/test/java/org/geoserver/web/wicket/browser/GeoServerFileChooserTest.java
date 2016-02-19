@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -12,16 +12,15 @@ import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.wicket.Component;
+import org.apache.wicket.ajax.AjaxRequestHandler;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.model.Model;
-import org.geoserver.data.test.SystemTestData;
 import org.geoserver.web.ComponentBuilder;
 import org.geoserver.web.FormTestPage;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geoserver.web.wicket.GeoServerDialog;
-import org.geoserver.web.wicket.WicketHierarchyPrinter;
 import org.geoserver.web.wicket.GeoServerDialog.DialogDelegate;
 import org.junit.Before;
 import org.junit.Test;
@@ -96,7 +95,7 @@ public class GeoServerFileChooserTest extends GeoServerWicketTestSupport {
         GeoServerDialog dialog = (GeoServerDialog) tester.getComponentFromLastRenderedPage("form:panel");
         assertNotNull(dialog);
 
-        dialog.showOkCancel(new AjaxRequestTarget(tester.getLastRenderedPage()), 
+        dialog.showOkCancel(new AjaxRequestHandler(tester.getLastRenderedPage()),
             new DialogDelegate() {
                 @Override
                 protected Component getContents(String id) {
@@ -111,7 +110,7 @@ public class GeoServerFileChooserTest extends GeoServerWicketTestSupport {
                 }
         });
         
-        dialog.submit(new AjaxRequestTarget(tester.getLastRenderedPage()));
+        dialog.submit(new AjaxRequestHandler(tester.getLastRenderedPage()));
     }
 
     @Test

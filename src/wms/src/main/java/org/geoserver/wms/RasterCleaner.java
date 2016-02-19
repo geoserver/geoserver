@@ -102,5 +102,13 @@ public class RasterCleaner extends AbstractDispatcherCallback {
             list.clear();
         }
     }
+    
+    public List<RenderedImage> getImages() {
+        return images.get();
+    }
+    
+    public List<GridCoverage2D> getCoverages() {
+        return coverages.get();
+    }
 
 }

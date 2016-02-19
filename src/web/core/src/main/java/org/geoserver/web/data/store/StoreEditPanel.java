@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -18,7 +18,6 @@ import org.geoserver.catalog.StoreInfo;
 import org.geoserver.web.GeoServerApplication;
 import org.geotools.data.DataAccessFactory;
 import org.geotools.data.DataAccessFactory.Param;
-import org.geotools.data.Repository;
 
 /**
  * Base class for panels containing the form edit components for {@link StoreInfo} objects

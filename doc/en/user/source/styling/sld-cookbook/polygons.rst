@@ -164,6 +164,53 @@ Details
 This example is similar to the :ref:`sld_cookbook_polygons_simplepolygonwithstroke` example, save for defining the fill's opacity in **line 6**. The value of 0.5 results in partially transparent fill that is 50% opaque.  An opacity value of 1 would draw the fill as 100% opaque, while an opacity value of 0 would result in a completely transparent (0% opaque) fill.  In this example, since the background is white, the dark blue looks lighter.  Were the points imposed on a dark background, the resulting color would be darker.
 
 
+.. _sld_cookbook_polygons_offset:
+
+Offset inner lines
+------------------
+
+Shows how to draw inner buffer lines inside a polygon.
+
+.. figure:: images/polygon_offset.png
+   :align: center
+
+   *Offset buffer*
+
+Code
+~~~~
+
+:download:`View and download the full "Inner offset lines" SLD <artifacts/polygon_offset.sld>`
+
+.. code-block:: xml 
+   :linenos:
+
+      <FeatureTypeStyle>
+        <Rule>
+          <PolygonSymbolizer>
+            <Stroke>
+              <CssParameter name="stroke">#000000</CssParameter>
+              <CssParameter name="stroke-width">2</CssParameter> 
+            </Stroke>
+          </PolygonSymbolizer>
+          <LineSymbolizer>
+            <Stroke>
+              <CssParameter name="stroke">#AAAAAA</CssParameter>
+              <CssParameter name="stroke-width">3</CssParameter>
+            </Stroke>
+            <PerpendicularOffset>-2</PerpendicularOffset>
+          </LineSymbolizer>
+        </Rule>
+      </FeatureTypeStyle>
+
+Details
+~~~~~~~
+
+This example is similar to the :ref:`sld_cookbook_polygons_simplepolygonwithstroke` example, save 
+for defining adding a ``<LineSymbolizer>>`` at **line 9**, where a light gray (**line 11**) 
+3 pixels wide (**line 12**) line is drawn as a inner buffer inside the polygon.
+**Line 14** controls the buffering distance, setting a inner buffer of 2 pixels.   
+
+
 .. _sld_cookbook_polygons_graphicfill:
 
 Graphic fill

@@ -76,6 +76,8 @@ public abstract class FeatureCollectionResponse extends RequestObject {
     }
 
     public static class WFS11 extends FeatureCollectionResponse {
+        BigInteger totalNumberOfFeatures;
+        
         public WFS11(EObject adaptee) {
             super(adaptee);
         }
@@ -96,12 +98,11 @@ public abstract class FeatureCollectionResponse extends RequestObject {
 
         @Override
         public BigInteger getTotalNumberOfFeatures() {
-            //noop
-            return null;
+            return totalNumberOfFeatures;
         }
         @Override
         public void setTotalNumberOfFeatures(BigInteger n) {
-            //noop
+            this.totalNumberOfFeatures = n;
         }
 
         @Override

@@ -7,7 +7,6 @@ package org.geoserver.security.impl;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -18,6 +17,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.logging.Logger;
 
+import org.geoserver.platform.resource.Resource;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.GeoServerUserGroupService;
 import org.geoserver.security.GeoServerUserGroupStore;
@@ -127,7 +127,7 @@ public abstract class AbstractUserGroupStore  implements GeoServerUserGroupStore
         deserialize();
     }
 
-    public File getConfigRoot() throws IOException {
+    public Resource getConfigRoot() throws IOException {
         return service.getConfigRoot();
     }
 

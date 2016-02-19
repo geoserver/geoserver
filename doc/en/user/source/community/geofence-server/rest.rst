@@ -112,7 +112,7 @@ Requests
 --------
 
 ``/geofence/rest/rules/``
-~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Query all rules or add a new rule.
 
@@ -135,7 +135,7 @@ Query all rules or add a new rule.
 
 
 ``/geofence/rest/rules/count``
-~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Counts (filtered) rules.
 
@@ -153,7 +153,7 @@ Counts (filtered) rules.
      - 200 OK. Rule list count in XML.
 
 ``/geofence/rest/rules/id/<id>``
-~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Query, modify or delete a specific rule.
 

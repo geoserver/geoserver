@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -16,6 +16,7 @@ import org.apache.wicket.util.convert.IConverter;
 import org.geoserver.security.password.URLMasterPasswordProviderConfig;
 import org.geoserver.web.wicket.HelpLink;
 
+@SuppressWarnings("serial")
 public class URLMasterPasswordProviderPanel 
     extends MasterPasswordProviderPanel<URLMasterPasswordProviderConfig> {
 
@@ -23,9 +24,9 @@ public class URLMasterPasswordProviderPanel
         super(id, model);
 
         add(new HelpLink("urlHelp", this).setDialog(dialog));
-        add(new TextField("uRL", URL.class) {
+        add(new TextField<URL>("uRL", URL.class) {
             @Override
-            public IConverter getConverter(Class<?> type) {
+            public <C> IConverter<C> getConverter(Class<C> type) {
                 return new IConverter() {
                     @Override
                     public String convertToString(Object value, Locale locale) {

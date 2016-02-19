@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -71,7 +71,7 @@ public  class UsernamePasswordDetailsPanelTest extends AbstractSecurityNamedServ
         
         activatePanel();
         
-        assertEquals(1, countItmes());
+        assertEquals(1, countItems());
         assertNotNull(getSecurityNamedServiceConfig("default"));
         assertNull(getSecurityNamedServiceConfig("xxxxxxxx"));
         
@@ -87,7 +87,7 @@ public  class UsernamePasswordDetailsPanelTest extends AbstractSecurityNamedServ
         clickCancel();
         
         tester.assertRenderedPage(basePage.getClass());
-        assertEquals(1, countItmes());
+        assertEquals(1, countItems());
         assertNotNull(getSecurityNamedServiceConfig("default"));
         
         clickAddNew();
@@ -101,7 +101,7 @@ public  class UsernamePasswordDetailsPanelTest extends AbstractSecurityNamedServ
         
         
         tester.assertRenderedPage(basePage.getClass());
-        assertEquals(2, countItmes());        
+        assertEquals(2, countItems());        
         assertNotNull(getSecurityNamedServiceConfig("default"));
         
         UsernamePasswordAuthenticationProviderConfig authConfig=

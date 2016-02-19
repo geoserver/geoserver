@@ -5,13 +5,13 @@
  */
 package org.geoserver.security.impl;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.SortedSet;
 
+import org.geoserver.platform.resource.Resource;
 import org.geoserver.security.GeoServerUserGroupService;
 import org.geoserver.security.GeoServerUserGroupStore;
 import org.geoserver.security.event.UserGroupLoadedEvent;
@@ -177,8 +177,8 @@ public abstract class AbstractUserGroupService extends AbstractGeoServerSecurity
     /**
      * The root configuration for the user group service.
      */
-    public File getConfigRoot() throws IOException {
-        return new File(getSecurityManager().getUserGroupRoot(), getName());
+    public Resource getConfigRoot() throws IOException {
+        return getSecurityManager().userGroup().get(getName());
     }
 
     /* (non-Javadoc)

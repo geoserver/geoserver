@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -16,6 +16,8 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.StringResourceModel;
+import org.apache.wicket.util.visit.IVisit;
+import org.apache.wicket.util.visit.IVisitor;
 import org.geoserver.cluster.JMSFactory;
 import org.geoserver.cluster.client.JMSContainer;
 import org.geoserver.cluster.configuration.BrokerConfiguration;
@@ -48,33 +50,26 @@ public class ClusterPage extends GeoServerSecuredPage {
         fp.setOutputMarkupId(true);
 
         // form and submit
-        final Form<Properties> form = new Form<Properties>("form",
-                new CompoundPropertyModel<Properties>(getConfig().getConfigurations()));
+        Properties configurations = getConfig().getConfigurations();
+        final Form<Properties> form = new Form<Properties>("form", new CompoundPropertyModel<Properties>(configurations));
 
         // add broker URL setting
         final TextField<String> brokerURL = new TextField<String>(
                 BrokerConfiguration.BROKER_URL_KEY);
-        // https://issues.apache.org/jira/browse/WICKET-2426
-        brokerURL.setType(String.class);
         form.add(brokerURL);
 
         // add group name setting
         final TextField<String> instanceName = new TextField<String>(
                 JMSConfiguration.INSTANCE_NAME_KEY);
-        // https://issues.apache.org/jira/browse/WICKET-2426
-        instanceName.setType(String.class);
         form.add(instanceName);
         
         // add instance name setting
         final TextField<String> group = new TextField<String>(
                 JMSConfiguration.GROUP_KEY);
-        // https://issues.apache.org/jira/browse/WICKET-2426
-        group.setType(String.class);
         form.add(group);
 
         // add topic name setting
         final TextField<String> topicName = new TextField<String>(TopicConfiguration.TOPIC_NAME_KEY);
-        // https://issues.apache.org/jira/browse/WICKET-2426
         topicName.setType(String.class);
         form.add(topicName);
 
@@ -125,8 +120,8 @@ public class ClusterPage extends GeoServerSecuredPage {
                                 ConnectionConfigurationStatus.disabled.toString());
                     }
                 }
-                target.addComponent(connectionInfo);
-                target.addComponent(fp);
+                target.add(connectionInfo);
+                target.add(fp);
             }
 
         };
@@ -170,7 +165,7 @@ public class ClusterPage extends GeoServerSecuredPage {
                     readOnlyInfo.getModel().setObject("enabled");
                     loader.enable(true);
                 }
-                target.addComponent(this.getParent());
+                target.add(this.getParent());
             }
         };
         form.add(readOnly);
@@ -217,7 +212,7 @@ public class ClusterPage extends GeoServerSecuredPage {
                 JMSFactory factory = getJMSFactory();
                 if (!factory.isEmbeddedBrokerStarted()) {
                     try {
-                        if (factory.startEmbeddedBroker(getConfig().getConfigurations())) {
+                        if (factory.startEmbeddedBroker(configurations)) {
                             embeddedBrokerInfo.getModel().setObject("enabled");
                         }
                     } catch (Exception e) {
@@ -236,31 +231,21 @@ public class ClusterPage extends GeoServerSecuredPage {
                         fp.error(e.getLocalizedMessage());
                     }
                 }
-                target.addComponent(this.getParent());
+                target.add(this.getParent());
             }
         };
         form.add(embeddedBroker);
 
-        // TODO change status if it is changed due to reset
-        // final Button reset = new Button("resetB", new StringResourceModel("reset", this, null)) {
-        // @Override
-        // public void onSubmit() {
-        // try {
-        // getConfig().loadTempConfig();
-        // fp.info("Configuration reloaded");
-        // } catch (FileNotFoundException e) {
-        // LOGGER.error(e.getLocalizedMessage(), e);
-        // fp.error(e.getLocalizedMessage());
-        // } catch (IOException e) {
-        // LOGGER.error(e.getLocalizedMessage(), e);
-        // fp.error(e.getLocalizedMessage());
-        // }
-        // }
-        // };
-        // form.add(reset);
-
         // add the form
         add(form);
+        
+        // make sure all text fields are not set to null in case of empty string, the
+        // property model is based on HastTable, that cannot handle null values
+        form.visitChildren(TextField.class, (component, visit) -> {
+            TextField tf = (TextField) component;
+            tf.setConvertEmptyInputStringToNull(false);
+        });
+        
 
         // add the status monitor
         add(fp);
@@ -274,7 +259,7 @@ public class ClusterPage extends GeoServerSecuredPage {
         final TextField<String> toggleInfo = new TextField<String>(textFieldId);
 
         // https://issues.apache.org/jira/browse/WICKET-2426
-        toggleInfo.setType(String.class);
+        // toggleInfo.setType(String.class);
 
         toggleInfo.setOutputMarkupId(true);
         toggleInfo.setOutputMarkupPlaceholderTag(true);
@@ -289,7 +274,7 @@ public class ClusterPage extends GeoServerSecuredPage {
                     org.apache.wicket.markup.html.form.Form<?> form) {
                 fp.error("ERROR");
 
-                target.addComponent(fp);
+                target.add(fp);
             };
 
             @Override
@@ -309,8 +294,8 @@ public class ClusterPage extends GeoServerSecuredPage {
                             + " is still registered to the topic destination");
                 }
                 toggleInfo.getModel().setObject(Boolean.toString(switchTo));
-                target.addComponent(toggleInfo);
-                target.addComponent(fp);
+                target.add(toggleInfo);
+                target.add(fp);
 
             }
         };

@@ -306,14 +306,16 @@ public class GetMapRequest extends WMSRequest implements Cloneable {
     }
 
     /**
-     * @return The time request parameter. The list may contain {@link Date} or {@link DateRange} objects
+     * @return The time request parameter. The list may contain {@link Date} or {@link DateRange} objects, 
+     * or null to indicate the default value
      */
     public List<Object> getTime() {
         return this.optionalParams.time;
     }
 
     /**
-     * Returns the chosen elevations. The list may contain {@link Date} or {@link NumberRange} objects
+     * Returns the chosen elevations. The list may contain {@link Date} or {@link NumberRange} objects,
+     * or null to indicate the default value
      * @return
      */
     public List<Object> getElevation() {

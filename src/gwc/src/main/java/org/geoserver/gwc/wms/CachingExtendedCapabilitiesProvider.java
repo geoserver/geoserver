@@ -11,7 +11,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.gwc.GWC;
 import org.geoserver.ows.LocalWorkspace;
@@ -210,7 +210,7 @@ public class CachingExtendedCapabilitiesProvider implements ExtendedCapabilities
     }
 
     @Override
-    public NumberRange<Double> overrideScaleDenominators(LayerInfo layer,
+    public NumberRange<Double> overrideScaleDenominators(PublishedInfo layer,
             NumberRange<Double> scaleDenominators) {
         return scaleDenominators;
     }

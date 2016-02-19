@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -30,7 +30,7 @@ class CancellingOutputStream extends FilterOutputStream {
     @Override
     public void write(byte[] b) throws IOException {
         checkCancelled();
-        super.write(b);
+        out.write(b);
     }
 
     private void checkCancelled() {
@@ -42,13 +42,13 @@ class CancellingOutputStream extends FilterOutputStream {
     @Override
     public void write(byte[] b, int off, int len) throws IOException {
         checkCancelled();
-        super.write(b, off, len);
+        out.write(b, off, len);
     }
 
     @Override
     public void write(int b) throws IOException {
         checkCancelled();
-        super.write(b);
+        out.write(b);
     }
 
 }

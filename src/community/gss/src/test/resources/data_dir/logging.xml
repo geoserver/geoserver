@@ -1,5 +1,0 @@
-<logging>
-  <location>logs/geoserver.log</location>
-  <stdOutLogging>true</stdOutLogging>
-  <level>DEFAULT_LOGGING.properties</level>
-</logging>

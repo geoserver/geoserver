@@ -27,9 +27,9 @@ public class ScriptPageTest extends GeoServerWicketTestSupport {
     public void init() throws IOException {
         // Add a few scripts
         scriptManager = GeoServerExtensions.bean(ScriptManager.class);
-        File appDir = scriptManager.findOrCreateScriptDir("apps/app1");
+        File appDir = scriptManager.script("apps/app1").dir();
         FileUtils.writeStringToFile(new File(appDir, "main.py"), "print 'foo'");
-        File wpsDir = scriptManager.findOrCreateScriptDir("wps");
+        File wpsDir = scriptManager.script("wps").dir();
         FileUtils.writeStringToFile(new File(wpsDir, "buffer.groovy"), "buffer");
         // Login and load the page
         login();

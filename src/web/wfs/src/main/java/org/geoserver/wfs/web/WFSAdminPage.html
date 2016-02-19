@@ -13,13 +13,13 @@
           <label for="maxNumberOfFeaturesForPreview"><wicket:message key="maxNumberOfFeaturesForPreview">Maximum number of features for preview (Values &lt= 0 use the maximum number of features)</wicket:message></label>
           <input class="field text" wicket:id="maxNumberOfFeaturesForPreview" type="text"></input>
         </li>
-        <li>
-          <input class="field checkbox" wicket:id="featureBounding" type="checkbox"></input>
-          <label class="choice" for="featureBounding"><wicket:message key="featureBounding">Return bounding box with every feature</wicket:message></label>
+        <li class="choiceItem">
+          <input wicket:id="featureBounding" type="checkbox"></input>
+          <label for="featureBounding"><wicket:message key="featureBounding">Return bounding box with every feature</wicket:message></label>
         </li>
-        <li>
-          <input class="field checkbox" wicket:id="hitsIgnoreMaxFeatures" type="checkbox"></input>
-          <label class="choice" for="hitsIgnoreMaxFeatures"><wicket:message key="hitsIgnoreMaxFeatures">Ignore maximum number of features when calculating hits</wicket:message></label>
+        <li class="choiceItem">
+          <input wicket:id="hitsIgnoreMaxFeatures" type="checkbox"></input>
+          <label for="hitsIgnoreMaxFeatures"><wicket:message key="hitsIgnoreMaxFeatures">Ignore maximum number of features when calculating hits</wicket:message></label>
         </li>
       </ul>
     </fieldset>
@@ -41,18 +41,18 @@
     <fieldset>
       <legend><span><wicket:message key="serviceLevel">Service Level</wicket:message></span></legend>
       <div wicket:id="serviceLevel">
-        <ul>
+        <ul class="choiceList">
           <li>
-            <input id="basic" wicket:id="basic" class="field radio" type="radio"></input>
-            <label for="basic" class="choice"><wicket:message key="basic">basic</wicket:message></label>
+            <input id="basic" wicket:id="basic" type="radio"></input>
+            <label for="basic"><wicket:message key="basic">basic</wicket:message></label>
           </li>
           <li>
-            <input id="transactional" wicket:id="transactional" class="field radio" type="radio"></input>
-            <label for="transactional" class="choice"><wicket:message key="transactional">Transactional</wicket:message></label>
+            <input id="transactional" wicket:id="transactional" type="radio"></input>
+            <label for="transactional"><wicket:message key="transactional">Transactional</wicket:message></label>
           </li>
           <li>
-     	    <input id="complete" wicket:id="complete" class="field radio" type="radio"></input>
-            <label for="complete" class="choice"><wicket:message key="complete">Complete</wicket:message></label>
+     	    <input id="complete" wicket:id="complete" type="radio"></input>
+            <label for="complete"><wicket:message key="complete">Complete</wicket:message></label>
           </li>
         </ul>
       </div>
@@ -79,10 +79,10 @@
   <li>
     <fieldset>
       <legend><span><wicket:message key="conformance">Conformance</wicket:message></span></legend>
-      <ul>
+      <ul class="choiceList">
        <li>
-          <input class="field checkbox" wicket:id="canonicalSchemaLocation" type="checkbox"></input>
-          <label class="choice" for="canonicalSchemaLocation"><wicket:message key="canonicalSchemaLocation">Encode canonical WFS schema location</wicket:message></label>
+          <input wicket:id="canonicalSchemaLocation" type="checkbox"></input>
+          <label for="canonicalSchemaLocation"><wicket:message key="canonicalSchemaLocation">Encode canonical WFS schema location</wicket:message></label>
         </li>
       </ul>
     </fieldset>
@@ -91,14 +91,14 @@
     <fieldset>
       <legend><span><wicket:message key="encodeFeatureMember">Encode response with </wicket:message></span></legend>
       <div wicket:id="encodeFeatureMember">
-        <ul>
+        <ul class="choiceList">
           <li>
-            <input id="featureMembers" wicket:id="featureMembers" class="field radio" type="radio"></input>
-            <label for="featureMembers" class="choice"><wicket:message key="featureMembers">One "featureMembers" element</wicket:message></label>
+            <input id="featureMembers" wicket:id="featureMembers" type="radio"></input>
+            <label for="featureMembers"><wicket:message key="featureMembers">One "featureMembers" element</wicket:message></label>
           </li>
           <li>
-            <input id="featureMember" wicket:id="featureMember" class="field radio" type="radio"></input>
-            <label for="featureMember" class="choice"><wicket:message key="featureMember">Multiple "featureMember" elements</wicket:message></label>
+            <input id="featureMember" wicket:id="featureMember" type="radio"></input>
+            <label for="featureMember"><wicket:message key="featureMember">Multiple "featureMember" elements</wicket:message></label>
           </li>         
         </ul>
       </div>
@@ -107,10 +107,10 @@
   <li>
     <fieldset>
       <legend><span><wicket:message key="shapeOutputFormat">SHAPE-ZIP output format</wicket:message></span></legend>
-      <ul>
+      <ul class="choiceList">
        <li>
-          <input class="field checkbox" wicket:id="shapeZipPrjFormat" type="checkbox"></input>
-          <label class="choice" for="shapeZipPrjFormat"><wicket:message key="shapeZipPrjFormat">SHAPE-ZIP default prj is ESRI</wicket:message></label>
+          <input wicket:id="shapeZipPrjFormat" type="checkbox"></input>
+          <label for="shapeZipPrjFormat"><wicket:message key="shapeZipPrjFormat">SHAPE-ZIP default prj is ESRI</wicket:message></label>
         </li>
       </ul>
     </fieldset>

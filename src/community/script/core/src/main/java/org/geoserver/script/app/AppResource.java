@@ -9,13 +9,14 @@ import static java.lang.String.format;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
+import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.script.ScriptEngine;
 
+import org.geoserver.platform.resource.Files;
 import org.geoserver.rest.RestletException;
 import org.geoserver.script.ScriptManager;
 import org.geotools.util.logging.Logging;
@@ -34,12 +35,17 @@ public class AppResource extends Resource {
     static Logger LOGGER = Logging.getLogger(AppResource.class);
 
     ScriptManager scriptMgr;
-    File script;
+    org.geoserver.platform.resource.Resource script;
 
-    public AppResource(File script, ScriptManager scriptMgr, Request request, Response response) {
+    public AppResource(org.geoserver.platform.resource.Resource script, ScriptManager scriptMgr, Request request, Response response) {
         super(null, request, response);
         this.scriptMgr = scriptMgr;
         this.script = script;
+    }
+
+    @Deprecated
+    public AppResource(File script, ScriptManager scriptMgr, Request request, Response response) {
+        this(Files.asResource(script), scriptMgr, request, response);
     }
     
     @Override
@@ -47,7 +53,7 @@ public class AppResource extends Resource {
         try {
             ScriptEngine eng = scriptMgr.createNewEngine(script);
             if (eng == null) {
-                throw new RestletException(format("Script engine for %s not found", script.getName()), 
+                throw new RestletException(format("Script engine for %s not found", script.name()), 
                     Status.CLIENT_ERROR_BAD_REQUEST);
             }
 
@@ -55,11 +61,11 @@ public class AppResource extends Resource {
             AppHook hook = scriptMgr.lookupAppHook(script);
             if (hook == null) {
                 //TODO: fall back on default
-                throw new RestletException(format("No hook found for %s", script.getPath()), 
+                throw new RestletException(format("No hook found for %s", script.path()), 
                     Status.SERVER_ERROR_INTERNAL);
             }
 
-            Reader in = new BufferedReader(new FileReader(script));
+            Reader in = new BufferedReader(new InputStreamReader(script.in()));
             try {
                 eng.eval(in);
                 hook.run(getRequest(), getResponse(), eng);
@@ -70,7 +76,7 @@ public class AppResource extends Resource {
         } 
         catch (Exception e) {
             LOGGER.log(Level.WARNING, e.getLocalizedMessage(), e);
-            throw new RestletException("Error executing script " + script.getName(), 
+            throw new RestletException("Error executing script " + script.name(), 
                 Status.SERVER_ERROR_INTERNAL, e);
         }
     }

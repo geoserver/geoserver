@@ -21,8 +21,6 @@ Set the following performance settings in the Java virtual machine (JVM) for you
      - Allocates extra memory to your server.  By default, JVM will use only 64MB of heap. If you're serving just vector data, you'll be streaming, so having more memory won't increase performance.  If you're serving coverages, however, JAI will use a disk cache. ``-Xmx256M`` allocates 256MB of memory to GeoServer (use more if you have excess memory).  It is also a good idea to configure the JAI tile cache size (see the Server Config page in the :ref:`web_admin` section) so that it uses 75% of the heap (0.75). ``-Xms48m`` will tell the virtual machine to grab a 48MB heap on startup, which will make heap management more stable during heavy load serving.
    * - ``-XX:SoftRefLRUPolicyMSPerMB=36000``
      - Increases the lifetime of "soft references" in GeoServer.  GeoServer uses soft references to cache datastore references and other similar requests.  Making them live longer will increase the effectiveness of the cache.
-   * - ``-XX:MaxPermSize=128m``
-     - Increases the maximum size of permanent generation (or "permgen") allocated to GeoServer to 128MB.  Permgen is the heap portion where the class bytecode is stored.  GeoServer uses lots of classes, and it may exhaust that space quickly, leading to out of memory errors.  This is especially important if you're deploying GeoServer along with other applications in the same container, or if you need to deploy multiple GeoServer instances inside the same container.
    * - ``-XX:+UseParallelGC``
      - Enables the throughput garbage collector.
 

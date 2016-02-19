@@ -5,7 +5,6 @@
  */
 package org.geoserver.importer;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -34,6 +33,8 @@ import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.jdbc.JDBCDataStoreFactory;
 import org.geotools.util.logging.Logging;
 import org.geoserver.importer.job.ProgressMonitor;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resources;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.feature.type.FeatureType;
@@ -123,7 +124,11 @@ public class DataStoreFormat extends VectorFormat {
                     featureType.setNamespace(null);
     
                     SimpleFeatureSource featureSource = dataStore.getFeatureSource(typeName); 
-                    cb.setupBounds(featureType, featureSource);
+                    
+                    //Defer bounds calculation
+                    featureType.setNativeBoundingBox(EMPTY_BOUNDS);
+                    featureType.setLatLonBoundingBox(EMPTY_BOUNDS);
+                    featureType.getMetadata().put("recalculate-bounds", Boolean.TRUE);
     
                     //add attributes
                     CatalogFactory factory = catalog.getFactory();
@@ -209,7 +214,7 @@ public class DataStoreFormat extends VectorFormat {
     public Map<String,Serializable> createConnectionParameters(ImportData data, Catalog catalog) throws IOException {
         //try file based
         if (dataStoreFactory instanceof FileDataStoreFactorySpi) {
-            File f = null;
+            Resource f = null;
             if (data instanceof SpatialFile) {
                 f = ((SpatialFile) data).getFile();
             }
@@ -219,7 +224,7 @@ public class DataStoreFormat extends VectorFormat {
 
             if (f != null) {
                 Map<String,Serializable> map = new HashMap<String, Serializable>();
-                map.put("url", relativeDataFileURL(f.toURI().toURL().toString(), catalog));
+                map.put("url", relativeDataFileURL(Resources.find(f).toURI().toURL().toString(), catalog));
                 if (data.getCharsetEncoding() != null) {
                     // @todo this map only work for shapefile
                     map.put("charset",data.getCharsetEncoding());

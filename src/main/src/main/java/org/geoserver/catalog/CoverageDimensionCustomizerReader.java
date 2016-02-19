@@ -1,4 +1,4 @@
-/* (c) 2014-2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2014 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -32,6 +32,8 @@ import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.HarvestedSource;
 import org.geotools.coverage.grid.io.OverviewPolicy;
 import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
+import org.geotools.data.ResourceInfo;
+import org.geotools.data.ServiceInfo;
 import org.geotools.factory.Hints;
 import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.resources.Classes;
@@ -209,8 +211,19 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
         return coverageName;
     }
 
-    public CoverageInfo getInfo() {
+    public CoverageInfo getCoverageInfo() {
         return info;
+    }
+
+    @Override
+    public ServiceInfo getInfo() {
+        return delegate.getInfo();
+    }
+
+    @Override
+    public ResourceInfo getInfo(String coverageName) {
+        checkCoverageName(coverageName);
+        return delegate.getInfo(coverageName);
     }
 
     @Override
@@ -592,7 +605,7 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
                 builder = formatRange(builder, null);
                 builder.append(')').append(LINE_SEPARATOR);
                 for (final Category category : customCategories) {
-                    builder.append("  ").append(/*category == main ? '\u2023' : */' ').append(' ')
+                    builder.append("  ").append(' ').append(' ')
                           .append(category).append(LINE_SEPARATOR);
                 }
                 return builder.toString();
@@ -664,8 +677,9 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
             boolean nodataConfigured = configuredNoDataValues != null
                     && configuredNoDataValues.length > 0;
             // custom categories
-            if (categories != null) {
-                this.customCategories = new ArrayList<Category>(categories.size());
+            int numCategories = 0;
+            if (categories != null && (numCategories = categories.size()) > 0) {
+                this.customCategories = new ArrayList<Category>(numCategories);
                 Category wrapped = null;
                 for (Category category : categories) {
                     wrapped = category;
@@ -728,6 +742,7 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
 
     @Override
     public DatasetLayout getDatasetLayout(String coverageName) {
+        checkCoverageName(coverageName);
         return delegate.getDatasetLayout(coverageName);
     }
 }

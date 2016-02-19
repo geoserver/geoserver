@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -111,7 +111,7 @@ public class WicketHierarchyPrinter {
         printComponent(c, level);
         if (c instanceof MarkupContainer) {
             MarkupContainer mc = (MarkupContainer) c;
-            for (Iterator it = mc.iterator(); it.hasNext();) {
+            for (Iterator<?> it = mc.iterator(); it.hasNext();) {
                 walkHierarchy((Component) it.next(), level + 1);
             }
         }

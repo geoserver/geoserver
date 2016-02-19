@@ -38,6 +38,7 @@ import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.filters.LoggingFilter;
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Files;
 import org.geotools.data.DataUtilities;
 import org.h2.tools.DeleteDbFiles;
 import org.junit.After;
@@ -208,7 +209,7 @@ public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
             File zip = new File(f, "pds.zip");
             IOUtils.copy(getClass().getResourceAsStream("test-data/pds.zip"), new FileOutputStream(
                     zip));
-            org.geoserver.rest.util.IOUtils.inflate(new ZipFile(zip), f, null);
+            org.geoserver.rest.util.IOUtils.inflate(new ZipFile(zip), Files.asResource(f), null);
 
             MockHttpServletResponse resp = putAsServletResponse(
                     "/rest/workspaces/gs/datastores/pds/external.shp", new File(f, "pds.shp")

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
- Copyright (C) 2014 - Open Source Geospatial Foundation. All rights reserved.
+ Copyright (C) 2014 - 2015 - Open Source Geospatial Foundation. All rights reserved.
  This code is licensed under the GPL 2.0 license, available at the root
  application directory.
  -->
@@ -187,7 +187,8 @@
     <bean id="rawDataPPIO" class="org.geoserver.wps.ppio.RawDataPPIO">
       <constructor-arg ref="wpsResourceManager" />
     </bean>
-    
+    <bean id="classificationStatsPPIO" class="org.geoserver.wps.gs.ClassificationStatsPPIO"/>
+
     <!-- Register the GeoServer factory and processes -->
     <bean id="geoserverProcessFactory" class="org.geoserver.wps.jts.SpringBeanProcessFactory">
       <constructor-arg index="0" value="GeoServer specific processes"/>
@@ -207,7 +208,7 @@
     <bean id="storeCoverageProcess" class="org.geoserver.wps.gs.StoreCoverage" >
       <constructor-arg index="0" ref="wpsResourceManager"></constructor-arg>
     </bean>
-    
+
     <bean id="georectifyConfiguration" class="org.geoserver.wps.gs.GeorectifyConfiguration" /> 
     <bean id="georectifyCoverage" class="org.geoserver.wps.gs.GeorectifyCoverage">
     	<property name="config" ref="georectifyConfiguration" /> 
@@ -311,4 +312,6 @@
     <bean id="rasterSizeEstimators" class="org.geoserver.wps.validator.RasterSizeEstimator"/>
     <bean id="rawDataSizeEstimator" class="org.geoserver.wps.validator.RawDataSizeEstimator"/>
     <bean id="geometrySizeEstimator" class="org.geoserver.wps.validator.GeometrySizeEstimator"/>
+    
+    <bean id="processStartupFilter" class="org.geoserver.wps.executor.ProcessStartupFilter"/>
 </beans>

@@ -5,24 +5,21 @@
  */
 package org.geoserver.script.rest;
 
-import java.io.File;
-import java.io.FileFilter;
-import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
-import static java.lang.String.format;
 
 import org.apache.commons.io.FilenameUtils;
+import org.geoserver.platform.resource.Resource.Type;
+import org.geoserver.platform.resource.Resources;
 import org.geoserver.rest.PageInfo;
 import org.geoserver.rest.ReflectiveResource;
-import org.geoserver.rest.RestletException;
 import org.geoserver.rest.format.DataFormat;
 import org.geoserver.rest.format.ReflectiveHTMLFormat;
 import org.geoserver.rest.format.ReflectiveXMLFormat;
 import org.geoserver.script.ScriptManager;
+import org.geoserver.util.Filter;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.data.Status;
 import org.restlet.resource.Resource;
 
 import com.google.common.collect.Lists;
@@ -58,49 +55,44 @@ public class ScriptListResource extends ReflectiveResource {
     protected Object handleObjectGet() throws Exception {
         final String type = (String) getRequest().getAttributes().get("type");
 
-        File dir = null;
-        try {
-            dir = scriptMgr.findScriptDir(path);
-        } catch (IOException e) {
-            throw new RestletException(format("Error looking up script dir %s", path),
-                    Status.SERVER_ERROR_INTERNAL, e);
-        }
+        org.geoserver.platform.resource.Resource dir = scriptMgr.script(path);
 
         List<Script> scripts = Lists.newArrayList();
         if (dir != null) {
-            FileFilter filter = type != null ? new FileFilter() {
-                @Override
-                public boolean accept(File pathname) {
-                    return type.equalsIgnoreCase(FilenameUtils.getExtension(pathname.getName()));
-                }
-            } : new FileFilter() {
-                @Override
-                public boolean accept(File pathname) {
-                    return true;
-                }
-            };
-            for (File f : dir.listFiles(filter)) {
+            Filter<org.geoserver.platform.resource.Resource> filter = 
+                    type != null ? new Filter<org.geoserver.platform.resource.Resource>() {
+                        @Override
+                        public boolean accept(org.geoserver.platform.resource.Resource pathname) {
+                            return type.equalsIgnoreCase(FilenameUtils.getExtension(pathname.name()));
+                        }
+                    } : new Filter<org.geoserver.platform.resource.Resource>() {
+                        @Override
+                        public boolean accept(org.geoserver.platform.resource.Resource pathname) {
+                            return true;
+                        }
+                    };
+            for (org.geoserver.platform.resource.Resource f : Resources.list(dir, filter)) {
                 if (path.equals("apps")) {
-                    File mainScript = scriptMgr.findAppMainScript(f);
+                    org.geoserver.platform.resource.Resource mainScript = scriptMgr.findAppMainScript(f);
                     if (mainScript != null) {
-                        String name = mainScript.getAbsolutePath().substring(
-                                f.getParentFile().getAbsolutePath().length() + 1).replace("\\", "/");
+                        String name = mainScript.path().substring(
+                                f.parent().path().length() + 1).replace("\\", "/");
                         scripts.add(new Script(name));
                     }
                 } else if (path.equals("wps")) {
-                    if (f.isDirectory()) {
-                        String namespace = f.getName();
-                        File[] files = f.listFiles();
-                        for(File file: files) {
-                            String name = namespace + ":" + file.getName();
+                    if (f.getType() == Type.DIRECTORY) {
+                        String namespace = f.name();
+                        List<org.geoserver.platform.resource.Resource> files = f.list();
+                        for(org.geoserver.platform.resource.Resource file: files) {
+                            String name = namespace + ":" + file.name();
                             scripts.add(new Script(name));
                         }
                     } else {
-                        String name = f.getName();
+                        String name = f.name();
                         scripts.add(new Script(name));
                     }
                 } else {
-                    String name = f.getName();
+                    String name = f.name();
                     scripts.add(new Script(name));
                 }
             }

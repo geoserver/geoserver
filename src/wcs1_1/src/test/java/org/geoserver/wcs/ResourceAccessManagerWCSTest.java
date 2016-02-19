@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -28,6 +28,7 @@ import org.geoserver.security.ResourceAccessManager;
 import org.geoserver.security.SecurityUtils;
 import org.geoserver.security.TestResourceAccessManager;
 import org.geotools.coverage.grid.GridCoverage2D;
+import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.geometry.DirectPosition2D;
 import org.geotools.referencing.CRS;
 import org.junit.Test;
@@ -91,6 +92,8 @@ public class ResourceAccessManagerWCSTest extends AbstractGetCoverageTest {
                 .getBean("testResourceAccessManager");
         Catalog catalog = getCatalog();
         CoverageInfo world = catalog.getCoverageByName(getLayerId(MockData.WORLD));
+        world.getParameters().put(AbstractGridFormat.USE_JAI_IMAGEREAD.getName().getCode(), Boolean.FALSE);
+        catalog.save(world);
 
         // limits for mr cite_noworld: can't access the world layer
         tam.putLimits("cite_noworld", world, new CoverageAccessLimits(CatalogMode.HIDE,
@@ -149,6 +152,7 @@ public class ResourceAccessManagerWCSTest extends AbstractGetCoverageTest {
         assertTrue(value[0] > 0);
         assertTrue(value[1] > 0);
         assertTrue(value[2] > 0);
+        CoverageCleanerCallback.disposeCoverage(coverage);
     }
 
     @Test
@@ -225,6 +229,7 @@ public class ResourceAccessManagerWCSTest extends AbstractGetCoverageTest {
         assertEquals(0, value[0]);
         assertEquals(0, value[1]);
         assertEquals(0, value[2]);
+        CoverageCleanerCallback.disposeCoverage(coverage);
     }
 
     protected void authenticate(String username, String password) {

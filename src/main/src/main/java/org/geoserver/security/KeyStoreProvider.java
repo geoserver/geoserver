@@ -5,7 +5,6 @@
  */
 package org.geoserver.security;
 
-import java.io.File;
 import java.io.IOException;
 import java.security.Key;
 import java.security.KeyStore;
@@ -14,6 +13,7 @@ import java.security.PublicKey;
 
 import javax.crypto.SecretKey;
 
+import org.geoserver.platform.resource.Resource;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.GeoServerUserGroupService;
 
@@ -25,10 +25,11 @@ public interface KeyStoreProvider {
     void setSecurityManager(GeoServerSecurityManager securityManager);
 
     /**
-     * @return the default key store {@link File} object
+     * @return the default key store {@link Resource} object
+     * 
      */
-    File getFile();
-
+    Resource getResource();
+    
     /**
      * Forces a reload of the key store
      * 

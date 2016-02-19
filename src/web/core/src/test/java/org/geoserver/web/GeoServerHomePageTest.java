@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -49,7 +49,7 @@ public class GeoServerHomePageTest extends GeoServerWicketTestSupport {
         GeoServerApplication geoServerApplication = getGeoServerApplication();
         String contactEmail = geoServerApplication.getGeoServer().getGlobal().getSettings().getContact().
                 getContactEmail();
-        assertEquals("geoserver@example.org", contactEmail == null ? "geoserver@example.org" : contactEmail);
+        assertEquals("andrea@geoserver.org", contactEmail == null ? "andrea@geoserver.org" : contactEmail);
     }
 
     public static class MockHomePageContentProvider implements GeoServerHomePageContentProvider {

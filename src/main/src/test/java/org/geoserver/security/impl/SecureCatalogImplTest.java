@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -582,7 +582,6 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
         assertSame(states, sc.getFeatureTypeByName("topp:states"));
         assertSame(roads, sc.getFeatureTypeByName("topp:roads"));
         LayerGroupInfo layerGroup = sc.getLayerGroupByName("topp", "layerGroupWithSomeLockedLayer");        
-        assertSame(layerGroupWithSomeLockedLayer, layerGroup);
         assertEquals(2, layerGroup.getLayers().size());
         
         // try with read-only user, not empty LayerGroup should be returned
@@ -632,7 +631,7 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
     @Test
     public void testSecurityFilterWideOpen() throws Exception {
         // getting the resourceAccessManager
-        ResourceAccessManager resourceManager = getResourceAccessManager(buildLegacyAccessManager("wideOpen.properties"));
+        ResourceAccessManager resourceManager = getResourceAccessManager(buildAccessManager("wideOpen.properties"));
 
         // Workspace test
         Class<? extends CatalogInfo> clazz = WorkspaceInfo.class;
@@ -688,7 +687,7 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
     @Test
     public void testSecurityFilterLockedDown() throws Exception {
         // getting the resourceAccessManager
-        ResourceAccessManager resourceManager = getResourceAccessManager(buildLegacyAccessManager("lockedDown.properties"));
+        ResourceAccessManager resourceManager = getResourceAccessManager(buildAccessManager("lockedDown.properties"));
 
         // Workspace test
         Class<? extends CatalogInfo> clazz = WorkspaceInfo.class;
@@ -764,7 +763,7 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
     @Test
     public void testSecurityFilterWsLock() throws Exception {
         // getting the resourceAccessManager
-        ResourceAccessManager resourceManager = getResourceAccessManager(buildLegacyAccessManager("wsLock.properties"));
+        ResourceAccessManager resourceManager = getResourceAccessManager(buildAccessManager("wsLock.properties"));
 
         // Workspace test
         Class<? extends CatalogInfo> clazz = WorkspaceInfo.class;
@@ -923,7 +922,7 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
     @Test
     public void testSecurityFilterLayerLock() throws Exception {
         // getting the resourceAccessManager
-        ResourceAccessManager resourceManager = getResourceAccessManager(buildLegacyAccessManager("layerLock.properties"));
+        ResourceAccessManager resourceManager = getResourceAccessManager(buildAccessManager("layerLock.properties"));
 
         // Workspace test
         Class<? extends CatalogInfo> clazz = WorkspaceInfo.class;
@@ -1035,7 +1034,7 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
     @Test
     public void testSecurityFilterComplex() throws Exception {
         // getting the resourceAccessManager
-        ResourceAccessManager resourceManager = getResourceAccessManager(buildLegacyAccessManager("complex.properties"));
+        ResourceAccessManager resourceManager = getResourceAccessManager(buildAccessManager("complex.properties"));
 
         // Workspace test
         Class<? extends CatalogInfo> clazz = WorkspaceInfo.class;

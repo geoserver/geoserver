@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -14,6 +14,8 @@ import java.util.List;
 
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
+import org.apache.wicket.feedback.FeedbackMessage;
+import org.apache.wicket.feedback.FeedbackMessages;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.image.Image;
@@ -87,14 +89,14 @@ public class WMSLayerConfigTest extends GeoServerWicketTestSupport {
         // check submitting like this will create errors, there is no selection
         tester.submitForm("form");
         
-        assertTrue(page.getSession().getFeedbackMessages().hasErrorMessageFor(layerConfig));
+        assertTrue(layerConfig.getFeedbackMessages().hasMessage(FeedbackMessage.ERROR));
         
         // now set something and check there are no messages this time
         page.getSession().getFeedbackMessages().clear();
         FormTester ft = tester.newFormTester("form");
         ft.select("panel:styles:defaultStyle", 0);
         ft.submit();
-        assertFalse(page.getSession().getFeedbackMessages().hasErrorMessageFor(layerConfig));
+        assertFalse(layerConfig.getFeedbackMessages().hasMessage(FeedbackMessage.ERROR));
     }
 
     @Test

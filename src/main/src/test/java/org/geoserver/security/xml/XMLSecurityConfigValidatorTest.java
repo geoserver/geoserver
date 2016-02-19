@@ -21,6 +21,10 @@ import java.util.logging.Logger;
 
 import junit.framework.Assert;
 
+import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Files;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.ResourceStore;
 import org.geoserver.security.GeoServerRoleService;
 import org.geoserver.security.GeoServerRoleStore;
 import org.geoserver.security.GeoServerSecurityManager;
@@ -37,6 +41,7 @@ import org.geoserver.security.validation.SecurityConfigException;
 import org.geoserver.security.validation.SecurityConfigValidatorTest;
 import org.geotools.util.logging.Logging;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 public class XMLSecurityConfigValidatorTest extends SecurityConfigValidatorTest {
 
@@ -148,6 +153,10 @@ public class XMLSecurityConfigValidatorTest extends SecurityConfigValidatorTest 
         expect(activeRoleService.getName()).andReturn("foo").anyTimes();
         expect(secMgr.getActiveRoleService()).andReturn(activeRoleService).anyTimes();
         
+        TemporaryFolder tempFolder = new TemporaryFolder();
+        tempFolder.create();
+        expect(secMgr.role()).andReturn(Files.asResource(tempFolder.getRoot())).anyTimes();
+        
         expect(secMgr.listRoleServices()).andReturn(new TreeSet<String>(
             Arrays.asList("test1", "test2", "test3", "test4"))).anyTimes();
         
@@ -179,7 +188,7 @@ public class XMLSecurityConfigValidatorTest extends SecurityConfigValidatorTest 
 
         xmlConfig = (XMLRoleServiceConfig) 
                 createRoleConfig("test3",XMLRoleService.class,XMLRoleService.DEFAULT_LOCAL_ADMIN_ROLE,                        
-                        new File(getSecurityManager().getRoleRoot(),"test3.xml").getAbsolutePath());
+                        new File(getSecurityManager().role().dir(),"test3.xml").getAbsolutePath());
         try {
             validator.validateRemoveRoleService(xmlConfig);
             
@@ -325,6 +334,10 @@ public class XMLSecurityConfigValidatorTest extends SecurityConfigValidatorTest 
         
         expect(secMgr.listUserGroupServices()).andReturn(new TreeSet<String>(
                 Arrays.asList("test1", "test2", "testModify"))).anyTimes();
+        
+        TemporaryFolder tempFolder = new TemporaryFolder();
+        tempFolder.create();
+        expect(secMgr.userGroup()).andReturn(Files.asResource(tempFolder.getRoot())).anyTimes();
 
         expect(secMgr.loadPasswordEncoder(getPlainTextPasswordEncoder().getName()))
             .andReturn(getPlainTextPasswordEncoder()).anyTimes();
@@ -360,7 +373,7 @@ public class XMLSecurityConfigValidatorTest extends SecurityConfigValidatorTest 
         xmlConfig = (XMLUserGroupServiceConfig) 
                 createUGConfig("test3", XMLUserGroupService.class, 
                 getPlainTextPasswordEncoder().getName(),PasswordValidator.DEFAULT_NAME,
-                new File(getSecurityManager().getUserGroupRoot(),"test3.xml").getAbsolutePath());
+                new File(getSecurityManager().userGroup().dir(),"test3.xml").getAbsolutePath());
 
         try {
             validator.validateRemoveUserGroupService(xmlConfig);

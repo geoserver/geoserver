@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -127,7 +127,7 @@ public class GeoServerTileLayerInfoImpl implements Serializable, GeoServerTileLa
      * 
      * @return {@code this}
      */
-    private final GeoServerTileLayerInfo readResolve() {
+    private final Object readResolve() {
         if (null == metaWidthHeight) {
             metaWidthHeight = new int[2];
         }
@@ -393,7 +393,7 @@ public class GeoServerTileLayerInfoImpl implements Serializable, GeoServerTileLa
             }
         }
     }
-
+    
     /**
      * @see org.geoserver.gwc.layer.GeoServerTileLayerInfo#getParameterFilters()
      */

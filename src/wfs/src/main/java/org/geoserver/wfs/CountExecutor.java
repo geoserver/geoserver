@@ -40,7 +40,9 @@ class CountExecutor {
         if(providedCount != COUNT_UNSET) {
             return providedCount;
         } else {
-            return source.getCount(query);
+            // make sure we get a count by getting a feature colleciton
+            // FeatureSource.getCount(...) can return -1
+            return source.getFeatures(query).size();
         }
     }
 

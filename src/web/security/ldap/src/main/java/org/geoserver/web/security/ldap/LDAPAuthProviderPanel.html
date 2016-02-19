@@ -16,9 +16,9 @@
               <input id="serverURL" wicket:id="serverURL" type="text" class="text"></input>
             </li>
             
-            <li>
-              <input id="useTLS" wicket:id="useTLS" type="checkbox" class="field checkbox"></input>
-              <label for="useTLS" class="choice"><wicket:message key="useTLS"></wicket:message></label>
+            <li class="choiceItem">
+              <input id="useTLS" wicket:id="useTLS" type="checkbox"></input>
+              <label for="useTLS"><wicket:message key="useTLS"></wicket:message></label>
             </li>
             <li>
               <label for="userDnPattern"><wicket:message key="userDnPattern"></wicket:message></label>
@@ -41,9 +41,9 @@
             <span><wicket:message key="authorization"></wicket:message></span>
           </legend>
           <ul>
-           <li>
-            <input id="useLdapAuthorization" wicket:id="useLdapAuthorization" type="checkbox" class="field checkbox"></input>
-            <label for="useLdapAuthorization" class="choice">
+           <li class="choiceItem">
+            <input id="useLdapAuthorization" wicket:id="useLdapAuthorization" type="checkbox"></input>
+            <label for="useLdapAuthorization">
               <wicket:message key="useLdapAuthorization"></wicket:message>
             </label>
            </li>

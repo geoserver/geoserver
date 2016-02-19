@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -20,7 +20,7 @@ import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.IChoiceRenderer;
+import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
@@ -28,7 +28,6 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.validation.IValidatable;
 import org.apache.wicket.validation.IValidator;
 import org.apache.wicket.validation.ValidationError;
-import org.apache.wicket.validation.validator.AbstractValidator;
 import org.geoserver.gwc.ConfigurableBlobStore;
 import org.geoserver.gwc.config.GWCConfig;
 import org.geoserver.platform.GeoServerExtensions;
@@ -41,7 +40,7 @@ import org.geowebcache.storage.blobstore.memory.CacheStatistics;
 
 /**
  * This class is a new Panel for configuring In Memory Caching for GWC. The user can enable/disable In Memory caching, enable/disable file
- * persistence. Also fromt this panel the user can have information about cache statistics and also change the cache configuration.
+ * persistence. Also from this panel the user can have information about cache statistics and also change the cache configuration.
  * 
  * @author Nicola Lagomarsini Geosolutions
  */
@@ -115,10 +114,10 @@ public class InMemoryBlobStorePanel extends Panel {
             final Map<String, String> cacheProviders = store.getCacheProvidersNames();
             final IModel<String> providerClass = new PropertyModel<String>(gwcConfigModel,
                     "cacheProviderClass");
-            IChoiceRenderer<String> renderer = new CacheProviderRenderer(cacheProviders);
+            ChoiceRenderer<String> renderer = new CacheProviderRenderer(cacheProviders);
             choice = new DropDownChoice<String>("caches", providerClass, new ArrayList<String>(
                     cacheProviders.keySet()), renderer);
-            choice.add(new AjaxFormComponentUpdatingBehavior("onChange") {
+            choice.add(new AjaxFormComponentUpdatingBehavior("change") {
 
                 @Override
                 protected void onUpdate(AjaxRequestTarget target) {
@@ -140,7 +139,7 @@ public class InMemoryBlobStorePanel extends Panel {
                         cacheConfigContainer.setMapKey(cacheClass, gwcConfigModel);
                     }
 
-                    target.addComponent(cacheConfigContainer);
+                    target.add(cacheConfigContainer);
                 }
             });
             cacheConfigContainer.setEnabled(!store.getCacheProviders()
@@ -155,7 +154,7 @@ public class InMemoryBlobStorePanel extends Panel {
         // Adding cache configuration container to the global container
         container.add(cacheConfigContainer);
         // Definition of the behavior related to caching
-        innerCachingEnabledChoice.add(new AjaxFormComponentUpdatingBehavior("onChange") {
+        innerCachingEnabledChoice.add(new AjaxFormComponentUpdatingBehavior("change") {
 
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
@@ -163,7 +162,7 @@ public class InMemoryBlobStorePanel extends Panel {
                 boolean isVisible = innerCachingEnabledChoice.getModelObject() == null ? false
                         : innerCachingEnabledChoice.getModelObject();
                 container.setVisible(isVisible);
-                target.addComponent(container.getParent());
+                target.add(container.getParent());
             }
         });
 
@@ -247,7 +246,7 @@ public class InMemoryBlobStorePanel extends Panel {
                 } catch (Throwable t) {
                     error(t);
                 }
-                target.addComponent(statsContainer);
+                target.add(statsContainer);
             }
         };
 
@@ -256,11 +255,11 @@ public class InMemoryBlobStorePanel extends Panel {
     }
 
     /**
-     * {@link AbstractValidator} implementation for checking if the value is null or minor than 0
+     * {@link IValidator} implementation for checking if the value is null, or less or equal to 0
      * 
      * @author Nicola Lagomarsini Geosolutions
      */
-    static class MinimumLongValidator extends AbstractValidator<Long> {
+    static class MinimumLongValidator implements IValidator<Long> {
 
         private String errorKey;
 
@@ -269,49 +268,38 @@ public class InMemoryBlobStorePanel extends Panel {
         }
 
         @Override
-        public boolean validateOnNullValue() {
-            return true;
-        }
-
-        @Override
-        protected void onValidate(IValidatable<Long> validatable) {
-            if (validatable == null || validatable.getValue() <= 0) {
+        public void validate(IValidatable<Long> iv) {
+            if (iv == null || iv.getValue() <= 0) {
                 ValidationError error = new ValidationError();
                 error.setMessage(new ParamResourceModel(errorKey, null, "").getObject());
-                validatable.error(error);
+                iv.error(error);
             }
         }
     }
 
     /**
-     * {@link AbstractValidator} implementation for checking if the concurrency Level is null or minor than 0
+     * {@link IValidator} implementation for checking if the concurrency Level is null, or less than or equal to 0
      * 
      * @author Nicola Lagomarsini Geosolutions
      */
-    static class MinimumConcurrencyValidator extends AbstractValidator<Integer> {
+    static class MinimumConcurrencyValidator implements IValidator<Integer> {
 
         @Override
-        public boolean validateOnNullValue() {
-            return true;
-        }
-
-        @Override
-        protected void onValidate(IValidatable<Integer> validatable) {
-            if (validatable == null || validatable.getValue() <= 0) {
+        public void validate(IValidatable<Integer> iv) {
+            if (iv == null || iv.getValue() <= 0) {
                 ValidationError error = new ValidationError();
-                error.setMessage(new ParamResourceModel("BlobStorePanel.invalidConcurrency", null,
-                        "").getObject());
-                validatable.error(error);
+                error.setMessage(new ParamResourceModel("BlobStorePanel.invalidConcurrency", null, "").getObject());
+                iv.error(error);
             }
         }
     }
 
     /**
-     * {@link IChoiceRenderer} implementation mapping available {@link CacheProvider} names with the {@link CacheProvider} class names.
+     * {@link ChoiceRenderer} implementation mapping available {@link CacheProvider} names with the {@link CacheProvider} class names.
      * 
      * @author Nicola Lagomarsini Geosolutions
      */
-    static class CacheProviderRenderer implements IChoiceRenderer<String> {
+    static class CacheProviderRenderer extends ChoiceRenderer<String> {
 
         private Map<String, String> map;
 

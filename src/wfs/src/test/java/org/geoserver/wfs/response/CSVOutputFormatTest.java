@@ -1,21 +1,17 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014-2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wfs.response;
 
-import static org.junit.Assert.*;
-
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.List;
-
+import au.com.bytecode.opencsv.CSVReader;
+import com.mockrunner.mock.web.MockHttpServletResponse;
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.Point;
 import net.opengis.wfs.GetFeatureType;
 import net.opengis.wfs.WfsFactory;
-
 import org.geoserver.data.test.MockData;
 import org.geoserver.platform.Operation;
 import org.geoserver.wfs.WFSTestSupport;
@@ -26,16 +22,20 @@ import org.geotools.data.memory.MemoryDataStore;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
+import org.geotools.feature.type.DateUtil;
 import org.junit.Test;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 
-import au.com.bytecode.opencsv.CSVReader;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.StringReader;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.Point;
+import static org.junit.Assert.assertEquals;
 
 
 public class CSVOutputFormatTest extends WFSTestSupport {
@@ -75,15 +75,29 @@ public class CSVOutputFormatTest extends WFSTestSupport {
         SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
         builder.add("geom", Point.class);
         builder.add("label", String.class);
+        builder.add("dtg", Date.class);
+        builder.add("n", Integer.class);
+        builder.add("d", Double.class);
         builder.setName("funnyLabels");
         SimpleFeatureType type = builder.buildFeatureType();
-        
+
+        Date d = (new SimpleDateFormat("yyyy-MM-dd")).parse("2016-01-01");
         GeometryFactory gf = new GeometryFactory();
-        SimpleFeature f1 = SimpleFeatureBuilder.build(type, new Object[]{gf.createPoint(new Coordinate(5, 8)), "A label with \"quotes\""}, null);
-        SimpleFeature f2 = SimpleFeatureBuilder.build(type, new Object[]{gf.createPoint(new Coordinate(5, 4)), "A long label\nwith newlines"}, null);
-        SimpleFeature f3 = SimpleFeatureBuilder.build(type,
-                new Object[] { gf.createPoint(new Coordinate(5, 4)),
-                        "A long label\r\nwith windows\r\nnewlines" }, null);
+        SimpleFeature f1 =
+                SimpleFeatureBuilder.build(
+                        type,
+                        new Object[] { gf.createPoint(new Coordinate(5, 8)), "A label with \"quotes\"", d, 10, 100.0 },
+                        null);
+        SimpleFeature f2 =
+                SimpleFeatureBuilder.build(
+                        type,
+                        new Object[] { gf.createPoint(new Coordinate(5, 4)), "A long label\nwith newlines", d, 10, 200.0 },
+                        null);
+        SimpleFeature f3 =
+                SimpleFeatureBuilder.build(
+                        type,
+                        new Object[] { gf.createPoint(new Coordinate(5, 4)), "A long label\r\nwith windows\r\nnewlines", d, 10, 300.0 },
+                        null);
         
         MemoryDataStore data = new MemoryDataStore();
         data.addFeature(f1);
@@ -119,6 +133,11 @@ public class CSVOutputFormatTest extends WFSTestSupport {
         assertEquals(f2.getAttribute("label"), lines.get(2)[2]);
         // the test CSVReader helpfully turns \r\n into \n for us.
         assertEquals(((String) f3.getAttribute("label")).replace("\r\n", "\n"), lines.get(3)[2]);
+        // dates
+        assertEquals(DateUtil.serializeDateTime((Date) f1.getAttribute("dtg")), lines.get(1)[3]);
+        // Numbers
+        assertEquals(f1.getAttribute("n"), Integer.parseInt(lines.get(1)[4]));
+        assertEquals(f2.getAttribute("d"), Double.parseDouble(lines.get(2)[5]));
     }
     
     /**

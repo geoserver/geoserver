@@ -21,6 +21,7 @@ import org.geoserver.importer.ImportContext;
 import org.geoserver.importer.ImportStore;
 import org.geoserver.importer.ImportTask;
 import org.geoserver.importer.Importer;
+import org.geoserver.platform.resource.Resource;
 
 import com.sleepycat.bind.EntryBinding;
 import com.sleepycat.bind.serial.ClassCatalog;
@@ -113,10 +114,9 @@ public class BDBImportStore implements ImportStore {
         envCfg.setTransactional(true);
         envCfg.setConfigParam("je.log.fileMax", String.valueOf(100 * 1024 * 1024));
 
-        File dbRoot = new File(importer.getImportRoot(), "bdb");
-        dbRoot.mkdir();
+        Resource dbRoot = importer.getImportRoot().get("bdb");
         
-        Environment env = new Environment(dbRoot, envCfg);
+        Environment env = new Environment(dbRoot.dir(), envCfg);
 
         DatabaseConfig dbConfig = new DatabaseConfig();
         dbConfig.setAllowCreate(true);

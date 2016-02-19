@@ -1,4 +1,4 @@
-/* (c) 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2015 - 2016 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -40,6 +40,8 @@ import org.geowebcache.layer.TileLayer;
  */
 public class BlobStoresPage extends GeoServerSecuredPage {
 
+    private static final long serialVersionUID = 6076989713813458347L;
+
     private AjaxLink<Object> remove;
 
     private GeoServerTablePanel<BlobStoreConfig> blobStoresPanel;
@@ -77,7 +79,7 @@ public class BlobStoresPage extends GeoServerSecuredPage {
                 for (BlobStoreConfig config : blobStoresPanel.getSelection()) {
                     if (config.isDefault()) {
                         error(new ParamResourceModel("deleteError", getPage()).getString());
-                        target.addComponent(feedbackPanel);
+                        target.add(feedbackPanel);
                         return;
                     }
                     ids.add(config.getId());
@@ -128,9 +130,9 @@ public class BlobStoresPage extends GeoServerSecuredPage {
                         public void onClose(AjaxRequestTarget target) {
                             if (error != null) {
                                 error(error);
-                                target.addComponent(feedbackPanel);
+                                target.add(feedbackPanel);
                             } else {
-                                target.addComponent(blobStoresPanel);
+                                target.add(blobStoresPanel);
                             }
                         }
 
@@ -140,9 +142,9 @@ public class BlobStoresPage extends GeoServerSecuredPage {
                         GWC.get().removeBlobStores(ids);
                     } catch (ConfigurationException e) {
                         error(e.toString());
-                        target.addComponent(feedbackPanel);
+                        target.add(feedbackPanel);
                     }
-                    target.addComponent(blobStoresPanel);
+                    target.add(blobStoresPanel);
                 }
             }
         });
@@ -157,11 +159,11 @@ public class BlobStoresPage extends GeoServerSecuredPage {
             private static final long serialVersionUID = -5380703588873422601L;
 
             @Override
-            protected Component getComponentForProperty(String id, IModel itemModel,
+            protected Component getComponentForProperty(String id, IModel<BlobStoreConfig> itemModel,
                     Property<BlobStoreConfig> property) {
                 final BlobStoreConfig blobStore = (BlobStoreConfig) itemModel.getObject();
                 if (property == BlobStoresProvider.ID) {
-                    return new SimpleAjaxLink(id, itemModel, property.getModel(itemModel)) {
+                    return new SimpleAjaxLink<BlobStoreConfig>(id, itemModel, property.getModel(itemModel)) {
                         private static final long serialVersionUID = 1L;
 
                         @Override
@@ -190,7 +192,7 @@ public class BlobStoresPage extends GeoServerSecuredPage {
             @Override
             protected void onSelectionUpdate(AjaxRequestTarget target) {
                 remove.setEnabled(blobStoresPanel.getSelection().size() > 0);
-                target.addComponent(remove);
+                target.add(remove);
             }
         });
         blobStoresPanel.setOutputMarkupId(true);

@@ -6,17 +6,18 @@ Java Considerations
 Use Supported JRE
 -----------------
 
-GeoServer's speed depends a lot on the chosen Java Runtime Environment (JRE).  For best performance, use *Oracle JRE 7* (also known as JRE 1.7). JREs other than those tested may work correctly, but are generally not recommended.  As an example users of OpenJDK 1.6 report GeoServer 2.5 to be working with reduced 2D rendering performance.
+GeoServer's speed depends a lot on the chosen Java Runtime Environment (JRE).  For best performance, use *Oracle JRE 8* (also known as JRE 1.8). JREs other than those tested may work correctly, but are generally not recommended.  As an example users of OpenJDK 1.6 report GeoServer 2.5 to be working with reduced 2D rendering performance.
 
 Tested:
 
-* Java 7 - GeoServer 2.6.x and above (OpenJDK and Oracle JRE tested)
+* Java 8 - GeoServer 2.9.x and above (OpenJDK and Oracle JRE tested)
+* Java 7 - GeoServer 2.6.x to GeoServer 2.8.x (OpenJDK and Oracle JRE tested)
 * Java 6 - GeoServer 2.3.x to GeoServer 2.5.x (Oracle JRE tested)
 * Java 5 - GeoServer 2.2.x and earlier (Sun JRE tested)
 
 Unsupported:
 
-* Java 8 - unsupported with known issues (does not currently build)
+* Java 9
    
 As of GeoServer 2.0, a Java Runtime Environment (JRE) is sufficient to run GeoServer.  GeoServer no longer requires a Java Development Kit (JDK).
 
@@ -44,7 +45,7 @@ Installing native JAI on Windows
 Installing native JAI on Linux
 ``````````````````````````````
 
-#. Go to the `JAI download page <http://download.java.net/media/jai/builds/release/1_1_3/>`_ and download the Linux installer for version 1.1.3, choosing the appropriate architecture:
+#. Go to the `OpenGeo JAI download page <http://data.opengeo.org/suite/jai/>`_ and download the Linux installer for version 1.1.3, choosing the appropriate architecture:
 
    * `i586` for the 32 bit systems
    * `amd64` for the 64 bit ones (even if using Intel processors)
@@ -57,7 +58,7 @@ Installing native JAI on Linux
     # accept license 
     $ sudo rm jai-1_1_3-lib-linux-i586-jdk.bin
   
-#. Go to the `JAI Image I/O download page <http://download.java.net/media/jai-imageio/builds/release/1.1/>`_ and download the Linux installer for version 1.1, choosing the appropriate architecture:
+#. Go to the `OpenGeo JAI Image I/O Download page <http://data.opengeo.org/suite/jai/>`_ and download the Linux installer for version 1.1, choosing the appropriate architecture:
 
    * `i586` for the 32 bit systems
    * `amd64` for the 64 bit ones (even if using Intel processors)
@@ -125,10 +126,7 @@ Test if unlimited key length is available
 
 Start or restart GeoServer and login as administrator. The annotated warning should have disappeared.
 
-.. figure:: ../webadmin/security/images/unlimitedkey.png
-   :align: center
-  
-
+.. figure:: ../security/webadmin/images/unlimitedkey.png
 
 Additionally, the GeoServer log file should contain the following line::
 

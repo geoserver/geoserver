@@ -10,12 +10,14 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.Properties;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 
-import org.mortbay.jetty.Connector;
-import org.mortbay.jetty.Server;
-import org.mortbay.jetty.bio.SocketConnector;
-import org.mortbay.jetty.webapp.WebAppContext;
-import org.mortbay.thread.BoundedThreadPool;
+import org.eclipse.jetty.server.Connector;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.util.thread.ExecutorThreadPool;
+import org.eclipse.jetty.webapp.WebAppContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,11 +35,15 @@ public class Start {
     private static final Logger log = LoggerFactory.getLogger(Start.class);
 
     public static void main(String[] args) {
+        // don't even think of serving more than XX requests in parallel...
+        // we have a limit in our processing and memory capacities
+        ThreadPoolExecutor tp = (ThreadPoolExecutor) Executors.newCachedThreadPool();
+        tp.setMaximumPoolSize(50);
 
-		Server server = null;
-		SocketConnector conn = null;
+        Server server = null;
+		ServerConnector conn = null;
 		try {
-			server = new Server();
+			server = new Server(new ExecutorThreadPool(tp));
 
 			// TODO pass properties file
 			File properties = null;
@@ -66,7 +72,7 @@ public class Start {
 
 			server.setHandler(configureContext(prop));
 
-			conn = configureConnection(prop);
+			conn = configureConnection(prop, server);
 
 			server.setConnectors(new Connector[] { conn });
 
@@ -135,16 +141,11 @@ public class Start {
         }
     }
 
-    private static SocketConnector configureConnection(final Properties prop) {
-        // don't even think of serving more than XX requests in parallel...
-        // we have a limit in our processing and memory capacities
-        BoundedThreadPool tp = new BoundedThreadPool();
-        tp.setMaxThreads(50);
+    private static ServerConnector configureConnection(final Properties prop, Server server) {
 
-        SocketConnector conn = new SocketConnector();
+        ServerConnector conn = new ServerConnector(server);
 
         conn.setPort(parseInt(prop.getProperty(JETTY_PORT, JETTY_PORT_DEFAULT)));
-        conn.setThreadPool(tp);
         conn.setAcceptQueueSize(100);
 
         return conn;

@@ -22,7 +22,7 @@
   <artifactId>gs-web-demo</artifactId>
   <packaging>jar</packaging>
   <version>2.9-SNAPSHOT</version>
-  <name>Demoes Module</name>
+  <name>Demos Module</name>
   
   <dependencies>
     <dependency>
@@ -34,6 +34,11 @@
       <groupId>org.geoserver</groupId>
       <artifactId>gs-wms</artifactId>
       <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+      <scope>provided</scope>
     </dependency>
 	  <dependency>
 	     <groupId>com.mockrunner</groupId>

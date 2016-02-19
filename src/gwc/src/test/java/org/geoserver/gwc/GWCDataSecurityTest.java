@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -18,12 +18,14 @@ import javax.xml.namespace.QName;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
+import org.geoserver.catalog.LayerInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.SystemTestData.LayerProperty;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.CatalogMode;
 import org.geoserver.security.CoverageAccessLimits;
+import org.geoserver.security.DataAccessLimits;
 import org.geoserver.security.GeoServerRoleStore;
 import org.geoserver.security.GeoServerUserGroupStore;
 import org.geoserver.security.ResourceAccessManager;
@@ -87,12 +89,14 @@ public class GWCDataSecurityTest extends WMSTestSupport {
         ugStore.addUser(ugStore.createUserObject("cite_nomosaic", "cite", true));
         ugStore.addUser(ugStore.createUserObject("cite_cropmosaic", "cite", true));
         ugStore.addUser(ugStore.createUserObject("cite_filtermosaic", "cite", true));
+        ugStore.addUser(ugStore.createUserObject("cite_nogroup", "cite", true));
         ugStore.store();
         
         GeoServerRoleStore roleStore= getSecurityManager().getActiveRoleService().createStore();
         GeoServerRole role = roleStore.createRoleObject("ROLE_DUMMY");
         roleStore.addRole(role);
         roleStore.associateRoleToUser(role, "cite");
+        roleStore.associateRoleToUser(role, "cite_nogroup");
         roleStore.associateRoleToUser(role, "cite_nomosaic");
         roleStore.associateRoleToUser(role, "cite_cropmosaic");  
         roleStore.associateRoleToUser(role, "cite_filtermosaic");             
@@ -195,5 +199,36 @@ public class GWCDataSecurityTest extends WMSTestSupport {
         response = getAsServletResponse(path);
         assertEquals("image/png", response.getContentType());
     }  
+    
+    @Test
+    public void testLayerGroup() throws Exception {
+        // no auth, it should work
+        setRequestAuth(null, null);
+        String path = "gwc/service/wms?bgcolor=0x000000&LAYERS=" + NATURE_GROUP + "&STYLES=&FORMAT=image/png&SERVICE=WMS&VERSION=1.1.1" +
+                "&REQUEST=GetMap&SRS=EPSG:4326&BBOX=0,-90,180,90&WIDTH=256&HEIGHT=256&transparent=false";
+        MockHttpServletResponse response = getAsServletResponse(path);
+        assertEquals("image/png", response.getContentType());
+
+        // now setup auth for the group
+        TestResourceAccessManager tam = (TestResourceAccessManager) applicationContext.getBean("testResourceAccessManager");
+        LayerInfo lakes = getCatalog().getLayerByName(getLayerId(MockData.LAKES));
+        // LayerInfo forests = getCatalog().getLayerByName(getLayerId(MockData.FORESTS));
+        tam.putLimits("cite_nogroup", lakes, new DataAccessLimits(CatalogMode.HIDE, Filter.EXCLUDE));
+        tam.putLimits("cite", lakes, new DataAccessLimits(CatalogMode.HIDE, Filter.INCLUDE));
+//        tam.putLimits("cite_nogroup", forests, new DataAccessLimits(CatalogMode.HIDE, Filter.EXCLUDE));
+//        tam.putLimits("cite", forests, new DataAccessLimits(CatalogMode.HIDE, Filter.INCLUDE));
+        
+        // this one cannot get the image, one layer in the group is not accessible
+        setRequestAuth("cite_nogroup", "cite");
+        response = getAsServletResponse(path);
+        assertEquals("application/xml", response.getContentType());
+        String str = string(getBinaryInputStream(response));
+        assertTrue(str.contains("org.geotools.ows.ServiceException: Could not find layer " + NATURE_GROUP));
+        
+        // but this can access it all
+        setRequestAuth("cite", "cite");
+        response = getAsServletResponse(path);
+        assertEquals("image/png", response.getContentType());
+    }
 
 }

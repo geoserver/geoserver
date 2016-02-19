@@ -1,4 +1,4 @@
-.. _sec_tutorials_cert:
+.. _security_tutorials_cert:
 
 Configuring X.509 Certificate Authentication
 ============================================

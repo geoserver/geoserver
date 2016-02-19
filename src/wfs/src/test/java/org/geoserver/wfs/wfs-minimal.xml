@@ -8,7 +8,7 @@
 This is a description of your Web Feature Server.
 
 The GeoServer is a full transactional Web Feature Server, you may wish to limit
-GeoServer to a Basic service level to prevent modificaiton of your geographic
+GeoServer to a Basic service level to prevent modification of your geographic
 data.
      </abstrct>
   <accessConstraints>NONE</accessConstraints>

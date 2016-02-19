@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -7,17 +7,15 @@ package org.geoserver.community.css.web;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
@@ -35,6 +33,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -44,6 +43,9 @@ import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.Styles;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServerDataDirectory;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resource.Type;
+import org.geoserver.platform.resource.Resources;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.GeoServerDialog.DialogDelegate;
@@ -54,6 +56,8 @@ import org.geotools.styling.StyledLayerDescriptor;
 
 public class CssDemoPage extends GeoServerSecuredPage {
 
+    private static final long serialVersionUID = 356621271722561780L;
+
     /**
      * Eventually prefixes the
      * 
@@ -62,6 +66,7 @@ public class CssDemoPage extends GeoServerSecuredPage {
      */
     public class StyleNameModel extends LoadableDetachableModel<String> {
 
+        private static final long serialVersionUID = 640854278050951419L;
         private StyleInfo style;
 
         public StyleNameModel(StyleInfo style) {
@@ -109,8 +114,8 @@ public class CssDemoPage extends GeoServerSecuredPage {
     }
 
     private static LayerInfo extractLayer(PageParameters params, Catalog catalog) {
-        if (params.containsKey("layer")) {
-            String name = params.getString("layer");
+        if (params.getNamedKeys().contains("layer")) {
+            String name = params.get("layer").toString();
             return catalog.getLayerByName(name);
         } else {
             // TODO: Revisit this behavior
@@ -131,8 +136,8 @@ public class CssDemoPage extends GeoServerSecuredPage {
     }
 
     private static StyleInfo extractStyle(PageParameters params, Catalog catalog, LayerInfo layer) {
-        if (params.containsKey("style")) {
-            String style = params.getString("style");
+        if (params.getNamedKeys().contains("style")) {
+            String style = params.get("style").toString();
             String[] parts = style.split(":", 2);
             if (parts.length == 1) {
                 return catalog.getStyleByName(parts[0]);
@@ -152,14 +157,10 @@ public class CssDemoPage extends GeoServerSecuredPage {
         }
     }
 
-    public File findStyleFile(StyleInfo style) {
-        try {
-            GeoServerDataDirectory datadir = new GeoServerDataDirectory(getCatalog()
-                    .getResourceLoader());
-            return datadir.findStyleSldFile(style);
-        } catch (IOException ioe) {
-            throw new WicketRuntimeException(ioe);
-        }
+    public Resource findStyleFile(StyleInfo style) {
+        GeoServerDataDirectory datadir = new GeoServerDataDirectory(getCatalog()
+                .getResourceLoader());
+        return datadir.style(style);
     }
 
     public Catalog catalog() {
@@ -204,8 +205,8 @@ public class CssDemoPage extends GeoServerSecuredPage {
                     style.setWorkspace(ws);
                 }
 
-                File sld = findStyleFile(style);
-                if (sld == null || !sld.exists()) {
+                Resource sld = findStyleFile(style);
+                if (sld == null || !Resources.exists(sld)) {
                     catalog.getResourcePool().writeStyle(
                             style,
                             new ByteArrayInputStream(cssText2sldText(defaultStyle, style)
@@ -213,9 +214,9 @@ public class CssDemoPage extends GeoServerSecuredPage {
                     sld = findStyleFile(style);
                 }
 
-                File css = new File(sld.getParent(), name + ".css");
-                if (!css.exists()) {
-                    FileWriter writer = new FileWriter(css);
+                Resource css = sld.parent().get(name + ".css");
+                if (!Resources.exists(css)) {
+                    OutputStreamWriter writer = new OutputStreamWriter(css.out());
                     writer.write(defaultStyle);
                     writer.close();
                 }
@@ -235,57 +236,64 @@ public class CssDemoPage extends GeoServerSecuredPage {
         final Fragment mainContent = new Fragment("main-content", "normal", this);
 
         final ModalWindow popup = new ModalWindow("popup");
+        popup.showUnloadConfirmation(false);
         mainContent.add(popup);
         final StyleNameModel styleNameModel = new StyleNameModel(style);
-        final PropertyModel layerNameModel = new PropertyModel(layer, "prefixedName");
+        final PropertyModel<String> layerNameModel = new PropertyModel<String>(layer, "prefixedName");
 
-        mainContent.add(new AjaxLink("create.style", new ParamResourceModel(
+        mainContent.add(new AjaxLink<String>("create.style", new ParamResourceModel(
                 "CssDemoPage.createStyle", this)) {
+                    private static final long serialVersionUID = 1276737009163734430L;
+
             public void onClick(AjaxRequestTarget target) {
-                target.appendJavascript("Wicket.Window.unloadConfirmation = false;");
                 popup.setInitialHeight(200);
                 popup.setInitialWidth(300);
-                popup.setTitle(new Model("Choose name for new style"));
+                popup.setTitle(new Model<String>("Choose name for new style"));
                 popup.setContent(new StyleNameInput(popup.getContentId(), CssDemoPage.this));
                 popup.show(target);
             }
         });
 
-        mainContent.add(new SimpleAjaxLink("change.style", styleNameModel) {
+        mainContent.add(new SimpleAjaxLink<String>("change.style", styleNameModel) {
+            private static final long serialVersionUID = -3767935899990478209L;
+
             public void onClick(AjaxRequestTarget target) {
-                target.appendJavascript("Wicket.Window.unloadConfirmation = false;");
                 popup.setInitialHeight(400);
                 popup.setInitialWidth(600);
-                popup.setTitle(new Model("Choose style to edit"));
+                popup.setTitle(new Model<String>("Choose style to edit"));
                 popup.setContent(new StyleChooser(popup.getContentId(), CssDemoPage.this));
                 popup.show(target);
             }
         });
-        mainContent.add(new SimpleAjaxLink("change.layer", layerNameModel) {
+        mainContent.add(new SimpleAjaxLink<String>("change.layer", layerNameModel) {
+            private static final long serialVersionUID = 7341058018479354596L;
+
             public void onClick(AjaxRequestTarget target) {
-                target.appendJavascript("Wicket.Window.unloadConfirmation = false;");
                 popup.setInitialHeight(400);
                 popup.setInitialWidth(600);
-                popup.setTitle(new Model("Choose layer to edit"));
+                popup.setTitle(new Model<String>("Choose layer to edit"));
                 popup.setContent(new LayerChooser(popup.getContentId(), CssDemoPage.this));
                 popup.show(target);
             }
         });
-        mainContent.add(new AjaxLink("associate.styles", new ParamResourceModel(
+        mainContent.add(new AjaxLink<String>("associate.styles", new ParamResourceModel(
                 "CssDemoPage.associateStyles", this)) {
+            private static final long serialVersionUID = -5694226354260865370L;
+
             public void onClick(AjaxRequestTarget target) {
-                target.appendJavascript("Wicket.Window.unloadConfirmation = false;");
                 popup.setInitialHeight(400);
                 popup.setInitialWidth(600);
-                popup.setTitle(new Model("Choose layers to associate"));
+                popup.setTitle(new Model<String>("Choose layers to associate"));
                 popup.setContent(new MultipleLayerChooser(popup.getContentId(), CssDemoPage.this));
                 popup.show(target);
             }
         });
         ParamResourceModel associateToLayer = new ParamResourceModel(
                 "CssDemoPage.associateDefaultStyle", this, styleNameModel, layerNameModel);
-        final SimpleAjaxLink associateDefaultStyle = new SimpleAjaxLink("associate.default.style",
-                new Model(), associateToLayer) {
+        final SimpleAjaxLink<String> associateDefaultStyle = new SimpleAjaxLink<String>("associate.default.style",
+                new Model<String>(), associateToLayer) {
+            private static final long serialVersionUID = -1861639192229523093L;
+
             public void onClick(final AjaxRequestTarget linkTarget) {
                 final Component theComponent = this;
                 dialog.setResizable(false);
@@ -294,6 +302,8 @@ public class CssDemoPage extends GeoServerSecuredPage {
                 dialog.setInitialHeight(7);
                 dialog.setInitialWidth(50);
                 dialog.showOkCancel(linkTarget, new DialogDelegate() {
+                    /** serialVersionUID */
+                    private static final long serialVersionUID = -406178892098125499L;
                     boolean success = false;
 
                     @Override
@@ -308,12 +318,12 @@ public class CssDemoPage extends GeoServerSecuredPage {
                     @Override
                     public void onClose(AjaxRequestTarget target) {
                         super.onClose(target);
-                        target.addComponent(theComponent);
+                        target.add(theComponent);
                         if (success) {
                             CssDemoPage.this.info(new ParamResourceModel(
                                     "CssDemoPage.styleAssociated", CssDemoPage.this,
                                     styleNameModel, layerNameModel).getString());
-                            target.addComponent(getFeedbackPanel());
+                            target.add(getFeedbackPanel());
                         }
                     }
 
@@ -336,6 +346,8 @@ public class CssDemoPage extends GeoServerSecuredPage {
         mainContent.add(associateDefaultStyle);
 
         final IModel<String> sldModel = new AbstractReadOnlyModel<String>() {
+            private static final long serialVersionUID = 879601998074117903L;
+
             public String getObject() {
                 try {
                     // if file already in css format transform to sld, otherwise load the SLD file
@@ -343,11 +355,11 @@ public class CssDemoPage extends GeoServerSecuredPage {
                         StyledLayerDescriptor sld = Styles.sld(style.getStyle());
                         return Styles.string(sld, new SLDHandler(), SLDHandler.VERSION_10, true);
                     } else {
-                        File file = findStyleFile(style);
-                        if (file != null && file.isFile()) {
+                        Resource file = findStyleFile(style);
+                        if (file != null && file.getType() == Type.RESOURCE) {
                             BufferedReader reader = null;
                             try {
-                                reader = new BufferedReader(new FileReader(file));
+                                reader = new BufferedReader(new InputStreamReader(file.in()));
                                 StringBuilder builder = new StringBuilder();
                                 char[] line = new char[4096];
                                 int len = 0;
@@ -368,22 +380,28 @@ public class CssDemoPage extends GeoServerSecuredPage {
             }
         };
 
-        final CompoundPropertyModel model = new CompoundPropertyModel<CssDemoPage>(CssDemoPage.this);
+        final CompoundPropertyModel<CssDemoPage> model = new CompoundPropertyModel<CssDemoPage>(CssDemoPage.this);
         List<ITab> tabs = new ArrayList<ITab>();
-        tabs.add(new PanelCachingTab(new AbstractTab(new Model("Generated SLD")) {
+        tabs.add(new PanelCachingTab(new AbstractTab(new Model<String>("Generated SLD")) {
+            private static final long serialVersionUID = 8555701231692660833L;
+
             public Panel getPanel(String id) {
                 SLDPreviewPanel panel = new SLDPreviewPanel(id, sldModel);
                 sldPreview = panel.getLabel();
                 return panel;
             }
         }));
-        tabs.add(new PanelCachingTab(new AbstractTab(new Model("Map")) {
+        tabs.add(new PanelCachingTab(new AbstractTab(new Model<String>("Map")) {
+            private static final long serialVersionUID = -6162351963705823223L;
+
             public Panel getPanel(String id) {
                 return map = new OpenLayersMapPanel(id, layer, style);
             }
         }));
         if (layer.getResource() instanceof FeatureTypeInfo) {
-            tabs.add(new PanelCachingTab(new AbstractTab(new Model("Data")) {
+            tabs.add(new PanelCachingTab(new AbstractTab(new Model<String>("Data")) {
+                private static final long serialVersionUID = 4184410057835108176L;
+
                 public Panel getPanel(String id) {
                     try {
                         return new DataPanel(id, model, (FeatureTypeInfo) layer.getResource());
@@ -393,24 +411,28 @@ public class CssDemoPage extends GeoServerSecuredPage {
                 };
             }));
         } else if (layer.getResource() instanceof CoverageInfo) {
-            tabs.add(new PanelCachingTab(new AbstractTab(new Model("Data")) {
+            tabs.add(new PanelCachingTab(new AbstractTab(new Model<String>("Data")) {
+                private static final long serialVersionUID = 646758948234232061L;
+
                 public Panel getPanel(String id) {
                     return new BandsPanel(id, (CoverageInfo) layer.getResource());
                 };
             }));
         }
-        tabs.add(new AbstractTab(new Model("CSS Reference")) {
+        tabs.add(new AbstractTab(new Model<String>("CSS Reference")) {
+            private static final long serialVersionUID = 2107911061109604980L;
+
             public Panel getPanel(String id) {
                 return new DocsPanel(id);
             }
         });
 
-        File sldFile = findStyleFile(style);
-        File cssFile = new File(sldFile.getParentFile(), style.getName() + ".css");
+        Resource sldFile = findStyleFile(style);
+        Resource cssFile = sldFile.parent().get(style.getName() + ".css");
 
         mainContent.add(new StylePanel("style.editing", model, CssDemoPage.this, cssFile));
 
-        mainContent.add(new AjaxTabbedPanel("context", tabs));
+        mainContent.add(new AjaxTabbedPanel<ITab>("context", tabs));
 
         add(mainContent);
         add(dialog = new GeoServerDialog("dialog"));

@@ -21,6 +21,8 @@ import java.util.logging.Logger;
 import org.apache.commons.io.FileUtils;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.config.impl.GeoServerLifecycleHandler;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resources;
 import org.geotools.renderer.style.FontCache;
 import org.geotools.renderer.style.ImageGraphicFactory;
 import org.geotools.renderer.style.SVGGraphicFactory;
@@ -109,22 +111,17 @@ public class WMSLifecycleHandler implements GeoServerLifecycleHandler, Applicati
 
     List<Font> loadFontsFromDataDirectory() {
         List<Font> result = new ArrayList<Font>();
-        try {
-            Collection<File> files = FileUtils.listFiles(data.findStyleDir(), new String[] { "ttf",
-                    "TTF" }, true);
-            for (File file : files) {
-                try {
-                    final Font font = Font.createFont(Font.TRUETYPE_FONT, file);
-                    result.add(font);
-                    LOGGER.log(Level.INFO,
-                            "Loaded font file " + file + ", loaded font '" + font.getName()
-                                    + "' in family '" + font.getFamily() + "'");
-                } catch (Exception e) {
-                    LOGGER.log(Level.WARNING, "Failed to load font file " + file, e);
-                }
+        for (Resource file : Resources.list(data.getStyles(), new Resources.ExtensionFilter("TTF"),
+                true)) {
+            try {
+                final Font font = Font.createFont(Font.TRUETYPE_FONT, file.file());
+                result.add(font);
+                LOGGER.log(Level.INFO,
+                        "Loaded font file " + file + ", loaded font '" + font.getName()
+                                + "' in family '" + font.getFamily() + "'");
+            } catch (Exception e) {
+                LOGGER.log(Level.WARNING, "Failed to load font file " + file, e);
             }
-        } catch (IOException e) {
-            LOGGER.log(Level.WARNING, "Failed to scan style directory for fonts", e);
         }
 
         return result;

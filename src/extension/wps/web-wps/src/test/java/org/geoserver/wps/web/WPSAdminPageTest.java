@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -7,7 +7,7 @@ package org.geoserver.wps.web;
 
 import java.util.Collections;
 
-import org.apache.wicket.PageParameters;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.impl.ServiceInfoImpl;
@@ -66,7 +66,7 @@ public class WPSAdminPageTest extends WPSPagesTestSupport {
         // start the page with the custom workspace
         login();
         tester.startPage(WPSAdminPage.class,
-                new PageParameters(Collections.singletonMap("workspace", defaultWs.getName())));
+                new PageParameters().add("workspace", defaultWs.getName()));
         // print(tester.getLastRenderedPage(), true, true, true);
 
         // test that components have been filled as expected

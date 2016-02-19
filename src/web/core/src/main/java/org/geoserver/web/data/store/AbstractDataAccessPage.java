@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -7,8 +7,6 @@ package org.geoserver.web.data.store;
 
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.logging.Logger;
 
 import org.apache.wicket.Component;
@@ -153,7 +151,7 @@ abstract class AbstractDataAccessPage extends GeoServerSecuredPage {
             @Override
             protected void onError(AjaxRequestTarget target, Form form) {
                 super.onError(target, form);
-                target.addComponent(paramsForm);
+                target.add(paramsForm);
             }
 
             @Override
@@ -163,7 +161,7 @@ abstract class AbstractDataAccessPage extends GeoServerSecuredPage {
                     onSaveDataStore(dataStore, target);
                 } catch (IllegalArgumentException e) {
                     paramsForm.error(e.getMessage());
-                    target.addComponent(paramsForm);
+                    target.add(paramsForm);
                 }
             }
         });
@@ -253,17 +251,16 @@ abstract class AbstractDataAccessPage extends GeoServerSecuredPage {
                 if (namespacePanel != null) {
                     // update the GUI
                     namespacePanel.setDefaultModelObject(namespaceInfo);
-                    target.addComponent(namespacePanel.getFormComponent());
+                    target.add(namespacePanel.getFormComponent());
                 } else if(namespaceModel != null) {
                     // update the model directly
                     namespaceModel.setObject(namespaceInfo);
-                    // target.addComponent(AbstractDataAccessPage.this);
+                    // target.add(AbstractDataAccessPage.this);
                 }
             }
         });
     }
 
-    @SuppressWarnings("unchecked")
     private NamespacePanel findNamespacePanel(MarkupContainer c) {
         Component child;
         for (Iterator<? extends Component> it = ((MarkupContainer) c).iterator(); it.hasNext();) {

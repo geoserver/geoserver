@@ -32,7 +32,7 @@ public class ScriptEditPageTest extends GeoServerWicketTestSupport {
     public void init() throws IOException {
         // Add a few scripts
         ScriptManager scriptManager = GeoServerExtensions.bean(ScriptManager.class);
-        File wpsDir = scriptManager.findOrCreateScriptDir("wps");
+        File wpsDir = scriptManager.script("wps").dir();
         File wpsScript = new File(wpsDir, "buffer.groovy");
         FileUtils.writeStringToFile(wpsScript, "buffer");
         Script script = new Script(wpsScript);
@@ -62,7 +62,7 @@ public class ScriptEditPageTest extends GeoServerWicketTestSupport {
         tester.assertNoErrorMessage();
 
         ScriptManager scriptManager = GeoServerExtensions.bean(ScriptManager.class);
-        File file = new File(scriptManager.getWpsRoot(), "buffer.groovy");
+        File file = new File(scriptManager.wps().dir(), "buffer.groovy");
         assertTrue(file.exists());
 
         assertEquals("geom.buffer(-1);", FileUtils.readFileToString(file));

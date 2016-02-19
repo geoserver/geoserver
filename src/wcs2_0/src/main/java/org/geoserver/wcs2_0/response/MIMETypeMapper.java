@@ -23,6 +23,7 @@ import org.geoserver.catalog.event.CatalogRemoveEvent;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.wcs.responses.CoverageResponseDelegate;
 import org.geoserver.wcs.responses.CoverageResponseDelegateFinder;
+import org.geoserver.wcs.responses.GeoTIFFCoverageResponseDelegate;
 import org.geotools.util.SoftValueHashMap;
 import org.geotools.util.Utilities;
 import org.geotools.util.logging.Logging;
@@ -42,6 +43,8 @@ import org.springframework.context.ApplicationContextAware;
 public class MIMETypeMapper implements ApplicationContextAware {
 
     private static final String NO_MIME_TYPE = "NoMimeType";
+    
+    public static final String DEFAULT_FORMAT = GeoTIFFCoverageResponseDelegate.GEOTIFF_CONTENT_TYPE;
 
     private Logger LOGGER = Logging.getLogger(MIMETypeMapper.class);
 
@@ -67,8 +70,9 @@ public class MIMETypeMapper implements ApplicationContextAware {
     }
 
     /**
-     * Returns a mime types or null for the provided {@link CoverageInfo} using the
-     * {@link CoverageInfo#getNativeFormat()} as its key.
+     * Returns a mime types for the provided {@link CoverageInfo} using the
+     * {@link CoverageInfo#getNativeFormat()} as its key. In case none was found,
+     * the DEFAULT_FORMAT format is returned.
      * 
      * @param cInfo the {@link CoverageInfo} to find a mime type for
      * @return a mime types or null for the provided {@link CoverageInfo} using the
@@ -82,7 +86,7 @@ public class MIMETypeMapper implements ApplicationContextAware {
         String mime = mimeTypeCache.get(cInfo.getId());
         if(mime != null) {
             if(NO_MIME_TYPE.equals(mime)) {
-                return null;
+                return DEFAULT_FORMAT;
             } else {
                 return mime;
             }
@@ -95,6 +99,7 @@ public class MIMETypeMapper implements ApplicationContextAware {
             }
         }
         
+        // the native format must be encodable
         if (mime != null && outputMimeTypes.contains(mime)) {
             mimeTypeCache.put(cInfo.getId(), mime);
             if (LOGGER.isLoggable(Level.FINE)) {
@@ -105,7 +110,7 @@ public class MIMETypeMapper implements ApplicationContextAware {
             // we either don't have a clue about the mime, or we don't have an encoder, 
             // save the response as null
             mimeTypeCache.put(cInfo.getId(), NO_MIME_TYPE);
-            return null;
+            return DEFAULT_FORMAT;
         }
     }
 

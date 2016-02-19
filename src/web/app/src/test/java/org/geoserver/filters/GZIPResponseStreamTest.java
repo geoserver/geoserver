@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.zip.GZIPInputStream;
 
 import javax.servlet.ServletOutputStream;
+import javax.servlet.WriteListener;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 
@@ -59,6 +60,13 @@ public class GZIPResponseStreamTest  {
 
         public byte[] toByteArray(){
             return bos.toByteArray();
+        }
+
+        public boolean isReady() {
+            return true;
+        }
+
+        public void setWriteListener(WriteListener writeListener) {
         }
     }
 

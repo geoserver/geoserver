@@ -1,11 +1,10 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.script.web;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -15,15 +14,18 @@ import java.util.logging.Logger;
 
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.script.ScriptManager;
 import org.geotools.util.logging.Logging;
 
-public class ScriptsModel extends LoadableDetachableModel {
+public class ScriptsModel extends LoadableDetachableModel<List<Script>> {
 
+    private static final long serialVersionUID = 2762280972166257950L;
     private static final Logger LOGGER = Logging.getLogger("org.geoserver.script.web");
 
     @Override
-    protected Object load() {
+    protected List<Script> load() {
         List<Script> scripts = getScripts();
         Collections.sort(scripts, new ScriptComparator());
         return scripts;
@@ -45,25 +47,25 @@ public class ScriptsModel extends LoadableDetachableModel {
         List<Script> scripts = new ArrayList<Script>();
         ScriptManager scriptManager = (ScriptManager) GeoServerExtensions.bean("scriptMgr");
         try {
-            File[] dirs = { scriptManager.getWpsRoot(), scriptManager.getWfsTxRoot(),
-                    scriptManager.getFunctionRoot(), scriptManager.getAppRoot() };
-            for (File dir : dirs) {
-                File[] files = dir.listFiles();
-                for (File file : files) {
-                    if (dir.getName().equals("apps")) {
-                        if (file.isDirectory()) {
-                            File mainFile = scriptManager.findAppMainScript(file);
+            Resource[] dirs = { scriptManager.wps(), scriptManager.wfsTx(),
+                    scriptManager.function(), scriptManager.app() };
+            for (Resource dir : dirs) {
+                List<Resource> files = dir.list();
+                for (Resource file : files) {
+                    if (dir.name().equals("apps")) {
+                        if (file.getType() == Type.DIRECTORY) {
+                            Resource mainFile = scriptManager.findAppMainScript(file);
                             if (mainFile != null) {
                                 Script script = new Script(mainFile);
                                 scripts.add(script);
                             } else {
-                                LOGGER.info("Could not find main app file in " + file.getAbsolutePath());
+                                LOGGER.info("Could not find main app file in " + file.path());
                             }
                         }
-                    } else if (dir.getName().equals("wps")) {
-                        if (file.isDirectory()) {
-                            File[] fs = file.listFiles();
-                            for(File f: fs) {
+                    } else if (dir.name().equals("wps")) {
+                        if (file.getType() == Type.DIRECTORY) {
+                            List<Resource> fs = file.list();
+                            for(Resource f: fs) {
                                 scripts.add(new Script(f));
                             }
                         } else {

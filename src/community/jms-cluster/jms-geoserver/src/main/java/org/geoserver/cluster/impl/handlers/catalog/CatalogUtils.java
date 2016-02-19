@@ -88,7 +88,7 @@ public abstract class CatalogUtils {
 		if (info==null || catalog==null)
 			throw new NullArgumentException("Arguments may never be null");
 		
-		final StyleInfo localObject = catalog.getStyleByName(info.getName());
+		final StyleInfo localObject = catalog.getStyleByName(info.getWorkspace(),info.getName());
 		if (localObject != null) {
 			return localObject;
 		}
@@ -145,7 +145,9 @@ public abstract class CatalogUtils {
 		if (info==null || catalog==null)
 			throw new NullArgumentException("Arguments may never be null");
 		
-		final LayerInfo localObject=catalog.getLayerByName(info.getName());
+		
+		// make sure we use the prefixed name to include the workspace
+		final LayerInfo localObject=catalog.getLayerByName(info.prefixedName());
 		
 		if (localObject !=null){
 			return localObject;
@@ -214,7 +216,8 @@ public abstract class CatalogUtils {
 		if (info==null || catalog==null)
 			throw new NullArgumentException("Arguments may never be null");
 		
-		final LayerGroupInfo localObject=catalog.getLayerGroupByName(info.getName());
+		// make sure we use the prefixed name to include the workspace
+		final LayerGroupInfo localObject=catalog.getLayerGroupByName(info.prefixedName());
 		
 		if (localObject !=null){
 			return localObject;

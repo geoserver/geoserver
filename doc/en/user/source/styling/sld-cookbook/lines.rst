@@ -249,6 +249,50 @@ In this example, **line 5** sets the color of the lines to be blue (``#0000FF``)
 lines to be 3 pixels.  **Line 7** determines the composition of the line dashes.  The value of ``5 2`` creates a
 repeating pattern of 5 pixels of drawn line, followed by 2 pixels of omitted line.
 
+Offset line
+-----------
+
+This example alters the :ref:`sld_cookbook_lines_simpleline` to add a perpendicular offset line on the left side
+of the line, at five pixels distance.
+
+.. figure:: images/line_offset.png
+   :align: center
+
+   *Offset line*
+
+Code
+~~~~
+
+:download:`View and download the full "Dashed line" SLD <artifacts/line_offset.sld>`
+
+.. code-block:: xml 
+   :linenos: 
+
+      <FeatureTypeStyle>
+        <Rule>
+          <LineSymbolizer>
+            <Stroke>
+              <CssParameter name="stroke">#000000</CssParameter>
+            </Stroke>
+          </LineSymbolizer>
+          <LineSymbolizer>
+            <Stroke>
+              <CssParameter name="stroke">#FF0000</CssParameter>
+              <CssParameter name="stroke-dasharray">5 2</CssParameter>
+            </Stroke>
+            <PerpendicularOffset>5</PerpendicularOffset>
+          </LineSymbolizer>
+        </Rule>
+      </FeatureTypeStyle>
+
+Details
+~~~~~~~
+
+In this example, the first line symbolizer just paints the lines black.
+**line 8** begines a second lines symbolizer, sets the color of the lines to be red (``#FF0000``) at line 10 and
+determines the composition of the line dashes at **Line 11**. 
+**Line 13** finally specifies a perpendicular offset of 5 pixels (positive, thus on the left side). 
+
 
 Railroad (hatching)
 -------------------

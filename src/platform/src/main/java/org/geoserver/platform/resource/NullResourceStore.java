@@ -23,6 +23,8 @@ final class NullResourceStore implements ResourceStore {
     @Override
     public Resource get(final String resourcePath) {
         return new Resource() {
+            private static final long serialVersionUID = -8613315438546471004L;
+            
             String path = resourcePath;
 
             @Override
@@ -147,6 +149,11 @@ final class NullResourceStore implements ResourceStore {
     @Override
     public boolean move(String path, String target) {
         return false; // unable to move empty resource
+    }
+
+    @Override
+    public ResourceNotificationDispatcher getResourceNotificationDispatcher() {
+        return null;
     }
 
 }

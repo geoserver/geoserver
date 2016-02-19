@@ -54,7 +54,7 @@ When finished, click :guilabel:`Save`.
 Configuring external WFS layers
 -------------------------------
 
-When properly loaded, all layers served by the external WFS will be available to GeoServer.  Before they can be served, however, they will need to be individually configured as new layers.  See the section on :ref:`webadmin_layers` for how to add and edit new layers.
+When properly loaded, all layers served by the external WFS will be available to GeoServer.  Before they can be served, however, they will need to be individually configured as new layers.  See the section on :ref:`data_webadmin_layers` for how to add and edit new layers.
 
 Connecting to an external WFS layer via a proxy server
 ------------------------------------------------------

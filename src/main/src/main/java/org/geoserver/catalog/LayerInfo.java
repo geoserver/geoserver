@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -155,26 +155,7 @@ public interface LayerInfo extends PublishedInfo {
      * Defaults to {@code false}
      * </p>
      */
-    boolean isOpaque();
-
-    /**
-     * Gets the attribution information for this layer.  
-     *
-     * @return an AttributionInfo instance with the layer's attribution information.
-     *
-     * @see AttributionInfo
-     */
-    AttributionInfo getAttribution();
-
-    /**
-     * Sets the attribution information for this layer.  
-     *
-     * @param attribution an AttributionInfo instance with the new attribution information.
-     *
-     * @see AttributionInfo
-     */
-    void setAttribution(AttributionInfo attribution);
-    
+    boolean isOpaque();    
     /**
      * Returns true if the layer existence should be advertised (true by default, unless otherwise set)
      * @return

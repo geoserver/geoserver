@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -25,30 +25,37 @@ import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 
 public class LiveActivityPanel extends Panel {
 
+    private static final long serialVersionUID = -2807950039989311964L;
+
+
     public LiveActivityPanel(String id) {
         super(id);
         
-        GeoServerTablePanel<RequestData> requests = new GeoServerTablePanel<RequestData>("requests", 
-            new LiveRequestDataProvider()) {
-                @Override
-                protected Component getComponentForProperty(String id, IModel itemModel,
-                        Property<RequestData> property) {
-                    Object prop = ((BeanProperty<RequestData>)property)
-                        .getPropertyValue((RequestData) itemModel.getObject()); 
-                    
-                    String value = prop != null ? prop.toString() : "";
-                    return new Label(id, value); 
-                }
+        GeoServerTablePanel<RequestData> requests = new GeoServerTablePanel<RequestData>("requests",
+                new LiveRequestDataProvider()) {
+            private static final long serialVersionUID = -431473636413825153L;
+
+            @Override
+            protected Component getComponentForProperty(String id, IModel<RequestData> itemModel,
+                    Property<RequestData> property) {
+                Object prop = ((BeanProperty<RequestData>) property)
+                        .getPropertyValue((RequestData) itemModel.getObject());
+
+                String value = prop != null ? prop.toString() : "";
+                return new Label(id, value);
+            }
         };
         add(requests);
     }
 
     
     static class LiveRequestDataProvider extends GeoServerDataProvider<RequestData> {
-
-        static final Property<RequestData> ID = new BeanProperty("id", "id");
-        static final Property<RequestData> PATH = new BeanProperty("path", "path");
-        static final Property<RequestData> STATUS = new BeanProperty("status", "status");
+    	
+        private static final long serialVersionUID = -5576324995486786071L;
+		
+        static final Property<RequestData> ID = new BeanProperty<RequestData>("id", "id");
+        static final Property<RequestData> PATH = new BeanProperty<RequestData>("path", "path");
+        static final Property<RequestData> STATUS = new BeanProperty<RequestData>("status", "status");
         
         @Override
         protected List<RequestData> getItems() {

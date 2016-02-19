@@ -13,11 +13,11 @@ In order to install and run this application, follow these steps:
 
 (0) Download and install a Java Development Kit
 
-* Download a Java Runtime Environment (Java 7 or later) from:
+* Download a Java Runtime Environment (Java 8 or later) from:
 
-    http://www.oracle.com/technetwork/java/
+    http://www.oracle.com/technetwork/java/javase/downloads/
      or 
-    http://openjdk.java.net
+    http://openjdk.java.net/
 
 * Install the JRE according to the instructions included with the release.
 
@@ -136,4 +136,4 @@ distribution of GeoServer:
 For more information about configuring and running GeoServer, please see the 
 GeoServer web site:
 
-    http://geoserver.org
+    http://geoserver.org/

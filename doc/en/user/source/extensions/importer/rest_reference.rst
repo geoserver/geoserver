@@ -65,13 +65,13 @@ All the imports
      - Retrieve all imports
      - 200
      - n/a
-     - :ref:`Import Collection <import_collection>`
+     - Import Collection
      - n/a
    * - POST
      - Create a new import
      - 201 with Location header
      - n/a
-     - :ref:`Imports <import>`
+     - Imports
      - async=false/true,execute=false/true
      
 Retrieving the list of all imports
@@ -249,7 +249,7 @@ Import object
      - Retrieve import with id <importId>
      - 200
      - n/a
-     - :ref:`Imports <import>`
+     - Imports
      - n/a
    * - POST
      - Execute import with id <importId>
@@ -264,7 +264,7 @@ Import object
        used. This allows an external system to dictate the id management.
      - 201 with Location header
      - n/a
-     - :ref:`Imports <import>`
+     - Imports
      - n/a
    * - DELETE
      - Remove import with id <importId>
@@ -324,12 +324,12 @@ Tasks
      - Retrieve all tasks for import with id <importId>
      - 200
      - n/a
-     - :ref:`Task Collection <tasks>`
+     - Task Collection
    * - POST
      - Create a new task
      - 201 with Location header
      - :ref:`Multipart form data <file_upload>`
-     - :ref:`Tasks <tasks>`
+     - Tasks
 
 .. _file_upload:
 
@@ -427,12 +427,12 @@ Single task resource
      - Retrieve task with id <taskId> within import with id <importId>
      - 200
      - n/a
-     - :ref:`Task <tasks>`
+     - Task
    * - PUT
      - Modify task with id <taskId> within import with id <importId>
      - 200
-     - :ref:`Task <tasks>`
-     - :ref:`Task <tasks>`
+     - Task
+     - Task
    * - DELETE
      - Remove task with id <taskId> within import with id <importId>
      - 200
@@ -481,7 +481,7 @@ The following operations are specific to data objects of type ``directory``.
      - Retrieve the list of files for a task with id <taskId> within import with id <importId>
      - 200
      - n/a
-     - :ref:`Task <tasks>`
+     - Task
 
 The response to a GET request will be::
 
@@ -524,7 +524,7 @@ The response to a GET request will be::
      - Retrieve the file with id <fileId> from the data of a task with id <taskId> within import with id <importId>
      - 200
      - n/a
-     - :ref:`Task <tasks>`
+     - Task
    * - DELETE
      - Remove a specific file from the task with id <taskId> within import with id <importId>
      - 200
@@ -693,8 +693,8 @@ The layer defines how the target layer will be created
    * - PUT
      - Modify the target layer for a task with id <taskId> within import with id <importId>
      - 200
-     - :ref:`Task <tasks>`
-     - :ref:`Task <tasks>`
+     - Task
+     - Task
 
 
 Requesting the task layer will result in the following::

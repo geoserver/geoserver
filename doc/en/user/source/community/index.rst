@@ -1,7 +1,7 @@
 .. _community:
 
-Community
-=========
+Community modules
+=================
 
 This section is devoted to GeoServer community modules. Community modules are considered "pending" in that they are not
 officially part of the GeoServer releases. They are however built along with the
@@ -17,16 +17,13 @@ officially part of the GeoServer releases. They are however built along with the
 
    authkey/index
    dds/index
-   netcdf/netcdf
    python/index
    scripting/index
    spatialite/index
-   netcdf-out/index
    colormap/index
    jdbcconfig/index
    mbtiles/index
    geopkg/index
-   grib/grib
    rest/index
    pgraster/pgraster
    wps-download/index
@@ -39,3 +36,5 @@ officially part of the GeoServer releases. They are however built along with the
    geofence-server/index
    gdal/index
    gwc-s3/index
+   params-extractor/index
+   remote-wps/index

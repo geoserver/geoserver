@@ -8,13 +8,15 @@ package org.geoserver.wms.kvp;
 import java.awt.Color;
 import java.awt.image.IndexColorModel;
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resource.Type;
 
 /**
  * Loads a JASC Pal files into an {@link IndexColorModel}.
@@ -58,35 +60,26 @@ class PALFileLoader {
 	protected IndexColorModel indexColorModel;
 
 	/**
-	 * {@link PALFileLoader} constructor that accept a file path as a string.
-	 * 
-	 * <p>
-	 * Note that the transparentIndex pixel should not exceed the last
-	 * zero-based index available for the colormap we area going to create. If
-	 * this happens we might get very bad behaviour. Note also that if we set
-	 * this parameter to -1 we'll get an opaque {@link IndexColorModel}.
-	 * 
-	 * @param filePath
-	 *            to the aplette file.
-	 * @param transparentIndex
-	 *            transparent pixel index (zero-based).
-	 */
-	public PALFileLoader(final String filePath) {
-		this(new File(filePath));
-	}
-
-	/**
-	 * {@link PALFileLoader} constructor that accept a file.
-	 * 
-	 * @see #PALFileLoader(String, int)
-	 */
-	public PALFileLoader(File file) {
-		if (!file.exists() | !file.canRead())
+	 * {@link PALFileLoader} constructor that accept a resource.
+	 
+         * <p>
+         * Note that the transparentIndex pixel should not exceed the last
+         * zero-based index available for the colormap we area going to create. If
+         * this happens we might get very bad behaviour. Note also that if we set
+         * this parameter to -1 we'll get an opaque {@link IndexColorModel}.
+         * 
+         * @param filePath
+         *            to the aplette file.
+         * @param transparentIndex
+         *            transparent pixel index (zero-based).
+         */
+	public PALFileLoader(Resource file) {
+		if (file.getType() != Type.RESOURCE)
 			throw new IllegalArgumentException(
-					"The provided file cannot be read.");
+					"The provided file does not exist.");
 		BufferedReader reader = null;
 		try {
-			reader = new BufferedReader(new FileReader(file));
+			reader = new BufferedReader(new InputStreamReader(file.in()));
 			// header
 			boolean loadNext = false;
 			String temp = reader.readLine().trim();

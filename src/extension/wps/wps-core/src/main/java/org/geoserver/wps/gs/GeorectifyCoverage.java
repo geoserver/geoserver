@@ -34,6 +34,7 @@ import javax.media.jai.JAI;
 import javax.media.jai.operator.ConstantDescriptor;
 
 import org.apache.commons.io.IOUtils;
+import org.geoserver.platform.resource.Files;
 import org.geoserver.wps.WPSException;
 import org.geoserver.wps.resource.WPSFileResource;
 import org.geoserver.wps.resource.WPSResourceManager;

@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -31,7 +31,7 @@ public class ScriptPage extends GeoServerSecuredPage {
         // the middle table
         add(table = new GeoServerTablePanel<Script>("table", provider, true) {
             @Override
-            protected Component getComponentForProperty(String id, IModel itemModel,
+            protected Component getComponentForProperty(String id, IModel<Script> itemModel,
                     Property<Script> property) {
                 if (property == ScriptProvider.NAME) {
                     return scriptLink(id, itemModel);
@@ -48,7 +48,7 @@ public class ScriptPage extends GeoServerSecuredPage {
             @Override
             protected void onSelectionUpdate(AjaxRequestTarget target) {
                 removal.setEnabled(table.getSelection().size() > 0);
-                target.addComponent(removal);
+                target.add(removal);
             }
         });
         table.setOutputMarkupId(true);
@@ -62,7 +62,7 @@ public class ScriptPage extends GeoServerSecuredPage {
         Fragment header = new Fragment(HEADER_PANEL, "header", this);
 
         // the add button
-        header.add(new BookmarkablePageLink("addNew", ScriptNewPage.class));
+        header.add(new BookmarkablePageLink<Object>("addNew", ScriptNewPage.class));
 
         // the removal button
         header.add(removal = new ScriptSelectionRemovalLink("removeSelected", table, dialog));
@@ -72,9 +72,9 @@ public class ScriptPage extends GeoServerSecuredPage {
         return header;
     }
 
-    Component scriptLink(String id, final IModel itemModel) {
-        IModel nameModel = ScriptProvider.NAME.getModel(itemModel);
-        IModel fileModel = ScriptProvider.FILE.getModel(itemModel);
+    Component scriptLink(String id, final IModel<Script> itemModel) {
+        IModel<?> nameModel = ScriptProvider.NAME.getModel(itemModel);
+        IModel<?> fileModel = ScriptProvider.FILE.getModel(itemModel);
         return new SimpleBookmarkableLink(id, ScriptEditPage.class, nameModel,
         // @TODO type and extension instead of file
                 "file", fileModel.getObject().toString());

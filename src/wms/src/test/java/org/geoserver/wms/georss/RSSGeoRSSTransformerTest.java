@@ -11,6 +11,8 @@ import static org.junit.Assert.assertTrue;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.File;
+import java.io.FileOutputStream;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -57,7 +59,42 @@ public class RSSGeoRSSTransformerTest extends WMSTestSupport {
         NodeList description = channel.getElementsByTagName("description");
         assertEquals("Test Abstract", description.item(0).getChildNodes().item(0).getNodeValue());
     }
+	
+    @Test
+    public void testLinkTemplate() throws Exception {
+        WMSMapContent map = new WMSMapContent(createGetMapRequest(MockData.BASIC_POLYGONS));
+        map.addLayer(createMapLayer(MockData.BASIC_POLYGONS));
 
+        try {
+            File linkFile = new File(testData.getDataDirectoryRoot().getAbsolutePath() + "/workspaces/cite/cite/BasicPolygons/link.ftl");
+            FileOutputStream out = new FileOutputStream(linkFile);
+            out.write("http://dummp.com".getBytes());
+            out.close();
+        } catch (Exception e) {
+            System.out.println("Error writing link.ftl: " + e);
+        }
+
+        Document document;
+        try {
+            document = getRSSResponse(map, AtomGeoRSSTransformer.GeometryEncoding.LATLONG);
+        } finally {
+            map.dispose();
+        }
+        Element element = document.getDocumentElement();
+        assertEquals("rss", element.getNodeName());
+
+        NodeList items = element.getElementsByTagName("item");
+
+        int n = getFeatureSource(MockData.BASIC_POLYGONS).getCount(Query.ALL);
+
+        assertEquals(n, items.getLength());
+        for (int i = 0; i < items.getLength(); i++) {
+            Element item = (Element) items.item(i);
+			assertEquals("http://dummp.com", item.getElementsByTagName("link").item(0).getChildNodes().item(0).getNodeValue());
+        }
+    }
+
+    @Test
     public void testLatLongInternal() throws Exception {
         WMSMapContent map = new WMSMapContent(createGetMapRequest(MockData.BASIC_POLYGONS));
         map.addLayer(createMapLayer(MockData.BASIC_POLYGONS));

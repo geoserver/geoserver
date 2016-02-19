@@ -1,4 +1,4 @@
-.. _community_solr_load:
+.. _community_solr_optimize:
 
 Optimize rendering of complex polygons
 --------------------------------------

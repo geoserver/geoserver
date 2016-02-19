@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -20,8 +20,8 @@ import org.apache.wicket.extensions.ajax.markup.html.autocomplete.IAutoCompleteR
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.CheckBox;
+import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.apache.wicket.markup.html.form.RadioChoice;
 import org.apache.wicket.markup.html.form.SubmitLink;
 import org.apache.wicket.markup.html.form.TextArea;
@@ -32,7 +32,7 @@ import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.StringResourceModel;
-import org.apache.wicket.validation.validator.MinimumValidator;
+import org.apache.wicket.validation.validator.RangeValidator;
 import org.geoserver.security.CatalogMode;
 import org.geoserver.security.GeoServerRoleService;
 import org.geoserver.security.impl.GeoServerRole;
@@ -79,7 +79,7 @@ public class WPSAccessRulePage extends AbstractSecurityPage {
 
         TextField<Integer> maxComplexInputSize = new TextField<Integer>("maxComplexInputSize",
                 Integer.class);
-        maxComplexInputSize.add(new MinimumValidator<Integer>(0));
+        maxComplexInputSize.add(RangeValidator.minimum(0));
         form.add(maxComplexInputSize);
 
         final AutoCompleteSettings settings = new AutoCompleteSettings();
@@ -91,12 +91,12 @@ public class WPSAccessRulePage extends AbstractSecurityPage {
         GeoServerTablePanel<ProcessGroupInfo> processFilterEditor = new GeoServerTablePanel<ProcessGroupInfo>("processFilterTable", provider) {
 
             @Override
-            protected Component getComponentForProperty(String id, final IModel itemModel,
+            protected Component getComponentForProperty(String id, final IModel<ProcessGroupInfo> itemModel,
                     Property<ProcessGroupInfo> property) {
 
                 if(property.getName().equals("enabled")) {
                     Fragment fragment = new Fragment(id, "enabledFragment", WPSAccessRulePage.this);
-                    CheckBox enabled = new CheckBox("enabled", property.getModel(itemModel));
+                    CheckBox enabled = new CheckBox("enabled", (IModel<Boolean>) property.getModel(itemModel));
                     enabled.setOutputMarkupId(true);
                     fragment.add(enabled);
                     return fragment;
@@ -108,8 +108,8 @@ public class WPSAccessRulePage extends AbstractSecurityPage {
                     return new Label(id, property.getModel(itemModel));
                 } else if(property.getName().equals("roles")) {
                     Fragment fragment = new Fragment(id, "rolesFragment", WPSAccessRulePage.this);
-                    TextArea<String> roles = new  TextArea<String>("roles", property.getModel(itemModel)){
-                        public org.apache.wicket.util.convert.IConverter getConverter(java.lang.Class<?> type) {
+                    TextArea<String> roles = new  TextArea<String>("roles", (IModel<String>) property.getModel(itemModel)) {
+                        public <C extends Object> org.apache.wicket.util.convert.IConverter<C> getConverter(java.lang.Class<C> type) {
                             return new RolesConverter(availableRoles);
                         };
                     };
@@ -192,7 +192,7 @@ public class WPSAccessRulePage extends AbstractSecurityPage {
         return result;
     }
     
-    class CatalogModeRenderer implements IChoiceRenderer {
+    class CatalogModeRenderer extends ChoiceRenderer {
 
         public Object getDisplayValue(Object object) {
             return new ParamResourceModel(((CatalogMode) object).name(), getPage())

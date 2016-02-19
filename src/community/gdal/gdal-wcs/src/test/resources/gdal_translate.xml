@@ -18,6 +18,10 @@
             <fileExtension>.pdf</fileExtension>
             <singleFile>true</singleFile>
             <mimeType>application/pdf</mimeType>
+            <formatAdapters>
+            	<GrayAlphaToRGBA/>
+            	<PalettedToRGB/>
+            </formatAdapters>
         </Format>
         <Format>
             <toolFormat>AAIGrid</toolFormat>

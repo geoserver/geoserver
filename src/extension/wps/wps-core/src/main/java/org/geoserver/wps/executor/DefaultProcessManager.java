@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -92,7 +92,7 @@ public class DefaultProcessManager implements ProcessManager, ExtensionPriority,
     public Map<String, Object> submitChained(String executionId, Name processName,
             Map<String, Object> inputs, ProgressListener listener) throws ProcessException {
         // straight execution, no thread pooling, we're already running in the parent process thread
-        ProcessFactory pf = GeoServerProcessors.createProcessFactory(processName, false);
+        ProcessFactory pf = GeoServerProcessors.createProcessFactory(processName, true);
         if (pf == null) {
             throw new WPSException("No such process: " + processName);
         }
@@ -190,7 +190,7 @@ public class DefaultProcessManager implements ProcessManager, ExtensionPriority,
                 // transfer the thread locals to this execution context
                 threadLocalTransfer.apply();
                 
-                ProcessFactory pf = GeoServerProcessors.createProcessFactory(processName, false);
+                ProcessFactory pf = GeoServerProcessors.createProcessFactory(processName, true);
                 if (pf == null) {
                     throw new WPSException("No such process: " + processName);
                 }

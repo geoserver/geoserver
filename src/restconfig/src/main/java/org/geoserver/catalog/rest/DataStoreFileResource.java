@@ -16,11 +16,9 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
@@ -28,6 +26,9 @@ import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.NamespaceInfo;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resources;
+import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.rest.RestletException;
 import org.geoserver.rest.format.StreamDataFormat;
 import org.geoserver.rest.util.RESTUtils;
@@ -216,7 +217,7 @@ public class DataStoreFileResource extends StoreFileResource {
         getResponse().setStatus(Status.SUCCESS_ACCEPTED);
         Form form = getRequest().getResourceRef().getQueryAsForm();
 
-        File uploadedFile = doFileUpload(method, workspace, datastore, format).get(0);
+        Resource uploadedFile = doFileUpload(method, workspace, datastore, format).get(0);
         
         //look up the target datastore type specified by user
         String sourceDataStoreFormat = dataStoreFormat; 
@@ -481,22 +482,16 @@ public class DataStoreFileResource extends StoreFileResource {
             
             //clean up the files if we can
             if (isInlineUpload(method) && canRemoveFiles) {
-        		if (uploadedFile.isFile()) uploadedFile = uploadedFile.getParentFile();
-        		try {
-        			FileUtils.deleteDirectory(uploadedFile);
-        		} 
-        		catch (IOException ie) {
-        			LOGGER.info("Unable to delete " + uploadedFile.getAbsolutePath());
-        			if (LOGGER.isLoggable(Level.FINE)) {
-        				LOGGER.log(Level.FINE, "", ie);
-        			}
+        		if (uploadedFile.getType() == Type.RESOURCE) uploadedFile = uploadedFile.parent();
+        		if (!uploadedFile.delete()) {
+                            LOGGER.info("Unable to delete " + uploadedFile.path());
         		}
             }
         }
     }
 
     @Override
-    protected File findPrimaryFile(File directory, String format) {
+    protected Resource findPrimaryFile(Resource directory, String format) {
         if ("shp".equalsIgnoreCase(format)) {
             //special case for shapefiles, since shapefile datastore can handle directories just 
             // return the directory, this handles the case of a user uploading a zip with multiple
@@ -508,7 +503,7 @@ public class DataStoreFileResource extends StoreFileResource {
         }
     }
     
-    void updateParameters(DataStoreInfo info, NamespaceInfo namespace, DataAccessFactory factory, File uploadedFile) {
+    void updateParameters(DataStoreInfo info, NamespaceInfo namespace, DataAccessFactory factory, Resource uploadedFile) {
         Map connectionParameters = info.getConnectionParameters();
         updateParameters(connectionParameters, factory, uploadedFile);
 
@@ -520,12 +515,12 @@ public class DataStoreFileResource extends StoreFileResource {
         }
     }
     
-    void updateParameters(Map connectionParameters, DataAccessFactory factory, File uploadedFile) {
+    void updateParameters(Map connectionParameters, DataAccessFactory factory, Resource uploadedFile) {
 
         for ( Param p : factory.getParametersInfo() ) {
             //the nasty url / file hack
             if ( File.class == p.type || URL.class == p.type ) {
-                File f = uploadedFile;
+                File f = Resources.find(uploadedFile);
                 
                 if ( "directory".equals( p.key ) ) {
                     //set the value to be the directory

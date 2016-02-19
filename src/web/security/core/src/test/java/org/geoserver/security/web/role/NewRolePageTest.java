@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -70,7 +70,7 @@ public class NewRolePageTest extends AbstractSecurityWicketTestSupport {
         form.select("parent", index);
         
         
-        //tester.executeAjaxEvent("form:properties:add", "onclick");
+        //tester.executeAjaxEvent("form:properties:add", "click");
         //form = tester.newFormTester("form");
         //print(tester.getLastRenderedPage(),true,true);
         

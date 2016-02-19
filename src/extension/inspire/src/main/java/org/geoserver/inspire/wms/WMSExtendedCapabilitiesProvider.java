@@ -18,8 +18,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataMap;
+import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.wms.ExtendedCapabilitiesProvider;
 import org.geoserver.wms.GetCapabilitiesRequest;
 import org.geoserver.wms.WMS;
@@ -73,7 +73,7 @@ public class WMSExtendedCapabilitiesProvider implements ExtendedCapabilitiesProv
             return;
         }
         MetadataMap serviceMetadata = wms.getMetadata();
-        Boolean createExtendedCapabilities = (Boolean) serviceMetadata.get(CREATE_EXTENDED_CAPABILITIES.key);
+        Boolean createExtendedCapabilities = serviceMetadata.get(CREATE_EXTENDED_CAPABILITIES.key, Boolean.class);
         String metadataURL = (String) serviceMetadata.get(SERVICE_METADATA_URL.key);
         //Don't create extended capabilities element if mandatory content not present
         //or turned off
@@ -128,7 +128,7 @@ public class WMSExtendedCapabilitiesProvider implements ExtendedCapabilitiesProv
     }
 
     @Override
-    public NumberRange<Double> overrideScaleDenominators(LayerInfo layer,
+    public NumberRange<Double> overrideScaleDenominators(PublishedInfo layer,
             NumberRange<Double> scaleDenominators) {
         return scaleDenominators;
     }

@@ -90,19 +90,6 @@ public class FileSystemResourceStore implements ResourceStore {
         }
     }
     
-    public synchronized void addListener(File file, String path, ResourceListener listener) {
-        if( watcher == null ){
-            watcher = new FileSystemWatcher();
-        }
-        watcher.addListener( file, path, listener );
-    }
-    
-    public synchronized void removeListener(File file, String path, ResourceListener listener) {
-        if( watcher != null ){
-            watcher.removeListener(file, path, listener );
-        }
-    }
-    
     @Override
     public Resource get(String path) {
         path = Paths.valid(path);
@@ -149,6 +136,8 @@ public class FileSystemResourceStore implements ResourceStore {
      * This implementation is a stateless data object, acting as a simple handle around a File.
      */
     class FileSystemResource implements Resource {
+        private static final long serialVersionUID = 5824101017129479435L;
+
         String path;
 
         File file;
@@ -175,12 +164,12 @@ public class FileSystemResourceStore implements ResourceStore {
         
         @Override
         public void addListener(ResourceListener listener) {
-            FileSystemResourceStore.this.addListener( file, path, listener );
+            getResourceNotificationDispatcher().addListener(path, listener);
         }
         
         @Override
         public void removeListener(ResourceListener listener) {
-            FileSystemResourceStore.this.removeListener( file, path, listener );
+            getResourceNotificationDispatcher().removeListener(path, listener);
         }
         @Override
         public InputStream in() {
@@ -458,5 +447,20 @@ public class FileSystemResourceStore implements ResourceStore {
             }
         }
 
+    }
+
+    @Override
+    public ResourceNotificationDispatcher getResourceNotificationDispatcher() {
+        if( watcher == null ){
+            watcher = new FileSystemWatcher(new FileSystemWatcher.FileExtractor() {
+
+                @Override
+                public File getFile(String path) {
+                    return Paths.toFile(baseDirectory, path);
+                }
+                
+            });
+        }
+        return watcher;
     }
 }

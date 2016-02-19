@@ -96,8 +96,8 @@ For this example the project will be called "hello_wps".
            <plugin>
              <artifactId>maven-compiler-plugin</artifactId>
              <configuration>
-               <source>1.6</source>
-               <target>1.6</target>
+               <source>1.8</source>
+               <target>1.8</target>
              </configuration>
           </plugin>
         </plugins>
@@ -141,7 +141,7 @@ Create the process class
 
 #. Create the Java class that implements the custom WPS process.
 
-   Create a Java class called ``HelloWPS.java`` inside the created package:
+   Create a Java class called ``HelloWPS.java`` inside the created package (make sure you are in the 'src/main/java' folder and not in the 'src/test/java' folder):
 
   .. code-block:: java
  

@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -16,6 +16,7 @@ import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.extensions.markup.html.form.palette.Palette;
 import org.apache.wicket.extensions.markup.html.form.palette.component.Recorder;
+import org.apache.wicket.extensions.markup.html.form.palette.theme.DefaultTheme;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.model.IModel;
@@ -49,6 +50,7 @@ public class AuthFilterChainPalette extends Palette<String> {
                 }
         }, 10, true);
         this.choicesModel=(AvailableAuthFilterNamesModel)choicesModel;
+        add(new DefaultTheme());
     }
 
     public void setChain(VariableFilterChain chain) {
@@ -85,7 +87,7 @@ public class AuthFilterChainPalette extends Palette<String> {
     protected Recorder newRecorderComponent()
     {
       Recorder recorder=super.newRecorderComponent();     
-      recorder.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+      recorder.add(new AjaxFormComponentUpdatingBehavior("change") {
         private static final long serialVersionUID = 1L;
 
         @Override

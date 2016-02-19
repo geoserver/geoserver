@@ -6,6 +6,7 @@
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertNull;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -20,6 +21,7 @@ import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.custommonkey.xmlunit.exceptions.XpathException;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.StyleInfo;
@@ -29,8 +31,11 @@ import org.geoserver.wms.GetCapabilitiesRequest;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSTestSupport;
+import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.referencing.CRS;
 import org.junit.Assert;
 import org.junit.Test;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -40,6 +45,7 @@ import org.w3c.dom.NodeList;
  * Test cases for Capabilities' ScaleHint  
  * 
  * @author Mauricio Pazos
+ * @author Niels Charlier
  *
  */
 public class GetCapabilitiesScaleHintTest extends WMSTestSupport {
@@ -88,6 +94,7 @@ public class GetCapabilitiesScaleHintTest extends WMSTestSupport {
         addLayerAndStyle(testData, ACCIDENT);
         addLayerAndStyle(testData, ACCIDENT2);
         addLayerAndStyle(testData, ACCIDENT3);
+        addLayerGroups(testData);
     }
 
     void addLayerAndStyle(SystemTestData testData, QName name) throws IOException {
@@ -103,6 +110,65 @@ public class GetCapabilitiesScaleHintTest extends WMSTestSupport {
         LayerInfo layerInfo = this.catalog.getLayerByName(layerId);
         layerInfo.setDefaultStyle(defaultStyle);
         this.catalog.save(layerInfo);
+    }
+    
+    void addLayerGroups(SystemTestData testData) throws Exception {
+        //setup basic layergroups
+        testData.addStyle("Accident3_2", getClass(), this.catalog);
+        
+        CoordinateReferenceSystem nativeCrs = CRS.decode("EPSG:4326", true);
+        ReferencedEnvelope nativeBounds = new ReferencedEnvelope(-180, 180, -90, 90, nativeCrs);
+        
+        LayerGroupInfo layerGroup1 = catalog.getFactory().createLayerGroup();        
+        layerGroup1.setName("testLayerGroup1");
+        layerGroup1.setBounds(nativeBounds);
+        
+        LayerGroupInfo layerGroup2 = catalog.getFactory().createLayerGroup();        
+        layerGroup2.setName("testLayerGroup2");
+        layerGroup2.setBounds(nativeBounds);
+        
+        LayerGroupInfo layerGroup3 = catalog.getFactory().createLayerGroup();        
+        layerGroup3.setName("testLayerGroup3");
+        layerGroup3.setBounds(nativeBounds);
+        
+        //add layers & styles
+        layerGroup1.getLayers().add(catalog.getLayerByName(getLayerId(REGIONATED)));
+        layerGroup1.getStyles().add(null);
+        layerGroup1.getLayers().add(catalog.getLayerByName(getLayerId(ACCIDENT3)));
+        layerGroup1.getStyles().add(catalog.getStyleByName("Accident3_2"));
+        
+        layerGroup2.getLayers().add(catalog.getLayerByName(getLayerId(REGIONATED)));
+        layerGroup2.getLayers().add(catalog.getLayerByName(getLayerId(ACCIDENT)));
+        layerGroup2.getLayers().add(catalog.getLayerByName(getLayerId(ACCIDENT2)));
+        
+        layerGroup3.getLayers().add(layerGroup2);
+        layerGroup3.getLayers().add(catalog.getLayerByName(getLayerId(ACCIDENT3)));
+                        
+        catalog.add(layerGroup1);
+        catalog.add(layerGroup2);
+        catalog.add(layerGroup3);
+    }
+    
+    @Test
+    public void testLayerGroups()throws Exception{
+
+        Document dom = findCapabilities(false);
+        
+        //print(dom);
+
+        Element layerElement= searchLayerElement("testLayerGroup1", dom);
+
+        NodeList scaleNode = layerElement.getElementsByTagName("ScaleHint");
+        Element scaleElement = (Element)scaleNode.item(0);
+
+        assertEquals(Double.valueOf(80000000), Double.valueOf(scaleElement.getAttribute("min")));
+        assertEquals(Double.valueOf(1000000000), Double.valueOf(scaleElement.getAttribute("max")));
+        
+        layerElement= searchLayerElement("testLayerGroup3", dom);        
+        scaleNode = layerElement.getElementsByTagName("ScaleHint");
+        scaleElement = (Element)scaleNode.item(0);
+
+        assertNull(scaleElement);
     }
 
     /**

@@ -5,8 +5,6 @@
  */
 package org.geoserver.cluster.hazelcast;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.logging.Logger;
@@ -14,8 +12,10 @@ import java.util.logging.Logger;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.cluster.ClusterConfig;
 import org.geoserver.cluster.ClusterConfigWatcher;
-import org.geoserver.config.GeoServerDataDirectory;
-import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.data.util.IOUtils;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.ResourceStore;
+import org.geoserver.platform.resource.Resources;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -40,7 +40,7 @@ public class HzCluster implements DisposableBean, InitializingBean {
     static final String HAZELCAST_FILENAME = "hazelcast.xml";
     
     HazelcastInstance hz;
-    GeoServerResourceLoader rl;
+    ResourceStore rl;
     ClusterConfigWatcher watcher;
 
     private Catalog rawCatalog;
@@ -55,14 +55,11 @@ public class HzCluster implements DisposableBean, InitializingBean {
      * @return
      * @throws IOException
      */
-    public File getConfigFile(String fileName, Class<?> scope) throws IOException {
-        File dir = rl.findOrCreateDirectory(CONFIG_DIRECTORY);
-        File file = rl.find(dir, fileName);
-        if (file == null) {
-            
-            file = rl.createFile(dir, fileName);
-            
-            rl.copyFromClassPath(fileName, file, scope);
+    public Resource getConfigFile(String fileName, Class<?> scope) throws IOException {
+        Resource dir = rl.get(CONFIG_DIRECTORY);
+        Resource file = dir.get(fileName);
+        if (!Resources.exists(file)) {
+            IOUtils.copy(scope.getResourceAsStream(fileName), file.out());
         }
         return file;
     }
@@ -122,7 +119,7 @@ public class HzCluster implements DisposableBean, InitializingBean {
     public void afterPropertiesSet() throws Exception {
         watcher = loadConfig();
         if(watcher.get().isEnabled()){
-            hz = Hazelcast.newHazelcastInstance(loadHazelcastConfig(rl));
+            hz = Hazelcast.newHazelcastInstance(loadHazelcastConfig());
             CLUSTER = this;
         }
     }
@@ -138,13 +135,10 @@ public class HzCluster implements DisposableBean, InitializingBean {
         }
     }
     
-    private Config loadHazelcastConfig(GeoServerResourceLoader rl) throws IOException{
-        File hzf = getConfigFile(HAZELCAST_FILENAME, HzCluster.class);
-        InputStream hzIn = new FileInputStream(hzf);
-        try {
-            return new XmlConfigBuilder(new FileInputStream(hzf)).build();
-        } finally {
-            hzIn.close();
+    private Config loadHazelcastConfig() throws IOException{
+        Resource hzf = getConfigFile(HAZELCAST_FILENAME, HzCluster.class);
+        try (InputStream hzIn = hzf.in()) {
+            return new XmlConfigBuilder(hzIn).build();
         }
     }
     
@@ -153,8 +147,8 @@ public class HzCluster implements DisposableBean, InitializingBean {
      * @param dd
      * @throws IOException
      */
-    public void setDataDirectory(GeoServerDataDirectory dd) throws IOException {
-        rl=dd.getResourceLoader();
+    public void setResourceStore(ResourceStore dd) throws IOException {
+        rl=dd;
     }
     
     /**
@@ -169,7 +163,7 @@ public class HzCluster implements DisposableBean, InitializingBean {
     }
 
     ClusterConfigWatcher loadConfig() throws IOException {
-        File f = getConfigFile(HzCluster.CONFIG_FILENAME, HzCluster.class);
+        Resource f = getConfigFile(HzCluster.CONFIG_FILENAME, HzCluster.class);
         
         return new ClusterConfigWatcher(f);
     }

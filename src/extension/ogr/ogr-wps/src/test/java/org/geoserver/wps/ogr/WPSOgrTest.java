@@ -6,6 +6,7 @@ package org.geoserver.wps.ogr;
 
 import static junit.framework.Assert.assertEquals;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
@@ -13,18 +14,14 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import org.custommonkey.xmlunit.SimpleNamespaceContext;
-import org.custommonkey.xmlunit.XMLUnit;
-import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.ogr.core.Format;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.util.XmlTestUtil;
 import org.geoserver.wfs.response.Ogr2OgrConfigurator;
 import org.geoserver.wfs.response.Ogr2OgrTestUtil;
 import org.geoserver.wfs.response.OgrConfiguration;
@@ -39,9 +36,15 @@ import com.mockrunner.mock.web.MockHttpServletResponse;
 import com.thoughtworks.xstream.XStream;
 
 public class WPSOgrTest extends WPSTestSupport {
-
+    
+    private XmlTestUtil xml;
+    
     @Before
     public void setUp() throws Exception {
+        xml = new XmlTestUtil();
+        xml.addNamespace("kml", "http://www.opengis.net/kml/2.2");
+        //xml.setShowXML(System.out); // Uncomment to print XML to stdout on failure
+        
         Assume.assumeTrue(Ogr2OgrTestUtil.isOgrAvailable());
     }
 
@@ -139,13 +142,7 @@ public class WPSOgrTest extends WPSTestSupport {
             configurator.loadConfiguration();
             Document d = postAsDOM("wps",
                     getWpsDocumentXML("application/vnd.google-earth.kml; subtype=OGR-KML"));
-            Map<String, String> m = new HashMap<String, String>();
-            m.put("kml", "http://www.opengis.net/kml/2.2");
-            org.custommonkey.xmlunit.NamespaceContext ctx = new SimpleNamespaceContext(m);
-            XpathEngine engine = XMLUnit.newXpathEngine();
-            engine.setNamespaceContext(ctx);
-            assertEquals(1, engine.getMatchingNodes("//kml:kml/kml:Document/kml:Schema", d)
-                    .getLength());
+            assertThat(d, xml.hasOneNode("//kml:kml/kml:Document/kml:Schema | //kml:kml/kml:Document/kml:Folder/kml:Schema"));
         } catch (IOException e) {
             System.err.println(e.getStackTrace());
         } finally {

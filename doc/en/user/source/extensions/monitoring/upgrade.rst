@@ -39,10 +39,10 @@ Column ``resource`` renamed to ``name`` in ``request_resources`` table
 * *Version*: n/a, extension still community status
 * *Date*: Dec 09, 2011
 * *Subversion revision*: 16632
-* *Reference*: :geos:`4871
- 
+* *Reference*: :geos:`4871`
+
 Upgrading without performing any action will result in the ``name`` column being added to the ``request_resources`` table, 
-leaving the ``resource`` column in tact. From that point forward the ``resource`` column will essentially be ignored.
+leaving the ``resource`` column intact. From that point forward the ``resource`` column will essentially be ignored.
 However no data from the ``resource`` column will be migrated, which will throw off reports, resource access statistics, 
 etc... If you wish to migrate the data perform one of the following actions two actions.
 

@@ -6,20 +6,20 @@ Controlling feature ID generation in spatial databases
 Introduction
 ------------
 
-All spatial database data stores (PostGIS, Oracle, MySQL and so on) normally derive the feature ID the table primary key and assume certain conventions on how to locate the next value for the key in case a new feature needs to be generated (WFS insert operation).
+All spatial database data stores (PostGIS, Oracle, MySQL and so on) normally derive the feature ID from the table primary key and assume certain conventions on how to locate the next value for the key in case a new feature needs to be generated (WFS insert operation).
 
 Common conventions rely on finding auto-increment columns (PostGIS) or finding a sequence that is named after a specific convention such as ``<table>_<column>_SEQUENCE`` (Oracle case). 
 
-In case none of the above is found normally the store will fall back on generating random feature IDs at each new request, making the table unsuitable for feature ID based searches and transactions.
+In case none of the above is found, normally the store will fall back on generating random feature IDs at each new request, making the table unsuitable for feature ID based searches and transactions.
 
 Metadata table description
 --------------------------
 
-These defaults can be overridden manually by creating a `primary key metadata table` that specifies which columns to use and what strategy to use to generate new primary key values. The table can be created with this SQL statement (this one is valid for PostGIS and ORACLE, adapt it to your specific database, you may remove the check at the end if you want to)::
+These defaults can be overridden manually by creating a `primary key metadata table` that specifies which columns to use and what strategy to use to generate new primary key values. The (schema qualified) table can be created with this SQL statement (this one is valid for PostGIS and ORACLE, adapt it to your specific database, you may remove the check at the end if you want to)::
 
    --PostGIS DDL
 
-   CREATE TABLE gt_pk_metadata_table (
+   CREATE TABLE my_schema.gt_pk_metadata (
      table_schema VARCHAR(32) NOT NULL,
      table_name VARCHAR(32) NOT NULL,
      pk_column VARCHAR(32) NOT NULL,
@@ -33,7 +33,7 @@ These defaults can be overridden manually by creating a `primary key metadata ta
    
    --ORACLE DDL
 
-   CREATE TABLE gt_pk_metadata_table (
+   CREATE TABLE gt_pk_metadata (
      table_schema VARCHAR2(32) NOT NULL,
      table_name VARCHAR2(32) NOT NULL,
      pk_column VARCHAR2(32) NOT NULL,
@@ -42,10 +42,10 @@ These defaults can be overridden manually by creating a `primary key metadata ta
      pk_sequence VARCHAR2(64),
      constraint  chk_pk_policy check (pk_policy in ('sequence', 'assigned', 'autoincrement')));
   
-   CREATE UNIQUE INDEX gt_pk_metadata_table_idx01 ON gt_pk_metadata_table (table_schema, table_name, pk_column);
+   CREATE UNIQUE INDEX gt_pk_metadata_table_idx01 ON gt_pk_metadata (table_schema, table_name, pk_column);
 
 
-The table can be given a different name, in that case the name (eventually schema qualified) of the table must be specified in the `primary key metadata table` configuration parameter of the store.
+The table can be given a different name. In that case, the (schema qualified) name of the table must be specified in the `primary key metadata table` configuration parameter of the store.
 
 The following table describes the meaning of each column in the metadata table.
 

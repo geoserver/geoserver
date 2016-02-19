@@ -1,11 +1,15 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wfs.response;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -15,6 +19,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -23,9 +28,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import javax.xml.namespace.QName;
-
-import net.opengis.wfs.GetFeatureType;
-import net.opengis.wfs.WfsFactory;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -42,10 +44,12 @@ import org.geoserver.wfs.WFSTestSupport;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.shapefile.ShapefileDataStore;
+import org.geotools.data.shapefile.ShapefileDumper;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.feature.FeatureCollection;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.opengis.feature.Feature;
@@ -57,6 +61,9 @@ import org.opengis.filter.Filter;
 import com.mockrunner.mock.web.MockHttpServletResponse;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.MultiPolygon;
+
+import net.opengis.wfs.GetFeatureType;
+import net.opengis.wfs.WfsFactory;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class ShapeZipTest extends WFSTestSupport {
@@ -102,6 +109,7 @@ public class ShapeZipTest extends WFSTestSupport {
         gs.getSettings().setProxyBaseUrl(null);
         getGeoServer().save(gs);
     }
+    
 
     @Override
     protected void setUpInternal(SystemTestData dataDirectory) throws Exception {
@@ -185,6 +193,15 @@ public class ShapeZipTest extends WFSTestSupport {
         checkShapefileIntegrity(expectedTypes, new ByteArrayInputStream(zip));
         checkFieldsAreNotEmpty(new ByteArrayInputStream(zip));
     }
+    
+    @Test
+    public void testSplitSize() throws Exception {
+        ShapeZipOutputFormat of = (ShapeZipOutputFormat) applicationContext.getBean("shapezipOutputFormat");
+        byte[] zip = writeOut(getFeatureSource(SystemTestData.BASIC_POLYGONS).getFeatures(), 500, 500);
+        String shapefileName = SystemTestData.BASIC_POLYGONS.getLocalPart();
+        final String[] expectedTypes = new String[] {shapefileName, shapefileName + "1", shapefileName + "2"};
+        checkShapefileIntegrity(expectedTypes, new ByteArrayInputStream(zip));
+    }
 
     @Test
     public void testMultiTypeDots() throws Exception {
@@ -256,15 +273,13 @@ public class ShapeZipTest extends WFSTestSupport {
     public void testEmptyResultMultiGeom() throws Exception {
         byte[] zip = writeOut(getFeatureSource(ALL_DOTS).getFeatures(Filter.EXCLUDE));
 
-        final String[] expectedTypes = new String[] { "All_Types_Dots" };
-        checkShapefileIntegrity(expectedTypes, new ByteArrayInputStream(zip));
-
         boolean foundReadme = false;
         ZipInputStream zis = new ZipInputStream(new ByteArrayInputStream(zip));
         ZipEntry entry;
         while ((entry = zis.getNextEntry()) != null) {
             foundReadme |= entry.getName().equals("README.TXT");
         }
+        assertTrue("Did not find readme file", foundReadme);
     }
 
     @Test
@@ -473,6 +488,21 @@ public class ShapeZipTest extends WFSTestSupport {
         checkFileContent("BasicPolygons.prj", new ByteArrayInputStream(byteArrayZip),
                 get4326_ESRI_WKTContent());
     }
+    
+    /**
+     * Saves the feature source contents into a zipped shapefile, returns the output as a byte array
+     */
+    byte[] writeOut(FeatureCollection fc, long maxShpSize, long maxDbfSize) throws IOException {
+        ShapeZipOutputFormat zip = new ShapeZipOutputFormat();
+        zip.setMaxDbfSize(maxDbfSize);
+        zip.setMaxShpSize(maxShpSize);
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        FeatureCollectionResponse fct = 
+            FeatureCollectionResponse.adapt(WfsFactory.eINSTANCE.createFeatureCollectionType());
+        fct.getFeature().add(fc);
+        zip.write(fct, bos, op);
+        return bos.toByteArray();
+    }
 
     /**
      * Saves the feature source contents into a zipped shapefile, returns the output as a byte array
@@ -591,16 +621,19 @@ public class ShapeZipTest extends WFSTestSupport {
                 names.add(name + extension);
             }
         }
+        Set<String> found = new HashSet<>();
         while ((entry = zis.getNextEntry()) != null) {
             final String name = entry.getName();
-            if(name.endsWith(".txt")) {
+            found.add(name);
+            if(name.toLowerCase().endsWith(".txt")) {
                 // not part of the shapefile, it's the request dump
                 continue;
             }
-            assertTrue("Missing " + name, names.contains(name));
+            assertTrue("Unexpected " + name, names.contains(name));
             names.remove(name);
             zis.closeEntry();
         }
+        assertTrue("Could not find all expected files, missing ones are: " + names + "\nFound in zip are: " + found, names.isEmpty());
         zis.close();
     }
 

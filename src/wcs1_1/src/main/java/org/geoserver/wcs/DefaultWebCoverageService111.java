@@ -349,7 +349,7 @@ public class DefaultWebCoverageService111 implements WebCoverageService111 {
             // make sure we work in streaming mode
             //
             // work in streaming fashion when JAI is involved
-            readParameters = WCSUtils.replaceParameter(readParameters, Boolean.FALSE,
+            readParameters = WCSUtils.replaceParameter(readParameters, Boolean.TRUE,
                     AbstractGridFormat.USE_JAI_IMAGEREAD);
 
             //

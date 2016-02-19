@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -14,7 +14,7 @@ import java.util.Locale;
 import org.apache.wicket.Page;
 import org.apache.wicket.ajax.AbstractDefaultAjaxBehavior;
 import org.apache.wicket.behavior.AbstractAjaxBehavior;
-import org.apache.wicket.behavior.IBehavior;
+import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.feedback.FeedbackMessage;
 import org.apache.wicket.markup.repeater.Item;
@@ -226,7 +226,7 @@ public abstract class AbstractSecurityWicketTestSupport extends GeoServerWicketT
     }
     
     public void executeModalWindowClosedCallback(ModalWindow modalWindow) {
-        for (IBehavior behavior : modalWindow.getBehaviors()) {
+        for (Behavior behavior : modalWindow.getBehaviors()) {
           if (behavior instanceof AbstractDefaultAjaxBehavior) {
             String name = behavior.getClass().getSimpleName();
             if (name.startsWith("WindowClosedBehavior")) {
@@ -237,7 +237,7 @@ public abstract class AbstractSecurityWicketTestSupport extends GeoServerWicketT
       }
 
       public void executeModalWindowCloseButtonCallback(ModalWindow modalWindow) {
-        for (IBehavior behavior : modalWindow.getBehaviors()) {
+        for (Behavior behavior : modalWindow.getBehaviors()) {
           if (behavior instanceof AbstractDefaultAjaxBehavior) {
             String name = behavior.getClass().getSimpleName();
             

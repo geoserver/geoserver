@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -74,7 +74,7 @@ abstract class LimitedOutputStream extends FilterOutputStream {
      * @see java.io.FilterInputStream#in
      */
     public void write(int b) throws IOException {
-        super.write(b);
+        out.write(b);
         count++;
         checkLimit();
     }
@@ -94,7 +94,7 @@ abstract class LimitedOutputStream extends FilterOutputStream {
      * @see java.io.FilterInputStream#in
      */
     public void write(byte[] b, int off, int len) throws IOException {
-        super.write(b, off, len);
+        out.write(b, off, len);
         if (len > 0) {
             count += len;
             checkLimit();

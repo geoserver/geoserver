@@ -1,4 +1,4 @@
-/* (c) 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2015 - 2016 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -15,7 +15,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.AjaxRequestHandler;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.form.CheckBox;
@@ -131,8 +131,8 @@ public class S3BlobStoresPageTest extends GeoServerWicketTestSupport {
         
         //select
         CheckBox selector = ((CheckBox) tester.getComponentFromLastRenderedPage("storesPanel:listContainer:items:1:selectItemContainer:selectItem"));
-        tester.getServletRequest().setParameter(selector.getInputName(), "true");
-        tester.executeAjaxEvent(selector, "onclick");
+        tester.getRequest().setParameter(selector.getInputName(), "true");
+        tester.executeAjaxEvent(selector, "click");
                 
         assertEquals(1, table.getSelection().size());        
         assertEquals(dummy1, table.getSelection().get(0));
@@ -158,8 +158,8 @@ public class S3BlobStoresPageTest extends GeoServerWicketTestSupport {
         //select
         //super.print(page, false, false, true);
         selector = ((CheckBox) tester.getComponentFromLastRenderedPage("storesPanel:listContainer:items:2:selectItemContainer:selectItem"));
-        tester.getServletRequest().setParameter(selector.getInputName(), "true");
-        tester.executeAjaxEvent(selector, "onclick");
+        tester.getRequest().setParameter(selector.getInputName(), "true");
+        tester.executeAjaxEvent(selector, "click");
         
         //click delete
         assertEquals(1, table.getSelection().size());        
@@ -172,7 +172,7 @@ public class S3BlobStoresPageTest extends GeoServerWicketTestSupport {
         
         //confirm      
         GeoServerDialog dialog = (GeoServerDialog) tester.getComponentFromLastRenderedPage("confirmDeleteDialog");
-        dialog.submit(new AjaxRequestTarget(tester.getLastRenderedPage()));       
+        dialog.submit(new AjaxRequestHandler(tester.getLastRenderedPage()));
         
         assertFalse(GWC.get().getBlobStores().contains(dummy1));
         layer = GWC.get().getTileLayerByName("cite:Lakes");

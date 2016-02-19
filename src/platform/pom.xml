@@ -49,8 +49,13 @@
    <artifactId>commons-codec</artifactId>
   </dependency>
   <dependency>
+    <groupId>com.h2database</groupId>
+    <artifactId>h2</artifactId>
+  </dependency>
+  <dependency>
    <groupId>javax.servlet</groupId>
    <artifactId>servlet-api</artifactId>
+   <scope>provided</scope>
   </dependency>
   <dependency>
    <groupId>javax.media</groupId>
@@ -67,6 +72,11 @@
   <dependency>
    <groupId>junit</groupId>
    <artifactId>junit</artifactId>
+   <scope>test</scope>
+  </dependency>
+  <dependency>
+   <groupId>xmlunit</groupId>
+   <artifactId>xmlunit</artifactId>
    <scope>test</scope>
   </dependency>
   <dependency>

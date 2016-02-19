@@ -53,7 +53,7 @@ public class WFSExtendedCapabilitiesProvider implements
             return;
         }
         MetadataMap serviceMetadata = wfs.getMetadata();
-        Boolean createExtendedCapabilities = (Boolean) serviceMetadata.get(CREATE_EXTENDED_CAPABILITIES.key);
+        Boolean createExtendedCapabilities = serviceMetadata.get(CREATE_EXTENDED_CAPABILITIES.key, Boolean.class);
         String metadataURL = (String) serviceMetadata.get(SERVICE_METADATA_URL.key);
         String mediaType = (String) serviceMetadata.get(SERVICE_METADATA_TYPE.key);
         String language = (String) serviceMetadata.get(LANGUAGE.key);

@@ -59,6 +59,7 @@ import org.geoserver.importer.transform.IntegerFieldToDateTransform;
 import org.geoserver.importer.transform.ReprojectTransform;
 import org.geoserver.importer.transform.TransformChain;
 import org.geoserver.importer.transform.VectorTransformChain;
+import org.geoserver.platform.resource.Resource;
 import org.geoserver.rest.PageInfo;
 import org.geoserver.rest.RestletException;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -506,7 +507,7 @@ public class ImportJSONWriter {
         }
         
         if (expand > 0) {
-            json.key("location").value(data.getFile().getParentFile().getPath());
+            json.key("location").value(data.getFile().parent().path());
             if (data.getCharsetEncoding() != null) {
                 json.key("charset").value(data.getCharsetEncoding());
             }
@@ -514,7 +515,7 @@ public class ImportJSONWriter {
             message(data);
         }
         else {
-            json.key("file").value(data.getFile().getName());
+            json.key("file").value(data.getFile().name());
         }
 
         json.endObject();
@@ -523,16 +524,16 @@ public class ImportJSONWriter {
 
     void fileContents(FileData data, Object parent, int expand) throws IOException {
         //TODO: we should probably url encode to handle spaces and other chars
-        String filename = data.getFile().getName();
+        String filename = data.getFile().name();
         json.key("file").value(filename);
         json.key("href").value(page.rootURI(pathTo(data, parent)+"/files/"+filename));
         if (expand > 0) {
             if (data instanceof SpatialFile) {
                 SpatialFile sf = (SpatialFile) data;
-                json.key("prj").value(sf.getPrjFile() != null ? sf.getPrjFile().getName() : null);
+                json.key("prj").value(sf.getPrjFile() != null ? sf.getPrjFile().name() : null);
                 json.key("other").array();
-                for (File supp : ((SpatialFile) data).getSuppFiles()) {
-                    json.value(supp.getName());
+                for (Resource supp : ((SpatialFile) data).getSuppFiles()) {
+                    json.value(supp.name());
                 }
                 json.endArray();
     
@@ -565,7 +566,7 @@ public class ImportJSONWriter {
             json.key("format").value(data.getFormat().getName());
         }
 
-        json.key("location").value(data.getFile().getPath());
+        json.key("location").value(data.getFile().path());
         json.key("href").value(page.rootURI(pathTo(data, parent)));
 
         if (expand > 0) {

@@ -68,6 +68,10 @@ Line symbology
       * expression
       * An expression to use for the geometry when rendering features. 
       * yes
+    - * ``stroke-offset``
+      * expression
+      * Draws a parallel line using the specified distance, positive values offset left, negative right.  
+      * yes
     - * ``stroke-mime``
       * string (`MIME Type <http://en.wikipedia.org/wiki/MIME>`_)
       * The type of the image referenced by a url()

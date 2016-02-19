@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -9,14 +9,13 @@ import java.util.Locale;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.MarkupContainer;
-import org.apache.wicket.Session;
 import org.apache.wicket.ajax.AjaxEventBehavior;
-import org.apache.wicket.behavior.IBehavior;
-import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.behavior.Behavior;
+import org.apache.wicket.feedback.IFeedbackMessageFilter;
 import org.apache.wicket.markup.html.form.FormComponent;
-import org.apache.wicket.protocol.http.WebRequestCycle;
-import org.apache.wicket.util.tester.FormTester;
 import org.apache.wicket.util.tester.WicketTester;
+import org.apache.wicket.util.visit.IVisit;
+import org.apache.wicket.util.visit.IVisitor;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.security.GeoServerSecurityTestSupport;
 import org.geoserver.web.wicket.WicketHierarchyPrinter;
@@ -41,17 +40,16 @@ public abstract class GeoServerWicketTestSupport extends GeoServerSecurityTestSu
         // make sure that we check the english i18n when needed
         Locale.setDefault(Locale.ENGLISH);
         
-        GeoServerApplication app = 
- (GeoServerApplication) applicationContext
-                .getBean("webApplication");
-        tester = new WicketTester(
-                (GeoServerApplication) applicationContext.getBean("webApplication"));
+        GeoServerApplication app = (GeoServerApplication) applicationContext.getBean("webApplication");
+        tester = new WicketTester(app, false);
         app.init();
     }
 
     @After
     public void clearErrorMessages() {
-        Session.get().cleanupFeedbackMessages();
+        if(tester != null && !tester.getFeedbackMessages(IFeedbackMessageFilter.ALL).isEmpty()) {
+            tester.cleanupFeedbackMessages();
+        }
     }
 
     @Override
@@ -107,23 +105,6 @@ public abstract class GeoServerWicketTestSupport extends GeoServerSecurityTestSu
        WicketHierarchyPrinter.print(c, dumpClass, dumpValue);
    }
     
-    public void prefillForm(final FormTester tester) {
-        Form form = tester.getForm();
-        form.visitChildren(new Component.IVisitor() {
-            
-            public Object component(Component component) {
-                if(component instanceof FormComponent) {
-                    FormComponent fc = (FormComponent) component;
-                    String name = fc.getInputName();
-                    String value = fc.getValue();
-                    
-                    tester.setValue(name, value);
-                }
-                return Component.IVisitor.CONTINUE_TRAVERSAL;
-            }
-        });
-    }
-    
     /**
      * Finds the component whose model value equals to the specified content, and
      * the component class is equal, subclass or implementor of the specified class
@@ -132,13 +113,13 @@ public abstract class GeoServerWicketTestSupport extends GeoServerSecurityTestSu
      * @param componentClass the target class, or null if any component will do
      * @return
      */
-    public Component findComponentByContent(MarkupContainer root, Object content, Class componentClass) {
+    public Component findComponentByContent(MarkupContainer root, Object content, Class<?> componentClass) {
         ComponentContentFinder finder = new ComponentContentFinder(content);
         root.visitChildren(componentClass, finder);
         return finder.candidate;
     }
     
-    class ComponentContentFinder implements Component.IVisitor {
+    class ComponentContentFinder implements IVisitor<Component, Void> {
         Component candidate;
         Object content;
         
@@ -147,12 +128,12 @@ public abstract class GeoServerWicketTestSupport extends GeoServerSecurityTestSu
         }
         
 
-        public Object component(Component component) {
+        @Override
+        public void component(Component component, IVisit<Void> visit) {
             if(content.equals(component.getDefaultModelObject())) {
                 this.candidate = component;
-                return Component.IVisitor.STOP_TRAVERSAL;
+                visit.stop();
             }
-            return Component.IVisitor.CONTINUE_TRAVERSAL;
         }
         
     }
@@ -163,7 +144,7 @@ public abstract class GeoServerWicketTestSupport extends GeoServerSecurityTestSu
      */
     public static void initResourceSettings(WicketTester tester) {
         tester.getApplication().getResourceSettings().setResourceStreamLocator(new GeoServerResourceStreamLocator());
-        tester.getApplication().getResourceSettings().addStringResourceLoader(0, new GeoServerStringResourceLoader());
+        tester.getApplication().getResourceSettings().getStringResourceLoaders().add(0, new GeoServerStringResourceLoader());
     }
     
     /**
@@ -174,7 +155,7 @@ public abstract class GeoServerWicketTestSupport extends GeoServerSecurityTestSu
      * @return
      */
     protected AjaxEventBehavior getAjaxBehavior(String path, String event) {
-        for (IBehavior b : tester.getComponentFromLastRenderedPage(path).getBehaviors()) {
+        for (Behavior b : tester.getComponentFromLastRenderedPage(path).getBehaviors()) {
             if (b instanceof AjaxEventBehavior && ((AjaxEventBehavior) b).getEvent().equals(event)) {
                 return (AjaxEventBehavior) b;            
             }
@@ -184,21 +165,26 @@ public abstract class GeoServerWicketTestSupport extends GeoServerSecurityTestSu
 
     /**
      * Execute Ajax Event Behavior with attached value.
-     * Particularly useful to execute an onchange in a DropDownChoice (not supported by tester
-     * or formtester in wicket 1.4). 
      * 
      * @param path
      * @param event
      * @param value
      */
-    protected void executeAjaxEventBehavior(String path, String event, String value) {        
-        AjaxEventBehavior behavior = getAjaxBehavior(path, event);
-        CharSequence url = behavior.getCallbackUrl(false);
-        WebRequestCycle cycle = tester.setupRequestAndResponse(true);
-        tester.getServletRequest().setRequestToRedirectString(url.toString());
+    protected void executeAjaxEventBehavior(String path, String event, String value) {
         String[] ids = path.split(":");
         String id = ids[ids.length-1];
-        tester.getServletRequest().setParameter(id, value);
-        tester.processRequestCycle(cycle);
+        tester.getRequest().setParameter(id, value);
+        tester.executeAjaxEvent(path, event);
+    }
+    
+    /**
+     * Sets the value of a form component that might not be included in a form (because maybe we 
+     * are using it via Ajax). By itself it just prepares the stage for a subsequent Ajax request 
+     * 
+     * @param component The {@link FormComponent} whose value we are going to set
+     * @param value The form value (as we'd set it in a HTML form)
+     */
+    protected void setFormComponentValue(FormComponent component, String value) {
+        tester.getRequest().getPostParameters().setParameterValue(component.getInputName(), value);
     }
 }

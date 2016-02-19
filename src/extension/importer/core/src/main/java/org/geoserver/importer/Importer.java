@@ -1,12 +1,12 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.importer;
 
-import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -21,6 +21,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.apache.commons.io.FilenameUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.CoverageInfo;
@@ -36,7 +37,9 @@ import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.StyleGenerator;
 import org.geoserver.catalog.StyleHandler;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.Styles;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.config.GeoServer;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamPersister.CRSConverter;
 import org.geoserver.config.util.XStreamPersisterFactory;
@@ -53,7 +56,10 @@ import org.geoserver.importer.transform.TransformChain;
 import org.geoserver.importer.transform.VectorTransformChain;
 import org.geoserver.platform.ContextLoadedEvent;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.resource.Paths;
+import org.geoserver.platform.resource.Resource;
 import org.geoserver.security.GeoServerSecurityManager;
+import org.geoserver.util.EntityResolverProvider;
 import org.geotools.coverage.grid.io.HarvestedSource;
 import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
 import org.geotools.data.DataStore;
@@ -69,6 +75,8 @@ import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.jdbc.JDBCDataStore;
 import org.geotools.referencing.CRS;
+import org.geotools.styling.Style;
+import org.geotools.styling.StyledLayerDescriptor;
 import org.geotools.util.logging.Logging;
 import org.opengis.coverage.grid.GridCoverageReader;
 import org.opengis.feature.simple.SimpleFeature;
@@ -183,6 +191,10 @@ public class Importer implements DisposableBean, ApplicationListener {
 
     public Catalog getCatalog() {
         return catalog;
+    }
+
+    public GeoServer getGeoServer() {
+        return GeoServerExtensions.bean(GeoServer.class);
     }
 
     public ImportContext getContext(long id) {
@@ -418,7 +430,7 @@ public class Importer implements DisposableBean, ApplicationListener {
             data.prepare(context.progress());
         }
 
-        if (data instanceof FileData) {
+        if (data instanceof FileData && ((FileData) data).getFile() != null) {
             if (data instanceof Mosaic) {
                 return initForMosaic(context, (Mosaic)data);
             }
@@ -426,7 +438,7 @@ public class Importer implements DisposableBean, ApplicationListener {
                 return initForDirectory(context, (Directory)data);
             }
             else {
-                return initForFile(context, (FileData)data);
+                return initForFile(context, (FileData) data);
             }
         }
         else if (data instanceof Table) {
@@ -664,25 +676,34 @@ public class Importer implements DisposableBean, ApplicationListener {
         if (l.getDefaultStyle() == null) {
             try {
                 StyleInfo style = null;
-                if (r instanceof FeatureTypeInfo) {
-                    //since this resource is still detached from the catalog we can't call
-                    // through to get it's underlying resource, so we depend on the "native"
-                    // type provided from the format
-                    FeatureType featureType =
-                        (FeatureType) task.getMetadata().get(FeatureType.class);
-                    if (featureType != null) {
-                        style = styleGen.createStyle(styleHandler, (FeatureTypeInfo) r, featureType);
-                    } else {
-                        throw new RuntimeException("Unable to compute style");
-                    }
 
+                // first check the case of a style file being uploaded via zip along with rest of files 
+                if (task.getData() instanceof SpatialFile) {
+                    SpatialFile file = (SpatialFile) task.getData();
+                    if (file.getStyleFile() != null) {
+                        style = createStyleFromFile(file.getStyleFile(), task);
+                    }
                 }
-                else if (r instanceof CoverageInfo) {
-                    style = styleGen.createStyle(styleHandler, (CoverageInfo) r);
-                }
-                else {
-                    throw new RuntimeException("Unknown resource type :"
-                            + r.getClass());
+
+                if (style == null) {
+                    if (r instanceof FeatureTypeInfo) {
+                        //since this resource is still detached from the catalog we can't call
+                        // through to get it's underlying resource, so we depend on the "native"
+                        // type provided from the format
+                        FeatureType featureType =
+                                (FeatureType) task.getMetadata().get(FeatureType.class);
+                        if (featureType != null) {
+                            style = styleGen.createStyle(styleHandler, (FeatureTypeInfo) r, featureType);
+                        } else {
+                            throw new RuntimeException("Unable to compute style");
+                        }
+
+                    } else if (r instanceof CoverageInfo) {
+                        style = styleGen.createStyle(styleHandler, (CoverageInfo) r);
+                    } else {
+                        throw new RuntimeException("Unknown resource type :"
+                                + r.getClass());
+                    }
                 }
                 l.setDefaultStyle(style);
             }
@@ -797,11 +818,11 @@ public class Importer implements DisposableBean, ApplicationListener {
                 if (context.getData() instanceof Directory) {
                     directory = (Directory) context.getData();
                 } else if ( context.getData() instanceof SpatialFile ) {
-                    directory = new Directory( ((SpatialFile) context.getData()).getFile().getParentFile() );
+                    directory = new Directory( ((SpatialFile) context.getData()).getFile().parent() );
                 }
                 if (directory != null) {
                     if (LOGGER.isLoggable(Level.FINE)) {
-                        LOGGER.fine("Archiving directory " + directory.getFile().getAbsolutePath());
+                        LOGGER.fine("Archiving directory " + directory.getFile().path());
                     }       
                     try {
                         directory.archive(getArchiveFile(context));
@@ -833,11 +854,11 @@ public class Importer implements DisposableBean, ApplicationListener {
 
     }
     
-    public File getArchiveFile(ImportContext context) throws IOException {
+    public Resource getArchiveFile(ImportContext context) throws IOException {
         //String archiveName = "import-" + task.getContext().getId() + "-" + task.getId() + "-" + task.getData().getName() + ".zip";
         String archiveName = "import-" + context.getId() + ".zip";
-        File dir = getCatalog().getResourceLoader().findOrCreateDirectory("uploads","archives");
-        return new File(dir, archiveName);
+        Resource dir = getCatalog().getResourceLoader().get(Paths.path("uploads", "archives"));
+        return dir.get(archiveName);
     }
     
     public void changed(ImportContext context) {
@@ -917,6 +938,13 @@ public class Importer implements DisposableBean, ApplicationListener {
             }
 
             addToCatalog(task);
+            
+            if (task.getLayer().getResource() instanceof FeatureTypeInfo) {
+                FeatureTypeInfo featureType = (FeatureTypeInfo) task.getLayer().getResource();
+                FeatureTypeInfo resource = getCatalog().getResourceByName(
+                        featureType.getQualifiedName(), FeatureTypeInfo.class);
+                calculateBounds(resource);
+            }
 
             // apply post transform
             if (!doPostTransform(task, task.getData(), tx)) {
@@ -971,23 +999,9 @@ public class Importer implements DisposableBean, ApplicationListener {
                     if (task.getUpdateMode() == UpdateMode.CREATE) {
                         addToCatalog(task);
                     }
-    
-                    // verify that the newly created featuretype's resource
-                    // has bounding boxes computed - this might be required
-                    // for csv or other uploads that have a geometry that is
-                    // the result of a transform. there may be another way...
                     FeatureTypeInfo resource = getCatalog().getResourceByName(
                             featureType.getQualifiedName(), FeatureTypeInfo.class);
-                    if (resource.getNativeBoundingBox().isEmpty()
-                            || resource.getMetadata().get("recalculate-bounds") != null) {
-                        // force computation
-                        CatalogBuilder cb = new CatalogBuilder(getCatalog());
-                        ReferencedEnvelope nativeBounds = cb.getNativeBounds(resource);
-                        resource.setNativeBoundingBox(nativeBounds);
-                        resource.setLatLonBoundingBox(cb.getLatLonBounds(nativeBounds,
-                                resource.getCRS()));
-                        getCatalog().save(resource);
-                    }
+                    calculateBounds(resource);
                 }
             }
             catch(Exception e) {
@@ -1038,6 +1052,42 @@ public class Importer implements DisposableBean, ApplicationListener {
         task.setState(canceled ? ImportTask.State.CANCELED : ImportTask.State.COMPLETE);
 
     }
+    
+    /**
+     * (Re)calculates the bounds for a FeatureTypeInfo.
+     * Bounds will be calculated if:
+     * <li> The native bounds of the resource are null or empty
+     * <li> The resource has a metadata entry "recalculate-bounds"="true"<br><br>
+     * 
+     * Otherwise, this method has no effect.<br><br>
+     * 
+     * If the metadata entry "recalculate-bounds"="true" exists, 
+     * it will be removed after bounds are calculated.<br><br>
+     * 
+     * This is currently used by csv / kml uploads that have a geometry that may be the result of a 
+     * transform, and by JDBC imports which wait to calculate bounds until after the layers that 
+     * will be imported have been chosen.
+     * 
+     * @param resource The resource to calculate the bounds for
+     */
+    protected void calculateBounds(FeatureTypeInfo resource) throws IOException {
+        if (resource.getNativeBoundingBox() == null || resource.getNativeBoundingBox().isEmpty()
+                || Boolean.TRUE.equals(resource.getMetadata().get("recalculate-bounds"))
+                || "true".equals(resource.getMetadata().get("recalculate-bounds"))) {
+            // force computation
+            CatalogBuilder cb = new CatalogBuilder(getCatalog());
+            ReferencedEnvelope nativeBounds = cb.getNativeBounds(resource);
+            resource.setNativeBoundingBox(nativeBounds);
+            resource.setLatLonBoundingBox(cb.getLatLonBounds(nativeBounds,
+                    resource.getCRS()));
+            getCatalog().save(resource);
+            
+            //Do not re-calculate on subsequent imports
+            if (resource.getMetadata().get("recalculate-bounds") != null) {
+                resource.getMetadata().remove("recalculate-bounds");
+            }
+        }
+    }
 
     private void checkSingleHarvest(List<HarvestedSource> harvests) throws IOException {
         for (HarvestedSource harvested : harvests) {
@@ -1059,7 +1109,7 @@ public class Importer implements DisposableBean, ApplicationListener {
             throws IOException {
         if (data instanceof SpatialFile) {
             SpatialFile sf = (SpatialFile) data;
-            List<HarvestedSource> harvests = sr.harvest(null, sf.getFile(),
+            List<HarvestedSource> harvests = sr.harvest(null, sf.getFile().file(),
                     null);
             checkSingleHarvest(harvests);
         } else if (data instanceof Directory) {
@@ -1444,21 +1494,12 @@ public class Importer implements DisposableBean, ApplicationListener {
     }
 
     //file location methods
-    public File getImportRoot() {
-        try {
-            return catalog.getResourceLoader().findOrCreateDirectory("imports");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    public Resource getImportRoot() {
+        return catalog.getResourceLoader().get("imports");
     }
 
-    public File getUploadRoot() {
-        try {
-            return catalog.getResourceLoader().findOrCreateDirectory("uploads");
-        }
-        catch(IOException e) {
-            throw new RuntimeException(e);
-        }
+    public Resource getUploadRoot() {
+        return catalog.getResourceLoader().get("uploads");
     }
 
     public void destroy() throws Exception {
@@ -1539,15 +1580,60 @@ public class Importer implements DisposableBean, ApplicationListener {
                 securityManager));
         
         // security
-        xs.allowTypes(new Class[] { ImportContext.class, ImportTask.class, File.class });
+        xs.allowTypes(new Class[] { ImportContext.class, ImportTask.class });
         xs.allowTypeHierarchy(TransformChain.class);
         xs.allowTypeHierarchy(DataFormat.class);
         xs.allowTypeHierarchy(ImportData.class);
         xs.allowTypeHierarchy(ImportTransform.class);
+        xs.allowTypeHierarchy(Resource.class);
 
         return xp;
     }
 
+    /**
+     * Creates a style for the layer being imported from a resource that was included in the 
+     * directory or archive that the data is being imported from.
+     */
+    StyleInfo createStyleFromFile(Resource styleFile, ImportTask task) {
+        String ext = FilenameUtils.getExtension(styleFile.name());
+        if (ext != null) {
+            StyleHandler styleHandler = Styles.handler(ext);
+            if (styleHandler != null) {
+                try {
+                    StyledLayerDescriptor sld = styleHandler.parse(styleFile, null, null,
+                            new EntityResolverProvider(getGeoServer()).getEntityResolver());
+
+                    Style style = Styles.style(sld);
+                    if (style != null) {
+                        StyleInfo info = catalog.getFactory().createStyle();
+
+                        String styleName = styleGen.generateUniqueStyleName(task.getLayer().getResource());
+                        info.setName(styleName);
+                        
+                        info.setFilename(styleName + "." +ext);
+                        info.setFormat(styleHandler.getFormat());
+                        info.setWorkspace(task.getStore().getWorkspace());
+
+                        try (InputStream in = styleFile.in()) {
+                            catalog.getResourcePool().writeStyle(info, in);
+                        }
+                        return info;
+                    }
+                    else {
+                        LOGGER.warning("Style file contained no styling: " + styleFile.path());
+                    }
+                }
+                catch(Exception e) {
+                    LOGGER.log(Level.WARNING, "Error parsing style: " + styleFile.path(), e);
+                }
+            }
+            else {
+                LOGGER.warning("Unable to find style handler for file extension: " + ext);
+            }
+        }
+
+        return null;
+    }
 
 
 }

@@ -18,13 +18,13 @@ public class DefaultDataAccessManagerAuthTest extends AbstractAuthorizationTest 
 
     @Test 
     public void testWideOpen() throws Exception {
-        DataAccessManager manager = buildLegacyAccessManager("wideOpen.properties");
+        DataAccessManager manager = buildAccessManager("wideOpen.properties");
         checkUserAccessFlat(manager, anonymous, true, true);
     }
 
     @Test
     public void testLockedDown() throws Exception {
-        DataAccessManager manager = buildLegacyAccessManager("lockedDown.properties");
+        DataAccessManager manager = buildAccessManager("lockedDown.properties");
         checkUserAccessFlat(manager, anonymous, false, false);
         checkUserAccessFlat(manager, roUser, false, false);
         checkUserAccessFlat(manager, rwUser, true, true);
@@ -33,7 +33,7 @@ public class DefaultDataAccessManagerAuthTest extends AbstractAuthorizationTest 
     
     @Test
     public void testPublicRead() throws Exception {
-        DataAccessManager manager = buildLegacyAccessManager("publicRead.properties");
+        DataAccessManager manager = buildAccessManager("publicRead.properties");
         checkUserAccessFlat(manager, anonymous, true, false);
         checkUserAccessFlat(manager, roUser, true, false);
         checkUserAccessFlat(manager, rwUser, true, true);
@@ -55,7 +55,7 @@ public class DefaultDataAccessManagerAuthTest extends AbstractAuthorizationTest 
     
     @Test
     public void testComplex() throws Exception {
-        DataAccessManager wo = buildLegacyAccessManager("complex.properties");
+        DataAccessManager wo = buildAccessManager("complex.properties");
         
         // check non configured ws inherits root configuration, auth read, nobody write
         assertFalse(wo.canAccess(anonymous, nurcWs, AccessMode.READ));
@@ -115,31 +115,31 @@ public class DefaultDataAccessManagerAuthTest extends AbstractAuthorizationTest 
     
     @Test
     public void testDefaultMode() throws Exception {
-        DataAccessManager wo = buildLegacyAccessManager("lockedDown.properties");
+        DataAccessManager wo = buildAccessManager("lockedDown.properties");
         assertEquals(CatalogMode.HIDE, wo.getMode());
     }
     
     @Test
     public void testHideMode() throws Exception {
-        DataAccessManager wo = buildLegacyAccessManager("lockedDownHide.properties");
+        DataAccessManager wo = buildAccessManager("lockedDownHide.properties");
         assertEquals(CatalogMode.HIDE, wo.getMode());
     }
     
     @Test
     public void testChallengeMode() throws Exception {
-        DataAccessManager wo = buildLegacyAccessManager("lockedDownChallenge.properties");
+        DataAccessManager wo = buildAccessManager("lockedDownChallenge.properties");
         assertEquals(CatalogMode.CHALLENGE, wo.getMode());
     }
     
     @Test
     public void testMixedMode() throws Exception {
-        DataAccessManager wo = buildLegacyAccessManager("lockedDownMixed.properties");
+        DataAccessManager wo = buildAccessManager("lockedDownMixed.properties");
         assertEquals(CatalogMode.MIXED, wo.getMode());
     }
     
     @Test
     public void testUnknownMode() throws Exception {
-        DataAccessManager wo = buildLegacyAccessManager("lockedDownUnknown.properties");
+        DataAccessManager wo = buildAccessManager("lockedDownUnknown.properties");
         // should fall back on the default and complain in the logger
         assertEquals(CatalogMode.HIDE, wo.getMode());
     }

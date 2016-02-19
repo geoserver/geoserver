@@ -6,7 +6,6 @@
 package org.geoserver.monitor;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -16,14 +15,12 @@ import java.util.logging.Level;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.geoserver.monitor.MonitorRequestFilter.Filter;
-import org.geoserver.ows.util.ResponseUtils;
+import org.geoserver.data.util.IOUtils;
 import org.geoserver.platform.FileWatcher;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
-import org.geoserver.platform.resource.Resources;
 import org.springframework.util.AntPathMatcher;
 
 import static org.geoserver.monitor.MonitorFilter.LOGGER;
@@ -40,8 +37,9 @@ public class MonitorRequestFilter {
     public MonitorRequestFilter(GeoServerResourceLoader loader) throws IOException {
         Resource configFile = loader.get( Paths.path("monitoring", "filter.properties") );
         if (configFile.getType() == Type.UNDEFINED) {
-            loader.copyFromClassPath("filter.properties", configFile.file(), getClass());
+            IOUtils.copy(getClass().getResourceAsStream("filter.properties"), configFile.out());
         }
+        filters = new ArrayList<Filter>();
         watcher = new FilterPropertyFileWatcher(configFile);
     }
     

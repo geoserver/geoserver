@@ -31,7 +31,7 @@ Ext.onReady(function() {
             fillOpacity: 0.7,
             strokeWidth: 2,
             pointRadius: 12,
-            externalGraphic: "http://openlayers.org/dev/img/marker-blue.png"
+            externalGraphic: "http://geoserver.org/img/geoserver-logo.png"
         })
     });
     var geom = OpenLayers.Geometry.fromWKT, Vec = OpenLayers.Feature.Vector;

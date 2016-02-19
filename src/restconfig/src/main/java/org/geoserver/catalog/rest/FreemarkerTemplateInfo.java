@@ -5,15 +5,15 @@
  */
 package org.geoserver.catalog.rest;
 
-import java.io.File;
+import org.geoserver.platform.resource.Resource;
 
 
 public class FreemarkerTemplateInfo {
 
     private String name;
 
-    public FreemarkerTemplateInfo(File file) {
-        name = file.getName();
+    public FreemarkerTemplateInfo(Resource file) {
+        name = file.name();
     }
 
     public String getName() {

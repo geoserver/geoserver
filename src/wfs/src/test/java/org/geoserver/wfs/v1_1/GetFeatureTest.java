@@ -8,6 +8,7 @@ package org.geoserver.wfs.v1_1;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.net.URLEncoder;
@@ -17,21 +18,44 @@ import javax.xml.namespace.QName;
 
 import org.custommonkey.xmlunit.XMLAssert;
 import org.geoserver.config.GeoServer;
+import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.test.RunTestSetup;
+import org.geoserver.util.XmlTestUtil;
 import org.geoserver.wfs.GMLInfo;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.WFSTestSupport;
 import org.geotools.gml3.GML;
+import org.hamcrest.Matchers;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 public class GetFeatureTest extends WFSTestSupport {
-	
+    
+    XmlTestUtil xmlUtil;
+    
+    @Before
+    public void setupXmlUtil() {
+        xmlUtil = new XmlTestUtil();
+        xmlUtil.addNamespace("wfs", "http://www.opengis.net/wfs");
+        xmlUtil.addNamespace("sf", "http://cite.opengeospatial.org/gmlsf");
+        //xmlUtil.setShowXML(System.out); // Uncomment to display XML on failure
+    }
+    @Before
+    public void setupExternalEntities() {
+        GeoServerInfo gsi = this.getGeoServer().getGlobal();
+        gsi.setXmlExternalEntitiesEnabled(true);
+        getGeoServer().save(gsi);
+    }
+    
     @Override
     protected void setUpInternal(SystemTestData data) throws Exception {
+        this.getGeoServer().getGlobal().setXmlExternalEntitiesEnabled(true);
     	WFSInfo wfs = getWFS();
         wfs.setFeatureBounding(true);
     	getGeoServer().save(wfs);
@@ -223,6 +247,7 @@ public class GetFeatureTest extends WFSTestSupport {
     
     @Test
     public void testPostWithMatchingUrnBboxFilter() throws Exception {
+        assertThat(getGeoServer().getGlobal().isXmlExternalEntitiesEnabled(), Matchers.is(true));
         String xml = "<wfs:GetFeature " + "service=\"WFS\" "
             + "version=\"1.1.0\" "
             + "outputFormat=\"text/xml; subtype=gml/3.1.1\" "
@@ -244,9 +269,8 @@ public class GetFeatureTest extends WFSTestSupport {
             + "</wfs:GetFeature>";
 
         Document doc = postAsDOM("wfs", xml);
-        assertEquals("wfs:FeatureCollection", doc.getDocumentElement().getNodeName());
-        NodeList features = doc.getElementsByTagName("sf:PrimitiveGeoFeature");
-        assertEquals(1, features.getLength());
+        assertThat(doc, xmlUtil.hasNode("wfs:FeatureCollection"));
+        assertThat(doc, xmlUtil.hasNode("//sf:PrimitiveGeoFeature"));
     }
 
     @Test

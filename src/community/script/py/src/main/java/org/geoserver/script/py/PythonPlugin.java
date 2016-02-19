@@ -41,7 +41,7 @@ public class PythonPlugin extends ScriptPlugin {
     public void init(ScriptManager scriptMgr) throws Exception {
         //add lib to python.path
         Properties props = new Properties();
-        props.put("python.path", scriptMgr.getLibRoot("py").getAbsolutePath());
+        props.put("python.path", scriptMgr.script("lib/" + "py").dir().getAbsolutePath());
         PythonInterpreter.initialize(null, props, null);
 
 //        codecs.register(new PyObject() {

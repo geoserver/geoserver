@@ -142,16 +142,16 @@ public class XMLUserDetailsServiceTest extends AbstractUserDetailsServiceTest {
         assertTrue(disabledUser.getAuthorities().contains(role_test));
         
         GeoServerSecurityManager securityManager = getSecurityManager();
-        File userfile = new File(securityManager.getSecurityRoot(),"users.properties");
+        File userfile = new File(securityManager.get("security").dir(),"users.properties");
         assertFalse(userfile.exists());
-        File userfileOld = new File(securityManager.getSecurityRoot(),"users.properties.old");
+        File userfileOld = new File(securityManager.get("security").dir(),"users.properties.old");
         assertTrue(userfileOld.exists());
 
-        File roleXSD = new File(new File(securityManager.getRoleRoot(), roleService.getName()),
+        File roleXSD = new File(new File(securityManager.get("security/role").dir(), roleService.getName()),
             XMLConstants.FILE_RR_SCHEMA);
         assertTrue(roleXSD.exists());
 
-        File userXSD = new File (new File(securityManager.getUserGroupRoot(), userService.getName()), 
+        File userXSD = new File (new File(securityManager.get("security/usergroup").dir(), userService.getName()), 
             XMLConstants.FILE_UR_SCHEMA);
         assertTrue(userXSD.exists());
         

@@ -109,7 +109,17 @@ public class DefaultGeoServerLoaderTest {
         GeoServerResourceLoader resources = GeoServerExtensions.bean(GeoServerResourceLoader.class );
         assertSame( catalog.getResourceLoader(), resources );
         loader.readCatalog(catalog, xp);
-        assertNotNull(catalog.getLayerGroupByName("topp", "simplegroup"));
+        
+        LayerGroupInfo simpleLayerGroup = catalog.getLayerGroupByName("topp", "simplegroup");
+        assertNotNull(simpleLayerGroup);
+        assertEquals(101, simpleLayerGroup.getAttribution().getLogoWidth());
+        assertEquals(102, simpleLayerGroup.getAttribution().getLogoHeight());
+        assertEquals(2, simpleLayerGroup.getMetadataLinks().size());
+        assertEquals("http://my/metadata/link/1", 
+                simpleLayerGroup.getMetadataLinks().get(0).getContent());
+        assertEquals("text/html", 
+                simpleLayerGroup.getMetadataLinks().get(0).getType());
+        
         LayerGroupInfo nestedLayerGroup = catalog.getLayerGroupByName("topp", "nestedgroup");
         assertNotNull(nestedLayerGroup);
         assertNotNull(nestedLayerGroup.getLayers());

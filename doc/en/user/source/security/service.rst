@@ -1,11 +1,11 @@
-.. _sec_service:
+.. _security_service:
 
 Service Security
 ================
 
 GeoServer supports access control at the service level, allowing for the locking down of service operations to only authenticated users who have been granted a particular role. There are two main categories of services in GeoServer. The first is :ref:`OWS services <services>` such as WMS and WFS. The second are RESTful services, such as the GeoServer :ref:`rest`.
 
-.. note:: Service-level security and :ref:`sec_layer` cannot be combined. For example, it is not possible to specify access to a specific OWS service only for one specific layer.
+.. note:: Service-level security and :ref:`security_layer` cannot be combined. For example, it is not possible to specify access to a specific OWS service only for one specific layer.
 
 OWS services
 ------------
@@ -28,7 +28,7 @@ The parameters include:
 * ``operation``—Any operation supported by the service, examples include ``GetFeature`` for WFS, ``GetMap`` for WMS, ``*`` for all operations
 * ``role[,role2,...]``—List of predefined role names
 
-.. note::  It is important that roles specified are actually linked to a user, otherwise the whole service/operation will be accessible to no one except for the :ref:`sec_root`. However in some cases this may be the desired effect.
+.. note::  It is important that roles specified are actually linked to a user, otherwise the whole service/operation will be accessible to no one except for the :ref:`security_root`. However in some cases this may be the desired effect.
 
 The default service security configuration in GeoServer contains no rules and allows any anonymous user to access any operation of any service. The following are some examples of desired security restrictions and the corresponding rules.
 
@@ -70,7 +70,7 @@ REST service security access rules are specified in a file named :file:`rest.pro
 The parameters include:
 
 * ``[]``—Denote optional parameters
-* ``uriPattern``—The :ref:`ant pattern <sec_service_ant_patterns>` that matches a set of request URIs 
+* ``uriPattern``—The :ref:`ant pattern <security_service_ant_patterns>` that matches a set of request URIs 
 * ``method``—HTTP request method, one of ``GET``, ``POST``, ``PUT``, ``POST``, ``DELETE``, or ``HEAD``
 * ``role``—Name of a predefined role. The wildcard ``*`` is used to indicate all users, including anonymous users.
 
@@ -79,7 +79,7 @@ The parameters include:
    * URI patterns should account for the first component of the rest path, usually ``rest`` or ``api``
    * ``method`` and ``role`` lists should **not** contain any spaces
 
-.. _sec_service_ant_patterns:
+.. _security_service_ant_patterns:
 
 Ant patterns
 ~~~~~~~~~~~~

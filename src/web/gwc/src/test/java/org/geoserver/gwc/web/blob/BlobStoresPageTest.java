@@ -1,4 +1,4 @@
-/* (c) 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2015 - 2016 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -14,7 +14,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.AjaxRequestHandler;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.form.CheckBox;
@@ -78,7 +78,8 @@ public class BlobStoresPageTest extends GeoServerWicketTestSupport {
         
         tester.startPage(page);        
 
-        GeoServerTablePanel table = (GeoServerTablePanel) tester.getComponentFromLastRenderedPage("storesPanel");
+        @SuppressWarnings("unchecked")
+		GeoServerTablePanel<BlobStoreConfig> table = (GeoServerTablePanel<BlobStoreConfig>) tester.getComponentFromLastRenderedPage("storesPanel");
         
         assertEquals(blobStores.size(), table.getDataProvider().size());
         assertTrue(getStoresFromTable(table).contains(dummy1));  
@@ -109,7 +110,8 @@ public class BlobStoresPageTest extends GeoServerWicketTestSupport {
         BlobStoresPage page = new BlobStoresPage();
         tester.startPage(page);   
         
-        GeoServerTablePanel table = (GeoServerTablePanel) tester.getComponentFromLastRenderedPage("storesPanel");
+        @SuppressWarnings("unchecked")
+		GeoServerTablePanel<BlobStoreConfig> table = (GeoServerTablePanel<BlobStoreConfig>) tester.getComponentFromLastRenderedPage("storesPanel");
                 
         BlobStoreConfig dummy1 = dummyStore1();
         GWC.get().addBlobStore(dummy1);
@@ -122,8 +124,8 @@ public class BlobStoresPageTest extends GeoServerWicketTestSupport {
         
         //select
         CheckBox selector = ((CheckBox) tester.getComponentFromLastRenderedPage("storesPanel:listContainer:items:1:selectItemContainer:selectItem"));
-        tester.getServletRequest().setParameter(selector.getInputName(), "true");
-        tester.executeAjaxEvent(selector, "onclick");
+        tester.getRequest().setParameter(selector.getInputName(), "true");
+        tester.executeAjaxEvent(selector, "click");
                 
         assertEquals(1, table.getSelection().size());        
         assertEquals(dummy1, table.getSelection().get(0));
@@ -149,8 +151,8 @@ public class BlobStoresPageTest extends GeoServerWicketTestSupport {
         //select
         //super.print(page, false, false, true);
         selector = ((CheckBox) tester.getComponentFromLastRenderedPage("storesPanel:listContainer:items:2:selectItemContainer:selectItem"));
-        tester.getServletRequest().setParameter(selector.getInputName(), "true");
-        tester.executeAjaxEvent(selector, "onclick");
+        tester.getRequest().setParameter(selector.getInputName(), "true");
+        tester.executeAjaxEvent(selector, "click");
         
         //click delete
         assertEquals(1, table.getSelection().size());        
@@ -163,7 +165,7 @@ public class BlobStoresPageTest extends GeoServerWicketTestSupport {
         
         //confirm      
         GeoServerDialog dialog = (GeoServerDialog) tester.getComponentFromLastRenderedPage("confirmDeleteDialog");
-        dialog.submit(new AjaxRequestTarget(tester.getLastRenderedPage()));       
+        dialog.submit(new AjaxRequestHandler(tester.getLastRenderedPage()));       
         
         assertFalse(GWC.get().getBlobStores().contains(dummy1));
         layer = GWC.get().getTileLayerByName("cite:Lakes");
@@ -171,11 +173,11 @@ public class BlobStoresPageTest extends GeoServerWicketTestSupport {
         
     }
     
-    public List<BlobStoreConfig> getStoresFromTable(GeoServerTablePanel table) {
+    public List<BlobStoreConfig> getStoresFromTable(GeoServerTablePanel<BlobStoreConfig> table) {
         List<BlobStoreConfig> result = new ArrayList<BlobStoreConfig>();
-        Iterator it = table.getDataProvider().iterator(0, table.size());
+        Iterator<BlobStoreConfig> it = table.getDataProvider().iterator(0, table.size());
         while (it.hasNext()) {
-            result.add( (BlobStoreConfig) it.next());
+            result.add(it.next());
         }
         return result;
         

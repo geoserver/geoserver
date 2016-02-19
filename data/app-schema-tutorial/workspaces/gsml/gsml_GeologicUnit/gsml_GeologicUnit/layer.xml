@@ -1,0 +1,17 @@
+<layer>
+  <id>gsml_GeologicUnit_layer</id>
+  <name>GeologicUnit</name>
+  <path>/</path>
+  <type>VECTOR</type>
+  <defaultStyle>
+    <name>polygon</name>
+  </defaultStyle>
+  <resource class="featureType">
+    <id>gsml_GeologicUnit_featuretype</id>
+  </resource>
+  <enabled>true</enabled>
+  <attribution>
+    <logoWidth>0</logoWidth>
+    <logoHeight>0</logoHeight>
+  </attribution>
+</layer>

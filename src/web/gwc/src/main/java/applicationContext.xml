@@ -74,14 +74,7 @@
     <property name="componentClass" value="org.geoserver.gwc.web.layer.LayerCacheOptionsTabPanel"/>
     <property name="order" value="200"/>
   </bean>
-    
-  <bean id="layerGroupCacheEditPanelInfo" class="org.geoserver.web.publish.LayerGroupConfigurationPanelInfo">
-    <property name="id" value="layerGroupCacheEditTabPanelInfo"/>
-    <property name="titleKey" value="LayerGroupCacheOptionsPanel.title"/>
-    <property name="descriptionKey" value="LayerGroupCacheOptionsPanel.shortDescription"/>
-    <property name="componentClass" value="org.geoserver.gwc.web.layer.LayerGroupCacheOptionsPanel"/>
-  </bean>
-  
+
   <bean id="diskQuotaWarningProvider" class="org.geoserver.gwc.web.diskquota.DiskQuotaWarningProvider"/>
   
   <bean class="org.geoserver.gwc.web.blob.FileBlobStoreType" /> 

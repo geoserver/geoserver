@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -87,7 +87,9 @@ public class StyleParameterFilterSubform extends AbstractParameterFilterSubform<
         }
     }
     static class LabelledEmptyStringModel implements IModel<String> {
-    
+
+        private static final long serialVersionUID = 7591957769540603345L;
+
         final private IModel<String> realModel;
         
         final String label;
@@ -115,7 +117,7 @@ public class StyleParameterFilterSubform extends AbstractParameterFilterSubform<
 
         @Override
         public void setObject(String object) {
-            if (object.equals(label)) {
+            if (label.equals(object)) {
                 realModel.setObject("");
             } else {
                 realModel.setObject(object);
@@ -194,20 +196,25 @@ public class StyleParameterFilterSubform extends AbstractParameterFilterSubform<
     public StyleParameterFilterSubform(String id,
             IModel<StyleParameterFilter> model) {
         super(id, model);
-        
-        final Component defaultValue;
+    }
+    
+    @Override
+    public void onInitialize() {
+    	super.onInitialize();
+    	
+    	final Component defaultValue;
         
         final String allStyles = getLocalizer().getString("allStyles", this);
         final String layerDefault = getLocalizer().getString("layerDefault", this);
         
         final IModel<List<String>> availableStylesModelDefault = 
-                new SetAsListModel(new PropertyModel<Set<String>>(model, "layerStyles"), layerDefault);
+                new SetAsListModel(new PropertyModel<Set<String>>(getModel(), "layerStyles"), layerDefault);
         final IModel<List<String>> availableStylesModelAllowed = 
-                new SetAsListModel(new PropertyModel<Set<String>>(model, "layerStyles"), allStyles);
+                new SetAsListModel(new PropertyModel<Set<String>>(getModel(), "layerStyles"), allStyles);
         final IModel<List<String>> selectedStylesModel = 
-                new NullableSetAsListModel(new PropertyModel<Set<String>>(model, "styles"), allStyles);
+                new NullableSetAsListModel(new PropertyModel<Set<String>>(getModel(), "styles"), allStyles);
         final IModel<String> selectedDefaultModel = 
-                new LabelledEmptyStringModel(new PropertyModel<String>(model, "realDefault"), layerDefault);
+                new LabelledEmptyStringModel(new PropertyModel<String>(getModel(), "realDefault"), layerDefault);
         
         defaultValue = new DropDownChoice<String>("defaultValue", selectedDefaultModel, availableStylesModelDefault);
         add(defaultValue);

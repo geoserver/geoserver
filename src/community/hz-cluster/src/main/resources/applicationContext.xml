@@ -14,7 +14,7 @@
    </bean>
    <bean id="hzCluster" 
          class="org.geoserver.cluster.hazelcast.HzCluster">
-      <property name="dataDirectory" ref="dataDirectory"/>
+      <property name="resourceStore" ref="resourceStore"/>
       <property name="rawCatalog" ref="rawCatalog"/>
    </bean>
 
@@ -24,4 +24,11 @@
    
    <bean id="hzExtensionFilter" class="org.geoserver.cluster.hazelcast.HzExtensionFilter">
    </bean>
+
+   <bean id="hzLockProvider" class="org.geoserver.cluster.hazelcast.HzLockProvider">
+      <property name="cluster" ref="hzCluster"/>
+   </bean>
+   
+   <!-- override the default one -->
+   <bean id="resourceNotificationDispatcher" class="org.geoserver.cluster.hazelcast.HzResourceNotificationDispatcher" />
 </beans>

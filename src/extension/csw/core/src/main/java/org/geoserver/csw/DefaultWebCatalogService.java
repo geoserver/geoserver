@@ -5,6 +5,7 @@
  */
 package org.geoserver.csw;
 
+import java.io.File;
 import java.util.List;
 
 import net.opengis.cat.csw20.CapabilitiesType;
@@ -113,6 +114,12 @@ public class DefaultWebCatalogService implements WebCatalogService, ApplicationC
         throw new ServiceException("Transactions are not supported by this CSW service");
     }
 
+    @Override
+    public List<File> directDownload(DirectDownloadType request) throws ServiceException {
+        checkStore();
+        return new DirectDownload(this.csw, this.store).run(request);
+    }
+    
     /**
      * Checks we have a store to use
      */

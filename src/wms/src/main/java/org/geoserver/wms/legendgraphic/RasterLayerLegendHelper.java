@@ -51,8 +51,6 @@ public class RasterLayerLegendHelper {
         try {
             GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
             Resource rasterLegend = loader.get( Paths.path("styles","rasterLegend.png"));
-//            final File stylesDirectory = GeoserverDataDirectory.findCreateConfigDir("styles");
-//            final File rasterLegend = new File(stylesDirectory, "rasterLegend.png");
             if (rasterLegend.getType() == Type.RESOURCE ){
                 imgShape = ImageIO.read(rasterLegend.file());
             }

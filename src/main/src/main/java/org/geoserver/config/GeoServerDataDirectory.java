@@ -42,6 +42,7 @@ import org.geoserver.platform.resource.Files;
 import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
+import org.geoserver.platform.resource.ResourceNotificationDispatcher;
 import org.geoserver.platform.resource.ResourceStore;
 import org.geoserver.platform.resource.Resources;
 import org.geotools.data.DataUtilities;
@@ -1206,7 +1207,7 @@ public class GeoServerDataDirectory implements ResourceStore {
             throw new FileNotFoundException( "No such resource: " + s.getFilename());
         }
         final DefaultResourceLocator locator = new DefaultResourceLocator();
-        locator.setSourceUrl(resourceToUrl(styleResource));
+        locator.setSourceUrl(Resources.toURL(styleResource));
         StyledLayerDescriptor sld =
             Styles.handler(s.getFormat()).parse(styleResource, s.getFormatVersion(), locator, null);
         final Style style = Styles.style(sld);
@@ -1235,8 +1236,16 @@ public class GeoServerDataDirectory implements ResourceStore {
                 URL url = super.locateResource(uri);
                 if(url.getProtocol().equalsIgnoreCase("resource")) {
                     //GEOS-7025: Just get the path; don't try to create the file
-                    return fileToUrlPreservingCqlTemplates(
-                            Paths.toFile(root(), urlToResource(url).path()));
+                    URL u = fileToUrlPreservingCqlTemplates(
+                            Paths.toFile(root(), resourceLoader.fromURL(url).path()));
+                    if (url.getQuery() != null) {
+                        try {
+                            return new URL(u.toString() + "?" + url.getQuery());
+                        } catch (MalformedURLException ex) {
+                            return null;
+                        }
+                    }
+                    return u;
                 } else {
                     return url;
                 }
@@ -1253,7 +1262,7 @@ public class GeoServerDataDirectory implements ResourceStore {
             }
 
         };
-        locator.setSourceUrl(resourceToUrl(styleResource));
+        locator.setSourceUrl(Resources.toURL(styleResource));
         final StyledLayerDescriptor sld =
             Styles.handler(s.getFormat()).parse(input, s.getFormatVersion(), locator, null);
         final Style style = Styles.style(sld);
@@ -1335,7 +1344,7 @@ public class GeoServerDataDirectory implements ResourceStore {
                         return;
                     }
                     try {
-                        Resource r = urlToResource(exgr.getLocation());
+                        Resource r = resourceLoader.fromURL(exgr.getLocation());
                         
                         if (r!=null && r.getType()!=Type.UNDEFINED){
                             resources.add(r);
@@ -1368,70 +1377,9 @@ public class GeoServerDataDirectory implements ResourceStore {
         return resources;
     }
 
-    URL resourceToUrl(final Resource res) {
-        try {
-            return new URL("resource", null, -1, String.format(res.getType()==Type.DIRECTORY?"/%s/":"/%s", res.path()),
-                new URLStreamHandler(){
-
-                @Override
-                protected URLConnection openConnection(URL u)
-                        throws IOException {
-                    return new URLConnection(u){
-
-                        @Override
-                        public void connect() throws IOException {
-                            // TODO Auto-generated method stub
-                            
-                        }
-
-                        @Override
-                        public long getLastModified() {
-                            return res.lastmodified();
-                        }
-
-                        @Override
-                        public InputStream getInputStream() throws IOException {
-                            return res.in();
-                        }
-
-                        @Override
-                        public OutputStream getOutputStream() throws IOException {
-                            return res.out();
-                        }
-                    };
-                }
-                
-            });
-        } catch (MalformedURLException e) {
-            throw new IllegalStateException("Should not happen",e);
-            //LOGGER.log(Level.FINER, e.getMessage(), e);
-        }
-    }
-    
-    @Nullable Resource urlToResource(URL url) {
-        if(url.getProtocol().equalsIgnoreCase("resource")) {
-            return get(Paths.convert(url.getPath()));
-        } else if (url.getProtocol().equalsIgnoreCase("file")){
-            return Files.asResource(DataUtilities.urlToFile(url));
-        } else {
-            return null;
-        }
-    }
-    Resource uriToResource(Resource base, URI uri) throws MalformedURLException {
-        if(uri.getScheme()!=null && !uri.getScheme().equals("file")) {
-            return null;
-        }
-        if(uri.isAbsolute() && ! uri.isOpaque()) {
-            assert uri.getScheme().equals("file");
-            return Files.asResource(new File(uri.toURL().getFile()));
-        }  else {
-            return base.get(uri.normalize().getSchemeSpecificPart());
-        }
-    }
-
     /**
      * Wrapper for {@link DataUtilities#fileToURL} that unescapes braces used to delimit CQL templates.
-     */
+     */ 
     public static URL fileToUrlPreservingCqlTemplates(File file) {
         URL url = DataUtilities.fileToURL(file);
         if (!file.getPath().contains("${")) {
@@ -1444,6 +1392,11 @@ public class GeoServerDataDirectory implements ResourceStore {
                 return null;
             }
         }
+    }
+
+    @Override
+    public ResourceNotificationDispatcher getResourceNotificationDispatcher() {
+        return resourceLoader.getResourceNotificationDispatcher();
     }
 
 }

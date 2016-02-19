@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -250,6 +250,18 @@ public class GetMapIntegrationTest extends WMSTestSupport {
                 + "&srs=epsg:4326&BBOX=-130,49,-125,54";
         image = getAsImage(url, "image/png");
         color = getPixelColor(image, 25, 25);
+        // the color is white, or white-ish
+        assertTrue(color.getRed() + color.getGreen() + color.getBlue() > (250 * 3));
+    }
+
+    @Test
+    public void testRasterRenderingTxOutOfBbox() throws Exception {
+        String layer = getLayerId(MockData.USA_WORLDIMG);
+        String url = "wms?service=WMS&VERSION=1.1.1&request=GetMap&styles=crop_raster"
+                + "&format=image/png&layers="  + layer + "&WIDTH=100&HEIGHT=100"
+                + "&srs=epsg:4326&BBOX=-120,40,-115,45";
+        BufferedImage image = getAsImage(url, "image/png");
+        Color color = getPixelColor(image, 25, 25);
         // the color is white, or white-ish
         assertTrue(color.getRed() + color.getGreen() + color.getBlue() > (250 * 3));
     }

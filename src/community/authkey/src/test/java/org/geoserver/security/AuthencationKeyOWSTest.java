@@ -1,13 +1,13 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.security;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -34,6 +34,8 @@ import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.wms.WMSInfo;
 import org.junit.Test;
 import org.w3c.dom.Document;
+
+import com.mockrunner.mock.web.MockHttpServletResponse;
 
 public class AuthencationKeyOWSTest extends GeoServerSystemTestSupport {
 
@@ -260,5 +262,25 @@ public class AuthencationKeyOWSTest extends GeoServerSystemTestSupport {
         XpathEngine engine = XMLUnit.newXpathEngine();
         String url = engine.evaluate("//wfs:FeatureCollection/@xsi:schemaLocation", doc);
         assertTrue(url.contains("&authkey=" + citeKey));
+    }
+
+    /*
+     * Tests that URLs in the OpenLayers Map are correctly generated (see: GEOS-7295)
+     */
+    @Test
+    public void testOpenLayersMapOutput() throws Exception {
+        MockHttpServletResponse response = getAsServletResponse("cite/wms?service=WMS&"
+                + "version=1.1.0&"
+                + "request=GetMap&"
+                + "bbox=-2.0,2.0,-1.0,6.0&"
+                + "layers=" + MockData.BASIC_POLYGONS.getPrefix() + ":" + MockData.BASIC_POLYGONS.getLocalPart() + "&"
+                + "width=300&"
+                + "height=300&"
+                + "srs=EPSG:4326&"
+                + "format=application/openlayers"
+                + "&authkey=" + citeKey);
+        byte[] responseContent = getBinary(response);
+        String htmlDoc = new String(responseContent, "UTF-8");
+        assertTrue(htmlDoc.indexOf("http://localhost:8080/geoserver/cite/wms?authkey=" + citeKey) > 0);
     }
 }

@@ -5,8 +5,6 @@
  */
 package org.geoserver.security.jdbc;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -22,7 +20,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.logging.Logger;
 
-
+import org.geoserver.platform.resource.Resource;
 import org.geoserver.security.GeoServerRoleService;
 import org.geoserver.security.GeoServerRoleStore;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
@@ -109,13 +107,13 @@ public  class JDBCRoleService extends AbstractJDBCService implements GeoServerRo
                 (JDBCSecurityServiceConfig) config;
                         
             String fileNameDML =jdbcConfig.getPropertyFileNameDML();
-            File file = checkORCreateJDBCPropertyFile(fileNameDML,getConfigRoot(),DEFAULT_DML_FILE);
-            dmlProps = Util.loadUniversal(new FileInputStream(file));
+            Resource file = checkORCreateJDBCPropertyFile(fileNameDML,getConfigRoot(),DEFAULT_DML_FILE);
+            dmlProps = Util.loadUniversal(file.in());
                         
             String fileNameDDL =jdbcConfig.getPropertyFileNameDDL();
             if (fileNameDDL!=null && fileNameDDL.length()> 0 ) {
                 file = checkORCreateJDBCPropertyFile(fileNameDDL, getConfigRoot(), DEFAULT_DDL_FILE);
-                ddlProps = Util.loadUniversal(new FileInputStream(file));
+                ddlProps = Util.loadUniversal(file.in());
                 createTablesIfRequired((JDBCSecurityServiceConfig)config);
             }
 
@@ -544,7 +542,7 @@ public  class JDBCRoleService extends AbstractJDBCService implements GeoServerRo
     /**
      * The root configuration for the role service.
      */
-    public File getConfigRoot() throws IOException {
-        return new File(getSecurityManager().getRoleRoot(), getName());
+    public Resource getConfigRoot() throws IOException {
+        return getSecurityManager().get("security/role").get(getName());
     }
 }

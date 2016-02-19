@@ -5,7 +5,7 @@ Using the Importer extension
 
 Here are step-by-step instructions to import multiple shapefiles in one operation. For more details on different types of operations, please see the :ref:`extensions_importer_guireference`
 
-#. Find a directory of shapefiles and copy into your :ref:`data_directory`.
+#. Find a directory of shapefiles and copy into your :ref:`datadir`.
 
    .. note:: You can always use the `Natural Earth Quickstart <http://www.naturalearthdata.com/downloads/>`_ data for this task.
 

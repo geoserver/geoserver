@@ -126,7 +126,6 @@ goto run
 
 
 :run
-  if "%JAVA_OPTS%" == "" (set JAVA_OPTS=-XX:MaxPermSize=128m)
   cd %GEOSERVER_HOME%
   echo Please wait while loading GeoServer...
   echo.

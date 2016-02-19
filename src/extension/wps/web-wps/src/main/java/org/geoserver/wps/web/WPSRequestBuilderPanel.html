@@ -43,9 +43,9 @@
         <fieldset>
           <legend><span><wicket:message key="authentication">authentication</wicket:message></span></legend>
           <ul>
-            <li>
-              <input class="field checkbox" style="display:inline" type="checkbox" wicket:id="authenticate"/>
-              <label class="choice"><wicket:message key="authenticate">authenticate</wicket:message></label>
+            <li class="choiceItem">
+              <input type="checkbox" wicket:id="authenticate"/>
+              <label for="authenticate"><wicket:message key="authenticate">authenticate</wicket:message></label>
             </li>
             <li wicket:id="userpwdContainer">
 	            <ul>

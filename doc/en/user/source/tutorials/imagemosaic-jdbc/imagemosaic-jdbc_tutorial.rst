@@ -47,7 +47,7 @@ Afterwards, create a world file :file:`start.wld` in the :file:`working` directo
 Preparing the pyramids and the tiles
 ------------------------------------
 
-If you are new to tiles and pyramids, take a quick look here `<http://star.pst.qub.ac.uk/idl/Image_Tiling.html>`_
+If you are new to tiles and pyramids, take a quick look here `<http://northstar-www.dartmouth.edu/doc/idl/html_6.2/Image_Tiling.html>`_
 
 How many pyramids are needed ?
 ------------------------------

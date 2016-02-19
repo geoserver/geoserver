@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2014 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -25,6 +25,12 @@ public class DefaultFixedValueStrategyFactory implements FixedValueStrategyFacto
     @Override
     public DimensionDefaultValueSelectionStrategy createFixedValueStrategy(Object value) {
         return new FixedValueStrategyImpl(value);
+    }
+
+    @Override
+    public DimensionDefaultValueSelectionStrategy createFixedValueStrategy(Object value,
+            String fixedCapabilitiesValue) {
+        return new FixedValueStrategyImpl(value, fixedCapabilitiesValue);
     }
 
 }

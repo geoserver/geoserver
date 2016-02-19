@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -6,6 +6,7 @@
 package org.geoserver.wfs.v2_0;
 
 import static org.junit.Assert.*;
+
 import java.io.ByteArrayInputStream;
 import java.net.URLDecoder;
 import java.util.Arrays;
@@ -311,6 +312,22 @@ public class GetFeaturePagingTest extends WFS20TestSupport {
         doTestNextPreviousGET("cdf:Fifteen");
     }
 
+    @Test
+    public void testNextPreviousSkipNumberMatchedGET() throws Exception {
+        FeatureTypeInfo fti = this.getCatalog().getFeatureTypeByName("Fifteen");
+        fti.setSkipNumberMatched(true);
+        this.getCatalog().save(fti);
+        try {
+            assertEquals(true, fti.getSkipNumberMatched());
+            doTestNextPreviousGET("gs:Fifteen");
+            doTestNextPreviousGET("cdf:Fifteen");
+        }
+        finally {
+            fti.setSkipNumberMatched(false);
+            this.getCatalog().save(fti);
+        }
+    }
+
     public void doTestNextPreviousGET(String typeName) throws Exception {
         Document doc = getAsDOM("/wfs?request=GetFeature&version=2.0.0&service=wfs&" +
                 "typename=" + typeName + "&count=5");
@@ -392,6 +409,7 @@ public class GetFeaturePagingTest extends WFS20TestSupport {
     }
 
     void assertStartIndexCount(Document doc, String att, int startIndex, int count) {
+        assertTrue(doc.getDocumentElement().hasAttribute(att));
         String s = doc.getDocumentElement().getAttribute(att);
         String[] kvp = s.split("\\?")[1].split("&");
         int actualStartIndex = -1;

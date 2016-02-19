@@ -38,6 +38,7 @@ import org.geoserver.catalog.impl.CatalogFactoryImpl;
 import org.geoserver.data.test.MockCatalogBuilder.Callback;
 import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Files;
 import org.geoserver.security.GeoServerAuthenticationProvider;
 import org.geoserver.security.GeoServerRoleStore;
 import org.geoserver.security.GeoServerSecurityFilterChain;
@@ -66,6 +67,7 @@ import org.geoserver.security.password.PasswordValidator;
 import org.geoserver.security.validation.PasswordValidatorImpl;
 import org.geoserver.security.xml.XMLRoleService;
 import org.geoserver.security.xml.XMLUserGroupService;
+import org.junit.rules.TemporaryFolder;
 import org.springframework.context.ApplicationContext;
 
 /**
@@ -204,6 +206,10 @@ public class MockCreator implements Callback {
         expect(masterPasswdProvider.getName()).andReturn(MasterPasswordProvider.DEFAULT_NAME).anyTimes();
         expect(secMgr.listMasterPasswordProviders()).andReturn(
             new TreeSet<String>(Arrays.asList(MasterPasswordProvider.DEFAULT_NAME))).anyTimes();
+        
+        TemporaryFolder tempFolder = new TemporaryFolder();
+        tempFolder.create();
+        expect(secMgr.masterPasswordProvider()).andReturn(Files.asResource(tempFolder.newFolder())).anyTimes();
     
         //password validators
         PasswordValidator passwdValidator = createNiceMock(PasswordValidator.class);

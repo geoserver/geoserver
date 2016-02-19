@@ -1820,8 +1820,8 @@ public class ResourcePool {
      */
     public void writeStyle( StyleInfo info, Style style, boolean format) throws IOException {
         synchronized ( styleCache ) {
-            File styleFile = dataDir().findOrCreateStyleSldFile(info);
-            BufferedOutputStream out = new BufferedOutputStream( new FileOutputStream( styleFile ) );
+            Resource styleFile = dataDir().style(info);
+            BufferedOutputStream out = new BufferedOutputStream(styleFile.out());
             
             try {
                 Styles.handler(info.getFormat()).encode(Styles.sld(style), info.getFormatVersion(), format, out);
@@ -1842,42 +1842,26 @@ public class ResourcePool {
      */
     public void writeStyle( StyleInfo style, InputStream in ) throws IOException {
         synchronized ( styleCache ) {
-            File styleFile = dataDir().findOrCreateStyleSldFile(style);
+            Resource styleFile = dataDir().style(style);
             writeStyle(in, styleFile);
             clear(style);
         }
     }
 
-	/**
-	 * Safe write on styleFile the passed inputStream
-	 * 
-	 * @param in
-	 *            the new stream to write to styleFile
-	 * @param styleFile
-	 *            file to update
-	 * @throws IOException
-	 */
-	public static void writeStyle(final InputStream in, final File styleFile)
-			throws IOException {
-		final File temporaryFile = File.createTempFile(styleFile.getName(),
-				null, styleFile.getParentFile());
-		BufferedOutputStream out = null;
-		try {
-			out = new BufferedOutputStream(new FileOutputStream(temporaryFile));
-			IOUtils.copy(in, out);
-			out.flush();
-		} finally {
-			out.close();
-		}
-		// move the file
-		try {
-			org.geoserver.data.util.IOUtils.rename(temporaryFile, styleFile);
-		} finally {
-			if (temporaryFile.exists()) {
-				temporaryFile.delete();
-			}
-		}
-	}
+    /**
+     * Safe write on styleFile the passed inputStream
+     * 
+     * @param in the new stream to write to styleFile
+     * @param styleFile file to update
+     * @throws IOException
+     */
+    public static void writeStyle(final InputStream in, final Resource styleFile)
+            throws IOException {
+        try (BufferedOutputStream out = new BufferedOutputStream(styleFile.out())) {
+            IOUtils.copy(in, out);
+            out.flush();
+        } 
+    }
 
     /**
      * Deletes a style from the configuration.

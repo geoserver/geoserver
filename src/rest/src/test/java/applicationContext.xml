@@ -8,8 +8,8 @@
 
 <beans>
 
-    <bean id="exceptionThrowingResource" class="org.geoserver.rest.ExceptionThrowingResource"/>
-    <bean id="gsUserResource" class="org.geoserver.rest.GsUserResource"/>
+    <bean id="exceptionThrowingResource" class="org.geoserver.rest.ExceptionThrowingResource" singleton="false"/>
+    <bean id="gsUserResource" class="org.geoserver.rest.GsUserResource" singleton="false"/>
     <bean id="testMapping" class="org.geoserver.rest.RESTMapping">
       <property name="routes">
         <map>

@@ -117,6 +117,12 @@
       <groupId>org.geoserver</groupId>
       <artifactId>gs-rest</artifactId>
       <version>${project.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>javax.servlet</groupId>
+          <artifactId>servlet-api</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>
@@ -158,17 +164,17 @@
       <artifactId>gt-image</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.mortbay.jetty</groupId>
-      <artifactId>jetty</artifactId>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-server</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.mortbay.jetty</groupId>
-      <artifactId>jetty-naming</artifactId>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-jndi</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.mortbay.jetty</groupId>
+      <groupId>org.eclipse.jetty</groupId>
       <artifactId>jetty-plus</artifactId>
       <scope>test</scope>
     </dependency>
@@ -257,11 +263,13 @@
         </executions>
       </plugin-->
       <plugin>
-        <groupId>org.mortbay.jetty</groupId>
-        <artifactId>maven-jetty-plugin</artifactId>
-        <version>6.1.22</version>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-maven-plugin</artifactId>
+        <version>${jetty.version}</version>
         <configuration>
-          <contextPath>geoserver</contextPath>
+          <webApp>
+            <contextPath>/geoserver</contextPath>
+          </webApp>
           <connectors>
             <connector implementation="org.mortbay.jetty.nio.SelectChannelConnector">
               <port>${jetty.port}</port>
@@ -270,13 +278,14 @@
           </connectors>
           <stopPort>${jetty.stopPort}</stopPort>
           <stopKey>GEOSERVER_JETTY_STOPKEY</stopKey>
-          <contextPath>geoserver</contextPath>
           <daemon>false</daemon>
           <!-- uncomment following to set a GEOSERVER_DATA_DIR -->
           <!--
             <systemProperties> <systemProperty> <name>GEOSERVER_DATA_DIR</name>
             <value>/home/ak/geoserver_data</value> </systemProperty> </systemProperties>
           -->
+          <!-- Make sure it's not looking for annotations everywhere -->
+          <contextXml>${project.build.testOutputDirectory}/jetty-context.xml</contextXml>
         </configuration>
       </plugin>
 	  <plugin>
@@ -412,6 +421,16 @@
           <artifactId>gs-oracle</artifactId>
           <version>2.9-SNAPSHOT</version>
         </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>oracleDriver</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.extension</groupId>
+          <artifactId>gs-oracle</artifactId>
+          <version>2.9-SNAPSHOT</version>
+        </dependency>
         <dependency>
             <groupId>com.oracle</groupId>
             <artifactId>ojdbc7</artifactId>
@@ -450,16 +469,6 @@
        <groupId>org.geoserver.extension</groupId>
        <artifactId>gs-h2</artifactId>
        <version>${project.version}</version>
-      </dependency>
-     </dependencies>
-    </profile>
-    <profile>
-     <id>validation</id>
-     <dependencies>
-      <dependency>
-        <groupId>org.geoserver.community</groupId>
-        <artifactId>gs-validation</artifactId>
-        <version>${project.version}</version>
       </dependency>
      </dependencies>
     </profile>
@@ -559,26 +568,6 @@
       </dependencies>
     </profile>
     <profile>
-      <id>istyler</id>
-      <dependencies>
-        <dependency>
-          <groupId>org.geoserver.community</groupId>
-          <artifactId>gs-istyler</artifactId>
-          <version>${project.version}</version>
-        </dependency>
-      </dependencies>
-    </profile>
-    <profile>
-      <id>proxy</id>
-      <dependencies>
-        <dependency>
-          <groupId>org.geoserver.community</groupId>
-          <artifactId>gs-proxy</artifactId>
-          <version>${project.version}</version>
-        </dependency>
-      </dependencies>
-    </profile>
-    <profile>
       <id>control-flow</id>
       <dependencies>
         <dependency>
@@ -649,26 +638,6 @@
         <dependency>
           <groupId>org.geoserver.extension</groupId>
           <artifactId>gs-css</artifactId>
-          <version>${project.version}</version>
-        </dependency>
-      </dependencies>
-    </profile>
-    <profile>
-      <id>gss</id>
-      <dependencies>
-        <dependency>
-          <groupId>org.geoserver.community</groupId>
-          <artifactId>gs-gss</artifactId>
-          <version>${project.version}</version>
-        </dependency>
-      </dependencies>
-    </profile>
-    <profile>
-      <id>ftp</id>
-      <dependencies>
-        <dependency>
-          <groupId>org.geoserver.community</groupId>
-          <artifactId>gs-ftp</artifactId>
           <version>${project.version}</version>
         </dependency>
       </dependencies>
@@ -790,16 +759,6 @@
       </dependencies>
     </profile>
     <profile>
-      <id>sfs</id>
-      <dependencies>
-        <dependency>
-          <groupId>org.geoserver.community</groupId>
-          <artifactId>gs-simpleFeatureService</artifactId>
-          <version>${project.version}</version>
-        </dependency>
-      </dependencies>
-    </profile>
-    <profile>
       <id>sfs-store</id>
       <dependencies>
         <dependency>
@@ -905,6 +864,16 @@
         <dependency>
           <groupId>org.geoserver.community</groupId>
           <artifactId>gs-jdbcconfig</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>jdbcstore</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-jdbcstore</artifactId>
           <version>${project.version}</version>
         </dependency>
       </dependencies>
@@ -1043,7 +1012,7 @@
       <id>libjpeg-turbo</id>
       <dependencies>
         <dependency>
-          <groupId>org.geoserver.community</groupId>
+          <groupId>org.geoserver.extension</groupId>
           <artifactId>gs-libjpeg-turbo</artifactId>
           <version>${project.version}</version>
         </dependency>
@@ -1078,7 +1047,7 @@
       <id>netcdf-out</id>
       <dependencies>
         <dependency>
-          <groupId>org.geoserver.community</groupId>
+          <groupId>org.geoserver.extension</groupId>
           <artifactId>gs-netcdf-out</artifactId>
           <version>${project.version}</version>
         </dependency>
@@ -1088,7 +1057,7 @@
       <id>pgraster</id>
       <dependencies>
         <dependency>
-          <groupId>org.geoserver.extension</groupId>
+          <groupId>org.geoserver.community</groupId>
           <artifactId>gs-pgraster</artifactId>
           <version>${project.version}</version>
         </dependency>
@@ -1110,16 +1079,6 @@
         <dependency>
           <groupId>org.geoserver.community</groupId>
           <artifactId>gs-wfs-notification-plugin</artifactId>
-          <version>${project.version}</version>
-        </dependency>
-      </dependencies>
-    </profile>
-    <profile>
-      <id>geoserver-sync</id>
-      <dependencies>
-        <dependency>
-	  <groupId>org.geoserver.community</groupId>
-          <artifactId>geoserver-sync-server</artifactId>
           <version>${project.version}</version>
         </dependency>
       </dependencies>
@@ -1319,5 +1278,45 @@
         </dependency>
       </dependencies>
    </profile>
+   <profile>
+      <id>wps-jdbc</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-wps-jdbc</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+   </profile>
+   <profile>
+      <id>hz-cluster</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-hz-cluster</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+   </profile>
+   <profile>
+      <id>params-extractor</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-params-extractor</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>wps-remote</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-wps-remote</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
  </profiles>
 </project>

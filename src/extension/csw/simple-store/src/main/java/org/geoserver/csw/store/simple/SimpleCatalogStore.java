@@ -5,8 +5,6 @@
  */
 package org.geoserver.csw.store.simple;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
@@ -20,6 +18,9 @@ import org.geoserver.csw.store.AbstractCatalogStore;
 import org.geoserver.csw.store.CatalogStore;
 import org.geoserver.csw.store.CatalogStoreCapabilities;
 import org.geoserver.csw.store.RepositoryItem;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resource.Type;
+import org.geoserver.platform.resource.Resources;
 import org.geotools.data.Query;
 import org.geotools.data.Transaction;
 import org.geotools.data.store.FilteringFeatureCollection;
@@ -42,20 +43,17 @@ import org.opengis.filter.Filter;
  */
 public class SimpleCatalogStore extends AbstractCatalogStore {
 
-    private File root;
+    private Resource root;
     
-    public SimpleCatalogStore(File root) {
+    public SimpleCatalogStore(Resource root) {
     	support(CSWRecordDescriptor.getInstance());
     	
         this.root = root;
 
-        if (!root.exists()) {
-            throw new IllegalArgumentException("Record directory does not exists: "
-                    + root.getPath());
-        } else if (!root.isDirectory()) {
+        if (root.getType() == Type.RESOURCE) {
             throw new IllegalArgumentException(
                     "Got an existing reference on the file system, but it's not a directory: "
-                            + root.getPath());
+                            + root.path());
         }
     }
     
@@ -125,7 +123,7 @@ public class SimpleCatalogStore extends AbstractCatalogStore {
         while(it.hasNext()) {
             Feature f = it.next();
             if(recordId.equals(f.getIdentifier().getID())) {
-                final File file = it.getLastFile();
+                final Resource resource = it.getLastFile();
                 return new RepositoryItem() {
                     
                     @Override
@@ -135,7 +133,7 @@ public class SimpleCatalogStore extends AbstractCatalogStore {
                     
                     @Override
                     public InputStream getContents() throws IOException {
-                        return new FileInputStream(file);
+                        return resource.in();
                     }
                 };
             }

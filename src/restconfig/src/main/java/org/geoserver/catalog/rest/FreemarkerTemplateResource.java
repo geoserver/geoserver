@@ -5,13 +5,15 @@
  */
 package org.geoserver.catalog.rest;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 
 import org.geoserver.catalog.Catalog;
+import org.geoserver.platform.resource.Paths;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resources;
 import org.geoserver.rest.RestletException;
 import org.geoserver.rest.format.MediaTypes;
 import org.geoserver.rest.util.RESTUtils;
@@ -56,7 +58,7 @@ public class FreemarkerTemplateResource extends StoreFileResource {
 
     @Override    
     public void handleGet() {   
-        getResponse().setEntity(new FileRepresentation(getTemplateFile(), MEDIATYPE_FTL, 0));
+        getResponse().setEntity(new FileRepresentation(getTemplateFile().file(), MEDIATYPE_FTL, 0));
     }
     
     @Override    
@@ -74,14 +76,14 @@ public class FreemarkerTemplateResource extends StoreFileResource {
         }
     }    
         
-    private File doFileUpload() {
+    private Resource doFileUpload() {
         try {
             getResponse().setStatus(Status.SUCCESS_ACCEPTED);
-            File directory = catalog.getResourceLoader().findOrCreateDirectory(getDirectoryPath(getRequest()));
+            Resource directory = catalog.getResourceLoader().get(Paths.path(getDirectoryPath(getRequest())));
 
             if (LOGGER.isLoggable(Level.INFO)) {
                 MediaType mediaType = getRequest().getEntity().getMediaType();
-                LOGGER.info("PUT file: mimetype=" + mediaType + ", path=" + directory.getAbsolutePath());
+                LOGGER.info("PUT file: mimetype=" + mediaType + ", path=" + directory.path());
             }
             
             return RESTUtils.handleBinUpload(getAttribute("template") + "." + MEDIATYPE_FTL_EXTENSION, directory, false, getRequest());
@@ -90,12 +92,11 @@ public class FreemarkerTemplateResource extends StoreFileResource {
         }
     }
     
-    private File getTemplateFile() {
+    private Resource getTemplateFile() {
         try {
-            File directory = catalog.getResourceLoader().find(getDirectoryPath(getRequest()));
-            File templateFile = catalog.getResourceLoader().find(directory, 
-                    getAttribute("template") + "." + MEDIATYPE_FTL_EXTENSION);        
-            if (templateFile == null) {
+            Resource directory = catalog.getResourceLoader().get(Paths.path(getDirectoryPath(getRequest())));
+            Resource templateFile = directory.get( getAttribute("template") + "." + MEDIATYPE_FTL_EXTENSION);        
+            if (!Resources.exists(templateFile)) {
                 if (LOGGER.isLoggable(Level.INFO)) {
                     LOGGER.info("File not found: " + getDirectoryPathAsString(getRequest()) + "/" + 
                             getAttribute("template") + "." + MEDIATYPE_FTL_EXTENSION);
@@ -105,7 +106,7 @@ public class FreemarkerTemplateResource extends StoreFileResource {
             } else {
                 return templateFile;
             }
-        } catch (IOException e) {
+        } catch (IllegalStateException e) {
             throw new RestletException(e.getMessage(), Status.CLIENT_ERROR_NOT_FOUND, e);            
         }        
     }

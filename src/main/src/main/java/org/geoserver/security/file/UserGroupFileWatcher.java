@@ -29,6 +29,11 @@ public class UserGroupFileWatcher extends FileWatcher implements UserGroupLoaded
         this.service=service;
         checkAndConfigure();
     }
+    
+    /**
+     * 
+     * @deprecated Use Resource instead of File
+     */
     public UserGroupFileWatcher(File file,GeoServerUserGroupService service) {
         super(file);
         this.service=service;
@@ -40,6 +45,11 @@ public class UserGroupFileWatcher extends FileWatcher implements UserGroupLoaded
         this.lastModified=lastModified;
         checkAndConfigure();
     }
+    
+    /**
+     * 
+     * @deprecated Use Resource instead of File
+     */
     public UserGroupFileWatcher(File file,GeoServerUserGroupService service, long lastModified) {
         super(file);
         this.service=service;

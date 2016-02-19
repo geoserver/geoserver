@@ -126,7 +126,7 @@ public class ExecutionStatus implements Serializable {
     /**
      * Request completion time
      */
-    Date completionTime;
+    Date completionTime = null;
 
     /**
      * A heartbeat field, used when clustering nodes
@@ -157,7 +157,7 @@ public class ExecutionStatus implements Serializable {
     public ExecutionStatus(Name processName, String executionId, boolean asynchronous) {
         this.processName = processName;
         this.executionId = executionId;
-        this.phase = ProcessState.QUEUED;
+        setPhase(ProcessState.QUEUED);
         this.creationTime = new Date();
         this.lastUpdated = this.creationTime;
         this.asynchronous = asynchronous;
@@ -175,7 +175,7 @@ public class ExecutionStatus implements Serializable {
     public ExecutionStatus(ExecutionStatus other) {
         this.processName = other.processName;
         this.executionId = other.executionId;
-        this.phase = other.phase;
+        setPhase(other.phase);
         this.progress = other.progress;
         this.task = other.task;
         this.exception = other.exception;
@@ -190,7 +190,7 @@ public class ExecutionStatus implements Serializable {
 
     public void setException(Throwable exception) {
         this.exception = exception;
-        this.phase = ProcessState.FAILED;
+        setPhase(ProcessState.FAILED);
     }
 
     public Name getProcessName() {
@@ -228,7 +228,9 @@ public class ExecutionStatus implements Serializable {
 
     public void setPhase(ProcessState phase) {
         this.phase = phase;
-        if (phase != null && phase.isExecutionCompleted()) {
+        if (phase != null && phase.isExecutionCompleted()
+                //if there is already a completionTime don't overwrite it!
+                &&this.completionTime==null) {           
             this.completionTime = new Date();
         }
     }
@@ -307,7 +309,7 @@ public class ExecutionStatus implements Serializable {
      * 
      * @param lastUpdated
      */
-    void setLastUpdated(Date lastUpdated) {
+    public void setLastUpdated(Date lastUpdated) {
         this.lastUpdated = lastUpdated;
     }
 
@@ -350,8 +352,9 @@ public class ExecutionStatus implements Serializable {
         if (asynchronous != other.asynchronous)
             return false;
         if (completionTime == null) {
-            if (other.completionTime != null)
+            if (other.completionTime != null) {
                 return false;
+            }
         } else if (!completionTime.equals(other.completionTime))
             return false;
         if (creationTime == null) {
@@ -395,6 +398,4 @@ public class ExecutionStatus implements Serializable {
             return false;
         return true;
     }
-
-
 }

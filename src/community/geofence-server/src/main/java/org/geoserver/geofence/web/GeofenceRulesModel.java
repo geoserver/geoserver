@@ -1,4 +1,4 @@
-/* (c) 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2015 - 2016 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -10,10 +10,14 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import com.vividsolutions.jts.geom.MultiPolygon;
+
+import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortParam;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.geoserver.geofence.core.model.Rule;
+import org.geoserver.geofence.core.model.RuleLimits;
 import org.geoserver.geofence.core.model.enums.GrantType;
 import org.geoserver.geofence.services.RuleAdminService;
 import org.geoserver.geofence.services.dto.ShortRule;
@@ -27,14 +31,17 @@ import org.geoserver.web.wicket.GeoServerDataProvider;
  * @author Niels Charlier
  *
  */
-@SuppressWarnings("serial")
 public class GeofenceRulesModel extends GeoServerDataProvider<ShortRule> {
             
+    private static final long serialVersionUID = 478867886089304835L;
+
     /** 
      * Makes columns that are unsortable and display "*" instead of empty when null
      * 
      */
     public static class RuleBeanProperty<T> extends BeanProperty<T> {
+        private static final long serialVersionUID = 483799722644223445L;
+
         public RuleBeanProperty(String key, String propertyPath) {
             super(key, propertyPath);
         }
@@ -44,8 +51,11 @@ public class GeofenceRulesModel extends GeoServerDataProvider<ShortRule> {
             return null;
         }        
         
-        public IModel getModel(IModel itemModel) { //replace null by *
+        @SuppressWarnings({ "unchecked", "rawtypes" })
+		public IModel getModel(IModel<T> itemModel) { //replace null by *
             return new PropertyModel<Object>(itemModel, getPropertyPath()) {
+                private static final long serialVersionUID = 1L;
+
                 @Override
                 public Object getObject() {
                     Object o = super.getObject();
@@ -77,16 +87,22 @@ public class GeofenceRulesModel extends GeoServerDataProvider<ShortRule> {
     
     public GeofenceRulesModel() {
         rules = adminService().getAll();   
-        setSort("priority", true);
+        setSort("priority", SortOrder.ASCENDING);
     }
     
     @Override
-    protected Comparator<ShortRule> getComparator(SortParam sort) {
+    protected Comparator<ShortRule> getComparator(SortParam<?> sort) {
         return null; //disable on-the-fly sorting
+    }
+
+    @Override
+    public void setSort(Object property, SortOrder order) {
+        super.setSort(property, order);
+        Collections.sort(rules, super.getComparator(new SortParam<>(property, order == SortOrder.ASCENDING)));
     }
     
     @Override 
-    public void setSort(SortParam param) {
+    public void setSort(SortParam<Object> param) {
         super.setSort(param);
         //enable in-memory sorting
         Collections.sort(rules, super.getComparator(param));
@@ -204,7 +220,28 @@ public class GeofenceRulesModel extends GeoServerDataProvider<ShortRule> {
         rule.setPriority(0);
         return rule;
     }
-    
+
+    public void save(Long ruleId, MultiPolygon allowedArea) {
+        Rule rule = adminService().get(ruleId);
+        RuleLimits ruleLimits = rule.getRuleLimits();
+        if (ruleLimits == null) {
+            ruleLimits = new RuleLimits();
+            ruleLimits.setRule(rule);
+        }
+        ruleLimits.setAllowedArea(allowedArea);
+        adminService().setLimits(ruleId, ruleLimits);
+    }
+
+    public RuleLimits getRulesLimits(Long ruleId) {
+        if(ruleId != null) {
+            Rule rule = adminService().get(ruleId);
+            if(rule != null) {
+                return rule.getRuleLimits();
+            }
+        }
+        return null;
+    }
+
     protected static void syncRule(ShortRule shortRule, Rule rule) {
         rule.setPriority(shortRule.getPriority());
         rule.setUsername(shortRule.getUserName());

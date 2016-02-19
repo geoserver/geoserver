@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -15,6 +15,8 @@ import org.junit.Test;
 public class CapabilitiesHomePagePanelTest extends GeoServerWicketTestSupport {
 
     public static class TestPage extends WebPage {
+
+        private static final long serialVersionUID = -4374237095130771859L;
         /*
          * Empy WebPage to aid in testing CapabilitiesHomePagePanel as a component of this page (the
          * accompanying CapabilitiesHomePagePanelTest$TestPage.html. Needed since

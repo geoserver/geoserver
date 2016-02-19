@@ -1,4 +1,4 @@
-/* (c) 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2015 - 2016 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -20,8 +20,9 @@ import org.geowebcache.config.BlobStoreConfig;
  * @author Niels Charlier
  *
  */
-@SuppressWarnings("serial")
 public class BlobStoresProvider extends GeoServerDataProvider<BlobStoreConfig> {
+
+    private static final long serialVersionUID = 4400431816195261839L;
 
     public static final Property<BlobStoreConfig> ID = new BeanProperty<BlobStoreConfig>("id", "id");
 
@@ -40,7 +41,7 @@ public class BlobStoresProvider extends GeoServerDataProvider<BlobStoreConfig> {
     }
 
     @Override
-    protected Comparator<BlobStoreConfig> getComparator(final SortParam sort) {
+    protected Comparator<BlobStoreConfig> getComparator(final SortParam<?> sort) {
         if (sort != null && sort.getProperty().equals(TYPE.getName())) {
 
             return new Comparator<BlobStoreConfig>() {

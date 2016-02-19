@@ -503,12 +503,12 @@ margin-right: 5px;
 }
 
 .button-group .button-login div {
-background-image: url(../img/icons/silk/door_in.png);
+background-image: url(../img/icons/silk/door-in.png);
 padding-left: 25px;
 }
 
 .button-group .button-logout span {
-background: url(../img/icons/silk/door_out.png) no-repeat;
+background: url(../img/icons/silk/door-out.png) no-repeat;
 display: block;
 margin: 5px;
 padding-left: 25px;

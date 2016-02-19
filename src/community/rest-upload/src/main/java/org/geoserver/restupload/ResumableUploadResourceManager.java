@@ -6,6 +6,7 @@
 package org.geoserver.restupload;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.channels.FileChannel;
@@ -25,6 +26,7 @@ import org.apache.commons.io.filefilter.WildcardFileFilter;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resources;
 import org.geoserver.rest.util.IOUtils;
 import org.geoserver.rest.util.RESTUtils;
 import org.geotools.util.logging.Logging;
@@ -157,10 +159,9 @@ public class ResumableUploadResourceManager {
         RESTUtils.remapping(null, FilenameUtils.getBaseName(destinationPath),
                 remappingPath, tempFile, storeParams);
         //Move file to remapped path
-        File destinationFile = new File(remappingPath.toString());
-        destinationFile.getParentFile().mkdirs();
+        Resource destinationFile = Resources.fromPath(remappingPath.toString());
         // Fill file
-        IOUtils.copyFile(resource.getFile(), destinationFile);
+        IOUtils.copyStream(new FileInputStream(resource.getFile()), destinationFile.out(), true, true);
         resource.delete();
         // Add temporary sidecar file to mark upload completion, it will be cleared after expirationThreshold
         getSideCarFile(uploadId).createNewFile();

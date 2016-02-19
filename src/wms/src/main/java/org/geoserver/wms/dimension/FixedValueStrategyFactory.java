@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2014 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -21,5 +21,14 @@ public interface FixedValueStrategyFactory {
      * @return
      */
     public DimensionDefaultValueSelectionStrategy createFixedValueStrategy(Object value);
+
+    /**
+     * Returns a fixed default value strategy.
+     * 
+     * @param value The value
+     * @param fixedCapabilitiesValue Its capabilities representation
+     * @return
+     */
+    public DimensionDefaultValueSelectionStrategy createFixedValueStrategy(Object value, String fixedCapabilitiesValue);
         
 }

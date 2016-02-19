@@ -9,6 +9,8 @@
         <constructor-arg ref="dataDirectory" />
         <property name="location"
             value="file:resumableUpload.properties" />
+            
+        <property name="ignoreUnresolvablePlaceholders" value="true" />
         <property name="properties">
             <props>
                 <prop key="resumable.tempPath">tmp/upload</prop>

@@ -7,11 +7,11 @@ This plugin can be used for managing the upload of files in GeoServer via REST w
 Installing the Plugin
 ----------------------------------------------
 
- #. Download the plugin from the `nightly GeoServer community module builds <http://ares.boundlessgeo.com/geoserver/master/community-latest/>`_.
+    #. Download the plugin from the `nightly GeoServer community module builds <http://ares.boundlessgeo.com/geoserver/master/community-latest/>`_.
 
     .. warning:: Make sure the version of the extension matches the version of the GeoServer instance!
 
- #. Extract the contents of the archive into the ``WEB-INF/lib`` directory of the GeoServer installation.
+    #. Extract the contents of the archive into the ``WEB-INF/lib`` directory of the GeoServer installation.
 
 
 Plugin Description
@@ -60,38 +60,39 @@ Example of usage
 
 *POST*
 REQUEST::
-	curl -v -u admin:geoserver -H "Content-type text/plain" -XPOST -d "/test/test.txt" http://localhost:8080/geoserver/rest/resumableupload
+
+    curl -v -u admin:geoserver -H "Content-type text/plain" -XPOST -d "/test/test.txt" http://localhost:8080/geoserver/rest/resumableupload
+
 REPLY::
 
-	HTTP/1.1 201 Created-----TO USE IN PUT-----
+    HTTP/1.1 201 Created-----TO USE IN PUT-----
 
-	http://localhost:8080/geoserver/rest/resumableupload/1eb35cad-c715-40f5-adf5-bba91d9c947e-----------------------
+    http://localhost:8080/geoserver/rest/resumableupload/1eb35cad-c715-40f5-adf5-bba91d9c947e-----------------------
 
 
 
 *PUT (PARTIAL UPLOAD, SERVER FAILS, 3 bytes saved)*
 REQUEST::
-	curl -v -u admin:geoserver -H "Content-type application/octet-stream" -H "Content-Length:4" -XPUT --data-binary "test" http://localhost:8080/geoserver/rest/resumableupload/1eb35cad-c715-40f5-adf5-bba91d9c947e
+
+    curl -v -u admin:geoserver -H "Content-type application/octet-stream" -H "Content-Length:4" -XPUT --data-binary "test" http://localhost:8080/geoserver/rest/resumableupload/1eb35cad-c715-40f5-adf5-bba91d9c947e
 
 
 *GET*
 REQUEST::
-	curl -v -u admin:geoserver -XGET http://localhost:8080/geoserver/rest/resumableupload/1eb35cad-c715-40f5-adf5-bba91d9c947e
+
+    curl -v -u admin:geoserver -XGET http://localhost:8080/geoserver/rest/resumableupload/1eb35cad-c715-40f5-adf5-bba91d9c947e
 
 REPLY::
 
-	HTTP/1.1 308 308
-	Range: 0-2
+    HTTP/1.1 308 308
+    Range: 0-2
 
 *PUT (RESUME UPLOAD, transfer only "t" byte)*
 REQUEST::
-	curl -v -u admin:geoserver -H "Content-type application/octet-stream" -H "Content-Length:1" -H "Content-Range:Bytes=3-4/4" -XPUT --data-binary "t" http://localhost:8080/geoserver/rest/resumableupload/1eb35cad-c715-40f5-adf5-bba91d9c947e
+
+    curl -v -u admin:geoserver -H "Content-type application/octet-stream" -H "Content-Length:1" -H "Content-Range:Bytes=3-4/4" -XPUT --data-binary "t" http://localhost:8080/geoserver/rest/resumableupload/1eb35cad-c715-40f5-adf5-bba91d9c947e
 
 REPLY::
 
-	HTTP/1.1 200 OK
-	test/test.txt
-	
-
-
-	
+    HTTP/1.1 200 OK
+    test/test.txt

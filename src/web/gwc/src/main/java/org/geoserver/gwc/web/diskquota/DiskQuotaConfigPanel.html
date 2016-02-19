@@ -4,9 +4,9 @@
     <fieldset>
       <legend><span><wicket:message key="diskQuota">Disk Quota</wicket:message></span></legend>
       <ul>
-        <li>
-          <input id="enableDiskQuota" class="field checkbox" type="checkbox" wicket:id="enableDiskQuota" />
-          <label class="choice"><wicket:message key="enableDiskQuota">Enable Disk Quota</wicket:message></label>
+        <li class="choiceItem">
+          <input id="enableDiskQuota" type="checkbox" wicket:id="enableDiskQuota" />
+          <label for="enableDiskQuota"><wicket:message key="enableDiskQuota">Enable Disk Quota</wicket:message></label>
         </li>
         <li>
           <label for="cleanUpFreq"><wicket:message key="cleanUpFreq">Force cache disk quota is exceeded every:</wicket:message></label>
@@ -23,14 +23,14 @@
         <li>
           <label><wicket:message key="globalQuotaTitle">When forcing quota limits, remove tiles that are:</wicket:message></label>
           <div wicket:id="globalQuotaExpirationPolicy">
-          <ul>
+          <ul class="choiceList">
             <li>
-              <input id="globalQuotaPolicyLFU" class="field radio" type="radio" wicket:id="globalQuotaPolicyLFU" />
-              <label class="choice"><wicket:message key="LFU">Least frequently used</wicket:message></label>
+              <input id="globalQuotaPolicyLFU" type="radio" wicket:id="globalQuotaPolicyLFU" />
+              <label for="globalQuotaPolicyLFU"><wicket:message key="LFU">Least frequently used</wicket:message></label>
             </li>
             <li>
-              <input id="globalQuotaPolicyLRU" class="field radio" type="radio" wicket:id="globalQuotaPolicyLRU" value="LRU"/>
-              <label class="choice"><wicket:message key="LRU">Least recently used</wicket:message></label>
+              <input id="globalQuotaPolicyLRU" type="radio" wicket:id="globalQuotaPolicyLRU" value="LRU"/>
+              <label for="globalQuotaPolicyLRU"><wicket:message key="LRU">Least recently used</wicket:message></label>
             </li>
           </ul>
           </div>

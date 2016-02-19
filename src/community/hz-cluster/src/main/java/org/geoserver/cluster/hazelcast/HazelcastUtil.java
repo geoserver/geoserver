@@ -23,4 +23,13 @@ public class HazelcastUtil {
     public static String addressString(InetSocketAddress addr) {
         return addr.getAddress().getHostAddress() + ":" + addr.getPort();
     }
+
+    public static String nodeId(HzCluster cluster) {
+        try {
+            return localIPAsString(cluster.getHz());
+        } catch (RuntimeException e) {
+            return "nodeId not available: " + e.getMessage();
+        }
+    }
+
 }

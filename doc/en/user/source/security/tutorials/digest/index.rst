@@ -1,4 +1,4 @@
-.. _sec_tutorials_digest:
+.. _security_tutorials_digest:
 
 Configuring Digest Authentication
 =================================

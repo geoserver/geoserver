@@ -19,7 +19,6 @@
  */
 package org.geoserver.geofence.web;
 
-import java.util.List;
 import java.util.logging.Level;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -42,7 +41,6 @@ import org.geoserver.geofence.config.GeoFenceConfigurationController;
 import org.geoserver.geofence.config.GeoFenceConfigurationManager;
 import org.geoserver.geofence.services.RuleReaderService;
 import org.geoserver.geofence.services.dto.RuleFilter;
-import org.geoserver.geofence.services.dto.ShortRule;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.wicket.model.ExtPropertyModel;
@@ -52,6 +50,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+
 import org.geoserver.web.util.MapModel;
 
 /**
@@ -61,6 +60,8 @@ import org.geoserver.web.util.MapModel;
  *
  */
 public class GeofencePage extends GeoServerSecuredPage {
+
+    private static final long serialVersionUID = 5845823599005718408L;
 
     /**
      * Configuration object.
@@ -97,22 +98,24 @@ public class GeofencePage extends GeoServerSecuredPage {
                     .setEnabled(!config.isInternal()));
 
         form.add(new AjaxSubmitLink("test") {
+            private static final long serialVersionUID = -91239899377941223L;
+
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                ((FormComponent)form.get("servicesUrl")).processInput();
-                String servicesUrl = (String)((FormComponent)form.get("servicesUrl")).getConvertedInput();
+                ((FormComponent<?>)form.get("servicesUrl")).processInput();
+                String servicesUrl = (String)((FormComponent<?>)form.get("servicesUrl")).getConvertedInput();
                 RuleReaderService ruleReader = getRuleReaderService(servicesUrl);
                 try {
-                    List<ShortRule> rules = ruleReader.getMatchingRules(new RuleFilter());
+                    ruleReader.getMatchingRules(new RuleFilter());
 
                     info(new StringResourceModel(GeofencePage.class.getSimpleName() +
-                            ".connectionSuccessful", null).getObject());
+                            ".connectionSuccessful").getObject());
                 } catch(Exception e) {
                     error(e);
                     LOGGER.log(Level.WARNING, e.getMessage(), e);
                 }
 
-                target.addComponent(getPage().get("feedback"));
+                target.add(getPage().get("feedback"));
             }
 
             private RuleReaderService getRuleReaderService(String servicesUrl) {
@@ -192,7 +195,7 @@ public class GeofencePage extends GeoServerSecuredPage {
         updateStatsValues(cacheRuleReader);
 
         for (String key : statsValues.keySet()) {
-            Label label = new Label(key, new MapModel(statsValues, key));
+            Label label = new Label(key, new MapModel<String>(statsValues, key));
             label.setOutputMarkupId(true);
             form.add(label);
             statsLabels.add(label);
@@ -200,25 +203,27 @@ public class GeofencePage extends GeoServerSecuredPage {
 
         form.add(new AjaxSubmitLink("invalidate") {
 
+            private static final long serialVersionUID = 3847903240475052867L;
+
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
                 CachedRuleReader cacheRuleReader = GeoServerExtensions
                     .bean(CachedRuleReader.class);
                 cacheRuleReader.invalidateAll();
                 info(new StringResourceModel(GeofencePage.class.getSimpleName() +
-                        ".cacheInvalidated", null).getObject());
+                        ".cacheInvalidated").getObject());
                 updateStatsValues(cacheRuleReader);
                 for (Label label : statsLabels) {
-                    target.addComponent(label);
+                    target.add(label);
                 }
 
-                target.addComponent(getPage().get("feedback"));
+                target.add(getPage().get("feedback"));
             }
         }.setDefaultFormProcessing(false));
 
     }
 
-    private final Map<String, String> statsValues = new HashMap<String, String>();
+    private final Map<String, Object> statsValues = new HashMap<String, Object>();
     private final Set<Label> statsLabels = new HashSet<Label>();
 
     private static final String KEY_RULE_SIZE = "rule.size";
@@ -228,6 +233,14 @@ public class GeofencePage extends GeoServerSecuredPage {
     private static final String KEY_RULE_LOADKO = "rule.loadko";
     private static final String KEY_RULE_LOADTIME = "rule.loadtime";
     private static final String KEY_RULE_EVICTION = "rule.evict";
+
+    private static final String KEY_ADMIN_SIZE = "admin.size";
+    private static final String KEY_ADMIN_HIT = "admin.hit";
+    private static final String KEY_ADMIN_MISS = "admin.miss";
+    private static final String KEY_ADMIN_LOADOK = "admin.loadok";
+    private static final String KEY_ADMIN_LOADKO = "admin.loadko";
+    private static final String KEY_ADMIN_LOADTIME = "admin.loadtime";
+    private static final String KEY_ADMIN_EVICTION = "admin.evict";
 
     private static final String KEY_USER_SIZE = "user.size";
     private static final String KEY_USER_HIT = "user.hit";
@@ -247,6 +260,14 @@ public class GeofencePage extends GeoServerSecuredPage {
         statsValues.put(KEY_RULE_LOADKO, ""+cacheRuleReader.getStats().loadExceptionCount());
         statsValues.put(KEY_RULE_LOADTIME, ""+cacheRuleReader.getStats().totalLoadTime());
         statsValues.put(KEY_RULE_EVICTION, ""+cacheRuleReader.getStats().evictionCount());
+
+        statsValues.put(KEY_ADMIN_SIZE, ""+cacheRuleReader.getAdminAuthCacheSize());
+        statsValues.put(KEY_ADMIN_HIT,  ""+cacheRuleReader.getAdminAuthStats().hitCount());
+        statsValues.put(KEY_ADMIN_MISS, ""+cacheRuleReader.getAdminAuthStats().missCount());
+        statsValues.put(KEY_ADMIN_LOADOK, ""+cacheRuleReader.getAdminAuthStats().loadSuccessCount());
+        statsValues.put(KEY_ADMIN_LOADKO, ""+cacheRuleReader.getAdminAuthStats().loadExceptionCount());
+        statsValues.put(KEY_ADMIN_LOADTIME, ""+cacheRuleReader.getAdminAuthStats().totalLoadTime());
+        statsValues.put(KEY_ADMIN_EVICTION, ""+cacheRuleReader.getAdminAuthStats().evictionCount());
 
         statsValues.put(KEY_USER_SIZE, ""+cacheRuleReader.getUserCacheSize());
         statsValues.put(KEY_USER_HIT, ""+cacheRuleReader.getUserStats().hitCount());

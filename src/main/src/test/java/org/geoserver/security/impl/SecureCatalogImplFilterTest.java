@@ -1,3 +1,8 @@
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.security.impl;
 
 import static org.hamcrest.Matchers.*;
@@ -135,7 +140,7 @@ public class SecureCatalogImplFilterTest {
             // Not relevant to the test ad complicates things due to static calls
             @Override
             protected <T extends CatalogInfo> T checkAccess(
-                    Authentication user, T info) {
+                    Authentication user, T info, MixedModeBehavior mixedModeBehavior) {
                 return info;
             }
         };

@@ -5,13 +5,13 @@
  */
 package org.geoserver.cluster;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.geoserver.platform.resource.Resource;
 import org.geoserver.security.PropertyFileWatcher;
 import org.geotools.util.logging.Logging;
 
@@ -26,7 +26,7 @@ public class ClusterConfigWatcher {
         return new ClusterConfig();
     }
 
-    public ClusterConfigWatcher(File file) {
+    public ClusterConfigWatcher(Resource file) {
         watcher = new PropertyFileWatcher(file) {
             @Override
             protected Properties parseFileContents(InputStream in) throws IOException {

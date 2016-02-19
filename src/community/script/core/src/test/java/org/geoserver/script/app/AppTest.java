@@ -21,7 +21,7 @@ public class AppTest extends ScriptIntTestSupport {
     protected void setUpInternal() throws Exception {
         super.setUpInternal();
     
-        app = getScriptManager().findOrCreateAppDir("foo");
+        app = getScriptManager().app("foo").dir();
         ext = getExtension();
     }
 

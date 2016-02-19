@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -158,12 +158,15 @@ public class DiskQuotaConfigPanel extends Panel {
         jdbcContainer.add(connectionTypeChooser);
         
         // make the JDBC configuration visible only when the user chose a JDBC store
-        quotaStoreChooser.add(new AjaxFormComponentUpdatingBehavior("onChange") {
-            
+        quotaStoreChooser.add(new AjaxFormComponentUpdatingBehavior("change") {
+    
+            private static final long serialVersionUID = -6806581935751265393L;
+    
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
-                jdbcContainer.setVisible("JDBC".equals(quotaStoreChooser.getModelObject()));
-                target.addComponent(quotaStoreContainer);
+                jdbcContainer.setVisible("JDBC".equals(quotaStoreChooser
+                        .getModelObject()));
+                target.add(quotaStoreContainer);
             }
         });
         
@@ -189,14 +192,17 @@ public class DiskQuotaConfigPanel extends Panel {
         connectionTypeContainer.add(privatePoolPanel);
         
         // make the two ways to configure the JDBC store show up as alternatives
-        connectionTypeChooser.add(new AjaxFormComponentUpdatingBehavior("onChange") {
-            
+        connectionTypeChooser.add(new AjaxFormComponentUpdatingBehavior("change") {
+    
+            private static final long serialVersionUID = -8286073946292214144L;
+    
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
-                boolean jndiVisible = "JNDI".equals(connectionTypeChooser.getModelObject());
+                boolean jndiVisible = "JNDI".equals(connectionTypeChooser
+                        .getModelObject());
                 jndiContainer.setVisible(jndiVisible);
                 privatePoolPanel.setVisible(!jndiVisible);
-                target.addComponent(connectionTypeContainer);
+                target.add(connectionTypeContainer);
             }
         });
         
@@ -223,8 +229,8 @@ public class DiskQuotaConfigPanel extends Panel {
 
         Object[] progressMessageParams = { globalUsedQuotaModel.getObject().toNiceString(),
                 globalQuotaModel.getObject().toNiceString() };
-        IModel<String> progressMessageModel = new StringResourceModel(
-                "DiskQuotaConfigPanel.usedQuotaMessage", null, progressMessageParams);
+        IModel<String> progressMessageModel = 
+        		new StringResourceModel("DiskQuotaConfigPanel.usedQuotaMessage").setParameters(progressMessageParams);
         addGlobalQuotaStatusBar(globalQuotaModel, globalUsedQuotaModel, progressMessageModel);
 
         TextField<Double> quotaValue = new TextField<Double>("globalQuota", quotaValueModel);
@@ -276,7 +282,7 @@ public class DiskQuotaConfigPanel extends Panel {
         cleanUpFreqModel = new PropertyModel<Integer>(diskQuotaModel, "cacheCleanUpFrequency");
         TextField<Integer> cleanUpFreq = new TextField<Integer>("cleanUpFreq", cleanUpFreqModel);
         cleanUpFreq.setRequired(true);
-        cleanUpFreq.add(new AttributeModifier("title", true, new StringResourceModel(
+        cleanUpFreq.add(new AttributeModifier("title", new StringResourceModel(
                 "DiskQuotaConfigPanel.cleanUpFreq.title", (Component) null, null)));
         add(cleanUpFreq);
         {
@@ -354,8 +360,7 @@ public class DiskQuotaConfigPanel extends Panel {
     static CheckBox checkbox(String id, IModel<Boolean> model, String titleKey) {
         CheckBox checkBox = new CheckBox(id, model);
         if (null != titleKey) {
-            AttributeModifier attributeModifier = new AttributeModifier("title", true,
-                    new StringResourceModel(titleKey, (Component) null, null));
+            AttributeModifier attributeModifier = new AttributeModifier("title", new StringResourceModel(titleKey, (Component) null, null));
             checkBox.add(attributeModifier);
         }
         return checkBox;

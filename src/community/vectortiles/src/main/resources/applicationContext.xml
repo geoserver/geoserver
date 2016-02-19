@@ -21,7 +21,7 @@
   <bean id="wmsTopoJSONMapOutputFormat" class="org.geoserver.wms.vector.VectorTileMapOutputFormat">
     <constructor-arg ref="wms"/>
     <constructor-arg ref="wmsTopoJSONBuilderFactory"/>
-    <property name="clipToMapBounds" value="false">
+    <property name="clipToMapBounds" value="true">
       <description>Use geometries clipped to tile bounds
       Clipping is set to false since OL3 does not yet have a way to deal with clipped geometries.
       It should be set to true once OL3 knows what to do with clipped geometries.
@@ -29,6 +29,9 @@
     </property>
     <property name="transformToScreenCoordinates" value="true">
       <description>The topoJSON map builder expects geometries in screen coordinates</description>
+    </property>
+    <property name="overSamplingFactor" value="2.0">
+      <description>Sub-pixel accuracy - higher value means less generalization (higher resolution results)</description>
     </property>
   </bean>
 
@@ -38,9 +41,12 @@
   <bean id="wmsGeoJsonMapOutputFormat" class="org.geoserver.wms.vector.VectorTileMapOutputFormat">
     <constructor-arg ref="wms" />
     <constructor-arg ref="wmsGeoJsonBuilderFactory" />
-    <property name="clipToMapBounds" value="false"/>
+    <property name="clipToMapBounds" value="true"/>
     <property name="transformToScreenCoordinates" value="false">
       <description>The geoJson map builder expects geometries in map coordinates</description>
+    </property>
+     <property name="overSamplingFactor" value="2.0">
+      <description>Sub-pixel accuracy - higher value means less generalization (higher resolution results)</description>
     </property>
   </bean>
     
@@ -52,6 +58,9 @@
     <constructor-arg ref="wmsMapBoxBuilderFactory"/>
     <property name="clipToMapBounds" value="true" />
     <property name="transformToScreenCoordinates" value="true" />
+     <property name="overSamplingFactor" value="2.0">
+      <description>Sub-pixel accuracy - higher value means less generalization (higher resolution results)</description>
+    </property>
   </bean>
   
 

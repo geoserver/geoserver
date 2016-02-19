@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2014 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -30,8 +30,8 @@ public class FeatureMaximumValueSelectionStrategyImpl extends
     }
 
     @Override
-    public <T> T getDefaultValue(ResourceInfo resource, String dimensionName,
-            DimensionInfo dimension, Class<T> clz) {
+    public Object getDefaultValue(ResourceInfo resource, String dimensionName,
+            DimensionInfo dimension, Class clz) {
         final MaxVisitor max = new MaxVisitor(dimension.getAttribute());
         CalcResult res = getCalculatedResult((FeatureTypeInfo) resource, dimension, max);
         if (res.equals(CalcResult.NULL_RESULT)) {

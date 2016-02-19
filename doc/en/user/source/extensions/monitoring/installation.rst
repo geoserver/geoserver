@@ -34,4 +34,4 @@ There are two ways to verify that the monitoring extension has been properly ins
 
      *Monitoring section in the web admin interface*
 
-#. Start GeoServer and navigate to the current :ref:`data_directory`.  If successfully installed, a new directory named ``monitoring`` will be created in the data directory.
+#. Start GeoServer and navigate to the current :ref:`datadir`.  If successfully installed, a new directory named ``monitoring`` will be created in the data directory.

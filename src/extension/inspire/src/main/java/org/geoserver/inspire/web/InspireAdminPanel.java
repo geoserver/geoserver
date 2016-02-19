@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -21,6 +21,7 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.CheckBox;
+import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.apache.wicket.markup.html.form.TextField;
@@ -31,6 +32,7 @@ import org.apache.wicket.model.ResourceModel;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.config.ServiceInfo;
 import org.geoserver.inspire.UniqueResourceIdentifiers;
+import org.geoserver.wcs.WCSInfo;
 import org.geoserver.web.services.AdminPagePanel;
 import org.geoserver.web.util.MapModel;
 import org.geoserver.web.util.MetadataMapModel;
@@ -53,14 +55,15 @@ public class InspireAdminPanel extends AdminPagePanel {
         String metadataURL = (String) serviceMetadata.get(SERVICE_METADATA_URL.key);
         String mediaType = (String) serviceMetadata.get(SERVICE_METADATA_TYPE.key);
         String language = (String) serviceMetadata.get(LANGUAGE.key);
-        boolean isWfs = model.getObject() instanceof WFSInfo;
+        boolean isDownloadService = model.getObject() instanceof WFSInfo ||
+                model.getObject() instanceof WCSInfo;
         UniqueResourceIdentifiers ids = null;
-        if (isWfs) {
+        if (isDownloadService) {
             ids = (UniqueResourceIdentifiers) serviceMetadata.get(SPATIAL_DATASET_IDENTIFIER_TYPE.key, UniqueResourceIdentifiers.class);
         }
         if (!serviceMetadata.containsKey(CREATE_EXTENDED_CAPABILITIES.key)) {
             if (metadataURL == null
-                    || isWfs
+                    || isDownloadService
                     && (ids == null || ids.isEmpty())) {
                 serviceMetadata.put(CREATE_EXTENDED_CAPABILITIES.key, false);
             } else {
@@ -90,7 +93,7 @@ public class InspireAdminPanel extends AdminPagePanel {
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
                 configs.setVisible(createInspireExtendedCapabilities.getModelObject());
-                target.addComponent(container);
+                target.add(container);
             }
         });
 
@@ -106,7 +109,7 @@ public class InspireAdminPanel extends AdminPagePanel {
                 "border");
         metadataURLBorder.add(metadataUrlField);
         configs.add(metadataURLBorder);
-        metadataUrlField.add(new AttributeModifier("title", true, new ResourceModel(
+        metadataUrlField.add(new AttributeModifier("title", new ResourceModel(
                 "InspireAdminPanel.metadataURL.title")));
 
         final Map<String, String> mdUrlTypes = new HashMap<String, String>();
@@ -116,7 +119,7 @@ public class InspireAdminPanel extends AdminPagePanel {
 
         IModel<String> urlTypeModel = new MapModel(metadata, SERVICE_METADATA_TYPE.key);
 
-        IChoiceRenderer<String> urlTypeChoiceRenderer = new IChoiceRenderer<String>() {
+        IChoiceRenderer<String> urlTypeChoiceRenderer = new ChoiceRenderer<String>() {
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -141,10 +144,11 @@ public class InspireAdminPanel extends AdminPagePanel {
 
         configs.add(serviceMetadataRecordType);
 
-        // this is WFS specific, will appear only if the service is WFS
+        // this is download service specific, will appear only if the service is
+        // WFS or WCS
         WebMarkupContainer identifiersContainer = new WebMarkupContainer(
                 "datasetIdentifiersContainer");
-        identifiersContainer.setVisible(isWfs);
+        identifiersContainer.setVisible(isDownloadService);
         configs.add(identifiersContainer);
         IModel<UniqueResourceIdentifiers> sdiModel = new MetadataMapModel(metadata, SPATIAL_DATASET_IDENTIFIER_TYPE.key, UniqueResourceIdentifiers.class);
         UniqueResourceIdentifiersEditor identifiersEditor = new UniqueResourceIdentifiersEditor(

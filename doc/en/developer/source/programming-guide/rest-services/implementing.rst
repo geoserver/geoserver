@@ -66,8 +66,8 @@ Create a new module
            <plugin>
              <artifactId>maven-compiler-plugin</artifactId>
              <configuration>
-               <source>1.5</source>
-               <target>1.5</target>
+               <source>1.8</source>
+               <target>1.8</target>
              </configuration>
           </plugin>
         </plugins>

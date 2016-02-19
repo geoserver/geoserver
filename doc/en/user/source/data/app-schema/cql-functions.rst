@@ -214,7 +214,7 @@ FormatDateTimezone
 ``````````````````
 
 
-A function to format a date/time using a `SimpleDateFormat pattern <http://docs.oracle.com/javase/6/docs/api/java/text/SimpleDateFormat.html>`_ in a `time zone supported by Java <http://joda-time.sourceforge.net/timezones.html>`_. This function improves on ``dateFormat``, which formats date/time in the server time zone and can produce unintended results. Note that the term "date" is derived from a Java class name; this class represents a date/time, not just a single day.
+A function to format a date/time using a `SimpleDateFormat pattern <https://docs.oracle.com/javase/8/docs/api/java/text/SimpleDateFormat.html>`_ in a `time zone supported by Java <http://joda-time.sourceforge.net/timezones.html>`_. This function improves on ``dateFormat``, which formats date/time in the server time zone and can produce unintended results. Note that the term "date" is derived from a Java class name; this class represents a date/time, not just a single day.
 
 **Syntax**::
 
@@ -223,9 +223,11 @@ A function to format a date/time using a `SimpleDateFormat pattern <http://docs.
 pattern
     formatting pattern supported by `SimpleDateFormat <http://docs.oracle.com/javase/6/docs/api/java/text/SimpleDateFormat.html>`_, for example ``'yyyy-MM-dd'``. Use two single quotes to include a literal single quote in a CQL string literal, for example ``'yyyy-MM-dd''T''HH:mm:ss''Z'''``.
 date
-    the date/time to be formatted or its string representation, for example ``'1948-01-01T00:00:00Z'``. An exception will be returned if the date is invalid. Database types with time zone information are recommended.
+    the date/time to be formatted or its string representation, for example ``'1948-01-01T00:00:00Z'``. An exception will be returned if the date is malformed (and not null). Database types with time zone information are recommended.
 timezone
     the name of a time zone supported by Java, for example ``'UTC'`` or ``'Canada/Mountain'``. Note that unrecognised timezones will silently be converted to UTC.
+
+This function returns null if any parameter is null.
 
 This example formats date/times from a column ``POSITION`` in UTC for inclusion in a ``csml:TimeSeries``::
 
@@ -236,7 +238,4 @@ This example formats date/times from a column ``POSITION`` in UTC for inclusion 
         </sourceExpression>
         <isList>true</isList>
     </AttributeMapping>
-
-Note that any of the arguments could be sourced from a database column.
-
 

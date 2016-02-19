@@ -21,6 +21,7 @@ import net.sf.json.JSONObject;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.geoserver.platform.resource.Resources;
 import org.geoserver.rest.RestletException;
 import org.geoserver.rest.format.DataFormat;
 import org.geoserver.rest.format.StreamDataFormat;
@@ -38,7 +39,6 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.ext.fileupload.RestletFileUpload;
-
 import org.restlet.resource.Representation;
 
 /**
@@ -283,7 +283,7 @@ public class TaskResource extends BaseResource {
         }
         FileData file;
         try {
-            file = FileData.createFromFile(new File(location.toURI().getPath()));
+            file = FileData.createFromFile(Resources.fromPath(location.toURI().getPath()));
         } catch (Exception ex) {
             throw new RuntimeException("Unexpected exception", ex);
         }
@@ -292,7 +292,7 @@ public class TaskResource extends BaseResource {
             try {
                 file.prepare();
             } catch (IOException ioe) {
-                String msg = "Error processing file: " + file.getFile().getAbsolutePath();
+                String msg = "Error processing file: " + file.getFile().path();
                 getLogger().log(Level.WARNING, msg, ioe);
                 throw new RestletException(msg, Status.SERVER_ERROR_INTERNAL);
             }

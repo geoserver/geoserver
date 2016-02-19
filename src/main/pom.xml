@@ -39,6 +39,7 @@
   <dependency>
    <groupId>javax.servlet</groupId>
    <artifactId>servlet-api</artifactId>
+   <scope>provided</scope>
   </dependency>
   <dependency>
    <groupId>net.sf.json-lib</groupId>
@@ -128,6 +129,10 @@
   <dependency>
     <groupId>com.google.code.findbugs</groupId>
     <artifactId>jsr305</artifactId>
+  </dependency>
+  <dependency>
+    <groupId>it.geosolutions.jaiext.concurrent-tile-cache</groupId>
+    <artifactId>jt-concurrent-tile-cache</artifactId>
   </dependency>
   
   <dependency>

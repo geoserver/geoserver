@@ -1,4 +1,4 @@
-.. _sec_auth_chain:
+.. _security_auth_chain:
 
 Authentication chain
 ====================

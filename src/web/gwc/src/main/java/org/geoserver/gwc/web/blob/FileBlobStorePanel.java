@@ -1,4 +1,4 @@
-/* (c) 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2015 - 2016 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -28,19 +28,24 @@ public class FileBlobStorePanel extends Panel {
 
     public FileBlobStorePanel(String id, final IModel<FileBlobStoreConfig> configModel) {
         super(id, configModel);
-
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Override
+    public void onInitialize() {
+        super.onInitialize();
+        
         DirectoryParamPanel paramPanel;
         add(paramPanel = new DirectoryParamPanel("baseDirectory", new PropertyModel<String>(
-                configModel.getObject(), "baseDirectory"), new ParamResourceModel("baseDirectory",
+                getDefaultModel().getObject(), "baseDirectory"), new ParamResourceModel("baseDirectory",
                 this), true));
-        paramPanel.add(new AttributeModifier("title", true,
-                new ResourceModel("baseDirectory.title")));
-        paramPanel.getFormComponent().setModel(paramPanel.getDefaultModel()); // disable filemodel
+        paramPanel.add(new AttributeModifier("title", new ResourceModel("baseDirectory.title")));
+        paramPanel.getFormComponent().setModel((IModel<String>) paramPanel.getDefaultModel()); // disable filemodel
         paramPanel.setFileFilter(new Model<DirectoryFileFilter>(
                 (DirectoryFileFilter) DirectoryFileFilter.INSTANCE));
         add(new TextField<Integer>("fileSystemBlockSize").setRequired(true)
-                .add(new AttributeModifier("title", true, new ResourceModel(
-                        "fileSystemBlockSize.title"))));
+                .add(new AttributeModifier("title", new ResourceModel("fileSystemBlockSize.title"))));
+    	
     }
 
 }

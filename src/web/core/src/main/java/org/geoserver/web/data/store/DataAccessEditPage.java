@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -11,9 +11,9 @@ import java.util.List;
 import java.util.logging.Level;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -45,12 +45,14 @@ public class DataAccessEditPage extends AbstractDataAccessPage implements Serial
      * @param parameters
      */
     public DataAccessEditPage(PageParameters parameters) {
-        String wsName = parameters.getString(WS_NAME);
-        String storeName = parameters.getString(STORE_NAME);
+        String wsName = parameters.get(WS_NAME).toOptionalString();
+        String storeName = parameters.get(STORE_NAME).toString();
         DataStoreInfo dsi = getCatalog().getDataStoreByName(wsName, storeName);
         
         if(dsi == null) {
-            error(new ParamResourceModel("DataAccessEditPage.notFound", this, wsName, storeName).getString());
+            getSession().error(
+                new ParamResourceModel("DataAccessEditPage.notFound", this, wsName, storeName).getString()
+            );
             doReturn(StorePage.class);
             return;
         }

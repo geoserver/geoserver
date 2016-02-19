@@ -29,6 +29,8 @@ import org.geoserver.gwc.layer.GeoServerTileLayerInfoImpl;
 import org.geoserver.gwc.layer.LegacyTileLayerInfoLoader;
 import org.geoserver.gwc.layer.TileLayerCatalog;
 import org.geoserver.gwc.layer.TileLayerInfoUtil;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.wms.WMSInfo;
 import org.geotools.util.Version;
 import org.geotools.util.logging.Logging;
@@ -90,8 +92,8 @@ public class GWCInitializer implements GeoServerInitializer {
                 + GWCConfigPersister.GWC_CONFIG_FILE);
 
         final Version currentVersion = new Version("1.0.0");
-        final File configFile = configPersister.findConfigFile();
-        if (configFile == null) {
+        final Resource configFile = configPersister.findConfigFile();
+        if (configFile == null || configFile.getType() != Type.RESOURCE) {
             LOGGER.fine("GWC's GeoServer specific configuration not found, creating with old defaults");
             GWCConfig oldDefaults = GWCConfig.getOldDefaults();
             oldDefaults.setVersion(currentVersion.toString());

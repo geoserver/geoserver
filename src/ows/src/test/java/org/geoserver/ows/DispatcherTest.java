@@ -342,6 +342,14 @@ public class DispatcherTest extends TestCase {
     }
     
     public void testHttpErrorCodeException() throws Exception {
+    	assertHttpErrorCode("httpErrorCodeException");
+    }
+    
+    public void testWrappedHttpErrorCodeException() throws Exception {
+        assertHttpErrorCode("wrappedHttpErrorCodeException");
+    }
+
+    private void assertHttpErrorCode(String requestType) throws Exception {
         URL url = getClass().getResource("applicationContext.xml");
 
         FileSystemXmlApplicationContext context = new FileSystemXmlApplicationContext(url.toString());
@@ -373,7 +381,7 @@ public class DispatcherTest extends TestCase {
         CodeExpectingHttpServletResponse response = new CodeExpectingHttpServletResponse(new MockHttpServletResponse());
 
         request.setupAddParameter("service", "hello");
-        request.setupAddParameter("request", "httpErrorCodeException");
+		request.setupAddParameter("request", requestType);
         request.setupAddParameter("version", "1.0.0");
 
         request.setRequestURI(
@@ -382,7 +390,7 @@ public class DispatcherTest extends TestCase {
         
         dispatcher.handleRequest(request, response);
         assertEquals(HttpServletResponse.SC_NO_CONTENT, response.getStatusCode());
-    }
+	}
     
     /**
      * Assert that if the service bean implements the optional {@link DirectInvocationService}

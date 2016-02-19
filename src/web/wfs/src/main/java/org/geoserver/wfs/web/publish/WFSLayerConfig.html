@@ -2,11 +2,12 @@
 <head></head>
 <body>
 <form name="theForm">
-  <wicket:panel>
-    <ul>
-    <li>  
+<wicket:panel>
+  <h3><wicket:message key="wfsSettings">WFS Settings</wicket:message></h3>
+  <ul>
+    <li>
       <fieldset>
-        <legend><span><wicket:message key="wfsSettings">WFS Settings</wicket:message></span></legend>
+        <legend><span><wicket:message key="featureSettings">Feature Settings</wicket:message></span></legend>
         <ul>
           <li>
             <label for="perReqFeatureLimit"><wicket:message key="perReqFeatureLimit">Per-Request feature limit</wicket:message></label>
@@ -27,10 +28,10 @@
                     <span><wicket:message key="skipNumberMatchedTitle">otherSRS</wicket:message></span>
                     <a href="#" wicket:id="skipNumberMatchedHelp" class="help-link"></a>
                 </legend>
-                <ul>
+                <ul class="choiceList">
                     <li>
-                        <input id="skipNumberMatched" class="field checkbox" wicket:id="skipNumberMatched" type="checkbox"></input>
-                        <label for="skipNumberMatched" class="choice"><wicket:message key="skipNumberMatched">skipNumberMatched</wicket:message></label>
+                        <input id="skipNumberMatched" wicket:id="skipNumberMatched" type="checkbox"></input>
+                        <label for="skipNumberMatched"><wicket:message key="skipNumberMatched">skipNumberMatched</wicket:message></label>
                     </li>
                 </ul>
             </fieldset>
@@ -42,9 +43,9 @@
           <a href="#" wicket:id="otherSRSHelp" class="help-link"></a>
         </legend>
         <ul>
-            <li>
-              <input id="basic-enabled" class="field checkbox" wicket:id="overridingServiceSRS" type="checkbox"></input>
-              <label for="basic-enabled" class="choice"><wicket:message key="overridingServiceSRS">overridingServiceSRS</wicket:message></label>
+            <li class="choiceItem">
+              <input id="basic-enabled" wicket:id="overridingServiceSRS" type="checkbox"></input>
+              <label for="basic-enabled"><wicket:message key="overridingServiceSRS">overridingServiceSRS</wicket:message></label>
             </li>
             <ul>
               <li wicket:id="otherSRSContainer">

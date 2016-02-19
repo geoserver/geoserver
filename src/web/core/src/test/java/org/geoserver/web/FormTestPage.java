@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -19,17 +19,19 @@ import org.apache.wicket.model.IModel;
  */
 public class FormTestPage extends WebPage {
 
+    private static final long serialVersionUID = 4530843789748801989L;
+    
     public static final String PANEL = "panel";
     public static final String FORM = "form";
 
     public FormTestPage(ComponentBuilder builder) {
-        Form form = new Form(FORM);
+        Form<?> form = new Form<Object>(FORM);
         form.add(builder.buildComponent(PANEL));
         add(form);
     }
 
-    public FormTestPage(ComponentBuilder builder, IModel<?> formModel) {
-        Form form = new Form(FORM, formModel);
+    public FormTestPage(ComponentBuilder builder, IModel<Object> formModel) {
+        Form<?> form = new Form<Object>(FORM, formModel);
         form.add(builder.buildComponent(PANEL));
         add(form);
     }

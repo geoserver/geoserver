@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -18,11 +18,11 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -39,13 +39,14 @@ import javax.xml.XMLConstants;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
-import org.geoserver.catalog.LayerGroupHelper;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.NamespaceInfo;
+import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.gwc.config.GWCConfig;
 import org.geoserver.gwc.config.GWCConfigPersister;
 import org.geoserver.gwc.layer.CatalogConfiguration;
@@ -55,6 +56,7 @@ import org.geoserver.gwc.layer.GeoServerTileLayer;
 import org.geoserver.gwc.layer.GeoServerTileLayerInfo;
 import org.geoserver.gwc.layer.GeoServerTileLayerInfoImpl;
 import org.geoserver.ows.Dispatcher;
+import org.geoserver.ows.LocalWorkspace;
 import org.geoserver.ows.Response;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.Operation;
@@ -67,6 +69,7 @@ import org.geoserver.security.decorators.SecuredLayerInfo;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.map.RenderedImageMap;
+import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.visitor.ExtractBoundsFilterVisitor;
 import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.geometry.jts.JTS;
@@ -119,6 +122,9 @@ import org.geowebcache.storage.StorageBroker;
 import org.geowebcache.storage.StorageException;
 import org.geowebcache.storage.TileRange;
 import org.opengis.filter.Filter;
+import org.opengis.filter.FilterFactory2;
+import org.opengis.filter.MultiValuedFilter.MatchAction;
+import org.opengis.filter.Or;
 import org.opengis.metadata.extent.GeographicBoundingBox;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
@@ -187,7 +193,15 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
 
     private CatalogStyleChangeListener catalogStyleChangeListener;
 
-    private final Catalog rawCatalog;
+    /**
+     * The catalog, secured and filtered
+     */
+    private final Catalog catalog;
+    
+    /**
+     * The raw catalog, non secured. Use with extreme caution!
+     */
+    private Catalog rawCatalog;
 
     private ConfigurableLockProvider lockProvider;
     
@@ -199,10 +213,13 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
 
     private JDBCConfigurationStorage jdbcConfigurationStorage;
     
+    private FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2();
+    
+    
     public GWC(final GWCConfigPersister gwcConfigPersister, final StorageBroker sb,
             final TileLayerDispatcher tld, final GridSetBroker gridSetBroker,
             final TileBreeder tileBreeder, final DiskQuotaMonitor monitor, 
-            final Dispatcher owsDispatcher, final Catalog rawCatalog,
+            final Dispatcher owsDispatcher, final Catalog catalog, final Catalog rawCatalog,
             final DefaultStorageFinder storageFinder,
             final JDBCConfigurationStorage jdbcConfigurationStorage) {
         
@@ -213,13 +230,14 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         this.tileBreeder = tileBreeder;
         this.monitor = monitor;
         this.owsDispatcher = owsDispatcher;
+        this.catalog = catalog;
         this.rawCatalog = rawCatalog;
         this.storageFinder = storageFinder;
 
-        catalogLayerEventListener = new CatalogLayerEventListener(this, rawCatalog);
-        catalogStyleChangeListener = new CatalogStyleChangeListener(this, rawCatalog);
-        this.rawCatalog.addListener(catalogLayerEventListener);
-        this.rawCatalog.addListener(catalogStyleChangeListener);
+        catalogLayerEventListener = new CatalogLayerEventListener(this, catalog);
+        catalogStyleChangeListener = new CatalogStyleChangeListener(this, catalog);
+        this.catalog.addListener(catalogLayerEventListener);
+        this.catalog.addListener(catalogStyleChangeListener);
         
         this.lockProvider = new ConfigurableLockProvider();
         updateLockProvider(getConfig().getLockProviderName());
@@ -296,7 +314,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
     }
 
     public Catalog getCatalog() {
-        return rawCatalog;
+        return catalog;
     }
 
     public GWCConfig getConfig() {
@@ -1059,7 +1077,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
      */
     public boolean isDiskQuotaEnabled() {
         DiskQuotaMonitor diskQuotaMonitor = getDiskQuotaMonitor();
-        return diskQuotaMonitor.getConfig().isEnabled();
+        return diskQuotaMonitor.isEnabled() && diskQuotaMonitor.getConfig().isEnabled();
     }
 
     /**
@@ -1248,18 +1266,6 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         return gridSetBroker;
     }
 
-    // public GeoServerTileLayer getTileLayerById(final String id) {
-    // return embeddedConfig.getLayerById(id);
-    // }
-
-    public List<LayerInfo> getLayerInfos() {
-        return getCatalog().getLayers();
-    }
-
-    public List<LayerGroupInfo> getLayerGroups() {
-        return getCatalog().getLayerGroups();
-    }
-
     public LayerInfo getLayerInfoById(String layerId) {
         return getCatalog().getLayer(layerId);
     }
@@ -1271,7 +1277,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
     public LayerGroupInfo getLayerGroupByName(String layerName) {
         return getCatalog().getLayerGroupByName(layerName);
     }
-
+    
     public LayerGroupInfo getLayerGroupById(String id) {
         return getCatalog().getLayerGroup(id);
     }
@@ -1356,7 +1362,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         }
 
         final FeatureTypeInfo typeInfo = getCatalog().getFeatureTypeByName(namespace, typeName);
-        final List<LayerInfo> layers = getCatalog().getLayers(typeInfo);
+                final List<LayerInfo> layers = getCatalog().getLayers(typeInfo);
 
         Set<String> affectedLayers = new HashSet<String>();
 
@@ -1366,18 +1372,32 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
                 affectedLayers.add(tileLayerName);
             }
         }
-
-        for (LayerGroupInfo lgi : getLayerGroups()) {
+        
+        // build a query to find all groups directly containing any
+        // of the layers associated to the feature type
+        List<Filter> filters = new ArrayList<>();
+        for (LayerInfo layer : layers) {
+            filters.add(ff.equal(ff.property("layers.id"), ff.literal(layer.getId()), true, MatchAction.ANY));
+            filters.add(ff.equal(ff.property("rootLayer.id"), ff.literal(layer.getId())));
+        }
+        Or groupFilter = ff.or(filters);
+        List<LayerGroupInfo> groups = new ArrayList<>();
+        try(CloseableIterator<LayerGroupInfo> it = getCatalog().list(LayerGroupInfo.class, groupFilter)) {
+            while(it.hasNext()) {
+                LayerGroupInfo lg = it.next();
+                groups.add(lg);
+            }
+        } catch (Exception e) {
+            log.log(Level.SEVERE, "Failed to load groups associated to feature type " + typeName, e);
+        }
+        // add the parents recursively
+        loadGroupParents(groups);
+        for (LayerGroupInfo lgi : groups) {
             final String tileLayerName = tileLayerName(lgi);
             if (!tileLayerExists(tileLayerName)) {
                 continue;
             }
-            for (LayerInfo li : lgi.layers()) {
-                ResourceInfo resource = li.getResource();
-                if (typeInfo.equals(resource)) {
-                    affectedLayers.add(tileLayerName);
-                }
-            }
+            affectedLayers.add(tileLayerName);
         }
         return affectedLayers;
     }
@@ -1602,27 +1622,26 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
      *         style
      */
     public Iterable<LayerInfo> getLayerInfosFor(final StyleInfo style) {
-        final String styleName = style.prefixedName();
+        return getLayerInfosFor(style, true);
+    }
+    
+    /**
+     * @return all the {@link LayerInfo}s in the {@link Catalog} that somehow refer to the given
+     *         style
+     */
+    private Iterable<LayerInfo> getLayerInfosFor(final StyleInfo style, boolean includeSecondaryStyles) {
         List<LayerInfo> result = new ArrayList<LayerInfo>();
-        {
-            for (LayerInfo layer : getLayerInfos()) {
-                try {
-                    String name = layer.getDefaultStyle().prefixedName();
-                    if (styleName.equals(name)) {
-                        result.add(layer);
-                        continue;
-                    }
-                    for (StyleInfo alternateStyle : layer.getStyles()) {
-                        name = alternateStyle.prefixedName();
-                        if (styleName.equals(name)) {
-                            result.add(layer);
-                            break;
-                        }
-                    }
-                } catch (Exception e) {
-                    log.log(Level.SEVERE, "Failed to retrieve style info for layer" + layer.getName(), e);
-                }
+        Filter styleFilter = ff.equal(ff.property("defaultStyle.id"), ff.literal(style.getId()), true);
+        if(includeSecondaryStyles) {
+            styleFilter = ff.or(styleFilter, ff.equal(ff.property("styles.id"), ff.literal(style.getId()), true, MatchAction.ANY));
+        }
+
+        try(CloseableIterator<LayerInfo> it = getCatalog().list(LayerInfo.class, styleFilter)) {
+            while(it.hasNext()) {
+                result.add(it.next());
             }
+        } catch (Exception e) {
+            log.log(Level.SEVERE, "Failed to layers associated to style " + style.prefixedName(), e);
         }
         return result;
     }
@@ -1632,26 +1651,99 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
      */
     public Iterable<LayerGroupInfo> getLayerGroupsFor(final StyleInfo style) {
         List<LayerGroupInfo> layerGroups = new ArrayList<LayerGroupInfo>();
+        
+        // get the layers whose default style is that style, they might be in layer groups
+        // using their default style
+        Iterable<LayerInfo> layers = getLayerInfosFor(style);
 
-        for (LayerGroupInfo layerGroup : getLayerGroups()) {
-            LayerGroupHelper helper = new LayerGroupHelper(layerGroup);
-            final Iterator<LayerInfo> groupLayers = helper.allLayers().iterator();
-            final Iterator<StyleInfo> explicitLayerGroupStyles = helper.allStyles().iterator();
-
-            while (groupLayers.hasNext()) {
-                LayerInfo childLayer = groupLayers.next();
-                StyleInfo assignedLayerStyle = explicitLayerGroupStyles.next();
-                if (assignedLayerStyle == null) {
-                    assignedLayerStyle = childLayer.getDefaultStyle();
+        // build a query retrieving the first list of candidates
+        List<Filter> filters = new ArrayList<>();
+        filters.add(ff.equal(ff.property("styles.id"), ff.literal(style.getId()), true, MatchAction.ANY));
+        filters.add(ff.equal(ff.property("rootLayerStyle.id"), ff.literal(style.getId())));
+        for (LayerInfo layer : layers) {
+            filters.add(ff.equal(ff.property("layers.id"), ff.literal(layer.getId()), true, MatchAction.ANY));
+            filters.add(ff.equal(ff.property("rootLayer.id"), ff.literal(layer.getId())));
+        }
+        Or groupFilter = ff.or(filters);
+        
+        try(CloseableIterator<LayerGroupInfo> it = getCatalog().list(LayerGroupInfo.class, groupFilter)) {
+            while(it.hasNext()) {
+                LayerGroupInfo lg = it.next();
+                if(isLayerGroupFor(lg, style)) {
+                    layerGroups.add(lg);
                 }
+            }
+        } catch (Exception e) {
+            log.log(Level.SEVERE, "Failed to load groups associated to style " + style.prefixedName(), e);
+        }
+        
+        loadGroupParents(layerGroups); 
+        
 
-                if (style.equals(assignedLayerStyle)) {
-                    layerGroups.add(layerGroup);
-                    break;
-                }                
+        return layerGroups;
+    }
+
+    /**
+     * Given a list of groups, recursively loads all other groups containing any of them
+     * @param layerGroups
+     */
+    private void loadGroupParents(List<LayerGroupInfo> layerGroups) {
+        // we now have groups that are directly referencing the incriminated style, and need
+        // to find all their parents, recursively...
+        boolean foundNewParents = true;
+        List<LayerGroupInfo> newGroups = new ArrayList<>(layerGroups);
+        while(foundNewParents && !newGroups.isEmpty()) {
+            List<Filter> parentFilters = new ArrayList<>();
+            for (LayerGroupInfo lg : newGroups) {
+                parentFilters.add(ff.equal(ff.property("layers.id"), ff.literal(lg.getId()), true, MatchAction.ANY));
+            }
+            Or parentFilter = ff.or(parentFilters);
+            newGroups.clear();
+            foundNewParents = false;
+            try(CloseableIterator<LayerGroupInfo> it = getCatalog().list(LayerGroupInfo.class, parentFilter)) {
+                while(it.hasNext()) {
+                    LayerGroupInfo lg = it.next();
+                    if(!layerGroups.contains(lg)) {
+                        newGroups.add(lg);
+                        layerGroups.add(lg);
+                        foundNewParents = true;
+                    }
+                }
+            } catch (Exception e) {
+                log.log(Level.SEVERE, "Failed to recursively load parents group parents ");
             }
         }
-        return layerGroups;
+    }
+
+    private boolean isLayerGroupFor(LayerGroupInfo lg, StyleInfo style) {
+        // check root layer
+        if(style.equals(lg.getRootLayerStyle()) || 
+                (lg.getRootLayerStyle() == null && lg.getRootLayer() != null && style.equals(lg.getRootLayer().getDefaultStyle()))) {
+            return true;
+        }
+        // check the layers (and only the layers, not the sub-groups, if we got here 
+        // it means we have a style involved, or a layer that has the default style we search
+        // but we don't know if the default style got overridden
+        final int styleCount = lg.getStyles().size();
+        final int layerCount = lg.getLayers().size();
+        final int count = Math.max(styleCount, layerCount);
+        for (int i = 0; i < count; i++) {
+            // paranoid check in case the two lists are not in sync
+            StyleInfo si = i < styleCount ? lg.getStyles().get(i) : null;
+            PublishedInfo pi = i < layerCount ? lg.getLayers().get(i) : null;
+            if(pi instanceof LayerInfo) {
+                if(style.equals(si)) {
+                    return true;
+                } else {
+                    LayerInfo li = (LayerInfo) pi;
+                    if(style.equals(li.getDefaultStyle())) {
+                        return true;
+                    }
+                }
+            }
+        }
+        
+        return false;
     }
 
     /**
@@ -1952,59 +2044,91 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
      * @throws ServiceException 
      */
     public void verifyAccessLayer(String layerName, ReferencedEnvelope boundingBox) throws ServiceException {
-        LayerInfo layerInfo =  getLayerInfoByName(layerName); //catalog.getLayerByName(layerName);
-        if (layerInfo == null) {
-            throw new ServiceException("Could not find layer " + layerName, "LayerNotDefined");
-        }
-        if (layerInfo instanceof SecuredLayerInfo && boundingBox != null) {
-            //test layer bbox limits
-            SecuredLayerInfo securedLayerInfo = (SecuredLayerInfo) layerInfo;
-            WrapperPolicy policy = securedLayerInfo.getWrapperPolicy();
-            AccessLimits limits = policy.getLimits();
-                        
-            if (limits instanceof DataAccessLimits) {
-                //ensure we are all using the same CRS
-                CoordinateReferenceSystem dataCrs = layerInfo.getResource().getCRS();  
-                if (boundingBox.getCoordinateReferenceSystem()!=null && !CRS.equalsIgnoreMetadata(dataCrs, boundingBox.getCoordinateReferenceSystem())) {
-                    try {
-                        boundingBox = boundingBox.transform(dataCrs,true);
-                    } catch (Exception e) {
-                        //bboxes not compatible? deny access for all certainty.
-                        boundingBox = null;
-                    }
-                }
-                Envelope limitBox = new ReferencedEnvelope(ReferencedEnvelope.EVERYTHING, dataCrs); 
-                
-                Filter filter = ((DataAccessLimits) limits).getReadFilter();
-                if (filter != null) {
-                    //extract filter envelope from filter
-                    Envelope box = (Envelope) filter.accept(ExtractBoundsFilterVisitor.BOUNDS_VISITOR, null);
-                    if (box != null) {
-                        limitBox = new ReferencedEnvelope(limitBox.intersection(box), dataCrs);                        
-                    }
-                }
-                if (limits instanceof CoverageAccessLimits) {
-                    if (((CoverageAccessLimits) limits).getRasterFilter() != null) {
-                        Envelope box = ((CoverageAccessLimits) limits).getRasterFilter().getEnvelopeInternal();
-                        if (box != null) {
-                            limitBox = new ReferencedEnvelope(limitBox.intersection(box), dataCrs);                        
-                        }
-                    }
-                }
-                if (limits instanceof WMSAccessLimits) {
-                    if (((WMSAccessLimits) limits).getRasterFilter() != null) {
-                        Envelope box = ((WMSAccessLimits) limits).getRasterFilter().getEnvelopeInternal();
-                        if (box != null) {
-                            limitBox = new ReferencedEnvelope(limitBox.intersection(box), dataCrs);                        
-                        }
-                    }
-                }                
-                
-                if (!limitBox.covers(ReferencedEnvelope.EVERYTHING) && (boundingBox==null || !limitBox.contains(boundingBox))) {
-                    throw new ServiceException("Access denied to bounding box on layer " + layerName, "AccessDenied");
+        // get the list of internal layers corresponding to the advertised layer
+        List<LayerInfo> layerInfos = null;
+        LayerInfo li = getCatalog().getLayerByName(layerName);
+        if(li != null) {
+            layerInfos = Arrays.asList(li);
+        }  else {
+            // tricky here, first we need to flatten the group, and we also need
+            // to make sure we are getting the full layer group, not just part of it
+            // otherwise we are going to cache different views for different users
+            LayerGroupInfo group = getCatalog().getLayerGroupByName(layerName);
+            if(group != null) {
+                // use the prefixed name to avoid clashes because the raw catalog is not workspace-filtered
+                LayerGroupInfo rawGroup = rawCatalog.getLayerGroupByName(group.prefixedName());
+                if(rawGroup.layers().size() == group.layers().size()) {
+                    layerInfos = group.layers();
                 }
             }
-            
+        }
+         
+        if (layerInfos == null || layerInfos.isEmpty()) {
+            throw new ServiceException("Could not find layer " + layerName, "LayerNotDefined");
+        }
+        if (boundingBox != null) {
+            for (LayerInfo layerInfo : layerInfos) {
+                if(layerInfo instanceof SecuredLayerInfo) {
+                    // test layer bbox limits
+                    SecuredLayerInfo securedLayerInfo = (SecuredLayerInfo) layerInfo;
+                    WrapperPolicy policy = securedLayerInfo.getWrapperPolicy();
+                    AccessLimits limits = policy.getLimits();
+    
+                    if (limits instanceof DataAccessLimits) {
+                        // ensure we are all using the same CRS
+                        CoordinateReferenceSystem dataCrs = layerInfo.getResource().getCRS();
+                        if (boundingBox.getCoordinateReferenceSystem() != null
+                                && !CRS.equalsIgnoreMetadata(dataCrs,
+                                        boundingBox.getCoordinateReferenceSystem())) {
+                            try {
+                                boundingBox = boundingBox.transform(dataCrs, true);
+                            } catch (Exception e) {
+                                // bboxes not compatible? deny access for all certainty.
+                                boundingBox = null;
+                            }
+                        }
+                        Envelope limitBox = new ReferencedEnvelope(ReferencedEnvelope.EVERYTHING,
+                                dataCrs);
+    
+                        Filter filter = ((DataAccessLimits) limits).getReadFilter();
+                        if (filter != null) {
+                            // extract filter envelope from filter
+                            Envelope box = (Envelope) filter
+                                    .accept(ExtractBoundsFilterVisitor.BOUNDS_VISITOR, null);
+                            if (box != null) {
+                                limitBox = new ReferencedEnvelope(limitBox.intersection(box), dataCrs);
+                            }
+                        }
+                        if (limits instanceof CoverageAccessLimits) {
+                            if (((CoverageAccessLimits) limits).getRasterFilter() != null) {
+                                Envelope box = ((CoverageAccessLimits) limits).getRasterFilter()
+                                        .getEnvelopeInternal();
+                                if (box != null) {
+                                    limitBox = new ReferencedEnvelope(limitBox.intersection(box),
+                                            dataCrs);
+                                }
+                            }
+                        }
+                        if (limits instanceof WMSAccessLimits) {
+                            if (((WMSAccessLimits) limits).getRasterFilter() != null) {
+                                Envelope box = ((WMSAccessLimits) limits).getRasterFilter()
+                                        .getEnvelopeInternal();
+                                if (box != null) {
+                                    limitBox = new ReferencedEnvelope(limitBox.intersection(box),
+                                            dataCrs);
+                                }
+                            }
+                        }
+    
+                        if (!limitBox.covers(ReferencedEnvelope.EVERYTHING)
+                                && (boundingBox == null || !limitBox.contains(boundingBox))) {
+                            throw new ServiceException(
+                                    "Access denied to bounding box on layer " + layerName,
+                                    "AccessDenied");
+                        }
+                    }
+                }
+            }
         }
     }
 

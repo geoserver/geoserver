@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns:wicket="http://wicket.apache.org/">
+   <head />
+   <body>
+      <form name="theForm">
+         <wicket:panel>
+            <fieldset>
+               <legend>
+                  <span>
+                     <wicket:message key="CSWLayerConfig.directDownloadSettings">DirectDownload settings</wicket:message>
+                  </span>
+               </legend>
+               <ul>
+                  <li>
+                     <input id="directDownloadEnabled" class="field checkbox" type="checkbox" wicket:id="directDownloadEnabled" />
+                     <label class="choice">
+                        <wicket:message key="CSWLayerConfig.directDownloadEnabled">Enable directDownload link creations</wicket:message>
+                     </label>
+                  </li>
+                  <li>
+                     <label>
+                        <wicket:message key="CSWLayerConfig.maxDownloadSize">maxdownloadsize</wicket:message>
+                     </label>
+                     <input type="text" wicket:id="maxDownloadSize" class="field text" />
+                  </li>
+               </ul>
+            </fieldset>
+         </wicket:panel>
+      </form>
+   </body>
+</html>

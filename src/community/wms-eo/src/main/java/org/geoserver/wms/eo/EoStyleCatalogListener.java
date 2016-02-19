@@ -5,12 +5,10 @@
  */
 package org.geoserver.wms.eo;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.apache.commons.io.FileUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogException;
 import org.geoserver.catalog.StyleInfo;
@@ -19,7 +17,11 @@ import org.geoserver.catalog.event.CatalogListener;
 import org.geoserver.catalog.event.CatalogModifyEvent;
 import org.geoserver.catalog.event.CatalogPostModifyEvent;
 import org.geoserver.catalog.event.CatalogRemoveEvent;
+import org.geoserver.data.util.IOUtils;
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Paths;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resources;
 import org.geotools.util.logging.Logging;
 
 
@@ -73,9 +75,10 @@ public class EoStyleCatalogListener implements CatalogListener, EoStyles {
      */
     private void initializeStyle(String styleName, String sld) throws IOException {
         // copy the file out to the data directory if necessary
-        if (resourceLoader.find("styles", sld) == null) {
-            FileUtils.copyURLToFile(EoStyleCatalogListener.class.getResource(sld), 
-                    new File(resourceLoader.findOrCreateDirectory("styles"), sld));
+        Resource res = resourceLoader.get(Paths.path("styles", sld));
+        if (!Resources.exists(res)) {
+            IOUtils.copy(EoStyleCatalogListener.class.getResourceAsStream(sld), 
+                    res.out());
         }
         
         // create a style for it

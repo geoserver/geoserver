@@ -13,7 +13,6 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Shape;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -23,6 +22,7 @@ import java.util.logging.Logger;
 
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
+import org.geoserver.platform.resource.Resource;
 import org.geoserver.wms.WMSMapContent;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -245,12 +245,12 @@ public class MapDecorationLayout {
      * @return a new MapDecorationLayout containing the MapDecorations specified
      * @throws Exception if the configuration is invalid or other errors occur while parsing
      */
-    public static MapDecorationLayout fromFile(File f, boolean tiled) throws Exception {
+    public static MapDecorationLayout fromFile(Resource f, boolean tiled) throws Exception {
         MapDecorationLayout dl = tiled 
             ? new MetatiledMapDecorationLayout()
             : new MapDecorationLayout();
         
-        Document confFile = new SAXBuilder().build(f);
+        Document confFile = new SAXBuilder().build(f.file());
 
         for (Element e : (List<Element>)confFile.getRootElement().getChildren("decoration")){
             Map<String, String> m = new HashMap<String,String>();

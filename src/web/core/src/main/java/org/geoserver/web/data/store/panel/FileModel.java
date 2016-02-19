@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -23,17 +23,19 @@ import org.geotools.util.logging.Logging;
  * @author Andrea Aime - GeoSolutions
  *
  */
-public class FileModel implements IModel {
+public class FileModel implements IModel<String> {
+    private static final long serialVersionUID = 3911203737278340528L;
+
     static final Logger LOGGER = Logging.getLogger(FileModel.class);
     
-    IModel delegate;
+    IModel<String> delegate;
     File rootDir;
     
-    public FileModel(IModel delegate) {
+    public FileModel(IModel<String> delegate) {
         this(delegate, GeoServerExtensions.bean(GeoServerResourceLoader.class).getBaseDirectory());
     }
 
-    public FileModel(IModel delegate, File rootDir) {
+    public FileModel(IModel<String> delegate, File rootDir) {
         this.delegate = delegate;
         this.rootDir = rootDir;
     }
@@ -48,7 +50,7 @@ public class FileModel implements IModel {
         return isSubfile(root, selection.getParentFile());
     }
 
-    public Object getObject() {
+    public String getObject() {
         return delegate.getObject();
     }
 
@@ -57,8 +59,7 @@ public class FileModel implements IModel {
         
     }
 
-    public void setObject(Object object) {
-        String location = (String) object;
+    public void setObject(String location) {
         
         if(location != null) {
             File dataDirectory = canonicalize(rootDir);

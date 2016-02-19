@@ -51,6 +51,11 @@ public class Format {
      * The mime type of the single file output
      */
     private String mimeType;
+  
+    /**
+     * Eventual adapters to to be run before encoding
+     */
+    List<FormatAdapter> formatAdapters;
 
     public Format() {
         this.options = Collections.emptyList();
@@ -103,6 +108,17 @@ public class Format {
      */
     public void setGeoserverFormat(String geoserverFormat) {
         this.geoserverFormat = geoserverFormat;
+    }
+
+    /**
+     * Returns the configured format adapters, or an empty list if none was setup
+     * @return
+     */
+    public List<FormatAdapter> getFormatAdapters() {
+        if(formatAdapters == null) {
+            formatAdapters = new ArrayList<>();
+        }
+        return formatAdapters;
     }
 
     /**

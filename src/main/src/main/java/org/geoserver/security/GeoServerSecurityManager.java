@@ -643,14 +643,6 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
         return dataDir.get(path);
     }
 
-    public boolean remove(String path) {
-        return dataDir.remove(path);
-    }
-
-    public boolean move(String path, String target) {
-        return dataDir.move(path, target);
-    }
-
     /**
      * Security configuration root directory.
      */

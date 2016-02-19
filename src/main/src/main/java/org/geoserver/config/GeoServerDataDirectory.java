@@ -86,14 +86,6 @@ public class GeoServerDataDirectory {
         return resourceLoader.get(path);
     }
 
-    public boolean move(String path, String target) {
-        return resourceLoader.move(path, target);
-    }
-
-    public boolean remove(String path) {
-        return resourceLoader.remove(path);
-    }
-
     /**
      * The root of the data directory.
      */

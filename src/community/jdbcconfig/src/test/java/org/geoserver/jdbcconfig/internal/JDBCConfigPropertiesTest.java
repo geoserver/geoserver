@@ -1,13 +1,8 @@
+/* (c) 2016 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.jdbcconfig.internal;
-
-import static org.junit.Assert.*;
-import static org.geoserver.jdbcconfig.JDBCConfigTestSupport.*;
-import static org.hamcrest.CoreMatchers.*;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.Properties;
 
 import org.apache.commons.io.FileUtils;
 import org.geoserver.jdbcloader.JDBCLoaderPropertiesFactoryBean;
@@ -16,6 +11,15 @@ import org.geotools.data.DataUtilities;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Properties;
+
+import static org.geoserver.jdbcconfig.JDBCConfigTestSupport.createTempDir;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.junit.Assert.*;
 
 public class JDBCConfigPropertiesTest {
     
@@ -43,7 +47,7 @@ public class JDBCConfigPropertiesTest {
 
     @Test
     public void testLoadDefaults() throws IOException {
-        JDBCConfigPropertiesFactoryBean factory = new JDBCConfigPropertiesFactoryBean(loader);
+        JDBCConfigPropertiesFactoryBean factory = new JDBCConfigPropertiesFactoryBean(loader.getResourceStore());
         JDBCConfigProperties props = (JDBCConfigProperties) factory.createProperties();
 
         assertFalse(props.isEnabled());
@@ -76,7 +80,7 @@ public class JDBCConfigPropertiesTest {
 
         System.setProperty(CONFIG_SYSPROP, configFile.getAbsolutePath());
         try {
-            JDBCLoaderPropertiesFactoryBean factory = new JDBCConfigPropertiesFactoryBean(loader);
+            JDBCLoaderPropertiesFactoryBean factory = new JDBCConfigPropertiesFactoryBean(loader.getResourceStore());
             JDBCConfigProperties props = (JDBCConfigProperties) factory.createProperties();
 
             assertEquals("bar", props.getProperty("foo"));
@@ -94,7 +98,7 @@ public class JDBCConfigPropertiesTest {
 
         System.setProperty(CONFIG_SYSPROP, DataUtilities.fileToURL(configFile).toString());
         try {
-            JDBCLoaderPropertiesFactoryBean factory = new JDBCConfigPropertiesFactoryBean(loader);
+            JDBCLoaderPropertiesFactoryBean factory = new JDBCConfigPropertiesFactoryBean(loader.getResourceStore());
             JDBCConfigProperties props = (JDBCConfigProperties) factory.createProperties();
 
             assertEquals("bar", props.getProperty("foo"));
@@ -113,7 +117,7 @@ public class JDBCConfigPropertiesTest {
         System.setProperty(IMPORT_SYSPROP, "false");
         
         try {
-            JDBCLoaderPropertiesFactoryBean factory = new JDBCConfigPropertiesFactoryBean(loader);
+            JDBCLoaderPropertiesFactoryBean factory = new JDBCConfigPropertiesFactoryBean(loader.getResourceStore());
             JDBCConfigProperties props = (JDBCConfigProperties) factory.createProperties();
     
             assertEquals("jdbc:h2:nofile", props.getJdbcUrl().get());
@@ -129,7 +133,7 @@ public class JDBCConfigPropertiesTest {
 
     @Test
     public void testDataDirPlaceholder() throws Exception {
-        JDBCConfigPropertiesFactoryBean factory = new JDBCConfigPropertiesFactoryBean(loader);
+        JDBCConfigPropertiesFactoryBean factory = new JDBCConfigPropertiesFactoryBean(loader.getResourceStore());
         JDBCConfigProperties props = (JDBCConfigProperties) factory.createProperties();
         props.setJdbcUrl("jdbc:h2:file:${GEOSERVER_DATA_DIR}");
 

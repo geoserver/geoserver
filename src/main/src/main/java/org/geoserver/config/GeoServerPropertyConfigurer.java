@@ -1,9 +1,13 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.config;
+
+import org.geotools.util.logging.Logging;
+import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
+import org.springframework.core.io.Resource;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -11,10 +15,6 @@ import java.io.OutputStream;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import org.geotools.util.logging.Logging;
-import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
-import org.springframework.core.io.Resource;
 
 /**
  * A spring placeholder configurer that loads properties from the data directory.
@@ -82,7 +82,7 @@ public class GeoServerPropertyConfigurer extends PropertyPlaceholderConfigurer {
     @Override
     public void setLocation(Resource location) {
         try {
-            location = SpringResourceAdaptor.relative(location, data);
+            location = SpringResourceAdaptor.relative(location, data.getResourceStore());
             if (location instanceof SpringResourceAdaptor) {
                 configFile = ((SpringResourceAdaptor) location).getResource();
             }

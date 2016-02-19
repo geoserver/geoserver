@@ -1,13 +1,8 @@
+/* (c) 2016 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.jdbcconfig.internal;
-
-import static org.junit.Assert.*;
-import static org.geoserver.jdbcconfig.JDBCConfigTestSupport.*;
-import static org.hamcrest.CoreMatchers.*;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.Properties;
 
 import org.apache.commons.io.FileUtils;
 import org.geoserver.jdbcloader.JDBCLoaderPropertiesFactoryBean;
@@ -16,6 +11,15 @@ import org.geotools.data.DataUtilities;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Properties;
+
+import static org.geoserver.jdbcconfig.JDBCConfigTestSupport.createTempDir;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.junit.Assert.*;
 
 public class JDBCConfigPropertiesTest {
     

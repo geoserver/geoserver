@@ -680,4 +680,7 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Re
         return resources.getResourceNotificationDispatcher();
     }
 
+    public ResourceStore getResourceStore() {
+        return resources;
+    }
 }

@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -1792,11 +1792,11 @@ public class ResourcePool {
      * @return A reader for the style.
      */
     public BufferedReader readStyle( StyleInfo style ) throws IOException {
-        File styleFile = dataDir().findStyleSldFile(style);
-        if( styleFile == null ) {
-            throw new IOException( "No such file: " + style.getFilename() );
+        Resource styleResource = dataDir().style(style);
+        if( styleResource == null ) {
+            throw new IOException( "No such resource: " + style.getFilename() );
         }
-        return new BufferedReader( new InputStreamReader( new FileInputStream( styleFile ) ) );
+        return new BufferedReader(new InputStreamReader(styleResource.in()));
         
     }
     

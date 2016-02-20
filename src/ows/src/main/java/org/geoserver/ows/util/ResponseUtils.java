@@ -15,6 +15,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.geoserver.ows.URLMangler;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.platform.GeoServerExtensions;
@@ -460,16 +461,29 @@ public class ResponseUtils {
     
     /**
      * URL encodes the value towards the UTF-8 charset
-     * @param value
+     * 
+     * @param value the string you want encoded
+     * @param exclude any reserved URL character that and should not be percent encoded (such as '/').
+     * 
      */
-    public static String urlEncode(String value) {
+    public static String urlEncode(String value, char... exclude) {
+        StringBuilder resultStr = new StringBuilder();
+        byte[] encArray;
         try {
-            // TODO: URLEncoder also encodes ( and ) which are considered safe chars,
-            // see also http://www.w3.org/International/O-URL-code.html
-            return URLEncoder.encode(value, "UTF-8"); 
-        } catch(UnsupportedEncodingException e) {
-            throw new RuntimeException("This is unexpected", e);
+            encArray = value.getBytes("UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException("This is unexpected", e); /* should not happen¸ UTF-8 is always supported */
         }
+        for (byte enc : encArray) {
+            if (enc >= 'A' && enc <= 'Z' || enc >= 'a' && enc <= 'z' || enc >= '0' && enc <= '9'
+                    || enc == '-' || enc == '_' || enc == '.' || enc == '~' || 
+                    ArrayUtils.contains(exclude, (char) enc)) {
+                resultStr.append((char) enc);
+            } else {
+                resultStr.append(String.format("%%%02X", enc));
+            }
+        }
+        return resultStr.toString();
     }
     
     /**

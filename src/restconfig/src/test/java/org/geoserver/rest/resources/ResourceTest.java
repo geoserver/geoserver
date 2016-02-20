@@ -159,13 +159,13 @@ public class ResourceTest extends GeoServerSystemTestSupport {
     public void testSpecialCharacterNames() throws Exception {
         XMLUnit.setXpathNamespaceContext(NS_XML);
         Document doc = getAsDOM("/rest/resource/po%c3%abzie?format=xml");
-        XMLAssert.assertXpathEvaluatesTo("http://localhost:8080/geoserver/rest/resource/po%c3%abzie/caf%c3%a9", 
+        XMLAssert.assertXpathEvaluatesTo("http://localhost:8080/geoserver/rest/resource/po%C3%ABzie/caf%C3%A9", 
                 "/ResourceDirectory/children/child/atom:link/@href", doc);
 
         MockHttpServletResponse response = getAsServletResponse("/rest/resource/po%c3%abzie/caf%c3%a9?format=xml");
         Assert.assertEquals(200, response.getStatusCode());
         Assert.assertEquals("resource", response.getHeader("Resource-Type"));
-        Assert.assertEquals("http://localhost:8080/geoserver/rest/resource/po%c3%abzie", 
+        Assert.assertEquals("http://localhost:8080/geoserver/rest/resource/po%C3%ABzie", 
                 response.getHeader("Resource-Parent"));
     }
     

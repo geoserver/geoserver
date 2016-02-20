@@ -222,34 +222,13 @@ public class ResourceResource extends AbstractResource {
     }
 
     private String href(String path) {
-        return ResponseUtils.buildURL(getPageInfo().rootURI("resource/"), formatPathURL(path), null, URLType.RESOURCE);
+        return ResponseUtils.buildURL(getPageInfo().rootURI("resource/"), 
+                ResponseUtils.urlEncode(path, '/'), null, URLType.RESOURCE);
     }
 
     private static String formatHtmlLink(String link) {
         return link.replaceAll("&", "&amp;");
     }
-
-    private static String formatPathURL(String input) {
-        StringBuilder resultStr = new StringBuilder();
-        byte[] encArray;
-        try {
-            encArray = input.getBytes("UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e); /* should not happen¸ UTF-8 is always supported */
-        }
-        for (byte enc : encArray) {
-            if (enc >= 'A' && enc <= 'Z' || enc >= 'a' && enc <= 'z' 
-                    || enc >= '0' && enc <= '9'
-                    || enc == '-' || enc == '_' || enc == '.' || enc == '~' 
-                    || enc == '/') { // do not escape path slash, it is part of the URL!
-                resultStr.append((char) enc);
-            } else {
-                resultStr.append(String.format("%%%02x", enc));
-            }
-        }
-        return resultStr.toString();
-    }
-
     private MediaType getMediaType(Resource resource) {
         if (resource.getType() == Type.DIRECTORY) {
             return getFormatGet(false).getMediaType();

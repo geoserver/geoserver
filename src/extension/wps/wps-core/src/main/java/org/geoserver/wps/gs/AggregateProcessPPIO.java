@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -34,6 +34,10 @@ public class AggregateProcessPPIO extends XStreamPPIO {
         };
         xstream.allowTypes(new Class[] { AggregateProcess.Results.class });
         xstream.alias(AggregationResults.getLocalPart(), AggregateProcess.Results.class);
+        xstream.omitField(AggregateProcess.Results.class, "aggregateAttribute");
+        xstream.omitField(AggregateProcess.Results.class, "functions");
+        xstream.omitField(AggregateProcess.Results.class, "groupByAttributes");
+        xstream.omitField(AggregateProcess.Results.class, "results");
         return xstream;
     }
     

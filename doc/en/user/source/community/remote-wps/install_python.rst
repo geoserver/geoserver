@@ -8,7 +8,11 @@ Remote WPS Python Wrapper Framework
 
 The Remote WPS Python framework source code is available on a public GitHub Repository of GeoSolutions S.A.S.
 
-The users can clone the repository at the following address:
+Users can install the "wps-remote" Python package by using the PyPi distribution ::
+
+    pip install wps-remote==2.9
+
+The source code repository is available at the following address:
 
   https://github.com/geoserver/wps-remote
 
@@ -157,11 +161,7 @@ The system requires Python 2.7.9+ with few packages in order to work correctly. 
 
   # From a Command Line prompt
 
-  $> pip install psutil
-  $> pip install jsonschema
-  $> pip install path.py
-  $> pip install argparse
-  $> pip install sleekxmpp
+  $> pip install wps-remote==2.9
 
 **Configure the RemoteWPS Environment**
 
@@ -215,19 +215,27 @@ Link the shared folder to the ``C:/share`` through the NFS protocol. This is pos
 First Deploy Of The RemoteWPS Python Framework
 ++++++++++++++++++++++++++++++++++++++++++++++
 
-Clone the RemoteWPS Python Framework into a working folder, e.g.:
+The wps-remote WHL archive contains a folder with a sample configuration ::
 
-.. code-block:: shell
+    xmpp_data
 
-    $> cd C:\work
+Extract this folder and proceed with the next steps.
 
-    $> git clone https://github.com/geoserver/wps-remote RemoteWPS
+The files can also be downloaded from the GitHub source repository.
+    
+To clone the RemoteWPS Python Framework into a working folder, e.g.:
+
+    .. code-block:: shell
+
+        $> cd C:\work
+
+        $> git clone https://github.com/geoserver/wps-remote RemoteWPS
 
 **Setting Up The** ``remote.config``
 
 .. code-block:: shell
 
-  # Edit the file c:/work/RemoteWPS/xmpp_data/configs/remote.config
+  # Edit the file xmpp_data/configs/remote.config
 
   [DEFAULT]
 
@@ -260,7 +268,7 @@ The requisites for this configuration to work properly are:
 
 .. code-block:: shell
 
-  # Edit the file c:/work/RemoteWPS/xmpp_data/configs/logger.properties
+  # Edit the file xmpp_data/configs/logger.properties
 
   [loggers]
   keys=root
@@ -306,7 +314,7 @@ The requisites for this configuration to work properly are:
 
 .. code-block:: shell
 
-  # Edit the file c:/work/RemoteWPS/xmpp_data/configs/myservice/service.config
+  # Edit the file xmpp_data/configs/myservice/service.config
 
   # ########################################### #
   # Default Service Params                      #

@@ -4,6 +4,7 @@
  */
 package org.geoserver.rest.resources;
 
+import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.resource.ResourceStore;
 import org.geoserver.rest.util.RESTUtils;
 import org.restlet.Finder;
@@ -29,7 +30,7 @@ public class ResourceFinder extends Finder {
     
     @Override
     public Resource findTarget(Request request, Response response) {        
-        String path = request.getResourceRef().getRelativeRef().getPath();
+        String path = ResponseUtils.urlDecode(request.getResourceRef().getRelativeRef().getPath());
         if (".".equals(path)) { //root
             path = "/";
         }

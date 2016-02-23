@@ -7,12 +7,15 @@ package org.geoserver.rest.resources;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.geoserver.ows.URLMangler.URLType;
+import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
@@ -133,7 +136,7 @@ public class ResourceResource extends AbstractResource {
         protected ResourceMetadata(Resource resource, ResourceResource self, boolean isDir) {
             if (!resource.path().isEmpty()) {
                 parent = new ResourceReference("/" + resource.parent().path(),
-                        new AtomLink(self.href(resource.parent().path(), true), "alternate", 
+                        new AtomLink(self.href(resource.parent().path()), "alternate", 
                                      self.getFormatGet(false).getMediaType().getName()));
             }            
             lastModified = new Date(resource.lastmodified());
@@ -187,8 +190,8 @@ public class ResourceResource extends AbstractResource {
             super(resource, self, true);
             for (Resource child : resource.list()) {
                 children.add(new ResourceChild(child.name(), 
-                        new AtomLink(self.href(child.path(), child.getType() == Type.DIRECTORY), 
-                                "alternate", self.getMediaType(child).getName())));
+                        new AtomLink(self.href(child.path()), "alternate", 
+                                self.getMediaType(child).getName())));
             }
         }
 
@@ -218,21 +221,14 @@ public class ResourceResource extends AbstractResource {
         return operation;
     }
 
-    private String href(String path, boolean isDir) {
-        String href = getPageInfo().rootURI("resources/" + path);
-        if (isDir) {
-            String format = (String) getRequest().getAttributes().get("format");
-            if (format != null) {
-                href += "?format=" + format;
-            }
-        }
-        return href;
+    private String href(String path) {
+        return ResponseUtils.buildURL(getPageInfo().rootURI("resource/"), 
+                ResponseUtils.urlEncode(path, '/'), null, URLType.RESOURCE);
     }
 
-    public String formatHtmlLink(String link) {
+    private static String formatHtmlLink(String link) {
         return link.replaceAll("&", "&amp;");
     }
-
     private MediaType getMediaType(Resource resource) {
         if (resource.getType() == Type.DIRECTORY) {
             return getFormatGet(false).getMediaType();
@@ -351,7 +347,7 @@ public class ResourceResource extends AbstractResource {
                 getVariants().add(rep);
 
                 if (!"".equals(resource.path())) {
-                    getResponseHeaders().add("Resource-Parent", "/" + resource.parent().path());
+                    getResponseHeaders().add("Resource-Parent", href(resource.parent().path()));
                 }
                 getResponseHeaders().add("Resource-Type", resource.getType().toString().toLowerCase());
             }

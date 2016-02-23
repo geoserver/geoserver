@@ -1378,6 +1378,8 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         InputSource input = new InputSource(stream);
         if (encoding != null) {
             input.setEncoding(encoding);
+        } else {
+            input.setEncoding(Charset.defaultCharset().name());
         }
 
         if(skipDTD) {

@@ -6,7 +6,7 @@ language: java
 before_script:
   - cd src
 script:
-  - rm -rf /home/travis/.m2/repository
+  - rm -rf /home/travis/.m2
   - mvn -B -U -T2 -fae -Prelease clean install -Dtest.maxHeapSize=512M -Djava.awt.headless=true
 notifications:
   email:

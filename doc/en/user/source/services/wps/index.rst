@@ -18,9 +18,6 @@ For the official WPS specification, see `OGC Web Processing Service 05-007r7 <ht
    operations
    administration
    security
-   processes
-   hazelcast-clustering
    requestbuilder
-   
-   
-   
+   processes/index
+   hazelcast-clustering

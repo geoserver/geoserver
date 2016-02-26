@@ -38,6 +38,7 @@
             <include>protobuf-java-*.jar</include>
             <include>commons-compress-*.jar</include>
             <include>woodstox-core-asl-*.jar</include>
+            <include>stax2-api-*.jar</include>
             <!-- Google GSON libs -->
             <include>gson-*.jar</include>
             <!-- JCommander libs -->

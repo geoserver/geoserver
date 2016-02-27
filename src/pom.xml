@@ -681,9 +681,9 @@
     <version>2.0.8</version>
    </dependency>
    <dependency>
-    <groupId>com.mockrunner</groupId>
-    <artifactId>mockrunner</artifactId>
-    <version>0.3.6</version>
+    <groupId>org.springframework</groupId>
+    <artifactId>spring-test</artifactId>
+    <version>${spring.version}</version>
    </dependency>
    <dependency>
     <groupId>commons-beanutils</groupId>

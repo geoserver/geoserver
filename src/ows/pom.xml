@@ -61,9 +61,9 @@
    <artifactId>xpp3</artifactId>
   </dependency>
   <dependency>
-   <groupId>com.mockrunner</groupId>
-   <artifactId>mockrunner</artifactId>
-   <scope>test</scope>
+   <groupId>org.springframework</groupId>
+   <artifactId>spring-test</artifactId>
+   <!-- <scope>test</scope> -->
   </dependency>
   <dependency>
    <groupId>junit</groupId>

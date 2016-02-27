@@ -160,11 +160,6 @@
   </dependency>
   <dependency>
    <groupId>org.geoserver.extension</groupId>
-   <artifactId>gs-geosearch</artifactId>
-   <version>${project.version}</version>
-  </dependency>
-  <dependency>
-   <groupId>org.geoserver.extension</groupId>
    <artifactId>gs-charts</artifactId>
    <version>${project.version}</version>
   </dependency> 

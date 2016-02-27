@@ -125,7 +125,7 @@ public abstract class AbstractToolConfigurator implements ApplicationListener<Co
 
     /**
      * Builds and configures the XStream used for de-serializing the configuration
-     * @return
+     *
      */
     protected XStream buildXStream() {
         XStream xstream = new SecureXStream();

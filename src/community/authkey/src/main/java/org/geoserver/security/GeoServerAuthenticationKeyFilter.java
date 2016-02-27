@@ -187,7 +187,7 @@ public class GeoServerAuthenticationKeyFilter extends  GeoServerSecurityFilter
      * Extracts authkey value from the request.
      * 
      * @param req
-     * @return
+     *
      */
     private String getAuthKeyParamValue(HttpServletRequest req) {
         String keyParamName = getAuthKeyParamName();

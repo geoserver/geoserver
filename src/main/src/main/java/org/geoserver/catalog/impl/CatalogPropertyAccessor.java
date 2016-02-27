@@ -94,7 +94,7 @@ public class CatalogPropertyAccessor implements PropertyAccessor {
 
     /**
      * @param input
-     * @return
+     *
      */
     @SuppressWarnings("unchecked")
     private List<String> getAnyText(final Info input) {

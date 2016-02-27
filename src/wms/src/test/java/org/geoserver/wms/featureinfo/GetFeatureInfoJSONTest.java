@@ -27,7 +27,6 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
     /**
      * Tests JSONP outside of expected polygon
      * 
-     * @throws Exception
      */
     @Test
     public void testSimpleJSONP() throws Exception {
@@ -69,7 +68,6 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
     /**
      * Tests jsonp with custom callback function
      * 
-     * @throws Exception
      */
     @Test
     public void testCustomJSONP() throws Exception {
@@ -111,7 +109,6 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
     /**
      * Tests JSON outside of expected polygon
      * 
-     * @throws Exception
      */
     @Test
     public void testSimpleJSON() throws Exception {
@@ -198,7 +195,6 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
     /**
      * Tests CQL filter
      * 
-     * @throws Exception
      */
     @Test
     public void testCQLFilter() throws Exception {

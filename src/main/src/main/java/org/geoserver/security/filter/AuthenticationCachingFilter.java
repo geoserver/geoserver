@@ -25,7 +25,7 @@ public interface AuthenticationCachingFilter {
      * Tries to extract a unique key for the principal
      * If this is not possible, return <code>null</code>
      * 
-     * if the principal equals {@link GeoServerUser#ROOT_USERNAME) 
+     * if the principal equals {@link GeoServerUser#ROOT_USERNAME} 
      * <code>null</code> must be returned. (Never cache this user)
      * 
      * For pre-authentication filters, the name of the
@@ -44,7 +44,7 @@ public interface AuthenticationCachingFilter {
      * is true, this method should return <code>null</code>
      * 
      * @param request
-     * @return
+     *
      */
     public String getCacheKey(HttpServletRequest request);
 }

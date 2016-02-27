@@ -105,7 +105,6 @@ public class GetLegendGraphicKvpReaderTest extends WMSTestSupport {
      * This is the case where a remote SLD document is used in "library" mode.
      * </p>
      * 
-     * @throws Exception
      */
     
     @org.junit.Test

@@ -351,8 +351,6 @@ public class LockFeature {
      * This is the implementation for the Admin "free lock" action, transaction
      * locks are not released.
      * </p>
-     *
-     * @return Number of locks released
      */
     public void releaseAll() throws WFSException {
         try {

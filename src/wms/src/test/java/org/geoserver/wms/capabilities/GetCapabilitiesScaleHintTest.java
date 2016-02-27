@@ -184,7 +184,6 @@ public class GetCapabilitiesScaleHintTest extends WMSTestSupport {
      * 		ScaleHint element shouldn't be generated.
      * </pre>
      * 
-     * @throws Exception
      */
     @Test
     public void scaleHintDefaultValues()throws Exception{
@@ -213,7 +212,6 @@ public class GetCapabilitiesScaleHintTest extends WMSTestSupport {
      *   <ScaleHint min=0 max=value/>     
      * </pre>
      * 
-     * @throws Exception
      */
     @Test
     public void scaleHintDefaultMinValue()throws Exception{
@@ -246,7 +244,6 @@ public class GetCapabilitiesScaleHintTest extends WMSTestSupport {
      *   <ScaleHint min=0 max=value/>     
      * </pre>
      * 
-     * @throws Exception
      */
     @Test
     public void scaleHintUnitsPerPixelDefaultMinValue()throws Exception{
@@ -278,7 +275,6 @@ public class GetCapabilitiesScaleHintTest extends WMSTestSupport {
      *   <ScaleHint min=value max=infinity/>     
      * </pre>
      * 
-     * @throws Exception
      */
     @Test
     public void scaleHintDefaultMaxValue()throws Exception{
@@ -310,7 +306,6 @@ public class GetCapabilitiesScaleHintTest extends WMSTestSupport {
      *   <ScaleHint min=value max=infinity/>     
      * </pre>
      * 
-     * @throws Exception
      */
     @Test
     public void scaleHintUnitsPerPixelDefaultMaxValue()throws Exception{
@@ -334,7 +329,6 @@ public class GetCapabilitiesScaleHintTest extends WMSTestSupport {
      * Min is the minimum value found in the set of rules
      * </pre>
      * 
-     * @throws Exception
      */
     @Test
     public void scaleHintFoundMaxMinDenominators()throws Exception{
@@ -358,7 +352,6 @@ public class GetCapabilitiesScaleHintTest extends WMSTestSupport {
      * Both values are computed as units per diagonal pixel
      * </pre>
      * 
-     * @throws Exception
      */
     @Test
     public void scaleHintUnitsPerPixelFoundMaxMinDenominators()throws Exception{
@@ -380,7 +373,6 @@ public class GetCapabilitiesScaleHintTest extends WMSTestSupport {
      * @param scaleHintUnitsPerDiaPixel true if the scalehint must be in units per diagonal of a pixel
      * @return Capabilities as {@link Document}
      * 
-     * @throws Exception
      */
     private Document findCapabilities(Boolean scaleHintUnitsPerDiaPixel) throws Exception{
         //set the Scalehint units per diagonal pixel setting.

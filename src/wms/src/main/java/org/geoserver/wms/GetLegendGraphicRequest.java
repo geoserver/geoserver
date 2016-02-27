@@ -673,7 +673,7 @@ public class GetLegendGraphicRequest extends WMSRequest {
     /**
      * Gets the locale to be used for text in output
      * (null to use default locale).
-     * @return
+     *
      */
     public Locale getLocale() {
         return this.locale;

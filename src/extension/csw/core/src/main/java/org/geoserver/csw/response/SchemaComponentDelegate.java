@@ -25,7 +25,7 @@ public interface SchemaComponentDelegate {
      * Tests whether this delegate can write the XSD for the specified schema, or not
      * 
      * @param schema
-     * @return
+     *
      */
     public boolean canHandle(AttributeDescriptor descriptor);
 

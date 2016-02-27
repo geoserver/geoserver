@@ -604,7 +604,7 @@ public class ImportProcess implements GSProcess {
      * 
      * @param sourceType
      * @param targetType
-     * @return
+     *
      */
     Map<String, String> buildAttributeMapping(SimpleFeatureType sourceType,
             SimpleFeatureType targetType) {

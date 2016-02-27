@@ -72,7 +72,6 @@ public class GetCoverageMultipartEncodingTest extends WCSTestSupport {
      * ArcGrid cannot encode rotate coverages, yet due to a bug the output was a garbled mime multipart instead of a service exception. This makes
      * sure an exception is returned instead.
      * 
-     * @throws Exception
      */
     @Test
     public void testArcgridException() throws Exception {

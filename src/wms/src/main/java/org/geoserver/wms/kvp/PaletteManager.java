@@ -64,8 +64,7 @@ public class PaletteManager {
      * Loads a PaletteManager
      * 
      * @param name
-     * @return
-     * @throws Exception
+     *
      */
     public static IndexColorModel getPalette(String name) throws Exception {
         // check for safe paletteInverter
@@ -214,7 +213,7 @@ public class PaletteManager {
 		 * Returns true if the backing file does not exist any more, or has been
 		 * modified
 		 * 
-		 * @return
+		 *
 		 */
 		public boolean isStale() {
 			return !Resources.exists(file) || (file.lastmodified() != lastModified);

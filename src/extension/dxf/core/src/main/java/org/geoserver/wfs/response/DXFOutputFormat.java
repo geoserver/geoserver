@@ -94,7 +94,7 @@ public class DXFOutputFormat extends WFSGetFeatureOutputFormat {
      * Gets current request extension (dxf or zip).
      * 
      * @param operation
-     * @return
+     *
      */
     public String getDxfExtension(Operation operation) {
         GetFeatureRequest request = GetFeatureRequest.adapt(operation
@@ -279,7 +279,7 @@ public class DXFOutputFormat extends WFSGetFeatureOutputFormat {
      * Gets a list of names for layers, one
      * for each query.
      * @param it
-     * @return
+     *
      */
     private String[] getLayerNames(List<Query> queries) {
         List<String> names = new ArrayList<String>();

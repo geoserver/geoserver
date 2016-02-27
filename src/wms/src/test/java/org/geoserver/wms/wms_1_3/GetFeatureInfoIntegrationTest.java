@@ -182,7 +182,6 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
      * As for section 7.4.3.7, a missing or incorrectly specified pair of I,J parameters shall issue
      * a service exception with {@code InvalidPoint} code.
      * 
-     * @throws Exception
      */
     @Test
     public void testInvalidPoint() throws Exception {
@@ -207,7 +206,6 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
     /**
      * Tests a simple GetFeatureInfo works, and that the result contains the expected polygon
      * 
-     * @throws Exception
      */
     @Test
     public void testSimple() throws Exception {
@@ -297,7 +295,6 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
     /**
      * Tests a simple GetFeatureInfo works, and that the result contains the expected polygon
      * 
-     * @throws Exception
      */
     @Test
     public void testSimpleHtml() throws Exception {
@@ -315,7 +312,6 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
      * Tests GetFeatureInfo with a buffer specified works, and that the result contains the expected
      * polygon
      * 
-     * @throws Exception
      */
     @Test
     public void testBuffer() throws Exception {
@@ -350,7 +346,6 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
      * Tests GetFeatureInfo with a buffer specified works, and that the result contains the expected
      * polygon
      * 
-     * @throws Exception
      */
     @Test
     public void testAutoBuffer() throws Exception {
@@ -374,7 +369,6 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
      * Tests GetFeatureInfo with a buffer specified works, and that the result contains the expected
      * polygon
      * 
-     * @throws Exception
      */
     @Test
     public void testBufferScales() throws Exception {
@@ -422,7 +416,6 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
     /**
      * Tests a GetFeatureInfo againworks, and that the result contains the expected polygon
      * 
-     * @throws Exception
      */
     @Test
     public void testTwoLayers() throws Exception {
@@ -442,7 +435,6 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
      * Check GetFeatureInfo returns an error if the format is not known, instead of returning the
      * text format as in https://osgeo-org.atlassian.net/browse/GEOS-1924
      * 
-     * @throws Exception
      */
     @Test
     public void testUknownFormat() throws Exception {
@@ -553,7 +545,6 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
     /**
      * Check we report back an exception when query_layer contains layers not part of LAYERS
      * 
-     * @throws Exception
      */
     @Test
     public void testUnknownQueryLayer() throws Exception {

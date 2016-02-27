@@ -297,7 +297,7 @@ public abstract class WMSTestSupport extends GeoServerSystemTestSupport {
      * @param testName
      * @param image
      * @param bgColor
-     * @return
+     *
      */
     protected int countNonBlankPixels(String testName, BufferedImage image, Color bgColor) {
         int pixelsDiffer = 0;
@@ -509,7 +509,7 @@ public abstract class WMSTestSupport extends GeoServerSystemTestSupport {
      * @param i
      * @param j
      * @param color
-     * @return
+     *
      */
     protected Color getPixelColor(BufferedImage image, int i, int j) {
         ColorModel cm = image.getColorModel();

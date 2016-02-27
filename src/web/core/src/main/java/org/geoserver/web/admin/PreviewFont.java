@@ -111,7 +111,7 @@ public class PreviewFont implements Serializable {
     /**
      * Returns the font name
      * 
-     * @return
+     *
      */
     public String getFontName() {
         return font.getFontName();

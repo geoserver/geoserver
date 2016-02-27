@@ -88,10 +88,8 @@ import com.vividsolutions.jts.geom.Polygon;
 
 /**
  * Template {@linkPlain org.vfny.geoserver.responses.wms.GetLegendGraphicProducer} based on
- * GeoTools' {@link GeoTools' {@link http
- * ://svn.geotools.org/geotools/trunk/gt/module/main/src/org/geotools
- * /renderer/lite/StyledShapePainter.java StyledShapePainter} that produces a BufferedImage with the
- * appropriate legend graphic for a given GetLegendGraphic WMS request.
+ * <a href="http://svn.geotools.org/geotools/trunk/gt/module/main/src/org/geotools/renderer/lite/StyledShapePainter.java"> GeoTools StyledShapePainter</a>
+ * that produces a BufferedImage with the appropriate legend graphic for a given GetLegendGraphic WMS request.
  * 
  * <p>
  * It should be enough for a subclass to implement {@linkPlain
@@ -168,7 +166,7 @@ public class BufferedImageLegendGraphicBuilder {
      *            the "parsed" request, where "parsed" means that it's values are already validated
      *            so this method must not take care of verifying the requested layer exists and the
      *            like.
-     * @return
+     *
      * 
      * @throws ServiceException
      *             if there are problems creating a "sample" feature instance for the FeatureType
@@ -476,7 +474,7 @@ public class BufferedImageLegendGraphicBuilder {
      *              (if null a sample Feature will be created from featureType)
      * @param rules set of rules to scan for symbols
      * @param minimumSymbolSize lower constraint for the symbols size
-     * @return
+     *
      */
     private double calcSymbolScale(int width, int height, FeatureType featureType,
             Feature feature, final Rule[] rules, double minimumSymbolsSize) {
@@ -549,7 +547,7 @@ public class BufferedImageLegendGraphicBuilder {
      *        input
      * @param sample feature sample to be returned as is in output, if defined
      * @param rule rule containing symbolizers to scan for max dimensionality
-     * @return
+     *
      */
     private Feature getSampleFeatureForRule(FeatureType featureType,
             Feature sample, final Rule rule) {
@@ -655,7 +653,7 @@ public class BufferedImageLegendGraphicBuilder {
      * @param image
      * @param label
      * @param request
-     * @return
+     *
      */
     private BufferedImage getRenderedLabel(BufferedImage image, String label,
             GetLegendGraphicRequest request) {
@@ -932,7 +930,7 @@ public class BufferedImageLegendGraphicBuilder {
      * @param schema the schema for which to create a sample Feature instance
      * @param dimensionality the geometry dimensionality required (ovverides the one
      *        defined in the schema) 1= points, 2= lines, 3= polygons
-     * @return
+     *
      * @throws ServiceException
      */
     private Feature createSampleFeature(FeatureType schema, int dimensionality)
@@ -951,7 +949,7 @@ public class BufferedImageLegendGraphicBuilder {
      * @param schema schema to clone
      * @param dimensionality dimensionality for the geometry 1= points, 2= lines, 3=
      *        polygons
-     * @return
+     *
      */
     private FeatureType cloneWithDimensionality(FeatureType schema,
             int dimensionality) {
@@ -988,7 +986,7 @@ public class BufferedImageLegendGraphicBuilder {
      * Creates a Geometry class for the given dimensionality.
      * 
      * @param dimensionality
-     * @return
+     *
      */
     private Class<?> getGeometryForDimensionality(int dimensionality) {
         if (dimensionality == 1) {
@@ -1007,7 +1005,7 @@ public class BufferedImageLegendGraphicBuilder {
      * @param schema
      *            the schema for which to create a sample Feature instance
      * 
-     * @return
+     *
      * 
      * @throws ServiceException
      */
@@ -1035,7 +1033,7 @@ public class BufferedImageLegendGraphicBuilder {
      * Geometry type.
      * 
      * @param schema
-     * @return
+     *
      */
     private boolean hasMixedGeometry(SimpleFeatureType schema) {
         for (AttributeDescriptor attDesc : schema.getAttributeDescriptors()) {

@@ -156,7 +156,7 @@ public class ResourceConfigurationPage extends PublishedConfigurationPage<LayerI
     /**
      * Returns the {@link ResourceInfo} contained in this page
      *
-     * @return
+     *
      */
     public ResourceInfo getResourceInfo() {
         return (ResourceInfo) myResourceModel.getObject();

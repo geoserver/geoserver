@@ -123,7 +123,7 @@ public class FileParamPanel extends Panel implements ParamPanel {
 
     /**
      * The text field stored inside the panel. 
-     * @return
+     *
      */
     public FormComponent<String> getFormComponent() {
         return textField;

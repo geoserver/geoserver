@@ -94,7 +94,7 @@ public class FileModel implements IModel<String> {
     /**
      * Turns a file in canonical form if possible
      * @param file
-     * @return
+     *
      */
     File canonicalize(File file) {
         try {

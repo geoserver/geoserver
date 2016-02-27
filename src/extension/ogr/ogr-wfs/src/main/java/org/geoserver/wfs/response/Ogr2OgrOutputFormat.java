@@ -110,7 +110,7 @@ public class Ogr2OgrOutputFormat extends WFSGetFeatureOutputFormat implements Fo
     /**
      * Returns the ogr2ogr executable full path
      * 
-     * @return
+     *
      */
     @Override
     public String getExecutable() {
@@ -131,7 +131,7 @@ public class Ogr2OgrOutputFormat extends WFSGetFeatureOutputFormat implements Fo
     /**
      * Returns the environment variables that are set prior to invoking ogr2ogr
      * 
-     * @return
+     *
      */
     @Override
     public Map<String, String> getEnvironment() {
@@ -220,7 +220,7 @@ public class Ogr2OgrOutputFormat extends WFSGetFeatureOutputFormat implements Fo
     /**
      * Get a list of supported ogr formats
      *
-     * @return
+     *
      */
     @Override
     public List<Format> getFormats() {
@@ -322,7 +322,7 @@ public class Ogr2OgrOutputFormat extends WFSGetFeatureOutputFormat implements Fo
      * Writes to disk using shapefile if the feature type allows for it, GML otherwise
      * @param tempDir
      * @param curCollection
-     * @return
+     *
      */
     private File writeToDisk(File tempDir,
             SimpleFeatureCollection curCollection) throws Exception {
@@ -376,7 +376,7 @@ public class Ogr2OgrOutputFormat extends WFSGetFeatureOutputFormat implements Fo
     /**
      * Returns true if the schema has just one geometry and the geom type is known
      * @param schema
-     * @return
+     *
      */
     private boolean isShapefileCompatible(SimpleFeatureType schema) {
         GeometryType gt = null;

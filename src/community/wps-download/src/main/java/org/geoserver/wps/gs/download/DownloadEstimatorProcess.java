@@ -70,7 +70,6 @@ public class DownloadEstimatorProcess implements GSProcess {
      * @param targetSizeY the size of the target image along the Y axis
      * @param progressListener the progress listener
      * @return the boolean
-     * @throws Exception
      */
     @DescribeResult(name = "result", description = "Download Limits are respected or not!")
     public Boolean execute(

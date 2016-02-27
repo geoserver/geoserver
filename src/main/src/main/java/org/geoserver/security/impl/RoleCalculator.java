@@ -84,7 +84,7 @@ public class RoleCalculator  {
      * Convenience method for {@link #calculateRoles(GeoServerUser)}
      * 
      * @param username
-     * @return
+     *
      * @throws IOException
      */
     public SortedSet<GeoServerRole> calculateRoles(String username)
@@ -112,7 +112,7 @@ public class RoleCalculator  {
      * {@link GeoServerRole#ADMIN_ROLE} is also included in the set. 
      * 
      * @param user
-     * @return
+     *
      * @throws IOException
      */  
     public SortedSet<GeoServerRole> calculateRoles(GeoServerUser user)
@@ -185,7 +185,7 @@ public class RoleCalculator  {
      * including inherited roles
      * 
      * @param group
-     * @return
+     *
      * @throws IOException
      */
     public SortedSet<GeoServerRole> calculateRoles(GeoServerUserGroup group) throws IOException {
@@ -216,7 +216,7 @@ public class RoleCalculator  {
      * 
      * @param user
      * @param roles
-     * @return
+     *
      * @throws IOException
      */
     public SortedSet<GeoServerRole> personalizeRoles(GeoServerUser user, Collection<GeoServerRole> roles) throws IOException{

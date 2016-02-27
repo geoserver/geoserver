@@ -378,7 +378,6 @@ public class GetFeatureTest extends WFSTestSupport {
     /**
      * Tests CQL filter
      * 
-     * @throws Exception
      */
     @Test
     public void testCQLFilter() throws Exception {

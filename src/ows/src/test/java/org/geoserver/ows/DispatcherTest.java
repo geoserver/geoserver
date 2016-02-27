@@ -285,7 +285,6 @@ public class DispatcherTest extends TestCase {
     
     /**
      * Tests mixed get/post situations for cases in which there is no kvp parser
-     * @throws Exception
      */
     public void testHelloOperationMixed() throws Exception {
         URL url = getClass().getResource("applicationContextOnlyXml.xml");

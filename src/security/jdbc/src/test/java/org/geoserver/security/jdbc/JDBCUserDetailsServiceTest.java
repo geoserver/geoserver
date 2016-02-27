@@ -11,7 +11,7 @@ import static org.junit.Assert.*;
 import java.io.IOException;
 import java.sql.SQLException;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.security.GeoServerRoleService;

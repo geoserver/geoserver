@@ -49,7 +49,7 @@ public enum AccessMode {
     
     /**
      * Returns the short version of the {@link AccessMode} name
-     * @return
+     *
      */
     public String getAlias() {
         return alias;

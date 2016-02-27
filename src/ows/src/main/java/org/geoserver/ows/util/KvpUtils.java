@@ -550,7 +550,7 @@ public class KvpUtils {
      * 
      * @param kvp
      * @param key
-     * @return
+     *
      */
     public static String getSingleValue(Map kvp, String key) {
         Object value = kvp.get(key);
@@ -582,7 +582,7 @@ public class KvpUtils {
      * instead.
      *  
      * @param path a url in the form path?k1=v1&k2=v2&,,,
-     * @return
+     *
      */
     public static Map<String, Object> parseQueryString(String path) {
         int index = path.indexOf('?');

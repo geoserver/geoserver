@@ -49,7 +49,7 @@ public class Property {
     }
 
     /**
-     * @return
+     *
      */
     public String getPropertyName() {
         return propertyType.getPropertyName();

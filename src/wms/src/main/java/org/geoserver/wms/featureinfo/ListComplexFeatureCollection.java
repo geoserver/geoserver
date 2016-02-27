@@ -76,7 +76,7 @@ class ListComplexFeatureCollection extends BaseFeatureCollection {
     /**
      * Calculate bounds from features
      * 
-     * @return
+     *
      */
     private ReferencedEnvelope calculateBounds() {
         ReferencedEnvelope extent = new ReferencedEnvelope();

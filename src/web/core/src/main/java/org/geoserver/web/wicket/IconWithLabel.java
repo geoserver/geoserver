@@ -36,7 +36,7 @@ public class IconWithLabel extends Panel {
     /**
      * Returns the image contained in this panel (allows playing with its attributes)
      * 
-     * @return
+     *
      */
     public Image getImage() {
         return image;
@@ -46,7 +46,7 @@ public class IconWithLabel extends Panel {
      * Returns the label wrapped by the {@link IconWithLabel} panel (allows playing with its
      * attributes)
      * 
-     * @return
+     *
      */
     public Label getLabel() {
         return label;

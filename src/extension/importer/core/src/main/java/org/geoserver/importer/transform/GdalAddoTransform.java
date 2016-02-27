@@ -29,7 +29,7 @@ public class GdalAddoTransform extends AbstractCommandLineTransform implements R
     /**
      * Checks if gdaladdo is available
      * 
-     * @return
+     *
      * @throws IOException
      */
     public static boolean isAvailable() throws IOException {

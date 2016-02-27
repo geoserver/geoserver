@@ -490,12 +490,10 @@ public class WMSRequests {
     /**
      * Encodes a map of formation options to be used as the value in a kvp.
      * 
+     * A string of the form 'key1:value1,value2;key2:value1;...', or the empty string if the
+     *         formatOptions map is empty.
      * @param formatOptions The map of formation options.
      * @param sb StringBuffer to append to.
-     * 
-     * @return A string of the form 'key1:value1,value2;key2:value1;...', or the empty string if the
-     *         formatOptions map is empty.
-     * 
      */
     public static void encodeFormatOptions(Map formatOptions, StringBuffer sb) {
         if (formatOptions == null || formatOptions.isEmpty()) {

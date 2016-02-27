@@ -39,7 +39,6 @@ public interface DirectInvocationService {
      * @throws IllegalArgumentException
      *             if either the operation name or arguments list doesn't match one of the service
      *             provided operations
-     * @throws Exception
      *             under any other circumstances, specific to the operation being executed
      */
     Object invokeDirect(String operationName, Object[] parameters) throws IllegalArgumentException,

@@ -147,7 +147,7 @@ public class ReaderUtils {
      *
      * @return The child element found, null if not found.
      *
-     * @see getChildElement(Element,String,boolean)
+     * @see #getChildElement(Element,String,boolean)
      */
     public static Element[] getChildElements(Element root, String name) {
         try {
@@ -253,7 +253,7 @@ public class ReaderUtils {
      *
      * @return The child element found, null if not found.
      *
-     * @see getChildElement(Element,String,boolean)
+     * @see #getChildElement(Element,String,boolean)
      */
     public static Element getChildElement(Element root, String name) {
         try {
@@ -714,7 +714,7 @@ public class ReaderUtils {
      * Unescapes the provided text with XML entities, 
      * see (http://en.wikipedia.org/wiki/List_of_XML_and_HTML_character_entity_references#Character_entities_in_XML)
      * @param text
-     * @return
+     *
      */
     private static String unescape(String text) {
     	String s = text;

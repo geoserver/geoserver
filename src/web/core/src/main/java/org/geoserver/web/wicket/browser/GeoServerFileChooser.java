@@ -239,7 +239,7 @@ public class GeoServerFileChooser extends Panel {
 //     * If the file is in the data directory builds a data dir relative path, otherwise
 //     * returns an absolute path 
 //     * @param file
-//     * @return
+//     *
 //     */
 //    public String getRelativePath(File file) {
 //        File dataDirectory = GeoserverDataDirectory.getGeoserverDataDirectory();

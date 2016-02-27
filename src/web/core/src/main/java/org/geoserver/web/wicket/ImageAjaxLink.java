@@ -62,7 +62,7 @@ public abstract class ImageAjaxLink<T> extends Panel {
 
     /**
      * Returns the image contained in this link (allows playing with its attributes)
-     * @return
+     *
      */
     public Image getImage() {
         return image;
@@ -71,7 +71,7 @@ public abstract class ImageAjaxLink<T> extends Panel {
     /**
      * Returns the link wrapped by the {@link ImageAjaxLink} panel 
      * (allows playing with its attributes and enable/disable the link)
-     * @return
+     *
      */
     public AjaxLink<T> getLink() {
         return link;

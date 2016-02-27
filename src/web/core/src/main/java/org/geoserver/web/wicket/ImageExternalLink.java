@@ -41,7 +41,7 @@ public class ImageExternalLink extends Panel {
     /**
      * Returns the image contained in this link (allows playing with its attributes)
      * 
-     * @return
+     *
      */
     public Image getImage() {
         return image;
@@ -51,7 +51,7 @@ public class ImageExternalLink extends Panel {
      * Returns the link wrapped by the {@link ImageExternalLink} panel (allows playing with its
      * attributes and enable/disable the link)
      * 
-     * @return
+     *
      */
     public ExternalLink getLink() {
         return link;

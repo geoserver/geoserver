@@ -8,7 +8,7 @@
  */
 package org.geoserver.wms.decoration;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.junit.Test;
 

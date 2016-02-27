@@ -109,7 +109,7 @@ public class GeoServerProcessors implements ApplicationContextAware {
      * Returns the process factory instance corresponding to the specified class. 
      * @param factoryClass The factory to look for
      * @param applyFilters Whether to apply the registered {@link ProcessFilter} instances, or not
-     * @return
+     *
      */
     public static ProcessFactory getProcessFactory(Class factoryClass, boolean applyFilters) {
         Set<ProcessFactory> factories = Processors.getProcessFactories();

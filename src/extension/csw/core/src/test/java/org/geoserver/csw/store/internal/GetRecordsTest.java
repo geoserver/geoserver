@@ -192,7 +192,6 @@ public class GetRecordsTest extends CSWInternalTestSupport {
     /**
      * From CITE compliance, throw an error if a non spatial property is used in a spatial filter
      * 
-     * @throws Exception
      */
     @Test
     public void testSpatialFilterNonGeomProperty() throws Exception {
@@ -218,7 +217,6 @@ public class GetRecordsTest extends CSWInternalTestSupport {
 
     /**
      * From CITE compliance, throw an error the output format is not supported
-     * @throws Exception
      */
     @Test 
     public void testUnsupportedOutputFormat() throws Exception {

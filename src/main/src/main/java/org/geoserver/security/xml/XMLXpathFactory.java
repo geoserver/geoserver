@@ -66,7 +66,7 @@ public class XMLXpathFactory extends XMLXpath {
      * Get XPath provider for roles, depending on the version
      * 
      * @param version
-     * @return
+     *
      */
     public RoleXMLXpath getRoleXMLXpath(String version) {
         if (VERSION_RR_1_0.equals(version))
@@ -79,7 +79,7 @@ public class XMLXpathFactory extends XMLXpath {
      * Get XPath provider for user/groups, depending on the version
      * 
      * @param version
-     * @return
+     *
      */
     public UserGroupXMLXpath getUserGroupXMLXpath(String version) {
         if (VERSION_RR_1_0.equals(version))

@@ -497,7 +497,7 @@ public class ConfigDatabase {
     /**
      * @param info
      * @param prop
-     * @return
+     *
      */
     private Info lookUpRelatedObject(final Info info, final Property prop,
             @Nullable Integer collectionIndex) {
@@ -613,7 +613,7 @@ public class ConfigDatabase {
 
     /**
      * @param info
-     * @return
+     *
      */
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public <T extends Info> T save(T info) {

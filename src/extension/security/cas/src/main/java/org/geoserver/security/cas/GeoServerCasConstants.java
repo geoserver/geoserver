@@ -57,7 +57,7 @@ public class GeoServerCasConstants {
      * if the ulrPrefix is null, the return value is null
      * 
      * @param urlPrefix
-     * @return
+     *
      */
     public static String createProxyCallBackURl(String urlPrefix) {
         return createCasURl(urlPrefix, CAS_PROXY_RECEPTOR_PATTERN);
@@ -68,7 +68,7 @@ public class GeoServerCasConstants {
      * 
      * @param casUrlPrefix
      * @param casUri
-     * @return
+     *
      */
     public static String createCasURl(String casUrlPrefix, String casUri) {
         if (casUrlPrefix==null)

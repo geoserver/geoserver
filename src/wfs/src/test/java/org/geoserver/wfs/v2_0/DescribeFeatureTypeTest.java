@@ -162,7 +162,6 @@ public class DescribeFeatureTypeTest extends WFS20TestSupport {
     /**
      * See https://osgeo-org.atlassian.net/browse/GEOS-3306
      * 
-     * @throws Exception
      */
     @Test
     public void testUserSuppliedTypeNameNamespace() throws Exception {
@@ -178,7 +177,6 @@ public class DescribeFeatureTypeTest extends WFS20TestSupport {
     /**
      * See https://osgeo-org.atlassian.net/browse/GEOS-3306
      * 
-     * @throws Exception
      */
     @Test
     public void testUserSuppliedTypeNameDefaultNamespace() throws Exception {
@@ -206,7 +204,6 @@ public class DescribeFeatureTypeTest extends WFS20TestSupport {
      * addresses the typeName either by qualifying it as declared in the getcaps document, or
      * providing an alternate prefix with its corresponding prefix to namespace mapping.
      * 
-     * @throws Exception
      */
     @Test
     public void testCiteCompliance() throws Exception {
@@ -256,7 +253,6 @@ public class DescribeFeatureTypeTest extends WFS20TestSupport {
     /**
      * See https://osgeo-org.atlassian.net/browse/GEOS-3306
      * 
-     * @throws Exception
      */
     @Test
     public void testPrefixedGetStrictCite() throws Exception {

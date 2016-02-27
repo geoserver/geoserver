@@ -5,8 +5,7 @@
  */
 package org.geoserver.flow.controller;
 
-import static junit.framework.Assert.fail;
-import static org.junit.Assert.*;
+import static org.junit.Assert.fail;
 
 import java.lang.Thread.State;
 
@@ -41,7 +40,7 @@ public abstract class AbstractFlowControllerTest {
             while (t.getState() != State.WAITING && t.getState() != State.TIMED_WAITING) {
                 if (System.currentTimeMillis() > (start + maxWait))
                     fail("Waited for the thread to be blocked more than maxWait: " + maxWait);
-                Thread.currentThread().sleep(10);
+                Thread.sleep(10);
             }
         } catch (InterruptedException e) {
             fail("Sometime interrupeted our wait: " + e);
@@ -62,7 +61,7 @@ public abstract class AbstractFlowControllerTest {
             while (t.getState() != State.TERMINATED) {
                 if (System.currentTimeMillis() > (start + maxWait))
                     fail("Waited for the thread to be terminated more than maxWait: " + maxWait);
-                Thread.currentThread().sleep(20);
+                Thread.sleep(20);
             }
         } catch (Exception e) {
             System.out.println("Could not terminate thread " + t);
@@ -84,7 +83,7 @@ public abstract class AbstractFlowControllerTest {
                     t.interrupt();
                 }
 
-                Thread.currentThread().sleep(20);
+                Thread.sleep(20);
             }
         } catch (InterruptedException e) {
             fail("Sometime interrupeted our wait: " + e);

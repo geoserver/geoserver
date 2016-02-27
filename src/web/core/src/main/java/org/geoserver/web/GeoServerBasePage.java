@@ -272,7 +272,7 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
 
     /**
 	 * Gets the page title from the PageName.title resource, falling back on "GeoServer" if not found
-	 * @return
+	 *
 	 */
 	String getPageTitle() {
 	    try {
@@ -330,7 +330,7 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
     /**
      * Splits up the pages by category, turning the list into a map keyed by category
      * @param pages
-     * @return
+     *
      */
     private Map<Category,List<MenuPageInfo>> splitByCategory(List<MenuPageInfo> pages){
         Collections.sort(pages);
@@ -381,7 +381,7 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
    
    /**
     * Returns the feedback panel included in the GeoServer base page
-    * @return
+    *
     */
    public FeedbackPanel getFeedbackPanel() {
        return feedbackPanel;
@@ -410,7 +410,7 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
     * processed in that order.
     * <p>
     * This method should be called by pages that must return after doing some task on a form submit
-    * such as a save or a cancel. If no return page has been set via {@Link {@link #setReturnPage(Page)}} 
+    * such as a save or a cancel. If no return page has been set via {@link #setReturnPage(Page)} 
     * or {@link #setReturnPageClass(Class)} then {@link GeoServerHomePage} is used.
     * </p>
     */
@@ -428,7 +428,7 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
     * </p>
     * <p>
     * This method should be called by pages that must return after doing some task on a form submit
-    * such as a save or a cancel. If no return page has been set via {@Link {@link #setReturnPage(Page)}} 
+    * such as a save or a cancel. If no return page has been set via {@link #setReturnPage(Page)} 
     * or {@link #setReturnPageClass(Class)} then {@link GeoServerHomePage} is used.
     * </p>
     */

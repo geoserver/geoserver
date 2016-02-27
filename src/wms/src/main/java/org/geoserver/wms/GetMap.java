@@ -258,7 +258,7 @@ public class GetMap {
      * @param mapContent
      * @param delegate
      * @param env
-     * @return
+     *
      * @throws IOException
      */
     WebMap executeInternal(WMSMapContent mapContent, final GetMapRequest request,
@@ -570,7 +570,7 @@ public class GetMap {
      * 
      * @param style
      * @param scaleDenominator
-     * @return
+     *
      */
     static int computeLayerBuffer(Style style, double scaleDenominator) {
         final double TOLERANCE = 1e-6;

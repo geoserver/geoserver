@@ -72,7 +72,7 @@ public abstract class AbstractGeoServerSecurityService implements GeoServerSecur
      * Authentication filters with an {@link AuthenticationEntryPoint} must
      * return their entry point 
      * 
-     * @return
+     *
      */
     public AuthenticationEntryPoint getAuthenticationEntryPoint() {
         return null;

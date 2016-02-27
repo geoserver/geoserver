@@ -109,7 +109,7 @@ public class GeoServerCredentialsFromRequestHeaderFilter extends
      * 
      * @param header the String to parse
      * @param pattern the pattern to use. This must contain one group
-     * @return
+     *
      */
     private String parseHeader(String header, Pattern pattern) {
         Matcher m = pattern.matcher(header);

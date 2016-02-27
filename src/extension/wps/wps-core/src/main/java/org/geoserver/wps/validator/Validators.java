@@ -21,7 +21,7 @@ public class Validators {
      * Returns a clone of the validators collection where none of the validators implementing one of
      * the specified filter classes is available
      * 
-     * @return
+     *
      */
     public static List<Validator> filterOutClasses(Collection<Validator> validators,
             Class... filteredClasses) {
@@ -53,7 +53,7 @@ public class Validators {
      * validators collection, or -1 if there is no limit
      * 
      * @param validators
-     * @return
+     *
      */
     public static int getMaxSizeMB(Collection<Validator> validators) {
         int maxSize = Integer.MAX_VALUE;

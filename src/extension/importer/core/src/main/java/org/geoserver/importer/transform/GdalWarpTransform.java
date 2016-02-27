@@ -33,7 +33,7 @@ public class GdalWarpTransform extends AbstractCommandLineTransform implements R
     /**
      * Checks if gdalwarp is available
      * 
-     * @return
+     *
      * @throws IOException
      */
     public static boolean isAvailable() throws IOException {

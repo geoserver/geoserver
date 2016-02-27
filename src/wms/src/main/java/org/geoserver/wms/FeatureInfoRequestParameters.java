@@ -118,7 +118,7 @@ public class FeatureInfoRequestParameters {
      * 
      * @param request
      * @param layers
-     * @return
+     *
      */
     private List<Style> getStyles(final GetFeatureInfoRequest request, List<MapLayerInfo> layers) {
         List<Style> getMapStyles = request.getGetMapRequest().getStyles();
@@ -157,7 +157,7 @@ public class FeatureInfoRequestParameters {
     /**
      * Returns the current layer
      * 
-     * @return
+     *
      */
     public MapLayerInfo getLayer() {
         return layers.get(currentLayer);
@@ -180,7 +180,7 @@ public class FeatureInfoRequestParameters {
     /**
      * The property names for the specified layer (if any, null otherwise)
      * 
-     * @return
+     *
      */
     public String[] getPropertyNames() {
         if (propertyNames == null || propertyNames.size() == 0
@@ -195,7 +195,7 @@ public class FeatureInfoRequestParameters {
     /**
      * The view parameters for the current layer
      * 
-     * @return
+     *
      */
     public Map<String, String> getViewParams() {
         if (viewParams == null || viewParams.size() < currentLayer) {
@@ -229,7 +229,7 @@ public class FeatureInfoRequestParameters {
     /**
      * The requested coordinate reference system
      * 
-     * @return
+     *
      */
     public CoordinateReferenceSystem getRequestedCRS() {
         return requestedCRS;
@@ -280,7 +280,7 @@ public class FeatureInfoRequestParameters {
     /**
      * A filter factory suitable to build filters
      * 
-     * @return
+     *
      */
     public FilterFactory2 getFilterFactory() {
         return ff;
@@ -289,7 +289,7 @@ public class FeatureInfoRequestParameters {
     /**
      * The GetMap request wrapped by the GetFeatureInfo one
      * 
-     * @return
+     *
      */
     public GetMapRequest getGetMapRequest() {
         return getMapReq;

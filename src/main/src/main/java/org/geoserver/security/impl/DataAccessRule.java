@@ -106,7 +106,7 @@ public class DataAccessRule implements Comparable<DataAccessRule>, Serializable 
     /**
      * Returns the key for the current rule. No other rule should have the same
      * 
-     * @return
+     *
      */
     public String getKey() {
         return workspace + "." + layer + "." + accessMode.getAlias();
@@ -114,7 +114,7 @@ public class DataAccessRule implements Comparable<DataAccessRule>, Serializable 
     
     /**
      * Returns the list of roles as a comma separated string for this rule
-     * @return
+     *
      */
     public String getValue() {
         if(roles.isEmpty()) {

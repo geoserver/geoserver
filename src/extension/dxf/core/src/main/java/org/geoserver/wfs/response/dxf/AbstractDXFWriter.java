@@ -94,7 +94,6 @@ public abstract class AbstractDXFWriter implements DXFWriter {
      * Create a new instance of the writer, using the given underlying writer.
      * 
      * @param writer
-     * @return
      */
     public abstract DXFWriter newInstance(Writer writer);
 
@@ -102,7 +101,6 @@ public abstract class AbstractDXFWriter implements DXFWriter {
      * Verifies if the writer supports the request dxf version.
      * 
      * @param version
-     * @return
      */
     public boolean supportsVersion(String version) {
         if (version == null)
@@ -175,7 +173,7 @@ public abstract class AbstractDXFWriter implements DXFWriter {
      * Extracts and cache the global ReferenceEnvelope for the given feature list.
      * 
      * @param featureList
-     * @return
+     *
      */
     protected ReferencedEnvelope getEnvelope(List featureList) {
         if (e == null) {
@@ -195,7 +193,7 @@ public abstract class AbstractDXFWriter implements DXFWriter {
      * Normalizes an envelope to get a usable viewport.
      * 
      * @param e2
-     * @return
+     *
      */
     private ReferencedEnvelope normalizeEnvelope(ReferencedEnvelope e) {
         if (e != null) {
@@ -334,7 +332,7 @@ public abstract class AbstractDXFWriter implements DXFWriter {
      * Gets a name for the layer represented by the given collection.
      * 
      * @param coll
-     * @return
+     *
      */
     protected String getLayerName(FeatureCollection coll) {
         String name = getCachedName(coll.hashCode() + "");
@@ -362,7 +360,7 @@ public abstract class AbstractDXFWriter implements DXFWriter {
     /**
      * Gets a stored layer name.
      * @param id
-     * @return
+     *
      */
     private String getCachedName(String id) {
         return cachedNames.get(id);
@@ -372,7 +370,7 @@ public abstract class AbstractDXFWriter implements DXFWriter {
      * Assign a color to the collection, cycling through
      * the available color list.
      * @param coll
-     * @return
+     *
      */
     protected int getColor(FeatureCollection coll) {
         int color = colors[colorPos];
@@ -387,7 +385,7 @@ public abstract class AbstractDXFWriter implements DXFWriter {
      * Assign a line type to the collection, cycling through
      * the available line types list.
      * @param coll
-     * @return
+     *
      */
     protected int getLineType(FeatureCollection coll) {
         int ltype = ltypePos;

@@ -611,7 +611,7 @@ public class XStreamPersister {
      * Builds a converter that will marshal/unmarshal the target class by reference, that is, by
      * storing the object id as opposed to fully serializing it
      * @param clazz
-     * @return
+     *
      */
     public ReferenceConverter buildReferenceConverter(Class clazz) {
         return new ReferenceConverter(clazz);
@@ -620,7 +620,7 @@ public class XStreamPersister {
     /**
      * Same as {@link #buildReferenceConverter(Class)}, but works against a collection of objects
      * @param clazz
-     * @return
+     *
      */
     public ReferenceCollectionConverter buildReferenceCollectionConverter(Class clazz) {
         return new ReferenceCollectionConverter(clazz);

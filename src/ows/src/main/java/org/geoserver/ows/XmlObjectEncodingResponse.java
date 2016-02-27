@@ -71,7 +71,7 @@ public class XmlObjectEncodingResponse extends Response {
 
     /**
      * Subclasses can override this method to return the necessary schema location declarations
-     * @return
+     *
      */
     protected Map<String, String> getSchemaLocations() {
         return Collections.emptyMap();

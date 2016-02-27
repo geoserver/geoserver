@@ -40,7 +40,6 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WebMap;
-import org.geoserver.wms.map.RenderedImageMap;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.util.logging.Logging;
@@ -192,7 +191,7 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
      * <ul>
      * <li>Caching for this layer is enabled by configuration
      * <li>Its backing {@link LayerInfo} or {@link LayerGroupInfo} is enabled and not errored (as
-     * per {@link LayerInfo#enabled()} {@link LayerGroupInfo#}
+     * per {@link LayerInfo#enabled()} {@link LayerGroupInfo}
      * <li>The layer is not errored ({@link #getConfigErrorMessage() == null}
      * </ul>
      * The layer is enabled by configuration if: the {@code GWC.enabled} metadata property is set to
@@ -1061,7 +1060,7 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
      * Returns the max age of a layer group by looking for the minimum max age of its components
      * 
      * @param lg
-     * @return
+     *
      */
     private int getGroupMaxAge(LayerGroupInfo lg) {
         int maxAge = Integer.MAX_VALUE;
@@ -1086,7 +1085,7 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
 
     /**
      * Returns the max age for the specified layer
-     * @return
+     *
      */
     private int getLayerMaxAge(LayerInfo li) {
         MetadataMap metadata = li.getResource().getMetadata();

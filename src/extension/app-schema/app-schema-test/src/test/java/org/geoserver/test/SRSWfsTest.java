@@ -79,8 +79,6 @@ public class SRSWfsTest extends AbstractAppSchemaTestSupport {
 
     /**
      * Test content of GetFeature response.
-     * @throws FactoryException 
-     * @throws NoSuchAuthorityCodeException 
      */
     @Test
     public void testGetFeatureContent() throws NoSuchAuthorityCodeException, FactoryException {
@@ -226,11 +224,6 @@ public class SRSWfsTest extends AbstractAppSchemaTestSupport {
 
     /**
      * Test SRS reprojection. Ensure both geometry values and SRS information are encoded correctly.
-     * 
-     * @throws NoSuchAuthorityCodeException
-     * @throws FactoryException
-     * @throws MismatchedDimensionException
-     * @throws TransformException
      */
     @Test
     public void testReproject() throws NoSuchAuthorityCodeException, FactoryException,

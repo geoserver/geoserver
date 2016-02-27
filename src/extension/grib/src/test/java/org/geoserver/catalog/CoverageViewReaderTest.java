@@ -93,7 +93,6 @@ public class CoverageViewReaderTest extends GeoServerSystemTestSupport {
     }
 
     /**
-     * @throws Exception
      */
     @Test
     public void testCoverageView() throws Exception {

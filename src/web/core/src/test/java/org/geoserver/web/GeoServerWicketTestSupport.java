@@ -111,7 +111,7 @@ public abstract class GeoServerWicketTestSupport extends GeoServerSecurityTestSu
      * @param root the component under which the search is to be performed
      * @param content 
      * @param componentClass the target class, or null if any component will do
-     * @return
+     *
      */
     public Component findComponentByContent(MarkupContainer root, Object content, Class<?> componentClass) {
         ComponentContentFinder finder = new ComponentContentFinder(content);
@@ -152,7 +152,7 @@ public abstract class GeoServerWicketTestSupport extends GeoServerSecurityTestSu
      * 
      * @param path path to component
      * @param event the name of the event
-     * @return
+     *
      */
     protected AjaxEventBehavior getAjaxBehavior(String path, String event) {
         for (Behavior b : tester.getComponentFromLastRenderedPage(path).getBehaviors()) {

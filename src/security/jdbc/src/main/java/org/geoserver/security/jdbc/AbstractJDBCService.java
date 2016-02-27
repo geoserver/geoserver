@@ -13,9 +13,7 @@ import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.StringTokenizer;
@@ -94,7 +92,7 @@ public abstract class AbstractJDBCService extends AbstractGeoServerSecurityServi
     /**
      * simple getter
      * 
-     * @return
+     *
      */
     protected DataSource getDataSource() {
         return datasource;
@@ -105,7 +103,7 @@ public abstract class AbstractJDBCService extends AbstractGeoServerSecurityServi
      * check/set autocommit == false and isolation level
      * according to {@link #DEFAULT_ISOLATION_LEVEL}
      * 
-     * @return
+     *
      * @throws SQLException
      */
     protected Connection getConnection() throws SQLException{
@@ -154,7 +152,7 @@ public abstract class AbstractJDBCService extends AbstractGeoServerSecurityServi
      * 
      * @param key
      * @param con
-     * @return
+     *
      * @throws IOException
      * @throws SQLException
      */
@@ -170,7 +168,7 @@ public abstract class AbstractJDBCService extends AbstractGeoServerSecurityServi
      * @param key
      * @param props
      * @param con
-     * @return
+     *
      * @throws IOException if key does not exist
      * @throws SQLException
      */
@@ -187,7 +185,7 @@ public abstract class AbstractJDBCService extends AbstractGeoServerSecurityServi
      * 
      * @param key
      * @param con
-     * @return
+     *
      * @throws IOException
      * @throws SQLException
      */
@@ -203,7 +201,7 @@ public abstract class AbstractJDBCService extends AbstractGeoServerSecurityServi
      * other values result in false
      * 
      * @param booleanString
-     * @return
+     *
      */
     protected boolean convertFromString(String booleanString) {
         if (booleanString==null)
@@ -216,7 +214,7 @@ public abstract class AbstractJDBCService extends AbstractGeoServerSecurityServi
      * true --> "Y"
      * false --> "N"
      * @param b
-     * @return
+     *
      */
     protected String convertToString(boolean b) {
         return b ? "Y" : "N";        
@@ -227,7 +225,7 @@ public abstract class AbstractJDBCService extends AbstractGeoServerSecurityServi
      * Get ordered property keys for creating
      * tables/indexes
      * 
-     * @return
+     *
      */
     protected abstract String[] getOrderedNamesForCreate();
     
@@ -235,7 +233,7 @@ public abstract class AbstractJDBCService extends AbstractGeoServerSecurityServi
      * Get ordered property keys for dropping
      * tables/indexes
      * 
-     * @return
+     *
      */
     protected abstract String[] getOrderedNamesForDrop();
     
@@ -365,7 +363,7 @@ public abstract class AbstractJDBCService extends AbstractGeoServerSecurityServi
      * Checks if the tables are already created
      * 
      * @param con
-     * @return
+     *
      * @throws IOException
      */
     public boolean tablesAlreadyCreated() throws IOException {
@@ -465,9 +463,9 @@ public abstract class AbstractJDBCService extends AbstractGeoServerSecurityServi
      * If no template was found, use the default template
      * 
      * 
-     * @param fileName, target location
-     * @param namedRoot, parent dir if fileName is relative
-     * @param defaultResource, the standard template
+     * @param fileName target location
+     * @param namedRoot parent dir if fileName is relative
+     * @param defaultResource the standard template
      * @throws IOException
      * @return the file to use
      */

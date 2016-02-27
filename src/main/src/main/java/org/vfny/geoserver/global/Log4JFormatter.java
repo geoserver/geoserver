@@ -187,7 +187,7 @@ public class Log4JFormatter extends Formatter {
     /**
      * Returns the full stack trace of the given exception
      * @param record
-     * @return
+     *
      */
     private String getStackTrace(Throwable t) {
         StringWriter sw = new StringWriter();

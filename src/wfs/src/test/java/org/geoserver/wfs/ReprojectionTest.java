@@ -203,7 +203,6 @@ public class ReprojectionTest extends WFSTestSupport {
 
     /**
      * See GEOT-3760
-     * @throws Exception
      */
     @Test
     public void testGetFeatureWithProjectedBoxIntersectsPost() throws Exception {
@@ -242,8 +241,7 @@ public class ReprojectionTest extends WFSTestSupport {
     
     /**
      * Returns the transformed corners of the POLYGON layer bbox
-     * @return
-     * @throws Exception
+     *
      * @throws TransformException
      */
     private double[] getTransformedPolygonsLayerBBox() throws Exception, TransformException {

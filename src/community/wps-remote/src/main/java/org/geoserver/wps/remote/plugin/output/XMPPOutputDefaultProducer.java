@@ -43,8 +43,7 @@ public class XMPPOutputDefaultProducer {
      * @param xmppClient
      * @param publish
      * @param metadata
-     * @return
-     * @throws Exception
+     *
      */
     public Object produceOutput(Object value, String type, String pID, String baseURL,
             XMPPClient xmppClient, boolean publish, String name, String title, String description,

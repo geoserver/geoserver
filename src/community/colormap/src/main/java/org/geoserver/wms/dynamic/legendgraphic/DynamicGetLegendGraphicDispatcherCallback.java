@@ -103,7 +103,7 @@ public class DynamicGetLegendGraphicDispatcherCallback implements DispatcherCall
      * Look for a ColorRamp string definition used by a {@link FilterFunction_svgColorMap} if any.
      * 
      * @param styles
-     * @return
+     *
      */
     private String getColorRampDefinition(final List<Style> styles) {
         // Parsing the first style
@@ -133,7 +133,7 @@ public class DynamicGetLegendGraphicDispatcherCallback implements DispatcherCall
      * Look for a ColorRamp definition used by a {@link DynamicColorMapProcess} rendering transformation.
      * 
      * @param processFunction
-     * @return
+     *
      */
     private String getColorRampDefinition(final ProcessFunction processFunction) {
         List<Expression> functionParameters = processFunction.getParameters();

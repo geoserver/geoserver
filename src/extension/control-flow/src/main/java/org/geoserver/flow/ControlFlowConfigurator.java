@@ -30,7 +30,7 @@ public interface ControlFlowConfigurator {
      * Returns true if the set of flow controllers changed since last invocation of
      * {@link #buildFlowControllers()}
      * 
-     * @return
+     *
      */
     boolean isStale();
 }

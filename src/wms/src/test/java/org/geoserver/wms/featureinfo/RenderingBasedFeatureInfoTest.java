@@ -97,7 +97,6 @@ public class RenderingBasedFeatureInfoTest extends WMSTestSupport {
     
     /**
      * Test hitArea does not overflow out of painted area.
-     * @throws Exception
      */
     @Test
     public void  testHitAreaSize()  throws Exception {
@@ -404,7 +403,6 @@ public class RenderingBasedFeatureInfoTest extends WMSTestSupport {
      * with VectorRenderingLayerIdentifier, due to 1 pixel missing
      * in map size. 
      * 
-     * @throws Exception
      */
     @Test
     public void testCalculatedScale() throws Exception {

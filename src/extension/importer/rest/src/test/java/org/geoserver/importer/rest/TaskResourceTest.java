@@ -449,7 +449,6 @@ public class TaskResourceTest extends ImporterTestSupport {
     /**
      * Ideally, many variations of error handling could be tested here.
      * (For performance - otherwise too much tear-down/setup)
-     * @throws Exception
      */
     @Test
     public void testErrorHandling() throws Exception {

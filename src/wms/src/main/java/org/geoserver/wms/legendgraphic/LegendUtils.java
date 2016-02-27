@@ -612,7 +612,7 @@ public class LegendUtils {
      * Locates the specified rule by name
      * @param fts
      * @param rule
-     * @return
+     *
      */
     public static Rule getRule(FeatureTypeStyle[] fts, String rule) {
         Rule sldRule = null;

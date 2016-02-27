@@ -216,7 +216,6 @@ public class KMLReflector {
      * 
      * @param kvp
      * @param formatOptions
-     * @throws Exception
      */
     public static void organizeFormatOptionsParams(Map<String, String> kvp,
             Map<String, Object> formatOptions) throws Exception {

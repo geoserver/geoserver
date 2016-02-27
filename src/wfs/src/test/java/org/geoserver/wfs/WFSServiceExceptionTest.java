@@ -72,7 +72,6 @@ public class WFSServiceExceptionTest extends WFSTestSupport {
 
     /**
      * @param path
-     * @throws Exception
      * 
      */
     private static void testJson(String content) {

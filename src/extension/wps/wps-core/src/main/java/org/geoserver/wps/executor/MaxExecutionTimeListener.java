@@ -44,7 +44,7 @@ public class MaxExecutionTimeListener extends DelegateProgressListener {
     /**
      * Returns true if the execution went beyond the allowed max time
      * 
-     * @return
+     *
      */
     public boolean isExpired() {
         return maxExecutionTime > 0 && (System.currentTimeMillis() - startTime) > maxExecutionTime;
@@ -53,7 +53,7 @@ public class MaxExecutionTimeListener extends DelegateProgressListener {
     /**
      * The maximum execution time
      * 
-     * @return
+     *
      */
     public long getMaxExecutionTime() {
         return maxExecutionTime;

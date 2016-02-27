@@ -515,7 +515,6 @@ public class GetCoverageTest extends AbstractGetCoverageTest {
      * This tests just ended up throwing an exception as the coverage being encoded
      * was too large due to a bug in the scales estimation
      * 
-     * @throws Exception
      */
     @Test
     public void testRotatedPost() throws Exception {
@@ -561,7 +560,6 @@ public class GetCoverageTest extends AbstractGetCoverageTest {
      * This tests just ended up throwing an exception as the coverage being encoded
      * was too large due to a bug in the scales estimation
      * 
-     * @throws Exception
      */
     @Test
     public void testRotatedGet() throws Exception {

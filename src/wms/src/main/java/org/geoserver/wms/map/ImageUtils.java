@@ -128,7 +128,7 @@ public class ImageUtils {
      * @param height
      * @param palette
      * @param transparent
-     * @return
+     *
      */
     public static long getDrawingSurfaceMemoryUse(final int width, final int height,
             final IndexColorModel palette, final boolean transparent) {
@@ -215,7 +215,7 @@ public class ImageUtils {
      * 
      * @param originalImage
      * @param invColorMap may be {@code null}
-     * @return
+     *
      */
     public static RenderedImage forceIndexed8Bitmask(RenderedImage originalImage, final InverseColorMapOp invColorMap) {
         if (LOGGER.isLoggable(Level.FINER)) {

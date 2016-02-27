@@ -37,7 +37,7 @@ public class LayerGroupHelper {
     
     /**
      * 
-     * @return
+     *
      */
     public List<LayerInfo> allLayers() {
         List<LayerInfo> layers = new ArrayList<LayerInfo>();
@@ -62,7 +62,7 @@ public class LayerGroupHelper {
     
     /**
      * 
-     * @return
+     *
      */
     public List<StyleInfo> allStyles() {
         List<StyleInfo> styles = new ArrayList<StyleInfo>();
@@ -148,7 +148,6 @@ public class LayerGroupHelper {
     /**
      * 
      * @param crs
-     * @throws Exception
      */
     public void calculateBounds(CoordinateReferenceSystem crs) throws Exception {
         List<LayerInfo> layers = allLayers();        
@@ -186,7 +185,6 @@ public class LayerGroupHelper {
     
     /**
      * 
-     * @throws Exception
      */
     public void calculateBounds() throws Exception {
         List<LayerInfo> layers = allLayers();       

@@ -56,7 +56,7 @@ public abstract class CasAuthenticationHelper {
      * create URL from a CAS protocol URI 
      * 
      * @param casUri
-     * @return
+     *
      */
     protected URL createURLFromCasURI(String casUri) {
         URL retValue=null;
@@ -150,7 +150,7 @@ public abstract class CasAuthenticationHelper {
     /**
      * Single logout from Cas server
      * 
-     * @return
+     *
      * @throws IOException
      */
     public boolean ssoLogout() throws IOException {
@@ -200,7 +200,7 @@ public abstract class CasAuthenticationHelper {
      * The concrete login, after sucessful login,
      * the cookies should be set using {@link #extractCASCookies(List, HttpURLConnection)}
      * 
-     * @return
+     *
      * @throws IOException
      */
     public  abstract boolean ssoLogin() throws IOException;
@@ -214,7 +214,7 @@ public abstract class CasAuthenticationHelper {
      * {@link #isSecure()} == true
      * 
      * @param service
-     * @return
+     *
      * @throws IOException
      */
     public String getServiceTicket(URL service) throws IOException{

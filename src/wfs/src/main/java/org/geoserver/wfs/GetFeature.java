@@ -909,7 +909,7 @@ public class GetFeature {
      * Allows subclasses to poke with the feature collection extraction
      * @param source
      * @param gtQuery
-     * @return
+     *
      * @throws IOException
      */
     protected FeatureCollection<? extends FeatureType, ? extends Feature> getFeatures(

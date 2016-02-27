@@ -24,13 +24,12 @@ public interface WPSResource {
 
     /**
      * Deletes the resource permanently
-     * @throws Exception
      */
     void delete() throws Exception;
 
     /**
      * The resource name, used for error reporting
-     * @return
+     *
      */
     String getName();
 }

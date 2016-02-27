@@ -83,7 +83,7 @@ public abstract class XStreamServiceLoader<T extends ServiceInfo> implements Ser
      * more specific initializations (such as the actual supported versions and so on)
      * 
      * @param service
-     * @return
+     *
      */
     protected T initialize(T service) {
         if (service instanceof ServiceInfoImpl) {

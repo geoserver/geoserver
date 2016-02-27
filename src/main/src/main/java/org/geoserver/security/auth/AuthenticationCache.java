@@ -48,7 +48,7 @@ public interface AuthenticationCache {
      * 
      * @param filterName
      * @param cacheKey
-     * @return
+     *
      */
     public Authentication get(String filterName, String cacheKey);
     

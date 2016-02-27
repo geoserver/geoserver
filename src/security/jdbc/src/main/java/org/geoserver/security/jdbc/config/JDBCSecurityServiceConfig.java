@@ -179,7 +179,7 @@ public abstract class JDBCSecurityServiceConfig extends BaseSecurityNamedService
     /**
      * Indicates if the tables are created behind the scenes
      * 
-     * @return
+     *
      */
     public boolean isCreatingTables() {
         return creatingTables;

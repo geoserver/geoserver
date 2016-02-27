@@ -93,7 +93,6 @@ public class LegendCapabilitiesTest extends WMSTestSupport {
      *           &lt;/LegendURL&gt;
      * </pre>
      * 
-     * @throws Exception
      */
     @Test
     public void testCapabilities() throws Exception {

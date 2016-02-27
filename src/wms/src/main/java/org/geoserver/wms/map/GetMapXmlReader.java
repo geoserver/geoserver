@@ -451,7 +451,7 @@ public class GetMapXmlReader extends org.geoserver.ows.XmlRequestReader {
      * info or from the given set of styles from the request.
      * @param layerStyles
      * @param currLayer
-     * @return
+     *
      */
     private static boolean shouldUseLayerStyle(Style[] layerStyles,
             MapLayerInfo currLayer) {
@@ -632,7 +632,7 @@ public class GetMapXmlReader extends org.geoserver.ows.XmlRequestReader {
      * @param parentNode
      * @param wantedChildName
      * 
-     * @return
+     *
      */
     public Node getNode(Node parentNode, String wantedChildName) {
         NodeList children = parentNode.getChildNodes();
@@ -665,7 +665,7 @@ public class GetMapXmlReader extends org.geoserver.ows.XmlRequestReader {
      * @param parentNode
      * @param wantedChildName
      * 
-     * @return
+     *
      */
     public String getNodeValue(Node parentNode, String wantedChildName) {
         NodeList children = parentNode.getChildNodes();
@@ -697,7 +697,7 @@ public class GetMapXmlReader extends org.geoserver.ows.XmlRequestReader {
      * @param n
      * @param name
      * 
-     * @return
+     *
      */
     public boolean nodeNameEqual(Node n, String name) {
         if (n.getNodeName().equalsIgnoreCase(name)) {
@@ -725,7 +725,6 @@ public class GetMapXmlReader extends org.geoserver.ows.XmlRequestReader {
      * @param f
      * @param getMapRequest
      * 
-     * @throws Exception
      * @throws ServiceException
      */
     public void validateSchemaSLD(File f, GetMapRequest getMapRequest) throws Exception {
@@ -766,7 +765,6 @@ public class GetMapXmlReader extends org.geoserver.ows.XmlRequestReader {
      * @param f
      * @param getMapRequest
      * 
-     * @throws Exception
      * @throws ServiceException
      */
     public void validateSchemaGETMAP(File f, GetMapRequest getMapRequest) throws Exception {

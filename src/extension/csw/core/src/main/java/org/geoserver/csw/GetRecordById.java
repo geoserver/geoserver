@@ -151,7 +151,7 @@ public class GetRecordById {
      * is found
      * 
      * @param request
-     * @return
+     *
      */
     private RecordDescriptor getRecordDescriptor(GetRecordByIdType request) {
         String outputSchema = request.getOutputSchema();

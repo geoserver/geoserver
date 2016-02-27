@@ -44,7 +44,7 @@ public class GETMAPValidator {
      *  uses the geoserver_home patch
      * @param xml
      * @param req
-     * @return
+     *
      */
     public List validateGETMAP(InputStream xml) {
         GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);

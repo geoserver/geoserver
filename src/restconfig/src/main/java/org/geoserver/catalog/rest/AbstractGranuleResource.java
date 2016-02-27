@@ -78,7 +78,7 @@ public abstract class AbstractGranuleResource extends CatalogResourceBase {
      * Sets up the query to identify only the granules pertinent to this resource (and the 
      * eventual request parameters)
      * 
-     * @return
+     *
      */
     protected abstract Query getResourceQuery();
 

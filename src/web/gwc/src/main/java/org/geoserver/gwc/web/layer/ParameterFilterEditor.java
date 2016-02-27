@@ -340,7 +340,7 @@ class ParameterFilterEditor extends FormComponentPanel<Set<ParameterFilter>> {
     /**
      * Returns an appropriate subform for the given ParameterFilter model
      * @param model
-     * @return
+     *
      */
     @SuppressWarnings("unchecked")
     private Component getSubform(String id, IModel<? extends ParameterFilter> model){

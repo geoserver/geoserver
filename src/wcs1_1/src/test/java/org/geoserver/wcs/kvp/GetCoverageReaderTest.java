@@ -292,7 +292,6 @@ public class GetCoverageReaderTest extends WCSTestSupport {
     /**
      * Tests Bicubic (also called cubic) interpolation with a RangeSubset.
      *
-     * @throws Exception
      */
     @Test
     public void testInterpolationBicubic() throws Exception {
@@ -302,7 +301,6 @@ public class GetCoverageReaderTest extends WCSTestSupport {
     /**
      * Tests Bilinear (also called linear) interpolation with a RangeSubset.
      *
-     * @throws Exception
      */
     @Test
     public void testInterpolationBilinear() throws Exception {
@@ -312,7 +310,6 @@ public class GetCoverageReaderTest extends WCSTestSupport {
     /**
      * Tests Nearest neighbor (also called nearest) interpolation with a RangeSubset.
      *
-     * @throws Exception
      */
     @Test
     public void testInterpolationNearest() throws Exception {
@@ -343,7 +340,6 @@ public class GetCoverageReaderTest extends WCSTestSupport {
      * Tests valid range subset expressions, but with a mix of valid and invalid identifiers.
      *
      * @param interpolation The used interpolation method.
-     * @throws Exception
      */
     private void testRangeSubset(String interpolation) throws Exception {
         Map<String, Object> raw = baseMap();

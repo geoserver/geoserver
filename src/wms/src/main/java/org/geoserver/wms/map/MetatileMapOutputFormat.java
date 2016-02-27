@@ -196,7 +196,7 @@ public final class MetatileMapOutputFormat implements GetMapOutputFormat {
      * 
      * @param request
      * @param delegate
-     * @return
+     *
      */
     public static boolean isRequestTiled(GetMapRequest request, GetMapOutputFormat delegate) {
         boolean tiled = request.isTiled();
@@ -224,7 +224,7 @@ public final class MetatileMapOutputFormat implements GetMapOutputFormat {
      * 
      * @param key
      * @param metaTile
-     * @return
+     *
      */
     static RenderedImage[] split(MetaTileKey key, RenderedImage metaTile) {
         final int metaFactor = key.getMetaFactor();

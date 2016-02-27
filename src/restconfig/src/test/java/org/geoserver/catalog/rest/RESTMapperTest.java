@@ -133,7 +133,7 @@ public class RESTMapperTest extends CatalogRESTTestSupport {
      * Create a fake root directory where the sample data are stored. This directory contains a path with spaces
      * in order to check that no error are thrown with URL encoding.
      * 
-     * @return
+     *
      */
     private File getRootDirectory() {
         File dataDirectoryRoot = getTestData().getDataDirectoryRoot();
@@ -148,7 +148,6 @@ public class RESTMapperTest extends CatalogRESTTestSupport {
      * @param root
      * @param workspace
      * @param coverageStore
-     * @throws Exception
      */
     private void testFile(File root, String workspace, String coverageStore) throws Exception {
         // Selection of a zip file

@@ -74,7 +74,7 @@ public class VFSWorker {
      * @param archiveFile
      * @param filter
      * 
-     * @return
+     *
      */
     public List<String> listFiles(final Resource archiveFile, final FilenameFilter filter) {
         FileSystemManager fsManager;

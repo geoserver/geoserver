@@ -30,7 +30,6 @@ public class PropertyEncodingOrderTest extends AbstractAppSchemaTestSupport {
      * an encoding order issue with gsml:indexData according to the schema
      * http://www.geosciml.org/geosciml/2.0/xsd/borehole.xsd
      * 
-     * @throws Exception
      */
     @Test
     public void testPropertyEncodingOrder_Borehole() throws Exception {
@@ -116,7 +115,6 @@ public class PropertyEncodingOrderTest extends AbstractAppSchemaTestSupport {
      * Test the gmsl:PlanarOrientation is encoded in the order of aziumth, convention, dip, polarity
      * according to the schema CGI_Value.xsd
      * 
-     * @throws Exception
      */
     @Test
     public void testPropertyEncodingOrder_PlanarOrientation() throws Exception {
@@ -185,7 +183,6 @@ public class PropertyEncodingOrderTest extends AbstractAppSchemaTestSupport {
      * 
      * Test elements are encoded in the order as defined in the schema GeologicUnit is tested here
      * 
-     * @throws Exception
      */
 
     @Test

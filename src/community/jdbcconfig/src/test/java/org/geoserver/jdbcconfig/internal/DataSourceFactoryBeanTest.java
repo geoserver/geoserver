@@ -122,7 +122,6 @@ public class DataSourceFactoryBeanTest {
 
     /**
      * If JNDI lookup fails, fall back to properties file
-     * @throws Exception
      */
     @Test
     public void testJNDIFail() throws Exception {

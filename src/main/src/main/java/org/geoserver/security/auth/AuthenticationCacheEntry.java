@@ -83,7 +83,7 @@ public class AuthenticationCacheEntry {
      * returns true if the entry has expired, false otherwise
      * 
      * @param timeInMilliSecs
-     * @return
+     *
      */
     public boolean hasExpired(long timeInMilliSecs) {
         if (lastAccessed+timeToIdleSeconds*1000 < timeInMilliSecs) return true;

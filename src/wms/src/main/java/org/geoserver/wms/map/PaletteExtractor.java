@@ -97,7 +97,7 @@ public class PaletteExtractor extends FilterAttributeExtractor implements StyleV
     
     /**
      * Returns the palette, or null if it wasn't possible to devise one
-     * @return
+     *
      */
     public IndexColorModel getPalette() {
         if(!canComputePalette())

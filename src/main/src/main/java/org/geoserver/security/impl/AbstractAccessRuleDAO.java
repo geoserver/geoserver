@@ -87,9 +87,7 @@ public abstract class AbstractAccessRuleDAO<R extends Comparable<?>> {
     
     /**
      * Returns the list of rules contained in the property file. The returned rules are
-     * sorted against the {@link R} natural order
-     * 
-     * @return
+     * sorted against the <code>R</code> natural order
      */
     public List<R> getRules() {
         checkPropertyFile(false);
@@ -125,7 +123,7 @@ public abstract class AbstractAccessRuleDAO<R extends Comparable<?>> {
     /**
      * Removes the rule from rule set
      * @param rule
-     * @return
+     *
      */
     public boolean removeRule(R rule) {
         lastModified = System.currentTimeMillis();
@@ -136,7 +134,7 @@ public abstract class AbstractAccessRuleDAO<R extends Comparable<?>> {
      * Returns the last modification date of the rules in this DAO (last time the rules were
      * reloaded from the property file)
      * 
-     * @return
+     *
      */
     public long getLastModified() {
         return lastModified;

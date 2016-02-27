@@ -566,8 +566,6 @@ public abstract class DataReferenceWfsOnlineTest extends AbstractDataReferenceWf
 
     /**
      * Test FeatureCollection is encoded with one/many featureMembers element
-     * 
-     * @throws Exception
      */
     @Test
     public void testEncodeFeatureMember() {

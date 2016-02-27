@@ -24,7 +24,7 @@ public class ComplexComparatorFactory {
     /**
      * Builds a composite comparator matching the specified sortBy array
      * @param sortBy
-     * @return
+     *
      */
     public static Comparator<Feature> buildComparator(SortBy... sortBy) {
         if (sortBy.length == 0) {
@@ -48,7 +48,7 @@ public class ComplexComparatorFactory {
     /**
      * Builds a single comparator based on the sortBy specification
      * @param sortBy
-     * @return
+     *
      */
     public static Comparator<Feature> buildComparator(SortBy sortBy) {
         if (sortBy == null) {

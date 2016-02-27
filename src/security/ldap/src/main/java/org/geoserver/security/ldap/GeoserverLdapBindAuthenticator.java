@@ -67,7 +67,7 @@ public class GeoserverLdapBindAuthenticator extends BindAuthenticator {
      * dnPattern (if defined) to transform username for authentication.
      * 
      * @param authentication
-     * @return
+     *
      */
     protected DirContextOperations authenticateUsingFilter(
             Authentication authentication) {

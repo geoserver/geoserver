@@ -241,7 +241,7 @@ class ScaleToTarget {
      * </p>
      *
      * @param sourceGC the scaled coverage
-     * @return
+     *
      * @throws IOException
      */
     /*

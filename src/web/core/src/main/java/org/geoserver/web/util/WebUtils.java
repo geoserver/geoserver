@@ -49,7 +49,7 @@ public class WebUtils {
      * @param key
      * @param model
      * @param params
-     * @return
+     *
      */
     public static String localize(String key, IModel<?> model, Object... params) {
         StringResourceModel rm = new StringResourceModel(key, (Component)null) {

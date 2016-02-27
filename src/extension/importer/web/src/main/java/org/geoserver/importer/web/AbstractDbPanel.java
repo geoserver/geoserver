@@ -183,7 +183,7 @@ public abstract class AbstractDbPanel extends ImportSourcePanel {
     /**
      * Setups the datastore and moves to the next page
      * 
-     * @return
+     *
      */
 //    SubmitLink submitLink() {
 //        // TODO: fill this up with the required parameters

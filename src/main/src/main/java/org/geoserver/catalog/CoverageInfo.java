@@ -141,7 +141,7 @@ public interface CoverageInfo extends ResourceInfo {
     
     /**
      * Returns the native coverage name (might be null for single coverage formats)
-     * @return
+     *
      */
     String getNativeCoverageName();
     

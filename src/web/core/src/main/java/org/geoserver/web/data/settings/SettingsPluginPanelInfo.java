@@ -59,7 +59,7 @@ public class SettingsPluginPanelInfo extends ComponentInfo<SettingsPluginPanel> 
      * @param id
      * @param model
      * @param application
-     * @return
+     *
      */
     public static ListView<SettingsPluginPanelInfo> createExtensions(String id, final IModel<SettingsInfo> model,
             GeoServerApplication application) {

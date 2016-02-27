@@ -824,7 +824,7 @@ public class DefaultWebCoverageService111 implements WebCoverageService111 {
      * http://... prefixes)
      * 
      * @param srsName
-     * @return
+     *
      */
     private String extractCode(String srsName) {
         if (srsName.startsWith("http://www.opengis.net/gml/srs/epsg.xml#"))
@@ -843,7 +843,7 @@ public class DefaultWebCoverageService111 implements WebCoverageService111 {
      * 
      * @param supportedFormats
      * @param format
-     * @return
+     *
      */
     private String getDeclaredFormat(List supportedFormats, String format) {
         // supported formats may be setup using old style formats, first scan
@@ -958,7 +958,7 @@ public class DefaultWebCoverageService111 implements WebCoverageService111 {
     /**
      * 
      * @param date
-     * @return
+     *
      */
     private static Date cvtToGmt(Date date) {
         TimeZone tz = TimeZone.getDefault();

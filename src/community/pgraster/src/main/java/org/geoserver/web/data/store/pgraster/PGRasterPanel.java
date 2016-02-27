@@ -156,7 +156,7 @@ public class PGRasterPanel extends Panel {
 
     /**
      * Setup a URL String composing all the required configuration options
-     * @return
+     *
      * @throws FactoryException 
      */
     public String buildURL() {

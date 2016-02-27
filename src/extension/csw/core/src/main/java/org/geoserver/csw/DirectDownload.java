@@ -146,7 +146,7 @@ public class DirectDownload {
     /**
      * Prepare the list of files to be downloaded from the current request.
      * @param request
-     * @return
+     *
      */
     public List<File> run(DirectDownloadType request) {
         List<File> result = new ArrayList<File>();

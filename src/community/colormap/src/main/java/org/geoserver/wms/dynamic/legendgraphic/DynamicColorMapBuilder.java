@@ -232,7 +232,7 @@ public class DynamicColorMapBuilder {
      * @param readParameters
      * @param parameterDescriptors
      * @param map
-     * @return
+     *
      * @throws IOException
      */
     private GeneralParameterValue[] parseCustomDomains(final ReaderDimensionsAccessor dimensions,
@@ -344,7 +344,7 @@ public class DynamicColorMapBuilder {
      * Create a small 2x2 envelope to be used to read a small coverage in order to retrieve statistics from it
      * 
      * @param coverageInfo
-     * @return
+     *
      */
     private ReferencedEnvelope createTestEnvelope(final CoverageInfo coverageInfo) {
         final ReferencedEnvelope envelope = coverageInfo.getNativeBoundingBox();

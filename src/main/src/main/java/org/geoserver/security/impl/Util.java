@@ -46,7 +46,7 @@ public class Util {
      * 
      * @param booleanString
      * @param defaultValue
-     * @return
+     *
      */
     static public boolean convertToBoolean(String booleanString, boolean defaultValue) {        
         if (booleanString == null || booleanString.trim().length()==0)
@@ -169,7 +169,7 @@ public class Util {
      * format.
      * 
      * @param in
-     * @return
+     *
      * @throws IOException
      */
     public static Properties loadUniversal(InputStream in) throws IOException {

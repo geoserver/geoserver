@@ -180,7 +180,6 @@ public class GetCapabilitiesScaleDenominatorTest extends WMSTestSupport {
      * @param scaleHintUnitsPerDiaPixel true if the scalehint must be in units per diagonal of a pixel
      * @return Capabilities as {@link Document}
      * 
-     * @throws Exception
      */
     private Document findCapabilities(Boolean scaleHintUnitsPerDiaPixel) throws Exception{
         //set the Scalehint units per diagonal pixel setting.

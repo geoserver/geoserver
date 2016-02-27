@@ -80,7 +80,7 @@ public class FrameCatalogVisitor {
     /**
      * Invokes the Executor service and produces the frames images.
      * @param wmsConfiguration
-     * @return
+     *
      * @throws IOException
      */
     public RenderedImageList produce(WMS wmsConfiguration) throws IOException {
@@ -225,7 +225,7 @@ class FrameLoader implements Callable<RenderedImage> {
      * @param theRequest
      * @param param
      * @param value
-     * @return
+     *
      * @throws Exception 
      */
     private static GetMapRequest replaceRequestParams(GetMapRequest theRequest, String param,

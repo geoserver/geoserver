@@ -97,7 +97,7 @@ public class WCSEnvelope extends AbstractEnvelope {
      * its zero or negative, but in case a dimension is the longitude, a negative span will be
      * treated as a dateline crossing, and thus treated as non empty
      * 
-     * @return
+     *
      */
     public boolean isEmpty() {
         for (int i = 0; i < dimensions; i++) {
@@ -167,7 +167,7 @@ public class WCSEnvelope extends AbstractEnvelope {
      * in that case two envelopes will be returned covering the portion before and after the
      * dateline
      * 
-     * @return
+     *
      */
     public GeneralEnvelope[] getNormalizedEnvelopes() {
         if (!isCrossingDateline()) {
@@ -245,7 +245,7 @@ public class WCSEnvelope extends AbstractEnvelope {
     /**
      * Returns true if this envelope is crossing the dateline
      * 
-     * @return
+     *
      */
     public boolean isCrossingDateline() {
         // TODO: handle the case the envelope is in a projected system and still
@@ -258,7 +258,7 @@ public class WCSEnvelope extends AbstractEnvelope {
      * Returns true if the specified dimension index is matching the longitude axis
      * 
      * @param dimension
-     * @return
+     *
      */
     public boolean isLongitude(int dimension) {
         return longitudeDimension == dimension;

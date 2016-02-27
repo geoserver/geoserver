@@ -74,7 +74,7 @@ public interface CoverageDimensionInfo extends Serializable {
     
     /**
      * Returns the unit name for this dimension, or null if unknown
-     * @return
+     *
      */
     String getUnit();
     
@@ -86,7 +86,7 @@ public interface CoverageDimensionInfo extends Serializable {
 
     /**
      * 
-     * @return
+     *
      */
     SampleDimensionType getDimensionType();
 

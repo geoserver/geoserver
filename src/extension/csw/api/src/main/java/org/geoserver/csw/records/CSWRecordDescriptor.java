@@ -195,7 +195,7 @@ public class CSWRecordDescriptor extends AbstractRecordDescriptor {
      * Checks if a field is public static final
      * 
      * @param field
-     * @return
+     *
      */
     static boolean isConstant(Field field) {
         int modifier = field.getModifiers();
@@ -266,7 +266,7 @@ public class CSWRecordDescriptor extends AbstractRecordDescriptor {
      * Locates the AttributeDescriptor corresponding to the specified element name 
      * 
      * @param elementName
-     * @return
+     *
      */    
     public static AttributeDescriptor getDescriptor(String elementName) {
         return (AttributeDescriptor) Types.findDescriptor(RECORD_TYPE, elementName);

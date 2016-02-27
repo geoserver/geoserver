@@ -196,7 +196,7 @@ public class RasterTableSelectionPanel extends Panel {
      * @param user
      * @param password
      * @param sessionFac
-     * @return
+     *
      * @throws IllegalArgumentException
      */
     List<String> getRasterColumns(final String server, final String port, final String instance,

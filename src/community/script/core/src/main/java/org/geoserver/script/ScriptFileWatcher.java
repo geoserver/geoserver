@@ -43,7 +43,7 @@ public class ScriptFileWatcher extends FileWatcher<ScriptEngine> {
     /**
      * Create a new script engine and evaluate the script if modified since the
      * last call to read.  Otherwise return the existing engine.
-     * @return
+     *
      * @throws IOException
      */
     public ScriptEngine readIfModified() throws IOException {

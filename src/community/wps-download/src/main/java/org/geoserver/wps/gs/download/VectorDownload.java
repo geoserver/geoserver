@@ -88,7 +88,6 @@ class VectorDownload {
      * @param targetCRS the reproject {@link CoordinateReferenceSystem}
      * @param progressListener
      * @return a file, given the provided mime-type.
-     * @throws Exception
      */
     public Resource execute(FeatureTypeInfo resourceInfo, String mimeType, Geometry roi, boolean clip,
             Filter filter, CoordinateReferenceSystem targetCRS,
@@ -214,7 +213,6 @@ class VectorDownload {
      * @param name name of the feature source
      * @param mimeType mimetype of the result
      * @return a {@link File} containing the written features
-     * @throws Exception
      */
     private Resource writeVectorOutput(final SimpleFeatureCollection features, final String name,
             final String mimeType) throws Exception {

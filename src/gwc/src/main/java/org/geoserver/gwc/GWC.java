@@ -535,7 +535,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
      * Returns the names of the styles for the layer, including the default style
      * 
      * @param layerName
-     * @return
+     *
      */
     private Set<String> getCachedStyles(final String layerName) {
         final TileLayer l = getTileLayerByName(layerName);
@@ -922,7 +922,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
      * @param filter
      * @param cqlFilter
      * @param filters
-     * @return
+     *
      */
     private boolean checkFilter(List filter, List cqlFilter, Map<String, ParameterFilter> filters) {
         // Check if the two filters are equals and the FILTER parameter is not a ParameterFilter
@@ -1221,7 +1221,6 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
      *            the KVP map of OWS parameters
      * @param cookies
      * @return an http response wrapper where to grab the raw dispatcher response from
-     * @throws Exception
      */
     public Resource dispatchOwsRequest(final Map<String, String> params, Cookie[] cookies)
             throws Exception {

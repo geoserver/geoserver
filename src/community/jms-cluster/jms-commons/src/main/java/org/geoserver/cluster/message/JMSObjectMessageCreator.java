@@ -25,10 +25,8 @@ import org.springframework.jms.core.MessageCreator;
  * 
  * @author Carlo Cancellieri - carlo.cancellieri@geo-solutions.it
  * 
- * @param <S>
- *            serializable class
- * @param <O>
- *            object to serialize
+ * @param <S> serializable class
+ * @param <O> object to serialize
  */
 public class JMSObjectMessageCreator implements MessageCreator {
 

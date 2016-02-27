@@ -21,7 +21,6 @@ public class SecuredGetMapRequestTest extends SecureObjectsTest {
      * Test for GEOS-6362: getFinalURL had side effects and gave different results if called
      * multiple times.
      * 
-     * @throws Exception
      */
     @Test
     public void testNoSideEffectsOnGetFinalUrl() throws Exception {

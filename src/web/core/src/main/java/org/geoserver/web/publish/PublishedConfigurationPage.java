@@ -302,7 +302,7 @@ public abstract class PublishedConfigurationPage<T extends PublishedInfo> extend
     /**
      * Returns the {@link PublishedInfo} contained in this page
      * 
-     * @return
+     *
      */
     public T getPublishedInfo() {
         return (T) myModel.getObject();

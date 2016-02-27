@@ -135,7 +135,7 @@ public class DynamicDefaultValueSelectionFactory extends AbstractDispatcherCallb
      * dimension to compute
      * 
      * @param resource
-     * @return
+     *
      */
     private DefaultValueConfigurations getConfigurations(ResourceInfo resource) {
         DefaultValueConfigurations configurations = resource.getMetadata().get(
@@ -474,7 +474,7 @@ public class DynamicDefaultValueSelectionFactory extends AbstractDispatcherCallb
      * value
      * 
      * @param value
-     * @return
+     *
      */
     private Object getSimpleValue(Object value) {
         if (value instanceof List) {
@@ -606,7 +606,7 @@ public class DynamicDefaultValueSelectionFactory extends AbstractDispatcherCallb
      * @param resource
      * @param config
      * @param restrictions
-     * @return
+     *
      * @throws IOException
      */
     private Object getVectorDefaultValue(FeatureTypeInfo resource,
@@ -668,7 +668,7 @@ public class DynamicDefaultValueSelectionFactory extends AbstractDispatcherCallb
      * If the object is not a List, it wraps it into one
      * 
      * @param value
-     * @return
+     *
      */
     private List<Object> wrapIntoList(Object value) {
         List<Object> values;

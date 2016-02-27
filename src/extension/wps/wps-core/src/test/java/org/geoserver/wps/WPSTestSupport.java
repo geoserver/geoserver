@@ -195,8 +195,7 @@ public abstract class WPSTestSupport extends GeoServerSystemTestSupport {
      * 
      * @param xml
      * @param maxWaitSeconds
-     * @return
-     * @throws Exception
+     *
      */
     protected Document submitAsynchronous(String xml, long maxWaitSeconds) throws Exception {
         Document dom = postAsDOM("wps", xml);

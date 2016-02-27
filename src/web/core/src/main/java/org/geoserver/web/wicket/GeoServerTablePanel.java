@@ -256,7 +256,7 @@ public abstract class GeoServerTablePanel<T> extends Panel {
     
     /**
      * Returns pager above the table
-     * @return
+     *
      */
     public Component getTopPager() {
         return navigatorTop;
@@ -264,7 +264,7 @@ public abstract class GeoServerTablePanel<T> extends Panel {
     
     /**
      * Returns the pager below the table
-     * @return
+     *
      */
     public Component getBottomPager() {
         return navigatorBottom;
@@ -272,7 +272,7 @@ public abstract class GeoServerTablePanel<T> extends Panel {
     
     /**
      * Returns the data provider feeding this table
-     * @return
+     *
      */
     public GeoServerDataProvider<T> getDataProvider() {
         return dataProvider;
@@ -292,7 +292,7 @@ public abstract class GeoServerTablePanel<T> extends Panel {
      * Returns a model for this property title. Default behaviour is to lookup for a
      * resource name <page>.th.<propertyName>
      * @param property
-     * @return
+     *
      */
     protected IModel<String> getPropertyTitle(Property<T> property) {
         ResourceModel resMod = new ResourceModel("th." + property.getName(),  property.getName());
@@ -314,7 +314,7 @@ public abstract class GeoServerTablePanel<T> extends Panel {
     
     /**
      * Returns the items that have been selected by the user 
-     * @return
+     *
      */
     @SuppressWarnings("unchecked")
 	public List<T> getSelection() {
@@ -545,7 +545,7 @@ public abstract class GeoServerTablePanel<T> extends Panel {
      * 
      * @param itemModel
      * @param property
-     * @return
+     *
      */
     protected abstract Component getComponentForProperty(String id, IModel<T> itemModel,
             Property<T> property);

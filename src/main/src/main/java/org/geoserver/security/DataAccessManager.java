@@ -23,7 +23,7 @@ public interface DataAccessManager {
     /**
      * Returns the security mode in which the secure catalog must operate
      * 
-     * @return
+     *
      */
     public CatalogMode getMode();
 

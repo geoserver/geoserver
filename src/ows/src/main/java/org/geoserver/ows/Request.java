@@ -148,7 +148,7 @@ public class Request {
 
     /**
      * Returns the raw http request being handled by the {@link Dispatcher}
-     * @return
+     *
      */
     public HttpServletRequest getHttpRequest() {
         return httpRequest;
@@ -156,7 +156,7 @@ public class Request {
 
     /**
      * Returns the raw http response being handled by the {@link Dispatcher}
-     * @return
+     *
      */
     public HttpServletResponse getHttpResponse() {
         return httpResponse;
@@ -164,7 +164,7 @@ public class Request {
 
     /**
      * True if the request is a GET one
-     * @return
+     *
      */
     public boolean isGet() {
         return get;
@@ -201,7 +201,7 @@ public class Request {
 
     /**
      * The service requested 
-     * @return
+     *
      */
     public String getService() {
         return service;
@@ -209,7 +209,7 @@ public class Request {
 
     /**
      * The operation requested against the service
-     * @return
+     *
      */
     public String getRequest() {
         return request;
@@ -217,7 +217,7 @@ public class Request {
 
     /**
      * The service version
-     * @return
+     *
      */
     public String getVersion() {
         return version;
@@ -239,7 +239,7 @@ public class Request {
     
     /**
      * The output format
-     * @return
+     *
      */
     public String getOutputFormat() {
         return outputFormat;
@@ -249,7 +249,7 @@ public class Request {
      * The Operation used to call the service code. Available only after dispatching is done, it
      * provides access to the current service object, and the parsed request
      * 
-     * @return
+     *
      */
     public Operation getOperation() {
         return operation;
@@ -257,7 +257,7 @@ public class Request {
 
     /**
      * The eventual error thrown during request parsing, execution or output writing
-     * @return
+     *
      */
     public Throwable getError() {
         return error;
@@ -453,7 +453,7 @@ public class Request {
     
     /**
      * The timestamp when the request hit the server
-     * @return
+     *
      */
     public Date getTimestamp() {
         return timestamp;

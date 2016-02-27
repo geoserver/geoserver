@@ -293,7 +293,7 @@ public class WMS implements ApplicationContextAware {
      * 
      * @param requestedVersion
      *            the request version, or {@code null} if unspecified
-     * @return
+     *
      */
     public static Version negotiateVersion(final Version requestedVersion) {
         if (null == requestedVersion) {
@@ -517,7 +517,7 @@ public class WMS implements ApplicationContextAware {
     /**
      * Checks if continuous map wrapping is enabled or not
      * 
-     * @return
+     *
      */
     public boolean isContinuousMapWrappingEnabled() {
         // for backwards compatibility we set the config value to the sys variable one if set, but
@@ -529,7 +529,7 @@ public class WMS implements ApplicationContextAware {
     /**
      * Checks if advanced projection handling is enabled or not
      * 
-     * @return
+     *
      */
     public boolean isAdvancedProjectionHandlingEnabled() {
         // for backwards compatibility we set the config value to the sys variable one if set, but
@@ -715,7 +715,7 @@ public class WMS implements ApplicationContextAware {
      * Checks is a getMap mime type is allowed
      * 
      * @param format
-     * @return
+     *
      */
     public boolean isAllowedGetMapFormat(GetMapOutputFormat format) {
         
@@ -729,7 +729,7 @@ public class WMS implements ApplicationContextAware {
      * Checks is a getFeatureInfo mime type is allowed
      * 
      * @param format
-     * @return
+     *
      */
     public boolean isAllowedGetFeatureInfoFormat(GetFeatureInfoOutputFormat format) {
         if (getServiceInfo().isGetFeatureInfoMimeTypeCheckingEnabled()==false)
@@ -743,7 +743,7 @@ public class WMS implements ApplicationContextAware {
      * GetFeatureInfo format
      * 
      * @param requestFormat
-     * @return
+     *
      */
     public ServiceException unallowedGetFeatureInfoFormatException(String requestFormat) {
         ServiceException e = new ServiceException("Getting feature info using "
@@ -757,7 +757,7 @@ public class WMS implements ApplicationContextAware {
      * GetMap format
      * 
      * @param requestFormat
-     * @return
+     *
      */
     public ServiceException unallowedGetMapFormatException(String requestFormat) {
         ServiceException e = new ServiceException("Creating maps using "
@@ -909,7 +909,7 @@ public class WMS implements ApplicationContextAware {
      * @param exact
      *            If set to false, a version object will always be returned. If set to true only a
      *            version matching on of the available wms versions will be returned.
-     * @return
+     *
      */
     public static Version version(String version, boolean exact) {
         if (version == null || 0 == version.trim().length()) {
@@ -1020,7 +1020,7 @@ public class WMS implements ApplicationContextAware {
      * @param mapLayerInfo
      * @param layerFilter
      * @param reader
-     * @return
+     *
      */
     public GeneralParameterValue[] getWMSReadParameters(final GetMapRequest request,
             final MapLayerInfo mapLayerInfo, final Filter layerFilter, final List<Object> times,
@@ -1126,7 +1126,7 @@ public class WMS implements ApplicationContextAware {
      * representation: all values for {@link DimensionPresentation#LIST}, otherwise min and max
      * 
      * @param typeInfo
-     * @return
+     *
      * @throws IOException
      */
     public TreeSet<Date> getFeatureTypeTimes(FeatureTypeInfo typeInfo) throws IOException {
@@ -1174,7 +1174,7 @@ public class WMS implements ApplicationContextAware {
      * representation: all values for {@link DimensionPresentation#LIST}, otherwise min and max
      * 
      * @param typeInfo
-     * @return
+     *
      * @throws IOException
      */
     public TreeSet<Double> getFeatureTypeElevations(FeatureTypeInfo typeInfo) throws IOException {
@@ -1224,7 +1224,7 @@ public class WMS implements ApplicationContextAware {
      * Returns the default value for time dimension.
      * 
      * @param resourceInfo
-     * @return
+     *
      */
     public Object getDefaultTime(ResourceInfo resourceInfo) {
         // check the time metadata
@@ -1243,7 +1243,7 @@ public class WMS implements ApplicationContextAware {
      * Returns the default value for elevation dimension.
      * 
      * @param resourceInfo
-     * @return
+     *
      */
     public Object getDefaultElevation(ResourceInfo resourceInfo) {
         DimensionInfo elevation = getDimensionInfo(resourceInfo, ResourceInfo.ELEVATION);
@@ -1255,7 +1255,7 @@ public class WMS implements ApplicationContextAware {
      * Looks up the elevation configuration, throws an exception if not found
      * @param resourceInfo
      * @param dimensionName 
-     * @return
+     *
      */
     public DimensionInfo getDimensionInfo(ResourceInfo resourceInfo, String dimensionName) {
         DimensionInfo info = resourceInfo.getMetadata().get(dimensionName,
@@ -1274,7 +1274,7 @@ public class WMS implements ApplicationContextAware {
      * @param dimensionName
      * @param resourceInfo
      * @param clz
-     * @return
+     *
      */
     public <T> T getDefaultCustomDimensionValue(String dimensionName, ResourceInfo resourceInfo, Class<T> clz){
         DimensionInfo customDim = resourceInfo.getMetadata().get(ResourceInfo.CUSTOM_DIMENSION_PREFIX+dimensionName,
@@ -1305,7 +1305,7 @@ public class WMS implements ApplicationContextAware {
      * 
      * @param typeInfo
      * @param dimension
-     * @return
+     *
      * @throws IOException
      */
     FeatureCollection getDimensionCollection(FeatureTypeInfo typeInfo, DimensionInfo dimension)
@@ -1336,7 +1336,7 @@ public class WMS implements ApplicationContextAware {
      * @param currentTime
      * @param currentElevation
      * @param mapLayerInfo
-     * @return
+     *
      */
     public Filter getTimeElevationToFilter(List<Object> times, List<Object> elevations,
             FeatureTypeInfo typeInfo) throws IOException {

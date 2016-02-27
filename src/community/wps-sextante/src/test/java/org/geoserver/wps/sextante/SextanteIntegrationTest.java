@@ -16,7 +16,6 @@ public class SextanteIntegrationTest extends WPSTestSupport {
 
     /**
      * Tests raster input and output as arcgrid
-     * @throws Exception
      */
 	@Test
     public void testArcGridInOut() throws Exception {

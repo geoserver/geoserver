@@ -60,7 +60,7 @@ public class JAIToolsRangeConverterFactory implements ConverterFactory {
      * Return the parsed Range.
      *
      * @param sRange
-     * @return
+     *
      */
     static Range<Double> parseRangeInternal(Matcher m, String sRange) {
         Double min = null;
@@ -102,7 +102,7 @@ public class JAIToolsRangeConverterFactory implements ConverterFactory {
     /**
      * Parses a list of ranges from a string
      * @param sRangeList
-     * @return
+     *
      */
     public static List<Range<Double>> parseRanges(String sRangeList) {
         // check that the whole input string is a list of ranges

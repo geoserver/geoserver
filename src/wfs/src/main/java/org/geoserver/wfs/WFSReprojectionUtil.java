@@ -32,7 +32,7 @@ class WFSReprojectionUtil {
      * 
      * @param nativeCRS
      * @param wfsVersion
-     * @return
+     *
      */
     public static CoordinateReferenceSystem getDeclaredCrs(CoordinateReferenceSystem nativeCRS,
             String wfsVersion) {
@@ -58,7 +58,7 @@ class WFSReprojectionUtil {
      * 
      * @param nativeCRS
      * @param wfsVersion
-     * @return
+     *
      */
     public static CoordinateReferenceSystem getDeclaredCrs(FeatureType schema, String wfsVersion) {
         if (schema == null)
@@ -76,7 +76,7 @@ class WFSReprojectionUtil {
      * 
      * @param nativeCRS
      * @param wfsVersion
-     * @return
+     *
      */
     public static Filter applyDefaultCRS(Filter filter, CoordinateReferenceSystem defaultCRS) {
         DefaultCRSFilterVisitor defaultVisitor = new DefaultCRSFilterVisitor(ff, defaultCRS);
@@ -89,7 +89,7 @@ class WFSReprojectionUtil {
      * 
      * @param filter
      * @param schema
-     * @return
+     *
      */
     public static Filter reprojectFilter(Filter filter, FeatureType schema) {
         ReprojectingFilterVisitor visitor = new ReprojectingFilterVisitor(ff, schema);
@@ -103,7 +103,7 @@ class WFSReprojectionUtil {
      * @param filter
      * @param schema
      * @param defaultCRS
-     * @return
+     *
      */
     public static Filter normalizeFilterCRS(Filter filter, FeatureType schema,
             CoordinateReferenceSystem defaultCRS) {

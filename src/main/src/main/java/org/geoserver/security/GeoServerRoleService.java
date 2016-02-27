@@ -112,7 +112,7 @@ public interface GeoServerRoleService extends GeoServerSecurityService {
      * can use their special classes derived from {@link GeoServerRole}
      * 
      * @param role
-     * @return
+     *
      */
     GeoServerRole createRoleObject(String role) throws IOException;
     
@@ -127,7 +127,7 @@ public interface GeoServerRoleService extends GeoServerSecurityService {
     /**
      * Loads a {@link GeoServerRole} by name
      * @param role
-     * @return
+     *
      * @throws null if the role is not found
      */
     GeoServerRole getRoleByName(String role) throws  IOException;
@@ -156,17 +156,12 @@ public interface GeoServerRoleService extends GeoServerSecurityService {
      * A GIS example could be a BBOX for specific user to
      * restrict his access to the wms service  
      * 
-     * @param roleName, the name of the role
+     * @param roleName the name of the role
+     * @param roleParams the params for the role from {@link GeoServerRoleService}
+     * @param userName the user name
+     * @param userProps the properties of the user from {@link GeoServerUserGroupService}
      * 
-     * @param roleParams, the params for the role from
-     * {@link GeoServerRoleService}
-     * 
-     * @param userName, the user name
-     * @param userProps. the properties of the user from
-     * {@link GeoServerUserGroupService}
-     * 
-     * @return null for no personalization, the personalized
-     * properties otherwise 
+     * @return null for no personalization, the personalized properties otherwise 
      * @throws IOException
      */
     Properties personalizeRoleParams (String roleName,Properties roleParams, 

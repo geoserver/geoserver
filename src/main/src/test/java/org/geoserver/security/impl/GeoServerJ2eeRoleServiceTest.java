@@ -12,7 +12,7 @@ import static org.junit.Assert.*;
 import java.io.File;
 import java.io.IOException;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.util.IOUtils;

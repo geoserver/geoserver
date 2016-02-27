@@ -77,7 +77,7 @@ public class Tile {
      * This code takes care of the first, whilst the second issue remains as a TODO
      * @param x
      * @param y
-     * @return
+     *
      */
     public boolean contains(double x, double y) {
         double minx = envelope.getMinX();
@@ -118,7 +118,7 @@ public class Tile {
      * Returns the parent of this tile, or null if this tile is (one of) the
      * root of the current dataset
      * 
-     * @return
+     *
      */
     public Tile getParent() {
         // if we got to one of the root tiles for this data set, just stop
@@ -132,7 +132,7 @@ public class Tile {
     /**
      * Returns the four direct children of this tile
      * 
-     * @return
+     *
      */
     public Tile[] getChildren() {
         Tile[] result = new Tile[4];
@@ -146,7 +146,7 @@ public class Tile {
     /**
      * Returns the WGS84 envelope of this tile
      * 
-     * @return
+     *
      */
     public ReferencedEnvelope getEnvelope() {
         return envelope;

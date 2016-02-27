@@ -22,7 +22,7 @@ public class JAIToolsRangePPIO extends LiteralPPIO {
      * Parses a single range from a string
      *
      * @param sRange
-     * @return
+     *
      */
     public static Range<Double> parseRange(String sRange) {
     	try {

@@ -39,7 +39,7 @@ public abstract class GeoServerSecurityProvider {
      * 
      * @param serviceClass
      * @param className
-     * @return
+     *
      */
     static public GeoServerSecurityProvider getProvider (Class<?> serviceClass, String className) {
 
@@ -260,7 +260,7 @@ public abstract class GeoServerSecurityProvider {
 
     /**
      * Returns the specific class of the password validator created by 
-     * {@link #createPasswordValidator(PasswordPolicyConfig))}.
+     * {@link #createPasswordValidator(PasswordPolicyConfig)}.
      * <p>
      * If the extension does not provide a validator this method should simply return
      * <code>null</code>. 
@@ -276,7 +276,7 @@ public abstract class GeoServerSecurityProvider {
      * return <code>null</code>
      * 
      * @param config
-     * @return
+     *
      */
     public PasswordValidator createPasswordValidator(PasswordPolicyConfig config, 
             GeoServerSecurityManager securityManager) {
@@ -288,7 +288,7 @@ public abstract class GeoServerSecurityProvider {
      * which should be encrypted. (backend store 
      * passwords as an example) 
      * 
-     * @return
+     *
      */
     public Map<Class<?>, Set<String>> getFieldsForEncryption() {
         return Collections.emptyMap();
@@ -298,7 +298,6 @@ public abstract class GeoServerSecurityProvider {
      * Return true if the {@link GeoServerRoleService} implementation
      * is not thread safe.
      * 
-     * @return 
      */
     public boolean roleServiceNeedsLockProtection() {
         return false;
@@ -308,7 +307,6 @@ public abstract class GeoServerSecurityProvider {
      * Return true if the {@link GeoServerUserGroupService} implementation
      * is not thread safe.
      * 
-     * @return 
      */
     public boolean userGroupServiceNeedsLockProtection() {
         return false;
@@ -316,7 +314,7 @@ public abstract class GeoServerSecurityProvider {
     
     /**
      * Return a configuration validator, subclass of {@link SecurityConfigValidator}
-     * @return
+     *
      */
     public SecurityConfigValidator createConfigurationValidator(GeoServerSecurityManager securityManager) {
        return new SecurityConfigValidator(securityManager); 

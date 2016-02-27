@@ -174,7 +174,7 @@ public abstract class AbstractURLPublisher extends AbstractController {
     /**
      * Retrieves the resource URL from the specified request
      * @param request
-     * @return
+     *
      * @throws IOException 
      */
     protected abstract URL getUrl(HttpServletRequest request) throws IOException;

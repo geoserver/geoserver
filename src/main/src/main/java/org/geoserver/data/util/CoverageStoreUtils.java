@@ -118,7 +118,7 @@ public final class CoverageStoreUtils {
      * bleck
      * </p>
      *
-     * @return
+     *
      */
     public static Format aquireFactoryByType(String type) {
         final Format[] formats = GridFormatFinder.getFormatArray();
@@ -142,7 +142,7 @@ public final class CoverageStoreUtils {
      *
      * @param description
      *
-     * @return
+     *
      */
     public static Format aquireFactory(String description) {
         Format[] formats = GridFormatFinder.getFormatArray();
@@ -277,7 +277,7 @@ public final class CoverageStoreUtils {
      *
      * @param sourceCRS
      * @param targetEnvelope
-     * @return
+     *
      * @throws IndexOutOfBoundsException
      * @throws FactoryException
      * @throws TransformException

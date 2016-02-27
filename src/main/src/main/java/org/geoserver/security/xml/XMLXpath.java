@@ -84,7 +84,7 @@ public abstract class XMLXpath {
      * Compile XPath Strings to {@link XPathExpression}
      * @param xpath
      * @param expression
-     * @return
+     *
      */
     protected XPathExpression compile(XPath xpath,String expression) {
         try {
@@ -102,7 +102,7 @@ public abstract class XMLXpath {
      * @param xpath
      * @param attrName
      * @param prefix
-     * @return
+     *
      */
     protected XPathExpression compileRelativeAttribute(XPath xpath,String attrName,String prefix) {        
         //return compile(xpath,"@"+prefix+":"+attrName);

@@ -242,7 +242,7 @@ public class ResponseUtils {
      * </ul>
      * </p>
      * @param url
-     * @return
+     *
      */
     public static String stripRemainingPath(String path) {
         int i = 0;
@@ -442,7 +442,7 @@ public class ResponseUtils {
     /**
      * Convenience method to build a KVP parameter map
      * @param parameters sequence of keys and values
-     * @return
+     *
      */
     public static Map<String, String> params(String... parameters) {
         Map<String, String> result = new LinkedHashMap<String, String>();
@@ -489,7 +489,7 @@ public class ResponseUtils {
     /**
      * URL decods the value using ISO-8859-1 as the reference charset
      * @param value
-     * @return
+     *
      */
     public static String urlDecode(String value) {
         try {

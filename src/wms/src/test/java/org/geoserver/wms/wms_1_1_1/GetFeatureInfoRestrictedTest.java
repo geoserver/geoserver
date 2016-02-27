@@ -71,7 +71,6 @@ public class GetFeatureInfoRestrictedTest extends WMSTestSupport {
     
     /**
      * Test the effects of reprojection on a readonly layer (Created to expose GEOS-3977)
-     * @throws Exception
      */
     @Test 
     public void testRestrictedReprojection() throws Exception {

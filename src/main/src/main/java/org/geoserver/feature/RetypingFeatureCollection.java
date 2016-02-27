@@ -74,7 +74,7 @@ public class RetypingFeatureCollection extends DecoratingFeatureCollection {
      * @param id
      * @param original
      * @param target
-     * @return
+     *
      */
     public static FeatureId reTypeId(FeatureId sourceId, SimpleFeatureType original,
             SimpleFeatureType target) {

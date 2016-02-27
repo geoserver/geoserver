@@ -20,7 +20,6 @@ import org.opengis.feature.type.Name;
  * The extension point is used as follows:
  * 
  * <pre>
- * {@code
  * featureTypeInitializers = GeoServerExtensions.extensions(FeatureTypeInitializer.class);
  * for(FeatureTypeInitializer fti : featureTypeInitializers){
  *      if(fti.canHandle(info,dataAccess)){

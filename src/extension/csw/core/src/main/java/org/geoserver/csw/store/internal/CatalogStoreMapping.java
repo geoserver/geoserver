@@ -142,7 +142,7 @@ public class CatalogStoreMapping {
      * 
      * @param properties list of property names to be included in submapping
      * @param rd Record Descriptor
-     * @return
+     *
      */
     public CatalogStoreMapping subMapping(List<PropertyName> properties, RecordDescriptor rd) {
         Set<String> paths = new HashSet<String>();
@@ -181,7 +181,7 @@ public class CatalogStoreMapping {
      * it is a required property.
      * 
      * @param mappingSource
-     * @return
+     *
      */
     public static CatalogStoreMapping parse(Map<String, String> mappingSource) {
 

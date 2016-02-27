@@ -715,7 +715,7 @@ public abstract class FeatureTypeSchemaBuilder {
      * @param complexType
      * @param schema
      * @param factory
-     * @return
+     *
      */
     private XSDComplexTypeDefinition buildComplexSchemaContent(ComplexType complexType,
             XSDSchema schema, XSDFactory factory) {

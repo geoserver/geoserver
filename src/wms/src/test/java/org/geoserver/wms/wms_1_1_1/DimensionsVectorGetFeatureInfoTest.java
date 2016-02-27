@@ -50,7 +50,7 @@ public class DimensionsVectorGetFeatureInfoTest extends WMSDimensionsTestSupport
      * @param baseFeatureInfo The GetFeatureInfo request, minus x and y
      * @param x
      * @param y
-     * @return
+     *
      */
     String getFeatureAt(String baseFeatureInfo, int x, int y) throws Exception {
         MockHttpServletResponse response = getAsServletResponse(baseFeatureInfo

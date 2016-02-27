@@ -871,7 +871,7 @@ public class GetFeatureJoinTest extends WFS20TestSupport {
      * Convenience to read the csv content and
      * 
      * @param csvContent
-     * @return
+     *
      * @throws IOException
      */
     private List<String[]> readLines(String csvContent) throws IOException {

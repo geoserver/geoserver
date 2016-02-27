@@ -203,7 +203,6 @@ public class GetFeatureInfoTest extends WMSTestSupport {
      * GML feature bounding enabled. This method tests GML 2 with Content-Type:
      * <code>application/vnd.ogc.gml</code>.
      *
-     * @throws Exception
      */
     @Test
     public void testGMLNoData() throws Exception {
@@ -215,7 +214,6 @@ public class GetFeatureInfoTest extends WMSTestSupport {
      * GML feature bounding enabled. This method tests GML 2 with Content-Type:
      * <code>text/xml</code>.
      *
-     * @throws Exception
      */
     @Test
     public void testXMLNoData() throws Exception {
@@ -227,7 +225,6 @@ public class GetFeatureInfoTest extends WMSTestSupport {
      * GML feature bounding enabled. This method tests GML 3.1.1 with Content-Type:
      * <code>text/xml; subtype=gml/3.1.1</code>.
      *
-     * @throws Exception
      */
     @Test
     public void testXML311NoData() throws Exception {
@@ -238,7 +235,6 @@ public class GetFeatureInfoTest extends WMSTestSupport {
      * Tests GML outside of 
      * expected polygon
      * 
-     * @throws Exception
      */
     @Test 
     public void testSimple() throws Exception {
@@ -297,7 +293,6 @@ public class GetFeatureInfoTest extends WMSTestSupport {
      * Tests property selection 
      * expected polygon
      * 
-     * @throws Exception
      */
     @Test 
     public void testSelectPropertiesVector() throws Exception {
@@ -321,7 +316,6 @@ public class GetFeatureInfoTest extends WMSTestSupport {
      * Tests a simple GetFeatureInfo works, and that the result contains the
      * expected polygon
      * 
-     * @throws Exception
      */
     @Test 
     public void testSimpleHtml() throws Exception {
@@ -344,7 +338,6 @@ public class GetFeatureInfoTest extends WMSTestSupport {
      * Tests GetFeatureInfo with a buffer specified works, and that the result contains the
      * expected polygon
      * 
-     * @throws Exception
      */
     @Test 
     public void testBuffer() throws Exception {
@@ -378,7 +371,6 @@ public class GetFeatureInfoTest extends WMSTestSupport {
      * Tests GetFeatureInfo with a buffer specified works, and that the result contains the
      * expected polygon
      * 
-     * @throws Exception
      */
     @Test 
     public void testAutoBuffer() throws Exception {
@@ -403,7 +395,6 @@ public class GetFeatureInfoTest extends WMSTestSupport {
     /**
      * Tests GetFeatureInfo uses the env params
      * 
-     * @throws Exception
      */
     @Test 
     public void testParameterizedStyle() throws Exception {
@@ -428,7 +419,6 @@ public class GetFeatureInfoTest extends WMSTestSupport {
      * Tests GetFeatureInfo with a buffer specified works, and that the result contains the
      * expected polygon
      * 
-     * @throws Exception
      */
     @Test 
     public void testBufferScales() throws Exception {
@@ -472,7 +462,6 @@ public class GetFeatureInfoTest extends WMSTestSupport {
      * Tests a GetFeatureInfo again works, and that the result contains the
      * expected polygon
      * 
-     * @throws Exception
      */
     @Test 
     public void testTwoLayers() throws Exception {
@@ -491,7 +480,6 @@ public class GetFeatureInfoTest extends WMSTestSupport {
      * Tests a GetFeatureInfo again works, and that the result contains the
      * expected polygon
      * 
-     * @throws Exception
      */
     @Test 
     public void testSelectPropertiesTwoVectorLayers() throws Exception {
@@ -518,7 +506,6 @@ public class GetFeatureInfoTest extends WMSTestSupport {
      * Tests a GetFeatureInfo again works, and that the result contains the
      * expected polygon
      * 
-     * @throws Exception
      */
     @Test 
     public void testSelectPropertiesTwoVectorLayersOneList() throws Exception {
@@ -547,7 +534,6 @@ public class GetFeatureInfoTest extends WMSTestSupport {
     /**
      * Tests that FEATURE_COUNT is respected globally, not just per layer
      * 
-     * @throws Exception
      */
     @Test 
     public void testTwoLayersFeatureCount() throws Exception {
@@ -577,7 +563,6 @@ public class GetFeatureInfoTest extends WMSTestSupport {
      * of returning the text format as in
      * https://osgeo-org.atlassian.net/browse/GEOS-1924
      * 
-     * @throws Exception
      */
     @Test 
     public void testUknownFormat() throws Exception {
@@ -681,7 +666,6 @@ public class GetFeatureInfoTest extends WMSTestSupport {
     
     /**
      * Check we report back an exception when query_layer contains layers not part of LAYERS
-     * @throws Exception
      */
     @Test
     public void testUnkonwnQueryLayer() throws Exception {

@@ -382,7 +382,7 @@ public class XMPPClient extends RemoteProcessClient {
      * Utility method to extract the process inputs accordingly to whatever declared from the endpoint.
      * 
      * @param input
-     * @return
+     *
      * @throws IOException
      */
     private Object getFixedInputs(Map<String, Object> input) throws IOException {
@@ -432,7 +432,6 @@ public class XMPPClient extends RemoteProcessClient {
      * 
      * @param username
      * @param password
-     * @throws Exception
      */
     public void performLogin(String username, String password) throws Exception {
         if (connection != null && connection.isConnected()) {
@@ -472,7 +471,7 @@ public class XMPPClient extends RemoteProcessClient {
      * Generate the XMPP JID
      * 
      * @param username
-     * @return
+     *
      */
     private String getJID(String username) {
         final String id = md5Java(username + "@" + this.domain + "/" + System.nanoTime());
@@ -483,7 +482,7 @@ public class XMPPClient extends RemoteProcessClient {
      * Generate a unique Server JID Resource
      * 
      * @param username
-     * @return
+     *
      */
     private String getResource(String username) {
         final String id = md5Java(username + "@" + this.domain + "/" + System.nanoTime());
@@ -499,7 +498,6 @@ public class XMPPClient extends RemoteProcessClient {
      * 
      * @param available
      * @param status
-     * @throws Exception
      */
     public void setStatus(boolean available, String status) throws Exception {
         Presence.Type type = available ? Type.available : Type.unavailable;
@@ -524,7 +522,6 @@ public class XMPPClient extends RemoteProcessClient {
      * 
      * @param user
      * @param name
-     * @throws Exception
      */
     public void createEntry(String user, String name) throws Exception {
         LOGGER.fine(String.format("Creating entry for buddy '%1$s' with name %2$s", user, name));
@@ -601,7 +598,7 @@ public class XMPPClient extends RemoteProcessClient {
      * 
      * @param person
      * 
-     * @return
+     *
      */
     static NameImpl extractServiceName(String person) throws Exception {
         String occupantFlatName = null;
@@ -624,7 +621,6 @@ public class XMPPClient extends RemoteProcessClient {
     /**
      * Send an invitation to the new logged in member
      * 
-     * @throws Exception
      */
     protected void sendInvitations() throws Exception {
         synchronized (registeredServices) {
@@ -652,7 +648,6 @@ public class XMPPClient extends RemoteProcessClient {
      * 
      * @param p
      * 
-     * @throws Exception
      */
     protected void handleMemberJoin(Presence p) throws Exception {
         synchronized (registeredServices) {
@@ -678,7 +673,6 @@ public class XMPPClient extends RemoteProcessClient {
      * 
      * @param p
      * 
-     * @throws Exception
      */
     protected void handleMemberLeave(Packet p) throws Exception {
         final Name serviceName = extractServiceName(p.getFrom());
@@ -702,7 +696,7 @@ public class XMPPClient extends RemoteProcessClient {
      * 
      * @param candidateServiceJID
      * 
-     * @return
+     *
      */
     private String getFlattestMachine(Name name, String candidateServiceJID) {
         final String serviceName = name.getLocalPart();
@@ -859,7 +853,7 @@ public class XMPPClient extends RemoteProcessClient {
 
         /**
          * 
-         * @return
+         *
          * @throws NotConnectedException
          */
         private boolean sendPing() throws NotConnectedException {
@@ -956,7 +950,7 @@ public class XMPPClient extends RemoteProcessClient {
      * Utility method to "pickle" (compress) the input parameters to be attached to the XMPP message
      * 
      * @param unpickled
-     * @return
+     *
      * @throws PickleException
      * @throws IOException
      */
@@ -969,7 +963,7 @@ public class XMPPClient extends RemoteProcessClient {
      * Utility method to "un-pickle" (decompress) the input parameters attached to the XMPP message
      * 
      * @param strdata
-     * @return
+     *
      * @throws PickleException
      * @throws IOException
      */
@@ -981,7 +975,7 @@ public class XMPPClient extends RemoteProcessClient {
      * Utility method to "un-pickle" (decompress) the input parameters attached to the XMPP message
      * 
      * @param data
-     * @return
+     *
      * @throws PickleException
      * @throws IOException
      */
@@ -996,7 +990,7 @@ public class XMPPClient extends RemoteProcessClient {
      * Utility method to get bytes out of a String
      * 
      * @param s
-     * @return
+     *
      * @throws IOException
      */
     static byte[] toBytes(String s) throws IOException {
@@ -1018,7 +1012,7 @@ public class XMPPClient extends RemoteProcessClient {
      * Utility method to get bytes out of a short array
      * 
      * @param shorts
-     * @return
+     *
      */
     static byte[] toBytes(short[] shorts) {
         byte[] result = new byte[shorts.length + 3];
@@ -1035,7 +1029,7 @@ public class XMPPClient extends RemoteProcessClient {
      * Utility method to generate a unique md5
      * 
      * @param message
-     * @return
+     *
      */
     public static String md5Java(String message) {
         String digest = null;

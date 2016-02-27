@@ -101,7 +101,7 @@ public abstract class NameSpaceElement {
      * Returns a qualified type definition name <code>prefix:definition name</code>.
      * </p>
      * @return the name if the default prefix is non null, null otherwise
-     * @see getTypeDefName()
+     * @see #getTypeDefName()
      */
     public abstract String getQualifiedTypeDefName();
 
@@ -111,7 +111,7 @@ public abstract class NameSpaceElement {
      * Returns a qualified type reference name <code>prefix:reference name</code>.
      * </p>
      * @return the name if the default prefix is non null, null otherwise
-     * @see getTypeRefName()
+     * @see #getTypeRefName()
      */
     public abstract String getQualifiedTypeRefName();
 
@@ -122,7 +122,7 @@ public abstract class NameSpaceElement {
      * </p>
      * @param prefix The prefix to use for qualification.
      * @return the name if either the specified or default prefix is non null, null otherwise
-     * @see getTypeDefName()
+     * @see #getTypeDefName()
      */
     public abstract String getQualifiedTypeDefName(String prefix);
 
@@ -133,7 +133,7 @@ public abstract class NameSpaceElement {
      * </p>
      * @param prefix The prefix to use for qualification.
      * @return the name if either the specified or default prefix is non null, null otherwise
-     * @see getTypeRefName()
+     * @see #getTypeRefName()
      */
     public abstract String getQualifiedTypeRefName(String prefix);
 

@@ -111,7 +111,7 @@ public class SimpleResourceNotificationDispatcher implements ResourceNotificatio
      * 
      * @param resource
      * @param kind
-     * @return
+     *
      */
     public static List<Event> createEvents(Resource resource, Kind kind) {
         List<Event> events = new ArrayList<Event>();
@@ -146,7 +146,7 @@ public class SimpleResourceNotificationDispatcher implements ResourceNotificatio
      * 
      * @param resource
      * @param kind
-     * @return
+     *
      */
     public static List<Event> createRenameEvents(Resource src, Resource dest) {
         List<Event> events = new ArrayList<Event>();

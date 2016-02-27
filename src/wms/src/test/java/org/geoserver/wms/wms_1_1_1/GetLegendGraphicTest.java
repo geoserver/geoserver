@@ -64,7 +64,6 @@ public class GetLegendGraphicTest extends WMSTestSupport {
      * Tests GML output does not break when asking for an area that has no data with
      * GML feature bounding enabled
      * 
-     * @throws Exception
      */
     @Test
     public void testPlain() throws Exception {
@@ -78,7 +77,6 @@ public class GetLegendGraphicTest extends WMSTestSupport {
      * Tests GML output does not break when asking for an area that has no data with
      * GML feature bounding enabled
      * 
-     * @throws Exception
      */
     @Test
     public void testEnv() throws Exception {

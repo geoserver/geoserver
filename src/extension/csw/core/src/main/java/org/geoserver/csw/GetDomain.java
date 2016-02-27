@@ -65,7 +65,7 @@ public class GetDomain {
      * Returns the requested feature types
      * 
      * @param request
-     * @return
+     *
      */
     public CloseableIterator<String> run(GetDomainType request) {
         try {

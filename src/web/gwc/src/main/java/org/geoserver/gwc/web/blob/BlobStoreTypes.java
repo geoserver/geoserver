@@ -52,7 +52,7 @@ public final class BlobStoreTypes {
      * Get BlobStoreType from BlobStoreConfig class
      * 
      * @param clazz 
-     * @return
+     *
      */
     public static BlobStoreType<?> getFromClass(Class<? extends BlobStoreConfig> clazz) {
         return getTypes().get(clazz);
@@ -61,7 +61,7 @@ public final class BlobStoreTypes {
     /**
      * Get all BlobStoreTypes
      * 
-     * @return
+     *
      */
     public static List<BlobStoreType<?>> getAll() {
         return new ArrayList<BlobStoreType<?>>(getTypes().values());

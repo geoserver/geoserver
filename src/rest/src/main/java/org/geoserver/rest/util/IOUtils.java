@@ -508,7 +508,7 @@ public class IOUtils extends org.apache.commons.io.IOUtils {
 	 * @param sourceDirectory the directory to delete files from.
 	 * @param filter the {@link FilenameFilter} to use for selecting files to delete.
 	 * @param recursive boolean that specifies if we want to delete files recursively or not.
-	 * @return
+	 *
 	 */
 	public static boolean deleteDirectory(File sourceDirectory, FilenameFilter filter, boolean recursive, boolean deleteItself) {
 		inputNotNull(sourceDirectory,filter);
@@ -538,7 +538,7 @@ public class IOUtils extends org.apache.commons.io.IOUtils {
 	 * @param sourceDirectory the directory to delete files from.
 	 * @param filter the {@link FilenameFilter} to use for selecting files to delete.
 	 * @param recursive boolean that specifies if we want to delete files recursively or not.
-	 * @return
+	 *
 	 */
 	public static void deleteFile(File file) {
 		inputNotNull(file);

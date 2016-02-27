@@ -50,7 +50,7 @@ public class GWCIconFactory implements Serializable {
      * Returns the appropriate icon for the specified layer type.
      * 
      * @param info
-     * @return
+     *
      */
     public static PackageResourceReference getSpecificLayerIcon(final TileLayer layer) {
         if (layer instanceof GeoServerTileLayer) {

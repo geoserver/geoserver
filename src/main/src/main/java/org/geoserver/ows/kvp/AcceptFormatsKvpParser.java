@@ -43,7 +43,7 @@ public abstract class AcceptFormatsKvpParser extends KvpParser {
 
     /**
      * Creates the AcceptsFormatType
-     * @return
+     *
      */
     protected abstract EObject createObject();
 }

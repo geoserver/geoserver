@@ -387,7 +387,7 @@ public class RESTUtils {
      * @param workspaceName
      * @param storeName
      * @param catalog
-     * @return
+     *
      */
     public static String getItem(String workspaceName, String storeName, Catalog catalog, String key) {
         // Initialization of a null String containing the root directory to use for the input store config
@@ -428,7 +428,7 @@ public class RESTUtils {
      * 
      * @param storeName
      * @param catalog
-     * @return
+     *
      */
     public static MetadataMap loadMapfromStore(String storeName, Catalog catalog) {
        StoreInfo storeInfo = catalog.getStoreByName(storeName, CoverageStoreInfo.class);
@@ -448,7 +448,7 @@ public class RESTUtils {
      * 
      * @param workspaceName
      * @param catalog
-     * @return
+     *
      */
     public static MetadataMap loadMapfromWorkSpace(String workspaceName, Catalog catalog) {
        WorkspaceInfo wsInfo = catalog.getWorkspaceByName(workspaceName);
@@ -465,7 +465,7 @@ public class RESTUtils {
     /**
      * This method is used for extracting the metadata map from the global settings
      * 
-     * @return
+     *
      */
     public static MetadataMap loadMapFromGlobal() {
        GeoServerInfo gsInfo = GeoServerExtensions.bean(GeoServer.class).getGlobal();
@@ -480,10 +480,10 @@ public class RESTUtils {
 
     /**
      * Extraction of the item from the metadata map
-     * @param <T>
      * 
      * @param map
-     * @return
+     * @param key
+     *
      */
     public static String extractMapItem(MetadataMap map, String key) {
        if(map != null && !map.isEmpty()){

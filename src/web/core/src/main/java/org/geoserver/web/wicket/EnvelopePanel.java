@@ -203,7 +203,7 @@ public class EnvelopePanel extends FormComponentPanel<ReferencedEnvelope> {
 
     /**
      * Returns the coordinate reference system added by the user in the GUI, if any and valid
-     * @return
+     *
      */
     public CoordinateReferenceSystem getCoordinateReferenceSystem() {
         return crs;

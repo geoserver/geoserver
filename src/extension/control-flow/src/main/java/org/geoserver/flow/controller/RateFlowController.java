@@ -129,8 +129,6 @@ public class RateFlowController implements FlowController {
     /**
      * Builds a UserFlowController that will trigger stale queue expiration once 100 queues have
      * been accumulated and
-     * 
-     * @param queueSize the maximum amount of per user concurrent requests
      */
     public RateFlowController(Predicate<Request> matcher,
             int maxRequests, long timeInterval, long delay, KeyGenerator keyGenerator) {

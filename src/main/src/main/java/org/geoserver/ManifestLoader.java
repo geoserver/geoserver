@@ -130,7 +130,7 @@ public class ManifestLoader {
      * load an about model
      * 
      * @param loader
-     * @return
+     *
      * @throws IllegalArgumentException if arguments are null
      */
     private static AboutModel getAboutModel(final ClassLoader loader)

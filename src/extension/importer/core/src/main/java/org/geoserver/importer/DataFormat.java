@@ -147,7 +147,7 @@ public abstract class DataFormat implements Serializable {
      * cast exception will happen otherwise)
      * 
      * @param data
-     * @return
+     *
      */
     protected Resource getFileFromData(ImportData data) {
         assert data instanceof FileData;

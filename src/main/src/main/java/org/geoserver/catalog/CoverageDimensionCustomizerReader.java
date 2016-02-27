@@ -145,7 +145,6 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
      * @param coverageName the specified coverageName. It may be null in case of {@link GridCoverage2DReader}s 
      * with a single coverage, coming from an old catalog where no coverageName has been stored. 
      * @param info the {@link CoverageStoreInfo} instance used to look for {@link CoverageInfo} instances.
-     * @return 
      */
     public static GridCoverageReader wrap(GridCoverage2DReader delegate, String coverageName,
             CoverageStoreInfo info) {
@@ -181,7 +180,7 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
      * on that store.
      * 
      * @param storeInfo the storeInfo to be used to access the catalog
-     * @return
+     *
      */
     private CoverageInfo getCoverageInfo(CoverageStoreInfo storeInfo) {
         Utilities.ensureNonNull("storeInfo", storeInfo);

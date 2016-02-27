@@ -59,7 +59,7 @@ public class WPSStorageCleaner extends TimerTask {
      * The file expiration delay in milliseconds. A file will be deleted when it's been around more
      * than expirationDelay
      * 
-     * @return
+     *
      */
     public long getExpirationDelay() {
         return expirationDelay;

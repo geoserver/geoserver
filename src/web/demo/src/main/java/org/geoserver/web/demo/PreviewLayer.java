@@ -142,7 +142,7 @@ public class PreviewLayer {
      * Builds a fake GetMap request
      * 
      * @param prefixedName
-     * @return
+     *
      */
     GetMapRequest getRequest() {
         if (request == null) {
@@ -177,7 +177,7 @@ public class PreviewLayer {
      * 
      * @param name
      * @param catalog
-     * @return
+     *
      */
     private List<MapLayerInfo> expandLayers(Catalog catalog) {
         List<MapLayerInfo> layers = new ArrayList<MapLayerInfo>();
@@ -214,7 +214,7 @@ public class PreviewLayer {
      * 
      * @param request
      * @param string
-     * @return
+     *
      */
     public String getWmsLink() {
         GetMapRequest request = getRequest();
@@ -235,7 +235,7 @@ public class PreviewLayer {
      * Returns the default GML link for this layer.
      *
      * @param gmlParamsCache optional map where computed GML output params are cached
-     * @return
+     *
      */
     public String getGmlLink(Map<String, GMLOutputParams> gmlParamsCache) {
         GMLOutputParams gmlParams = new GMLOutputParams();

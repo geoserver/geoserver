@@ -1120,7 +1120,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
          * other layer groups
          * 
          * @param allGroups
-         * @return
+         *
          */
         private List<LayerGroupInfo> filterNestedGroups(Iterator<LayerGroupInfo> iterator) {
             List<LayerGroupInfo> allGroups = new ArrayList<LayerGroupInfo>();

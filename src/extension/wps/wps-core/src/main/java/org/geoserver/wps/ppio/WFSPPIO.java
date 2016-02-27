@@ -125,7 +125,7 @@ public class WFSPPIO extends XMLPPIO {
      * It is not the best approach, but works in most cases, whilst not doing it would break
      * the code in most cases. Would be better to find a more general approach...
      * @param fc
-     * @return
+     *
      */
     private SimpleFeatureCollection eliminateFeatureBounds(SimpleFeatureCollection fc) {
         final SimpleFeatureType original = fc.getSchema();
@@ -157,8 +157,7 @@ public class WFSPPIO extends XMLPPIO {
     /**
      * Gets the collection CRS, either from metadata or by scanning the collection contents
      * @param fc
-     * @return
-     * @throws Exception
+     *
      */
     CoordinateReferenceSystem getCollectionCRS(SimpleFeatureCollection fc) throws Exception {
         // this is unlikely to work for remote or embedded collections, but it's also easy to check

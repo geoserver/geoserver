@@ -31,7 +31,7 @@ public interface AuthenticationKeyMapper extends BeanNameAware {
      * Returns <code>null</code> if the user is disabled
      * 
      * @param key
-     * @return
+     *
      */
     GeoServerUser getUser(String key) throws IOException;
     
@@ -48,8 +48,6 @@ public interface AuthenticationKeyMapper extends BeanNameAware {
     /**
      * Returns <code>true</code> it the mapper can deal with read only u 
      * user/group services
-     * 
-     * @return 
      */
     boolean supportsReadOnlyUserGroupService();
     
@@ -64,30 +62,22 @@ public interface AuthenticationKeyMapper extends BeanNameAware {
     /**
      * Returns the list of configuration parameters supported by this mapper.
      * 
-     * @return
+     *
      */
     public Set<String> getAvailableParameters();
     
     /**
      * Configures the mapper parameters.
-     * 
-     * @param parameters
      */
     public void configureMapper(Map<String, String> parameters);
     
     /**
      * Returns the mapper parameters.
-     * 
-     * @return
      */
     public Map<String, String> getMapperConfiguration();
 
     /**
      * Validates the given parameter.
-     * 
-     * @param paramName
-     * @param string
-     * @throws FilterConfigException
      */
     public void validateParameter(String paramName, String value) throws FilterConfigException;
 }

@@ -584,7 +584,7 @@ public class Wcs10CapsTransformer extends TransformerBase {
         /**
          * 
          * @param originalArray
-         * @return
+         *
          */
         private String[] orderDoubleArray(String[] originalArray) {
             List finalArray = Arrays.asList(originalArray);
@@ -606,7 +606,7 @@ public class Wcs10CapsTransformer extends TransformerBase {
         /**
          * 
          * @param originalArray
-         * @return
+         *
          */
         private String[] orderTimeArray(String[] originalArray) {
             List finalArray = Arrays.asList(originalArray);

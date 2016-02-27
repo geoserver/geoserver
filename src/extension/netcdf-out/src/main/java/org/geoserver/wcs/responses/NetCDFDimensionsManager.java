@@ -211,7 +211,7 @@ class NetCDFDimensionsManager {
          * (the latter for dimensions having ranges)
          * @param netCDFCoordinates used to check whether a dimension is related to a coordinate. In that case, 
          * just return the coordinate values.
-         * @return
+         *
          */
         public Array getDimensionData(final boolean rangeValues, NetCDFCoordinate[] netCDFCoordinates) {
             final String dimensionName = getName();
@@ -277,7 +277,7 @@ class NetCDFDimensionsManager {
          * @param input 
          * @param isTime does this object represents a temporal entity?
          * @param endValue specify whether it needs to return the second value of a range
-         * @return
+         *
          */
         private Object getValue(Object input, boolean isTime, boolean endValue) {
             if (isTime) {
@@ -295,7 +295,7 @@ class NetCDFDimensionsManager {
          * an origin {@link NetCDFUtilities#START_TIME}.
          * @param input
          * @param endTime specify whether it needs to return the second value of a time range
-         * @return
+         *
          */
         private Double getTime(Object input, boolean endTime) {
             long time = 0;

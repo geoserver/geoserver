@@ -59,7 +59,7 @@ public class GeoServerSecuredPage extends GeoServerBasePage {
      * so, remember to perform the same change in the associated
      * {@link MenuPageInfo} instance
      * 
-     * @return
+     *
      */
     protected ComponentAuthorizer getPageAuthorizer() {
         return DEFAULT_AUTHORIZER;

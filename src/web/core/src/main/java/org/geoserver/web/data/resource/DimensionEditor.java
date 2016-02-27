@@ -381,7 +381,7 @@ public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
      * 
      * @param resource
      * @param type
-     * @return
+     *
      */
     List<String> getAttributesOfType(ResourceInfo resource, Class<?> type) {
         List<String> result = new ArrayList<String>();

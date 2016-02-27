@@ -80,7 +80,7 @@ public class SLDPackageHandler extends StyleHandler {
      * Unzips a SLD package to a temporal folder, returning the SLD file path.
      *
      * @param input
-     * @return
+     *
      * @throws IOException
      */
     private File unzipSldPackage(Object input) throws IOException {

@@ -148,7 +148,7 @@ public class GeoServerSecurityFilterChain implements Serializable {
     /**
      * Create the initial {@link GeoServerSecurityFilterChain} 
      * 
-     * @return
+     *
      */
     public static GeoServerSecurityFilterChain createInitialChain() {
         return new GeoServerSecurityFilterChain(new ArrayList<RequestFilterChain>(INITIAL));

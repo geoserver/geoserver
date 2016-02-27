@@ -18,7 +18,7 @@ public interface Sequence<T> {
     /**
      * Returns the next item, or null if the sequence is completed
      * 
-     * @return
+     *
      */
     T next();
 }

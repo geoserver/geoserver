@@ -65,7 +65,7 @@ public  class GeoServerRequestMatcher implements RequestMatcher {
      * in {@link #methods}
      * 
      * @param request
-     * @return
+     *
      */
     protected boolean matchesHTTPMethod(HttpServletRequest request) {
         if (methods==null)

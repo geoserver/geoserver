@@ -2053,7 +2053,7 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
     /**
      * 
      * @param file
-     * @return
+     *
      * @throws IOException
      * 
      * @deprecated Use {@link #dumpMasterPassword(Resource)}
@@ -2074,7 +2074,7 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
      * code is <code>false</code>. On success, the return code is <code>true</code>. 
      * 
      * @param file
-     * @return
+     *
      * @throws IOException
      */
     public boolean dumpMasterPassword(Resource file) throws IOException {
@@ -2110,7 +2110,7 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
      * 
      * If authorization fails, an IOException is thrown
      * 
-     * @return
+     *
      * @throws IOException
      */
     public char[] getMasterPasswordForREST() throws IOException {
@@ -2141,7 +2141,7 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
      * 
      * @param countMethodsToCheck
      * @param allowedMethods
-     * @return
+     *
      */
     String checkStackTrace(int countMethodsToCheck,String[][] allowedMethods) {
         
@@ -2179,7 +2179,6 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
      * converts an 2.1.x security configuration to 2.2.x
      * 
      * @return <code>true</code> if migration has taken place  
-     * @throws Exception
      */
     boolean migrateFrom21() throws Exception{
         
@@ -2583,8 +2582,7 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
      * migration from 2.2.x to 2.3.x
      * return <code>true</code> if migration has taken place
      * 
-     * @return
-     * @throws Exception
+     *
      */
     boolean migrateFrom22(boolean migratedFrom21) throws Exception{
         
@@ -2683,7 +2681,6 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
      * converts an 2.3.x security configuration to 2.4.x
      * 
      * @return <code>true</code> if migration has taken place  
-     * @throws Exception
      */
     boolean migrateFrom23() throws Exception{
         SecurityManagerConfig config = loadSecurityConfig();
@@ -2705,7 +2702,6 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
      * The page /accessDeniedPage does not exist and would not work
      * if it exists.
      * 
-     * @throws Exception
      */
     void removeErroneousAccessDeniedPage() throws Exception {
          

@@ -16,9 +16,6 @@ import org.geoserver.catalog.Info;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamPersisterFactory;
 
-/**
- * @param <T>
- */
 public class XStreamInfoSerialBinding {
 
     private final XStreamPersister xstreamPersister;

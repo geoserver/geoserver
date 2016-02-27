@@ -34,7 +34,7 @@ public interface CatalogFilter {
      * Return true to hide the specified layer from the catalog
      * 
      * @param layer
-     * @return
+     *
      */
     boolean hideLayer(LayerInfo layer);
 
@@ -56,7 +56,7 @@ public interface CatalogFilter {
      * Return true to hide the specified workspace from the catalog
      * 
      * @param layer
-     * @return
+     *
      */
     boolean hideWorkspace(WorkspaceInfo workspace);
 
@@ -64,14 +64,13 @@ public interface CatalogFilter {
      * Return true to hide the specified resource from the catalog
      * 
      * @param layer
-     * @return
+     *
      */
     boolean hideResource(ResourceInfo resource);
     
     /**
      * Returns a Filter equivalent to this CatalogFilter when applied to an object of the specified type.
      * @param clazz
-     * @return 
      */
     Filter getSecurityFilter(final Class<? extends CatalogInfo> clazz);
 }

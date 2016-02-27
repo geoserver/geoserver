@@ -212,7 +212,7 @@ public class GetCapabilitiesResponse extends BaseCapabilitiesResponse {
      * </p>
      * 
      * @param request
-     * @return
+     *
      */
     private String getInternalDTDDeclaration(final GetCapabilitiesRequest request) {
 

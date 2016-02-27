@@ -53,7 +53,6 @@ public class AnimatorTest extends WMSTestSupport {
     /**
      * Testing FrameCatalog constructor from a generic WMS request.
      * 
-     * @throws Exception
      */
     @org.junit.Test
     public void testFrameCatalog() throws Exception {
@@ -87,7 +86,6 @@ public class AnimatorTest extends WMSTestSupport {
     /**
      * Testing FrameVisitor animation frames setup and production.
      * 
-     * @throws Exception
      */
     @org.junit.Test
     public void testFrameVisitor() throws Exception {

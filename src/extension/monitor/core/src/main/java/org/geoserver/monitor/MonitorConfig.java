@@ -190,7 +190,7 @@ public class MonitorConfig implements ApplicationContextAware {
      * @param prefix
      * @param name
      * @param target
-     * @return
+     *
      */
     public <T> T getProperty(String prefix, String name, Class<T> target) {
         String key = prefix == null ? name : prefix + "." + name;

@@ -256,7 +256,7 @@ public class OpenLayersMapOutputFormat implements GetMapOutputFormat {
      * type. Ugly, if you come up with better means of doing so, fix it.
      * 
      * @param mapContent
-     * @return
+     *
      */
     private boolean hasOnlyCoverages(WMSMapContent mapContent) {
         for (Layer layer : mapContent.layers()) {
@@ -284,7 +284,7 @@ public class OpenLayersMapOutputFormat implements GetMapOutputFormat {
      * "dd"), "m", "ft", "km", "mi", "inches".
      * 
      * @param request
-     * @return
+     *
      */
     private String getOL2Units(GetMapRequest request) {
         CoordinateReferenceSystem crs = request.getCrs();
@@ -319,7 +319,7 @@ public class OpenLayersMapOutputFormat implements GetMapOutputFormat {
      * otherwise the scale won't be shown. 
      * 
      * @param request
-     * @return
+     *
      */
     private String getOL3Units(GetMapRequest request) {
         CoordinateReferenceSystem crs = request.getCrs();
@@ -346,7 +346,7 @@ public class OpenLayersMapOutputFormat implements GetMapOutputFormat {
      * 
      * 
      * @param rawKvp
-     * @return
+     *
      */
     private List<Map<String, String>> getLayerParameter(Map<String, String> rawKvp) {
         List<Map<String, String>> result = new ArrayList<Map<String, String>>(rawKvp.size());
@@ -374,7 +374,7 @@ public class OpenLayersMapOutputFormat implements GetMapOutputFormat {
      * "http://localhost:8080/geoserver//wms?LAYERS=..." and Jetty 6.1 won't digest them...
      * 
      * @param baseUrl
-     * @return
+     *
      */
     private String canonicUrl(String baseUrl) {
         if (baseUrl.endsWith("/")) {

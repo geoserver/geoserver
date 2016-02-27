@@ -174,7 +174,7 @@ public abstract class AbstractCommandLineTransform extends AbstractTransform imp
      * Returns the list of options to be passed the executable to test its availability and ability
      * to run. e.g. "--help"
      * 
-     * @return
+     *
      */
     protected abstract List<String> getAvailabilityTestOptions();
 
@@ -203,7 +203,7 @@ public abstract class AbstractCommandLineTransform extends AbstractTransform imp
      * the output is made of several files)
      * 
      * @param data
-     * @return
+     *
      * @throws IOException
      */
     protected abstract List<String> getReplacementTargetNames(ImportData data) throws IOException;
@@ -211,7 +211,7 @@ public abstract class AbstractCommandLineTransform extends AbstractTransform imp
     /**
      * Returns true if the command line manipulates the input file directly
      * 
-     * @return
+     *
      */
     protected boolean isInline() {
         return false;
@@ -221,7 +221,7 @@ public abstract class AbstractCommandLineTransform extends AbstractTransform imp
      * Returns true if in the command line the output file comes after the input one. The default
      * implementation returns true
      * 
-     * @return
+     *
      */
     protected boolean isOutputAfterInput() {
         return true;
@@ -231,7 +231,7 @@ public abstract class AbstractCommandLineTransform extends AbstractTransform imp
      * The command input file
      * 
      * @param data
-     * @return
+     *
      * @throws IOException
      */
     protected abstract Resource getInputFile(ImportData data) throws IOException;
@@ -240,7 +240,7 @@ public abstract class AbstractCommandLineTransform extends AbstractTransform imp
      * The directory used for outputs, by default, a subdirectory of the input file parent
      * 
      * @param data
-     * @return
+     *
      * @throws IOException
      */
     protected Resource getOutputDirectory(ImportData data) throws IOException {
@@ -255,7 +255,7 @@ public abstract class AbstractCommandLineTransform extends AbstractTransform imp
     /**
      * Implementors must provide the executable to be run
      * 
-     * @return
+     *
      */
     protected abstract File getExecutable() throws IOException;
 
@@ -264,7 +264,7 @@ public abstract class AbstractCommandLineTransform extends AbstractTransform imp
      * the searched file name
      * 
      * @param name
-     * @return
+     *
      * @throws IOException
      */
     protected File getExecutableFromPath(String name) throws IOException {

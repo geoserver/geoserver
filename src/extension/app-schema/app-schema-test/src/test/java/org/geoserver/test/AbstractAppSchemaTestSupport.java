@@ -368,7 +368,6 @@ public abstract class AbstractAppSchemaTestSupport extends GeoServerSystemTestSu
      *            XPath expression
      * @param document
      *            document under test
-     * @throws Exception
      */
     protected void assertXpathMatches(String regex, String xpath, Document document) {
         assertTrue(evaluate(xpath, document).matches(regex));
@@ -384,7 +383,6 @@ public abstract class AbstractAppSchemaTestSupport extends GeoServerSystemTestSu
      *            XPath expression
      * @param document
      *            document under test
-     * @throws Exception
      */
     protected void assertXpathNotMatches(String regex, String xpath, Document document) {
         assertFalse(evaluate(xpath, document).matches(regex));
@@ -557,7 +555,7 @@ public abstract class AbstractAppSchemaTestSupport extends GeoServerSystemTestSu
      * @param testName
      * @param image
      * @param bgColor
-     * @return
+     *
      */
     protected int countNonBlankPixels(String testName, BufferedImage image, Color bgColor) {
         int pixelsDiffer = 0;
@@ -595,7 +593,7 @@ public abstract class AbstractAppSchemaTestSupport extends GeoServerSystemTestSu
      * @param i
      * @param j
      * @param color
-     * @return
+     *
      */
     protected Color getPixelColor(BufferedImage image, int i, int j) {
         ColorModel cm = image.getColorModel();

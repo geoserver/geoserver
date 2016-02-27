@@ -24,17 +24,17 @@ public class DatabaseUtil {
     public final static String NEWLINE = System.getProperty("line.separator");
 
     /**
+     * Split input stream into a list of sql statements.
+     * <p>
      * there are a number of limitation when using this method. Firstly each separate query in a
      * script must be on a new line so that ";" at the end of the string can be used as a delimiter.
      * Secondly, escape character for $$ $_$ "'" have not been taken into consideration. This will
      * cause an issue if any of the operators are used in string eg 'the $quick brown' We have
      * catered to scenarios for multiple $ quoting on single/multi line.
-     * 
-     * @param f
-     * @return
-     * @throws Exception
+     * </p>
+     * @param inputStream sql statements
+     * @return list of SQL statements
      */
-
     public ArrayList<String> splitPostgisSQLScript(InputStream inputStream) throws Exception {
 
         StringBuilder contents = new StringBuilder();
@@ -195,10 +195,8 @@ public class DatabaseUtil {
     /**
      * Splits the oracle sql script file into individual statements.
      * 
-     * @param f
-     *            - The oracle sql script
-     * @return - the list of sql statement
-     * @throws Exception
+     * @param inputStream The oracle sql script
+     * @returnlist of sql statements
      */
     public ArrayList<String> splitOracleSQLScript(InputStream inputStream) throws Exception {
 

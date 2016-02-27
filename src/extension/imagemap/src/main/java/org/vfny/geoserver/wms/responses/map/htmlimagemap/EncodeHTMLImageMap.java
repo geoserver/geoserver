@@ -243,7 +243,7 @@ public class EncodeHTMLImageMap extends WebMap{
      * Filter given rules, to consider only the rules compatible
      * with the current scale.
      * @param rules
-     * @return
+     *
      */
     private Rule[] filterRules(Rule[] rules) {
     	List<Rule> result=new ArrayList<Rule>();

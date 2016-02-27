@@ -28,7 +28,7 @@ public class ValidatingInputProvider implements InputProvider {
      * 
      * @param delegate
      * @param validators
-     * @return
+     *
      */
     public static InputProvider wrap(InputProvider delegate, Collection<Validator> validators) {
         if (validators == null || validators.isEmpty()) {

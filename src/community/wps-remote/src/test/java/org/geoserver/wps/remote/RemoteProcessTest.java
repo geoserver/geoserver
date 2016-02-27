@@ -286,7 +286,7 @@ public class RemoteProcessTest extends WPSTestSupport {
     /**
      * 
      * @param fname
-     * @return
+     *
      * @throws IOException
      */
     private static InputStream fullStream(File fname) throws IOException {

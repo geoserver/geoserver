@@ -89,7 +89,7 @@ public class GMLSchemaTranslator extends NameSpaceTranslator {
      *
      * @see org.vfny.geoserver.global.xml.NameSpaceTranslator#getElements()
      *
-     * @return
+     *
      */
     public Set getElements() {
         return elements;
@@ -100,7 +100,7 @@ public class GMLSchemaTranslator extends NameSpaceTranslator {
      *
      * @see org.vfny.geoserver.global.xml.NameSpaceTranslator#getNameSpace()
      *
-     * @return
+     *
      */
     public String getNameSpace() {
         return "http://www.opengis.net/gml";

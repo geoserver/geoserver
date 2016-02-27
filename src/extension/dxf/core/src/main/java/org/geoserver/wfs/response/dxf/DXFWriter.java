@@ -26,7 +26,7 @@ public interface DXFWriter {
      * using the given writer as output.
      * 
      * @param writer
-     * @return
+     *
      */
     public DXFWriter newInstance(Writer writer);
 
@@ -34,7 +34,7 @@ public interface DXFWriter {
      * Checks if the writer supports the requested dxf version.
      * 
      * @param version
-     * @return
+     *
      */
     public boolean supportsVersion(String version);
 
@@ -58,7 +58,7 @@ public interface DXFWriter {
     /**
      * Gets the writer description.
      * 
-     * @return
+     *
      */
     public String getDescription();
 }

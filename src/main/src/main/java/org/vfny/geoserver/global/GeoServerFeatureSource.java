@@ -177,7 +177,7 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
      * @param declaredCRS 
      * @param linearizationTolerance TODO
      * @param metadata Feature type metadata
-     * @return
+     *
      */
     public static GeoServerFeatureSource create(FeatureSource <SimpleFeatureType, SimpleFeature> featureSource, SimpleFeatureType schema,
         Filter definitionQuery, CoordinateReferenceSystem declaredCRS, int srsHandling, Double linearizationTolerance,
@@ -196,7 +196,7 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
      *
      * @param featureSource
      * @param settings Settings for this store
-     * @return
+     *
      */
     public static GeoServerFeatureSource create(FeatureSource <SimpleFeatureType, SimpleFeature> featureSource, Settings settings) {
         if (featureSource instanceof FeatureLocking) {
@@ -348,7 +348,7 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
      * Description ...
      * </p>
      *
-     * @return
+     *
      *
      * @see org.geotools.data.FeatureSource#getDataStore()
      */
@@ -395,7 +395,7 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
      *
      * @param query
      *
-     * @return
+     *
      *
      * @throws IOException
      *
@@ -575,7 +575,7 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
      * since data stores cannot be trusted
      * @param query
      * @param schema TODO
-     * @return
+     *
      * @throws IOException
      */
     protected Query adaptQuery(Query query, SimpleFeatureType schema) throws IOException {
@@ -634,7 +634,7 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
      * Description ...
      * </p>
      *
-     * @return
+     *
      *
      * @see org.geotools.data.FeatureSource#getSchema()
      */

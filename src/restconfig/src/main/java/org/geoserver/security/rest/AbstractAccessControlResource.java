@@ -167,7 +167,7 @@ public abstract class AbstractAccessControlResource<DAO extends AbstractAccessRu
      * 
      * @param props
      * @param map
-     * @return
+     *
      */
     protected Set<Object> intersection(Map map) {
 
@@ -194,7 +194,7 @@ public abstract class AbstractAccessControlResource<DAO extends AbstractAccessRu
      * 
      * @param props
      * @param map
-     * @return
+     *
      */
     protected Set<Object> nonExistingKeys(Map map) {
 
@@ -219,7 +219,7 @@ public abstract class AbstractAccessControlResource<DAO extends AbstractAccessRu
      * Returns the key string for a rule
      * 
      * @param rule
-     * @return
+     *
      */
     protected abstract String keyFor(Comparable<?> rule);
 
@@ -229,7 +229,7 @@ public abstract class AbstractAccessControlResource<DAO extends AbstractAccessRu
      * @param ruleKey
      *            ,ruleValue
      * @param rule
-     * @return
+     *
      */
     protected String validateRule(String ruleKey, String ruleValue) {
         return validateRuleKey(ruleKey);
@@ -242,7 +242,7 @@ public abstract class AbstractAccessControlResource<DAO extends AbstractAccessRu
      * <code>null</code> if the rule is ok
      * 
      * @param ruleKey
-     * @return
+     *
      */
     protected abstract String validateRuleKey(String ruleKey);
 
@@ -250,7 +250,7 @@ public abstract class AbstractAccessControlResource<DAO extends AbstractAccessRu
      * Convert an {@link Entry} to a rule object
      * 
      * @param entry
-     * @return
+     *
      */
     protected abstract Comparable convertEntryToRule(Entry<String, String> entry);
 

@@ -182,7 +182,6 @@ public abstract class GetCapabilitiesLegendURLTest extends WMSTestSupport {
     /**
      * Tests that already cached icons are read from disk and
      * used to calculate size.
-     * @throws Exception
      */
     @Test
     public void testCachedLegendURLSize() throws Exception {
@@ -203,7 +202,6 @@ public abstract class GetCapabilitiesLegendURLTest extends WMSTestSupport {
     
     /**
      * Tests that folder for legend samples is created, if missing.
-     * @throws Exception
      */
     @Test
     public void testCachedLegendURLFolderCreated() throws Exception {
@@ -222,7 +220,6 @@ public abstract class GetCapabilitiesLegendURLTest extends WMSTestSupport {
     /**
      * Tests the layer names are workspace qualified
      * 
-     * @throws Exception
      */
     @Test
     public void testLayerWorkspaceQualified() throws Exception {
@@ -241,7 +238,6 @@ public abstract class GetCapabilitiesLegendURLTest extends WMSTestSupport {
     /**
      * Tests that not existing icons are created on disk and
      * used to calculate size.
-     * @throws Exception
      */
     @Test
     public void testCreatedLegendURLSize() throws Exception {
@@ -293,7 +289,6 @@ public abstract class GetCapabilitiesLegendURLTest extends WMSTestSupport {
     /**
      * Tests that not existing icons for workspace bound styles are created on disk
      * in the workspace styles folder.
-     * @throws Exception
      */
     @Test
     public void testCreatedLegendURLFromWorkspaceSize() throws Exception {
@@ -320,7 +315,6 @@ public abstract class GetCapabilitiesLegendURLTest extends WMSTestSupport {
     /**
      * Tests that already cached icons are recreated if related
      * SLD is newer.
-     * @throws Exception
      */
     @Test
     public void testCachedLegendURLUpdatedSize() throws Exception {
@@ -355,7 +349,6 @@ public abstract class GetCapabilitiesLegendURLTest extends WMSTestSupport {
     /**
      * Tests that already cached icons are recreated if related
      * SLD is newer (using Catalog events).
-     * @throws Exception
      */
     @Test
     public void testCachedLegendURLUpdatedSize2() throws Exception {
@@ -389,7 +382,6 @@ public abstract class GetCapabilitiesLegendURLTest extends WMSTestSupport {
     /**
      * Tests that already cached icons are read from disk and
      * used to calculate size.
-     * @throws Exception
      */
     @Test
     public void testOnlineResourceWidthHeight() throws Exception {
@@ -438,21 +430,21 @@ public abstract class GetCapabilitiesLegendURLTest extends WMSTestSupport {
     /**
      * Each WMS version suite of tests has its own TransformerBase implementation.
      *  
-     * @return
+     *
      */
     protected abstract TransformerBase createTransformer();
 
     /**
      * Each WMS version has a different root name for the Capabilities XML document.
      *  
-     * @return
+     *
      */
     protected abstract String getRootElement();
     
     /**
      * Each WMS version uses a different element prefix.
      *  
-     * @return
+     *
      */
     protected abstract String getElementPrefix();
 

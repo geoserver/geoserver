@@ -82,8 +82,7 @@ public class DataSourceFactoryBean implements FactoryBean<DataSource>, Disposabl
 
     /**
      * Look up or create a DataSource
-     * @return
-     * @throws Exception
+     *
      */
     protected DataSource lookupOrCreateDataSource() throws Exception {
         DataSource ds = null;
@@ -113,7 +112,7 @@ public class DataSourceFactoryBean implements FactoryBean<DataSource>, Disposabl
 
     /**
      * Get an unconfigured BasicDataSource to set up
-     * @return
+     *
      */
     protected BasicDataSource createBasicDataSource() {
         return new BasicDataSource();
@@ -121,7 +120,7 @@ public class DataSourceFactoryBean implements FactoryBean<DataSource>, Disposabl
     
     /**
      * Try to lookup a configured DataSource using JNDI.
-     * @return
+     *
      * @throws NamingException 
      */
     protected Optional<DataSource> getJNDIDataSource(Optional<String> name) {
@@ -151,8 +150,7 @@ public class DataSourceFactoryBean implements FactoryBean<DataSource>, Disposabl
     
     /**
      * Create and configure a DataSource based on the JDBCLoaderProperties
-     * @return
-     * @throws Exception
+     *
      */
     protected DataSource createDataSource() throws Exception {
         BasicDataSource dataSource = createBasicDataSource();

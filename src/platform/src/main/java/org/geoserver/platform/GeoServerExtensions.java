@@ -280,7 +280,7 @@ public class GeoServerExtensions implements ApplicationContextAware, Application
     /**
      * Returns a specific bean given its name
      * @param name
-     * @return
+     *
      */
     public static final Object bean(String name) {
         return bean(name, context);

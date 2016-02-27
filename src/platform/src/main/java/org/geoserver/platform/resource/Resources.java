@@ -629,7 +629,7 @@ public class Resources {
      * Create a URL from a resource.
      * 
      * @param res
-     * @return
+     *
      */
     public static URL toURL(final Resource res) {        
         try {

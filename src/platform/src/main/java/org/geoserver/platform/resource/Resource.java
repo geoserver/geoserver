@@ -173,7 +173,7 @@ public interface Resource extends Serializable {
      * @see File#exists()
      * @see File#isDirectory()
      * @see File#isFile()
-     * @return
+     *
      */
     Type getType();
     
@@ -187,7 +187,7 @@ public interface Resource extends Serializable {
     /**
      * Move the resource to the specified location.
      * @see File#renameTo(File)
-     * @return
+     *
      */
     boolean renameTo(Resource dest);
 }

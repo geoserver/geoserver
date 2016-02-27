@@ -11,10 +11,11 @@ import java.util.List;
  * Provider of GeoServer extensions.
  * <p>
  * Implementations of this interface must be registered in a spring context.
+ * </p>
  * <pre>
- * &lt;bean id="myExtensionProvider" class="com.xyz.MyExtensionProvider"/>
+ * &lt;bean id="myExtensionProvider" class="com.xyz.MyExtensionProvider"/&gt;
  * </pre>
- * 
+ * <p>
  * After which the extension lookup methods in {@link GeoServerExtensions} will
  * use any instances of this interface as a supplementary lookup to the initial 
  * spring context lookup.  

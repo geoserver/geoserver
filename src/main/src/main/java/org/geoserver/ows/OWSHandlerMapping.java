@@ -16,12 +16,12 @@ import org.springframework.web.servlet.handler.SimpleUrlHandlerMapping;
  * This handler mapping extends a set of mappings to allow for a request to specifying a 
  * local workspace. Consider the following mappings:
  * <pre>
- *   &lt;property name="mappings">
+ *   &lt;property name="mappings"&gt;
  *      &lt;props>
- *              &lt;prop key="/wfs">dispatcher&lt;/prop>
- *              &lt;prop key="/wfs/*">dispatcher&lt;/prop>
- *      &lt;/props>
- *    &lt;/property>
+ *              &lt;prop key="/wfs"&gt;dispatcher&lt;/prop&gt;
+ *              &lt;prop key="/wfs/*"&gt;dispatcher&lt;/prop&gt;
+ *      &lt;/props&gt;
+ *    &lt;/property&gt;
  * </pre>
  * This handler will allow the above mappings to match "workspace prefixed" requests such as:
  * <pre>

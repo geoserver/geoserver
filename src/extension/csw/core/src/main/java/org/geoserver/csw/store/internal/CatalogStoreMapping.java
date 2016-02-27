@@ -179,9 +179,6 @@ public class CatalogStoreMapping {
      * The textual representation is a set of key-value pairs, where the key represents the mapped key and the value is an OGC expression
      * representing the mapped content. Furthermore, if the key starts with @ it also defines the ID element and if the key starts with $
      * it is a required property.
-     * 
-     * @param mappingSource
-     *
      */
     public static CatalogStoreMapping parse(Map<String, String> mappingSource) {
 

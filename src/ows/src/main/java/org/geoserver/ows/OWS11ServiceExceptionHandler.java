@@ -69,7 +69,7 @@ public class OWS11ServiceExceptionHandler extends ServiceExceptionHandler {
     /**
      * Constructor to be called if the exception is for a particular service.
      *
-     * @param services List of services this handler handles exceptions for.
+     * @param service Services this handler handles exceptions for
      */
     public OWS11ServiceExceptionHandler(Service service) {
         super(Arrays.asList(service));

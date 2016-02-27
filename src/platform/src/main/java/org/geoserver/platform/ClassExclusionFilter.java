@@ -23,7 +23,7 @@ public class ClassExclusionFilter implements ExtensionFilter {
 
     /**
      * Specifies which class to be filtered away
-     * @param beanClass
+     * @param beanClass bean to be filtered
      */
     public void setBeanClass(Class beanClass) {
         this.beanClass = beanClass;
@@ -35,7 +35,6 @@ public class ClassExclusionFilter implements ExtensionFilter {
 
     /**
      * When true enables hierarchy matching. Defaults to false
-     * @param matchSubclasses
      */
     public void setMatchSubclasses(boolean matchSubclasses) {
         this.matchSubclasses = matchSubclasses;

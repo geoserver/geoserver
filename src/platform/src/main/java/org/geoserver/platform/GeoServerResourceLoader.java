@@ -32,6 +32,7 @@ import org.springframework.web.context.ServletContextAware;
  * Access to resources in GeoServer including configuration information and unmanaged cache or log files.
  * <p>
  * The loader maintains a search path in which it will use to look up resources.
+ * </p>
  * <ul>
  * <li>Configuration is accessed using {@link ResourceStore#get(String)} which provides stream based access. If required configuration can be unpacked
  * into a file in the data directory. The most common example is for use as a template.
@@ -39,10 +40,10 @@ import org.springframework.web.context.ServletContextAware;
  * (when upgrading or for use on different nodes in a cluster).</li>
  * <li>
  * </ul>
+ * <p>
  * The {@link #baseDirectory} is a member of this path. Files and directories created by the resource loader are made relative to
  * {@link #baseDirectory}.
  * </p>
- * <p>
  * 
  * <pre>
  * <code>
@@ -53,8 +54,6 @@ import org.springframework.web.context.ServletContextAware;
  * File log = loader.find("logs/geoserver.log");
  * </code>
  * </pre>
- * 
- * </p>
  * 
  * @author Justin Deoliveira, The Open Planning Project, jdeolive@openplans.org
  * 
@@ -102,7 +101,7 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Re
     /**
      * Creates a new resource loader.
      *
-     * @param baseDirectory The directory in which
+     * @param resourceStore resource store for artifact storage
      */
     public GeoServerResourceLoader(ResourceStore resourceStore) {
         this.resources = resourceStore;
@@ -127,8 +126,8 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Re
     /**
      * Adds a location to the path used for resource lookups.
      *
-     * @param A directory containing resources.
-     * @deprecated No longert used
+     * @param searchLocation directory containing resources.
+     * @deprecated No longer used
      */
     public void addSearchLocation(File searchLocation) {
         //searchLocations.add(searchLocation);
@@ -136,8 +135,6 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Re
 
     /**
      * Sets the search locations used for resource lookups.
-     * 
-     * The {@link #baseDirectory} is always incuded in {@link #searchLocations}.
      *
      * @param searchLocations A set of {@link File}.
      * @deprecated No longer used
@@ -154,10 +151,8 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Re
 
     /**
      * Sets the base directory.
-     * 
-     * The base directory is included in {@link #searchLocations}.
      *
-     * @param baseDirectory
+     * @param baseDirectory base of data directory used for file configuration files
      */
     public void setBaseDirectory(File baseDirectory) {
         this.baseDirectory = baseDirectory;
@@ -206,7 +201,7 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Re
      * 
      * Convenience method for Resources.fromPath(resources.get(Paths.BASE), path)
      * 
-     * See {@link Resources#fromPath(Resource, String)}
+     * See {@link Resources#fromPath(String, Resource)}
      * 
      */
     public Resource fromPath(String path) {
@@ -215,7 +210,7 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Re
     
     /**
      *
-     * @Deprecated use {@link Resources#fromURL(Resource, String)}
+     * @deprecated use {@link Resources#fromURL(Resource, String)}
      */
     @Deprecated 
     public File url(String url) {
@@ -262,17 +257,15 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Re
     
     /**
      * Performs a resource lookup.
-     * <p>
+     * 
      * <pre>
      * Example:
      *   File f = resourceLoader.find( "data", "shapefiles", "foo.shp" );
-     * </pre> 
-     * </p>
-     * @param location The components of the path of the resource to lookup.
+     * </pre>
      * 
-     * @return The file handle representing the resource, or null if the
-     *  resource could not be found.
-     *  
+     * @param location The components of the path of the resource to lookup.
+     * @return The file handle representing the resource, or null if the resource could not be found.
+     * 
      * @throws IOException Any I/O errors that occur.
      */
     public File find( String... location ) throws IOException {        
@@ -403,8 +396,6 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Re
      * relative.
      *
      * @return The file handle of the created directory.
-     *
-     * @throws IOException
      */
     public File createDirectory(String location) throws IOException {
         Resource directory = get( Paths.convert(location) );
@@ -420,13 +411,11 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Re
      * <p>
      * If <code>location</code> already exists as a file, an IOException is thrown.
      * </p>
-     * @param parent The containing directory, may be null.
+     * @param parentFile The containing directory, may be null.
      * @param location Location of directory to create, either absolute or
      * relative.
      *
      * @return The file handle of the created directory.
-     *
-     * @throws IOException
      */
     public File createDirectory(File parentFile, String location) throws IOException {
         Resource directory = get(Paths.convert(getBaseDirectory(), parentFile, location));
@@ -488,11 +477,13 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Re
      * <p>
      * Relative paths are created relative to {@link #baseDirectory}.
      * </p>
+     * <p>
      * If {@link #baseDirectory} is not set, an IOException is thrown.
      * </p>
      * <p>
      * If <code>location</code> already exists as a directory, an IOException is thrown.
      * </p>
+     * 
      * @param location Location of file to create, either absolute or relative.
      * @param parentFile The containing directory for the file.
      * 
@@ -513,7 +504,7 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Re
      * path it is considered to be relative to {@link #getBaseDirectory()}.
       </p>
      * 
-     * @param resource The resource to copy.
+     * @param classpathResource The resource to copy.
      * @param location The destination to copy to.
      */
     public void copyFromClassPath( String classpathResource, String location ) throws IOException {

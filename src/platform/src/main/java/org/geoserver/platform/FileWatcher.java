@@ -6,7 +6,6 @@
 package org.geoserver.platform;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -50,9 +49,10 @@ public class FileWatcher<T> {
     /**
      * Reads the file updating the last check timestamp.
      * <p>
-     * Subclasses can override {@link #parseFileContents(FileInputStream)} to do something 
+     * Subclasses can override {@link #parseFileContents(InputStream)} to do something 
      * when the file is read.
      * </p>
+     * @return parsed file contents
      */
     public T read() throws IOException {
         T result = null;
@@ -105,7 +105,7 @@ public class FileWatcher<T> {
      * content and knowing the last modified time stamp
      * can avoid unnecessary reload operations 
      * 
-     * @param lastModified
+     * @param lastModified last modified time
      */
     public void setKnownLastModified(long lastModified) {
         this.lastModified = lastModified;

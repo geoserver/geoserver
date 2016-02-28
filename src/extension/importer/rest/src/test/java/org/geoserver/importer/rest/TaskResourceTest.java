@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -15,6 +15,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.Statement;
@@ -439,7 +440,7 @@ public class TaskResourceTest extends ImporterTestSupport {
         assertEquals("Invalid context state", State.PENDING, state);
     }
     
-    private void verifyInvalidCRSErrorResponse(MockHttpServletResponse resp) {
+    private void verifyInvalidCRSErrorResponse(MockHttpServletResponse resp) throws UnsupportedEncodingException {
         assertEquals(Status.CLIENT_ERROR_BAD_REQUEST.getCode(), resp.getStatusCode());
         JSONObject errorResponse = JSONObject.fromObject(resp.getOutputStreamContent());
         JSONArray errors = errorResponse.getJSONArray("errors");

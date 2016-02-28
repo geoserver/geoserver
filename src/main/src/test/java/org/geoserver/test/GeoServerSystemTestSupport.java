@@ -1,11 +1,14 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.test;
 
+import static org.hamcrest.CoreMatchers.startsWith;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
 import java.awt.image.BufferedImage;
@@ -19,6 +22,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -97,6 +101,7 @@ import org.geotools.util.logging.Log4JLoggerFactory;
 import org.geotools.util.logging.Logging;
 import org.geotools.xml.XSD;
 import org.junit.After;
+import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.GrantedAuthorityImpl;
@@ -208,18 +213,22 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
 
         // if we have data, create a mock servlet context and start up the spring configuration
         if (testData.isTestDataAvailable()) {
-            MockServletContext servletContext = new MockServletContext();
-            servletContext.setInitParameter("GEOSERVER_DATA_DIR", testData.getDataDirectoryRoot()
-                    .getPath());
-            servletContext.setInitParameter("serviceStrategy", "PARTIAL-BUFFER2");
-            
             //set up a fake WEB-INF directory
+            org.springframework.core.io.ResourceLoader rl;
             if (testData.getDataDirectoryRoot().canWrite()) {
                 File webinf = new File(testData.getDataDirectoryRoot(), "WEB-INF");
                 webinf.mkdir();
                 
-                servletContext.setRealPath("WEB-INF", webinf.getAbsolutePath());
+                rl = new DirectoryResourceLoader(testData.getDataDirectoryRoot());
+            } else {
+                rl = new DefaultResourceLoader();
             }
+            MockServletContext servletContext = new MockServletContext(rl);
+            // we are on servlet 2.4
+            servletContext.setMinorVersion(4);
+            servletContext.setInitParameter("GEOSERVER_DATA_DIR", testData.getDataDirectoryRoot()
+                    .getPath());
+            servletContext.setInitParameter("serviceStrategy", "PARTIAL-BUFFER2");
 
             List<String> contexts = new ArrayList();
             setUpSpring(contexts);
@@ -449,6 +458,18 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
     //
     // lookup/accessor helper methods 
     //
+
+    /**
+     * Asserts the content type taking into account that Spring-test insists on adding
+     * the charset encoding to the content type (see https://jira.spring.io/browse/SPR-1717)
+     * @param string
+     * @param response
+     */
+    protected static void assertContentType(String contentType, MockHttpServletResponse response) {
+        String actual = response.getHeader("Content-Type");
+        assertNotNull(actual);
+        assertThat(actual, startsWith(contentType));
+    }
 
     protected GeoServerDataDirectory getDataDirectory() {
         return new GeoServerDataDirectory(getResourceLoader());
@@ -818,6 +839,10 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
     protected void logout() {
         SecurityContextHolder.clearContext();
     }
+    
+    protected MockHttpServletRequest createRequest(String path) {
+        return createRequest(path, false);
+    }
 
     //
     // request/response helpers
@@ -836,7 +861,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
      * @param path The path for the request and optional the query string.
      * @return
      */
-    protected MockHttpServletRequest createRequest(String path) {
+    protected MockHttpServletRequest createRequest(String path, boolean createSession) {
         MockHttpServletRequest request = new GeoServerMockHttpServletRequest();
 
         request.setScheme("http");
@@ -845,7 +870,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         request.setContextPath("/geoserver");
         request.setRequestURI(ResponseUtils.stripQueryString(ResponseUtils.appendPath(
                     "/geoserver/", path)));
-        request.setRequestURL(ResponseUtils.appendPath("http://localhost:8080/geoserver", path ) );
+        // request.setRequestURL(ResponseUtils.appendPath("http://localhost:8080/geoserver", path ) );
         request.setQueryString(ResponseUtils.getQueryString(path));
         request.setRemoteAddr("127.0.0.1");
         request.setServletPath(ResponseUtils.makePathAbsolute( ResponseUtils.stripRemainingPath(path)) );
@@ -864,9 +889,10 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         
         kvp(request, path);
 
-        MockHttpSession session = new MockHttpSession();
-        session.setupServletContext(new MockServletContext());
-        request.setSession(session);
+        if(createSession) {
+            MockHttpSession session = new MockHttpSession(new MockServletContext());
+            request.setSession(session);
+        }
 
         request.setUserPrincipal(null);
 
@@ -1102,16 +1128,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
      * @return
      */
     protected byte[] getBinary(MockHttpServletResponse response) {
-        try {
-            MockServletOutputStream os = (MockServletOutputStream) response.getOutputStream();
-            final Field field = os.getClass().getDeclaredField("buffer");
-            field.setAccessible(true);
-            ByteArrayOutputStream bos = (ByteArrayOutputStream) field.get(os);
-            return bos.toByteArray();
-        } catch (Exception e) {
-            throw new RuntimeException("Whoops, did you change the MockRunner version? "
-                    + "If so, you might want to change this method too");
-        }
+        return response.getContentAsByteArray();
     }
             
             
@@ -1226,7 +1243,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         return json(response);
     }
     
-    protected JSON json(MockHttpServletResponse response) {
+    protected JSON json(MockHttpServletResponse response) throws UnsupportedEncodingException {
         String content = response.getOutputStreamContent();
         return JSONSerializer.toJSON(content);
     }
@@ -1426,9 +1443,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         // create an instance of the spring dispatcher
         ServletContext context = applicationContext.getServletContext();
 
-        MockServletConfig config = new MockServletConfig();
-        config.setServletContext(context);
-        config.setServletName("dispatcher");
+        MockServletConfig config = new MockServletConfig(context, "dispatcher");
 
         DispatcherServlet dispatcher = new DispatcherServlet(applicationContext);
 
@@ -1443,14 +1458,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         final DispatcherServlet dispatcher = getDispatcher();
         
         // build a filter chain so that we can test with filters as well
-        MockFilterChain chain = new MockFilterChain();
-        List<Filter> filters = getFilters();
-        if(filters != null) {
-            for (Filter filter : filters) {
-                chain.addFilter(filter);
-            }
-        }
-        chain.setServlet(new HttpServlet() {
+        HttpServlet servlet = new HttpServlet() {
             @Override
             protected void service(HttpServletRequest request, HttpServletResponse response)
                     throws ServletException, IOException {
@@ -1482,7 +1490,15 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
                     throw (IOException) new IOException("Failed to handle the request").initCause(e);
                 }
             }
-        });
+        };
+        List<Filter> filterList = getFilters();
+        MockFilterChain chain;
+        if(filterList != null) {
+            chain = new MockFilterChain(servlet, (Filter[]) filterList.toArray(new Filter[filterList.size()]));
+        } else {
+            chain = new MockFilterChain(servlet);
+        }
+        
         
         chain.doFilter(request, response);
         
@@ -1924,7 +1940,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         
         
         @Override
-        public BufferedReader getReader() throws IOException {
+        public BufferedReader getReader() {
             if (null == myBody)
                 return null;
             return new BufferedReader(new StringReader(new String(myBody)));

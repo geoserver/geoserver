@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -318,9 +318,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         assertNotNull(lastModifiedHeader);
         Date lastModified = DateUtil.parseDate(lastModifiedHeader);
 
-        MockHttpServletRequest httpReq = createRequest(path);
-        httpReq.setMethod("GET");
-        httpReq.setBodyContent(new byte[] {});
+        MockHttpServletRequest httpReq = createGetRequest(path);
         httpReq.setHeader("If-Modified-Since", lastModifiedHeader);
 
         response = dispatch(httpReq, "UTF-8");
@@ -331,6 +329,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         Date past = new Date(lastModified.getTime() - 5000);
         String ifModifiedSince = DateUtil.formatDate(past);
 
+        httpReq = createGetRequest(path);
         httpReq.setHeader("If-Modified-Since", ifModifiedSince);
         response = dispatch(httpReq, "UTF-8");
         assertEquals(HttpServletResponse.SC_OK, response.getErrorCode());
@@ -338,9 +337,17 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         Date future = new Date(lastModified.getTime() + 5000);
         ifModifiedSince = DateUtil.formatDate(future);
 
+        httpReq = createGetRequest(path);
         httpReq.setHeader("If-Modified-Since", ifModifiedSince);
         response = dispatch(httpReq, "UTF-8");
         assertEquals(HttpServletResponse.SC_NOT_MODIFIED, response.getErrorCode());
+    }
+
+    private MockHttpServletRequest createGetRequest(final String path) {
+        MockHttpServletRequest httpReq = createRequest(path);
+        httpReq.setMethod("GET");
+        httpReq.setBodyContent(new byte[] {});
+        return httpReq;
     }
 
     @Test public void testDirectWMSIntegrationMaxAge() throws Exception {

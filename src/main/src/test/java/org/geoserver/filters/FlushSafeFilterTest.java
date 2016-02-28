@@ -50,7 +50,7 @@ public class FlushSafeFilterTest {
             ServletOutputStream os;
 
             @Override
-            public ServletOutputStream getOutputStream() throws IOException {
+            public ServletOutputStream getOutputStream() {
                 if (os == null) {
                     final ServletOutputStream wrapped = super.getOutputStream();
                     os = new ServletOutputStream() {

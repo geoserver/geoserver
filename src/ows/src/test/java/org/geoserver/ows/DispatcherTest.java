@@ -255,7 +255,7 @@ public class DispatcherTest extends TestCase {
                     this.encoding = encoding;
                 }
 
-                public ServletInputStream getInputStream() throws IOException{
+                public ServletInputStream getInputStream() {
                     final ServletInputStream stream = super.getInputStream();
                     return new ServletInputStream(){
                         public int read() throws IOException{
@@ -311,7 +311,7 @@ public class DispatcherTest extends TestCase {
                     this.encoding = encoding;
                 }
                 
-                public ServletInputStream getInputStream() throws IOException{
+                public ServletInputStream getInputStream() {
                     final ServletInputStream stream = super.getInputStream();
                     return new ServletInputStream(){
                         public int read() throws IOException{

@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -658,7 +658,7 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
         MockFilterChain chain = new MockFilterChain();        
                 
         getProxy().doFilter(request, response, chain);
-        assertEquals(0, response.getCookies().size());
+        assertEquals(0, response.getCookies().length);
         String tmp = response.getHeader("WWW-Authenticate");
         assertNotNull(tmp);
     
@@ -678,8 +678,8 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
         assertNotNull(auth);
         assertNull(SecurityContextHolder.getContext().getAuthentication());
         checkForAuthenticatedRole(auth);
-        assertEquals(1,response.getCookies().size());
-        Cookie cookie = (Cookie) response.getCookies().get(0);
+        assertEquals(1,response.getCookies().length);
+        Cookie cookie = (Cookie) response.getCookies()[0];
 
         request= createRequest("/foo/bar");
         request.setupAddParameter("_spring_security_remember_me", "yes");
@@ -728,7 +728,7 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
         assertNull(SecurityContextHolder.getContext().getAuthentication());
         //checkForAuthenticatedRole(auth);
         // no cookie for root user
-        assertEquals(0,response.getCookies().size());
+        assertEquals(0,response.getCookies().length);
         
         // check disabled user
         updateUser("ug1", "abc@xyz.com", false);
@@ -741,8 +741,8 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
         getProxy().doFilter(request, response, chain);
         assertEquals(HttpServletResponse.SC_UNAUTHORIZED, response.getErrorCode());
         // check for cancel cookie
-        assertEquals(1,response.getCookies().size());
-        Cookie cancelCookie = (Cookie) response.getCookies().get(0);
+        assertEquals(1,response.getCookies().length);
+        Cookie cancelCookie = (Cookie) response.getCookies()[0];
         assertNull(cancelCookie.getValue());
         updateUser("ug1", "abc@xyz.com", true);
 

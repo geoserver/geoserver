@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -505,7 +505,7 @@ public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
         assertNull(SecurityContextHolder.getContext().getAuthentication());
         MockHttpSession session = (MockHttpSession) request.getSession(false);
         assertNotNull(session);
-        assertTrue(session.isValid());
+        assertFalse(session.isInvalid());
 
 
 
@@ -547,7 +547,7 @@ public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
         assertNull(SecurityContextHolder.getContext().getAuthentication());
         session = (MockHttpSession) request.getSession(false);
         assertNotNull(session);
-        assertTrue(session.isValid());
+        assertFalse(session.isInvalid());
 
         
         // logout triggered by cas server

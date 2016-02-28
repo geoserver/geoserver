@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -117,7 +117,7 @@ public class RememberMeTest extends GeoServerSecurityTestSupport {
         request.setMethod("POST");
         MockHttpServletResponse response = dispatch(request);
         assertLoginOk(response);
-        assertEquals(0, response.getCookies().size());
+        assertEquals(0, response.getCookies().length);
 
         request = createRequest("/j_spring_security_check");
         request.setupAddParameter("username", "admin");
@@ -126,9 +126,9 @@ public class RememberMeTest extends GeoServerSecurityTestSupport {
         request.setMethod("POST");
         response = dispatch(request);
         assertLoginOk(response);
-        assertEquals(1, response.getCookies().size());
+        assertEquals(1, response.getCookies().length);
 
-        Cookie cookie = (Cookie) response.getCookies().get(0);
+        Cookie cookie = (Cookie) response.getCookies()[0];
 
         request = createRequest("/web/");
         response = dispatch(request);

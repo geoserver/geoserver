@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -7,20 +7,17 @@
 
 package org.geoserver.security.impl;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
-
-import junit.framework.Assert;
 
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.util.IOUtils;
 import org.geoserver.security.AbstractSecurityServiceTest;
 import org.geoserver.security.GeoServerRoleService;
-import org.geoserver.security.GeoServerRoleStore;
 import org.geoserver.security.config.J2eeRoleServiceConfig;
-import org.junit.Before;
 import org.junit.Test;
 
 public  class GeoServerJ2eeRoleServiceTest extends AbstractSecurityServiceTest {

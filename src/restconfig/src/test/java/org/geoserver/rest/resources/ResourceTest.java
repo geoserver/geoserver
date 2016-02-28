@@ -152,7 +152,7 @@ public class ResourceTest extends GeoServerSystemTestSupport {
         Assert.assertEquals("http://localhost:8080/geoserver/rest/resource/mydir2", 
                 response.getHeader("Resource-Parent"));
         Assert.assertEquals("resource", response.getHeader("Resource-Type"));
-        Assert.assertEquals("image/png", response.getHeader("Content-Type"));
+        assertContentType("image/png", response);
     }
 
     @Test
@@ -235,7 +235,7 @@ public class ResourceTest extends GeoServerSystemTestSupport {
         Assert.assertEquals("http://localhost:8080/geoserver/rest/resource/",
                 response.getHeader("Resource-Parent"));
         Assert.assertEquals("directory", response.getHeader("Resource-Type"));
-        Assert.assertEquals("application/xml", response.getHeader("Content-Type"));
+        assertContentType("application/xml", response);
     }
     
     @Test

@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -8,6 +8,7 @@ package org.geoserver.monitor;
 import static org.junit.Assert.*;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
@@ -40,9 +41,7 @@ public class MonitorFilterTest {
         
         filter = new MonitorFilter(new Monitor(dao), new MonitorRequestFilter());
         
-        chain = new MockFilterChain();
-        
-        chain.setServlet(new HttpServlet() {
+        chain = new MockFilterChain(new HttpServlet() {
             @Override
             public void service(ServletRequest req, ServletResponse res) throws ServletException,
                     IOException {
@@ -74,7 +73,7 @@ public class MonitorFilterTest {
     
     @Test    
     public void testWithBody() throws Exception {
-        chain.setServlet(new HttpServlet() {
+        chain = new MockFilterChain(new HttpServlet() {
             @Override
             public void service(ServletRequest req, ServletResponse res) throws ServletException,
                     IOException {
@@ -101,7 +100,7 @@ public class MonitorFilterTest {
     
     @Test
     public void testWithLongBody() throws Exception {
-        chain.setServlet(new HttpServlet() {
+        chain = new MockFilterChain(new HttpServlet() {
             @Override
             public void service(ServletRequest req, ServletResponse res) throws ServletException,
                     IOException {
@@ -137,7 +136,7 @@ public class MonitorFilterTest {
         
         filter.monitor.config.props.put("maxBodySize", Integer.toString(UNBOUNDED_BODY_SIZE)); // Ensure the configured property is correct for the tests
         
-        chain.setServlet(new HttpServlet() {
+        chain = new MockFilterChain(new HttpServlet() {
             @Override
             public void service(ServletRequest req, ServletResponse res) throws ServletException,
                     IOException {
@@ -196,7 +195,7 @@ public class MonitorFilterTest {
       
     }
     
-    MockHttpServletRequest request(String method, String path, String remoteAddr, String body, String referer) {
+    MockHttpServletRequest request(String method, String path, String remoteAddr, String body, String referer) throws UnsupportedEncodingException {
         MockHttpServletRequest req = new MockHttpServletRequest();
         req.setMethod(method);
         req.setServerName("localhost");

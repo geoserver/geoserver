@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -14,6 +14,7 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.Serializable;
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -225,7 +226,7 @@ public abstract class ImporterTestSupport extends GeoServerSystemTestSupport {
         return putAsServletResponse(url, srsRequest, "application/json");
     }
     
-    protected void assertErrorResponse(MockHttpServletResponse resp, String... errs) {
+    protected void assertErrorResponse(MockHttpServletResponse resp, String... errs) throws UnsupportedEncodingException {
         assertEquals(400, resp.getStatusCode());
         JSONObject json = JSONObject.fromObject(resp.getOutputStreamContent());
         JSONArray errors = json.getJSONArray("errors");

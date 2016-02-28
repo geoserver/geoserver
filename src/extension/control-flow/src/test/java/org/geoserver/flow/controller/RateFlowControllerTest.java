@@ -24,7 +24,7 @@ public class RateFlowControllerTest extends AbstractFlowControllerTest {
 
         // grab the cookie
         Cookie cookie = (Cookie) ((MockHttpServletResponse) firstRequest.getHttpResponse())
-                .getCookies().get(0);
+                .getCookies()[0];
         String cookieValue = cookie.getValue();
 
         // second request
@@ -65,7 +65,7 @@ public class RateFlowControllerTest extends AbstractFlowControllerTest {
 
         // grab the cookie
         Cookie cookie = (Cookie) ((MockHttpServletResponse) firstRequest.getHttpResponse())
-                .getCookies().get(0);
+                .getCookies()[0];
         String cookieValue = cookie.getValue();
 
         // second request

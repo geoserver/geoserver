@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -65,6 +65,7 @@ public class GetFeatureTest extends WFSTestSupport {
         String contentType = "application/x-www-form-urlencoded; charset=UTF-8";
         String body = "request=GetFeature&typename=cdf:Fifteen&version=1.0.0&service=wfs";
         MockHttpServletRequest request = createRequest("wfs");
+        request.setMethod("POST");
         request.setBodyContent(body);
         // this is normally done by the servlet container, but the mock system won't do it
         request.setupAddParameter("request", "GetFeature");
@@ -74,7 +75,7 @@ public class GetFeatureTest extends WFSTestSupport {
         request.setContentType(contentType);
         MockHttpServletResponse response = dispatch(request);
         try (ByteArrayInputStream bis = new ByteArrayInputStream(
-                response.getOutputStreamContent().getBytes())) {
+                response.getContentAsByteArray())) {
             Document doc = dom(bis);
             assertEquals("wfs:FeatureCollection", doc.getDocumentElement().getNodeName());
 

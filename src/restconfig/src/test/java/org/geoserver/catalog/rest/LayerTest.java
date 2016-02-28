@@ -1,18 +1,13 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.catalog.rest;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.io.IOException;
 
@@ -137,7 +132,7 @@ public class LayerTest extends CatalogRESTTestSupport {
     public void testDelete() throws Exception {
         assertNotNull(catalog.getLayerByName( "cite:Buildings" ));
         
-        assertEquals(200, deleteAsServletResponse("/layers/cite:Buildings").getStatusCode());
+        assertEquals(200, deleteAsServletResponse("/rest/layers/cite:Buildings").getStatusCode());
     }
     
     @Test

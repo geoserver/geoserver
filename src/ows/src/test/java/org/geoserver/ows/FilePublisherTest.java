@@ -69,6 +69,7 @@ public class FilePublisherTest {
     private MockHttpServletResponse request(String[] path, String modifiedSince) throws Exception {
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.setContextPath("/geoserver");
+        request.setMethod("GET");
         StringBuilder b = new StringBuilder("/geoserver");
         for (int i = 0; i < path.length; i++) {
             b.append('/').append(path[i]);

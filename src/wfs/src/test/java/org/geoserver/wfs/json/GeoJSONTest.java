@@ -39,7 +39,7 @@ import org.junit.Test;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONNull;
@@ -138,7 +138,7 @@ public class GeoJSONTest extends WFSTestSupport {
     public void testGet() throws Exception {	
         MockHttpServletResponse response = getAsServletResponse("wfs?request=GetFeature&version=1.0.0&typename=sf:PrimitiveGeoFeature&maxfeatures=1&outputformat="+JSONType.json);
         assertEquals("application/json", response.getContentType());
-        String out = response.getOutputStreamContent();
+        String out = response.getContentAsString();
 
     	
     	JSONObject rootObject = JSONObject.fromObject( out );
@@ -161,7 +161,7 @@ public class GeoJSONTest extends WFSTestSupport {
             MockHttpServletResponse response = getAsServletResponse("wfs?request=GetFeature&version=2.0.0&typename=sf:PrimitiveGeoFeature&outputformat="
                     + JSONType.json);
             assertEquals("application/json", response.getContentType());
-            String out = response.getOutputStreamContent();
+            String out = response.getContentAsString();
 
             JSONObject rootObject = JSONObject.fromObject(out);
             assertEquals(rootObject.get("type"), "FeatureCollection");
@@ -181,7 +181,7 @@ public class GeoJSONTest extends WFSTestSupport {
         MockHttpServletResponse response = getAsServletResponse("wfs?request=GetFeature&version=1.0.0&typename=sf:PrimitiveGeoFeature&maxfeatures=1&outputformat="+JSONType.simple_json,"");
         assertEquals("application/json", response.getContentType());
         assertEquals("UTF-8", response.getCharacterEncoding());
-        String out = response.getOutputStreamContent();
+        String out = response.getContentAsString();
         
         JSONObject rootObject = JSONObject.fromObject( out );
         assertEquals(rootObject.get("type"),"FeatureCollection");
@@ -194,7 +194,7 @@ public class GeoJSONTest extends WFSTestSupport {
     public void testGetJsonIdPolicyTrue() throws Exception {    
         MockHttpServletResponse response = getAsServletResponse("wfs?request=GetFeature&version=1.0.0&typename=sf:PrimitiveGeoFeature&maxfeatures=1&outputformat="+JSONType.simple_json+"&format_options=" + JSONType.ID_POLICY+":true");
         assertEquals("application/json", response.getContentType());
-        String out = response.getOutputStreamContent();
+        String out = response.getContentAsString();
         
         JSONObject rootObject = JSONObject.fromObject( out );
         assertEquals(rootObject.get("type"),"FeatureCollection");
@@ -210,7 +210,7 @@ public class GeoJSONTest extends WFSTestSupport {
     public void testGetJsonIdPolicyFalse() throws Exception {    
         MockHttpServletResponse response = getAsServletResponse("wfs?request=GetFeature&version=1.0.0&typename=sf:PrimitiveGeoFeature&maxfeatures=1&outputformat="+JSONType.simple_json+"&format_options=" + JSONType.ID_POLICY+":false");
         assertEquals("application/json", response.getContentType());
-        String out = response.getOutputStreamContent();
+        String out = response.getContentAsString();
         
         JSONObject rootObject = JSONObject.fromObject( out );
         assertEquals(rootObject.get("type"),"FeatureCollection");
@@ -224,7 +224,7 @@ public class GeoJSONTest extends WFSTestSupport {
     public void testGetJsonIdPolicyAttribute() throws Exception {    
         MockHttpServletResponse response = getAsServletResponse("wfs?request=GetFeature&version=1.0.0&typename=sf:PrimitiveGeoFeature&maxfeatures=1&outputformat="+JSONType.simple_json+"&format_options=" + JSONType.ID_POLICY+":name");
         assertEquals("application/json", response.getContentType());
-        String out = response.getOutputStreamContent();
+        String out = response.getContentAsString();
         
         JSONObject rootObject = JSONObject.fromObject( out );
         assertEquals(rootObject.get("type"),"FeatureCollection");
@@ -249,7 +249,7 @@ public class GeoJSONTest extends WFSTestSupport {
                 + "<wfs:Query typeName=\"sf:PrimitiveGeoFeature\"> "
                 + "</wfs:Query> " + "</wfs:GetFeature>";
 
-        String out = postAsServletResponse( "wfs", xml ).getOutputStreamContent();
+        String out = postAsServletResponse( "wfs", xml ).getContentAsString();
     	
     	JSONObject rootObject = JSONObject.fromObject( out );
     	assertEquals(rootObject.get("type"),"FeatureCollection");
@@ -291,7 +291,7 @@ public class GeoJSONTest extends WFSTestSupport {
         + "</wfs:GetFeature>";
         //System.out.println("\n" + xml + "\n");
         
-        String out  = postAsServletResponse( "wfs", xml).getOutputStreamContent();
+        String out  = postAsServletResponse( "wfs", xml).getContentAsString();
 
         JSONObject rootObject = JSONObject.fromObject( out );
         //System.out.println(rootObject.get("type"));
@@ -320,7 +320,7 @@ public class GeoJSONTest extends WFSTestSupport {
         MockHttpServletResponse resp = getAsServletResponse("wfs?request=GetFeature&version=1.0.0&typename=sf:PrimitiveGeoFeature&maxfeatures=1&outputformat="
                 + JSONType.jsonp + "&format_options=" + JSONType.CALLBACK_FUNCTION_KEY + ":myFunc");
         JSONType.setJsonpEnabled(false);
-        String out = resp.getOutputStreamContent();
+        String out = resp.getContentAsString();
 
         assertEquals(JSONType.jsonp, resp.getContentType());
         assertTrue(out.startsWith("myFunc("));
@@ -390,7 +390,7 @@ public class GeoJSONTest extends WFSTestSupport {
                 + "</ogc:Filter> "
                 + "</wfs:Query> " + "</wfs:GetFeature>";
 
-        String out5 = postAsServletResponse( "wfs", xml ).getOutputStreamContent();
+        String out5 = postAsServletResponse( "wfs", xml ).getContentAsString();
         
         JSONObject rootObject5 = JSONObject.fromObject( out5 );
         assertEquals(rootObject5.get("totalFeatures"),1);

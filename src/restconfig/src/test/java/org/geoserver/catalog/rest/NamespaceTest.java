@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -26,7 +26,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 public class NamespaceTest extends CatalogRESTTestSupport {
     
@@ -72,12 +72,12 @@ public class NamespaceTest extends CatalogRESTTestSupport {
 
     @Test
     public void testPutAllUnauthorized() throws Exception {
-        assertEquals( 405, putAsServletResponse( "/rest/namespaces" ).getStatusCode() );
+        assertEquals( 405, putAsServletResponse( "/rest/namespaces" ).getStatus() );
     }
 
     @Test
     public void testDeleteAllUnauthorized() throws Exception {
-        assertEquals( 405, deleteAsServletResponse( "/rest/namespaces").getStatusCode() );
+        assertEquals( 405, deleteAsServletResponse( "/rest/namespaces").getStatus() );
     }
     
     @Test
@@ -119,19 +119,19 @@ public class NamespaceTest extends CatalogRESTTestSupport {
         String exception = "No such namespace: " + namespace;
         // First request should thrown an exception
         MockHttpServletResponse response = getAsServletResponse(requestPath);
-        assertEquals(404, response.getStatusCode());
-        assertTrue(response.getOutputStreamContent().contains(
+        assertEquals(404, response.getStatus());
+        assertTrue(response.getContentAsString().contains(
                 exception));
         // Same request with ?quietOnNotFound should not throw an exception
         response = getAsServletResponse(requestPath + "?quietOnNotFound=true");
-        assertEquals(404, response.getStatusCode());
-        assertFalse(response.getOutputStreamContent().contains(
+        assertEquals(404, response.getStatus());
+        assertFalse(response.getContentAsString().contains(
                 exception));
     }
     
     @Test
     public void testGetNonExistant() throws Exception {
-        assertEquals( 404, getAsServletResponse( "/rest/namespaces/none").getStatusCode() );
+        assertEquals( 404, getAsServletResponse( "/rest/namespaces/none").getStatus() );
     }
     
     @Test
@@ -142,7 +142,7 @@ public class NamespaceTest extends CatalogRESTTestSupport {
               "<uri>http://foo.com</uri>" +
             "</namespace>";
         MockHttpServletResponse response = postAsServletResponse( "/rest/namespaces", xml, "text/xml" );
-        assertEquals( 201, response.getStatusCode() );
+        assertEquals( 201, response.getStatus() );
         assertNotNull( response.getHeader( "Location") );
         assertTrue( response.getHeader("Location").endsWith( "/namespaces/foo" ) );
         
@@ -163,7 +163,7 @@ public class NamespaceTest extends CatalogRESTTestSupport {
         String json = "{'namespace':{ 'prefix':'foo', 'uri':'http://foo.com' }}";
         
         MockHttpServletResponse response = postAsServletResponse( "/rest/namespaces", json, "text/json" );
-        assertEquals( 201, response.getStatusCode() );
+        assertEquals( 201, response.getStatus() );
         assertNotNull( response.getHeader( "Location") );
         assertTrue( response.getHeader("Location").endsWith( "/namespaces/foo" ) );
         
@@ -181,12 +181,12 @@ public class NamespaceTest extends CatalogRESTTestSupport {
         
         MockHttpServletResponse response = 
             postAsServletResponse("/rest/namespaces/gs", xml, "text/xml" );
-        assertEquals( 405, response.getStatusCode() );
+        assertEquals( 405, response.getStatus() );
     }
     
     @Test
     public void testDeleteNonExistant() throws Exception {
-        assertEquals( 404, deleteAsServletResponse("/rest/namespaces/newExistant").getStatusCode() );
+        assertEquals( 404, deleteAsServletResponse("/rest/namespaces/newExistant").getStatus() );
     }
     
     @Test
@@ -201,15 +201,15 @@ public class NamespaceTest extends CatalogRESTTestSupport {
         Document dom = getAsDOM( "/rest/namespaces/foo.xml");
         assertEquals( "namespace", dom.getDocumentElement().getNodeName() );
         
-        assertEquals( 200, deleteAsServletResponse( "/rest/namespaces/foo" ).getStatusCode() );
-        assertEquals( 404, getAsServletResponse( "/rest/namespaces/foo.xml" ).getStatusCode() );
+        assertEquals( 200, deleteAsServletResponse( "/rest/namespaces/foo" ).getStatus() );
+        assertEquals( 404, getAsServletResponse( "/rest/namespaces/foo.xml" ).getStatus() );
         // verify associated workspace was deleted
-        assertEquals( 404, getAsServletResponse( "/rest/workspaces/foo.xml" ).getStatusCode() );
+        assertEquals( 404, getAsServletResponse( "/rest/workspaces/foo.xml" ).getStatus() );
     }
     
     @Test
     public void testDeleteNonEmpty() throws Exception {
-        assertEquals( 401, deleteAsServletResponse("/rest/namespaces/sf").getStatusCode() );
+        assertEquals( 401, deleteAsServletResponse("/rest/namespaces/sf").getStatus() );
     }
     
     @Test
@@ -221,7 +221,7 @@ public class NamespaceTest extends CatalogRESTTestSupport {
         
         MockHttpServletResponse response = 
             putAsServletResponse("/rest/namespaces/gs", xml, "text/xml" );
-        assertEquals( 200, response.getStatusCode() );
+        assertEquals( 200, response.getStatus() );
         
         Document dom = getAsDOM( "/rest/namespaces/gs.xml" );
         assertXpathEvaluatesTo("1", "count(//namespace/uri[text()='http://changed'])", dom );
@@ -236,7 +236,7 @@ public class NamespaceTest extends CatalogRESTTestSupport {
         
         MockHttpServletResponse response = 
             putAsServletResponse("/rest/namespaces/nonExistant", xml, "text/xml" );
-        assertEquals( 404, response.getStatusCode() );
+        assertEquals( 404, response.getStatus() );
     }
     
     @Test

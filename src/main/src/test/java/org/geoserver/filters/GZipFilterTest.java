@@ -16,12 +16,11 @@ import javax.servlet.ServletResponse;
 import org.junit.Test;
 import org.springframework.mock.web.DelegatingServletOutputStream;
 
-import com.mockrunner.mock.web.MockFilterChain;
-import com.mockrunner.mock.web.MockFilterConfig;
-import com.mockrunner.mock.web.MockHttpServletRequest;
-import com.mockrunner.mock.web.MockHttpServletResponse;
-import com.mockrunner.mock.web.MockServletContext;
-import com.mockrunner.mock.web.MockServletOutputStream;
+import org.springframework.mock.web.MockFilterChain;
+import org.springframework.mock.web.MockFilterConfig;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockServletContext;
 
 public class GZipFilterTest {
 
@@ -29,7 +28,7 @@ public class GZipFilterTest {
     @Test
     public void testRetrieveSameOutputStream() throws Exception {
         MockHttpServletRequest request = new MockHttpServletRequest("GET", "http://www.geoserver.org");
-        request.setHeader("accept-encoding", "gzip");
+        request.addHeader("accept-encoding", "gzip");
         MockHttpServletResponse response = new MockHttpServletResponse();
         response.setContentType("text/plain");
 
@@ -70,7 +69,7 @@ public class GZipFilterTest {
     @Test
     public void testGZipRemovesContentLength() throws Exception {
         MockHttpServletRequest request = new MockHttpServletRequest("GET", "http://www.geoserver.org");
-        request.setHeader("accept-encoding", "gzip");
+        request.addHeader("accept-encoding", "gzip");
         MockHttpServletResponse response = new MockHttpServletResponse();
         response.setContentType("text/plain");
 
@@ -101,7 +100,7 @@ public class GZipFilterTest {
     @Test
     public void testNotGZippedMantainsContentLength() throws Exception {
         MockHttpServletRequest request = new MockHttpServletRequest("GET", "http://www.geoserver.org");
-        request.setHeader("accept-encoding", "gzip");
+        request.addHeader("accept-encoding", "gzip");
         MockHttpServletResponse response = new MockHttpServletResponse();
         response.setContentType("text/css");
 

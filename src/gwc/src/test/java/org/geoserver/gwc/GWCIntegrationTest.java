@@ -67,8 +67,8 @@ import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
-import com.mockrunner.mock.web.MockHttpServletRequest;
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 @TestSetup(run=TestSetupFrequency.REPEAT)
 public class GWCIntegrationTest extends GeoServerSystemTestSupport {
@@ -112,7 +112,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         MockHttpServletResponse sr = getAsServletResponse("gwc/service/wmts?request=GetTile&layer="
                 + layerId
                 + "&format=image/png&tilematrixset=EPSG:4326&tilematrix=EPSG:4326:0&tilerow=0&tilecol=0");
-        assertEquals(200, sr.getErrorCode());
+        assertEquals(200, sr.getStatus());
         assertEquals("image/png", sr.getContentType());
     }
     
@@ -122,7 +122,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         MockHttpServletResponse sr = getAsServletResponse("gwc/service/wmts?request=GetTile&layer="
                 + layerId
                 + "&format=image/png&tilematrixset=EPSG:4326&tilematrix=EPSG:4326:0&tilerow=0&tilecol=0");
-        assertEquals(200, sr.getErrorCode());
+        assertEquals(200, sr.getStatus());
         assertEquals("image/png", sr.getContentType());
     }
     
@@ -131,7 +131,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         String layerId = getLayerId(MockData.BASIC_POLYGONS);
         MockHttpServletResponse sr = getAsServletResponse("gwc/service/wms?service=wms&version=1.1.1&request=GetLegendGraphic&layer="
                 + layerId + "&style=&format=image/png");
-        assertEquals(200, sr.getErrorCode());
+        assertEquals(200, sr.getStatus());
         assertEquals("image/png", sr.getContentType());
     }
     
@@ -143,7 +143,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         MockHttpServletResponse sr = getAsServletResponse("gwc/service/wmts?request=GetTile&layer="
                 + layerId
                 + "&format=image/png&tilematrixset=EPSG:4326&tilematrix=EPSG:4326:0&tilerow=0&tilecol=0");
-        assertEquals(200, sr.getErrorCode());
+        assertEquals(200, sr.getStatus());
         assertEquals("image/png", sr.getContentType());
         assertEquals("max-age=7200, must-revalidate", sr.getHeader("Cache-Control"));
     }
@@ -156,7 +156,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         MockHttpServletResponse sr = getAsServletResponse("gwc/service/wmts?request=GetTile&layer="
                 + layerId
                 + "&format=image/png&tilematrixset=EPSG:4326&tilematrix=EPSG:4326:0&tilerow=0&tilecol=0");
-        assertEquals(200, sr.getErrorCode());
+        assertEquals(200, sr.getStatus());
         assertEquals("image/png", sr.getContentType());
         assertNull(sr.getHeader("Cache-Control"));
     }
@@ -180,7 +180,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         MockHttpServletResponse sr = getAsServletResponse("gwc/service/wmts?request=GetTile&layer="
                 + FLAT_LAYER_GROUP
                 + "&format=image/png&tilematrixset=EPSG:4326&tilematrix=EPSG:4326:0&tilerow=0&tilecol=0");
-        assertEquals(200, sr.getErrorCode());
+        assertEquals(200, sr.getStatus());
         assertEquals("image/png", sr.getContentType());
         assertEquals("max-age=1000, must-revalidate", sr.getHeader("Cache-Control"));
     }
@@ -215,7 +215,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         MockHttpServletResponse sr = getAsServletResponse("gwc/service/wmts?request=GetTile&layer="
                 + NESTED_LAYER_GROUP
                 + "&format=image/png&tilematrixset=EPSG:4326&tilematrix=EPSG:4326:0&tilerow=0&tilecol=0");
-        assertEquals(200, sr.getErrorCode());
+        assertEquals(200, sr.getStatus());
         assertEquals("image/png", sr.getContentType());
         assertEquals("max-age=7200, must-revalidate", sr.getHeader("Cache-Control"));
         
@@ -223,7 +223,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         sr = getAsServletResponse("gwc/service/wmts?request=GetTile&layer="
                 + CONTAINER_LAYER_GROUP
                 + "&format=image/png&tilematrixset=EPSG:4326&tilematrix=EPSG:4326:0&tilerow=0&tilecol=0");
-        assertEquals(200, sr.getErrorCode());
+        assertEquals(200, sr.getStatus());
         assertEquals("image/png", sr.getContentType());
         assertEquals("max-age=1000, must-revalidate", sr.getHeader("Cache-Control"));
     }
@@ -252,14 +252,14 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         request = buildGetMap(true, layerName, "EPSG:4326", null);
         response = getAsServletResponse(request);
 
-        assertEquals(200, response.getStatusCode());
+        assertEquals(200, response.getStatus());
         assertEquals("image/png", response.getContentType());
         assertNull(response.getHeader("geowebcache-tile-index"));
 
         request = request + "&tiled=true";
         response = getAsServletResponse(request);
 
-        assertEquals(200, response.getErrorCode());
+        assertEquals(200, response.getStatus());
         assertEquals("image/png", response.getContentType());
     }
 
@@ -273,7 +273,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         String request = buildGetMap(true, layerName, "EPSG:4326", null) + "&tiled=true";
         MockHttpServletResponse response = getAsServletResponse(request);
 
-        assertEquals(200, response.getStatusCode());
+        assertEquals(200, response.getStatus());
         assertEquals("image/png", response.getContentType());
         assertEquals(layerName, response.getHeader("geowebcache-layer"));
         assertEquals("[0, 0, 0]", response.getHeader("geowebcache-tile-index"));
@@ -293,7 +293,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
                 + "&srs=EPSG:4326&bbox=-90,-180,90,0&format=image/png&width=256&height=256&tiled=true";
         MockHttpServletResponse response = getAsServletResponse(request);
 
-        assertEquals(200, response.getStatusCode());
+        assertEquals(200, response.getStatus());
         assertEquals("image/png", response.getContentType());
         assertEquals(layerName, response.getHeader("geowebcache-layer"));
         assertEquals("[0, 0, 0]", response.getHeader("geowebcache-tile-index"));
@@ -311,7 +311,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         final String path = buildGetMap(true, layerName, "EPSG:4326", null) + "&tiled=true";
 
         MockHttpServletResponse response = getAsServletResponse(path);
-        assertEquals(200, response.getStatusCode());
+        assertEquals(200, response.getStatus());
         assertEquals("image/png", response.getContentType());
 
         String lastModifiedHeader = response.getHeader("Last-Modified");
@@ -319,34 +319,34 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         Date lastModified = DateUtil.parseDate(lastModifiedHeader);
 
         MockHttpServletRequest httpReq = createGetRequest(path);
-        httpReq.setHeader("If-Modified-Since", lastModifiedHeader);
+        httpReq.addHeader("If-Modified-Since", lastModifiedHeader);
 
         response = dispatch(httpReq, "UTF-8");
 
-        assertEquals(HttpServletResponse.SC_NOT_MODIFIED, response.getErrorCode());
+        assertEquals(HttpServletResponse.SC_NOT_MODIFIED, response.getStatus());
 
         // set the If-Modified-Since header to some point in the past of the last modified value
         Date past = new Date(lastModified.getTime() - 5000);
         String ifModifiedSince = DateUtil.formatDate(past);
 
         httpReq = createGetRequest(path);
-        httpReq.setHeader("If-Modified-Since", ifModifiedSince);
+        httpReq.addHeader("If-Modified-Since", ifModifiedSince);
         response = dispatch(httpReq, "UTF-8");
-        assertEquals(HttpServletResponse.SC_OK, response.getErrorCode());
+        assertEquals(HttpServletResponse.SC_OK, response.getStatus());
 
         Date future = new Date(lastModified.getTime() + 5000);
         ifModifiedSince = DateUtil.formatDate(future);
 
         httpReq = createGetRequest(path);
-        httpReq.setHeader("If-Modified-Since", ifModifiedSince);
+        httpReq.addHeader("If-Modified-Since", ifModifiedSince);
         response = dispatch(httpReq, "UTF-8");
-        assertEquals(HttpServletResponse.SC_NOT_MODIFIED, response.getErrorCode());
+        assertEquals(HttpServletResponse.SC_NOT_MODIFIED, response.getStatus());
     }
 
     private MockHttpServletRequest createGetRequest(final String path) {
         MockHttpServletRequest httpReq = createRequest(path);
         httpReq.setMethod("GET");
-        httpReq.setBodyContent(new byte[] {});
+        httpReq.setContent(new byte[] {});
         return httpReq;
     }
 
@@ -394,7 +394,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
 
         MockHttpServletResponse response = getAsServletResponse(request);
 
-        assertEquals(200, response.getStatusCode());
+        assertEquals(200, response.getStatus());
         assertEquals("image/png", response.getContentType());
         assertEquals(qualifiedName, response.getHeader("geowebcache-layer"));
     }
@@ -416,13 +416,13 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
 
         MockHttpServletResponse response = getAsServletResponse(request);
 
-        assertEquals(200, response.getStatusCode());
+        assertEquals(200, response.getStatus());
         assertEquals("image/png", response.getContentType());
         assertEquals(qualifiedName, response.getHeader("geowebcache-layer"));
         assertThat(response.getHeader("geowebcache-cache-result"), equalToIgnoringCase("MISS"));
         
         MockHttpServletResponse response2 = getAsServletResponse(request);
-        assertEquals(200, response2.getStatusCode());
+        assertEquals(200, response2.getStatus());
         assertEquals("image/png", response2.getContentType());
         assertEquals(qualifiedName, response2.getHeader("geowebcache-layer"));
         assertThat(response2.getHeader("geowebcache-cache-result"), equalToIgnoringCase("HIT"));
@@ -434,7 +434,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
                         WORKSPACED_STYLE_NAME, tileLayer) + "&tiled=true";
 
         MockHttpServletResponse response3 = getAsServletResponse(request);
-        assertEquals(200, response3.getStatusCode());
+        assertEquals(200, response3.getStatus());
         assertEquals("image/png", response3.getContentType());
         assertEquals(qualifiedName, response3.getHeader("geowebcache-layer"));
         assertThat(response3.getHeader("geowebcache-cache-result"), equalToIgnoringCase("HIT"));
@@ -452,7 +452,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
                 + buildGetMap(directWMSIntegrationEndpoint, localName, "EPSG:4326",
                         WORKSPACED_STYLE_NAME, tileLayer) + "&tiled=true";
         MockHttpServletResponse response4 = getAsServletResponse(request);
-        assertEquals(200, response4.getStatusCode());
+        assertEquals(200, response4.getStatus());
         assertEquals("image/png", response4.getContentType());
         assertEquals(newWorkspaceName + ":" + WORKSPACED_LAYER,
                 response4.getHeader("geowebcache-layer"));
@@ -485,13 +485,13 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
                 + WORKSPACED_LAYER_GROUP
                 + "&format=image/png&tilematrixset=EPSG:4326&tilematrix=EPSG:4326:0&tilerow=0&tilecol=0";
         MockHttpServletResponse sr = getAsServletResponse(request);
-        assertEquals(200, sr.getErrorCode());
+        assertEquals(200, sr.getStatus());
         assertEquals("image/png", sr.getContentType());
         assertThat(sr.getHeader("geowebcache-cache-result"), equalToIgnoringCase("MISS"));
 
         // run again, it should be a hit
         sr = getAsServletResponse(request);
-        assertEquals(200, sr.getErrorCode());
+        assertEquals(200, sr.getStatus());
         assertEquals("image/png", sr.getContentType());
         assertThat(sr.getHeader("geowebcache-cache-result"), equalToIgnoringCase("HIT"));
 
@@ -502,7 +502,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         request = buildGetMap(true, lg.prefixedName(), "EPSG:4326", null, tileLayer)
                 + "&tiled=true";
         sr = getAsServletResponse(request);
-        assertEquals(200, sr.getErrorCode());
+        assertEquals(200, sr.getStatus());
         assertEquals("image/png", sr.getContentType());
         assertEquals(lg.prefixedName(), sr.getHeader("geowebcache-layer"));
         assertThat(sr.getHeader("geowebcache-cache-result"), equalToIgnoringCase("HIT"));
@@ -511,7 +511,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         request = workspaceName + "/"
                 + buildGetMap(true, lg.getName(), "EPSG:4326", null, tileLayer) + "&tiled=true";
         sr = getAsServletResponse(request);
-        assertEquals(200, sr.getErrorCode());
+        assertEquals(200, sr.getStatus());
         assertEquals(lg.prefixedName(), sr.getHeader("geowebcache-layer"));
         assertThat(sr.getHeader("geowebcache-cache-result"), equalToIgnoringCase("HIT"));
 
@@ -528,7 +528,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
                 + WORKSPACED_LAYER_GROUP
                 + "&format=image/png&tilematrixset=EPSG:4326&tilematrix=EPSG:4326:0&tilerow=0&tilecol=0";
         sr = getAsServletResponse(request);
-        assertEquals(200, sr.getErrorCode());
+        assertEquals(200, sr.getStatus());
         assertEquals("image/png", sr.getContentType());
         assertThat(sr.getHeader("geowebcache-cache-result"), equalToIgnoringCase("HIT"));
 
@@ -536,7 +536,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         String newQualifiedName = newWorkspaceName + ":" + lg.getName();
         request = buildGetMap(true, newQualifiedName, "EPSG:4326", null, tileLayer) + "&tiled=true";
         sr = getAsServletResponse(request);
-        assertEquals(200, sr.getErrorCode());
+        assertEquals(200, sr.getStatus());
         assertEquals("image/png", sr.getContentType());
         assertEquals(lg.prefixedName(), sr.getHeader("geowebcache-layer"));
         assertThat(sr.getHeader("geowebcache-cache-result"), equalToIgnoringCase("HIT"));
@@ -545,7 +545,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         request = newWorkspaceName + "/"
                 + buildGetMap(true, lg.getName(), "EPSG:4326", null, tileLayer) + "&tiled=true";
         sr = getAsServletResponse(request);
-        assertEquals(200, sr.getErrorCode());
+        assertEquals(200, sr.getStatus());
         assertEquals(newQualifiedName, sr.getHeader("geowebcache-layer"));
         assertThat(sr.getHeader("geowebcache-cache-result"), equalToIgnoringCase("HIT"));
     }
@@ -573,13 +573,13 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
 
         MockHttpServletResponse response = getAsServletResponse(request);
 
-        assertEquals(200, response.getStatusCode());
+        assertEquals(200, response.getStatus());
 
         assertTrue(response.getContentType(),
                 response.getContentType().startsWith("application/vnd.ogc.se_xml"));
 
-        assertTrue(response.getOutputStreamContent(),
-                response.getOutputStreamContent()
+        assertTrue(response.getContentAsString(),
+                response.getContentAsString()
                         .contains("Could not find layer cdf:BasicPolygons"));
     }
 
@@ -588,7 +588,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         String content = "reload_configuration=1";
         String contentType = "application/x-www-form-urlencoded";
         MockHttpServletResponse response = postAsServletResponse(path, content, contentType);
-        assertEquals(200, response.getStatusCode());
+        assertEquals(200, response.getStatus());
     }
 
     @Test public void testBasicIntegration() throws Exception {
@@ -817,7 +817,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         GeoWebCacheDispatcher dispatcher = GeoServerExtensions.bean(GeoWebCacheDispatcher.class);
         // dispatcher.setServletPrefix("http://localhost/geoserver/");
         MockHttpServletResponse response = getAsServletResponse("gwc/service/wms?service=wms&version=1.1.0&request=GetCapabilities");
-        System.out.println(response.getOutputStreamContent());
+        System.out.println(response.getContentAsString());
         assertEquals("application/vnd.ogc.wms_xml", response.getContentType());
         assertEquals("inline;filename=wms-getcapabilities.xml", response.getHeader("content-disposition"));
     }
@@ -914,7 +914,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
                 + "&tilematrix=EPSG:4326:0" //
                 + "&tilerow=0" //
                 + "&tilecol=0");
-        assertEquals(200, response.getErrorCode());
+        assertEquals(200, response.getStatus());
         assertEquals("image/png", response.getContentType());
         // cache directory and cached tile should now be present
         assertNotNull("Missing cache directory " + cacheDirectory, loader.find(cacheDirectory));

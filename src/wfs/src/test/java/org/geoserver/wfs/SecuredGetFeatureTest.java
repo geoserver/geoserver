@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -30,8 +30,8 @@ import org.junit.Test;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
-import com.mockrunner.mock.web.MockHttpServletRequest;
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 public class SecuredGetFeatureTest extends WFSTestSupport {
 	
@@ -74,7 +74,7 @@ public class SecuredGetFeatureTest extends WFSTestSupport {
         dao.storeRules();
 
         MockHttpServletResponse resp = getAsServletResponse("wfs?request=GetFeature&version=1.0.0&service=wfs&typeName=" + getLayerId(SystemTestData.BUILDINGS));
-        assertEquals(401, resp.getErrorCode());
+        assertEquals(401, resp.getStatus());
         assertEquals("Basic realm=\"GeoServer Realm\"", resp.getHeader("WWW-Authenticate"));
     }
     
@@ -87,7 +87,7 @@ public class SecuredGetFeatureTest extends WFSTestSupport {
         request.addHeader("Authorization",  "Basic " + new String(Base64.encodeBase64("cite:wrongpassword".getBytes())));
 
         MockHttpServletResponse resp = dispatch(request);
-        assertEquals(401, resp.getErrorCode());
+        assertEquals(401, resp.getStatus());
         assertEquals("Basic realm=\"GeoServer Realm\"", resp.getHeader("WWW-Authenticate"));
     }
     

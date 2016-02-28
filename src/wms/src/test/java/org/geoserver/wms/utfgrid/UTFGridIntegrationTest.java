@@ -21,7 +21,7 @@ import org.geoserver.wms.wms_1_1_1.GetMapIntegrationTest;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 import net.sf.json.JSON;
 import net.sf.json.JSONObject;
@@ -111,7 +111,7 @@ public class UTFGridIntegrationTest extends WMSTestSupport {
     private UTFGridTester getAsGridTester(String request, int width, int height, int resolution) throws Exception {
         MockHttpServletResponse response = getAsServletResponse(request);
         if(!response.getContentType().startsWith("application/json")) {
-            System.out.println(response.getOutputStreamContent());
+            System.out.println(response.getContentAsString());
             fail("Expected json but got " + response.getContentType());
         }
         JSON json = json(response);

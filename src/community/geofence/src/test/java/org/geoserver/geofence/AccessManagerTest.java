@@ -6,8 +6,7 @@ package org.geoserver.geofence;
 
 import java.util.*;
 
-import com.mockrunner.mock.web.MockHttpServletRequest;
-import com.mockrunner.mock.web.MockRequestDispatcher;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.geoserver.catalog.*;
 import org.geoserver.catalog.impl.*;
 import org.geoserver.data.test.MockData;

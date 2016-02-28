@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2014 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -13,7 +13,7 @@ import org.geotools.process.Processors;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 public class RawInputOutputTest extends WPSTestSupport {
 
@@ -115,7 +115,7 @@ public class RawInputOutputTest extends WPSTestSupport {
         MockHttpServletResponse response = postAsServletResponse("wps", xml);
         // System.out.println(response.getContentType());
         assertEquals("text/xml", response.getContentType());
-        assertEquals("ABCDE", response.getOutputStreamContent());
+        assertEquals("ABCDE", response.getContentAsString());
     }
     
     @Test
@@ -175,7 +175,7 @@ public class RawInputOutputTest extends WPSTestSupport {
         
         MockHttpServletResponse response = getAsServletResponse(reference);
         assertEquals("application/json", response.getContentType());
-        assertEquals("ABCDE", response.getOutputStreamContent());
+        assertEquals("ABCDE", response.getContentAsString());
     }
     
     @Test

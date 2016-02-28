@@ -46,8 +46,8 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import com.mockrunner.mock.web.MockHttpServletRequest;
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 public class DirectDownloadTest extends GeoServerSystemTestSupport {
 
@@ -212,7 +212,7 @@ public class DirectDownloadTest extends GeoServerSystemTestSupport {
         MockHttpServletResponse response = getAsServletResponse(downloadLink);
         assertEquals("application/xml", response.getContentType());
 
-        Document domResponse = dom(new ByteArrayInputStream(response.getOutputStreamContent()
+        Document domResponse = dom(new ByteArrayInputStream(response.getContentAsString()
                 .getBytes()));
         Element root = domResponse.getDocumentElement();
         assertEquals("ows:ExceptionReport", root.getNodeName());

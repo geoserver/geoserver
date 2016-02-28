@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -31,7 +31,7 @@ import org.junit.Test;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.w3c.dom.Document;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 public class WMSLayerTest extends CatalogRESTTestSupport {
     
@@ -123,12 +123,12 @@ public class WMSLayerTest extends CatalogRESTTestSupport {
     
     @Test
     public void testPutAllUnauthorized() throws Exception {
-        assertEquals( 405, putAsServletResponse("/rest/workspaces/sf/wmsstores/demo/wmslayers").getStatusCode() );
+        assertEquals( 405, putAsServletResponse("/rest/workspaces/sf/wmsstores/demo/wmslayers").getStatus() );
     }
     
     @Test
     public void testDeleteAllUnauthorized() throws Exception {
-        assertEquals( 405, deleteAsServletResponse("/rest/workspaces/sf/wmsstores/demo/wmslayers").getStatusCode() );
+        assertEquals( 405, deleteAsServletResponse("/rest/workspaces/sf/wmsstores/demo/wmslayers").getStatus() );
     }
  
     @Test
@@ -151,7 +151,7 @@ public class WMSLayerTest extends CatalogRESTTestSupport {
         MockHttpServletResponse response = 
             postAsServletResponse( "/rest/workspaces/sf/wmsstores/demo/wmslayers/", xml, "text/xml");
         
-        assertEquals( 201, response.getStatusCode() );
+        assertEquals( 201, response.getStatus() );
         assertNotNull( response.getHeader( "Location") );
         assertTrue( response.getHeader("Location").endsWith( "/workspaces/sf/wmsstores/demo/wmslayers/bugsites" ) );
         
@@ -181,7 +181,7 @@ public class WMSLayerTest extends CatalogRESTTestSupport {
         MockHttpServletResponse response =  
             postAsServletResponse( "/rest/workspaces/sf/wmsstores/demo/wmslayers/", json, "text/json");
         
-        assertEquals( 201, response.getStatusCode() );
+        assertEquals( 201, response.getStatus() );
         assertNotNull( response.getHeader( "Location") );
         assertTrue( response.getHeader("Location").endsWith( "/workspaces/sf/wmsstores/demo/wmslayers/bugsites" ) );
         
@@ -198,7 +198,7 @@ public class WMSLayerTest extends CatalogRESTTestSupport {
         
         MockHttpServletResponse response = 
             postAsServletResponse( "/rest/workspaces/sf/wmsstores/demo/wmslayers/states", xml, "text/xml");
-        assertEquals( 405, response.getStatusCode() );
+        assertEquals( 405, response.getStatus() );
     }
     
     @Test
@@ -253,33 +253,33 @@ public class WMSLayerTest extends CatalogRESTTestSupport {
         
         // First request should thrown an exception
         MockHttpServletResponse response = getAsServletResponse(requestPath);
-        assertEquals(404, response.getStatusCode());
-        assertTrue(response.getOutputStreamContent().contains(
+        assertEquals(404, response.getStatus());
+        assertTrue(response.getContentAsString().contains(
                 exception));
         
         // Same request with ?quietOnNotFound should not throw an exception
         response = getAsServletResponse(requestPath + "?quietOnNotFound=true");
-        assertEquals(404, response.getStatusCode());
-        assertFalse(response.getOutputStreamContent().contains(
+        assertEquals(404, response.getStatus());
+        assertFalse(response.getContentAsString().contains(
                 exception));
         // No exception thrown
-        assertTrue(response.getOutputStreamContent().isEmpty());
+        assertTrue(response.getContentAsString().isEmpty());
         
         // CASE 2: wmsstore set
         
         // First request should thrown an exception
         response = getAsServletResponse(requestPath2);
-        assertEquals(404, response.getStatusCode());
-        assertTrue(response.getOutputStreamContent().contains(
+        assertEquals(404, response.getStatus());
+        assertTrue(response.getContentAsString().contains(
                 exception2));
         
         // Same request with ?quietOnNotFound should not throw an exception
         response = getAsServletResponse(requestPath2 + "?quietOnNotFound=true");
-        assertEquals(404, response.getStatusCode());
-        assertFalse(response.getOutputStreamContent().contains(
+        assertEquals(404, response.getStatus());
+        assertFalse(response.getContentAsString().contains(
                 exception2));
         // No exception thrown
-        assertTrue(response.getOutputStreamContent().isEmpty());
+        assertTrue(response.getContentAsString().isEmpty());
     }
     
     @Test
@@ -290,7 +290,7 @@ public class WMSLayerTest extends CatalogRESTTestSupport {
           "</wmsLayer>";
         MockHttpServletResponse response = 
             putAsServletResponse("/rest/workspaces/sf/wmsstores/demo/wmslayers/states", xml, "text/xml");
-        assertEquals( 200, response.getStatusCode() );
+        assertEquals( 200, response.getStatus() );
         
         Document dom = getAsDOM("/rest/workspaces/sf/wmsstores/demo/wmslayers/states.xml");
         assertXpathEvaluatesTo("Lots of states here", "/wmsLayer/title", dom );
@@ -307,21 +307,21 @@ public class WMSLayerTest extends CatalogRESTTestSupport {
             "</wmsLayer>";
           MockHttpServletResponse response = 
               putAsServletResponse("/rest/workspaces/sf/wmsstores/demo/wmslayers/bugsites", xml, "text/xml");
-          assertEquals( 404, response.getStatusCode() );
+          assertEquals( 404, response.getStatus() );
     }
    
     @Test
     public void testDelete() throws Exception {
         assertNotNull(catalog.getResourceByName("sf", "states", WMSLayerInfo.class));
         assertEquals( 200,  
-            deleteAsServletResponse( "/rest/workspaces/sf/wmsstores/demo/wmslayers/states").getStatusCode());
+            deleteAsServletResponse( "/rest/workspaces/sf/wmsstores/demo/wmslayers/states").getStatus());
         assertNull( catalog.getResourceByName("sf", "states", WMSLayerInfo.class));
     }
     
     @Test
     public void testDeleteNonExistant() throws Exception {
         assertEquals( 404,  
-            deleteAsServletResponse( "/rest/workspaces/sf/wmsstores/demo/wmslayers/NonExistent").getStatusCode());
+            deleteAsServletResponse( "/rest/workspaces/sf/wmsstores/demo/wmslayers/NonExistent").getStatus());
     }
     
     void addLayer() {
@@ -339,7 +339,7 @@ public class WMSLayerTest extends CatalogRESTTestSupport {
         
         assertNotNull(catalog.getResourceByName("sf", "states", WMSLayerInfo.class));
         assertEquals( 403,  
-            deleteAsServletResponse( "/rest/workspaces/sf/wmsstores/demo/wmslayers/states").getStatusCode());
+            deleteAsServletResponse( "/rest/workspaces/sf/wmsstores/demo/wmslayers/states").getStatus());
     }
     
     @Test
@@ -350,7 +350,7 @@ public class WMSLayerTest extends CatalogRESTTestSupport {
         assertNotNull(catalog.getResourceByName("sf", "states", WMSLayerInfo.class));
         
         assertEquals( 200,  
-            deleteAsServletResponse( "/rest/workspaces/sf/wmsstores/demo/wmslayers/states?recurse=true").getStatusCode());
+            deleteAsServletResponse( "/rest/workspaces/sf/wmsstores/demo/wmslayers/states?recurse=true").getStatus());
         
         assertNull( catalog.getLayerByName("sf:states"));
         assertNull( catalog.getResourceByName("sf", "states", WMSLayerInfo.class));

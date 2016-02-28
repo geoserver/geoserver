@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -22,7 +22,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 public class CapabilitiesModifyingTest extends GeoServerSystemTestSupport {
     
@@ -56,8 +56,8 @@ public class CapabilitiesModifyingTest extends GeoServerSystemTestSupport {
     public void testMisconfiguredLayerGeneratesErrorDocumentInDefaultConfig() throws Exception {
         MockHttpServletResponse response = getAsServletResponse(
                 "wms?service=WMS&request=GetCapabilities&version=1.1.1");
-        assertTrue("Response does not contain ServiceExceptionReport: " + response.getOutputStreamContent(),
-                response.getOutputStreamContent().endsWith("</ServiceExceptionReport>"));
+        assertTrue("Response does not contain ServiceExceptionReport: " + response.getContentAsString(),
+                response.getContentAsString().endsWith("</ServiceExceptionReport>"));
     }
     
     @Test
@@ -78,8 +78,8 @@ public class CapabilitiesModifyingTest extends GeoServerSystemTestSupport {
     public void testMisconfiguredLayerGeneratesErrorDocumentInDefaultConfig_1_3_0() throws Exception {
         MockHttpServletResponse response = getAsServletResponse(
                 "wms?service=WMS&request=GetCapabilities&version=1.3.0");
-        assertTrue("Response does not contain ServiceExceptionReport: " + response.getOutputStreamContent(),
-                response.getOutputStreamContent().endsWith("</ServiceExceptionReport>"));
+        assertTrue("Response does not contain ServiceExceptionReport: " + response.getContentAsString(),
+                response.getContentAsString().endsWith("</ServiceExceptionReport>"));
     }
     
     @Test

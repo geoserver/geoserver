@@ -34,7 +34,7 @@ import org.opengis.filter.FilterFactory;
 import org.opengis.filter.expression.PropertyName;
 import org.w3c.dom.Document;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 /**
  * Performs integration tests using a mock {@link ResourceAccessManager}
@@ -292,7 +292,7 @@ public class ResourceAccessManagerWFSTest extends WFSTestSupport {
         // and a direct access will fail with an auth challenge
         setRequestAuth("cite_mixed", "cite");
         MockHttpServletResponse response = getAsServletResponse("cite/wfs?request=DescribeFeatureType&version=1.1.0&service=wfs&typeName=" + getLayerId(SystemTestData.BUILDINGS));
-        assertEquals(403, response.getErrorCode());
+        assertEquals(403, response.getStatus());
     }
     
     @Test

@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -43,7 +43,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 /**
  * Integration test for GeoServer cached layers using the GWC REST API
@@ -62,7 +62,7 @@ public class RESTIntegrationTest extends GeoServerSystemTestSupport {
     public void testGetLayersList() throws Exception {
         final String url = "gwc/rest/layers.xml";
         MockHttpServletResponse sr = getAsServletResponse(url);
-        assertEquals(200, sr.getErrorCode());
+        assertEquals(200, sr.getStatus());
         assertTrue(sr.getContentType(), sr.getContentType().startsWith("text/xml"));
 
         Document dom = getAsDOM(url);
@@ -91,7 +91,7 @@ public class RESTIntegrationTest extends GeoServerSystemTestSupport {
         final String id = getCatalog().getLayerByName(layerName).getId();
 
         MockHttpServletResponse sr = getAsServletResponse(url);
-        assertEquals(200, sr.getErrorCode());
+        assertEquals(200, sr.getStatus());
         assertTrue(sr.getContentType(), sr.getContentType().startsWith("text/xml"));
 
         Document dom = getAsDOM(url);
@@ -118,10 +118,10 @@ public class RESTIntegrationTest extends GeoServerSystemTestSupport {
 
         MockHttpServletResponse response = putLayer(url, "badId", layerName);
 
-        assertEquals(HttpServletResponse.SC_BAD_REQUEST, response.getStatusCode());
+        assertEquals(HttpServletResponse.SC_BAD_REQUEST, response.getStatus());
         // See GWCGeoServerRESTConfigurationProvider$RESTConverterHelper.unmarshal
         String expected = "No GeoServer Layer or LayerGroup exists with id 'badId'";
-        assertEquals(expected, response.getOutputStreamContent());
+        assertEquals(expected, response.getContentAsString());
         assertTrue(response.getContentType().startsWith("text/plain"));
     }
 
@@ -135,10 +135,10 @@ public class RESTIntegrationTest extends GeoServerSystemTestSupport {
         final String url = "gwc/rest/layers/badLayerName.xml";
         MockHttpServletResponse response = putLayer(url, "", "badLayerName");
 
-        assertEquals(HttpServletResponse.SC_NOT_FOUND, response.getStatusCode());
+        assertEquals(HttpServletResponse.SC_NOT_FOUND, response.getStatus());
         // See GWCGeoServerRESTConfigurationProvider$RESTConverterHelper.unmarshal
         String expected = "GeoServer Layer or LayerGroup 'badLayerName' not found";
-        assertEquals(expected, response.getOutputStreamContent());
+        assertEquals(expected, response.getContentAsString());
     }
 
     @Test
@@ -151,11 +151,11 @@ public class RESTIntegrationTest extends GeoServerSystemTestSupport {
 
         MockHttpServletResponse response = putLayer(url, id, "badLayerName");
 
-        assertEquals(HttpServletResponse.SC_BAD_REQUEST, response.getStatusCode());
+        assertEquals(HttpServletResponse.SC_BAD_REQUEST, response.getStatus());
         // See GWCGeoServerRESTConfigurationProvider$RESTConverterHelper.unmarshal
         String expected = "Layer with id '" + id
                 + "' found but name does not match: 'badLayerName'/'" + layerName + "'";
-        assertEquals(expected, response.getOutputStreamContent());
+        assertEquals(expected, response.getContentAsString());
     }
 
     /**
@@ -171,10 +171,10 @@ public class RESTIntegrationTest extends GeoServerSystemTestSupport {
 
         MockHttpServletResponse response = putLayer(url, id, "");
 
-        assertEquals(HttpServletResponse.SC_BAD_REQUEST, response.getStatusCode());
+        assertEquals(HttpServletResponse.SC_BAD_REQUEST, response.getStatus());
         // See GWCGeoServerRESTConfigurationProvider$RESTConverterHelper.unmarshal
         String expected = "Layer name not provided";
-        assertEquals(expected, response.getOutputStreamContent());
+        assertEquals(expected, response.getContentAsString());
     }
 
     @Test
@@ -187,11 +187,11 @@ public class RESTIntegrationTest extends GeoServerSystemTestSupport {
 
         MockHttpServletResponse response = putLayer(url, id, layerName);
 
-        assertEquals(HttpServletResponse.SC_BAD_REQUEST, response.getStatusCode());
+        assertEquals(HttpServletResponse.SC_BAD_REQUEST, response.getStatus());
         // See GWC's TileLayerRestlet
         String expected = "Layer with name " + layerName
                 + " already exists, use POST if you want to replace it.";
-        assertEquals(expected, response.getOutputStreamContent());
+        assertEquals(expected, response.getContentAsString());
 
     }
 
@@ -205,10 +205,10 @@ public class RESTIntegrationTest extends GeoServerSystemTestSupport {
 
         MockHttpServletResponse response = putLayer(url, id, layerName);
 
-        assertEquals(HttpServletResponse.SC_BAD_REQUEST, response.getStatusCode());
+        assertEquals(HttpServletResponse.SC_BAD_REQUEST, response.getStatus());
         // See GWC's TileLayerRestlet
         String expected = "There is a mismatch between the name of the  layer in the submission and the URL you specified.";
-        assertEquals(expected, response.getOutputStreamContent());
+        assertEquals(expected, response.getContentAsString());
 
     }
 
@@ -227,7 +227,7 @@ public class RESTIntegrationTest extends GeoServerSystemTestSupport {
 
         MockHttpServletResponse response = putLayer(url, id, layerName);
 
-        assertEquals(HttpServletResponse.SC_OK, response.getStatusCode());
+        assertEquals(HttpServletResponse.SC_OK, response.getStatus());
 
         assertTrue(mediator.tileLayerExists(layerName));
     }
@@ -277,7 +277,7 @@ public class RESTIntegrationTest extends GeoServerSystemTestSupport {
 
         MockHttpServletResponse response = super.putAsServletResponse(url, xml, "text/xml");
 
-        assertEquals(HttpServletResponse.SC_OK, response.getStatusCode());
+        assertEquals(HttpServletResponse.SC_OK, response.getStatus());
 
         assertTrue(mediator.tileLayerExists(layerName));
         GeoServerTileLayer tileLayer = (GeoServerTileLayer) mediator.getTileLayerByName(layerName);
@@ -353,7 +353,7 @@ public class RESTIntegrationTest extends GeoServerSystemTestSupport {
 
         MockHttpServletResponse response = super.putAsServletResponse(url, xml, "text/xml");
 
-        assertEquals(HttpServletResponse.SC_OK, response.getStatusCode());
+        assertEquals(HttpServletResponse.SC_OK, response.getStatus());
 
         assertTrue(mediator.tileLayerExists(layerName));
         GeoServerTileLayer tileLayer = (GeoServerTileLayer) mediator.getTileLayerByName(layerName);
@@ -410,7 +410,7 @@ public class RESTIntegrationTest extends GeoServerSystemTestSupport {
 
         final String url = "gwc/rest/layers/" + layerName + ".xml";
         MockHttpServletResponse response = super.deleteAsServletResponse(url);
-        assertEquals(HttpServletResponse.SC_OK, response.getStatusCode());
+        assertEquals(HttpServletResponse.SC_OK, response.getStatus());
         assertFalse(mediator.tileLayerExists(layerName));
     }
 
@@ -419,9 +419,9 @@ public class RESTIntegrationTest extends GeoServerSystemTestSupport {
 
         final String url = "gwc/rest/layers/badLayerName.xml";
         MockHttpServletResponse response = super.deleteAsServletResponse(url);
-        assertEquals(HttpServletResponse.SC_NOT_FOUND, response.getStatusCode());
+        assertEquals(HttpServletResponse.SC_NOT_FOUND, response.getStatus());
         // See GWC's TileLayerRestlet
-        assertEquals("Unknown layer: badLayerName", response.getOutputStreamContent());
+        assertEquals("Unknown layer: badLayerName", response.getContentAsString());
     }
 
     @Test
@@ -462,7 +462,7 @@ public class RESTIntegrationTest extends GeoServerSystemTestSupport {
 
         MockHttpServletResponse response = super.postAsServletResponse(url, xml, "text/xml");
 
-        assertEquals(HttpServletResponse.SC_OK, response.getStatusCode());
+        assertEquals(HttpServletResponse.SC_OK, response.getStatus());
 
         assertTrue(mediator.tileLayerExists(layerName));
         GeoServerTileLayer tileLayer = (GeoServerTileLayer) mediator.getTileLayerByName(layerName);
@@ -517,7 +517,7 @@ public class RESTIntegrationTest extends GeoServerSystemTestSupport {
     
             MockHttpServletResponse response = super.postAsServletResponse(url, xml, "text/xml");
     
-            assertEquals(HttpServletResponse.SC_OK, response.getStatusCode());
+            assertEquals(HttpServletResponse.SC_OK, response.getStatus());
     
             GeoServerTileLayer tileLayer = (GeoServerTileLayer) mediator.getTileLayerByName(layerName);
             GeoServerTileLayerInfo info = tileLayer.getInfo();
@@ -540,7 +540,7 @@ public class RESTIntegrationTest extends GeoServerSystemTestSupport {
     
             MockHttpServletResponse response = super.postAsServletResponse(url, xml, "text/xml");
     
-            assertEquals(HttpServletResponse.SC_OK, response.getStatusCode());
+            assertEquals(HttpServletResponse.SC_OK, response.getStatus());
     
             GeoServerTileLayer tileLayer = (GeoServerTileLayer) mediator.getTileLayerByName(layerName);
             GeoServerTileLayerInfo info = tileLayer.getInfo();

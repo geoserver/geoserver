@@ -6,9 +6,9 @@
 
 package org.geoserver.ows;
 
-import com.mockrunner.mock.web.MockHttpServletRequest;
-import com.mockrunner.mock.web.MockHttpServletResponse;
-import com.mockrunner.mock.web.MockServletContext;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockServletContext;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.net.URLEncoder;
@@ -77,7 +77,7 @@ public class FilePublisherTest {
         String uri = URLEncoder.encode(b.toString(), "UTF-8");
         request.setRequestURI(uri);
         if (modifiedSince != null) {
-            request.setHeader("If-Modified-Since", modifiedSince);
+            request.addHeader("If-Modified-Since", modifiedSince);
         }
         MockHttpServletResponse response = new MockHttpServletResponse();
         publisher.handleRequest(request, response);
@@ -88,8 +88,8 @@ public class FilePublisherTest {
     public void testEncoding() throws Exception {
         for (String[] path: paths) {
             MockHttpServletResponse response = request(path, null);
-            assertEquals(Arrays.toString(path), 200, response.getErrorCode());
-            assertEquals(path[path.length - 1], response.getOutputStreamContent());
+            assertEquals(Arrays.toString(path), 200, response.getStatus());
+            assertEquals(path[path.length - 1], response.getContentAsString());
         }
     }
 
@@ -101,16 +101,16 @@ public class FilePublisherTest {
             String lastModified = response.getHeader("Last-Modified");
             assertNotNull(lastModified);
             response = request(path, lastModified);
-            assertEquals(304, response.getStatusCode());
+            assertEquals(304, response.getStatus());
 
             long timeStamp = AbstractURLPublisher.lastModified(lastModified) + 10000;
             response = request(path, AbstractURLPublisher.lastModified(timeStamp));
-            assertEquals(304, response.getStatusCode());
+            assertEquals(304, response.getStatus());
 
             timeStamp -= 20000;
             response = request(path, AbstractURLPublisher.lastModified(timeStamp));
-            assertEquals(200, response.getErrorCode());
-            assertEquals(path[path.length - 1], response.getOutputStreamContent());
+            assertEquals(200, response.getStatus());
+            assertEquals(path[path.length - 1], response.getContentAsString());
         }
     }
 

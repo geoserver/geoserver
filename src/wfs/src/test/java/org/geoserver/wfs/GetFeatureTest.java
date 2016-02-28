@@ -31,8 +31,8 @@ import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
-import com.mockrunner.mock.web.MockHttpServletRequest;
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 public class GetFeatureTest extends WFSTestSupport {
 	
@@ -66,12 +66,12 @@ public class GetFeatureTest extends WFSTestSupport {
         String body = "request=GetFeature&typename=cdf:Fifteen&version=1.0.0&service=wfs";
         MockHttpServletRequest request = createRequest("wfs");
         request.setMethod("POST");
-        request.setBodyContent(body);
+        request.setContent(body.getBytes("UTF-8"));
         // this is normally done by the servlet container, but the mock system won't do it
-        request.setupAddParameter("request", "GetFeature");
-        request.setupAddParameter("typename", "cdf:Fifteen");
-        request.setupAddParameter("version", "1.0.0");
-        request.setupAddParameter("service", "wfs");
+        request.addParameter("request", "GetFeature");
+        request.addParameter("typename", "cdf:Fifteen");
+        request.addParameter("version", "1.0.0");
+        request.addParameter("service", "wfs");
         request.setContentType(contentType);
         MockHttpServletResponse response = dispatch(request);
         try (ByteArrayInputStream bis = new ByteArrayInputStream(

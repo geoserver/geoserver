@@ -22,9 +22,9 @@ import org.junit.Test;
 
 import junit.framework.TestCase;
 
-import com.mockrunner.mock.web.MockFilterChain;
-import com.mockrunner.mock.web.MockHttpServletRequest;
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockFilterChain;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 public class MonitorFilterTest {
     
@@ -183,7 +183,7 @@ public class MonitorFilterTest {
         // "Referrer" was misspelled in the HTTP spec, check if it works with the "correct" 
         // spelling. 
         MockHttpServletRequest req = request("POST", "/bar/foo", "78.56.34.12", null, null);
-        ((MockHttpServletRequest)req).setHeader("Referrer", "http://testhost/testpath");
+        ((MockHttpServletRequest)req).addHeader("Referrer", "http://testhost/testpath");
         filter.doFilter(req, response(), chain);
         
         RequestData data = dao.getLast();
@@ -205,9 +205,9 @@ public class MonitorFilterTest {
         if(body==null) body=""; // MockHttpServletRequest#getInputStream doesn't like null bodies 
                                 // and throws NullPointerException. It should probably do something useful like return an empty stream or throw
                                 // IOException.
-        req.setBodyContent(body);
+        req.setContent(body.getBytes("UTF-8"));
         if(referer!=null)
-            req.setHeader("Referer", referer);
+            req.addHeader("Referer", referer);
         return req;
     }
     

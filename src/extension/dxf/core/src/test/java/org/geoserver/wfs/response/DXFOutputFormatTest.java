@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -16,7 +16,7 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.wfs.WFSTestSupport;
 import org.junit.Test;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 /**
  * Test the DXFOutputFormat WFS extension.
@@ -185,13 +185,13 @@ public class DXFOutputFormatTest extends WFSTestSupport {
         try {
             // geometry as blocks false
             MockHttpServletResponse resp = getAsServletResponse("wfs?request=GetFeature&version=1.1.0&typeName=Polygons&outputFormat=dxf");
-            String sResponse = resp.getOutputStreamContent();
+            String sResponse = resp.getContentAsString();
             assertNotNull(sResponse);
             // no insert block generated
             assertFalse(sResponse.indexOf("INSERT") != -1);
             // geometry as blocks true
             resp = getAsServletResponse("wfs?request=GetFeature&version=1.1.0&typeName=Polygons&outputFormat=dxf&format_options=asblocks:true");
-            sResponse = resp.getOutputStreamContent();
+            sResponse = resp.getContentAsString();
             assertNotNull(sResponse);
             // one insert block generated
             assertTrue(sResponse.indexOf("INSERT") != -1);
@@ -210,12 +210,12 @@ public class DXFOutputFormatTest extends WFSTestSupport {
         try {
             // good request, version 14
             MockHttpServletResponse resp = getAsServletResponse("wfs?request=GetFeature&version=1.1.0&typeName=Polygons&outputFormat=dxf&format_options=version:14");
-            String sResponse = resp.getOutputStreamContent();
+            String sResponse = resp.getContentAsString();
             assertNotNull(sResponse);
             assertTrue(sResponse.startsWith("  0"));
             // bad request, version 13: not supported
             resp = getAsServletResponse("wfs?request=GetFeature&version=1.1.0&typeName=Polygons&outputFormat=dxf&format_options=version:13");
-            sResponse = resp.getOutputStreamContent();
+            sResponse = resp.getContentAsString();
             assertNotNull(sResponse);
             // has to return an exception
             assertTrue(sResponse.indexOf("</ows:ExceptionReport>") != -1);
@@ -241,7 +241,7 @@ public class DXFOutputFormatTest extends WFSTestSupport {
         assertEquals("attachment; filename=" + featureName + ".dxf", resp
                 .getHeader("Content-Disposition"));
         // check for content (without checking in detail)
-        String sResponse = resp.getOutputStreamContent();        
+        String sResponse = resp.getContentAsString();        
         assertNotNull(sResponse);
         return sResponse;
 

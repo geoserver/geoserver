@@ -12,9 +12,9 @@ import java.lang.reflect.Method;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.mockrunner.mock.web.MockHttpServletRequest;
-import com.mockrunner.mock.web.MockHttpSession;
-import com.mockrunner.mock.web.MockServletContext;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpSession;
+import org.springframework.mock.web.MockServletContext;
 
 public class RequestWrapperTestSupport {
 
@@ -37,7 +37,7 @@ public class RequestWrapperTestSupport {
         request.setContentType("application/x-www-form-urlencoded");
 
 		request.setMethod("POST");
-		request.setBodyContent(body);
+		request.setContent(body.getBytes("UTF-8"));
 
         MockHttpSession session = new MockHttpSession(new MockServletContext());
         request.setSession(session);

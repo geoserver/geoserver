@@ -42,8 +42,8 @@ import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.w3c.dom.Document;
 
-import com.mockrunner.mock.web.MockHttpServletRequest;
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
 
@@ -63,9 +63,9 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
         
         MockHttpServletResponse response = 
             putAsServletResponse( "/rest/workspaces/sf/coveragestores/usa/file.worldimage", bytes, "application/zip");
-        assertEquals( 201, response.getStatusCode() );
+        assertEquals( 201, response.getStatus() );
         
-        String content = response.getOutputStreamContent();
+        String content = response.getContentAsString();
         Document d = dom( new ByteArrayInputStream( content.getBytes() ));
         assertEquals( "coverageStore", d.getDocumentElement().getNodeName());
         
@@ -85,7 +85,7 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
         
         MockHttpServletResponse response = 
             putAsServletResponse( "/rest/workspaces/gs/coveragestores/store%20with%20spaces/file.worldimage", bytes, "application/zip");
-        assertEquals(500, response.getStatusCode());
+        assertEquals(500, response.getStatus());
     }
     
     @Test
@@ -102,10 +102,10 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
         
         MockHttpServletResponse response = 
             putAsServletResponse( "/rest/workspaces/gs/coveragestores/watertemp/file.imagemosaic", bytes, "application/zip");
-        assertEquals( 201, response.getStatusCode() );
+        assertEquals( 201, response.getStatus() );
         
         // check the response contents
-        String content = response.getOutputStreamContent();
+        String content = response.getContentAsString();
         Document d = dom( new ByteArrayInputStream( content.getBytes() ));
         
         XMLAssert.assertXpathEvaluatesTo("watertemp", "//coverageStore/name", d);
@@ -134,10 +134,10 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
         
         MockHttpServletResponse response = 
             putAsServletResponse( "/rest/workspaces/gs/coveragestores/watertemp2/file.imagemosaic", bytes, "application/zip");
-        assertEquals( 201, response.getStatusCode() );
+        assertEquals( 201, response.getStatus() );
         
         // check the response contents
-        String content = response.getOutputStreamContent();
+        String content = response.getContentAsString();
         Document d = dom( new ByteArrayInputStream( content.getBytes() ));
         
         XMLAssert.assertXpathEvaluatesTo("watertemp2", "//coverageStore/name", d);
@@ -164,8 +164,8 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
         MockHttpServletRequest request = createRequest( "/rest/workspaces/gs/coveragestores/watertemp2/file.imagemosaic" ); 
         request.setMethod( "POST" );
         request.setContentType("application/zip" );
-        request.setBodyContent(bytes);
-        request.setHeader( "Content-type", "application/zip" );
+        request.setContent(bytes);
+        request.addHeader("Content-type", "application/zip");
         // Get The response
         response = dispatch( request );
         // Get the Mosaic Reader
@@ -194,10 +194,10 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
         MockHttpServletResponse response = putAsServletResponse(
                 "/rest/workspaces/gs/coveragestores/watertemp3/file.imagemosaic", bytes,
                 "application/zip");
-        assertEquals(201, response.getStatusCode());
+        assertEquals(201, response.getStatus());
 
         // check the response contents
-        String content = response.getOutputStreamContent();
+        String content = response.getContentAsString();
         Document d = dom(new ByteArrayInputStream(content.getBytes()));
 
         XMLAssert.assertXpathEvaluatesTo("watertemp3", "//coverageStore/name", d);
@@ -221,8 +221,8 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
         MockHttpServletRequest request = createRequest("/rest/workspaces/gs/coveragestores/watertemp3/external.imagemosaic");
         request.setMethod("POST");
         request.setContentType("text/plain");
-        request.setBodyContent("file:///" + outputDirectory.dir().getAbsolutePath());
-        request.setHeader("Content-type", "text/plain");
+        request.setContent(("file:///" + outputDirectory.dir().getAbsolutePath()).getBytes("UTF-8"));
+        request.addHeader("Content-type", "text/plain");
         // Get The response
         response = dispatch(request);
         // Get the Mosaic Reader
@@ -298,8 +298,8 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
             MockHttpServletRequest request = createRequest("/rest/workspaces/gs/coveragestores/watertemp4/file.imagemosaic");
             request.setMethod("POST");
             request.setContentType("application/zip");
-            request.setBodyContent(bytes);
-            request.setHeader("Content-type", "application/zip");
+            request.setContent(bytes);
+            request.addHeader("Content-type", "application/zip");
             // Get The response
             MockHttpServletResponse response = dispatch(request);
             // Get the Mosaic Reader
@@ -424,10 +424,10 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
         MockHttpServletRequest request = createRequest("/rest/workspaces/gs/coveragestores/watertemp5/file.imagemosaic?filename=" + filename);
         request.setMethod("POST");
         request.setContentType("image/tiff");
-        request.setBodyContent(bytes);
-        request.setHeader("Content-type", "image/tiff");
+        request.setContent(bytes);
+        request.addHeader("Content-type", "image/tiff");
         // Get The response
-        assertEquals(202, dispatch(request).getStatusCode());
+        assertEquals(202, dispatch(request).getStatus());
         // Get the Mosaic Reader
         reader2 = (StructuredGridCoverage2DReader) storeInfo.getGridCoverageReader(null,
                 GeoTools.getDefaultHints());

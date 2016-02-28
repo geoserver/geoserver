@@ -36,8 +36,8 @@ import org.springframework.security.authentication.RememberMeAuthenticationToken
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import com.mockrunner.mock.web.MockHttpServletRequest;
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 @Category(SystemTest.class)
 public class RememberMeTest extends GeoServerSecurityTestSupport {
@@ -112,17 +112,17 @@ public class RememberMeTest extends GeoServerSecurityTestSupport {
     public void testRememberMeLogin() throws Exception {
         
         MockHttpServletRequest request = createRequest("/j_spring_security_check");
-        request.setupAddParameter("username", "admin");
-        request.setupAddParameter("password", "geoserver");
+        request.addParameter("username", "admin");
+        request.addParameter("password", "geoserver");
         request.setMethod("POST");
         MockHttpServletResponse response = dispatch(request);
         assertLoginOk(response);
         assertEquals(0, response.getCookies().length);
 
         request = createRequest("/j_spring_security_check");
-        request.setupAddParameter("username", "admin");
-        request.setupAddParameter("password", "geoserver");
-        request.setupAddParameter("_spring_security_remember_me", "yes");
+        request.addParameter("username", "admin");
+        request.addParameter("password", "geoserver");
+        request.addParameter("_spring_security_remember_me", "yes");
         request.setMethod("POST");
         response = dispatch(request);
         assertLoginOk(response);
@@ -135,7 +135,7 @@ public class RememberMeTest extends GeoServerSecurityTestSupport {
         assertNull(request.getAttribute("auth"));
         
         request = createRequest("/web/");
-        request.addCookie(cookie);
+        request.setCookies(cookie);
         response = dispatch(request);
         assertTrue(request.getAttribute("auth") instanceof RememberMeAuthenticationToken);
     }

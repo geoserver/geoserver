@@ -23,7 +23,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 public class DimensionsVectorGetFeatureInfoTest extends WMSDimensionsTestSupport {
 
@@ -56,7 +56,7 @@ public class DimensionsVectorGetFeatureInfoTest extends WMSDimensionsTestSupport
         MockHttpServletResponse response = getAsServletResponse(baseFeatureInfo
                 + "&info_format=application/vnd.ogc.gml&x=" + x + "&y=" + y);
         assertEquals("application/vnd.ogc.gml", response.getContentType());
-        Document doc = dom(new ByteArrayInputStream(response.getOutputStreamContent().getBytes()));
+        Document doc = dom(new ByteArrayInputStream(response.getContentAsString().getBytes()));
         String sCount = xpath.evaluate("count(//sf:TimeElevation)", doc);
         int count = Integer.valueOf(sCount);
 

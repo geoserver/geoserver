@@ -17,7 +17,7 @@ import org.geotools.geopkg.TileMatrix;
 import org.geotools.geopkg.TileReader;
 import org.junit.Test;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 public class GeoPackageProcessTest extends WPSTestSupport {
     

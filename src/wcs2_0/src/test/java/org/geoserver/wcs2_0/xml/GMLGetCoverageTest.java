@@ -11,7 +11,7 @@ import org.geoserver.wcs2_0.response.GMLCoverageResponseDelegate;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletResponse;
 /**
  * Testing {@link GMLCoverageResponseDelegate}
  * 
@@ -29,7 +29,7 @@ public class GMLGetCoverageTest extends WCSTestSupport {
         MockHttpServletResponse response = postAsServletResponse("wcs", request);
         
         assertEquals("application/gml+xml", response.getContentType());
-        Document dom = dom(new ByteArrayInputStream(response.getOutputStreamContent().getBytes()));     
+        Document dom = dom(new ByteArrayInputStream(response.getContentAsString().getBytes()));     
 //        print(dom);
         
         // validate

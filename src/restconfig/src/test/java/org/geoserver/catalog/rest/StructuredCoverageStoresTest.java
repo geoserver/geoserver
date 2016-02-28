@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -35,7 +35,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 public class StructuredCoverageStoresTest extends CatalogRESTTestSupport {
     
@@ -151,7 +151,7 @@ public class StructuredCoverageStoresTest extends CatalogRESTTestSupport {
     @Test
     public void testMissingGrandule() throws Exception {
         MockHttpServletResponse response = getAsServletResponse( "/rest/workspaces/wcs/coveragestores/watertemp/coverages/watertemp/index/granules/notThere.xml");
-        assertEquals(404, response.getStatusCode());
+        assertEquals(404, response.getStatus());
     }
     
     @Test
@@ -166,16 +166,16 @@ public class StructuredCoverageStoresTest extends CatalogRESTTestSupport {
         String exception = "Could not find a granule with id " + g + " in coveage " + ws + ":" + cs;
         // First request should thrown an exception
         MockHttpServletResponse response = getAsServletResponse(requestPath);
-        assertEquals(404, response.getStatusCode());
-        assertTrue(response.getOutputStreamContent().contains(
+        assertEquals(404, response.getStatus());
+        assertTrue(response.getContentAsString().contains(
                 exception));
         // Same request with ?quietOnNotFound should not throw an exception
         response = getAsServletResponse(requestPath + "?quietOnNotFound=true");
-        assertEquals(404, response.getStatusCode());
-        assertFalse(response.getOutputStreamContent().contains(
+        assertEquals(404, response.getStatus());
+        assertFalse(response.getContentAsString().contains(
                 exception));
         // No exception thrown
-        assertTrue(response.getOutputStreamContent().isEmpty());
+        assertTrue(response.getContentAsString().isEmpty());
     }
     
     @Test
@@ -189,7 +189,7 @@ public class StructuredCoverageStoresTest extends CatalogRESTTestSupport {
         
         // delete it
         MockHttpServletResponse response = deleteAsServletResponse("/rest/workspaces/wcs/coveragestores/watertemp/coverages/watertemp/index/granules/" + octoberId);
-        assertEquals(200, response.getStatusCode());
+        assertEquals(200, response.getStatus());
 
         // check it's gone from the index
         dom = getAsDOM( "/rest/workspaces/wcs/coveragestores/watertemp/coverages/watertemp/index/granules.xml");
@@ -206,7 +206,7 @@ public class StructuredCoverageStoresTest extends CatalogRESTTestSupport {
         // print(dom);
         
         MockHttpServletResponse response = deleteAsServletResponse("/rest/workspaces/wcs/coveragestores/watertemp/coverages/watertemp/index/granules");
-        assertEquals(200, response.getStatusCode());
+        assertEquals(200, response.getStatus());
 
         // check it's gone from the index
         dom = getAsDOM( "/rest/workspaces/wcs/coveragestores/watertemp/coverages/watertemp/index/granules.xml");
@@ -221,7 +221,7 @@ public class StructuredCoverageStoresTest extends CatalogRESTTestSupport {
         
         MockHttpServletResponse response = deleteAsServletResponse("/rest/workspaces/wcs/coveragestores/watertemp/coverages" +
         		"/watertemp/index/granules?filter=ingestion=2008-11-01T00:00:00Z");
-        assertEquals(200, response.getStatusCode());
+        assertEquals(200, response.getStatus());
 
         // check it's gone from the index
         dom = getAsDOM( "/rest/workspaces/wcs/coveragestores/watertemp/coverages/watertemp/index/granules.xml");
@@ -241,7 +241,7 @@ public class StructuredCoverageStoresTest extends CatalogRESTTestSupport {
         String body = url.toExternalForm();
         MockHttpServletResponse response = postAsServletResponse("/rest/workspaces/wcs/coveragestores/watertemp/external.imagemosaic", 
                 body, "text/plain");
-        assertEquals(202, response.getStatusCode());
+        assertEquals(202, response.getStatus());
         
         Document dom = getAsDOM( "/rest/workspaces/wcs/coveragestores/watertemp/coverages/watertemp/index/granules.xml");
         // print(dom);
@@ -261,7 +261,7 @@ public class StructuredCoverageStoresTest extends CatalogRESTTestSupport {
         String body = url.toExternalForm();
         MockHttpServletResponse response = postAsServletResponse("/rest/workspaces/wcs/coveragestores/watertemp/external.imagemosaic", 
                 body, "text/plain");
-        assertEquals(202, response.getStatusCode());
+        assertEquals(202, response.getStatus());
         
         Document dom = getAsDOM( "/rest/workspaces/wcs/coveragestores/watertemp/coverages/watertemp/index/granules.xml");
         // print(dom);

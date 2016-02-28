@@ -46,7 +46,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.w3c.dom.Document;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 public abstract class ImporterTestSupport extends GeoServerSystemTestSupport {
     
@@ -227,8 +227,8 @@ public abstract class ImporterTestSupport extends GeoServerSystemTestSupport {
     }
     
     protected void assertErrorResponse(MockHttpServletResponse resp, String... errs) throws UnsupportedEncodingException {
-        assertEquals(400, resp.getStatusCode());
-        JSONObject json = JSONObject.fromObject(resp.getOutputStreamContent());
+        assertEquals(400, resp.getStatus());
+        JSONObject json = JSONObject.fromObject(resp.getContentAsString());
         JSONArray errors = json.getJSONArray("errors");
         assertNotNull("Expected error array", errors);
         assertEquals(errs.length, errors.size());

@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -12,7 +12,7 @@ import org.geoserver.data.test.MockData;
 import org.geoserver.wps.WPSTestSupport;
 import org.junit.Test;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletResponse;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.WKTReader;
 
@@ -44,7 +44,7 @@ public class CollectGeometriesTest extends WPSTestSupport {
         
         MockHttpServletResponse response = postAsServletResponse(root(), xml);
         
-        Geometry actual = new WKTReader().read(response.getOutputStreamContent());
+        Geometry actual = new WKTReader().read(response.getContentAsString());
         Geometry expected = new WKTReader().read("MULTIPOLYGON (((-2 6, 1 6, 1 5, 2 5, 2 2, -1 2, -1 3, -2 3, -2 6)), ((-1 0, 0 1, 1 0, 0 -1, -1 0)))");
         
         // equals does not work with geometry collections... go figure

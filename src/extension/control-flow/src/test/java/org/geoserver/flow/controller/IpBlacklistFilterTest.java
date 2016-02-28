@@ -18,9 +18,9 @@ import javax.servlet.http.HttpServlet;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.junit.Test;
 
-import com.mockrunner.mock.web.MockFilterChain;
-import com.mockrunner.mock.web.MockHttpServletRequest;
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockFilterChain;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 public class IpBlacklistFilterTest extends GeoServerSystemTestSupport {
 

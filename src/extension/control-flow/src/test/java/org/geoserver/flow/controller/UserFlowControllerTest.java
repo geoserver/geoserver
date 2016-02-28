@@ -12,7 +12,7 @@ import javax.servlet.http.Cookie;
 import org.geoserver.flow.controller.FlowControllerTestingThread.ThreadState;
 import org.geoserver.ows.Request;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 public class UserFlowControllerTest extends AbstractFlowControllerTest {
     public void testConcurrentRequestsSingleUser() {

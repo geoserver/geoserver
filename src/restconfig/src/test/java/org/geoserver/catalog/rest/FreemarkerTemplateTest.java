@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -68,7 +68,7 @@ public class FreemarkerTemplateTest extends GeoServerSystemTestSupport {
         assertEquals(content, getAsString(path).trim());
         
         // DELETE
-        assertEquals(200, deleteAsServletResponse(path).getStatusCode());
+        assertEquals(200, deleteAsServletResponse(path).getStatus());
         
         // GET
         assertEquals("File Not Found", getAsString(path).trim());
@@ -138,7 +138,7 @@ public class FreemarkerTemplateTest extends GeoServerSystemTestSupport {
         
         for (String path : paths) {
             // DELETE
-            assertEquals(200, deleteAsServletResponse(path).getStatusCode());
+            assertEquals(200, deleteAsServletResponse(path).getStatus());
         }                                
         
         for (String path : paths) {

@@ -21,7 +21,7 @@ import org.junit.After;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 public class LayerTest extends CatalogRESTTestSupport {
 
@@ -67,16 +67,16 @@ public class LayerTest extends CatalogRESTTestSupport {
         String exception = "No such layer: " + layer;
         // First request should thrown an exception
         MockHttpServletResponse response = getAsServletResponse(requestPath);
-        assertEquals(404, response.getStatusCode());
-        assertTrue(response.getOutputStreamContent().contains(
+        assertEquals(404, response.getStatus());
+        assertTrue(response.getContentAsString().contains(
                 exception));
         // Same request with ?quietOnNotFound should not throw an exception
         response = getAsServletResponse(requestPath + "?quietOnNotFound=true");
-        assertEquals(404, response.getStatusCode());
-        assertFalse(response.getOutputStreamContent().contains(
+        assertEquals(404, response.getStatus());
+        assertFalse(response.getContentAsString().contains(
                 exception));
         // No exception thrown
-        assertTrue(response.getOutputStreamContent().isEmpty());
+        assertTrue(response.getContentAsString().isEmpty());
     }
     
     @Test
@@ -103,7 +103,7 @@ public class LayerTest extends CatalogRESTTestSupport {
             "</layer>";
         MockHttpServletResponse response = 
             putAsServletResponse("/rest/layers/cite:Buildings", xml, "text/xml");
-        assertEquals( 200, response.getStatusCode() );
+        assertEquals( 200, response.getStatus() );
         
         l = catalog.getLayerByName("cite:Buildings");
         assertEquals( "Forests", l.getDefaultStyle().getName() );
@@ -122,7 +122,7 @@ public class LayerTest extends CatalogRESTTestSupport {
         String updatedJson = json.toString();
         MockHttpServletResponse response = 
                 putAsServletResponse("/rest/layers/cite:Buildings", updatedJson, "application/json");
-        assertEquals( 200, response.getStatusCode() );
+        assertEquals( 200, response.getStatus() );
 
         l = catalog.getLayerByName("cite:Buildings");
         assertEquals( "polygon", l.getDefaultStyle().getName() );
@@ -132,7 +132,7 @@ public class LayerTest extends CatalogRESTTestSupport {
     public void testDelete() throws Exception {
         assertNotNull(catalog.getLayerByName( "cite:Buildings" ));
         
-        assertEquals(200, deleteAsServletResponse("/rest/layers/cite:Buildings").getStatusCode());
+        assertEquals(200, deleteAsServletResponse("/rest/layers/cite:Buildings").getStatus());
     }
     
     @Test
@@ -140,7 +140,7 @@ public class LayerTest extends CatalogRESTTestSupport {
         assertNotNull(catalog.getLayerByName( "cite:Buildings" ));
         assertNotNull(catalog.getFeatureTypeByName( "cite", "Buildings" ));
         
-        assertEquals(200, deleteAsServletResponse("/rest/layers/cite:Buildings").getStatusCode());
+        assertEquals(200, deleteAsServletResponse("/rest/layers/cite:Buildings").getStatus());
         
         assertNull(catalog.getLayerByName( "cite:Buildings" ));
         assertNotNull(catalog.getFeatureTypeByName( "cite", "Buildings" ));
@@ -148,7 +148,7 @@ public class LayerTest extends CatalogRESTTestSupport {
         assertNotNull(catalog.getLayerByName( "cite:Bridges" ));
         assertNotNull(catalog.getFeatureTypeByName( "cite", "Bridges" ));
         
-        assertEquals(200, deleteAsServletResponse("/rest/layers/cite:Bridges?recurse=true").getStatusCode());
+        assertEquals(200, deleteAsServletResponse("/rest/layers/cite:Bridges?recurse=true").getStatus());
     
         assertNull(catalog.getLayerByName( "cite:Bridges" ));
         assertNull(catalog.getFeatureTypeByName( "cite", "Bridges" ));
@@ -168,7 +168,7 @@ public class LayerTest extends CatalogRESTTestSupport {
 
         MockHttpServletResponse response =
             postAsServletResponse("/rest/workspaces/cite/styles", xml);
-        assertEquals(201, response.getStatusCode());
+        assertEquals(201, response.getStatus());
         assertNotNull(cat.getStyleByName("cite", "foo"));
 
         xml = 
@@ -181,7 +181,7 @@ public class LayerTest extends CatalogRESTTestSupport {
             "</layer>";
         response =
             putAsServletResponse("/rest/layers/cite:Buildings", xml, "application/xml");
-        assertEquals(200, response.getStatusCode());
+        assertEquals(200, response.getStatus());
 
         LayerInfo l = cat.getLayerByName("cite:Buildings");
         assertNotNull(l.getDefaultStyle());
@@ -209,7 +209,7 @@ public class LayerTest extends CatalogRESTTestSupport {
 
         MockHttpServletResponse response =
             postAsServletResponse("/rest/workspaces/cite/styles", xml);
-        assertEquals(201, response.getStatusCode());
+        assertEquals(201, response.getStatus());
         assertNotNull(cat.getStyleByName("cite", "foo"));
 
         xml = 
@@ -224,7 +224,7 @@ public class LayerTest extends CatalogRESTTestSupport {
             "</layer>";
         response =
             putAsServletResponse("/rest/layers/cite:Buildings", xml, "application/xml");
-        assertEquals(200, response.getStatusCode());
+        assertEquals(200, response.getStatus());
 
         LayerInfo l = cat.getLayerByName("cite:Buildings");
         assertNotNull(l.getDefaultStyle());

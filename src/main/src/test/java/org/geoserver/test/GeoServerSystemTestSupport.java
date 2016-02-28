@@ -118,13 +118,12 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
-import com.mockrunner.mock.web.MockFilterChain;
-import com.mockrunner.mock.web.MockHttpServletRequest;
-import com.mockrunner.mock.web.MockHttpServletResponse;
-import com.mockrunner.mock.web.MockHttpSession;
-import com.mockrunner.mock.web.MockServletConfig;
-import com.mockrunner.mock.web.MockServletContext;
-import com.mockrunner.mock.web.MockServletOutputStream;
+import org.springframework.mock.web.MockFilterChain;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpSession;
+import org.springframework.mock.web.MockServletConfig;
+import org.springframework.mock.web.MockServletContext;
 
 import net.sf.json.JSON;
 import net.sf.json.JSONSerializer;
@@ -875,7 +874,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         request.setRemoteAddr("127.0.0.1");
         request.setServletPath(ResponseUtils.makePathAbsolute( ResponseUtils.stripRemainingPath(path)) );
         request.setPathInfo(ResponseUtils.makePathAbsolute( ResponseUtils.stripBeginningPath( ResponseUtils.stripQueryString(path))));
-        request.setHeader("Host", "localhost:8080");
+        request.addHeader("Host", "localhost:8080");
         
         // deal with authentication
         if(username != null) {
@@ -941,7 +940,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
      */
     protected InputStream get( String path ) throws Exception {
         MockHttpServletResponse response = getAsServletResponse(path);
-        return new ByteArrayInputStream( response.getOutputStreamContent().getBytes() );
+        return new ByteArrayInputStream( response.getContentAsString().getBytes() );
     }
     
     /**
@@ -970,7 +969,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
     protected MockHttpServletResponse getAsServletResponse( String path, String charset ) throws Exception {
         MockHttpServletRequest request = createRequest( path ); 
         request.setMethod( "GET" );
-        request.setBodyContent(new byte[]{});
+        request.setContent(new byte[]{});
         
         return dispatch( request, charset );
     }
@@ -990,10 +989,10 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         MockHttpServletRequest request = createRequest( path ); 
         request.setMethod( "POST" );
         request.setContentType( "application/x-www-form-urlencoded" );
-        request.setBodyContent(new byte[]{});
+        request.setContent(new byte[]{});
         
         MockHttpServletResponse response = dispatch( request );
-        return new ByteArrayInputStream( response.getOutputStreamContent().getBytes() );
+        return new ByteArrayInputStream( response.getContentAsString().getBytes() );
     }
 
     /**
@@ -1047,7 +1046,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
      */
     protected InputStream put(String path, byte[] body, String contentType) throws Exception {
         MockHttpServletResponse response = putAsServletResponse(path, body, contentType);
-        return new ByteArrayInputStream(response.getOutputStreamContent().getBytes());
+        return new ByteArrayInputStream(response.getContentAsString().getBytes());
     }
     
     protected MockHttpServletResponse putAsServletResponse(String path) throws Exception {
@@ -1065,8 +1064,8 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         MockHttpServletRequest request = createRequest(path);
         request.setMethod("PUT");
         request.setContentType(contentType);
-        request.setBodyContent(body);
-        request.setHeader( "Content-type", contentType );
+        request.setContent(body);
+        request.addHeader("Content-type", contentType);
 
         return dispatch(request);
     }
@@ -1085,7 +1084,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
      */
     protected InputStream post( String path , String xml ) throws Exception {
         MockHttpServletResponse response = postAsServletResponse(path, xml);
-        return new ByteArrayInputStream(response.getOutputStreamContent().getBytes());
+        return new ByteArrayInputStream(response.getContentAsString().getBytes());
     }
 
     /**
@@ -1150,15 +1149,15 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
      */
     protected InputStream post(String path, String body, String contentType) throws Exception{
         MockHttpServletResponse response = postAsServletResponse(path, body, contentType);
-        return new ByteArrayInputStream(response.getOutputStreamContent().getBytes());
+        return new ByteArrayInputStream(response.getContentAsString().getBytes());
     }
     
     protected MockHttpServletResponse postAsServletResponse(String path, String body, String contentType) throws Exception {
         MockHttpServletRequest request = createRequest(path);
         request.setMethod("POST");
         request.setContentType(contentType);
-        request.setBodyContent(body);
-        request.setHeader("Content-type",  contentType );
+        request.setContent(body.getBytes("UTF-8"));
+        request.addHeader("Content-type", contentType);
 
         return dispatch(request);
     }
@@ -1167,8 +1166,8 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         MockHttpServletRequest request = createRequest(path);
         request.setMethod("POST");
         request.setContentType(contentType);
-        request.setBodyContent(body);
-        request.setHeader("Content-type",  contentType );
+        request.setContent(body.getBytes("UTF-8"));
+        request.addHeader("Content-type", contentType);
         return dispatch(request, charset);
     }
 
@@ -1178,8 +1177,8 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         MockHttpServletRequest request = createRequest(path);
         request.setMethod("POST");
         request.setContentType(contentType);
-        request.setBodyContent(body);
-        request.setHeader( "Content-type", contentType );
+        request.setContent(body);
+        request.addHeader("Content-type", contentType);
 
         return dispatch(request);
     }
@@ -1244,7 +1243,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
     }
     
     protected JSON json(MockHttpServletResponse response) throws UnsupportedEncodingException {
-        String content = response.getOutputStreamContent();
+        String content = response.getContentAsString();
         return JSONSerializer.toJSON(content);
     }
     
@@ -1512,10 +1511,10 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
          for (String key : params.keySet()) {
             Object value = params.get(key);
             if(value instanceof String) {
-                request.setupAddParameter(key, (String) value);
+                request.addParameter(key, (String) value);
             } else {
                 String[] values = (String[]) value;
-                request.setupAddParameter(key, values);
+                request.addParameter(key, values);
             }
         }
          
@@ -1573,7 +1572,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
     protected void assertStatusCodeForRequest(int code, String method, String path, String body, String type) throws Exception {
         MockHttpServletRequest request = createRequest(path);
         request.setMethod(method);
-        request.setBodyContent(body);
+        request.setContent(body.getBytes("UTF-8"));
         request.setContentType(type);
 
         CodeExpectingHttpServletResponse response = new CodeExpectingHttpServletResponse(new MockHttpServletResponse());
@@ -1726,11 +1725,11 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         // check the http level
         assertEquals("application/xml", response.getContentType());
         if (status != null) {
-            assertEquals(status.intValue(), response.getStatusCode());
+            assertEquals(status.intValue(), response.getStatus());
         }
 
         // check the returned xml
-        Document dom = dom(new ByteArrayInputStream(response.getOutputStreamContent().getBytes()));
+        Document dom = dom(new ByteArrayInputStream(response.getContentAsString().getBytes()));
         Element root = dom.getDocumentElement();
         assertEquals("ows:ExceptionReport", root.getNodeName());
         assertEquals("2.0.0", root.getAttribute("version"));
@@ -1928,14 +1927,14 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         private byte[] myBody;
         
         @Override
-        public void setBodyContent(byte[] body) {
+        public void setContent(byte[] body) {
             myBody = body;
         }
         
-        @Override
-        public void setBodyContent(String body) {
-            myBody = body.getBytes();
-        }
+//        @Override
+//        public void setBodyContent(String body) {
+//            myBody = body.getBytes();
+//        }
         
         
         
@@ -1947,16 +1946,16 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         }
         
         public ServletInputStream getInputStream() {
-            return new GeoServerMockServletInputStream(myBody);
+            return new GeoServerDelegatingServletInputStream(myBody);
         }
     }
 
-    private static class GeoServerMockServletInputStream extends ServletInputStream {
+    private static class GeoServerDelegatingServletInputStream extends ServletInputStream {
         private byte[] myBody;
         private int myOffset = 0;
         private int myMark = -1;
 
-        public GeoServerMockServletInputStream(byte[] body){
+        public GeoServerDelegatingServletInputStream(byte[] body){
             myBody = body;
         }
         

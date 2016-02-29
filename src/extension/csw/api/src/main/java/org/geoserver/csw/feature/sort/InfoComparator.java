@@ -21,7 +21,7 @@ class InfoComparator implements Comparator<Info> {
     /**
      * Builds a new comparator
      * 
-     * @param inverse If true the comparator will force an ascending order (descending otherwise)
+     * @param ascending If true the comparator will force an ascending order (descending otherwise)
      */
     public InfoComparator(boolean ascending) {
         this.ascending = ascending;

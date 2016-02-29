@@ -112,7 +112,6 @@ public class MemoryFeatureCollection extends AbstractFeatureCollection<FeatureTy
      * @see #remove(Object)
      * @see #contains(Object)
      */
-    @SuppressWarnings("unchecked")
     final public boolean removeAll(Collection<?> c) {
         return features.removeAll(c);
     }
@@ -165,9 +164,8 @@ public class MemoryFeatureCollection extends AbstractFeatureCollection<FeatureTy
      *         method.
      * @throws NullPointerException if the specified collection is null.
      * 
-     * @see #add(Object)
+     * @see #add(Feature)
      */
-    @SuppressWarnings("unchecked")
     public boolean addAll(Collection<Feature> c) {
         return features.addAll(c);
     }

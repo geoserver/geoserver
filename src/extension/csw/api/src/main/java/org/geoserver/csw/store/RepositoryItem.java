@@ -25,7 +25,6 @@ public interface RepositoryItem {
     
     /**
      * The repository item contents
-     * @throws IOException 
      */
     public InputStream getContents() throws IOException;
 }

@@ -81,7 +81,7 @@ public class Directory extends FileData {
      * 
      * @param dir The directory
      * 
-     * @Deprecated Use Resource instead of File
+     * @deprecated Use Resource instead of File
      */
     @Deprecated
     public Directory(File dir) {

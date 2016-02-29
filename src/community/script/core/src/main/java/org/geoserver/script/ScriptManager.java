@@ -125,7 +125,7 @@ public class ScriptManager implements InitializingBean {
     /**
      * The root "scripts" directory, located directly under the root of the data directory.
      * 
-     * @Deprecated use {@link #script()}
+     * @deprecated use {@link #script()}
      */    
     @Deprecated
     public File getScriptRoot() throws IOException {
@@ -136,7 +136,7 @@ public class ScriptManager implements InitializingBean {
      * Finds a script directory located at the specified path, returning <code>null</code> if no 
      * such directory exists.
      * 
-     * @Deprecated use {@link #script(String)}
+     * @deprecated use {@link #script(String)}
      */
     @Deprecated
     public File findScriptDir(String path) throws IOException {
@@ -151,7 +151,7 @@ public class ScriptManager implements InitializingBean {
      * Finds a script directory located at the specified path, creating the directory if it does not
      * already exist.
      * 
-     * @Deprecated use {@link #script(String...)}
+     * @deprecated use {@link #script(String...)}
      * 
      */
     @Deprecated
@@ -163,7 +163,7 @@ public class ScriptManager implements InitializingBean {
      * Finds a script file with the specified filename located  in the specified directory path, 
      * returning <code>null</code> if the file does not exist.
      * 
-     * @Deprecated use {@link #script(String...)}
+     * @deprecated use {@link #script(String...)}
      */
     @Deprecated
     public File findScriptFile(String dirPath, String filename) throws IOException {
@@ -175,7 +175,7 @@ public class ScriptManager implements InitializingBean {
      * Finds a script file at the specified path, returning <code>null</code> if the file does not 
      * exist.
      * 
-     * @Deprecated use {@link #script(String...)}
+     * @deprecated use {@link #script(String...)}
      */
     @Deprecated
     public File findScriptFile(String path) throws IOException {
@@ -186,7 +186,7 @@ public class ScriptManager implements InitializingBean {
     /**
      * Finds a script file at the specified path, creating it if necessary.
      * 
-     * @Deprecated use {@link #script(String...)}
+     * @deprecated use {@link #script(String...)}
      */
     @Deprecated
     public File findOrCreateScriptFile(String path) throws IOException {
@@ -196,7 +196,7 @@ public class ScriptManager implements InitializingBean {
     /**
      * The root "apps" directory, located directly under {@link #getScriptRoot()}.
      * 
-     * @Deprecated use {@link #app()}
+     * @deprecated use {@link #app()}
      */
     @Deprecated
     public File getAppRoot() throws IOException {
@@ -206,7 +206,7 @@ public class ScriptManager implements InitializingBean {
     /**
      * Finds a named app dir, returning <code>null</code> if the directory does not exist.
      * 
-     * @Deprecated use {@link #app(String)}
+     * @deprecated use {@link #app(String)}
      */
     @Deprecated
     public File findAppDir(String app) throws IOException {
@@ -216,7 +216,7 @@ public class ScriptManager implements InitializingBean {
     /**
      * Finds a named app dir, creating if it does not already exist.
      * 
-     * @Deprecated use {@link #app(String)}
+     * @deprecated use {@link #app(String)}
      */
     @Deprecated
     public File findOrCreateAppDir(String app) throws IOException {
@@ -242,7 +242,7 @@ public class ScriptManager implements InitializingBean {
     /**
      * Find the main script File
      * 
-     * @Deprecated use {@link #findAppMainScript(Resource)}
+     * @deprecated use {@link #findAppMainScript(Resource)}
      */
     @Deprecated
     public File findAppMainScript(File appDir) {
@@ -278,7 +278,7 @@ public class ScriptManager implements InitializingBean {
     /**
      * The root "wps" directory, located directly under {@link #getScriptRoot()} 
      * 
-     * @Deprecated use {@link #wps()}
+     * @deprecated use {@link #wps()}
      */
     @Deprecated
     public File getWpsRoot() throws IOException {
@@ -288,7 +288,7 @@ public class ScriptManager implements InitializingBean {
     /**
      * The root "wfs/tx" directory, located directly under {@link #getScriptRoot()} 
      * 
-     *  @Deprecated use {@link #wfsTx()}
+     * @deprecated use {@link #wfsTx()}
      */
     @Deprecated
     public File getWfsTxRoot() throws IOException {
@@ -298,7 +298,7 @@ public class ScriptManager implements InitializingBean {
     /**
      * The root "function" directory, located directly under {@link #getScriptRoot()} 
      * 
-     * @Deprecated use {@link #function()}
+     * @deprecated use {@link #function()}
      */
     @Deprecated
     public File getFunctionRoot() throws IOException {
@@ -306,7 +306,7 @@ public class ScriptManager implements InitializingBean {
     }
 
     /**
-     * @Deprecated use {@link #lib(String)}
+     * @deprecated use {@link #lib(String)}
      */
     @Deprecated
     public File getLibRoot(String ext) throws IOException {

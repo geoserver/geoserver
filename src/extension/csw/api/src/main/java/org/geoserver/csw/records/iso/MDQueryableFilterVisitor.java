@@ -30,7 +30,7 @@ public class MDQueryableFilterVisitor extends DuplicatingFilterVisitor {
     /**
      * Helper method to translate propertyname that possibly contains queryable name to xml x-path 
      *     
-     * @param expression
+     * @param expression property name
      *
      */
     public static PropertyName property(PropertyName expression) {

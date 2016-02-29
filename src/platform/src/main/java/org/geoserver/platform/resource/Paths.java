@@ -321,7 +321,7 @@ public class Paths {
      * 
      * @param base directory location
      * @param folder context for relative path (may be "." or null for base directory)
-     * @param fileLocation File path (using {@link File#separator}) allowing for relative references
+     * @param location File path (using {@link File#separator}) allowing for relative references
      * @return relative path used for Resource lookup
      */
     public static String convert(File base, File folder, String... location) {
@@ -382,7 +382,7 @@ public class Paths {
      * This method converts file paths (using {@link File#separator}) to the URL style paths used for {@link ResourceStore#get(String)}.
      * 
      * @param path Initial path used resolve relative reference lookup
-     * @param filePath File path using {@link File#separator}
+     * @param filename File path (using {@link File#separator})
      * @return Resource path suitable for use with {@link ResourceStore#get(String)} or null for absolute path
      */
     public static String convert(String path, String filename) {

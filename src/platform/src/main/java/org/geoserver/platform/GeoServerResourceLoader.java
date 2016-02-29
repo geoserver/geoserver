@@ -275,18 +275,16 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Re
 
     /**
      * Performs a resource lookup, optionally specifying a containing directory.
-     * <p>
+     * 
      * <pre>
      * Example:
      *   File f = resourceLoader.find( "data", "shapefiles", "foo.shp" );
-     * </pre> 
-     * </p>
+     * </pre>
+     * 
      * @param parentFile The parent directory, may be null.
      * @param location The components of the path of the resource to lookup.
+     * @return The file handle representing the resource, or null if the resource could not be found.
      * 
-     * @return The file handle representing the resource, or null if the
-     *  resource could not be found.
-     *  
      * @throws IOException Any I/O errors that occur.
      */
     public File find( File parentFile, String... location ) throws IOException {

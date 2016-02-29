@@ -23,7 +23,6 @@ public class CatalogComparatorFactory {
 
     /**
      * Builds a composite comparator matching the specified sortBy array
-     * @param sortBy
      *
      */
     public static Comparator<Info> buildComparator(SortBy... sortBy) {
@@ -47,8 +46,6 @@ public class CatalogComparatorFactory {
 
     /**
      * Builds a single comparator based on the sortBy specification
-     * @param sortBy
-     *
      */
     public static Comparator<Info> buildComparator(SortBy sortBy) {
         if (sortBy == null) {

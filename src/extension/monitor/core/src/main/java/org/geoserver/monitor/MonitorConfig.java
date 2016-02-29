@@ -43,7 +43,7 @@ public class MonitorConfig implements ApplicationContextAware {
     public static enum Mode {
         HISTORY, LIVE,
 
-        @Deprecated // use live
+     * @deprecated // use live
         HYBRID;
     }
 

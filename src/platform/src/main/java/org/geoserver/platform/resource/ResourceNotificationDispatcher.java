@@ -34,12 +34,10 @@ public interface ResourceNotificationDispatcher {
     
     /**
      * Remove resource store content listener.
-     * @param path
-     * @param listener
      * 
      * @param resource path to resource to listen to
      * @param listener Listener to stop receiving change notification
-     * @return true iff successful 
+     * @return true iff successful
      */
     public boolean removeListener(String resource, ResourceListener listener);
     

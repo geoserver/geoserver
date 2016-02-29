@@ -272,7 +272,7 @@ public final class Files {
     
     /**
      *
-     * @Deprecated use {@link Resources#fromURL(Resource, String)}
+     * @deprecated use {@link Resources#fromURL(Resource, String)}
      */
     @Deprecated 
     public static File url(File baseDirectory, String url) {
@@ -291,7 +291,7 @@ public final class Files {
      * Adapter allowing a File reference to be quickly used a Resource.
      * 
      * This is used as a placeholder when updating code to use resource, while still maintaining deprecated File methods: 
-     * <pre></code>
+     * <pre><code>
      * //deprecated
      * public FileWatcher( File file ){
      *    this.resource = Files.asResource( file );
@@ -325,9 +325,7 @@ public final class Files {
     /**
      * Safe buffered output stream to temp file, output stream close used to renmae file into place.
      * 
-     * @param file
      * @return buffered output stream to temporary file (output stream close used to rename file into place)
-     * @throws FileNotFoundException
      */
     public static OutputStream out(final File file) throws FileNotFoundException {
         // first save to a temp file
@@ -411,8 +409,7 @@ public final class Files {
      * file that cannot be deleted a warning log will be issued.
      * 
      * @param file File to remove
-     * @throws IOException
-     * @returns true if any file present is removed
+     * @return true if any file present is removed
      */
     public static boolean delete(File file) {
         if( file.isDirectory()){

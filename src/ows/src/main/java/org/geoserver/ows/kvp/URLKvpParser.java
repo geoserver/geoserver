@@ -11,12 +11,9 @@ import org.geoserver.ows.KvpParser;
 
 
 /**
- * Parses url kvp's of the form 'key=<url>'.
- * <p>
- *
- * </p>
+ * Parses url kvp's of the form 'key=&lt;url&gt;'.
+ * 
  * @author Justin Deoliveira, The Open Planning Project, jdeolive@openplans.org
- *
  */
 public class URLKvpParser extends KvpParser {
     /**

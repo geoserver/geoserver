@@ -57,8 +57,6 @@ import org.geotools.xml.Node;
  *
  *          </code>
  *         </pre>
- * </p>
- *
  * @generated
  */
 public class WGS84BoundingBoxTypeBinding extends AbstractComplexBinding {

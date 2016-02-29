@@ -62,7 +62,7 @@ public interface CatalogFilter {
     /**
      * Return true to hide the specified resource from the catalog
      * 
-     * @param layer Resource (layer) to hide
+     * @param resource Resource (layer) to hide
      */
     boolean hideResource(ResourceInfo resource);
     

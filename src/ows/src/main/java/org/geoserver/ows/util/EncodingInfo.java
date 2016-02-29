@@ -41,36 +41,22 @@ public class EncodingInfo {
     private boolean fHasBOM;
 
     /**
-     * Non-arg constructor to use in a few cases when you need a blank
-     * instance of <code>EncodingInfo</code>. It cant' be used right
-     * after creation and should be populated first via either setters
-     * or specific charset detection methods.
-     *
-     * @param  encoding  Name of the autodetected encoding scheme.
-     *
-     * @param  isBigEndian
-     *
-     *         Detected byte order of the data. <code>true</code> if
-     *         order is big-endian, <code>false</code> if little-endian,
-     *         and <code>null</code> if byte order is not relevant for
-     *         this encoding scheme.
+     * Non-arg constructor to use in a few cases when you need a blank instance of <code>EncodingInfo</code>. It cant' be used right after creation
+     * and should be populated first via either setters or specific charset detection methods.
      */
     public EncodingInfo() {
     }
 
     /**
-     * Constructor that takes name of the encoding scheme and endianness
-     * - results of autodetection in <code>getEncodingName</code>.
-     * BOM is considered missing if object is constructed this way.
+     * Constructor that takes name of the encoding scheme and endianness - results of autodetection in <code>getEncodingName</code>. BOM is considered
+     * missing if object is constructed this way.
      *
-     * @param  encoding  Name of the autodetected encoding scheme.
+     * @param encoding Name of the autodetected encoding scheme.
      *
-     * @param  isBigEndian
+     * @param isBigEndian
      *
-     *         Detected byte order of the data. <code>true</code> if
-     *         order is big-endian, <code>false</code> if little-endian,
-     *         and <code>null</code> if byte order is not relevant for
-     *         this encoding scheme.
+     *        Detected byte order of the data. <code>true</code> if order is big-endian, <code>false</code> if little-endian, and <code>null</code> if
+     *        byte order is not relevant for this encoding scheme.
      */
     public EncodingInfo(String encoding, Boolean isBigEndian) {
         fEncoding = encoding;
@@ -79,21 +65,17 @@ public class EncodingInfo {
     }
 
     /**
-     * Constructor that takes name of the encoding scheme and endianness
-     * - results of autodetection in <code>getEncodingName()</code>.
-     * Also presence of Byte Order Mark should be specified explicitly.
+     * Constructor that takes name of the encoding scheme and endianness - results of autodetection in <code>getEncodingName()</code>. Also presence
+     * of Byte Order Mark should be specified explicitly.
      *
-     * @param  encoding  Name of the autodetected encoding scheme.
+     * @param encoding Name of the autodetected encoding scheme.
      *
-     * @param  isBigEndian
+     * @param isBigEndian
      *
-     *         Detected byte order of the data. <code>true</code> if
-     *         order is big-endian, <code>false</code> if little-endian,
-     *         and <code>null</code> if byte order is not relevant for
-     *         this encoding scheme.
+     *        Detected byte order of the data. <code>true</code> if order is big-endian, <code>false</code> if little-endian, and <code>null</code> if
+     *        byte order is not relevant for this encoding scheme.
      *
-     * @param  hasBOM  <code>true</code> if BOM is present,
-     *                 <code>false</code> otherwise.
+     * @param hasBOM <code>true</code> if BOM is present, <code>false</code> otherwise.
      */
     public EncodingInfo(String encoding, Boolean isBigEndian, boolean hasBOM) {
         fEncoding = encoding;

@@ -41,7 +41,7 @@ import org.geotools.util.Version;
  *  }
  *         </code>
  * </pre>
- * <h4>Operation Binding</h4>
+ * <p><b>Operation Binding</b></p>
  * <p>
  * In the normal case, a kvp parser is engaged when a request specifies a name which matches the name declared by the kvp
  * parser. It is also possible to attach a kvp parser so that it only engages on a particular operation. This is done by declaring the one or more of
@@ -62,9 +62,9 @@ import org.geotools.util.Version;
  * <pre>
  *         <code>
  *  &lt;bean id="myKvpParser" class="org.xzy.MyKvpParser"&gt;
- *    &lt;property name="service">MyService&lt;/property&gt;
- *    &lt;property name="request">MyRequest&lt;/property&gt;
- *  &lt;bean>
+ *    &lt;property name="service"&gt;MyService&lt;/property&gt;
+ *    &lt;property name="request"&gt;MyRequest&lt;/property&gt;
+ *  &lt;bean&gt;
  *         </code>
  * </pre>
  * 

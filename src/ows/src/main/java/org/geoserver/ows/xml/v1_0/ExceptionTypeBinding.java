@@ -45,8 +45,6 @@ import org.geotools.xml.AbstractComplexEMFBinding;
  *
  *          </code>
  *         </pre>
- * </p>
- *
  * @generated
  */
 public class ExceptionTypeBinding extends AbstractComplexEMFBinding {

@@ -48,8 +48,6 @@ import org.geotools.xs.bindings.XSQNameBinding;
  *
  *          </code>
  *         </pre>
- * </p>
- *
  * @generated
  */
 public class PropertyTypeBinding extends AbstractComplexBinding {

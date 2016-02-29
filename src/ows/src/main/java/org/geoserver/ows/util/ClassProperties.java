@@ -70,7 +70,7 @@ public class ClassProperties {
     /**
      * Looks up a setter method by property name.
      * <p>
-     * setter("foo",Integer) -> void setFoo(Integer); 
+     * setter("foo",Integer) --&gt; void setFoo(Integer); 
      * </p>
      * @param property The property.
      * @param type The type of the property.
@@ -105,7 +105,7 @@ public class ClassProperties {
     /**
      * Looks up a getter method by its property name.
      * <p>
-     * getter("foo",Integer) -> Integer getFoo(); 
+     * getter("foo",Integer) --&gt; Integer getFoo(); 
      * </p>
      * @param property The property.
      * @param type The type of the property.

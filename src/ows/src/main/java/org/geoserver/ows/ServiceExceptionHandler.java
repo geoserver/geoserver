@@ -28,14 +28,11 @@ import org.geoserver.platform.ServiceException;
  *  &lt;/bean&gt;
  * </code>
  * </pre>
- *
+ * <p>
  * Where <code>myService</code> is the id of another bean somewhere in the
- * context.
- *
- * </p>
+ * context.</p>
  *
  * @author Justin Deoliveira, The Open Planning Project
- *
  */
 public abstract class ServiceExceptionHandler {
     /**

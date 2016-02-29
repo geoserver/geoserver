@@ -1514,6 +1514,11 @@
      <breakiterator>true</breakiterator>
      <tags>
       <tag>
+       <name>generated</name>
+       <placement>tfmc</placement>
+       <head>GENERATED:</head>
+      </tag>
+      <tag>
        <name>todo</name>
        <placement>tfmc</placement>
        <head>TODO:</head>

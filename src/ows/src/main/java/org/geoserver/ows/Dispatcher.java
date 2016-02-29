@@ -87,9 +87,9 @@ import org.xmlpull.v1.XmlPullParserFactory;
  * pairs. Commonly this type of request is made in an http "GET" request, the parameters being specified in the query string:
  *
  * <pre>
- * <code>http://www.xyz.com/geoserver?service=someService&amp;request=someRequest&amp;version=X.Y.Z&amp;param1=...&amp;param2=...
+ * <code>http://www.xyz.com/geoserver?service=someService&amp;request=someRequest&amp;version=X.Y.Z&amp;param1=...&amp;param2=...</code>
  * </pre>
- *
+ * <p>
  *  This type of request can also be made in a "POST" request in with a
  *  mime-type of "application/x-www-form-urlencoded".
  * </p>

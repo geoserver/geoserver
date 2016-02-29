@@ -47,8 +47,6 @@ import org.opengis.filter.Filter;
  *
  *          </code>
  *         </pre>
- * </p>
- *
  * @generated
  */
 public class DeleteElementTypeBinding extends AbstractComplexEMFBinding {

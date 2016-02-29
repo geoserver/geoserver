@@ -716,7 +716,7 @@ public class UCSReader extends Reader {
      * is in the supplementary character range. The method call is
      * equivalent to the expression:
      * <blockquote><pre>
-     * codePoint >= 0x10000 && codePoint <= 0x10ffff
+     * codePoint &gt;= 0x10000 &amp;&amp; codePoint &lt;= 0x10ffff
      * </pre></blockquote>
      *
      * Stolen from JDK 1.5 <code>java.lang.Character</code> class in

@@ -61,8 +61,6 @@ import org.geotools.xml.InstanceComponent;
  *
  *          </code>
  *         </pre>
- * </p>
- *
  * @generated
  */
 public class IdentifierGenerationOptionTypeBinding extends AbstractSimpleBinding {

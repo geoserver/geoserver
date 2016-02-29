@@ -79,8 +79,7 @@ public interface Resource extends Serializable {
      * 
      * Registers listener with ResourceNotificationDispatcher.
      * 
-     * @See {@link ResourceNotificationDispatcher#addListener(String, ResourceListener)}
-     * 
+     * @see ResourceNotificationDispatcher#addListener(String, ResourceListener)
      */
     void addListener( ResourceListener listener);
     
@@ -88,7 +87,7 @@ public interface Resource extends Serializable {
      * 
      * Removes listener from ResourceNotificationDispatcher.
      * 
-     * @see {@link ResourceNotificationDispatcher#removeListener(String, ResourceListener)}
+     * @see ResourceNotificationDispatcher#removeListener(String, ResourceListener)
      */
     void removeListener( ResourceListener listener);
     

@@ -20,7 +20,6 @@ import java.util.List;
  * A listener to path="user_projections/epsg.properties" receive notification on change to the <b>epsg.properties</b> file. This notification will
  * consist of of delta=<code>user_projections/epsg.properties</code></li>
  * <li>Listeners on a directory will be notified on any resource change in the directory. The delta will include any modified directories.
- * <br/>
  * A listener on path="style" is notified on change to <b>style/pophatch.sld</b> and <b>style/icons/city.png</b>. The change to these two files is
  * represented with delta consisting of delta=<code>style,style/icons,style/icons/city.png,style/pophatch.sld</code></li>
  * <li>Removed resources may be represented in notification, but will have reverted to {@link Resource.Type#UNDEFINED} since the content is no longer

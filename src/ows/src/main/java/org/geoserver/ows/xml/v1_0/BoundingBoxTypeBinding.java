@@ -17,7 +17,6 @@ import org.geotools.xml.Node;
 /**
  * Binding object for the type http://www.opengis.net/ows:BoundingBoxType.
  *
- * <p>
  *        <pre>
  *         <code>
  *  &lt;complexType name="BoundingBoxType"&gt;
@@ -53,7 +52,6 @@ import org.geotools.xml.Node;
  *
  *          </code>
  *         </pre>
- * </p>
  *
  * @generated
  */

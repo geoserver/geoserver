@@ -119,8 +119,6 @@ import org.picocontainer.MutablePicoContainer;
  *
  *          </code>
  *         </pre>
- * </p>
- *
  * @generated
  */
 public class InsertElementTypeBinding extends AbstractComplexEMFBinding {

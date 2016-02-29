@@ -9,12 +9,9 @@ import org.geoserver.ows.KvpParser;
 
 
 /**
- * Parses integer kvp's of the form 'key=<integer>'.
- * <p>
- *
- * </p>
+ * Parses integer kvp's of the form 'key=&lt;integer&gt;'.
+ * 
  * @author Justin Deoliveira, The Open Planning Project, jdeolive@openplans.org
- *
  */
 public class IntegerKvpParser extends KvpParser {
     /**

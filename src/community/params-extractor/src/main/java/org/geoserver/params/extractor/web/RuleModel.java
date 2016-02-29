@@ -4,6 +4,8 @@
  */
 package org.geoserver.params.extractor.web;
 
+import org.geoserver.params.extractor.EchoParameter;
+import org.geoserver.params.extractor.EchoParameterBuilder;
 import org.geoserver.params.extractor.Rule;
 import org.geoserver.params.extractor.RuleBuilder;
 
@@ -23,13 +25,24 @@ public class RuleModel implements Serializable {
     private String transform;
     private Integer remove;
     private String combine;
+    private boolean activated;
+    private boolean echo;
+
+    private boolean isForwardOnly;
 
     public RuleModel() {
+        this(false);
+    }
+
+    public RuleModel(boolean isForwardOnly) {
         id = UUID.randomUUID().toString();
+        activated = true;
+        this.isForwardOnly = isForwardOnly;
     }
 
     public RuleModel(Rule rule) {
         id = rule.getId();
+        activated = rule.getActivated();
         position = rule.getPosition();
         match = rule.getMatch();
         activation = rule.getActivation();
@@ -42,8 +55,17 @@ public class RuleModel implements Serializable {
         }
     }
 
+    public RuleModel(EchoParameter echoParameter) {
+        id = echoParameter.getId();
+        parameter = echoParameter.getParameter();
+        activated = echoParameter.getActivated();
+        echo = true;
+        isForwardOnly = true;
+    }
+
     public Rule toRule() {
         RuleBuilder ruleBuilder = new RuleBuilder().withId(id)
+                .withActivated(activated)
                 .withPosition(position)
                 .withMatch(match)
                 .withActivation(activation)
@@ -56,6 +78,14 @@ public class RuleModel implements Serializable {
             ruleBuilder.withTransform(transform);
         }
         return ruleBuilder.build();
+    }
+
+    public EchoParameter toEchoParameter() {
+        return new EchoParameterBuilder()
+                .withId(id)
+                .withParameter(parameter)
+                .withActivated(activated)
+                .build();
     }
 
     public String getId() {
@@ -120,5 +150,25 @@ public class RuleModel implements Serializable {
 
     public void setCombine(String combine) {
         this.combine = combine;
+    }
+
+    public boolean getActivated() {
+        return activated;
+    }
+
+    public void setActivated(boolean activated) {
+        this.activated = activated;
+    }
+
+    public boolean getEcho() {
+        return echo;
+    }
+
+    public void setEcho(boolean echo) {
+        this.echo = echo;
+    }
+
+    public boolean isEchoOnly() {
+        return isForwardOnly;
     }
 }

@@ -7,6 +7,7 @@ package org.geoserver.params.extractor.web;
 import org.apache.wicket.extensions.ajax.markup.html.tabs.AjaxTabbedPanel;
 import org.apache.wicket.extensions.markup.html.tabs.AbstractTab;
 import org.apache.wicket.extensions.markup.html.tabs.ITab;
+import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.SubmitLink;
 import org.apache.wicket.markup.html.form.TextField;
@@ -26,9 +27,17 @@ public class ParamsExtractorRulePage extends GeoServerSecuredPage {
     public ParamsExtractorRulePage(RuleModel optionalRuleModel) {
         final CompoundPropertyModel<RuleModel> simpleRuleModel = new CompoundPropertyModel<>(Utils.withDefault(optionalRuleModel, new RuleModel()));
         final CompoundPropertyModel<RuleModel> complexRuleModel = new CompoundPropertyModel<>(Utils.withDefault(optionalRuleModel, new RuleModel()));
+        final CompoundPropertyModel<RuleModel> echoParameterModel = new CompoundPropertyModel<>(Utils.withDefault(optionalRuleModel, new RuleModel(true)));
         Form<RuleModel> form = new Form<>("form");
         add(form);
         final List<ITab> tabs = new ArrayList<>();
+        if (optionalRuleModel == null || optionalRuleModel.isEchoOnly()) {
+            tabs.add(new WrappedTab("Echo Parameter", echoParameterModel) {
+                public Panel getPanel(String panelId) {
+                    return new EchoParameterPanel(panelId, echoParameterModel);
+                }
+            });
+        }
         if (optionalRuleModel == null || optionalRuleModel.getPosition() != null) {
             tabs.add(new WrappedTab("Basic Rule", simpleRuleModel) {
                 public Panel getPanel(String panelId) {
@@ -82,6 +91,7 @@ public class ParamsExtractorRulePage extends GeoServerSecuredPage {
             add(new TextField<Integer>("position").setRequired(true).setType(Integer.class));
             add(new TextField<String>("parameter").setRequired(true));
             add(new TextField<String>("transform").setRequired(true));
+            add(new CheckBox("echo"));
         }
     }
 
@@ -95,6 +105,15 @@ public class ParamsExtractorRulePage extends GeoServerSecuredPage {
             add(new TextField<String>("transform").setRequired(true));
             add(new TextField<Integer>("remove").setType(Integer.class));
             add(new TextField<String>("combine"));
+            add(new CheckBox("echo"));
+        }
+    }
+
+    public class EchoParameterPanel extends Panel {
+
+        public EchoParameterPanel(String panelId, IModel<RuleModel> model) {
+            super(panelId, model);
+            add(new TextField<String>("parameter").setRequired(true));
         }
     }
 }

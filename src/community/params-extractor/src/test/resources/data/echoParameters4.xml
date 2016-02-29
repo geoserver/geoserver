@@ -1,0 +1,11 @@
+<?xml version="1.0" ?>
+<EchoParameters>
+    <EchoParameter id="0"
+                      parameter="CQL_FILTER"
+                      activated="true">
+    </EchoParameter>
+    <EchoParameter id="1"
+                      parameter="BBOX"
+                      activated="false">
+    </EchoParameter>
+</EchoParameters>

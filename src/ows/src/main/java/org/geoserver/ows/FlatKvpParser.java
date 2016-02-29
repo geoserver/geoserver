@@ -14,26 +14,21 @@ import org.geoserver.ows.util.KvpUtils;
 /**
  * A kvp parser which parses a value consisting of tokens in a flat list.
  * <p>
- * A value in flat form is a list of tokens separated by a single delimiter.
- * The default delimiter is a comma ( , ). Example:
- *         <pre>
- *         <code>
- *         key=token1,token2,...,tokenN
- *         </code>
- *  </pre>
+ * A value in flat form is a list of tokens separated by a single delimiter. The default delimiter is a comma ( , ). Example:
  * </p>
+ * 
+ * <pre><code>
+ *         key=token1,token2,...,tokenN
+ * </code></pre>
  * <p>
- * Upon processing of each token, the token is parsed into an instance of
- * {@link #getBinding()}. Subclasses should override the method
+ * Upon processing of each token, the token is parsed into an instance of {@link #getBinding()}. Subclasses should override the method
  * {@link #parseToken(String)}.
  * </p>
  * <p>
- * By default, the {@link #parse(String)} method returns an list which contains
- * instances of {@link #getBinding()}. The {@link #parse(List)} method may
- * be overidden to return a differnt type of object.
+ * By default, the {@link #parse(String)} method returns an list which contains instances of {@link #getBinding()}. The {@link #parse(List)} method
+ * may be overidden to return a differnt type of object.
  * </p>
  * @author Justin Deoliveira, The Open Planning Project, jdeolive@openplans.org
- *
  */
 public class FlatKvpParser extends KvpParser {
     /**

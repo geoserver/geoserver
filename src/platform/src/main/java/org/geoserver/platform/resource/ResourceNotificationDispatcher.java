@@ -49,7 +49,7 @@ public interface ResourceNotificationDispatcher {
      * (Delete notifications are propagated to their children. All operations are propagated to their parents.)
      * See {@link SimpleResourceNotificationDispatcher} for an example.
      * 
-     * @param notification
+     * @param notification notification of resource change (may be for a single resource or a directory)
      */
     public void changed(ResourceNotification notification);
 

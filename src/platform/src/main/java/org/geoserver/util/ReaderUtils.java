@@ -40,15 +40,13 @@ import org.xml.sax.helpers.DefaultHandler;
  *
  * <p>
  * This class is intended to be used as a library of XML relevant operation for
- * the XMLConfigReader class.
+ * the  GeoTools XMLConfigDigester class.
  * </p>
  *
  * <p></p>
  *
  * @author dzwiers, Refractions Research, Inc.
  * @version $Id$
- *
- * @see XMLConfigReader
  */
 public class ReaderUtils {
     /** Used internally to create log information to detect errors. */
@@ -103,13 +101,11 @@ public class ReaderUtils {
      * </p>
      *
      * @param file A file Handle to test.
-     * @param isDir true when the File passed in is expected to be a directory,
-     *        false when the handle is expected to be a file.
+     * @param isDir true when the File passed in is expected to be a directory, false when the handle is expected to be a file.
      *
      * @return the File handle passed in
      *
-     * @throws Exception When the file does not exist or is not
-     *         the type specified.
+     * @throws FileNotFoundException When the file does not exist or is not the type specified.
      */
     public static File checkFile(File file, boolean isDir)
         throws FileNotFoundException {

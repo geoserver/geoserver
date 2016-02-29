@@ -11,15 +11,15 @@ import java.util.Map;
 /**
  * Mangles service URL's based on teh presence of a {@link LocalWorkspace} and {@link LocalLayer}.
  * <p>
- * When the local workspace and layer are present this mangler will turns urls of the form:
+ * When the local workspace and layer are present this mangler will turns urls of the form:</p>
  * <pre>
  *   /geoserver/wfs?...
  * </pre>
  * into:
  * <pre>
- *   /geoserver/&lt;localWorkspace>/&lt;localLayer>/wfs?...
+ *   /geoserver/&lt;localWorkspace&gt;/&lt;localLayer&gt;/wfs?...
  * </pre>
- * </p>
+ * 
  * @author Justin Deoliveira, OpenGeo
  *
  */

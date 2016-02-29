@@ -55,22 +55,20 @@ public interface CatalogFilter {
     /**
      * Return true to hide the specified workspace from the catalog
      * 
-     * @param layer
-     *
+     * @param workspace Workspace to hide
      */
     boolean hideWorkspace(WorkspaceInfo workspace);
 
     /**
      * Return true to hide the specified resource from the catalog
      * 
-     * @param layer
-     *
+     * @param layer Resource (layer) to hide
      */
     boolean hideResource(ResourceInfo resource);
     
     /**
      * Returns a Filter equivalent to this CatalogFilter when applied to an object of the specified type.
-     * @param clazz
+     * @param clazz CatalogInfo type to check against security filters
      */
     Filter getSecurityFilter(final Class<? extends CatalogInfo> clazz);
 }

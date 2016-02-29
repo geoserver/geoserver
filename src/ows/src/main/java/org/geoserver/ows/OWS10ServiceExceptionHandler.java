@@ -25,15 +25,12 @@ import org.geoserver.platform.ServiceException;
 import org.geotools.xml.Encoder;
 
 /**
- * A default implementation of {@link ServiceExceptionHandler} which outputs
- * as service exception in a <code>ows:ExceptionReport</code> document.
+ * A default implementation of {@link ServiceExceptionHandler} which outputs as service exception in a <code>ows:ExceptionReport</code> document.
  * <p>
- * This service exception handler will generate an OWS exception report,
- * see {@linkplain "http://schemas.opengis.net/ows/1.0.0/owsExceptionReport.xsd"}.
+ * This service exception handler will generate an OWS exception report, see {@link "http://schemas.opengis.net/ows/1.0.0/owsExceptionReport.xsd"} .
  * </p>
  *
  * @author Justin Deoliveira, The Open Planning Project
- *
  */
 public class OWS10ServiceExceptionHandler extends ServiceExceptionHandler {
     protected boolean verboseExceptions = false;

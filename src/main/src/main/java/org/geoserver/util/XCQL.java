@@ -51,7 +51,7 @@ public class XCQL {
      * </p>
      * @param filter The ecql/cql string.
      * 
-     * @see ECQL#toFiter(String)
+     * @see ECQL#toFilter(String)
      */
     public static Filter toFilter(String filter) throws CQLException {
         try {

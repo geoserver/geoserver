@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -25,6 +25,8 @@ import org.restlet.Context;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.resource.Resource;
+
+import com.thoughtworks.xstream.XStream;
 
 /**
  * 
@@ -134,6 +136,11 @@ public class ClusterResource extends ReflectiveResource {
 			});
 			return cfg;
 		}
+	}
+	
+	@Override
+	protected void configureXStream(XStream xstream) {
+	    xstream.allowTypes(new Class[] { Properties.class });
 	}
 
 }

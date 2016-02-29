@@ -19,7 +19,7 @@ public class UrlTransform {
         this.requestUri = requestUri;
         for (Map.Entry<String, String[]> entry : parameters.entrySet()) {
             normalizedNames.put(entry.getKey().toLowerCase(), entry.getKey());
-            this.parameters.put(entry.getKey(), entry.getValue());
+            this.parameters.put(entry.getKey(), Arrays.copyOf(entry.getValue(), entry.getValue().length));
         }
     }
 

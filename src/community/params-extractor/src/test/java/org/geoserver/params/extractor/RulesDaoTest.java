@@ -6,22 +6,18 @@ package org.geoserver.params.extractor;
 
 import org.junit.Test;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.InputStream;
-import java.net.URL;
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
 
-public class RulesDaoTest {
+public final class RulesDaoTest extends TestSupport {
 
     @Test
     public void testParsingEmptyFile() throws Exception {
-        doWork("rules1.xml", (InputStream inputStream) -> {
+        doWork("data/rules1.xml", (InputStream inputStream) -> {
             List<Rule> rules = RulesDao.getRules(inputStream);
             assertThat(rules.size(), is(0));
         });
@@ -29,7 +25,7 @@ public class RulesDaoTest {
 
     @Test
     public void testParsingEmptyRules() throws Exception {
-        doWork("rules2.xml", (InputStream inputStream) -> {
+        doWork("data/rules2.xml", (InputStream inputStream) -> {
             List<Rule> rules = RulesDao.getRules(inputStream);
             assertThat(rules.size(), is(0));
         });
@@ -37,7 +33,7 @@ public class RulesDaoTest {
 
     @Test
     public void testParsingPositionRule() throws Exception {
-        doWork("rules3.xml", (InputStream inputStream) -> {
+        doWork("data/rules3.xml", (InputStream inputStream) -> {
             List<Rule> rules = RulesDao.getRules(inputStream);
             assertThat(rules.size(), is(1));
             checkRule(rules.get(0), new RuleBuilder().withId("0").withPosition(3)
@@ -47,7 +43,7 @@ public class RulesDaoTest {
 
     @Test
     public void testParsingMatchRule() throws Exception {
-        doWork("rules4.xml", (InputStream inputStream) -> {
+        doWork("data/rules4.xml", (InputStream inputStream) -> {
             List<Rule> rules = RulesDao.getRules(inputStream);
             assertThat(rules.size(), is(1));
             checkRule(rules.get(0), new RuleBuilder().withId("0").withMatch("^.*?(/([^/]+?))/[^/]+$")
@@ -57,51 +53,62 @@ public class RulesDaoTest {
 
     @Test
     public void testParsingMultipleRules() throws Exception {
-        doWork("rules5.xml", (InputStream inputStream) -> {
+        doWork("data/rules5.xml", (InputStream inputStream) -> {
             List<Rule> rules = RulesDao.getRules(inputStream);
             assertThat(rules.size(), is(3));
-            checkRule(rules.get(0), new RuleBuilder().withId("0").withPosition(3)
+            checkRule(findRule("0", rules), new RuleBuilder().withId("0").withPosition(3)
                     .withParameter("cql_filter").withRemove(1).withTransform("seq='$2'").build());
-            checkRule(rules.get(1), new RuleBuilder().withId("1").withMatch("^.*?(/([^/]+?))/[^/]+$")
+            checkRule(findRule("1", rules), new RuleBuilder().withId("1").withMatch("^.*?(/([^/]+?))/[^/]+$")
                     .withParameter("cql_filter").withRemove(2).withTransform("seq='$2'").build());
-            checkRule(rules.get(2), new RuleBuilder().withId("2").withPosition(4)
+            checkRule(findRule("2", rules), new RuleBuilder().withId("2").withPosition(4)
                     .withParameter("cql_filter").withRemove(null).withTransform("seq='$2'").build());
         });
     }
 
-    private void checkRule(Rule ruleA, Rule ruleB) {
-        assertThat(ruleA, notNullValue());
-        assertThat(ruleB, notNullValue());
-        checkValue(ruleA, ruleB, Rule::getId);
-        checkValue(ruleA, ruleB, Rule::getPosition);
-        checkValue(ruleA, ruleB, Rule::getMatch);
-        checkValue(ruleA, ruleB, Rule::getParameter);
-        checkValue(ruleA, ruleB, Rule::getTransform);
-        checkValue(ruleA, ruleB, Rule::getRemove);
-        checkValue(ruleA, ruleB, Rule::getCombine);
-    }
-
-    private <T, R> void checkValue(T ruleA, T ruleB, Function<T, R> getter) {
-        R valueA = getter.apply(ruleA);
-        R valueB = getter.apply(ruleB);
-        if (valueA == null) {
-            assertThat(valueB, nullValue());
-        } else {
-            assertThat(valueB, notNullValue());
-            assertThat(valueA, is(valueB));
-        }
-    }
-
-    private static void doWork(String resourcePath, Consumer<InputStream> consumer) throws Exception {
-        URL resource = RulesDaoTest.class.getClassLoader().getResource(resourcePath);
-        assertThat(resource, notNullValue());
-        File file = new File(resource.getFile());
-        assertThat(file.exists(), is(true));
-        try (InputStream inputStream = new FileInputStream(file)) {
-            if (inputStream.available() == 0) {
-                return;
-            }
-            consumer.accept(inputStream);
-        }
+    @Test
+    public void testRuleCrud() {
+        // create the rules to be used, rule C is an update of rule B (the id is the same)
+        Rule ruleA = new RuleBuilder().withId("0")
+                .withActivated(true)
+                .withPosition(3)
+                .withParameter("cql_filter")
+                .withTransform("CFCC='$2'").build();
+        Rule ruleB = new RuleBuilder().withId("1")
+                .withActivated(true)
+                .withMatch("^(?:/[^/]*){3}(/([^/]+)).*$")
+                .withParameter("cql_filter")
+                .withActivation("^.*$")
+                .withTransform("CFCC='$2'")
+                .withRemove(1)
+                .withCombine("$1 AND $2").build();
+        Rule ruleC = new RuleBuilder().withId("1")
+                .withActivated(false)
+                .withMatch("^(?:/[^/]*){4}(/([^/]+)).*$")
+                .withParameter("cql_filter")
+                .withActivation("^.*$")
+                .withTransform("CFCC='$2'")
+                .withRemove(1)
+                .withCombine("$1 OR $2").build();
+        // get the existing rules, this should return an empty list
+        List<Rule> rules = RulesDao.getRules();
+        assertThat(rules.size(), is(0));
+        // we save rules A and B
+        RulesDao.saveOrUpdateRule(ruleA);
+        RulesDao.saveOrUpdateRule(ruleB);
+        rules = RulesDao.getRules();
+        assertThat(rules.size(), is(2));
+        checkRule(ruleA, findRule("0", rules));
+        checkRule(ruleB, findRule("1", rules));
+        // we update rule B using rule C
+        RulesDao.saveOrUpdateRule(ruleC);
+        rules = RulesDao.getRules();
+        assertThat(rules.size(), is(2));
+        checkRule(ruleA, findRule("0", rules));
+        checkRule(ruleC, findRule("1", rules));
+        // we delete rule A
+        RulesDao.deleteRules("0");
+        rules = RulesDao.getRules();
+        assertThat(rules.size(), is(1));
+        checkRule(ruleC, findRule("1", rules));
     }
 }

@@ -18,5 +18,7 @@ application directory.
         <property name="order" value="100" />
         <property name="icon" value="img/direction-pencil.png" />
     </bean>
-    <bean id="paramsExtractorUrlMangler" class="org.geoserver.params.extractor.ParamsExtractorUrlMangler"/>
+    <bean id="paramsExtractorUrlMangler" class="org.geoserver.params.extractor.UrlMangler">
+        <constructor-arg ref="dataDirectory"/>
+    </bean>
 </beans>

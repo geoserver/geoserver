@@ -9,6 +9,7 @@ import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.PackageResourceReference;
+import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.SubmitLink;
 import org.apache.wicket.markup.html.form.TextArea;
@@ -16,6 +17,7 @@ import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.PropertyModel;
 import org.geoserver.params.extractor.UrlTransform;
 import org.geoserver.params.extractor.Utils;
 import org.geoserver.web.GeoServerSecuredPage;
@@ -24,8 +26,8 @@ import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.ImageAjaxLink;
 import org.geoserver.web.wicket.ParamResourceModel;
 
-import java.net.URLDecoder;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ParamsExtractorConfigPage extends GeoServerSecuredPage {
 
@@ -38,8 +40,11 @@ public class ParamsExtractorConfigPage extends GeoServerSecuredPage {
             @Override
             protected Component getComponentForProperty(String id, IModel itemModel,
                                                         GeoServerDataProvider.Property<RuleModel> property) {
-                if (property == RulesModel.BUTTONS) {
-                    return new ButtonPanel(id, (RuleModel) itemModel.getObject());
+                if (property == RulesModel.EDIT_BUTTON) {
+                    return new EditButtonPanel(id, (RuleModel) itemModel.getObject());
+                }
+                if (property == RulesModel.ACTIVATE_BUTTON) {
+                    return new ActivateButtonPanel(id, (RuleModel) itemModel.getObject());
                 }
                 return null;
             }
@@ -68,7 +73,9 @@ public class ParamsExtractorConfigPage extends GeoServerSecuredPage {
                     String queryRequest = urlParts.length > 1 ? urlParts[1] : null;
                     UrlTransform urlTransform = new UrlTransform(requestUri, Utils.parseParameters(queryRequest));
                     for (RuleModel ruleModel : rulesPanel.getSelection()) {
-                        ruleModel.toRule().apply(urlTransform);
+                        if (!ruleModel.isEchoOnly()) {
+                            ruleModel.toRule().apply(urlTransform);
+                        }
                     }
                     if (urlTransform.haveChanged()) {
                         outputText = urlTransform.toString();
@@ -98,16 +105,16 @@ public class ParamsExtractorConfigPage extends GeoServerSecuredPage {
                 for (RuleModel ruleModel : rulesPanel.getSelection()) {
                     rulesIds.add(ruleModel.getId());
                 }
-                RulesModel.deleteRules(rulesIds.toArray(new String[rulesIds.size()]));
+                RulesModel.delete(rulesIds.toArray(new String[rulesIds.size()]));
                 target.addComponent(rulesPanel);
             }
         });
         return header;
     }
 
-    private class ButtonPanel extends Panel {
+    private class EditButtonPanel extends Panel {
 
-        public ButtonPanel(String id, final RuleModel ruleModel) {
+        public EditButtonPanel(String id, final RuleModel ruleModel) {
             super(id);
             this.setOutputMarkupId(true);
             ImageAjaxLink editLink = new ImageAjaxLink("edit", new PackageResourceReference(getClass(), "img/edit.png")) {
@@ -119,6 +126,28 @@ public class ParamsExtractorConfigPage extends GeoServerSecuredPage {
             editLink.getImage().add(new AttributeModifier("alt", new ParamResourceModel("ParamsExtractorConfigPage.edit", editLink)));
             editLink.setOutputMarkupId(true);
             add(editLink);
+        }
+    }
+
+    private class ActivateButtonPanel extends Panel {
+
+        public ActivateButtonPanel(String id, final RuleModel ruleModel) {
+            super(id);
+            this.setOutputMarkupId(true);
+            CheckBox activateButton = new CheckBox("activated", new PropertyModel<Boolean>(ruleModel, "activated")) {
+
+                @Override
+                public void onSelectionChanged() {
+                    super.onSelectionChanged();
+                    RulesModel.saveOrUpdate(ruleModel);
+                }
+
+                @Override
+                protected boolean wantOnSelectionChangedNotifications() {
+                    return true;
+                }
+            };
+            add(activateButton);
         }
     }
 }

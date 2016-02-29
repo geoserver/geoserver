@@ -16,6 +16,7 @@ import java.util.regex.Pattern;
 public final class RequestWrapper extends HttpServletRequestWrapper {
 
     private final UrlTransform urlTransform;
+    private final Map originalParameters;
 
     private final Pattern pathInfoPattern;
     private final Pattern servletPathPattern;
@@ -28,12 +29,17 @@ public final class RequestWrapper extends HttpServletRequestWrapper {
     public RequestWrapper(UrlTransform urlTransform, HttpServletRequest request) {
         super(request);
         this.urlTransform = urlTransform;
+        originalParameters = request.getParameterMap();
         pathInfoPattern = Pattern.compile("^" + request.getContextPath() + "([^/]+?).*$");
         servletPathPattern = Pattern.compile("^" + request.getContextPath() + "[^/]+?/([^/]+?).*$");
         pathInfo = extractPathInfo(urlTransform.getOriginalRequestUri());
         servletPath = extractServletPath(urlTransform.getOriginalRequestUri());
         parameters = new HashMap<>(super.getParameterMap());
         parameters.putAll(urlTransform.getParameters());
+    }
+
+    public Map getOriginalParameters() {
+        return originalParameters;
     }
 
     @Override

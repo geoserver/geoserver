@@ -34,11 +34,6 @@
      <version>${project.version}</version>
    </dependency>   
    <dependency>
-     <groupId>org.geoserver.community</groupId>
-     <artifactId>gs-ftp</artifactId>
-     <version>${project.version}</version>
-   </dependency>
-   <dependency>
      <groupId>org.geoserver.script</groupId>
      <artifactId>gs-script-py</artifactId>
      <version>${project.version}</version>
